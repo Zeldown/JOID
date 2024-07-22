@@ -101,7 +101,7 @@ public class CustomFontRenderer implements FontProvider {
 		TEXEL_UNIFORM   = CustomFontRenderer.SHADER.getFloat2Uniform("texel");
 	}
 
-	private void draw(final double x, final double y, final String text, final TextInfo info, final boolean colored) {
+	private void draw(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final boolean colored) {
 		if (!CustomFontRenderer.SHADER.isActive()) {
 			throw new RuntimeException("FontRenderer shader is not usable");
 		}
@@ -218,7 +218,7 @@ public class CustomFontRenderer implements FontProvider {
 		CustomFontRenderer.SHADER.unbind();
 	}
 
-	private void drawGlyph(final Font font, final Glyph glyph, final Color color, final double x, final double y, final double width, final double height, final int fontSize, final boolean italic) {
+	private void drawGlyph(final @NonNull Font font, final @NonNull Glyph glyph, final @NonNull Color color, final double x, final double y, final double width, final double height, final int fontSize, final boolean italic) {
 		final AtlasBounds atlasBounds = glyph.getAtlasBounds();
 		if (atlasBounds == null) {
 			return;
@@ -248,7 +248,7 @@ public class CustomFontRenderer implements FontProvider {
 		tess.draw();
 	}
 
-	private void bindFont(final Font font) {
+	private void bindFont(final @NonNull Font font) {
 		font.getTexture().bind();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
@@ -260,12 +260,12 @@ public class CustomFontRenderer implements FontProvider {
 		CustomFontRenderer.TEXEL_UNIFORM.setValue(1F / font.getFontInfo().getAtlas().getWidth(), 1F / font.getFontInfo().getAtlas().getHeight());
 	}
 
-	private void bindColor(final Color color) {
+	private void bindColor(final @NonNull Color color) {
 		final float amt = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null)[2];
 		CustomFontRenderer.BLEND_UNIFORM.setValue(amt);
 	}
 
-	private FontBounds getBounds(final String text, final TextInfo info) {
+	private @NonNull FontBounds getBounds(final @NonNull String text, final @NonNull TextInfo info) {
 		final CustomFont font = (CustomFont) info.getFont();
 		final int fontSize = info.getFontSize();
 		final float letterSpacing = info.getLetterSpacing();
@@ -302,12 +302,8 @@ public class CustomFontRenderer implements FontProvider {
 
 	/* [ Provider Section ] */
 	@Override
-	public FontBounds drawText(final double x, final double y, @NonNull String text, final @NonNull TextInfo info) {
+	public @NonNull FontBounds drawText(final double x, final double y, @NonNull String text, final @NonNull TextInfo info) {
 		text = info.modify(text);
-
-		if (info.getFont() == null) {
-			return null;
-		}
 
 		if (info.getShadowColor() != null) {
 			this.draw(x + info.getShadowX(), y + info.getShadowY(), text, info.copy().color(info.getShadowColor()), false);
@@ -333,7 +329,7 @@ public class CustomFontRenderer implements FontProvider {
 	}
 
 	/* [ Instance Section ] */
-	public static CustomFontRenderer inst() {
+	public static @NonNull CustomFontRenderer inst() {
 		return CustomFontRenderer.INSTANCE;
 	}
 

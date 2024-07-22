@@ -30,29 +30,29 @@ public class TweenAnimator {
 		this.value = value;
 	}
 
-    /**
-     * Creates a new TweenAnimator with an initial value of 0.
-     *
-     * @return The created TweenAnimator instance.
-     */
+	/**
+	 * Creates a new TweenAnimator with an initial value of 0.
+	 *
+	 * @return The created TweenAnimator instance.
+	 */
 	public static @NonNull TweenAnimator create() {
 		return new TweenAnimator(0F);
 	}
 
-    /**
-     * Creates a new TweenAnimator with a specified initial value.
-     *
-     * @param value The initial value of the animator.
-     * @return The created TweenAnimator instance.
-     */
+	/**
+	 * Creates a new TweenAnimator with a specified initial value.
+	 *
+	 * @param value The initial value of the animator.
+	 * @return The created TweenAnimator instance.
+	 */
 	public static @NonNull TweenAnimator create(final float value) {
 		return new TweenAnimator(value);
 	}
 
 	/* [ Manage Section ] */
-    /**
-     * Clears the current state of the animator, resetting values and removing any ongoing animations.
-     */
+	/**
+	 * Clears the current state of the animator, resetting values and removing any ongoing animations.
+	 */
 	public void clear() {
 		this.value      = 0F;
 		this.speed      = 1F;
@@ -139,13 +139,13 @@ public class TweenAnimator {
 		this.timeline.push(Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
 	}
 
-    /**
-     * Sets a callback to be executed when the animation ends.
-     *
-     * @param callback The callback function to be executed.
+	/**
+	 * Sets a callback to be executed when the animation ends.
+	 *
+	 * @param callback The callback function to be executed.
 	 * @throws NullPointerException If the provided callback is {@code null}.
-     * @return This TweenAnimator instance for method chaining.
-     */
+	 * @return This TweenAnimator instance for method chaining.
+	 */
 	public @NonNull TweenAnimator setCallback(final @NonNull Consumer<@NonNull BaseTween<@NonNull ?>> callback) {
 		assert this.timeline != null;
 		this.timeline.addCallback(TweenCallback.END, callback);
@@ -153,11 +153,11 @@ public class TweenAnimator {
 	}
 
 	/* [ Start Section ] */
-    /**
-     * Starts the animation. This method must be called after creating the animation sequence or parallel set.
-     *
-     * @return This TweenAnimator instance for method chaining.
-     */
+	/**
+	 * Starts the animation. This method must be called after creating the animation sequence or parallel set.
+	 *
+	 * @return This TweenAnimator instance for method chaining.
+	 */
 	public @NonNull TweenAnimator start() {
 		assert this.timeline != null;
 		this.lastUpdate = System.currentTimeMillis();

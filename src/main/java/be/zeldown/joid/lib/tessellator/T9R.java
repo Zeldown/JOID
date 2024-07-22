@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.lwjgl.opengl.GL11;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 public final class T9R {
@@ -56,66 +57,65 @@ public final class T9R {
 	public int draw() {
 		if (!this.isDrawing) {
 			throw new IllegalStateException("Not tesselating!");
-		} else {
-			this.isDrawing = false;
-
-			int offs = 0;
-			while (offs < this.vertexCount) {
-				final int vtc = Math.min(this.vertexCount - offs, T9R.nativeBufferSize >> 5);
-				T9R.intBuffer.clear();
-				T9R.intBuffer.put(this.rawBuffer, offs * 8, vtc * 8);
-				T9R.byteBuffer.position(0);
-				T9R.byteBuffer.limit(vtc * 32);
-				offs += vtc;
-
-				if (this.hasTexture) {
-					T9R.floatBuffer.position(3);
-					GL11.glTexCoordPointer(2, 32, T9R.floatBuffer);
-					GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-				}
-
-				if (this.hasBrightness) {
-					T9R.shortBuffer.position(14);
-					GL11.glTexCoordPointer(2, 32, T9R.shortBuffer);
-					GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-				}
-
-				if (this.hasColor) {
-					T9R.byteBuffer.position(20);
-					GL11.glColorPointer(4, true, 32, T9R.byteBuffer);
-					GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-				}
-
-				if (this.hasNormals) {
-					T9R.byteBuffer.position(24);
-					GL11.glNormalPointer(32, T9R.byteBuffer);
-					GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-				}
-
-				T9R.floatBuffer.position(0);
-				GL11.glVertexPointer(3, 32, T9R.floatBuffer);
-				GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-				GL11.glDrawArrays(this.drawMode, 0, vtc);
-				GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
-
-				if (this.hasTexture || this.hasBrightness) {
-					GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-				}
-
-				if (this.hasColor || this.hasNormals) {
-					GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-				}
-			}
-
-			if (this.rawBufferSize > 0x20000 && this.rawBufferIndex < (this.rawBufferSize << 3)) {
-				this.rawBufferSize = 0x10000;
-				this.rawBuffer = new int[this.rawBufferSize];
-			}
-
-			final int i = this.rawBufferIndex * 4;
-			this.reset();
-			return i;
 		}
+		this.isDrawing = false;
+
+		int offs = 0;
+		while (offs < this.vertexCount) {
+			final int vtc = Math.min(this.vertexCount - offs, T9R.nativeBufferSize >> 5);
+			T9R.intBuffer.clear();
+			T9R.intBuffer.put(this.rawBuffer, offs * 8, vtc * 8);
+			T9R.byteBuffer.position(0);
+			T9R.byteBuffer.limit(vtc * 32);
+			offs += vtc;
+
+			if (this.hasTexture) {
+				T9R.floatBuffer.position(3);
+				GL11.glTexCoordPointer(2, 32, T9R.floatBuffer);
+				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+			}
+
+			if (this.hasBrightness) {
+				T9R.shortBuffer.position(14);
+				GL11.glTexCoordPointer(2, 32, T9R.shortBuffer);
+				GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+			}
+
+			if (this.hasColor) {
+				T9R.byteBuffer.position(20);
+				GL11.glColorPointer(4, true, 32, T9R.byteBuffer);
+				GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+			}
+
+			if (this.hasNormals) {
+				T9R.byteBuffer.position(24);
+				GL11.glNormalPointer(32, T9R.byteBuffer);
+				GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+			}
+
+			T9R.floatBuffer.position(0);
+			GL11.glVertexPointer(3, 32, T9R.floatBuffer);
+			GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+			GL11.glDrawArrays(this.drawMode, 0, vtc);
+			GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+
+			if (this.hasTexture || this.hasBrightness) {
+				GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+			}
+
+			if (this.hasColor || this.hasNormals) {
+				GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+			}
+		}
+
+		if (this.rawBufferSize > 0x20000 && this.rawBufferIndex < this.rawBufferSize << 3) {
+			this.rawBufferSize = 0x10000;
+			this.rawBuffer = new int[this.rawBufferSize];
+		}
+
+		final int i = this.rawBufferIndex * 4;
+		this.reset();
+		return i;
 	}
 
 	private void reset() {
@@ -173,9 +173,9 @@ public final class T9R {
 
 	public void setColor(final int rgb) {
 		final int j = rgb >> 16 & 255;
-			final int k = rgb >> 8 & 255;
-			final int l = rgb & 255;
-			this.setColor(j, k, l);
+		final int k = rgb >> 8 & 255;
+		final int l = rgb & 255;
+		this.setColor(j, k, l);
 	}
 
 	public void setColor(final int rgb, final int a) {
@@ -277,9 +277,9 @@ public final class T9R {
 
 	public void setNormal(final float x, final float y, final float z) {
 		this.hasNormals = true;
-		final byte normalX = (byte)((int)(x * 127.0F));
-		final byte normalY = (byte)((int)(y * 127.0F));
-		final byte normalZ = (byte)((int)(z * 127.0F));
+		final byte normalX = (byte)(int)(x * 127.0F);
+		final byte normalY = (byte)(int)(y * 127.0F);
+		final byte normalZ = (byte)(int)(z * 127.0F);
 		this.normal = normalX & 255 | (normalY & 255) << 8 | (normalZ & 255) << 16;
 	}
 
@@ -289,11 +289,11 @@ public final class T9R {
 		this.zOffset += z;
 	}
 
-	public static T9R inst() {
+	public static @NonNull T9R inst() {
 		return T9R.INSTANCE;
 	}
 
-	public T9R copy() {
+	public @NonNull T9R copy() {
 		return new T9R();
 	}
 

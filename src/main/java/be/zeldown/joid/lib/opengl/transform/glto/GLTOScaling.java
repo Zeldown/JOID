@@ -4,13 +4,14 @@ import org.lwjgl.opengl.GL11;
 
 import be.zeldown.joid.lib.opengl.modifier.GLCoords;
 import be.zeldown.joid.lib.opengl.modifier.GLScale;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class GLTOScaling implements GLTO {
 
-	private final GLScale  scale;
-	private final GLCoords pivot;
+	@NonNull private final GLScale  scale;
+	@NonNull private final GLCoords pivot;
 
 	@Override
 	public void transform() {

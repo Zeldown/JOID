@@ -48,7 +48,7 @@ public class JOIDWindow {
 			if (!Display.isVisible()) {
 				try {
 					Thread.sleep(100);
-				} catch (InterruptedException inte) {
+				} catch (final InterruptedException inte) {
 					inte.printStackTrace();
 				}
 				continue;
@@ -71,7 +71,7 @@ public class JOIDWindow {
 				TextInfo.create(TestFont.SPACE_GROTESK, 25, Color.WHITE).align(TextAlign.RIGHT)
 		};
 
-		String[] texts = {
+		final String[] texts = {
 				"lorem impsum",
 				"§oitalic",
 				"spacing",

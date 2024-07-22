@@ -4,14 +4,16 @@ import org.lwjgl.opengl.GL11;
 
 import be.zeldown.joid.lib.opengl.modifier.GLCoords;
 import be.zeldown.joid.lib.opengl.modifier.GLRotation;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class GLTORotating implements GLTO {
 
-	private final double     angle;
-	private final GLRotation rotation;
-	private final GLCoords   pivot;
+	private final double angle;
+
+	@NonNull private final GLRotation rotation;
+	@NonNull private final GLCoords   pivot;
 
 	@Override
 	public void transform() {
