@@ -75,8 +75,8 @@ jar {
 
 shadowJar {
     from(sourceSets.main.output.resourcesDir)
-    configurations = [project.configurations.shadow] // ***
-    classifier = 'dev'
+    configurations = [project.configurations.shadow]
+    classifier = null
     
 	exclude 'test/*'
 }

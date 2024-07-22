@@ -34,21 +34,17 @@ public class CustomFontRenderer implements FontProvider {
 
 	private static final CustomFontRenderer INSTANCE = new CustomFontRenderer();
 
+	private static final Random RANDOM = new Random();
 	private static final Map<Integer, Color> COLOR_MAP = new HashMap<>();
 
-	private static final Random RANDOM = new Random();
-
-	private static final char CHAR_OPERATOR         = '\u00a7'; /* § */
+	private static final char CHAR_OPERATOR         = '§';
 	private static final String CHAR_OPERATOR_ATLAS = "0123456789abcdefklmnopr";
 	private static final String AZ_ATLAS            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	private static final IGLShader      SHADER;
-
 	private static final SamplerUniform MSDF_UNIFORM;
-
 	private static final FloatUniform   DOFFSET_UNIFORM;
 	private static final FloatUniform   BLEND_UNIFORM;
-
 	private static final Float2Uniform  TEXEL_UNIFORM;
 	private static final Float4Uniform  COLOR_UNIFORM;
 
@@ -93,16 +89,14 @@ public class CustomFontRenderer implements FontProvider {
 			vert = JOID.class.getResourceAsStream("/shaders/font/font.vsh");
 			frag = JOID.class.getResourceAsStream("/shaders/font/font.fsh");
 		} catch (final Exception e) {
-			e.printStackTrace();
+			throw new RuntimeException("Failed to load font shaders", e);
 		}
 
 		SHADER = GLShader.from(vert, frag, ShaderBlendState.NORMAL);
 
 		MSDF_UNIFORM    = CustomFontRenderer.SHADER.getSamplerUniform("msdf");
-
 		DOFFSET_UNIFORM = CustomFontRenderer.SHADER.getFloatUniform("doffset");
 		BLEND_UNIFORM   = CustomFontRenderer.SHADER.getFloatUniform("blend");
-
 		COLOR_UNIFORM   = CustomFontRenderer.SHADER.getFloat4Uniform("color");
 		TEXEL_UNIFORM   = CustomFontRenderer.SHADER.getFloat2Uniform("texel");
 	}
