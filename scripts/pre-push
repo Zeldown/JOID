@@ -1,0 +1,54 @@
+#!/bin/sh
+
+echo ""
+echo "🚀 Running pre-push hook"
+echo ""
+echo ""
+
+echo "🔍 Stashing changes"
+git stash -q --keep-index
+
+echo ""
+echo ""
+
+echo "🔍 Checking build status"
+./gradlew check
+status=$?
+if [ $status -ne 0 ]; then
+    echo ""
+    echo ""
+    echo "❌ Push rejected due to failing gradle check"
+    echo ""
+    echo ""
+    exit $status
+fi
+
+echo ""
+echo ""
+
+echo "🎉 Running Gradle tests"
+./gradlew test
+status=$?
+if [ $status -ne 0 ]; then
+    echo ""
+    echo ""
+    echo "❌ Push rejected due to failing gradle test"
+    echo ""
+    echo ""
+    exit $status
+fi
+
+echo ""
+echo ""
+
+echo "🧹 Popping changes from the stash"
+git stash pop -q
+
+echo ""
+echo ""
+echo "✅ Done with unit tests"
+echo ""
+echo ""
+
+# Exit with the captured status
+exit $status
