@@ -38,8 +38,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: artifact.jar
-      - name: Rename Files
-        run: mv $FILE ${{ env.FILE }}
       - name: Generate Changelog
         run: echo "# Build Release" > ${{ github.workspace }}-CHANGELOG.txt
       - name: Release
