@@ -4,7 +4,7 @@
 ## Java OpenGL Interface Developement
 
 <div align="center" >
-  <img align="center" src="https://img.shields.io/badge/version-1.2.0 (7f84f42)-blue">
+  <img align="center" src="https://img.shields.io/badge/version-1.2.0 (c815acc)-blue">
   <img align="center" src="https://img.shields.io/badge/maintainer-Zeldown-orange">
   <img align="center" src="https://img.shields.io/maintenance/yes/9999">
   <img align="center" src="https://github.com/Zeldown/JOID/actions/workflows/push.yml/badge.svg">
