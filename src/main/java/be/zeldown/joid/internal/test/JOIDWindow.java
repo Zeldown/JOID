@@ -64,9 +64,6 @@ public class JOIDWindow {
 
 	private void render() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		if (!TestFont.isLoaded()) {
-			return;
-		}
 
 		final TextInfo[] fonts = {
 				TextInfo.create(TestFont.MONTSERRAT, 25, Color.WHITE).align(TextAlign.LEFT).lineHeight(-5.5F),

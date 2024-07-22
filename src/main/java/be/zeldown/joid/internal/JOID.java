@@ -1,5 +1,7 @@
 package be.zeldown.joid.internal;
 
+import java.io.InputStream;
+
 import org.lwjgl.LWJGLException;
 
 import be.zeldown.joid.internal.test.JOIDWindow;
@@ -14,6 +16,10 @@ public class JOID {
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static InputStream get(String path) {
+		return JOID.class.getResourceAsStream(path);
 	}
 
 }

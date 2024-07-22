@@ -12,21 +12,17 @@ public class TestFont {
 	public static CustomFont SPACE_GROTESK;
 
 	public static void load() {
-		{
-			final FontInputStream regular = new FontInputStream(JOID.class.getResourceAsStream("/test/fonts/Montserrat-Regular/font.json"), JOID.class.getResourceAsStream("/test/fonts/Montserrat-Regular/font.png"));
-			final FontInputStream bold = new FontInputStream(JOID.class.getResourceAsStream("/test/fonts/Montserrat-Bold/font.json"), JOID.class.getResourceAsStream("/test/fonts/Montserrat-Bold/font.png"));
-			FontLoader.load(regular, bold, font -> TestFont.MONTSERRAT = font);
+		TestFont.MONTSERRAT = FontLoader.load(TestFont.get("/test/fonts/Montserrat-Regular/"), TestFont.get("/test/fonts/Montserrat-Bold/")).join();
+		TestFont.BATUPHAT = FontLoader.load(TestFont.get("/test/fonts/Batuphat-Script/")).join();
+		TestFont.SPACE_GROTESK = FontLoader.load(TestFont.get("/test/fonts/Space-Grotesk/")).join();
+	}
+
+	private static FontInputStream get(String path) {
+		if (path.endsWith("/")) {
+			path = path.substring(0, path.length() - 1);
 		}
 
-		{
-			final FontInputStream regular = new FontInputStream(JOID.class.getResourceAsStream("/test/fonts/Batuphat-Script/font.json"), JOID.class.getResourceAsStream("/test/fonts/Batuphat-Script/font.png"));
-			FontLoader.load(regular, font -> TestFont.BATUPHAT = font);
-		}
-
-		{
-			final FontInputStream regular = new FontInputStream(JOID.class.getResourceAsStream("/test/fonts/Space-Grotesk/font.json"), JOID.class.getResourceAsStream("/test/fonts/Space-Grotesk/font.png"));
-			FontLoader.load(regular, font -> TestFont.SPACE_GROTESK = font);
-		}
+		return new FontInputStream(JOID.get(path + "/font.json"), JOID.get(path + "/font.png"));
 	}
 
 	public static boolean isLoaded() {
