@@ -43,11 +43,14 @@ public class CustomFontRenderer implements FontProvider {
 	private static final String AZ_ATLAS            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	private static final IGLShader      SHADER;
-	private static final SamplerUniform SAMPLER_UNIFORM;
+
+	private static final SamplerUniform MSDF_UNIFORM;
+
 	private static final FloatUniform   DOFFSET_UNIFORM;
-	private static final FloatUniform   HINT_AMOUNT_UNIFORM;
-	private static final Float2Uniform  SDF_TEXEL;
-	private static final Float4Uniform  FG_COLOR_UNIFORM;
+	private static final FloatUniform   BLEND_UNIFORM;
+
+	private static final Float2Uniform  TEXEL_UNIFORM;
+	private static final Float4Uniform  COLOR_UNIFORM;
 
 	static {
 		CustomFontRenderer.COLOR_MAP.put(0, Color.BLACK);
@@ -95,11 +98,13 @@ public class CustomFontRenderer implements FontProvider {
 
 		SHADER = GLShader.from(vert, frag, ShaderBlendState.NORMAL);
 
-		SAMPLER_UNIFORM     = CustomFontRenderer.SHADER.getSamplerUniform("msdf");
-		DOFFSET_UNIFORM     = CustomFontRenderer.SHADER.getFloatUniform("doffset");
-		HINT_AMOUNT_UNIFORM = CustomFontRenderer.SHADER.getFloatUniform("hint_amount");
-		SDF_TEXEL           = CustomFontRenderer.SHADER.getFloat2Uniform("sdf_texel");
-		FG_COLOR_UNIFORM    = CustomFontRenderer.SHADER.getFloat4Uniform("fgColor");
+		MSDF_UNIFORM    = CustomFontRenderer.SHADER.getSamplerUniform("msdf");
+
+		DOFFSET_UNIFORM = CustomFontRenderer.SHADER.getFloatUniform("doffset");
+		BLEND_UNIFORM   = CustomFontRenderer.SHADER.getFloatUniform("blend");
+
+		COLOR_UNIFORM   = CustomFontRenderer.SHADER.getFloat4Uniform("color");
+		TEXEL_UNIFORM   = CustomFontRenderer.SHADER.getFloat2Uniform("texel");
 	}
 
 	private void draw(final double x, final double y, final String text, final TextInfo info, final boolean colored) {
@@ -231,7 +236,7 @@ public class CustomFontRenderer implements FontProvider {
 		final double textureLeft = atlasBounds.getLeft() / atlas.getWidth();
 		final double textureRight = atlasBounds.getRight() / atlas.getWidth();
 
-		CustomFontRenderer.FG_COLOR_UNIFORM.setValue(
+		CustomFontRenderer.COLOR_UNIFORM.setValue(
 				color.getRed()   / 255F,
 				color.getGreen() / 255F,
 				color.getBlue()  / 255F,
@@ -257,13 +262,13 @@ public class CustomFontRenderer implements FontProvider {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 
-		CustomFontRenderer.SAMPLER_UNIFORM.setValue(font.getTexture().getGlTextureId());
-		CustomFontRenderer.SDF_TEXEL.setValue(1F / font.getFontInfo().getAtlas().getWidth(), 1F / font.getFontInfo().getAtlas().getHeight());
+		CustomFontRenderer.MSDF_UNIFORM.setValue(font.getTexture().getGlTextureId());
+		CustomFontRenderer.TEXEL_UNIFORM.setValue(1F / font.getFontInfo().getAtlas().getWidth(), 1F / font.getFontInfo().getAtlas().getHeight());
 	}
 
 	private void bindColor(final Color color) {
 		final float amt = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null)[2];
-		CustomFontRenderer.HINT_AMOUNT_UNIFORM.setValue(amt);
+		CustomFontRenderer.BLEND_UNIFORM.setValue(amt);
 	}
 
 	private FontBounds getBounds(final String text, final TextInfo info) {
@@ -330,7 +335,7 @@ public class CustomFontRenderer implements FontProvider {
 
 	@Override
 	public double getLineHeight(final @NonNull TextInfo info) {
-		return ((CustomFont)info.getFont()).getBold().getFontInfo().getMetrics().getLineHeight() * info.getFontSize() + info.getLineHeight();
+		return ((CustomFont) info.getFont()).getBold().getFontInfo().getMetrics().getLineHeight() * info.getFontSize() + info.getLineHeight();
 	}
 
 	/* [ Instance Section ] */
