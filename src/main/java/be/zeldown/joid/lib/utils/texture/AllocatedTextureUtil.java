@@ -1,4 +1,4 @@
-package be.zeldown.joid.lib.texture;
+package be.zeldown.joid.lib.utils.texture;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL12;
 
 public class AllocatedTextureUtil {
 
-	private static final int UPLOAD_BUFFER_SIZE = 4194304;
+	private static final int UPLOAD_BUFFER_SIZE = 2048 * 2048;
 	private static final IntBuffer UPLOAD_DATA_BUFFER = ByteBuffer.allocateDirect(AllocatedTextureUtil.UPLOAD_BUFFER_SIZE << 2).order(ByteOrder.nativeOrder()).asIntBuffer();
 
 	public static void allocateTexture(final int textureId, final int width, final int height) {

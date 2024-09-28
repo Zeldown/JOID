@@ -26,11 +26,11 @@ public final class TextInfo {
 	private TextAlign     align;
 	private ITextModifier modifier;
 
-	private TextInfo(final @NonNull IFont font, final int fontSize) {
+	private TextInfo(final IFont font, final int fontSize) {
 		this(font, fontSize, Color.BLACK);
 	}
 
-	private TextInfo(final @NonNull IFont font, final int fontSize, final @NonNull Color color) {
+	private TextInfo(final IFont font, final int fontSize, final Color color) {
 		this(font, fontSize, 0, 0, color, true, null, fontSize/13.5F, fontSize/13.5F, TextAlign.LEFT, null);
 	}
 
@@ -64,7 +64,7 @@ public final class TextInfo {
 		return text;
 	}
 
-	public final @NonNull TextInfo font(final @NonNull IFont font) {
+	public final @NonNull TextInfo font(final IFont font) {
 		this.font = font;
 		return this;
 	}

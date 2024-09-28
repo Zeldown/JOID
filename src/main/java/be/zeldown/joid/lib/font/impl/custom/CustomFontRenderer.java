@@ -1,4 +1,4 @@
-package be.zeldown.joid.lib.font.impl;
+package be.zeldown.joid.lib.font.impl.custom;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -34,10 +34,11 @@ public class CustomFontRenderer implements FontProvider {
 
 	private static final CustomFontRenderer INSTANCE = new CustomFontRenderer();
 
-	private static final Random RANDOM = new Random();
 	private static final Map<Integer, Color> COLOR_MAP = new HashMap<>();
 
-	private static final char CHAR_OPERATOR         = '§';
+	private static final Random RANDOM = new Random();
+
+	private static final char CHAR_OPERATOR         = '\u00a7'; /* § */
 	private static final String CHAR_OPERATOR_ATLAS = "0123456789abcdefklmnopr";
 	private static final String AZ_ATLAS            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -86,8 +87,8 @@ public class CustomFontRenderer implements FontProvider {
 		InputStream vert = null;
 		InputStream frag = null;
 		try {
-			vert = JOID.class.getResourceAsStream("/shaders/font/font.vsh");
-			frag = JOID.class.getResourceAsStream("/shaders/font/font.fsh");
+			vert = JOID.class.getResourceAsStream("/assets/shaders/font/font.vsh");
+			frag = JOID.class.getResourceAsStream("/assets/shaders/font/font.fsh");
 		} catch (final Exception e) {
 			throw new RuntimeException("Failed to load font shaders", e);
 		}
@@ -101,7 +102,7 @@ public class CustomFontRenderer implements FontProvider {
 		TEXEL_UNIFORM   = CustomFontRenderer.SHADER.getFloat2Uniform("texel");
 	}
 
-	private void draw(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final boolean colored) {
+	private void draw(final double x, final double y, final String text, final TextInfo info, final boolean colored) {
 		if (!CustomFontRenderer.SHADER.isActive()) {
 			throw new RuntimeException("FontRenderer shader is not usable");
 		}
@@ -218,7 +219,7 @@ public class CustomFontRenderer implements FontProvider {
 		CustomFontRenderer.SHADER.unbind();
 	}
 
-	private void drawGlyph(final @NonNull Font font, final @NonNull Glyph glyph, final @NonNull Color color, final double x, final double y, final double width, final double height, final int fontSize, final boolean italic) {
+	private void drawGlyph(final Font font, final Glyph glyph, final Color color, final double x, final double y, final double width, final double height, final int fontSize, final boolean italic) {
 		final AtlasBounds atlasBounds = glyph.getAtlasBounds();
 		if (atlasBounds == null) {
 			return;
@@ -248,24 +249,24 @@ public class CustomFontRenderer implements FontProvider {
 		tess.draw();
 	}
 
-	private void bindFont(final @NonNull Font font) {
-		font.getTexture().bind();
+	private void bindFont(final Font font) {
+		font.getTexture().bindTextureOnly();
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 
-		CustomFontRenderer.MSDF_UNIFORM.setValue(font.getTexture().getGlTextureId());
+		CustomFontRenderer.MSDF_UNIFORM.setValue(font.getTexture().getTextureId());
 		CustomFontRenderer.TEXEL_UNIFORM.setValue(1F / font.getFontInfo().getAtlas().getWidth(), 1F / font.getFontInfo().getAtlas().getHeight());
 	}
 
-	private void bindColor(final @NonNull Color color) {
+	private void bindColor(final Color color) {
 		final float amt = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null)[2];
 		CustomFontRenderer.BLEND_UNIFORM.setValue(amt);
 	}
 
-	private @NonNull FontBounds getBounds(final @NonNull String text, final @NonNull TextInfo info) {
+	private FontBounds getBounds(final String text, final TextInfo info) {
 		final CustomFont font = (CustomFont) info.getFont();
 		final int fontSize = info.getFontSize();
 		final float letterSpacing = info.getLetterSpacing();
@@ -302,8 +303,12 @@ public class CustomFontRenderer implements FontProvider {
 
 	/* [ Provider Section ] */
 	@Override
-	public @NonNull FontBounds drawText(final double x, final double y, @NonNull String text, final @NonNull TextInfo info) {
+	public FontBounds drawText(final double x, final double y, @NonNull String text, final @NonNull TextInfo info) {
 		text = info.modify(text);
+
+		if (info.getFont() == null) {
+			return null;
+		}
 
 		if (info.getShadowColor() != null) {
 			this.draw(x + info.getShadowX(), y + info.getShadowY(), text, info.copy().color(info.getShadowColor()), false);
@@ -325,11 +330,11 @@ public class CustomFontRenderer implements FontProvider {
 
 	@Override
 	public double getLineHeight(final @NonNull TextInfo info) {
-		return ((CustomFont) info.getFont()).getBold().getFontInfo().getMetrics().getLineHeight() * info.getFontSize() + info.getLineHeight();
+		return ((CustomFont)info.getFont()).getBold().getFontInfo().getMetrics().getLineHeight() * info.getFontSize() + info.getLineHeight();
 	}
 
 	/* [ Instance Section ] */
-	public static @NonNull CustomFontRenderer inst() {
+	public static CustomFontRenderer inst() {
 		return CustomFontRenderer.INSTANCE;
 	}
 

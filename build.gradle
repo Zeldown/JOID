@@ -70,7 +70,7 @@ jar {
         }
     }
     
-	exclude 'test/demo/*'
+	exclude 'assets/test/*'
 }
 
 shadowJar {
@@ -78,7 +78,7 @@ shadowJar {
     configurations = [project.configurations.shadow]
     classifier = null
     
-	exclude 'test/*'
+	exclude 'assets/test/*'
 }
 
 build.dependsOn shadowJar

@@ -1,7 +1,6 @@
 package be.zeldown.joid.lib.font.dto.text;
 
 import lombok.Getter;
-import lombok.NonNull;
 
 public enum TextOverflow {
 
@@ -10,9 +9,9 @@ public enum TextOverflow {
 	DOT("."),
 	HYPHEN("-");
 
-	@Getter private final String overflow;
+	@Getter String overflow;
 
-	TextOverflow(final @NonNull String overflow) {
+	private TextOverflow(final String overflow) {
 		this.overflow = overflow;
 	}
 
