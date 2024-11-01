@@ -10,7 +10,7 @@ buildscript {
 }
 
 plugins {
-    id 'io.franzbecker.gradle-lombok' version '1.6'
+    id 'io.franzbecker.gradle-lombok' version '1.8'
 }
 
 allprojects{
@@ -23,12 +23,11 @@ allprojects{
 
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: 'maven-publish'
 
 dependencies {
-    compile "org.projectlombok:lombok:1.18.22"
+    compile "org.projectlombok:lombok:1.18.34"
     
-    compile "org.lwjgl.lwjgl:lwjgl:2.9.1"
+    compile "org.lwjgl.lwjgl:lwjgl:2.9.3"
     
     shadow "com.google.guava:guava:15.0"
     shadow "com.google.code.gson:gson:2.2.4"
