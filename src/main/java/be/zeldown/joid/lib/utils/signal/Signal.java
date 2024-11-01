@@ -5,6 +5,10 @@ import java.util.Set;
 
 import lombok.NonNull;
 
+/**
+ * The `Signal` class in Java represents a signal with a generic type, allowing subscribers to receive
+ * updates when the signal value changes.
+ */
 public class Signal<T> implements ISignal<T> {
 
 	private final Set<@NonNull SignalSubscriber<@NonNull T>> eventSet;

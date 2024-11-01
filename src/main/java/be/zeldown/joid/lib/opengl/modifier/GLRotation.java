@@ -21,21 +21,25 @@ public class GLRotation {
 	}
 
 	/**
-	 * Creates a new GLRotation instance with default rotation angles (0, 0, 0).
-	 *
-	 * @return A new GLRotation instance with default rotation angles.
+	 * The function creates a new instance of GLRotation with default values for rotation angles.
+	 * 
+	 * @return An instance of the GLRotation class with the values (0, 0, 0) is being returned.
 	 */
 	public static @NonNull GLRotation create() {
 	    return new GLRotation(0, 0, 0);
 	}
 
 	/**
-	 * Creates a new GLRotation instance with the specified yaw, pitch, and roll angles.
-	 *
-	 * @param yaw   The rotation angle around the vertical axis (yaw).
-	 * @param pitch The rotation angle around the lateral axis (pitch).
-	 * @param roll  The rotation angle around the longitudinal axis (roll).
-	 * @return A new GLRotation instance with the specified rotation angles.
+	 * The function creates a new GLRotation object with the specified yaw, pitch, and roll values.
+	 * 
+	 * @param yaw The yaw parameter typically represents the rotation around the vertical axis, often
+	 * referred to as the yaw axis.
+	 * @param pitch The pitch parameter typically represents the rotation around the x-axis in a 3D space.
+	 * It is the angle at which an object is tilted up or down.
+	 * @param roll The `roll` parameter typically represents the rotation around the z-axis in a 3D space.
+	 * It is the rotation about the axis that points directly out of the screen towards you.
+	 * @return An instance of the GLRotation class with the specified yaw, pitch, and roll values is being
+	 * returned.
 	 */
 	public static @NonNull GLRotation create(final double yaw, final double pitch, final double roll) {
 	    return new GLRotation(yaw, pitch, roll);
