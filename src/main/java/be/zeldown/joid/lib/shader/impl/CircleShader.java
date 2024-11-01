@@ -26,7 +26,7 @@ public class CircleShader {
 				CircleShader.radiusUniform    = CircleShader.shader.getFloatUniform("u_Radius");
 				CircleShader.centerPosUniform = CircleShader.shader.getFloat2Uniform("u_CenterPos");
 			}
-		}catch (final Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 
 			CircleShader.shader           = null;

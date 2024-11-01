@@ -16,7 +16,7 @@ public interface FontProvider {
 	 * @return The bounds of the drawn text.
 	 * @throws NullPointerException If either the text or text information is {@code null}.
 	 */
-	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info);
+	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info);
 
 	/**
 	 * Gets the width of the specified text using the provided text information.

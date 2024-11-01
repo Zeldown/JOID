@@ -22,24 +22,11 @@ public final class CustomFontLoader {
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
 
-	public static @NonNull CompletableFuture<@NonNull CustomFont> load(final @NonNull FontInputStream regular) {
-		return CustomFontLoader.load(regular, null);
-	}
-
-	public static @NonNull CompletableFuture<@NonNull CustomFont> load(final @NonNull FontInputStream regular, final FontInputStream bold) {
+	public static @NonNull CompletableFuture<@NonNull CustomFont> load(final @NonNull FontInputStream input) {
 		final CompletableFuture<CustomFont> future = new CompletableFuture<>();
-
-		CustomFontLoader.loadFont(regular, regularFont -> {
-			if (bold == null) {
-				future.complete(new CustomFont(regularFont, regularFont));
-				return;
-			}
-
-			CustomFontLoader.loadFont(bold, boldFont -> {
-				future.complete(new CustomFont(regularFont, boldFont));
-			});
+		CustomFontLoader.loadFont(input, font -> {
+			future.complete(new CustomFont(font));
 		});
-
 		return future;
 	}
 
@@ -47,8 +34,8 @@ public final class CustomFontLoader {
 		CustomFontLoader.EXECUTOR.submit(() -> {
 			final FontInfo tempFontInfo = FontInfo.fromJson(CustomFontLoader.GSON.fromJson(new InputStreamReader(fontInputStream.getData(), StandardCharsets.UTF_8), JsonObject.class));
 			final Font font = new Font(tempFontInfo, fontInputStream.getTexture());
-			font.getTexture();
 
+			font.getTexture();
 			callback.accept(font);
 		});
 	}

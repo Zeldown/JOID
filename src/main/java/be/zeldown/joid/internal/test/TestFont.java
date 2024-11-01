@@ -12,7 +12,7 @@ public class TestFont {
 	public static CustomFont SPACE_GROTESK;
 
 	public static void load() {
-		TestFont.MONTSERRAT = CustomFontLoader.load(TestFont.get("/assets/test/fonts/Montserrat-Regular/"), TestFont.get("/assets/test/fonts/Montserrat-Bold/")).join();
+		TestFont.MONTSERRAT = CustomFontLoader.load(TestFont.get("/assets/test/fonts/Montserrat-Regular/")).join();
 		TestFont.BATUPHAT = CustomFontLoader.load(TestFont.get("/assets/test/fonts/Batuphat-Script/")).join();
 		TestFont.SPACE_GROTESK = CustomFontLoader.load(TestFont.get("/assets/test/fonts/Space-Grotesk/")).join();
 	}

@@ -13,8 +13,7 @@ import lombok.NonNull;
 @AllArgsConstructor
 public final class CustomFont implements IFont {
 
-	@NonNull private final Font regular;
-	@NonNull private final Font bold;
+	@NonNull private final Font font;
 
 	public @NonNull TextInfo info(final int fontSize) {
 		return TextInfo.create(this, fontSize);

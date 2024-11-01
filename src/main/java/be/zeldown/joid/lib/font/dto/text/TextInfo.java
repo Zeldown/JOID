@@ -1,9 +1,8 @@
 package be.zeldown.joid.lib.font.dto.text;
 
 import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.draw.DrawUtils;
+import be.zeldown.joid.lib.font.dto.font.FontBounds;
 import be.zeldown.joid.lib.font.dto.font.IFont;
-import be.zeldown.joid.lib.font.dto.text.modifier.ITextModifier;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,21 +16,18 @@ public final class TextInfo {
 	private float   letterSpacing;
 	private float   lineHeight;
 	private Color   color;
-	private boolean colored;
+	private boolean italic;
 
 	private Color shadowColor;
 	private float shadowX;
 	private float shadowY;
-
-	private TextAlign     align;
-	private ITextModifier modifier;
 
 	private TextInfo(final IFont font, final int fontSize) {
 		this(font, fontSize, Color.BLACK);
 	}
 
 	private TextInfo(final IFont font, final int fontSize, final Color color) {
-		this(font, fontSize, 0, 0, color, true, null, fontSize/13.5F, fontSize/13.5F, TextAlign.LEFT, null);
+		this(font, fontSize, 0, 0, color, false, null, fontSize / 13.5F, fontSize / 13.5F);
 	}
 
 	public static final @NonNull TextInfo create(final @NonNull IFont font, final int fontSize) {
@@ -43,27 +39,47 @@ public final class TextInfo {
 	}
 
 	/* [ Getter Section ] */
+	public final @NonNull FontBounds getBounds(final @NonNull String text) {
+		return new FontBounds(this.getWidth(text), this.getHeight(text));
+	}
+
 	public final double getWidth(final @NonNull String text) {
-		return DrawUtils.TEXT.getWidth(text, this);
+		return this.font.getFontProvider().getWidth(text, this);
 	}
 
 	public final double getHeight(final @NonNull String text) {
-		return DrawUtils.TEXT.getHeight(text, this);
+		return this.font.getFontProvider().getHeight(text, this);
 	}
 
 	public final double getHeight() {
-		return DrawUtils.TEXT.getLineHeight(this);
+		return this.font.getFontProvider().getLineHeight(this);
+	}
+
+	public final double dw(final @NonNull String text, final double value) {
+		return this.getWidth(text) / value;
+	}
+
+	public final double dh(final @NonNull String text, final double value) {
+		return this.getHeight(text) / value;
+	}
+
+	public final double dh(final double value) {
+		return this.getHeight() / value;
+	}
+
+	public final double aw(final @NonNull String text, final double value) {
+		return this.getWidth(text) + value;
+	}
+
+	public final double ah(final @NonNull String text, final double value) {
+		return this.getHeight(text) + value;
+	}
+
+	public final double ah(final double value) {
+		return this.getHeight() + value;
 	}
 
 	/* [ Builder Section ] */
-	public final @NonNull String modify(final @NonNull String text) {
-		if (this.modifier != null) {
-			return this.modifier.modify(text);
-		}
-
-		return text;
-	}
-
 	public final @NonNull TextInfo font(final IFont font) {
 		this.font = font;
 		return this;
@@ -89,8 +105,8 @@ public final class TextInfo {
 		return this;
 	}
 
-	public final @NonNull TextInfo colored(final boolean colored) {
-		this.colored = colored;
+	public final @NonNull TextInfo italic(final boolean italic) {
+		this.italic = italic;
 		return this;
 	}
 
@@ -110,18 +126,8 @@ public final class TextInfo {
 		return this;
 	}
 
-	public final @NonNull TextInfo align(final @NonNull TextAlign align) {
-		this.align = align;
-		return this;
-	}
-
-	public final @NonNull TextInfo modifier(final @NonNull ITextModifier modifier) {
-		this.modifier = modifier;
-		return this;
-	}
-
 	public final @NonNull TextInfo copy() {
-		return new TextInfo(this.font, this.fontSize, this.letterSpacing, this.lineHeight, this.color, this.colored, this.shadowColor, this.shadowX, this.shadowY, this.align, this.modifier);
+		return new TextInfo(this.font, this.fontSize, this.letterSpacing, this.lineHeight, this.color, this.italic, this.shadowColor, this.shadowX, this.shadowY);
 	}
 
 }

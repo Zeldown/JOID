@@ -7,9 +7,11 @@ import org.lwjgl.opengl.GL11;
 
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.font.dto.text.TextAlign;
+import be.zeldown.joid.lib.draw.text.builder.Text;
+import be.zeldown.joid.lib.draw.text.builder.utils.TextOverflow;
+import be.zeldown.joid.lib.draw.text.utils.TextMode;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
-import be.zeldown.joid.lib.font.dto.text.TextOverflow;
+import be.zeldown.joid.lib.utils.align.Align;
 
 public class JOIDWindow {
 
@@ -66,22 +68,22 @@ public class JOIDWindow {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
 		final TextInfo[] fonts = {
-				TextInfo.create(TestFont.MONTSERRAT, 25, Color.WHITE).align(TextAlign.LEFT).lineHeight(-5.5F),
-				TextInfo.create(TestFont.BATUPHAT, 25, Color.WHITE).align(TextAlign.CENTER).lineHeight(-5.5F),
-				TextInfo.create(TestFont.SPACE_GROTESK, 25, Color.WHITE).align(TextAlign.RIGHT)
+				TextInfo.create(TestFont.MONTSERRAT, 25, Color.WHITE).lineHeight(-5.5F),
+				TextInfo.create(TestFont.BATUPHAT, 25, Color.WHITE).lineHeight(-5.5F),
+				TextInfo.create(TestFont.SPACE_GROTESK, 25, Color.WHITE).lineHeight(-5.5F)
 		};
 
 		final String[] texts = {
 				"lorem impsum",
-				"§oitalic",
+				"italic",
 				"spacing",
 				"n-spacing",
-				"§00 §11 §22 §33 §44 §55 §66 §77 §88 §99 §aa §bb §cc §dd §ee §ff §pp",
+				"0123456789",
 				"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
 				"splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text",
 				"overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow",
 				"colored shadow text",
-				"§cshadow §ltext"
+				"shadow text"
 		};
 
 		final double x = 10;
@@ -90,9 +92,11 @@ public class JOIDWindow {
 		final double width = this.displayMode.getWidth() - 20;
 
 		double oy = 0;
-		for (final TextInfo info : fonts) {
-			final double ox = info.getAlign() == TextAlign.LEFT ? 0 : info.getAlign() == TextAlign.CENTER ? width / 2 : width;
+		for (int i = 0; i < fonts.length; i++) {
+			final TextInfo info = fonts[i];
+			final Align align = i == 0 ? Align.START : i == 1 ? Align.CENTER : Align.END;
 			for (final String text : texts) {
+				final boolean italic = text.contains("italic");
 				final boolean spacing = text.contains("spacing");
 				final boolean negativeSpacing = text.contains("n-spacing");
 				final boolean hasShadow = text.contains("shadow");
@@ -100,14 +104,8 @@ public class JOIDWindow {
 				final boolean split = text.contains("splitted");
 				final boolean overflow = text.contains("overflow");
 
-				final TextInfo infoCopy = info.copy().letterSpacing(negativeSpacing ? -4F : spacing ? 10F : 0F).shadow(hasShadow ? hasColoredShadow ? Color.RAINBOW() : Color.BLACK : null);
-				if (split) {
-					DrawUtils.TEXT.drawText(x + ox, y + oy, width, text, infoCopy);
-					oy += DrawUtils.TEXT.getLines(width, text, infoCopy).size() * info.getHeight() + margin;
-				} else {
-					DrawUtils.TEXT.drawText(x + ox, y + oy, width, text, infoCopy, overflow ? TextOverflow.ELLIPSIS : null);
-					oy += info.getHeight() + margin;
-				}
+				final TextInfo infoCopy = info.copy().italic(italic).letterSpacing(negativeSpacing ? -4F : spacing ? 10F : 0F).shadow(hasShadow ? hasColoredShadow ? Color.RAINBOW() : Color.BLACK : null);
+				oy += DrawUtils.TEXT.drawText(x, y + oy, width, infoCopy.getHeight(), Text.create(text, infoCopy, align).overflow(TextOverflow.ELLIPSIS), split ? TextMode.SPLIT : overflow ? TextMode.OVERFLOW : TextMode.NORMAL).getHeight() + margin;
 			}
 		}
 	}

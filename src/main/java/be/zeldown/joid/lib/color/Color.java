@@ -2,6 +2,8 @@ package be.zeldown.joid.lib.color;
 
 import java.nio.FloatBuffer;
 
+import javax.vecmath.Vector4f;
+
 import org.lwjgl.opengl.GL11;
 
 import lombok.NonNull;
@@ -28,6 +30,8 @@ public final class Color {
 	public float b = 0.0F;
 	public float a = 1.0F;
 
+	public ColorGradient gradient;
+
 	/**
 	 * Constructs a new {@code Color} instance by copying the RGB and alpha components from another color.
 	 *
@@ -36,6 +40,17 @@ public final class Color {
 	 */
 	public Color(final @NonNull Color color) {
 		this(color.r, color.g, color.b, color.a);
+	}
+
+	/**
+	 * Constructs a new {@code Color} instance by copying the RGB and alpha components from another color.
+	 *
+	 * @param color The color from which to copy the RGB and alpha components.
+	 * @throws NullPointerException If the provided color is {@code null}.
+	 */
+	public Color(final @NonNull ColorGradient gradient) {
+		this(gradient.getStartColor());
+		this.gradient = gradient;
 	}
 
 	/**
@@ -48,7 +63,7 @@ public final class Color {
 	 * @throws NullPointerException If the provided color is {@code null}.
 	 */
 	public Color(final @NonNull java.awt.Color color) {
-		this(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+		this(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F, color.getAlpha()/255F);
 	}
 
 	/**
@@ -86,7 +101,7 @@ public final class Color {
 	 * @throws IllegalArgumentException If any of the RGB components is outside the valid range [0, 255].
 	 */
 	public Color(final int r, final int g, final int b) {
-		this(r / 255F, g / 255F, b / 255F, 1F);
+		this(r/255F, g/255F, b/255F, 1F);
 	}
 
 	/**
@@ -103,7 +118,7 @@ public final class Color {
 	 * @throws IllegalArgumentException If any of the RGBA components is outside the valid range [0, 255].
 	 */
 	public Color(final int r, final int g, final int b, final int a) {
-		this(r / 255F, g / 255F, b / 255F, a / 255F);
+		this(r/255F, g/255F, b/255F, a/255F);
 	}
 
 	/**
@@ -131,15 +146,14 @@ public final class Color {
 		if (a < 0) {
 			a += 256;
 		}
-
 		if (a == 0) {
 			a = 255;
 		}
 
-		this.r = r / 255F;
-		this.g = g / 255F;
-		this.b = b / 255F;
-		this.a = a / 255F;
+		this.r = r / 255.0f;
+		this.g = g / 255.0f;
+		this.b = b / 255.0f;
+		this.a = a / 255.0f;
 	}
 
 	/**
@@ -182,7 +196,6 @@ public final class Color {
 		if (nm.length() == 7) {
 			return new Color(Integer.decode(nm.substring(0, 7)));
 		}
-
 		if (nm.length() == 9) {
 			final int intval = Integer.decode(nm);
 			final int red    = intval >> 24 & 0xFF;
@@ -261,6 +274,30 @@ public final class Color {
 	}
 
 	/**
+	 * Binds the color values to the OpenGL color state and executes the specified
+	 * runnable.
+	 * <p>
+	 * This method sets the current OpenGL color to the values of the {@code Color}
+	 * instance, executes the specified runnable, and then resets the OpenGL color
+	 * to the default white color with full opacity.
+	 * </p>
+	 *
+	 * @param runnable The runnable to execute after binding the color.
+	 * @throws NullPointerException If the provided runnable or canvas is {@code null}.
+	 */
+	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
+		if (this.isGradient()) {
+			this.gradient.bind(canvas);
+			runnable.run();
+			this.gradient.unbind();
+		} else {
+			this.bind();
+			runnable.run();
+			Color.reset();
+		}
+	}
+
+	/**
 	 * Returns the RGB representation of this color as a single integer.
 	 * <p>
 	 * The RGB value is packed into the integer as follows:
@@ -275,10 +312,10 @@ public final class Color {
 	 * @return The RGB representation of this color as a single integer.
 	 */
 	public int getRGB() {
-		return  ((int) (this.a * 255) & 0xFF) << 24 |
-				((int) (this.r * 255) & 0xFF) << 16 |
-				((int) (this.g * 255) & 0xFF) << 8  |
-				((int) (this.b * 255) & 0xFF) << 0;
+		return ((int)(this.a * 255) & 0xFF) << 24 |
+				((int)(this.r * 255) & 0xFF) << 16 |
+				((int)(this.g * 255) & 0xFF) << 8  |
+				((int)(this.b * 255) & 0xFF) << 0;
 	}
 
 	/**
@@ -290,7 +327,7 @@ public final class Color {
 	 * @return A new {@code Color} instance representing a darker shade of the current color.
 	 */
 	public @NonNull Color darker() {
-		return this.darker(0.5F);
+		return this.darker(0.5f);
 	}
 
 	/**
@@ -304,9 +341,9 @@ public final class Color {
 	 * @throws IllegalArgumentException If the scale is outside the valid range [0, 1].
 	 */
 	public @NonNull Color darker(float scale) {
-		scale = 1F - scale;
+		scale = 1 - scale;
 
-		return new Color(this.r * scale, this.g * scale, this.b * scale, this.a);
+		return new Color(this.r * scale,this.g * scale,this.b * scale,this.a);
 	}
 
 	/**
@@ -318,7 +355,7 @@ public final class Color {
 	 * @return A new {@code Color} instance representing a brighter shade of the current color.
 	 */
 	public @NonNull Color brighter() {
-		return this.brighter(0.2F);
+		return this.brighter(0.2f);
 	}
 
 	/**
@@ -327,7 +364,7 @@ public final class Color {
 	 * @return The red component of this color.
 	 */
 	public int getRed() {
-		return (int) (this.r * 255F);
+		return (int) (this.r * 255);
 	}
 
 	/**
@@ -336,7 +373,7 @@ public final class Color {
 	 * @return The green component of this color.
 	 */
 	public int getGreen() {
-		return (int) (this.g * 255F);
+		return (int) (this.g * 255);
 	}
 
 	/**
@@ -345,7 +382,7 @@ public final class Color {
 	 * @return The blue component of this color.
 	 */
 	public int getBlue() {
-		return (int) (this.b * 255F);
+		return (int) (this.b * 255);
 	}
 
 	/**
@@ -354,7 +391,7 @@ public final class Color {
 	 * @return The alpha component of this color.
 	 */
 	public int getAlpha() {
-		return (int) (this.a * 255F);
+		return (int) (this.a * 255);
 	}
 
 	/**
@@ -363,7 +400,7 @@ public final class Color {
 	 * @return The red component of this color.
 	 */
 	public int getRedByte() {
-		return (int) (this.r * 255F);
+		return (int) (this.r * 255);
 	}
 
 	/**
@@ -372,7 +409,7 @@ public final class Color {
 	 * @return The green component of this color.
 	 */
 	public int getGreenByte() {
-		return (int) (this.g * 255F);
+		return (int) (this.g * 255);
 	}
 
 	/**
@@ -381,7 +418,7 @@ public final class Color {
 	 * @return The blue component of this color.
 	 */
 	public int getBlueByte() {
-		return (int) (this.b * 255F);
+		return (int) (this.b * 255);
 	}
 
 	/**
@@ -390,7 +427,7 @@ public final class Color {
 	 * @return The alpha component of this color.
 	 */
 	public int getAlphaByte() {
-		return (int) (this.a * 255F);
+		return (int) (this.a * 255);
 	}
 
 	/**
@@ -401,8 +438,8 @@ public final class Color {
 	 * @throws IllegalArgumentException If the scale is not greater than 0.
 	 */
 	public @NonNull Color brighter(float scale) {
-		scale += 1F;
-		return new Color(this.r * scale, this.g * scale, this.b * scale, this.a);
+		scale += 1;
+		return new Color(this.r * scale,this.g * scale,this.b * scale,this.a);
 	}
 
 	/**
@@ -453,6 +490,7 @@ public final class Color {
 		copy.g += c.g;
 		copy.b += c.b;
 		copy.a += c.a;
+
 		return copy;
 	}
 
@@ -468,6 +506,7 @@ public final class Color {
 		copy.g *= value;
 		copy.b *= value;
 		copy.a *= value;
+
 		return copy;
 	}
 
@@ -486,6 +525,39 @@ public final class Color {
 	 */
 	public @NonNull Color to(final @NonNull Color target, final float progress) {
 		return Color.transition(this, target, progress);
+	}
+
+	/**
+	 * Generates a gradient color between this color and a target color based on the specified direction.
+	 * <p>
+	 * The resulting color is determined by interpolating between the RGB components of this color and the target color
+	 * according to the specified direction. The direction vector should be a normalized vector indicating the direction
+	 * of the gradient. The resulting color is the linear combination of the two colors based on the direction vector.
+	 * </p>
+	 *
+	 * @param target The target color to interpolate towards.
+	 * @return The interpolated color between this color and the target color.
+	 * @throws NullPointerException If the target color is {@code null}.
+	 */
+	public @NonNull Color toGradient(final @NonNull Color target) {
+		return this.toGradient(target, new Vector4f(0F, 0F, 1F, 0F));
+	}
+
+	/**
+	 * Generates a gradient color between this color and a target color based on the specified direction.
+	 * <p>
+	 * The resulting color is determined by interpolating between the RGB components of this color and the target color
+	 * according to the specified direction. The direction vector should be a normalized vector indicating the direction
+	 * of the gradient. The resulting color is the linear combination of the two colors based on the direction vector.
+	 * </p>
+	 *
+	 * @param target The target color to interpolate towards.
+	 * @param direction The direction of the gradient.
+	 * @return The interpolated color between this color and the target color.
+	 * @throws NullPointerException If the target color or direction is {@code null}.
+	 */
+	public @NonNull Color toGradient(final @NonNull Color target, final @NonNull Vector4f direction) {
+		return Color.gradient(this, target, direction);
 	}
 
 	/**
@@ -539,7 +611,6 @@ public final class Color {
 				hue = hue + 1.0f;
 			}
 		}
-
 		hsbvals[0] = hue;
 		hsbvals[1] = saturation;
 		hsbvals[2] = brightness;
@@ -598,6 +669,10 @@ public final class Color {
 		return new Color(this.r, this.g, blue, this.a);
 	}
 
+	public boolean isGradient() {
+		return this.gradient != null;
+	}
+
 	/**
 	 * Converts the RGB color components to the equivalent HSB (Hue, Saturation, Brightness) representation.
 	 *
@@ -651,7 +726,6 @@ public final class Color {
 				hue = hue + 1.0f;
 			}
 		}
-
 		hsbvals[0] = hue;
 		hsbvals[1] = saturation;
 		hsbvals[2] = brightness;
@@ -686,7 +760,6 @@ public final class Color {
 		if (progress == 0) {
 			return color1;
 		}
-
 		if (progress == 1) {
 			return color2;
 		}
@@ -700,6 +773,21 @@ public final class Color {
 	}
 
 	/**
+	 * Creates a new color that is a gradient between two colors based on the specified direction.
+	 * <p>
+	 * The gradient is determined by interpolating between the two colors based on the specified direction.
+	 * </p>
+	 * @param color1 The starting color of the gradient.
+	 * @param color2 The ending color of the gradient.
+	 * @param direction The direction of the gradient.
+	 * @return A new color representing a gradient between the two colors.
+	 * @throws NullPointerException If either color1, color2, or direction is {@code null}.
+	 */
+	public static @NonNull Color gradient(final @NonNull Color color1, final @NonNull Color color2, final @NonNull Vector4f direction) {
+		return new Color(new ColorGradient(color1, color2, direction));
+	}
+
+	/**
 	 * Creates a new color that is a rainbow color based on the current system time.
 	 * @return A new color representing a rainbow color.
 	 */
@@ -708,12 +796,20 @@ public final class Color {
 	}
 
 	/**
+	 * Creates a new color that is a rainbow color based on the current system time.
+	 * @return A new color representing a rainbow color.
+	 */
+	public static @NonNull Color RAINBOW(final long time) {
+		return new Color(java.awt.Color.HSBtoRGB(time % 3000L / 3000.0F, 0.8F, 0.8F));
+	}
+
+	/**
 	 * Creates a new color that is a loading color based on the current system time.
 	 * @return A new color representing a loading color.
 	 */
 	public static @NonNull Color LOADING() {
 		final long now = System.currentTimeMillis();
-		final float color = (float)((Math.sin(2 * Math.PI * (now%4000) / 2000) + 1) / 50F) + 0.15F;
+		final float color = (float) ((Math.sin(2 * Math.PI * (now % 4000) / 2000) + 1) / 50F) + 0.15F;
 		return new Color(color, color, color);
 	}
 

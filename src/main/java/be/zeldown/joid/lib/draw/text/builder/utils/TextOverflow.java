@@ -1,4 +1,4 @@
-package be.zeldown.joid.lib.font.dto.text;
+package be.zeldown.joid.lib.draw.text.builder.utils;
 
 import lombok.Getter;
 

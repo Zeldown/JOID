@@ -31,7 +31,7 @@ public class RoundedShader {
 				RoundedShader.innerRectUniform = RoundedShader.shader.getFloat4Uniform("u_InnerRect");
 				RoundedShader.typeUniform      = RoundedShader.shader.getIntUniform("u_Type");
 			}
-		}catch (final Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 
 			RoundedShader.shader           = null;
