@@ -41,7 +41,7 @@ public class RoundedShader {
 		}
 	}
 
-	public static void use(final RoundedShaderType type, final float radius, final float innerLeft, final float innerTop, final float innerRight, final float innerBottom, final @NonNull Runnable runnable) {
+	public static void use(final @NonNull RoundedShaderType type, final float radius, final float innerLeft, final float innerTop, final float innerRight, final float innerBottom, final @NonNull Runnable runnable) {
 		if (!RoundedShader.isAvailable()) {
 			throw new RuntimeException("RoundedShader is not available");
 		}

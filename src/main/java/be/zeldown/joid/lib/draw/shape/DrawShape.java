@@ -296,7 +296,7 @@ public final class DrawShape {
 		GLContext.color(() -> {
 			tessellator.start(mode);
 			for (final Vector2d point : points) {
-				tessellator.addVertex(point.x, point.y, 0.0D);
+				tessellator.vertex(point.x, point.y, 0D);
 			}
 			tessellator.draw();
 		}, color);

@@ -12,7 +12,7 @@ public class DirectIntUniform extends DirectShaderUniform implements IntUniform 
 
 	@Override
 	public void setValue(final int value) {
-		GL20.glUniform1i(this.getLocation(), value);
+		GL20.glUniform1i(super.getLocation(), value);
 	}
 
 }

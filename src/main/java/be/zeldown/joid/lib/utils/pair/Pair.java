@@ -1,13 +1,11 @@
 package be.zeldown.joid.lib.utils.pair;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import be.zeldown.joid.lib.utils.tuple.Tuple;
 
-@Getter
-@RequiredArgsConstructor
-public class Pair<T> {
+public class Pair<T> extends Tuple<T, T> {
 
-	private final T left;
-	private final T right;
+	public Pair(final T first, final T second) {
+		super(first, second);
+	}
 
 }

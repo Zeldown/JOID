@@ -15,7 +15,7 @@ public final class CustomFont implements IFont {
 
 	@NonNull private final Font font;
 
-	public @NonNull TextInfo info(final int fontSize) {
+	public @NonNull TextInfo info(final float fontSize) {
 		return TextInfo.create(this, fontSize);
 	}
 

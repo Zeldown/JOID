@@ -22,7 +22,7 @@ public class GLScale {
 	 * @return A new GLScale instance with default scale factors.
 	 */
 	public static @NonNull GLScale create() {
-	    return new GLScale(1, 1, 1);
+		return new GLScale(1D, 1D, 1D);
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class GLScale {
 	 * @return A new GLScale instance with the specified scale factors.
 	 */
 	public static @NonNull GLScale create(final double width, final double height, final double depth) {
-	    return new GLScale(width, height, depth);
+		return new GLScale(width, height, depth);
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class GLScale {
 	 * @return A new GLScale instance with the specified width scale.
 	 */
 	public static @NonNull GLScale WIDTH(final double width) {
-	    return new GLScale(width, 1, 1);
+		return new GLScale(width, 1D, 1D);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class GLScale {
 	 * @return A new GLScale instance with the specified height scale.
 	 */
 	public static @NonNull GLScale HEIGHT(final double height) {
-	    return new GLScale(1, height, 1);
+		return new GLScale(1D, height, 1D);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class GLScale {
 	 * @return A new GLScale instance with the specified depth scale.
 	 */
 	public static @NonNull GLScale DEPTH(final double depth) {
-	    return new GLScale(1, 1, depth);
+		return new GLScale(1D, 1D, depth);
 	}
 
 	/**
@@ -74,8 +74,8 @@ public class GLScale {
 	 * @return The modified GLScale instance.
 	 */
 	public @NonNull GLScale width(final double width) {
-	    this.rawX = width;
-	    return this;
+		this.rawX = width;
+		return this;
 	}
 
 	/**
@@ -85,8 +85,8 @@ public class GLScale {
 	 * @return The modified GLScale instance.
 	 */
 	public @NonNull GLScale height(final double height) {
-	    this.rawY = height;
-	    return this;
+		this.rawY = height;
+		return this;
 	}
 
 	/**
@@ -96,8 +96,8 @@ public class GLScale {
 	 * @return The modified GLScale instance.
 	 */
 	public @NonNull GLScale depth(final double depth) {
-	    this.rawZ = depth;
-	    return this;
+		this.rawZ = depth;
+		return this;
 	}
 
 }

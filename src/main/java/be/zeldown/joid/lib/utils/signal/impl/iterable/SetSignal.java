@@ -6,6 +6,7 @@ import java.util.Set;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor
 public class SetSignal<E> extends Signal<Set<E>> {
@@ -18,7 +19,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		super(value);
 	}
 
-	public static <E> SetSignal<E> of(final Set<E> defaultValue) {
+	public static <E> @NonNull SetSignal<E> of(final Set<E> defaultValue) {
 		final SetSignal<E> instance = new SetSignal<>();
 		instance.set(defaultValue);
 		return instance;
@@ -35,7 +36,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		this.publish();
 	}
 
-	public boolean contains(final E e) {
+	public boolean contains(final @NonNull E e) {
 		return this.getOrDefault().contains(e);
 	}
 
@@ -43,7 +44,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return this.getOrDefault().isEmpty();
 	}
 
-	public boolean remove(final E e) {
+	public boolean remove(final @NonNull E e) {
 		final boolean success = this.getOrDefault().remove(e);
 		this.publish();
 		return success;

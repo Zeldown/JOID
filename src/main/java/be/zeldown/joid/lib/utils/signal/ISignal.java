@@ -1,19 +1,18 @@
 package be.zeldown.joid.lib.utils.signal;
 
+import lombok.NonNull;
+
 public interface ISignal<T> {
 
 	T getOrDefault();
 
 	void reset();
+	void set(final T value);
 
-	void set(T value);
-
-	void subscribe(SignalSubscriber<T> subscriber);
-
-	void unsubscribe(SignalSubscriber<T> subscriber);
+	void subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber);
+	void unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber);
 
 	void publish();
-
 	void silent();
 
 	boolean isPresent();

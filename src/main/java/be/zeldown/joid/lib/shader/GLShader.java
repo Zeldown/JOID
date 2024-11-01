@@ -44,9 +44,9 @@ public class GLShader implements IGLShader {
 	private final Map<String, DirectSamplerUniform> samplerMap = new HashMap<>();
 	private final Map<Integer, Integer> textureBindingMap = new HashMap<>();
 
-	@NonNull private final String vertSource;
-	@NonNull private final String fragSource;
-	@NonNull private final ShaderBlendState blendState;
+	private final String vertSource;
+	private final String fragSource;
+	private final ShaderBlendState blendState;
 
 	private final int program    = GL20.glCreateProgram();
 	private final int vertShader = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
@@ -80,7 +80,6 @@ public class GLShader implements IGLShader {
 	@Override
 	public void bind() {
 		this.prevActiveTexture = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE);
-
 		for (final DirectSamplerUniform sampler : this.samplerMap.values()) {
 			this.bindTexture(sampler.getTextureUnit(), sampler.getTextureId());
 		}
@@ -104,8 +103,8 @@ public class GLShader implements IGLShader {
 		if (this.prevBlendState != null) {
 			this.prevBlendState.apply();
 		}
-		this.bound = false;
 
+		this.bound = false;
 		GL20.glUseProgram(0);
 	}
 
@@ -123,13 +122,11 @@ public class GLShader implements IGLShader {
 
 			GL20.glShaderSource(shader, source);
 			GL20.glCompileShader(shader);
-
 			if (GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) != 1) {
 				System.out.println("Failed to compile shader (" + GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) + ")");
 				System.out.println(GL20.glGetShaderInfoLog(shader, 1024));
 				return;
 			}
-
 			GL20.glAttachShader(this.program, shader);
 		}
 

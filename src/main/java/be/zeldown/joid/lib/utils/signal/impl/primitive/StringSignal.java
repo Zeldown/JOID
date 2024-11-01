@@ -2,6 +2,7 @@ package be.zeldown.joid.lib.utils.signal.impl.primitive;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor
 public class StringSignal extends Signal<String> {
@@ -10,18 +11,18 @@ public class StringSignal extends Signal<String> {
 		super(value);
 	}
 
-	public static StringSignal of(final String defaultValue) {
+	public static @NonNull StringSignal of(final String defaultValue) {
 		final StringSignal instance = new StringSignal();
 		instance.set(defaultValue);
 		return instance;
 	}
 
-	public void append(final String value) {
+	public void append(final @NonNull String value) {
 		final String updatedValue = this.getOrDefault() + value;
 		this.set(updatedValue);
 	}
 
-	public void concat(final String str) {
+	public void concat(final @NonNull String str) {
 		final String updatedValue = this.getOrDefault().concat(str);
 		this.set(updatedValue);
 	}
@@ -31,7 +32,7 @@ public class StringSignal extends Signal<String> {
 		this.set(updatedValue);
 	}
 
-	public void replace(final CharSequence target, final CharSequence replacement) {
+	public void replace(final @NonNull CharSequence target, final @NonNull CharSequence replacement) {
 		final String updatedValue = this.getOrDefault().replace(target, replacement);
 		this.set(updatedValue);
 	}

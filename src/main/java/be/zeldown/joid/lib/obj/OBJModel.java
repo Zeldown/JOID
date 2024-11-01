@@ -124,9 +124,6 @@ public final class OBJModel implements IDrawableModel {
 		} finally {
 			try {
 				reader.close();
-			} catch (final IOException silent) {}
-
-			try {
 				inputStream.close();
 			} catch (final IOException silent) {}
 		}

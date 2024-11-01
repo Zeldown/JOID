@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import org.lwjgl.opengl.GL11;
 
+import be.zeldown.joid.lib.color.Color;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -56,8 +57,9 @@ public final class T9R {
 
 	public int draw() {
 		if (!this.isDrawing) {
-			throw new IllegalStateException("Not tesselating!");
+			throw new IllegalStateException("You must start drawing before you can finish!");
 		}
+
 		this.isDrawing = false;
 
 		int offs = 0;
@@ -113,9 +115,8 @@ public final class T9R {
 			this.rawBuffer = new int[this.rawBufferSize];
 		}
 
-		final int i = this.rawBufferIndex * 4;
 		this.reset();
-		return i;
+		return this.rawBufferIndex * 4;
 	}
 
 	private void reset() {
@@ -126,12 +127,12 @@ public final class T9R {
 	}
 
 	public void quads() {
-		this.start(7);
+		this.start(GL11.GL_QUADS);
 	}
 
 	public void start(final int drawMode) {
 		if (this.isDrawing) {
-			throw new IllegalStateException("Already tesselating!");
+			throw new IllegalStateException("You must call draw() before you can start another draw!");
 		}
 
 		this.isDrawing = true;
@@ -144,48 +145,52 @@ public final class T9R {
 		this.isColorDisabled = false;
 	}
 
-	public void setTextureUV(final double u, final double v) {
+	public void uv(final double u, final double v) {
 		this.hasTexture = true;
 		this.textureU = u;
 		this.textureV = v;
 	}
 
-	public void setBrightness(final int brightness) {
+	public void brightness(final int brightness) {
 		this.hasBrightness = true;
 		this.brightness = brightness;
 	}
 
-	public void setColor(final int r, final int g, final int b) {
-		this.setColor(r, g, b, 255);
+	public void color(final @NonNull Color color) {
+		this.color(color.r, color.g, color.b, color.a);
 	}
 
-	public void setColor(final float r, final float g, final float b) {
-		this.setColor((int)(r * 255.0F), (int)(g * 255.0F), (int)(b * 255.0F));
+	public void color(final int r, final int g, final int b) {
+		this.color(r, g, b, 255F);
 	}
 
-	public void setColor(final float r, final float g, final float b, final float a) {
-		this.setColor((int)(r * 255.0F), (int)(g * 255.0F), (int)(b * 255.0F), (int)(a * 255.0F));
+	public void color(final float r, final float g, final float b) {
+		this.color((int) (r * 255F), (int) (g * 255F), (int) (b * 255F));
 	}
 
-	public void setColor(final byte r, final byte g, final byte n) {
-		this.setColor(r & 255, g & 255, n & 255);
+	public void color(final float r, final float g, final float b, final float a) {
+		this.color((int) (r * 255F), (int) (g * 255F), (int) (b * 255F), (int) (a * 255F));
 	}
 
-	public void setColor(final int rgb) {
-		final int j = rgb >> 16 & 255;
-		final int k = rgb >> 8 & 255;
-		final int l = rgb & 255;
-		this.setColor(j, k, l);
+	public void color(final byte r, final byte g, final byte n) {
+		this.color(r & 255, g & 255, n & 255);
 	}
 
-	public void setColor(final int rgb, final int a) {
-		final int k = rgb >> 16 & 255;
-		final int l = rgb >> 8 & 255;
-		final int i1 = rgb & 255;
-		this.setColor(k, l, i1, a);
+	public void color(final int rgb) {
+		final int r = rgb >> 16 & 255;
+		final int g = rgb >> 8 & 255;
+		final int b = rgb & 255;
+		this.color(r, g, b);
 	}
 
-	public void setColor(int r, int g, int b, int a) {
+	public void color(final int rgb, final int a) {
+		final int r = rgb >> 16 & 255;
+		final int g = rgb >> 8 & 255;
+		final int b = rgb & 255;
+		this.color(r, g, b, a);
+	}
+
+	public void color(int r, int g, int b, int a) {
 		if (!this.isColorDisabled) {
 			if (r > 255) {
 				r = 255;
@@ -229,12 +234,12 @@ public final class T9R {
 		}
 	}
 
-	public void addVertexWithUV(final double x, final double y, final double z, final double u, final double v) {
-		this.setTextureUV(u, v);
-		this.addVertex(x, y, z);
+	public void vertexUV(final double x, final double y, final double z, final double u, final double v) {
+		this.uv(u, v);
+		this.vertex(x, y, z);
 	}
 
-	public void addVertex(final double x, final double y, final double v) {
+	public void vertex(final double x, final double y, final double v) {
 		if (this.rawBufferIndex >= this.rawBufferSize - 32) {
 			if (this.rawBufferSize == 0) {
 				this.rawBufferSize = 0x10000;
@@ -275,11 +280,11 @@ public final class T9R {
 		this.isColorDisabled = true;
 	}
 
-	public void setNormal(final float x, final float y, final float z) {
+	public void normals(final float x, final float y, final float z) {
 		this.hasNormals = true;
-		final byte normalX = (byte)(int)(x * 127.0F);
-		final byte normalY = (byte)(int)(y * 127.0F);
-		final byte normalZ = (byte)(int)(z * 127.0F);
+		final byte normalX = (byte) (int) (x * 127F);
+		final byte normalY = (byte) (int) (y * 127F);
+		final byte normalZ = (byte) (int) (z * 127F);
 		this.normal = normalX & 255 | (normalY & 255) << 8 | (normalZ & 255) << 16;
 	}
 

@@ -21,7 +21,7 @@ public class DirectFloatArrayUniform extends DirectShaderUniform implements Floa
 		final FloatBuffer floatBuffer = byteBuffer.asFloatBuffer();
 		floatBuffer.put(array);
 		floatBuffer.rewind();
-		GL20.glUniform1(this.getLocation(), floatBuffer);
+		GL20.glUniform1(super.getLocation(), floatBuffer);
 	}
 
 }

@@ -91,6 +91,10 @@ public final class Resource {
 		return this;
 	}
 
+	public final @NonNull Resource copy() {
+		return new Resource(this.builder, this.data);
+	}
+
 	/* [ Getter Section ] */
 	public final @NonNull String getUniqueId() {
 		return this.data.getUniqueId();

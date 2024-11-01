@@ -11,6 +11,7 @@ import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.draw.text.builder.utils.TextOverflow;
 import be.zeldown.joid.lib.draw.text.utils.TextMode;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.utils.align.Align;
 
 public class JOIDWindow {
@@ -40,7 +41,7 @@ public class JOIDWindow {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GL11.glViewport(0, 0, this.displayMode.getWidth(), this.displayMode.getHeight());
-		GL11.glClearColor(0.0F, 0.0F, 0.0F, 0.0F);
+		GL11.glClearColor(0F, 0F, 0F, 0F);
 	}
 
 	public void loop() {
@@ -85,6 +86,8 @@ public class JOIDWindow {
 				"colored shadow text",
 				"shadow text"
 		};
+
+		DrawUtils.RESOURCE.drawResource(0, 0, this.displayMode.getWidth(), this.displayMode.getHeight(), Resource.of("https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg"));
 
 		final double x = 10;
 		final double y = 10;

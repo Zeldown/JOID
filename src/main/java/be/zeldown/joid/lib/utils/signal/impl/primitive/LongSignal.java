@@ -1,6 +1,7 @@
 package be.zeldown.joid.lib.utils.signal.impl.primitive;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
+import lombok.NonNull;
 
 public class LongSignal extends Signal<Long> {
 
@@ -12,7 +13,7 @@ public class LongSignal extends Signal<Long> {
 		super(value);
 	}
 
-	public static LongSignal of(final long defaultValue) {
+	public static @NonNull LongSignal of(final long defaultValue) {
 		final LongSignal instance = new LongSignal();
 		instance.set(defaultValue);
 		return instance;

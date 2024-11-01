@@ -15,7 +15,6 @@ public class AllocatedTextureUtil {
 	public static void allocateTexture(final int textureId, final int width, final int height) {
 		GL11.glDeleteTextures(textureId);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer) null);
 	}
 
@@ -52,7 +51,6 @@ public class AllocatedTextureUtil {
 
 	private static void copyToBufferPos(final int[] data, final int width, final int height) {
 		final int[] copiedData = data;
-
 		AllocatedTextureUtil.UPLOAD_DATA_BUFFER.clear();
 		AllocatedTextureUtil.UPLOAD_DATA_BUFFER.put(copiedData, width, height);
 		AllocatedTextureUtil.UPLOAD_DATA_BUFFER.position(0).limit(height);

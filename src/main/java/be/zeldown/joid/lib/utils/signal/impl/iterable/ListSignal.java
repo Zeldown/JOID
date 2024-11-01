@@ -6,6 +6,7 @@ import java.util.List;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor
 public class ListSignal<E> extends Signal<List<E>> {
@@ -14,7 +15,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 		this(new ArrayList<>(value));
 	}
 
-	public static <E> ListSignal<E> of(final List<E> defaultValue) {
+	public static <E> @NonNull ListSignal<E> of(final List<E> defaultValue) {
 		final ListSignal<E> instance = new ListSignal<>();
 		instance.set(defaultValue);
 		return instance;
@@ -35,7 +36,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 		this.publish();
 	}
 
-	public boolean contains(final E e) {
+	public boolean contains(final @NonNull E e) {
 		return this.getOrDefault().contains(e);
 	}
 
@@ -43,7 +44,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return this.getOrDefault().get(index);
 	}
 
-	public int indexOf(final E e) {
+	public int indexOf(final @NonNull E e) {
 		return this.getOrDefault().indexOf(e);
 	}
 
@@ -51,7 +52,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return this.getOrDefault().isEmpty();
 	}
 
-	public boolean remove(final E e) {
+	public boolean remove(final @NonNull E e) {
 		final boolean success = this.getOrDefault().remove(e);
 		this.publish();
 		return success;

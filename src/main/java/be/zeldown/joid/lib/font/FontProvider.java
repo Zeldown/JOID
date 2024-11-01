@@ -16,7 +16,7 @@ public interface FontProvider {
 	 * @return The bounds of the drawn text.
 	 * @throws NullPointerException If either the text or text information is {@code null}.
 	 */
-	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info);
+	@NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info);
 
 	/**
 	 * Gets the width of the specified text using the provided text information.
@@ -26,7 +26,7 @@ public interface FontProvider {
 	 * @return The width of the text in pixels.
 	 * @throws NullPointerException If either the text or text information is {@code null}.
 	 */
-	public double getWidth(final @NonNull String text, final @NonNull TextInfo info);
+	double getWidth(final @NonNull String text, final @NonNull TextInfo info);
 
 	/**
 	 * Gets the height of the specified text using the provided text information.
@@ -36,7 +36,7 @@ public interface FontProvider {
 	 * @return The height of the text in pixels.
 	 * @throws NullPointerException If either the text or text information is {@code null}.
 	 */
-	public double getHeight(final @NonNull String text, final @NonNull TextInfo info);
+	double getHeight(final @NonNull String text, final @NonNull TextInfo info);
 
 	/**
 	 * Gets the height of a line of text using the provided text information.
@@ -45,6 +45,6 @@ public interface FontProvider {
 	 * @return The height of a line of text in pixels.
 	 * @throws NullPointerException If the text information is {@code null}.
 	 */
-	public double getLineHeight(final @NonNull TextInfo info);
+	double getLineHeight(final @NonNull TextInfo info);
 
 }

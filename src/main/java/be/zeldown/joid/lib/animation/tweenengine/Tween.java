@@ -93,7 +93,7 @@ public final class Tween extends BaseTween<Tween> {
 		final Tween tween = Tween.pool.get();
 		tween.setup(target, tweenType, duration);
 		tween.ease(Quad.INOUT);
-		tween.path(TweenPaths.catmullRom);
+		tween.path(TweenPaths.CATMULL_ROM);
 		return tween;
 	}
 
@@ -101,7 +101,7 @@ public final class Tween extends BaseTween<Tween> {
 		final Tween tween = Tween.pool.get();
 		tween.setup(target, tweenType, duration);
 		tween.ease(Quad.INOUT);
-		tween.path(TweenPaths.catmullRom);
+		tween.path(TweenPaths.CATMULL_ROM);
 		tween.isFrom = true;
 		return tween;
 	}
@@ -197,7 +197,7 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	private Class<?> findTargetClass() {
-		if (Tween.registeredAccessors.containsKey(this.target.getClass()) || (this.target instanceof TweenAccessor)) {
+		if (Tween.registeredAccessors.containsKey(this.target.getClass()) || this.target instanceof TweenAccessor) {
 			return this.target.getClass();
 		}
 
@@ -384,11 +384,10 @@ public final class Tween extends BaseTween<Tween> {
 			this.accessor = (TweenAccessor<Object>) this.target;
 		}
 
-		if (this.accessor != null) {
-			this.combinedAttrsCnt = this.accessor.getValues(this.target, this.type, this.accessorBuffer);
-		} else {
+		if (this.accessor == null) {
 			throw new RuntimeException("No TweenAccessor was found for the target");
 		}
+		this.combinedAttrsCnt = this.accessor.getValues(this.target, this.type, this.accessorBuffer);
 
 		if (this.combinedAttrsCnt > Tween.combinedAttrsLimit) {
 			this.throwCombinedAttrsLimitReached();

@@ -12,7 +12,7 @@ import lombok.NonNull;
 public final class TextInfo {
 
 	private IFont   font;
-	private int     fontSize;
+	private float   fontSize;
 	private float   letterSpacing;
 	private float   lineHeight;
 	private Color   color;
@@ -22,19 +22,19 @@ public final class TextInfo {
 	private float shadowX;
 	private float shadowY;
 
-	private TextInfo(final IFont font, final int fontSize) {
+	private TextInfo(final IFont font, final float fontSize) {
 		this(font, fontSize, Color.BLACK);
 	}
 
-	private TextInfo(final IFont font, final int fontSize, final Color color) {
-		this(font, fontSize, 0, 0, color, false, null, fontSize / 13.5F, fontSize / 13.5F);
+	private TextInfo(final IFont font, final float fontSize, final Color color) {
+		this(font, fontSize, 0F, 0F, color, false, null, fontSize / 13.5F, fontSize / 13.5F);
 	}
 
-	public static final @NonNull TextInfo create(final @NonNull IFont font, final int fontSize) {
+	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
 		return new TextInfo(font, fontSize);
 	}
 
-	public static final @NonNull TextInfo create(final @NonNull IFont font, final int fontSize, final @NonNull Color color) {
+	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize, final @NonNull Color color) {
 		return new TextInfo(font, fontSize, color);
 	}
 
@@ -85,7 +85,7 @@ public final class TextInfo {
 		return this;
 	}
 
-	public final @NonNull TextInfo fontSize(final int fontSize) {
+	public final @NonNull TextInfo fontSize(final float fontSize) {
 		this.fontSize = fontSize;
 		return this;
 	}

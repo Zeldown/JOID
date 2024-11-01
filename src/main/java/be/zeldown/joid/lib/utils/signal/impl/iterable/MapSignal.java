@@ -7,6 +7,7 @@ import java.util.Set;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor
 public class MapSignal<K, V> extends Signal<Map<K, V>> {
@@ -15,7 +16,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		super(value);
 	}
 
-	public static <K, V> MapSignal<K, V> of(final Map<K, V>defaultValue) {
+	public static <K, V> @NonNull MapSignal<K, V> of(final Map<K, V>defaultValue) {
 		final MapSignal<K, V> instance = new MapSignal<>();
 		instance.set(defaultValue);
 		return instance;
@@ -26,7 +27,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		this.publish();
 	}
 
-	public boolean containsKey(final K key) {
+	public boolean containsKey(final @NonNull K key) {
 		return this.getOrDefault().containsKey(key);
 	}
 
@@ -42,17 +43,17 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return this.getOrDefault().isEmpty();
 	}
 
-	public Set<K> keySet() {
+	public @NonNull Set<K> keySet() {
 		return this.getOrDefault().keySet();
 	}
 
-	public V put(final K key, final V value) {
+	public V put(final @NonNull K key, final V value) {
 		final V result = this.getOrDefault().put(key, value);
 		this.publish();
 		return result;
 	}
 
-	public V remove(final K key) {
+	public V remove(final @NonNull K key) {
 		final V result = this.getOrDefault().remove(key);
 		this.publish();
 		return result;
@@ -62,7 +63,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return this.getOrDefault().size();
 	}
 
-	public Collection<V> values() {
+	public @NonNull Collection<V> values() {
 		return this.getOrDefault().values();
 	}
 

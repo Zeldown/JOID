@@ -69,7 +69,7 @@ public class CustomFontRenderer implements FontProvider {
 		final Font font = customFont.getFont();
 
 		final Color activeColor = info.getColor();
-		final int fontSize = info.getFontSize();
+		final float fontSize = info.getFontSize();
 		final float letterSpacing = info.getLetterSpacing();
 
 		this.bindFont(font);
@@ -103,7 +103,7 @@ public class CustomFontRenderer implements FontProvider {
 		CustomFontRenderer.SHADER.unbind();
 	}
 
-	private void drawGlyph(final @NonNull Font font, final @NonNull Glyph glyph, final @NonNull Color color, final double x, final double y, final double width, final double height, final int fontSize, final boolean italic) {
+	private void drawGlyph(final @NonNull Font font, final @NonNull Glyph glyph, final @NonNull Color color, final double x, final double y, final double width, final double height, final float fontSize, final boolean italic) {
 		final AtlasBounds atlasBounds = glyph.getAtlasBounds();
 		if (atlasBounds == null) {
 			return;
@@ -120,10 +120,10 @@ public class CustomFontRenderer implements FontProvider {
 
 		final T9R tess = T9R.inst();
 		tess.start(GL11.GL_QUADS);
-		tess.addVertexWithUV(x, y + height, 0D, textureLeft, textureBottom);
-		tess.addVertexWithUV(x + width, y + height, 0D, textureRight, textureBottom);
-		tess.addVertexWithUV(x + width + topOffset, y, 0D, textureRight, textureTop);
-		tess.addVertexWithUV(x + topOffset, y, 0D, textureLeft, textureTop);
+		tess.vertexUV(x, y + height, 0D, textureLeft, textureBottom);
+		tess.vertexUV(x + width, y + height, 0D, textureRight, textureBottom);
+		tess.vertexUV(x + width + topOffset, y, 0D, textureRight, textureTop);
+		tess.vertexUV(x + topOffset, y, 0D, textureLeft, textureTop);
 		tess.draw();
 	}
 
@@ -177,7 +177,7 @@ public class CustomFontRenderer implements FontProvider {
 		final CustomFont customFont = (CustomFont) info.getFont();
 		final Font font = customFont.getFont();
 
-		final int fontSize = info.getFontSize();
+		final float fontSize = info.getFontSize();
 		final float letterSpacing = info.getLetterSpacing();
 
 		double totalWidth = 0D;

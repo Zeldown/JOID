@@ -10,25 +10,25 @@ import lombok.NonNull;
 
 public final class Color {
 
-	public static final Color WHITE       = new Color(1.0F, 1.0F, 1.0F, 1.0F);
-	public static final Color YELLOW      = new Color(1.0F, 1.0F, 0.0F, 1.0F);
-	public static final Color RED         = new Color(1.0F, 0.0F, 0.0F, 1.0F);
-	public static final Color BLUE        = new Color(0.0F, 0.0F, 1.0F, 1.0F);
-	public static final Color GREEN       = new Color(0.0F, 1.0F, 0.0F, 1.0F);
-	public static final Color BLACK       = new Color(0.0F, 0.0F, 0.0F, 1.0F);
-	public static final Color GRAY        = new Color(0.5F, 0.5F, 0.5F, 1.0F);
-	public static final Color CYAN        = new Color(0.0F, 1.0F, 1.0F, 1.0F);
-	public static final Color DARKGRAY    = new Color(0.3F, 0.3F, 0.3F, 1.0F);
-	public static final Color LIGHTGRAY   = new Color(0.7F, 0.7F, 0.7F, 1.0F);
-	public static final Color PINK        = new Color(1.0F, 0.7F, 0.7F, 1.0F);
-	public static final Color ORANGE      = new Color(1.0F, 0.8F, 0.0F, 1.0F);
-	public static final Color MAGENTA     = new Color(1.0F, 0.0F, 1.0F, 1.0F);
-	public static final Color TRANSPARENT = new Color(0.0F, 0.0F, 0.0F, 0.0F);
+	public static final Color WHITE       = new Color(1F, 1F, 1F, 1F);
+	public static final Color YELLOW      = new Color(1F, 1F, 0F, 1F);
+	public static final Color RED         = new Color(1F, 0F, 0F, 1F);
+	public static final Color BLUE        = new Color(0F, 0F, 1F, 1F);
+	public static final Color GREEN       = new Color(0F, 1F, 0F, 1F);
+	public static final Color BLACK       = new Color(0F, 0F, 0F, 1F);
+	public static final Color GRAY        = new Color(0.5F, 0.5F, 0.5F, 1F);
+	public static final Color CYAN        = new Color(0F, 1F, 1F, 1F);
+	public static final Color DARKGRAY    = new Color(0.3F, 0.3F, 0.3F, 1F);
+	public static final Color LIGHTGRAY   = new Color(0.7F, 0.7F, 0.7F, 1F);
+	public static final Color PINK        = new Color(1F, 0.7F, 0.7F, 1F);
+	public static final Color ORANGE      = new Color(1F, 0.8F, 0F, 1F);
+	public static final Color MAGENTA     = new Color(1F, 0F, 1F, 1F);
+	public static final Color TRANSPARENT = new Color(0F, 0F, 0F, 0F);
 
-	public float r = 0.0F;
-	public float g = 0.0F;
-	public float b = 0.0F;
-	public float a = 1.0F;
+	public float r = 0F;
+	public float g = 0F;
+	public float b = 0F;
+	public float a = 1F;
 
 	public ColorGradient gradient;
 
@@ -86,7 +86,7 @@ public final class Color {
 	 * @throws IllegalArgumentException If any of the RGB components is outside the valid range [0.0, 1.0].
 	 */
 	public Color(final float r, final float g, final float b) {
-		this(r, g, b, 1.0F);
+		this(r, g, b, 1F);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public final class Color {
 	 * @throws IllegalArgumentException If any of the RGB components is outside the valid range [0, 255].
 	 */
 	public Color(final int r, final int g, final int b) {
-		this(r/255F, g/255F, b/255F, 1F);
+		this(r / 255F, g / 255F, b / 255F, 1F);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public final class Color {
 	 * @throws IllegalArgumentException If any of the RGBA components is outside the valid range [0, 255].
 	 */
 	public Color(final int r, final int g, final int b, final int a) {
-		this(r/255F, g/255F, b/255F, a/255F);
+		this(r / 255F, g / 255F, b / 255F, a / 255F);
 	}
 
 	/**
@@ -150,10 +150,10 @@ public final class Color {
 			a = 255;
 		}
 
-		this.r = r / 255.0f;
-		this.g = g / 255.0f;
-		this.b = b / 255.0f;
-		this.a = a / 255.0f;
+		this.r = r / 255F;
+		this.g = g / 255F;
+		this.b = b / 255F;
+		this.a = a / 255F;
 	}
 
 	/**
@@ -196,13 +196,14 @@ public final class Color {
 		if (nm.length() == 7) {
 			return new Color(Integer.decode(nm.substring(0, 7)));
 		}
+
 		if (nm.length() == 9) {
 			final int intval = Integer.decode(nm);
 			final int red    = intval >> 24 & 0xFF;
-		final int green  = intval >> 16 & 0xFF;
-		final int blue   = intval >>  8 & 0xFF;
-		final int alpha  = intval >>  0 & 0xFF;
-		return new Color(red, green, blue, alpha);
+			final int green  = intval >> 16 & 0xFF;
+			final int blue   = intval >>  8 & 0xFF;
+			final int alpha  = intval >>  0 & 0xFF;
+			return new Color(red, green, blue, alpha);
 		}
 
 		throw new NumberFormatException("Invalid color: " + nm);
@@ -312,10 +313,7 @@ public final class Color {
 	 * @return The RGB representation of this color as a single integer.
 	 */
 	public int getRGB() {
-		return ((int)(this.a * 255) & 0xFF) << 24 |
-				((int)(this.r * 255) & 0xFF) << 16 |
-				((int)(this.g * 255) & 0xFF) << 8  |
-				((int)(this.b * 255) & 0xFF) << 0;
+		return ((int)(this.a * 255) & 0xFF) << 24 | ((int)(this.r * 255) & 0xFF) << 16 | ((int)(this.g * 255) & 0xFF) << 8  | ((int)(this.b * 255) & 0xFF) << 0;
 	}
 
 	/**
@@ -327,7 +325,7 @@ public final class Color {
 	 * @return A new {@code Color} instance representing a darker shade of the current color.
 	 */
 	public @NonNull Color darker() {
-		return this.darker(0.5f);
+		return this.darker(0.5F);
 	}
 
 	/**
@@ -355,7 +353,7 @@ public final class Color {
 	 * @return A new {@code Color} instance representing a brighter shade of the current color.
 	 */
 	public @NonNull Color brighter() {
-		return this.brighter(0.2f);
+		return this.brighter(0.2F);
 	}
 
 	/**
@@ -364,7 +362,7 @@ public final class Color {
 	 * @return The red component of this color.
 	 */
 	public int getRed() {
-		return (int) (this.r * 255);
+		return (int) (this.r * 255F);
 	}
 
 	/**
@@ -373,7 +371,7 @@ public final class Color {
 	 * @return The green component of this color.
 	 */
 	public int getGreen() {
-		return (int) (this.g * 255);
+		return (int) (this.g * 255F);
 	}
 
 	/**
@@ -382,7 +380,7 @@ public final class Color {
 	 * @return The blue component of this color.
 	 */
 	public int getBlue() {
-		return (int) (this.b * 255);
+		return (int) (this.b * 255F);
 	}
 
 	/**
@@ -391,7 +389,7 @@ public final class Color {
 	 * @return The alpha component of this color.
 	 */
 	public int getAlpha() {
-		return (int) (this.a * 255);
+		return (int) (this.a * 255F);
 	}
 
 	/**
@@ -400,7 +398,7 @@ public final class Color {
 	 * @return The red component of this color.
 	 */
 	public int getRedByte() {
-		return (int) (this.r * 255);
+		return (int) (this.r * 255F);
 	}
 
 	/**
@@ -409,7 +407,7 @@ public final class Color {
 	 * @return The green component of this color.
 	 */
 	public int getGreenByte() {
-		return (int) (this.g * 255);
+		return (int) (this.g * 255F);
 	}
 
 	/**
@@ -418,7 +416,7 @@ public final class Color {
 	 * @return The blue component of this color.
 	 */
 	public int getBlueByte() {
-		return (int) (this.b * 255);
+		return (int) (this.b * 255F);
 	}
 
 	/**
@@ -427,7 +425,7 @@ public final class Color {
 	 * @return The alpha component of this color.
 	 */
 	public int getAlphaByte() {
-		return (int) (this.a * 255);
+		return (int) (this.a * 255F);
 	}
 
 	/**
@@ -438,8 +436,8 @@ public final class Color {
 	 * @throws IllegalArgumentException If the scale is not greater than 0.
 	 */
 	public @NonNull Color brighter(float scale) {
-		scale += 1;
-		return new Color(this.r * scale,this.g * scale,this.b * scale,this.a);
+		scale += 1F;
+		return new Color(this.r * scale, this.g * scale, this.b * scale, this.a);
 	}
 
 	/**
@@ -485,12 +483,11 @@ public final class Color {
 	 * @return A new color resulting from the addition.
 	 */
 	public @NonNull Color addToCopy(final @NonNull Color c) {
-		final Color copy = new Color(this.r,this.g,this.b,this.a);
+		final Color copy = new Color(this.r, this.g, this.b, this.a);
 		copy.r += c.r;
 		copy.g += c.g;
 		copy.b += c.b;
 		copy.a += c.a;
-
 		return copy;
 	}
 
@@ -501,12 +498,11 @@ public final class Color {
 	 * @return A new color resulting from the scaling operation.
 	 */
 	public @NonNull Color scaleCopy(final float value) {
-		final Color copy = new Color(this.r,this.g,this.b,this.a);
+		final Color copy = new Color(this.r, this.g, this.b, this.a);
 		copy.r *= value;
 		copy.g *= value;
 		copy.b *= value;
 		copy.a *= value;
-
 		return copy;
 	}
 
@@ -585,7 +581,7 @@ public final class Color {
 			cmin = this.getBlue();
 		}
 
-		brightness = cmax / 255.0f;
+		brightness = cmax / 255F;
 		if (cmax != 0) {
 			saturation = (float) (cmax - cmin) / (float) cmax;
 		} else {
@@ -601,14 +597,14 @@ public final class Color {
 			if (this.getRed() == cmax) {
 				hue = bluec - greenc;
 			} else if (this.getGreen() == cmax) {
-				hue = 2.0f + redc - bluec;
+				hue = 2F + redc - bluec;
 			} else {
-				hue = 4.0f + greenc - redc;
+				hue = 4F + greenc - redc;
 			}
 
-			hue = hue / 6.0f;
+			hue = hue / 6F;
 			if (hue < 0) {
-				hue = hue + 1.0f;
+				hue = hue + 1F;
 			}
 		}
 		hsbvals[0] = hue;
@@ -700,7 +696,7 @@ public final class Color {
 			cmin = b;
 		}
 
-		brightness = cmax / 255.0f;
+		brightness = cmax / 255F;
 		if (cmax != 0) {
 			saturation = (float) (cmax - cmin) / (float) cmax;
 		} else {
@@ -716,14 +712,14 @@ public final class Color {
 			if (r == cmax) {
 				hue = bluec - greenc;
 			} else if (g == cmax) {
-				hue = 2.0f + redc - bluec;
+				hue = 2F + redc - bluec;
 			} else {
-				hue = 4.0f + greenc - redc;
+				hue = 4F + greenc - redc;
 			}
 
-			hue = hue / 6.0f;
+			hue = hue / 6F;
 			if (hue < 0) {
-				hue = hue + 1.0f;
+				hue = hue + 1F;
 			}
 		}
 		hsbvals[0] = hue;
@@ -792,7 +788,7 @@ public final class Color {
 	 * @return A new color representing a rainbow color.
 	 */
 	public static @NonNull Color RAINBOW() {
-		return new Color(java.awt.Color.HSBtoRGB(System.currentTimeMillis() % 3000L / 3000.0F, 0.8F, 0.8F));
+		return new Color(java.awt.Color.HSBtoRGB(System.currentTimeMillis() % 3000L / 3000F, 0.8F, 0.8F));
 	}
 
 	/**
@@ -800,7 +796,7 @@ public final class Color {
 	 * @return A new color representing a rainbow color.
 	 */
 	public static @NonNull Color RAINBOW(final long time) {
-		return new Color(java.awt.Color.HSBtoRGB(time % 3000L / 3000.0F, 0.8F, 0.8F));
+		return new Color(java.awt.Color.HSBtoRGB(time % 3000L / 3000F, 0.8F, 0.8F));
 	}
 
 	/**
@@ -842,7 +838,6 @@ public final class Color {
 			final Color o = (Color) other;
 			return o.r == this.r && o.g == this.g && o.b == this.b && o.a == this.a;
 		}
-
 		return false;
 	}
 

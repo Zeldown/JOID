@@ -122,23 +122,23 @@ public final class DrawResource {
 				final T9R tess = T9R.inst();
 				tess.start(GL11.GL_QUADS);
 				if (textureCoords == null || textureCoords.length != 4) {
-					tess.addVertexWithUV(x, y + height, 0.0D, 0.0D, 1.0D);
-					tess.addVertexWithUV(x + width, y + height, 0.0D, 1.0D, 1.0D);
-					tess.addVertexWithUV(x + width, y, 0.0D, 1.0D, 0.0D);
-					tess.addVertexWithUV(x, y, 0.0D, 0.0D, 0.0D);
+					tess.vertexUV(x, y + height, 0D, 0D, 1D);
+					tess.vertexUV(x + width, y + height, 0D, 1D, 1D);
+					tess.vertexUV(x + width, y, 0D, 1D, 0D);
+					tess.vertexUV(x, y, 0D, 0D, 0D);
 				} else {
 					final double u = textureCoords[0];
 					final double v = textureCoords[1];
 					final double drawWidth = textureCoords[2];
 					final double drawHeight = textureCoords[3];
 
-					final double widthFactor = 1.0F / width;
-					final double heightFactor = 1.0F / height;
+					final double widthFactor = 1F / width;
+					final double heightFactor = 1F / height;
 
-					tess.addVertexWithUV(x, y + drawHeight, 0.0D, u * widthFactor, (v + drawHeight) * heightFactor);
-					tess.addVertexWithUV(x + drawWidth, y + drawHeight, 0.0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
-					tess.addVertexWithUV(x + drawWidth, y, 0.0D, (u + drawWidth) * widthFactor, v * heightFactor);
-					tess.addVertexWithUV(x, y, 0.0D, u * widthFactor, v * heightFactor);
+					tess.vertexUV(x, y + drawHeight, 0D, u * widthFactor, (v + drawHeight) * heightFactor);
+					tess.vertexUV(x + drawWidth, y + drawHeight, 0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
+					tess.vertexUV(x + drawWidth, y, 0D, (u + drawWidth) * widthFactor, v * heightFactor);
+					tess.vertexUV(x, y, 0D, u * widthFactor, v * heightFactor);
 				}
 				tess.draw();
 

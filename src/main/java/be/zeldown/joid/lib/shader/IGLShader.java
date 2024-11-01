@@ -13,19 +13,19 @@ import lombok.NonNull;
 
 public interface IGLShader {
 
-	public void bind();
-	public void unbind();
+	void bind();
+	void unbind();
 
-	public boolean isActive();
+	boolean isActive();
 
-	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name);
-	public @NonNull IntUniform getIntUniform(final @NonNull String name);
-	public @NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name);
-	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name);
-	public @NonNull FloatUniform getFloatUniform(final @NonNull String name);
-	public @NonNull Float2Uniform getFloat2Uniform(final @NonNull String name);
-	public @NonNull Float3Uniform getFloat3Uniform(final @NonNull String name);
-	public @NonNull Float4Uniform getFloat4Uniform(final @NonNull String name);
-	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name);
+	@NonNull SamplerUniform getSamplerUniform(final @NonNull String name);
+	@NonNull IntUniform getIntUniform(final @NonNull String name);
+	@NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name);
+	@NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name);
+	@NonNull FloatUniform getFloatUniform(final @NonNull String name);
+	@NonNull Float2Uniform getFloat2Uniform(final @NonNull String name);
+	@NonNull Float3Uniform getFloat3Uniform(final @NonNull String name);
+	@NonNull Float4Uniform getFloat4Uniform(final @NonNull String name);
+	@NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name);
 
 }

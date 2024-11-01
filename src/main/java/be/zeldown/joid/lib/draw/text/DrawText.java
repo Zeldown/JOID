@@ -2,11 +2,9 @@ package be.zeldown.joid.lib.draw.text;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.draw.text.builder.TextElement;
-import be.zeldown.joid.lib.draw.text.builder.utils.TextOverflow;
 import be.zeldown.joid.lib.draw.text.utils.TextMode;
 import be.zeldown.joid.lib.font.dto.font.FontBounds;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
@@ -25,21 +23,8 @@ public final class DrawText {
 		DrawText.instance = this;
 	}
 
-	/* [ Raw Section ] */
-	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {
-		return this.drawText(x, y, Text.create(text, info).align(horizontalAlign, verticalAlign));
-	}
-
-	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow, final @NonNull TextMode mode) {
-		return this.drawText(x, y, width, height, Text.create(text, info).align(horizontalAlign, verticalAlign).overflow(overflow), mode);
-	}
-
-	public @NonNull List<@NonNull String> getLines(final double width, final @NonNull String text, final @NonNull TextInfo info) {
-		return this.getLines(width, Text.create(text, info)).stream().map(Text::getText).collect(Collectors.toList());
-	}
-
 	/* [ Text Section ] */
-	public FontBounds drawText(double x, double y, final @NonNull Text text) {
+	public @NonNull FontBounds drawText(double x, double y, final @NonNull Text text) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
 		}
@@ -73,7 +58,7 @@ public final class DrawText {
 		return text.getBounds();
 	}
 
-	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull Text text, final @NonNull TextMode mode) {
+	public @NonNull FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull Text text, final @NonNull TextMode mode) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
 		}

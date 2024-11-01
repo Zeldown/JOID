@@ -3,11 +3,14 @@ package be.zeldown.joid.lib.utils.signal;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.NonNull;
+
 public class Signal<T> implements ISignal<T> {
+
+	private final Set<@NonNull SignalSubscriber<@NonNull T>> eventSet;
 
 	private volatile T defaultValue;
 	private volatile T value;
-	private final Set<SignalSubscriber<T>> eventSet;
 
 	private boolean nextSilent = false;
 
@@ -20,7 +23,7 @@ public class Signal<T> implements ISignal<T> {
 		this.eventSet = new HashSet<>();
 	}
 
-	public static <T> Signal<T> of(final T defaultValue) {
+	public static <T> @NonNull Signal<T> of(final T defaultValue) {
 		final Signal<T> instance = new Signal<>();
 		instance.set(defaultValue);
 		return instance;
@@ -43,12 +46,12 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	@Override
-	public void subscribe(final SignalSubscriber<T> subscriber) {
+	public void subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
 		this.eventSet.add(subscriber);
 	}
 
 	@Override
-	public void unsubscribe(final SignalSubscriber<T> subscriber) {
+	public void unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
 		this.eventSet.remove(subscriber);
 	}
 
@@ -70,7 +73,7 @@ public class Signal<T> implements ISignal<T> {
 		this.eventSet.removeAll(outdatedSet);
 	}
 
-	public Set<SignalSubscriber<T>> getEventSet() {
+	public @NonNull Set<@NonNull SignalSubscriber<@NonNull T>> getEventSet() {
 		return this.eventSet;
 	}
 

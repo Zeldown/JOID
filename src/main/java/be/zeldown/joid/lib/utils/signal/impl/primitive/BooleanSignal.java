@@ -1,6 +1,7 @@
 package be.zeldown.joid.lib.utils.signal.impl.primitive;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
+import lombok.NonNull;
 
 public class BooleanSignal extends Signal<Boolean> {
 
@@ -16,7 +17,7 @@ public class BooleanSignal extends Signal<Boolean> {
 		this.set(!this.getOrDefault());
 	}
 
-	public static BooleanSignal of(final boolean defaultValue) {
+	public static @NonNull BooleanSignal of(final boolean defaultValue) {
 		final BooleanSignal instance = new BooleanSignal();
 		instance.set(defaultValue);
 		return instance;

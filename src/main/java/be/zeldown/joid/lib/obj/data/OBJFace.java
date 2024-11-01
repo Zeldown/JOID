@@ -16,13 +16,13 @@ public final class OBJFace {
 	private OBJTextureCoordinate[] textureCoordinates;
 	private OBJVertex              faceNormal;
 
-	public void render(final T9R tessellator) {
+	public void render(final @NonNull T9R tessellator) {
 		final float textureOffset = 0.0005F;
 		if (this.faceNormal == null) {
 			this.faceNormal = this.normal();
 		}
 
-		tessellator.setNormal(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
+		tessellator.normals(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
 
 		float averageU = 0F;
 		float averageV = 0F;
@@ -51,9 +51,9 @@ public final class OBJFace {
 					offsetV = -offsetV;
 				}
 
-				tessellator.addVertexWithUV(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ(), this.textureCoordinates[i].getU() + offsetU, this.textureCoordinates[i].getV() + offsetV);
+				tessellator.vertexUV(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ(), this.textureCoordinates[i].getU() + offsetU, this.textureCoordinates[i].getV() + offsetV);
 			} else {
-				tessellator.addVertex(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ());
+				tessellator.vertex(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ());
 			}
 		}
 	}
@@ -66,7 +66,7 @@ public final class OBJFace {
 		return new OBJVertex((float) normalVector.x, (float) normalVector.y, (float) normalVector.z);
 	}
 
-	private Vector3d crossProduct(final Vector3d vector1, final Vector3d vector2) {
+	private Vector3d crossProduct(final @NonNull Vector3d vector1, final @NonNull Vector3d vector2) {
 		return new Vector3d(vector1.y * vector2.z - vector1.z * vector2.y, vector1.z * vector2.x - vector1.x * vector2.z, vector1.x * vector2.y - vector1.y * vector2.x);
 	}
 

@@ -1,6 +1,7 @@
 package be.zeldown.joid.lib.utils.signal.impl.primitive;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
+import lombok.NonNull;
 
 public class DoubleSignal extends Signal<Double> {
 
@@ -12,7 +13,7 @@ public class DoubleSignal extends Signal<Double> {
 		super(value);
 	}
 
-	public static DoubleSignal of(final double defaultValue) {
+	public static @NonNull DoubleSignal of(final double defaultValue) {
 		final DoubleSignal instance = new DoubleSignal();
 		instance.set(defaultValue);
 		return instance;
