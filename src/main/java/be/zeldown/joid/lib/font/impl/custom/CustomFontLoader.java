@@ -14,7 +14,6 @@ import com.google.gson.JsonObject;
 import be.zeldown.joid.lib.font.dto.font.Font;
 import be.zeldown.joid.lib.font.dto.font.FontInfo;
 import be.zeldown.joid.lib.font.dto.font.FontInputStream;
-import be.zeldown.joid.lib.font.dto.font.impl.CustomFont;
 import lombok.NonNull;
 
 public final class CustomFontLoader {
@@ -22,7 +21,7 @@ public final class CustomFontLoader {
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
 
-	public static @NonNull CompletableFuture<@NonNull CustomFont> load(final @NonNull FontInputStream input) {
+	public static @NonNull CompletableFuture<be.zeldown.joid.lib.font.impl.custom.CustomFont> load(final @NonNull FontInputStream input) {
 		final CompletableFuture<CustomFont> future = new CompletableFuture<>();
 		CustomFontLoader.loadFont(input, font -> {
 			future.complete(new CustomFont(font));

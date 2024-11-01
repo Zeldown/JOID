@@ -13,7 +13,7 @@ import com.google.gson.JsonObject;
 import be.zeldown.joid.lib.font.dto.font.Font;
 import be.zeldown.joid.lib.font.dto.font.FontInfo;
 import be.zeldown.joid.lib.font.dto.font.FontInputStream;
-import be.zeldown.joid.lib.font.dto.font.impl.CustomFont;
+import be.zeldown.joid.lib.font.impl.custom.CustomFont;
 import lombok.NonNull;
 
 public class FontLoader {
@@ -21,7 +21,7 @@ public class FontLoader {
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
 
-	public static void load(final @NonNull FontInputStream input, final @NonNull Consumer<@NonNull CustomFont> callback) {
+	public static void load(final @NonNull FontInputStream input, final @NonNull Consumer<be.zeldown.joid.lib.font.impl.custom.CustomFont> callback) {
 		FontLoader.loadFont(input, font -> {
 			callback.accept(new CustomFont(font));
 		});

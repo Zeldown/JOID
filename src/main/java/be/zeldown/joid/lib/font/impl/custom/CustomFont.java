@@ -1,10 +1,9 @@
-package be.zeldown.joid.lib.font.dto.font.impl;
+package be.zeldown.joid.lib.font.impl.custom;
 
 import be.zeldown.joid.lib.font.FontProvider;
 import be.zeldown.joid.lib.font.dto.font.Font;
 import be.zeldown.joid.lib.font.dto.font.IFont;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
-import be.zeldown.joid.lib.font.impl.custom.CustomFontRenderer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;

@@ -15,7 +15,6 @@ import be.zeldown.joid.lib.font.dto.data.Metrics;
 import be.zeldown.joid.lib.font.dto.data.PlaneBounds;
 import be.zeldown.joid.lib.font.dto.font.Font;
 import be.zeldown.joid.lib.font.dto.font.FontBounds;
-import be.zeldown.joid.lib.font.dto.font.impl.CustomFont;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.shader.GLShader;
 import be.zeldown.joid.lib.shader.IGLShader;

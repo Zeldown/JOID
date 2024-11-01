@@ -2,7 +2,7 @@ package be.zeldown.joid.internal.test;
 
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.font.dto.font.FontInputStream;
-import be.zeldown.joid.lib.font.dto.font.impl.CustomFont;
+import be.zeldown.joid.lib.font.impl.custom.CustomFont;
 import be.zeldown.joid.lib.font.impl.custom.CustomFontLoader;
 
 public class TestFont {
