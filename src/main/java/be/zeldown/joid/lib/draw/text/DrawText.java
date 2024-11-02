@@ -29,15 +29,15 @@ public final class DrawText {
 			return FontBounds.empty();
 		}
 
-		if (text.getHorizontalAlignment() == Align.CENTER) {
+		if (text.getHorizontalAlignment().isCenter()) {
 			x -= text.getWidth() / 2;
-		} else if (text.getHorizontalAlignment() == Align.END) {
+		} else if (text.getHorizontalAlignment().isEnd()) {
 			x -= text.getWidth();
 		}
 
-		if (text.getVerticalAlignment() == Align.CENTER) {
+		if (text.getVerticalAlignment().isCenter()) {
 			y -= text.getHeight() / 2;
-		} else if (text.getVerticalAlignment() == Align.END) {
+		} else if (text.getVerticalAlignment().isEnd()) {
 			y -= text.getHeight();
 		}
 
@@ -46,9 +46,9 @@ public final class DrawText {
 			final TextInfo info = element.getInfo();
 
 			double oy = y;
-			if (text.getVerticalAlignment() == Align.CENTER) {
+			if (text.getVerticalAlignment().isCenter()) {
 				oy += (text.getHeight() - info.getHeight()) / 2;
-			} else if (text.getVerticalAlignment() == Align.END) {
+			} else if (text.getVerticalAlignment().isEnd()) {
 				oy += text.getHeight() - info.getHeight();
 			}
 
@@ -67,15 +67,15 @@ public final class DrawText {
 			double ox = x;
 			double oy = y;
 
-			if (text.getHorizontalAlignment() == Align.CENTER) {
+			if (text.getHorizontalAlignment().isCenter()) {
 				ox = x + width / 2;
-			} else if (text.getHorizontalAlignment() == Align.END) {
+			} else if (text.getHorizontalAlignment().isEnd()) {
 				ox = x + width;
 			}
 
-			if (text.getVerticalAlignment() == Align.CENTER) {
+			if (text.getVerticalAlignment().isCenter()) {
 				oy = y + height / 2;
-			} else if (text.getVerticalAlignment() == Align.END) {
+			} else if (text.getVerticalAlignment().isEnd()) {
 				oy = y + height;
 			}
 
@@ -131,18 +131,18 @@ public final class DrawText {
 			double ox = x;
 			double oy = y;
 
-			if (text.getHorizontalAlignment() == Align.CENTER) {
+			if (text.getHorizontalAlignment().isCenter()) {
 				ox = x + width / 2;
-			} else if (text.getHorizontalAlignment() == Align.END) {
+			} else if (text.getHorizontalAlignment().isEnd()) {
 				ox = x + width;
 			}
 
-			if (text.getVerticalAlignment() == Align.CENTER) {
+			if (text.getVerticalAlignment().isCenter()) {
 				oy = y + height / 2;
 				for (final Text line : textList) {
 					oy -= line.dh(2);
 				}
-			} else if (text.getVerticalAlignment() == Align.END) {
+			} else if (text.getVerticalAlignment().isEnd()) {
 				oy = y + height;
 				for (final Text line : textList) {
 					oy -= line.getHeight();
