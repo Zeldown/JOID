@@ -172,10 +172,11 @@ public final class DrawText {
 
 		Text currentText = text.copyProperties();
 		for (final TextElement element : text.getElementList()) {
-			final String elementText = text.getText(element);
+			final String elementText = text.getText(element).replace("<br>", String.valueOf('\n'));
 			int lastSplit = 0;
 			for (int i = 0; i < elementText.length(); i++) {
-				if (elementText.charAt(i) == '\n') {
+				final char c = elementText.charAt(i);
+				if (c == '\n' || c == '\r' || c == '\t') {
 					final int foundSplit = i;
 					currentText.add(element.copyWithText(elementText.substring(lastSplit, foundSplit)));
 					textList.add(currentText);
