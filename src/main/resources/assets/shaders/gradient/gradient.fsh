@@ -8,6 +8,7 @@ uniform vec4 startColor;
 uniform vec4 endColor;
 
 uniform vec4 canvas;
+uniform sampler2D texture;
 
 void main() {
     vec2 uv = (pos.xy - canvas.xy) / canvas.zw;
@@ -17,5 +18,7 @@ void main() {
     t = clamp(t, 0.0, 1.0);
 
     vec4 color = mix(startColor, endColor, t);
-    gl_FragColor = vec4(color.r, color.g, color.b, color.a);
+    vec4 textureColor = texture2D(texture, uv);
+    
+    gl_FragColor = vec4(color.rgb + textureColor.rgb, color.a);
 }

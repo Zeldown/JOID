@@ -200,10 +200,10 @@ public final class Color {
 		if (nm.length() == 9) {
 			final int intval = Integer.decode(nm);
 			final int red    = intval >> 24 & 0xFF;
-			final int green  = intval >> 16 & 0xFF;
-			final int blue   = intval >>  8 & 0xFF;
-			final int alpha  = intval >>  0 & 0xFF;
-			return new Color(red, green, blue, alpha);
+		final int green  = intval >> 16 & 0xFF;
+		final int blue   = intval >>  8 & 0xFF;
+		final int alpha  = intval >>  0 & 0xFF;
+		return new Color(red, green, blue, alpha);
 		}
 
 		throw new NumberFormatException("Invalid color: " + nm);

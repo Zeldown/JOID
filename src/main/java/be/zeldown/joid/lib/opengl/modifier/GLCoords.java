@@ -55,20 +55,6 @@ public class GLCoords {
 		return this;
 	}
 
-	/**
-	 * The `add` function in Java increments the x, y, and z coordinates by the provided values and
-	 * returns the updated GLCoords object.
-	 * 
-	 * @param x The parameter `x` represents the amount to add to the current x-coordinate of the GLCoords
-	 * object.
-	 * @param y The `add` method you provided is used to add the given values of `x`, `y`, and `z` to the
-	 * current coordinates `this.x`, `this.y`, and `this.z` respectively. The method returns the updated
-	 * `GLCoords` object.
-	 * @param z The `z` parameter represents the amount by which the `z` coordinate is to be incremented
-	 * in the `add` method.
-	 * @return The method is returning the current instance of the GLCoords object (`this`) after adding
-	 * the provided values `x`, `y`, and `z` to its existing coordinates.
-	 */
 	public @NonNull GLCoords add(final double x, final double y, final double z) {
 		this.x += x;
 		this.y += y;

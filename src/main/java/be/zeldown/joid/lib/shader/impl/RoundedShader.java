@@ -23,8 +23,8 @@ public class RoundedShader {
 
 	static {
 		try {
-			final InputStream vert = JOID.class.getResourceAsStream("/assets/shaders/circle/rounded.vsh");
-			final InputStream frag = JOID.class.getResourceAsStream("/assets/shaders/circle/rounded.fsh");
+			final InputStream vert = JOID.class.getResourceAsStream("/assets/shaders/rounded/rounded.vsh");
+			final InputStream frag = JOID.class.getResourceAsStream("/assets/shaders/rounded/rounded.fsh");
 			RoundedShader.shader = GLShader.from(vert, frag, ShaderBlendState.NORMAL);
 			if (RoundedShader.shader.isActive()) {
 				RoundedShader.radiusUniform    = RoundedShader.shader.getFloatUniform("u_Radius");

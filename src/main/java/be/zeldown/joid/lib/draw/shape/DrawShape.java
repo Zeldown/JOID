@@ -1,12 +1,12 @@
 package be.zeldown.joid.lib.draw.shape;
 
 import javax.vecmath.Vector2d;
+import javax.vecmath.Vector4f;
 
 import org.lwjgl.opengl.GL11;
 
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.opengl.context.GLContext;
 import be.zeldown.joid.lib.shader.impl.CircleShader;
 import be.zeldown.joid.lib.shader.impl.RoundedShader;
 import be.zeldown.joid.lib.shader.impl.RoundedShader.RoundedShaderType;
@@ -52,7 +52,7 @@ public final class DrawShape {
 	 * @throws NullPointerException if color is null.
 	 */
 	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
-		RoundedShader.use(RoundedShaderType.COLOR, radius, (float)(x + radius), (float)(y + radius), (float)(x + width - radius), (float)(y + height - radius), () -> {
+		RoundedShader.use(RoundedShaderType.COLOR, radius, (float) (x + radius), (float) (y + radius), (float) (x + width - radius), (float) (y + height - radius), () -> {
 			this.drawRect(x, y, width, height, color);
 		});
 	}
@@ -288,18 +288,30 @@ public final class DrawShape {
 	 * @throws IllegalArgumentException  if any element in the points array is null.
 	 */
 	public void drawShape(final int mode, final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
+		double minX = Double.MAX_VALUE;
+		double minY = Double.MAX_VALUE;
+		double maxX = Double.MIN_VALUE;
+		double maxY = Double.MIN_VALUE;
+
+		for (final Vector2d point : points) {
+			minX = Math.min(minX, point.x);
+			minY = Math.min(minY, point.y);
+			maxX = Math.max(maxX, point.x);
+			maxY = Math.max(maxY, point.y);
+		}
+
 		final T9R tessellator = T9R.inst();
 		GL11.glPushMatrix();
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GLContext.color(() -> {
+		color.bind(() -> {
 			tessellator.start(mode);
 			for (final Vector2d point : points) {
-				tessellator.vertex(point.x, point.y, 0D);
+				tessellator.vertex(point.x, point.y, 0.0D);
 			}
 			tessellator.draw();
-		}, color);
+		}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();

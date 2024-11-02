@@ -3,7 +3,6 @@ package be.zeldown.joid.lib.draw.resource;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
-import be.zeldown.joid.lib.opengl.context.GLContext;
 import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.tessellator.T9R;
 import lombok.Getter;
@@ -106,46 +105,43 @@ public final class DrawResource {
 	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
 	 */
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		GLContext.matrix(() -> {
-			GL11.glColor4f(1F, 1F, 1F, 1F);
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glEnable(GL11.GL_POINT_SMOOTH);
-			GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			resource.bind(() -> {
-				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-				GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_POINT_SMOOTH);
+		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		resource.bind(() -> {
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
 
-				final double[] textureCoords = resource.getProperties().getTextureCoords();
+			final double[] textureCoords = resource.getProperties().getTextureCoords();
 
-				final T9R tess = T9R.inst();
-				tess.start(GL11.GL_QUADS);
-				if (textureCoords == null || textureCoords.length != 4) {
-					tess.vertexUV(x, y + height, 0D, 0D, 1D);
-					tess.vertexUV(x + width, y + height, 0D, 1D, 1D);
-					tess.vertexUV(x + width, y, 0D, 1D, 0D);
-					tess.vertexUV(x, y, 0D, 0D, 0D);
-				} else {
-					final double u = textureCoords[0];
-					final double v = textureCoords[1];
-					final double drawWidth = textureCoords[2];
-					final double drawHeight = textureCoords[3];
+			final T9R tess = T9R.inst();
+			tess.start(GL11.GL_QUADS);
+			if (textureCoords == null || textureCoords.length != 4) {
+				tess.vertexUV(x, y + height, 0D, 0D, 1D);
+				tess.vertexUV(x + width, y + height, 0D, 1D, 1D);
+				tess.vertexUV(x + width, y, 0D, 1D, 0D);
+				tess.vertexUV(x, y, 0D, 0D, 0D);
+			} else {
+				final double u = textureCoords[0];
+				final double v = textureCoords[1];
+				final double drawWidth = textureCoords[2];
+				final double drawHeight = textureCoords[3];
 
-					final double widthFactor = 1F / width;
-					final double heightFactor = 1F / height;
+				final double widthFactor = 1F / width;
+				final double heightFactor = 1F / height;
 
-					tess.vertexUV(x, y + drawHeight, 0D, u * widthFactor, (v + drawHeight) * heightFactor);
-					tess.vertexUV(x + drawWidth, y + drawHeight, 0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
-					tess.vertexUV(x + drawWidth, y, 0D, (u + drawWidth) * widthFactor, v * heightFactor);
-					tess.vertexUV(x, y, 0D, u * widthFactor, v * heightFactor);
-				}
-				tess.draw();
+				tess.vertexUV(x, y + drawHeight, 0D, u * widthFactor, (v + drawHeight) * heightFactor);
+				tess.vertexUV(x + drawWidth, y + drawHeight, 0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
+				tess.vertexUV(x + drawWidth, y, 0D, (u + drawWidth) * widthFactor, v * heightFactor);
+				tess.vertexUV(x, y, 0D, u * widthFactor, v * heightFactor);
+			}
+			tess.draw();
 
-				GL11.glDisable(GL11.GL_POINT_SMOOTH);
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
-			});
+			GL11.glDisable(GL11.GL_POINT_SMOOTH);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
 		});
 	}
 
