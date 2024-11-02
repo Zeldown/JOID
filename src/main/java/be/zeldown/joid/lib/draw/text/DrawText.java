@@ -176,7 +176,7 @@ public final class DrawText {
 			int lastSplit = 0;
 			for (int i = 0; i < elementText.length(); i++) {
 				final char c = elementText.charAt(i);
-				if (c == '\n' || c == '\r' || c == '\t') {
+				if (c == '\n' || c == '\r') {
 					final int foundSplit = i;
 					currentText.add(element.copyWithText(elementText.substring(lastSplit, foundSplit)));
 					textList.add(currentText);
