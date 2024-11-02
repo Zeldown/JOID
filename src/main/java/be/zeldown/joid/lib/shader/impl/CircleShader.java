@@ -23,8 +23,8 @@ public class CircleShader {
 			final InputStream frag = JOID.class.getResourceAsStream("/assets/shaders/circle/circle.fsh");
 			CircleShader.shader = GLShader.from(vert, frag, ShaderBlendState.NORMAL);
 			if (CircleShader.shader.isActive()) {
-				CircleShader.radiusUniform    = CircleShader.shader.getFloatUniform("u_Radius");
-				CircleShader.centerPosUniform = CircleShader.shader.getFloat2Uniform("u_CenterPos");
+				CircleShader.radiusUniform    = CircleShader.shader.getFloatUniform("radius");
+				CircleShader.centerPosUniform = CircleShader.shader.getFloat2Uniform("center");
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();

@@ -66,8 +66,8 @@ public final class DrawShape {
 	 * @throws NullPointerException if color is null.
 	 */
 	public void drawCircle(final double x, final double y, final @NonNull Color color, final double radius) {
-		CircleShader.use((float)radius, (float)x, (float)y, () -> {
-			final double diameter = radius * 2;
+		CircleShader.use((float) radius, (float) x, (float) y, () -> {
+			final double diameter = radius * 2D;
 			this.drawRect(x - radius, y - radius, diameter, diameter, color);
 		});
 	}
@@ -83,7 +83,7 @@ public final class DrawShape {
 	 * @throws NullPointerException if color is null.
 	 */
 	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
-		this.drawBorder(x, y, x2, y2, color, 1);
+		this.drawBorder(x, y, x2, y2, color, 1D);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public final class DrawShape {
 	 * @throws NullPointerException if color is null.
 	 */
 	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
-		this.drawFilledBorder(x, y, x2, y2, color, 1);
+		this.drawFilledBorder(x, y, x2, y2, color, 1D);
 	}
 
 	/**
@@ -191,7 +191,7 @@ public final class DrawShape {
 	 */
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
 		Vector2d last = start;
-		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
 		for (float t = 0F; t < 1F; t += 1F / distance) {
 			final Vector2d point = Bezier.quadratic(t, start, end, control);
 			DrawUtils.SHAPE.drawLine(color, last, point);
@@ -226,7 +226,7 @@ public final class DrawShape {
 	 */
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
 		Vector2d last = start;
-		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
 		for (float t = 0F; t < 1F; t += 1F / distance) {
 			final Vector2d point = Bezier.cubic(t, start, startControl, end, endControl);
 			DrawUtils.SHAPE.drawLine(color, last, point);
@@ -281,7 +281,7 @@ public final class DrawShape {
 		color.bind(() -> {
 			tessellator.start(mode);
 			for (final Vector2d point : points) {
-				tessellator.vertex(point.x, point.y, 0.0D);
+				tessellator.vertex(point.x, point.y, 0D);
 			}
 			tessellator.draw();
 		}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));

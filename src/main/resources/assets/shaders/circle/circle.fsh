@@ -1,14 +1,12 @@
 #version 110
 
-uniform float u_Radius;
-uniform vec2 u_CenterPos;
+varying vec2 pos;
 
-varying vec2 f_Position;
+uniform float radius;
+uniform vec2 center;
 
 void main() {
-    float v = length(f_Position - u_CenterPos);
-
-    float a = 1.0 - smoothstep(u_Radius - 1.0, u_Radius, v);
-
+    float v = length(pos - center);
+    float a = 1.0 - smoothstep(radius - 1.0, radius, v);
     gl_FragColor = gl_Color * vec4(1.0, 1.0, 1.0, a);
 }
