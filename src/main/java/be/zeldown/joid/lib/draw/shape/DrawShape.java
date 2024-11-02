@@ -9,7 +9,6 @@ import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.shader.impl.CircleShader;
 import be.zeldown.joid.lib.shader.impl.RoundedShader;
-import be.zeldown.joid.lib.shader.impl.RoundedShader.RoundedShaderType;
 import be.zeldown.joid.lib.tessellator.T9R;
 import be.zeldown.joid.lib.utils.bezier.Bezier;
 import lombok.Getter;
@@ -52,33 +51,7 @@ public final class DrawShape {
 	 * @throws NullPointerException if color is null.
 	 */
 	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
-		RoundedShader.use(RoundedShaderType.COLOR, radius, (float) (x + radius), (float) (y + radius), (float) (x + width - radius), (float) (y + height - radius), () -> {
-			this.drawRect(x, y, width, height, color);
-		});
-	}
-
-	/**
-	 * Draws a rounded rectangle with the specified dimensions, color, and radius.
-	 *
-	 * @param x             The x-coordinate of the top-left corner of the
-	 *                      rectangle.
-	 * @param y             The y-coordinate of the top-left corner of the
-	 *                      rectangle.
-	 * @param width         The width of the rectangle.
-	 * @param height        The height of the rectangle.
-	 * @param color         The color of the rectangle. Must not be null.
-	 * @param radius        The radius of the rounded corners.
-	 * @param roundedLeft   Whether the left side of the rectangle should be
-	 *                      rounded.
-	 * @param roundedTop    Whether the top side of the rectangle should be rounded.
-	 * @param roundedRight  Whether the right side of the rectangle should be
-	 *                      rounded.
-	 * @param roundedBottom Whether the bottom side of the rectangle should be
-	 *                      rounded.
-	 * @throws NullPointerException if color is null.
-	 */
-	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom) {
-		RoundedShader.use(RoundedShaderType.COLOR, radius, (float)(x + (roundedLeft ? radius : 0)), (float)(y + (roundedTop ? radius : 0)), (float)(x + width - (roundedRight ? radius : 0)), (float)(y + height - (roundedBottom ? radius : 0)), () -> {
+		RoundedShader.use(radius, new Vector4f((float) x, (float) y, (float) (x + width), (float) (y + height)), () -> {
 			this.drawRect(x, y, width, height, color);
 		});
 	}

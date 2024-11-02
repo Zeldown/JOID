@@ -1,26 +1,22 @@
 #version 120
 
-varying vec2 TexCoord;
+varying vec2 pos;
 
-uniform sampler2D tex;
-uniform float u_Radius;
-uniform vec4 u_InnerRect;
-uniform int u_Type = 0;
-
-varying vec2 f_Position;
+uniform float radius;
+uniform vec4 canvas;
+uniform sampler2D texture;
 
 void main() {
-    vec2 tl = u_InnerRect.xy - f_Position;
-    vec2 br = f_Position - u_InnerRect.zw;
-    vec2 dis = max(br, tl);
-    vec4 sample =  texture2D(tex, TexCoord);
+    vec2 uv = (pos.xy - (canvas.xy - vec2(radius))) / (canvas.zw + vec2(radius));
+    vec4 textureColor = texture2D(texture, uv);
 
-    float v = length(max(vec2(0.0), dis)) - u_Radius;
-    float a = 1.0 - smoothstep(0.0, 1.0, v);
+    vec2 tl = canvas.xy - pos;
+    vec2 br = pos - canvas.zw;
+    vec2 dis = max(br, tl);
+
+    float t = length(max(vec2(0.0, 0.0), dis)) - radius;
+    float a = 1.0 - smoothstep(0.0, 1.0, t);
     
-    if (u_Type == 0) {
-    	gl_FragColor = sample * vec4(1.0, 1.0, 1.0, a);
-    } else {
-    	gl_FragColor = gl_Color * vec4(1.0, 1.0, 1.0, a);
-    }
+    vec4 color = textureColor.rgb == vec3(0.0) ? gl_Color : textureColor;
+    gl_FragColor = color * vec4(1.0, 1.0, 1.0, min(a, (textureColor.a, gl_Color.a)));
 }
