@@ -189,6 +189,14 @@ public final class Color {
 	 * @throws NullPointerException If the provided string is {@code null}.
 	 */
 	public static @NonNull Color decode(@NonNull String nm) {
+		if ("rainbow".equalsIgnoreCase(nm.replace("#", ""))) {
+			return Color.RAINBOW();
+		}
+
+		if ("loading".equalsIgnoreCase(nm.replace("#", ""))) {
+			return Color.LOADING();
+		}
+
 		if (nm.startsWith("rgb(")) {
 			final String[] parts = nm.substring(4, nm.length() - 1).split(",");
 			return new Color(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim()));
