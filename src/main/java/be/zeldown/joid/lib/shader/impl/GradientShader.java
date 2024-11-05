@@ -48,24 +48,7 @@ public class GradientShader {
 	}
 
 	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final @NonNull Vector4f canvas, final @NonNull Runnable runnable) {
-		if (!GradientShader.isAvailable()) {
-			throw new RuntimeException("GradientShader is not available");
-		}
-
-		if (startPos.x < 0 || startPos.x > 1 || startPos.y < 0 || startPos.y > 1) {
-			throw new RuntimeException("startPos have to be normalized [0, 1]");
-		}
-
-		if (endPos.x < 0 || endPos.x > 1 || endPos.y < 0 || endPos.y > 1) {
-			throw new RuntimeException("endPos have to be be normalized [0, 1]");
-		}
-
-		GradientShader.shader.bind();
-		GradientShader.startPosUniform.setValue(startPos.x, 1F - startPos.y);
-		GradientShader.endPosUniform.setValue(endPos.x, 1F - endPos.y);
-		GradientShader.startColorUniform.setValue(startColor.r, startColor.g, startColor.b, startColor.a);
-		GradientShader.endColorUniform.setValue(endColor.r, endColor.g, endColor.b, endColor.a);
-		GradientShader.canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
+		GradientShader.bind(startPos, endPos, startColor, endColor, canvas);
 		runnable.run();
 		GradientShader.shader.unbind();
 	}

@@ -12,13 +12,15 @@ uniform sampler2D texture;
 
 void main() {
     vec2 uv = (pos.xy - canvas.xy) / canvas.zw;
+    
     vec2 direction = endPos - startPos;
 
     float t = dot(uv - startPos, direction) / dot(direction, direction);
     t = clamp(t, 0.0, 1.0);
 
-    vec4 color = mix(startColor, endColor, t);
+    vec4 mixedColor = mix(startColor, endColor, t);
     vec4 textureColor = texture2D(texture, uv);
     
-    gl_FragColor = vec4(color.rgb + textureColor.rgb, color.a);
+    vec4 color = textureColor.rgb == vec3(0.0) ? gl_Color : textureColor;
+    gl_FragColor = vec4(mixedColor.rgb * color.rgb, mixedColor.a);
 }
