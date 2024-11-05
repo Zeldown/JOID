@@ -63,7 +63,7 @@ public final class Color {
 	 * @throws NullPointerException If the provided color is {@code null}.
 	 */
 	public Color(final @NonNull java.awt.Color color) {
-		this(color.getRed()/255F, color.getGreen()/255F, color.getBlue()/255F, color.getAlpha()/255F);
+		this(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
 	}
 
 	/**
@@ -189,6 +189,22 @@ public final class Color {
 	 * @throws NullPointerException If the provided string is {@code null}.
 	 */
 	public static @NonNull Color decode(@NonNull String nm) {
+		if (nm.startsWith("rgb(")) {
+			final String[] parts = nm.substring(4, nm.length() - 1).split(",");
+			return new Color(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim()));
+		}
+
+		if (nm.startsWith("rgba(")) {
+			final String[] parts = nm.substring(5, nm.length() - 1).split(",");
+			return new Color(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim()), Integer.parseInt(parts[3].trim()));
+		}
+
+		if (nm.startsWith("gradient(")) {
+			final String[] parts = nm.substring(9, nm.length() - 1).split(",");
+			final Vector4f direction = parts.length < 6 ? new Vector4f(0F, 0F, 1F, 0F) : new Vector4f(Float.parseFloat(parts[2].trim()), Float.parseFloat(parts[3].trim()), Float.parseFloat(parts[4].trim()), Float.parseFloat(parts[5].trim()));
+			return new Color(new ColorGradient(Color.decode(parts[0].trim()), Color.decode(parts[1].trim()), direction));
+		}
+
 		if (!nm.startsWith("#")) {
 			nm = "#" + nm;
 		}
@@ -200,10 +216,10 @@ public final class Color {
 		if (nm.length() == 9) {
 			final int intval = Integer.decode(nm);
 			final int red    = intval >> 24 & 0xFF;
-		final int green  = intval >> 16 & 0xFF;
-		final int blue   = intval >>  8 & 0xFF;
-		final int alpha  = intval >>  0 & 0xFF;
-		return new Color(red, green, blue, alpha);
+			final int green  = intval >> 16 & 0xFF;
+			final int blue   = intval >>  8 & 0xFF;
+			final int alpha  = intval >>  0 & 0xFF;
+			return new Color(red, green, blue, alpha);
 		}
 
 		throw new NumberFormatException("Invalid color: " + nm);
@@ -814,11 +830,11 @@ public final class Color {
 	 */
 	@Override
 	public @NonNull String toString() {
-		return String.format(
-				"Color(%d, %d, %d, %d) [%s]",
-				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha(),
-				this.encode()
-				);
+		if (this.isGradient()) {
+			return String.format("Gradient(%s, %s, %s)", this.gradient.getStartColor().toString(), this.gradient.getEndColor().toString(), this.gradient.getDirection().toString());
+		}
+
+		return String.format("Color(%d, %d, %d, %d) [%s]", this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha(), this.encode());
 	}
 
 	/**
@@ -826,7 +842,7 @@ public final class Color {
 	 */
 	@Override
 	public int hashCode() {
-		return (int) (this.r+this.g+this.b+this.a)*255;
+		return (int) (this.r + this.g + this.b + this.a) * 255;
 	}
 
 	/**

@@ -15,8 +15,8 @@ public final class ResourceData {
 
 	private static final ExecutorService ASYNC_EXECUTOR = Executors.newFixedThreadPool(16);
 
-	private String                   uniqueId;
-	private BufferedImage            image;
+	private String        uniqueId;
+	private BufferedImage image;
 
 	private int[]   textureId;
 	private int[][] data;
@@ -25,13 +25,13 @@ public final class ResourceData {
 	private boolean loaded;
 	private boolean uploaded;
 
-	private int    width;
-	private int    height;
+	private int width;
+	private int height;
 
 	/* [ Constructor ] */
 	public ResourceData(final @NonNull String uniqueId, final BufferedImage image) {
-		this.uniqueId   = uniqueId;
-		this.image      = image;
+		this.uniqueId = uniqueId;
+		this.image    = image;
 	}
 
 	/* [ Query Section ] */
