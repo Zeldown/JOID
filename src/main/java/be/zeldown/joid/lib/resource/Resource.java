@@ -158,14 +158,13 @@ public final class Resource {
 	}
 
 	public final void bind(final @NonNull Runnable runnable) {
-		this.prepareBind();
-
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTextureId());
+		this.bindTextureOnly();
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, this.properties.getInterpolation());
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, this.properties.getInterpolation());
 		runnable.run();
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		this.unbind();
 	}
 
 	public final void bindTextureOnly() {
@@ -181,6 +180,10 @@ public final class Resource {
 		if (this.isLoaded() && !this.isUploaded() && this.getData() != null) {
 			this.upload();
 		}
+	}
+
+	public final void unbind() {
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 	}
 
 }
