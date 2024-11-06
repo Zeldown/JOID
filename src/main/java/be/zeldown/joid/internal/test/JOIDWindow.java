@@ -67,7 +67,6 @@ public class JOIDWindow {
 
 	private void render() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 
 		final TextInfo[] fonts = {
 				TextInfo.create(TestFont.MONTSERRAT, 25, Color.WHITE).lineHeight(-5.5F),
@@ -89,7 +88,6 @@ public class JOIDWindow {
 		};
 
 		DrawUtils.RESOURCE.drawResource(0, 0, this.displayMode.getWidth(), this.displayMode.getHeight(), Resource.of("https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg"));
-		DrawUtils.SHAPE.drawRoundedRect(0, 0, this.displayMode.getWidth(), this.displayMode.getHeight(), Color.RED, 200F);
 
 		final double x = 10;
 		final double y = 10;
