@@ -48,12 +48,6 @@ public class GradientShader {
 	}
 
 	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final @NonNull Vector4f canvas, final @NonNull Runnable runnable) {
-		GradientShader.bind(startPos, endPos, startColor, endColor, canvas);
-		runnable.run();
-		GradientShader.shader.unbind();
-	}
-
-	public static void bind(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final @NonNull Vector4f canvas) {
 		if (!GradientShader.isAvailable()) {
 			throw new RuntimeException("GradientShader is not available");
 		}
@@ -72,13 +66,7 @@ public class GradientShader {
 		GradientShader.startColorUniform.setValue(startColor.r, startColor.g, startColor.b, startColor.a);
 		GradientShader.endColorUniform.setValue(endColor.r, endColor.g, endColor.b, endColor.a);
 		GradientShader.canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
-	}
-
-	public static void unbind() {
-		if (!GradientShader.isAvailable()) {
-			throw new RuntimeException("GradientShader is not available");
-		}
-
+		runnable.run();
 		GradientShader.shader.unbind();
 	}
 

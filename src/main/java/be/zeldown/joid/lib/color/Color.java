@@ -312,9 +312,7 @@ public final class Color {
 	 */
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
 		if (this.isGradient()) {
-			this.gradient.bind(canvas);
-			runnable.run();
-			this.gradient.unbind();
+			this.gradient.use(canvas, runnable);
 		} else {
 			this.bind();
 			runnable.run();

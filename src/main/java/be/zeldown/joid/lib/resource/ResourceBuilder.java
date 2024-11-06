@@ -133,6 +133,24 @@ public final class ResourceBuilder {
 		return resource;
 	}
 
+	public @NonNull Resource of(final int id) {
+		final String uniqueId = "texture_" + String.valueOf(id);
+		if (this.cache != null) {
+			final ResourceData cached = this.cache.getIfPresent(uniqueId);
+			if (cached != null) {
+				return new Resource(this, cached);
+			}
+		}
+
+		final ResourceData data = new ResourceData(uniqueId, null).textureId(id);
+		final Resource resource = new Resource(this, data);
+		if (this.cache != null) {
+			this.cache.put(uniqueId, data);
+		}
+
+		return resource;
+	}
+
 	private class DownloadBufferedImageThread extends Thread {
 
 		private final @NonNull Consumer<BufferedImage> callback;

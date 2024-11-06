@@ -91,7 +91,7 @@ public class JOIDWindow {
 
 		final double x = 10;
 		final double y = 10;
-		final double margin = 8.5;
+		final double margin = 7.5;
 		final double width = this.displayMode.getWidth() - 20;
 
 		double oy = 0;
