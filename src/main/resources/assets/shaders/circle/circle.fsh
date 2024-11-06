@@ -8,7 +8,7 @@ uniform sampler2D texture;
 
 void main() {
 	vec4 canvas = vec4(center.x - radius, center.y - radius, center.x + radius, center.y + radius);
-    vec2 uv = (pos.xy - (canvas.xy - vec2(radius))) / (canvas.zw + vec2(radius));
+    vec2 uv = (pos.xy - canvas.xy) / canvas.zw;
     vec4 textureColor = texture2D(texture, uv);
     
     float v = length(pos - center);
