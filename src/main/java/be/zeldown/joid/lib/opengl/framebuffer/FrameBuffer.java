@@ -1,18 +1,14 @@
 package be.zeldown.joid.lib.opengl.framebuffer;
 
-import java.util.concurrent.TimeUnit;
+import javax.vecmath.Vector4d;
+import javax.vecmath.Vector4f;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
-import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.resource.Resource;
-import be.zeldown.joid.lib.resource.ResourceBuilder;
-import be.zeldown.joid.lib.resource.dto.ResourceData;
+import be.zeldown.joid.lib.tessellator.T9R;
 import be.zeldown.joid.lib.utils.texture.AllocatedTextureUtil;
 import lombok.Getter;
 import lombok.NonNull;
@@ -22,17 +18,13 @@ import lombok.Setter;
 @Setter
 public class FrameBuffer {
 
-	private static final Cache<String, ResourceData> RESOURCE_CACHE = CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build();
-	private static final ResourceBuilder RESOURCE_BUILDER = ResourceBuilder.create().async().linear().cache(FrameBuffer.RESOURCE_CACHE);
-
 	private final int framebuffer;
 	private final int texture;
 
 	private int width;
 	private int height;
-	private Resource resource;
 
-	private boolean filled = false;
+	private boolean filled;
 
 	public FrameBuffer() {
 		this.framebuffer = GL30.glGenFramebuffers();
@@ -42,7 +34,6 @@ public class FrameBuffer {
 	public @NonNull FrameBuffer prepare(final int width, final int height, final int interpolation) {
 		this.width = width;
 		this.height = height;
-		this.resource = FrameBuffer.RESOURCE_BUILDER.of(this.texture).interpolation(interpolation);
 
 		AllocatedTextureUtil.allocateTexture(this.texture, this.width, this.height);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, interpolation);
@@ -56,22 +47,35 @@ public class FrameBuffer {
 		return this;
 	}
 
-	public void bind() {
+	public @NonNull FrameBuffer bind() {
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.framebuffer);
+		return this;
 	}
 
-	public void unbind() {
+	public @NonNull FrameBuffer unbind() {
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+		return this;
 	}
 
-	public void fill(final @NonNull Runnable runnable) {
+	public @NonNull FrameBuffer fill(final @NonNull Runnable runnable) {
 		this.bind();
 		runnable.run();
 		this.unbind();
+
+		this.filled = true;
+		return this;
 	}
 
-	public void draw(final double x, final double y, final double width, final double height) {
-		if (this.resource == null) {
+	public @NonNull FrameBuffer draw(final Vector4f canvas) {
+		return this.draw(canvas.x, canvas.y, canvas.z, canvas.w);
+	}
+
+	public @NonNull FrameBuffer draw(final Vector4d canvas) {
+		return this.draw(canvas.x, canvas.y, canvas.z, canvas.w);
+	}
+
+	public @NonNull FrameBuffer draw(final double x, final double y, final double width, final double height) {
+		if (this.width == 0 || this.height == 0) {
 			throw new RuntimeException("You have to prepare the framebuffer before drawing it.");
 		}
 
@@ -79,7 +83,28 @@ public class FrameBuffer {
 			throw new RuntimeException("You have to fill the framebuffer before drawing it.");
 		}
 
-		DrawUtils.RESOURCE.drawResource(x, y, width, height, this.resource);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_POINT_SMOOTH);
+		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.texture);
+
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+
+		final T9R tess = T9R.inst();
+		tess.start(GL11.GL_QUADS);
+		tess.vertexUV(x, y + height, 0D, 0D, 0D);
+		tess.vertexUV(x + width, y + height, 0D, 1D, 0D);
+		tess.vertexUV(x + width, y, 0D, 1D, 1D);
+		tess.vertexUV(x, y, 0D, 0D, 1D);
+		tess.draw();
+
+		GL11.glDisable(GL11.GL_POINT_SMOOTH);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		return this;
 	}
 
 	public void delete() {

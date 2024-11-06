@@ -47,7 +47,7 @@ public class GradientShader {
 		}
 	}
 
-	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final @NonNull Vector4f canvas, final @NonNull Runnable runnable) {
+	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
 		if (!GradientShader.isAvailable()) {
 			throw new RuntimeException("GradientShader is not available");
 		}

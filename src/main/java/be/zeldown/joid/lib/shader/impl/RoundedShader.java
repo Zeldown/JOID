@@ -39,7 +39,7 @@ public class RoundedShader {
 		}
 	}
 
-	public static void use(final float radius, final @NonNull Vector4f canvas, final @NonNull Runnable runnable) {
+	public static void use(final float radius, final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
 		if (!RoundedShader.isAvailable()) {
 			throw new RuntimeException("RoundedShader is not available");
 		}

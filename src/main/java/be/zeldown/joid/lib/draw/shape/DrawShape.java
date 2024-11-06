@@ -51,9 +51,9 @@ public final class DrawShape {
 	 * @throws NullPointerException if color is null.
 	 */
 	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
-		RoundedShader.use(radius, new Vector4f((float) x, (float) y, (float) (x + width), (float) (y + height)), () -> {
+		RoundedShader.use(radius, () -> {
 			this.drawRect(x, y, width, height, color);
-		});
+		}, new Vector4f((float) x, (float) y, (float) width, (float) height));
 	}
 
 	/**
@@ -66,8 +66,8 @@ public final class DrawShape {
 	 * @throws NullPointerException if color is null.
 	 */
 	public void drawCircle(final double x, final double y, final @NonNull Color color, final double radius) {
+		final double diameter = radius * 2D;
 		CircleShader.use((float) radius, (float) x, (float) y, () -> {
-			final double diameter = radius * 2D;
 			this.drawRect(x - radius, y - radius, diameter, diameter, color);
 		});
 	}

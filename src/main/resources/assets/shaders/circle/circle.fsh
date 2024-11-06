@@ -4,8 +4,13 @@ varying vec2 pos;
 
 uniform float radius;
 uniform vec2 center;
+uniform sampler2D texture;
 
 void main() {
+	vec4 canvas = vec4(center.x - radius, center.y - radius, center.x + radius, center.y + radius);
+    vec2 uv = (pos.xy - (canvas.xy - vec2(radius))) / (canvas.zw + vec2(radius));
+    vec4 textureColor = texture2D(texture, uv);
+    
     float v = length(pos - center);
     float a = 1.0 - smoothstep(radius - 1.0, radius, v);
     

@@ -16,8 +16,8 @@ public class ColorGradient {
 	private final Color    endColor;
 	private final Vector4f direction;
 
-	public void use(final @NonNull Vector4f canvas, final @NonNull Runnable runnable) {
-		GradientShader.use(new Vector2f(this.direction.x, this.direction.y), new Vector2f(this.direction.z, this.direction.w), this.startColor, this.endColor, canvas, runnable);
+	public void use(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
+		GradientShader.use(new Vector2f(this.direction.x, this.direction.y), new Vector2f(this.direction.z, this.direction.w), this.startColor, this.endColor, runnable, canvas);
 	}
 
 }
