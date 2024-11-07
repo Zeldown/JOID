@@ -34,4 +34,4 @@ jobs:
         git add README.md
         git add build.gradle
         git commit -m "update: update version to ${TAG_NAME} (:bookmark:)"
-        git push origin HEAD:main
+        git push origin HEAD:lwjgl-2
