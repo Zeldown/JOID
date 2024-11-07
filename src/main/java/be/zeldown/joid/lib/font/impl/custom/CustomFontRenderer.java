@@ -67,7 +67,7 @@ public class CustomFontRenderer implements FontProvider {
 		final CustomFont customFont = (CustomFont) info.getFont();
 		final Font font = customFont.getFont();
 
-		final Color activeColor = info.getColor();
+		final Color activeColor = info.getColor().copy();
 		final float fontSize = info.getFontSize();
 		final float letterSpacing = info.getLetterSpacing();
 
@@ -76,11 +76,43 @@ public class CustomFontRenderer implements FontProvider {
 		CustomFontRenderer.DOFFSET_UNIFORM.setValue(3.5F / fontSize);
 
 		double currentX = x;
+		Color lastColor = null;
 		for (int i = 0; i < text.length(); i++) {
 			final char c = text.charAt(i);
 			final Glyph glyph = font.getFontInfo().getGlyphMap().get((int)c);
 			if (glyph == null) {
 				continue;
+			}
+
+			if (c == '[') {
+				final int endIndex = text.indexOf(']', i);
+				if (endIndex != -1) {
+					final String colorCode = text.substring(i + 1, endIndex);
+					if ("#reset".equals(colorCode)) {
+						if (lastColor != null) {
+							activeColor.r = lastColor.r;
+							activeColor.g = lastColor.g;
+							activeColor.b = lastColor.b;
+							activeColor.a = lastColor.a;
+							lastColor = null;
+						}
+						i = endIndex;
+						continue;
+					}
+
+					try {
+						final Color color = Color.decode(colorCode);
+						if (color != null) {
+							lastColor = activeColor.copy();
+							activeColor.r = color.r;
+							activeColor.g = color.g;
+							activeColor.b = color.b;
+							activeColor.a = color.a;
+						}
+						i = endIndex;
+						continue;
+					} catch (final NumberFormatException silent) {}
+				}
 			}
 
 			final PlaneBounds planeBounds = glyph.getPlaneBounds();
@@ -186,6 +218,23 @@ public class CustomFontRenderer implements FontProvider {
 			if (glyph == null) {
 				i++;
 				continue;
+			}
+
+			if (c == '[') {
+				final int endIndex = text.indexOf(']', i);
+				if (endIndex != -1) {
+					final String colorCode = text.substring(i + 1, endIndex);
+					if ("#reset".equals(colorCode)) {
+						i = endIndex;
+						continue;
+					}
+
+					try {
+						Color.decode(colorCode);
+						i = endIndex;
+						continue;
+					} catch (final NumberFormatException silent) {}
+				}
 			}
 
 			totalWidth += glyph.getAdvance() * fontSize + letterSpacing;
