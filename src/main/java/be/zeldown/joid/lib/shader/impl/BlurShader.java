@@ -10,6 +10,7 @@ import be.zeldown.joid.lib.shader.IGLShader;
 import be.zeldown.joid.lib.shader.blend.ShaderBlendState;
 import be.zeldown.joid.lib.shader.uniform.Float4Uniform;
 import be.zeldown.joid.lib.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.shader.uniform.IntUniform;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -17,6 +18,7 @@ public class BlurShader {
 
 	@Getter private static IGLShader     shader;
 	@Getter private static FloatUniform  radiusUniform;
+	@Getter private static IntUniform    passUniform;
 	@Getter private static Float4Uniform canvasUniform;
 
 	static {
@@ -26,6 +28,7 @@ public class BlurShader {
 			BlurShader.shader = GLShader.from(vert, frag, ShaderBlendState.NORMAL);
 			if (BlurShader.shader.isActive()) {
 				BlurShader.radiusUniform = BlurShader.shader.getFloatUniform("radius");
+				BlurShader.passUniform   = BlurShader.shader.getIntUniform("pass");
 				BlurShader.canvasUniform = BlurShader.shader.getFloat4Uniform("canvas");
 			}
 		} catch (final Exception e) {
@@ -33,6 +36,7 @@ public class BlurShader {
 
 			BlurShader.shader        = null;
 			BlurShader.radiusUniform = null;
+			BlurShader.passUniform   = null;
 			BlurShader.canvasUniform = null;
 		}
 	}
@@ -44,6 +48,7 @@ public class BlurShader {
 
 		BlurShader.shader.bind();
 		BlurShader.radiusUniform.setValue(radius);
+		BlurShader.passUniform.setValue(-1);
 		BlurShader.canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
 		runnable.run();
 		BlurShader.shader.unbind();
