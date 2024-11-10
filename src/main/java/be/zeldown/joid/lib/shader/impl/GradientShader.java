@@ -44,6 +44,7 @@ public class GradientShader {
 			GradientShader.endPosUniform     = null;
 			GradientShader.startColorUniform = null;
 			GradientShader.endColorUniform   = null;
+			GradientShader.canvasUniform     = null;
 		}
 	}
 
