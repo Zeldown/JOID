@@ -10,18 +10,17 @@ void main() {
     vec2 uv = (pos.xy - canvas.xy) / canvas.zw;
     vec4 textureColor = texture2D(texture, uv);
     
-    float pi = 6.28318530718;
+    vec4 color = vec4(0.0);
+    vec2 texOffset = 1.0 / canvas.zw;
     
-    float directions = 64.0;
-    float quality = 32.0;
-   
-    vec2 mappedRadius = radius / canvas.zw;
-    for (float d = 0.0; d < pi; d += pi / directions) {
-		for (float i = 1.0 / quality; i <= 1.0; i += 1.0 / quality) {
-			textureColor += texture2D(texture, uv + vec2(cos(d), sin(d)) * mappedRadius * i);		
+    float total = 0.0;
+    for (float x = -radius; x <= radius; x++) {
+        for (float y = -radius; y <= radius; y++) {
+            float weight = exp(-(x * x + y * y) / (2.0 * radius * radius));
+            color += texture2D(texture, uv + vec2(x, y) * texOffset) * weight;
+            total += weight;
         }
     }
-    
-    textureColor /= quality * directions - 15.0;
-    gl_FragColor = textureColor;
+
+    gl_FragColor = color / total;
 }
