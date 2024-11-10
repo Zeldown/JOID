@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
 import lombok.Getter;
@@ -114,6 +115,10 @@ public final class Resource {
 
 	public final int[] getData(final int index) {
 		return this.data.getData() == null || this.data.getData().length <= index ? null : this.data.getData()[index];
+	}
+
+	public final @NonNull Color getColor(final int x, final int y) {
+		return this.data.getColor(x, y);
 	}
 
 	public final boolean isGenerated() {

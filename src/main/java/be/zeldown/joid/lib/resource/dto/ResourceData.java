@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 
 import org.lwjgl.opengl.GL11;
 
+import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.utils.texture.AllocatedTextureUtil;
 import lombok.Getter;
 import lombok.NonNull;
@@ -107,6 +108,21 @@ public final class ResourceData {
 
 		this.uploaded = true;
 		this.data = null;
+	}
+
+	/* [ Getter Section ] */
+	public final @NonNull Color getColor(final int x, final int y) {
+		if (this.data == null || this.data.length == 0 || this.data[0] == null) {
+			return Color.BLACK;
+		}
+
+		final int index = y * this.width + x;
+		if (index < 0 || index >= this.data[0].length) {
+			return Color.BLACK;
+		}
+
+		final int color = this.data[0][index];
+		return new Color(color);
 	}
 
 	@Override
