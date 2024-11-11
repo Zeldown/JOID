@@ -18,7 +18,8 @@ void main() {
 	    for (float x = -radius; x <= radius; x++) {
 	        for (float y = -radius; y <= radius; y++) {
 	            float weight = exp(-(x * x + y * y) / (2.0 * radius * radius));
-	            color += texture2D(texture, uv + vec2(x, y) * texOffset) * weight;
+	            vec2 mappedUv = uv + vec2(x, y) * texOffset;
+	            color += (mappedUv.x > 1.0 || mappedUv.x < 0.0 || mappedUv.y > 1.0 || mappedUv.y < 0.0 ? vec4(0.0) : texture2D(texture, mappedUv)) * weight;
 	            total += weight;
 	        }
 	    }
