@@ -2,6 +2,7 @@ package be.zeldown.joid.lib.draw.text;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.draw.text.builder.TextElement;
@@ -123,7 +124,7 @@ public final class DrawText {
 		}
 
 		if (mode == TextMode.SPLIT || mode == TextMode.BOX) {
-			final List<Text> textList = this.getLines(width, text);
+			final List<Text> textList = this.getTexts(width, text);
 			if (textList.isEmpty()) {
 				return FontBounds.empty();
 			}
@@ -167,7 +168,11 @@ public final class DrawText {
 		return null;
 	}
 
-	public @NonNull List<@NonNull Text> getLines(final double width, final @NonNull Text text) {
+	public @NonNull List<@NonNull String> getLines(final double width, final @NonNull Text text) {
+		return this.getTexts(width, text).stream().map(Text::getText).collect(Collectors.toList());
+	}
+
+	public @NonNull List<@NonNull Text> getTexts(final double width, final @NonNull Text text) {
 		final List<Text> textList = new LinkedList<>();
 
 		Text currentText = text.copyProperties();

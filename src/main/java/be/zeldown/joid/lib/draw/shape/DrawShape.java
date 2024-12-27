@@ -165,6 +165,24 @@ public final class DrawShape {
 	}
 
 	/**
+	 * Draws a dashed line with the specified color, dash size, and vertices.
+	 *
+	 * @param color    The color of the line. Must not be null.
+	 * @param dashSize The size of the dashes.
+	 * @param points   The vertices of the line. Must not be null or contain null
+	 *                 elements.
+	 * @throws NullPointerException     if color or points is null.
+	 * @throws IllegalArgumentException if points array is empty.
+	 * @throws IllegalArgumentException if any element in the points array is null.
+	 */
+	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Vector2d @NonNull... points) {
+		GL11.glEnable(GL11.GL_LINE_STIPPLE);
+		GL11.glLineStipple(pattern, (short) 0xAAAA);
+		this.drawLine(color, stroke, points);
+		GL11.glDisable(GL11.GL_LINE_STIPPLE);
+	}
+
+	/**
 	 * Draws a line with the specified color and vertices.
 	 *
 	 * @param color  The color of the line. Must not be null.
