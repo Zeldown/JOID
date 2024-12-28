@@ -95,6 +95,7 @@ public class DemoWindow extends UIBridge {
 				}
 			}
 
+			super.update();
 			this.render();
 			Display.update();
 
