@@ -88,6 +88,10 @@ public abstract class UIBridge implements IUIBridge {
 		}
 	}
 
+	public final void update() {
+		this.uiList.forEach(UI::onUpdate);
+	}
+
 	public final void draw() {
 		try {
 			if (this.uiList.isEmpty()) {
