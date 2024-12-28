@@ -34,50 +34,74 @@ Create the ideal interface with a wide range of customizable components and impr
 <br>
 
 ```java
-public class UIDemoChoice extends UI {
-
-	public static final Set<Class<? extends UI>> LIST = new LinkedHashSet<>();
-
-	static {
-		// Registering UI_LIST
-		// [...]
-	}
+public class UIDemoSimple extends UIDemo {
 
 	@Override
 	public void init() {
-		super.setTransition(new DemoPushTransition());
+		final ContainerNode container = ContainerNode.create(0D, 0D, 1920D, 1080D);
 
-		RectNode
-		.create(0, 0, 1920, 1080)
-		.color(Color.BLACK)
-		.overflow(OverflowProperty.SCROLL)
-		.body(rect -> {
-			FlexNode
-			.vertical(960 - 200, 10, 400)
-			.margin(10D)
-			.body(flex -> {
-				for (final Class<? extends UI> clazz : UIDemoChoice.LIST) {
-					RectNode
-					.create(0, 0, 400, 60)
-					.color(Color.WHITE)
-					.body(container -> {
-						TextNode
-						.create(container.dw(2), container.dh(2))
-						.text(Text.create(clazz.getSimpleName(), TextInfo.create(DemoFont.MONTSERRAT, 30), Align.CENTER, Align.CENTER))
-						.anchor(Align.CENTER)
-						.attach(container);
-					}).onClick((node, mouseX, mouseY, clickType) -> {
-						try {
-							final UI ui = clazz.newInstance();
-							ui.setTransition(new DemoPushTransition());
-							ZUI.open(ui);
-						} catch (final Exception e) {
-							e.printStackTrace();
-						}
-					}).hover(() -> clazz.getName()).attach(flex);
-				}
-			}).attach(rect);
-		}).attach(this);
+		/* append children */
+		container.body(() -> {
+			RectNode.create(
+					1920D / 4D,
+					1080D / 4D,
+					1920D / 2D,
+					1080D / 2D
+					)
+			.color(Color.RED, Color.GREEN)
+			.border(Color.GREEN, Color.RED, 3D, true)
+			.body(n -> {
+				final double childWidth = n.dw(3D);
+				final double childHeight = n.dh(2D);
+
+				RectNode.create(
+						0D,
+						n.dh(2D) - childHeight/2,
+						childWidth,
+						childHeight
+						)
+				.color(Color.RED, Color.WHITE)
+				.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+				.hover(() -> "hover1")
+				.attach(n);
+
+				RectNode.create(
+						n.aw(-childWidth),
+						n.dh(2D) - childHeight/2,
+						childWidth,
+						childHeight
+						)
+				.color(Color.RED, Color.WHITE)
+				.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+				.hover(() -> Arrays.asList("hover1", "hover2"))
+				.body(n1 -> {
+					RectNode.create(
+							n1.dw(4D),
+							n1.dh(4D),
+							n1.dw(2D),
+							n1.dh(2D)
+							)
+					.color(Color.RED, Color.MAGENTA)
+					.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+					.hover(() -> Arrays.asList("hover1", "hover2", "hover3"))
+					.attach(n1);
+				})
+				.attach(n);
+			})
+			.attach(container);
+		});
+
+		container.attach(this);
+	}
+
+	@Override
+	public void preDraw(final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawRect(0D, 0D, 1920D, 1080D, Color.BLUE.toGradient(Color.RED));
+	}
+
+	@Override
+	public void postDraw(final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.BLUE, 10D);
 	}
 
 }
