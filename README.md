@@ -29,8 +29,9 @@ Create the ideal interface with a wide range of customizable components and impr
 </div>
 
 ## Demo
-[Watch all prebuilt components's video](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/components.mp4)
-[See awesome UIs made with JOID](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/showcase/)
+- [Watch all prebuilt components's video](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/components.mp4)
+- [See awesome UIs made with JOID](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/showcase/)
+<br>
 
 ```java
 public class UIDemoChoice extends UI {
