@@ -39,32 +39,8 @@ public class UIDemoChoice extends UI {
 	public static final Set<Class<? extends UI>> LIST = new LinkedHashSet<>();
 
 	static {
-		UIDemoChoice.LIST.add(UIDemoChoice.class);
-		UIDemoChoice.LIST.add(UIDemoSimple.class);
-		UIDemoChoice.LIST.add(UIDemoOverflow.class);
-		UIDemoChoice.LIST.add(UIDemoDraggable.class);
-		UIDemoChoice.LIST.add(UIDemoFont.class);
-		UIDemoChoice.LIST.add(UIDemoFlex.class);
-		UIDemoChoice.LIST.add(UIDemoImage.class);
-		UIDemoChoice.LIST.add(UIDemoWait.class);
-		UIDemoChoice.LIST.add(UIDemoWatch.class);
-		UIDemoChoice.LIST.add(UIDemoTextField.class);
-		UIDemoChoice.LIST.add(UIDemoSelector.class);
-		UIDemoChoice.LIST.add(UIDemoContainer.class);
-		UIDemoChoice.LIST.add(UIDemoEntity.class);
-		UIDemoChoice.LIST.add(UIDemoModel.class);
-		UIDemoChoice.LIST.add(UIDemoGrid.class);
-		UIDemoChoice.LIST.add(UIDemoSlider.class);
-		UIDemoChoice.LIST.add(UIDemoCheckbox.class);
-		UIDemoChoice.LIST.add(UIDemoToggle.class);
-		UIDemoChoice.LIST.add(UIDemoSwitch.class);
-		UIDemoChoice.LIST.add(UIDemoStore.class);
-		UIDemoChoice.LIST.add(UIDemoOtherStore.class);
-		UIDemoChoice.LIST.add(UIDemoChart.class);
-	}
-
-	public UIDemoChoice(final String name, final Boolean isServerSide) {
-		System.out.println(name + " " + isServerSide);
+		// Registering UI_LIST
+		// [...]
 	}
 
 	@Override
