@@ -98,6 +98,7 @@ public abstract class UIBridge implements IUIBridge {
 
 			double renderPipeline = 0D;
 			GL11.glPushMatrix();
+			GL11.glTranslated(0D, 0D, -2000D);
 			while (iterator.hasNext()) {
 				final UI ui = iterator.next();
 				if (!ui.getData().visible()) {
@@ -109,7 +110,6 @@ public abstract class UIBridge implements IUIBridge {
 				ui.draw();
 				renderPipeline = ui.getRenderPipelineLevel() + 10D;
 			}
-
 			GL11.glTranslated(0D, 0D, -renderPipeline);
 			GL11.glPopMatrix();
 		} catch (final Exception throwable) {

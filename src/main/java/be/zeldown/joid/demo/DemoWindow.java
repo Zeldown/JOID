@@ -28,12 +28,7 @@ public class DemoWindow extends UIBridge {
 		Display.setTitle("JOID - Demo");
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0D, this.displayMode.getWidth(), this.displayMode.getHeight(), 0D, 0D, 10000D);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glViewport(0, 0, this.displayMode.getWidth(), this.displayMode.getHeight());
-		GL11.glClearColor(0F, 0F, 0F, 0F);
+		this.identity();
 	}
 
 	public void run() {
@@ -43,9 +38,23 @@ public class DemoWindow extends UIBridge {
 
 	public void init() {
 		DemoFont.load();
-		super.load();
-
 		JOID.open(new UIDemoChoice());
+
+		super.load();
+	}
+
+	private void identity() {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0D, Display.getWidth(), Display.getHeight(), 0D, 0D, 10000D);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+		GL11.glClearColor(0F, 0F, 0F, 0F);
+	}
+
+	private void render() {
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		super.draw();
 	}
 
 	public void loop() {
@@ -90,17 +99,13 @@ public class DemoWindow extends UIBridge {
 			Display.update();
 
 			if (Display.wasResized()) {
+				this.identity();
 				super.load();
 			}
 		}
 
 		Display.destroy();
 		System.exit(0);
-	}
-
-	private void render() {
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		super.draw();
 	}
 
 	@Override
