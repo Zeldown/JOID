@@ -33,8 +33,13 @@ Create the ideal interface with a wide range of customizable components and impr
 - [See awesome UIs made with JOID](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/showcase/)
 <br>
 
-```java
-public class UIDemoSimple extends UIDemo {
+
+<img src="https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/simple.png">
+<details>
+  <summary>Code</summary>
+  
+  ```java
+  public class UIDemoSimple extends UIDemo {
 
 	@Override
 	public void init() {
@@ -104,8 +109,9 @@ public class UIDemoSimple extends UIDemo {
 		DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.BLUE, 10D);
 	}
 
-}
-```
+  }
+  ```
+</details>
 
 ## Credits
 
