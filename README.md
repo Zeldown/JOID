@@ -18,12 +18,91 @@ Design your project uniquely by making the theme that best fits your preferences
 <br>
 Stand out in the global landscape with a personalized design that reflects your vision.
 <br><br>
+
+
 Create the ideal interface with a wide range of customizable components and impressive animations, allowing you to showcase your talent effortlessly.
 <br><br>
 
+[Demo](#demo)
 [Credits](#credits)
 
 </div>
+
+## Demo
+https://github.com/user-attachments/assets/ba9a4161-0ac0-4af4-9cce-7a5141f79f59
+```java
+public class UIDemoChoice extends UI {
+
+	public static final Set<Class<? extends UI>> LIST = new LinkedHashSet<>();
+
+	static {
+		UIDemoChoice.LIST.add(UIDemoChoice.class);
+		UIDemoChoice.LIST.add(UIDemoSimple.class);
+		UIDemoChoice.LIST.add(UIDemoOverflow.class);
+		UIDemoChoice.LIST.add(UIDemoDraggable.class);
+		UIDemoChoice.LIST.add(UIDemoFont.class);
+		UIDemoChoice.LIST.add(UIDemoFlex.class);
+		UIDemoChoice.LIST.add(UIDemoImage.class);
+		UIDemoChoice.LIST.add(UIDemoWait.class);
+		UIDemoChoice.LIST.add(UIDemoWatch.class);
+		UIDemoChoice.LIST.add(UIDemoTextField.class);
+		UIDemoChoice.LIST.add(UIDemoSelector.class);
+		UIDemoChoice.LIST.add(UIDemoContainer.class);
+		UIDemoChoice.LIST.add(UIDemoEntity.class);
+		UIDemoChoice.LIST.add(UIDemoModel.class);
+		UIDemoChoice.LIST.add(UIDemoGrid.class);
+		UIDemoChoice.LIST.add(UIDemoSlider.class);
+		UIDemoChoice.LIST.add(UIDemoCheckbox.class);
+		UIDemoChoice.LIST.add(UIDemoToggle.class);
+		UIDemoChoice.LIST.add(UIDemoSwitch.class);
+		UIDemoChoice.LIST.add(UIDemoStore.class);
+		UIDemoChoice.LIST.add(UIDemoOtherStore.class);
+		UIDemoChoice.LIST.add(UIDemoChart.class);
+	}
+
+	public UIDemoChoice(final String name, final Boolean isServerSide) {
+		System.out.println(name + " " + isServerSide);
+	}
+
+	@Override
+	public void init() {
+		super.setTransition(new DemoPushTransition());
+
+		RectNode
+		.create(0, 0, 1920, 1080)
+		.color(Color.BLACK)
+		.overflow(OverflowProperty.SCROLL)
+		.body(rect -> {
+			FlexNode
+			.vertical(960 - 200, 10, 400)
+			.margin(10D)
+			.body(flex -> {
+				for (final Class<? extends UI> clazz : UIDemoChoice.LIST) {
+					RectNode
+					.create(0, 0, 400, 60)
+					.color(Color.WHITE)
+					.body(container -> {
+						TextNode
+						.create(container.dw(2), container.dh(2))
+						.text(Text.create(clazz.getSimpleName(), TextInfo.create(DemoFont.MONTSERRAT, 30), Align.CENTER, Align.CENTER))
+						.anchor(Align.CENTER)
+						.attach(container);
+					}).onClick((node, mouseX, mouseY, clickType) -> {
+						try {
+							final UI ui = clazz.newInstance();
+							ui.setTransition(new DemoPushTransition());
+							ZUI.open(ui);
+						} catch (final Exception e) {
+							e.printStackTrace();
+						}
+					}).hover(() -> clazz.getName()).attach(flex);
+				}
+			}).attach(rect);
+		}).attach(this);
+	}
+
+}
+```
 
 ## Credits
 
