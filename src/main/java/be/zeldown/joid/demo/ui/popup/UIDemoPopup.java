@@ -15,7 +15,7 @@ import be.zeldown.joid.lib.ui.core.data.popup.UIDataPopup;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
-@UIData(popup = @UIDataPopup(active = true))
+@UIData(background = true, popup = @UIDataPopup(active = true))
 public class UIDemoPopup extends UI {
 
 	@Override

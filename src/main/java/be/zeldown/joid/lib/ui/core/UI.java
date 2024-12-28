@@ -550,7 +550,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		if (this.lastFpsUpdate == 0L) {
-			this.fps = 30;
+			this.fps = 0;
 			this.fpsCounter = 0;
 			this.lastFpsUpdate = System.currentTimeMillis();
 		} else {
@@ -843,6 +843,10 @@ public abstract class UI implements IUI, IndexedElement {
 	 * @return The interpolated value.
 	 */
 	public final double lerpByFramerate(double value, final double target, final double speed, final double snapDiff, final boolean snap) {
+		if (this.fps == 0D) {
+			return value;
+		}
+
 		final double diff = target - value;
 		final double absDiff = Math.abs(diff);
 
