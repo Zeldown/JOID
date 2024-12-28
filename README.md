@@ -3,7 +3,7 @@
 # JOID
 ## Java OpenGL Interface Developement
 
-<div align="center" >
+<div align="center">
   <img align="center" src="https://img.shields.io/badge/version-4.0.0 (91f23d4)-blue">
   <img align="center" src="https://img.shields.io/badge/maintainer-Zeldown-orange">
   <img align="center" src="https://img.shields.io/maintenance/yes/9999">
@@ -29,7 +29,9 @@ Create the ideal interface with a wide range of customizable components and impr
 </div>
 
 ## Demo
-https://github.com/user-attachments/assets/ba9a4161-0ac0-4af4-9cce-7a5141f79f59
+[Watch all prebuilt components's video](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/components.mp4)
+[See awesome UIs made with JOID](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/showcase/)
+
 ```java
 public class UIDemoChoice extends UI {
 
