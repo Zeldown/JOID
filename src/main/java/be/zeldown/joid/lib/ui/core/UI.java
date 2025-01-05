@@ -176,7 +176,7 @@ public abstract class UI implements IUI, IndexedElement {
 				if (devNodeEnabled) {
 					this.devNode.attach(this);
 				} else {
-					this.devNode = DevNode.create(1625, 1007).visible(node -> node.getUi().isOnTop()).enabled(node -> node.getUi().isOnTop()).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE);
+					this.devNode = DevNode.create(1625, 1007).visible(node -> node.getUi().isOnTop()).enabled(node -> node.getUi().isOnTop()).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
 				}
 			}
 

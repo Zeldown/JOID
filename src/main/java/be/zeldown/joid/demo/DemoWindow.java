@@ -10,6 +10,8 @@ import org.lwjgl.opengl.PixelFormat;
 
 import be.zeldown.joid.demo.ui.UIDemoChoice;
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.color.Color;
+import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.ui.bridge.UIBridge;
 import be.zeldown.joid.lib.ui.core.UI;
 import lombok.NonNull;
@@ -54,6 +56,7 @@ public class DemoWindow extends UIBridge {
 
 	private void render() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		DrawUtils.SHAPE.drawRect(0, 0, Display.getWidth(), Display.getHeight(), new Color(50, 50, 50));
 		super.draw();
 	}
 

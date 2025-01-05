@@ -30,7 +30,7 @@ public class UIDemoWait extends UIDemo {
 				for (int i = 0; i < cardInformations.getOrDefault().size(); i++) {
 					container.getChild(i, TextNode.class).getText().text(cardInformations.getOrDefault().get(i));
 				}
-			}).skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.RAINBOW()));
+			});
 		}).attach(this);
 
 		new Thread(() -> {
