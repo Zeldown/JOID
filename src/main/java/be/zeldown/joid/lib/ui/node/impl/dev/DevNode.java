@@ -475,7 +475,7 @@ public final class DevNode extends Node {
 			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (1080 - mouseY) / 2, Text.create((int) (1080 - mouseY) + "px", TextInfo.create(InternalFont.MONTSERRAT_REGULAR, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
 		}
 
-		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK, 10F);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK);
 	}
 
 	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {
