@@ -39,9 +39,7 @@ public class DemoWindow extends UIBridge {
 	}
 
 	public void init() {
-		DemoFont.load();
 		JOID.open(new UIDemoChoice());
-
 		super.load();
 	}
 
