@@ -79,7 +79,7 @@ public final class JOID {
 		final IUIBridge bridge = BridgeHandler.get(uiClass);
 		if (bridge != null) {
 			for (final UI ui : bridge.getUiList()) {
-				if (ui.getClass().equals(uiClass)) {
+				if (uiClass.isInstance(ui)) {
 					return (T) ui;
 				}
 			}
