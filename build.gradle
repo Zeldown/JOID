@@ -45,7 +45,7 @@ group = "be.zeldown.joid"
 archivesBaseName = "joid"
 
 task updateVersion() {
-    project.version = "4.0.1"
+    project.version = "4.0.2"
 }
 
 build.dependsOn updateVersion
