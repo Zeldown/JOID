@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.lwjgl.LWJGLException;
 
+import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.demo.DemoWindow;
 import be.zeldown.joid.internal.font.InternalFont;
 import be.zeldown.joid.lib.ui.bridge.BridgeHandler;
@@ -50,6 +51,10 @@ public final class JOID {
 		System.out.println("=================================");
 
 		InternalFont.load();
+		if (this.demoMode) {
+			DemoFont.load();
+		}
+
 		return this;
 	}
 
