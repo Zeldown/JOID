@@ -69,7 +69,11 @@ jar {
         }
     }
     
-	exclude 'assets/test/*'
+    if (project.hasProperty('dev')) {
+    	classifier = 'dev'
+  	} else {
+		exclude 'assets/test/*'
+	}
 }
 
 shadowJar {
@@ -77,7 +81,11 @@ shadowJar {
     configurations = [project.configurations.shadow]
     classifier = null
     
-	exclude 'assets/test/*'
+    if (project.hasProperty('dev')) {
+    	classifier = 'dev'
+  	} else {
+		exclude 'assets/test/*'
+	}
 }
 
 build.dependsOn shadowJar
