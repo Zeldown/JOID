@@ -100,7 +100,7 @@ public final class JOID {
 		}
 
 		if (ui.getData().popup().active()) {
-			bridge.add(ui);
+			bridge.open(ui);
 			return bridge;
 		}
 
