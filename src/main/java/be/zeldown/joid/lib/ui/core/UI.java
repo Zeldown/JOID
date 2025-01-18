@@ -24,6 +24,7 @@ import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.opengl.context.Drawing;
+import be.zeldown.joid.lib.opengl.framebuffer.FrameBuffer;
 import be.zeldown.joid.lib.opengl.modifier.GLCoords;
 import be.zeldown.joid.lib.opengl.transform.GLTransformation;
 import be.zeldown.joid.lib.ui.bridge.BridgeHandler;
@@ -54,6 +55,7 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
 
 	@NonNull private final UIDataObject data;
+	@NonNull private final FrameBuffer frameBuffer;
 	@NonNull private final Map<Integer[], Runnable> keybindMap;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
@@ -73,6 +75,8 @@ public abstract class UI implements IUI, IndexedElement {
 	private double y;
 	private double width;
 	private double height;
+	private double lastWidth;
+	private double lastHeight;
 
 	private double viewportWidth;
 	private double viewportHeight;
@@ -96,6 +100,7 @@ public abstract class UI implements IUI, IndexedElement {
 			this.data = new UIDataObject();
 		}
 
+		this.frameBuffer = new FrameBuffer();
 		this.nodeList = new IndexedConcurrentList<>();
 		this.keybindMap = new HashMap<>();
 		this.storeMap = new HashMap<>();
@@ -127,8 +132,15 @@ public abstract class UI implements IUI, IndexedElement {
 			System.out.println("Starting load...");
 		}
 
-		this.width  = screenWidth;
+		this.width = screenWidth;
 		this.height = screenHeight;
+
+		if (this.frameBuffer.getFramebuffer() == -1 || this.lastWidth != screenWidth || this.lastHeight != screenHeight) {
+			this.frameBuffer.prepare((int) this.width, (int) this.height, GL11.GL_LINEAR);
+		}
+
+		this.lastWidth = screenWidth;
+		this.lastHeight = screenHeight;
 
 		final double baseRatio = 16D / 9D;
 		final double ratio = this.width / this.height;
@@ -458,6 +470,7 @@ public abstract class UI implements IUI, IndexedElement {
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		this.frameBuffer.clear().bind();
 
 		final double translateX = this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
 		final double translateY = this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
@@ -522,6 +535,8 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		});
 
+		this.frameBuffer.unbind();
+		this.frameBuffer.draw(this.viewportWidth, this.viewportHeight);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0D, this.width, this.height, 0D, 0D, 10000D);
