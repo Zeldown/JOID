@@ -105,7 +105,10 @@ public final class DrawResource {
 	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
 	 */
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		final boolean textureEnabled = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
+		if (!textureEnabled) {
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+		}
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_POINT_SMOOTH);
 		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
@@ -141,7 +144,9 @@ public final class DrawResource {
 
 			GL11.glDisable(GL11.GL_POINT_SMOOTH);
 			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			if (!textureEnabled) {
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+			}
 		});
 	}
 
