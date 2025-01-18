@@ -167,6 +167,7 @@ public abstract class UI implements IUI, IndexedElement {
 			UIPropertyHook.load(this);
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
+			this.keybindMap.clear();
 			this.nodeList.clear();
 			this.scheduledTaskList.clear();
 
