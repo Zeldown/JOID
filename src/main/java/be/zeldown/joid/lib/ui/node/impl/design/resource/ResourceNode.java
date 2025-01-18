@@ -154,7 +154,7 @@ public class ResourceNode extends Node {
 
 		RoundedShader.use(this.borderRadius, () -> {
 			runnable.run();
-		}, new Vector4f((float) super.getX(), (float) super.getY(), (float) super.getWidth(), (float) super.getHeight()));
+		}, new Vector4f((float) super.getX(), (float) super.getY(), (float) (super.getX() + super.getWidth()), (float) (super.getY() + super.getHeight())));
 	}
 
 	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource) {
