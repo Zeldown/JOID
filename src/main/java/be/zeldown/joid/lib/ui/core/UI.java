@@ -470,7 +470,7 @@ public abstract class UI implements IUI, IndexedElement {
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		this.frameBuffer.clear().bind();
+		//		this.frameBuffer.clear().bind();
 
 		final double translateX = this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
 		final double translateY = this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
@@ -535,8 +535,8 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		});
 
-		this.frameBuffer.unbind();
-		this.frameBuffer.draw(this.viewportWidth, this.viewportHeight);
+		//		this.frameBuffer.unbind();
+		//		this.frameBuffer.draw(this.viewportWidth, this.viewportHeight);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0D, this.width, this.height, 0D, 0D, 10000D);

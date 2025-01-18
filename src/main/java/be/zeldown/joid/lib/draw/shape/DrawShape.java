@@ -53,7 +53,7 @@ public final class DrawShape {
 	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
 		RoundedShader.use(radius, () -> {
 			this.drawRect(x, y, width, height, color);
-		}, new Vector4f((float) x, (float) y, (float) width, (float) height));
+		}, new Vector4f((float) x, (float) y, (float) (x + width), (float) (y + height)));
 	}
 
 	/**
