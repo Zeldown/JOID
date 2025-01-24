@@ -1,10 +1,11 @@
 package be.zeldown.joid.lib.ui.bridge;
 
 import be.zeldown.joid.lib.ui.core.UI;
+import be.zeldown.joid.lib.utils.list.IndexedElement;
 import be.zeldown.joid.lib.utils.list.IndexedLinkedList;
 import lombok.NonNull;
 
-public interface IUIBridge {
+public interface IUIBridge extends IndexedElement {
 
 	void open(final @NonNull UI ui);
 	void close(final @NonNull UI ui);
