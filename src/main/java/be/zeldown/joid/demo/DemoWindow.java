@@ -112,6 +112,24 @@ public class DemoWindow extends UIBridge {
 
 	@Override
 	public void open(final @NonNull UI ui) {
+		if (!ui.getData().popup().active()) {
+			for (final UI currentUi : super.getUiList()) {
+				final boolean result = currentUi.onClose();
+				if (currentUi.getTransition() != null && currentUi.getTransition().getOut() != null && currentUi.getTransition().getOut().isRunning()) {
+					currentUi.getTransition().getOut().getAnimator().setCallback(tween -> {
+						JOID.open(ui, this);
+					});
+					return;
+				}
+
+				if (!result) {
+					return;
+				}
+
+				this.close(currentUi);
+			}
+		}
+
 		this.add(ui);
 	}
 

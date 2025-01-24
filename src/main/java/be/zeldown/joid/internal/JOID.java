@@ -99,32 +99,11 @@ public final class JOID {
 			return null;
 		}
 
-		if (ui.getData().popup().active()) {
-			bridge.open(ui);
-			return bridge;
-		}
-
 		JOID.open(ui, bridge);
 		return bridge;
 	}
 
-	private static void open(final @NonNull UI ui, final @NonNull IUIBridge bridge) {
-		for (final UI currentUi : bridge.getUiList()) {
-			final boolean result = currentUi.onClose();
-			if (currentUi.getTransition() != null && currentUi.getTransition().getOut() != null && currentUi.getTransition().getOut().isRunning()) {
-				currentUi.getTransition().getOut().getAnimator().setCallback(tween -> {
-					JOID.open(ui, bridge);
-				});
-				return;
-			}
-
-			if (!result) {
-				return;
-			}
-
-			bridge.close(currentUi);
-		}
-
+	public static void open(final @NonNull UI ui, final @NonNull IUIBridge bridge) {
 		bridge.open(ui);
 	}
 
