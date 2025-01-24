@@ -1,13 +1,13 @@
 #version 120
 
 varying vec2 pos;
+varying vec2 uv;
 
 uniform float radius;
 uniform vec4 canvas;
 uniform sampler2D texture;
 
 void main() {
-    vec2 uv = (pos.xy - (canvas.xy - vec2(radius))) / (canvas.zw + vec2(radius));
     vec4 textureColor = texture2D(texture, uv);
 
     vec2 tl = canvas.xy - pos;
