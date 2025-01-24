@@ -1,6 +1,7 @@
 package be.zeldown.joid.lib.utils.signal;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import lombok.NonNull;
@@ -40,12 +41,18 @@ public class Signal<T> implements ISignal<T> {
 
 	@Override
 	public void reset() {
-		this.value = this.defaultValue;
+		this.set(this.defaultValue);
 	}
 
 	@Override
 	public void set(final T value) {
-		this.value = value;
+		final T oldValue = this.value;
+		final T newValue = value;
+
+		if (oldValue == null && newValue == null || oldValue != null && oldValue.equals(newValue)) {
+			return;
+		}
+
 		this.publish();
 	}
 
@@ -89,6 +96,25 @@ public class Signal<T> implements ISignal<T> {
 	@Override
 	public boolean isPresent() {
 		return this.value != null;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.value);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+
+		if (obj == null || this.getClass() != obj.getClass()) {
+			return false;
+		}
+
+		final Signal<?> other = (Signal<?>) obj;
+		return Objects.equals(this.value, other.value);
 	}
 
 }
