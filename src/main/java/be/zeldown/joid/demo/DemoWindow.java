@@ -163,4 +163,9 @@ public class DemoWindow extends UIBridge {
 		return true;
 	}
 
+	@Override
+	public int getIndex() {
+		return 0;
+	}
+
 }
