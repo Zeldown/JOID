@@ -4,10 +4,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import be.zeldown.joid.lib.ui.core.UI;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.list.IndexedLinkedList;
 import lombok.NonNull;
 
@@ -25,31 +27,31 @@ public abstract class UIBridge implements IUIBridge {
 		this.uiList.forEach(ui -> ui.load(width, height));
 	}
 
-	public final void mousePressed(final int clickType) {
+	public final void mousePressed(final @NonNull ClickType clickType) {
 		final List<UI> uiList = this.uiList.reversed();
 		for (int i = 0; i < uiList.size(); i++) {
 			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMousePressed(clickType) || ui.getData().popup().active()) {
+			if (ui.getData().active() && ui.getData().visible() && ui.onMousePressed(clickType) || ui.getPopup().active()) {
 				break;
 			}
 		}
 	}
 
-	public final void mouseDragged(final int clickType, final long delaTime) {
+	public final void mouseDragged(final @NonNull ClickType clickType, final long delaTime) {
 		final List<UI> uiList = this.uiList.reversed();
 		for (int i = 0; i < uiList.size(); i++) {
 			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseDragged(clickType, delaTime) || ui.getData().popup().active()) {
+			if (ui.getData().active() && ui.getData().visible() && ui.onMouseDragged(clickType, delaTime) || ui.getPopup().active()) {
 				break;
 			}
 		}
 	}
 
-	public final void mouseReleased(final int clickType) {
+	public final void mouseReleased(final @NonNull ClickType clickType) {
 		final List<UI> uiList = this.uiList.reversed();
 		for (int i = 0; i < uiList.size(); i++) {
 			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseReleased(clickType) || ui.getData().popup().active()) {
+			if (ui.getData().active() && ui.getData().visible() && ui.onMouseReleased(clickType) || ui.getPopup().active()) {
 				break;
 			}
 		}
@@ -63,7 +65,7 @@ public abstract class UIBridge implements IUIBridge {
 		final List<UI> uiList = this.uiList.reversed();
 		for (int i = 0; i < uiList.size(); i++) {
 			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseScroll(value) || ui.getData().popup().active()) {
+			if (ui.getData().active() && ui.getData().visible() && ui.onMouseScroll(value) || ui.getPopup().active()) {
 				break;
 			}
 		}
@@ -82,7 +84,7 @@ public abstract class UIBridge implements IUIBridge {
 				return;
 			}
 
-			if (ui.onKeyPressed(c, keyCode) || ui.getData().popup().active()) {
+			if (ui.onKeyPressed(c, keyCode) || ui.getPopup().active()) {
 				break;
 			}
 		}
@@ -111,7 +113,7 @@ public abstract class UIBridge implements IUIBridge {
 
 				renderPipeline += ui.getData().zlevel();
 				GL11.glTranslated(0D, 0D, renderPipeline);
-				ui.draw();
+				ui.draw(Mouse.getX(), Mouse.getY());
 				renderPipeline = ui.getRenderPipelineLevel() + 10D;
 			}
 			GL11.glTranslated(0D, 0D, -renderPipeline);

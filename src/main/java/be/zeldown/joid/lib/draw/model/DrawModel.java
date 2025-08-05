@@ -33,7 +33,6 @@ public final class DrawModel {
 		GL11.glScaled(sizeX, sizeY, sizeZ);
 		GL11.glRotated(180D, 0D, 1D, 0D);
 
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_LIGHT0);
@@ -41,7 +40,7 @@ public final class DrawModel {
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glColorMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_AMBIENT_AND_DIFFUSE);
 		GL11.glShadeModel(GL11.GL_FLAT);
-		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, this.setColorBuffer(0.6F, 0.6F, 0.6F, 1F));
+		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, this.setColorBuffer(0.6F, 0.6F, 0.6F, 1.0F));
 
 		model.render();
 
@@ -49,7 +48,6 @@ public final class DrawModel {
 		GL11.glDisable(GL11.GL_LIGHT1);
 		GL11.glDisable(GL11.GL_LIGHT0);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
 
 		GL11.glPopMatrix();
 	}

@@ -1,19 +1,26 @@
-#version 110
+#version 120
 
-varying vec2 pos;
+varying vec2 vTexCoord;
+varying vec2 vPosition;
+varying vec4 vColor;
 
 uniform float radius;
 uniform vec2 center;
+
 uniform sampler2D texture;
 
 void main() {
-	vec4 canvas = vec4(center.x - radius, center.y - radius, center.x + radius, center.y + radius);
-    vec2 uv = (pos.xy - canvas.xy) / canvas.zw;
-    vec4 textureColor = texture2D(texture, uv);
+    float dist = length(vPosition - center);
     
-    float v = length(pos - center);
-    float a = 1.0 - smoothstep(radius - 1.0, radius, v);
+    vec4 finalColor;
+    vec4 textureColor = texture2D(texture, vTexCoord);
+    if (textureColor.a < 0.01 || (textureColor.r + textureColor.g + textureColor.b) < 0.01) {
+        finalColor = vColor;
+    } else {
+        finalColor = textureColor;
+    }
     
-    vec4 color = textureColor.rgb == vec3(0.0) ? gl_Color : textureColor;
-    gl_FragColor = color * vec4(1.0, 1.0, 1.0, a);
+    float alpha = 1.0 - smoothstep(radius - 1.0, radius, dist);
+    finalColor.a *= alpha;
+    gl_FragColor = finalColor;
 }

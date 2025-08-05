@@ -22,6 +22,7 @@ public class DirectSamplerUniform extends DirectShaderUniform implements Sampler
 	@Override
 	public void setValue(final int textureId) {
 		this.textureId = textureId;
+
 		if (this.shader.isBound()) {
 			this.shader.bindTexture(this.textureUnit, this.textureId);
 		}

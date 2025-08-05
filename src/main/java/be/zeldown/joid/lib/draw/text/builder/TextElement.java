@@ -1,5 +1,7 @@
 package be.zeldown.joid.lib.draw.text.builder;
 
+import java.util.function.Supplier;
+
 import be.zeldown.joid.lib.draw.text.builder.modifier.ITextModifier;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import lombok.Getter;
@@ -9,18 +11,26 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public class TextElement {
 
-	private String        text;
-	private TextInfo      info;
-	private ITextModifier modifier;
+	private Supplier<Object> text;
+	private TextInfo         info;
+	private ITextModifier    modifier;
 
-	protected TextElement(final @NonNull String text, final @NonNull TextInfo info, final ITextModifier modifier) {
+	protected TextElement(final @NonNull Object text, final @NonNull TextInfo info, final ITextModifier modifier) {
+		this(() -> text.toString(), info, modifier);
+	}
+
+	protected TextElement(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info, final ITextModifier modifier) {
 		this.text = text;
 		this.info = info;
 		this.modifier = modifier;
 	}
 
 	public static final @NonNull TextElement create(final @NonNull Object text, final @NonNull TextInfo info) {
-		return new TextElement(text.toString(), info, null);
+		return new TextElement(text, info, null);
+	}
+
+	public static final @NonNull TextElement create(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info) {
+		return new TextElement(() -> text.get(), info, null);
 	}
 
 	public static final @NonNull TextElement create(final int text, final @NonNull TextInfo info) {
@@ -48,37 +58,48 @@ public class TextElement {
 	}
 
 	public final <T extends TextElement> @NonNull T text(final @NonNull Object text) {
-		this.text = text.toString();
+		this.text = () -> text;
+		return (T) this;
+	}
+
+	public final <T extends TextElement> @NonNull T text(final @NonNull Supplier<@NonNull Object> text) {
+		this.text = text;
 		return (T) this;
 	}
 
 	public final <T extends TextElement> @NonNull T text(final int text) {
-		this.text = String.valueOf(text);
+		final String value = String.valueOf(text);
+		this.text = () -> value;
 		return (T) this;
 	}
 
 	public final <T extends TextElement> @NonNull T text(final double text) {
-		this.text = String.valueOf(text);
+		final String value = String.valueOf(text);
+		this.text = () -> value;
 		return (T) this;
 	}
 
 	public final <T extends TextElement> @NonNull T text(final float text) {
-		this.text = String.valueOf(text);
+		final String value = String.valueOf(text);
+		this.text = () -> value;
 		return (T) this;
 	}
 
 	public final <T extends TextElement> @NonNull T text(final long text) {
-		this.text = String.valueOf(text);
+		final String value = String.valueOf(text);
+		this.text = () -> value;
 		return (T) this;
 	}
 
 	public final <T extends TextElement> @NonNull T text(final char text) {
-		this.text = String.valueOf(text);
+		final String value = String.valueOf(text);
+		this.text = () -> value;
 		return (T) this;
 	}
 
 	public final <T extends TextElement> @NonNull T text(final boolean text) {
-		this.text = String.valueOf(text);
+		final String value = String.valueOf(text);
+		this.text = () -> value;
 		return (T) this;
 	}
 
@@ -97,7 +118,11 @@ public class TextElement {
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Object text) {
-		return (T) new TextElement(text.toString(), this.info, this.modifier);
+		return (T) new TextElement(text, this.info, this.modifier);
+	}
+
+	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Supplier<@NonNull Object> text) {
+		return (T) new TextElement(text, this.info, this.modifier);
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithInfo(final @NonNull TextInfo info) {
@@ -110,11 +135,12 @@ public class TextElement {
 
 	/* [ Getter Section ] */
 	public final @NonNull String getRawText() {
-		return this.text;
+		return this.text.get().toString();
 	}
 
 	public final @NonNull String getText() {
-		return this.modifier == null ? this.text : this.modifier.modify(this.text);
+		final String rawText = this.getRawText();
+		return this.modifier == null ? rawText : this.modifier.modify(rawText);
 	}
 
 }

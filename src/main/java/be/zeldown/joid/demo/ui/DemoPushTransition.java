@@ -1,9 +1,9 @@
 package be.zeldown.joid.demo.ui;
 
-import org.lwjgl.opengl.GL11;
-
 import be.zeldown.joid.lib.animation.tweenengine.Timeline;
 import be.zeldown.joid.lib.animation.tweenengine.TweenEquations;
+import be.zeldown.joid.lib.opengl.modifier.GLVector;
+import be.zeldown.joid.lib.opengl.transform.GLTransformation;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.transition.Transition;
 import lombok.NonNull;
@@ -16,6 +16,8 @@ public class DemoPushTransition extends Transition {
 
 	public static class PushInTransition extends Transition.In {
 
+		private final GLTransformation transformation = GLTransformation.create().translate(GLVector.X(() -> 1920D * (1F - super.getAnimator().getValue())));
+
 		@Override
 		public void init(final @NonNull UI ui) {}
 
@@ -27,18 +29,19 @@ public class DemoPushTransition extends Transition {
 
 		@Override
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			GL11.glPushMatrix();
-			GL11.glTranslated(1920 * (1F - super.getAnimator().getValue()), 0, 0);
+			this.transformation.apply();
 		}
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			GL11.glPopMatrix();
+			this.transformation.reset();
 		}
 
 	}
 
 	public static class PushOutTransition extends Transition.Out {
+
+		private final GLTransformation transformation = GLTransformation.create().translate(GLVector.X(() -> -1920D * (1F - super.getAnimator().getValue())));
 
 		@Override
 		public void init(final @NonNull UI ui) {}
@@ -51,13 +54,12 @@ public class DemoPushTransition extends Transition {
 
 		@Override
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			GL11.glPushMatrix();
-			GL11.glTranslated(-1920 * (1F - super.getAnimator().getValue()), 0, 0);
+			this.transformation.apply();
 		}
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			GL11.glPopMatrix();
+			this.transformation.reset();
 		}
 
 	}

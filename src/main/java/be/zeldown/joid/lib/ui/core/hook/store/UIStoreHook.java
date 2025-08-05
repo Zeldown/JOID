@@ -115,7 +115,7 @@ public final class UIStoreHook {
 		return new File(parent, id + ".store");
 	}
 
-	private static JsonObject loadFile(final @NonNull String id) {
+	private static @NonNull JsonObject loadFile(final @NonNull String id) {
 		try {
 			final File file = UIStoreHook.getFile(id);
 			if (!file.exists()) {

@@ -60,7 +60,7 @@ public class TextNode extends Node {
 				super.height(this.text.getHeight());
 			}
 		} else if (this.mode == TextMode.SPLIT) {
-			super.height(DrawUtils.TEXT.getTexts(super.getWidth(), this.text).stream().mapToDouble(Text::getHeight).sum());
+			super.height(DrawUtils.TEXT.getLines(super.getWidth(), this.text).stream().mapToDouble(Text::getHeight).sum());
 		}
 	}
 

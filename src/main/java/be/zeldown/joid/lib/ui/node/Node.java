@@ -1,8 +1,13 @@
 package be.zeldown.joid.lib.ui.node;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +20,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.google.gson.Gson;
@@ -25,7 +31,7 @@ import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.animation.animator.TweenAnimator;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.opengl.context.GLContext;
+import be.zeldown.joid.lib.opengl.GLHelper;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.hook.store.UIStore;
 import be.zeldown.joid.lib.ui.node.callback.NodeCallback;
@@ -45,17 +51,23 @@ import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeAppendCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeDrawCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeInitCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeReloadCallback;
+import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeRenderCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeUpdateCallback;
 import be.zeldown.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
+import be.zeldown.joid.lib.ui.node.effect.NodeEffect;
+import be.zeldown.joid.lib.ui.node.hover.HoverElement;
 import be.zeldown.joid.lib.ui.node.hover.HoverSupplier;
+import be.zeldown.joid.lib.ui.node.hover.impl.DefaultHoverElement;
 import be.zeldown.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode;
 import be.zeldown.joid.lib.ui.node.layer.NodeLayer;
 import be.zeldown.joid.lib.ui.node.property.draggable.DraggableProperty;
 import be.zeldown.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableAreaType;
+import be.zeldown.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableType;
 import be.zeldown.joid.lib.ui.node.property.overflow.OverflowProperty;
 import be.zeldown.joid.lib.ui.node.property.position.PositionProperty;
 import be.zeldown.joid.lib.ui.node.property.watch.WatchProperty;
 import be.zeldown.joid.lib.utils.align.Align;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import be.zeldown.joid.lib.utils.list.IndexedConcurrentList;
 import be.zeldown.joid.lib.utils.list.IndexedLinkedList;
@@ -80,6 +92,7 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_KEY_PRESSED    = NodeCallbackRegistry.next(NodeKeyPressedCallback.class);
 
 	private static final int CALLBACK_INIT           = NodeCallbackRegistry.next(NodeInitCallback.class);
+	private static final int CALLBACK_RENDER         = NodeCallbackRegistry.next(NodeRenderCallback.class);
 	private static final int CALLBACK_DRAW           = NodeCallbackRegistry.next(NodeDrawCallback.class);
 	private static final int CALLBACK_UPDATE         = NodeCallbackRegistry.next(NodeUpdateCallback.class);
 	private static final int CALLBACK_RELOAD         = NodeCallbackRegistry.next(NodeReloadCallback.class);
@@ -97,10 +110,13 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_SNAP           = NodeCallbackRegistry.next(NodeSnapCallback.class);
 
 	private final List<TweenAnimator> animators;
-	private final TweenAnimator hoverAnimator;
+	private final TweenAnimator       hoverAnimator;
 
-	private final IndexedConcurrentList<Node>  children;
-	private final List<NodeLayer>              layers;
+	private final IndexedConcurrentList<Node>                              children;
+	private final LinkedList<NodeLayer>                                    layerList;
+	private final Map<Class<? extends NodeEffect<Node>>, NodeEffect<Node>> effectMap;
+
+	private final List<HoverElement>           hoverElementList;
 	private final List<Supplier<List<String>>> hoverSupplierList;
 
 	private final double defaultX;
@@ -133,6 +149,7 @@ public abstract class Node implements INode {
 	private Align            anchorY;
 
 	private DraggableProperty draggable;
+	private Node              draggedNode;
 	private boolean           dragging;
 	private boolean           dragged;
 	private double            dragX;
@@ -145,8 +162,7 @@ public abstract class Node implements INode {
 	private int    zindex;
 	private double zlevel;
 
-	private double[] stencilBox;
-	private double   aspectRatio;
+	private double aspectRatio;
 
 	private boolean mounted;
 
@@ -164,8 +180,8 @@ public abstract class Node implements INode {
 	private double lastWidth;
 	private double lastHeight;
 
-	private int  lastClickType;
-	private long lastClickTime;
+	private ClickType lastClickType;
+	private long      lastClickTime;
 
 	private char lastKey;
 	private int  lastKeyCode;
@@ -183,8 +199,11 @@ public abstract class Node implements INode {
 		this.animators     = new ArrayList<>();
 		this.hoverAnimator = this.createAnimator();
 
-		this.children          = new IndexedConcurrentList<>();
-		this.layers            = new LinkedList<>();
+		this.children  = new IndexedConcurrentList<>();
+		this.layerList = new LinkedList<>();
+		this.effectMap = new LinkedHashMap<>();
+
+		this.hoverElementList  = new LinkedList<>();
 		this.hoverSupplierList = new LinkedList<>();
 
 		this.waitingList = new ArrayList<>();
@@ -223,6 +242,7 @@ public abstract class Node implements INode {
 				this.skeleton.load(this.ui);
 			}
 
+			this.effectMap.values().stream().filter(this::shouldApplyEffect).forEachOrdered(effect -> effect.init(this, this.ui));
 			this.init(this.ui);
 		});
 
@@ -232,216 +252,249 @@ public abstract class Node implements INode {
 
 	public final void render(final double mouseX, final double mouseY) {
 		final long now = System.nanoTime();
-		GLContext.matrix(() -> {
-			Color.reset();
-			if (this.parent != null) {
-				GL11.glTranslated(this.parent.x, this.parent.y, 0D);
-				if (this.position == PositionProperty.ABSOLUTE) {
-					GL11.glTranslated(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
+		GLHelper.pushMatrix();
+		Color.reset();
+		if (this.parent != null) {
+			GL11.glTranslated(this.parent.x, this.parent.y, 0D);
+			if (this.position == PositionProperty.ABSOLUTE) {
+				GL11.glTranslated(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
+			}
+		}
+
+		GL11.glTranslated(0D, 0D, this.zlevel);
+
+		if (this.isVisible()) {
+			if (this.aspectRatio >= 0D) {
+				if (this.width != 0) {
+					this.height = this.width * this.aspectRatio;
+				} else if (this.height != 0) {
+					this.width = this.height * this.aspectRatio;
 				}
 			}
 
-			GL11.glTranslated(0D, 0D, this.zlevel);
-
-			if (this.isVisible()) {
-				if (this.aspectRatio >= 0D) {
-					if (this.width != 0) {
-						this.height = this.width * this.aspectRatio;
-					} else if (this.height != 0) {
-						this.width = this.height * this.aspectRatio;
-					}
+			if (this.width != this.lastWidth) {
+				if (this.anchorX.isCenter()) {
+					this.x += (this.lastWidth - this.width) / 2;
+				} else if (this.anchorX.isEnd()) {
+					this.x += this.lastWidth - this.width;
 				}
+				this.lastWidth = this.width;
+			}
 
-				if (this.width != this.lastWidth) {
-					if (this.anchorX.isCenter()) {
-						this.x += (this.lastWidth - this.width) / 2;
-					} else if (this.anchorX.isEnd()) {
-						this.x += this.lastWidth - this.width;
-					}
-					this.lastWidth = this.width;
+			if (this.height != this.lastHeight) {
+				if (this.anchorY.isCenter()) {
+					this.y += (this.lastHeight - this.height) / 2;
+				} else if (this.anchorY.isEnd()) {
+					this.y += this.lastHeight - this.height;
 				}
+				this.lastHeight = this.height;
+			}
 
-				if (this.height != this.lastHeight) {
-					if (this.anchorY.isCenter()) {
-						this.y += (this.lastHeight - this.height) / 2;
-					} else if (this.anchorY.isEnd()) {
-						this.y += this.lastHeight - this.height;
-					}
-					this.lastHeight = this.height;
-				}
+			if (!this.hovered && this.isHovered(mouseX, mouseY)) {
+				this.hoverAnimator.sequence(this.hoverDuration, 100F).start();
+			}
 
-				if (!this.hovered && this.isHovered(mouseX, mouseY)) {
-					this.hoverAnimator.sequence(this.hoverDuration, 100F).start();
-				}
+			if (this.hovered && !this.isHovered(mouseX, mouseY)) {
+				this.hoverAnimator.sequence(this.hoverDuration, 0F).start();
+			}
 
-				if (this.hovered && !this.isHovered(mouseX, mouseY)) {
-					this.hoverAnimator.sequence(this.hoverDuration, 0F).start();
-				}
+			this.hovered = this.isHovered(mouseX, mouseY);
+			this.animators.forEach(TweenAnimator::update);
 
-				this.hovered = this.isHovered(mouseX, mouseY);
-				this.animators.forEach(TweenAnimator::update);
-
-				if (this.overflow == OverflowProperty.SCROLL) {
-					if (!this.hasOverflowY()) {
-						this.maxScrollX = 0;
-						double scrollOffset = Double.MIN_VALUE;
-						for (final Node child : this.children) {
-							this.maxScrollX = Math.max(this.maxScrollX, child.defaultX + child.width - this.width);
-							if (scrollOffset == Double.MIN_VALUE) {
-								scrollOffset = child.defaultX;
-							} else {
-								scrollOffset = Math.min(scrollOffset, child.defaultX);
-							}
-						}
-
-						if (this.hasOverflowX()) {
-							this.maxScrollX += scrollOffset;
-							this.children.forEach(child -> {
-								child.x = child.defaultX + this.scrollX;
-							});
+			if (this.overflow == OverflowProperty.SCROLL) {
+				if (!this.hasOverflowY()) {
+					this.maxScrollX = 0;
+					double scrollOffset = Double.MIN_VALUE;
+					for (final Node child : this.children) {
+						this.maxScrollX = Math.max(this.maxScrollX, child.defaultX + child.width - this.width);
+						if (scrollOffset == Double.MIN_VALUE) {
+							scrollOffset = child.defaultX;
+						} else {
+							scrollOffset = Math.min(scrollOffset, child.defaultX);
 						}
 					}
 
-					if (!this.hasOverflowX()) {
-						this.maxScrollY = 0;
-						double scrollOffset = Double.MIN_VALUE;
-						for (final Node child : this.children) {
-							this.maxScrollY = Math.max(this.maxScrollY, child.defaultY + child.height - this.height);
-							if (scrollOffset == Double.MIN_VALUE) {
-								scrollOffset = child.defaultY;
-							} else {
-								scrollOffset = Math.min(scrollOffset, child.defaultY);
-							}
-						}
-
-						if (this.hasOverflowY()) {
-							this.maxScrollY += scrollOffset;
-							this.children.forEach(child -> {
-								child.y = child.defaultY + this.scrollY;
-							});
-						}
-					}
-				}
-
-				this.targetScrollX = Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0);
-				this.targetScrollY = Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0);
-
-				if (this.targetScrollX != this.scrollX) {
-					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-					this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed, speed, true);
-				}
-
-				if (this.targetScrollY != this.scrollY) {
-					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-					this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
-				}
-
-				if (this.scrollbar != null) {
 					if (this.hasOverflowX()) {
-						final float percent = (float) Math.abs(this.scrollX / this.maxScrollX);
-						this.scrollbar.x(this.scrollbar.getDefaultX() + this.scrollbar.getScrollWidth() * percent);
+						this.maxScrollX += scrollOffset;
+						this.children.forEach(child -> {
+							child.x = child.defaultX + this.scrollX;
+						});
+					}
+				}
+
+				if (!this.hasOverflowX()) {
+					this.maxScrollY = 0;
+					double scrollOffset = Double.MIN_VALUE;
+					for (final Node child : this.children) {
+						this.maxScrollY = Math.max(this.maxScrollY, child.defaultY + child.height - this.height);
+						if (scrollOffset == Double.MIN_VALUE) {
+							scrollOffset = child.defaultY;
+						} else {
+							scrollOffset = Math.min(scrollOffset, child.defaultY);
+						}
 					}
 
 					if (this.hasOverflowY()) {
-						final float percent = (float) Math.abs(this.scrollY / this.maxScrollY);
-						this.scrollbar.y(this.scrollbar.getDefaultY() + this.scrollbar.getScrollHeight() * percent);
+						this.maxScrollY += scrollOffset;
+						this.children.forEach(child -> {
+							child.y = child.defaultY + this.scrollY;
+						});
 					}
 				}
+			}
 
-				if (this.dragging) {
-					this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), () -> {
-						this.targetDragX = mouseX - this.dragX;
-						this.targetDragY = mouseY - this.dragY;
-					});
+			this.targetScrollX = Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0);
+			this.targetScrollY = Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0);
+
+			if (this.targetScrollX != this.scrollX) {
+				final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
+				this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed, speed, true);
+			}
+
+			if (this.targetScrollY != this.scrollY) {
+				final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
+				this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
+			}
+
+			if (this.scrollbar != null) {
+				if (this.hasOverflowX()) {
+					final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollX / this.maxScrollX)));
+					this.scrollbar.x(this.scrollbar.getDefaultX() + this.scrollbar.getScrollWidth() * percent);
 				}
 
-				if (this.draggable != null && this.draggable.isEnabled(this)) {
-					if (!this.dragging && this.draggable.getAreaType() != DraggableAreaType.FREE) {
-						final double[] bounds = this.draggable.getBounds(this);
-						final double boundX = bounds[0];
-						final double boundY = bounds[1];
-						final double boundWidth = bounds[2];
-						final double boundHeight = bounds[3];
+				if (this.hasOverflowY()) {
+					final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollY / this.maxScrollY)));
+					this.scrollbar.y(this.scrollbar.getDefaultY() + this.scrollbar.getScrollHeight() * percent);
+				}
+			}
 
-						final boolean inside = this.getAbsoluteX() >= boundX && this.getAbsoluteY() >= boundY && this.getAbsoluteX() + this.width <= boundX + boundWidth && this.getAbsoluteY() + this.height <= boundY + boundHeight;
-						if (!inside) {
-							if (this.targetDragX < boundX) {
-								this.targetDragX = boundX;
-							} else if (this.targetDragX + this.width > boundX + boundWidth) {
-								this.targetDragX = boundX + boundWidth - this.width;
-							}
+			if (this.dragging && Mouse.isGrabbed()) {
+				this.stopDragging();
+			}
 
-							if (this.targetDragY < boundY) {
-								this.targetDragY = boundY;
-							} else if (this.targetDragY + this.height > boundY + boundHeight) {
-								this.targetDragY = boundY + boundHeight - this.height;
-							}
+			if (this.dragging) {
+				this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), () -> {
+					this.targetDragX = mouseX - this.dragX;
+					this.targetDragY = mouseY - this.dragY;
+				});
+			}
 
-							this.dragged = true;
+			if (this.draggable != null && this.draggable.isEnabled(this)) {
+				if (!this.dragging && this.draggable.getAreaType() != DraggableAreaType.FREE) {
+					final double[] bounds = this.draggable.getBounds(this);
+					final double boundX = bounds[0];
+					final double boundY = bounds[1];
+					final double boundWidth = bounds[2];
+					final double boundHeight = bounds[3];
+
+					final boolean inside = this.getAbsoluteX() >= boundX && this.getAbsoluteY() >= boundY && this.getAbsoluteX() + this.width <= boundX + boundWidth && this.getAbsoluteY() + this.height <= boundY + boundHeight;
+					if (!inside) {
+						if (this.targetDragX < boundX) {
+							this.targetDragX = boundX;
+						} else if (this.targetDragX + this.width > boundX + boundWidth) {
+							this.targetDragX = boundX + boundWidth - this.width;
 						}
+
+						if (this.targetDragY < boundY) {
+							this.targetDragY = boundY;
+						} else if (this.targetDragY + this.height > boundY + boundHeight) {
+							this.targetDragY = boundY + boundHeight - this.height;
+						}
+
+						this.dragged = true;
 					}
+				}
 
-					if (this.dragged) {
-						final double newAbsoluteX = this.draggable.lerp(this.ui.getFps(), this.getAbsoluteX(), this.targetDragX);
-						final double newAbsoluteY = this.draggable.lerp(this.ui.getFps(), this.getAbsoluteY(), this.targetDragY);
-
+				if (this.dragged) {
+					if (this.draggable.getType() == DraggableType.MOVE) {
+						final double newAbsoluteX = this.draggable.lerp(this.getUi().getFps(), this.getAbsoluteX(), this.targetDragX);
+						final double newAbsoluteY = this.draggable.lerp(this.getUi().getFps(), this.getAbsoluteY(), this.targetDragY);
 						final double diffX = this.getAbsoluteX() - this.x;
 						final double diffY = this.getAbsoluteY() - this.y;
 
 						this.x = newAbsoluteX - diffX;
 						this.y = newAbsoluteY - diffY;
+					} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
+						final double newAbsoluteX = this.draggable.lerp(this.getUi().getFps(), this.draggedNode.getAbsoluteX(), this.targetDragX);
+						final double newAbsoluteY = this.draggable.lerp(this.getUi().getFps(), this.draggedNode.getAbsoluteY(), this.targetDragY);
+						this.draggedNode.x = newAbsoluteX;
+						this.draggedNode.y = newAbsoluteY;
+					}
 
-						if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
-							this.dragged = false;
-						}
+					if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
+						this.dragged = false;
 					}
 				}
-
-				final boolean wasMounted = this.mounted;
-				this.mounted = this.isMounted();
-
-				if (!wasMounted && this.mounted) {
-					this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
-				}
-
-				final double stencilBoxX = this.stencilBox == null ? 0 : this.x + this.stencilBox[0];
-				final double stencilBoxY = this.stencilBox == null ? 0 : this.y + this.stencilBox[1];
-				final double stencilBoxW = this.stencilBox == null ? 0 : this.stencilBox[2];
-				final double stencilBoxH = this.stencilBox == null ? 0 : this.stencilBox[3];
-				this.ui.stencil(stencilBoxX, stencilBoxY, stencilBoxW, stencilBoxH, () -> {
-					this.ui.stencil(this.x, this.y, this.width, this.height, () -> {
-						if (this.overflow != OverflowProperty.NONE) {
-							this.children.forEach(child -> child.overflowArea = this);
-						} else if (this.overflowArea != null) {
-							this.children.forEach(child -> child.overflowArea = this.overflowArea);
-						}
-
-						if (this.skeleton != null && !this.mounted) {
-							this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
-								this.skeleton.render(mouseX, mouseY);
-							}, mouseX, mouseY);
-							return;
-						}
-
-						this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-						this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
-							if (this.mounted) {
-								this.draw(mouseX, mouseY);
-							} else {
-								this.drawSkeleton(mouseX, mouseY);
-							}
-						}, mouseX, mouseY);
-						this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
-						this.layers.forEach(layer -> layer.draw(mouseX, mouseY));
-					}, this.overflow != OverflowProperty.NONE);
-				}, this.stencilBox != null);
-
-				if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.hasOverflowX() || this.hasOverflowY())) {
-					this.scrollbar.render(mouseX, mouseY);
-				}
 			}
-			Color.reset();
-		});
+
+			final boolean wasMounted = this.mounted;
+			this.mounted = this.isMounted();
+
+			if (!wasMounted && this.mounted) {
+				this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
+			}
+
+			this.effectMap.values().stream().filter(this::shouldApplyEffect).forEachOrdered(effect -> effect.pre(this, mouseX, mouseY));
+			this.ui.mask(this.x, this.y, this.width, this.height, () -> {
+				if (this.overflow != OverflowProperty.NONE) {
+					this.children.forEach(child -> child.overflowArea = this);
+				} else if (this.overflowArea != null) {
+					this.children.forEach(child -> child.overflowArea = this.overflowArea);
+				}
+
+				if (this.skeleton != null && !this.mounted) {
+					this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+						this.skeleton.render(mouseX, mouseY);
+					}, mouseX, mouseY);
+					return;
+				}
+
+				this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+					this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
+					this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
+						if (this.mounted) {
+							this.draw(mouseX, mouseY);
+						} else {
+							this.drawSkeleton(mouseX, mouseY);
+						}
+					}, mouseX, mouseY);
+
+					this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
+					this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
+
+					if (this.draggedNode != null) {
+						final boolean scissor = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
+						final boolean stencil = GL11.glIsEnabled(GL11.GL_STENCIL_TEST);
+						if (scissor) {
+							GL11.glDisable(GL11.GL_SCISSOR_TEST);
+						}
+
+						if (stencil) {
+							GL11.glDisable(GL11.GL_STENCIL_TEST);
+						}
+
+						GL11.glTranslated(-this.parent.x, -this.parent.y, 0D);
+						this.draggedNode.render(mouseX, mouseY);
+						GL11.glTranslated(this.parent.x, this.parent.y, 0D);
+
+						if (scissor) {
+							GL11.glEnable(GL11.GL_SCISSOR_TEST);
+						}
+
+						if (stencil) {
+							GL11.glEnable(GL11.GL_STENCIL_TEST);
+						}
+					}
+				}, mouseX, mouseY);
+			}, this.overflow != OverflowProperty.NONE);
+			this.effectMap.values().stream().filter(this::shouldApplyEffect).forEachOrdered(effect -> effect.post(this, mouseX, mouseY));
+
+			if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.hasOverflowX() || this.hasOverflowY())) {
+				this.scrollbar.render(mouseX, mouseY);
+			}
+		}
+		Color.reset();
+		GLHelper.popMatrix();
 		this.renderTime = System.nanoTime() - now;
 	}
 
@@ -454,13 +507,19 @@ public abstract class Node implements INode {
 		});
 
 		if (this.isHovered(mouseX, mouseY, false)) {
-			if (this.hoverSupplierList != null && !this.hoverSupplierList.isEmpty()) {
-				final List<String> hoverList = new LinkedList<>();
+			final List<HoverElement> hoverList = new LinkedList<>(this.hoverElementList);
+			if (!this.hoverSupplierList.isEmpty()) {
+				final List<String> lines = new LinkedList<>();
 				for (final Supplier<List<String>> hoverSupplier : this.hoverSupplierList) {
-					hoverList.addAll(hoverSupplier.get());
+					lines.addAll(hoverSupplier.get());
 				}
-				this.ui.drawHover(hoverList, mouseX, mouseY);
+				hoverList.add(new DefaultHoverElement(lines));
 			}
+
+			if (!hoverList.isEmpty()) {
+				hoverList.forEach(element -> element.render(this, mouseX, mouseY));
+			}
+
 			return true;
 		}
 
@@ -475,13 +534,7 @@ public abstract class Node implements INode {
 
 	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(
-				this.x,
-				this.y,
-				this.width,
-				this.height,
-				Color.LOADING()
-				);
+		DrawUtils.SHAPE.drawRect(this.x,this.y, this.width, this.height, Color.LOADING());
 	}
 
 	public final void onUpdate() {
@@ -491,7 +544,7 @@ public abstract class Node implements INode {
 		});
 	}
 
-	public final void onMousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public final void onMousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.lastClickType = clickType;
 		this.lastClickTime = System.currentTimeMillis();
 
@@ -499,7 +552,7 @@ public abstract class Node implements INode {
 			this.scrollbar.onMousePressed(mouseX, mouseY, clickType, context);
 		}
 
-		if (this.skeleton != null) {
+		if (this.skeleton != null && !this.mounted) {
 			this.skeleton.onMousePressed(mouseX, mouseY, clickType, context);
 		}
 
@@ -519,26 +572,17 @@ public abstract class Node implements INode {
 			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, context, mouseX, mouseY, clickType);
 		}
 
-		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && clickType == 0 && this.isHovered(mouseX, mouseY)) {
-			this.executeCallback(Node.CALLBACK_DRAG_START, InternalContext.create(), () -> {
-				this.dragging = true;
-				this.dragX = mouseX - this.getAbsoluteX();
-				this.dragY = mouseY - this.getAbsoluteY();
-				this.startDragX = this.getAbsoluteX();
-				this.startDragY = this.getAbsoluteY();
-				this.targetDragX = this.getAbsoluteX();
-				this.targetDragY = this.getAbsoluteY();
-				this.dragged = true;
-			});
+		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && clickType.isLeft() && this.isHovered(mouseX, mouseY)) {
+			this.startDragging(mouseX, mouseY);
 		}
 	}
 
-	public final void onMouseDragged(final double mouseX, final double mouseY, final int clickType, final long deltaTime, final @NonNull InternalContext context) {
+	public final void onMouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
 		if (this.scrollbar != null) {
 			this.scrollbar.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context);
 		}
 
-		if (this.skeleton != null) {
+		if (this.skeleton != null && !this.mounted) {
 			this.skeleton.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context);
 		}
 
@@ -555,12 +599,12 @@ public abstract class Node implements INode {
 		}
 	}
 
-	public final void onMouseReleased(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public final void onMouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (this.scrollbar != null) {
 			this.scrollbar.onMouseReleased(mouseX, mouseY, clickType, context);
 		}
 
-		if (this.skeleton != null) {
+		if (this.skeleton != null && !this.mounted) {
 			this.skeleton.onMouseReleased(mouseX, mouseY, clickType, context);
 		}
 
@@ -568,7 +612,7 @@ public abstract class Node implements INode {
 			this.executeCallback(Node.CALLBACK_DRAG_END, InternalContext.create(), () -> {
 				if (this.draggable != null && this.draggable.isEnabled(this)) {
 					if (this.draggable.hasSnapping()) {
-						final Node snapNode = this.draggable.getSnapping(this);
+						final Node snapNode = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
 						if (snapNode != null) {
 							this.executeCallback(Node.CALLBACK_SNAP, InternalContext.create(), () -> {
 								this.targetDragX = snapNode.getAbsoluteX();
@@ -581,6 +625,7 @@ public abstract class Node implements INode {
 					}
 				}
 				this.dragging = false;
+				this.draggedNode = null;
 			});
 		}
 
@@ -602,7 +647,7 @@ public abstract class Node implements INode {
 			this.scrollbar.onMouseScroll(mouseX, mouseY, value, context);
 		}
 
-		if (this.skeleton != null) {
+		if (this.skeleton != null && !this.mounted) {
 			this.skeleton.onMouseScroll(mouseX, mouseY, value, context);
 		}
 
@@ -641,7 +686,7 @@ public abstract class Node implements INode {
 			this.scrollbar.onKeyPressed(c, keyCode, context);
 		}
 
-		if (this.skeleton != null) {
+		if (this.skeleton != null && !this.mounted) {
 			this.skeleton.onKeyPressed(c, keyCode, context);
 		}
 
@@ -659,34 +704,17 @@ public abstract class Node implements INode {
 	}
 
 	/* [ Utility Section ] */
-	/**
-	 * Adds the specified animator to the node.
-	 * @param <T> the type of the node
-	 * @param animator the animator to add
-	 * @return the created animator
-	 */
 	public final @NonNull TweenAnimator createAnimator() {
 		final TweenAnimator animator = TweenAnimator.create();
 		this.animators.add(animator);
 		return animator;
 	}
 
-	/**
-	 * Removes the specified animator from the node
-	 * @param <T> the type of the node
-	 * @param animator the animator to remove
-	 * @return the modified node
-	 */
 	public final <T extends Node> @NonNull T removeAnimator(final @NonNull TweenAnimator animator) {
 		this.animators.remove(animator);
 		return (T) this;
 	}
 
-	/**
-	 * Reloads the node and its children, loads the UI, and executes the reload callback.
-	 * The method iterates through all the children nodes, calling their reload methods.
-	 * Then, it loads the UI and executes the reload callback specified by the identifier {@link Node#CALLBACK_RELOAD}.
-	 */
 	public final void reload() {
 		this.executeCallback(Node.CALLBACK_RELOAD, InternalContext.create(), () -> {
 			this.children.forEach(Node::reload);
@@ -694,15 +722,6 @@ public abstract class Node implements INode {
 		});
 	}
 
-	/**
-	 * Appends the given nodes as children to this node.
-	 *
-	 * @param index The index to append.
-	 * @param nodes The nodes to append.
-	 * @param <T>   The type of the node.
-	 * @return The modified node after appending the children.
-	 * @throws NullPointerException If the nodes are {@code null}.
-	 */
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
 			this.executeCallback(Node.CALLBACK_APPEND, InternalContext.create(), () -> {
@@ -716,115 +735,46 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	/**
-	 * Attaches the specified node as a child to this node.
-	 *
-	 * @param node The node to attach.
-	 * @param <T>  The type of the node.
-	 * @return The modified node after attaching the child.
-	 * @throws NullPointerException If the node is {@code null}.
-	 */
 	public final <T extends Node> @NonNull T attach(final @NonNull Node node) {
 		node.append(this);
 		return (T) this;
 	}
 
-	/**
-	 * Attaches this node to the specified UI.
-	 *
-	 * @param ui The UI to attach to.
-	 * @param <T> The type of the node.
-	 * @return The modified node after attaching to the UI.
-	 * @throws NullPointerException If the UI is {@code null}.
-	 */
 	public final <T extends Node> @NonNull T attach(final @NonNull UI ui) {
 		ui.add(this);
 		return (T) this;
 	}
 
-	/**
-	 * Executes the specified runnable as the body of this node.
-	 *
-	 * @param runnable The runnable to execute.
-	 * @param <T>      The type of the node.
-	 * @return The modified node after executing the runnable.
-	 * @throws NullPointerException If the runnable is {@code null}.
-	 */
 	public final <T extends Node> @NonNull T body(final @NonNull Runnable runnable) {
 		return this.body(n -> runnable.run());
 	}
 
-	/**
-	 * Executes the specified consumer, passing this node as an argument.
-	 *
-	 * @param consumer The consumer to execute.
-	 * @param <T>      The type of the node.
-	 * @return The modified node after executing the consumer.
-	 * @throws NullPointerException If the consumer is {@code null}.
-	 */
 	public final <T extends Node> @NonNull T body(final @NonNull Consumer<@NonNull T> consumer) {
 		this.bodyConsumer = (Consumer<Node>) consumer;
 		this.bodyConsumer.accept(this);
 		return (T) this;
 	}
 
-	/**
-	 * Scrolls this node horizontally based on the provided value and speed.
-	 *
-	 * @param value The value to scroll by.
-	 * @param speed The speed of the scroll.
-	 * @param <T>   The type of the node.
-	 * @return The modified node after horizontal scrolling.
-	 */
 	public final <T extends Node> @NonNull T scrollX(final double value, final double speed) {
 		this.setScrollX(this.targetScrollX + value * speed);
 		return (T) this;
 	}
 
-	/**
-	 * Scrolls this node vertically based on the provided value and speed.
-	 *
-	 * @param value The value to scroll by.
-	 * @param speed The speed of the scroll.
-	 * @param <T>   The type of the node.
-	 * @return The modified node after vertical scrolling.
-	 */
 	public final <T extends Node> @NonNull T scrollY(final double value, final double speed) {
 		this.setScrollY(this.targetScrollY + value * speed);
 		return (T) this;
 	}
 
-	/**
-	 * Sets the horizontal scroll percentage based on the provided value.
-	 *
-	 * @param percent The percentage value to set.
-	 * @param <T>     The type of the node.
-	 * @return The modified node after setting the horizontal scroll.
-	 */
 	public final <T extends Node> @NonNull T setScrollX(final float percent) {
 		this.setScrollX(-this.maxScrollX * percent);
 		return (T) this;
 	}
 
-	/**
-	 * Sets the vertical scroll percentage based on the provided value.
-	 *
-	 * @param percent The percentage value to set.
-	 * @param <T>     The type of the node.
-	 * @return The modified node after setting the vertical scroll.
-	 */
 	public final <T extends Node> @NonNull T setScrollY(final float percent) {
 		this.setScrollY(-this.maxScrollY * percent);
 		return (T) this;
 	}
 
-	/**
-	 * Sets the horizontal scroll value based on the provided value.
-	 *
-	 * @param value The value to set.
-	 * @param <T>   The type of the node.
-	 * @return The modified node after setting the horizontal scroll.
-	 */
 	public final <T extends Node> @NonNull T setScrollX(final double value) {
 		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, InternalContext.create(), () -> {
 			final double oldValue = this.targetScrollX;
@@ -839,13 +789,6 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	/**
-	 * Sets the vertical scroll value based on the provided value.
-	 *
-	 * @param value The value to set.
-	 * @param <T>   The type of the node.
-	 * @return The modified node after setting the vertical scroll.
-	 */
 	public final <T extends Node> @NonNull T setScrollY(final double value) {
 		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, InternalContext.create(), () -> {
 			final double oldValue = this.targetScrollY;
@@ -873,6 +816,32 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T updateScrollY() {
 		this.scrollY = this.targetScrollY;
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T startDragging(final double mouseX, final double mouseY) {
+		this.executeCallback(Node.CALLBACK_DRAG_START, InternalContext.create(), () -> {
+			this.dragging = true;
+			this.dragX = mouseX - this.getAbsoluteX();
+			this.dragY = mouseY - this.getAbsoluteY();
+			this.startDragX = this.getAbsoluteX();
+			this.startDragY = this.getAbsoluteY();
+			this.targetDragX = this.getAbsoluteX();
+			this.targetDragY = this.getAbsoluteY();
+			this.dragged = true;
+
+			if (this.draggable.getType() == DraggableType.COPY) {
+				this.draggedNode = this.copy();
+				this.draggedNode.x = this.targetDragX;
+				this.draggedNode.y = this.targetDragY;
+				this.draggedNode.position(PositionProperty.ABSOLUTE);
+			}
+		});
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T stopDragging() {
+		this.stopDragging();
 		return (T) this;
 	}
 
@@ -936,11 +905,10 @@ public abstract class Node implements INode {
 	}
 
 	/* [ Getter Section ] */
-	/**
-	 * Gets the absolute X-coordinate of the node, taking into account its parent's position.
-	 *
-	 * @return The absolute X-coordinate of the node.
-	 */
+	public final boolean hasUi() {
+		return this.ui != null;
+	}
+
 	public final double getAbsoluteX() {
 		if (this.position == PositionProperty.ABSOLUTE) {
 			return this.x;
@@ -949,11 +917,6 @@ public abstract class Node implements INode {
 		return this.parent != null ? this.parent.getAbsoluteX() + this.x : this.x;
 	}
 
-	/**
-	 * Gets the absolute Y-coordinate of the node, taking into account its parent's position.
-	 *
-	 * @return The absolute Y-coordinate of the node.
-	 */
 	public final double getAbsoluteY() {
 		if (this.position == PositionProperty.ABSOLUTE) {
 			return this.y;
@@ -962,56 +925,23 @@ public abstract class Node implements INode {
 		return this.parent != null ? this.parent.getAbsoluteY() + this.y : this.y;
 	}
 
-	/**
-	 * Gets the absolute default X-coordinate of the node, taking into account its parent's position.
-	 *
-	 * @return The absolute default X-coordinate of the node.
-	 */
 	public final double getAbsoluteDefaultX() {
 		return this.parent != null ? this.parent.getAbsoluteX() + this.defaultX : this.defaultX;
 	}
 
-	/**
-	 * Gets the absolute default Y-coordinate of the node, taking into account its parent's position.
-	 *
-	 * @return The absolute default Y-coordinate of the node.
-	 */
 	public final double getAbsoluteDefaultY() {
 		return this.parent != null ? this.parent.getAbsoluteY() + this.defaultY : this.defaultY;
 	}
 
-	/**
-	 * Clears all children nodes associated with this node.
-	 *
-	 * @param <T> The type of the node.
-	 * @return The modified node after clearing its children.
-	 */
 	public final <T extends Node> @NonNull T clearChildren() {
 		this.children.clear();
 		return (T) this;
 	}
 
-	/**
-	 * Gets a list of children nodes of a specific type associated with this node.
-	 *
-	 * @param clazz The class type of the children nodes.
-	 * @param <T>   The type of the children nodes.
-	 * @return A list of children nodes of the specified type.
-	 * @throws NullPointerException If the class type is {@code null}.
-	 */
 	public final <T extends Node> IndexedLinkedList<T> getChildren(final @NonNull Class<T> clazz) {
 		return new IndexedLinkedList<>(this.children.ordered().stream().filter(child -> clazz.isAssignableFrom(child.getClass())).map(child -> (T) child).collect(Collectors.toList()));
 	}
 
-	/**
-	 * Gets a specific child node based on its index and type associated with this node.
-	 *
-	 * @param index The index of the child node.
-	 * @param clazz The class type of the child node.
-	 * @param <T>   The type of the child node.
-	 * @return The specified child node or {@code null} if not found.
-	 * @throws NullPointerException If the class type is {@code null}.
-	 */
 	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
 		int i = 0;
 		for (final Node child : this.children) {
@@ -1027,37 +957,14 @@ public abstract class Node implements INode {
 		return null;
 	}
 
-	/**
-	 * Get the associated ui of this node.
-	 *
-	 * @param <T>
-	 * @param clazz
-	 * @return The associated ui of this node.
-	 * @throws NullPointerException If the class type is {@code null}.
-	 */
-	public final <T extends UI> @NonNull T getUi() {
+	public final <T extends UI> T getUi() {
 		return (T) this.ui;
 	}
 
-	/**
-	 * Checks if the node is being hovered by the mouse at the specified coordinates.
-	 *
-	 * @param mouseX The X-coordinate of the mouse.
-	 * @param mouseY The Y-coordinate of the mouse.
-	 * @return {@code true} if the node is being hovered, {@code false} otherwise.
-	 */
 	public boolean isHovered(final double mouseX, final double mouseY) {
 		return this.isHovered(mouseX, mouseY, true);
 	}
 
-	/**
-	 * Checks if the node is being hovered by the mouse at the specified coordinates.
-	 *
-	 * @param mouseX The X-coordinate of the mouse.
-	 * @param mouseY The Y-coordinate of the mouse.
-	 * @param checkEnabled {@code true} if the node should be checked for being enabled, {@code false} otherwise.
-	 * @return {@code true} if the node is being hovered, {@code false} otherwise.
-	 */
 	public boolean isHovered(final double mouseX, final double mouseY, final boolean checkEnabled) {
 		if (this.ui == null) {
 			return false;
@@ -1066,10 +973,6 @@ public abstract class Node implements INode {
 		return this.isVisible() && (!checkEnabled || this.isEnabled()) && this.ui.isOnTop() && (this.overflowArea != null ? this.overflowArea.isHovered(mouseX, mouseY) : true) && mouseX > this.getAbsoluteX() && mouseX <= this.getAbsoluteX() + this.width && mouseY > this.getAbsoluteY() && mouseY <= this.getAbsoluteY() + this.height;
 	}
 
-	/**
-	 * Checks if the node should be rendered.
-	 * @return {@code true} if the node should be rendered, {@code false} otherwise.
-	 */
 	public boolean isVisible() {
 		if (this.parent != null && !this.parent.isVisible()) {
 			return false;
@@ -1084,27 +987,14 @@ public abstract class Node implements INode {
 		return this.isVisibleProperty();
 	}
 
-	/**
-	 * Return the node's visible properties.
-	 * @return {@code true} if the node should be rendered, {@code false} otherwise.
-	 */
 	public boolean isVisibleProperty() {
 		return this.visible.test(this);
 	}
 
-	/**
-	 * Return the node's enabled properties.
-	 * @return {@code true} if the node is enabled, {@code false} otherwise.
-	 */
 	public boolean isEnabled() {
 		return this.enabled.test(this);
 	}
 
-	/**
-	 * Checks if the node is currently mounted in the hierarchy.
-	 *
-	 * @return {@code true} if the node is mounted, {@code false} otherwise.
-	 */
 	public final boolean isMounted() {
 		if (this.parent != null && !this.parent.isMounted() && !this.equals(this.parent.skeleton)) {
 			return false;
@@ -1124,121 +1014,58 @@ public abstract class Node implements INode {
 		return mounted;
 	}
 
-	/**
-	 * Adjusts a value based on the hover animation.
-	 *
-	 * @param value The original value to adjust.
-	 * @return The adjusted value based on the hover animation.
-	 */
 	public final float hoverValue(final float value) {
 		return value / 100F * this.hoverAnimator.getValue();
 	}
 
-	/**
-	 * Calculates the ratio of the node's width to the specified value.
-	 *
-	 * @param value The value to divide the width by.
-	 * @return The result of the division.
-	 */
+	public final double w() {
+		return this.width;
+	}
+
+	public final double h() {
+		return this.height;
+	}
+
 	public final double dw(final double value) {
 		return this.width / value;
 	}
 
-	/**
-	 * Calculates the ratio of the node's height to the specified value.
-	 *
-	 * @param value The value to divide the height by.
-	 * @return The result of the division.
-	 */
 	public final double dh(final double value) {
 		return this.height / value;
 	}
 
-	/**
-	 * Calculates the result of multiplying the node's width by the specified value.
-	 *
-	 * @param value The value to multiply the width by.
-	 * @return The result of the multiplication.
-	 */
 	public final double mw(final double value) {
 		return this.width * value;
 	}
 
-	/**
-	 * Calculates the result of multiplying the node's height by the specified value.
-	 *
-	 * @param value The value to multiply the height by.
-	 * @return The result of the multiplication.
-	 */
 	public final double mh(final double value) {
 		return this.height * value;
 	}
 
-	/**
-	 * Calculates the result of adding the specified value to the node's width.
-	 *
-	 * @param value The value to add to the width.
-	 * @return The result of the addition.
-	 */
 	public final double aw(final double value) {
 		return this.width + value;
 	}
 
-	/**
-	 * Calculates the result of adding the specified value to the node's height.
-	 *
-	 * @param value The value to add to the height.
-	 * @return The result of the addition.
-	 */
 	public final double ah(final double value) {
 		return this.height + value;
 	}
 
-	/**
-	 * Calculates the result of adding the specified value to the node's X-coordinate.
-	 *
-	 * @param value The value to add to the X-coordinate.
-	 * @return The result of the addition.
-	 */
 	public final double ax(final double value) {
 		return this.x + value;
 	}
 
-	/**
-	 * Calculates the result of adding the specified value to the node's Y-coordinate.
-	 *
-	 * @param value The value to add to the Y-coordinate.
-	 * @return The result of the addition.
-	 */
 	public final double ay(final double value) {
 		return this.y + value;
 	}
 
-	/**
-	 * Checks if there is overflow in the X-direction, indicating the content extends beyond the visible area.
-	 *
-	 * @return {@code true} if there is overflow in the X-direction, {@code false} otherwise.
-	 */
 	public final boolean hasOverflowX() {
 		return this.maxScrollX > 0;
 	}
 
-	/**
-	 * Checks if there is overflow in the Y-direction, indicating the content extends beyond the visible area.
-	 *
-	 * @return {@code true} if there is overflow in the Y-direction, {@code false} otherwise.
-	 */
 	public final boolean hasOverflowY() {
 		return this.maxScrollY > 0;
 	}
 
-	/**
-	 * Retrieves the callback associated with the specified callback identifier.
-	 *
-	 * @param type The callback identifier.
-	 * @param <T>      The type of the node.
-	 * @return The callback associated with the identifier, or {@code null} if not found.
-	 */
 	public final <T extends NodeCallback> @NonNull List<@NonNull NodeCallbackObject<T>> getCallbackList(final int type) {
 		if (this.callbackMap.isEmpty() || !this.callbackMap.containsKey(type)) {
 			return null;
@@ -1264,11 +1091,18 @@ public abstract class Node implements INode {
 		return this.callbackMap.containsKey(type);
 	}
 
-	/**
-	 * Gets the index of the node within its parent or UI hierarchy.
-	 *
-	 * @return The index of the node as a string.
-	 */
+	public final boolean hasEffect(final @NonNull Class<? extends NodeEffect<?>> clazz) {
+		return this.effectMap.containsKey(clazz);
+	}
+
+	public final <T extends NodeEffect<Node>> T getEffect(final @NonNull Class<T> clazz) {
+		return (T) this.effectMap.get(clazz);
+	}
+
+	public boolean shouldApplyEffect(final @NonNull NodeEffect<Node> effect) {
+		return effect.shouldApply(this);
+	}
+
 	public final @NonNull String getMappedIndex() {
 		if (this.ui == null) {
 			return "N/A";
@@ -1281,11 +1115,6 @@ public abstract class Node implements INode {
 		return String.valueOf(this.ui.getNodeList().ordered().indexOf(this));
 	}
 
-	/**
-	 * Gets the hierarchical representation of the node's position within its parent or UI hierarchy.
-	 *
-	 * @return The hierarchical representation of the node's position.
-	 */
 	public final @NonNull String getHierarchy() {
 		if (this.parent == null) {
 			return this.getClass().getSimpleName();
@@ -1294,14 +1123,127 @@ public abstract class Node implements INode {
 		return this.parent.getHierarchy() + " - " + this.getClass().getSimpleName();
 	}
 
+	public final <T extends Node> @NonNull T copy() {
+		Node copy = null;
+		try {
+			final Constructor<? extends Node> constructor = this.getClass().getDeclaredConstructor(double.class, double.class, double.class, double.class);
+			constructor.setAccessible(true);
+			copy = constructor.newInstance(this.x, this.y, this.width, this.height);
+		} catch (final Exception e) {
+			try {
+				final Constructor<? extends Node> constructor = this.getClass().getDeclaredConstructor(double.class, double.class);
+				constructor.setAccessible(true);
+				copy = constructor.newInstance(this.x, this.y);
+			} catch (final Exception e1) {
+				try {
+					final Constructor<? extends Node> constructor = this.getClass().getDeclaredConstructor();
+					constructor.setAccessible(true);
+					copy = constructor.newInstance();
+				} catch (final Exception e2) {
+					throw new RuntimeException("Failed to copy node: " + this.getClass().getSimpleName(), e2);
+				}
+			}
+		}
+
+		copy.ui = this.ui;
+		copy.parent = this.parent;
+		copy.skeleton = this.skeleton;
+
+		copy.callbackMap = new HashMap<>(this.callbackMap);
+
+		copy.x = this.x;
+		copy.y = this.y;
+		copy.width = this.width;
+		copy.height = this.height;
+
+		copy.position = this.position;
+		copy.overflow = this.overflow;
+		copy.anchorX = this.anchorX;
+		copy.anchorY = this.anchorY;
+
+		copy.draggable = this.draggable;
+		copy.zindex = this.zindex;
+		copy.zlevel = this.zlevel;
+
+		copy.aspectRatio = this.aspectRatio;
+
+		copy.mounted = this.mounted;
+
+		copy.lastWidth = this.lastWidth;
+		copy.lastHeight = this.lastHeight;
+
+		for (final Node child : this.children) {
+			final Node childCopy = child.copy();
+			childCopy.parent(copy);
+			copy.children.add(childCopy);
+		}
+
+		for (final Field field : this.getFields(this.getClass())) {
+			if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers()) || Modifier.isTransient(field.getModifiers()) || field.getDeclaringClass() == Node.class) {
+				continue;
+			}
+
+			try {
+				field.setAccessible(true);
+				field.set(copy, field.get(this));
+			} catch (final Exception e) {
+				throw new RuntimeException("Failed to copy node: " + this.getClass().getSimpleName(), e);
+			}
+		}
+
+		return (T) copy;
+	}
+
+	private @NonNull List<@NonNull Field> getFields(final @NonNull Class<?> clazz) {
+		final List<Field> fields = new ArrayList<>();
+		for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
+			Collections.addAll(fields, c.getDeclaredFields());
+		}
+		return fields;
+	}
+
 	/* [ Hook Section ] */
 	public final <T extends UIStore> T useStore(final @NonNull Class<T> clazz) {
-		return this.ui.useStore(clazz);
+		return this.getUi().useStore(clazz);
 	}
 
 	/* [ Setter Section ] */
 	public final <T extends Node> @NonNull T layer(final @NonNull NodeLayer layer) {
-		this.layers.add(layer);
+		this.layerList.add(layer);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T layer(final int index, final @NonNull NodeLayer layer) {
+		this.layerList.add(index, layer);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T clearLayers() {
+		this.layerList.clear();
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T effect(final @NonNull NodeEffect<Node> effect) {
+		return this.effect(node -> effect);
+	}
+
+	public final <T extends Node> @NonNull T effect(final @NonNull Function<@NonNull Node, @NonNull NodeEffect<Node>> supplier) {
+		final NodeEffect<Node> effect = supplier.apply(this);
+		final Map<Class<? extends NodeEffect<Node>>, NodeEffect<Node>> copiedMap = new LinkedHashMap<>(this.effectMap);
+		copiedMap.put((Class<? extends NodeEffect<Node>>) effect.getClass(), effect);
+
+		this.effectMap.clear();
+		this.effectMap.putAll(copiedMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.comparingInt(NodeEffect::getPriority))).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, (Supplier<Map<Class<? extends NodeEffect<Node>>, NodeEffect<Node>>>) LinkedHashMap::new)));
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T removeEffect(final @NonNull Class<? extends NodeEffect<?>> effect) {
+		this.effectMap.remove(effect);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T clearEffects() {
+		this.effectMap.clear();
 		return (T) this;
 	}
 
@@ -1370,6 +1312,7 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T dragging(final boolean dragging, final double mouseX, final double mouseY) {
 		if (!dragging) {
 			this.dragging = false;
+			this.draggedNode = null;
 			return (T) this;
 		}
 
@@ -1381,21 +1324,6 @@ public abstract class Node implements INode {
 		this.targetDragX = this.getAbsoluteX();
 		this.targetDragY = this.getAbsoluteY();
 		this.dragged = true;
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T stencilBox(final double x, final double y, final double width, final double height) {
-		this.stencilBox = new double[] { x, y, width, height };
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T stencilBox(final double width, final double height) {
-		this.stencilBox = new double[] { 0, 0, width, height };
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T stencilBox() {
-		this.stencilBox = new double[] { 0, 0, this.width, this.height };
 		return (T) this;
 	}
 
@@ -1463,12 +1391,16 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T watch(final Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
 		signal.subscribe(value -> {
 			if (this.ui == null) {
-				return true;
+				return this.getUi() != null;
 			}
 
 			this.executeCallback(Node.CALLBACK_WATCH, InternalContext.create(), () -> {
 				for (final WatchProperty property : properties) {
-					property.apply(this);
+					try {
+						property.apply(this);
+					} catch (final Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}, signal, properties);
 
@@ -1528,13 +1460,36 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
+	public final <T extends Node> @NonNull T visible(final @NonNull Signal<?>... signals) {
+		this.visible = node -> {
+			for (final Signal<?> signal : signals) {
+				if (signal.getOrDefault() == null) {
+					return false;
+				}
+			}
+			return true;
+		};
+		return (T) this;
+	}
+
 	public final <T extends Node> @NonNull T enabled(final @NonNull Predicate<@NonNull T> enabled) {
 		this.enabled = (Predicate<Node>) enabled;
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T clearHover() {
+		this.hoverElementList.clear();
 		this.hoverSupplierList.clear();
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T clearHoverLines() {
+		this.hoverSupplierList.clear();
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T clearHoverElements() {
+		this.hoverElementList.clear();
 		return (T) this;
 	}
 
@@ -1557,6 +1512,17 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T hover(final @NonNull HoverSupplier supplier) {
 		this.hoverSupplierList.add(() -> Collections.singletonList(supplier.get()));
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T hoverElements(final @NonNull HoverElement element) {
+		this.hoverElementList.clear();
+		this.hover(element);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T hover(final @NonNull HoverElement element) {
+		this.hoverElementList.add(element);
 		return (T) this;
 	}
 
@@ -1587,6 +1553,10 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T onInit(final @NonNull NodeInitCallback<T> callback) {
 		return this.registerCallback(Node.CALLBACK_INIT, callback);
+	}
+
+	public final <T extends Node> @NonNull T onRender(final @NonNull NodeRenderCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_RENDER, callback);
 	}
 
 	public final <T extends Node> @NonNull T onDraw(final @NonNull NodeDrawCallback<T> callback) {
@@ -1683,7 +1653,6 @@ public abstract class Node implements INode {
 		if (JOID.inst().isDevMode()) {
 			return Node.PRETTY_GSON.toJson(json);
 		}
-
 		return Node.GSON.toJson(json);
 	}
 

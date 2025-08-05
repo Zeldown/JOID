@@ -1,6 +1,5 @@
 package be.zeldown.joid.lib.font.dto.font;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import be.zeldown.joid.lib.resource.Resource;
@@ -25,12 +24,7 @@ public class Font {
 			return this.texture;
 		}
 
-		try {
-			this.texture = Font.BUILDER.of(this.atlas);
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
-
+		this.texture = Font.BUILDER.of(this.atlas);
 		return this.texture;
 	}
 

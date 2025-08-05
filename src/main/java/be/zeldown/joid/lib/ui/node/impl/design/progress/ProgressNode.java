@@ -34,7 +34,7 @@ public class ProgressNode extends Node {
 	public void draw(final double mouseX, final double mouseY) {
 		if (this.resources[0] != null && this.resources[1] != null) {
 			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resources[0]);
-			super.getUi().stencil(this.getProgressX(), this.getProgressY(), this.getProgressWidth(), this.getProgressHeight(), () -> {
+			super.getUi().mask(this.getProgressX(), this.getProgressY(), this.getProgressWidth(), this.getProgressHeight(), () -> {
 				DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resources[1]);
 			});
 		} else {

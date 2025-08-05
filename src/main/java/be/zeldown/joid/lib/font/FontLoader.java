@@ -21,9 +21,20 @@ public class FontLoader {
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
 
-	public static void load(final @NonNull FontInputStream input, final @NonNull Consumer<CustomFont> callback) {
-		FontLoader.loadFont(input, font -> {
-			callback.accept(new CustomFont(font));
+	public static void load(final @NonNull FontInputStream regular, final @NonNull Consumer<be.zeldown.joid.lib.font.impl.custom.CustomFont> callback) {
+		FontLoader.load(regular, null, callback);
+	}
+
+	public static void load(final @NonNull FontInputStream regular, final FontInputStream bold, final @NonNull Consumer<be.zeldown.joid.lib.font.impl.custom.CustomFont> callback) {
+		FontLoader.loadFont(regular, regularFont -> {
+			if (bold == null) {
+				callback.accept(new CustomFont(regularFont, regularFont));
+				return;
+			}
+
+			FontLoader.loadFont(bold, boldFont -> {
+				callback.accept(new CustomFont(regularFont, boldFont));
+			});
 		});
 	}
 

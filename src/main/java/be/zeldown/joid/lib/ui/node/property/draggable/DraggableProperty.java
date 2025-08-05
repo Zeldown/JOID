@@ -14,6 +14,7 @@ import lombok.NonNull;
 public class DraggableProperty {
 
 	private Predicate<Node>   enabled;
+	private DraggableType     type;
 
 	private DraggableAreaType areaType;
 	private Object            areaObject;
@@ -23,6 +24,7 @@ public class DraggableProperty {
 
 	private DraggableProperty() {
 		this.enabled    = node -> true;
+		this.type       = DraggableType.MOVE;
 		this.areaType   = DraggableAreaType.FREE;
 		this.areaObject = null;
 		this.snapType   = DraggableSnapType.NEAREST;
@@ -147,6 +149,11 @@ public class DraggableProperty {
 		return this;
 	}
 
+	public final @NonNull DraggableProperty type(final @NonNull DraggableType type) {
+		this.type = type;
+		return this;
+	}
+
 	public final @NonNull DraggableProperty area(final @NonNull DraggableAreaType areaType) {
 		this.areaType = areaType;
 		return this;
@@ -197,6 +204,13 @@ public class DraggableProperty {
 
 	public final @NonNull DraggableProperty copy() {
 		return new DraggableProperty().enabled(this.enabled).area(this.areaType, this.areaObject).snap(this.snapType, this.snapNodes == null ? null : this.snapNodes.toArray(new Node[0]));
+	}
+
+	public enum DraggableType {
+
+		MOVE,
+		COPY;
+
 	}
 
 	public enum DraggableAreaType {

@@ -12,7 +12,7 @@ public class DirectFloat4Uniform extends DirectShaderUniform implements Float4Un
 
 	@Override
 	public void setValue(final float f1, final float f2, final float f3, final float f4) {
-		GL20.glUniform4f(super.getLocation(), f1, f2, f3, f4);
+		GL20.glUniform4f(this.getLocation(), f1, f2, f3, f4);
 	}
 
 }

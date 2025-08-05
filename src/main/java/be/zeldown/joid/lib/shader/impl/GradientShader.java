@@ -1,78 +1,56 @@
 package be.zeldown.joid.lib.shader.impl;
 
-import java.io.InputStream;
-
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.shader.GLShader;
-import be.zeldown.joid.lib.shader.IGLShader;
-import be.zeldown.joid.lib.shader.blend.ShaderBlendState;
 import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
 import be.zeldown.joid.lib.shader.uniform.Float4Uniform;
-import lombok.Getter;
+import be.zeldown.joid.lib.shader.uniform.IntUniform;
 import lombok.NonNull;
 
-public class GradientShader {
+public class GradientShader extends GLShaderImpl {
 
-	@Getter private static IGLShader     shader;
-	@Getter private static Float2Uniform startPosUniform;
-	@Getter private static Float2Uniform endPosUniform;
-	@Getter private static Float4Uniform startColorUniform;
-	@Getter private static Float4Uniform endColorUniform;
-	@Getter private static Float4Uniform canvasUniform;
+	private static final GradientShader INSTANCE = new GradientShader();
 
-	static {
-		try {
-			final InputStream vert = JOID.class.getResourceAsStream("/assets/shaders/gradient/gradient.vsh");
-			final InputStream frag = JOID.class.getResourceAsStream("/assets/shaders/gradient/gradient.fsh");
-			GradientShader.shader = GLShader.from(vert, frag, ShaderBlendState.NORMAL);
-			if (GradientShader.shader.isActive()) {
-				GradientShader.startPosUniform   = GradientShader.shader.getFloat2Uniform("startPos");
-				GradientShader.endPosUniform     = GradientShader.shader.getFloat2Uniform("endPos");
-				GradientShader.startColorUniform = GradientShader.shader.getFloat4Uniform("startColor");
-				GradientShader.endColorUniform   = GradientShader.shader.getFloat4Uniform("endColor");
-				GradientShader.canvasUniform     = GradientShader.shader.getFloat4Uniform("canvas");
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-
-			GradientShader.shader            = null;
-			GradientShader.startPosUniform   = null;
-			GradientShader.endPosUniform     = null;
-			GradientShader.startColorUniform = null;
-			GradientShader.endColorUniform   = null;
-			GradientShader.canvasUniform     = null;
-		}
+	private GradientShader() {
+		this.load(JOID.class.getResourceAsStream("/assets/shaders/gradient/gradient.vsh"), JOID.class.getResourceAsStream("/assets/shaders/gradient/gradient.fsh"));
 	}
 
-	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
-		if (!GradientShader.isAvailable()) {
-			throw new RuntimeException("GradientShader is not available");
+	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final Runnable runnable, final @NonNull Vector4f canvas) {
+		if (!GradientShader.INSTANCE.isAvailable()) {
+			return;
 		}
 
-		if (startPos.x < 0 || startPos.x > 1 || startPos.y < 0 || startPos.y > 1) {
-			throw new RuntimeException("startPos have to be normalized [0, 1]");
+		GradientShader.INSTANCE.bind();
+		final Float2Uniform startPosUniform = GradientShader.INSTANCE.shader.getFloat2Uniform("startPos");
+		startPosUniform.setValue(startPos.x, startPos.y);
+
+		final Float2Uniform endPosUniform = GradientShader.INSTANCE.shader.getFloat2Uniform("endPos");
+		endPosUniform.setValue(endPos.x, endPos.y);
+
+		final Float4Uniform startColorUniform = GradientShader.INSTANCE.shader.getFloat4Uniform("startColor");
+		startColorUniform.setValue(startColor.r, startColor.g, startColor.b, startColor.a);
+
+		final Float4Uniform endColorUniform = GradientShader.INSTANCE.shader.getFloat4Uniform("endColor");
+		endColorUniform.setValue(endColor.r, endColor.g, endColor.b, endColor.a);
+
+		final IntUniform hasTextureUniform = GradientShader.INSTANCE.shader.getIntUniform("hasTexture");
+		hasTextureUniform.setValue(0);
+
+		final Float4Uniform canvasUniform = GradientShader.INSTANCE.shader.getFloat4Uniform("canvas");
+		canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
+
+		if (runnable != null) {
+			runnable.run();
 		}
 
-		if (endPos.x < 0 || endPos.x > 1 || endPos.y < 0 || endPos.y > 1) {
-			throw new RuntimeException("endPos have to be be normalized [0, 1]");
-		}
-
-		GradientShader.shader.bind();
-		GradientShader.startPosUniform.setValue(startPos.x, 1F - startPos.y);
-		GradientShader.endPosUniform.setValue(endPos.x, 1F - endPos.y);
-		GradientShader.startColorUniform.setValue(startColor.r, startColor.g, startColor.b, startColor.a);
-		GradientShader.endColorUniform.setValue(endColor.r, endColor.g, endColor.b, endColor.a);
-		GradientShader.canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
-		runnable.run();
-		GradientShader.shader.unbind();
+		GradientShader.INSTANCE.unbind();
 	}
 
-	public static boolean isAvailable() {
-		return GradientShader.shader != null;
+	public static @NonNull GradientShader inst() {
+		return GradientShader.INSTANCE;
 	}
 
 }

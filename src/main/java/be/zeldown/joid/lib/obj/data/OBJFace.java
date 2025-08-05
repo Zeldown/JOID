@@ -22,7 +22,7 @@ public final class OBJFace {
 			this.faceNormal = this.normal();
 		}
 
-		tessellator.normals(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
+		tessellator.setNormal(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
 
 		float averageU = 0F;
 		float averageV = 0F;
@@ -51,9 +51,9 @@ public final class OBJFace {
 					offsetV = -offsetV;
 				}
 
-				tessellator.vertexUV(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ(), this.textureCoordinates[i].getU() + offsetU, this.textureCoordinates[i].getV() + offsetV);
+				tessellator.addVertexWithUV(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ(), this.textureCoordinates[i].getU() + offsetU, this.textureCoordinates[i].getV() + offsetV);
 			} else {
-				tessellator.vertex(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ());
+				tessellator.addVertex(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ());
 			}
 		}
 	}

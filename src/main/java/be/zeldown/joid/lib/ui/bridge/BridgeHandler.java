@@ -13,7 +13,12 @@ public final class BridgeHandler {
 	}
 
 	public static IUIBridge get(final @NonNull UI ui) {
-		return BridgeHandler.get(ui.getClass());
+		for (final IUIBridge bridge : BridgeHandler.BRIDGE_LIST.reversed()) {
+			if (bridge.canHandle(ui)) {
+				return bridge;
+			}
+		}
+		return null;
 	}
 
 	public static IUIBridge get(final @NonNull Class<? extends UI> clazz) {
@@ -22,7 +27,16 @@ public final class BridgeHandler {
 				return bridge;
 			}
 		}
+		return null;
+	}
 
+	@SuppressWarnings("unchecked")
+	public static <T extends IUIBridge> T getBridge(final @NonNull Class<? extends T> bridgeClass) {
+		for (final IUIBridge bridge : BridgeHandler.BRIDGE_LIST) {
+			if (bridgeClass.isInstance(bridge)) {
+				return (T) bridge;
+			}
+		}
 		return null;
 	}
 

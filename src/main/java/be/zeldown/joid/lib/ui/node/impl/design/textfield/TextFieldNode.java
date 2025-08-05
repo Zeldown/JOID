@@ -6,7 +6,6 @@ import org.lwjgl.input.Keyboard;
 
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
@@ -14,6 +13,7 @@ import be.zeldown.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldC
 import be.zeldown.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldEnterCallback;
 import be.zeldown.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldFocusCallback;
 import be.zeldown.joid.lib.utils.align.Align;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.clipboard.ClipboardUtils;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import lombok.Getter;
@@ -126,8 +126,8 @@ public class TextFieldNode extends Node {
 
 		final double textX = tmpTextX;
 		final double textY = tmpTextY;
-		super.getUi().stencil(super.getX() + this.marginLeft, super.getY(), super.getWidth() - this.marginLeft - this.marginRight, super.getHeight(), () -> {
-			DrawUtils.TEXT.drawText(textX, textY, Text.create(isPlaceholder ? this.placeholder : this.text, isPlaceholder ? this.info.copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)) : this.info));
+		super.getUi().mask(super.getX() + this.marginLeft, super.getY(), super.getWidth() - this.marginLeft - this.marginRight, super.getHeight(), () -> {
+			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? this.placeholder : this.text, isPlaceholder ? this.info.copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)) : this.info, Align.START, Align.START);
 
 			if (this.focused) {
 				final String beforeCursor = this.text.substring(0, this.cursorPos);
@@ -326,16 +326,24 @@ public class TextFieldNode extends Node {
 	}
 
 	private final void setText(String newText) {
-		final String oldText = this.text;
+		if (newText == null) {
+			newText = "";
+		}
+
+		final String oldText = this.text == null ? "" : this.text;
 		newText = this.filter.apply(oldText, newText);
 		if (this.maxTextLength >= 0 && newText.length() > this.maxTextLength) {
 			newText = newText.substring(0, this.maxTextLength);
 		}
 
 		final String finalNewText = newText;
-		this.executeCallback(TextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+		if (!finalNewText.equals(oldText)) {
+			this.executeCallback(TextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+				this.text = finalNewText;
+			}, oldText, finalNewText);
+		} else {
 			this.text = finalNewText;
-		}, oldText, finalNewText);
+		}
 	}
 
 	private final void holdInput(final int keyCode) {
@@ -346,7 +354,7 @@ public class TextFieldNode extends Node {
 	}
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
 			this.focused(false);
 			this.selectionStart = -1;
@@ -475,7 +483,7 @@ public class TextFieldNode extends Node {
 	}
 
 	public final <T extends TextFieldNode> @NonNull T text(final @NonNull String text) {
-		this.text = text;
+		this.setText(text);
 		return (T) this;
 	}
 

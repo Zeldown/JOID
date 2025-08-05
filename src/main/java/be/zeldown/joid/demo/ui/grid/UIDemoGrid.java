@@ -14,7 +14,7 @@ public class UIDemoGrid extends UIDemo {
 		.verticalMargin(5D)
 		.horizontalMargin(5D)
 		.body(grid -> {
-			for (int i = 0; i < 50; i++) {
+			for (int i=0;i<50;i++) {
 				RectNode.create(0, 0, 50, 50).color(Color.RED).attach(grid);
 			}
 		})

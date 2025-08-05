@@ -6,6 +6,7 @@ import be.zeldown.joid.demo.ui.UIDemo;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.ui.core.data.UIData;
+import be.zeldown.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import be.zeldown.joid.lib.ui.node.impl.design.shape.RectNode;
 import be.zeldown.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import be.zeldown.joid.lib.utils.align.Align;
@@ -27,6 +28,7 @@ public class UIDemoSimple extends UIDemo {
 					)
 			.color(Color.RED, Color.GREEN)
 			.border(Color.GREEN, Color.RED, 3D, true)
+			.effect(RoundedNodeEffect.create(30F))
 			.body(n -> {
 				final double childWidth = n.dw(3D);
 				final double childHeight = n.dh(2D);
@@ -38,7 +40,9 @@ public class UIDemoSimple extends UIDemo {
 						childHeight
 						)
 				.color(Color.RED, Color.WHITE)
-				.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+				.onClick((node, mouseX, mouseY, clickType) -> {
+					System.out.println(node);
+				})
 				.hover(() -> "hover1")
 				.attach(n);
 
@@ -49,7 +53,9 @@ public class UIDemoSimple extends UIDemo {
 						childHeight
 						)
 				.color(Color.RED, Color.WHITE)
-				.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+				.onClick((node, mouseX, mouseY, clickType) -> {
+					System.out.println(node);
+				})
 				.hover(() -> Arrays.asList("hover1", "hover2"))
 				.body(n1 -> {
 					RectNode.create(
@@ -59,7 +65,9 @@ public class UIDemoSimple extends UIDemo {
 							n1.dh(2D)
 							)
 					.color(Color.RED, Color.MAGENTA)
-					.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+					.onClick((node, mouseX, mouseY, clickType) -> {
+						System.out.println(node);
+					})
 					.hover(() -> Arrays.asList("hover1", "hover2", "hover3"))
 					.attach(n1);
 				})

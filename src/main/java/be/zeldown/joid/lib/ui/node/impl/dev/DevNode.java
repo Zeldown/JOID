@@ -32,6 +32,7 @@ import be.zeldown.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import be.zeldown.joid.lib.ui.node.property.overflow.OverflowProperty;
 import be.zeldown.joid.lib.ui.node.property.watch.WatchProperty;
 import be.zeldown.joid.lib.utils.align.Align;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import be.zeldown.joid.lib.utils.signal.Signal;
 import be.zeldown.joid.lib.utils.signal.impl.primitive.BooleanSignal;
@@ -112,8 +113,9 @@ public final class DevNode extends Node {
 					this.inspectSignal.set(!this.inspectSignal.getOrDefault());
 					this.inspectedNode.set(null);
 					this.inspectedNodeLocked.set(false);
+					this.inspectedNodeLocked.publish();
 				})
-				.hover(() -> "[I] Inspect")
+				.hover(() -> "§8[§cI§8] §7Inspect")
 				.attach(flex);
 
 				ResourceNode
@@ -127,7 +129,7 @@ public final class DevNode extends Node {
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					node.getUi().reload();
 				})
-				.hover(() -> "[R] Reload")
+				.hover(() -> "§8[§cR§8] §7Reload")
 				.attach(flex);
 
 				ResourceNode
@@ -141,7 +143,7 @@ public final class DevNode extends Node {
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					this.eyeSignal.set(!this.eyeSignal.getOrDefault());
 				})
-				.hover(() -> "[U] Update")
+				.hover(() -> "§8[§cU§8] §7Update")
 				.attach(flex);
 
 				ResourceNode
@@ -155,7 +157,7 @@ public final class DevNode extends Node {
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					this.gridSignal.set(!this.gridSignal.getOrDefault());
 				})
-				.hover(() -> "[G] Grid")
+				.hover(() -> "§8[§cG§8] §7Grid")
 				.attach(flex);
 			} catch (final Exception e) {
 				e.printStackTrace();
@@ -298,6 +300,7 @@ public final class DevNode extends Node {
 						if (inspectedNode.getParent() != null) {
 							this.inspectedNode.set(inspectedNode.getParent());
 							this.inspectedNodeLocked.set(true);
+							this.inspectedNodeLocked.publish();
 						}
 					})
 					.attach(scroll);
@@ -314,6 +317,7 @@ public final class DevNode extends Node {
 						.onClick((clickedNode, mouseX, mouseY, clickType) -> {
 							this.inspectedNode.set(child);
 							this.inspectedNodeLocked.set(true);
+							this.inspectedNodeLocked.publish();
 						})
 						.attach(scroll);
 					}
@@ -475,7 +479,7 @@ public final class DevNode extends Node {
 			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (1080 - mouseY) / 2, Text.create((int) (1080 - mouseY) + "px", TextInfo.create(InternalFont.MONTSERRAT_REGULAR, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
 		}
 
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK);
+		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK, 10F);
 	}
 
 	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {
@@ -508,22 +512,24 @@ public final class DevNode extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final int clickType, final InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final InternalContext context) {
 		if (context.isCancelled() || !super.isEnabled()) {
 			return;
 		}
 
 		if (this.inspectSignal.getOrDefault() && this.inspectedNode.getOrDefault() != null) {
-			if (clickType == 0 && !this.inspectedNodeLocked.getOrDefault()) {
+			if (clickType.isLeft() && !this.inspectedNodeLocked.getOrDefault()) {
 				this.inspectedNodeLocked.set(true);
+				this.inspectedNodeLocked.publish();
 				context.cancel();
-			} else if (clickType == 1 && this.inspectedNodeLocked.getOrDefault()) {
+			} else if (clickType.isRight() && this.inspectedNodeLocked.getOrDefault()) {
 				this.inspectedNodeLocked.set(false);
+				this.inspectedNodeLocked.publish();
 				context.cancel();
 			}
 		}
 
-		if (clickType == 1 && this.gridSignal.getOrDefault()) {
+		if (clickType.isRight() && this.gridSignal.getOrDefault()) {
 			this.gridColorIndex = (this.gridColorIndex + 1) % DevNode.GRID_COLORS.length;
 		}
 	}
@@ -538,6 +544,7 @@ public final class DevNode extends Node {
 			this.inspectSignal.set(!this.inspectSignal.getOrDefault());
 			this.inspectedNode.set(null);
 			this.inspectedNodeLocked.set(false);
+			this.inspectedNodeLocked.publish();
 			return;
 		}
 
@@ -562,6 +569,7 @@ public final class DevNode extends Node {
 
 		this.inspectedNode.set(this.inspectedNode.getOrDefault().getParent());
 		this.inspectedNodeLocked.set(true);
+		this.inspectedNodeLocked.publish();
 	}
 
 }

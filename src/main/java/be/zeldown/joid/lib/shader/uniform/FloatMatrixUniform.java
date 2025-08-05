@@ -1,7 +1,9 @@
 package be.zeldown.joid.lib.shader.uniform;
 
+import lombok.NonNull;
+
 public interface FloatMatrixUniform extends ShaderUniform {
 
-	void setValue(final float[] value);
+	public void setValue(final @NonNull float[] value);
 
 }

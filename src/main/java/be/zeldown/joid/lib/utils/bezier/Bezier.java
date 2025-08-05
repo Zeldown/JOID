@@ -13,7 +13,7 @@ public class Bezier {
 	/**
 	 * The function calculates a quadratic Bezier curve point at parameter t using start, end, and control
 	 * vectors.
-	 * 
+	 *
 	 * @param t The parameter `t` in the `quadratic` method represents the interpolation value between the
 	 * start and end points of a quadratic Bezier curve. It typically ranges from 0 to 1, where 0
 	 * corresponds to the start point and 1 corresponds to the end point of the curve. Values
@@ -36,7 +36,7 @@ public class Bezier {
 	/**
 	 * This Java function calculates a point on a cubic Bezier curve given a parameter value and control
 	 * points.
-	 * 
+	 *
 	 * @param t The parameter `t` represents the interpolation value between 0 and 1 for the cubic Bezier
 	 * curve calculation. It determines the position along the curve where you want to calculate the
 	 * corresponding point.

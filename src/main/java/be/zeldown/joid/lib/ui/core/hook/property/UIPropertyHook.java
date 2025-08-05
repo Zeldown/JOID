@@ -20,6 +20,7 @@ import lombok.NonNull;
 public final class UIPropertyHook {
 
 	private static final Gson GSON = new GsonBuilder().create();
+
 	private static final Map<String, List<Field>> PROPERTY_MAP = new HashMap<>();
 
 	public static void load(final @NonNull UI ui) {
@@ -108,7 +109,7 @@ public final class UIPropertyHook {
 		return fields;
 	}
 
-	private static JsonObject loadFile(final @NonNull UI ui) {
+	private static @NonNull JsonObject loadFile(final @NonNull UI ui) {
 		final File parent = new File(JOID.inst().getConfigDir(), "property");
 		final File file = new File(parent, ui.getClass().getName() + ".dat");
 		try {
@@ -135,7 +136,7 @@ public final class UIPropertyHook {
 
 	private static void saveFile(final @NonNull UI ui, final @NonNull JsonObject json) {
 		final File parent = new File(JOID.inst().getConfigDir(), "property");
-		final File file = new File(parent, ui.getClass().getName() + ".dat");
+		final File file = new File(parent, ui.getClass().getName() + ".zui");
 		try {
 			if (!file.exists()) {
 				if (!parent.exists()) {

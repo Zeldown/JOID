@@ -123,8 +123,9 @@ public class TweenAnimator {
 	 * @param duration The duration of the animation.
 	 * @param value The target value of the animation.
 	 */
-	public void push(final float duration, final float value) {
+	public @NonNull TweenAnimator push(final float duration, final float value) {
 		this.push(duration, value, TweenEquations.LINEAR);
+		return this;
 	}
 
 	/**
@@ -135,8 +136,9 @@ public class TweenAnimator {
 	 * @param equation The easing equation to be used for the animation.
 	 * @throws NullPointerException If the provided equation is {@code null}.
 	 */
-	public void push(final float duration, final float value, final @NonNull TweenEquation equation) {
+	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
 		this.timeline.push(Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
+		return this;
 	}
 
 	/**
@@ -170,10 +172,11 @@ public class TweenAnimator {
 	 * Updates the TweenAnimator, advancing the animation progress based on the elapsed time since the last update.
 	 * The internal TweenManager is updated with the adjusted delta time.
 	 */
-	public void update() {
+	public @NonNull TweenAnimator update() {
 		final long now = System.currentTimeMillis();
 		this.update(now - this.lastUpdate);
 		this.lastUpdate = now;
+		return this;
 	}
 
 	/**
@@ -182,8 +185,9 @@ public class TweenAnimator {
 	 *
 	 * @param delta The time elapsed since the last update, adjusted by the animation speed.
 	 */
-	public void update(final float delta) {
+	public @NonNull TweenAnimator update(final float delta) {
 		this.manager.update(delta * this.speed);
+		return this;
 	}
 
 }

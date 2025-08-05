@@ -16,6 +16,7 @@ public final class TextInfo {
 	private float   letterSpacing;
 	private float   lineHeight;
 	private Color   color;
+	private boolean colored;
 	private boolean italic;
 
 	private Color shadowColor;
@@ -27,7 +28,7 @@ public final class TextInfo {
 	}
 
 	private TextInfo(final IFont font, final float fontSize, final Color color) {
-		this(font, fontSize, 0F, 0F, color, false, null, fontSize / 13.5F, fontSize / 13.5F);
+		this(font, fontSize, 0, 0, color, true, false, null, fontSize / 13.5F, fontSize / 13.5F);
 	}
 
 	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
@@ -105,6 +106,11 @@ public final class TextInfo {
 		return this;
 	}
 
+	public final @NonNull TextInfo colored(final boolean colored) {
+		this.colored = colored;
+		return this;
+	}
+
 	public final @NonNull TextInfo italic(final boolean italic) {
 		this.italic = italic;
 		return this;
@@ -127,7 +133,12 @@ public final class TextInfo {
 	}
 
 	public final @NonNull TextInfo copy() {
-		return new TextInfo(this.font, this.fontSize, this.letterSpacing, this.lineHeight, this.color, this.italic, this.shadowColor, this.shadowX, this.shadowY);
+		return new TextInfo(this.font, this.fontSize, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY);
+	}
+
+	@Override
+	public String toString() {
+		return this.font.toString() + "x" + this.fontSize + " [" + this.color + "]";
 	}
 
 }

@@ -7,12 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Stack;
 
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.util.concurrent.AtomicDouble;
@@ -24,13 +24,13 @@ import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.opengl.context.Drawing;
-import be.zeldown.joid.lib.opengl.framebuffer.FrameBuffer;
-import be.zeldown.joid.lib.opengl.modifier.GLCoords;
+import be.zeldown.joid.lib.opengl.modifier.GLVector;
 import be.zeldown.joid.lib.opengl.transform.GLTransformation;
 import be.zeldown.joid.lib.ui.bridge.BridgeHandler;
 import be.zeldown.joid.lib.ui.bridge.IUIBridge;
-import be.zeldown.joid.lib.ui.core.data.UIData;
 import be.zeldown.joid.lib.ui.core.data.UIDataObject;
+import be.zeldown.joid.lib.ui.core.data.debug.UIDataDebugObject;
+import be.zeldown.joid.lib.ui.core.data.popup.UIDataPopupObject;
 import be.zeldown.joid.lib.ui.core.hook.property.UIPropertyHook;
 import be.zeldown.joid.lib.ui.core.hook.store.UIStore;
 import be.zeldown.joid.lib.ui.core.hook.store.UIStoreHook;
@@ -41,6 +41,7 @@ import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.impl.dev.DevNode;
 import be.zeldown.joid.lib.ui.node.property.draggable.DraggableProperty;
 import be.zeldown.joid.lib.utils.align.Align;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import be.zeldown.joid.lib.utils.list.IndexedConcurrentList;
 import be.zeldown.joid.lib.utils.list.IndexedElement;
@@ -54,20 +55,22 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
 
-	@NonNull private final UIDataObject data;
-	@NonNull private final FrameBuffer frameBuffer;
-	@NonNull private final Map<Integer[], Runnable> keybindMap;
+	@NonNull private final UIDataObject         data;
+	@NonNull private final UIDataDebugObject    debug;
+	@NonNull private final UIDataPopupObject    popup;
+
+	@NonNull private final Stack<StencilState>                  stencilStack;
+	@NonNull private final Map<Integer[], Runnable>             keybindMap;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
+	private transient Transition                             transition;
+	private transient FileAlterationMonitor                  fileMonitor;
+	private transient List<UIScheduledTask>                  scheduledTaskList;
+	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
+
+	private final DoubleSignal zoomLevel;
 	private final DoubleSignal scaledWidth;
 	private final DoubleSignal scaledHeight;
-
-	private transient FileAlterationMonitor fileMonitor;
-	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
-	private transient List<UIScheduledTask> scheduledTaskList;
-
-	private transient Transition transition;
-	private transient IUIBridge bridge;
 
 	private boolean initialized;
 
@@ -75,49 +78,46 @@ public abstract class UI implements IUI, IndexedElement {
 	private double y;
 	private double width;
 	private double height;
-	private double lastWidth;
-	private double lastHeight;
 
 	private double viewportWidth;
 	private double viewportHeight;
 
 	private double fps;
-	private long fpsCounter;
-	private long lastFpsUpdate;
-	private long renderTime;
+	private long   fpsCounter;
+	private long   lastFpsUpdate;
+	private long   renderTime;
 
-	private double renderPipelineLevel;
+	private double  mouseX;
+	private double  mouseY;
+	private double  renderPipelineLevel;
 	private boolean onTop;
 
 	private DevNode devNode;
 
 	public UI() {
-		if (this.getClass().isAnnotationPresent(UIData.class)) {
-			this.data = new UIDataObject(this.getClass().getAnnotation(UIData.class));
-		} else if (this.getClass().getSuperclass() != null && this.getClass().getSuperclass().isAnnotationPresent(UIData.class)) {
-			this.data = new UIDataObject(this.getClass().getSuperclass().getAnnotation(UIData.class));
-		} else {
-			this.data = new UIDataObject();
-		}
+		this.data = UIDataObject.getOrDefault(this.getClass());
+		this.debug = UIDataDebugObject.getOrDefault(this.getClass());
+		this.popup = UIDataPopupObject.getOrDefault(this.getClass());
 
-		this.frameBuffer = new FrameBuffer();
-		this.nodeList = new IndexedConcurrentList<>();
+		this.stencilStack = new Stack<>();
 		this.keybindMap = new HashMap<>();
+		this.nodeList = new IndexedConcurrentList<>();
 		this.storeMap = new HashMap<>();
 		this.scheduledTaskList = new ArrayList<>();
 
-		if (this.data.popup().active() && this.data.popup().transition().isActive()) {
+		if (this.popup.active() && this.popup.transition().isActive()) {
 			this.transition = new PopTransition();
 
-			if (!this.data.popup().transition().isIn()) {
+			if (!this.popup.transition().isIn()) {
 				this.transition.getIn().disable();
 			}
 
-			if (!this.data.popup().transition().isOut()) {
+			if (!this.popup.transition().isOut()) {
 				this.transition.getOut().disable();
 			}
 		}
 
+		this.zoomLevel = new DoubleSignal(1D);
 		this.scaledWidth = new DoubleSignal(1920D);
 		this.scaledHeight = new DoubleSignal(1080D);
 
@@ -125,22 +125,20 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	/* [ Bridge Section ] */
-	public final void load(final double screenWidth, final double screenHeight) {
+	public final void load(final double finalWidth, final double finalHeight) {
+		this.load(finalWidth, finalHeight, 1D);
+	}
+
+	public final void load(final double finalWidth, final double finalHeight, final double zoomLevel) {
 		final long start = System.nanoTime();
-		if (JOID.inst().isDevMode() && this.data.profiler() && !this.initialized) {
+		if (JOID.inst().isDevMode() && this.debug.profiler() && !this.initialized) {
 			System.out.println("##########################");
 			System.out.println("Starting load...");
 		}
 
-		this.width = screenWidth;
-		this.height = screenHeight;
-
-		if (this.frameBuffer.getFramebuffer() == -1 || this.lastWidth != screenWidth || this.lastHeight != screenHeight) {
-			this.frameBuffer.prepare((int) this.width, (int) this.height, GL11.GL_LINEAR);
-		}
-
-		this.lastWidth = screenWidth;
-		this.lastHeight = screenHeight;
+		this.width  = finalWidth;
+		this.height = finalHeight;
+		this.zoomLevel.set(zoomLevel);
 
 		final double baseRatio = 16D / 9D;
 		final double ratio = this.width / this.height;
@@ -193,14 +191,14 @@ public abstract class UI implements IUI, IndexedElement {
 				}
 			}
 
-			if (JOID.inst().isDevMode() && this.data.profiler()) {
+			if (JOID.inst().isDevMode() && this.debug.profiler()) {
 				final long end = System.nanoTime();
 				System.out.println("Load completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
 				System.out.println("##########################");
 			}
 		}
 
-		if (JOID.inst().isDevMode() && this.data.hotreload() && this.fileMonitor == null) {
+		if (JOID.inst().isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
 			final File currentFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 			final FileAlterationObserver observer = new FileAlterationObserver(currentFile.getParentFile());
 			observer.addListener(new FileAlterationListener() {
@@ -221,7 +219,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 					final long start = System.nanoTime();
 					UI.this.initialized = false;
-					UI.this.load(UI.this.width, UI.this.height);
+					UI.this.load(UI.this.width, UI.this.height, UI.this.zoomLevel.getOrDefault());
 					final long end = System.nanoTime();
 
 					System.out.println("Reload completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
@@ -265,7 +263,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	public final boolean onMousePressed(final int clickType) {
+	public final boolean onMousePressed(final @NonNull ClickType clickType) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -277,11 +275,12 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
 		this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+
 		this.mousePressed(mx, my, clickType, context);
 		return context.isCancelled();
 	}
 
-	public final boolean onMouseDragged(final int clickType, final long deltaTime) {
+	public final boolean onMouseDragged(final @NonNull ClickType clickType, final long deltaTime) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -291,11 +290,12 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final InternalContext context = InternalContext.create();
 		this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, clickType, deltaTime, context));
+
 		this.mouseDragged(mx, my, clickType, deltaTime, context);
 		return context.isCancelled();
 	}
 
-	public final boolean onMouseReleased(final int clickType) {
+	public final boolean onMouseReleased(final @NonNull ClickType clickType) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -305,6 +305,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final InternalContext context = InternalContext.create();
 		this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, clickType, context));
+
 		this.mouseReleased(mx, my, clickType, context);
 		return context.isCancelled();
 	}
@@ -317,8 +318,15 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
+		if (JOID.inst().isDevMode() && Keyboard.isKeyDown(Keyboard.KEY_LMENU) && value != 0) {
+			this.zoomLevel.add(value / (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 1000D : 10000D));
+			this.updateScaledSize();
+			return true;
+		}
+
 		final InternalContext context = InternalContext.create();
 		this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, value, context));
+
 		this.mouseScroll(mx, my, value, context);
 		return context.isCancelled();
 	}
@@ -348,8 +356,41 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
+		if (this.data.zoomable() && !context.isCancelled()) {
+			if ((keyCode == Keyboard.KEY_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+				double tempZoomLevel = this.zoomLevel.getOrDefault();
+				tempZoomLevel += 0.1D;
+				tempZoomLevel = Math.min(1D, tempZoomLevel);
+				if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
+					this.zoomLevel.set(tempZoomLevel);
+					this.updateScaledSize();
+					context.cancel();
+				}
+			}
+
+			if ((keyCode == Keyboard.KEY_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+				double tempZoomLevel = this.zoomLevel.getOrDefault();
+				tempZoomLevel -= 0.1D;
+				tempZoomLevel = Math.max(0.1D, tempZoomLevel);
+				if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
+					this.zoomLevel.set(tempZoomLevel);
+					this.updateScaledSize();
+					context.cancel();
+				}
+			}
+		}
+
 		if (JOID.inst().isDevMode() && !context.isCancelled()) {
 			if (keyCode == Keyboard.KEY_R && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || keyCode == Keyboard.KEY_F5) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+					double tempZoomLevel = this.zoomLevel.getOrDefault();
+					tempZoomLevel = 1D;
+					if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
+						this.zoomLevel.set(tempZoomLevel);
+						this.updateScaledSize();
+					}
+				}
+
 				this.reload();
 				context.cancel();
 			} else if (keyCode == Keyboard.KEY_F3 && this.devNode != null) {
@@ -420,8 +461,11 @@ public abstract class UI implements IUI, IndexedElement {
 		UIPropertyHook.save(this);
 	}
 
-	public final void draw() {
+	public final void draw(final double mouseX, final double mouseY) {
 		final long start = System.nanoTime();
+
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
 
 		final List<UIScheduledTask> toRemove = new ArrayList<>();
@@ -435,6 +479,14 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 		this.scheduledTaskList.removeAll(toRemove);
+
+		double tempZoomLevel = this.zoomLevel.getOrDefault();
+		tempZoomLevel = Math.min(1D, tempZoomLevel);
+		tempZoomLevel = Math.max(0.1D, tempZoomLevel);
+		if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
+			this.zoomLevel.set(tempZoomLevel);
+			this.updateScaledSize();
+		}
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
@@ -467,17 +519,25 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		//		this.frameBuffer.clear().bind();
+		if (this.data.projection()) {
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glLoadIdentity();
+			GL11.glOrtho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
+		}
 
 		final double translateX = this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
 		final double translateY = this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
-		GLTransformation.create().translate(GLCoords.create(translateX, translateY)).apply(() -> {
+		GLTransformation.create().translate(GLVector.create(translateX, translateY)).apply(() -> {
 			this.renderPipelineLevel = 0;
 			final AtomicDouble lastRenderPipelineLevel = new AtomicDouble(this.renderPipelineLevel);
+
+			if (this.zoomLevel.getOrDefault() != 1D) {
+				GL11.glTranslated(this.data.getAnchorPositionX(), this.data.getAnchorPositionY(), 0D);
+				GL11.glScaled(this.zoomLevel.getOrDefault(), this.zoomLevel.getOrDefault(), 1D);
+				GL11.glTranslated(-this.data.getAnchorPositionX(), -this.data.getAnchorPositionY(), 0D);
+			}
 
 			this.nodeList
 			.ordered()
@@ -536,13 +596,6 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		});
 
-		//		this.frameBuffer.unbind();
-		//		this.frameBuffer.draw(this.viewportWidth, this.viewportHeight);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0D, this.width, this.height, 0D, 0D, 10000D);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
 		if (this.transition != null) {
 			if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
 				this.transition.getIn().post(this, mx, my);
@@ -556,7 +609,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final long end = System.nanoTime();
 		this.renderTime = end - start;
 
-		if (JOID.inst().isDevMode() && this.data.profiler()) {
+		if (JOID.inst().isDevMode() && this.debug.profiler()) {
 			final float ms = this.renderTime / 1_000_000F;
 			if (ms > 16.66F) {
 				System.err.println("##########################");
@@ -581,160 +634,113 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	/* [ Utility Section ] */
-	/**
-	 * Gets the X-coordinate of the mouse within the scaled viewport.
-	 *
-	 * @return The X-coordinate of the mouse.
-	 */
 	public final double getMouseX() {
-		return this.getRelativeX(Mouse.getX() * (this.viewportWidth / this.width));
+		return this.getRelativeX(this.mouseX * (this.viewportWidth / this.width));
 	}
 
-	/**
-	 * Gets the Y-coordinate of the mouse within the scaled viewport.
-	 *
-	 * @return The Y-coordinate of the mouse.
-	 */
 	public final double getMouseY() {
-		return this.getRelativeY((this.height - Mouse.getY()) * (this.viewportHeight / this.height));
+		return this.getRelativeY((this.height - this.mouseY) * (this.viewportHeight / this.height));
 	}
 
-	/**
-	 * Converts a value from the source coordinate space to the scaled viewport coordinate space along the x-axis.
-	 *
-	 * @param value The value to convert.
-	 * @return The converted value in the scaled viewport coordinate space.
-	 */
-	public final double getRelativeX(final double value) {
-		return value - (this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX()));
+	public final double getRelativeX(double value) {
+		value -= this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
+
+		if (this.zoomLevel.getOrDefault() != 1D) {
+			value -= this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+			value *= 1D / this.zoomLevel.getOrDefault();
+		}
+
+		return value;
 	}
 
-	/**
-	 * Converts a value from the source coordinate space to the scaled viewport coordinate space along the y-axis.
-	 *
-	 * @param value The value to convert.
-	 * @return The converted value in the scaled viewport coordinate space.
-	 */
-	public final double getRelativeY(final double value) {
-		return value - (this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY()));
+	public final double getRelativeY(double value) {
+		value -= this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
+
+		if (this.zoomLevel.getOrDefault() != 1D) {
+			value -= this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+			value *= 1D / this.zoomLevel.getOrDefault();
+		}
+
+		return value;
 	}
 
-	/**
-	 * Converts a value from the absolute coordinate space to the scaled viewport coordinate space along the x-axis.
-	 *
-	 * @param value The value to convert.
-	 * @return The converted value in the scaled viewport coordinate space.
-	 */
 	public final double getAbsoluteX(double value) {
+		if (this.zoomLevel.getOrDefault() != 1D) {
+			value /= 1D / this.zoomLevel.getOrDefault();
+			value += this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+		}
+
 		value += this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
 		value /= this.viewportWidth / this.width;
+
 		return value;
 	}
 
-	/**
-	 * Converts a value from the absolute coordinate space to the scaled viewport coordinate space along the y-axis.
-	 *
-	 * @param value The value to convert.
-	 * @return The converted value in the scaled viewport coordinate space.
-	 */
 	public final double getAbsoluteY(double value) {
+		if (this.zoomLevel.getOrDefault() != 1D) {
+			value /= 1D / this.zoomLevel.getOrDefault();
+			value += this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+		}
+
 		value += this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
 		value /= this.viewportHeight / this.height;
+
 		return value;
 	}
 
-	/**
-	 * Converts a value from the absolute coordinate space to the scaled viewport coordinate space along the width-axis.
-	 *
-	 * @param value The value to convert.
-	 * @return The converted value in the scaled viewport coordinate space.
-	 */
 	public final double getAbsoluteWidth(final double value) {
-		return value / (this.viewportWidth / this.width);
+		return value * this.zoomLevel.getOrDefault() / (this.viewportWidth / this.width);
 	}
 
-
-	/**
-	 * Converts a value from the absolute coordinate space to the scaled viewport coordinate space along the height-axis.
-	 *
-	 * @param value The value to convert.
-	 * @return The converted value in the scaled viewport coordinate space.
-	 */
 	public final double getAbsoluteHeight(final double value) {
-		return value / (this.viewportHeight / this.height);
+		return value * this.zoomLevel.getOrDefault() / (this.viewportHeight / this.height);
 	}
 
-	/**
-	 * Enables stencil and sets the stencil mask based on the specified parameters.
-	 *
-	 * @param stencilX      The x-coordinate of the stencil region in local coordinates.
-	 * @param stencilY      The y-coordinate of the stencil region in local coordinates.
-	 * @param stencilWidth  The width of the stencil region in local coordinates.
-	 * @param stencilHeight The finalHeight of the stencil region in local coordinates.
-	 */
-	public final void startStencil(final double stencilX, final double stencilY, final double stencilWidth, final double stencilHeight) {
-		GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-		GL11.glEnable(GL11.GL_STENCIL_TEST);
-		GL11.glStencilFunc(GL11.GL_ALWAYS, 1, 255);
-		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_REPLACE);
+	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeiht, final @NonNull Drawing drawing) {
+		this.mask(maskX, maskY, maskWidth, maskHeiht, drawing, true);
+	}
+
+	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
+		if (enabled) {
+			this.startMask(maskX, maskY, maskWidth, maskHeight);
+			drawing.draw();
+			this.stopMask();
+		} else {
+			drawing.draw();
+		}
+	}
+
+	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
+		final int stencilValue = this.stencilStack.size() + 1;
+		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
+		if (stencilValue == 1) {
+			GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+			GL11.glEnable(GL11.GL_STENCIL_TEST);
+		}
+
+		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue - 1, 0xFF);
+		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INCR);
+
 		GL11.glColorMask(false, false, false, false);
-		DrawUtils.SHAPE.drawRect(stencilX, stencilY, stencilWidth, stencilHeight, Color.RED);
+		DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED);
 		GL11.glColorMask(true, true, true, true);
 
-		GL11.glStencilFunc(GL11.GL_EQUAL, 1, 255);
+		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
 		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
 	}
 
-	/**
-	 * Disables stencil.
-	 */
-	public final void endStencil() {
-		GL11.glDisable(GL11.GL_STENCIL_TEST);
-		GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-	}
-
-	/**
-	 * Draws the content of the specified drawing within a stencil region.
-	 *
-	 * @param stencilX      The x-coordinate of the stencil region in local coordinates.
-	 * @param stencilY      The y-coordinate of the stencil region in local coordinates.
-	 * @param stencilWidth  The width of the stencil region in local coordinates.
-	 * @param stencilHeight The finalHeight of the stencil region in local coordinates.
-	 * @param drawing       The drawing to be rendered within the stencil region. Must not be null.
-	 */
-	public final void stencil(final double stencilX, final double stencilY, final double stencilWidth, final double stencilHeight, final @NonNull Drawing drawing) {
-		this.stencil(stencilX, stencilY, stencilWidth, stencilHeight, drawing, true);
-	}
-
-	/**
-	 * Draws the content of the specified drawing within a stencil region, optionally enabling or disabling stencil testing.
-	 *
-	 * @param stencilX      The x-coordinate of the stencil region in local coordinates.
-	 * @param stencilY      The y-coordinate of the stencil region in local coordinates.
-	 * @param stencilWidth  The width of the stencil region in local coordinates.
-	 * @param stencilHeight The finalHeight of the stencil region in local coordinates.
-	 * @param drawing       The drawing to be rendered within the stencil region. Must not be null.
-	 * @param enableStencil Flag indicating whether to enable stencil testing.
-	 */
-	public final void stencil(final double stencilX, final double stencilY, final double stencilWidth, final double stencilHeight, final @NonNull Drawing drawing, final boolean enableStencil) {
-		if (enableStencil) {
-			this.startStencil(stencilX, stencilY, stencilWidth, stencilHeight);
-		}
-		drawing.draw();
-		if (enableStencil) {
-			this.endStencil();
+	public final void stopMask() {
+		this.stencilStack.pop();
+		final int stencilValue = this.stencilStack.size();
+		if (stencilValue == 0) {
+			GL11.glDisable(GL11.GL_STENCIL_TEST);
+			GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+		} else {
+			GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
+			GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
 		}
 	}
 
-	/**
-	 * Draws a hover tooltip with the specified list of text lines at the given coordinates and context.
-	 *
-	 * @param texts   The list of text lines to be displayed in the tooltip.
-	 * @param x       The x-coordinate of the top-left corner of the tooltip.
-	 * @param y       The y-coordinate of the top-left corner of the tooltip.
-	 * @param context The drawing context providing necessary information for rendering.
-	 * @throws NullPointerException if the provided list of texts or drawing context is null.
-	 */
 	public void drawHover(final List<@NonNull String> lines, double x, double y) {
 		if (lines == null || lines.isEmpty()) {
 			return;
@@ -771,7 +777,7 @@ public abstract class UI implements IUI, IndexedElement {
 				final List<String> copiedLines = new ArrayList<>(lines);
 				lines.clear();
 				for (final String line : copiedLines) {
-					lines.addAll(DrawUtils.TEXT.getLines(1920, Text.create(line, textInfo)));
+					lines.addAll(DrawUtils.TEXT.getLines(1920, line, textInfo));
 				}
 
 				width = 0;
@@ -811,20 +817,10 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	/**
-	 * Bind the specified runnable to the specified keys.
-	 *
-	 * @param runnable
-	 * @param keys
-	 * @throws NullPointerException if the provided runnable or keys are null.
-	 */
 	public final void keybind(final @NonNull Runnable runnable, final @NonNull Integer... keys) {
 		this.keybindMap.put(keys, runnable);
 	}
 
-	/**
-	 * Reloads the UI.
-	 */
 	public final void reload() {
 		if (this.devNode != null) {
 			this.devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
@@ -832,12 +828,12 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		this.initialized = false;
-		this.load(this.width, this.height);
+		this.load(this.width, this.height, this.zoomLevel.getOrDefault());
 	}
 
 	public final void updateScaledSize() {
-		final double tempScaledWidth = this.viewportWidth;
-		final double tempScaledHeight = this.viewportHeight;
+		final double tempScaledWidth = this.viewportWidth / this.zoomLevel.getOrDefault();
+		final double tempScaledHeight = this.viewportHeight / this.zoomLevel.getOrDefault();
 
 		if (this.scaledWidth.getOrDefault() != tempScaledWidth) {
 			this.scaledWidth.set(tempScaledWidth);
@@ -848,21 +844,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	/**
-	 * Interpolates the specified value to the specified target value based on the specified speed.
-	 *
-	 * @param value
-	 * @param target
-	 * @param speed
-	 * @param snapDiff
-	 * @param snap
-	 * @return The interpolated value.
-	 */
 	public final double lerpByFramerate(double value, final double target, final double speed, final double snapDiff, final boolean snap) {
-		if (this.fps == 0D) {
-			return value;
-		}
-
 		final double diff = target - value;
 		final double absDiff = Math.abs(diff);
 
@@ -889,15 +871,6 @@ public abstract class UI implements IUI, IndexedElement {
 		this.scheduledTaskList.add(new UIScheduledTask(runnable, delay, period));
 	}
 
-	/**
-	 * Adds the specified non-null nodes to the list of nodes.
-	 * <p>
-	 * The nodes are appended to the end of the existing list.
-	 * </p>
-	 *
-	 * @param nodes The non-null nodes to be added to the list.
-	 * @throws NullPointerException If any of the provided nodes is {@code null}.
-	 */
 	public final void add(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
 			node.load(this);
@@ -905,11 +878,6 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	/**
-	 * Sets the rendering pipeline level to the specified value.
-	 *
-	 * @param level The rendering pipeline level to be set.
-	 */
 	public final void setRenderPipelineLevel(final double level) {
 		this.renderPipelineLevel = level;
 	}
@@ -930,12 +898,8 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	/* [ Getter Section ] */
-	private final IUIBridge getBridge() {
-		if (this.bridge != null) {
-			return this.bridge;
-		}
-
-		return this.bridge = BridgeHandler.get(this);
+	public final IUIBridge getBridge() {
+		return BridgeHandler.get(this);
 	}
 
 	/* [ Setter Section ] */
@@ -947,7 +911,7 @@ public abstract class UI implements IUI, IndexedElement {
 	/* [ Abstract Methods ] */
 	@Override
 	public int getIndex() {
-		return this.data.zindex();
+		return 0;
 	}
 
 	/* [ Static Utils ] */
@@ -961,6 +925,26 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public static boolean isAltKeyDown() {
 		return Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU);
+	}
+
+	/* [ DTO Section ] */
+	@Getter
+	private class StencilState {
+
+		public final int value;
+		public final double x;
+		public final double y;
+		public final double width;
+		public final double height;
+
+		public StencilState(final int value, final double x, final double y, final double width, final double height) {
+			this.value = value;
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+		}
+
 	}
 
 }

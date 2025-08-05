@@ -51,9 +51,35 @@ public final class DrawShape {
 	 * @throws NullPointerException if color is null.
 	 */
 	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
-		RoundedShader.use(radius, () -> {
+		RoundedShader.use(radius, (float) (x + radius), (float) (y + radius), (float) (x + width - radius), (float) (y + height - radius), () -> {
 			this.drawRect(x, y, width, height, color);
-		}, new Vector4f((float) x, (float) y, (float) (x + width), (float) (y + height)));
+		});
+	}
+
+	/**
+	 * Draws a rounded rectangle with the specified dimensions, color, and radius.
+	 *
+	 * @param x             The x-coordinate of the top-left corner of the
+	 *                      rectangle.
+	 * @param y             The y-coordinate of the top-left corner of the
+	 *                      rectangle.
+	 * @param width         The width of the rectangle.
+	 * @param height        The height of the rectangle.
+	 * @param color         The color of the rectangle. Must not be null.
+	 * @param radius        The radius of the rounded corners.
+	 * @param roundedLeft   Whether the left side of the rectangle should be
+	 *                      rounded.
+	 * @param roundedTop    Whether the top side of the rectangle should be rounded.
+	 * @param roundedRight  Whether the right side of the rectangle should be
+	 *                      rounded.
+	 * @param roundedBottom Whether the bottom side of the rectangle should be
+	 *                      rounded.
+	 * @throws NullPointerException if color is null.
+	 */
+	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom) {
+		RoundedShader.use(radius, (float) (x + (roundedLeft ? radius : 0)), (float) (y + (roundedTop ? radius : 0)), (float) (x + width - (roundedRight ? radius : 0)), (float) (y + height - (roundedBottom ? radius : 0)), () -> {
+			this.drawRect(x, y, width, height, color);
+		});
 	}
 
 	/**
@@ -296,13 +322,16 @@ public final class DrawShape {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		final int texture = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		color.bind(() -> {
 			tessellator.start(mode);
 			for (final Vector2d point : points) {
-				tessellator.vertex(point.x, point.y, 0D);
+				tessellator.addVertex(point.x, point.y, 0D);
 			}
 			tessellator.draw();
 		}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();

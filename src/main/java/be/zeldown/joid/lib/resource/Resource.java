@@ -4,15 +4,16 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
+import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -44,6 +45,10 @@ public final class Resource {
 
 	public static @NonNull Resource of(final @NonNull String url) {
 		return Resource.DEFAULT_BUILDER.of(url);
+	}
+
+	public static @NonNull Resource of(final @NonNull String url, final Consumer<Resource> callback) {
+		return Resource.DEFAULT_BUILDER.of(url, callback);
 	}
 
 	/* [ Query Section ] */
@@ -87,8 +92,13 @@ public final class Resource {
 		return this;
 	}
 
-	public final @NonNull Resource image(final BufferedImage image) {
-		this.data.image(image);
+	public final @NonNull Resource decoder(final IResourceDecoder decoder) {
+		this.data.decoder(decoder);
+		return this;
+	}
+
+	public final @NonNull Resource reset() {
+		this.properties = this.builder.getProperties().copy();
 		return this;
 	}
 
@@ -101,12 +111,16 @@ public final class Resource {
 		return this.data.getUniqueId();
 	}
 
-	public final BufferedImage getImage() {
-		return this.data.getImage();
+	public final IResourceDecoder getDecoder() {
+		return this.data.getDecoder();
 	}
 
 	public final int getTextureId() {
 		return this.data.getTextureId() == null || this.data.getTextureId().length == 0 ? -1 : this.data.getTextureId()[0];
+	}
+
+	public final int getTextureId(final int index) {
+		return this.data.getTextureId() == null || this.data.getTextureId().length <= index ? -1 : this.data.getTextureId()[index];
 	}
 
 	public final int[] getData() {
@@ -115,10 +129,6 @@ public final class Resource {
 
 	public final int[] getData(final int index) {
 		return this.data.getData() == null || this.data.getData().length <= index ? null : this.data.getData()[index];
-	}
-
-	public final @NonNull Color getColor(final int x, final int y) {
-		return this.data.getColor(x, y);
 	}
 
 	public final boolean isGenerated() {
@@ -174,7 +184,15 @@ public final class Resource {
 
 	public final void bindTextureOnly() {
 		this.prepareBind();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTextureId());
+		if (!this.data.isUploaded()) {
+			this.unbind();
+		}
+
+		if (this.data.getDecoder() == null) {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTextureId(0));
+		} else {
+			this.data.getDecoder().bind(this.data);
+		}
 	}
 
 	public final void prepareBind() {
@@ -189,6 +207,16 @@ public final class Resource {
 
 	public final void unbind() {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+	}
+
+	public final void clear() {
+		if (this.data != null) {
+			this.data.clear();
+		}
+
+		if (this.builder != null && this.builder.getCache() != null) {
+			this.builder.getCache().invalidate(this.data.getUniqueId());
+		}
 	}
 
 }

@@ -3,6 +3,7 @@ package be.zeldown.joid.lib.ui.node.impl.structure.checkbox;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import be.zeldown.joid.lib.ui.node.impl.structure.checkbox.callback.NodeCheckboxChangeCallback;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import lombok.Getter;
 import lombok.NonNull;
@@ -20,7 +21,7 @@ public abstract class CheckboxNode extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}

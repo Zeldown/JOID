@@ -1,5 +1,6 @@
 package be.zeldown.joid.lib.ui.node.impl.structure.grid;
 
+import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.property.overflow.OverflowProperty;
 import lombok.Getter;
@@ -24,12 +25,22 @@ public final class GridNode extends Node {
 	}
 
 	@Override
+	public void init(final @NonNull UI ui) {
+		this.updateGrid();
+	}
+
+	@Override
 	public final void draw(final double mouseX, final double mouseY) {
 		this.updateGrid();
 	}
 
 	@Override
 	public final void drawSkeleton(final double mouseX, final double mouseY) {
+		this.updateGrid();
+	}
+
+	@Override
+	public void update() {
 		this.updateGrid();
 	}
 

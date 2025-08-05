@@ -24,13 +24,13 @@ public class DemoPermanentStore extends UIStore {
 	}
 
 	@Override
-	public void load(final @NonNull JsonObject nbt) {
-		this.time = nbt.get("time").getAsLong();
+	public void load(final @NonNull JsonObject json) {
+		this.time = json.has("time") ? json.get("time").getAsLong() : System.currentTimeMillis();
 	}
 
 	@Override
-	public void save(final @NonNull JsonObject nbt) {
-		nbt.addProperty("time", this.time);
+	public void save(@NonNull final JsonObject json) {
+		json.addProperty("time", this.time);
 	}
 
 }

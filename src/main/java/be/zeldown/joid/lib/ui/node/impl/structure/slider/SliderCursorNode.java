@@ -1,6 +1,7 @@
 package be.zeldown.joid.lib.ui.node.impl.structure.slider;
 
 import be.zeldown.joid.lib.ui.node.Node;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import lombok.Getter;
 import lombok.NonNull;
@@ -29,7 +30,7 @@ public abstract class SliderCursorNode extends Node {
 	public abstract void drawCursor(final double mouseX, final double mouseY);
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (!this.isHovered(mouseX, mouseY)) {
 			return;
 		}
@@ -38,7 +39,7 @@ public abstract class SliderCursorNode extends Node {
 	}
 
 	@Override
-	public final void mouseReleased(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public final void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.dragging = false;
 	}
 

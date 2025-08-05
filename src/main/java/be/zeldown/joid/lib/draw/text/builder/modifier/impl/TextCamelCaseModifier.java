@@ -1,22 +1,21 @@
 package be.zeldown.joid.lib.draw.text.builder.modifier.impl;
 
 import be.zeldown.joid.lib.draw.text.builder.modifier.ITextModifier;
-import lombok.NonNull;
 
 public class TextCamelCaseModifier implements ITextModifier {
 
 	@Override
-	public @NonNull String modify(final @NonNull String text) {
+	public String modify(final String text) {
 		final String[] words = text.split("[\\W_]+");
 		final StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < words.length; i++) {
-			String word = words[i];
-			if (i == 0) {
-				word = word.isEmpty() ? word : word.toLowerCase();
-			} else {
-				word = word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
-			}
-			builder.append(word);
+		    String word = words[i];
+		    if (i == 0) {
+		        word = word.isEmpty() ? word : word.toLowerCase();
+		    } else {
+		        word = word.isEmpty() ? word : Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
+		    }
+		    builder.append(word);
 		}
 
 		return builder.toString();

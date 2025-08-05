@@ -3,6 +3,7 @@ package be.zeldown.joid.lib.draw.resource;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
+import be.zeldown.joid.lib.opengl.GLHelper;
 import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.tessellator.T9R;
 import lombok.Getter;
@@ -15,18 +16,18 @@ public final class DrawResource {
 
 	public DrawResource() {
 		if (DrawResource.instance != null) {
-			throw new RuntimeException("Attempted to create a duplicate instance of Resource.");
+			throw new RuntimeException("Attempted to create a duplicate instance of DrawResource.");
 		}
 		DrawResource.instance = this;
 	}
 
 	/**
-	 * Draws an resource scaled proportionally based on the provided width, maintaining the aspect ratio.
+	 * Draws a resource scaled proportionally based on the provided width, maintaining the aspect ratio.
 	 *
 	 * @param x        The x-coordinate of the top-left corner.
 	 * @param y        The y-coordinate of the top-left corner.
 	 * @param width    The width of the scaled resource.
-	 * @param resource    The {@link ResourceLocation} of the resource.
+	 * @param resource The {@link ResourceLocation} of the resource.
 	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
 	 */
 	public void drawScaledResourceWidth(final double x, final double y, final double width, final @NonNull Resource resource) {
@@ -34,12 +35,12 @@ public final class DrawResource {
 	}
 
 	/**
-	 * Draws an resource scaled proportionally based on the provided height, maintaining the aspect ratio.
+	 * Draws a resource scaled proportionally based on the provided height, maintaining the aspect ratio.
 	 *
 	 * @param x        The x-coordinate of the top-left corner.
 	 * @param y        The y-coordinate of the top-left corner.
 	 * @param height   The height of the scaled resource.
-	 * @param resource    The {@link ResourceLocation} of the resource.
+	 * @param resource The {@link ResourceLocation} of the resource.
 	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
 	 */
 	public void drawScaledResourceHeight(final double x, final double y, final double height, final @NonNull Resource resource) {
@@ -47,27 +48,27 @@ public final class DrawResource {
 	}
 
 	/**
-	 * Draws an resource scaled to the specified dimensions, filling the entire area maintaining the aspect ratio.
+	 * Draws a resource scaled to the specified dimensions, filling the entire area maintaining the aspect ratio.
 	 *
 	 * @param x                   The x-coordinate of the top-left corner.
 	 * @param y                   The y-coordinate of the top-left corner.
 	 * @param width               The width of the scaled resource.
 	 * @param height              The height of the scaled resource.
-	 * @param resource  			  The {@link ResourceLocation} of the resource.
+	 * @param resource			  The {@link ResourceLocation} of the resource.
 	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
 	 */
 	public void drawCenteredResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		final double resourceWidth = resource.getWidth();
-		final double resourceHeight = resource.getHeight();
+		final double imageWidth = resource.getWidth();
+		final double imageHeight = resource.getHeight();
 
-		final double ratio = resourceWidth / resourceHeight;
+		final double ratio = imageWidth / imageHeight;
 
 		double scaledX = 0;
 		double scaledY = 0;
 		double scaledWidth = 0;
 		double scaledHeight = 0;
 
-		if (resourceWidth <= resourceHeight) {
+		if (imageWidth <= imageHeight) {
 			scaledWidth = width;
 			scaledHeight = scaledWidth / ratio;
 			scaledX = x + (width - scaledWidth) / 2;
@@ -85,9 +86,9 @@ public final class DrawResource {
 	/**
 	 * Draws the resource at the specified location.
 	 *
-	 * @param x      The x-coordinate of the top-left corner.
-	 * @param y      The y-coordinate of the top-left corner.
-	 * @param resource  The {@link ResourceLocation} of the resource.
+	 * @param x        The x-coordinate of the top-left corner.
+	 * @param y        The y-coordinate of the top-left corner.
+	 * @param resource The {@link ResourceLocation} of the resource.
 	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
 	 */
 	public void drawResource(final double x, final double y, final @NonNull Resource resource) {
@@ -95,20 +96,17 @@ public final class DrawResource {
 	}
 
 	/**
-	 * Draws an resource on the screen with the specified coordinates, dimensions, and interpolation mode.
+	 * Draws a resource on the screen with the specified coordinates, dimensions, and interpolation mode.
 	 *
 	 * @param x                    The x-coordinate of the top-left corner of the resource.
 	 * @param y                    The y-coordinate of the top-left corner of the resource.
 	 * @param width                The width of the resource.
 	 * @param height               The height of the resource.
-	 * @param resource                The {@link ResourceLocation} of the resource.
+	 * @param resource             The {@link ResourceLocation} of the resource.
 	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
 	 */
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		final boolean textureEnabled = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
-		if (!textureEnabled) {
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-		}
+		GLHelper.pushMatrix();
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_POINT_SMOOTH);
 		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
@@ -122,32 +120,30 @@ public final class DrawResource {
 			final T9R tess = T9R.inst();
 			tess.start(GL11.GL_QUADS);
 			if (textureCoords == null || textureCoords.length != 4) {
-				tess.vertexUV(x, y + height, 0D, 0D, 1D);
-				tess.vertexUV(x + width, y + height, 0D, 1D, 1D);
-				tess.vertexUV(x + width, y, 0D, 1D, 0D);
-				tess.vertexUV(x, y, 0D, 0D, 0D);
+				tess.addVertexWithUV(x, y + height, 0.0D, 0.0D, 1.0D);
+				tess.addVertexWithUV(x + width, y + height, 0.0D, 1.0D, 1.0D);
+				tess.addVertexWithUV(x + width, y, 0.0D, 1.0D, 0.0D);
+				tess.addVertexWithUV(x, y, 0.0D, 0.0D, 0.0D);
 			} else {
 				final double u = textureCoords[0];
 				final double v = textureCoords[1];
 				final double drawWidth = textureCoords[2];
 				final double drawHeight = textureCoords[3];
 
-				final double widthFactor = 1F / width;
-				final double heightFactor = 1F / height;
+				final double widthFactor = 1.0F / width;
+				final double heightFactor = 1.0F / height;
 
-				tess.vertexUV(x, y + drawHeight, 0D, u * widthFactor, (v + drawHeight) * heightFactor);
-				tess.vertexUV(x + drawWidth, y + drawHeight, 0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
-				tess.vertexUV(x + drawWidth, y, 0D, (u + drawWidth) * widthFactor, v * heightFactor);
-				tess.vertexUV(x, y, 0D, u * widthFactor, v * heightFactor);
+				tess.addVertexWithUV(x, y + drawHeight, 0.0D, u * widthFactor, (v + drawHeight) * heightFactor);
+				tess.addVertexWithUV(x + drawWidth, y + drawHeight, 0.0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
+				tess.addVertexWithUV(x + drawWidth, y, 0.0D, (u + drawWidth) * widthFactor, v * heightFactor);
+				tess.addVertexWithUV(x, y, 0.0D, u * widthFactor, v * heightFactor);
 			}
 			tess.draw();
 
 			GL11.glDisable(GL11.GL_POINT_SMOOTH);
 			GL11.glDisable(GL11.GL_BLEND);
-			if (!textureEnabled) {
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
-			}
 		});
+		GLHelper.popMatrix();
 	}
 
 }

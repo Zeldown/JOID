@@ -7,6 +7,7 @@ import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import be.zeldown.joid.lib.ui.node.impl.structure.slider.callback.NodeSliderChangeCallback;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import be.zeldown.joid.lib.utils.signal.Signal;
 import lombok.Getter;
@@ -69,7 +70,7 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (!super.isHovered()) {
 			return;
 		}
