@@ -1,11 +1,12 @@
 package be.zeldown.joid.lib.ui.node;
 
 import be.zeldown.joid.lib.ui.core.UI;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import be.zeldown.joid.lib.utils.list.RecursiveIndexedElement;
 import lombok.NonNull;
 
-public interface INode extends RecursiveIndexedElement {
+public interface INode extends RecursiveIndexedElement, Cloneable {
 
 	/**
 	 * Initializes the UI component.
@@ -53,7 +54,7 @@ public interface INode extends RecursiveIndexedElement {
 	 *
 	 * @return {@code true} if the action should be cancelled, and {@code false} otherwise.
 	 */
-	default public void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {}
+	default public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {}
 
 	/**
 	 * Called when the mouse is dragged.
@@ -65,7 +66,7 @@ public interface INode extends RecursiveIndexedElement {
 	 * @param cancelled
 	 * @return {@code true} if the action should be cancelled, and {@code false} otherwise.
 	 */
-	default public void mouseDragged(final double mouseX, final double mouseY, final int clickType, final long deltaTime, final @NonNull InternalContext context) {}
+	default public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {}
 
 	/**
 	 * Called when a mouse button is released.
@@ -77,7 +78,7 @@ public interface INode extends RecursiveIndexedElement {
 	 *
 	 * @return {@code true} if the action should be cancelled, and {@code false} otherwise.
 	 */
-	default public void mouseReleased(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {}
+	default public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {}
 
 	/**
 	 * Called when the mouse wheel is scrolled.

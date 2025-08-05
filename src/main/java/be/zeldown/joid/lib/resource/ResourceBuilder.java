@@ -1,23 +1,27 @@
 package be.zeldown.joid.lib.resource;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
-
-import javax.imageio.ImageIO;
+import java.util.function.Supplier;
 
 import com.google.common.cache.Cache;
 
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
+import be.zeldown.joid.lib.resource.dto.decoder.ResourceDecoder;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public final class ResourceBuilder {
+
+	private static final List<ResourceBuilder> BUILDER_LIST = new ArrayList<>();
 
 	private Cache<String, ResourceData> cache;
 	private ResourceProperties properties;
@@ -25,6 +29,8 @@ public final class ResourceBuilder {
 	private ResourceBuilder() {
 		this.cache = null;
 		this.properties = new ResourceProperties();
+
+		ResourceBuilder.BUILDER_LIST.add(this);
 	}
 
 	public static @NonNull ResourceBuilder create() {
@@ -75,89 +81,90 @@ public final class ResourceBuilder {
 	}
 
 	/* [ Resource Section ] */
-	public @NonNull Resource of(final @NonNull InputStream stream) throws IOException {
+	public @NonNull Resource of(final @NonNull InputStream stream) {
 		final String uniqueId = stream.toString();
-		if (this.cache != null) {
-			final ResourceData cached = this.cache.getIfPresent(uniqueId);
-			if (cached != null) {
-				return new Resource(this, cached);
+		try {
+			final InputStream supportedStream = stream.markSupported() ? stream : new BufferedInputStream(stream);
+			supportedStream.mark(6);
+
+			final byte[] header = new byte[6];
+			final int read = supportedStream.read(header);
+			supportedStream.reset();
+
+			if (read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a') {
+				return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.gif(supportedStream))));
 			}
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 
-		final ResourceData data = new ResourceData(uniqueId, ImageIO.read(stream));
-		final Resource resource = new Resource(this, data);
-		if (this.cache != null) {
-			this.cache.put(uniqueId, data);
-		}
-
-		return resource;
+		return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.image(stream))));
 	}
 
 	public @NonNull Resource of(final @NonNull BufferedImage image) {
 		final String uniqueId = image.toString();
-		if (this.cache != null) {
-			final ResourceData cached = this.cache.getIfPresent(uniqueId);
-			if (cached != null) {
-				return new Resource(this, cached);
-			}
-		}
-
-		final ResourceData data = new ResourceData(uniqueId, image);
-		final Resource resource = new Resource(this, data);
-		if (this.cache != null) {
-			this.cache.put(uniqueId, data);
-		}
-
-		return resource;
+		return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.image(image))));
 	}
 
 	public @NonNull Resource of(final @NonNull String url) {
+		return this.of(url, null);
+	}
+
+	public @NonNull Resource of(final @NonNull String url, final Consumer<Resource> callback) {
 		final String uniqueId = url;
-		if (this.cache != null) {
-			final ResourceData cached = this.cache.getIfPresent(uniqueId);
-			if (cached != null) {
-				return new Resource(this, cached);
-			}
-		}
-
-		final ResourceData data = new ResourceData(uniqueId, null);
-		final Resource resource = new Resource(this, data);
-		if (this.cache != null) {
-			this.cache.put(uniqueId, data);
-		}
-
-		new DownloadBufferedImageThread(url, image -> {
-			resource.image(image);
-		}).start();
-
-		return resource;
+		return this.cache(uniqueId, () -> {
+			final Resource resource = new Resource(this, new ResourceData(uniqueId, null));
+			new ResourceDownloadThread(url, inputStream -> {
+				resource.decoder(url.endsWith(".gif") ? ResourceDecoder.gif(inputStream) : ResourceDecoder.image(inputStream));
+				if (callback != null) {
+					callback.accept(resource);
+				}
+			}).start();
+			return resource;
+		});
 	}
 
 	public @NonNull Resource of(final int id) {
 		final String uniqueId = "texture_" + String.valueOf(id);
-		if (this.cache != null) {
-			final ResourceData cached = this.cache.getIfPresent(uniqueId);
-			if (cached != null) {
-				return new Resource(this, cached);
-			}
+		return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, null).textureId(id)));
+	}
+
+	/* [ Cache Section ] */
+	private final @NonNull Resource cache(final @NonNull String uniqueId, final @NonNull Supplier<Resource> callable) {
+		if (this.cache == null) {
+			return callable.get();
 		}
 
-		final ResourceData data = new ResourceData(uniqueId, null).textureId(id);
-		final Resource resource = new Resource(this, data);
-		if (this.cache != null) {
-			this.cache.put(uniqueId, data);
+		final ResourceData data = this.cache.getIfPresent(uniqueId);
+		if (data != null) {
+			return new Resource(this, data);
 		}
 
+		final Resource resource = callable.get();
+		this.cache.put(uniqueId, resource.getResourceData());
 		return resource;
 	}
 
-	private class DownloadBufferedImageThread extends Thread {
+	public final void reload() {
+		if (this.cache == null) {
+			return;
+		}
 
-		private final @NonNull Consumer<BufferedImage> callback;
-		private final @NonNull String url;
+		this.cache.invalidateAll();
+	}
 
-		public DownloadBufferedImageThread(final @NonNull String url, final @NonNull Consumer<@NonNull BufferedImage> callback) {
-			super("DownloadBufferedImageThread/" + url);
+	/* [ Static Section ] */
+	public static @NonNull List<@NonNull ResourceBuilder> getBuilders() {
+		return ResourceBuilder.BUILDER_LIST;
+	}
+
+	private class ResourceDownloadThread extends Thread {
+
+		@NonNull private final Consumer<InputStream> callback;
+		@NonNull private final String url;
+
+		private ResourceDownloadThread(final @NonNull String url, final @NonNull Consumer<@NonNull InputStream> callback) {
+			super("ResourceDownloadThread/" + url);
 
 			this.url = url;
 			this.callback = callback;
@@ -172,13 +179,11 @@ public final class ResourceBuilder {
 
 				final int status = connection.getResponseCode();
 				final InputStream inputStream = connection.getInputStream();
-				final BufferedImage image = ImageIO.read(inputStream);
-
-				if (image == null) {
-					System.out.println("Unable to read image from " + this.url + " [status=" + status + "]");
+				if (inputStream == null) {
+					System.out.println("[DrawUtils] Unable to read image from " + this.url + " [status=" + status + "]");
 				}
 
-				this.callback.accept(image);
+				this.callback.accept(inputStream);
 			} catch (final Exception silent) {
 				try {
 					final URL rul = new URL(this.url.replace("https", "http"));
@@ -187,13 +192,11 @@ public final class ResourceBuilder {
 
 					final int status = connection.getResponseCode();
 					final InputStream inputStream = connection.getInputStream();
-					final BufferedImage image = ImageIO.read(inputStream);
-
-					if (image == null) {
-						System.out.println("Unable to read image from " + this.url.replace("https", "http") + " [status=" + status + "]");
+					if (inputStream == null) {
+						System.out.println("[DrawUtils] Unable to read image from " + this.url.replace("https", "http") + " [status=" + status + "]");
 					}
 
-					this.callback.accept(image);
+					this.callback.accept(inputStream);
 				} catch (final Exception e) {
 					e.printStackTrace();
 				}

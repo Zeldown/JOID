@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.draw.text.builder.TextElement;
+import be.zeldown.joid.lib.draw.text.builder.utils.TextOverflow;
 import be.zeldown.joid.lib.draw.text.utils.TextMode;
 import be.zeldown.joid.lib.font.dto.font.FontBounds;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
@@ -24,8 +25,21 @@ public final class DrawText {
 		DrawText.instance = this;
 	}
 
+	/* [ Raw Section ] */
+	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {
+		return this.drawText(x, y, Text.create(text, info).align(horizontalAlign, verticalAlign));
+	}
+
+	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow, final @NonNull TextMode mode) {
+		return this.drawText(x, y, width, height, Text.create(text, info).align(horizontalAlign, verticalAlign).overflow(overflow), mode);
+	}
+
+	public @NonNull List<@NonNull String> getLines(final double width, final @NonNull String text, final @NonNull TextInfo info) {
+		return this.getLines(width, Text.create(text, info)).stream().map(Text::getText).collect(Collectors.toList());
+	}
+
 	/* [ Text Section ] */
-	public @NonNull FontBounds drawText(double x, double y, final @NonNull Text text) {
+	public FontBounds drawText(double x, double y, final @NonNull Text text) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
 		}
@@ -59,7 +73,7 @@ public final class DrawText {
 		return text.getBounds();
 	}
 
-	public @NonNull FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull Text text, final @NonNull TextMode mode) {
+	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull Text text, final @NonNull TextMode mode) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
 		}
@@ -124,7 +138,7 @@ public final class DrawText {
 		}
 
 		if (mode == TextMode.SPLIT || mode == TextMode.BOX) {
-			final List<Text> textList = this.getTexts(width, text);
+			final List<Text> textList = this.getLines(width, text);
 			if (textList.isEmpty()) {
 				return FontBounds.empty();
 			}
@@ -168,11 +182,7 @@ public final class DrawText {
 		return null;
 	}
 
-	public @NonNull List<@NonNull String> getLines(final double width, final @NonNull Text text) {
-		return this.getTexts(width, text).stream().map(Text::getText).collect(Collectors.toList());
-	}
-
-	public @NonNull List<@NonNull Text> getTexts(final double width, final @NonNull Text text) {
+	public @NonNull List<@NonNull Text> getLines(final double width, final @NonNull Text text) {
 		final List<Text> textList = new LinkedList<>();
 
 		Text currentText = text.copyProperties();
@@ -199,7 +209,11 @@ public final class DrawText {
 						}
 					}
 
-					currentText.add(element.copyWithText(elementText.substring(lastSplit, foundSplit)));
+					String splitText = elementText.substring(lastSplit, foundSplit);
+					if (splitText.endsWith(" ")) {
+						splitText = splitText.substring(0, splitText.length() - 1);
+					}
+					currentText.add(element.copyWithText(splitText));
 					textList.add(currentText);
 					currentText = text.copyProperties();
 					lastSplit = foundSplit;

@@ -5,6 +5,7 @@ package be.zeldown.joid.lib.opengl.transform.glto;
  */
 public interface GLTO {
 
-	void transform();
+	abstract void transform();
+	abstract void reset();
 
 }

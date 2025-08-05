@@ -12,8 +12,9 @@ public class TweenAnimatorAccessor implements TweenAccessor<TweenAnimator> {
 		case ANIMATION_VALUE:
 			returnValues[0] = target.getValue();
 			break;
+
 		default:
-			throw new IllegalArgumentException("Invalid tween type: " + tweenType);
+			break;
 		}
 
 		return 1;
@@ -25,8 +26,9 @@ public class TweenAnimatorAccessor implements TweenAccessor<TweenAnimator> {
 		case ANIMATION_VALUE:
 			target.setValue(newValues[0]);
 			break;
+
 		default:
-			throw new IllegalArgumentException("Invalid tween type: " + tweenType);
+			break;
 		}
 	}
 

@@ -1,7 +1,6 @@
 package be.zeldown.joid.lib.utils.signal.impl.primitive;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
-import lombok.NonNull;
 
 public class IntegerSignal extends Signal<Integer> {
 
@@ -13,7 +12,7 @@ public class IntegerSignal extends Signal<Integer> {
 		super(value);
 	}
 
-	public static @NonNull IntegerSignal of(final int defaultValue) {
+	public static IntegerSignal of(final int defaultValue) {
 		final IntegerSignal instance = new IntegerSignal();
 		instance.set(defaultValue);
 		return instance;
@@ -56,6 +55,11 @@ public class IntegerSignal extends Signal<Integer> {
 	public void power(final int exponent) {
 		final int updatedValue = (int) Math.pow(this.getOrDefault(), exponent);
 		this.set(updatedValue);
+	}
+
+	@Override
+	public String toString() {
+		return this.getOrDefault() == null ? "IntegerSignal{null}" : "IntegerSignal{" + this.getOrDefault().toString() + "}";
 	}
 
 }

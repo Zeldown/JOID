@@ -7,7 +7,7 @@ import be.zeldown.joid.lib.animation.tweenengine.path.Linear;
 
 public interface TweenPaths {
 
-	public static final Linear LINEAR = new Linear();
-	public static final CatmullRom CATMULL_ROM = new CatmullRom();
+	public static final Linear linear = new Linear();
+	public static final CatmullRom catmullRom = new CatmullRom();
 
 }

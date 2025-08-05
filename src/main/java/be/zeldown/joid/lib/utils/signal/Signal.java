@@ -3,13 +3,10 @@ package be.zeldown.joid.lib.utils.signal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 
 import lombok.NonNull;
 
-/**
- * The `Signal` class in Java represents a signal with a generic type, allowing subscribers to receive
- * updates when the signal value changes.
- */
 public class Signal<T> implements ISignal<T> {
 
 	private final transient Set<@NonNull SignalSubscriber<@NonNull T>> eventSet;
@@ -17,7 +14,7 @@ public class Signal<T> implements ISignal<T> {
 	private volatile T defaultValue;
 	private volatile T value;
 
-	private boolean nextSilent = false;
+	private transient boolean nextSilent = false;
 
 	public Signal() {
 		this(null);
@@ -34,43 +31,46 @@ public class Signal<T> implements ISignal<T> {
 		return instance;
 	}
 
-	@Override
-	public T getOrDefault() {
-		return this.value != null ? this.value : this.defaultValue;
+	public static <T> @NonNull Signal<T> of(final @NonNull CompletionStage<T> future) {
+		final Signal<T> instance = new Signal<>();
+		future.thenAccept(instance::set);
+		return instance;
 	}
 
 	@Override
-	public void reset() {
+	public @NonNull Signal<T> reset() {
 		this.set(this.defaultValue);
+		return this;
 	}
 
 	@Override
-	public void set(final T value) {
+	public @NonNull Signal<T> set(final T value) {
 		final T oldValue = this.value;
-		final T newValue = value;
-
-		if (oldValue == null && newValue == null || oldValue != null && oldValue.equals(newValue)) {
-			return;
+		this.value = value;
+		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
+			return this;
 		}
 
-		this.publish();
+		return this.publish();
 	}
 
 	@Override
-	public void subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
+	public @NonNull Signal<T> subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
 		this.eventSet.add(subscriber);
+		return this;
 	}
 
 	@Override
-	public void unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
+	public @NonNull Signal<T> unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
 		this.eventSet.remove(subscriber);
+		return this;
 	}
 
 	@Override
-	public void publish() {
+	public @NonNull Signal<T> publish() {
 		if (this.nextSilent) {
 			this.nextSilent = false;
-			return;
+			return this;
 		}
 
 		final Set<SignalSubscriber<T>> outdatedSet = new HashSet<>();
@@ -82,6 +82,7 @@ public class Signal<T> implements ISignal<T> {
 		}
 
 		this.eventSet.removeAll(outdatedSet);
+		return this;
 	}
 
 	public @NonNull Set<@NonNull SignalSubscriber<@NonNull T>> getEventSet() {
@@ -89,8 +90,14 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	@Override
-	public void silent() {
+	public @NonNull Signal<T> silent() {
 		this.nextSilent = true;
+		return this;
+	}
+
+	@Override
+	public T getOrDefault() {
+		return this.value != null ? this.value : this.defaultValue;
 	}
 
 	@Override

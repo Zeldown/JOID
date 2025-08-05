@@ -1,22 +1,29 @@
 #version 120
 
-varying vec2 pos;
-varying vec2 uv;
+varying vec2 vPosition;
+varying vec2 vTexCoord;
+varying vec4 vColor;
 
-uniform float radius;
-uniform vec4 canvas;
-uniform sampler2D texture;
+uniform float u_Radius;
+uniform vec4 u_InnerRect;
+
+uniform sampler2D tex;
 
 void main() {
-    vec4 textureColor = texture2D(texture, uv);
-
-    vec2 tl = canvas.xy - pos;
-    vec2 br = pos - canvas.zw;
-    vec2 dis = max(br, tl);
-
-    float t = length(max(vec2(0.0, 0.0), dis)) - radius;
-    float a = 1.0 - smoothstep(0.0, 1.0, t);
+    vec2 tl = u_InnerRect.xy - vPosition;
+    vec2 br = vPosition - u_InnerRect.zw;
+    vec2 distances = max(br, tl);
     
-    vec4 color = textureColor.rgb == vec3(0.0) ? gl_Color : textureColor;
-    gl_FragColor = color * vec4(1.0, 1.0, 1.0, min(a, (textureColor.a, gl_Color.a)));
+    float distanceToCorner = length(max(vec2(0.0), distances)) - u_Radius;
+    
+    vec4 baseColor;
+    vec4 textureColor = texture2D(tex, vTexCoord);
+    if (textureColor.a < 0.01 || (textureColor.r + textureColor.g + textureColor.b) < 0.01) {
+        baseColor = vColor;
+    } else {
+        baseColor = textureColor;
+    }
+    
+    float alpha = 1.0 - smoothstep(0.0, 1.0, distanceToCorner);
+    gl_FragColor = baseColor * vec4(1.0, 1.0, 1.0, alpha);
 }

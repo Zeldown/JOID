@@ -1,19 +1,18 @@
 package be.zeldown.joid.lib.utils.signal.impl.primitive;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
-import lombok.NonNull;
 
 public class DoubleSignal extends Signal<Double> {
 
 	public DoubleSignal() {
-		super(0.0);
+		super(0D);
 	}
 
 	public DoubleSignal(final double value) {
 		super(value);
 	}
 
-	public static @NonNull DoubleSignal of(final double defaultValue) {
+	public static DoubleSignal of(final double defaultValue) {
 		final DoubleSignal instance = new DoubleSignal();
 		instance.set(defaultValue);
 		return instance;
@@ -50,6 +49,11 @@ public class DoubleSignal extends Signal<Double> {
 	public void decrement() {
 		final double updatedValue = this.getOrDefault() - 1;
 		this.set(updatedValue);
+	}
+
+	@Override
+	public String toString() {
+		return this.getOrDefault() == null ? "DoubleSignal{null}" : "DoubleSignal{" + this.getOrDefault().toString() + "}";
 	}
 
 }

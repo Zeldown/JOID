@@ -3,117 +3,196 @@ package be.zeldown.joid.lib.opengl.modifier;
 import lombok.Getter;
 import lombok.NonNull;
 
+import java.util.function.Supplier;
+
 @Getter
 public class GLScale {
 
-	private double rawX;
-	private double rawY;
-	private double rawZ;
+	private Supplier<Double> rawXSupplier;
+	private Supplier<Double> rawYSupplier;
+	private Supplier<Double> rawZSupplier;
 
 	private GLScale(final double width, final double height, final double depth) {
-		this.rawX = width;
-		this.rawY = height;
-		this.rawZ = depth;
+		this.rawXSupplier = () -> width;
+		this.rawYSupplier = () -> height;
+		this.rawZSupplier = () -> depth;
+	}
+
+	private GLScale(final Supplier<Double> widthSupplier, final Supplier<Double> heightSupplier, final Supplier<Double> depthSupplier) {
+		this.rawXSupplier = widthSupplier;
+		this.rawYSupplier = heightSupplier;
+		this.rawZSupplier = depthSupplier;
+	}
+
+	public double getRawX() {
+		return rawXSupplier.get();
+	}
+
+	public double getRawY() {
+		return rawYSupplier.get();
+	}
+
+	public double getRawZ() {
+		return rawZSupplier.get();
 	}
 
 	/**
-	 * The function creates a new instance of GLScale with default scaling values of 1.
-	 * 
-	 * @return An instance of the GLScale class with values (1.0, 1.0, 1.0) is being returned.
+	 * Creates a new GLScale instance with default scale factors (1, 1, 1).
+	 *
+	 * @return A new GLScale instance with default scale factors.
 	 */
 	public static @NonNull GLScale create() {
-		return new GLScale(1D, 1D, 1D);
+	    return new GLScale(1, 1, 1);
 	}
 
 	/**
-	 * The function creates a new GLScale object with the specified width, height, and depth.
-	 * 
-	 * @param width The width parameter represents the width value for the GLScale object.
-	 * @param height height
-	 * @param depth The `depth` parameter represents the depth dimension of an object or shape. It is
-	 * typically the distance from the front to the back of the object.
-	 * @return An instance of the GLScale class with the specified width, height, and depth values is
-	 * being returned.
+	 * Creates a new GLScale instance with the specified scale factors.
+	 *
+	 * @param width  The scale factor along the x-axis.
+	 * @param height The scale factor along the y-axis.
+	 * @param depth  The scale factor along the z-axis.
+	 * @return A new GLScale instance with the specified scale factors.
 	 */
 	public static @NonNull GLScale create(final double width, final double height, final double depth) {
-		return new GLScale(width, height, depth);
+	    return new GLScale(width, height, depth);
 	}
 
 	/**
-	 * The function WIDTH takes a double value representing width and returns a new GLScale object with
-	 * the specified width and default height and depth.
-	 * 
-	 * @param width The `width` parameter is a double value representing the width of a scale.
-	 * @return An instance of the GLScale class with the specified width value and default height and
-	 * depth values.
+	 * Creates a new GLScale instance with the specified scale factor suppliers.
+	 *
+	 * @param widthSupplier  The scale factor supplier along the x-axis.
+	 * @param heightSupplier The scale factor supplier along the y-axis.
+	 * @param depthSupplier  The scale factor supplier along the z-axis.
+	 * @return A new GLScale instance with the specified scale factor suppliers.
+	 */
+	public static @NonNull GLScale create(final Supplier<Double> widthSupplier, final Supplier<Double> heightSupplier, final Supplier<Double> depthSupplier) {
+	    return new GLScale(widthSupplier, heightSupplier, depthSupplier);
+	}
+
+	/**
+	 * Creates a new GLScale instance with the specified width and default height and depth scales (1, 1).
+	 *
+	 * @param width The scale factor along the x-axis.
+	 * @return A new GLScale instance with the specified width scale.
 	 */
 	public static @NonNull GLScale WIDTH(final double width) {
-		return new GLScale(width, 1D, 1D);
+	    return new GLScale(width, 1, 1);
 	}
 
 	/**
-	 * The HEIGHT function returns a GLScale object with a specified height value.
-	 * 
-	 * @param height The `height` parameter is a double value that represents the height component of a
-	 * `GLScale` object.
-	 * @return A new instance of the GLScale class with the specified height value and default values for
-	 * width and depth.
+	 * Creates a new GLScale instance with the specified width supplier and default height and depth scales (1, 1).
+	 *
+	 * @param widthSupplier The scale factor supplier along the x-axis.
+	 * @return A new GLScale instance with the specified width scale supplier.
+	 */
+	public static @NonNull GLScale WIDTH(final Supplier<Double> widthSupplier) {
+	    return new GLScale(widthSupplier, () -> 1.0, () -> 1.0);
+	}
+
+	/**
+	 * Creates a new GLScale instance with the specified height and default width and depth scales (1, 1).
+	 *
+	 * @param height The scale factor along the y-axis.
+	 * @return A new GLScale instance with the specified height scale.
 	 */
 	public static @NonNull GLScale HEIGHT(final double height) {
-		return new GLScale(1D, height, 1D);
+	    return new GLScale(1, height, 1);
 	}
 
 	/**
-	 * The function DEPTH returns a new GLScale object with specified depth value.
-	 * 
-	 * @param depth The `DEPTH` method takes a `double` parameter named `depth`, which represents the
-	 * depth value used to create a new `GLScale` object with scaling factors of 1 for the x and y axes,
-	 * and the specified depth value for the z axis.
-	 * @return An instance of the GLScale class with scaling factors of 1 for x and y, and the specified
-	 * depth for the z-axis is being returned.
+	 * Creates a new GLScale instance with the specified height supplier and default width and depth scales (1, 1).
+	 *
+	 * @param heightSupplier The scale factor supplier along the y-axis.
+	 * @return A new GLScale instance with the specified height scale supplier.
+	 */
+	public static @NonNull GLScale HEIGHT(final Supplier<Double> heightSupplier) {
+	    return new GLScale(() -> 1.0, heightSupplier, () -> 1.0);
+	}
+
+	/**
+	 * Creates a new GLScale instance with the specified depth and default width and height scales (1, 1).
+	 *
+	 * @param depth The scale factor along the z-axis.
+	 * @return A new GLScale instance with the specified depth scale.
 	 */
 	public static @NonNull GLScale DEPTH(final double depth) {
-		return new GLScale(1D, 1D, depth);
+	    return new GLScale(1, 1, depth);
 	}
 
 	/**
-	 * The `width` function in Java sets the width of a GLScale object and returns the object itself.
-	 * 
-	 * @param width The `width` parameter is a double value representing the width that will be set to the
-	 * `rawX` property of the `GLScale` object.
-	 * @return The method is returning the current instance of the GLScale object (`this`) after setting
-	 * the `rawX` field to the provided `width` value.
+	 * Creates a new GLScale instance with the specified depth supplier and default width and height scales (1, 1).
+	 *
+	 * @param depthSupplier The scale factor supplier along the z-axis.
+	 * @return A new GLScale instance with the specified depth scale supplier.
+	 */
+	public static @NonNull GLScale DEPTH(final Supplier<Double> depthSupplier) {
+	    return new GLScale(() -> 1.0, () -> 1.0, depthSupplier);
+	}
+
+	/**
+	 * Sets the scale factor along the x-axis of this GLScale instance and returns the modified instance.
+	 *
+	 * @param width The new scale factor along the x-axis.
+	 * @return The modified GLScale instance.
 	 */
 	public @NonNull GLScale width(final double width) {
-		this.rawX = width;
-		return this;
+	    this.rawXSupplier = () -> width;
+	    return this;
 	}
 
 	/**
-	 * The `height` function in Java sets the raw Y value to the specified height and returns the current
-	 * object.
-	 * 
-	 * @param height The `height` parameter is a double value representing the height that is being set
-	 * for a GLScale object.
-	 * @return The method is returning the current instance of the `GLScale` object (`this`) after setting
-	 * the `rawY` field to the provided `height` value.
+	 * Sets the scale factor supplier along the x-axis of this GLScale instance and returns the modified instance.
+	 *
+	 * @param widthSupplier The new scale factor supplier along the x-axis.
+	 * @return The modified GLScale instance.
+	 */
+	public @NonNull GLScale width(final Supplier<Double> widthSupplier) {
+	    this.rawXSupplier = widthSupplier;
+	    return this;
+	}
+
+	/**
+	 * Sets the scale factor along the y-axis of this GLScale instance and returns the modified instance.
+	 *
+	 * @param height The new scale factor along the y-axis.
+	 * @return The modified GLScale instance.
 	 */
 	public @NonNull GLScale height(final double height) {
-		this.rawY = height;
-		return this;
+	    this.rawYSupplier = () -> height;
+	    return this;
 	}
 
 	/**
-	 * The `depth` function in Java sets the depth value and returns the GLScale object.
-	 * 
-	 * @param depth The `depth` parameter is a double value representing the depth of an object in a 3D
-	 * space.
-	 * @return The method is returning the current instance of the GLScale object (`this`) after setting
-	 * the `rawZ` field to the provided `depth` value.
+	 * Sets the scale factor supplier along the y-axis of this GLScale instance and returns the modified instance.
+	 *
+	 * @param heightSupplier The new scale factor supplier along the y-axis.
+	 * @return The modified GLScale instance.
+	 */
+	public @NonNull GLScale height(final Supplier<Double> heightSupplier) {
+	    this.rawYSupplier = heightSupplier;
+	    return this;
+	}
+
+	/**
+	 * Sets the scale factor along the z-axis of this GLScale instance and returns the modified instance.
+	 *
+	 * @param depth The new scale factor along the z-axis.
+	 * @return The modified GLScale instance.
 	 */
 	public @NonNull GLScale depth(final double depth) {
-		this.rawZ = depth;
-		return this;
+	    this.rawZSupplier = () -> depth;
+	    return this;
+	}
+
+	/**
+	 * Sets the scale factor supplier along the z-axis of this GLScale instance and returns the modified instance.
+	 *
+	 * @param depthSupplier The new scale factor supplier along the z-axis.
+	 * @return The modified GLScale instance.
+	 */
+	public @NonNull GLScale depth(final Supplier<Double> depthSupplier) {
+	    this.rawZSupplier = depthSupplier;
+	    return this;
 	}
 
 }

@@ -1,5 +1,6 @@
 package be.zeldown.joid.lib.ui.node.impl.design.model;
 
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import lombok.Getter;
 import lombok.NonNull;
@@ -53,10 +54,10 @@ public class ModelViewerNode extends ModelNode {
 		}
 
 		if(this.dragged) {
-			this.targetRotationYaw += (mouseX - this.draggedMouseX)/5F;
+			this.targetRotationYaw += (mouseX - this.draggedMouseX) / 5F;
 			this.draggedMouseX = mouseX;
 
-			this.targetRotationPitch += (mouseY - this.draggedMouseY)/5F;
+			this.targetRotationPitch -= (mouseY - this.draggedMouseY) / 5F;
 			this.draggedMouseY = mouseY;
 
 			this.targetRotationYaw = Math.max(this.minRotationYaw, Math.min(this.maxRotationYaw, this.targetRotationYaw));
@@ -88,7 +89,7 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (!super.isHovered(mouseX, mouseY)) {
 			return;
 		}
@@ -101,7 +102,7 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.dragged = false;
 	}
 

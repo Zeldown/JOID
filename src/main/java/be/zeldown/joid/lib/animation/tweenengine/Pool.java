@@ -48,8 +48,8 @@ public abstract class Pool<T> {
 
 	public interface Callback<T> {
 
-		void onPool(T obj);
-		void onUnPool(T obj);
+		public void onPool(T obj);
+		public void onUnPool(T obj);
 
 	}
 

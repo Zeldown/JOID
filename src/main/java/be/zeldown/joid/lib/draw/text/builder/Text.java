@@ -3,6 +3,7 @@ package be.zeldown.joid.lib.draw.text.builder;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import be.zeldown.joid.lib.draw.text.builder.modifier.ITextModifier;
 import be.zeldown.joid.lib.draw.text.builder.utils.TextOverflow;
@@ -47,7 +48,15 @@ public final class Text {
 		return new Text().add(TextElement.create(text, info));
 	}
 
+	public static final @NonNull Text create(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info) {
+		return new Text().add(TextElement.create(text, info));
+	}
+
 	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign) {
+		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign);
+	}
+
+	public static final @NonNull Text create(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign) {
 		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign);
 	}
 
@@ -55,7 +64,15 @@ public final class Text {
 		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign);
 	}
 
+	public static final @NonNull Text create(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {
+		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign);
+	}
+
 	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info, final @NonNull TextOverflow overflow) {
+		return new Text().add(TextElement.create(text, info)).overflow(overflow);
+	}
+
+	public static final @NonNull Text create(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info, final @NonNull TextOverflow overflow) {
 		return new Text().add(TextElement.create(text, info)).overflow(overflow);
 	}
 
@@ -63,7 +80,15 @@ public final class Text {
 		return new Text().add(TextElement.create(text, info)).horizontalAlign(align).overflow(overflow);
 	}
 
+	public static final @NonNull Text create(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info, final @NonNull Align align, final @NonNull TextOverflow overflow) {
+		return new Text().add(TextElement.create(text, info)).horizontalAlign(align).overflow(overflow);
+	}
+
 	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow) {
+		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign).overflow(overflow);
+	}
+
+	public static final @NonNull Text create(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow) {
 		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign).overflow(overflow);
 	}
 
@@ -83,12 +108,42 @@ public final class Text {
 		return this.text(0, text);
 	}
 
+	public @NonNull Text text(final @NonNull Supplier<@NonNull String> text) {
+		return this.text(0, text);
+	}
+
 	public @NonNull Text text(final int index, final @NonNull String text) {
 		if (index < 0 || index >= this.elementList.size()) {
 			return this;
 		}
 
 		this.elementList.get(index).text(text);
+		this.width = 0;
+		this.height = 0;
+		return this;
+	}
+
+	public @NonNull Text text(final int index, final @NonNull Supplier<@NonNull String> text) {
+		if (index < 0 || index >= this.elementList.size()) {
+			return this;
+		}
+
+		this.elementList.get(index).text(text);
+		this.width = 0;
+		this.height = 0;
+		return this;
+	}
+
+	public @NonNull Text info(final @NonNull TextInfo info) {
+		return this.info(0, info);
+	}
+
+	public @NonNull Text info(final int index, final @NonNull TextInfo info) {
+		if (index < 0 || index >= this.elementList.size()) {
+			return this;
+		}
+
+		this.elementList.get(index).info(info);
 		this.width = 0;
 		this.height = 0;
 		return this;
@@ -240,6 +295,11 @@ public final class Text {
 
 	public final @NonNull FontBounds getBounds() {
 		return new FontBounds(this.getWidth(), this.getHeight());
+	}
+
+	@Override
+	public String toString() {
+		return "\"" + this.getText() + "\" - " + this.horizontalAlignment + " / " + this.verticalAlignment + " - " + this.overflow + " [" + this.elementList.size() + "]";
 	}
 
 }

@@ -7,13 +7,15 @@ import org.lwjgl.input.Keyboard;
 
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.draw.text.builder.Text;
+import be.zeldown.joid.lib.draw.text.builder.utils.TextOverflow;
 import be.zeldown.joid.lib.draw.text.utils.TextMode;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import be.zeldown.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCallback;
 import be.zeldown.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldFocusCallback;
+import be.zeldown.joid.lib.utils.align.Align;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.clipboard.ClipboardUtils;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import lombok.Getter;
@@ -103,9 +105,9 @@ public class MultilineTextFieldNode extends Node {
 		final double textX = super.getX() + this.marginLeft;
 		final double textY = super.getY() + this.marginTop - this.yOffset;
 
-		super.getUi().stencil(super.getX() + this.marginLeft, super.getY() + this.marginTop, maxWidth, this.getRawHeight(), () -> {
+		super.getUi().mask(super.getX() + this.marginLeft, super.getY() + this.marginTop, maxWidth, this.getRawHeight(), () -> {
 			final boolean isPlaceholder = this.text.isEmpty() && !this.focused;
-			DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), Text.create(isPlaceholder ? this.placeholder : this.text, isPlaceholder ? this.info.copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)) : this.info), TextMode.SPLIT);
+			DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), isPlaceholder ? this.placeholder : this.text, isPlaceholder ? this.info.copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)) : this.info, Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
 
 			if (this.focused) {
 				final String beforeCursor = this.text.substring(0, this.cursorPos);
@@ -470,16 +472,24 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	private final void setText(String newText) {
-		final String oldText = this.text;
+		if (newText == null) {
+			newText = "";
+		}
+
+		final String oldText = this.text == null ? "" : this.text;
 		newText = this.filter.apply(oldText, newText);
 		if (this.maxTextLength >= 0 && newText.length() > this.maxTextLength) {
 			newText = newText.substring(0, this.maxTextLength);
 		}
 
 		final String finalNewText = newText;
-		this.executeCallback(MultilineTextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+		if (!finalNewText.equals(oldText)) {
+			this.executeCallback(MultilineTextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+				this.text = finalNewText;
+			}, oldText, finalNewText);
+		} else {
 			this.text = finalNewText;
-		}, oldText, finalNewText);
+		}
 	}
 
 	private final void holdInput(final int keyCode) {
@@ -490,7 +500,7 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
 			this.focused = false;
 			this.selectionStart = -1;
@@ -644,17 +654,17 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	private final @NonNull List<String> getLines() {
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), Text.create(this.text, this.info));
+		return DrawUtils.TEXT.getLines(this.getRawWidth(), this.text, this.info);
 	}
 
 	private final @NonNull List<String> getLines(final @NonNull String text) {
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), Text.create(text, this.info));
+		return DrawUtils.TEXT.getLines(this.getRawWidth(), text, this.info);
 	}
 
 	private final @NonNull List<String> getLines(int start, int end) {
 		start = Math.max(0, start);
 		end = Math.min(this.text.replace("\n", "").length(), end);
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), Text.create(this.text.substring(start, end), this.info));
+		return DrawUtils.TEXT.getLines(this.getRawWidth(), this.text.substring(start, end), this.info);
 	}
 
 	private final double getLineHeight() {
@@ -666,7 +676,7 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	public final <T extends MultilineTextFieldNode> @NonNull T text(final @NonNull String text) {
-		this.text = text;
+		this.setText(text);
 		return (T) this;
 	}
 

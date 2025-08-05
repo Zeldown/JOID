@@ -23,17 +23,17 @@ public class DirectFloatMatrixUniform extends DirectShaderUniform implements Flo
 		floatBuffer.rewind();
 
 		switch (array.length) {
-		case 4:
-			GL20.glUniformMatrix2(super.getLocation(), false, floatBuffer);
-			break;
-		case 9:
-			GL20.glUniformMatrix3(super.getLocation(), false, floatBuffer);
-			break;
-		case 16:
-			GL20.glUniformMatrix4(super.getLocation(), false, floatBuffer);
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid matrix size, matrix size must be 4, 9 or 16 not " + array.length + "!");
+			case 4:
+				GL20.glUniformMatrix2(this.getLocation(), false, floatBuffer);
+				break;
+			case 9:
+				GL20.glUniformMatrix3(this.getLocation(), false, floatBuffer);
+				break;
+			case 16:
+				GL20.glUniformMatrix4(this.getLocation(), false, floatBuffer);
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid matrix size");
 		}
 	}
 

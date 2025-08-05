@@ -1,11 +1,11 @@
 package be.zeldown.joid.lib.color;
 
 import java.nio.FloatBuffer;
+import java.util.function.Consumer;
 
 import javax.vecmath.Vector4f;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.opengl.GLHelper;
 import lombok.NonNull;
 
 public final class Color {
@@ -25,11 +25,27 @@ public final class Color {
 	public static final Color MAGENTA     = new Color(1F, 0F, 1F, 1F);
 	public static final Color TRANSPARENT = new Color(0F, 0F, 0F, 0F);
 
+	public static final Color RAINBOW = new Color(1F, 1F, 1F, 1F, color -> {
+		final Color rainbow = Color.RAINBOW();
+		color.r = rainbow.r;
+		color.g = rainbow.g;
+		color.b = rainbow.b;
+		color.a = rainbow.a;
+	});
+	public static final Color LOADING = new Color(1F, 1F, 1F, 1F, color -> {
+		final Color loading = Color.LOADING();
+		color.r = loading.r;
+		color.g = loading.g;
+		color.b = loading.b;
+		color.a = loading.a;
+	});
+
 	public float r = 0F;
 	public float g = 0F;
 	public float b = 0F;
 	public float a = 1F;
 
+	public Consumer<Color> update;
 	public ColorGradient gradient;
 
 	/**
@@ -175,6 +191,15 @@ public final class Color {
 		this.a = Math.min(a, 1);
 	}
 
+	public Color(final float r, final float g, final float b, final float a, final Consumer<Color> update) {
+		this.r = Math.min(r, 1);
+		this.g = Math.min(g, 1);
+		this.b = Math.min(b, 1);
+		this.a = Math.min(a, 1);
+
+		this.update = update;
+	}
+
 	/**
 	 * Creates a new {@code Color} instance by decoding the specified string representation of an RGB color.
 	 * <p>
@@ -295,7 +320,8 @@ public final class Color {
 	 * </p>
 	 */
 	public void bind() {
-		GL11.glColor4f(this.r, this.g, this.b, this.a);
+		this.update();
+		GLHelper.color(this);
 	}
 
 	/**
@@ -505,7 +531,7 @@ public final class Color {
 	 * @return A new color resulting from the addition.
 	 */
 	public @NonNull Color addToCopy(final @NonNull Color c) {
-		final Color copy = new Color(this.r, this.g, this.b, this.a);
+		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
 		copy.r += c.r;
 		copy.g += c.g;
 		copy.b += c.b;
@@ -520,7 +546,7 @@ public final class Color {
 	 * @return A new color resulting from the scaling operation.
 	 */
 	public @NonNull Color scaleCopy(final float value) {
-		final Color copy = new Color(this.r, this.g, this.b, this.a);
+		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
 		copy.r *= value;
 		copy.g *= value;
 		copy.b *= value;
@@ -640,7 +666,7 @@ public final class Color {
 	 * @return A new {@code Color} instance with the same RGB and alpha components as this color.
 	 */
 	public @NonNull Color copy() {
-		return new Color(this.r, this.g, this.b, this.a);
+		return new Color(this.r, this.g, this.b, this.a, this.update);
 	}
 
 	/**
@@ -651,7 +677,7 @@ public final class Color {
 	 * @return A new {@code Color} instance with the same RGB components and the specified alpha component.
 	 */
 	public @NonNull Color copyAlpha(final float alpha) {
-		return new Color(this.r, this.g, this.b, alpha);
+		return new Color(this.r, this.g, this.b, alpha, this.update);
 	}
 
 	/**
@@ -662,7 +688,7 @@ public final class Color {
 	 * @return A new {@code Color} instance with the specified red component and the same green, blue, and alpha components.
 	 */
 	public @NonNull Color copyRed(final float red) {
-		return new Color(red, this.g, this.b, this.a);
+		return new Color(red, this.g, this.b, this.a, this.update);
 	}
 
 	/**
@@ -673,7 +699,7 @@ public final class Color {
 	 * @return A new {@code Color} instance with the same red, blue, and alpha components and the specified green component.
 	 */
 	public @NonNull Color copyGreen(final float green) {
-		return new Color(this.r, green, this.b, this.a);
+		return new Color(this.r, green, this.b, this.a, this.update);
 	}
 
 	/**
@@ -684,7 +710,14 @@ public final class Color {
 	 * @return A new {@code Color} instance with the same red, green, and alpha components and the specified blue component.
 	 */
 	public @NonNull Color copyBlue(final float blue) {
-		return new Color(this.r, this.g, blue, this.a);
+		return new Color(this.r, this.g, blue, this.a, this.update);
+	}
+
+	public @NonNull Color update() {
+		if (this.update != null) {
+			this.update.accept(this);
+		}
+		return this;
 	}
 
 	public boolean isGradient() {
@@ -757,7 +790,7 @@ public final class Color {
 	 * </p>
 	 */
 	public static void reset() {
-		GL11.glColor4f(1F, 1F, 1F, 1F);
+		GLHelper.popColor();
 	}
 
 	/**
@@ -786,7 +819,8 @@ public final class Color {
 				color1.r * (1F - progress) + color2.r * progress,
 				color1.g * (1F - progress) + color2.g * progress,
 				color1.b * (1F - progress) + color2.b * progress,
-				color1.a * (1F - progress) + color2.a * progress
+				color1.a * (1F - progress) + color2.a * progress,
+				progress > 0.5F ? color2.update : color1.update
 				);
 	}
 
@@ -836,11 +870,11 @@ public final class Color {
 	 */
 	@Override
 	public @NonNull String toString() {
-		if (this.isGradient()) {
-			return String.format("Gradient(%s, %s, %s)", this.gradient.getStartColor().toString(), this.gradient.getEndColor().toString(), this.gradient.getDirection().toString());
-		}
-
-		return String.format("Color(%d, %d, %d, %d) [%s]", this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha(), this.encode());
+		return String.format(
+				"Color(%d, %d, %d, %d) [%s]",
+				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha(),
+				this.encode()
+				);
 	}
 
 	/**

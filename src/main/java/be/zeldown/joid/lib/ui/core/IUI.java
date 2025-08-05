@@ -1,5 +1,6 @@
 package be.zeldown.joid.lib.ui.core;
 
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
@@ -19,7 +20,7 @@ public interface IUI {
 	 * @param clickType The type of mouse click (e.g., left, right, middle).
 	 * @param cancelled Whether the click event was triggered by a Node.
 	 */
-	default public void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {}
+	default public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {}
 
 	/**
 	 * Called when the mouse is dragged.
@@ -31,7 +32,7 @@ public interface IUI {
 	 * @param cancelled
 	 * @return {@code true} if the action should be cancelled, and {@code false} otherwise.
 	 */
-	default public void mouseDragged(final double mouseX, final double mouseY, final int clickType, final long deltaTime, final @NonNull InternalContext context) {}
+	default public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {}
 
 	/**
 	 * Called when a mouse button is released.
@@ -41,7 +42,7 @@ public interface IUI {
 	 * @param clickType The type of mouse click (e.g., left, right, middle).
 	 * @param cancelled Whether the click event was triggered by a Node.
 	 */
-	default public void mouseReleased(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {}
+	default public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {}
 
 	/**
 	 * Called when the mouse wheel is scrolled.

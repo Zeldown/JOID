@@ -1,10 +1,10 @@
 package be.zeldown.joid.lib.ui.core.data;
 
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 
 import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.ui.core.data.popup.UIDataPopup;
-import be.zeldown.joid.lib.ui.core.data.popup.UIDataPopupObject;
+import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.utils.align.Align;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -15,14 +15,13 @@ import lombok.ToString;
 public final class UIDataObject implements UIData {
 
 	/* [ Default Section ] */
-	private UIDataPopupObject popup = new UIDataPopupObject();
 	private boolean active          = true;
 	private boolean visible         = true;
-	private boolean background      = false;
-	private boolean hotreload       = true;
-	private boolean profiler        = true;
+	private boolean pause           = true;
+	private boolean zoomable        = false;
+	private boolean projection      = true;
+	private boolean background      = true;
 	private String  backgroundColor = "#101010C0";
-	private int     zindex          = 0;
 	private double  zlevel          = 0D;
 	private Align   anchorX         = Align.CENTER;
 	private Align   anchorY         = Align.CENTER;
@@ -31,14 +30,13 @@ public final class UIDataObject implements UIData {
 	private Color backgroundColorCache = Color.decode(this.backgroundColor);
 
 	public UIDataObject(final @NonNull UIData data) {
-		this.popup           = new UIDataPopupObject(data.popup());
 		this.active          = data.active();
 		this.visible         = data.visible();
+		this.pause           = data.pause();
+		this.zoomable        = data.zoomable();
+		this.projection      = data.projection();
 		this.background      = data.background();
 		this.backgroundColor = data.backgroundColor();
-		this.hotreload       = data.hotreload();
-		this.profiler        = data.profiler();
-		this.zindex          = data.zindex();
 		this.zlevel          = data.zlevel();
 		this.anchorX         = data.anchorX();
 		this.anchorY         = data.anchorY();
@@ -46,15 +44,24 @@ public final class UIDataObject implements UIData {
 		this.backgroundColorCache = Color.decode(this.backgroundColor);
 	}
 
+	public static @NonNull Optional<UIDataObject> get(final @NonNull Class<? extends UI> clazz) {
+		Class<?> currentClass = clazz;
+		UIData data = currentClass.getAnnotation(UIData.class);
+		while (data == null && currentClass.getSuperclass() != null) {
+			currentClass = currentClass.getSuperclass();
+			data = currentClass.getAnnotation(UIData.class);
+		}
+		return data != null ? Optional.of(new UIDataObject(data)) : Optional.empty();
+	}
+
+	public static @NonNull UIDataObject getOrDefault(final @NonNull Class<? extends UI> clazz) {
+		return UIDataObject.get(clazz).orElse(new UIDataObject());
+	}
+
 	/* [ Annotation Section ] */
 	@Override
 	public Class<? extends Annotation> annotationType() {
 		return UIData.class;
-	}
-
-	@Override
-	public UIDataPopup popup() {
-		return this.popup;
 	}
 
 	@Override
@@ -68,6 +75,16 @@ public final class UIDataObject implements UIData {
 	}
 
 	@Override
+	public boolean pause() {
+		return this.pause;
+	}
+
+	@Override
+	public boolean projection() {
+		return this.projection;
+	}
+
+	@Override
 	public boolean background() {
 		return this.background;
 	}
@@ -78,18 +95,8 @@ public final class UIDataObject implements UIData {
 	}
 
 	@Override
-	public boolean hotreload() {
-		return this.hotreload;
-	}
-
-	@Override
-	public boolean profiler() {
-		return this.profiler;
-	}
-
-	@Override
-	public int zindex() {
-		return this.zindex;
+	public boolean zoomable() {
+		return this.zoomable;
 	}
 
 	@Override
@@ -135,16 +142,6 @@ public final class UIDataObject implements UIData {
 
 	/* [ Setter Section ] */
 	/**
-	 * Define if the UI should be opened as an popup
-	 * @param popup
-	 * @return
-	 */
-	public final @NonNull UIDataObject setPopup(final @NonNull UIDataPopupObject popup) {
-		this.popup = popup;
-		return this;
-	}
-
-	/**
 	 * Define if the UI should be active
 	 * default: true
 	 * @param active
@@ -167,8 +164,41 @@ public final class UIDataObject implements UIData {
 	}
 
 	/**
+	 * Define if the game should be paused when the UI is opened
+	 * default: true
+	 * @param pause
+	 * @return this
+	 */
+	public final @NonNull UIDataObject setPause(final boolean pause) {
+		this.pause = pause;
+		return this;
+	}
+
+	/**
+	 * Define if the UI should be zoomable default: false
+	 *
+	 * @param zoomable
+	 * @return this
+	 */
+	public final @NonNull UIDataObject setZoomable(final boolean zoomable) {
+		this.zoomable = zoomable;
+		return this;
+	}
+
+	/**
+	 * Define if the UI should be projected on the screen default: true
+	 *
+	 * @param projection
+	 * @return this
+	 */
+	public final @NonNull UIDataObject setProjection(final boolean projection) {
+		this.projection = projection;
+		return this;
+	}
+
+	/**
 	 * Define if a default gray background should be drawn
-	 * default: false
+	 * default: true
 	 * @param background
 	 * @return this
 	 */
@@ -190,40 +220,6 @@ public final class UIDataObject implements UIData {
 	}
 
 	/**
-	 * Define if the UI should be reloaded when the code is modified default: true
-	 * default: true
-	 * @param hotreload
-	 * @return this
-	 */
-	public final @NonNull UIDataObject setHotreload(final boolean hotreload) {
-		this.hotreload = hotreload;
-		return this;
-	}
-
-	/**
-	 * Define if the profiler should be activated in debug mode
-	 * default: true
-	 * @param profiler
-	 * @return this
-	 */
-	public final @NonNull UIDataObject setProfiler(final boolean profiler) {
-		this.profiler = profiler;
-		return this;
-	}
-
-	/**
-	 * Define the Z index of the UI default: 0
-	 *
-	 * @param zlevel
-	 * @return this
-	 */
-	public final @NonNull UIDataObject setZindex(final int zindex) {
-		this.zindex = zindex;
-		return this;
-	}
-
-
-	/**
 	 * Define the Z level of the UI default: 0
 	 *
 	 * @param zlevel
@@ -240,7 +236,7 @@ public final class UIDataObject implements UIData {
 	 * @param anchorX
 	 * @return this
 	 */
-	public final @NonNull UIDataObject setAnchorX(final Align anchorX) {
+	public final @NonNull UIDataObject setAnchorX(final @NonNull Align anchorX) {
 		this.anchorX = anchorX;
 		return this;
 	}
@@ -251,7 +247,7 @@ public final class UIDataObject implements UIData {
 	 * @param anchorY
 	 * @return this
 	 */
-	public final @NonNull UIDataObject setAnchorY(final Align anchorY) {
+	public final @NonNull UIDataObject setAnchorY(final @NonNull Align anchorY) {
 		this.anchorY = anchorY;
 		return this;
 	}

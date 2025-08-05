@@ -4,13 +4,11 @@ import java.util.Map.Entry;
 
 import javax.vecmath.Vector2d;
 
-import org.lwjgl.opengl.GL11;
-
 import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.opengl.GLHelper;
 import be.zeldown.joid.lib.ui.node.impl.structure.chart.ChartNode;
 import be.zeldown.joid.lib.utils.align.Align;
 import lombok.NonNull;
@@ -32,8 +30,7 @@ public class DemoChartNode extends ChartNode {
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), new Color(163, 163, 163));
 
 		if (!super.isLoaded()) {
-			final Text text = Text.create("NO DATA", TextInfo.create(DemoFont.MONTSERRAT, 50, Color.WHITE)).align(Align.CENTER, Align.START);
-			DrawUtils.TEXT.drawText(super.getX() + super.dw(2), super.getY() + super.dh(2) - text.dh(2), text);
+			DrawUtils.TEXT.drawText(super.getX() + super.dw(2), super.getY() + super.dh(2) - TextInfo.create(DemoFont.MONTSERRAT, 50).getHeight() / 2, "NO DATA", TextInfo.create(DemoFont.MONTSERRAT, 50, Color.WHITE), Align.CENTER, Align.START);
 			return;
 		}
 
@@ -62,9 +59,9 @@ public class DemoChartNode extends ChartNode {
 					}
 				}
 
-				GL11.glTranslated(0, 0, 1);
+				GLHelper.translateZ(1);
 				DrawUtils.SHAPE.drawCircle(ox, oy, Color.WHITE, 7);
-				GL11.glTranslated(0, 0, -1);
+				GLHelper.translateZ(-1);
 
 				last = new Vector2d(ox, oy);
 				ox += offset;

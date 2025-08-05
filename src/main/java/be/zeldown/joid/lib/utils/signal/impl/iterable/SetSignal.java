@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@NoArgsConstructor
 public class SetSignal<E> extends Signal<Set<E>> {
+
+	public SetSignal() {}
 
 	public SetSignal(final Collection<E> value) {
 		this(new HashSet<>(value));
@@ -19,10 +19,16 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		super(value);
 	}
 
-	public static <E> @NonNull SetSignal<E> of(final Set<E> defaultValue) {
+	public static <E> SetSignal<E> of(final Set<E> defaultValue) {
 		final SetSignal<E> instance = new SetSignal<>();
 		instance.set(defaultValue);
 		return instance;
+	}
+
+	public @NonNull SetSignal<E> clear() {
+		this.getOrDefault().clear();
+		this.publish();
+		return this;
 	}
 
 	public boolean add(final E e) {
@@ -31,12 +37,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return success;
 	}
 
-	public void clear() {
-		this.getOrDefault().clear();
-		this.publish();
-	}
-
-	public boolean contains(final @NonNull E e) {
+	public boolean contains(final E e) {
 		return this.getOrDefault().contains(e);
 	}
 
@@ -44,7 +45,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return this.getOrDefault().isEmpty();
 	}
 
-	public boolean remove(final @NonNull E e) {
+	public boolean remove(final E e) {
 		final boolean success = this.getOrDefault().remove(e);
 		this.publish();
 		return success;
@@ -52,6 +53,11 @@ public class SetSignal<E> extends Signal<Set<E>> {
 
 	public int size() {
 		return this.getOrDefault().size();
+	}
+
+	@Override
+	public String toString() {
+		return this.getOrDefault() == null ? "SetSignal{null}" : "SetSignal{" + this.getOrDefault().toString() + "}";
 	}
 
 }

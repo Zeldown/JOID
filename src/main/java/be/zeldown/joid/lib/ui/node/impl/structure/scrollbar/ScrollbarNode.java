@@ -1,22 +1,22 @@
 package be.zeldown.joid.lib.ui.node.impl.structure.scrollbar;
 
 import be.zeldown.joid.lib.ui.node.Node;
+import be.zeldown.joid.lib.utils.box.BoundingBox;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 @SuppressWarnings("unchecked")
 public abstract class ScrollbarNode extends Node {
 
-	@NonNull private final ScrollbarBounds scroll;
+	@NonNull private final BoundingBox scroll;
 
 	private boolean dragging;
 	private Node scrollNode;
 
-	protected ScrollbarNode(final double x, final double y, final double width, final double height, final @NonNull ScrollbarBounds scroll) {
+	protected ScrollbarNode(final double x, final double y, final double width, final double height, final @NonNull BoundingBox scroll) {
 		super(x, y, width, height);
 		this.scroll = scroll;
 	}
@@ -52,7 +52,7 @@ public abstract class ScrollbarNode extends Node {
 	}
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (!this.isHovered(mouseX, mouseY)) {
 			return;
 		}
@@ -61,7 +61,7 @@ public abstract class ScrollbarNode extends Node {
 	}
 
 	@Override
-	public final void mouseReleased(final double mouseX, final double mouseY, final int clickType, final @NonNull InternalContext context) {
+	public final void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.dragging = false;
 	}
 
@@ -82,28 +82,5 @@ public abstract class ScrollbarNode extends Node {
 
 	/* [ Abstract Section ] */
 	public abstract void drawScrollbar(final double mouseX, final double mouseY);
-
-	@Getter
-	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-	public static class ScrollbarBounds {
-
-		private final double minX;
-		private final double minY;
-		private final double maxX;
-		private final double maxY;
-
-		public static @NonNull ScrollbarBounds create(final double minX, final double minY, final double width, final double height) {
-			return new ScrollbarBounds(minX, minY, minX + width, minY + height);
-		}
-
-		public final double getWidth() {
-			return this.maxX - this.minX;
-		}
-
-		public final double getHeight() {
-			return this.maxY - this.minY;
-		}
-
-	}
 
 }

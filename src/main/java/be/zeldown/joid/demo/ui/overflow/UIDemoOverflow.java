@@ -5,12 +5,13 @@ import be.zeldown.joid.demo.ui.overflow.node.DemoScrollbarNode;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.ui.core.data.UIData;
+import be.zeldown.joid.lib.ui.node.effect.impl.MaskNodeEffect;
 import be.zeldown.joid.lib.ui.node.impl.design.shape.RectNode;
 import be.zeldown.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import be.zeldown.joid.lib.ui.node.impl.structure.flex.FlexNode;
-import be.zeldown.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode.ScrollbarBounds;
 import be.zeldown.joid.lib.ui.node.property.overflow.OverflowProperty;
 import be.zeldown.joid.lib.utils.align.Align;
+import be.zeldown.joid.lib.utils.box.BoundingBox;
 
 @UIData(anchorY = Align.START, anchorX = Align.CENTER)
 public class UIDemoOverflow extends UIDemo {
@@ -29,7 +30,7 @@ public class UIDemoOverflow extends UIDemo {
 					)
 			.color(Color.BLUE)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(0, -20D, 10D, 10D, ScrollbarBounds.create(0, -20D, 1920D / 2D, 10D)))
+			.scrollbar(DemoScrollbarNode.create(0, -20D, 30D, 10D, BoundingBox.create(0, -20D, 1920D / 2D, 10D)))
 			.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
 			.onScrollEnd((node, scrollX, scrollY) -> {
 				RectNode.create(
@@ -44,9 +45,10 @@ public class UIDemoOverflow extends UIDemo {
 							0,
 							0,
 							rect.getWidth(),
-							10D
+							rect.getHeight()
 							)
 					.color(Color.GREEN)
+					.effect(MaskNodeEffect.create(rect.getWidth(), 10D))
 					.attach(rect);
 				})
 				.onClick((child, mouseX, mouseY, clickType) -> System.out.println(child))
@@ -71,9 +73,10 @@ public class UIDemoOverflow extends UIDemo {
 									0,
 									0,
 									rect.getWidth(),
-									10D
+									rect.getHeight()
 									)
 							.color(Color.GREEN)
+							.effect(MaskNodeEffect.create(rect.getWidth(), 10D))
 							.attach(rect);
 						})
 						.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
@@ -92,7 +95,7 @@ public class UIDemoOverflow extends UIDemo {
 					)
 			.color(Color.BLUE)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(130D, 0, 10D, 10D, ScrollbarBounds.create(130D, 0, 10D, 1080 / 2D)))
+			.scrollbar(DemoScrollbarNode.create(130D, 0, 10D, 30D, BoundingBox.create(130D, 0, 10D, 1080 / 2D)))
 			.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
 			.body(n -> {
 				FlexNode

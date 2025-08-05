@@ -1,12 +1,11 @@
 package be.zeldown.joid.lib.resource.dto;
 
-import java.awt.image.BufferedImage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.lwjgl.opengl.GL11;
 
-import be.zeldown.joid.lib.color.Color;
+import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
 import be.zeldown.joid.lib.utils.texture.AllocatedTextureUtil;
 import lombok.Getter;
 import lombok.NonNull;
@@ -16,8 +15,8 @@ public final class ResourceData {
 
 	private static final ExecutorService ASYNC_EXECUTOR = Executors.newFixedThreadPool(16);
 
-	private String        uniqueId;
-	private BufferedImage image;
+	private String            uniqueId;
+	private IResourceDecoder  decoder;
 
 	private int[]   textureId;
 	private int[][] data;
@@ -30,9 +29,12 @@ public final class ResourceData {
 	private int height;
 
 	/* [ Constructor ] */
-	public ResourceData(final @NonNull String uniqueId, final BufferedImage image) {
+	public ResourceData(final @NonNull String uniqueId, final IResourceDecoder decoder) {
 		this.uniqueId = uniqueId;
-		this.image    = image;
+		this.decoder  = decoder;
+		if (this.decoder != null) {
+			this.decoder.init(this);
+		}
 	}
 
 	/* [ Query Section ] */
@@ -41,8 +43,8 @@ public final class ResourceData {
 		return this;
 	}
 
-	public final @NonNull ResourceData image(final BufferedImage image) {
-		this.image = image;
+	public final @NonNull ResourceData decoder(final IResourceDecoder decoder) {
+		this.decoder = decoder;
 		return this;
 	}
 
@@ -51,25 +53,58 @@ public final class ResourceData {
 		return this;
 	}
 
+	public final @NonNull ResourceData textureId(final int[] textureId) {
+		this.textureId = textureId;
+		return this;
+	}
+
+	public final @NonNull ResourceData data(final int[][] data) {
+		this.data = data;
+		return this;
+	}
+
+	public final @NonNull ResourceData generated(final boolean generated) {
+		this.generated = generated;
+		return this;
+	}
+
+	public final @NonNull ResourceData loaded(final boolean loaded) {
+		this.loaded = loaded;
+		return this;
+	}
+
+	public final @NonNull ResourceData uploaded(final boolean uploaded) {
+		this.uploaded = uploaded;
+		return this;
+	}
+
+	public final @NonNull ResourceData width(final int width) {
+		this.width = width;
+		return this;
+	}
+
+	public final @NonNull ResourceData height(final int height) {
+		this.height = height;
+		return this;
+	}
+
+	/* [ Getter Section ] */
+	public final <T extends IResourceDecoder> T getDecoder(final @NonNull Class<T> clazz) {
+		if (this.decoder == null || !clazz.isAssignableFrom(this.decoder.getClass())) {
+			return null;
+		}
+		return clazz.cast(this.decoder);
+	}
+
 	/* [ Internal Section ] */
 	public final void generate(final boolean async) {
-		if (this.image != null) {
+		if (this.decoder != null) {
 			this.generated = true;
 
-			Runnable task = null;
-			this.textureId = new int[] {GL11.glGenTextures()};
-			AllocatedTextureUtil.allocateTexture(this.textureId[0], 1, 1);
-			AllocatedTextureUtil.uploadTexture(this.textureId[0], new int[] {0}, 1, 1);
-
-			task = () -> {
-				this.width  = this.image.getWidth();
-				this.height = this.image.getHeight();
-
-				this.data = new int[1][this.width * this.height];
-				this.image.getRGB(0, 0, this.width, this.height, this.data[0], 0, this.width);
-
+			this.decoder.prepare(this);
+			final Runnable task = () -> {
+				this.decoder.decode(this);
 				this.loaded = true;
-				this.image = null;
 				this.uploaded = false;
 			};
 
@@ -97,45 +132,39 @@ public final class ResourceData {
 			return;
 		}
 
-		for (int i = 0; i < this.textureId.length; i++) {
-			if (this.data[i] == null) {
-				continue;
-			}
+		if (this.decoder == null) {
+			for (int i = 0; i < this.textureId.length; i++) {
+				if (this.data[i] == null) {
+					continue;
+				}
 
-			AllocatedTextureUtil.allocateTexture(this.textureId[i], this.width, this.height);
-			AllocatedTextureUtil.uploadTexture(this.textureId[i], this.data[i], this.width, this.height);
+				AllocatedTextureUtil.allocateTexture(this.textureId[i], this.width, this.height);
+				AllocatedTextureUtil.uploadTexture(this.textureId[i], this.data[i], this.width, this.height);
+			}
+		} else {
+			this.decoder.upload(this);
 		}
 
 		this.uploaded = true;
 		this.data = null;
 	}
 
-	/* [ Getter Section ] */
-	public final @NonNull Color getColor(final int x, final int y) {
-		if (this.data == null || this.data.length == 0 || this.data[0] == null) {
-			return Color.BLACK;
-		}
-
-		final int index = y * this.width + x;
-		if (index < 0 || index >= this.data[0].length) {
-			return Color.BLACK;
-		}
-
-		final int color = this.data[0][index];
-		return new Color(color);
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
+	public final void clear() {
 		if (this.textureId != null) {
 			for (final int id : this.textureId) {
 				GL11.glDeleteTextures(id);
 			}
 		}
 
-		this.image = null;
 		this.data = null;
+		if (this.decoder != null) {
+			this.decoder.clear(this);
+		}
+	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		this.clear();
 		super.finalize();
 	}
 

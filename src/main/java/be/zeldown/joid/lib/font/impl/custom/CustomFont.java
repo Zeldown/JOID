@@ -12,15 +12,16 @@ import lombok.NonNull;
 @AllArgsConstructor
 public final class CustomFont implements IFont {
 
-	@NonNull private final Font font;
+	@NonNull private final Font regular;
+	@NonNull private final Font bold;
 
-	public @NonNull TextInfo info(final float fontSize) {
+	public @NonNull TextInfo info(final int fontSize) {
 		return TextInfo.create(this, fontSize);
 	}
 
 	@Override
 	public @NonNull FontProvider getFontProvider() {
-		return CustomFontRenderer.inst();
+		return CustomFontProvider.inst();
 	}
 
 }

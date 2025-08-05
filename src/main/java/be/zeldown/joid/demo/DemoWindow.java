@@ -1,5 +1,7 @@
 package be.zeldown.joid.demo;
 
+import java.util.List;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -12,15 +14,17 @@ import be.zeldown.joid.demo.ui.UIDemoChoice;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
+import be.zeldown.joid.lib.ui.bridge.IUIBridge;
 import be.zeldown.joid.lib.ui.bridge.UIBridge;
 import be.zeldown.joid.lib.ui.core.UI;
+import be.zeldown.joid.lib.utils.click.ClickType;
 import lombok.NonNull;
 
 public class DemoWindow extends UIBridge {
 
 	private final DisplayMode displayMode;
 
-	private int clickType = -1;
+	private ClickType clickType = null;
 	private long lastMouseEvent = 0L;
 
 	public DemoWindow() throws LWJGLException {
@@ -71,17 +75,18 @@ public class DemoWindow extends UIBridge {
 			}
 
 			while (Mouse.next()) {
-				final int clickType = Mouse.getEventButton();
 				final int scroll = Mouse.getEventDWheel();
+				final int button = Mouse.getEventButton();
+				final boolean state = Mouse.getEventButtonState();
 
-				if (Mouse.getEventButtonState()) {
-					this.clickType = clickType;
+				if (state && button != -1) {
+					this.clickType = ClickType.from(button);
 					this.lastMouseEvent = System.currentTimeMillis();
-					super.mousePressed(clickType);
-				} else if (clickType != -1) {
-					this.clickType = -1;
-					super.mouseReleased(clickType);
-				} else if (this.clickType != -1 && this.lastMouseEvent > 0L) {
+					super.mousePressed(this.clickType);
+				} else if (this.clickType != null && !state && button != -1) {
+					super.mouseReleased(this.clickType);
+					this.clickType = null;
+				} else if (this.clickType != null && this.lastMouseEvent > 0L && button == -1) {
 					super.mouseDragged(this.clickType, System.currentTimeMillis() - this.lastMouseEvent);
 				}
 
@@ -111,13 +116,18 @@ public class DemoWindow extends UIBridge {
 	}
 
 	@Override
+	public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
+
+	}
+
+	@Override
 	public void open(final @NonNull UI ui) {
-		if (!ui.getData().popup().active()) {
+		if (!ui.getPopup().active()) {
 			for (final UI currentUi : super.getUiList()) {
 				final boolean result = currentUi.onClose();
 				if (currentUi.getTransition() != null && currentUi.getTransition().getOut() != null && currentUi.getTransition().getOut().isRunning()) {
 					currentUi.getTransition().getOut().getAnimator().setCallback(tween -> {
-						JOID.open(ui, this);
+						JOID.open(ui);
 					});
 					return;
 				}
@@ -154,7 +164,6 @@ public class DemoWindow extends UIBridge {
 		if (this.getUiList().isEmpty()) {
 			return false;
 		}
-
 		return this.getUiList().ordered().getLast() == ui && ui.getData().active() && ui.getData().visible();
 	}
 
@@ -164,8 +173,18 @@ public class DemoWindow extends UIBridge {
 	}
 
 	@Override
+	public boolean canHandle(final @NonNull UI ui) {
+		return true;
+	}
+
+	@Override
 	public int getIndex() {
 		return 0;
+	}
+
+	@Override
+	public @NonNull IUIBridge getInstance() {
+		return this;
 	}
 
 }

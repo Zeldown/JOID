@@ -10,12 +10,11 @@ import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.ui.core.UI;
-import be.zeldown.joid.lib.ui.core.data.UIData;
 import be.zeldown.joid.lib.ui.core.data.popup.UIDataPopup;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
-@UIData(background = true, popup = @UIDataPopup(active = true))
+@UIDataPopup(active = true)
 public class UIDemoPopup extends UI {
 
 	@Override

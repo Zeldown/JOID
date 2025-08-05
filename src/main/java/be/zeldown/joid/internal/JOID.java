@@ -99,16 +99,12 @@ public final class JOID {
 			return null;
 		}
 
-		JOID.open(ui, bridge);
+		bridge.open(ui);
 		return bridge;
 	}
 
-	public static void open(final @NonNull UI ui, final @NonNull IUIBridge bridge) {
-		bridge.open(ui);
-	}
-
 	public static IUIBridge open(final @NonNull UI ui, final boolean force) {
-		if (!force || ui.getData().popup().active()) {
+		if (!force) {
 			return JOID.open(ui);
 		}
 

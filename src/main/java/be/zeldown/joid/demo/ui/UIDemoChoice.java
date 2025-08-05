@@ -91,7 +91,7 @@ public class UIDemoChoice extends UI {
 						try {
 							final UI ui = clazz.newInstance();
 							ui.setTransition(new DemoPushTransition());
-							JOID.open(ui);
+							JOID.open(ui, false);
 						} catch (final Exception e) {
 							e.printStackTrace();
 						}

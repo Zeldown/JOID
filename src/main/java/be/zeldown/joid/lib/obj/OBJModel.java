@@ -48,10 +48,10 @@ public final class OBJModel implements IDrawableModel {
 	private static Matcher faceVertexMatcher;
 	private static Matcher groupMatcher;
 
-	private List<OBJVertex>            vertices           = new ArrayList<>();
-	private List<OBJVertex>            vertexNormals      = new ArrayList<>();
-	private List<OBJTextureCoordinate> textureCoordinates = new ArrayList<>();
-	private List<OBJGroup>             groups             = new ArrayList<>();
+	private final List<OBJVertex>            vertices           = new ArrayList<>();
+	private final List<OBJVertex>            vertexNormals      = new ArrayList<>();
+	private final List<OBJTextureCoordinate> textureCoordinates = new ArrayList<>();
+	private final List<OBJGroup>             groups             = new ArrayList<>();
 
 	private String   name;
 	private Resource texture;

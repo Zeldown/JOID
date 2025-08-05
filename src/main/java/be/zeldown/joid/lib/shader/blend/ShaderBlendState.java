@@ -29,11 +29,11 @@ public class ShaderBlendState {
 	@Builder.Default
 	private final boolean enabled = true;
 
-	public ShaderBlendState(final @NonNull Equation equation, final Param srcRgb, final Param dstRgb) {
+	public ShaderBlendState(final Equation equation, final Param srcRgb, final Param dstRgb) {
 		this(equation, srcRgb, dstRgb, srcRgb, dstRgb, true);
 	}
 
-	public ShaderBlendState(final @NonNull Equation equation, final Param srcRgb, final Param dstRgb, final Param srcAlpha, final Param dstAlpha, final boolean enable) {
+	public ShaderBlendState(final Equation equation, final Param srcRgb, final Param dstRgb, final Param srcAlpha, final Param dstAlpha, final boolean enable) {
 		this.equation = equation;
 		this.srcRgb = srcRgb;
 		this.dstRgb = dstRgb;
@@ -50,7 +50,7 @@ public class ShaderBlendState {
 		}
 	}
 
-	public static ShaderBlendState create() {
+	public static @NonNull ShaderBlendState create() {
 		return new ShaderBlendState(
 				Equation.fromGl(GL11.glGetInteger(GL14.GL_BLEND_EQUATION)),
 				Param.fromGl(GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB)),
@@ -90,12 +90,12 @@ public class ShaderBlendState {
 		private final int glId;
 		private final String mcStr;
 
-		private Equation(final String mcStr, final int glId) {
+		private Equation(final @NonNull String mcStr, final int glId) {
 			this.mcStr = mcStr;
 			this.glId = glId;
 		}
 
-		public static Equation fromGl(final int glId) {
+		public static @NonNull Equation fromGl(final int glId) {
 			return Equation.EQUATION_BY_ID.get(glId).get(0);
 		}
 
@@ -120,12 +120,12 @@ public class ShaderBlendState {
 		private final int glId;
 		private final String mcStr;
 
-		private Param(final String mcStr, final int glId) {
+		private Param(final @NonNull String mcStr, final int glId) {
 			this.mcStr = mcStr;
 			this.glId = glId;
 		}
 
-		public static Param fromGl(final int glId) {
+		public static @NonNull Param fromGl(final int glId) {
 			return Param.PARAM_BY_ID.get(glId).get(0);
 		}
 

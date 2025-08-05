@@ -1,7 +1,6 @@
 package be.zeldown.joid.lib.utils.signal.impl.primitive;
 
 import be.zeldown.joid.lib.utils.signal.Signal;
-import lombok.NonNull;
 
 public class FloatSignal extends Signal<Float> {
 
@@ -13,7 +12,7 @@ public class FloatSignal extends Signal<Float> {
 		super(value);
 	}
 
-	public static @NonNull FloatSignal of(final float defaultValue) {
+	public static FloatSignal of(final float defaultValue) {
 		final FloatSignal instance = new FloatSignal();
 		instance.set(defaultValue);
 		return instance;
@@ -35,7 +34,7 @@ public class FloatSignal extends Signal<Float> {
 	}
 
 	public void divide(final float value) {
-		if (value == 0F) {
+		if (value == 0.0f) {
 			throw new ArithmeticException("Division by zero");
 		}
 		final float updatedValue = this.getOrDefault() / value;
@@ -43,13 +42,18 @@ public class FloatSignal extends Signal<Float> {
 	}
 
 	public void increment() {
-		final float updatedValue = this.getOrDefault() + 1F;
+		final float updatedValue = this.getOrDefault() + 1.0f;
 		this.set(updatedValue);
 	}
 
 	public void decrement() {
-		final float updatedValue = this.getOrDefault() - 1F;
+		final float updatedValue = this.getOrDefault() - 1.0f;
 		this.set(updatedValue);
+	}
+
+	@Override
+	public String toString() {
+		return this.getOrDefault() == null ? "FloatSignal{null}" : "FloatSignal{" + this.getOrDefault().toString() + "}";
 	}
 
 }
