@@ -1384,11 +1384,15 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T watch(final Signal<?> signal) {
+	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal) {
 		return this.watch(signal, WatchProperty.RELOAD);
 	}
 
-	public final <T extends Node> @NonNull T watch(final Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
+	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
+		return this.watch(signal, () -> JOID.isOpen(this.ui.getClass()), properties);
+	}
+
+	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
 		signal.subscribe(value -> {
 			if (this.ui == null) {
 				return this.getUi() != null;
@@ -1404,7 +1408,7 @@ public abstract class Node implements INode {
 				}
 			}, signal, properties);
 
-			return JOID.isOpen(this.ui.getClass());
+			return condition.get();
 		});
 		return (T) this;
 	}
