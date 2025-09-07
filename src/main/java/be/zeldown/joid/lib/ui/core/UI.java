@@ -18,11 +18,8 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.util.concurrent.AtomicDouble;
 
 import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.internal.font.InternalFont;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.draw.text.builder.Text;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.opengl.context.Drawing;
 import be.zeldown.joid.lib.opengl.modifier.GLVector;
 import be.zeldown.joid.lib.opengl.transform.GLTransformation;
@@ -633,6 +630,10 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
+	public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
+		this.getBridge().drawHover(this, lines, mouseX, mouseY);
+	}
+
 	/* [ Utility Section ] */
 	public final double getMouseX() {
 		return this.getRelativeX(this.mouseX * (this.viewportWidth / this.width));
@@ -738,82 +739,6 @@ public abstract class UI implements IUI, IndexedElement {
 		} else {
 			GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
 			GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
-		}
-	}
-
-	public void drawHover(final List<@NonNull String> lines, double x, double y) {
-		if (lines == null || lines.isEmpty()) {
-			return;
-		}
-
-		x += 25;
-
-		final TextInfo textInfo = TextInfo.create(InternalFont.MONTSERRAT_SEMI_BOLD, 24, Color.WHITE);
-		final double fontHeight = textInfo.getHeight();
-
-		final int offset = 3;
-		final int padding = 15;
-
-		double width = 0;
-		for (final String text : lines) {
-			if (text != null) {
-				width = Math.max(width, textInfo.getWidth(text) + padding * 2);
-			}
-		}
-
-		int height = (int) (fontHeight * lines.size() + padding * 2);
-		y -= height;
-
-		if (y < 0) {
-			y = 0;
-		}
-
-		if (x + width > 1920) {
-			x -= width + 50;
-
-			if (x < 0) {
-				y += height;
-
-				final List<String> copiedLines = new ArrayList<>(lines);
-				lines.clear();
-				for (final String line : copiedLines) {
-					lines.addAll(DrawUtils.TEXT.getLines(1920, line, textInfo));
-				}
-
-				width = 0;
-				for (final String text : lines) {
-					if (text != null) {
-						width = Math.max(width, textInfo.getWidth(text) + padding * 2);
-					}
-				}
-
-				height = (int) (fontHeight * lines.size() + padding * 2);
-				y -= height + padding;
-
-				if (y < 0) {
-					y = 0;
-				}
-
-				x = 1920 / 2 - width / 2;
-			}
-		}
-
-		DrawUtils.SHAPE.drawRect(x - offset, y, width + offset * 2, height, UI.HOVER_COLOR);
-		DrawUtils.SHAPE.drawRect(x, y - offset, width, offset, UI.HOVER_COLOR);
-		DrawUtils.SHAPE.drawRect(x, y + height, width, offset, UI.HOVER_COLOR);
-
-		DrawUtils.SHAPE.drawRect(x, y + offset, offset, height - offset * 2, UI.HOVER_BORDER_COLOR);
-		DrawUtils.SHAPE.drawRect(x + width - offset, y + offset, offset, height - offset * 2, UI.HOVER_BORDER_COLOR);
-		DrawUtils.SHAPE.drawRect(x + offset, y, width - offset * 2, offset, UI.HOVER_BORDER_COLOR);
-		DrawUtils.SHAPE.drawRect(x + offset, y + height - offset, width - offset * 2, offset, UI.HOVER_BORDER_COLOR);
-
-		DrawUtils.SHAPE.drawRect(x + offset, y + offset, width - offset * 2, height - offset * 2, UI.HOVER_COLOR);
-
-		for (int i = 0; i < lines.size(); i++) {
-			final String text = lines.get(i);
-			if (text != null) {
-				DrawUtils.TEXT.drawText(x + padding, y + padding + i * fontHeight, Text.create(text, textInfo));
-			}
 		}
 	}
 

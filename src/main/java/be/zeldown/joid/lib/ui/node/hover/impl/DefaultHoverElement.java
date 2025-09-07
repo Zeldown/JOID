@@ -20,7 +20,7 @@ public class DefaultHoverElement implements HoverElement {
 			return;
 		}
 
-		ui.getBridge().drawHover(this.lines, mouseX, mouseY);
+		ui.drawHover(this.lines, mouseX, mouseY);
 	}
 
 }
