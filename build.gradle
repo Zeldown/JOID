@@ -72,6 +72,8 @@ jar {
     if (project.hasProperty('dev')) {
     	classifier = 'dev'
   	} else {
+		classifier = 'prod'
+		exclude 'assets/dev/*'
 		exclude 'assets/test/*'
 	}
 }
@@ -84,6 +86,8 @@ shadowJar {
     if (project.hasProperty('dev')) {
     	classifier = 'dev'
   	} else {
+		classifier = 'prod'
+		exclude 'assets/dev/*'
 		exclude 'assets/test/*'
 	}
 }
