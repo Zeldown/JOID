@@ -6,6 +6,7 @@ import java.util.Set;
 import org.lwjgl.input.Keyboard;
 
 import be.zeldown.joid.demo.DemoFont;
+import be.zeldown.joid.demo.ui.animation.UIDemoAnimation;
 import be.zeldown.joid.demo.ui.chart.UIDemoChart;
 import be.zeldown.joid.demo.ui.checkbox.UIDemoCheckbox;
 import be.zeldown.joid.demo.ui.draggable.UIDemoDraggable;
@@ -44,6 +45,7 @@ public class UIDemoChoice extends UI {
 
 	static {
 		UIDemoChoice.LIST.add(UIDemoChoice.class);
+		UIDemoChoice.LIST.add(UIDemoAnimation.class);
 		UIDemoChoice.LIST.add(UIDemoSimple.class);
 		UIDemoChoice.LIST.add(UIDemoOverflow.class);
 		UIDemoChoice.LIST.add(UIDemoDraggable.class);
