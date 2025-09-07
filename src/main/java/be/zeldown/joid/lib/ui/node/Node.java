@@ -609,24 +609,7 @@ public abstract class Node implements INode {
 		}
 
 		if (this.dragging) {
-			this.executeCallback(Node.CALLBACK_DRAG_END, InternalContext.create(), () -> {
-				if (this.draggable != null && this.draggable.isEnabled(this)) {
-					if (this.draggable.hasSnapping()) {
-						final Node snapNode = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
-						if (snapNode != null) {
-							this.executeCallback(Node.CALLBACK_SNAP, InternalContext.create(), () -> {
-								this.targetDragX = snapNode.getAbsoluteX();
-								this.targetDragY = snapNode.getAbsoluteY();
-							}, snapNode);
-						} else {
-							this.targetDragX = this.startDragX;
-							this.targetDragY = this.startDragY;
-						}
-					}
-				}
-				this.dragging = false;
-				this.draggedNode = null;
-			});
+			this.stopDragging();
 		}
 
 		if (this.hasCallback(Node.CALLBACK_MOUSE_RELEASED)) {
@@ -841,7 +824,24 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T stopDragging() {
-		this.stopDragging();
+		this.executeCallback(Node.CALLBACK_DRAG_END, InternalContext.create(), () -> {
+			if (this.draggable != null && this.draggable.isEnabled(this)) {
+				if (this.draggable.hasSnapping()) {
+					final Node snapNode = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
+					if (snapNode != null) {
+						this.executeCallback(Node.CALLBACK_SNAP, InternalContext.create(), () -> {
+							this.targetDragX = snapNode.getAbsoluteX();
+							this.targetDragY = snapNode.getAbsoluteY();
+						}, snapNode);
+					} else {
+						this.targetDragX = this.startDragX;
+						this.targetDragY = this.startDragY;
+					}
+				}
+			}
+			this.dragging = false;
+			this.draggedNode = null;
+		});
 		return (T) this;
 	}
 
