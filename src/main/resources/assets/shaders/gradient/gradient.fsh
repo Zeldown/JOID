@@ -16,8 +16,9 @@ uniform vec4 canvas;
 
 void main() {
     vec2 normalizedPos;
-    if (canvas.z > 0.0 && canvas.w > 0.0) {
-        normalizedPos = (vPosition - canvas.xy) / canvas.zw;
+ 	if (canvas.z > canvas.x && canvas.w > canvas.y) {
+        vec2 rectSize = vec2(canvas.z - canvas.x, canvas.w - canvas.y);
+        normalizedPos = (vPosition - canvas.xy) / rectSize;
     } else {
         normalizedPos = vPosition;
     }
