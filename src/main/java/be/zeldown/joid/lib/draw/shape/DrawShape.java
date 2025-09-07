@@ -1,5 +1,7 @@
 package be.zeldown.joid.lib.draw.shape;
 
+import java.nio.ByteBuffer;
+
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector4f;
 
@@ -17,6 +19,8 @@ import lombok.NonNull;
 public final class DrawShape {
 
 	@Getter private static DrawShape instance;
+
+	private static int EMPTY_TEXTURE = -1;
 
 	public DrawShape() {
 		if (DrawShape.instance != null) {
@@ -323,8 +327,8 @@ public final class DrawShape {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		final int texture = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 		color.bind(() -> {
+			DrawShape.bindEmptyTexture();
 			tessellator.start(mode);
 			for (final Vector2d point : points) {
 				tessellator.addVertex(point.x, point.y, 0D);
@@ -335,6 +339,28 @@ public final class DrawShape {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glPopMatrix();
+	}
+
+	private static void bindEmptyTexture() {
+		if (DrawShape.EMPTY_TEXTURE == -1) {
+			DrawShape.EMPTY_TEXTURE = GL11.glGenTextures();
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, DrawShape.EMPTY_TEXTURE);
+
+			final byte[] whitePixel = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
+
+			final ByteBuffer buffer = ByteBuffer.allocateDirect(4);
+			buffer.put(whitePixel);
+			buffer.flip();
+
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+			return;
+		}
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, DrawShape.EMPTY_TEXTURE);
 	}
 
 }
