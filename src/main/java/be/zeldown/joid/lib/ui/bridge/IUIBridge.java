@@ -15,7 +15,7 @@ public interface IUIBridge extends IndexedElement {
 	void add(final @NonNull UI ui);
 	void remove(final @NonNull UI ui);
 
-	void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY);
+	void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY);
 
 	boolean isOpened(final @NonNull UI ui);
 	boolean isOnTop(final @NonNull UI ui);
