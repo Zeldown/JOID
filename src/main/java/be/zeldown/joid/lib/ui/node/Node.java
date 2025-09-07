@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -36,6 +37,7 @@ import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.hook.store.UIStore;
 import be.zeldown.joid.lib.ui.node.callback.NodeCallback;
 import be.zeldown.joid.lib.ui.node.callback.NodeCallbackObject;
+import be.zeldown.joid.lib.ui.node.callback.impl.animation.NodeAnimationCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.draggable.NodeSnapCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.key.NodeKeyPressedCallback;
@@ -100,6 +102,7 @@ public abstract class Node implements INode {
 
 	private static final int CALLBACK_MOUNT          = NodeCallbackRegistry.next(NodeMountCallback.class);
 	private static final int CALLBACK_WATCH          = NodeCallbackRegistry.next(NodeWatchCallback.class);
+	private static final int CALLBACK_ANIMATION      = NodeCallbackRegistry.next(NodeAnimationCallback.class);
 
 	private static final int CALLBACK_SCROLL_UPDATE  = NodeCallbackRegistry.next(NodeScrollUpdateCallback.class);
 	private static final int CALLBACK_SCROLL_END     = NodeCallbackRegistry.next(NodeScrollEndCallback.class);
@@ -109,8 +112,11 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_DRAG_END       = NodeCallbackRegistry.next(NodeDragCallback.class);
 	private static final int CALLBACK_SNAP           = NodeCallbackRegistry.next(NodeSnapCallback.class);
 
-	private final List<TweenAnimator> animators;
-	private final TweenAnimator       hoverAnimator;
+	private final transient List<Predicate<Node>>                     waitingList;
+	private final transient Map<Integer, List<NodeCallbackObject<?>>> callbackMap;
+
+	private final transient Map<TweenAnimator, Float> animatorMap;
+	private final transient TweenAnimator             hoverAnimator;
 
 	private final IndexedConcurrentList<Node>                              children;
 	private final LinkedList<NodeLayer>                                    layerList;
@@ -127,13 +133,10 @@ public abstract class Node implements INode {
 	private transient UI   ui;
 	private transient Node parent;
 
-	private transient Node          overflowArea;
-	private transient ScrollbarNode scrollbar;
-	private transient Node          skeleton;
-
-	private transient Consumer<Node>                            bodyConsumer;
-	private transient List<Predicate<Node>>                     waitingList;
-	private transient Map<Integer, List<NodeCallbackObject<?>>> callbackMap;
+	private transient Node           overflowArea;
+	private transient ScrollbarNode  scrollbar;
+	private transient Node           skeleton;
+	private transient Consumer<Node> bodyConsumer;
 
 	private double x;
 	private double y;
@@ -196,8 +199,11 @@ public abstract class Node implements INode {
 	}
 
 	public Node(final double x, final double y, final double width, final double height) {
-		this.animators     = new ArrayList<>();
-		this.hoverAnimator = this.createAnimator();
+		this.waitingList = new ArrayList<>();
+		this.callbackMap = new HashMap<>();
+
+		this.animatorMap   = new HashMap<>();
+		this.hoverAnimator = TweenAnimator.create();
 
 		this.children  = new IndexedConcurrentList<>();
 		this.layerList = new LinkedList<>();
@@ -205,9 +211,6 @@ public abstract class Node implements INode {
 
 		this.hoverElementList  = new LinkedList<>();
 		this.hoverSupplierList = new LinkedList<>();
-
-		this.waitingList = new ArrayList<>();
-		this.callbackMap = new HashMap<>();
 
 		this.defaultX = this.x = x;
 		this.defaultY = this.y = y;
@@ -299,7 +302,16 @@ public abstract class Node implements INode {
 			}
 
 			this.hovered = this.isHovered(mouseX, mouseY);
-			this.animators.forEach(TweenAnimator::update);
+			this.hoverAnimator.update();
+
+			for (final Entry<TweenAnimator, Float> entry : this.animatorMap.entrySet()) {
+				final TweenAnimator animator = entry.getKey().update();
+				final float value = animator.getValue();
+				if (value != entry.getValue()) {
+					this.executeCallback(Node.CALLBACK_ANIMATION, InternalContext.create(), animator, value);
+					entry.setValue(value);
+				}
+			}
 
 			if (this.overflow == OverflowProperty.SCROLL) {
 				if (!this.hasOverflowY()) {
@@ -687,17 +699,6 @@ public abstract class Node implements INode {
 	}
 
 	/* [ Utility Section ] */
-	public final @NonNull TweenAnimator createAnimator() {
-		final TweenAnimator animator = TweenAnimator.create();
-		this.animators.add(animator);
-		return animator;
-	}
-
-	public final <T extends Node> @NonNull T removeAnimator(final @NonNull TweenAnimator animator) {
-		this.animators.remove(animator);
-		return (T) this;
-	}
-
 	public final void reload() {
 		this.executeCallback(Node.CALLBACK_RELOAD, InternalContext.create(), () -> {
 			this.children.forEach(Node::reload);
@@ -1149,7 +1150,8 @@ public abstract class Node implements INode {
 		copy.parent = this.parent;
 		copy.skeleton = this.skeleton;
 
-		copy.callbackMap = new HashMap<>(this.callbackMap);
+		copy.getCallbackMap().clear();
+		copy.getCallbackMap().putAll(new HashMap<>(this.callbackMap));
 
 		copy.x = this.x;
 		copy.y = this.y;
@@ -1244,6 +1246,11 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T clearEffects() {
 		this.effectMap.clear();
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T animate(final @NonNull TweenAnimator animator) {
+		this.animatorMap.put(animator, animator.getValue());
 		return (T) this;
 	}
 
@@ -1587,6 +1594,10 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_WATCH, callback);
 	}
 
+	public final <T extends Node> @NonNull T onAnimate(final @NonNull NodeAnimationCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_ANIMATION, callback);
+	}
+
 	public final <T extends Node> @NonNull T onScrollUpdate(final @NonNull NodeScrollUpdateCallback<T> callback) {
 		return this.registerCallback(Node.CALLBACK_SCROLL_UPDATE, callback);
 	}
@@ -1657,6 +1668,7 @@ public abstract class Node implements INode {
 		if (JOID.inst().isDevMode()) {
 			return Node.PRETTY_GSON.toJson(json);
 		}
+
 		return Node.GSON.toJson(json);
 	}
 
