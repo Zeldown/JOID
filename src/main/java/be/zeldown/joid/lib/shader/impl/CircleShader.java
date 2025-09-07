@@ -3,6 +3,7 @@ package be.zeldown.joid.lib.shader.impl;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
 import be.zeldown.joid.lib.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.shader.uniform.IntUniform;
 import lombok.NonNull;
 
 public class CircleShader extends GLShaderImpl {
@@ -26,16 +27,31 @@ public class CircleShader extends GLShaderImpl {
 	}
 
 	public void bind(final float radius, final float centerX, final float centerY) {
+		this.bind(radius, centerX, centerY, RoundedShaderType.AUTO);
+	}
+
+	public void bind(final float radius, final float centerX, final float centerY, final @NonNull RoundedShaderType type) {
 		CircleShader.INSTANCE.bind();
 		final FloatUniform radiusUniform = CircleShader.INSTANCE.shader.getFloatUniform("radius");
 		radiusUniform.setValue(radius);
 
 		final Float2Uniform centerUniform = CircleShader.INSTANCE.shader.getFloat2Uniform("center");
 		centerUniform.setValue(centerX, centerY);
+
+		final IntUniform typeUniform = CircleShader.INSTANCE.shader.getIntUniform("type");
+		typeUniform.setValue(type.ordinal());
 	}
 
 	public static @NonNull CircleShader inst() {
 		return CircleShader.INSTANCE;
+	}
+
+	public enum RoundedShaderType {
+
+		AUTO,
+		TEXTURE,
+		COLOR;
+
 	}
 
 }

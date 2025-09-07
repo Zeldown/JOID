@@ -6,6 +6,7 @@ varying vec4 vColor;
 
 uniform float u_Radius;
 uniform vec4 u_InnerRect;
+uniform int u_Type;
 
 uniform sampler2D tex;
 
@@ -16,14 +17,15 @@ void main() {
     
     float distanceToCorner = length(max(vec2(0.0), distances)) - u_Radius;
     
-    vec4 baseColor;
-    vec4 textureColor = texture2D(tex, vTexCoord);
-    if (textureColor.a < 0.01 || (textureColor.r + textureColor.g + textureColor.b) < 0.01) {
-        baseColor = vColor;
-    } else {
-        baseColor = textureColor;
+    vec4 baseColor = texture2D(tex, vTexCoord) * vColor;
+    if (u_Type == 1) { // TEXTURE
+    	baseColor = texture2D(tex, vTexCoord);
+    } else if (u_Type == 2) { // COLOR
+    	baseColor = vColor;
     }
     
-    float alpha = 1.0 - smoothstep(0.0, 1.0, distanceToCorner);
-    gl_FragColor = baseColor * vec4(1.0, 1.0, 1.0, alpha);
+    float mask = 1.0 - smoothstep(0.0, 1.0, distanceToCorner);
+    float finalAlpha = baseColor.a * mask;
+
+    gl_FragColor = vec4(baseColor.rgb, finalAlpha);
 }
