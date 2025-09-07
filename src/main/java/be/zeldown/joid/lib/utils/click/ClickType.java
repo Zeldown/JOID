@@ -6,7 +6,12 @@ public enum ClickType {
 
 	LEFT,
 	RIGHT,
-	MIDDLE;
+	MIDDLE,
+
+	BACK,
+	FORWARD,
+
+	OTHER;
 
 	public static @NonNull ClickType from(final int button) {
 		switch (button) {
@@ -16,8 +21,12 @@ public enum ClickType {
 			return RIGHT;
 		case 2:
 			return MIDDLE;
+		case 3:
+			return BACK;
+		case 4:
+			return FORWARD;
 		default:
-			throw new IllegalArgumentException("Invalid mouse button: " + button);
+			return OTHER;
 		}
 	}
 
@@ -29,8 +38,12 @@ public enum ClickType {
 			return 1;
 		case MIDDLE:
 			return 2;
+		case BACK:
+			return 3;
+		case FORWARD:
+			return 4;
 		default:
-			throw new IllegalStateException("Unexpected value: " + this);
+			return -1;
 		}
 	}
 
@@ -44,6 +57,18 @@ public enum ClickType {
 
 	public boolean isMiddle() {
 		return this == MIDDLE;
+	}
+
+	public boolean isBack() {
+		return this == BACK;
+	}
+
+	public boolean isForward() {
+		return this == FORWARD;
+	}
+
+	public boolean isOther() {
+		return this == OTHER;
 	}
 
 }
