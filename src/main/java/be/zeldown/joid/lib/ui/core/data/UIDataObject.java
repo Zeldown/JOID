@@ -18,6 +18,7 @@ public final class UIDataObject implements UIData {
 	private boolean active          = true;
 	private boolean visible         = true;
 	private boolean pause           = true;
+	private boolean closeable       = true;
 	private boolean zoomable        = false;
 	private boolean projection      = true;
 	private boolean background      = true;
@@ -33,6 +34,7 @@ public final class UIDataObject implements UIData {
 		this.active          = data.active();
 		this.visible         = data.visible();
 		this.pause           = data.pause();
+		this.closeable       = data.closeable();
 		this.zoomable        = data.zoomable();
 		this.projection      = data.projection();
 		this.background      = data.background();
@@ -77,6 +79,11 @@ public final class UIDataObject implements UIData {
 	@Override
 	public boolean pause() {
 		return this.pause;
+	}
+
+	@Override
+	public boolean closeable() {
+		return this.closeable;
 	}
 
 	@Override
@@ -171,6 +178,11 @@ public final class UIDataObject implements UIData {
 	 */
 	public final @NonNull UIDataObject setPause(final boolean pause) {
 		this.pause = pause;
+		return this;
+	}
+
+	public final @NonNull UIDataObject setCloseable(final boolean closeable) {
+		this.closeable = closeable;
 		return this;
 	}
 

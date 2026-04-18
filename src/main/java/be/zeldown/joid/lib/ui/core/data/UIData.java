@@ -13,6 +13,7 @@ public @interface UIData {
 	boolean active()          default true;
 	boolean visible()         default true;
 	boolean pause()           default true;
+	boolean closeable()       default true;
 
 	boolean zoomable()        default false;
 	boolean projection()      default true;
