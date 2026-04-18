@@ -52,23 +52,11 @@ public final class UIDataPopupObject implements UIDataPopup {
 	}
 
 	/* [ Setter Section ] */
-	/**
-	 * Define the active state of the overlay
-	 * default: false
-	 * @param active
-	 * @return this
-	 */
 	public @NonNull UIDataPopupObject setActive(final boolean active) {
 		this.active = active;
 		return this;
 	}
 
-	/**
-	 * Define the active state of the transition
-	 * default: PopupTransition.IN_OUT
-	 * @param transition
-	 * @return this
-	 */
 	public @NonNull UIDataPopupObject setTransition(final @NonNull PopupTransition transition) {
 		this.transition = transition;
 		return this;
