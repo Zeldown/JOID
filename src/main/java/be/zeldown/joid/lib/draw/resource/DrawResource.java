@@ -21,42 +21,14 @@ public final class DrawResource {
 		DrawResource.instance = this;
 	}
 
-	/**
-	 * Draws a resource scaled proportionally based on the provided width, maintaining the aspect ratio.
-	 *
-	 * @param x        The x-coordinate of the top-left corner.
-	 * @param y        The y-coordinate of the top-left corner.
-	 * @param width    The width of the scaled resource.
-	 * @param resource The {@link ResourceLocation} of the resource.
-	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
-	 */
 	public void drawScaledResourceWidth(final double x, final double y, final double width, final @NonNull Resource resource) {
 		this.drawResource(x, y, width, width * resource.getHeight() / resource.getWidth(), resource);
 	}
 
-	/**
-	 * Draws a resource scaled proportionally based on the provided height, maintaining the aspect ratio.
-	 *
-	 * @param x        The x-coordinate of the top-left corner.
-	 * @param y        The y-coordinate of the top-left corner.
-	 * @param height   The height of the scaled resource.
-	 * @param resource The {@link ResourceLocation} of the resource.
-	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
-	 */
 	public void drawScaledResourceHeight(final double x, final double y, final double height, final @NonNull Resource resource) {
 		this.drawResource(x, y, height * resource.getWidth() / resource.getHeight(), height, resource);
 	}
 
-	/**
-	 * Draws a resource scaled to the specified dimensions, filling the entire area maintaining the aspect ratio.
-	 *
-	 * @param x                   The x-coordinate of the top-left corner.
-	 * @param y                   The y-coordinate of the top-left corner.
-	 * @param width               The width of the scaled resource.
-	 * @param height              The height of the scaled resource.
-	 * @param resource			  The {@link ResourceLocation} of the resource.
-	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
-	 */
 	public void drawCenteredResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
 		final double imageWidth = resource.getWidth();
 		final double imageHeight = resource.getHeight();
@@ -83,28 +55,10 @@ public final class DrawResource {
 		this.drawResource(scaledX, scaledY, scaledWidth, scaledHeight, resource);
 	}
 
-	/**
-	 * Draws the resource at the specified location.
-	 *
-	 * @param x        The x-coordinate of the top-left corner.
-	 * @param y        The y-coordinate of the top-left corner.
-	 * @param resource The {@link ResourceLocation} of the resource.
-	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
-	 */
 	public void drawResource(final double x, final double y, final @NonNull Resource resource) {
 		this.drawResource(x, y, resource.getWidth(), resource.getHeight(), resource);
 	}
 
-	/**
-	 * Draws a resource on the screen with the specified coordinates, dimensions, and interpolation mode.
-	 *
-	 * @param x                    The x-coordinate of the top-left corner of the resource.
-	 * @param y                    The y-coordinate of the top-left corner of the resource.
-	 * @param width                The width of the resource.
-	 * @param height               The height of the resource.
-	 * @param resource             The {@link ResourceLocation} of the resource.
-	 * @throws NullPointerException if the provided {@link ResourceLocation} is null.
-	 */
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
 		GLHelper.pushMatrix();
 		GL11.glEnable(GL11.GL_BLEND);

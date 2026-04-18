@@ -7,14 +7,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
 import be.zeldown.joid.lib.resource.dto.decoder.ResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -23,11 +26,13 @@ public final class ResourceBuilder {
 
 	private static final List<ResourceBuilder> BUILDER_LIST = new ArrayList<>();
 
+	public static final Cache<String, ResourceData> DEFAULT_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+
 	private Cache<String, ResourceData> cache;
 	private ResourceProperties properties;
 
 	private ResourceBuilder() {
-		this.cache = null;
+		this.cache = ResourceBuilder.DEFAULT_CACHE;
 		this.properties = new ResourceProperties();
 
 		ResourceBuilder.BUILDER_LIST.add(this);
@@ -85,14 +90,14 @@ public final class ResourceBuilder {
 		final String uniqueId = stream.toString();
 		try {
 			final InputStream supportedStream = stream.markSupported() ? stream : new BufferedInputStream(stream);
-			supportedStream.mark(6);
+			supportedStream.mark(12);
 
-			final byte[] header = new byte[6];
+			final byte[] header = new byte[12];
 			final int read = supportedStream.read(header);
 			supportedStream.reset();
 
-			if (read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a') {
-				return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.gif(supportedStream))));
+			if (VideoResourceDecoder.isVideoHeader(header, read)) {
+				return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.video(supportedStream, VideoResourceDecoder.isLoopByDefault(header, read)))));
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -115,7 +120,22 @@ public final class ResourceBuilder {
 		return this.cache(uniqueId, () -> {
 			final Resource resource = new Resource(this, new ResourceData(uniqueId, null));
 			new ResourceDownloadThread(url, inputStream -> {
-				resource.decoder(url.endsWith(".gif") ? ResourceDecoder.gif(inputStream) : ResourceDecoder.image(inputStream));
+				try {
+					final InputStream supportedStream = inputStream.markSupported() ? inputStream : new BufferedInputStream(inputStream);
+					supportedStream.mark(12);
+
+					final byte[] header = new byte[12];
+					final int read = supportedStream.read(header);
+					supportedStream.reset();
+
+					if (VideoResourceDecoder.isVideoHeader(header, read)) {
+						resource.decoder(ResourceDecoder.video(supportedStream, VideoResourceDecoder.isLoopByDefault(header, read)));
+					} else {
+						resource.decoder(ResourceDecoder.image(supportedStream));
+					}
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
 				if (callback != null) {
 					callback.accept(resource);
 				}

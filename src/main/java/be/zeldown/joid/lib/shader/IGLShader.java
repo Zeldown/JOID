@@ -1,5 +1,6 @@
 package be.zeldown.joid.lib.shader;
 
+import be.zeldown.joid.lib.shader.uniform.BooleanUniform;
 import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
 import be.zeldown.joid.lib.shader.uniform.Float3Uniform;
 import be.zeldown.joid.lib.shader.uniform.Float4ArrayUniform;
@@ -28,6 +29,7 @@ public interface IGLShader {
 	void bindTexture(int textureUnit, int textureId);
 
 	@NonNull SamplerUniform getSamplerUniform(final @NonNull String name);
+	@NonNull BooleanUniform getBooleanUniform(final @NonNull String name);
 	@NonNull IntUniform getIntUniform(final @NonNull String name);
 	@NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name);
 	@NonNull FloatUniform getFloatUniform(final @NonNull String name);

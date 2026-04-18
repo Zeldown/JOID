@@ -23,103 +23,116 @@ Stand out in the global landscape with a personalized design that reflects your 
 Create the ideal interface with a wide range of customizable components and impressive animations, allowing you to showcase your talent effortlessly.
 <br><br>
 
-[Demo](#demo)
+[Installation](#installation)
+[Features](#features)
+[Documentation](#documentation)
 [Credits](#credits)
 
 </div>
 
-## Demo
-- [Watch all prebuilt components's video](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/components.mp4)
-- [See awesome UIs made with JOID](https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/showcase/)
-<br>
+## Installation
 
+JOID is distributed via GitHub Releases as two artifacts:
 
-<img src="https://github.com/Zeldown/JOID/blob/lwjgl-2/demo/simple.png">
-<details>
-  <summary>Code</summary>
-  
-  ```java
-  public class UIDemoSimple extends UIDemo {
+- **joid-X.Y.Z-prod.jar** — production build (excludes dev/test assets)
+- **joid-X.Y.Z-dev.jar** — dev build (includes demo assets, fonts, test textures)
 
-	@Override
-	public void init() {
-		final ContainerNode container = ContainerNode.create(0D, 0D, 1920D, 1080D);
+Download the desired artifact from the [Releases page](https://github.com/Zeldown/JOID/releases) and add it to your project's classpath.
 
-		/* append children */
-		container.body(() -> {
-			RectNode.create(
-					1920D / 4D,
-					1080D / 4D,
-					1920D / 2D,
-					1080D / 2D
-					)
-			.color(Color.RED, Color.GREEN)
-			.border(Color.GREEN, Color.RED, 3D, true)
-			.body(n -> {
-				final double childWidth = n.dw(3D);
-				final double childHeight = n.dh(2D);
+### Gradle
 
-				RectNode.create(
-						0D,
-						n.dh(2D) - childHeight/2,
-						childWidth,
-						childHeight
-						)
-				.color(Color.RED, Color.WHITE)
-				.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
-				.hover(() -> "hover1")
-				.attach(n);
+```groovy
+dependencies {
+    compile files('libs/joid-6.0.0-prod.jar')
+}
+```
 
-				RectNode.create(
-						n.aw(-childWidth),
-						n.dh(2D) - childHeight/2,
-						childWidth,
-						childHeight
-						)
-				.color(Color.RED, Color.WHITE)
-				.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
-				.hover(() -> Arrays.asList("hover1", "hover2"))
-				.body(n1 -> {
-					RectNode.create(
-							n1.dw(4D),
-							n1.dh(4D),
-							n1.dw(2D),
-							n1.dh(2D)
-							)
-					.color(Color.RED, Color.MAGENTA)
-					.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
-					.hover(() -> Arrays.asList("hover1", "hover2", "hover3"))
-					.attach(n1);
-				})
-				.attach(n);
-			})
-			.attach(container);
-		});
+### Maven
 
-		container.attach(this);
-	}
+```xml
+<dependency>
+    <groupId>be.zeldown.joid</groupId>
+    <artifactId>joid</artifactId>
+    <version>6.0.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/libs/joid-6.0.0-prod.jar</systemPath>
+</dependency>
+```
 
-	@Override
-	public void preDraw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(0D, 0D, 1920D, 1080D, Color.BLUE.toGradient(Color.RED));
-	}
+### Native libraries
 
-	@Override
-	public void postDraw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.BLUE, 10D);
-	}
+The repository contains a `native/` folder with the required OpenGL and OpenAL native libraries. Make sure they are exposed to the JVM via `-Djava.library.path=./native` at launch.
 
-  }
-  ```
-</details>
+## Features
+
+- 🧱 **Node-based UI** — Hierarchical component system with layout nodes (flex, grid, scrollbar, container) and design nodes (shapes, text, images, text fields, sliders, charts, video…)
+- 🎨 **MSDF font rendering** — Crisp text at any scale using Multi-channel Signed Distance Fields
+- 🌈 **Shader pipeline** — Composable multi-pass GL effects: blur, border, gradient, circle, rounded corners
+- ✨ **Tween animations** — Full Universal Tween Engine integration (easing, paths, timelines, callbacks)
+- 🎯 **Reactive signals** — Observable values with conditional watches that auto-reload nodes
+- 💾 **Persistent stores** — `@UIStoreData`-annotated fields auto-serialized to JSON
+- 🎬 **Video playback** — `VideoPlayerNode` with FFmpeg-backed decoding (MP4/MOV/WEBM/MKV/AVI/GIF/APNG)
+- 🔌 **Bridge pattern** — Host-agnostic integration via `IUIBridge`
+
+## Documentation
+
+The full reference lives in the `documentation/` folder — a static single-page app that loads its Markdown pages through `fetch`. You need to serve it through a local HTTP server; opening `index.html` directly via `file://` will break every page load.
+
+### Prerequisites
+
+Pick either Node.js (for `npx serve`) or Python 3 (for `http.server`). You only need one.
+
+**Node.js (for `npx serve`)** — `npx` ships with Node.js. To check if you have it:
+
+```bash
+node -v
+npx -v
+```
+
+If either command isn't found, install Node.js:
+
+- **Windows** — download the LTS installer from <https://nodejs.org/> and run it. Or via winget: `winget install OpenJS.NodeJS.LTS`
+- **macOS** — via [Homebrew](https://brew.sh/): `brew install node` — or download the `.pkg` installer from <https://nodejs.org/>.
+- **Linux** — `sudo apt install nodejs npm` (Debian/Ubuntu), `sudo dnf install nodejs` (Fedora), `sudo pacman -S nodejs npm` (Arch), or use [nvm](https://github.com/nvm-sh/nvm) to manage versions.
+
+`npx serve .` then works out of the box — `npx` auto-downloads the `serve` package on first use. If you prefer a permanent install, run `npm install -g serve` once and call `serve .` directly afterwards.
+
+**Python 3 (alternative)** — already present on most macOS/Linux systems; on Windows install it from <https://python.org/> or via winget: `winget install Python.Python.3.12`. Check with `python3 --version` (or `python --version` on Windows).
+
+### Windows
+
+Double-click `documentation\run.bat` — it runs `npx serve .` inside the folder. Equivalent manual commands:
+
+```powershell
+cd documentation
+npx serve .
+# or, if Python is installed:
+python -m http.server 3000
+```
+
+### macOS
+
+```bash
+cd documentation
+npx serve .
+# or, if Python is installed:
+python3 -m http.server 3000
+```
+
+### Linux
+
+```bash
+cd documentation
+npx serve .
+# or, if Python is installed:
+python3 -m http.server 3000
+```
+
+Each command prints the local URL it's serving (usually <http://localhost:3000> for `serve`, <http://localhost:8000> for Python). Open it in your browser — the language toggle, Ctrl+K search, and Download-as-PDF button are all available from the UI.
 
 ## Credits
 
-JOID is built upon the Universal Tween Engine, a powerful and versatile animation engine created by [Aurélien Ribon](https://github.com/AurelienRibon).<br>
-The font rendering technology used in this project is helped by [msdfgen](https://github.com/Chlumsky/msdfgen) for the msdf generator.
-
-## MSDF-Generator
-
-```bash
-msdf-atlas-gen.exe -font font.ttf -charset charset.txt -dimensions 2048 2048 -imageout font.png -json font.json -type msdf -pxrange 24 -coloringstrategy distance
-```
+- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine
+- [msdfgen](https://github.com/Chlumsky/msdfgen) by **Viktor Chlumský** — MSDF font atlases
+- [LWJGL 2.9](https://www.lwjgl.org/) — OpenGL / OpenAL Java bindings
+- [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco** — Video decoding

@@ -1,0 +1,144 @@
+{
+	"version": "6.0.0",
+	"sections": [
+		{
+			"title": "Getting Started",
+			"group": "getting-started",
+			"items": [
+				{ "title": "Introduction", "path": "getting-started/introduction" },
+				{ "title": "Installation", "path": "getting-started/installation" },
+				{ "title": "Quick Start", "path": "getting-started/quick-start" },
+				{ "title": "Core Concepts", "path": "getting-started/core-concepts" }
+			]
+		},
+		{
+			"title": "UI",
+			"group": "ui",
+			"items": [
+				{ "title": "UI Class", "path": "ui/ui-class" },
+				{ "title": "Bridge", "path": "ui/bridge" },
+				{ "title": "Transitions", "path": "ui/transitions" }
+			]
+		},
+		{
+			"title": "Nodes",
+			"group": "nodes",
+			"items": [
+				{ "title": "Node Fundamentals", "path": "nodes/node-fundamentals" },
+				{
+					"title": "Design",
+					"group": "nodes/design",
+					"items": [
+						{ "title": "RectNode", "path": "nodes/design/rect" },
+						{ "title": "CircleNode", "path": "nodes/design/circle" },
+						{ "title": "TextNode", "path": "nodes/design/text" },
+						{ "title": "ResourceNode", "path": "nodes/design/resource" },
+						{ "title": "TextFieldNode", "path": "nodes/design/text-field" },
+						{ "title": "MultilineTextFieldNode", "path": "nodes/design/multiline-text-field" },
+						{ "title": "ProgressNode", "path": "nodes/design/progress" },
+						{ "title": "ModelNode", "path": "nodes/design/model" },
+						{ "title": "VideoPlayerNode", "path": "nodes/design/video-player" }
+					]
+				},
+				{
+					"title": "Structure",
+					"group": "nodes/structure",
+					"items": [
+						{ "title": "ContainerNode", "path": "nodes/structure/container" },
+						{ "title": "FlexNode", "path": "nodes/structure/flex" },
+						{ "title": "GridNode", "path": "nodes/structure/grid" },
+						{ "title": "ScrollbarNode", "path": "nodes/structure/scrollbar" },
+						{ "title": "SliderNode", "path": "nodes/structure/slider" },
+						{ "title": "CheckboxNode", "path": "nodes/structure/checkbox" },
+						{ "title": "ToggleNode", "path": "nodes/structure/toggle" },
+						{ "title": "SwitchNode", "path": "nodes/structure/switch" },
+						{ "title": "SelectorNode", "path": "nodes/structure/selector" },
+						{ "title": "ChartNode", "path": "nodes/structure/chart" }
+					]
+				}
+			]
+		},
+		{
+			"title": "Effects",
+			"group": "effects",
+			"items": [
+				{ "title": "Overview", "path": "effects/overview" },
+				{ "title": "Rounded", "path": "effects/rounded" },
+				{ "title": "Circle", "path": "effects/circle" },
+				{ "title": "Blur", "path": "effects/blur" },
+				{ "title": "Border", "path": "effects/border" },
+				{ "title": "Gradient", "path": "effects/gradient" }
+			]
+		},
+		{
+			"title": "Shaders",
+			"group": "shaders",
+			"items": [
+				{ "title": "Shader Pipeline", "path": "shaders/pipeline" },
+				{ "title": "Custom Shaders", "path": "shaders/custom" }
+			]
+		},
+		{
+			"title": "Animations",
+			"group": "animations",
+			"items": [
+				{ "title": "TweenAnimator", "path": "animations/tween-animator" },
+				{ "title": "Easing", "path": "animations/easing" }
+			]
+		},
+		{
+			"title": "Resources",
+			"group": "resources",
+			"items": [
+				{ "title": "ResourceBuilder", "path": "resources/resource-builder" },
+				{ "title": "Decoders", "path": "resources/decoders" }
+			]
+		},
+		{
+			"title": "State",
+			"group": "state",
+			"items": [
+				{ "title": "Signals", "path": "state/signals" },
+				{ "title": "Watch", "path": "state/watch" },
+				{ "title": "Stores", "path": "state/stores" }
+			]
+		},
+		{
+			"title": "Fonts",
+			"group": "fonts",
+			"items": [
+				{ "title": "Custom Fonts", "path": "fonts/custom-font" },
+				{ "title": "MSDF Atlas", "path": "fonts/msdf-atlas" }
+			]
+		},
+		{
+			"title": "Drawing",
+			"group": "drawing",
+			"items": [
+				{ "title": "DrawUtils", "path": "drawing/draw-utils" },
+				{ "title": "Shapes", "path": "drawing/shapes" },
+				{ "title": "Text", "path": "drawing/text" },
+				{ "title": "Resources", "path": "drawing/resources" },
+				{ "title": "Models", "path": "drawing/models" },
+				{ "title": "Color", "path": "drawing/color" }
+			]
+		},
+		{
+			"title": "Interactions",
+			"group": "interactions",
+			"items": [
+				{ "title": "Callbacks", "path": "interactions/callbacks" },
+				{ "title": "Hover", "path": "interactions/hover" },
+				{ "title": "Drag & Drop", "path": "interactions/drag-drop" }
+			]
+		},
+		{
+			"title": "Changelog",
+			"group": "changelog",
+			"items": [
+				{ "title": "Overview", "path": "changelog/index" },
+				{ "title": "6.0.0", "path": "changelog/6.0.0" }
+			]
+		}
+	]
+}

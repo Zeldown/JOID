@@ -63,7 +63,7 @@ public final class GridNode extends Node {
 			ox += child.getWidth() + this.horizontalMargin;
 		}
 
-		oy += super.getChildren().ordered().get(super.getChildren().size() - 1).getHeight() + this.verticalMargin;
+		oy += super.getChildren().ordered().get(super.getChildren().size() - 1).getHeight();
 		if (this.getOverflow() == OverflowProperty.NONE && oy > super.getDefaultHeight()) {
 			super.height(oy);
 		}

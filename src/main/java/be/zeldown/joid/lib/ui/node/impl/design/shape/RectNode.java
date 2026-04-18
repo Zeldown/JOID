@@ -1,9 +1,19 @@
 package be.zeldown.joid.lib.ui.node.impl.design.shape;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
+
+import javax.vecmath.Vector4f;
 
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
+import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.ShaderPipeline;
+import be.zeldown.joid.lib.shader.pipeline.pass.BorderShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.pass.CircleShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.pass.GradientShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.effect.NodeEffect;
 import be.zeldown.joid.lib.ui.node.effect.impl.CircleNodeEffect;
@@ -46,38 +56,36 @@ public class RectNode extends Node {
 		final Color borderColor = hoveredBorderColor != null ? this.borderColor.get().to(hoveredBorderColor, super.hoverValue(1F)) : this.borderColor.get();
 
 		final RoundedNodeEffect<?> roundedEffect = super.getEffect(RoundedNodeEffect.class);
-		if (roundedEffect != null && roundedEffect.getRadius() > 0F) {
-			final float borderRadius = roundedEffect.getRadius();
-			final boolean roundedLeft = roundedEffect.isLeft();
-			final boolean roundedTop = roundedEffect.isTop();
-			final boolean roundedRight = roundedEffect.isRight();
-			final boolean roundedBottom = roundedEffect.isBottom();
-
-			if (this.borderStroke > 0D) {
-				DrawUtils.SHAPE.drawRoundedRect(super.getX() - this.borderStroke, super.getY() - this.borderStroke, super.getWidth() + this.borderStroke * 2, super.getHeight() + this.borderStroke * 2, borderColor, (float) (borderRadius + this.borderStroke), roundedLeft, roundedTop, roundedRight, roundedBottom);
-			}
-			DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color, borderRadius, roundedLeft, roundedTop, roundedRight, roundedBottom);
-			return;
-		}
-
 		final CircleNodeEffect<?> circleEffect = super.getEffect(CircleNodeEffect.class);
-		if (circleEffect != null) {
-			final float size = (float) Math.min(super.dw(2), super.dh(2));
-			if (this.borderStroke > 0D) {
-				DrawUtils.SHAPE.drawCircle(super.ax(super.dw(2)), super.ay(super.dh(2)), borderColor, size + this.borderStroke * 2);
-			}
-			DrawUtils.SHAPE.drawCircle(super.ax(super.dw(2)), super.ay(super.dh(2)), color, size);
-			return;
+
+		final List<ShaderPass> passes = new ArrayList<>();
+
+		if (color.isGradient()) {
+			final Vector4f canvas = new Vector4f((float) super.getX(), (float) super.getY(), (float) (super.getX() + super.getWidth()), (float) (super.getY() + super.getHeight()));
+			passes.add(new GradientShaderPass(color.gradient, canvas));
 		}
 
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
-		if (this.borderStroke > 0D) {
-			if (this.borderFill) {
-				DrawUtils.SHAPE.drawFilledBorder(super.getX(), super.getY(), super.getX() + super.getWidth(), super.getY() + super.getHeight(), borderColor, this.borderStroke);
-			} else {
-				DrawUtils.SHAPE.drawBorder(super.getX(), super.getY(), super.getX() + super.getWidth(), super.getY() + super.getHeight(), borderColor, this.borderStroke);
-			}
+		if (roundedEffect != null && roundedEffect.getRadius() > 0F) {
+			passes.add(new RoundedShaderPass(roundedEffect, this));
 		}
+
+		if (circleEffect != null) {
+			passes.add(new CircleShaderPass(this));
+		}
+
+		if (this.borderStroke > 0D) {
+			passes.add(new BorderShaderPass((float) this.borderStroke, borderColor, this.borderFill));
+		}
+
+		ShaderPipeline.render(this, passes, () -> {
+			if (color.isGradient()) {
+				Color.WHITE.bind();
+				DrawUtils.SHAPE.drawRawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight());
+				Color.reset();
+			} else {
+				DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
+			}
+		});
 	}
 
 	/* [ Override Section ] */

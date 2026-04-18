@@ -125,7 +125,7 @@ public class CustomFontProvider implements FontProvider {
 		CustomFontProvider.DOFFSET_UNIFORM.setValue(3.5F / fontSize);
 
 		boolean obfuscated = false;
-		boolean italic = false;
+		boolean italic = info.isItalic();
 
 		double currentX = x;
 		Color lastColor = null;

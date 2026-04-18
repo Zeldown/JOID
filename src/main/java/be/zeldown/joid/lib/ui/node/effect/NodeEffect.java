@@ -1,5 +1,9 @@
 package be.zeldown.joid.lib.ui.node.effect;
 
+import java.util.Collections;
+import java.util.List;
+
+import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.node.Node;
 import lombok.Getter;
@@ -16,6 +20,19 @@ public abstract class NodeEffect<T extends Node> {
 
 	public boolean shouldApply(final @NonNull T node) {
 		return true;
+	}
+
+	public boolean isShaderEffect() {
+		return false;
+	}
+
+	public ShaderPass toShaderPass(final @NonNull T node) {
+		return null;
+	}
+
+	public List<ShaderPass> toShaderPasses(final @NonNull T node) {
+		final ShaderPass pass = this.toShaderPass(node);
+		return pass != null ? Collections.singletonList(pass) : Collections.emptyList();
 	}
 
 	@SuppressWarnings("unchecked")
