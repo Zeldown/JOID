@@ -41,6 +41,7 @@ public class UIDemoVideo extends UIDemo {
 			resource = Resource.of(JOID.class.getResourceAsStream("/assets/test/videos/video.mp4"));
 		} catch (final IOException e) {
 			e.printStackTrace();
+			JOID.close(this);
 			return;
 		}
 
@@ -81,7 +82,7 @@ public class UIDemoVideo extends UIDemo {
 
 	@Override
 	public void preDraw(final double mouseX, final double mouseY) {
-		if (!this.fullscreen && this.player.isPlaying()) {
+		if (!this.fullscreen && this.player != null && this.player.isPlaying()) {
 			this.bounceX += this.speedX;
 			this.bounceY += this.speedY;
 
@@ -101,6 +102,10 @@ public class UIDemoVideo extends UIDemo {
 
 	@Override
 	public void postDraw(final double mouseX, final double mouseY) {
+		if (this.player == null) {
+			return;
+		}
+
 		final long now = System.nanoTime();
 		this.frameTime = now - this.lastFrameTime;
 		this.lastFrameTime = now;

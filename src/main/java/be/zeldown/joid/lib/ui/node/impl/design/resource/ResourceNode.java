@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL11;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.resource.Resource;
-import be.zeldown.joid.lib.resource.dto.decoder.impl.GifResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
 import be.zeldown.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
@@ -45,17 +45,15 @@ public class ResourceNode extends Node {
 	public void draw(final double mouseX, final double mouseY) {
 		if (this.resource != null) {
 			this.resource.prepareBind();
-			if (!this.resourceStarted && this.resource.getDecoder() instanceof GifResourceDecoder) {
+			if (!this.resourceStarted && this.resource.getDecoder() instanceof VideoResourceDecoder) {
 				this.resourceStarted = true;
-				((GifResourceDecoder) this.resource.getDecoder()).start();
 			}
 		}
 
 		if (this.hoveredResource != null) {
 			this.hoveredResource.prepareBind();
-			if (!this.hoveredResourceStarted && this.hoveredResource.getDecoder() instanceof GifResourceDecoder) {
+			if (!this.hoveredResourceStarted && this.hoveredResource.getDecoder() instanceof VideoResourceDecoder) {
 				this.hoveredResourceStarted = true;
-				((GifResourceDecoder) this.hoveredResource.getDecoder()).start();
 			}
 		}
 

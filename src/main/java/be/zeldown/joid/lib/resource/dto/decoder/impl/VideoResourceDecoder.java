@@ -5,9 +5,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,7 +26,6 @@ import lombok.NonNull;
 public final class VideoResourceDecoder implements IResourceDecoder {
 
 	private static final int RING_BUFFER_SIZE = 5;
-	private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(Arrays.asList(".mp4", ".mov", ".webm", ".avi", ".mkv", ".gif", ".apng"));
 
 	private final File file;
 
@@ -363,19 +359,28 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	/* [ Static Section ] */
-	public static boolean isSupported(final @NonNull String path) {
-		final String lower = path.toLowerCase();
-		for (final String ext : VideoResourceDecoder.VIDEO_EXTENSIONS) {
-			if (lower.endsWith(ext)) {
-				return true;
-			}
+	public static boolean isVideoHeader(final @NonNull byte[] header, final int read) {
+		if (read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a') {
+			return true;
 		}
+
+		if (read >= 8 && header[4] == 'f' && header[5] == 't' && header[6] == 'y' && header[7] == 'p') {
+			return true;
+		}
+
+		if (read >= 4 && header[0] == (byte) 0x1A && header[1] == (byte) 0x45 && header[2] == (byte) 0xDF && header[3] == (byte) 0xA3) {
+			return true;
+		}
+
+		if (read >= 12 && header[0] == 'R' && header[1] == 'I' && header[2] == 'F' && header[3] == 'F' && header[8] == 'A' && header[9] == 'V' && header[10] == 'I' && header[11] == ' ') {
+			return true;
+		}
+
 		return false;
 	}
 
-	public static boolean isLoopDefault(final @NonNull String path) {
-		final String lower = path.toLowerCase();
-		return lower.endsWith(".gif") || lower.endsWith(".apng");
+	public static boolean isLoopByDefault(final @NonNull byte[] header, final int read) {
+		return read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a';
 	}
 
 	/* [ Getter Section ] */
