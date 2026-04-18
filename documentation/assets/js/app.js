@@ -4,8 +4,7 @@
 	const state = {
 		nav: null,
 		flatPages: [],
-		currentPath: null,
-		tocObserver: null
+		currentPath: null
 	};
 
 	async function loadNav() {
@@ -37,50 +36,61 @@
 		const root = document.getElementById('nav');
 		root.innerHTML = '';
 		for (const s of state.nav.sections) {
-			root.appendChild(renderNode(s));
+			root.appendChild(renderTopLevel(s));
 		}
 	}
 
-	function renderNode(node) {
+	function renderTopLevel(node) {
 		if (node.path && !node.items) {
+			const wrap = document.createElement('div');
+			wrap.className = 'nav-section';
 			const a = document.createElement('a');
 			a.className = 'nav-link';
 			a.href = '#/' + node.path;
 			a.textContent = node.title;
 			a.dataset.path = node.path;
-			const wrap = document.createElement('div');
-			wrap.className = 'nav-section';
 			wrap.appendChild(a);
 			return wrap;
 		}
 
+		const grp = document.createElement('div');
+		grp.className = 'nav-group';
+		const title = document.createElement('div');
+		title.className = 'nav-group-title';
+		title.textContent = node.title;
+		grp.appendChild(title);
+		const items = document.createElement('div');
+		items.className = 'nav-group-items';
 		if (node.items) {
-			if (node.group) {
-				const grp = document.createElement('div');
-				grp.className = 'nav-group';
-				const title = document.createElement('div');
-				title.className = 'nav-group-title';
-				title.textContent = node.title;
-				title.addEventListener('click', () => grp.classList.toggle('open'));
-				grp.appendChild(title);
-				const items = document.createElement('div');
-				items.className = 'nav-group-items';
-				for (const i of node.items) items.appendChild(renderNode(i));
-				grp.appendChild(items);
-				return grp;
-			}
+			for (const i of node.items) items.appendChild(renderItem(i, false));
+		}
+		grp.appendChild(items);
+		return grp;
+	}
+
+	function renderItem(node, deep) {
+		if (node.path && !node.items) {
+			const a = document.createElement('a');
+			a.className = 'nav-link' + (deep ? ' nav-link-deep' : '');
+			a.href = '#/' + node.path;
+			a.textContent = node.title;
+			a.dataset.path = node.path;
+			return a;
 		}
 
-		const section = document.createElement('div');
-		section.className = 'nav-section';
-		const sTitle = document.createElement('div');
-		sTitle.className = 'nav-section-title';
-		sTitle.textContent = node.title;
-		section.appendChild(sTitle);
+		const wrap = document.createElement('div');
+		wrap.className = 'nav-subgroup';
+		const title = document.createElement('div');
+		title.className = 'nav-subgroup-title';
+		title.textContent = node.title;
+		wrap.appendChild(title);
+		const items = document.createElement('div');
+		items.className = 'nav-subgroup-items';
 		if (node.items) {
-			for (const i of node.items) section.appendChild(renderNode(i));
+			for (const i of node.items) items.appendChild(renderItem(i, true));
 		}
-		return section;
+		wrap.appendChild(items);
+		return wrap;
 	}
 
 	function highlightNav(path) {
@@ -89,13 +99,6 @@
 			const match = l.dataset.path === path;
 			l.classList.toggle('active', match);
 			if (match) {
-				let el = l.parentElement;
-				while (el) {
-					if (el.classList && el.classList.contains('nav-group')) {
-						el.classList.add('open');
-					}
-					el = el.parentElement;
-				}
 				l.scrollIntoView({ block: 'nearest' });
 			}
 		});
@@ -128,6 +131,23 @@
 			renderer.link = function (href, title, text) {
 				let target = '';
 				if (href && href.startsWith('http')) target = ' target="_blank" rel="noopener"';
+				if (href && !href.startsWith('http') && !href.startsWith('#')) {
+					const parts = path.split('/');
+					parts.pop();
+					let resolved = href.replace(/\.md$/, '');
+					if (resolved.startsWith('../')) {
+						while (resolved.startsWith('../')) {
+							resolved = resolved.slice(3);
+							parts.pop();
+						}
+						resolved = (parts.length ? parts.join('/') + '/' : '') + resolved;
+					} else if (resolved.startsWith('./')) {
+						resolved = (parts.length ? parts.join('/') + '/' : '') + resolved.slice(2);
+					} else if (!resolved.includes('/')) {
+						resolved = (parts.length ? parts.join('/') + '/' : '') + resolved;
+					}
+					href = '#/' + resolved;
+				}
 				return '<a href="' + href + '"' + target + (title ? ' title="' + title + '"' : '') + '>' + text + '</a>';
 			};
 			const html = marked.parse(md, { renderer });
@@ -135,7 +155,6 @@
 			state.currentPath = path;
 			highlightNav(path);
 			enhanceArticle(article);
-			buildTOC(article);
 			buildPageNav(path);
 			Prism.highlightAllUnder(article);
 			const parsed = parseHash();
@@ -198,41 +217,6 @@
 				}
 			}
 		});
-	}
-
-	function buildTOC(article) {
-		const tocEl = document.getElementById('toc');
-		const headings = article.querySelectorAll('h2, h3');
-		if (!headings.length) {
-			tocEl.innerHTML = '';
-			return;
-		}
-		const list = document.createElement('ul');
-		list.className = 'toc-list';
-		headings.forEach(h => {
-			const li = document.createElement('li');
-			li.className = 'toc-' + h.tagName.toLowerCase();
-			const a = document.createElement('a');
-			a.href = '#/' + state.currentPath + '#' + h.id;
-			a.textContent = h.textContent;
-			a.dataset.target = h.id;
-			li.appendChild(a);
-			list.appendChild(li);
-		});
-		tocEl.innerHTML = '<div class="toc-title">On this page</div>';
-		tocEl.appendChild(list);
-
-		if (state.tocObserver) state.tocObserver.disconnect();
-		state.tocObserver = new IntersectionObserver(entries => {
-			entries.forEach(e => {
-				if (e.isIntersecting) {
-					document.querySelectorAll('.toc-list a').forEach(a => {
-						a.classList.toggle('active', a.dataset.target === e.target.id);
-					});
-				}
-			});
-		}, { rootMargin: '-10% 0px -80% 0px' });
-		headings.forEach(h => state.tocObserver.observe(h));
 	}
 
 	function buildPageNav(path) {
