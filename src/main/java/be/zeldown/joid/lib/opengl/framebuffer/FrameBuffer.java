@@ -6,7 +6,6 @@ import javax.vecmath.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL32;
 
 import be.zeldown.joid.lib.tessellator.T9R;
 import be.zeldown.joid.lib.utils.texture.AllocatedTextureUtil;
@@ -41,7 +40,7 @@ public class FrameBuffer {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.framebuffer);
-		GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, this.texture, 0);
+		GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, this.texture, 0);
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
 
 		return this;

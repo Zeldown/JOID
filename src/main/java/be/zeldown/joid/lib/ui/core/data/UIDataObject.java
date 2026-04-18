@@ -19,7 +19,7 @@ public final class UIDataObject implements UIData {
 	private boolean visible         = true;
 	private boolean pause           = true;
 	private boolean closeable       = true;
-	private boolean zoomable        = false;
+	private boolean zoomable        = true;
 	private boolean projection      = true;
 	private boolean background      = true;
 	private String  backgroundColor = "#101010C0";
