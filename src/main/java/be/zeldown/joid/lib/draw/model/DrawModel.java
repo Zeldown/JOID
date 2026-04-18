@@ -18,7 +18,7 @@ public final class DrawModel {
 
 	public DrawModel() {
 		if (DrawModel.instance != null) {
-			throw new RuntimeException("Attempted to create a duplicate instance of DrawEntity.");
+			throw new RuntimeException("Attempted to create a duplicate instance of DrawModel.");
 		}
 		DrawModel.instance = this;
 	}
