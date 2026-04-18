@@ -41,6 +41,11 @@ public class GradientShaderPass implements ShaderPass {
 		return 0;
 	}
 
+	@Override
+	public boolean supportsDirectBind() {
+		return false;
+	}
+
 	/* [ Internal Section ] */
 	private void bindInternal(final boolean hasTexture) {
 		if (!GradientShader.inst().isAvailable()) {
