@@ -23,10 +23,12 @@ public class UIDemoVideo extends UIDemo {
 	private VideoPlayerNode player;
 
 	private boolean fullscreen;
-	private double speedX = 0.75D;
-	private double speedY = 0.5D;
+	private double speedX = 90D;
+	private double speedY = 60D;
 	private double bounceX = 100D;
 	private double bounceY = 100D;
+
+	private long lastBounceTime;
 
 	private int fps;
 	private long fpsTimer;
@@ -83,8 +85,15 @@ public class UIDemoVideo extends UIDemo {
 	@Override
 	public void preDraw(final double mouseX, final double mouseY) {
 		if (!this.fullscreen && this.player != null && this.player.isPlaying()) {
-			this.bounceX += this.speedX;
-			this.bounceY += this.speedY;
+			final long now = System.nanoTime();
+			if (this.lastBounceTime == 0L) {
+				this.lastBounceTime = now;
+			}
+			final double delta = (now - this.lastBounceTime) / 1000000000D;
+			this.lastBounceTime = now;
+
+			this.bounceX += this.speedX * delta;
+			this.bounceY += this.speedY * delta;
 
 			if (this.bounceX <= 0D || this.bounceX + UIDemoVideo.SMALL_W >= 1920D) {
 				this.speedX = -this.speedX;
@@ -97,6 +106,8 @@ public class UIDemoVideo extends UIDemo {
 			}
 
 			this.player.position(this.bounceX, this.bounceY);
+		} else {
+			this.lastBounceTime = 0L;
 		}
 	}
 
