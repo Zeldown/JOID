@@ -78,7 +78,26 @@ The repository contains a `native/` folder with the required OpenGL and OpenAL n
 
 The full reference lives in the `documentation/` folder — a static single-page app that loads its Markdown pages through `fetch`. You need to serve it through a local HTTP server; opening `index.html` directly via `file://` will break every page load.
 
-Pick any of the following (or use your favourite static server).
+### Prerequisites
+
+Pick either Node.js (for `npx serve`) or Python 3 (for `http.server`). You only need one.
+
+**Node.js (for `npx serve`)** — `npx` ships with Node.js. To check if you have it:
+
+```bash
+node -v
+npx -v
+```
+
+If either command isn't found, install Node.js:
+
+- **Windows** — download the LTS installer from <https://nodejs.org/> and run it. Or via winget: `winget install OpenJS.NodeJS.LTS`
+- **macOS** — via [Homebrew](https://brew.sh/): `brew install node` — or download the `.pkg` installer from <https://nodejs.org/>.
+- **Linux** — `sudo apt install nodejs npm` (Debian/Ubuntu), `sudo dnf install nodejs` (Fedora), `sudo pacman -S nodejs npm` (Arch), or use [nvm](https://github.com/nvm-sh/nvm) to manage versions.
+
+`npx serve .` then works out of the box — `npx` auto-downloads the `serve` package on first use. If you prefer a permanent install, run `npm install -g serve` once and call `serve .` directly afterwards.
+
+**Python 3 (alternative)** — already present on most macOS/Linux systems; on Windows install it from <https://python.org/> or via winget: `winget install Python.Python.3.12`. Check with `python3 --version` (or `python --version` on Windows).
 
 ### Windows
 
