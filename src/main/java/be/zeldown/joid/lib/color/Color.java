@@ -441,11 +441,51 @@ public final class Color {
 			return color2;
 		}
 
+		final float inv = 1F - progress;
+
+		if (color1.isGradient() && color2.isGradient()) {
+			final ColorGradient g1 = color1.gradient;
+			final ColorGradient g2 = color2.gradient;
+			final Color start = new Color(
+					g1.getStartColor().r * inv + g2.getStartColor().r * progress,
+					g1.getStartColor().g * inv + g2.getStartColor().g * progress,
+					g1.getStartColor().b * inv + g2.getStartColor().b * progress,
+					g1.getStartColor().a * inv + g2.getStartColor().a * progress
+					);
+			final Color end = new Color(
+					g1.getEndColor().r * inv + g2.getEndColor().r * progress,
+					g1.getEndColor().g * inv + g2.getEndColor().g * progress,
+					g1.getEndColor().b * inv + g2.getEndColor().b * progress,
+					g1.getEndColor().a * inv + g2.getEndColor().a * progress
+					);
+			final Vector4f direction = new Vector4f(
+					g1.getDirection().x * inv + g2.getDirection().x * progress,
+					g1.getDirection().y * inv + g2.getDirection().y * progress,
+					g1.getDirection().z * inv + g2.getDirection().z * progress,
+					g1.getDirection().w * inv + g2.getDirection().w * progress
+					);
+			return new Color(new ColorGradient(start, end, direction));
+		}
+
+		if (color1.isGradient()) {
+			final ColorGradient g = color1.gradient;
+			final Color start = new Color(g.getStartColor().r * inv + color2.r * progress, g.getStartColor().g * inv + color2.g * progress, g.getStartColor().b * inv + color2.b * progress, g.getStartColor().a * inv + color2.a * progress);
+			final Color end = new Color(g.getEndColor().r * inv + color2.r * progress, g.getEndColor().g * inv + color2.g * progress, g.getEndColor().b * inv + color2.b * progress, g.getEndColor().a * inv + color2.a * progress);
+			return new Color(new ColorGradient(start, end, g.getDirection()));
+		}
+
+		if (color2.isGradient()) {
+			final ColorGradient g = color2.gradient;
+			final Color start = new Color(color1.r * inv + g.getStartColor().r * progress, color1.g * inv + g.getStartColor().g * progress, color1.b * inv + g.getStartColor().b * progress, color1.a * inv + g.getStartColor().a * progress);
+			final Color end = new Color(color1.r * inv + g.getEndColor().r * progress, color1.g * inv + g.getEndColor().g * progress, color1.b * inv + g.getEndColor().b * progress, color1.a * inv + g.getEndColor().a * progress);
+			return new Color(new ColorGradient(start, end, g.getDirection()));
+		}
+
 		return new Color(
-				color1.r * (1F - progress) + color2.r * progress,
-				color1.g * (1F - progress) + color2.g * progress,
-				color1.b * (1F - progress) + color2.b * progress,
-				color1.a * (1F - progress) + color2.a * progress,
+				color1.r * inv + color2.r * progress,
+				color1.g * inv + color2.g * progress,
+				color1.b * inv + color2.b * progress,
+				color1.a * inv + color2.a * progress,
 				progress > 0.5F ? color2.update : color1.update
 				);
 	}
