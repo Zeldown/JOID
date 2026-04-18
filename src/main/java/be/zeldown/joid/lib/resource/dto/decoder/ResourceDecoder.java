@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
 
-import be.zeldown.joid.lib.resource.dto.decoder.impl.GifResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.ImageResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
 import lombok.NonNull;
@@ -19,17 +18,13 @@ public class ResourceDecoder {
 		return new ImageResourceDecoder(image);
 	}
 
-	public static @NonNull IResourceDecoder gif(final @NonNull InputStream inputStream) {
-		return new GifResourceDecoder(inputStream);
-	}
-
 	public static @NonNull IResourceDecoder video(final @NonNull InputStream inputStream) {
 		return new VideoResourceDecoder(inputStream);
 	}
 
-	public static @NonNull IResourceDecoder video(final @NonNull InputStream inputStream, final @NonNull String path) {
+	public static @NonNull IResourceDecoder video(final @NonNull InputStream inputStream, final boolean loopByDefault) {
 		final VideoResourceDecoder decoder = new VideoResourceDecoder(inputStream);
-		if (VideoResourceDecoder.isLoopDefault(path)) {
+		if (loopByDefault) {
 			decoder.loop(true);
 		}
 		return decoder;

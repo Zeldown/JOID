@@ -96,34 +96,14 @@ public final class ResourceBuilder {
 			final int read = supportedStream.read(header);
 			supportedStream.reset();
 
-			if (read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a') {
-				return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.gif(supportedStream))));
-			}
-
-			if (ResourceBuilder.isVideoHeader(header, read)) {
-				return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.video(supportedStream))));
+			if (VideoResourceDecoder.isVideoHeader(header, read)) {
+				return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.video(supportedStream, VideoResourceDecoder.isLoopByDefault(header, read)))));
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 
 		return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.image(stream))));
-	}
-
-	private static boolean isVideoHeader(final @NonNull byte[] header, final int read) {
-		if (read >= 8 && header[4] == 'f' && header[5] == 't' && header[6] == 'y' && header[7] == 'p') {
-			return true;
-		}
-
-		if (read >= 4 && header[0] == (byte) 0x1A && header[1] == (byte) 0x45 && header[2] == (byte) 0xDF && header[3] == (byte) 0xA3) {
-			return true;
-		}
-
-		if (read >= 12 && header[0] == 'R' && header[1] == 'I' && header[2] == 'F' && header[3] == 'F' && header[8] == 'A' && header[9] == 'V' && header[10] == 'I' && header[11] == ' ') {
-			return true;
-		}
-
-		return false;
 	}
 
 	public @NonNull Resource of(final @NonNull BufferedImage image) {
@@ -140,7 +120,22 @@ public final class ResourceBuilder {
 		return this.cache(uniqueId, () -> {
 			final Resource resource = new Resource(this, new ResourceData(uniqueId, null));
 			new ResourceDownloadThread(url, inputStream -> {
-				resource.decoder(VideoResourceDecoder.isSupported(url) ? ResourceDecoder.video(inputStream, url) : ResourceDecoder.image(inputStream));
+				try {
+					final InputStream supportedStream = inputStream.markSupported() ? inputStream : new BufferedInputStream(inputStream);
+					supportedStream.mark(12);
+
+					final byte[] header = new byte[12];
+					final int read = supportedStream.read(header);
+					supportedStream.reset();
+
+					if (VideoResourceDecoder.isVideoHeader(header, read)) {
+						resource.decoder(ResourceDecoder.video(supportedStream, VideoResourceDecoder.isLoopByDefault(header, read)));
+					} else {
+						resource.decoder(ResourceDecoder.image(supportedStream));
+					}
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
 				if (callback != null) {
 					callback.accept(resource);
 				}
