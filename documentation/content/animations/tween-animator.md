@@ -1,60 +1,54 @@
 # TweenAnimator
 
-High-level wrapper around the Universal Tween Engine. Animate a `float` value over time with any easing curve — single tweens, sequences, parallel groups.
+High-level wrapper around the Universal Tween Engine. Animates a single `float` value over time with any easing curve — single tweens, sequences, parallel groups.
 
 ## Create
 
 ```java
-final TweenAnimator animator = TweenAnimator.create(0F);   // initial value
-```
-
-Or create from a supplier if the initial value is dynamic:
-
-```java
-final TweenAnimator animator = TweenAnimator.create();   // defaults to 0F
+TweenAnimator animator = TweenAnimator.create();        // starts at 0F
+TweenAnimator animator = TweenAnimator.create(0F);      // explicit initial value
 ```
 
 ## Start a tween
 
 ```java
-animator.sequence(400L, 100F).start();
+animator.sequence(400F, 100F).start();
 ```
 
-Animate from current value to `100F` over `400ms` with default `LINEAR` easing.
+Tween from the current value to `100F` over `400ms` with default `LINEAR` easing. **Durations are `float` milliseconds**, not `long`.
 
 ## Easing
 
 ```java
-animator.sequence(400L, 100F, TweenEquations.CUBIC_OUT).start();
+animator.sequence(400F, 100F, TweenEquations.CUBIC_OUT).start();
 ```
 
-See [Easing](easing.md) for the full catalog.
+See `Easing` for the full catalog.
 
-## Chained sequences
+## Chaining
 
-Use multiple `sequence()` calls to build a timeline:
+`sequence(...)` and `parallel(...)` **build a fresh timeline** — each call replaces any existing timeline on the animator. To extend the current timeline, use `push(...)`:
 
 ```java
 animator
-    .sequence(400L, 100F, TweenEquations.CUBIC_OUT)
-    .sequence(200L, 50F, TweenEquations.CUBIC_IN)
-    .sequence(300L, 100F, TweenEquations.BACK_OUT)
+    .sequence(400F, 100F, TweenEquations.CUBIC_OUT)
+    .push(200F, 50F, TweenEquations.CUBIC_IN)
+    .push(300F, 100F, TweenEquations.BACK_OUT)
     .start();
 ```
 
-Each sequence starts when the previous ends.
+`sequence(...)` creates a sequential timeline (each tween waits for the previous). `parallel(...)` creates a parallel timeline (all tweens run at once). `push(...)` appends to whichever timeline was just created.
 
-## Callbacks
+## Completion callback
 
 ```java
 animator
-    .sequence(400L, 100F)
-    .callback(value -> System.out.println("Current: " + value))
-    .onComplete(() -> System.out.println("Done"))
+    .sequence(400F, 100F)
+    .setCallback(tween -> System.out.println("done"))
     .start();
 ```
 
-`callback(Consumer<Float>)` — fires every frame with the current value. `onComplete(Runnable)` — fires once the full chain finishes.
+`setCallback(Consumer<BaseTween<?>>)` registers a `TweenCallback.END` callback — fires once when the timeline finishes. There is no per-frame callback; read `animator.getValue()` from your draw loop instead.
 
 ## Read the value
 
@@ -62,49 +56,54 @@ animator
 final float current = animator.getValue();
 ```
 
-Use in `draw` or reactive bindings:
+Use it in a `draw()` override, a watch callback, or bind it via a supplier lambda where the API accepts one.
+
+## Update cadence
+
+The animator needs `update()` calls every frame to advance:
 
 ```java
-node.x(() -> animator.getValue());
+animator.update();            // uses wall-clock delta since last call
+animator.update(deltaMs);     // explicit delta (× speed)
 ```
 
-## Example — fade in a node
+`TweenAnimator.setSpeed(float)` scales the effective delta — `1F` is normal, `2F` is twice as fast, `0F` pauses.
+
+## Example — fade in
 
 ```java
 final TweenAnimator fade = TweenAnimator.create(0F);
-fade.sequence(500L, 1F, TweenEquations.CUBIC_OUT).start();
+fade.sequence(500F, 1F, TweenEquations.CUBIC_OUT).start();
 
 RectNode.create(0, 0, 200, 100)
     .color(() -> Color.WHITE.copyAlpha(fade.getValue()))
     .attach(parent);
 ```
 
-## Example — wobble
+## Example — wobble chain
 
 ```java
 final TweenAnimator wobble = TweenAnimator.create(0F);
 wobble
-    .sequence(150L, 10F, TweenEquations.CUBIC_OUT)
-    .sequence(150L, -10F, TweenEquations.CUBIC_IN_OUT)
-    .sequence(150L, 5F, TweenEquations.CUBIC_IN_OUT)
-    .sequence(150L, 0F, TweenEquations.CUBIC_IN)
+    .sequence(150F, 10F, TweenEquations.CUBIC_OUT)
+    .push(150F, -10F, TweenEquations.CUBIC_IN_OUT)
+    .push(150F, 5F, TweenEquations.CUBIC_IN_OUT)
+    .push(150F, 0F, TweenEquations.CUBIC_IN)
     .start();
 
 node.x(() -> baseX + wobble.getValue());
 ```
 
-## Parallel tweens
+## Parallel tracks
 
-Use multiple `TweenAnimator` instances for independent animation tracks:
+Use multiple `TweenAnimator` instances for independent axes — each owns its own `TweenManager`:
 
 ```java
 final TweenAnimator x = TweenAnimator.create(0F);
 final TweenAnimator y = TweenAnimator.create(0F);
 
-x.sequence(500L, 200F, TweenEquations.CUBIC_OUT).start();
-y.sequence(300L, 100F, TweenEquations.BOUNCE_OUT).start();
-
-node.position(() -> x.getValue(), () -> y.getValue());
+x.sequence(500F, 200F, TweenEquations.CUBIC_OUT).start();
+y.sequence(300F, 100F, TweenEquations.BOUNCE_OUT).start();
 ```
 
 ## Integration with Node hover
@@ -112,27 +111,13 @@ node.position(() -> x.getValue(), () -> y.getValue());
 Every `Node` has a built-in hover animator:
 
 ```java
-// Automatic fade from 0 to 100 on hover
 node.hoverDuration(200L);
 node.hoverEquation(TweenEquations.CUBIC_OUT);
 
-// Read the current hover progress
-float t = node.hoverValue(1F);  // 0.0 → 1.0
+float t = node.hoverValue(1F);   // 0.0 → 1.0 on hover fade
 ```
-
-For custom hover animations, combine `hoverValue()` with your own tween or just use it directly.
-
-## Thread safety
-
-The underlying `TweenManager` is thread-safe — animations can be started, stopped, and read from multiple threads. Still, prefer the render thread for UI animations.
-
-## Best practices
-
-- **Prefer `TweenAnimator` over manual `t += deltaTime`.** Fewer bugs, smoother easing.
-- **Cache animators.** Creating one per frame defeats the purpose — store them as fields.
-- **Don't animate everything.** Animations are cheap but not free; each active animator costs a per-frame interpolation.
 
 ## See also
 
-- [Easing](easing.md) — easing equations catalog.
-- [Transitions](../ui/transitions.md) — UI-level in/out animations.
+- `Easing` — easing equations catalog.
+- `Transitions` — UI-level in/out animations.

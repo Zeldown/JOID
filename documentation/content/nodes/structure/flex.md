@@ -1,15 +1,15 @@
 # FlexNode
 
-Automatic linear layout — horizontal or vertical — with margins, growth, and overflow wrapping.
+Automatic linear layout — horizontal or vertical — with a configurable gap between children and optional cross-axis alignment. The node's main-axis size grows to fit its children; the cross-axis size is fixed by the factory you pick.
 
 ## Create
 
 ```java
-FlexNode.horizontal(x, y, height)         // row, auto-width
+FlexNode.horizontal(x, y, height)         // row, height fixed, width grows
     .body(flex -> { /* children */ })
     .attach(parent);
 
-FlexNode.vertical(x, y, width)             // column, auto-height
+FlexNode.vertical(x, y, width)             // column, width fixed, height grows
     .body(flex -> { /* children */ })
     .attach(parent);
 ```
@@ -19,11 +19,12 @@ Children are positioned sequentially along the main axis with `margin` gaps betw
 ## API
 
 ```java
-flex.margin(double);                 // gap between children
-flex.padding(double);                // padding inside the flex node
-flex.align(Align);                   // START / CENTER / END (cross-axis)
-flex.wrap(boolean);                  // overflow to next line/column
+FlexNode margin(double value)              // gap between children (main axis)
+FlexNode align(Align align)                // START / CENTER / END (cross axis)
+FlexNode direction(FlexDirection dir)      // COLUMN / ROW — matches the factory
 ```
+
+Only visible children (`isVisibleProperty()`) contribute to the layout — hidden children keep their slot but don't take space.
 
 ## Example — toolbar
 
@@ -55,23 +56,9 @@ FlexNode.vertical(40, 40, 400).margin(12).body(list -> {
 }).attach(parent);
 ```
 
-## Wrapping
-
-With `wrap(true)`, children that overflow the flex length wrap to the next row/column:
-
-```java
-FlexNode.horizontal(0, 0, 800).margin(8).wrap(true).body(grid -> {
-    for (int i = 0; i < 20; i++) {
-        RectNode.create(0, 0, 80, 80).color(Color.decode("#3b82f6")).attach(grid);
-    }
-}).attach(parent);
-```
-
-Prefer [GridNode](grid.md) for strict column/row layouts with equal sizing.
-
 ## Reactive children
 
-`FlexNode` recomputes positions on layout changes — adding or removing children via `append()` / `clearChildren()` triggers a re-layout automatically.
+`FlexNode` recomputes positions every frame (`draw`, `update`, `drawSkeleton`) — adding or removing children updates the layout on the next tick.
 
 For reactive data-driven lists:
 
@@ -96,5 +83,5 @@ FlexNode.vertical(0, 0, 400).margin(8)
 
 ## See also
 
-- [GridNode](grid.md) — strict grid layouts.
-- [ContainerNode](container.md) — non-layout wrapper.
+- `GridNode` — strict grid layouts with equal sizing.
+- `ContainerNode` — non-layout wrapper.

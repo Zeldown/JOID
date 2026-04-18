@@ -2,13 +2,10 @@
 	"version": "6.0.0",
 	"sections": [
 		{
-			"title": "Introduction",
-			"path": "introduction"
-		},
-		{
 			"title": "Getting Started",
 			"group": "getting-started",
 			"items": [
+				{ "title": "Introduction", "path": "getting-started/introduction" },
 				{ "title": "Installation", "path": "getting-started/installation" },
 				{ "title": "Quick Start", "path": "getting-started/quick-start" },
 				{ "title": "Core Concepts", "path": "getting-started/core-concepts" }
@@ -119,8 +116,11 @@
 			"group": "drawing",
 			"items": [
 				{ "title": "DrawUtils", "path": "drawing/draw-utils" },
-				{ "title": "Color", "path": "drawing/color" },
-				{ "title": "Shapes", "path": "drawing/shapes" }
+				{ "title": "Shapes", "path": "drawing/shapes" },
+				{ "title": "Text", "path": "drawing/text" },
+				{ "title": "Resources", "path": "drawing/resources" },
+				{ "title": "Models", "path": "drawing/models" },
+				{ "title": "Color", "path": "drawing/color" }
 			]
 		},
 		{

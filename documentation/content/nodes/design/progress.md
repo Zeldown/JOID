@@ -1,12 +1,12 @@
 # ProgressNode
 
-A horizontal or vertical progress bar. Good for loading indicators, health bars, and skill gauges.
+A progress bar that fills in one of four directions. Renders either with flat colors (background + foreground) or with paired `Resource` textures.
 
 ## Create
 
 ```java
 ProgressNode.create(x, y, width, height)
-    .color(Color.BLUE)
+    .color(Color.decode("#1f2937"), Color.decode("#3b82f6"))
     .progress(0.5F)
     .attach(parent);
 ```
@@ -14,44 +14,60 @@ ProgressNode.create(x, y, width, height)
 ## API
 
 ```java
-node.color(Color);                   // fill color
-node.color(Color, Color);            // fill + hover
-node.color(Color, Color, Color);     // background + fill + hover
-node.progress(float);                // 0.0 → 1.0
-node.progress(Supplier<Float>);      // reactive
-node.vertical(boolean);              // true = bottom-up, default false (horizontal)
-node.reverse(boolean);               // invert direction
+T progress(float value)                           // 0.0 → 1.0
+T progress(float min, float max, float value)     // value normalized to [0, 1]
+T direction(ProgressDirection direction)          // fill direction
+
+T color(Color background, Color foreground)       // both colors at once
+T background(Color color)
+T foreground(Color color)
+
+T resource(Resource background, Resource foreground)
+T background(Resource resource)
+T foreground(Resource resource)
 ```
+
+### `ProgressDirection`
+
+```java
+LEFT_TO_RIGHT     // default
+RIGHT_TO_LEFT
+TOP_TO_BOTTOM
+BOTTOM_TO_TOP
+```
+
+## Color vs resource rendering
+
+If both `background` and `foreground` resources are set, they're drawn with `DrawUtils.RESOURCE`, the foreground being masked to the current progress fraction (`UI.mask(...)`). Otherwise the node falls back to two `DrawUtils.SHAPE.drawRect` calls with the two colors.
 
 ## Reactive progress
 
+`ProgressNode` is a regular `Node`, so bind a signal through `.watch(...)` and update it externally:
+
 ```java
-final FloatSignal loading = new FloatSignal(0F);
+final Signal<Float> loading = new Signal<>(0F);
 
 ProgressNode.create(0, 0, 300, 8)
     .color(Color.decode("#1f2937"), Color.decode("#3b82f6"))
-    .progress(() -> loading.getOrDefault())
-    .watch(loading)
+    .progress(loading.getOrDefault())
+    .watch(loading, (node, value) -> node.progress(value))
     .effect(RoundedNodeEffect.create(4F))
     .attach(parent);
-
-// Animate loading elsewhere:
-TweenAnimator.create(0F).sequence(2000L, 1F).callback(loading::set).start();
 ```
 
-## Example — skill bar with label
+## Example — XP bar with label
 
 ```java
-final FloatSignal xp = new FloatSignal(0.73F);
+final Signal<Float> xp = new Signal<>(0.73F);
 
 RectNode.create(0, 0, 400, 24)
     .color(Color.decode("#111827"))
     .effect(RoundedNodeEffect.create(12F))
     .body(bar -> {
         ProgressNode.create(2, 2, 396, 20)
-            .color(Color.decode("#10b981"))
-            .progress(() -> xp.getOrDefault())
-            .watch(xp)
+            .color(Color.decode("#0f172a"), Color.decode("#10b981"))
+            .progress(xp.getOrDefault())
+            .watch(xp, (n, v) -> n.progress(v))
             .effect(RoundedNodeEffect.create(10F))
             .attach(bar);
 
@@ -62,18 +78,12 @@ RectNode.create(0, 0, 400, 24)
                 Align.CENTER, Align.CENTER
             ))
             .watch(xp)
-            .anchor(Align.CENTER)
             .attach(bar);
     })
     .attach(parent);
 ```
 
-## Best practices
-
-- **Clamp progress.** Negative or >1 values render unexpectedly. Clamp in the supplier: `Math.max(0F, Math.min(1F, value))`.
-- **Combine with rounded effects.** A raw rectangle progress bar looks crude; `RoundedNodeEffect` lifts it.
-
 ## See also
 
-- [Signals](../../state/signals.md) — `FloatSignal` for reactive progress.
-- [TweenAnimator](../../animations/tween-animator.md) — animate progress smoothly.
+- `Signals` — reactive value binding.
+- `TweenAnimator` — animating `progress` over time.

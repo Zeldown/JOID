@@ -25,6 +25,7 @@ Create the ideal interface with a wide range of customizable components and impr
 
 [Installation](#installation)
 [Features](#features)
+[Documentation](#documentation)
 [Credits](#credits)
 
 </div>
@@ -72,6 +73,43 @@ The repository contains a `native/` folder with the required OpenGL and OpenAL n
 - 💾 **Persistent stores** — `@UIStoreData`-annotated fields auto-serialized to JSON
 - 🎬 **Video playback** — `VideoPlayerNode` with FFmpeg-backed decoding (MP4/MOV/WEBM/MKV/AVI/GIF/APNG)
 - 🔌 **Bridge pattern** — Host-agnostic integration via `IUIBridge`
+
+## Documentation
+
+The full reference lives in the `documentation/` folder — a static single-page app that loads its Markdown pages through `fetch`. You need to serve it through a local HTTP server; opening `index.html` directly via `file://` will break every page load.
+
+Pick any of the following (or use your favourite static server).
+
+### Windows
+
+Double-click `documentation\run.bat` — it runs `npx serve .` inside the folder. Equivalent manual commands:
+
+```powershell
+cd documentation
+npx serve .
+# or, if Python is installed:
+python -m http.server 3000
+```
+
+### macOS
+
+```bash
+cd documentation
+npx serve .
+# or, if Python is installed:
+python3 -m http.server 3000
+```
+
+### Linux
+
+```bash
+cd documentation
+npx serve .
+# or, if Python is installed:
+python3 -m http.server 3000
+```
+
+Each command prints the local URL it's serving (usually <http://localhost:3000> for `serve`, <http://localhost:8000> for Python). Open it in your browser — the language toggle, Ctrl+K search, and Download-as-PDF button are all available from the UI.
 
 ## Credits
 

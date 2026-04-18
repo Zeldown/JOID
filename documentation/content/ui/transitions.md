@@ -1,100 +1,139 @@
 # Transitions
 
-Smooth in/out animations when a UI opens or closes, backed by the Tween Engine.
+Entry / exit animations that run around the opening and closing of a `UI`, backed by the Tween Engine.
 
-## Setting a transition
+## Structure
 
-Call `setTransition()` in the UI constructor or `init()`:
+`Transition` is abstract and final only in its static shape:
 
 ```java
-public MyUI() {
-    setTransition(new PopTransition());
+public abstract class Transition {
+    private final In in;
+    private final Out out;
+    // ...
 }
 ```
 
-`PopTransition` is the built-in scale-pop-in / scale-pop-out. It animates the `scaleLevel` signal of the UI from 0 to 1 on entry, and 1 to 0 on exit.
-
-## The `Transition` class
-
-A transition is two independent animators — one for `in`, one for `out` — each a `TweenAnimator` with custom easing and duration:
+A transition is a pair of states — one `In`, one `Out` — each with its own `TweenAnimator`. Both `In` and `Out` are themselves abstract subclasses of `TransitionState`:
 
 ```java
-public class PopTransition extends Transition {
+public static abstract class TransitionState {
+    private final TweenAnimator animator;
+    public TransitionState(float defaultValue) { ... }
 
-    public PopTransition() {
-        setIn(new TransitionState(TweenEquations.BACK_OUT, 400L, 0F, 1F));
-        setOut(new TransitionState(TweenEquations.BACK_IN, 300L, 1F, 0F));
+    public abstract void init(UI ui);
+    public abstract void start();
+    public abstract void pre(UI ui, double mouseX, double mouseY);
+    public abstract void post(UI ui, double mouseX, double mouseY);
+}
+
+public static abstract class In  extends TransitionState { public In()  { super(0F); } }
+public static abstract class Out extends TransitionState { public Out() { super(1F); } }
+```
+
+`In`'s animator starts at `0F`, `Out`'s at `1F`. `init` runs once with the UI on attach, `start` kicks off the tween, `pre`/`post` wrap the UI's draw.
+
+## Attaching a transition
+
+Call `setTransition(...)` on your UI:
+
+```java
+public class MyUI extends UI {
+    public MyUI() {
+        setTransition(new PopTransition());
     }
 }
 ```
 
-| Param | Meaning |
-|---|---|
-| Easing | Any `TweenEquation` (see [Easing](../animations/easing.md)) |
-| Duration | Milliseconds |
-| From | Starting value (typically 0 or 1) |
-| To | End value |
+## Built-in: `PopTransition`
 
-During the transition, the UI's `transition` signal drives node rendering — you can read it via `ui.getTransition().getState()` and apply custom effects.
+`PopTransition` scales the UI from `0.75` to `1.0` around its anchor position on entry, and back on exit, using `QUART_OUT` / `QUART_IN` over `130ms`.
+
+```java
+public class PopTransition extends Transition {
+    public PopTransition() {
+        super(new PopInTransition(), new PopOutTransition());
+    }
+
+    public static class PopInTransition extends Transition.In {
+        @Override public void init(UI ui) {}
+        @Override public void start() {
+            final Timeline timeline = getAnimator().sequence(130F, 1F, TweenEquations.QUART_OUT).getTimeline();
+            start(timeline);
+        }
+        @Override public void pre(UI ui, double mx, double my) {
+            final double scale = 0.75D + getAnimator().getValue() * 0.25D;
+            GL11.glPushMatrix();
+            GL11.glTranslated(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
+            GL11.glScaled(scale, scale, 1D);
+            GL11.glTranslated(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0);
+        }
+        @Override public void post(UI ui, double mx, double my) { GL11.glPopMatrix(); }
+    }
+
+    public static class PopOutTransition extends Transition.Out {
+        // symmetrical with QUART_IN, value 0F
+    }
+}
+```
 
 ## Writing a custom transition
 
-Extend `Transition` and define both states:
+A transition is always a constructor call to the parent (`super(new MyIn(), new MyOut())`) plus two inner classes extending `In` and `Out`. Inside each, wire the tween in `start()` and apply it in `pre()` / `post()`:
 
 ```java
 public class SlideTransition extends Transition {
 
     public SlideTransition() {
-        setIn(new TransitionState(TweenEquations.CUBIC_OUT, 500L, -1920F, 0F));
-        setOut(new TransitionState(TweenEquations.CUBIC_IN, 400L, 0F, 1920F));
+        super(new SlideIn(), new SlideOut());
+    }
+
+    public static class SlideIn extends Transition.In {
+        @Override public void init(UI ui) {}
+        @Override public void start() {
+            final Timeline timeline = getAnimator().sequence(300F, 1F, TweenEquations.CUBIC_OUT).getTimeline();
+            start(timeline);
+        }
+        @Override public void pre(UI ui, double mx, double my) {
+            final float offset = (1F - getAnimator().getValue()) * (float) ui.getWidth();
+            GL11.glPushMatrix();
+            GL11.glTranslatef(offset, 0F, 0F);
+        }
+        @Override public void post(UI ui, double mx, double my) { GL11.glPopMatrix(); }
+    }
+
+    public static class SlideOut extends Transition.Out {
+        @Override public void init(UI ui) {}
+        @Override public void start() {
+            final Timeline timeline = getAnimator().sequence(250F, 0F, TweenEquations.CUBIC_IN).getTimeline();
+            start(timeline);
+        }
+        @Override public void pre(UI ui, double mx, double my) {
+            final float offset = (1F - getAnimator().getValue()) * -(float) ui.getWidth();
+            GL11.glPushMatrix();
+            GL11.glTranslatef(offset, 0F, 0F);
+        }
+        @Override public void post(UI ui, double mx, double my) { GL11.glPopMatrix(); }
     }
 }
 ```
 
-Read the current offset in `preDraw` to apply:
+There is **no** `setIn(...)` / `setOut(...)` setter and **no** `TransitionState(equation, duration, from, to)` constructor — the class is built around the abstract methods above.
+
+## Disabling a state
+
+`TransitionState` exposes `enable()` / `disable()` and `isEnabled()`. A disabled state's `start()` is a no-op, so the tween never fires:
 
 ```java
-@Override
-public void preDraw(double mouseX, double mouseY) {
-    final float offset = getTransition().getState().getAnimator().getValue();
-    GL11.glTranslatef(offset, 0F, 0F);
-}
+ui.getTransition().getIn().disable();
 ```
 
-## How the bridge drives it
+## No-transition UIs
 
-When `JOID.open(ui)` is called on a UI that already has a `Transition`:
-
-1. The previous UI's **out** transition starts.
-2. When it finishes, the new UI is `add`ed.
-3. The new UI's **in** transition starts.
-
-Chaining is automatic. If you open without closing (overlay mode), only the `in` of the new UI runs.
-
-## Disabling transitions
-
-Some UIs shouldn't animate — transient popups, HUDs. Just don't set a transition:
-
-```java
-public HUDOverlay() {
-    // no setTransition call
-}
-```
-
-Or set a no-op:
-
-```java
-setTransition(new Transition());  // no in/out → instant
-```
-
-## Best practices
-
-- **Keep durations short.** 200-400ms feels snappy; anything over 600ms feels laggy.
-- **Match in/out easings.** `CUBIC_OUT` on entry pairs with `CUBIC_IN` on exit.
-- **Don't mutate the tree during a transition.** Build your nodes in `init()`, let the transition handle the visual progress.
+Don't call `setTransition(...)` at all — the UI enters and exits instantly. There is no "no-op" `Transition` constructor since the class is abstract.
 
 ## See also
 
-- [TweenAnimator](../animations/tween-animator.md) — full animation system.
-- [Easing](../animations/easing.md) — catalog of easing equations.
-- [Bridge](bridge.md) — how `open`/`close` trigger transitions.
+- [TweenAnimator](../animations/tween-animator.md) — the animator driving each state.
+- [Easing](../animations/easing.md) — easing equations.
+- [Bridge](bridge.md) — how `open` / `close` drive transitions.

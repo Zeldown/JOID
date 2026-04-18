@@ -1,46 +1,82 @@
 # Custom Fonts
 
-JOID renders text via MSDF (Multi-channel Signed Distance Field) atlases — crisp at any scale. Use your own fonts by generating an atlas and loading it at startup.
+JOID renders text through MSDF (Multi-channel Signed Distance Field) atlases — crisp at any scale. Load your own fonts with `FontLoader`, build a `TextInfo`, and feed it into a `Text` / `TextNode`.
 
-## Load a font
+## `FontLoader.load`
+
+`FontLoader` is asynchronous — it off-loads JSON parsing and texture upload to an executor pool and hands the finished `CustomFont` to a callback.
 
 ```java
-final Font myFont = FontLoader.load(getClass().getResourceAsStream("/fonts/Inter-Regular/font.png"),
-                                     getClass().getResourceAsStream("/fonts/Inter-Regular/font.json"));
+static void load(FontInputStream regular, Consumer<CustomFont> callback)
+static void load(FontInputStream regular, FontInputStream bold, Consumer<CustomFont> callback)
 ```
 
-Each font needs two files:
-
-- **`font.png`** — the MSDF atlas (2048×2048 typical).
-- **`font.json`** — glyph metadata (metrics, atlas coords).
-
-Both are produced by `msdf-atlas-gen` (see [MSDF Atlas](msdf-atlas.md)).
-
-## Bundled fonts
-
-JOID ships with Montserrat for dev use:
+A `FontInputStream` pairs the JSON metadata with the PNG atlas:
 
 ```java
-DemoFont.MONTSERRAT          // regular weight only, pre-loaded
+public FontInputStream(InputStream data, InputStream texture)            // data = .json, texture = .png
 ```
 
-Use it during development, then swap for your own fonts in production. `DemoFont` is only available when JOID loaded with `setDemoMode(true)`.
-
-## Create a `TextInfo`
+Minimal load:
 
 ```java
-TextInfo info = TextInfo.create(myFont, 24, Color.WHITE);
+FontLoader.load(
+    new FontInputStream(
+        getClass().getResourceAsStream("/fonts/Inter/font.json"),
+        getClass().getResourceAsStream("/fonts/Inter/font.png")
+    ),
+    customFont -> this.interFont = customFont
+);
 ```
 
-`TextInfo` combines font, size, color, and optional flags:
+Both regular and bold atlases:
 
 ```java
-TextInfo.create(myFont, 24, Color.WHITE)
-    .bold(true)
+FontLoader.load(
+    new FontInputStream(regularJson, regularPng),
+    new FontInputStream(boldJson, boldPng),
+    customFont -> {
+        // customFont.getRegular() and customFont.getBold() are Font instances
+    }
+);
+```
+
+If the single-argument overload is used, the same font is stored as both regular and bold on the `CustomFont` wrapper.
+
+## Bundled `DemoFont.MONTSERRAT`
+
+`DemoFont.MONTSERRAT` is loaded automatically when JOID is started with `setDemoMode(true)`. Great for bootstrapping the quick-start and demo UIs — ship your own atlas for production.
+
+## Build a `TextInfo`
+
+```java
+TextInfo.create(IFont font, float fontSize)
+TextInfo.create(IFont font, float fontSize, Color color)
+```
+
+Setters (all chainable, return the same `TextInfo` instance):
+
+```java
+T font(IFont font)
+T fontSize(float fontSize)
+T letterSpacing(float letterSpacing)
+T lineHeight(float lineHeight)
+T color(Color color)
+T colored(boolean colored)
+T italic(boolean italic)
+T shadow()                          // shadowColor = this.color.darker(0.3F)
+T shadow(Color color)               // explicit shadow color
+T shadow(float x, float y)          // shadow offset in logical units
+T copy()
+```
+
+There is **no** `bold(boolean)` setter, `shadowColor(Color)`, or `shadowOffset(double, double)` — bold is achieved by swapping the `IFont` (load a bold atlas and use `customFont.getBold()`); shadow is configured through `shadow(...)` overloads.
+
+```java
+final TextInfo info = TextInfo.create(customFont.getRegular(), 24, Color.WHITE)
     .italic(true)
-    .shadow(true)
-    .shadowColor(Color.BLACK)
-    .shadowOffset(1D, 1D);
+    .shadow(Color.BLACK)
+    .shadow(1F, 1F);
 ```
 
 ## Use in nodes
@@ -54,38 +90,39 @@ TextNode.create(0, 0)
 Or via `DrawUtils.TEXT` for ad-hoc drawing:
 
 ```java
-DrawUtils.TEXT.drawText(x, y, Text.create("Hello", info));
+DrawUtils.TEXT.drawText(x, y, "Hello", info, Align.START, Align.START);
 ```
 
-## Font weights and styles
+## Bold variants
 
-Load each variant separately — Inter-Bold.png, Inter-Italic.png, Inter-BoldItalic.png — and swap `TextInfo` per style:
+`CustomFont` owns two `Font` instances — `regular` and `bold`. Create two `TextInfo` objects, one per weight:
 
 ```java
-Font regular = FontLoader.load(...);
-Font bold = FontLoader.load(...);
+final TextInfo regularInfo = TextInfo.create(customFont.getRegular(), 16, Color.WHITE);
+final TextInfo boldInfo    = TextInfo.create(customFont.getBold(),    16, Color.WHITE);
 
-TextInfo regularInfo = TextInfo.create(regular, 16, Color.WHITE);
-TextInfo boldInfo = TextInfo.create(bold, 16, Color.WHITE);
-
-Text.create("Normal ", regularInfo).append("Bold", boldInfo);
+Text.create()
+    .add(TextElement.create("Normal ", regularInfo))
+    .add(TextElement.create("Bold",    boldInfo));
 ```
 
-## Async loading
+If you only have a single atlas, `CustomFont` falls back to the regular font for both.
 
-`FontLoader` reads synchronously. Load fonts once at application startup, before opening any UI that uses them.
+## Asynchronous loading
+
+`FontLoader.load(...)` returns immediately; the callback fires on the fixed-size executor pool once parsing and upload finish. Kick the load off at application start so the font is ready before the UI that uses it opens.
 
 ## Character set
 
-An MSDF atlas only contains the characters you generated for. Missing glyphs render as a placeholder box. Generate atlases with full Latin + symbols for general-purpose fonts.
+An MSDF atlas only contains the characters declared in the `charset.txt` at generation time. Missing glyphs render as a placeholder. Generate atlases with the full Latin range + symbols for general-purpose fonts — see [MSDF Atlas](msdf-atlas.md).
 
 ## Best practices
 
-- **Load once, at startup.** Fonts are reused across UIs.
-- **Cache `TextInfo`.** Reused per-node.
-- **Pre-size your atlas.** 2048×2048 fits ~500 glyphs at 48px — plenty for most alphabets. For CJK, use 4096×4096 or multiple atlases.
+- **Load fonts once, at startup.** They're reused across every UI.
+- **Cache `TextInfo`.** One per logical style (heading, body, code) — reuse per node.
+- **Pre-size your atlas.** 2048×2048 fits ~500 glyphs at 48px. For CJK, use 4096×4096 or split by script.
 
 ## See also
 
-- [MSDF Atlas](msdf-atlas.md) — generating your atlas.
+- [MSDF Atlas](msdf-atlas.md) — generating the atlas files.
 - [TextNode](../nodes/design/text.md) — rendering text.

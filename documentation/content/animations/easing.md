@@ -36,20 +36,22 @@ The catalog of easing equations available through `TweenEquations`. Each equatio
 
 ```java
 // Opening a menu — fast into view, smooth settle
-animator.sequence(300L, 1F, TweenEquations.CUBIC_OUT).start();
+animator.sequence(300F, 1F, TweenEquations.CUBIC_OUT).start();
 
 // Popup appearing — slight overshoot for polish
-animator.sequence(400L, 1F, TweenEquations.BACK_OUT).start();
+animator.sequence(400F, 1F, TweenEquations.BACK_OUT).start();
 
 // Closing — accelerate away
-animator.sequence(250L, 0F, TweenEquations.CUBIC_IN).start();
+animator.sequence(250F, 0F, TweenEquations.CUBIC_IN).start();
 
 // Interactive feedback (button press) — sharp in, relax out
 animator
-    .sequence(80L, 0.95F, TweenEquations.QUAD_IN)
-    .sequence(200L, 1F, TweenEquations.ELASTIC_OUT)
+    .sequence(80F, 0.95F, TweenEquations.QUAD_IN)
+    .push(200F, 1F, TweenEquations.ELASTIC_OUT)
     .start();
 ```
+
+`sequence(...)` and `parallel(...)` each create a fresh timeline — use `push(...)` to add a tween to the timeline that was just built (see [TweenAnimator](tween-animator.md)). Durations are `float` milliseconds.
 
 ## Using on Node hover
 
@@ -58,11 +60,11 @@ node.hoverEquation(TweenEquations.CUBIC_OUT);
 node.hoverDuration(250L);
 ```
 
-Default is `LINEAR` — override for most nodes.
+Default is `LINEAR` — override for most nodes. `hoverDuration` takes a `long` (milliseconds).
 
 ## Custom easing
 
-Implement `TweenEquation`:
+Extend `TweenEquation`:
 
 ```java
 public class SquareEasing extends TweenEquation {
@@ -77,7 +79,7 @@ public class SquareEasing extends TweenEquation {
     }
 }
 
-animator.sequence(400L, 100F, new SquareEasing()).start();
+animator.sequence(400F, 100F, new SquareEasing()).start();
 ```
 
 ## See also

@@ -1,31 +1,51 @@
 # CheckboxNode
 
-Two-state checkbox (checked / unchecked) with optional indeterminate state support.
+Two-state checkbox (checked / unchecked). `CheckboxNode` is **abstract** — you subclass it to provide the rendering, while the base class handles the click-to-toggle logic and the change callback.
 
-## Create
+## Usage
 
 ```java
-CheckboxNode.create(x, y, size)
-    .value(false)
+public class MyCheckbox extends CheckboxNode {
+
+    public MyCheckbox(final double x, final double y, final double size) {
+        super(x, y, size, size);
+    }
+
+    @Override
+    public void draw(final double mouseX, final double mouseY) {
+        DrawUtils.SHAPE.drawRoundedRect(getX(), getY(), getWidth(), getHeight(),
+            Color.decode("#1f2937"), 4F);
+        if (isChecked()) {
+            DrawUtils.SHAPE.drawRoundedRect(getX() + 4, getY() + 4,
+                getWidth() - 8, getHeight() - 8, Color.decode("#3b82f6"), 2F);
+        }
+    }
+}
+```
+
+Then use it:
+
+```java
+new MyCheckbox(0, 0, 24)
+    .checked(true)
+    .onChange((cb, next) -> System.out.println("checked: " + next))
     .attach(parent);
 ```
 
 ## API
 
 ```java
-node.value(boolean);
-node.value(Supplier<Boolean>);
-node.color(Color borderColor, Color checkColor);
-node.hoveredColor(Color);
+T checked(boolean value)
+T onChange(NodeCheckboxChangeCallback<T> callback)
+
+boolean isChecked()
 ```
 
-## Callbacks
+The `checked(boolean)` setter and the `onChange` callback are the entire public surface. Everything visual is up to your subclass's `draw()`.
 
-```java
-node.onChange((checkbox, value) -> {
-    System.out.println("Checked: " + value);
-});
-```
+## Behavior
+
+`mousePressed` is overridden on the base class: when the cursor is over the node and the event is not already cancelled, it flips `checked` and fires the change callback with the **new** value.
 
 ## Example — preferences row
 
@@ -33,24 +53,19 @@ node.onChange((checkbox, value) -> {
 final BooleanSignal notifications = new BooleanSignal(true);
 
 FlexNode.horizontal(0, 0, 32).margin(12).body(row -> {
-    CheckboxNode.create(0, 0, 24)
-        .value(notifications.getOrDefault())
+    new MyCheckbox(0, 0, 24)
+        .checked(notifications.getOrDefault())
         .onChange((cb, val) -> notifications.set(val))
         .attach(row);
 
     TextNode.create(0, 0)
         .text(Text.create("Enable notifications", info))
-        .anchor(Align.CENTER_Y)
+        .anchor(Align.START, Align.CENTER)
         .attach(row);
 }).attach(parent);
 ```
 
-## Best practices
-
-- **Pair with a label.** A checkbox alone is ambiguous — always pair with a `TextNode` in a `FlexNode`.
-- **Bind to a `BooleanSignal`** for reactive state.
-
 ## See also
 
-- [ToggleNode](toggle.md) — multi-state toggle.
-- [SwitchNode](switch.md) — switch-style UI for on/off.
+- `ToggleNode` — toggle between two arbitrary values, not booleans.
+- `SwitchNode` — multi-state switch.
