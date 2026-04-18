@@ -3,6 +3,8 @@ package be.zeldown.joid.lib.ui.node.effect.impl;
 import java.util.function.Supplier;
 
 import be.zeldown.joid.lib.shader.impl.RoundedShader;
+import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.effect.NodeEffect;
 import lombok.AccessLevel;
@@ -69,6 +71,16 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 		effect.topSupplier = topSupplier;
 		effect.bottomSupplier = bottomSupplier;
 		return effect;
+	}
+
+	@Override
+	public boolean isShaderEffect() {
+		return true;
+	}
+
+	@Override
+	public ShaderPass toShaderPass(final @NonNull T node) {
+		return new RoundedShaderPass(this, node);
 	}
 
 	/* [ Internal Section ] */
