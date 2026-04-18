@@ -439,6 +439,8 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void properlyClose() {
+		this.nodeList.forEach(Node::onDetach);
+
 		if (this.fileMonitor != null) {
 			new Thread(() -> {
 				try {
