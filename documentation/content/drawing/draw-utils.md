@@ -1,67 +1,33 @@
 # DrawUtils
 
-Static entry points for ad-hoc drawing outside the node tree. Use in `preDraw` / `postDraw`, custom `Node.draw()` overrides, or quick prototypes.
+`DrawUtils` is the entry point for ad-hoc drawing outside the node tree. Use it in `preDraw` / `postDraw`, inside custom `Node.draw()` overrides, or in one-off prototypes. For anything that needs hover, drag, effects, or reactivity, prefer a `Node` instead.
 
 ## The four facades
 
-```java
-DrawUtils.SHAPE      // rectangles, circles, lines, polygons
-DrawUtils.RESOURCE   // images, textures
-DrawUtils.TEXT       // text rendering
-DrawUtils.MODEL      // 3D OBJ models
-```
-
-Each is a pre-constructed instance — no `new DrawShape()` needed.
-
-## `DrawUtils.SHAPE`
+`DrawUtils` is just four `public static final` singletons — no constructor, nothing to instantiate.
 
 ```java
-DrawUtils.SHAPE.drawRect(x, y, width, height, color);
-DrawUtils.SHAPE.drawRoundedRect(x, y, w, h, color, radius);
-DrawUtils.SHAPE.drawRoundedRect(x, y, w, h, color, radius, left, top, right, bottom);
-DrawUtils.SHAPE.drawCircle(centerX, centerY, color, diameter);
-DrawUtils.SHAPE.drawBorder(x1, y1, x2, y2, color, stroke);
-DrawUtils.SHAPE.drawFilledBorder(x1, y1, x2, y2, color, stroke);
-DrawUtils.SHAPE.drawLine(x1, y1, x2, y2, color, stroke);
-DrawUtils.SHAPE.drawPolygon(color, vertices);
-DrawUtils.SHAPE.drawRawRect(x, y, w, h);         // no color — for shader composition
-DrawUtils.SHAPE.bindEmptyTexture();               // bind a 1x1 white texture
+DrawUtils.SHAPE       // DrawShape
+DrawUtils.TEXT        // DrawText
+DrawUtils.RESOURCE    // DrawResource
+DrawUtils.MODEL       // DrawModel
 ```
 
-See [Shapes](shapes.md) for details and use cases.
+Each facade has a dedicated page listing every method:
 
-## `DrawUtils.RESOURCE`
+- `Shapes` — rectangles, rounded rects, circles, borders, lines, curves, polygons.
+- `Text` — strings and rich `Text` builders with alignment and overflow.
+- `Resources` — images and videos from a `Resource`.
+- `Models` — 3D `IDrawableModel` instances.
 
-```java
-DrawUtils.RESOURCE.drawResource(x, y, resource);                      // at natural size
-DrawUtils.RESOURCE.drawResource(x, y, width, height, resource);       // stretched
-DrawUtils.RESOURCE.drawScaledResourceWidth(x, y, width, resource);    // height auto
-DrawUtils.RESOURCE.drawScaledResourceHeight(x, y, height, resource);  // width auto
-DrawUtils.RESOURCE.drawCenteredResource(x, y, w, h, resource);        // CONTAIN fit
-```
-
-## `DrawUtils.TEXT`
-
-```java
-DrawUtils.TEXT.drawText(x, y, Text.create("Hello", info));
-DrawUtils.TEXT.drawText(x, y, text, maxWidth, TextOverflow.ELLIPSIS);
-```
-
-## `DrawUtils.MODEL`
-
-```java
-DrawUtils.MODEL.drawModel(x, y, z, scale, model);
-DrawUtils.MODEL.drawModel(x, y, z, scaleX, scaleY, scaleZ, rotX, rotY, rotZ, model);
-```
-
-## Use cases
+## When to use it
 
 ### Overlay in `postDraw`
 
 ```java
 @Override
 public void postDraw(final double mouseX, final double mouseY) {
-    DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.WHITE, 8);
+    DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.WHITE, 4D);
 }
 ```
 
@@ -70,7 +36,7 @@ public void postDraw(final double mouseX, final double mouseY) {
 ```java
 @Override
 public void preDraw(final double mouseX, final double mouseY) {
-    DrawUtils.SHAPE.drawRect(0, 0, 1920, 1080, Color.decode("#111827"));
+    DrawUtils.SHAPE.drawRect(0, 0, getWidth(), getHeight(), Color.decode("#111827"));
 }
 ```
 
@@ -80,17 +46,34 @@ public void preDraw(final double mouseX, final double mouseY) {
 @Override
 public void draw(final double mouseX, final double mouseY) {
     DrawUtils.SHAPE.drawRect(getX(), getY(), getWidth(), getHeight(), Color.RED);
-    DrawUtils.TEXT.drawText(getX() + 8, getY() + 8, text);
+    DrawUtils.TEXT.drawText(getX() + 8, getY() + 8, "Custom node", info,
+        Align.START, Align.START);
 }
 ```
 
-## Best practices
+## When not to use it
 
-- **Prefer nodes over DrawUtils.** Nodes integrate with hover, drag, effects, and the tree — `DrawUtils` is raw GL with no interactivity.
-- **Use `DrawUtils` for overlays only.** FPS counters, cursors, debug outlines.
-- **Don't fight the effect system.** If you're reaching for `DrawUtils.SHAPE.drawRoundedRect` to hand-draw a rounded card, just use a `RectNode` + `RoundedNodeEffect`.
+- **Don't rebuild a `RectNode` by hand.** `RectNode` + `RoundedNodeEffect` is less code and integrates with hover/drag/effects.
+- **Don't layout with `DrawUtils`.** Reach for `FlexNode`, `GridNode`, or `ContainerNode`.
+- **Don't react to state through `DrawUtils`.** The drawing is immediate — use `Signal` + `Node.watch` to drive content.
+
+## Accessing singletons directly
+
+Each facade exposes its instance if you prefer bypassing `DrawUtils`:
+
+```java
+DrawShape.getInstance().drawRect(...);
+DrawText.getInstance().drawText(...);
+DrawResource.getInstance().drawResource(...);
+DrawModel.getInstance().drawModel(...);
+```
+
+Practically identical to the `DrawUtils.XXX` shortcut — pick whichever reads better in context.
 
 ## See also
 
-- [Shapes](shapes.md) — shape drawing details.
-- [Color](color.md) — color system.
+- `Shapes` — every shape primitive.
+- `Text` — raw strings, `Text` builders, modifiers.
+- `Resources` — image / video drawing.
+- `Models` — 3D model drawing.
+- `Color` — color construction and binding.

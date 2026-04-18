@@ -1,75 +1,109 @@
-# ChartNode & RadarChartNode
+# ChartNode
 
-Data visualization nodes for line/area charts and radar charts.
+Base class for chart-style data visualisation. `ChartNode` is **abstract** — subclass it to draw your chart (line, bar, pie, radar, whatever shape you need). The base class owns the X/Y axes and a map of named `ChartData` series; it offers no renderer of its own.
 
-## ChartNode — line / area
+## Subclass skeleton
 
 ```java
-ChartNode.create(x, y, width, height)
-    .series("fps", Color.decode("#3b82f6"))
-    .addPoint("fps", 60)
-    .addPoint("fps", 62)
-    .addPoint("fps", 58)
+public class LineChart extends ChartNode {
+
+    public LineChart(double x, double y, double w, double h) { super(x, y, w, h); }
+
+    @Override
+    public void draw(double mouseX, double mouseY) {
+        if (!isLoaded()) return;
+        // Iterate getLabels() + getDataMap() to render your lines.
+    }
+}
+```
+
+Then wire it up:
+
+```java
+new LineChart(40, 40, 400, 160)
+    .axis(ChartAxis.x("weekday", "Mon", "Tue", "Wed", "Thu", "Fri"))
+    .axis(ChartAxis.y("requests").suffix(" req"))
+    .data("api", ChartData.create()
+        .add("Mon", 120).add("Tue", 180).add("Wed", 160)
+        .add("Thu", 210).add("Fri", 240))
     .attach(parent);
 ```
 
-### API
+## API — `ChartNode`
 
 ```java
-chart.series(String id, Color color);      // register a series
-chart.addPoint(String id, double value);    // append a data point
-chart.clearSeries(String id);
-chart.yMin(double);                         // fixed Y range (otherwise auto)
-chart.yMax(double);
-chart.maxPoints(int);                       // oldest points discarded beyond this
-chart.gridColor(Color);
-chart.labelInfo(TextInfo);
-chart.filled(boolean);                      // area fill under the line
+T axis(XChartAxis x, YChartAxis y)
+T axis(XChartAxis x)
+T axis(YChartAxis y)
+
+T data(String dataName, ChartData data)
+T remove(String dataName)
+
+boolean isLoaded()                          // axes set + at least one non-empty series
+Set<String> getLabels()                      // X axis label set
+Map<String, ChartData> getDataMap()
+ChartData getData(String name)
+
+Number getAverage()
+Number getAverage(String dataName)
+Number getMin()
+Number getMin(String dataName)
+Number getMax()
+Number getMax(String dataName)
+
+XChartAxis getXAxis()
+YChartAxis getYAxis()
 ```
 
-### Example — live FPS graph
+No `series(...)`, no `addPoint(...)`, no `yMin/yMax`, no `maxPoints`, no `gridColor`, no `labelInfo`, no `filled` setter — those features do not exist on this class. Styling and scale are the subclass's responsibility.
+
+## Axes
+
+Static factories on `ChartAxis`:
 
 ```java
-final ChartNode chart = ChartNode.create(40, 40, 400, 120)
-    .series("fps", Color.decode("#3b82f6"))
-    .yMin(0D).yMax(120D)
-    .maxPoints(200)
-    .filled(true)
-    .effect(RoundedNodeEffect.create(8F))
-    .attach(this);
-
-this.schedule(() -> chart.addPoint("fps", getFps()), 0L, 100L);
+XChartAxis ChartAxis.x(String name, String... labels)
+YChartAxis ChartAxis.y(String name)
 ```
 
-## RadarChartNode — radar / spider chart
+`XChartAxis` holds the ordered label set and the per-series `ChartData`:
 
 ```java
-RadarChartNode.create(x, y, size)
-    .axis("STR").axis("DEX").axis("INT").axis("CHA").axis("WIS").axis("CON")
-    .series("player", Color.decode("#3b82f6"))
-    .setValue("player", "STR", 0.7D)
-    .setValue("player", "DEX", 0.5D)
-    .setValue("player", "INT", 0.9D)
-    .attach(parent);
+XChartAxis labelSet(String... labels)
+XChartAxis labelSet(Set<String> labelSet)   // LinkedHashSet only
+XChartAxis data(String dataName, ChartData data)
+XChartAxis remove(String dataName)
+ChartData get(String dataName)
 ```
 
-### API
+`YChartAxis` holds optional prefix / suffix strings for value formatting:
 
 ```java
-radar.axis(String label);
-radar.series(String id, Color color);
-radar.setValue(String seriesId, String axisLabel, double value);    // 0.0 → 1.0
-radar.gridColor(Color);
-radar.labelInfo(TextInfo);
-radar.filled(boolean);
+YChartAxis prefix(String prefix)
+YChartAxis suffix(String suffix)
 ```
 
-## Best practices
+## `ChartData`
 
-- **Limit series count** to 3–4 per chart. Beyond that, viewers can't distinguish lines.
-- **Pre-normalize radar values** to `0.0 → 1.0` for consistent visualization.
-- **Use `filled(true)` for single-series area charts**, `false` for multi-series comparison.
+```java
+ChartData ChartData.create()
+ChartData ChartData.create(Map<String, Number> dataMap)
+
+T add(String label, Number value)
+T remove(String label)
+T dataMap(Map<String, Number> dataMap)
+
+Number get(String label)
+boolean has(String label)
+boolean isEmpty()
+
+Number getAverage()
+Number getMin()
+Number getMax()
+```
+
+A `ChartData` holds a label-to-number mapping. Labels should match those declared on the X axis; missing keys are treated as "no value" by your renderer.
 
 ## See also
 
-- [Color](../../drawing/color.md) — picking series colors.
+- `Color` — picking series colours in your subclass.

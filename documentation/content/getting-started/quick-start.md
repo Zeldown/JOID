@@ -19,6 +19,8 @@ public static void main(final String[] args) {
 }
 ```
 
+The two flags on `JOID.inst()` turn on the debug gestures (`setDevMode`) and load the bundled `DemoFont` (`setDemoMode`) so you have a usable font without shipping your own atlas. Both default to `false` — see [Bootstrap](core-concepts.md#bootstrap) for the full list of flags and what each one enables.
+
 Running this opens a 1920×1080 black window. Press ESC to close.
 
 ## Your first UI

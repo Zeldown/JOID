@@ -1,76 +1,117 @@
 # SliderNode
 
-Draggable value slider. Three variants exist for common types: `DoubleSliderNode`, `IntegerSliderNode`, `StringSliderNode`.
+Draggable value slider. `SliderNode<O>` is **abstract** and generic — the type parameter `O` is the value type. Three abstract subclasses cover the common cases:
 
-## Create
+- `DoubleSliderNode extends SliderNode<Double>`
+- `IntegerSliderNode extends SliderNode<Integer>`
+- `StringSliderNode extends SliderNode<String>`
+
+You subclass one of them to provide `drawSlider(...)`, and pair it with an abstract `SliderCursorNode` subclass for the thumb.
+
+## Minimal setup
 
 ```java
-DoubleSliderNode.create(x, y, width, height)
-    .min(0D).max(100D)
-    .value(50D)
-    .attach(parent);
+public class MySlider extends IntegerSliderNode {
+    public MySlider(double x, double y, double w, double h) { super(x, y, w, h); }
 
-IntegerSliderNode.create(x, y, width, height)
-    .min(0).max(10).step(1)
-    .value(5)
-    .attach(parent);
+    @Override
+    public void drawSlider(final double mouseX, final double mouseY) {
+        DrawUtils.SHAPE.drawRoundedRect(getX(), getY() + getHeight() / 2 - 2,
+            getWidth(), 4, Color.decode("#374151"), 2F);
+    }
+}
 
-StringSliderNode.create(x, y, width, height)
-    .values("Easy", "Normal", "Hard", "Insane")
-    .value("Normal")
-    .attach(parent);
+public class MyCursor extends SliderCursorNode {
+    public MyCursor(double w, double h) { super(w, h); }
+
+    @Override
+    public void drawCursor(final double mouseX, final double mouseY) {
+        DrawUtils.SHAPE.drawCircle(getX() + getWidth() / 2,
+            getY() + getHeight() / 2, Color.WHITE, getWidth() / 2);
+    }
+}
 ```
 
-## API (shared)
+Wire them up:
 
 ```java
-slider.min(T);
-slider.max(T);
-slider.value(T);
-slider.value(Supplier<T>);
-slider.step(T);                       // snap increments (int/double)
-slider.trackColor(Color);
-slider.trackActiveColor(Color);       // from min to current value
-slider.cursorColor(Color);
-```
-
-## Callbacks
-
-```java
-slider.onChange((node, value) -> { /* final value committed */ });
-```
-
-## Example — volume slider
-
-```java
-final FloatSignal volume = new FloatSignal(0.75F);
-
-DoubleSliderNode.create(40, 40, 300, 24)
-    .min(0D).max(1D)
-    .value(volume.getOrDefault().doubleValue())
-    .trackColor(Color.decode("#374151"))
-    .trackActiveColor(Color.decode("#3b82f6"))
-    .effect(RoundedNodeEffect.create(12F))
-    .onChange((node, value) -> volume.set(value.floatValue()))
+new MySlider(40, 40, 300, 24)
+    .values(0, 100, 50)           // min, max, initial
+    .cursor(new MyCursor(16, 16))
+    .onChange((node, value) -> System.out.println("value = " + value))
     .attach(parent);
 ```
 
-## Custom cursor
-
-Style the cursor via `SliderCursorNode`:
+## Base API — `SliderNode<O>`
 
 ```java
-slider.cursor(SliderCursorNode.create(0, 0, 16, 16)
-    .color(Color.WHITE)
-    .effect(CircleNodeEffect.create()));
+T valueSet(Set<O> values, O initial)   // set the full value set
+T value(O value)                        // change current value (must be in set)
+T signal(Signal<O> signal)              // bind an external signal, updated on change
+T cursor(SliderCursorNode cursor)       // attach the cursor subclass
+
+T onChange(NodeSliderChangeCallback<T, O> callback)
+
+O getValue()
+Set<O> getValueSet()
+SliderCursorNode getCursor()
+Signal<O> getSignal()
 ```
 
-## Best practices
+`valueSet` is the canonical set of discrete positions. The slider snaps to the nearest entry as the cursor moves. Calling `value(...)` with a value outside the set throws `IllegalArgumentException`.
 
-- **Reactive bindings via `.value(Supplier)`** keep the slider in sync with external state.
-- **Use `IntegerSliderNode` with step** for discrete values — prevents float precision weirdness.
-- **Round the track** for a modern look.
+### `DoubleSliderNode`
+
+```java
+T values(double min, double max, double step, double value)
+T values(double value, Double... values)
+```
+
+The first overload builds a stepped range (`min`, `min+step`, …, `max`). The second accepts explicit values.
+
+### `IntegerSliderNode`
+
+```java
+T values(int min, int max, int value)
+T values(int value, Integer... values)
+```
+
+The first overload builds the inclusive integer range `[min, max]`.
+
+### `StringSliderNode`
+
+```java
+T values(String value, String... values)
+T values(Enum<?> value, Enum<?>... values)   // maps enum.name() into the set
+```
+
+## `SliderCursorNode`
+
+```java
+protected SliderCursorNode(double width, double height)
+
+T dragging(boolean value)
+T slider(SliderNode<?> parent)       // set by the slider via cursor(...)
+
+abstract void drawCursor(double mouseX, double mouseY)
+```
+
+The base class handles drag tracking, bounds clamping, and mouse pressed/released — you only render.
+
+## Example — volume slider with signal binding
+
+```java
+final Signal<Double> volume = new Signal<>(0.75D);
+
+new MySlider(40, 40, 300, 24)
+    .valueSet(tenths(0D, 1D), volume.getOrDefault())
+    .signal(volume)
+    .cursor(new MyCursor(16, 16))
+    .attach(parent);
+```
+
+The `.signal(...)` binding updates `volume` automatically on every change.
 
 ## See also
 
-- [Signals](../../state/signals.md) — bind slider value.
+- `Signals` — external state binding.

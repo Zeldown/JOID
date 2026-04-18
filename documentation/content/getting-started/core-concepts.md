@@ -2,18 +2,53 @@
 
 A short mental model for building with JOID. Each concept has a dedicated page — this one is the map.
 
+## Bootstrap
+
+Before opening any UI, initialize the library once with `JOID.inst().load()`. It's a builder — chain the flags you care about and finish with `load()`:
+
+```java
+JOID.inst()
+    .setConfigDir(new File("config"))
+    .setDevMode(false)
+    .setDemoMode(false)
+    .load();
+```
+
+### `setConfigDir(File)`
+
+Root folder for persistent state. `UIStore` JSON files (`@UIStoreData`) and any internal persistence land under this directory. If it doesn't exist, JOID creates it on `load()`. Defaults to `./config`.
+
+### `setDevMode(boolean)`
+
+Enables development-only behavior. When `true`:
+
+- **Alt-drag** on a node prints its coordinates and lets you move it live — useful while laying out by eye.
+- **Alt+arrow keys** nudge the hovered node by one pixel.
+- **Profiler overlay** is available when the UI declares `@UIData(debug = @Debug(profiler = true))`.
+- **Hot-reload** watches source files and re-runs `init()` when they change (same `@Debug` flag).
+- **Layout introspection** logs are emitted for structural issues.
+
+Leave it `false` in production — the debug gestures and file-watcher are unnecessary overhead, and the Alt-key bindings may collide with your own shortcuts.
+
+### `setDemoMode(boolean)`
+
+Loads the bundled `DemoFont` (shipped with the `-dev` artifact) so the quick-start snippets, demo UIs, and documentation examples have a usable font without you providing your own MSDF atlas. Once you ship your own fonts via a `CustomFontProvider`, turn it off.
+
+`load()` must be called **exactly once**, before registering bridges or opening UIs.
+
 ## The UI root
 
-Every screen is a class extending `UI`. The lifecycle is:
+Every screen is a class extending `UI` (which implements `IUI`). The hooks you override are defined on `IUI` and have sensible defaults — implement only what you need:
 
 1. `new YourUI()` — constructor.
-2. `JOID.open(ui)` — queued.
+2. `JOID.open(ui)` — hands the UI to its bridge.
 3. `init()` — you attach nodes here, once.
-4. `update()` / `draw()` — called every frame while open.
-5. `onClose()` — returns `true` if the UI can close.
-6. `properlyClose()` — cleanup, stores saved, nodes detached.
+4. Each frame: `preDraw(mouseX, mouseY)` → internal node rendering → `postDraw(mouseX, mouseY)`, plus `update()` for per-frame logic.
+5. `close()` — return `true` if the UI can close (the default is `true`).
 
-UIs are configured via the `@UIData` annotation (zoomable, pausable, backgroundColor, closeable…). See [UI Class](../ui/ui-class.md).
+When the UI is granted closure, JOID calls the internal `properlyClose()`: stores are saved, nodes are detached, and the bridge removes the UI. Rendering into the overall draw loop goes through `UI.draw(mouseX, mouseY)`, which is `final` — use `drawBackground`, `preDraw`, and `postDraw` for your own drawing.
+
+UIs are configured via the `@UIData` annotation (zoomable, pausable, backgroundColor, closeable…). See `UI Class`.
 
 ## The node tree
 
@@ -113,7 +148,7 @@ Put them into `ResourceNode`, `VideoPlayerNode`, or draw directly via `DrawUtils
 
 ## Rendering model
 
-At 60 FPS, each frame:
+Each frame:
 
 1. `UI.onUpdate()` — recursive `update()` on every node, tween advance.
 2. `UI.draw()` — projection setup, then recursive `Node.render()` starting from the root.

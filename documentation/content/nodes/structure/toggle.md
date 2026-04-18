@@ -1,63 +1,71 @@
 # ToggleNode
 
-Multi-state toggle. Cycles through N states on click. Use `ToggleState` for each option.
+A two-value toggle backed by a `ToggleState<F, S>` pair. `ToggleNode` is **abstract** — you subclass it to draw the two visual states, while the base class handles click-to-flip and exposes the currently selected value.
 
-## Create
+Unlike `CheckboxNode` (boolean only), `ToggleNode` lets the two sides carry arbitrary values. Typical use: `ToggleState<String, String>` for a text pair, `ToggleState<Enum, Enum>` for two modes.
+
+## Usage
 
 ```java
-ToggleNode.create(x, y, width, height)
-    .states(
-        ToggleState.of("low"),
-        ToggleState.of("medium"),
-        ToggleState.of("high")
-    )
-    .value("medium")
+public class MyToggle extends ToggleNode<String, String> {
+
+    public MyToggle(final double x, final double y, final double w, final double h) {
+        super(x, y, w, h);
+    }
+
+    @Override
+    public void draw(final double mouseX, final double mouseY) {
+        DrawUtils.SHAPE.drawRoundedRect(getX(), getY(), getWidth(), getHeight(),
+            isToggle() ? Color.decode("#3b82f6") : Color.decode("#374151"), 6F);
+    }
+}
+```
+
+Then use it:
+
+```java
+new MyToggle(0, 0, 80, 32)
+    .state("ON", "OFF")
+    .toggle(false)
+    .onChange((node, next) -> System.out.println("flipped, now toggle=" + next))
     .attach(parent);
 ```
 
 ## API
 
 ```java
-node.states(ToggleState... states);
-node.value(String);              // current state id
-node.value(Supplier<String>);
-node.backgroundColor(Color);
-node.activeColor(Color);
+T state(F toggle, S back)          // the two values the toggle carries
+T toggle(boolean value)             // true → value is the "toggle" (F) side
+
+<V> V getValue()                   // returns F if toggle, otherwise S
+boolean isToggle()
+ToggleState<F, S> getState()
+
+T onChange(NodeToggleChangeCallback<T, F, S> callback)
 ```
 
-## Callbacks
+The generic parameters `F` and `S` are the types of the two sides. The change callback receives the node and the **new** boolean toggle state.
+
+## Behavior
+
+`mousePressed` is overridden: when the cursor is over the node, the toggle flips and the callback fires with the new boolean. The associated value can be read with `getValue()` inside the callback.
+
+## Example — draft / preview
 
 ```java
-node.onChange((toggle, state) -> {
-    System.out.println("Active: " + state.id());
-});
-```
+public class DraftPreviewToggle extends ToggleNode<String, String> { ... }
 
-## Example — graphics quality
-
-```java
-final StringSignal quality = new StringSignal("high");
-
-ToggleNode.create(0, 0, 300, 40)
-    .states(
-        ToggleState.of("low").label("Low"),
-        ToggleState.of("medium").label("Medium"),
-        ToggleState.of("high").label("High"),
-        ToggleState.of("ultra").label("Ultra")
-    )
-    .value(quality.getOrDefault())
-    .onChange((t, s) -> quality.set(s.id()))
-    .effect(RoundedNodeEffect.create(20F))
+new DraftPreviewToggle(0, 0, 160, 36)
+    .state("Draft", "Preview")
+    .toggle(true)
+    .onChange((node, next) -> {
+        String current = node.getValue();
+        System.out.println("switched to " + current);
+    })
     .attach(parent);
 ```
 
-## Best practices
-
-- **Use stable ids.** `ToggleState.of("low")` — not `of("Low")` — so the id is independent of user-facing label.
-- **Limit to 3–5 states.** More than that, use a `SelectorNode` dropdown.
-
 ## See also
 
-- [CheckboxNode](checkbox.md) — binary toggle.
-- [SwitchNode](switch.md) — switch-style UI.
-- [SelectorNode](selector.md) — dropdown for many options.
+- `CheckboxNode` — boolean only.
+- `SwitchNode` — cycle through N string states.

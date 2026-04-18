@@ -8,17 +8,13 @@ Download from [github.com/Chlumsky/msdf-atlas-gen](https://github.com/Chlumsky/m
 
 ## Generate a font
 
+The exact command used to produce the fonts JOID ships with:
+
 ```bash
-msdf-atlas-gen.exe \
-    -font Inter-Regular.ttf \
-    -charset charset.txt \
-    -dimensions 2048 2048 \
-    -imageout font.png \
-    -json font.json \
-    -type msdf \
-    -pxrange 24 \
-    -coloringstrategy distance
+msdf-atlas-gen.exe -font font.ttf -charset charset.txt -dimensions 2048 2048 -imageout font.png -json font.json -type msdf -pxrange 24 -coloringstrategy distance
 ```
+
+Point `-font` at your TTF/OTF source, drop the characters you want in `charset.txt`, and you're done. The other flags are JOID's proven defaults.
 
 ### Parameters
 

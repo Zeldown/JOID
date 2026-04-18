@@ -1,64 +1,64 @@
 # ScrollbarNode
 
-Visual scrollbar for a parent with `overflow(OverflowProperty.SCROLL)`. Auto-tracks scroll position and supports click-to-drag.
+Visual scrollbar that follows a target node's scroll position. `ScrollbarNode` is **abstract** — you subclass it to draw the track and thumb, while the base class handles drag tracking and percentage-to-pixel mapping.
 
-## Create
+## Construction
+
+The constructor is protected and takes the usual bounds plus a `BoundingBox` describing the scrollable content:
 
 ```java
-RectNode.create(0, 0, 400, 300)
-    .overflow(OverflowProperty.SCROLL)
-    .body(wrapper -> {
-        // your long content here
-        FlexNode.vertical(0, 0, 400).body(list -> { /* ... */ }).attach(wrapper);
-        
-        ScrollbarNode.create(392, 0, 8, 300).attach(wrapper);
-    })
+protected ScrollbarNode(double x, double y, double width, double height, BoundingBox scroll)
+```
+
+## Usage
+
+```java
+public class MyScrollbar extends ScrollbarNode {
+
+    public MyScrollbar(double x, double y, double w, double h, BoundingBox scroll) {
+        super(x, y, w, h, scroll);
+    }
+
+    @Override
+    public void drawScrollbar(final double mouseX, final double mouseY) {
+        DrawUtils.SHAPE.drawRoundedRect(getX(), getY(), getWidth(), getHeight(),
+            Color.decode("#3b82f6"), 3F);
+    }
+}
+```
+
+Then attach it alongside the scrollable content and call `scrollNode(node)` to link the two:
+
+```java
+final Node content = /* your scrollable content */;
+new MyScrollbar(392, 0, 8, 80, content.getBoundingBox())
+    .scrollNode(content)
     .attach(parent);
 ```
 
-## Automatic linking
-
-`ScrollbarNode` finds its parent automatically — no need to pass a reference. It updates `scrollHeight` and cursor position based on the parent's scroll offset and total content height.
-
-## Styling
+## API
 
 ```java
-scrollbar.color(Color trackColor, Color thumbColor);
-scrollbar.effect(RoundedNodeEffect.create(4F));
+T scrollNode(Node node)              // the node being scrolled
+
+double getScrollWidth()               // scroll.width - this.width
+double getScrollHeight()              // scroll.height - this.height
+boolean isDragging()
+BoundingBox getScroll()
+Node getScrollNode()
+
+abstract void drawScrollbar(double mouseX, double mouseY)
 ```
 
-## Scroll behavior
+## Behavior
 
-The parent's `scrollY` is updated on mouse wheel, and the scrollbar cursor follows. Click-and-drag on the thumb also moves the parent's scroll.
+On `mousePressed` over the scrollbar, `dragging` is set to `true`. While dragging:
 
-Control scroll speed on the parent:
+- If the linked `scrollNode` has X overflow, the scrollbar slides horizontally and updates the target's `scrollX` percentage (0..1).
+- Else if the target has Y overflow, the scrollbar slides vertically and updates `scrollY`.
 
-```java
-parent.scrollSpeed(2D);   // pixels per wheel tick multiplier
-```
-
-## Hiding when not needed
-
-The scrollbar hides automatically when the content doesn't overflow. You can force visibility:
-
-```java
-scrollbar.visible(true);  // always shown
-```
-
-## Horizontal scrolling
-
-Scrollbars are vertical by default; for horizontal use a wider-than-tall rect:
-
-```java
-ScrollbarNode.create(0, 292, 400, 8).horizontal(true).attach(wrapper);
-```
-
-## Best practices
-
-- **Place the scrollbar last** among siblings to ensure it draws on top.
-- **Use 6–10px widths.** Wider scrollbars feel heavy; narrower are hard to grab.
-- **Round the track and thumb** for polish — one `RoundedNodeEffect` on the `ScrollbarNode` does both.
+`mouseReleased` clears the dragging flag. Implement `drawScrollbar(mouseX, mouseY)` to render the track/thumb — the bounds and position have already been updated by the base class at that point.
 
 ## See also
 
-- [Node Fundamentals](../node-fundamentals.md) — `overflow` property.
+- `Node Fundamentals` — overflow and scroll properties.

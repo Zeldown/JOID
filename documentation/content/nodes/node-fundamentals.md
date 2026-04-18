@@ -129,46 +129,48 @@ With `SCROLL`, the node's `scrollX` / `scrollY` update based on mouse wheel, and
 
 ## Draggable
 
-Make a node movable with the mouse:
+Make a node movable with the mouse. `DraggableProperty` exposes one factory per area type:
 
 ```java
-node.draggable(DraggableProperty.free());       // anywhere in parent
-node.draggable(DraggableProperty.horizontal()); // X-axis only
-node.draggable(DraggableProperty.vertical());   // Y-axis only
-node.draggable(DraggableProperty.zone(x, y, w, h));  // within a zone
-node.draggable(DraggableProperty.screen());     // anywhere in the UI
+node.draggable(DraggableProperty.free());                    // unrestricted
+node.draggable(DraggableProperty.parent());                  // stay inside parent
+node.draggable(DraggableProperty.node(other));               // stay inside another node
+node.draggable(DraggableProperty.ui());                      // stay inside the 1920×1080 UI
+node.draggable(DraggableProperty.screen());                  // stay inside the viewport
+node.draggable(DraggableProperty.custom(x, y, w, h));        // stay inside a custom box
+node.draggable(DraggableProperty.disabled());                // never draggable
 ```
 
-See [Drag & Drop](../interactions/drag-drop.md) for snapping, drag copies, and callbacks.
+There is no `horizontal()` / `vertical()` / `zone()` factory — restrict an axis by clamping the value yourself in `onDrag`. See [Drag & Drop](../interactions/drag-drop.md) for snapping, drag copies, and callbacks.
 
 ## Callbacks
 
-Attach behavior via the fluent API:
+Attach behaviour via the fluent API. Each setter takes a lambda whose parameters match the callback's `apply(...)` signature:
 
 ```java
-node.onInit(callback);
-node.onRender(callback);
-node.onDraw(callback);
-node.onUpdate(callback);
-node.onReload(callback);
-node.onAppend(callback);
-node.onDetach(callback);          // cleanup — release resources here
-node.onMount(callback);           // first frame rendered
-node.onClick(callback);
-node.onMousePressed(callback);
-node.onMouseReleased(callback);
-node.onMouseDragged(callback);
-node.onMouseScroll(callback);
-node.onKeyPressed(callback);
-node.onScrollUpdate(callback);
-node.onScrollEnd(callback);
-node.onAnimation(callback);
-node.onDrag(callback);
-node.onSnap(callback);
-node.onWatch(callback);           // reactive signals
+node.onInit((n) -> { });
+node.onRender((n, mouseX, mouseY, partialTicks) -> { });
+node.onDraw((n, mouseX, mouseY, partialTicks) -> { });
+node.onUpdate((n) -> { });
+node.onReload((n) -> { });
+node.onAppend((n, child) -> { });
+node.onDetach((n) -> { });                                                       // cleanup — release resources here
+node.onMount((n) -> { });                                                        // first frame rendered
+node.onClick((n, mouseX, mouseY, clickType) -> { });
+node.onMousePressed((n, mouseX, mouseY, clickType) -> { });
+node.onMouseReleased((n, mouseX, mouseY, clickType) -> { });
+node.onMouseDragged((n, mouseX, mouseY, clickType, deltaTime) -> { });
+node.onMouseScroll((n, mouseX, mouseY, value) -> { });
+node.onKeyPressed((n, character, keyCode) -> { });
+node.onScrollUpdate((n, value) -> { });
+node.onScrollEnd((n, scrollX, scrollY) -> { });
+node.onAnimation((n, animator, value) -> { });
+node.onDrag((n) -> { });
+node.onSnap((n, snapTarget) -> { });
+node.onWatch((n, signal, properties) -> { });                                   // reactive signals
 ```
 
-See [Callbacks](../interactions/callbacks.md) for full signatures.
+See [Callbacks](../interactions/callbacks.md) for full details (PRE/POST phases, `InternalContext`).
 
 ## Hover tooltips
 

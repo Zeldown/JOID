@@ -7,12 +7,17 @@
 ```java
 final Signal<String> name = new Signal<>("world");
 
-name.subscribe(v -> System.out.println("Name: " + v));
+name.subscribe(v -> {
+    System.out.println("Name: " + v);
+    return true;        // return false to auto-unsubscribe
+});
 
-name.set("JOID");  // prints: Name: JOID
+name.set("JOID");       // prints: Name: JOID
 ```
 
-## Primitive variants
+`SignalSubscriber<T>` is a `@FunctionalInterface` with a single method `boolean update(T value)`. Returning `false` from the lambda removes the subscriber automatically after the call.
+
+## Primitive and string variants
 
 Specialized signals avoid boxing:
 
@@ -25,49 +30,81 @@ new BooleanSignal(false);
 new StringSignal("");
 ```
 
-Each has an idiomatic `.set(primitive)` / `.getOrDefault()` API.
+They all extend `Signal<T>` with the matching boxed type. No specialised `.set(primitive)` — use `.set(Integer.valueOf(0))` or the `int` auto-boxing overload provided by `Integer`.
 
 ## Iterable signals
 
 ```java
-new ListSignal<Item>();     // List<T> backed
-new MapSignal<K, V>();       // Map backed
-new SetSignal<T>();          // Set backed
+new ListSignal<Item>();                                     // List<T> backed
+new MapSignal<K, V>();                                       // Map<K, V> backed
+new SetSignal<T>();                                          // Set<T> backed
 ```
 
-Iterable signals fire when the collection is modified — not just reassigned:
+Iterable signals wrap the collection and publish on each mutation. `ListSignal`'s surface:
 
 ```java
-final ListSignal<String> items = new ListSignal<>();
-items.add("hello");   // fires subscribers
-items.remove(0);      // fires subscribers
+boolean add(E e)
+boolean remove(E e)
+E remove(int index)
+E get(int index)
+E set(int index, E element)
+int indexOf(E e)
+boolean contains(E e)
+int size()
+boolean isEmpty()
+ListSignal<E> clear()
 ```
+
+Each write calls `publish()` internally.
 
 ## Reading
 
 ```java
-String current = name.getOrDefault();   // null-safe; returns initial value if unset
-String raw = name.get();                 // may be null
+String current = name.getOrDefault();                        // returns value, or the default if null
+boolean hasValue = name.isPresent();                          // value != null
 ```
 
-## Subscribing
+There is no `signal.get()` — read through `getOrDefault()`.
+
+## Subscribing / unsubscribing
 
 ```java
-SignalSubscriber<String> sub = name.subscribe(v -> reactTo(v));
-sub.unsubscribe();  // later
+final SignalSubscriber<String> sub = v -> { react(v); return true; };
+name.subscribe(sub);
+// later
+name.unsubscribe(sub);
 ```
 
-Most of the time you don't manage subscriptions manually — use `node.watch(signal)` instead.
+Keep a reference to the lambda if you want to unsubscribe later. Subscribers that return `false` from `update(...)` are removed automatically.
+
+Most of the time you won't manage subscriptions by hand — use `node.watch(signal)` and let the node clean up on detach.
 
 ## Silent updates
 
-Set without firing subscribers (e.g., to avoid cascading updates):
+Skip the next `publish()` with `silent()`:
 
 ```java
-name.setSilent("loaded from disk");
+name.silent().set("loaded from disk");
 ```
 
-Common in `UIStore.load()` to hydrate state without triggering reloads.
+The flag applies only to the immediately-following `set(...)` — it's not sticky. Used by `UIStore` during JSON hydration so stored signals don't trigger reloads on startup.
+
+## Static factories
+
+```java
+Signal<T> Signal.of(T defaultValue)
+Signal<T> Signal.of(CompletionStage<T> future)
+```
+
+The `CompletionStage` variant subscribes to the future and sets the value when it completes.
+
+## Other operations
+
+```java
+signal.reset();                                              // set(defaultValue), triggers publish if different
+signal.publish();                                            // re-fire subscribers with the current value
+signal.getEventSet();                                         // the internal subscriber set
+```
 
 ## Binding to nodes
 
@@ -75,7 +112,7 @@ Common in `UIStore.load()` to hydrate state without triggering reloads.
 final IntegerSignal count = new IntegerSignal(0);
 
 TextNode.create(0, 0)
-    .text(() -> Text.create("Count: " + count.getOrDefault(), info))
+    .text(Text.create(() -> "Count: " + count.getOrDefault(), info))
     .watch(count)
     .attach(parent);
 ```
@@ -84,35 +121,28 @@ See [Watch](watch.md) for full binding options.
 
 ## Computed signals
 
-Combine signals into derived values:
+Combine signals into derived values by subscribing one to the others:
 
 ```java
 final IntegerSignal a = new IntegerSignal(3);
 final IntegerSignal b = new IntegerSignal(4);
 final IntegerSignal sum = new IntegerSignal(a.getOrDefault() + b.getOrDefault());
 
-a.subscribe(v -> sum.set(v + b.getOrDefault()));
-b.subscribe(v -> sum.set(a.getOrDefault() + v));
+a.subscribe(v -> { sum.set(v + b.getOrDefault()); return true; });
+b.subscribe(v -> { sum.set(a.getOrDefault() + v); return true; });
 ```
 
-There's no built-in `computed(...)` helper — roll your own when you need one.
+There is no built-in `computed(...)` helper — wire one yourself when needed.
 
 ## Thread safety
 
-`Signal<T>` is safe to `set` from any thread. Subscribers fire synchronously on the caller's thread — if you `set` from a worker, handlers run there.
-
-For UI updates from a worker thread, schedule back on the render thread:
-
-```java
-ui.schedule(() -> node.reload(), 0L, 0L);
-```
+`Signal<T>` uses a plain `HashSet` for its subscriber set and is not internally synchronised — if you publish from multiple threads you're responsible for your own locking. Subscribers fire synchronously on the thread calling `set` / `publish`; UI mutations from worker threads should hop back to the render thread via `ui.schedule(...)`.
 
 ## Best practices
 
-- **Use primitive signals.** Fewer allocations than `Signal<Integer>`.
-- **Store signals on the UI or a shared state holder.** Lifecycle matches the owner.
-- **Avoid deep signal graphs.** 2-3 hops is fine; 10 is a redesign signal.
-- **Debounce high-frequency sets.** `onMouseDragged` fires every frame; don't set a signal per frame if the consumer only needs the final value.
+- **Store signals on the UI or a shared state holder** — lifecycle matches the owner.
+- **Avoid deep signal graphs.** 2–3 hops is fine; beyond that, refactor.
+- **Debounce high-frequency sets.** `onMouseDragged` fires every frame; don't `set` a signal per frame if the consumer only needs the final value.
 
 ## See also
 

@@ -7,13 +7,15 @@ The entry point for loading resources (images, videos, GIFs) into JOID. Handles 
 For most cases, use the static `Resource.of(...)` helpers:
 
 ```java
-Resource image = Resource.of(InputStream);     // throws IOException
-Resource image = Resource.of(BufferedImage);
-Resource image = Resource.of(String url);       // downloads async
-Resource image = Resource.of(int textureId);    // wrap an existing GL texture
+Resource image = Resource.of(InputStream stream);                      // throws IOException
+Resource image = Resource.of(BufferedImage image);
+Resource image = Resource.of(String url);                               // downloads async
+Resource image = Resource.of(String url, Consumer<Resource> callback);  // downloads async + notify
 ```
 
-These go through the default `ResourceBuilder` with a global 5-minute cache.
+All four go through a default `ResourceBuilder` (`.async().linear()`) that writes into `ResourceBuilder.DEFAULT_CACHE` — a 5-minute TTL cache shared across every default load.
+
+To wrap an existing GL texture id, use the builder's instance method instead: `ResourceBuilder.create().of(int id)` returns a `Resource` with no decoder attached and the supplied texture id set.
 
 ## Custom builder
 

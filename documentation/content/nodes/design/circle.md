@@ -1,6 +1,6 @@
 # CircleNode
 
-A filled circle. Simpler than using `RectNode + CircleNodeEffect` when you just want a circular shape.
+A filled circle. Simpler than `RectNode + CircleNodeEffect` when you only need a solid circular shape.
 
 ## Create
 
@@ -10,38 +10,38 @@ CircleNode.create(x, y, diameter)
     .attach(parent);
 ```
 
-The `x` / `y` represent the top-left of the bounding square; the circle is inscribed.
+The third parameter is the **diameter** (the bounding square's side). `x / y` point to the top-left of that square; the circle is inscribed. The node's `width` and `height` both equal `diameter`.
 
 ## API
 
 ```java
-node.color(Color color);
-node.color(Color normal, Color hovered);
-node.border(Color color, double stroke);
+T color(Color color)
+T color(Color normal, Color hovered)
+T hoveredColor(Color color)
 ```
 
-Same color/border semantics as [RectNode](rect.md).
+That's the full surface: there is no `border(...)` on `CircleNode`. For an outlined circle, use `RectNode + BorderNodeEffect + CircleNodeEffect`, or draw the outline yourself with `DrawUtils.SHAPE`.
 
-## When to use RectNode + CircleNodeEffect instead
+The hover colour is interpolated via `hoverValue(1F)` on each draw.
 
-If you need:
+## When to use `RectNode + CircleNodeEffect` instead
 
-- Rectangular aspect ratio (ellipse-like effect) → use `RectNode` with `CircleNodeEffect` — the effect uses `min(w, h)` as the diameter.
-- Gradients on the circle → `RectNode.color(gradient).effect(CircleNodeEffect.create())` routes through the shader pipeline and handles it correctly.
+- **Gradients** on the circle — `RectNode.color(gradient).effect(CircleNodeEffect.create())` goes through the shader pipeline and handles gradient shading correctly.
+- **Ellipse-like shapes** — the effect uses `min(width, height)` as the diameter, so a non-square `RectNode` yields an ellipse-shaped mask.
+- **Borders or other effects** — only the `RectNode` pipeline composes effects.
 
-Plain `CircleNode` is DrawUtils-based and doesn't compose shader passes.
+Plain `CircleNode` is `DrawUtils.SHAPE.drawCircle`-based and does not compose shader passes.
 
 ## Example — avatar badge
 
 ```java
 CircleNode.create(0, 0, 48)
     .color(Color.decode("#3b82f6"))
-    .border(Color.WHITE, 2D)
     .hover(() -> "Online")
     .attach(parent);
 ```
 
 ## See also
 
-- [RectNode](rect.md) — when you need gradients or compositing.
-- [Circle Effect](../../effects/circle.md).
+- [RectNode](rect.md) — when you need gradients, borders, or compositing.
+- [Circle Effect](../../effects/circle.md) — circle mask over any node.

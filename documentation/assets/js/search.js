@@ -20,13 +20,21 @@
 
 	async function buildIndex() {
 		await waitForNav();
+		const lang = window.JOID_DOCS.state.lang || 'en';
 		const pages = window.JOID_DOCS.state.flatPages;
 		const rawDocs = [];
 		for (const p of pages) {
 			try {
-				const res = await fetch('content/' + p.path + '.md');
-				if (!res.ok) continue;
-				const text = await res.text();
+				let text = null;
+				if (lang !== 'en') {
+					const resLang = await fetch('content/' + p.path + '.' + lang + '.md');
+					if (resLang.ok) text = await resLang.text();
+				}
+				if (text === null) {
+					const res = await fetch('content/' + p.path + '.md');
+					if (!res.ok) continue;
+					text = await res.text();
+				}
 				const sections = splitIntoSections(text, p);
 				for (const s of sections) rawDocs.push(s);
 			} catch (e) {}
@@ -137,7 +145,8 @@
 		const el = document.getElementById('search-results');
 		const terms = query.trim().split(/\s+/).filter(Boolean);
 		if (!results.length) {
-			el.innerHTML = '<div class="search-result" style="cursor: default;"><div class="search-result-title" style="color: var(--text-3);">No results</div></div>';
+			const label = (window.JOID_DOCS && window.JOID_DOCS.t) ? window.JOID_DOCS.t('searchNoResults') : 'No results';
+			el.innerHTML = '<div class="search-result" style="cursor: default;"><div class="search-result-title" style="color: var(--text-3);">' + label + '</div></div>';
 			return;
 		}
 		el.innerHTML = '';
