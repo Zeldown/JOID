@@ -342,11 +342,15 @@
 
 	function exportCurrentPageAsPdf(article, path) {
 		if (!window.html2pdf) return;
-		const h1 = article.querySelector('h1');
-		const baseName = (h1 ? h1.textContent : (path || 'page'))
+		const slug = (path || 'page')
 			.toLowerCase()
-			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/[^a-z0-9/]+/g, '-')
+			.replace(/\/+/g, '-')
 			.replace(/^-|-$/g, '') || 'page';
+		const version = (state.nav && state.nav.version) ? state.nav.version : '';
+		const versionPart = version ? '-v' + version : '';
+		const langSuffix = state.lang && state.lang !== DEFAULT_LANG ? '.' + state.lang : '';
+		const filename = 'joid-docs-' + slug + versionPart + langSuffix + '.pdf';
 		const clone = article.cloneNode(true);
 		clone.querySelectorAll('.copy-btn, .source-link, .pdf-link, .translation-missing').forEach(el => el.remove());
 		const wrapper = document.createElement('div');
@@ -356,7 +360,7 @@
 			.from(wrapper)
 			.set({
 				margin: [14, 12, 14, 12],
-				filename: baseName + '.pdf',
+				filename: filename,
 				image: { type: 'jpeg', quality: 0.98 },
 				html2canvas: {
 					scale: 2,
