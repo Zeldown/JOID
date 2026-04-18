@@ -79,7 +79,7 @@ public abstract class UIBridge implements IUIBridge {
 				continue;
 			}
 
-			if (keyCode == Keyboard.KEY_ESCAPE && ui.onClose()) {
+			if (keyCode == Keyboard.KEY_ESCAPE && ui.getData().closeable() && ui.onClose()) {
 				this.close(ui);
 				return;
 			}

@@ -53,22 +53,11 @@ public final class UIDataDebugObject implements UIDataDebug {
 	}
 
 	/* [ Setter Section ] */
-	/**
-	 * Define the profiler state of the debug
-	 * @param profiler
-	 * @return this
-	 */
 	public @NonNull UIDataDebugObject setProfiler(final boolean profiler) {
 		this.profiler = profiler;
 		return this;
 	}
 
-	/**
-	 * Define the hotreload state of the debug
-	 *
-	 * @param hotreload
-	 * @return this
-	 */
 	public @NonNull UIDataDebugObject setHotreload(final boolean hotreload) {
 		this.hotreload = hotreload;
 		return this;

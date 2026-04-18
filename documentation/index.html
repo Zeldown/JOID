@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JOID Documentation</title>
+	<link rel="stylesheet" href="assets/css/style.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+	<aside class="sidebar">
+		<div class="sidebar-header">
+			<a href="#/getting-started/introduction" class="brand">
+				<span class="brand-text">JOID</span>
+				<span class="brand-version" id="brand-version">6.0.0</span>
+			</a>
+			<button class="search-trigger" id="search-trigger" aria-label="Search documentation" title="Search (Ctrl+K)">
+				<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+			</button>
+		</div>
+		<nav class="nav" id="nav"></nav>
+		<div class="sidebar-footer">
+			<div class="lang-toggle" id="lang-toggle" role="group" aria-label="Language">
+				<button type="button" data-lang="en">EN</button>
+				<button type="button" data-lang="fr">FR</button>
+			</div>
+			<a href="https://github.com/Zeldown/JOID" target="_blank" rel="noopener">GitHub</a>
+			<span class="sep">·</span>
+			<a href="https://github.com/Zeldown/JOID/releases" target="_blank" rel="noopener">Releases</a>
+		</div>
+	</aside>
+
+	<button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+	</button>
+
+	<main class="content">
+		<article id="article" class="markdown"></article>
+		<nav class="page-nav" id="page-nav"></nav>
+	</main>
+
+	<div class="search-modal" id="search-modal" aria-hidden="true">
+		<div class="search-modal-backdrop" id="search-backdrop"></div>
+		<div class="search-modal-panel">
+			<div class="search-modal-input-wrap">
+				<svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+				<input type="search" id="search-input" placeholder="Search the documentation…" autocomplete="off" spellcheck="false">
+				<kbd class="kbd-esc">ESC</kbd>
+			</div>
+			<div class="search-modal-results" id="search-results"></div>
+			<div class="search-modal-footer">
+				<span class="search-hint"><kbd>↵</kbd> <span data-i18n="searchHintOpen">to open</span></span>
+				<span class="search-hint"><kbd>↑</kbd><kbd>↓</kbd> <span data-i18n="searchHintNavigate">to navigate</span></span>
+				<span class="search-hint"><kbd>ESC</kbd> <span data-i18n="searchHintClose">to close</span></span>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-groovy.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-glsl.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-xml-doc.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+	<script src="assets/js/app.js" defer></script>
+	<script src="assets/js/search.js" defer></script>
+</body>
+</html>

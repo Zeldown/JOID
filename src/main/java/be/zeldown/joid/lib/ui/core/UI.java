@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -48,6 +49,8 @@ import lombok.NonNull;
 
 @Getter
 public abstract class UI implements IUI, IndexedElement {
+
+	@Getter private static UI current;
 
 	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
@@ -100,7 +103,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.keybindMap = new HashMap<>();
 		this.nodeList = new IndexedConcurrentList<>();
 		this.storeMap = new HashMap<>();
-		this.scheduledTaskList = new ArrayList<>();
+		this.scheduledTaskList = new CopyOnWriteArrayList<>();
 
 		if (this.popup.active() && this.popup.transition().isActive()) {
 			this.transition = new PopTransition();
@@ -166,8 +169,10 @@ public abstract class UI implements IUI, IndexedElement {
 			this.nodeList.clear();
 			this.scheduledTaskList.clear();
 
+			UI.current = this;
 			this.init();
 			this.initialized = true;
+			UI.current = null;
 
 			if (this.transition != null) {
 				if (this.transition.getIn() != null && this.transition.getIn().isEnabled()) {
@@ -434,6 +439,8 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void properlyClose() {
+		this.nodeList.forEach(Node::onDetach);
+
 		if (this.fileMonitor != null) {
 			new Thread(() -> {
 				try {
@@ -516,12 +523,12 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
 		if (this.data.projection()) {
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
 			GL11.glOrtho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
 		}
 
 		final double translateX = this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());

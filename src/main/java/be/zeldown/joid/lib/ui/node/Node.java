@@ -30,9 +30,13 @@ import com.google.gson.JsonObject;
 
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.animation.animator.TweenAnimator;
+import be.zeldown.joid.lib.animation.tweenengine.TweenEquation;
+import be.zeldown.joid.lib.animation.tweenengine.TweenEquations;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.opengl.GLHelper;
+import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.ShaderPipeline;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.hook.store.UIStore;
 import be.zeldown.joid.lib.ui.node.callback.NodeCallback;
@@ -50,6 +54,7 @@ import be.zeldown.joid.lib.ui.node.callback.impl.scroll.NodeScrollUpdateCallback
 import be.zeldown.joid.lib.ui.node.callback.impl.signal.NodeMountCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.signal.NodeWatchCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeAppendCallback;
+import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeDetachCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeDrawCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeInitCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeReloadCallback;
@@ -98,6 +103,7 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_DRAW           = NodeCallbackRegistry.next(NodeDrawCallback.class);
 	private static final int CALLBACK_UPDATE         = NodeCallbackRegistry.next(NodeUpdateCallback.class);
 	private static final int CALLBACK_RELOAD         = NodeCallbackRegistry.next(NodeReloadCallback.class);
+	private static final int CALLBACK_DETACH         = NodeCallbackRegistry.next(NodeDetachCallback.class);
 	private static final int CALLBACK_APPEND         = NodeCallbackRegistry.next(NodeAppendCallback.class);
 
 	private static final int CALLBACK_MOUNT          = NodeCallbackRegistry.next(NodeMountCallback.class);
@@ -169,8 +175,9 @@ public abstract class Node implements INode {
 
 	private boolean mounted;
 
-	private boolean hovered;
-	private long    hoverDuration;
+	private boolean       hovered;
+	private long          hoverDuration;
+	private TweenEquation hoverEquation;
 
 	private double scrollX;
 	private double scrollY;
@@ -228,6 +235,7 @@ public abstract class Node implements INode {
 
 		this.aspectRatio = -1D;
 		this.hoverDuration = 200L;
+		this.hoverEquation = TweenEquations.LINEAR;
 		this.scrollSpeed = 1D;
 	}
 
@@ -294,11 +302,11 @@ public abstract class Node implements INode {
 			}
 
 			if (!this.hovered && this.isHovered(mouseX, mouseY)) {
-				this.hoverAnimator.sequence(this.hoverDuration, 100F).start();
+				this.hoverAnimator.sequence(this.hoverDuration, 100F, this.hoverEquation).start();
 			}
 
 			if (this.hovered && !this.isHovered(mouseX, mouseY)) {
-				this.hoverAnimator.sequence(this.hoverDuration, 0F).start();
+				this.hoverAnimator.sequence(this.hoverDuration, 0F, this.hoverEquation).start();
 			}
 
 			this.hovered = this.isHovered(mouseX, mouseY);
@@ -384,13 +392,6 @@ public abstract class Node implements INode {
 				this.stopDragging();
 			}
 
-			if (this.dragging) {
-				this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), () -> {
-					this.targetDragX = mouseX - this.dragX;
-					this.targetDragY = mouseY - this.dragY;
-				});
-			}
-
 			if (this.draggable != null && this.draggable.isEnabled(this)) {
 				if (!this.dragging && this.draggable.getAreaType() != DraggableAreaType.FREE) {
 					final double[] bounds = this.draggable.getBounds(this);
@@ -446,60 +447,74 @@ public abstract class Node implements INode {
 				this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
 			}
 
-			this.effectMap.values().stream().filter(this::shouldApplyEffect).forEachOrdered(effect -> effect.pre(this, mouseX, mouseY));
-			this.ui.mask(this.x, this.y, this.width, this.height, () -> {
-				if (this.overflow != OverflowProperty.NONE) {
-					this.children.forEach(child -> child.overflowArea = this);
-				} else if (this.overflowArea != null) {
-					this.children.forEach(child -> child.overflowArea = this.overflowArea);
-				}
+			final List<NodeEffect<Node>> shaderEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
+			final List<NodeEffect<Node>> otherEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
 
-				if (this.skeleton != null && !this.mounted) {
-					this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
-						this.skeleton.render(mouseX, mouseY);
-					}, mouseX, mouseY);
-					return;
-				}
+			otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
 
-				this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
-					this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-					this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
-						if (this.mounted) {
-							this.draw(mouseX, mouseY);
-						} else {
-							this.drawSkeleton(mouseX, mouseY);
-						}
-					}, mouseX, mouseY);
-
-					this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
-					this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
-
-					if (this.draggedNode != null) {
-						final boolean scissor = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
-						final boolean stencil = GL11.glIsEnabled(GL11.GL_STENCIL_TEST);
-						if (scissor) {
-							GL11.glDisable(GL11.GL_SCISSOR_TEST);
-						}
-
-						if (stencil) {
-							GL11.glDisable(GL11.GL_STENCIL_TEST);
-						}
-
-						GL11.glTranslated(-this.parent.x, -this.parent.y, 0D);
-						this.draggedNode.render(mouseX, mouseY);
-						GL11.glTranslated(this.parent.x, this.parent.y, 0D);
-
-						if (scissor) {
-							GL11.glEnable(GL11.GL_SCISSOR_TEST);
-						}
-
-						if (stencil) {
-							GL11.glEnable(GL11.GL_STENCIL_TEST);
-						}
+			final Runnable maskDraw = () -> {
+				this.ui.mask(this.x, this.y, this.width, this.height, () -> {
+					if (this.overflow != OverflowProperty.NONE) {
+						this.children.forEach(child -> child.overflowArea = this);
+					} else if (this.overflowArea != null) {
+						this.children.forEach(child -> child.overflowArea = this.overflowArea);
 					}
-				}, mouseX, mouseY);
-			}, this.overflow != OverflowProperty.NONE);
-			this.effectMap.values().stream().filter(this::shouldApplyEffect).forEachOrdered(effect -> effect.post(this, mouseX, mouseY));
+
+					if (this.skeleton != null && !this.mounted) {
+						this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+							this.skeleton.render(mouseX, mouseY);
+						}, mouseX, mouseY);
+						return;
+					}
+
+					this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+						this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
+						this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
+							if (this.mounted) {
+								this.draw(mouseX, mouseY);
+							} else {
+								this.drawSkeleton(mouseX, mouseY);
+							}
+						}, mouseX, mouseY);
+
+						this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
+						this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
+
+						if (this.draggedNode != null) {
+							final boolean scissor = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
+							final boolean stencil = GL11.glIsEnabled(GL11.GL_STENCIL_TEST);
+							if (scissor) {
+								GL11.glDisable(GL11.GL_SCISSOR_TEST);
+							}
+
+							if (stencil) {
+								GL11.glDisable(GL11.GL_STENCIL_TEST);
+							}
+
+							GL11.glTranslated(-this.parent.x, -this.parent.y, 0D);
+							this.draggedNode.render(mouseX, mouseY);
+							GL11.glTranslated(this.parent.x, this.parent.y, 0D);
+
+							if (scissor) {
+								GL11.glEnable(GL11.GL_SCISSOR_TEST);
+							}
+
+							if (stencil) {
+								GL11.glEnable(GL11.GL_STENCIL_TEST);
+							}
+						}
+					}, mouseX, mouseY);
+				}, this.overflow != OverflowProperty.NONE);
+			};
+
+			if (!shaderEffects.isEmpty()) {
+				final List<ShaderPass> passes = shaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+				ShaderPipeline.render(this, passes, maskDraw);
+			} else {
+				maskDraw.run();
+			}
+
+			otherEffects.forEach(effect -> effect.post(this, mouseX, mouseY));
 
 			if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.hasOverflowX() || this.hasOverflowY())) {
 				this.scrollbar.render(mouseX, mouseY);
@@ -606,6 +621,13 @@ public abstract class Node implements INode {
 		this.mouseDragged(mouseX, mouseY, clickType, deltaTime, context);
 		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context));
 
+		if (this.dragging) {
+			this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), () -> {
+				this.targetDragX = mouseX - this.dragX;
+				this.targetDragY = mouseY - this.dragY;
+			});
+		}
+
 		if (this.hasCallback(Node.CALLBACK_MOUSE_DRAGGED)) {
 			this.executePostCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, clickType, deltaTime);
 		}
@@ -703,6 +725,13 @@ public abstract class Node implements INode {
 		this.executeCallback(Node.CALLBACK_RELOAD, InternalContext.create(), () -> {
 			this.children.forEach(Node::reload);
 			this.load(this.ui);
+		});
+	}
+
+	public final void onDetach() {
+		this.executeCallback(Node.CALLBACK_DETACH, InternalContext.create(), () -> {
+			this.children.forEach(Node::onDetach);
+			this.detach();
 		});
 	}
 
@@ -935,6 +964,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T clearChildren() {
+		this.children.forEach(Node::onDetach);
 		this.children.clear();
 		return (T) this;
 	}
@@ -959,7 +989,10 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends UI> T getUi() {
-		return (T) this.ui;
+		if (this.ui != null) {
+			return (T) this.ui;
+		}
+		return (T) (this.ui = UI.getCurrent());
 	}
 
 	public boolean isHovered(final double mouseX, final double mouseY) {
@@ -1430,6 +1463,11 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
+	public final <T extends Node> @NonNull T hoverEquation(final @NonNull TweenEquation equation) {
+		this.hoverEquation = equation;
+		return (T) this;
+	}
+
 	public final <T extends Node> @NonNull T scrollSpeed(final double scrollSpeed) {
 		this.scrollSpeed = scrollSpeed;
 		return (T) this;
@@ -1576,6 +1614,10 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T onUpdate(final @NonNull NodeUpdateCallback<T> callback) {
 		return this.registerCallback(Node.CALLBACK_UPDATE, callback);
+	}
+
+	public final <T extends Node> @NonNull T onDetach(final @NonNull NodeDetachCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_DETACH, callback);
 	}
 
 	public final <T extends Node> @NonNull T onReload(final @NonNull NodeReloadCallback<T> callback) {

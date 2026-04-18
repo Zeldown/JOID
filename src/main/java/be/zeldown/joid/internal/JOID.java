@@ -16,6 +16,8 @@ import lombok.NonNull;
 @Getter
 public final class JOID {
 
+	public static final String VERSION = "5.1.0";
+
 	private static JOID instance;
 
 	private File configDir;
@@ -46,7 +48,7 @@ public final class JOID {
 		System.out.println(" - ConfigDir: " + this.configDir.getAbsolutePath());
 		System.out.println(" - DevMode: " + this.devMode);
 		System.out.println(" - DemoMode: " + this.demoMode);
-		System.out.println(" - Version: " + JOID.class.getPackage().getImplementationVersion());
+		System.out.println(" - Version: " + JOID.VERSION);
 		System.out.println("");
 		System.out.println("=================================");
 

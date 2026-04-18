@@ -17,6 +17,7 @@ import be.zeldown.joid.demo.ui.overflow.UIDemoOverflow;
 import be.zeldown.joid.demo.ui.popup.UIDemoPopup;
 import be.zeldown.joid.demo.ui.resource.UIDemoResource;
 import be.zeldown.joid.demo.ui.selector.UIDemoSelector;
+import be.zeldown.joid.demo.ui.shader.UIDemoShader;
 import be.zeldown.joid.demo.ui.simple.UIDemoSimple;
 import be.zeldown.joid.demo.ui.slider.UIDemoSlider;
 import be.zeldown.joid.demo.ui.store.UIDemoOtherStore;
@@ -24,6 +25,7 @@ import be.zeldown.joid.demo.ui.store.UIDemoStore;
 import be.zeldown.joid.demo.ui.sw.UIDemoSwitch;
 import be.zeldown.joid.demo.ui.textfield.UIDemoTextField;
 import be.zeldown.joid.demo.ui.toggle.UIDemoToggle;
+import be.zeldown.joid.demo.ui.video.UIDemoVideo;
 import be.zeldown.joid.demo.ui.wait.UIDemoWait;
 import be.zeldown.joid.demo.ui.watch.UIDemoWatch;
 import be.zeldown.joid.internal.JOID;
@@ -52,6 +54,8 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoFont.class);
 		UIDemoChoice.LIST.add(UIDemoFlex.class);
 		UIDemoChoice.LIST.add(UIDemoResource.class);
+		UIDemoChoice.LIST.add(UIDemoVideo.class);
+		UIDemoChoice.LIST.add(UIDemoShader.class);
 		UIDemoChoice.LIST.add(UIDemoWait.class);
 		UIDemoChoice.LIST.add(UIDemoWatch.class);
 		UIDemoChoice.LIST.add(UIDemoTextField.class);
@@ -61,9 +65,9 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoCheckbox.class);
 		UIDemoChoice.LIST.add(UIDemoToggle.class);
 		UIDemoChoice.LIST.add(UIDemoSwitch.class);
+		UIDemoChoice.LIST.add(UIDemoChart.class);
 		UIDemoChoice.LIST.add(UIDemoStore.class);
 		UIDemoChoice.LIST.add(UIDemoOtherStore.class);
-		UIDemoChoice.LIST.add(UIDemoChart.class);
 	}
 
 	@Override
