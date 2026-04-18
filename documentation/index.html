@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JOID Documentation</title>
+	<link rel="stylesheet" href="assets/css/style.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+	<aside class="sidebar">
+		<div class="sidebar-header">
+			<a href="#/introduction" class="brand">
+				<span class="brand-text">JOID</span>
+				<span class="brand-version" id="brand-version">6.0.0</span>
+			</a>
+		</div>
+		<div class="search-box">
+			<input type="search" id="search-input" placeholder="Search…" autocomplete="off">
+			<div class="search-results" id="search-results"></div>
+		</div>
+		<nav class="nav" id="nav"></nav>
+		<div class="sidebar-footer">
+			<a href="https://github.com/Zeldown/JOID" target="_blank" rel="noopener">GitHub</a>
+			<a href="https://github.com/Zeldown/JOID/releases" target="_blank" rel="noopener">Releases</a>
+		</div>
+	</aside>
+
+	<button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">☰</button>
+
+	<main class="content">
+		<article id="article" class="markdown"></article>
+		<nav class="page-nav" id="page-nav"></nav>
+	</main>
+
+	<aside class="toc" id="toc"></aside>
+
+	<script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-groovy.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-glsl.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-xml-doc.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/lunr@2.3.9/lunr.min.js"></script>
+	<script src="assets/js/app.js" defer></script>
+	<script src="assets/js/search.js" defer></script>
+</body>
+</html>
