@@ -388,13 +388,6 @@ public abstract class Node implements INode {
 				this.stopDragging();
 			}
 
-			if (this.dragging) {
-				this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), () -> {
-					this.targetDragX = mouseX - this.dragX;
-					this.targetDragY = mouseY - this.dragY;
-				});
-			}
-
 			if (this.draggable != null && this.draggable.isEnabled(this)) {
 				if (!this.dragging && this.draggable.getAreaType() != DraggableAreaType.FREE) {
 					final double[] bounds = this.draggable.getBounds(this);
@@ -609,6 +602,13 @@ public abstract class Node implements INode {
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context));
 		this.mouseDragged(mouseX, mouseY, clickType, deltaTime, context);
 		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context));
+
+		if (this.dragging) {
+			this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), () -> {
+				this.targetDragX = mouseX - this.dragX;
+				this.targetDragY = mouseY - this.dragY;
+			});
+		}
 
 		if (this.hasCallback(Node.CALLBACK_MOUSE_DRAGGED)) {
 			this.executePostCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, clickType, deltaTime);
