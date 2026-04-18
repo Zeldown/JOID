@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 import be.zeldown.joid.lib.shader.blend.ShaderBlendState;
+import be.zeldown.joid.lib.shader.uniform.BooleanUniform;
 import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
 import be.zeldown.joid.lib.shader.uniform.Float3Uniform;
 import be.zeldown.joid.lib.shader.uniform.Float4ArrayUniform;
@@ -23,6 +24,7 @@ import be.zeldown.joid.lib.shader.uniform.FloatMatrixUniform;
 import be.zeldown.joid.lib.shader.uniform.FloatUniform;
 import be.zeldown.joid.lib.shader.uniform.IntUniform;
 import be.zeldown.joid.lib.shader.uniform.SamplerUniform;
+import be.zeldown.joid.lib.shader.uniform.impl.DirectBooleanUniform;
 import be.zeldown.joid.lib.shader.uniform.impl.DirectFloat2Uniform;
 import be.zeldown.joid.lib.shader.uniform.impl.DirectFloat3Uniform;
 import be.zeldown.joid.lib.shader.uniform.impl.DirectFloat4ArrayUniform;
@@ -313,6 +315,11 @@ public class GLShader implements IGLShader {
 		sampler = new DirectSamplerUniform(location, this.samplerMap.size(), this);
 		this.samplerMap.put(name, sampler);
 		return sampler;
+	}
+
+	@Override
+	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
+		return new DirectBooleanUniform(this.getUniformLocation(name));
 	}
 
 	@Override
