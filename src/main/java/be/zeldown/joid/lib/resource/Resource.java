@@ -3,13 +3,9 @@ package be.zeldown.joid.lib.resource;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
@@ -20,8 +16,7 @@ import lombok.NonNull;
 @Getter
 public final class Resource {
 
-	private static final Cache<String, ResourceData> DEFAULT_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
-	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().async().linear().cache(Resource.DEFAULT_CACHE);
+	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().async().linear().cache(ResourceBuilder.DEFAULT_CACHE);
 
 	private final ResourceBuilder builder;
 	private final ResourceData data;

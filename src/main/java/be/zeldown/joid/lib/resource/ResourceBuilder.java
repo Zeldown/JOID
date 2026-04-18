@@ -7,10 +7,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
@@ -23,11 +25,13 @@ public final class ResourceBuilder {
 
 	private static final List<ResourceBuilder> BUILDER_LIST = new ArrayList<>();
 
+	public static final Cache<String, ResourceData> DEFAULT_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+
 	private Cache<String, ResourceData> cache;
 	private ResourceProperties properties;
 
 	private ResourceBuilder() {
-		this.cache = null;
+		this.cache = ResourceBuilder.DEFAULT_CACHE;
 		this.properties = new ResourceProperties();
 
 		ResourceBuilder.BUILDER_LIST.add(this);
