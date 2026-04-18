@@ -963,7 +963,10 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends UI> T getUi() {
-		return (T) this.ui;
+		if (this.ui != null) {
+			return (T) this.ui;
+		}
+		return (T) (this.ui = UI.getCurrent());
 	}
 
 	public boolean isHovered(final double mouseX, final double mouseY) {

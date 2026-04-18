@@ -50,6 +50,8 @@ import lombok.NonNull;
 @Getter
 public abstract class UI implements IUI, IndexedElement {
 
+	@Getter private static UI current;
+
 	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
 
@@ -167,8 +169,10 @@ public abstract class UI implements IUI, IndexedElement {
 			this.nodeList.clear();
 			this.scheduledTaskList.clear();
 
+			UI.current = this;
 			this.init();
 			this.initialized = true;
+			UI.current = null;
 
 			if (this.transition != null) {
 				if (this.transition.getIn() != null && this.transition.getIn().isEnabled()) {
