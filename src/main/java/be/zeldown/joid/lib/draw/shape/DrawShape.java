@@ -162,7 +162,23 @@ public final class DrawShape {
 		GL11.glPopMatrix();
 	}
 
-	private static void bindEmptyTexture() {
+	public void drawRawRect(final double x, final double y, final double width, final double height) {
+		final T9R tessellator = T9R.inst();
+		GL11.glPushMatrix();
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		DrawShape.bindEmptyTexture();
+		tessellator.start(GL11.GL_POLYGON);
+		tessellator.addVertex(x, y + height, 0D);
+		tessellator.addVertex(x + width, y + height, 0D);
+		tessellator.addVertex(x + width, y, 0D);
+		tessellator.addVertex(x, y, 0D);
+		tessellator.draw();
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glPopMatrix();
+	}
+
+	public static void bindEmptyTexture() {
 		if (DrawShape.EMPTY_TEXTURE == -1) {
 			DrawShape.EMPTY_TEXTURE = GL11.glGenTextures();
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, DrawShape.EMPTY_TEXTURE);
