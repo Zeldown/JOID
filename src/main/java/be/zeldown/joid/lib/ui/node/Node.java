@@ -52,6 +52,7 @@ import be.zeldown.joid.lib.ui.node.callback.impl.scroll.NodeScrollUpdateCallback
 import be.zeldown.joid.lib.ui.node.callback.impl.signal.NodeMountCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.signal.NodeWatchCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeAppendCallback;
+import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeDetachCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeDrawCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeInitCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeReloadCallback;
@@ -100,6 +101,7 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_DRAW           = NodeCallbackRegistry.next(NodeDrawCallback.class);
 	private static final int CALLBACK_UPDATE         = NodeCallbackRegistry.next(NodeUpdateCallback.class);
 	private static final int CALLBACK_RELOAD         = NodeCallbackRegistry.next(NodeReloadCallback.class);
+	private static final int CALLBACK_DETACH         = NodeCallbackRegistry.next(NodeDetachCallback.class);
 	private static final int CALLBACK_APPEND         = NodeCallbackRegistry.next(NodeAppendCallback.class);
 
 	private static final int CALLBACK_MOUNT          = NodeCallbackRegistry.next(NodeMountCallback.class);
@@ -710,6 +712,13 @@ public abstract class Node implements INode {
 		});
 	}
 
+	public final void onDetach() {
+		this.executeCallback(Node.CALLBACK_DETACH, InternalContext.create(), () -> {
+			this.children.forEach(Node::onDetach);
+			this.detach();
+		});
+	}
+
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
 			this.executeCallback(Node.CALLBACK_APPEND, InternalContext.create(), () -> {
@@ -939,6 +948,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T clearChildren() {
+		this.children.forEach(Node::onDetach);
 		this.children.clear();
 		return (T) this;
 	}
@@ -1588,6 +1598,10 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T onUpdate(final @NonNull NodeUpdateCallback<T> callback) {
 		return this.registerCallback(Node.CALLBACK_UPDATE, callback);
+	}
+
+	public final <T extends Node> @NonNull T onDetach(final @NonNull NodeDetachCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_DETACH, callback);
 	}
 
 	public final <T extends Node> @NonNull T onReload(final @NonNull NodeReloadCallback<T> callback) {
