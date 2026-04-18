@@ -15,7 +15,7 @@ public @interface UIData {
 	boolean pause()           default true;
 	boolean closeable()       default true;
 
-	boolean zoomable()        default false;
+	boolean zoomable()        default true;
 	boolean projection()      default true;
 	boolean background()      default true;
 	String  backgroundColor() default "#101010c0";
