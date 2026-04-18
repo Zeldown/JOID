@@ -9,11 +9,11 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.vecmath.Vector3f;
 
+import org.lwjgl.LWJGLException;
+import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 public final class VideoAudioPlayer {
 
@@ -21,9 +21,9 @@ public final class VideoAudioPlayer {
 	private static final float BASE_VOLUME = 0.3F;
 	private static final int SAMPLES_PER_BUFFER = 4096;
 
-	@Getter
-	@Setter
 	private static AudioListener audioListener;
+	private static boolean openALLoaded = false;
+	private static boolean shutdownHookRegistered = false;
 
 	private final int alFormat;
 	private final int sampleRate;
@@ -252,6 +252,17 @@ public final class VideoAudioPlayer {
 
 	/* [ Internal Section ] */
 	private void initAL() {
+		if (!AL.isCreated()) {
+			try {
+				VideoAudioPlayer.ensureOpenALLoaded();
+				AL.create();
+				VideoAudioPlayer.registerShutdownHook();
+			} catch (final LWJGLException e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+
 		this.source = AL10.alGenSources();
 		AL10.alSourcei(this.source, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
 		AL10.alSource3f(this.source, AL10.AL_POSITION, 0F, 0F, 0F);
@@ -344,6 +355,52 @@ public final class VideoAudioPlayer {
 		this.uploadBuffer.position(0);
 
 		AL10.alBufferData(bufferId, this.alFormat, this.uploadBuffer, this.sampleRate);
+	}
+
+	/* [ Static Section ] */
+	private static void registerShutdownHook() {
+		if (VideoAudioPlayer.shutdownHookRegistered) {
+			return;
+		}
+		VideoAudioPlayer.shutdownHookRegistered = true;
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			if (AL.isCreated()) {
+				AL.destroy();
+			}
+		}, "joid-al-shutdown"));
+	}
+
+	private static void ensureOpenALLoaded() {
+		if (VideoAudioPlayer.openALLoaded) {
+			return;
+		}
+
+		final String os = System.getProperty("os.name", "").toLowerCase();
+		final boolean is64 = System.getProperty("os.arch", "").contains("64");
+
+		String libName = null;
+		if (os.contains("win")) {
+			libName = is64 ? "OpenAL64" : "OpenAL32";
+		} else if (os.contains("mac") || os.contains("linux")) {
+			libName = "openal";
+		}
+
+		if (libName == null) {
+			return;
+		}
+
+		try {
+			System.loadLibrary(libName);
+			VideoAudioPlayer.openALLoaded = true;
+		} catch (final Throwable ignored) {}
+	}
+
+	public static AudioListener getAudioListener() {
+		return VideoAudioPlayer.audioListener;
+	}
+
+	public static void setAudioListener(final AudioListener audioListener) {
+		VideoAudioPlayer.audioListener = audioListener;
 	}
 
 }
