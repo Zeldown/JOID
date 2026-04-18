@@ -35,6 +35,8 @@ import be.zeldown.joid.lib.animation.tweenengine.TweenEquations;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.opengl.GLHelper;
+import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.ShaderPipeline;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.hook.store.UIStore;
 import be.zeldown.joid.lib.ui.node.callback.NodeCallback;
@@ -445,60 +447,74 @@ public abstract class Node implements INode {
 				this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
 			}
 
-			this.effectMap.values().stream().filter(this::shouldApplyEffect).forEachOrdered(effect -> effect.pre(this, mouseX, mouseY));
-			this.ui.mask(this.x, this.y, this.width, this.height, () -> {
-				if (this.overflow != OverflowProperty.NONE) {
-					this.children.forEach(child -> child.overflowArea = this);
-				} else if (this.overflowArea != null) {
-					this.children.forEach(child -> child.overflowArea = this.overflowArea);
-				}
+			final List<NodeEffect<Node>> shaderEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
+			final List<NodeEffect<Node>> otherEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
 
-				if (this.skeleton != null && !this.mounted) {
-					this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
-						this.skeleton.render(mouseX, mouseY);
-					}, mouseX, mouseY);
-					return;
-				}
+			otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
 
-				this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
-					this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-					this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
-						if (this.mounted) {
-							this.draw(mouseX, mouseY);
-						} else {
-							this.drawSkeleton(mouseX, mouseY);
-						}
-					}, mouseX, mouseY);
-
-					this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
-					this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
-
-					if (this.draggedNode != null) {
-						final boolean scissor = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
-						final boolean stencil = GL11.glIsEnabled(GL11.GL_STENCIL_TEST);
-						if (scissor) {
-							GL11.glDisable(GL11.GL_SCISSOR_TEST);
-						}
-
-						if (stencil) {
-							GL11.glDisable(GL11.GL_STENCIL_TEST);
-						}
-
-						GL11.glTranslated(-this.parent.x, -this.parent.y, 0D);
-						this.draggedNode.render(mouseX, mouseY);
-						GL11.glTranslated(this.parent.x, this.parent.y, 0D);
-
-						if (scissor) {
-							GL11.glEnable(GL11.GL_SCISSOR_TEST);
-						}
-
-						if (stencil) {
-							GL11.glEnable(GL11.GL_STENCIL_TEST);
-						}
+			final Runnable maskDraw = () -> {
+				this.ui.mask(this.x, this.y, this.width, this.height, () -> {
+					if (this.overflow != OverflowProperty.NONE) {
+						this.children.forEach(child -> child.overflowArea = this);
+					} else if (this.overflowArea != null) {
+						this.children.forEach(child -> child.overflowArea = this.overflowArea);
 					}
-				}, mouseX, mouseY);
-			}, this.overflow != OverflowProperty.NONE);
-			this.effectMap.values().stream().filter(this::shouldApplyEffect).forEachOrdered(effect -> effect.post(this, mouseX, mouseY));
+
+					if (this.skeleton != null && !this.mounted) {
+						this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+							this.skeleton.render(mouseX, mouseY);
+						}, mouseX, mouseY);
+						return;
+					}
+
+					this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+						this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
+						this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
+							if (this.mounted) {
+								this.draw(mouseX, mouseY);
+							} else {
+								this.drawSkeleton(mouseX, mouseY);
+							}
+						}, mouseX, mouseY);
+
+						this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
+						this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
+
+						if (this.draggedNode != null) {
+							final boolean scissor = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
+							final boolean stencil = GL11.glIsEnabled(GL11.GL_STENCIL_TEST);
+							if (scissor) {
+								GL11.glDisable(GL11.GL_SCISSOR_TEST);
+							}
+
+							if (stencil) {
+								GL11.glDisable(GL11.GL_STENCIL_TEST);
+							}
+
+							GL11.glTranslated(-this.parent.x, -this.parent.y, 0D);
+							this.draggedNode.render(mouseX, mouseY);
+							GL11.glTranslated(this.parent.x, this.parent.y, 0D);
+
+							if (scissor) {
+								GL11.glEnable(GL11.GL_SCISSOR_TEST);
+							}
+
+							if (stencil) {
+								GL11.glEnable(GL11.GL_STENCIL_TEST);
+							}
+						}
+					}, mouseX, mouseY);
+				}, this.overflow != OverflowProperty.NONE);
+			};
+
+			if (!shaderEffects.isEmpty()) {
+				final List<ShaderPass> passes = shaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+				ShaderPipeline.render(this, passes, maskDraw);
+			} else {
+				maskDraw.run();
+			}
+
+			otherEffects.forEach(effect -> effect.post(this, mouseX, mouseY));
 
 			if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.hasOverflowX() || this.hasOverflowY())) {
 				this.scrollbar.render(mouseX, mouseY);
