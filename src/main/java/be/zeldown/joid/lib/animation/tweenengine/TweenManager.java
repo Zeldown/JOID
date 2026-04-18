@@ -23,12 +23,15 @@ public class TweenManager {
 	// Public API
 	// -------------------------------------------------------------------------
 
+	private final Object lock = new Object();
 	private final ArrayList<BaseTween<?>> objects = new ArrayList<>(20);
 	private boolean isPaused = false;
 
 	public TweenManager add(final BaseTween<?> object) {
-		if (!this.objects.contains(object)) {
-			this.objects.add(object);
+		synchronized (this.lock) {
+			if (!this.objects.contains(object)) {
+				this.objects.add(object);
+			}
 		}
 
 		if (object.isAutoStartEnabled) {
@@ -39,9 +42,11 @@ public class TweenManager {
 	}
 
 	public boolean containsTarget(final Object target) {
-		for (final BaseTween<?> obj : this.objects) {
-			if (obj.containsTarget(target)) {
-				return true;
+		synchronized (this.lock) {
+			for (final BaseTween<?> obj : this.objects) {
+				if (obj.containsTarget(target)) {
+					return true;
+				}
 			}
 		}
 
@@ -49,9 +54,11 @@ public class TweenManager {
 	}
 
 	public boolean containsTarget(final Object target, final int tweenType) {
-		for (final BaseTween<?> obj : this.objects) {
-			if (obj.containsTarget(target, tweenType)) {
-				return true;
+		synchronized (this.lock) {
+			for (final BaseTween<?> obj : this.objects) {
+				if (obj.containsTarget(target, tweenType)) {
+					return true;
+				}
 			}
 		}
 
@@ -59,25 +66,33 @@ public class TweenManager {
 	}
 
 	public void killAll() {
-		for (final BaseTween<?> obj : this.objects) {
-			obj.kill();
+		synchronized (this.lock) {
+			for (final BaseTween<?> obj : this.objects) {
+				obj.kill();
+			}
 		}
 	}
 
 	public void killTarget(final Object target) {
-		for (final BaseTween<?> obj : this.objects) {
-			obj.killTarget(target);
+		synchronized (this.lock) {
+			for (final BaseTween<?> obj : this.objects) {
+				obj.killTarget(target);
+			}
 		}
 	}
 
 	public void killTarget(final Object target, final int tweenType) {
-		for (final BaseTween<?> obj : this.objects) {
-			obj.killTarget(target, tweenType);
+		synchronized (this.lock) {
+			for (final BaseTween<?> obj : this.objects) {
+				obj.killTarget(target, tweenType);
+			}
 		}
 	}
 
 	public void ensureCapacity(final int minCapacity) {
-		this.objects.ensureCapacity(minCapacity);
+		synchronized (this.lock) {
+			this.objects.ensureCapacity(minCapacity);
+		}
 	}
 
 	public void pause() {
@@ -89,41 +104,51 @@ public class TweenManager {
 	}
 
 	public void update(final float delta) {
-		for (int i = this.objects.size() - 1; i >= 0; i--) {
-			final BaseTween<?> obj = this.objects.get(i);
-			if (obj.isFinished() && obj.isAutoRemoveEnabled) {
-				this.objects.remove(i);
-				obj.free();
-			}
-		}
-
-		if (!this.isPaused) {
-			if (delta >= 0) {
-				for (final BaseTween<?> element : this.objects) {
-					element.update(delta);
+		synchronized (this.lock) {
+			for (int i = this.objects.size() - 1; i >= 0; i--) {
+				final BaseTween<?> obj = this.objects.get(i);
+				if (obj.isFinished() && obj.isAutoRemoveEnabled) {
+					this.objects.remove(i);
+					obj.free();
 				}
-			} else {
-				for (int i = this.objects.size() - 1; i >= 0; i--) {
-					this.objects.get(i).update(delta);
+			}
+
+			if (!this.isPaused) {
+				if (delta >= 0) {
+					for (final BaseTween<?> element : this.objects) {
+						element.update(delta);
+					}
+				} else {
+					for (int i = this.objects.size() - 1; i >= 0; i--) {
+						this.objects.get(i).update(delta);
+					}
 				}
 			}
 		}
 	}
 
 	public int size() {
-		return this.objects.size();
+		synchronized (this.lock) {
+			return this.objects.size();
+		}
 	}
 
 	public int getRunningTweensCount() {
-		return TweenManager.getTweensCount(this.objects);
+		synchronized (this.lock) {
+			return TweenManager.getTweensCount(this.objects);
+		}
 	}
 
 	public int getRunningTimelinesCount() {
-		return TweenManager.getTimelinesCount(this.objects);
+		synchronized (this.lock) {
+			return TweenManager.getTimelinesCount(this.objects);
+		}
 	}
 
 	public List<BaseTween<?>> getObjects() {
-		return Collections.unmodifiableList(this.objects);
+		synchronized (this.lock) {
+			return Collections.unmodifiableList(new ArrayList<>(this.objects));
+		}
 	}
 
 	// -------------------------------------------------------------------------
