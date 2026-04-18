@@ -584,6 +584,11 @@ public class TextFieldNode extends Node {
 		return (T) this;
 	}
 
+	public final <T extends TextFieldNode> @NonNull T cursorPosition(final int cursorPos) {
+		this.cursorPos = Math.min(Math.max(0, cursorPos), this.text.length());
+		return (T) this;
+	}
+
 	/* [ Callback Section ] */
 	public final <T extends TextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
 		super.registerCallback(TextFieldNode.CALLBACK_CHANGE, callback);
