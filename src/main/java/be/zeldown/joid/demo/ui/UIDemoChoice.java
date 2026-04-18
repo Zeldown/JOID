@@ -54,6 +54,8 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoFont.class);
 		UIDemoChoice.LIST.add(UIDemoFlex.class);
 		UIDemoChoice.LIST.add(UIDemoResource.class);
+		UIDemoChoice.LIST.add(UIDemoVideo.class);
+		UIDemoChoice.LIST.add(UIDemoShader.class);
 		UIDemoChoice.LIST.add(UIDemoWait.class);
 		UIDemoChoice.LIST.add(UIDemoWatch.class);
 		UIDemoChoice.LIST.add(UIDemoTextField.class);
@@ -63,11 +65,9 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoCheckbox.class);
 		UIDemoChoice.LIST.add(UIDemoToggle.class);
 		UIDemoChoice.LIST.add(UIDemoSwitch.class);
+		UIDemoChoice.LIST.add(UIDemoChart.class);
 		UIDemoChoice.LIST.add(UIDemoStore.class);
 		UIDemoChoice.LIST.add(UIDemoOtherStore.class);
-		UIDemoChoice.LIST.add(UIDemoChart.class);
-		UIDemoChoice.LIST.add(UIDemoShader.class);
-		UIDemoChoice.LIST.add(UIDemoVideo.class);
 	}
 
 	@Override
