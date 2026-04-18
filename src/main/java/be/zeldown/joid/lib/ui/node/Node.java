@@ -30,6 +30,8 @@ import com.google.gson.JsonObject;
 
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.animation.animator.TweenAnimator;
+import be.zeldown.joid.lib.animation.tweenengine.TweenEquation;
+import be.zeldown.joid.lib.animation.tweenengine.TweenEquations;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.opengl.GLHelper;
@@ -169,8 +171,9 @@ public abstract class Node implements INode {
 
 	private boolean mounted;
 
-	private boolean hovered;
-	private long    hoverDuration;
+	private boolean       hovered;
+	private long          hoverDuration;
+	private TweenEquation hoverEquation;
 
 	private double scrollX;
 	private double scrollY;
@@ -228,6 +231,7 @@ public abstract class Node implements INode {
 
 		this.aspectRatio = -1D;
 		this.hoverDuration = 200L;
+		this.hoverEquation = TweenEquations.LINEAR;
 		this.scrollSpeed = 1D;
 	}
 
@@ -294,11 +298,11 @@ public abstract class Node implements INode {
 			}
 
 			if (!this.hovered && this.isHovered(mouseX, mouseY)) {
-				this.hoverAnimator.sequence(this.hoverDuration, 100F).start();
+				this.hoverAnimator.sequence(this.hoverDuration, 100F, this.hoverEquation).start();
 			}
 
 			if (this.hovered && !this.isHovered(mouseX, mouseY)) {
-				this.hoverAnimator.sequence(this.hoverDuration, 0F).start();
+				this.hoverAnimator.sequence(this.hoverDuration, 0F, this.hoverEquation).start();
 			}
 
 			this.hovered = this.isHovered(mouseX, mouseY);
@@ -1427,6 +1431,11 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T hoverDuration(final long hoverDuration) {
 		this.hoverDuration = hoverDuration;
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T hoverEquation(final @NonNull TweenEquation equation) {
+		this.hoverEquation = equation;
 		return (T) this;
 	}
 
