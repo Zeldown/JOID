@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Stack;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -100,7 +101,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.keybindMap = new HashMap<>();
 		this.nodeList = new IndexedConcurrentList<>();
 		this.storeMap = new HashMap<>();
-		this.scheduledTaskList = new ArrayList<>();
+		this.scheduledTaskList = new CopyOnWriteArrayList<>();
 
 		if (this.popup.active() && this.popup.transition().isActive()) {
 			this.transition = new PopTransition();
