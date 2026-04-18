@@ -17,6 +17,7 @@ import com.google.common.cache.CacheBuilder;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
 import be.zeldown.joid.lib.resource.dto.decoder.ResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -119,7 +120,7 @@ public final class ResourceBuilder {
 		return this.cache(uniqueId, () -> {
 			final Resource resource = new Resource(this, new ResourceData(uniqueId, null));
 			new ResourceDownloadThread(url, inputStream -> {
-				resource.decoder(url.endsWith(".gif") ? ResourceDecoder.gif(inputStream) : ResourceDecoder.image(inputStream));
+				resource.decoder(VideoResourceDecoder.isSupported(url) ? ResourceDecoder.video(inputStream, url) : ResourceDecoder.image(inputStream));
 				if (callback != null) {
 					callback.accept(resource);
 				}
