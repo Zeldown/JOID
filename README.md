@@ -1,7 +1,7 @@
 <div align="center">
 
 # JOID
-## Java OpenGL Interface Developement
+## Java OpenGL Interface Development
 
 <div align="center">
   <img align="center" src="https://img.shields.io/badge/version-6.0.0 (b13afec)-blue">
@@ -12,15 +12,13 @@
 
 <br>
 
-Welcome to JOID, a powerful and flexible user interface toolkit designed for developer community.
+**Build GPU-composed UIs in pure Java — no CSS, no XML, no runtime parser.**
 <br><br>
-Design your project uniquely by making the theme that best fits your preferences, as there is no default theme to limit your creativity.
-<br>
-Stand out in the global landscape with a personalized design that reflects your vision.
+Welcome to JOID, a flexible component-based UI toolkit for LWJGL 2 made for developers who want to own their rendering path and ship interfaces that stand out. No default theme, no stylesheet dialect to fight — the code you write is the layout the GPU draws.
 <br><br>
-
-
-Create the ideal interface with a wide range of customizable components and impressive animations, allowing you to showcase your talent effortlessly.
+Under the hood: a retained-mode node tree, reactive signals that only notify the nodes watching them, a composable shader pipeline for custom GL effects, and a `Bridge` interface that drops the library into any OpenGL host — games, tools, editors, overlays.
+<br><br>
+No DSL to learn, no scene-graph format to serialize, no runtime engine to boot. Just chainable Java classes and a compiler that catches UI bugs the way it catches everything else — rename a node and every reference follows, wire the wrong signal type and you get a build error instead of a silent runtime failure.
 <br><br>
 
 [Installation](#installation)
@@ -77,59 +75,15 @@ The repository contains a `native/` folder with the required OpenGL and OpenAL n
 
 ## Documentation
 
-The full reference lives in the `documentation/` folder — a static single-page app that loads its Markdown pages through `fetch`. You need to serve it through a local HTTP server; opening `index.html` directly via `file://` will break every page load.
+<div align="center">
 
-### Prerequisites
+### 📖 [**joid.dev-zeldown.workers.dev**](https://joid.dev-zeldown.workers.dev/)
 
-Pick either Node.js (for `npx serve`) or Python 3 (for `http.server`). You only need one.
+Full reference · Searchable (`Ctrl+K`) · English & French · Per-page PDF export
 
-**Node.js (for `npx serve`)** — `npx` ships with Node.js. To check if you have it:
+</div>
 
-```bash
-node -v
-npx -v
-```
-
-If either command isn't found, install Node.js:
-
-- **Windows** — download the LTS installer from <https://nodejs.org/> and run it. Or via winget: `winget install OpenJS.NodeJS.LTS`
-- **macOS** — via [Homebrew](https://brew.sh/): `brew install node` — or download the `.pkg` installer from <https://nodejs.org/>.
-- **Linux** — `sudo apt install nodejs npm` (Debian/Ubuntu), `sudo dnf install nodejs` (Fedora), `sudo pacman -S nodejs npm` (Arch), or use [nvm](https://github.com/nvm-sh/nvm) to manage versions.
-
-`npx serve .` then works out of the box — `npx` auto-downloads the `serve` package on first use. If you prefer a permanent install, run `npm install -g serve` once and call `serve .` directly afterwards.
-
-**Python 3 (alternative)** — already present on most macOS/Linux systems; on Windows install it from <https://python.org/> or via winget: `winget install Python.Python.3.12`. Check with `python3 --version` (or `python --version` on Windows).
-
-### Windows
-
-Double-click `documentation\run.bat` — it runs `npx serve .` inside the folder. Equivalent manual commands:
-
-```powershell
-cd documentation
-npx serve .
-# or, if Python is installed:
-python -m http.server 3000
-```
-
-### macOS
-
-```bash
-cd documentation
-npx serve .
-# or, if Python is installed:
-python3 -m http.server 3000
-```
-
-### Linux
-
-```bash
-cd documentation
-npx serve .
-# or, if Python is installed:
-python3 -m http.server 3000
-```
-
-Each command prints the local URL it's serving (usually <http://localhost:3000> for `serve`, <http://localhost:8000> for Python). Open it in your browser — the language toggle, Ctrl+K search, and Download-as-PDF button are all available from the UI.
+<sub>Offline: the site is self-contained in the `documentation/` folder. Serve it with any static HTTP server (`cd documentation && npx serve .` or `python -m http.server 3000`) — opening `index.html` via `file://` won't work because pages load through `fetch`.</sub>
 
 ## License
 
