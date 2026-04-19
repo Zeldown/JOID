@@ -26,6 +26,7 @@ Create the ideal interface with a wide range of customizable components and impr
 [Installation](#installation)
 [Features](#features)
 [Documentation](#documentation)
+[License](#license)
 [Credits](#credits)
 
 </div>
@@ -129,6 +130,31 @@ python3 -m http.server 3000
 ```
 
 Each command prints the local URL it's serving (usually <http://localhost:3000> for `serve`, <http://localhost:8000> for Python). Open it in your browser — the language toggle, Ctrl+K search, and Download-as-PDF button are all available from the UI.
+
+## License
+
+JOID is released under the **JOID Community Source License v1.0** — a source-available, copyleft, non-commercial-by-default license.
+
+Full text: [LICENSE.md](LICENSE.md) (English, authoritative) · [LICENSE.fr.md](LICENSE.fr.md) (French, informational).
+
+### What you get for free
+
+- Use JOID in **any non-commercial project** — general gameplay UIs (HUD, settings, scoreboard, inventory, chat, minimap, launcher, login screen), internal tools, open-source projects, and Minecraft servers that accept donations without building a shop on top of JOID.
+- Fork, modify and redistribute the source, as long as modifications stay under the same license.
+
+### What you owe in return
+
+- **Attribution** — include a [NOTICE](NOTICE) entry in your project (repo root, about screen, partners page, Discord, or equivalent) that links back to the JOID repository.
+- **Share-alike** — if you distribute or publicly host a modified JOID, publish your modifications under the same license within 90 days.
+- **No sublicensing, no reselling JOID itself, no white-label consulting that is primarily JOID repackaging.**
+
+### Commercial use
+
+Any UI whose **primary purpose** generates direct revenue (in-game shops, paid cosmetic selectors, donations tied to rewards, paid launcher features…) requires a written commercial agreement.
+
+Request one via Discord DM to **`zeldown`** — see [COMMERCIAL.md](COMMERCIAL.md) for the procedure (typical response time: 24–48h). The public record of granted licenses is kept in [COMMERCIAL_GRANTS.md](COMMERCIAL_GRANTS.md).
+
+> This summary is informational. The license text in [LICENSE.md](LICENSE.md) prevails in case of conflict.
 
 ## Credits
 
