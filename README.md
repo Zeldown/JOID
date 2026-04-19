@@ -7,7 +7,7 @@
   <img align="center" src="https://img.shields.io/badge/version-6.0.0 (b13afec)-blue">
   <img align="center" src="https://img.shields.io/badge/maintainer-Zeldown-orange">
   <img align="center" src="https://img.shields.io/maintenance/yes/9999">
-  <img align="center" src="https://github.com/Zeldown/JOID/actions/workflows/push.yml/badge.svg">
+  <img align="center" src="https://github.com/Zeldown/JOID/actions/workflows/release.yml/badge.svg">
 </div>
 
 <br>
