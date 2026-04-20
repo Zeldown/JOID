@@ -44,6 +44,9 @@ import be.zeldown.joid.lib.ui.node.callback.NodeCallbackObject;
 import be.zeldown.joid.lib.ui.node.callback.impl.animation.NodeAnimationCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.draggable.NodeSnapCallback;
+import be.zeldown.joid.lib.ui.node.callback.impl.hover.NodeHoverCallback;
+import be.zeldown.joid.lib.ui.node.callback.impl.hover.NodeHoverEndCallback;
+import be.zeldown.joid.lib.ui.node.callback.impl.hover.NodeHoverStartCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.key.NodeKeyPressedCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.mouse.NodeMouseDraggedCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.mouse.NodeMousePressedCallback;
@@ -117,6 +120,10 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_DRAG_START     = NodeCallbackRegistry.next(NodeDragCallback.class);
 	private static final int CALLBACK_DRAG_END       = NodeCallbackRegistry.next(NodeDragCallback.class);
 	private static final int CALLBACK_SNAP           = NodeCallbackRegistry.next(NodeSnapCallback.class);
+
+	private static final int CALLBACK_HOVER          = NodeCallbackRegistry.next(NodeHoverCallback.class);
+	private static final int CALLBACK_HOVER_START    = NodeCallbackRegistry.next(NodeHoverStartCallback.class);
+	private static final int CALLBACK_HOVER_END      = NodeCallbackRegistry.next(NodeHoverEndCallback.class);
 
 	private final transient List<Predicate<Node>>                     waitingList;
 	private final transient Map<Integer, List<NodeCallbackObject<?>>> callbackMap;
@@ -303,14 +310,20 @@ public abstract class Node implements INode {
 
 			if (!this.hovered && this.isHovered(mouseX, mouseY)) {
 				this.hoverAnimator.sequence(this.hoverDuration, 100F, this.hoverEquation).start();
+				this.executeCallback(Node.CALLBACK_HOVER_START, InternalContext.create(), mouseX, mouseY);
 			}
 
 			if (this.hovered && !this.isHovered(mouseX, mouseY)) {
 				this.hoverAnimator.sequence(this.hoverDuration, 0F, this.hoverEquation).start();
+				this.executeCallback(Node.CALLBACK_HOVER_END, InternalContext.create(), mouseX, mouseY);
 			}
 
 			this.hovered = this.isHovered(mouseX, mouseY);
 			this.hoverAnimator.update();
+
+			if (this.hovered) {
+				this.executeCallback(Node.CALLBACK_HOVER, InternalContext.create(), mouseX, mouseY);
+			}
 
 			for (final Entry<TweenAnimator, Float> entry : this.animatorMap.entrySet()) {
 				final TweenAnimator animator = entry.getKey().update();
@@ -1662,6 +1675,18 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T onSnap(final @NonNull NodeSnapCallback<T> callback) {
 		return this.registerCallback(Node.CALLBACK_SNAP, callback);
+	}
+
+	public final <T extends Node> @NonNull T onHover(final @NonNull NodeHoverCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_HOVER, callback);
+	}
+
+	public final <T extends Node> @NonNull T onHoverStart(final @NonNull NodeHoverStartCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_HOVER_START, callback);
+	}
+
+	public final <T extends Node> @NonNull T onHoverEnd(final @NonNull NodeHoverEndCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_HOVER_END, callback);
 	}
 
 	/* [ Abstract Section ] */
