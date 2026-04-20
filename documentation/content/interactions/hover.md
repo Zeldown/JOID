@@ -103,20 +103,17 @@ The tooltip node is rendered in the hover overlay, not as a child — it won't a
 
 When a tooltip would overflow the right edge of the screen, JOID shifts it left. When it would overflow the top, it shifts down. Enabled automatically for `FOLLOW` and `RELATIVE` positions.
 
-## Detecting hover
-
-There is no per-frame `onHover` callback — instead, query the hover state via `node.isHovered()` from inside `onUpdate` or from a `draw()` override. For enter/leave semantics, keep a local flag:
+## Enter / leave / per-frame callbacks
 
 ```java
-final boolean[] wasHovered = { false };
-
-node.onUpdate((n, ctx) -> {
-    final boolean now = n.isHovered();
-    if (now && !wasHovered[0]) onEnter();
-    if (!now && wasHovered[0]) onLeave();
-    wasHovered[0] = now;
-});
+node.onHoverStart((n, mx, my) -> { /* frame the mouse enters */ })
+    .onHoverEnd((n, mx, my) -> { /* frame the mouse leaves */ })
+    .onHover((n, mx, my) -> { /* every frame while hovered */ });
 ```
+
+All three are wired into the same hover state machine that drives `hoverValue`. Query the current state anywhere else via `node.isHovered()`.
+
+See [Callbacks › Hover](callbacks.md#hover) for the full reference.
 
 ## Best practices
 
