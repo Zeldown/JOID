@@ -51,6 +51,16 @@ node.onSnap((n, snapNode) -> { });                                              
 
 `onDrag` à chaque frame pendant le drag. `onSnap` quand le nœud draggé est relâché assez près d'une cible de snap enregistrée.
 
+## Hover
+
+```java
+node.onHoverStart((n, mouseX, mouseY) -> { });                                    // NodeHoverStartCallback
+node.onHoverEnd((n, mouseX, mouseY) -> { });                                      // NodeHoverEndCallback
+node.onHover((n, mouseX, mouseY) -> { });                                         // NodeHoverCallback
+```
+
+`onHoverStart` se déclenche à la frame où la souris entre sur le nœud ; `onHoverEnd` à la frame où elle en sort ; `onHover` à chaque frame tant que la souris est dessus. Les trois sont câblés sur la même state machine qui pilote `hoverValue` — ils restent donc synchrones avec le fade de hover.
+
 ## Animation
 
 ```java

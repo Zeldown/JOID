@@ -103,20 +103,17 @@ Le nœud tooltip est rendu dans l'overlay de hover, pas comme enfant — il n'af
 
 Si un tooltip dépasserait le bord droit de l'écran, JOID le décale vers la gauche. S'il dépasse le haut, il le décale vers le bas. Activé automatiquement pour les positions `FOLLOW` et `RELATIVE`.
 
-## Détecter le hover
-
-Il n'y a **pas** de callback `onHover` par frame — interrogez plutôt l'état via `node.isHovered()` depuis `onUpdate` ou un override de `draw()`. Pour la sémantique enter/leave, tenez un flag local :
+## Callbacks enter / leave / par frame
 
 ```java
-final boolean[] wasHovered = { false };
-
-node.onUpdate((n, ctx) -> {
-    final boolean now = n.isHovered();
-    if (now && !wasHovered[0]) onEnter();
-    if (!now && wasHovered[0]) onLeave();
-    wasHovered[0] = now;
-});
+node.onHoverStart((n, mx, my) -> { /* frame où la souris entre */ })
+    .onHoverEnd((n, mx, my) -> { /* frame où la souris sort */ })
+    .onHover((n, mx, my) -> { /* chaque frame tant que hovered */ });
 ```
+
+Les trois sont câblés sur la même state machine que `hoverValue`. Interrogez l'état courant ailleurs via `node.isHovered()`.
+
+Voir [Callbacks › Hover](callbacks.md#hover) pour la référence complète.
 
 ## Bonnes pratiques
 

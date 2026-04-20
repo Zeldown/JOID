@@ -51,6 +51,16 @@ node.onSnap((n, snapNode) -> { });                                              
 
 `onDrag` fires each frame while the node is being dragged. `onSnap` fires when the dragged node is released close enough to a registered snap target.
 
+## Hover
+
+```java
+node.onHoverStart((n, mouseX, mouseY) -> { });                                    // NodeHoverStartCallback
+node.onHoverEnd((n, mouseX, mouseY) -> { });                                      // NodeHoverEndCallback
+node.onHover((n, mouseX, mouseY) -> { });                                         // NodeHoverCallback
+```
+
+`onHoverStart` fires the frame the mouse enters the node; `onHoverEnd` fires the frame it leaves; `onHover` fires every frame while the mouse is over the node. All three are wired into the same hover state machine that drives `hoverValue`, so they stay in sync with the hover fade.
+
 ## Animation
 
 ```java
