@@ -41,6 +41,9 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	private volatile boolean ended;
 	private volatile int displayedFrameIndex;
 
+	private final Object grabberLock = new Object();
+	private volatile boolean released;
+
 	private int[] textureIds;
 	private int currentBuffer;
 	private boolean texturesAllocated;
@@ -97,47 +100,53 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
-		try {
-			avutil.av_log_set_level(avutil.AV_LOG_QUIET);
-			FFmpegLogCallback.set();
-
-			this.grabber = new FFmpegFrameGrabber(this.file);
-			this.grabber.setPixelFormat(avutil.AV_PIX_FMT_BGRA);
-			this.grabber.start();
-
-			resource.width(this.grabber.getImageWidth());
-			resource.height(this.grabber.getImageHeight());
-
-			this.frameRate = this.grabber.getVideoFrameRate();
-			if (this.frameRate <= 0D) {
-				this.frameRate = 30D;
+		synchronized (this.grabberLock) {
+			if (this.released) {
+				return;
 			}
 
-			this.duration = this.grabber.getLengthInTime() / 1000000D;
-			this.totalFrames = this.grabber.getLengthInVideoFrames();
-			if (this.totalFrames <= 0) {
-				this.totalFrames = (int) (this.duration * this.frameRate);
-			}
+			try {
+				avutil.av_log_set_level(avutil.AV_LOG_QUIET);
+				FFmpegLogCallback.set();
 
-			this.frameQueue = new ArrayBlockingQueue<>(VideoResourceDecoder.RING_BUFFER_SIZE);
+				this.grabber = new FFmpegFrameGrabber(this.file);
+				this.grabber.setPixelFormat(avutil.AV_PIX_FMT_BGRA);
+				this.grabber.start();
 
-			if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
-				this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
-				if (this.hasLocation) {
-					this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
-					this.audioPlayer.setReferenceDistance(this.referenceDistance);
-					this.audioPlayer.setMaxDistance(this.maxDistance);
+				resource.width(this.grabber.getImageWidth());
+				resource.height(this.grabber.getImageHeight());
+
+				this.frameRate = this.grabber.getVideoFrameRate();
+				if (this.frameRate <= 0D) {
+					this.frameRate = 30D;
 				}
-			}
 
-			final Frame firstFrame = this.grabber.grabImage();
-			if (firstFrame != null) {
-				final int[] pixels = this.frameToPixels(firstFrame, resource.getWidth(), resource.getHeight());
-				resource.data(new int[][] { pixels });
+				this.duration = this.grabber.getLengthInTime() / 1000000D;
+				this.totalFrames = this.grabber.getLengthInVideoFrames();
+				if (this.totalFrames <= 0) {
+					this.totalFrames = (int) (this.duration * this.frameRate);
+				}
+
+				this.frameQueue = new ArrayBlockingQueue<>(VideoResourceDecoder.RING_BUFFER_SIZE);
+
+				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
+					this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+					if (this.hasLocation) {
+						this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
+						this.audioPlayer.setReferenceDistance(this.referenceDistance);
+						this.audioPlayer.setMaxDistance(this.maxDistance);
+					}
+				}
+
+				final Frame firstFrame = this.grabber.grabImage();
+				if (firstFrame != null) {
+					final int[] pixels = this.frameToPixels(firstFrame, resource.getWidth(), resource.getHeight());
+					resource.data(new int[][] { pixels });
+				}
+			} catch (final Exception e) {
+				System.err.println("Failed to decode video: " + e.getMessage());
+				e.printStackTrace();
 			}
-		} catch (final Exception e) {
-			System.err.println("Failed to decode video: " + e.getMessage());
-			e.printStackTrace();
 		}
 	}
 
@@ -206,6 +215,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	public void release() {
+		this.released = true;
 		this.running.set(false);
 
 		if (this.decodeThread != null) {
@@ -216,51 +226,57 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 			this.decodeThread = null;
 		}
 
-		if (this.audioPlayer != null) {
-			this.audioPlayer.cleanup();
-			this.audioPlayer = null;
-		}
+		synchronized (this.grabberLock) {
+			if (this.audioPlayer != null) {
+				this.audioPlayer.cleanup();
+				this.audioPlayer = null;
+			}
 
-		if (this.grabber != null) {
-			try {
-				this.grabber.stop();
-				this.grabber.release();
-			} catch (final Exception ignored) {}
-			this.grabber = null;
-		}
+			if (this.grabber != null) {
+				try {
+					this.grabber.stop();
+					this.grabber.release();
+				} catch (final Exception ignored) {}
+				this.grabber = null;
+			}
 
-		if (this.frameQueue != null) {
-			this.frameQueue.clear();
-		}
-
-		this.ended = false;
-	}
-
-	private void reopenGrabber() {
-		try {
-			avutil.av_log_set_level(avutil.AV_LOG_QUIET);
-			FFmpegLogCallback.set();
-
-			this.grabber = new FFmpegFrameGrabber(this.file);
-			this.grabber.setPixelFormat(avutil.AV_PIX_FMT_BGRA);
-			this.grabber.start();
-
-			if (this.frameQueue == null) {
-				this.frameQueue = new ArrayBlockingQueue<>(VideoResourceDecoder.RING_BUFFER_SIZE);
-			} else {
+			if (this.frameQueue != null) {
 				this.frameQueue.clear();
 			}
 
-			if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
-				this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
-				if (this.hasLocation) {
-					this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
-					this.audioPlayer.setReferenceDistance(this.referenceDistance);
-					this.audioPlayer.setMaxDistance(this.maxDistance);
+			this.ended = false;
+		}
+	}
+
+	private void reopenGrabber() {
+		synchronized (this.grabberLock) {
+			this.released = false;
+
+			try {
+				avutil.av_log_set_level(avutil.AV_LOG_QUIET);
+				FFmpegLogCallback.set();
+
+				this.grabber = new FFmpegFrameGrabber(this.file);
+				this.grabber.setPixelFormat(avutil.AV_PIX_FMT_BGRA);
+				this.grabber.start();
+
+				if (this.frameQueue == null) {
+					this.frameQueue = new ArrayBlockingQueue<>(VideoResourceDecoder.RING_BUFFER_SIZE);
+				} else {
+					this.frameQueue.clear();
 				}
+
+				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
+					this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+					if (this.hasLocation) {
+						this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
+						this.audioPlayer.setReferenceDistance(this.referenceDistance);
+						this.audioPlayer.setMaxDistance(this.maxDistance);
+					}
+				}
+			} catch (final Exception e) {
+				System.err.println("Failed to reopen video grabber: " + e.getMessage());
 			}
-		} catch (final Exception e) {
-			System.err.println("Failed to reopen video grabber: " + e.getMessage());
 		}
 	}
 
@@ -408,23 +424,29 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 
 	/* [ Internal Section ] */
 	private void seekInternal(final long microseconds) {
-		if (this.frameQueue != null) {
-			this.frameQueue.clear();
-		}
-
-		try {
-			if (this.grabber != null) {
-				this.grabber.setTimestamp(microseconds);
+		synchronized (this.grabberLock) {
+			if (this.released) {
+				return;
 			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
 
-		this.displayedFrameIndex = (int) (microseconds / 1000000D * this.frameRate);
-		this.ended = false;
+			if (this.frameQueue != null) {
+				this.frameQueue.clear();
+			}
 
-		if (this.audioPlayer != null) {
-			this.audioPlayer.flush();
+			try {
+				if (this.grabber != null) {
+					this.grabber.setTimestamp(microseconds);
+				}
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+
+			this.displayedFrameIndex = (int) (microseconds / 1000000D * this.frameRate);
+			this.ended = false;
+
+			if (this.audioPlayer != null) {
+				this.audioPlayer.flush();
+			}
 		}
 	}
 
@@ -445,34 +467,44 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 						continue;
 					}
 
-					final Frame frame = this.grabber.grab();
-					if (frame == null) {
-						if (this.loop) {
-							this.grabber.setTimestamp(0);
-							this.decodedFrameIndex.set(0);
-							this.displayedFrameIndex = 0;
-							if (this.audioPlayer != null) {
-								this.audioPlayer.flush();
+					boolean hasImage = false;
+					synchronized (this.grabberLock) {
+						if (this.released || this.grabber == null) {
+							return;
+						}
+
+						final Frame frame = this.grabber.grab();
+						if (frame == null) {
+							if (this.loop) {
+								this.grabber.setTimestamp(0);
+								this.decodedFrameIndex.set(0);
+								this.displayedFrameIndex = 0;
+								if (this.audioPlayer != null) {
+									this.audioPlayer.flush();
+								}
+								nextFrameTime = System.nanoTime();
+								continue;
 							}
-							nextFrameTime = System.nanoTime();
-							continue;
+							this.ended = true;
+							break;
 						}
-						this.ended = true;
-						break;
+
+						if (frame.samples != null && this.audioPlayer != null && this.volume > 0F) {
+							this.audioPlayer.pushSamples(frame.samples);
+						}
+
+						if (frame.image != null) {
+							hasImage = true;
+							final int[] pixels = this.frameToPixels(frame, this.grabber.getImageWidth(), this.grabber.getImageHeight());
+							if (!this.frameQueue.offer(pixels)) {
+								this.frameQueue.poll();
+								this.frameQueue.offer(pixels);
+							}
+							this.decodedFrameIndex.incrementAndGet();
+						}
 					}
 
-					if (frame.samples != null && this.audioPlayer != null && this.volume > 0F) {
-						this.audioPlayer.pushSamples(frame.samples);
-					}
-
-					if (frame.image != null) {
-						final int[] pixels = this.frameToPixels(frame, this.grabber.getImageWidth(), this.grabber.getImageHeight());
-						if (!this.frameQueue.offer(pixels)) {
-							this.frameQueue.poll();
-							this.frameQueue.offer(pixels);
-						}
-						this.decodedFrameIndex.incrementAndGet();
-
+					if (hasImage) {
 						nextFrameTime += (long) frameDurationNs;
 						final long sleepMs = (nextFrameTime - System.nanoTime()) / 1000000L;
 						if (sleepMs > 0L) {
