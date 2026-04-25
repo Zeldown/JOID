@@ -54,7 +54,7 @@ group = "be.zeldown.joid"
 archivesBaseName = "joid"
 
 task updateVersion() {
-    project.version = "6.1.0"
+    project.version = "6.1.1"
 
     def javaFile = file('src/main/java/be/zeldown/joid/internal/JOID.java')
     if (javaFile.exists()) {
