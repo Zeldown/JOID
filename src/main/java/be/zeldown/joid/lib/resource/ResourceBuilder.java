@@ -88,8 +88,8 @@ public final class ResourceBuilder {
 	/* [ Resource Section ] */
 	public @NonNull Resource of(final @NonNull InputStream stream) {
 		final String uniqueId = stream.toString();
+		final InputStream supportedStream = stream.markSupported() ? stream : new BufferedInputStream(stream);
 		try {
-			final InputStream supportedStream = stream.markSupported() ? stream : new BufferedInputStream(stream);
 			supportedStream.mark(12);
 
 			final byte[] header = new byte[12];
@@ -102,8 +102,7 @@ public final class ResourceBuilder {
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-
-		return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.image(stream))));
+		return this.cache(uniqueId, () -> new Resource(this, new ResourceData(uniqueId, ResourceDecoder.image(supportedStream))));
 	}
 
 	public @NonNull Resource of(final @NonNull BufferedImage image) {
