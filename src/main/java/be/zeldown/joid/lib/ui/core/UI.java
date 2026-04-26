@@ -526,6 +526,7 @@ public abstract class UI implements IUI, IndexedElement {
 		GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
 		if (this.data.projection()) {
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glPushMatrix();
 			GL11.glLoadIdentity();
 			GL11.glOrtho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -608,6 +609,12 @@ public abstract class UI implements IUI, IndexedElement {
 			if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
 				this.transition.getOut().post(this, mx, my);
 			}
+		}
+
+		if (this.data.projection()) {
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glPopMatrix();
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		}
 
 		final long end = System.nanoTime();
