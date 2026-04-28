@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 
 import be.zeldown.joid.internal.JOID;
@@ -45,9 +46,8 @@ public class CustomFontProvider implements FontProvider {
 
 	private static final IGLShader      SHADER;
 	private static final SamplerUniform MSDF_UNIFORM;
-	private static final FloatUniform   DOFFSET_UNIFORM;
-	private static final FloatUniform   BLEND_UNIFORM;
 	private static final Float2Uniform  TEXEL_UNIFORM;
+	private static final FloatUniform   PX_RANGE_UNIFORM;
 	private static final Float4Uniform  COLOR_UNIFORM;
 
 	private static final IntUniform     HAS_GRADIENT_UNIFORM;
@@ -103,11 +103,10 @@ public class CustomFontProvider implements FontProvider {
 
 		SHADER = GLShader.from(vert, frag, ShaderBlendState.NORMAL);
 
-		MSDF_UNIFORM    = CustomFontProvider.SHADER.getSamplerUniform("msdf");
-		DOFFSET_UNIFORM = CustomFontProvider.SHADER.getFloatUniform("doffset");
-		BLEND_UNIFORM   = CustomFontProvider.SHADER.getFloatUniform("blend");
-		COLOR_UNIFORM   = CustomFontProvider.SHADER.getFloat4Uniform("color");
-		TEXEL_UNIFORM   = CustomFontProvider.SHADER.getFloat2Uniform("texel");
+		MSDF_UNIFORM     = CustomFontProvider.SHADER.getSamplerUniform("msdf");
+		TEXEL_UNIFORM    = CustomFontProvider.SHADER.getFloat2Uniform("texel");
+		PX_RANGE_UNIFORM = CustomFontProvider.SHADER.getFloatUniform("pxRange");
+		COLOR_UNIFORM    = CustomFontProvider.SHADER.getFloat4Uniform("color");
 
 		HAS_GRADIENT_UNIFORM       = CustomFontProvider.SHADER.getIntUniform("u_HasGradient");
 		GRADIENT_START_UNIFORM     = CustomFontProvider.SHADER.getFloat4Uniform("u_GradientStart");
@@ -138,8 +137,6 @@ public class CustomFontProvider implements FontProvider {
 		this.bindFont(activeFont);
 		this.bindColor(activeColor);
 		this.bindGradient(activeColor, runX, runY, runWidth, runHeight);
-
-		CustomFontProvider.DOFFSET_UNIFORM.setValue(3.5F / fontSize);
 
 		boolean obfuscated = false;
 		boolean italic = info.isItalic();
@@ -256,20 +253,25 @@ public class CustomFontProvider implements FontProvider {
 		}
 
 		final Atlas atlas = font.getFontInfo().getAtlas();
-		final double textureTop = 1D - atlasBounds.getTop() / atlas.getHeight();
-		final double textureBottom = 1D - atlasBounds.getBottom() / atlas.getHeight();
-		final double textureLeft = atlasBounds.getLeft() / atlas.getWidth();
-		final double textureRight = atlasBounds.getRight() / atlas.getWidth();
+		final double textureTop = 1D - (atlasBounds.getTop() - 0.5D) / atlas.getHeight();
+		final double textureBottom = 1D - (atlasBounds.getBottom() + 0.5D) / atlas.getHeight();
+		final double textureLeft = (atlasBounds.getLeft() + 0.5D) / atlas.getWidth();
+		final double textureRight = (atlasBounds.getRight() - 0.5D) / atlas.getWidth();
 		final double topOffset = italic ? fontSize / 5D : 0D;
+
+		final double x2 = x + width;
+		final double y2 = y + height;
+		final double x1Top = x + topOffset;
+		final double x2Top = x + width + topOffset;
 
 		CustomFontProvider.COLOR_UNIFORM.setValue(color.r, color.g, color.b, color.a);
 
 		final T9R tess = T9R.inst();
 		tess.start(GL11.GL_QUADS);
-		tess.addVertexWithUV(x, y + height, 0D, textureLeft, textureBottom);
-		tess.addVertexWithUV(x + width, y + height, 0D, textureRight, textureBottom);
-		tess.addVertexWithUV(x + width + topOffset, y, 0D, textureRight, textureTop);
-		tess.addVertexWithUV(x + topOffset, y, 0D, textureLeft, textureTop);
+		tess.addVertexWithUV(x, y2, 0D, textureLeft, textureBottom);
+		tess.addVertexWithUV(x2, y2, 0D, textureRight, textureBottom);
+		tess.addVertexWithUV(x2Top, y, 0D, textureRight, textureTop);
+		tess.addVertexWithUV(x1Top, y, 0D, textureLeft, textureTop);
 		tess.draw();
 	}
 
@@ -278,11 +280,12 @@ public class CustomFontProvider implements FontProvider {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 
 		CustomFontProvider.MSDF_UNIFORM.setValue(font.getTexture().getTextureId());
 		CustomFontProvider.TEXEL_UNIFORM.setValue(1F / font.getFontInfo().getAtlas().getWidth(), 1F / font.getFontInfo().getAtlas().getHeight());
+		CustomFontProvider.PX_RANGE_UNIFORM.setValue(font.getFontInfo().getAtlas().getDistanceRange());
 	}
 
 	private void bindGradient(final @NonNull Color color, final double runX, final double runY, final double runWidth, final double runHeight) {
@@ -301,7 +304,6 @@ public class CustomFontProvider implements FontProvider {
 
 	private void bindColor(final @NonNull Color color) {
 		color.update();
-		CustomFontProvider.BLEND_UNIFORM.setValue(Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null)[2]);
 	}
 
 	/* [ Provider Section ] */
