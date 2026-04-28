@@ -1,5 +1,7 @@
 package be.zeldown.joid.lib.ui.node.impl.design.resource;
 
+import javax.vecmath.Vector4f;
+
 import org.lwjgl.opengl.GL11;
 
 import be.zeldown.joid.lib.color.Color;
@@ -78,62 +80,34 @@ public class ResourceNode extends Node {
 			return;
 		}
 
-		if (super.getWidth() == 0 && super.getHeight() != 0) {
-			this.color.bind();
-			if (this.hoveredResource == null && this.hoveredColor != null) {
-				this.color.to(this.hoveredColor, super.hoverValue(1F)).bind();
-			}
+		if (super.getWidth() == 0) {
+			super.width(resourceWidth * super.getHeight() / resourceHeight);
+			return;
+		}
 
-			final double lastWidth = super.getWidth();
-			final double newWidth = resourceWidth * super.getHeight() / resourceHeight;
-			if (lastWidth != newWidth) {
-				super.width(newWidth);
-			} else {
-				DrawUtils.RESOURCE.drawScaledResourceHeight(super.getX(), super.getY(), super.getHeight(), this.resource);
-				if (this.hoveredResource != null && this.hoveredResource != this.resource) {
-					(this.hoveredColor != null ? this.hoveredColor : this.color).copyAlpha(super.hoverValue(1F)).bind();
-					DrawUtils.RESOURCE.drawScaledResourceHeight(super.getX(), super.getY(), super.getHeight(), this.hoveredResource);
-				}
-			}
-		} else if (super.getHeight() == 0 && super.getWidth() != 0) {
-			this.color.bind();
-			if (this.hoveredResource == null && this.hoveredColor != null) {
-				this.color.to(this.hoveredColor, super.hoverValue(1F)).bind();
-			}
+		if (super.getHeight() == 0) {
+			super.height(resourceHeight * super.getWidth() / resourceWidth);
+			return;
+		}
 
-			final double lastHeight = super.getHeight();
-			final double newHeight = resourceHeight * super.getWidth() / resourceWidth;
-			if (lastHeight != newHeight) {
-				super.height(newHeight);
-			} else {
-				DrawUtils.RESOURCE.drawScaledResourceWidth(super.getX(), super.getY(), super.getWidth(), this.resource);
-				if (this.hoveredResource != null && this.hoveredResource != this.resource) {
-					(this.hoveredColor != null ? this.hoveredColor : this.color).copyAlpha(super.hoverValue(1F)).bind();
-					DrawUtils.RESOURCE.drawScaledResourceWidth(super.getX(), super.getY(), super.getWidth(), this.hoveredResource);
-				}
-			}
-		} else if (this.stretchType == StretchType.STRETCH) {
-			this.color.bind();
-			if (this.hoveredResource == null && this.hoveredColor != null) {
-				this.color.to(this.hoveredColor, super.hoverValue(1F)).bind();
-			}
+		final Vector4f canvas = new Vector4f((float) super.getX(), (float) super.getY(), (float) (super.getX() + super.getWidth()), (float) (super.getY() + super.getHeight()));
 
-			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
-			if (this.hoveredResource != null && this.hoveredResource != this.resource) {
-				(this.hoveredColor != null ? this.hoveredColor : this.color).copyAlpha(super.hoverValue(1F)).bind();
-				DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.hoveredResource);
-			}
-		} else if (this.stretchType == StretchType.CONTAIN) {
-			this.color.bind();
-			if (this.hoveredResource == null && this.hoveredColor != null) {
-				this.color.to(this.hoveredColor, super.hoverValue(1F)).bind();
-			}
+		final Color primary = this.hoveredColor != null && this.hoveredResource == null
+				? this.color.to(this.hoveredColor, super.hoverValue(1F))
+				: this.color;
+		primary.bind(() -> this.drawResource(this.resource), canvas, true);
 
-			DrawUtils.RESOURCE.drawCenteredResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
-			if (this.hoveredResource != null && this.hoveredResource != this.resource) {
-				(this.hoveredColor != null ? this.hoveredColor : this.color).copyAlpha(super.hoverValue(1F)).bind();
-				DrawUtils.RESOURCE.drawCenteredResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.hoveredResource);
-			}
+		if (this.hoveredResource != null && this.hoveredResource != this.resource) {
+			final Color secondary = (this.hoveredColor != null ? this.hoveredColor : this.color).copyAlpha(super.hoverValue(1F));
+			secondary.bind(() -> this.drawResource(this.hoveredResource), canvas, true);
+		}
+	}
+
+	private void drawResource(final @NonNull Resource resource) {
+		if (this.stretchType == StretchType.CONTAIN) {
+			DrawUtils.RESOURCE.drawCenteredResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
+		} else {
+			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
 		}
 	}
 

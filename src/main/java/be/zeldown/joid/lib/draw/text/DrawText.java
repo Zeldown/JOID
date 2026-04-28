@@ -56,6 +56,11 @@ public final class DrawText {
 			y -= text.getHeight();
 		}
 
+		final double runX = x;
+		final double runY = y;
+		final double runWidth = text.getWidth();
+		final double runHeight = text.getHeight();
+
 		for (final TextElement element : text.getElementList()) {
 			final String drawText = text.getText(element);
 			final TextInfo info = element.getInfo();
@@ -67,7 +72,7 @@ public final class DrawText {
 				oy += text.getHeight() - info.getHeight();
 			}
 
-			x += info.getFont().getFontProvider().drawText(x, oy, drawText, info).getWidth();
+			x += info.getFont().getFontProvider().drawText(x, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
 		}
 
 		return text.getBounds();

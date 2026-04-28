@@ -52,7 +52,7 @@ public class BorderShaderPass implements ShaderPass {
 
 	@Override
 	public float expansion() {
-		return this.borderWidth;
+		return this.borderWidth + 2F;
 	}
 
 	/* [ Internal Section ] */
@@ -64,8 +64,8 @@ public class BorderShaderPass implements ShaderPass {
 		final int scaleFactor = ShaderPipeline.scaleFactor(node != null ? node.getUi() : null);
 		final double nodeW = node != null ? node.getWidth() : 200D;
 		final double nodeH = node != null ? node.getHeight() : 120D;
-		final double expandedW = nodeW + this.borderWidth * 2D;
-		final double expandedH = nodeH + this.borderWidth * 2D;
+		final double expandedW = nodeW + this.expansion() * 2D;
+		final double expandedH = nodeH + this.expansion() * 2D;
 		final float pixelW = (float) Math.ceil(expandedW * scaleFactor);
 		final float pixelH = (float) Math.ceil(expandedH * scaleFactor);
 		final float texelW = 1F / Math.max(1F, pixelW);

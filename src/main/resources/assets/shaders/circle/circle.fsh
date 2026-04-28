@@ -21,7 +21,10 @@ void main() {
     }
     
     float mask = 1.0 - smoothstep(radius - 1.0, radius, dist);
-    float finalAlpha = baseColor.a * mask;
 
-    gl_FragColor = vec4(baseColor.rgb, finalAlpha);
+    if (type == 1) {
+        gl_FragColor = vec4(baseColor.rgb * mask, baseColor.a * mask);
+    } else {
+        gl_FragColor = vec4(baseColor.rgb, baseColor.a * mask);
+    }
 }

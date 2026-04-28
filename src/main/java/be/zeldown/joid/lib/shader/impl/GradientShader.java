@@ -19,6 +19,10 @@ public class GradientShader extends GLShaderImpl {
 	}
 
 	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final Runnable runnable, final @NonNull Vector4f canvas) {
+		GradientShader.use(startPos, endPos, startColor, endColor, false, runnable, canvas);
+	}
+
+	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final boolean hasTexture, final Runnable runnable, final @NonNull Vector4f canvas) {
 		if (!GradientShader.INSTANCE.isAvailable()) {
 			return;
 		}
@@ -37,7 +41,7 @@ public class GradientShader extends GLShaderImpl {
 		endColorUniform.setValue(endColor.r, endColor.g, endColor.b, endColor.a);
 
 		final IntUniform hasTextureUniform = GradientShader.INSTANCE.shader.getIntUniform("hasTexture");
-		hasTextureUniform.setValue(0);
+		hasTextureUniform.setValue(hasTexture ? 1 : 0);
 
 		final Float4Uniform canvasUniform = GradientShader.INSTANCE.shader.getFloat4Uniform("canvas");
 		canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);

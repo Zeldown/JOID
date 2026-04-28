@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL13;
 
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.color.Color;
+import be.zeldown.joid.lib.color.ColorGradient;
 import be.zeldown.joid.lib.font.FontProvider;
 import be.zeldown.joid.lib.font.dto.atlas.Atlas;
 import be.zeldown.joid.lib.font.dto.atlas.AtlasBounds;
@@ -25,6 +26,7 @@ import be.zeldown.joid.lib.shader.blend.ShaderBlendState;
 import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
 import be.zeldown.joid.lib.shader.uniform.Float4Uniform;
 import be.zeldown.joid.lib.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.shader.uniform.IntUniform;
 import be.zeldown.joid.lib.shader.uniform.SamplerUniform;
 import be.zeldown.joid.lib.tessellator.T9R;
 import lombok.NonNull;
@@ -47,6 +49,13 @@ public class CustomFontProvider implements FontProvider {
 	private static final FloatUniform   BLEND_UNIFORM;
 	private static final Float2Uniform  TEXEL_UNIFORM;
 	private static final Float4Uniform  COLOR_UNIFORM;
+
+	private static final IntUniform     HAS_GRADIENT_UNIFORM;
+	private static final Float4Uniform  GRADIENT_START_UNIFORM;
+	private static final Float4Uniform  GRADIENT_END_UNIFORM;
+	private static final Float2Uniform  GRADIENT_START_POS_UNIFORM;
+	private static final Float2Uniform  GRADIENT_END_POS_UNIFORM;
+	private static final Float4Uniform  GRADIENT_CANVAS_UNIFORM;
 
 	static {
 		CustomFontProvider.COLOR_MAP.put(0, Color.BLACK);
@@ -99,9 +108,16 @@ public class CustomFontProvider implements FontProvider {
 		BLEND_UNIFORM   = CustomFontProvider.SHADER.getFloatUniform("blend");
 		COLOR_UNIFORM   = CustomFontProvider.SHADER.getFloat4Uniform("color");
 		TEXEL_UNIFORM   = CustomFontProvider.SHADER.getFloat2Uniform("texel");
+
+		HAS_GRADIENT_UNIFORM       = CustomFontProvider.SHADER.getIntUniform("u_HasGradient");
+		GRADIENT_START_UNIFORM     = CustomFontProvider.SHADER.getFloat4Uniform("u_GradientStart");
+		GRADIENT_END_UNIFORM       = CustomFontProvider.SHADER.getFloat4Uniform("u_GradientEnd");
+		GRADIENT_START_POS_UNIFORM = CustomFontProvider.SHADER.getFloat2Uniform("u_GradientStartPos");
+		GRADIENT_END_POS_UNIFORM   = CustomFontProvider.SHADER.getFloat2Uniform("u_GradientEndPos");
+		GRADIENT_CANVAS_UNIFORM    = CustomFontProvider.SHADER.getFloat4Uniform("u_GradientCanvas");
 	}
 
-	private void draw(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
+	private void draw(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
 		if (!CustomFontProvider.SHADER.isActive()) {
 			throw new RuntimeException("FontRenderer shader is not usable");
 		}
@@ -121,6 +137,7 @@ public class CustomFontProvider implements FontProvider {
 
 		this.bindFont(activeFont);
 		this.bindColor(activeColor);
+		this.bindGradient(activeColor, runX, runY, runWidth, runHeight);
 
 		CustomFontProvider.DOFFSET_UNIFORM.setValue(3.5F / fontSize);
 
@@ -268,6 +285,20 @@ public class CustomFontProvider implements FontProvider {
 		CustomFontProvider.TEXEL_UNIFORM.setValue(1F / font.getFontInfo().getAtlas().getWidth(), 1F / font.getFontInfo().getAtlas().getHeight());
 	}
 
+	private void bindGradient(final @NonNull Color color, final double runX, final double runY, final double runWidth, final double runHeight) {
+		if (color.isGradient()) {
+			final ColorGradient grad = color.gradient;
+			CustomFontProvider.HAS_GRADIENT_UNIFORM.setValue(1);
+			CustomFontProvider.GRADIENT_START_UNIFORM.setValue(grad.getStartColor().r, grad.getStartColor().g, grad.getStartColor().b, grad.getStartColor().a);
+			CustomFontProvider.GRADIENT_END_UNIFORM.setValue(grad.getEndColor().r, grad.getEndColor().g, grad.getEndColor().b, grad.getEndColor().a);
+			CustomFontProvider.GRADIENT_START_POS_UNIFORM.setValue(grad.getDirection().x, grad.getDirection().y);
+			CustomFontProvider.GRADIENT_END_POS_UNIFORM.setValue(grad.getDirection().z, grad.getDirection().w);
+			CustomFontProvider.GRADIENT_CANVAS_UNIFORM.setValue((float) runX, (float) runY, (float) (runX + runWidth), (float) (runY + runHeight));
+		} else {
+			CustomFontProvider.HAS_GRADIENT_UNIFORM.setValue(0);
+		}
+	}
+
 	private void bindColor(final @NonNull Color color) {
 		color.update();
 		CustomFontProvider.BLEND_UNIFORM.setValue(Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null)[2]);
@@ -276,15 +307,21 @@ public class CustomFontProvider implements FontProvider {
 	/* [ Provider Section ] */
 	@Override
 	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
+		final FontBounds bounds = this.getBounds(text, info);
+		return this.drawText(x, y, text, info, x, y, bounds.getWidth(), bounds.getHeight());
+	}
+
+	@Override
+	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
 		}
 
 		if (info.getShadowColor() != null) {
-			this.draw(x + info.getShadowX(), y + info.getShadowY(), text, info.copy().color(info.getShadowColor()).colored(false));
+			this.draw(x + info.getShadowX(), y + info.getShadowY(), text, info.copy().color(info.getShadowColor()).colored(false), runX + info.getShadowX(), runY + info.getShadowY(), runWidth, runHeight);
 		}
 
-		this.draw(x, y, text, info);
+		this.draw(x, y, text, info, runX, runY, runWidth, runHeight);
 		return this.getBounds(text, info);
 	}
 

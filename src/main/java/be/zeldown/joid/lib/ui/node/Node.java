@@ -64,6 +64,7 @@ import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeReloadCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeRenderCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeUpdateCallback;
 import be.zeldown.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
+import be.zeldown.joid.lib.ui.node.effect.EffectScope;
 import be.zeldown.joid.lib.ui.node.effect.NodeEffect;
 import be.zeldown.joid.lib.ui.node.hover.HoverElement;
 import be.zeldown.joid.lib.ui.node.hover.HoverSupplier;
@@ -463,6 +464,9 @@ public abstract class Node implements INode {
 			final List<NodeEffect<Node>> shaderEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
 			final List<NodeEffect<Node>> otherEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
 
+			final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == EffectScope.SELF).collect(Collectors.toList());
+			final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == EffectScope.CHILDREN).collect(Collectors.toList());
+
 			otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
 
 			final Runnable maskDraw = () -> {
@@ -483,10 +487,18 @@ public abstract class Node implements INode {
 					this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
 						this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
 						this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
-							if (this.mounted) {
-								this.draw(mouseX, mouseY);
+							final Runnable selfDraw = () -> {
+								if (this.mounted) {
+									this.draw(mouseX, mouseY);
+								} else {
+									this.drawSkeleton(mouseX, mouseY);
+								}
+							};
+							if (selfShaderEffects.isEmpty()) {
+								selfDraw.run();
 							} else {
-								this.drawSkeleton(mouseX, mouseY);
+								final List<ShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+								ShaderPipeline.render(this, selfPasses, selfDraw);
 							}
 						}, mouseX, mouseY);
 
@@ -520,9 +532,9 @@ public abstract class Node implements INode {
 				}, this.overflow != OverflowProperty.NONE);
 			};
 
-			if (!shaderEffects.isEmpty()) {
-				final List<ShaderPass> passes = shaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-				ShaderPipeline.render(this, passes, maskDraw);
+			if (!subtreeShaderEffects.isEmpty()) {
+				final List<ShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+				ShaderPipeline.render(this, subtreePasses, maskDraw);
 			} else {
 				maskDraw.run();
 			}

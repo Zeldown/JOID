@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 import be.zeldown.joid.lib.opengl.framebuffer.FrameBuffer;
@@ -34,18 +35,25 @@ public final class ShaderPipeline {
 			return;
 		}
 
-		passes.sort(Comparator.comparingInt(ShaderPass::priority));
+		ShaderPipeline.pipelineDepth++;
+		try {
+			passes.sort(Comparator.comparingInt(ShaderPass::priority));
 
-		final boolean needsFBO = passes.size() > 1 || passes.stream().anyMatch(p -> p.expansion() > 0F || !p.supportsDirectBind());
-		if (!needsFBO) {
-			passes.get(0).bindDirect(node);
-			baseDraw.run();
-			passes.get(0).unbind();
-			return;
-		}
+			final boolean needsFBO = passes.size() > 1 || ShaderPipeline.pipelineDepth > 1 || passes.stream().anyMatch(p -> p.expansion() > 0F || !p.supportsDirectBind());
+			if (!needsFBO) {
+				final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
+				passes.get(0).bindDirect(node);
+				baseDraw.run();
+				passes.get(0).unbind();
+				GL20.glUseProgram(prevProgram);
+				return;
+			}
 
-		if (node != null) {
-			ShaderPipeline.renderMultiPass(node.getX(), node.getY(), node.getWidth(), node.getHeight(), ShaderPipeline.scaleFactor(node.getUi()), node, passes, baseDraw);
+			if (node != null) {
+				ShaderPipeline.renderMultiPass(node.getX(), node.getY(), node.getWidth(), node.getHeight(), ShaderPipeline.scaleFactor(node.getUi()), node, passes, baseDraw);
+			}
+		} finally {
+			ShaderPipeline.pipelineDepth--;
 		}
 	}
 
@@ -63,15 +71,22 @@ public final class ShaderPipeline {
 			return;
 		}
 
-		passes.sort(Comparator.comparingInt(ShaderPass::priority));
-		if (passes.size() == 1 && passes.get(0).expansion() == 0F && passes.get(0).supportsDirectBind()) {
-			passes.get(0).bindDirect(null);
-			baseDraw.run();
-			passes.get(0).unbind();
-			return;
-		}
+		ShaderPipeline.pipelineDepth++;
+		try {
+			passes.sort(Comparator.comparingInt(ShaderPass::priority));
+			if (passes.size() == 1 && ShaderPipeline.pipelineDepth <= 1 && passes.get(0).expansion() == 0F && passes.get(0).supportsDirectBind()) {
+				final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
+				passes.get(0).bindDirect(null);
+				baseDraw.run();
+				passes.get(0).unbind();
+				GL20.glUseProgram(prevProgram);
+				return;
+			}
 
-		ShaderPipeline.renderMultiPass(x, y, width, height, 2, null, passes, baseDraw);
+			ShaderPipeline.renderMultiPass(x, y, width, height, 2, null, passes, baseDraw);
+		} finally {
+			ShaderPipeline.pipelineDepth--;
+		}
 	}
 
 	public static int scaleFactor(final UI ui) {
@@ -100,11 +115,11 @@ public final class ShaderPipeline {
 		final int pixelW = Math.max(1, (int) Math.ceil(expW * scaleFactor));
 		final int pixelH = Math.max(1, (int) Math.ceil(expH * scaleFactor));
 
-		ShaderPipeline.pipelineDepth++;
 		final FrameBuffer[] fbos = ShaderPipeline.getOrCreateFBOs(pixelW, pixelH);
 		final FrameBuffer fboA = fbos[0];
 		final FrameBuffer fboB = fbos[1];
 
+		final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
 		final int prevFbo = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
 		ShaderPipeline.VIEWPORT_BUFFER.clear();
 		GL11.glGetInteger(GL11.GL_VIEWPORT, ShaderPipeline.VIEWPORT_BUFFER);
@@ -181,8 +196,7 @@ public final class ShaderPipeline {
 		passes.get(passes.size() - 1).bindForTexture(node);
 		ShaderPipeline.drawTexturedQuad(src.getTexture(), expX, expY, expW, expH);
 		passes.get(passes.size() - 1).unbind();
-
-		ShaderPipeline.pipelineDepth--;
+		GL20.glUseProgram(prevProgram);
 	}
 
 	private static void drawTexturedQuad(final int textureId, final double x, final double y, final double w, final double h) {

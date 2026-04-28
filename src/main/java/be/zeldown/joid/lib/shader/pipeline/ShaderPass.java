@@ -14,6 +14,6 @@ public interface ShaderPass {
 
 	default public float expansion() { return 0F; }
 
-	default public boolean supportsDirectBind() { return true; }
+	default public boolean supportsDirectBind() { return false; }
 
 }
