@@ -91,10 +91,7 @@ public class ResourceNode extends Node {
 		}
 
 		final Vector4f canvas = new Vector4f((float) super.getX(), (float) super.getY(), (float) (super.getX() + super.getWidth()), (float) (super.getY() + super.getHeight()));
-
-		final Color primary = this.hoveredColor != null && this.hoveredResource == null
-				? this.color.to(this.hoveredColor, super.hoverValue(1F))
-				: this.color;
+		final Color primary = this.hoveredColor != null && this.hoveredResource == null ? this.color.to(this.hoveredColor, super.hoverValue(1F)) : this.color;
 		primary.bind(() -> this.drawResource(this.resource), canvas, true);
 
 		if (this.hoveredResource != null && this.hoveredResource != this.resource) {
