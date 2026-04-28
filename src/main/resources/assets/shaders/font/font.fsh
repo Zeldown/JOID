@@ -5,11 +5,9 @@ varying vec4 vColor;
 varying vec2 vPosition;
 
 uniform sampler2D msdf;
-
-uniform float doffset;
-uniform float blend;
 uniform vec4 color;
 uniform vec2 texel;
+uniform float pxRange;
 
 uniform int u_HasGradient;
 uniform vec4 u_GradientStart;
@@ -18,23 +16,37 @@ uniform vec2 u_GradientStartPos;
 uniform vec2 u_GradientEndPos;
 uniform vec4 u_GradientCanvas;
 
-uniform int effectType;
-uniform vec4 effectColor;
-uniform float effectSize;
-uniform vec2 shadowOffset;
-
-float smoother(float edge0, float edge1, float x) {
-    x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
-    return x * x * (3.0 - 2.0 * x);
-}
-
 float median(float r, float g, float b) {
     return max(min(r, g), min(max(r, g), b));
 }
 
-float sdfDistance(sampler2D msdf, vec2 pos) {
+float sdfDistance(vec2 pos) {
     vec3 raw = texture2D(msdf, pos).rgb;
-    return max(min(raw.r, raw.g), min(max(raw.r, raw.g), raw.b));
+    return median(raw.r, raw.g, raw.b);
+}
+
+float screenPxRange() {
+    vec2 unitRange = vec2(pxRange) * texel;
+    vec2 screenTexSize = vec2(1.0) / fwidth(vTexCoord);
+    return max(0.5 * dot(unitRange, screenTexSize), 1.0);
+}
+
+float msdfAlpha(vec2 uv, float pxR) {
+    float d = sdfDistance(uv);
+    return clamp(pxR * (d - 0.5) + 0.5, 0.0, 1.0);
+}
+
+float supersampledAlpha() {
+    float pxR = screenPxRange();
+    vec2 maxOffset = texel * 0.5;
+    vec2 dx = clamp(dFdx(vTexCoord) * 0.354, -maxOffset, maxOffset);
+    vec2 dy = clamp(dFdy(vTexCoord) * 0.354, -maxOffset, maxOffset);
+    float a = msdfAlpha(vTexCoord, pxR);
+    a += msdfAlpha(vTexCoord + dx + dy, pxR);
+    a += msdfAlpha(vTexCoord - dx + dy, pxR);
+    a += msdfAlpha(vTexCoord + dx - dy, pxR);
+    a += msdfAlpha(vTexCoord - dx - dy, pxR);
+    return a / 5.0;
 }
 
 vec4 resolveColor() {
@@ -61,27 +73,12 @@ vec4 resolveColor() {
 }
 
 void main() {
-    float distance = sdfDistance(msdf, vTexCoord);
+    float alpha = supersampledAlpha();
 
-   	vec2 grad = vec2(
-        sdfDistance(msdf, vTexCoord + vec2(texel.x, 0.0)) - distance,
-        sdfDistance(msdf, vTexCoord + vec2(0.0, texel.y)) - distance
-    );
-
-    float grad_length = length(grad);
-
-    grad /= max(grad_length, 1.0 / 256.0);
-
-    float vgrad = abs(grad.y);
-    float res_doffset = mix(doffset, mix(doffset * 1.1, doffset * 0.8, vgrad), blend);
-    float alpha = smoother(0.5 - res_doffset, 0.5 + res_doffset, distance);
+    if (alpha < 1.0 / 256.0) {
+        discard;
+    }
 
     vec4 baseColor = resolveColor();
-    vec4 finalColor = vec4(baseColor.rgb, alpha * baseColor.a);
-
-    if (finalColor.a < 10.0 / 256.0) {
-        gl_FragColor = vec4(0.0);
-    } else {
-        gl_FragColor = finalColor * vColor;
-    }
+    gl_FragColor = vec4(baseColor.rgb, alpha * baseColor.a) * vColor;
 }
