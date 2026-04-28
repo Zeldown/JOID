@@ -5,6 +5,9 @@ import java.util.function.Consumer;
 
 import javax.vecmath.Vector4f;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
+
 import be.zeldown.joid.lib.opengl.GLHelper;
 import lombok.NonNull;
 
@@ -190,8 +193,14 @@ public final class Color {
 	}
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
+		this.bind(runnable, canvas, false);
+	}
+
+	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas, final boolean hasTexture) {
 		if (this.isGradient()) {
-			this.gradient.use(runnable, canvas);
+			final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
+			this.gradient.use(hasTexture, runnable, canvas);
+			GL20.glUseProgram(prevProgram);
 		} else {
 			this.bind();
 			runnable.run();
@@ -209,7 +218,6 @@ public final class Color {
 
 	public @NonNull Color darker(float scale) {
 		scale = 1 - scale;
-
 		return new Color(this.r * scale,this.g * scale,this.b * scale,this.a);
 	}
 

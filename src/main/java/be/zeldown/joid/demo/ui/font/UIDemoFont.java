@@ -34,7 +34,7 @@ public class UIDemoFont extends UIDemo {
 
 	@Override
 	public void init() {
-		FlexNode.vertical(10D, 10D, 1900D).margin(8.5D).body(node -> {
+		FlexNode.vertical(10D, 10D, 1900D).margin(5.8D).body(node -> {
 			for (int i = 0; i < UIDemoFont.FONTS.length; i++) {
 				final TextInfo info = UIDemoFont.FONTS[i];
 				final Align align = i == 0 ? Align.START : i == 1 ? Align.CENTER : Align.END;
@@ -45,7 +45,6 @@ public class UIDemoFont extends UIDemo {
 					final boolean hasColoredShadow = text.contains("colored");
 					final boolean split = text.contains("splitted");
 					final boolean overflow = text.contains("overflow");
-
 					TextNode.create(0, 0).text(Text.create(text, info.copy().letterSpacing(negativeSpacing ? -4F : spacing ? 10F : 0F).shadow(hasShadow ? hasColoredShadow ? Color.RAINBOW() : Color.BLACK : null)).overflow(overflow ? TextOverflow.ELLIPSIS : TextOverflow.NONE).horizontalAlign(align)).mode(split ? TextMode.SPLIT : overflow ? TextMode.OVERFLOW : TextMode.NORMAL).width(node.getWidth()).attach(node);
 				}
 			}

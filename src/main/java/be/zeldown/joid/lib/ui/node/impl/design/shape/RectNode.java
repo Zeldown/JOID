@@ -1,23 +1,12 @@
 package be.zeldown.joid.lib.ui.node.impl.design.shape;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
-
-import javax.vecmath.Vector4f;
 
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
-import be.zeldown.joid.lib.shader.pipeline.ShaderPipeline;
-import be.zeldown.joid.lib.shader.pipeline.pass.BorderShaderPass;
-import be.zeldown.joid.lib.shader.pipeline.pass.CircleShaderPass;
-import be.zeldown.joid.lib.shader.pipeline.pass.GradientShaderPass;
-import be.zeldown.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.effect.NodeEffect;
-import be.zeldown.joid.lib.ui.node.effect.impl.CircleNodeEffect;
-import be.zeldown.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import be.zeldown.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -51,47 +40,7 @@ public class RectNode extends Node {
 	public void draw(final double mouseX, final double mouseY) {
 		final Color hoveredColor = this.hoveredColor != null ? this.hoveredColor.get() : null;
 		final Color color = hoveredColor != null ? this.color.get().to(hoveredColor, super.hoverValue(1F)) : this.color.get();
-
-		final Color hoveredBorderColor = this.hoveredBorderColor != null ? this.hoveredBorderColor.get() : null;
-		final Color borderColor = hoveredBorderColor != null ? this.borderColor.get().to(hoveredBorderColor, super.hoverValue(1F)) : this.borderColor.get();
-
-		final RoundedNodeEffect<?> roundedEffect = super.getEffect(RoundedNodeEffect.class);
-		final CircleNodeEffect<?> circleEffect = super.getEffect(CircleNodeEffect.class);
-
-		final List<ShaderPass> passes = new ArrayList<>();
-
-		if (color.isGradient()) {
-			final Vector4f canvas = new Vector4f((float) super.getX(), (float) super.getY(), (float) (super.getX() + super.getWidth()), (float) (super.getY() + super.getHeight()));
-			passes.add(new GradientShaderPass(color.gradient, canvas));
-		}
-
-		if (roundedEffect != null && roundedEffect.getRadius() > 0F) {
-			passes.add(new RoundedShaderPass(roundedEffect, this));
-		}
-
-		if (circleEffect != null) {
-			passes.add(new CircleShaderPass(this));
-		}
-
-		if (this.borderStroke > 0D) {
-			passes.add(new BorderShaderPass((float) this.borderStroke, borderColor, this.borderFill));
-		}
-
-		ShaderPipeline.render(this, passes, () -> {
-			if (color.isGradient()) {
-				Color.WHITE.bind();
-				DrawUtils.SHAPE.drawRawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight());
-				Color.reset();
-			} else {
-				DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
-			}
-		});
-	}
-
-	/* [ Override Section ] */
-	@Override
-	public boolean shouldApplyEffect(final @NonNull NodeEffect<Node> effect) {
-		return super.shouldApplyEffect(effect) && !(effect instanceof RoundedNodeEffect) && !(effect instanceof CircleNodeEffect);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
 	}
 
 	/* [ Getter Section ] */
@@ -168,6 +117,7 @@ public class RectNode extends Node {
 		this.borderColor  = color;
 		this.borderStroke = stroke;
 		this.borderFill   = fill;
+		this.applyBorderEffect();
 		return (T) this;
 	}
 
@@ -176,12 +126,29 @@ public class RectNode extends Node {
 		this.hoveredBorderColor = hoveredColor;
 		this.borderStroke       = stroke;
 		this.borderFill         = fill;
+		this.applyBorderEffect();
 		return (T) this;
 	}
 
 	public final <T extends RectNode> @NonNull T hoveredBorderColor(final Supplier<Color> hoveredColor) {
 		this.hoveredBorderColor = hoveredColor;
 		return (T) this;
+	}
+
+	/* [ Internal Section ] */
+	private void applyBorderEffect() {
+		super.removeEffect((Class<? extends NodeEffect<?>>) (Class<?>) BorderNodeEffect.class);
+		if (this.borderStroke > 0D) {
+			final BorderNodeEffect<Node> effect = BorderNodeEffect.create(Color.TRANSPARENT, (float) this.borderStroke);
+			effect.color(this::computeBorderColor);
+			effect.fill(this.borderFill);
+			super.effect(effect);
+		}
+	}
+
+	private Color computeBorderColor() {
+		final Color hovered = this.hoveredBorderColor != null ? this.hoveredBorderColor.get() : null;
+		return hovered != null ? this.borderColor.get().to(hovered, super.hoverValue(1F)) : this.borderColor.get();
 	}
 
 }

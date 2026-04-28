@@ -56,6 +56,8 @@ void main() {
 
     vec4 borderColor = computeBorderColor();
 
+    vec3 originalStraight = original.rgb / max(original.a, 0.001);
+
     if (u_Mode == 1) {
         float minAlpha = original.a;
 
@@ -67,10 +69,14 @@ void main() {
             minAlpha = min(minAlpha, texture2D(tex, vTexCoord + dir * u_BorderWidth * 0.33 * u_TexelSize).a);
         }
 
-        float borderMask = original.a * (1.0 - smoothstep(0.0, 1.0, minAlpha));
-        gl_FragColor = vec4(mix(original.rgb, borderColor.rgb, borderMask * borderColor.a), original.a);
+        float reference = max(original.a, 0.001);
+        float insideRect = smoothstep(0.0, 0.01, original.a);
+        float touchesEdge = smoothstep(0.0, 1.0, (original.a - minAlpha) / reference);
+        float borderMask = insideRect * touchesEdge;
+        gl_FragColor = vec4(mix(originalStraight, borderColor.rgb, borderMask * borderColor.a), original.a);
     } else {
         float maxAlpha = original.a;
+        float refAlpha = original.a;
 
         for (int i = 0; i < 24; i++) {
             float angle = float(i) * 0.261799;
@@ -78,11 +84,17 @@ void main() {
             maxAlpha = max(maxAlpha, texture2D(tex, vTexCoord + dir * u_BorderWidth * u_TexelSize).a);
             maxAlpha = max(maxAlpha, texture2D(tex, vTexCoord + dir * u_BorderWidth * 0.66 * u_TexelSize).a);
             maxAlpha = max(maxAlpha, texture2D(tex, vTexCoord + dir * u_BorderWidth * 0.33 * u_TexelSize).a);
+            refAlpha = max(refAlpha, texture2D(tex, vTexCoord + dir * u_BorderWidth * 1.5 * u_TexelSize).a);
+            refAlpha = max(refAlpha, texture2D(tex, vTexCoord + dir * u_BorderWidth * 2.0 * u_TexelSize).a);
         }
+        refAlpha = max(refAlpha, maxAlpha);
 
-        float borderAlpha = borderColor.a * smoothstep(0.0, 1.0, maxAlpha);
+        float reference = max(maxAlpha, 0.001);
+        float haloFactor = smoothstep(0.0, 1.0, (maxAlpha - original.a) / reference);
+        float outerFade = refAlpha > 0.001 ? smoothstep(0.0, refAlpha, maxAlpha) : 0.0;
+        float borderAlpha = borderColor.a * haloFactor * outerFade;
         float outAlpha = original.a + borderAlpha * (1.0 - original.a);
-        vec3 outRGB = (original.rgb * original.a + borderColor.rgb * borderAlpha * (1.0 - original.a)) / max(outAlpha, 0.001);
+        vec3 outRGB = (original.rgb + borderColor.rgb * borderAlpha * (1.0 - original.a)) / max(outAlpha, 0.001);
 
         gl_FragColor = vec4(outRGB, outAlpha);
     }

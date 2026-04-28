@@ -18,6 +18,7 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 	private Supplier<Color> colorSupplier;
 	private Supplier<Float> widthSupplier;
 	private BorderMode mode;
+	private boolean fill = true;
 
 	private BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
 		this.colorSupplier = () -> color;
@@ -40,7 +41,7 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 
 	@Override
 	public ShaderPass toShaderPass(final @NonNull T node) {
-		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), true, this.mode);
+		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fill, this.mode);
 	}
 
 	/* [ Setter Section ] */
@@ -66,6 +67,11 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 
 	public <E extends BorderNodeEffect<T>> @NonNull E mode(final @NonNull BorderMode mode) {
 		this.mode = mode;
+		return (E) this;
+	}
+
+	public <E extends BorderNodeEffect<T>> @NonNull E fill(final boolean fill) {
+		this.fill = fill;
 		return (E) this;
 	}
 
