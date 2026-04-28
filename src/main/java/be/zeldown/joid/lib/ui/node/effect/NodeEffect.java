@@ -13,7 +13,7 @@ import lombok.NonNull;
 public abstract class NodeEffect<T extends Node> {
 
 	private int priority;
-	private EffectScope scope = EffectScope.SELF;
+	private NodeEffectScope scope = NodeEffectScope.SELF;
 
 	public void init(final @NonNull T node, final @NonNull UI ui) {}
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {}
@@ -42,9 +42,16 @@ public abstract class NodeEffect<T extends Node> {
 		return (E) this;
 	}
 
-	public @NonNull NodeEffect<T> scope(final @NonNull EffectScope scope) {
+	public @NonNull NodeEffect<T> scope(final @NonNull NodeEffectScope scope) {
 		this.scope = scope;
 		return this;
+	}
+
+	public static enum NodeEffectScope {
+
+		SELF,
+		CHILDREN;
+
 	}
 
 }

@@ -64,8 +64,8 @@ import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeReloadCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeRenderCallback;
 import be.zeldown.joid.lib.ui.node.callback.impl.state.NodeUpdateCallback;
 import be.zeldown.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
-import be.zeldown.joid.lib.ui.node.effect.EffectScope;
 import be.zeldown.joid.lib.ui.node.effect.NodeEffect;
+import be.zeldown.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import be.zeldown.joid.lib.ui.node.hover.HoverElement;
 import be.zeldown.joid.lib.ui.node.hover.HoverSupplier;
 import be.zeldown.joid.lib.ui.node.hover.impl.DefaultHoverElement;
@@ -464,8 +464,8 @@ public abstract class Node implements INode {
 			final List<NodeEffect<Node>> shaderEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
 			final List<NodeEffect<Node>> otherEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
 
-			final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == EffectScope.SELF).collect(Collectors.toList());
-			final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == EffectScope.CHILDREN).collect(Collectors.toList());
+			final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
+			final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
 
 			otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
 
