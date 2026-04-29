@@ -7,11 +7,13 @@ import be.zeldown.joid.demo.ui.UIDemo;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.shader.impl.BorderShader.BorderMode;
 import be.zeldown.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import be.zeldown.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import be.zeldown.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import be.zeldown.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import be.zeldown.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import be.zeldown.joid.lib.ui.node.impl.design.shape.RectNode;
 import be.zeldown.joid.lib.ui.node.impl.design.text.TextNode;
 import be.zeldown.joid.lib.ui.node.impl.structure.flex.FlexNode;
@@ -54,6 +56,44 @@ public class UIDemoShader extends UIDemo {
 				RectNode.create(0, 0, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).effect(CircleNodeEffect.create()).effect(BorderNodeEffect.create(Color.WHITE, 5F, BorderMode.IN)).attach(node);
 				RectNode.create(0, 0, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F, BorderMode.OUT)).attach(node);
 				RectNode.create(0, 0, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F, BorderMode.IN)).attach(node);
+			}).attach(flex);
+			FlexNode.horizontal(0, 0, 130).margin(20).body(node -> {
+				RectNode.create(0, 0, 200, 120).color(Color.GREEN.toGradient(Color.BLUE)).effect(RoundedNodeEffect.create(20F)).effect(BorderNodeEffect.create(Color.WHITE, 3F, BorderMode.OUT)).body(rect -> {
+					ResourceNode
+					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
+					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.attach(rect);
+				}).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.GREEN.toGradient(Color.BLUE)).effect(RoundedNodeEffect.create(20F)).effect(BorderNodeEffect.create(Color.WHITE, 3F, BorderMode.IN)).body(rect -> {
+					ResourceNode
+					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
+					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.attach(rect);
+				}).attach(node);
+				RectNode.create(0, 0, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).effect(CircleNodeEffect.create()).effect(BorderNodeEffect.create(Color.WHITE, 5F, BorderMode.OUT)).body(rect -> {
+					ResourceNode
+					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
+					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.attach(rect);
+				}).attach(node);
+				RectNode.create(0, 0, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).effect(CircleNodeEffect.create()).effect(BorderNodeEffect.create(Color.WHITE, 5F, BorderMode.IN)).body(rect -> {
+					ResourceNode
+					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
+					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.attach(rect);
+				}).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F, BorderMode.OUT)).body(rect -> {
+					ResourceNode
+					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
+					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.attach(rect);
+				}).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F, BorderMode.IN)).body(rect -> {
+					ResourceNode
+					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
+					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.attach(rect);
+				}).attach(node);
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 60).margin(20).body(node -> {
 				TextNode.create(0, 0).text(Text.create("Gradient Text", TextInfo.create(DemoFont.MONTSERRAT, 50, Color.RED.toGradient(Color.BLUE)))).effect(BorderNodeEffect.create(Color.BLUE.toGradient(Color.RED), 2F)).attach(node);
