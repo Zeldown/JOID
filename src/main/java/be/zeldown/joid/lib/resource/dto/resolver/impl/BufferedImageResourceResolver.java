@@ -21,9 +21,7 @@ public class BufferedImageResourceResolver implements IResourceResolver {
 	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {
 		final BufferedImage image = (BufferedImage) input;
 		final String uniqueId = image.toString();
-
 		final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, ResourceDecoder.image(image)));
-
 		if (callback != null) {
 			callback.accept(resource);
 		}

@@ -41,6 +41,7 @@ public class UrlResourceResolver implements IResourceResolver {
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
+
 			if (callback != null) {
 				callback.accept(resource);
 			}

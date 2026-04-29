@@ -12,9 +12,9 @@ public class DemoFont {
 	public static CustomFont SPACE_GROTESK;
 
 	public static void load() {
-		DemoFont.MONTSERRAT = CustomFontLoader.load(DemoFont.get("/assets/test/fonts/Montserrat-Regular/")).join();
-		DemoFont.BATUPHAT = CustomFontLoader.load(DemoFont.get("/assets/test/fonts/Batuphat-Script/")).join();
-		DemoFont.SPACE_GROTESK = CustomFontLoader.load(DemoFont.get("/assets/test/fonts/Space-Grotesk/")).join();
+		DemoFont.MONTSERRAT = CustomFontLoader.load(DemoFont.get("/assets/demo/fonts/Montserrat-Regular/")).join();
+		DemoFont.BATUPHAT = CustomFontLoader.load(DemoFont.get("/assets/demo/fonts/Batuphat-Script/")).join();
+		DemoFont.SPACE_GROTESK = CustomFontLoader.load(DemoFont.get("/assets/demo/fonts/Space-Grotesk/")).join();
 	}
 
 	private static FontInputStream get(String path) {
