@@ -33,18 +33,17 @@ public class InputStreamResourceResolver implements IResourceResolver {
 				supportedStream.reset();
 
 				if (VideoResourceDecoder.isVideoHeader(header, read)) {
-					return Resource.create(builder, new ResourceData(uniqueId, ResourceDecoder.video(supportedStream, VideoResourceDecoder.isLoopByDefault(header, read))));
+					return new ResourceData(uniqueId, ResourceDecoder.video(supportedStream, VideoResourceDecoder.isLoopByDefault(header, read)));
 				}
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
-			return Resource.create(builder, new ResourceData(uniqueId, ResourceDecoder.image(supportedStream)));
+			return new ResourceData(uniqueId, ResourceDecoder.image(supportedStream));
 		});
 
 		if (callback != null) {
 			callback.accept(resource);
 		}
-
 		return resource;
 	}
 

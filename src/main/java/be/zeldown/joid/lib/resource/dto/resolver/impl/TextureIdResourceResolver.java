@@ -19,7 +19,7 @@ public class TextureIdResourceResolver implements IResourceResolver {
 	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {
 		final int id = (Integer) input;
 		final String uniqueId = "texture_" + String.valueOf(id);
-		final Resource resource = builder.compute(uniqueId, () -> Resource.create(builder, new ResourceData(uniqueId, null).textureId(id)));
+		final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).textureId(id));
 		if (callback != null) {
 			callback.accept(resource);
 		}

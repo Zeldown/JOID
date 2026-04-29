@@ -24,31 +24,27 @@ public class UrlResourceResolver implements IResourceResolver {
 	@Override
 	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {
 		final String url = (String) input;
-		return builder.compute(url, () -> {
-			final Resource resource = Resource.create(builder, new ResourceData(url, null));
-			new ResourceDownloadThread(url, inputStream -> {
-				try {
-					final InputStream supportedStream = inputStream.markSupported() ? inputStream : new BufferedInputStream(inputStream);
-					supportedStream.mark(12);
+		return builder.compute(url, () -> new ResourceData(url, null), resource -> new ResourceDownloadThread(url, inputStream -> {
+			try {
+				final InputStream supportedStream = inputStream.markSupported() ? inputStream : new BufferedInputStream(inputStream);
+				supportedStream.mark(12);
 
-					final byte[] header = new byte[12];
-					final int read = supportedStream.read(header);
-					supportedStream.reset();
+				final byte[] header = new byte[12];
+				final int read = supportedStream.read(header);
+				supportedStream.reset();
 
-					if (VideoResourceDecoder.isVideoHeader(header, read)) {
-						resource.decoder(ResourceDecoder.video(supportedStream, VideoResourceDecoder.isLoopByDefault(header, read)));
-					} else {
-						resource.decoder(ResourceDecoder.image(supportedStream));
-					}
-				} catch (final Exception e) {
-					e.printStackTrace();
+				if (VideoResourceDecoder.isVideoHeader(header, read)) {
+					resource.decoder(ResourceDecoder.video(supportedStream, VideoResourceDecoder.isLoopByDefault(header, read)));
+				} else {
+					resource.decoder(ResourceDecoder.image(supportedStream));
 				}
-				if (callback != null) {
-					callback.accept(resource);
-				}
-			}).start();
-			return resource;
-		});
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+			if (callback != null) {
+				callback.accept(resource);
+			}
+		}).start());
 	}
 
 	private static class ResourceDownloadThread extends Thread {
