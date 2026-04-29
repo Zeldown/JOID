@@ -74,7 +74,6 @@ Built-in passes:
 
 | Pass | Priority |
 |---|---|
-| `GradientShaderPass` | 0 |
 | `RoundedShaderPass` | 100 |
 | `CircleShaderPass` | 100 |
 | `BlurShaderPass` (horizontal) | 150, 152, … |
@@ -82,10 +81,11 @@ Built-in passes:
 | `BorderShaderPass` | 200 |
 
 Pick priorities that respect this order when writing custom passes:
-- Color / gradient first.
-- Shape masking next.
+- Shape masking first.
 - Blur after.
 - Outline last.
+
+> Gradient fills are no longer a separate pass — `Color` binds the gradient shader natively when used inside `RectNode.color(...)`, `BorderNodeEffect`, or `TextInfo` (see [Color](../drawing/color.md)).
 
 ## Expansion
 

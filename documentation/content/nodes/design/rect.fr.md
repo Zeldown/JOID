@@ -97,5 +97,4 @@ RectNode.create(0, 0, 400, 120)
 - [Rounded Effect](../../effects/rounded.md)
 - [Circle Effect](../../effects/circle.md)
 - [Border Effect](../../effects/border.md)
-- [Gradient Effect](../../effects/gradient.md)
-- [Color](../../drawing/color.md)
+- [Color](../../drawing/color.md) — `Color.toGradient(...)` pour les remplissages en gradient.

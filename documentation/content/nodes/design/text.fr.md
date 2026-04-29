@@ -118,13 +118,12 @@ Le texte fonctionne bien avec les effets shader — gradients et bordures marche
 
 ```java
 TextNode.create(0, 0)
-    .text(Text.create("Gradient", TextInfo.create(font, 48, Color.WHITE)))
-    .effect(GradientNodeEffect.create(Color.RED, Color.BLUE))
+    .text(Text.create("Gradient", TextInfo.create(font, 48, Color.RED.toGradient(Color.BLUE))))
     .effect(BorderNodeEffect.create(Color.WHITE, 1F))
     .attach(parent);
 ```
 
-> NOTE. `GradientNodeEffect` sur `TextNode` force la voie FBO — le texte est rastérisé d'abord, puis coloré par le shader gradient qui lit cette texture.
+> NOTE. `Color.toGradient(...)` sur un `TextInfo` est résolu nativement par le shader font — pas de pass supplémentaire, pas de FBO. Les bordures en gradient fonctionnent pareil : `BorderNodeEffect.create(Color.RED.toGradient(Color.BLUE), 1F)`.
 
 ## Bonnes pratiques
 
@@ -137,5 +136,4 @@ TextNode.create(0, 0)
 - [Custom Fonts](../../fonts/custom-font.md)
 - [MSDF Atlas](../../fonts/msdf-atlas.md)
 - [Drawing / Text](../../drawing/text.md) — `Text`, `TextElement`, modifiers, modes, overflow.
-- [Color](../../drawing/color.md)
-- [Gradient Effect](../../effects/gradient.md)
+- [Color](../../drawing/color.md) — `Color.toGradient(...)` pour du texte et des bordures en gradient.

@@ -154,5 +154,5 @@ int rgb = color.getRGB();        // 0xCCFF0000 (AARRGGBB)
 ## Voir aussi
 
 - [Shapes](shapes.md).
-- [Gradient Effect](../effects/gradient.md).
+- [Effects Overview](../effects/overview.md) — appliquer des effets sur un nœud coloré.
 - [DrawUtils](draw-utils.md).

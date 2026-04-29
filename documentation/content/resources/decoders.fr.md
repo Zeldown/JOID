@@ -1,6 +1,6 @@
 # Decoders
 
-Les objets bas niveau qui transforment des octets en textures GPU. Vous les instanciez rarement directement — `ResourceBuilder` choisit le bon selon les magic bytes — mais connaître l'API aide pour écrire des décodeurs custom.
+Les objets bas niveau qui transforment des octets en textures GPU. Vous les instanciez rarement directement — les [resolvers](resolvers.md) choisissent le bon décodeur selon les magic bytes ou le type d'input — mais connaître l'API aide pour écrire des décodeurs custom.
 
 ## `IResourceDecoder`
 
@@ -146,5 +146,6 @@ new Resource(builder, new ResourceData(uniqueId, svg(stream)));
 ## Voir aussi
 
 - [ResourceBuilder](resource-builder.md).
+- [Resolvers](resolvers.md) — la couche de dispatch qui choisit le décodeur à utiliser.
 - [ResourceNode](../nodes/design/resource.md).
 - [VideoPlayerNode](../nodes/design/video-player.md).

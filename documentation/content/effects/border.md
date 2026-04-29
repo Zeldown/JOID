@@ -72,4 +72,4 @@ Produces a `BorderShaderPass` with priority 200 (applied after all other effects
 
 - [Effects Overview](overview.md).
 - [Rounded Effect](rounded.md) — border follows rounded corners.
-- [Gradient Effect](gradient.md) — color fill gradients.
+- [Color](../drawing/color.md) — `Color.toGradient(...)` for gradient fills and gradient borders.

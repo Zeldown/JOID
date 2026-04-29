@@ -2,6 +2,8 @@
 
 All notable changes to JOID, grouped by release.
 
+- [**6.2.1**](6.2.1.md) — 2026-04-29 — Resource resolver registry, GL state restore fix, asset folder rename.
+- [**6.2.0**](6.2.0.md) — 2026-04-28 — Effect scopes, native gradient on `Color`, MSDF font rework.
 - [**6.0.0**](6.0.0.md) — 2026-04-18 — Shader pipeline, video playback, lifecycle hooks, and more.
 
 ## Versioning

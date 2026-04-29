@@ -72,4 +72,4 @@ Produit un `BorderShaderPass` de priorité 200 (appliqué après tous les autres
 
 - [Effects Overview](overview.md).
 - [Rounded Effect](rounded.md) — la bordure suit les coins arrondis.
-- [Gradient Effect](gradient.md) — gradients de remplissage.
+- [Color](../drawing/color.md) — `Color.toGradient(...)` pour des remplissages et bordures en gradient.
