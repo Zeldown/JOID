@@ -27,10 +27,6 @@ public final class Resource {
 		this.data       = data;
 	}
 
-	public static @NonNull Resource create(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
-		return new Resource(builder, data);
-	}
-
 	public static @NonNull Resource of(final @NonNull Object input) {
 		return Resource.DEFAULT_BUILDER.of(input);
 	}

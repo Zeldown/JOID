@@ -88,18 +88,30 @@ public final class ResourceBuilder {
 		return ResourceResolver.resolve(this, input, callback);
 	}
 
-	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<Resource> supplier) {
+	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {
+		return this.compute(uniqueId, dataSupplier, null);
+	}
+
+	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier, final Consumer<Resource> onMiss) {
 		if (this.cache == null) {
-			return supplier.get();
+			final Resource resource = new Resource(this, dataSupplier.get());
+			if (onMiss != null) {
+				onMiss.accept(resource);
+			}
+			return resource;
 		}
 
-		final ResourceData data = this.cache.getIfPresent(uniqueId);
-		if (data != null) {
-			return new Resource(this, data);
+		final ResourceData cached = this.cache.getIfPresent(uniqueId);
+		if (cached != null) {
+			return new Resource(this, cached);
 		}
 
-		final Resource resource = supplier.get();
-		this.cache.put(uniqueId, resource.getResourceData());
+		final ResourceData data = dataSupplier.get();
+		this.cache.put(uniqueId, data);
+		final Resource resource = new Resource(this, data);
+		if (onMiss != null) {
+			onMiss.accept(resource);
+		}
 		return resource;
 	}
 
