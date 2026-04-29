@@ -92,11 +92,11 @@ public final class ResourceBuilder {
 		return this.compute(uniqueId, dataSupplier, null);
 	}
 
-	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier, final Consumer<Resource> onMiss) {
+	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier, final Consumer<Resource> onCreate) {
 		if (this.cache == null) {
 			final Resource resource = new Resource(this, dataSupplier.get());
-			if (onMiss != null) {
-				onMiss.accept(resource);
+			if (onCreate != null) {
+				onCreate.accept(resource);
 			}
 			return resource;
 		}
@@ -109,8 +109,8 @@ public final class ResourceBuilder {
 		final ResourceData data = dataSupplier.get();
 		this.cache.put(uniqueId, data);
 		final Resource resource = new Resource(this, data);
-		if (onMiss != null) {
-			onMiss.accept(resource);
+		if (onCreate != null) {
+			onCreate.accept(resource);
 		}
 		return resource;
 	}
@@ -119,7 +119,6 @@ public final class ResourceBuilder {
 		if (this.cache == null) {
 			return;
 		}
-
 		this.cache.invalidateAll();
 	}
 

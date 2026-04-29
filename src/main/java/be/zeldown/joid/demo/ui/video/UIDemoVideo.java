@@ -36,7 +36,7 @@ public class UIDemoVideo extends UIDemo {
 
 	@Override
 	public void init() {
-		final Resource resource = Resource.of(JOID.class.getResourceAsStream("/assets/test/videos/video.mp4"));
+		final Resource resource = Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4"));
 
 		this.player = VideoPlayerNode
 				.create(this.bounceX, this.bounceY, UIDemoVideo.SMALL_W, UIDemoVideo.SMALL_H)

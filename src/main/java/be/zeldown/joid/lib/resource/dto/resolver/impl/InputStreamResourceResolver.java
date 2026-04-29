@@ -44,6 +44,7 @@ public class InputStreamResourceResolver implements IResourceResolver {
 		if (callback != null) {
 			callback.accept(resource);
 		}
+
 		return resource;
 	}
 

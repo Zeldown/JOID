@@ -22,7 +22,7 @@ public class UIDemoResource extends UIDemo {
 			ResourceNode.create(0, 0).resource("https://placehold.co/800x400.png").height(100).attach(flex);
 			ResourceNode.create(0, 0).resource("https://placehold.co/400x800.png").width(100).attach(flex);
 
-			ResourceNode.create(0, 0).resource(Resource.of(JOID.class.getResourceAsStream("/assets/test/textures/image/gif.gif")).linear()).height(100).attach(flex);
+			ResourceNode.create(0, 0).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/gif.gif")).linear()).height(100).attach(flex);
 		}).attach(this);
 	}
 
