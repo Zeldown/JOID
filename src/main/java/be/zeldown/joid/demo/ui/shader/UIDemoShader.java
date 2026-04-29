@@ -61,37 +61,37 @@ public class UIDemoShader extends UIDemo {
 				RectNode.create(0, 0, 200, 120).color(Color.GREEN.toGradient(Color.BLUE)).effect(RoundedNodeEffect.create(20F)).effect(BorderNodeEffect.create(Color.WHITE, 3F, BorderMode.OUT)).body(rect -> {
 					ResourceNode
 					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
-					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.resource(Resource.of("https://placehold.co/" + String.format("%.0f", Math.floor(rect.dw(2))) + "x" + String.format("%.0f", Math.floor(rect.dh(2))) + ".png"))
 					.attach(rect);
 				}).attach(node);
 				RectNode.create(0, 0, 200, 120).color(Color.GREEN.toGradient(Color.BLUE)).effect(RoundedNodeEffect.create(20F)).effect(BorderNodeEffect.create(Color.WHITE, 3F, BorderMode.IN)).body(rect -> {
 					ResourceNode
 					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
-					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.resource(Resource.of("https://placehold.co/" + String.format("%.0f", Math.floor(rect.dw(2))) + "x" + String.format("%.0f", Math.floor(rect.dh(2))) + ".png"))
 					.attach(rect);
 				}).attach(node);
 				RectNode.create(0, 0, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).effect(CircleNodeEffect.create()).effect(BorderNodeEffect.create(Color.WHITE, 5F, BorderMode.OUT)).body(rect -> {
 					ResourceNode
 					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
-					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.resource(Resource.of("https://placehold.co/" + String.format("%.0f", Math.floor(rect.dw(2))) + "x" + String.format("%.0f", Math.floor(rect.dh(2))) + ".png"))
 					.attach(rect);
 				}).attach(node);
 				RectNode.create(0, 0, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).effect(CircleNodeEffect.create()).effect(BorderNodeEffect.create(Color.WHITE, 5F, BorderMode.IN)).body(rect -> {
 					ResourceNode
 					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
-					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.resource(Resource.of("https://placehold.co/" + String.format("%.0f", Math.floor(rect.dw(2))) + "x" + String.format("%.0f", Math.floor(rect.dh(2))) + ".png"))
 					.attach(rect);
 				}).attach(node);
 				RectNode.create(0, 0, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F, BorderMode.OUT)).body(rect -> {
 					ResourceNode
 					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
-					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.resource(Resource.of("https://placehold.co/" + String.format("%.0f", Math.floor(rect.dw(2))) + "x" + String.format("%.0f", Math.floor(rect.dh(2))) + ".png"))
 					.attach(rect);
 				}).attach(node);
 				RectNode.create(0, 0, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F, BorderMode.IN)).body(rect -> {
 					ResourceNode
 					.create(rect.dw(4), rect.dh(4), rect.dw(2), rect.dh(2))
-					.resource(Resource.of("https://paladiumfactions.s3.fr-par.scw.cloud/emblems/default/0.png?v=37dbb564"))
+					.resource(Resource.of("https://placehold.co/" + String.format("%.0f", Math.floor(rect.dw(2))) + "x" + String.format("%.0f", Math.floor(rect.dh(2))) + ".png"))
 					.attach(rect);
 				}).attach(node);
 			}).attach(flex);
@@ -109,11 +109,11 @@ public class UIDemoShader extends UIDemo {
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 130).margin(40).body(node -> {
 				final RectNode selfScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().scope(NodeEffectScope.SELF));
-				TextNode.create(100, 60).text(Text.create("chicken chicken", TextInfo.create(DemoFont.MONTSERRAT, 28, Color.WHITE))).anchor(Align.CENTER).attach(selfScoped);
+				TextNode.create(100, 60).text(Text.create("children node", TextInfo.create(DemoFont.MONTSERRAT, 28, Color.WHITE))).anchor(Align.CENTER).attach(selfScoped);
 				selfScoped.attach(node);
 
 				final RectNode childrenScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().scope(NodeEffectScope.CHILDREN));
-				TextNode.create(100, 60).text(Text.create("chicken chicken", TextInfo.create(DemoFont.MONTSERRAT, 28, Color.WHITE))).anchor(Align.CENTER).attach(childrenScoped);
+				TextNode.create(100, 60).text(Text.create("children node", TextInfo.create(DemoFont.MONTSERRAT, 28, Color.WHITE))).anchor(Align.CENTER).attach(childrenScoped);
 				childrenScoped.attach(node);
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 120).margin(20).body(node -> {

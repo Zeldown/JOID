@@ -1,7 +1,5 @@
 package be.zeldown.joid.demo.ui.video;
 
-import java.io.IOException;
-
 import org.lwjgl.input.Keyboard;
 
 import be.zeldown.joid.demo.DemoFont;
@@ -38,14 +36,7 @@ public class UIDemoVideo extends UIDemo {
 
 	@Override
 	public void init() {
-		final Resource resource;
-		try {
-			resource = Resource.of(JOID.class.getResourceAsStream("/assets/test/videos/video.mp4"));
-		} catch (final IOException e) {
-			e.printStackTrace();
-			JOID.close(this);
-			return;
-		}
+		final Resource resource = Resource.of(JOID.class.getResourceAsStream("/assets/test/videos/video.mp4"));
 
 		this.player = VideoPlayerNode
 				.create(this.bounceX, this.bounceY, UIDemoVideo.SMALL_W, UIDemoVideo.SMALL_H)
