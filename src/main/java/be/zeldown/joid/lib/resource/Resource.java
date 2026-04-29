@@ -1,8 +1,5 @@
 package be.zeldown.joid.lib.resource;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.function.Consumer;
 
 import org.lwjgl.opengl.GL11;
@@ -30,20 +27,16 @@ public final class Resource {
 		this.data       = data;
 	}
 
-	public static @NonNull Resource of(final @NonNull InputStream stream) throws IOException {
-		return Resource.DEFAULT_BUILDER.of(stream);
+	public static @NonNull Resource create(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
+		return new Resource(builder, data);
 	}
 
-	public static @NonNull Resource of(final @NonNull BufferedImage image) {
-		return Resource.DEFAULT_BUILDER.of(image);
+	public static @NonNull Resource of(final @NonNull Object input) {
+		return Resource.DEFAULT_BUILDER.of(input);
 	}
 
-	public static @NonNull Resource of(final @NonNull String url) {
-		return Resource.DEFAULT_BUILDER.of(url);
-	}
-
-	public static @NonNull Resource of(final @NonNull String url, final Consumer<Resource> callback) {
-		return Resource.DEFAULT_BUILDER.of(url, callback);
+	public static @NonNull Resource of(final @NonNull Object input, final Consumer<Resource> callback) {
+		return Resource.DEFAULT_BUILDER.of(input, callback);
 	}
 
 	/* [ Query Section ] */
