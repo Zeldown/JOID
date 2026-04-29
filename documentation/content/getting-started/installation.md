@@ -10,8 +10,8 @@ Two artifacts are published per version:
 
 | Artifact | Contents | Use when |
 |---|---|---|
-| `joid-X.Y.Z-prod.jar` | Library only, `assets/dev/*` and `assets/test/*` stripped | Shipping your app |
-| `joid-X.Y.Z-dev.jar` | Includes demo fonts, test textures, sample videos | Learning / developing |
+| `joid-X.Y.Z-prod.jar` | Library only, `assets/dev/*` and `assets/demo/*` stripped | Shipping your app |
+| `joid-X.Y.Z-dev.jar` | Includes demo fonts, demo textures, sample videos | Learning / developing |
 
 ## Gradle
 

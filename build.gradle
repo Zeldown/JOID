@@ -90,7 +90,7 @@ jar {
     	classifier = 'dev'
   	} else {
 		classifier = 'prod'
-		exclude 'assets/test/*'
+		exclude 'assets/demo/*'
 	}
 }
 
@@ -103,7 +103,7 @@ shadowJar {
     	classifier = 'dev'
   	} else {
 		classifier = 'prod'
-		exclude 'assets/test/*'
+		exclude 'assets/demo/*'
 	}
 }
 

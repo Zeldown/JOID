@@ -10,8 +10,8 @@ Deux artefacts sont publiés par version :
 
 | Artefact | Contenu | Utiliser quand |
 |---|---|---|
-| `joid-X.Y.Z-prod.jar` | Bibliothèque seule, `assets/dev/*` et `assets/test/*` retirés | Vous shippez votre app |
-| `joid-X.Y.Z-dev.jar` | Inclut polices de démo, textures de test, vidéos d'exemple | Apprentissage / développement |
+| `joid-X.Y.Z-prod.jar` | Bibliothèque seule, `assets/dev/*` et `assets/demo/*` retirés | Vous shippez votre app |
+| `joid-X.Y.Z-dev.jar` | Inclut polices de démo, textures de démo, vidéos d'exemple | Apprentissage / développement |
 
 ## Gradle
 

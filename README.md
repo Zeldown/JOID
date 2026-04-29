@@ -33,8 +33,8 @@ No DSL to learn, no scene-graph format to serialize, no runtime engine to boot. 
 
 JOID is distributed via GitHub Releases as two artifacts:
 
-- **joid-X.Y.Z-prod.jar** — production build (excludes dev/test assets)
-- **joid-X.Y.Z-dev.jar** — dev build (includes demo assets, fonts, test textures)
+- **joid-X.Y.Z-prod.jar** — production build (excludes dev/demo assets)
+- **joid-X.Y.Z-dev.jar** — dev build (includes demo assets, fonts, demo textures)
 
 Download the desired artifact from the [Releases page](https://github.com/Zeldown/JOID/releases) and add it to your project's classpath.
 
