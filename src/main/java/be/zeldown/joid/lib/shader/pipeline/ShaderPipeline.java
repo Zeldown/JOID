@@ -121,6 +121,8 @@ public final class ShaderPipeline {
 
 		final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
 		final int prevFbo = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
+		final boolean prevTexture2D = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
+		final boolean prevBlend = GL11.glIsEnabled(GL11.GL_BLEND);
 		ShaderPipeline.VIEWPORT_BUFFER.clear();
 		GL11.glGetInteger(GL11.GL_VIEWPORT, ShaderPipeline.VIEWPORT_BUFFER);
 		final int prevVpX = ShaderPipeline.VIEWPORT_BUFFER.get(0);
@@ -197,6 +199,16 @@ public final class ShaderPipeline {
 		ShaderPipeline.drawTexturedQuad(src.getTexture(), expX, expY, expW, expH);
 		passes.get(passes.size() - 1).unbind();
 		GL20.glUseProgram(prevProgram);
+		if (prevTexture2D) {
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+		} else {
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
+		if (prevBlend) {
+			GL11.glEnable(GL11.GL_BLEND);
+		} else {
+			GL11.glDisable(GL11.GL_BLEND);
+		}
 	}
 
 	private static void drawTexturedQuad(final int textureId, final double x, final double y, final double w, final double h) {
