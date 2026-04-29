@@ -32,13 +32,27 @@ Effects that bracket the node's render with `pre(node)` / `post(node)` — typic
 
 ### Shader effects
 
-Effects that produce one or more `ShaderPass`es, composed through the [Shader Pipeline](../shaders/pipeline.md) with FBO-backed multi-pass rendering. Example: `BlurNodeEffect`, `BorderNodeEffect`, `GradientNodeEffect`, `CircleNodeEffect`, `RoundedNodeEffect`.
+Effects that produce one or more `ShaderPass`es, composed through the [Shader Pipeline](../shaders/pipeline.md) with FBO-backed multi-pass rendering. Example: `BlurNodeEffect`, `BorderNodeEffect`, `CircleNodeEffect`, `RoundedNodeEffect`.
 
 Identify a shader effect:
 
 ```java
 effect.isShaderEffect();   // true / false
 ```
+
+## Scope
+
+Each effect declares whether it wraps the node's own draw, its children, or both, via `NodeEffectScope`:
+
+```java
+node.effect(BorderNodeEffect.create(Color.WHITE, 2F).scope(NodeEffectScope.SELF));
+node.effect(CircleNodeEffect.create().scope(NodeEffectScope.CHILDREN));
+```
+
+- **`SELF`** (default) — the effect wraps only the node's own draw. Children render normally above it. Use this for outlines, fills, rounded corners on the node itself.
+- **`CHILDREN`** — the effect wraps the children rendering instead. The node's own draw stays plain, and the effect masks/composes only the subtree. Use this when you want a circle clip on the inner content of a card without affecting the card's background.
+
+`NodeEffectScope` is an inner enum on `NodeEffect`.
 
 ## Priority
 
@@ -56,9 +70,10 @@ myEffect.priority(100);
 | [CircleNodeEffect](circle.md) | Shader | Circular mask |
 | [BlurNodeEffect](blur.md) | Shader | Gaussian blur |
 | [BorderNodeEffect](border.md) | Shader | Outline with gradient support |
-| [GradientNodeEffect](gradient.md) | Shader | Linear gradient fill |
 | `MaskNodeEffect` | Pre/Post | Stencil mask to a shape |
 | `TransformNodeEffect` | Pre/Post | GL translate/scale/rotate |
+
+> Looking for a gradient effect? Gradients are now first-class on [`Color`](../drawing/color.md) — use `Color.toGradient(other)` directly on `RectNode.color(...)`, `BorderNodeEffect.create(...)`, or any `TextInfo`. The dedicated `GradientNodeEffect` was removed in 6.2.0.
 
 ## Best practices
 

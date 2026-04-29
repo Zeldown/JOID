@@ -32,13 +32,27 @@ Effets qui encadrent le rendu du nœud avec `pre(node)` / `post(node)` — typiq
 
 ### Effets shader
 
-Effets qui produisent une ou plusieurs `ShaderPass`, composées via le [Shader Pipeline](../shaders/pipeline.md) avec rendu multi-passe backed par des FBOs. Exemples : `BlurNodeEffect`, `BorderNodeEffect`, `GradientNodeEffect`, `CircleNodeEffect`, `RoundedNodeEffect`.
+Effets qui produisent une ou plusieurs `ShaderPass`, composées via le [Shader Pipeline](../shaders/pipeline.md) avec rendu multi-passe backed par des FBOs. Exemples : `BlurNodeEffect`, `BorderNodeEffect`, `CircleNodeEffect`, `RoundedNodeEffect`.
 
 Identifier un effet shader :
 
 ```java
 effect.isShaderEffect();   // true / false
 ```
+
+## Scope
+
+Chaque effet déclare s'il enveloppe le draw du nœud, celui de ses enfants, ou les deux, via `NodeEffectScope` :
+
+```java
+node.effect(BorderNodeEffect.create(Color.WHITE, 2F).scope(NodeEffectScope.SELF));
+node.effect(CircleNodeEffect.create().scope(NodeEffectScope.CHILDREN));
+```
+
+- **`SELF`** (défaut) — l'effet enveloppe uniquement le draw du nœud. Les enfants se rendent normalement par-dessus. À utiliser pour des contours, remplissages, coins arrondis sur le nœud lui-même.
+- **`CHILDREN`** — l'effet enveloppe le rendu des enfants à la place. Le draw du nœud reste intact, et l'effet masque/compose uniquement le sous-arbre. À utiliser pour appliquer un clip circulaire au contenu interne d'une carte sans toucher au fond.
+
+`NodeEffectScope` est une enum interne à `NodeEffect`.
 
 ## Priorité
 
@@ -56,9 +70,10 @@ myEffect.priority(100);
 | [CircleNodeEffect](circle.md) | Shader | Masque circulaire |
 | [BlurNodeEffect](blur.md) | Shader | Flou gaussien |
 | [BorderNodeEffect](border.md) | Shader | Contour avec support gradient |
-| [GradientNodeEffect](gradient.md) | Shader | Remplissage gradient linéaire |
 | `MaskNodeEffect` | Pre/Post | Masque stencil à une forme |
 | `TransformNodeEffect` | Pre/Post | translate/scale/rotate GL |
+
+> Vous cherchez un effet gradient ? Les gradients sont désormais natifs sur [`Color`](../drawing/color.md) — utilisez `Color.toGradient(autre)` directement sur `RectNode.color(...)`, `BorderNodeEffect.create(...)`, ou n'importe quel `TextInfo`. Le `GradientNodeEffect` dédié a été retiré en 6.2.0.
 
 ## Bonnes pratiques
 

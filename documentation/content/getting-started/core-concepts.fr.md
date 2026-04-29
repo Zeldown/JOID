@@ -96,7 +96,7 @@ Une UI bien construite est majoritairement *des nœuds de design à l'intérieur
 Les effets sont un post-processing appliqué à la sortie rendue d'un nœud. Il en existe deux saveurs :
 
 - **Effets de forme** : `RoundedNodeEffect`, `CircleNodeEffect` — modifient la silhouette.
-- **Effets de shader** : `BlurNodeEffect`, `BorderNodeEffect`, `GradientNodeEffect` — passes GL complètes composées via le [Shader Pipeline](../shaders/pipeline.md).
+- **Effets de shader** : `BlurNodeEffect`, `BorderNodeEffect`, `RoundedNodeEffect`, `CircleNodeEffect` — passes GL complètes composées via le [Shader Pipeline](../shaders/pipeline.md). Les gradients sont natifs sur `Color` (voir [`Color.toGradient`](../drawing/color.md)).
 
 Chaînez plusieurs effets ; ils se composent par ordre de priorité.
 

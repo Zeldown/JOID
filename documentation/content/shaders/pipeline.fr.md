@@ -74,7 +74,6 @@ Passes intégrées :
 
 | Pass | Priorité |
 |---|---|
-| `GradientShaderPass` | 0 |
 | `RoundedShaderPass` | 100 |
 | `CircleShaderPass` | 100 |
 | `BlurShaderPass` (horizontal) | 150, 152, … |
@@ -82,10 +81,11 @@ Passes intégrées :
 | `BorderShaderPass` | 200 |
 
 Choisissez des priorités respectant cet ordre pour des passes custom :
-- Couleur / gradient en premier.
-- Masquage de forme ensuite.
+- Masquage de forme en premier.
 - Blur après.
 - Contour en dernier.
+
+> Les remplissages en gradient ne sont plus une passe séparée — `Color` bind le shader gradient nativement quand on l'utilise dans `RectNode.color(...)`, `BorderNodeEffect`, ou `TextInfo` (voir [Color](../drawing/color.md)).
 
 ## Expansion
 

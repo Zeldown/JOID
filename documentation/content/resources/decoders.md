@@ -1,6 +1,6 @@
 # Decoders
 
-The low-level objects that turn bytes into GPU textures. You rarely instantiate them directly — `ResourceBuilder` picks the right one based on magic bytes — but knowing the API helps when writing custom decoders.
+The low-level objects that turn bytes into GPU textures. You rarely instantiate them directly — [resolvers](resolvers.md) pick the right decoder based on magic bytes or input type — but knowing the API helps when writing custom decoders.
 
 ## `IResourceDecoder`
 
@@ -147,5 +147,6 @@ new Resource(builder, new ResourceData(uniqueId, svg(stream)));
 ## See also
 
 - [ResourceBuilder](resource-builder.md).
+- [Resolvers](resolvers.md) — the dispatch layer that selects which decoder to use.
 - [ResourceNode](../nodes/design/resource.md).
 - [VideoPlayerNode](../nodes/design/video-player.md).
