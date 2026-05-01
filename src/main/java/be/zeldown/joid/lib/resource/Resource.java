@@ -172,10 +172,14 @@ public final class Resource {
 			this.unbind();
 		}
 
-		if (this.data.getDecoder() == null) {
+		final IResourceDecoder decoder = this.data.getDecoder();
+		if (decoder == null) {
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTextureId(0));
 		} else {
-			this.data.getDecoder().bind(this.data);
+			if (!this.isGenerated()) {
+				this.generate();
+			}
+			decoder.bind(this.data);
 		}
 	}
 
