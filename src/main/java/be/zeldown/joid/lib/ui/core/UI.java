@@ -24,6 +24,7 @@ import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.opengl.context.Drawing;
 import be.zeldown.joid.lib.opengl.modifier.GLVector;
 import be.zeldown.joid.lib.opengl.transform.GLTransformation;
+import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.ui.bridge.BridgeHandler;
 import be.zeldown.joid.lib.ui.bridge.IUIBridge;
 import be.zeldown.joid.lib.ui.core.data.UIDataObject;
@@ -738,6 +739,41 @@ public abstract class UI implements IUI, IndexedElement {
 
 		GL11.glColorMask(false, false, false, false);
 		DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED);
+		GL11.glColorMask(true, true, true, true);
+
+		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
+		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+	}
+
+	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
+		this.mask(resource, maskX, maskY, maskWidth, maskHeight, drawing, true);
+	}
+
+	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
+		if (enabled) {
+			this.startMask(resource, maskX, maskY, maskWidth, maskHeight);
+			drawing.draw();
+			this.stopMask();
+		} else {
+			drawing.draw();
+		}
+	}
+
+	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
+		final int stencilValue = this.stencilStack.size() + 1;
+		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
+		if (stencilValue == 1) {
+			GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+			GL11.glEnable(GL11.GL_STENCIL_TEST);
+		}
+
+		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue - 1, 0xFF);
+		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INCR);
+
+		GL11.glColorMask(false, false, false, false);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.5F);
+		DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
 		GL11.glColorMask(true, true, true, true);
 
 		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
