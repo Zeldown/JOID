@@ -38,8 +38,10 @@ jobs:
         run: |
           sed -i "s/project.version = \".*\"/project.version = \"${TAG_NAME}\"/g" build.gradle
           sed -i "s/version-\([^[:space:]-]*\) \([^[:space:]-]*\)-/version-${TAG_NAME} (${COMMIT_SHA})-/g" README.md
+          sed -i "s/public static final String VERSION = \".*\";/public static final String VERSION = \"${TAG_NAME}\";/g" src/main/java/be/zeldown/joid/internal/JOID.java
           git add README.md
           git add build.gradle
+          git add src/main/java/be/zeldown/joid/internal/JOID.java
           git commit -m "update: update version to ${TAG_NAME} (:bookmark:)"
           git push origin HEAD:lwjgl-2
 
