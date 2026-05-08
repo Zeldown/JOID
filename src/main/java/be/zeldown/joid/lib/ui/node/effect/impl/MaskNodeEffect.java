@@ -2,6 +2,7 @@ package be.zeldown.joid.lib.ui.node.effect.impl;
 
 import java.util.function.Supplier;
 
+import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.effect.NodeEffect;
 import lombok.AccessLevel;
@@ -14,6 +15,7 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MaskNodeEffect<T extends Node> extends NodeEffect<T> {
 
+	private Resource resource;
 	private Supplier<Double> xSupplier;
 	private Supplier<Double> ySupplier;
 	private Supplier<Double> widthSupplier;
@@ -72,10 +74,30 @@ public class MaskNodeEffect<T extends Node> extends NodeEffect<T> {
 		return MaskNodeEffect.create(() -> 0.0, () -> 0.0, widthSupplier, heightSupplier);
 	}
 
+	public static <T extends Node> @NonNull MaskNodeEffect<T> create(final @NonNull Resource resource, final double width, final double height) {
+		return MaskNodeEffect.create(resource, 0D, 0D, width, height);
+	}
+
+	public static <T extends Node> @NonNull MaskNodeEffect<T> create(final @NonNull Resource resource, final double x, final double y, final double width, final double height) {
+		final MaskNodeEffect<T> effect = new MaskNodeEffect<>(x, y, width, height);
+		effect.resource = resource;
+		return effect;
+	}
+
+	public static <T extends Node> @NonNull MaskNodeEffect<T> create(final @NonNull Resource resource, final @NonNull Node node) {
+		final MaskNodeEffect<T> effect = MaskNodeEffect.create(node);
+		effect.resource = resource;
+		return effect;
+	}
+
 	/* [ Internal Section ] */
 	@Override
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
-		node.getUi().startMask(node.getX() + this.getX(), node.getY() + this.getY(), this.getWidth(), this.getHeight());
+		if (this.resource != null) {
+			node.getUi().startMask(this.resource, node.getX() + this.getX(), node.getY() + this.getY(), this.getWidth(), this.getHeight());
+		} else {
+			node.getUi().startMask(node.getX() + this.getX(), node.getY() + this.getY(), this.getWidth(), this.getHeight());
+		}
 	}
 
 	@Override
@@ -161,6 +183,11 @@ public class MaskNodeEffect<T extends Node> extends NodeEffect<T> {
 		this.ySupplier = ySupplier;
 		this.widthSupplier = widthSupplier;
 		this.heightSupplier = heightSupplier;
+		return (E) this;
+	}
+
+	public <E extends MaskNodeEffect<T>> @NonNull E resource(final Resource resource) {
+		this.resource = resource;
 		return (E) this;
 	}
 
