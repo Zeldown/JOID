@@ -647,7 +647,7 @@ public abstract class Node implements INode {
 		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context));
 
 		if (this.dragging) {
-			this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), () -> {
+			this.fireDrag(() -> {
 				this.targetDragX = mouseX - this.dragX;
 				this.targetDragY = mouseY - this.dragY;
 			});
@@ -858,7 +858,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T startDragging(final double mouseX, final double mouseY) {
-		this.executeCallback(Node.CALLBACK_DRAG_START, InternalContext.create(), () -> {
+		this.fireDragStart(() -> {
 			this.dragging = true;
 			this.dragX = mouseX - this.getAbsoluteX();
 			this.dragY = mouseY - this.getAbsoluteY();
@@ -879,7 +879,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T stopDragging() {
-		this.executeCallback(Node.CALLBACK_DRAG_END, InternalContext.create(), () -> {
+		this.fireDragEnd(() -> {
 			if (this.draggable != null && this.draggable.isEnabled(this)) {
 				if (this.draggable.hasSnapping()) {
 					final Node snapNode = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
@@ -898,6 +898,18 @@ public abstract class Node implements INode {
 			this.draggedNode = null;
 		});
 		return (T) this;
+	}
+
+	public final void fireDragStart(final Runnable runnable) {
+		this.executeCallback(Node.CALLBACK_DRAG_START, InternalContext.create(), runnable);
+	}
+
+	public final void fireDrag(final Runnable runnable) {
+		this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), runnable);
+	}
+
+	public final void fireDragEnd(final Runnable runnable) {
+		this.executeCallback(Node.CALLBACK_DRAG_END, InternalContext.create(), runnable);
 	}
 
 	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull InternalContext context, final Object... args) {
