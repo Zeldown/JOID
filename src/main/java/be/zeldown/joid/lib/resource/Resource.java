@@ -48,6 +48,7 @@ public final class Resource {
 
 	public final @NonNull Resource blocking() {
 		this.properties.blocking();
+		this.data.await();
 		return this;
 	}
 
@@ -140,11 +141,14 @@ public final class Resource {
 	}
 
 	/* [ Internal Section ] */
+	public final void dispatch(final @NonNull Runnable task) {
+		this.data.dispatch(task, this.properties.isAsync());
+	}
+
 	public final void generate() {
-		if (this.data == null || this.properties == null) {
+		if (this.data == null) {
 			return;
 		}
-
 		this.data.generate(this.properties.isAsync());
 	}
 
@@ -152,7 +156,6 @@ public final class Resource {
 		if (this.data == null) {
 			return;
 		}
-
 		this.data.upload();
 	}
 
