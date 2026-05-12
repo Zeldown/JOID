@@ -1,5 +1,7 @@
 package be.zeldown.joid.lib.resource.dto;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -15,8 +17,10 @@ public final class ResourceData {
 
 	private static final ExecutorService ASYNC_EXECUTOR = Executors.newFixedThreadPool(16);
 
-	private String            uniqueId;
-	private IResourceDecoder  decoder;
+	private String           uniqueId;
+	private IResourceDecoder decoder;
+
+	private final List<Thread> tasks = new CopyOnWriteArrayList<>();
 
 	private int[]   textureId;
 	private int[][] data;
@@ -88,15 +92,31 @@ public final class ResourceData {
 		return this;
 	}
 
-	/* [ Getter Section ] */
-	public final <T extends IResourceDecoder> T getDecoder(final @NonNull Class<T> clazz) {
-		if (this.decoder == null || !clazz.isAssignableFrom(this.decoder.getClass())) {
-			return null;
+	/* [ Internal Section ] */
+	public final void dispatch(final @NonNull Runnable task, final boolean async) {
+		if (async) {
+			final Thread thread = new Thread(task, "ResourceTask/" + this.uniqueId);
+			this.tasks.add(thread);
+			thread.start();
+		} else {
+			task.run();
 		}
-		return clazz.cast(this.decoder);
 	}
 
-	/* [ Internal Section ] */
+	public final void await() {
+		for (final Thread task : this.tasks) {
+			if (!task.isAlive()) {
+				continue;
+			}
+
+			try {
+				task.join();
+			} catch (final InterruptedException silent) {
+				Thread.currentThread().interrupt();
+			}
+		}
+	}
+
 	public final void generate(final boolean async) {
 		if (this.decoder != null) {
 			this.generated = true;
@@ -162,6 +182,15 @@ public final class ResourceData {
 		}
 	}
 
+	/* [ Getter Section ] */
+	public final <T extends IResourceDecoder> T getDecoder(final @NonNull Class<T> clazz) {
+		if (this.decoder == null || !clazz.isAssignableFrom(this.decoder.getClass())) {
+			return null;
+		}
+		return clazz.cast(this.decoder);
+	}
+
+	/* [ Java Section ] */
 	@Override
 	protected void finalize() throws Throwable {
 		this.clear();
