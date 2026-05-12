@@ -16,7 +16,7 @@ import lombok.NonNull;
 @Getter
 public final class JOID {
 
-	public static final String VERSION = "6.5.0";
+	public static final String VERSION = "6.5.1";
 
 	private static JOID instance;
 
