@@ -110,24 +110,17 @@ public class MultilineTextFieldNode extends Node {
 			DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), isPlaceholder ? this.placeholder : this.text, isPlaceholder ? this.info.copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)) : this.info, Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
 
 			if (this.focused) {
-				final String beforeCursor = this.text.substring(0, this.cursorPos);
-				final List<String> beforeCursorLines = this.getLines(beforeCursor);
-				if (beforeCursorLines.isEmpty()) {
-					final double cursorX = textX;
-					final double cursorY = textY;
-					final Color cursorColor = new Color(this.info.getColor());
-					final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (System.currentTimeMillis() % 2000) / 1000) + 1) / 2F);
-					cursorColor.a = cursorOpacity;
-					DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
-				} else {
-					final String line = beforeCursorLines.get(beforeCursorLines.size() - 1);
-					final double cursorX = textX + this.getTextWidth(line);
-					final double cursorY = textY + lineHeight * (beforeCursorLines.size() - 1);
-					final Color cursorColor = new Color(this.info.getColor());
-					final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (System.currentTimeMillis() % 2000) / 1000) + 1) / 2F);
-					cursorColor.a = cursorOpacity;
-					DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
-				}
+				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
+				final int cursorLineIdx = cursorLineCol[0];
+				final int cursorCol = cursorLineCol[1];
+				final String cursorLine = lines.isEmpty() ? "" : lines.get(cursorLineIdx).replace("\n", "").replace("\r", "");
+				final int safeCol = Math.min(cursorCol, cursorLine.length());
+				final double cursorX = textX + this.getTextWidth(cursorLine.substring(0, safeCol));
+				final double cursorY = textY + lineHeight * cursorLineIdx;
+				final Color cursorColor = new Color(this.info.getColor());
+				final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (System.currentTimeMillis() % 2000) / 1000) + 1) / 2F);
+				cursorColor.a = cursorOpacity;
+				DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
 			}
 
 			if (this.selectionStart != -1) {
@@ -135,69 +128,51 @@ public class MultilineTextFieldNode extends Node {
 				final int start = Math.min(this.cursorPos, this.selectionStart);
 				final int end = Math.max(this.cursorPos, this.selectionStart);
 
-				int startLine = 0;
-				int startChar = 0;
-				int endLine = 0;
-				int endChar = 0;
-
-				int charIndex = 0;
-				for (int i = 0; i < lines.size(); i++) {
-					final String line = lines.get(i);
-					if (charIndex + line.length() >= start) {
-						startLine = i;
-						startChar = start - charIndex;
-						break;
-					}
-
-					charIndex += line.length();
-				}
-
-				charIndex = 0;
-				for (int i = 0; i < lines.size(); i++) {
-					final String line = lines.get(i);
-					if (charIndex + line.length() >= end) {
-						endLine = i;
-						endChar = end - charIndex;
-						break;
-					}
-
-					charIndex += line.length();
-				}
+				final int[] startLineCol = this.getLineAndColumn(start);
+				final int[] endLineCol = this.getLineAndColumn(end);
+				final int startLine = startLineCol[0];
+				final int startChar = startLineCol[1];
+				final int endLine = endLineCol[0];
+				final int endChar = endLineCol[1];
 
 				if (startLine == endLine) {
-					final String line = lines.get(startLine);
-					final double selectionX = textX + this.getTextWidth(line.substring(0, startChar));
+					final String line = lines.get(startLine).replace("\n", "").replace("\r", "");
+					final int safeStart = Math.min(startChar, line.length());
+					final int safeEnd = Math.min(endChar, line.length());
+					final double selectionX = textX + this.getTextWidth(line.substring(0, safeStart));
 					final double selectionY = textY + lineHeight * startLine;
-					final String subLine = line.substring(startChar, endChar);
-					final double selectionWidth = "\n".equals(subLine) ? 2 : this.getTextWidth(subLine);
+					final String subLine = line.substring(safeStart, safeEnd);
+					final double selectionWidth = subLine.isEmpty() ? 2 : this.getTextWidth(subLine);
 					DrawUtils.SHAPE.drawRect(selectionX, selectionY, selectionWidth, lineHeight, selectionColor);
 				} else {
 					for (int i = startLine; i <= endLine; i++) {
-						final String line = lines.get(i);
+						final String line = lines.get(i).replace("\n", "").replace("\r", "");
 						final boolean isStart = i == startLine;
 						final boolean isEnd = i == endLine;
 
 						if (isStart) {
-							final double selectionX = textX + this.getTextWidth(line.substring(0, startChar));
+							final int safeStart = Math.min(startChar, line.length());
+							final double selectionX = textX + this.getTextWidth(line.substring(0, safeStart));
 							final double selectionY = textY + lineHeight * i;
-							final String subLine = line.substring(startChar);
-							final double selectionWidth = "\n".equals(subLine) ? 2 : this.getTextWidth(subLine);
+							final String subLine = line.substring(safeStart);
+							final double selectionWidth = subLine.isEmpty() ? 2 : this.getTextWidth(subLine);
 							DrawUtils.SHAPE.drawRect(selectionX, selectionY, selectionWidth, lineHeight, selectionColor);
 							continue;
 						}
 
 						if (isEnd) {
+							final int safeEnd = Math.min(endChar, line.length());
 							final double selectionX = textX;
 							final double selectionY = textY + lineHeight * i;
-							final String subLine = line.substring(0, endChar);
-							final double selectionWidth = "\n".equals(subLine) ? 2 : this.getTextWidth(subLine);
+							final String subLine = line.substring(0, safeEnd);
+							final double selectionWidth = subLine.isEmpty() ? 2 : this.getTextWidth(subLine);
 							DrawUtils.SHAPE.drawRect(selectionX, selectionY, selectionWidth, lineHeight, selectionColor);
 							continue;
 						}
 
 						final double selectionX = textX;
 						final double selectionY = textY + lineHeight * i;
-						final double selectionWidth = "\n".equals(line) ? 2 : this.getTextWidth(line);
+						final double selectionWidth = line.isEmpty() ? 2 : this.getTextWidth(line);
 						DrawUtils.SHAPE.drawRect(selectionX, selectionY, selectionWidth, lineHeight, selectionColor);
 					}
 				}
@@ -245,34 +220,28 @@ public class MultilineTextFieldNode extends Node {
 
 		context.cancel(() -> {
 			if (keyCode == Keyboard.KEY_UP) {
-				final List<String> lines = this.getLines();
-				final String beforeCursor = this.text.substring(0, this.cursorPos);
-				final List<String> beforeCursorLines = this.getLines(beforeCursor);
-				final int cursorLineIndex = beforeCursorLines.size() - 1;
-				if (cursorLineIndex <= 0) {
+				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
+				if (cursorLineCol[0] <= 0) {
 					return;
 				}
 
-				final String cursorLine = beforeCursorLines.get(cursorLineIndex);
-				final double cursorX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(cursorLine);
+				final List<String> lines = this.getLines();
+				final String currentLine = lines.get(cursorLineCol[0]).replace("\n", "").replace("\r", "");
+				final int currentCol = Math.min(cursorLineCol[1], currentLine.length());
+				final double cursorX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(currentLine.substring(0, currentCol));
 
-				final int newCursorLineIndex = cursorLineIndex - 1;
-				final String line = beforeCursorLines.get(newCursorLineIndex);
-				int lineCharIndex = 0;
-				for (int i = 0; i < newCursorLineIndex; i++) {
-					lineCharIndex += lines.get(i).length();
-				}
-
-				int newCursorPos = lineCharIndex + line.length();
-				for (int i = 0; i < line.length(); i++) {
-					final String beforeCursorLine = line.substring(0, i);
-					final double cursorLineX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(beforeCursorLine);
-					if (cursorX < cursorLineX) {
-						newCursorPos = lineCharIndex + i;
+				final int newLineIdx = cursorLineCol[0] - 1;
+				final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
+				int newCol = targetLine.length();
+				for (int i = 0; i < targetLine.length(); i++) {
+					final double colX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(targetLine.substring(0, i));
+					if (cursorX < colX) {
+						newCol = i;
 						break;
 					}
 				}
 
+				final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					if (this.selectionStart == -1) {
 						this.selectionStart = this.cursorPos;
@@ -292,33 +261,27 @@ public class MultilineTextFieldNode extends Node {
 
 			if (keyCode == Keyboard.KEY_DOWN) {
 				final List<String> lines = this.getLines();
-				final String beforeCursor = this.text.substring(0, this.cursorPos);
-				final List<String> beforeCursorLines = this.getLines(beforeCursor);
-				final int cursorLineIndex = beforeCursorLines.size() - 1;
-				if (cursorLineIndex >= lines.size() - 1) {
+				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
+				if (cursorLineCol[0] >= lines.size() - 1) {
 					return;
 				}
 
-				final String cursorLine = beforeCursorLines.get(cursorLineIndex);
-				final double cursorX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(cursorLine);
+				final String currentLine = lines.get(cursorLineCol[0]).replace("\n", "").replace("\r", "");
+				final int currentCol = Math.min(cursorLineCol[1], currentLine.length());
+				final double cursorX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(currentLine.substring(0, currentCol));
 
-				final int newCursorLineIndex = cursorLineIndex + 1;
-				final String line = lines.get(newCursorLineIndex);
-				int lineCharIndex = 0;
-				for (int i = 0; i < newCursorLineIndex; i++) {
-					lineCharIndex += lines.get(i).length();
-				}
-
-				int newCursorPos = lineCharIndex + line.length();
-				for (int i = 0; i < line.length(); i++) {
-					final String beforeCursorLine = line.substring(0, i);
-					final double cursorLineX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(beforeCursorLine);
-					if (cursorX < cursorLineX) {
-						newCursorPos = lineCharIndex + i;
+				final int newLineIdx = cursorLineCol[0] + 1;
+				final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
+				int newCol = targetLine.length();
+				for (int i = 0; i < targetLine.length(); i++) {
+					final double colX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(targetLine.substring(0, i));
+					if (cursorX < colX) {
+						newCol = i;
 						break;
 					}
 				}
 
+				final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					if (this.selectionStart == -1) {
 						this.selectionStart = this.cursorPos;
@@ -520,7 +483,6 @@ public class MultilineTextFieldNode extends Node {
 			final double lineHeight = this.getLineHeight();
 
 			int lineIndex = -1;
-			int lineCharIndex = 0;
 			for (int i = 0; i < lines.size(); i++) {
 				final double startLineY = super.getAbsoluteY() + this.marginTop - this.yOffset + lineHeight * i;
 				final double endLineY = startLineY + lineHeight;
@@ -528,22 +490,26 @@ public class MultilineTextFieldNode extends Node {
 					lineIndex = i;
 					break;
 				}
+			}
 
-				lineCharIndex += lines.get(i).length();
+			if (lineIndex < 0 && !lines.isEmpty()) {
+				final double firstLineY = super.getAbsoluteY() + this.marginTop - this.yOffset;
+				lineIndex = mouseY < firstLineY ? 0 : lines.size() - 1;
 			}
 
 			if (lineIndex >= 0) {
-				final String line = lines.get(lineIndex);
-				this.cursorPos = lineCharIndex + line.length();
+				final String line = lines.get(lineIndex).replace("\n", "").replace("\r", "");
+				int col = line.length();
 				for (int i = 0; i < line.length(); i++) {
 					final String beforeCursor = line.substring(0, i);
 					final String cursorChar = line.substring(i, i + 1);
 					final double cursorX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(beforeCursor) + this.getTextWidth(cursorChar) / 2;
 					if (mouseX < cursorX) {
-						this.cursorPos = lineCharIndex + i;
+						col = i;
 						break;
 					}
 				}
+				this.cursorPos = this.getTextPosition(lineIndex, col);
 			}
 
 			this.focused = true;
@@ -608,6 +574,61 @@ public class MultilineTextFieldNode extends Node {
 		if (cursorY + lineHeight - this.yOffset > super.getY() + super.getHeight() - this.marginBottom) {
 			this.yOffset = cursorY + lineHeight - super.getY() - super.getHeight() + this.marginBottom;
 		}
+	}
+
+	private final int[] getLineAndColumn(final int pos) {
+		final List<String> lines = this.getLines();
+		if (lines.isEmpty()) {
+			return new int[] {0, 0};
+		}
+
+		int textIdx = 0;
+		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
+			if (lineIdx > 0 && textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
+				textIdx++;
+			}
+
+			final String line = lines.get(lineIdx).replace("\n", "").replace("\r", "");
+			final int lineEnd = textIdx + line.length();
+			if (pos >= textIdx && pos <= lineEnd) {
+				return new int[] {lineIdx, pos - textIdx};
+			}
+
+			textIdx = lineEnd;
+			if (textIdx < this.text.length() && this.text.charAt(textIdx) == ' ' && lineIdx < lines.size() - 1) {
+				textIdx++;
+			}
+		}
+
+		final String lastLine = lines.get(lines.size() - 1).replace("\n", "").replace("\r", "");
+		return new int[] {lines.size() - 1, lastLine.length()};
+	}
+
+	private final int getTextPosition(final int lineIdx, final int col) {
+		final List<String> lines = this.getLines();
+		if (lines.isEmpty()) {
+			return 0;
+		}
+
+		int textIdx = 0;
+		final int clampedLineIdx = Math.min(Math.max(0, lineIdx), lines.size() - 1);
+		for (int i = 0; i <= clampedLineIdx; i++) {
+			if (i > 0 && textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
+				textIdx++;
+			}
+
+			final String line = lines.get(i).replace("\n", "").replace("\r", "");
+			if (i == clampedLineIdx) {
+				return textIdx + Math.min(Math.max(0, col), line.length());
+			}
+
+			textIdx += line.length();
+			if (textIdx < this.text.length() && this.text.charAt(textIdx) == ' ' && i < lines.size() - 1) {
+				textIdx++;
+			}
+		}
+
+		return textIdx;
 	}
 
 	private final boolean deleteSelection(final boolean filter) {
