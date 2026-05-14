@@ -38,6 +38,8 @@ jobs:
         run: |
           sed -i "s/project.version = \".*\"/project.version = \"${TAG_NAME}\"/g" build.gradle
           sed -i "s/version-\([^[:space:]-]*\) \([^[:space:]-]*\)-/version-${TAG_NAME} (${COMMIT_SHA})-/g" README.md
+          sed -i "s/joid-[0-9]\+\.[0-9]\+\.[0-9]\+-prod\.jar/joid-${TAG_NAME}-prod.jar/g" README.md
+          sed -i "s|<version>[0-9]\+\.[0-9]\+\.[0-9]\+</version>|<version>${TAG_NAME}</version>|g" README.md
           sed -i "s/public static final String VERSION = \".*\";/public static final String VERSION = \"${TAG_NAME}\";/g" src/main/java/be/zeldown/joid/internal/JOID.java
           git add README.md
           git add build.gradle
