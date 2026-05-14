@@ -42,7 +42,7 @@ Download the desired artifact from the [Releases page](https://github.com/Zeldow
 
 ```groovy
 dependencies {
-    compile files('libs/joid-6.0.0-prod.jar')
+    compile files('libs/joid-6.5.1-prod.jar')
 }
 ```
 
@@ -52,9 +52,9 @@ dependencies {
 <dependency>
     <groupId>be.zeldown.joid</groupId>
     <artifactId>joid</artifactId>
-    <version>6.0.0</version>
+    <version>6.5.1</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/libs/joid-6.0.0-prod.jar</systemPath>
+    <systemPath>${project.basedir}/libs/joid-6.5.1-prod.jar</systemPath>
 </dependency>
 ```
 
