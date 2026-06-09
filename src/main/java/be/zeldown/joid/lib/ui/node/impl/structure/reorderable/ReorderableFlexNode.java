@@ -88,7 +88,7 @@ public final class ReorderableFlexNode extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (!this.autoDrag || !clickType.isLeft() || context.isCancelled() || this.draggedNode != null) {
+		if (!this.autoDrag || !clickType.isLeft() || context.isCancelled() || this.draggedNode != null || !super.isEnabled()) {
 			return;
 		}
 
