@@ -328,7 +328,7 @@ public class MultilineTextFieldNode extends Node {
 			}
 
 			if (keyCode == Keyboard.KEY_ESCAPE) {
-				this.focused = false;
+				this.focused(false);
 				return;
 			}
 
@@ -465,7 +465,7 @@ public class MultilineTextFieldNode extends Node {
 	@Override
 	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
-			this.focused = false;
+			this.focused(false);
 			this.selectionStart = -1;
 			return;
 		}
@@ -512,7 +512,7 @@ public class MultilineTextFieldNode extends Node {
 				this.cursorPos = this.getTextPosition(lineIndex, col);
 			}
 
-			this.focused = true;
+			this.focused(true);
 		});
 	}
 
@@ -712,6 +712,10 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	public final <T extends MultilineTextFieldNode> @NonNull T focused(final boolean focused) {
+		if (this.focused == focused) {
+			return (T) this;
+		}
+
 		super.executeCallback(MultilineTextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
 			this.focused = focused;
 		});
