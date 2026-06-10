@@ -514,6 +514,10 @@ public class TextFieldNode extends Node {
 	}
 
 	public final <T extends TextFieldNode> @NonNull T focused(final boolean focused) {
+		if (this.focused == focused) {
+			return (T) this;
+		}
+
 		super.executeCallback(TextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
 			this.focused = focused;
 		});
