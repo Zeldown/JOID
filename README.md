@@ -4,7 +4,7 @@
 ## Java OpenGL Interface Development
 
 <div align="center">
-  <img align="center" src="https://img.shields.io/badge/version-6.5.2 (dfe0987)-blue">
+  <img align="center" src="https://img.shields.io/badge/version-6.5.3 (012f0b7)-blue">
   <img align="center" src="https://img.shields.io/badge/maintainer-Zeldown-orange">
   <img align="center" src="https://img.shields.io/maintenance/yes/9999">
   <img align="center" src="https://github.com/Zeldown/JOID/actions/workflows/release.yml/badge.svg">
@@ -42,7 +42,7 @@ Download the desired artifact from the [Releases page](https://github.com/Zeldow
 
 ```groovy
 dependencies {
-    compile files('libs/joid-6.5.2-prod.jar')
+    compile files('libs/joid-6.5.3-prod.jar')
 }
 ```
 
@@ -52,9 +52,9 @@ dependencies {
 <dependency>
     <groupId>be.zeldown.joid</groupId>
     <artifactId>joid</artifactId>
-    <version>6.5.2</version>
+    <version>6.5.3</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/libs/joid-6.5.2-prod.jar</systemPath>
+    <systemPath>${project.basedir}/libs/joid-6.5.3-prod.jar</systemPath>
 </dependency>
 ```
 
