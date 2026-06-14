@@ -193,19 +193,20 @@ public class MultilineTextFieldNode extends Node {
 					return;
 				}
 
-				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.cursorPos + 1));
+				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.nextWordIndex() : this.cursorPos + 1));
 			} else if (this.inputType == Keyboard.KEY_BACK) {
 				if (this.cursorPos <= 0) {
 					this.inputting = false;
 					return;
 				}
 
-				this.setText(this.text.substring(0, this.cursorPos - 1) + this.text.substring(this.cursorPos));
-				this.decreaseCursor(1);
+				final int backStart = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.previousWordIndex() : this.cursorPos - 1;
+				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
+				this.decreaseCursor(this.cursorPos - backStart);
 			} else if (this.inputType == Keyboard.KEY_LEFT) {
-				this.decreaseCursor(1);
+				this.decreaseCursor(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.cursorPos - this.previousWordIndex() : 1);
 			} else if (this.inputType == Keyboard.KEY_RIGHT) {
-				this.increaseCursor(1);
+				this.increaseCursor(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.nextWordIndex() - this.cursorPos : 1);
 			}
 
 			this.lastInput = System.currentTimeMillis();
@@ -309,7 +310,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(keyCode);
-				this.decreaseCursor(1);
+				this.decreaseCursor(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.cursorPos - this.previousWordIndex() : 1);
 				return;
 			}
 
@@ -323,7 +324,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(keyCode);
-				this.increaseCursor(1);
+				this.increaseCursor(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.nextWordIndex() - this.cursorPos : 1);
 				return;
 			}
 
@@ -338,8 +339,9 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(keyCode);
-				this.setText(this.text.substring(0, this.cursorPos - 1) + this.text.substring(this.cursorPos));
-				this.decreaseCursor(1);
+				final int backStart = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.previousWordIndex() : this.cursorPos - 1;
+				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
+				this.decreaseCursor(this.cursorPos - backStart);
 				return;
 			}
 
@@ -349,7 +351,8 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(keyCode);
-				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.cursorPos + 1));
+				final int deleteEnd = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.nextWordIndex() : this.cursorPos + 1;
+				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
 				return;
 			}
 
@@ -629,6 +632,36 @@ public class MultilineTextFieldNode extends Node {
 		}
 
 		return textIdx;
+	}
+
+	private final int previousWordIndex() {
+		int index = this.cursorPos;
+		while (index > 0 && this.isSeparator(this.text.charAt(index - 1))) {
+			index--;
+		}
+
+		while (index > 0 && !this.isSeparator(this.text.charAt(index - 1))) {
+			index--;
+		}
+
+		return index;
+	}
+
+	private final int nextWordIndex() {
+		int index = this.cursorPos;
+		while (index < this.text.length() && !this.isSeparator(this.text.charAt(index))) {
+			index++;
+		}
+
+		while (index < this.text.length() && this.isSeparator(this.text.charAt(index))) {
+			index++;
+		}
+
+		return index;
+	}
+
+	private final boolean isSeparator(final char c) {
+		return c == ' ' || c == '\n' || c == '\r';
 	}
 
 	private final boolean deleteSelection(final boolean filter) {
