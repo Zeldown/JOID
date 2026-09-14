@@ -503,7 +503,7 @@ public final class Color {
 	}
 
 	public static @NonNull Color RAINBOW() {
-		return new Color(java.awt.Color.HSBtoRGB(System.currentTimeMillis() % 3000L / 3000F, 0.8F, 0.8F));
+		return new Color(java.awt.Color.HSBtoRGB(BridgeHandler.CLOCK.get().currentTimeMillis() % 3000L / 3000F, 0.8F, 0.8F));
 	}
 
 	public static @NonNull Color RAINBOW(final long time) {
@@ -511,7 +511,7 @@ public final class Color {
 	}
 
 	public static @NonNull Color LOADING() {
-		final long now = System.currentTimeMillis();
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 		final float color = (float) ((Math.sin(2 * Math.PI * (now % 4000) / 2000) + 1) / 50F) + 0.15F;
 		return new Color(color, color, color);
 	}

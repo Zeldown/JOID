@@ -1,0 +1,75 @@
+package be.zeldown.joid.impl.lwjgl3;
+
+import java.nio.ByteBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30C;
+import org.lwjgl.system.Platform;
+
+import be.zeldown.joid.test.snapshot.ISnapshotBackend;
+import be.zeldown.joid.test.snapshot.SnapshotImage;
+import lombok.NonNull;
+
+public final class SnapshotBackend implements ISnapshotBackend {
+
+	private long window;
+	private int  width;
+	private int  height;
+
+	@Override
+	public void create(final int width, final int height) {
+		if (!GLFW.glfwInit()) {
+			throw new IllegalStateException("Unable to initialize GLFW");
+		}
+
+		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, Platform.get() == Platform.MACOSX ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_DEPTH_BITS, 24);
+		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 8);
+
+		this.window = GLFW.glfwCreateWindow(width, height, "JOID snapshot", 0L, 0L);
+		if (this.window == 0L) {
+			throw new IllegalStateException("Unable to create the GLFW window");
+		}
+
+		this.width  = width;
+		this.height = height;
+		GLFW.glfwMakeContextCurrent(this.window);
+		GLFW.glfwSwapInterval(0);
+		GL.createCapabilities();
+		Backend.register(this.window);
+	}
+
+	@Override
+	public void frame(final @NonNull Runnable draw) {
+		draw.run();
+	}
+
+	@Override
+	public @NonNull SnapshotImage capture() {
+		final ByteBuffer pixels = BufferUtils.createByteBuffer(this.width * this.height * 4);
+		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
+		GL11C.glReadBuffer(GL11C.GL_BACK);
+		GL11C.glReadPixels(0, 0, this.width, this.height, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixels);
+		return SnapshotImage.fromBytes(pixels, this.width, this.height, true, false);
+	}
+
+	@Override
+	public void present() {
+		GLFW.glfwSwapBuffers(this.window);
+	}
+
+	@Override
+	public void destroy() {
+		GLFW.glfwDestroyWindow(this.window);
+		GLFW.glfwTerminate();
+	}
+
+}

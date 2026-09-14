@@ -5,6 +5,7 @@ import be.zeldown.joid.demo.ui.UIDemo;
 import be.zeldown.joid.demo.ui.store.store.DemoGlobalStore;
 import be.zeldown.joid.demo.ui.store.store.DemoLocalStore;
 import be.zeldown.joid.demo.ui.store.store.DemoPermanentStore;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
@@ -16,9 +17,9 @@ public class UIDemoStore extends UIDemo {
 
 	@Override
 	public void init() {
-		super.useStore(DemoLocalStore.class, System.currentTimeMillis());
-		super.useStore(DemoGlobalStore.class, System.currentTimeMillis());
-		super.useStore(DemoPermanentStore.class, System.currentTimeMillis());
+		super.useStore(DemoLocalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
+		super.useStore(DemoGlobalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
+		super.useStore(DemoPermanentStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
 
 		FlexNode
 		.vertical(0, 1080 / 2, 1920)

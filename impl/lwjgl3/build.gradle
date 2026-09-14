@@ -20,3 +20,10 @@ task runDemo(type: JavaExec) {
         jvmArgs "-XstartOnFirstThread"
     }
 }
+
+
+test {
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+}

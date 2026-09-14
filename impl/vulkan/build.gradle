@@ -24,3 +24,11 @@ task runDemo(type: JavaExec) {
         jvmArgs "-XstartOnFirstThread"
     }
 }
+
+
+test {
+    systemProperty 'org.lwjgl.system.stackSize', 1024
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+}

@@ -76,6 +76,10 @@ JOID is a multi-module Gradle build. The `core` module contains the engine-agnos
 
 Entry points live in the `be.zeldown.joid.impl.<module>` package of each backend. Backends only implement the bridges — they never modify the `core` module. See [Backends](documentation/content/ui/backends.md) to write a new one.
 
+## Tests
+
+`./gradlew test` runs the shader unit tests, then renders the demo UIs offscreen on each backend with a controlled clock and compares them pixel by pixel to the references in `impl/<module>/src/test/snapshots`. `./gradlew crossBackendTest` also compares the backends to each other, and `./gradlew test -PupdateSnapshots` accepts an intended visual change. These tests need a GPU and run before each commit through the hook installed by `./gradlew installLocalGitHook`. See [Backends](documentation/content/ui/backends.md#tests).
+
 ## Features
 
 - 🧱 **Node-based UI** — Hierarchical component system with layout nodes (flex, grid, scrollbar, container) and design nodes (shapes, text, images, text fields, sliders, charts, video…)
@@ -85,7 +89,7 @@ Entry points live in the `be.zeldown.joid.impl.<module>` package of each backend
 - 🎯 **Reactive signals** — Observable values with conditional watches that auto-reload nodes
 - 💾 **Persistent stores** — `@UIStoreData`-annotated fields auto-serialized to JSON
 - 🎬 **Video playback** — `VideoPlayerNode` with FFmpeg-backed decoding (MP4/MOV/WEBM/MKV/AVI/GIF/APNG)
-- 🔌 **Bridge pattern** — Host- and engine-agnostic integration via `IUIBridge`, `IWindowBridge`, `IRenderBridge` and `IAudioBridge`
+- 🔌 **Bridge pattern** — Host- and engine-agnostic integration via `IUIBridge`, `IWindowBridge`, `IRenderBridge`, `IAudioBridge` and `IClockBridge`
 
 ## Documentation
 

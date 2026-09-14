@@ -43,14 +43,26 @@ subprojects {
 
     dependencies {
         compile "org.projectlombok:lombok:1.18.34"
+
+        testCompile "junit:junit:4.13.2"
     }
 
     eclipse.project.name = "JOID-${name}"
 }
 
+/* Tests */
+task crossBackendTest(type: JavaExec) {
+    dependsOn ':lwjgl2:test', ':lwjgl3:test', ':vulkan:test'
+    main = "be.zeldown.joid.test.snapshot.SnapshotComparison"
+    classpath = project(':core').sourceSets.test.runtimeClasspath
+    args file('build/snapshots').absolutePath, 'lwjgl2', 'lwjgl3', 'vulkan'
+}
+
 /* Scripts */
 task installLocalGitHook(type: Copy){
-	from new File(rootProject.rootDir, 'scripts/pre-push')
+	from(new File(rootProject.rootDir, 'scripts')) {
+		include 'pre-push', 'pre-commit'
+	}
 	into new File(rootProject.rootDir, '.git/hooks')
 	
 	fileMode 0775

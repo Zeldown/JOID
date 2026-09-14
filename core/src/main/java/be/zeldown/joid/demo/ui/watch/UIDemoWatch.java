@@ -37,12 +37,7 @@ public class UIDemoWatch extends UIDemo {
 			});
 		}).attach(this);
 
-		new Thread(() -> {
-			try {
-				Thread.sleep(3000L);
-				this.cardInformations.set(Arrays.asList("Zeldown", "Mon Titre", "ceci est la première ligne", "ma deuxième ligne", "troisième ligne"));
-			} catch (final Exception silent) {}
-		}).start();
+		super.schedule(() -> this.cardInformations.set(Arrays.asList("Zeldown", "Mon Titre", "ceci est la première ligne", "ma deuxième ligne", "troisième ligne")), 3000L);
 	}
 
 }

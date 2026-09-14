@@ -1,6 +1,6 @@
 # Backends
 
-Le cœur de JOID est agnostique au moteur. Les nœuds, les effets, le pipeline de shaders, les polices, les ressources et la vidéo n'appellent jamais directement OpenGL, Vulkan, GLFW ou OpenAL — ils passent par quatre bridges enregistrés dans `BridgeHandler`. Un backend est l'ensemble des classes qui implémentent ces bridges pour un moteur donné.
+Le cœur de JOID est agnostique au moteur. Les nœuds, les effets, le pipeline de shaders, les polices, les ressources et la vidéo n'appellent jamais directement OpenGL, Vulkan, GLFW ou OpenAL — ils passent par les bridges enregistrés dans `BridgeHandler`. Un backend est l'ensemble des classes qui implémentent ces bridges pour un moteur donné.
 
 | Bridge | Responsabilité |
 |---|---|
@@ -8,8 +8,9 @@ Le cœur de JOID est agnostique au moteur. Les nœuds, les effets, le pipeline d
 | `IWindowBridge` | Taille de la fenêtre, position de la souris, capture de la souris, état du clavier, presse-papier. |
 | `IRenderBridge` | Piles de matrices, état de rendu, textures, framebuffers, shaders, appels de dessin. |
 | `IAudioBridge` | Sources audio en streaming utilisées par le lecteur vidéo. |
+| `IClockBridge` | Temps des animations, des tâches planifiées, des curseurs de texte, des doubles clics et de `Node.wait`. `SystemClockBridge` est enregistré par défaut, `ManualClockBridge` contrôle le temps à la main. |
 
-Tous les bridges implémentent `IBridge`, et `BridgeHandler` expose un `BridgeRegistry` par type de bridge : `UI`, `WINDOW`, `RENDER` et `AUDIO`. Un registre garde tous les bridges enregistrés triés par `getIndex()` — `0` par défaut, le dernier enregistré l'emporte à égalité.
+Tous les bridges implémentent `IBridge`, et `BridgeHandler` expose un `BridgeRegistry` par type de bridge : `UI`, `WINDOW`, `RENDER`, `AUDIO` et `CLOCK`. Un registre garde tous les bridges enregistrés triés par `getIndex()` — `0` par défaut, le dernier enregistré l'emporte à égalité.
 
 | Méthode | Résultat |
 |---|---|
@@ -130,6 +131,31 @@ Les shaders vivent dans le module `core` et s'écrivent une seule fois en GLSL J
 | Vulkan | GLSL 450 | Mêmes attributs, les uniforms des deux étapes dans un seul bloc `std140` à `binding = 0`, samplers à partir de `binding = 1`, locations des varyings partagées par les deux étapes, `layout(location = 0) out vec4 fragColor`. |
 
 Chaque en-tête généré se termine par une directive `#line`, pour que les erreurs de compilation pointent vers le fichier d'origine. Les samplers qui ne sont pas réglés via un `SamplerUniform` reçoivent la texture actuellement liée. Les backends LWJGL 3 et Vulkan dessinent sans shader lié via `/assets/shaders/fixed`, et enveloppent le `main` du fragment pour appliquer l'alpha test de l'état de rendu.
+
+### Tests
+
+Chaque backend implémente `ISnapshotBackend` dans ses sources `src/test` — créer une surface hors écran, exécuter une frame, capturer ses pixels, la libérer — et étend `SnapshotSuite` :
+
+```java
+public class SnapshotTest extends SnapshotSuite {
+
+    @Override
+    protected ISnapshotBackend createBackend() {
+        return new SnapshotBackend();
+    }
+
+}
+```
+
+La suite enregistre un `ManualClockBridge`, vérifie que chaque shader du cœur compile, puis joue les scénarios `static` et `interaction` de `core/src/test/resources/snapshot` sur les UIs de démo. Le temps n'avance que par frames de 16 ms, et chaque capture attend la fin du chargement des ressources puis deux frames consécutives identiques, chaque exécution rend donc les mêmes pixels. Les captures sont comparées aux références de `src/test/snapshots` avec une tolérance de 8 par canal.
+
+| Commande | Résultat |
+|---|---|
+| `./gradlew test` | Tests unitaires des shaders et tests de snapshot de chaque module. Les captures et les différences sont écrites dans `build/snapshots`. |
+| `./gradlew test -PupdateSnapshots` | Remplace les références après un changement visuel voulu. |
+| `./gradlew crossBackendTest` | Lance les tests, puis compare les captures `lwjgl3` et `vulkan` à `lwjgl2`, en tolérant jusqu'à 2000 pixels par capture pour les différences de rastérisation sous-pixel. Les différences sont écrites dans `build/snapshots/cross`. |
+
+Les tests de snapshot nécessitent un GPU. Le hook pre-commit installé par `./gradlew installLocalGitHook` lance `check` et `crossBackendTest` dès qu'un commit touche les sources ou le build.
 
 ## Voir aussi
 

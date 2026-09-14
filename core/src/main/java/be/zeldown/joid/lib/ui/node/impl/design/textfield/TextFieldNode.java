@@ -132,7 +132,7 @@ public class TextFieldNode extends Node {
 				final String beforeCursor = this.text.substring(0, this.cursorPos);
 				final double cursorX = textX + this.info.getWidth(beforeCursor);
 				final Color cursorColor = new Color(this.info.getColor());
-				final float cursorOpacity = (float) ((Math.sin(2D * Math.PI * (System.currentTimeMillis() % 2000) / 1000) + 1D) / 2F);
+				final float cursorOpacity = (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F);
 				cursorColor.a = cursorOpacity;
 				DrawUtils.SHAPE.drawRect(cursorX, textY, 2D, this.info.getHeight(), cursorColor);
 			}
@@ -152,7 +152,7 @@ public class TextFieldNode extends Node {
 			}
 		});
 
-		if (this.inputting && System.currentTimeMillis() - this.lastInput >= (this.firstInput ? 500 : 100)) {
+		if (this.inputting && BridgeHandler.CLOCK.get().currentTimeMillis() - this.lastInput >= (this.firstInput ? 500 : 100)) {
 			this.firstInput = false;
 
 			if (!this.inputType.isDown()) {
@@ -182,7 +182,7 @@ public class TextFieldNode extends Node {
 				this.increaseCursor(Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() - this.cursorPos : 1);
 			}
 
-			this.lastInput = System.currentTimeMillis();
+			this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
 		}
 	}
 
@@ -351,7 +351,7 @@ public class TextFieldNode extends Node {
 	private final void holdInput(final @NonNull Key key) {
 		this.firstInput = true;
 		this.inputting  = true;
-		this.lastInput  = System.currentTimeMillis();
+		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.inputType  = key;
 	}
 

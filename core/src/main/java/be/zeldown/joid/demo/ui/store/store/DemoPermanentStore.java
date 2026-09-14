@@ -2,6 +2,7 @@ package be.zeldown.joid.demo.ui.store.store;
 
 import com.google.gson.JsonObject;
 
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.ui.core.hook.store.UIStore;
 import be.zeldown.joid.lib.ui.core.hook.store.context.StoreContext;
 import be.zeldown.joid.lib.ui.core.hook.store.data.UIStoreData;
@@ -25,7 +26,7 @@ public class DemoPermanentStore extends UIStore {
 
 	@Override
 	public void load(final @NonNull JsonObject json) {
-		this.time = json.has("time") ? json.get("time").getAsLong() : System.currentTimeMillis();
+		this.time = json.has("time") ? json.get("time").getAsLong() : BridgeHandler.CLOCK.get().currentTimeMillis();
 	}
 
 	@Override

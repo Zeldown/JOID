@@ -33,12 +33,7 @@ public class UIDemoWait extends UIDemo {
 			}).skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.LOADING));
 		}).attach(this);
 
-		new Thread(() -> {
-			try {
-				Thread.sleep(3000L);
-				cardInformations.set(Arrays.asList("Zeldown", "Mon Titre", "ceci est la première ligne", "ma deuxième ligne", "troisième ligne"));
-			} catch (final Exception silent) {}
-		}).start();
+		super.schedule(() -> cardInformations.set(Arrays.asList("Zeldown", "Mon Titre", "ceci est la première ligne", "ma deuxième ligne", "troisième ligne")), 3000L);
 	}
 
 }

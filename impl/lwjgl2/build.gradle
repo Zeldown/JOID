@@ -16,3 +16,8 @@ task runDemo(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     jvmArgs "-Djava.library.path=${file('native').absolutePath}"
 }
+
+
+test {
+    jvmArgs "-Djava.library.path=${file('native').absolutePath}"
+}

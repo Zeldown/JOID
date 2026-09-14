@@ -117,7 +117,7 @@ public class MultilineTextFieldNode extends Node {
 				final double cursorX = textX + this.getTextWidth(cursorLine.substring(0, safeCol));
 				final double cursorY = textY + lineHeight * cursorLineIdx;
 				final Color cursorColor = new Color(this.info.getColor());
-				final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (System.currentTimeMillis() % 2000) / 1000) + 1) / 2F);
+				final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1) / 2F);
 				cursorColor.a = cursorOpacity;
 				DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
 			}
@@ -178,7 +178,7 @@ public class MultilineTextFieldNode extends Node {
 			}
 		});
 
-		if (this.inputting && System.currentTimeMillis() - this.lastInput >= (this.firstInput ? 500 : 100)) {
+		if (this.inputting && BridgeHandler.CLOCK.get().currentTimeMillis() - this.lastInput >= (this.firstInput ? 500 : 100)) {
 			this.firstInput = false;
 
 			if (!this.inputType.isDown()) {
@@ -208,7 +208,7 @@ public class MultilineTextFieldNode extends Node {
 				this.increaseCursor(Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() - this.cursorPos : 1);
 			}
 
-			this.lastInput = System.currentTimeMillis();
+			this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
 		}
 	}
 
@@ -460,7 +460,7 @@ public class MultilineTextFieldNode extends Node {
 	private final void holdInput(final @NonNull Key key) {
 		this.firstInput = true;
 		this.inputting  = true;
-		this.lastInput  = System.currentTimeMillis();
+		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.inputType  = key;
 	}
 

@@ -9,6 +9,7 @@ import be.zeldown.joid.lib.animation.tweenengine.TweenCallback;
 import be.zeldown.joid.lib.animation.tweenengine.TweenEquation;
 import be.zeldown.joid.lib.animation.tweenengine.TweenEquations;
 import be.zeldown.joid.lib.animation.tweenengine.TweenManager;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -87,14 +88,14 @@ public class TweenAnimator {
 	/* [ Start Section ] */
 	public @NonNull TweenAnimator start() {
 		assert this.timeline != null;
-		this.lastUpdate = System.currentTimeMillis();
+		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.timeline.start(this.manager);
 		return this;
 	}
 
 	/* [ Update Section ] */
 	public @NonNull TweenAnimator update() {
-		final long now = System.currentTimeMillis();
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.update(now - this.lastUpdate);
 		this.lastUpdate = now;
 		return this;

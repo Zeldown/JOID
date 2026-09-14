@@ -11,6 +11,7 @@ import javax.vecmath.Vector2d;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.internal.font.InternalFont;
 import be.zeldown.joid.lib.animation.animator.TweenAnimator;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.draw.text.builder.Text;
@@ -438,7 +439,7 @@ public final class DevNode extends Node {
 		}
 
 		if (this.eyeSignal.getOrDefault()) {
-			final long now = System.currentTimeMillis();
+			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 			final long duration = 2000L;
 			for (final Node node : super.getUi().getNodeList().recursive()) {
 				if (node instanceof DevNode || this.getChildren().recursive().contains(node)) {

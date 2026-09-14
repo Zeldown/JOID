@@ -3,6 +3,7 @@ package be.zeldown.joid.demo.ui.video;
 import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.demo.ui.UIDemo;
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.draw.text.builder.Text;
@@ -75,7 +76,7 @@ public class UIDemoVideo extends UIDemo {
 	@Override
 	public void preDraw(final double mouseX, final double mouseY) {
 		if (!this.fullscreen && this.player != null && this.player.isPlaying()) {
-			final long now = System.nanoTime();
+			final long now = BridgeHandler.CLOCK.get().nanoTime();
 			if (this.lastBounceTime == 0L) {
 				this.lastBounceTime = now;
 			}
@@ -107,7 +108,7 @@ public class UIDemoVideo extends UIDemo {
 			return;
 		}
 
-		final long now = System.nanoTime();
+		final long now = BridgeHandler.CLOCK.get().nanoTime();
 		this.frameTime = now - this.lastFrameTime;
 		this.lastFrameTime = now;
 		this.frameCount++;

@@ -1,5 +1,6 @@
 package be.zeldown.joid.lib.ui.core.task;
 
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import lombok.Getter;
 
 @Getter
@@ -17,12 +18,12 @@ public class UIScheduledTask {
 		this.delay = delay;
 		this.period = period;
 
-		this.lastUpdate = System.currentTimeMillis();
+		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.nextUpdate = this.lastUpdate + this.delay;
 	}
 
 	public boolean shouldRun() {
-		return System.currentTimeMillis() >= this.nextUpdate;
+		return BridgeHandler.CLOCK.get().currentTimeMillis() >= this.nextUpdate;
 	}
 
 	public boolean execute() {
@@ -31,7 +32,7 @@ public class UIScheduledTask {
 			return false;
 		}
 
-		this.lastUpdate = System.currentTimeMillis();
+		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.nextUpdate = this.lastUpdate + this.period;
 		return true;
 	}

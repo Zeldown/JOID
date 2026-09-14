@@ -26,3 +26,32 @@ shadowJar {
 }
 
 build.dependsOn shadowJar
+
+
+dependencies {
+    testCompile project(':core').sourceSets.test.output
+}
+
+test {
+    def references = file('src/test/snapshots')
+    def output = rootProject.file("build/snapshots/${project.name}")
+
+    workingDir = file("$buildDir/snapshot")
+    inputs.dir references
+    inputs.property 'updateSnapshots', project.hasProperty('updateSnapshots')
+    outputs.dir output
+
+    systemProperty 'joid.snapshot.references', references.absolutePath
+    systemProperty 'joid.snapshot.output', output.absolutePath
+    systemProperty 'joid.snapshot.update', project.hasProperty('updateSnapshots')
+
+    testLogging {
+        exceptionFormat 'full'
+        events 'failed'
+    }
+
+    doFirst {
+        delete workingDir, output
+        workingDir.mkdirs()
+    }
+}

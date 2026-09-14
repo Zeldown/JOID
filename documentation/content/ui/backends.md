@@ -1,6 +1,6 @@
 # Backends
 
-JOID's core is engine-agnostic. Nodes, effects, the shader pipeline, fonts, resources and video never call OpenGL, Vulkan, GLFW or OpenAL directly — they go through four bridges registered in `BridgeHandler`. A backend is the set of classes that implements those bridges for one engine.
+JOID's core is engine-agnostic. Nodes, effects, the shader pipeline, fonts, resources and video never call OpenGL, Vulkan, GLFW or OpenAL directly — they go through the bridges registered in `BridgeHandler`. A backend is the set of classes that implements those bridges for one engine.
 
 | Bridge | Responsibility |
 |---|---|
@@ -8,8 +8,9 @@ JOID's core is engine-agnostic. Nodes, effects, the shader pipeline, fonts, reso
 | `IWindowBridge` | Window size, mouse position, mouse grab, keyboard state, clipboard. |
 | `IRenderBridge` | Matrix stacks, render state, textures, framebuffers, shaders, draw calls. |
 | `IAudioBridge` | Streaming audio sources used by the video player. |
+| `IClockBridge` | Time of animations, scheduled tasks, text cursors, double clicks and `Node.wait`. `SystemClockBridge` is registered by default, `ManualClockBridge` controls time by hand. |
 
-Every bridge implements `IBridge`, and `BridgeHandler` exposes one `BridgeRegistry` per bridge type: `UI`, `WINDOW`, `RENDER` and `AUDIO`. A registry keeps every registered bridge ordered by `getIndex()` — `0` by default, the latest registration wins on ties.
+Every bridge implements `IBridge`, and `BridgeHandler` exposes one `BridgeRegistry` per bridge type: `UI`, `WINDOW`, `RENDER`, `AUDIO` and `CLOCK`. A registry keeps every registered bridge ordered by `getIndex()` — `0` by default, the latest registration wins on ties.
 
 | Method | Result |
 |---|---|
@@ -130,6 +131,31 @@ Shaders live in the `core` module and are written once in JOID GLSL (see [Custom
 | Vulkan | GLSL 450 | Same attributes, the uniforms of both stages in a single `std140` block at `binding = 0`, samplers from `binding = 1`, varying locations shared by both stages, `layout(location = 0) out vec4 fragColor`. |
 
 Every generated header ends with a `#line` directive, so compilation errors point to the original file. Samplers that are not set through a `SamplerUniform` receive the currently bound texture. The LWJGL 3 and Vulkan backends draw without a bound shader through `/assets/shaders/fixed`, and wrap the fragment `main` to apply the render state alpha test.
+
+### Tests
+
+Each backend implements `ISnapshotBackend` in its `src/test` sources — create an offscreen surface, run a frame, capture its pixels, release it — and extends `SnapshotSuite`:
+
+```java
+public class SnapshotTest extends SnapshotSuite {
+
+    @Override
+    protected ISnapshotBackend createBackend() {
+        return new SnapshotBackend();
+    }
+
+}
+```
+
+The suite registers a `ManualClockBridge`, checks that every core shader compiles, then plays the `static` and `interaction` scenarios of `core/src/test/resources/snapshot` on the demo UIs. Time only advances by frames of 16 ms, and each shot waits for the resources being loaded then for two identical consecutive frames, so every run renders the same pixels. Shots are compared to the references in `src/test/snapshots` with a tolerance of 8 per channel.
+
+| Command | Result |
+|---|---|
+| `./gradlew test` | Shader unit tests and snapshot tests of every module. Rendered shots and differences are written to `build/snapshots`. |
+| `./gradlew test -PupdateSnapshots` | Replaces the references after an intended visual change. |
+| `./gradlew crossBackendTest` | Runs the tests, then compares the `lwjgl3` and `vulkan` shots to `lwjgl2`, tolerating up to 2000 pixels per shot for sub-pixel rasterization differences. Differences are written to `build/snapshots/cross`. |
+
+Snapshot tests need a GPU. The pre-commit hook installed by `./gradlew installLocalGitHook` runs `check` and `crossBackendTest` whenever a commit touches the sources or the build.
 
 ## See also
 

@@ -264,7 +264,7 @@ public abstract class Node implements INode {
 		});
 
 		this.updateCount++;
-		this.lastUpdate = System.currentTimeMillis();
+		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 	}
 
 	public final void render(final double mouseX, final double mouseY) {
@@ -584,7 +584,7 @@ public abstract class Node implements INode {
 
 	public final void onMousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.lastClickType = clickType;
-		this.lastClickTime = System.currentTimeMillis();
+		this.lastClickTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		if (this.scrollbar != null) {
 			this.scrollbar.onMousePressed(mouseX, mouseY, clickType, context);
@@ -708,7 +708,7 @@ public abstract class Node implements INode {
 	public final void onKeyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
 		this.lastCharacter = c;
 		this.lastKey = key;
-		this.lastKeyTime = System.currentTimeMillis();
+		this.lastKeyTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		if (this.scrollbar != null) {
 			this.scrollbar.onKeyPressed(c, key, context);
@@ -1442,8 +1442,8 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T wait(final long time, final @NonNull TimeUnit unit) {
-		final long endTime = System.currentTimeMillis() + unit.toMillis(time);
-		this.waitingList.add(node -> System.currentTimeMillis() >= endTime);
+		final long endTime = BridgeHandler.CLOCK.get().currentTimeMillis() + unit.toMillis(time);
+		this.waitingList.add(node -> BridgeHandler.CLOCK.get().currentTimeMillis() >= endTime);
 		return (T) this;
 	}
 

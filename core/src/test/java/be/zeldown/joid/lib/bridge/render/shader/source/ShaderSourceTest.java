@@ -1,0 +1,72 @@
+package be.zeldown.joid.lib.bridge.render.shader.source;
+
+import java.util.EnumSet;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import be.zeldown.joid.test.CoreShaders;
+
+public class ShaderSourceTest {
+
+	@Test
+	public void parsesVaryings() {
+		final ShaderSource source = ShaderSource.parse(ShaderStage.VERTEX, "out vec2 vTexCoord;\nflat out vec4 vColor;\n\nvoid main() {\n}\n");
+		Assert.assertEquals(2, source.getOutputs().size());
+		Assert.assertEquals("vec2 vTexCoord", source.getOutputs().get(0).getDeclaration());
+		Assert.assertFalse(source.getOutputs().get(0).isFlat());
+		Assert.assertTrue(source.getOutputs().get(1).isFlat());
+	}
+
+	@Test
+	public void separatesUniformsAndSamplers() {
+		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, "uniform sampler2D tex;\nuniform vec4 u_Color;\nuniform float u_Values[16];\n");
+		Assert.assertEquals(1, source.getSamplers().size());
+		Assert.assertEquals("tex", source.getSamplers().get(0).getName());
+		Assert.assertEquals(2, source.getUniforms().size());
+		Assert.assertEquals("float u_Values[16]", source.getUniforms().get(1).getDeclaration());
+	}
+
+	@Test
+	public void detectsUsedBuiltins() {
+		final ShaderSource source = ShaderSource.parse(ShaderStage.VERTEX, "// uNormalMatrix is unused\nvoid main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0); /* aNormal */\n}\n");
+		Assert.assertEquals(EnumSet.of(ShaderBuiltin.POSITION, ShaderBuiltin.PROJECTION_MATRIX, ShaderBuiltin.MODEL_VIEW_MATRIX), source.getBuiltins());
+	}
+
+	@Test
+	public void ignoresVersionAndBuiltinDeclarations() {
+		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, "#version 330 core\nlayout(location = 0) out vec4 fragColor;\nuniform bool uLighting;\n\nvoid main() {\n    fragColor = vec4(uLighting ? 1.0 : 0.0);\n}\n");
+		Assert.assertTrue(source.getOutputs().isEmpty());
+		Assert.assertTrue(source.getUniforms().isEmpty());
+		Assert.assertEquals(EnumSet.of(ShaderBuiltin.LIGHTING, ShaderBuiltin.FRAGMENT_COLOR), source.getBuiltins());
+		Assert.assertFalse(source.getBody().contains("#version"));
+	}
+
+	@Test
+	public void keepsLineNumbers() {
+		final String[] lines = ShaderSource.parse(ShaderStage.FRAGMENT, "uniform float u_Radius;\nin vec2 vTexCoord;\n\nvoid main() {\n    fragColor = vec4(u_Radius);\n}").getBody().split("\n", -1);
+		Assert.assertEquals("", lines[0]);
+		Assert.assertEquals("", lines[1]);
+		Assert.assertEquals("    fragColor = vec4(u_Radius);", lines[4]);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsVertexInputs() {
+		ShaderSource.parse(ShaderStage.VERTEX, "in vec3 aCustom;\n");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void rejectsFragmentOutputs() {
+		ShaderSource.parse(ShaderStage.FRAGMENT, "out vec4 color;\n");
+	}
+
+	@Test
+	public void parsesCoreShaders() {
+		Assert.assertFalse(CoreShaders.getNames().isEmpty());
+		for (final String name : CoreShaders.getNames()) {
+			Assert.assertTrue(name, CoreShaders.read(name, ShaderStage.VERTEX).getBuiltins().contains(ShaderBuiltin.POSITION));
+			Assert.assertTrue(name, CoreShaders.read(name, ShaderStage.FRAGMENT).getBuiltins().contains(ShaderBuiltin.FRAGMENT_COLOR));
+		}
+	}
+
+}
