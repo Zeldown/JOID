@@ -4,13 +4,13 @@ import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float4Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.IntUniform;
 import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
-import be.zeldown.joid.lib.shader.uniform.Float4Uniform;
-import be.zeldown.joid.lib.shader.uniform.IntUniform;
 import lombok.NonNull;
 
-public class GradientShader extends GLShaderImpl {
+public class GradientShader extends ShaderImpl {
 
 	private static final GradientShader INSTANCE = new GradientShader();
 

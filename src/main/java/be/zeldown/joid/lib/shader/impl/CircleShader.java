@@ -1,12 +1,12 @@
 package be.zeldown.joid.lib.shader.impl;
 
 import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
-import be.zeldown.joid.lib.shader.uniform.FloatUniform;
-import be.zeldown.joid.lib.shader.uniform.IntUniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.IntUniform;
 import lombok.NonNull;
 
-public class CircleShader extends GLShaderImpl {
+public class CircleShader extends ShaderImpl {
 
 	private static final CircleShader INSTANCE = new CircleShader();
 

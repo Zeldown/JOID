@@ -1,8 +1,5 @@
 package be.zeldown.joid.lib.shader.pipeline;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10,13 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
-
-import be.zeldown.joid.lib.opengl.framebuffer.FrameBuffer;
-import be.zeldown.joid.lib.tessellator.T9R;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.shader.IShader;
+import be.zeldown.joid.lib.bridge.render.state.BlendState;
+import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
+import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
+import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
+import be.zeldown.joid.lib.render.framebuffer.FrameBuffer;
+import be.zeldown.joid.lib.render.tessellator.Tessellator;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.node.Node;
 import lombok.NonNull;
@@ -24,7 +23,6 @@ import lombok.NonNull;
 public final class ShaderPipeline {
 
 	private static final Map<Long, FrameBuffer[]> FBO_POOL = new HashMap<>();
-	private static final IntBuffer VIEWPORT_BUFFER = ByteBuffer.allocateDirect(16 * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
 	private static int pipelineDepth = 0;
 
 	private ShaderPipeline() {}
@@ -41,11 +39,12 @@ public final class ShaderPipeline {
 
 			final boolean needsFBO = passes.size() > 1 || ShaderPipeline.pipelineDepth > 1 || passes.stream().anyMatch(p -> p.expansion() > 0F || !p.supportsDirectBind());
 			if (!needsFBO) {
-				final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
+				final IRenderBridge render = BridgeHandler.getRender();
+				final IShader previousShader = render.getShader();
 				passes.get(0).bindDirect(node);
 				baseDraw.run();
 				passes.get(0).unbind();
-				GL20.glUseProgram(prevProgram);
+				render.shader(previousShader);
 				return;
 			}
 
@@ -75,11 +74,12 @@ public final class ShaderPipeline {
 		try {
 			passes.sort(Comparator.comparingInt(ShaderPass::priority));
 			if (passes.size() == 1 && ShaderPipeline.pipelineDepth <= 1 && passes.get(0).expansion() == 0F && passes.get(0).supportsDirectBind()) {
-				final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
+				final IRenderBridge render = BridgeHandler.getRender();
+				final IShader previousShader = render.getShader();
 				passes.get(0).bindDirect(null);
 				baseDraw.run();
 				passes.get(0).unbind();
-				GL20.glUseProgram(prevProgram);
+				render.shader(previousShader);
 				return;
 			}
 
@@ -119,72 +119,50 @@ public final class ShaderPipeline {
 		final FrameBuffer fboA = fbos[0];
 		final FrameBuffer fboB = fbos[1];
 
-		final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
-		final int prevFbo = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
-		final boolean prevTexture2D = GL11.glIsEnabled(GL11.GL_TEXTURE_2D);
-		final boolean prevBlend = GL11.glIsEnabled(GL11.GL_BLEND);
-		ShaderPipeline.VIEWPORT_BUFFER.clear();
-		GL11.glGetInteger(GL11.GL_VIEWPORT, ShaderPipeline.VIEWPORT_BUFFER);
-		final int prevVpX = ShaderPipeline.VIEWPORT_BUFFER.get(0);
-		final int prevVpY = ShaderPipeline.VIEWPORT_BUFFER.get(1);
-		final int prevVpW = ShaderPipeline.VIEWPORT_BUFFER.get(2);
-		final int prevVpH = ShaderPipeline.VIEWPORT_BUFFER.get(3);
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.pushState();
 
 		/* [ Pass 0 : Base ] */
+		render.pushState();
 		fboA.bind();
-		GL11.glViewport(0, 0, pixelW, pixelH);
-		GL11.glClearColor(0F, 0F, 0F, 0F);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		GL14.glBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		render.viewport(0, 0, pixelW, pixelH);
+		render.clear(0F, 0F, 0F, 0F);
+		render.blend(BlendState.COMPOSITE);
 
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glPushMatrix();
-		GL11.glLoadIdentity();
-		GL11.glOrtho(expX, expX + expW, expY + expH, expY, -1000D, 1000D);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPushMatrix();
-		GL11.glLoadIdentity();
+		render.pushProjection();
+		render.ortho(expX, expX + expW, expY + expH, expY, -1000D, 1000D);
+		render.pushMatrix();
+		render.loadIdentity();
 
 		baseDraw.run();
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		render.blend(BlendState.NORMAL);
 
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPopMatrix();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glPopMatrix();
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
-		fboA.unbind();
+		render.popMatrix();
+		render.popProjection();
+		render.popState();
 
 		/* [ Post-Processing Passes ] */
 		FrameBuffer src = fboA;
 		FrameBuffer dst = fboB;
 
 		for (int i = 0; i < passes.size() - 1; i++) {
+			render.pushState();
 			dst.bind();
-			GL11.glViewport(0, 0, pixelW, pixelH);
-			GL11.glClearColor(0F, 0F, 0F, 0F);
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+			render.viewport(0, 0, pixelW, pixelH);
+			render.clear(0F, 0F, 0F, 0F);
 
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPushMatrix();
-			GL11.glLoadIdentity();
-			GL11.glOrtho(expX, expX + expW, expY + expH, expY, -1000D, 1000D);
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glPushMatrix();
-			GL11.glLoadIdentity();
+			render.pushProjection();
+			render.ortho(expX, expX + expW, expY + expH, expY, -1000D, 1000D);
+			render.pushMatrix();
+			render.loadIdentity();
 
 			passes.get(i).bindForTexture(node);
-			ShaderPipeline.drawTexturedQuad(src.getTexture(), expX, expY, expW, expH);
+			ShaderPipeline.drawTexturedQuad(src, expX, expY, expW, expH);
 			passes.get(i).unbind();
 
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glPopMatrix();
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPopMatrix();
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-
-			dst.unbind();
+			render.popMatrix();
+			render.popProjection();
+			render.popState();
 
 			final FrameBuffer temp = src;
 			src = dst;
@@ -192,45 +170,29 @@ public final class ShaderPipeline {
 		}
 
 		/* [ Final Pass ] */
-		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, prevFbo);
-		GL11.glViewport(prevVpX, prevVpY, prevVpW, prevVpH);
-
 		passes.get(passes.size() - 1).bindForTexture(node);
-		ShaderPipeline.drawTexturedQuad(src.getTexture(), expX, expY, expW, expH);
+		ShaderPipeline.drawTexturedQuad(src, expX, expY, expW, expH);
 		passes.get(passes.size() - 1).unbind();
-		GL20.glUseProgram(prevProgram);
-		if (prevTexture2D) {
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-		} else {
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-		}
-		if (prevBlend) {
-			GL11.glEnable(GL11.GL_BLEND);
-		} else {
-			GL11.glDisable(GL11.GL_BLEND);
-		}
+
+		render.popState();
 	}
 
-	private static void drawTexturedQuad(final int textureId, final double x, final double y, final double w, final double h) {
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-		GL11.glColor4f(1F, 1F, 1F, 1F);
+	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final double x, final double y, final double w, final double h) {
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.blend(BlendState.NORMAL);
+		render.texture(frameBuffer.getHandle().getTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		render.color(1F, 1F, 1F, 1F);
 
-		final T9R tess = T9R.inst();
-		tess.start(GL11.GL_QUADS);
+		final Tessellator tess = Tessellator.inst();
+		tess.start(DrawMode.QUADS);
 		tess.addVertexWithUV(x, y + h, 0D, 0D, 0D);
 		tess.addVertexWithUV(x + w, y + h, 0D, 1D, 0D);
 		tess.addVertexWithUV(x + w, y, 0D, 1D, 1D);
 		tess.addVertexWithUV(x, y, 0D, 0D, 1D);
 		tess.draw();
 
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		render.blend(BlendState.DISABLED);
+		render.resetTexture();
 	}
 
 	private static FrameBuffer[] getOrCreateFBOs(final int width, final int height) {
@@ -240,7 +202,7 @@ public final class ShaderPipeline {
 			return fbos;
 		}
 
-		fbos = new FrameBuffer[] {new FrameBuffer().prepare(width, height, GL11.GL_LINEAR), new FrameBuffer().prepare(width, height, GL11.GL_LINEAR)};
+		fbos = new FrameBuffer[] {FrameBuffer.create(width, height, TextureFilter.LINEAR), FrameBuffer.create(width, height, TextureFilter.LINEAR)};
 		ShaderPipeline.FBO_POOL.put(key, fbos);
 		return fbos;
 	}

@@ -2,8 +2,8 @@ package be.zeldown.joid.demo.ui;
 
 import be.zeldown.joid.lib.animation.tweenengine.Timeline;
 import be.zeldown.joid.lib.animation.tweenengine.TweenEquations;
-import be.zeldown.joid.lib.opengl.modifier.GLVector;
-import be.zeldown.joid.lib.opengl.transform.GLTransformation;
+import be.zeldown.joid.lib.render.modifier.Vector;
+import be.zeldown.joid.lib.render.transform.Transformation;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.transition.Transition;
 import lombok.NonNull;
@@ -16,7 +16,7 @@ public class DemoPushTransition extends Transition {
 
 	public static class PushInTransition extends Transition.In {
 
-		private final GLTransformation transformation = GLTransformation.create().translate(GLVector.X(() -> 1920D * (1F - super.getAnimator().getValue())));
+		private final Transformation transformation = Transformation.create().translate(Vector.X(() -> 1920D * (1F - super.getAnimator().getValue())));
 
 		@Override
 		public void init(final @NonNull UI ui) {}
@@ -41,7 +41,7 @@ public class DemoPushTransition extends Transition {
 
 	public static class PushOutTransition extends Transition.Out {
 
-		private final GLTransformation transformation = GLTransformation.create().translate(GLVector.X(() -> -1920D * (1F - super.getAnimator().getValue())));
+		private final Transformation transformation = Transformation.create().translate(Vector.X(() -> -1920D * (1F - super.getAnimator().getValue())));
 
 		@Override
 		public void init(final @NonNull UI ui) {}

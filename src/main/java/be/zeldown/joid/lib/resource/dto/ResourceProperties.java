@@ -1,16 +1,15 @@
 package be.zeldown.joid.lib.resource.dto;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public class ResourceProperties {
 
-	private boolean  async;
-	private int      interpolation;
-	private double[] textureCoords;
+	private boolean       async;
+	private TextureFilter interpolation = TextureFilter.NEAREST;
+	private double[]      textureCoords;
 
 	public static @NonNull ResourceProperties create() {
 		return new ResourceProperties();
@@ -26,18 +25,18 @@ public class ResourceProperties {
 		return this;
 	}
 
-	public final @NonNull ResourceProperties interpolation(final int interpolation) {
+	public final @NonNull ResourceProperties interpolation(final @NonNull TextureFilter interpolation) {
 		this.interpolation = interpolation;
 		return this;
 	}
 
 	public final @NonNull ResourceProperties linear() {
-		this.interpolation = GL11.GL_LINEAR;
+		this.interpolation = TextureFilter.LINEAR;
 		return this;
 	}
 
 	public final @NonNull ResourceProperties nearest() {
-		this.interpolation = GL11.GL_NEAREST;
+		this.interpolation = TextureFilter.NEAREST;
 		return this;
 	}
 

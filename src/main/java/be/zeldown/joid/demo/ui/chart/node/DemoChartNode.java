@@ -5,10 +5,10 @@ import java.util.Map.Entry;
 import javax.vecmath.Vector2d;
 
 import be.zeldown.joid.demo.DemoFont;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
-import be.zeldown.joid.lib.opengl.GLHelper;
 import be.zeldown.joid.lib.ui.node.impl.structure.chart.ChartNode;
 import be.zeldown.joid.lib.utils.align.Align;
 import lombok.NonNull;
@@ -59,9 +59,9 @@ public class DemoChartNode extends ChartNode {
 					}
 				}
 
-				GLHelper.translateZ(1);
+				BridgeHandler.getRender().translate(0D, 0D, 1D);
 				DrawUtils.SHAPE.drawCircle(ox, oy, Color.WHITE, 7);
-				GLHelper.translateZ(-1);
+				BridgeHandler.getRender().translate(0D, 0D, -1D);
 
 				last = new Vector2d(ox, oy);
 				ox += offset;

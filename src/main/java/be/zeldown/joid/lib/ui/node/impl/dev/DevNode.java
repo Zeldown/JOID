@@ -8,8 +8,6 @@ import java.util.Set;
 
 import javax.vecmath.Vector2d;
 
-import org.lwjgl.input.Keyboard;
-
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.internal.font.InternalFont;
 import be.zeldown.joid.lib.animation.animator.TweenAnimator;
@@ -34,6 +32,7 @@ import be.zeldown.joid.lib.ui.node.property.watch.WatchProperty;
 import be.zeldown.joid.lib.utils.align.Align;
 import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
+import be.zeldown.joid.lib.utils.key.Key;
 import be.zeldown.joid.lib.utils.signal.Signal;
 import be.zeldown.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 import lombok.Getter;
@@ -535,12 +534,12 @@ public final class DevNode extends Node {
 	}
 
 	@Override
-	public void keyPressed(final char c, final int keyCode, final InternalContext context) {
+	public void keyPressed(final char c, final Key key, final InternalContext context) {
 		if (context.isCancelled() || !super.isEnabled()) {
 			return;
 		}
 
-		if (keyCode == Keyboard.KEY_I) {
+		if (key == Key.I) {
 			this.inspectSignal.set(!this.inspectSignal.getOrDefault());
 			this.inspectedNode.set(null);
 			this.inspectedNodeLocked.set(false);
@@ -548,22 +547,22 @@ public final class DevNode extends Node {
 			return;
 		}
 
-		if (keyCode == Keyboard.KEY_R && !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+		if (key == Key.R && !Key.LEFT_CONTROL.isDown()) {
 			super.getUi().reload();
 			return;
 		}
 
-		if (keyCode == Keyboard.KEY_U) {
+		if (key == Key.U) {
 			this.eyeSignal.set(!this.eyeSignal.getOrDefault());
 			return;
 		}
 
-		if (keyCode == Keyboard.KEY_G) {
+		if (key == Key.G) {
 			this.gridSignal.set(!this.gridSignal.getOrDefault());
 			return;
 		}
 
-		if (keyCode != Keyboard.KEY_NUMPADENTER && keyCode != Keyboard.KEY_RETURN || this.inspectedNode.getOrDefault() == null || this.inspectedNode.getOrDefault().getParent() == null) {
+		if (key != Key.NUMPAD_ENTER && key != Key.ENTER || this.inspectedNode.getOrDefault() == null || this.inspectedNode.getOrDefault().getParent() == null) {
 			return;
 		}
 

@@ -6,11 +6,9 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
-import be.zeldown.joid.lib.utils.texture.AllocatedTextureUtil;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -42,9 +40,7 @@ public class ImageResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
-		resource.textureId(new int[] {GL11.glGenTextures()});
-		AllocatedTextureUtil.allocateTexture(resource.getTextureId()[0], 1, 1);
-		AllocatedTextureUtil.uploadTexture(resource.getTextureId()[0], new int[] {0}, 1, 1);
+		resource.texture(BridgeHandler.getRender().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
 	}
 
 	@Override
@@ -58,21 +54,18 @@ public class ImageResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		for (int i = 0; i < resource.getTextureId().length; i++) {
+		for (int i = 0; i < resource.getTextures().length; i++) {
 			if (resource.getData()[i] == null) {
 				continue;
 			}
 
-			AllocatedTextureUtil.allocateTexture(resource.getTextureId()[i], resource.getWidth(), resource.getHeight());
-			AllocatedTextureUtil.uploadTexture(resource.getTextureId()[i], resource.getData()[i], resource.getWidth(), resource.getHeight());
+			resource.getTextures()[i].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData()[i], resource.getWidth(), resource.getHeight());
 		}
 		this.clear(resource);
 	}
 
 	@Override
-	public void bind(final @NonNull ResourceData resource) {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, resource.getTextureId()[0]);
-	}
+	public void update(final @NonNull ResourceData resource) {}
 
 	@Override
 	public void clear(final @NonNull ResourceData resource) {

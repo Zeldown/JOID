@@ -1,11 +1,11 @@
 package be.zeldown.joid.lib.shader.impl;
 
 import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
-import be.zeldown.joid.lib.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
 import lombok.NonNull;
 
-public class BlurShader extends GLShaderImpl {
+public class BlurShader extends ShaderImpl {
 
 	private static final BlurShader INSTANCE = new BlurShader();
 

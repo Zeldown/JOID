@@ -3,8 +3,6 @@ package be.zeldown.joid.demo.ui;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.lwjgl.input.Keyboard;
-
 import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.demo.ui.animation.UIDemoAnimation;
 import be.zeldown.joid.demo.ui.chart.UIDemoChart;
@@ -39,6 +37,7 @@ import be.zeldown.joid.lib.ui.node.impl.design.text.TextNode;
 import be.zeldown.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import be.zeldown.joid.lib.ui.node.property.overflow.OverflowProperty;
 import be.zeldown.joid.lib.utils.align.Align;
+import be.zeldown.joid.lib.utils.key.Key;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -110,7 +109,7 @@ public class UIDemoChoice extends UI {
 
 		this.keybind(() -> {
 			JOID.open(new UIDemoPopup());
-		}, Keyboard.KEY_K, Keyboard.KEY_LCONTROL);
+		}, Key.K, Key.LEFT_CONTROL);
 	}
 
 }

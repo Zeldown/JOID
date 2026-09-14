@@ -1,11 +1,12 @@
 package be.zeldown.joid.lib.draw.resource;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL14;
-
-import be.zeldown.joid.lib.opengl.GLHelper;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.state.BlendState;
+import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
+import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
+import be.zeldown.joid.lib.render.tessellator.Tessellator;
 import be.zeldown.joid.lib.resource.Resource;
-import be.zeldown.joid.lib.tessellator.T9R;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -60,19 +61,14 @@ public final class DrawResource {
 	}
 
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		GLHelper.pushMatrix();
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_POINT_SMOOTH);
-		GL14.glBlendEquation(GL14.GL_FUNC_ADD);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		resource.bind(() -> {
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.pushMatrix();
+		render.blend(BlendState.NORMAL);
+		resource.bind(TextureWrap.CLAMP_TO_BORDER, () -> {
 			final double[] textureCoords = resource.getProperties().getTextureCoords();
 
-			final T9R tess = T9R.inst();
-			tess.start(GL11.GL_QUADS);
+			final Tessellator tess = Tessellator.inst();
+			tess.start(DrawMode.QUADS);
 			if (textureCoords == null || textureCoords.length != 4) {
 				tess.addVertexWithUV(x, y + height, 0.0D, 0.0D, 1.0D);
 				tess.addVertexWithUV(x + width, y + height, 0.0D, 1.0D, 1.0D);
@@ -94,10 +90,9 @@ public final class DrawResource {
 			}
 			tess.draw();
 
-			GL11.glDisable(GL11.GL_POINT_SMOOTH);
-			GL11.glDisable(GL11.GL_BLEND);
+			render.blend(BlendState.DISABLED);
 		});
-		GLHelper.popMatrix();
+		render.popMatrix();
 	}
 
 }

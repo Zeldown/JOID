@@ -2,12 +2,11 @@ package be.zeldown.joid.demo.ui.chart.node;
 
 import javax.vecmath.Vector2d;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.opengl.GLHelper;
-import be.zeldown.joid.lib.opengl.GLHelper.GlAttrib;
 import be.zeldown.joid.lib.ui.node.impl.structure.chart.RadarChartNode;
 import be.zeldown.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
 import lombok.NonNull;
@@ -41,11 +40,12 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 
 		DrawUtils.SHAPE.drawPolygon(new Color(89, 34, 30), points);
 
-		GLHelper.pushAttrib(GlAttrib.GL_LINE_SMOOTH, GlAttrib.GL_LINE_WIDTH);
-		GLHelper.enable(GL11.GL_LINE_SMOOTH);
-		GLHelper.lineWidth(6F);
-		DrawUtils.SHAPE.drawShape(GL11.GL_LINE_LOOP, new Color(239, 57, 38), points);
-		GLHelper.popAttrib();
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.pushState();
+		render.lineSmooth(true);
+		render.lineWidth(6F);
+		DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, new Color(239, 57, 38), points);
+		render.popState();
 	}
 
 	public final Vector2d getPoint(final int index, final double radius) {

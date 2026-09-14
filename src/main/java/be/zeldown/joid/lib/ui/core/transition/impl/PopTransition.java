@@ -1,9 +1,9 @@
 package be.zeldown.joid.lib.ui.core.transition.impl;
 
-import org.lwjgl.opengl.GL11;
-
 import be.zeldown.joid.lib.animation.tweenengine.Timeline;
 import be.zeldown.joid.lib.animation.tweenengine.TweenEquations;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.transition.Transition;
 import lombok.NonNull;
@@ -29,15 +29,16 @@ public class PopTransition extends Transition {
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
 			final double scale = 0.75D + super.getAnimator().getValue() * 0.25D;
 
-			GL11.glPushMatrix();
-			GL11.glTranslated(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
-			GL11.glScaled(scale, scale, 1D);
-			GL11.glTranslated(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0);
+			final IRenderBridge render = BridgeHandler.getRender();
+			render.pushMatrix();
+			render.translate(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
+			render.scale(scale, scale, 1D);
+			render.translate(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0);
 		}
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			GL11.glPopMatrix();
+			BridgeHandler.getRender().popMatrix();
 		}
 
 	}
@@ -57,15 +58,16 @@ public class PopTransition extends Transition {
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
 			final double scale = 0.75D + super.getAnimator().getValue() * 0.25D;
 
-			GL11.glPushMatrix();
-			GL11.glTranslated(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
-			GL11.glScaled(scale, scale, 1D);
-			GL11.glTranslated(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0);
+			final IRenderBridge render = BridgeHandler.getRender();
+			render.pushMatrix();
+			render.translate(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
+			render.scale(scale, scale, 1D);
+			render.translate(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0);
 		}
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			GL11.glPopMatrix();
+			BridgeHandler.getRender().popMatrix();
 		}
 
 	}

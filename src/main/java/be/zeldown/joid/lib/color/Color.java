@@ -5,10 +5,9 @@ import java.util.function.Consumer;
 
 import javax.vecmath.Vector4f;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
-
-import be.zeldown.joid.lib.opengl.GLHelper;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.shader.IShader;
 import lombok.NonNull;
 
 public final class Color {
@@ -189,7 +188,7 @@ public final class Color {
 
 	public void bind() {
 		this.update();
-		GLHelper.color(this);
+		BridgeHandler.getRender().color(this.r, this.g, this.b, this.a);
 	}
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
@@ -198,9 +197,10 @@ public final class Color {
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas, final boolean hasTexture) {
 		if (this.isGradient()) {
-			final int prevProgram = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);
+			final IRenderBridge render = BridgeHandler.getRender();
+			final IShader previousShader = render.getShader();
 			this.gradient.use(hasTexture, runnable, canvas);
-			GL20.glUseProgram(prevProgram);
+			render.shader(previousShader);
 		} else {
 			this.bind();
 			runnable.run();
@@ -438,7 +438,7 @@ public final class Color {
 	}
 
 	public static void reset() {
-		GLHelper.popColor();
+		BridgeHandler.getRender().color(1F, 1F, 1F, 1F);
 	}
 
 	public static @NonNull Color transition(final @NonNull Color color1, final @NonNull Color color2, final float progress) {

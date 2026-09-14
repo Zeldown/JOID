@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
+import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.draw.model.utils.IDrawableModel;
 import be.zeldown.joid.lib.obj.data.OBJFace;
 import be.zeldown.joid.lib.obj.data.OBJGroup;
 import be.zeldown.joid.lib.obj.data.OBJTextureCoordinate;
 import be.zeldown.joid.lib.obj.data.OBJVertex;
+import be.zeldown.joid.lib.render.tessellator.Tessellator;
 import be.zeldown.joid.lib.resource.Resource;
-import be.zeldown.joid.lib.tessellator.T9R;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -131,12 +131,12 @@ public final class OBJModel implements IDrawableModel {
 
 	@Override
 	public void render() {
-		this.texture.bind(() -> {
-			final T9R tessellator = T9R.inst().copy();
+		this.texture.bind(TextureWrap.REPEAT, () -> {
+			final Tessellator tessellator = Tessellator.inst().copy();
 			if (this.currentGroup != null) {
-				tessellator.start(this.currentGroup.getGlDrawingMode());
+				tessellator.start(this.currentGroup.getDrawMode());
 			} else {
-				tessellator.start(GL11.GL_TRIANGLES);
+				tessellator.start(DrawMode.TRIANGLES);
 			}
 
 			for (final OBJGroup groupObject : this.groups) {
@@ -252,15 +252,15 @@ public final class OBJModel implements IDrawableModel {
 		String[] subTokens = null;
 
 		if (tokens.length == 3) {
-			if (this.currentGroup.getGlDrawingMode() == -1) {
-				this.currentGroup.setGlDrawingMode(GL11.GL_TRIANGLES);
-			} else if (this.currentGroup.getGlDrawingMode() != GL11.GL_TRIANGLES) {
+			if (this.currentGroup.getDrawMode() == null) {
+				this.currentGroup.setDrawMode(DrawMode.TRIANGLES);
+			} else if (this.currentGroup.getDrawMode() != DrawMode.TRIANGLES) {
 				throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Invalid number of points for face (expected 4, found " + tokens.length + ")");
 			}
 		} else if (tokens.length == 4) {
-			if (this.currentGroup.getGlDrawingMode() == -1) {
-				this.currentGroup.setGlDrawingMode(GL11.GL_QUADS);
-			} else if (this.currentGroup.getGlDrawingMode() != GL11.GL_QUADS) {
+			if (this.currentGroup.getDrawMode() == null) {
+				this.currentGroup.setDrawMode(DrawMode.QUADS);
+			} else if (this.currentGroup.getDrawMode() != DrawMode.QUADS) {
 				throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Invalid number of points for face (expected 3, found " + tokens.length + ")");
 			}
 		}

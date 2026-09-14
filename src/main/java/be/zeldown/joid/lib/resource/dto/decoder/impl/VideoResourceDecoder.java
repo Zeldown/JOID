@@ -13,11 +13,12 @@ import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegLogCallback;
 import org.bytedeco.javacv.Frame;
-import org.lwjgl.opengl.GL11;
 
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.texture.ITexture;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
-import be.zeldown.joid.lib.utils.texture.AllocatedTextureUtil;
 import be.zeldown.joid.lib.video.VideoAudioPlayer;
 import lombok.Getter;
 import lombok.NonNull;
@@ -44,7 +45,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	private final Object grabberLock = new Object();
 	private volatile boolean released;
 
-	private int[] textureIds;
+	private ITexture[] textures;
 	private int currentBuffer;
 	private boolean texturesAllocated;
 
@@ -90,12 +91,11 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
-		this.textureIds = new int[] { GL11.glGenTextures(), GL11.glGenTextures() };
-		resource.textureId(new int[] { this.textureIds[0] });
-		AllocatedTextureUtil.allocateTexture(this.textureIds[0], 1, 1);
-		AllocatedTextureUtil.uploadTexture(this.textureIds[0], new int[] { 0 }, 1, 1);
-		AllocatedTextureUtil.allocateTexture(this.textureIds[1], 1, 1);
-		AllocatedTextureUtil.uploadTexture(this.textureIds[1], new int[] { 0 }, 1, 1);
+		final IRenderBridge render = BridgeHandler.getRender();
+		this.textures = new ITexture[] {render.createTexture(), render.createTexture()};
+		resource.texture(this.textures[0]);
+		this.textures[0].allocate(1, 1).upload(new int[] {0}, 1, 1);
+		this.textures[1].allocate(1, 1).upload(new int[] {0}, 1, 1);
 	}
 
 	@Override
@@ -156,10 +156,8 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 			return;
 		}
 
-		AllocatedTextureUtil.allocateTexture(this.textureIds[0], resource.getWidth(), resource.getHeight());
-		AllocatedTextureUtil.uploadTexture(this.textureIds[0], resource.getData()[0], resource.getWidth(), resource.getHeight());
-		AllocatedTextureUtil.allocateTexture(this.textureIds[1], resource.getWidth(), resource.getHeight());
-		AllocatedTextureUtil.uploadTexture(this.textureIds[1], resource.getData()[0], resource.getWidth(), resource.getHeight());
+		this.textures[0].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData()[0], resource.getWidth(), resource.getHeight());
+		this.textures[1].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData()[0], resource.getWidth(), resource.getHeight());
 
 		if (this.autoplay) {
 			this.play();
@@ -167,14 +165,13 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	@Override
-	public void bind(final @NonNull ResourceData resource) {
+	public void update(final @NonNull ResourceData resource) {
 		if (this.audioPlayer != null) {
 			this.audioPlayer.update();
 			this.audioPlayer.setVolume(this.volume);
 		}
 
 		if (!this.running.get() || this.paused.get()) {
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureIds[this.currentBuffer]);
 			return;
 		}
 
@@ -183,7 +180,6 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 			if (this.audioPlayer != null) {
 				this.audioPlayer.stop();
 			}
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureIds[this.currentBuffer]);
 			return;
 		}
 
@@ -191,26 +187,25 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		if (pixels != null) {
 			final int nextBuffer = 1 - this.currentBuffer;
 			if (!this.texturesAllocated) {
-				AllocatedTextureUtil.allocateTexture(this.textureIds[0], resource.getWidth(), resource.getHeight());
-				AllocatedTextureUtil.allocateTexture(this.textureIds[1], resource.getWidth(), resource.getHeight());
+				this.textures[0].allocate(resource.getWidth(), resource.getHeight());
+				this.textures[1].allocate(resource.getWidth(), resource.getHeight());
 				this.texturesAllocated = true;
 			}
-			AllocatedTextureUtil.uploadTexture(this.textureIds[nextBuffer], pixels, resource.getWidth(), resource.getHeight());
+			this.textures[nextBuffer].upload(pixels, resource.getWidth(), resource.getHeight());
 			this.currentBuffer = nextBuffer;
 			this.displayedFrameIndex++;
+			resource.texture(this.textures[this.currentBuffer]);
 		}
-
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureIds[this.currentBuffer]);
 	}
 
 	@Override
 	public void clear(final @NonNull ResourceData resource) {
 		this.release();
 
-		if (this.textureIds != null) {
-			GL11.glDeleteTextures(this.textureIds[0]);
-			GL11.glDeleteTextures(this.textureIds[1]);
-			this.textureIds = null;
+		if (this.textures != null) {
+			this.textures[0].delete();
+			this.textures[1].delete();
+			this.textures = null;
 		}
 	}
 

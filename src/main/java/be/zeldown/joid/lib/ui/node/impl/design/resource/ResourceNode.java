@@ -2,8 +2,7 @@ package be.zeldown.joid.lib.ui.node.impl.design.resource;
 
 import javax.vecmath.Vector4f;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.resource.Resource;
@@ -156,11 +155,11 @@ public class ResourceNode extends Node {
 
 	public final <T extends ResourceNode> @NonNull T linear(final boolean linearInterpolation) {
 		if (this.resource != null) {
-			this.resource.interpolation(linearInterpolation ? GL11.GL_LINEAR : GL11.GL_NEAREST);
+			this.resource.interpolation(linearInterpolation ? TextureFilter.LINEAR : TextureFilter.NEAREST);
 		}
 
 		if (this.hoveredResource != null) {
-			this.hoveredResource.interpolation(linearInterpolation ? GL11.GL_LINEAR : GL11.GL_NEAREST);
+			this.hoveredResource.interpolation(linearInterpolation ? TextureFilter.LINEAR : TextureFilter.NEAREST);
 		}
 
 		return (T) this;

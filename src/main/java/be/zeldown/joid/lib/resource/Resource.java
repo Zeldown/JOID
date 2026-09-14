@@ -2,8 +2,10 @@ package be.zeldown.joid.lib.resource;
 
 import java.util.function.Consumer;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.texture.ITexture;
+import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
+import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
@@ -52,7 +54,7 @@ public final class Resource {
 		return this;
 	}
 
-	public final @NonNull Resource interpolation(final int interpolation) {
+	public final @NonNull Resource interpolation(final @NonNull TextureFilter interpolation) {
 		this.properties.interpolation(interpolation);
 		return this;
 	}
@@ -100,12 +102,12 @@ public final class Resource {
 		return this.data.getDecoder();
 	}
 
-	public final int getTextureId() {
-		return this.data.getTextureId() == null || this.data.getTextureId().length == 0 ? -1 : this.data.getTextureId()[0];
+	public final ITexture getTexture() {
+		return this.data.getTextures() == null || this.data.getTextures().length == 0 ? null : this.data.getTextures()[0];
 	}
 
-	public final int getTextureId(final int index) {
-		return this.data.getTextureId() == null || this.data.getTextureId().length <= index ? -1 : this.data.getTextureId()[index];
+	public final ITexture getTexture(final int index) {
+		return this.data.getTextures() == null || this.data.getTextures().length <= index ? null : this.data.getTextures()[index];
 	}
 
 	public final int[] getData() {
@@ -159,31 +161,30 @@ public final class Resource {
 		this.data.upload();
 	}
 
-	public final void bind(final @NonNull Runnable runnable) {
-		this.bindTextureOnly();
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, this.properties.getInterpolation());
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, this.properties.getInterpolation());
+	public final void bind(final @NonNull TextureWrap wrap, final @NonNull Runnable runnable) {
+		this.bindTextureOnly(wrap);
 		runnable.run();
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		this.unbind();
 	}
 
-	public final void bindTextureOnly() {
+	public final void bindTextureOnly(final @NonNull TextureWrap wrap) {
 		this.prepareBind();
-		if (!this.data.isUploaded()) {
-			this.unbind();
-		}
 
 		final IResourceDecoder decoder = this.data.getDecoder();
-		if (decoder == null) {
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTextureId(0));
-		} else {
+		if (decoder != null) {
 			if (!this.isGenerated()) {
 				this.generate();
 			}
-			decoder.bind(this.data);
+			decoder.update(this.data);
 		}
+
+		final ITexture texture = this.getTexture();
+		if (texture == null) {
+			BridgeHandler.getRender().resetTexture();
+			return;
+		}
+
+		BridgeHandler.getRender().texture(texture, this.properties.getInterpolation(), wrap);
 	}
 
 	public final void prepareBind() {
@@ -197,7 +198,7 @@ public final class Resource {
 	}
 
 	public final void unbind() {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		BridgeHandler.getRender().resetTexture();
 	}
 
 	public final void clear() {

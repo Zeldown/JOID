@@ -8,7 +8,7 @@ import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.resource.ResourceBuilder;
 import be.zeldown.joid.lib.resource.dto.resolver.impl.BufferedImageResourceResolver;
 import be.zeldown.joid.lib.resource.dto.resolver.impl.InputStreamResourceResolver;
-import be.zeldown.joid.lib.resource.dto.resolver.impl.TextureIdResourceResolver;
+import be.zeldown.joid.lib.resource.dto.resolver.impl.TextureResourceResolver;
 import be.zeldown.joid.lib.resource.dto.resolver.impl.UrlResourceResolver;
 import lombok.NonNull;
 
@@ -20,7 +20,7 @@ public class ResourceResolver {
 		ResourceResolver.register(new InputStreamResourceResolver());
 		ResourceResolver.register(new BufferedImageResourceResolver());
 		ResourceResolver.register(new UrlResourceResolver());
-		ResourceResolver.register(new TextureIdResourceResolver());
+		ResourceResolver.register(new TextureResourceResolver());
 	}
 
 	public static void register(final @NonNull IResourceResolver resolver) {

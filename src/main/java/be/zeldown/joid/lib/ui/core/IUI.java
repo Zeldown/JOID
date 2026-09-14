@@ -2,6 +2,7 @@ package be.zeldown.joid.lib.ui.core;
 
 import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
+import be.zeldown.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
 public interface IUI {
@@ -16,7 +17,7 @@ public interface IUI {
 
 	default public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {}
 
-	default public void keyPressed(final char c, final int keyCode, final @NonNull InternalContext context) {}
+	default public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {}
 
 	default public void drawBackground(final double mouseX, final double mouseY) {}
 

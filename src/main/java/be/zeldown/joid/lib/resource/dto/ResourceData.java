@@ -5,10 +5,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.render.texture.ITexture;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
-import be.zeldown.joid.lib.utils.texture.AllocatedTextureUtil;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -22,8 +20,8 @@ public final class ResourceData {
 
 	private final List<Thread> tasks = new CopyOnWriteArrayList<>();
 
-	private int[]   textureId;
-	private int[][] data;
+	private ITexture[] textures;
+	private int[][]    data;
 
 	private boolean generated;
 	private boolean loaded;
@@ -52,13 +50,13 @@ public final class ResourceData {
 		return this;
 	}
 
-	public final @NonNull ResourceData textureId(final int textureId) {
-		this.textureId = new int[] {textureId};
+	public final @NonNull ResourceData texture(final @NonNull ITexture texture) {
+		this.textures = new ITexture[] {texture};
 		return this;
 	}
 
-	public final @NonNull ResourceData textureId(final int[] textureId) {
-		this.textureId = textureId;
+	public final @NonNull ResourceData textures(final ITexture[] textures) {
+		this.textures = textures;
 		return this;
 	}
 
@@ -133,14 +131,10 @@ public final class ResourceData {
 			} else {
 				task.run();
 			}
-		} else if (this.textureId != null && this.textureId.length > 0) {
+		} else if (this.textures != null && this.textures.length > 0) {
 			this.generated = true;
-			final int oldTexture = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
-
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.textureId[0]);
-			this.width = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_WIDTH);
-			this.height = GL11.glGetTexLevelParameteri(GL11.GL_TEXTURE_2D, 0, GL11.GL_TEXTURE_HEIGHT);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, oldTexture);
+			this.width = this.textures[0].getWidth();
+			this.height = this.textures[0].getHeight();
 
 			this.loaded = true;
 			this.uploaded = false;
@@ -153,13 +147,12 @@ public final class ResourceData {
 		}
 
 		if (this.decoder == null) {
-			for (int i = 0; i < this.textureId.length; i++) {
+			for (int i = 0; i < this.textures.length; i++) {
 				if (this.data[i] == null) {
 					continue;
 				}
 
-				AllocatedTextureUtil.allocateTexture(this.textureId[i], this.width, this.height);
-				AllocatedTextureUtil.uploadTexture(this.textureId[i], this.data[i], this.width, this.height);
+				this.textures[i].allocate(this.width, this.height).upload(this.data[i], this.width, this.height);
 			}
 		} else {
 			this.decoder.upload(this);
@@ -170,9 +163,9 @@ public final class ResourceData {
 	}
 
 	public final void clear() {
-		if (this.textureId != null) {
-			for (final int id : this.textureId) {
-				GL11.glDeleteTextures(id);
+		if (this.textures != null) {
+			for (final ITexture texture : this.textures) {
+				texture.delete();
 			}
 		}
 

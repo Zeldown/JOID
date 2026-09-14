@@ -2,7 +2,7 @@ package be.zeldown.joid.lib.obj.data;
 
 import javax.vecmath.Vector3d;
 
-import be.zeldown.joid.lib.tessellator.T9R;
+import be.zeldown.joid.lib.render.tessellator.Tessellator;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -16,7 +16,7 @@ public final class OBJFace {
 	private OBJTextureCoordinate[] textureCoordinates;
 	private OBJVertex              faceNormal;
 
-	public void render(final @NonNull T9R tessellator) {
+	public void render(final @NonNull Tessellator tessellator) {
 		final float textureOffset = 0.0005F;
 		if (this.faceNormal == null) {
 			this.faceNormal = this.normal();

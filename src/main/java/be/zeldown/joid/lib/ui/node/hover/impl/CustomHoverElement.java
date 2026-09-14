@@ -1,8 +1,6 @@
 package be.zeldown.joid.lib.ui.node.hover.impl;
 
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.hover.HoverElement;
@@ -73,7 +71,7 @@ public class CustomHoverElement implements HoverElement {
 			final double absoluteY = ui.getAbsoluteY(y);
 			final double absoluteWidth = ui.getAbsoluteWidth(elementWidth);
 
-			final double screenWidth = Display.getWidth();
+			final double screenWidth = BridgeHandler.getWindow().getWidth();
 
 			if (absoluteX + absoluteWidth > screenWidth) {
 				x -= absoluteX + absoluteWidth - screenWidth;
@@ -84,9 +82,9 @@ public class CustomHoverElement implements HoverElement {
 			}
 		}
 
-		GL11.glTranslated(x, y, 0);
+		BridgeHandler.getRender().translate(x, y, 0);
 		this.element.render(node, mouseX, mouseY);
-		GL11.glTranslated(-x, -y, 0);
+		BridgeHandler.getRender().translate(-x, -y, 0);
 	}
 
 	public enum HoverElementPosition {

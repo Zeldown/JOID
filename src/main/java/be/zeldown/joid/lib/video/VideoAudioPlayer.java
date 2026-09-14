@@ -1,18 +1,14 @@
 package be.zeldown.joid.lib.video;
 
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.vecmath.Vector3f;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.openal.AL;
-import org.lwjgl.openal.AL10;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.audio.IAudioSource;
 import lombok.NonNull;
 
 public final class VideoAudioPlayer {
@@ -22,21 +18,17 @@ public final class VideoAudioPlayer {
 	private static final int SAMPLES_PER_BUFFER = 4096;
 
 	private static AudioListener audioListener;
-	private static boolean openALLoaded = false;
-	private static boolean shutdownHookRegistered = false;
 
-	private final int alFormat;
+	private final int channels;
 	private final int sampleRate;
 	private final ArrayBlockingQueue<short[]> sampleQueue = new ArrayBlockingQueue<>(128);
 
 	private volatile float volume = 1F;
 
-	private int source = -1;
-	private int[] buffers;
+	private IAudioSource source;
 	private boolean initialized;
 	private boolean playing;
 	private boolean buffersQueued;
-	private ByteBuffer uploadBuffer;
 
 	private int pendingOffset;
 	private short[] pendingSamples;
@@ -51,12 +43,18 @@ public final class VideoAudioPlayer {
 
 	public VideoAudioPlayer(final int sampleRate, final int channels) {
 		this.sampleRate = sampleRate;
-		this.alFormat = channels > 1 ? AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16;
+		this.channels = channels;
 	}
 
 	public void play() {
 		if (!this.initialized) {
-			this.initAL();
+			try {
+				this.source = BridgeHandler.getAudio().createSource(this.sampleRate, this.channels);
+				this.initialized = true;
+			} catch (final Exception e) {
+				e.printStackTrace();
+				return;
+			}
 		}
 
 		this.playing = true;
@@ -66,22 +64,22 @@ public final class VideoAudioPlayer {
 
 	public void pause() {
 		this.playing = false;
-		if (this.source != -1) {
-			AL10.alSourcePause(this.source);
+		if (this.source != null) {
+			this.source.pause();
 		}
 	}
 
 	public void resume() {
 		this.playing = true;
-		if (this.source != -1) {
-			AL10.alSourcePlay(this.source);
+		if (this.source != null) {
+			this.source.play();
 		}
 	}
 
 	public void stop() {
 		this.playing = false;
-		if (this.source != -1) {
-			AL10.alSourceStop(this.source);
+		if (this.source != null) {
+			this.source.stop();
 		}
 	}
 
@@ -90,17 +88,13 @@ public final class VideoAudioPlayer {
 		this.pendingSamples = null;
 		this.pendingOffset = 0;
 		this.buffersQueued = false;
-		if (this.source != -1) {
-			AL10.alSourceStop(this.source);
-			final int queued = AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_QUEUED);
-			for (int i = 0; i < queued; i++) {
-				AL10.alSourceUnqueueBuffers(this.source);
-			}
+		if (this.source != null) {
+			this.source.clear();
 		}
 	}
 
 	public void update() {
-		if (!this.initialized || !this.playing || this.source == -1) {
+		if (!this.initialized || !this.playing || this.source == null) {
 			return;
 		}
 
@@ -120,50 +114,42 @@ public final class VideoAudioPlayer {
 			for (int i = 0; i < VideoAudioPlayer.BUFFER_COUNT; i++) {
 				final short[] merged = this.mergeNextChunk();
 				if (merged != null) {
-					this.fillBuffer(this.buffers[i], merged);
-					AL10.alSourceQueueBuffers(this.source, this.buffers[i]);
+					this.source.queue(merged);
 				}
 			}
 
 			this.buffersQueued = true;
-			AL10.alSourcef(this.source, AL10.AL_GAIN, this.volume * VideoAudioPlayer.BASE_VOLUME);
-			AL10.alSourcePlay(this.source);
+			this.source.gain(this.volume * VideoAudioPlayer.BASE_VOLUME);
+			this.source.play();
 			return;
 		}
 
-		final int processed = AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
+		final int processed = this.source.getProcessedBuffers();
 		for (int i = 0; i < processed; i++) {
 			final short[] merged = this.mergeNextChunk();
 			if (merged == null) {
 				break;
 			}
-			final int buffer = AL10.alSourceUnqueueBuffers(this.source);
-			this.fillBuffer(buffer, merged);
-			AL10.alSourceQueueBuffers(this.source, buffer);
+			this.source.queue(merged);
 		}
 
-		final int state = AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE);
-		if (state != AL10.AL_PLAYING && this.playing) {
-			final int queued = AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_QUEUED);
-			if (queued > 0) {
-				AL10.alSourcePlay(this.source);
-			}
+		if (!this.source.isPlaying() && this.playing && this.source.getQueuedBuffers() > 0) {
+			this.source.play();
 		}
 
-		AL10.alSourcef(this.source, AL10.AL_GAIN, this.volume * VideoAudioPlayer.BASE_VOLUME);
+		this.source.gain(this.volume * VideoAudioPlayer.BASE_VOLUME);
 
 		if (this.positional) {
 			final float distanceVolume = this.computeDistanceVolume();
 			if (distanceVolume <= 0.001F) {
-				final int currentState = AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE);
-				if (currentState == AL10.AL_PLAYING) {
-					AL10.alSourcePause(this.source);
+				if (this.source.isPlaying()) {
+					this.source.pause();
 				}
 				this.sampleQueue.clear();
 				return;
 			}
 
-			AL10.alSourcef(this.source, AL10.AL_GAIN, this.volume * VideoAudioPlayer.BASE_VOLUME * distanceVolume);
+			this.source.gain(this.volume * VideoAudioPlayer.BASE_VOLUME * distanceVolume);
 		}
 	}
 
@@ -232,17 +218,10 @@ public final class VideoAudioPlayer {
 	}
 
 	public void cleanup() {
-		if (this.source != -1) {
-			AL10.alSourceStop(this.source);
-			AL10.alDeleteSources(this.source);
-			this.source = -1;
-		}
-
-		if (this.buffers != null) {
-			for (final int buffer : this.buffers) {
-				AL10.alDeleteBuffers(buffer);
-			}
-			this.buffers = null;
+		if (this.source != null) {
+			this.source.stop();
+			this.source.delete();
+			this.source = null;
 		}
 
 		this.sampleQueue.clear();
@@ -251,30 +230,6 @@ public final class VideoAudioPlayer {
 	}
 
 	/* [ Internal Section ] */
-	private void initAL() {
-		if (!AL.isCreated()) {
-			try {
-				VideoAudioPlayer.ensureOpenALLoaded();
-				AL.create();
-				VideoAudioPlayer.registerShutdownHook();
-			} catch (final LWJGLException e) {
-				e.printStackTrace();
-				return;
-			}
-		}
-
-		this.source = AL10.alGenSources();
-		AL10.alSourcei(this.source, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
-		AL10.alSource3f(this.source, AL10.AL_POSITION, 0F, 0F, 0F);
-
-		this.buffers = new int[VideoAudioPlayer.BUFFER_COUNT];
-		for (int i = 0; i < VideoAudioPlayer.BUFFER_COUNT; i++) {
-			this.buffers[i] = AL10.alGenBuffers();
-		}
-
-		this.initialized = true;
-	}
-
 	private float computeDistanceVolume() {
 		if (VideoAudioPlayer.audioListener == null) {
 			return 1F;
@@ -343,58 +298,7 @@ public final class VideoAudioPlayer {
 		return chunk;
 	}
 
-	private void fillBuffer(final int bufferId, final @NonNull short[] samples) {
-		final int needed = samples.length * 2;
-		if (this.uploadBuffer == null || this.uploadBuffer.capacity() < needed) {
-			this.uploadBuffer = ByteBuffer.allocateDirect(needed).order(ByteOrder.nativeOrder());
-		}
-
-		this.uploadBuffer.clear();
-		this.uploadBuffer.asShortBuffer().put(samples);
-		this.uploadBuffer.limit(needed);
-		this.uploadBuffer.position(0);
-
-		AL10.alBufferData(bufferId, this.alFormat, this.uploadBuffer, this.sampleRate);
-	}
-
 	/* [ Static Section ] */
-	private static void registerShutdownHook() {
-		if (VideoAudioPlayer.shutdownHookRegistered) {
-			return;
-		}
-		VideoAudioPlayer.shutdownHookRegistered = true;
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			if (AL.isCreated()) {
-				AL.destroy();
-			}
-		}, "joid-al-shutdown"));
-	}
-
-	private static void ensureOpenALLoaded() {
-		if (VideoAudioPlayer.openALLoaded) {
-			return;
-		}
-
-		final String os = System.getProperty("os.name", "").toLowerCase();
-		final boolean is64 = System.getProperty("os.arch", "").contains("64");
-
-		String libName = null;
-		if (os.contains("win")) {
-			libName = is64 ? "OpenAL64" : "OpenAL32";
-		} else if (os.contains("mac") || os.contains("linux")) {
-			libName = "openal";
-		}
-
-		if (libName == null) {
-			return;
-		}
-
-		try {
-			System.loadLibrary(libName);
-			VideoAudioPlayer.openALLoaded = true;
-		} catch (final Throwable ignored) {}
-	}
-
 	public static AudioListener getAudioListener() {
 		return VideoAudioPlayer.audioListener;
 	}

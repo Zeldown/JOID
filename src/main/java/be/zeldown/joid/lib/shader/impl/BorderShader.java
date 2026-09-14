@@ -1,15 +1,15 @@
 package be.zeldown.joid.lib.shader.impl;
 
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float4Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.IntUniform;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.color.ColorGradient;
-import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
-import be.zeldown.joid.lib.shader.uniform.Float4Uniform;
-import be.zeldown.joid.lib.shader.uniform.FloatUniform;
-import be.zeldown.joid.lib.shader.uniform.IntUniform;
 import lombok.NonNull;
 
-public class BorderShader extends GLShaderImpl {
+public class BorderShader extends ShaderImpl {
 
 	private static final BorderShader INSTANCE = new BorderShader();
 

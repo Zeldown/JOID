@@ -2,13 +2,10 @@ package be.zeldown.joid.internal;
 
 import java.io.File;
 
-import org.lwjgl.LWJGLException;
-
 import be.zeldown.joid.demo.DemoFont;
-import be.zeldown.joid.demo.DemoWindow;
 import be.zeldown.joid.internal.font.InternalFont;
-import be.zeldown.joid.lib.ui.bridge.BridgeHandler;
-import be.zeldown.joid.lib.ui.bridge.IUIBridge;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.ui.IUIBridge;
 import be.zeldown.joid.lib.ui.core.UI;
 import lombok.Getter;
 import lombok.NonNull;
@@ -148,18 +145,6 @@ public final class JOID {
 			JOID.instance = new JOID();
 		}
 		return JOID.instance;
-	}
-
-	/* [ Demo Section ] */
-	public static void main(final String[] args) {
-		JOID.inst().setDevMode(true).setDemoMode(true).load();
-		try {
-			final DemoWindow window = new DemoWindow();
-			BridgeHandler.register(window);
-			window.run();
-		} catch (final LWJGLException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

@@ -5,11 +5,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.shader.IShader;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float4Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.IntUniform;
+import be.zeldown.joid.lib.bridge.render.state.BlendState;
+import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
+import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.color.ColorGradient;
 import be.zeldown.joid.lib.font.FontProvider;
@@ -21,15 +26,7 @@ import be.zeldown.joid.lib.font.dto.data.PlaneBounds;
 import be.zeldown.joid.lib.font.dto.font.Font;
 import be.zeldown.joid.lib.font.dto.font.FontBounds;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
-import be.zeldown.joid.lib.shader.GLShader;
-import be.zeldown.joid.lib.shader.IGLShader;
-import be.zeldown.joid.lib.shader.blend.ShaderBlendState;
-import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
-import be.zeldown.joid.lib.shader.uniform.Float4Uniform;
-import be.zeldown.joid.lib.shader.uniform.FloatUniform;
-import be.zeldown.joid.lib.shader.uniform.IntUniform;
-import be.zeldown.joid.lib.shader.uniform.SamplerUniform;
-import be.zeldown.joid.lib.tessellator.T9R;
+import be.zeldown.joid.lib.render.tessellator.Tessellator;
 import lombok.NonNull;
 
 public class CustomFontProvider implements FontProvider {
@@ -44,18 +41,17 @@ public class CustomFontProvider implements FontProvider {
 	private static final String CHAR_OPERATOR_ATLAS = "0123456789abcdefklmnopr";
 	private static final String AZ_ATLAS            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-	private static final IGLShader      SHADER;
-	private static final SamplerUniform MSDF_UNIFORM;
-	private static final Float2Uniform  TEXEL_UNIFORM;
-	private static final FloatUniform   PX_RANGE_UNIFORM;
-	private static final Float4Uniform  COLOR_UNIFORM;
+	private static final IShader       SHADER;
+	private static final Float2Uniform TEXEL_UNIFORM;
+	private static final FloatUniform  PX_RANGE_UNIFORM;
+	private static final Float4Uniform COLOR_UNIFORM;
 
-	private static final IntUniform     HAS_GRADIENT_UNIFORM;
-	private static final Float4Uniform  GRADIENT_START_UNIFORM;
-	private static final Float4Uniform  GRADIENT_END_UNIFORM;
-	private static final Float2Uniform  GRADIENT_START_POS_UNIFORM;
-	private static final Float2Uniform  GRADIENT_END_POS_UNIFORM;
-	private static final Float4Uniform  GRADIENT_CANVAS_UNIFORM;
+	private static final IntUniform    HAS_GRADIENT_UNIFORM;
+	private static final Float4Uniform GRADIENT_START_UNIFORM;
+	private static final Float4Uniform GRADIENT_END_UNIFORM;
+	private static final Float2Uniform GRADIENT_START_POS_UNIFORM;
+	private static final Float2Uniform GRADIENT_END_POS_UNIFORM;
+	private static final Float4Uniform GRADIENT_CANVAS_UNIFORM;
 
 	static {
 		CustomFontProvider.COLOR_MAP.put(0, Color.BLACK);
@@ -101,9 +97,8 @@ public class CustomFontProvider implements FontProvider {
 			e.printStackTrace();
 		}
 
-		SHADER = GLShader.from(vert, frag, ShaderBlendState.NORMAL);
+		SHADER = BridgeHandler.getRender().createShader(vert, frag, BlendState.NORMAL);
 
-		MSDF_UNIFORM     = CustomFontProvider.SHADER.getSamplerUniform("msdf");
 		TEXEL_UNIFORM    = CustomFontProvider.SHADER.getFloat2Uniform("texel");
 		PX_RANGE_UNIFORM = CustomFontProvider.SHADER.getFloatUniform("pxRange");
 		COLOR_UNIFORM    = CustomFontProvider.SHADER.getFloat4Uniform("color");
@@ -266,8 +261,8 @@ public class CustomFontProvider implements FontProvider {
 
 		CustomFontProvider.COLOR_UNIFORM.setValue(color.r, color.g, color.b, color.a);
 
-		final T9R tess = T9R.inst();
-		tess.start(GL11.GL_QUADS);
+		final Tessellator tess = Tessellator.inst();
+		tess.start(DrawMode.QUADS);
 		tess.addVertexWithUV(x, y2, 0D, textureLeft, textureBottom);
 		tess.addVertexWithUV(x2, y2, 0D, textureRight, textureBottom);
 		tess.addVertexWithUV(x2Top, y, 0D, textureRight, textureTop);
@@ -276,14 +271,8 @@ public class CustomFontProvider implements FontProvider {
 	}
 
 	private void bindFont(final @NonNull Font font) {
-		font.getTexture().bindTextureOnly();
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
+		font.getTexture().bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
 
-		CustomFontProvider.MSDF_UNIFORM.setValue(font.getTexture().getTextureId());
 		CustomFontProvider.TEXEL_UNIFORM.setValue(1F / font.getFontInfo().getAtlas().getWidth(), 1F / font.getFontInfo().getAtlas().getHeight());
 		CustomFontProvider.PX_RANGE_UNIFORM.setValue(font.getFontInfo().getAtlas().getDistanceRange());
 	}

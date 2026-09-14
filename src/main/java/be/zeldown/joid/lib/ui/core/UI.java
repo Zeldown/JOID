@@ -13,20 +13,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.state.StencilFunction;
+import be.zeldown.joid.lib.bridge.render.state.StencilOperation;
+import be.zeldown.joid.lib.bridge.ui.IUIBridge;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.opengl.context.Drawing;
-import be.zeldown.joid.lib.opengl.modifier.GLVector;
-import be.zeldown.joid.lib.opengl.transform.GLTransformation;
+import be.zeldown.joid.lib.render.context.Drawing;
+import be.zeldown.joid.lib.render.modifier.Vector;
+import be.zeldown.joid.lib.render.transform.Transformation;
 import be.zeldown.joid.lib.resource.Resource;
-import be.zeldown.joid.lib.ui.bridge.BridgeHandler;
-import be.zeldown.joid.lib.ui.bridge.IUIBridge;
 import be.zeldown.joid.lib.ui.core.data.UIDataObject;
 import be.zeldown.joid.lib.ui.core.data.debug.UIDataDebugObject;
 import be.zeldown.joid.lib.ui.core.data.popup.UIDataPopupObject;
@@ -42,6 +43,7 @@ import be.zeldown.joid.lib.ui.node.property.draggable.DraggableProperty;
 import be.zeldown.joid.lib.utils.align.Align;
 import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
+import be.zeldown.joid.lib.utils.key.Key;
 import be.zeldown.joid.lib.utils.list.IndexedConcurrentList;
 import be.zeldown.joid.lib.utils.list.IndexedElement;
 import be.zeldown.joid.lib.utils.signal.impl.primitive.DoubleSignal;
@@ -61,7 +63,7 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private final UIDataPopupObject    popup;
 
 	@NonNull private final Stack<StencilState>                  stencilStack;
-	@NonNull private final Map<Integer[], Runnable>             keybindMap;
+	@NonNull private final Map<Key[], Runnable>                 keybindMap;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
 	private transient Transition                             transition;
@@ -321,8 +323,8 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		if (JOID.inst().isDevMode() && Keyboard.isKeyDown(Keyboard.KEY_LMENU) && value != 0) {
-			this.zoomLevel.add(value / (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ? 1000D : 10000D));
+		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && value != 0) {
+			this.zoomLevel.add(value / (Key.LEFT_SHIFT.isDown() ? 1000D : 10000D));
 			this.updateScaledSize();
 			return true;
 		}
@@ -334,19 +336,19 @@ public abstract class UI implements IUI, IndexedElement {
 		return context.isCancelled();
 	}
 
-	public final boolean onKeyPressed(final char c, final int keyCode) {
+	public final boolean onKeyPressed(final char c, final @NonNull Key key) {
 		if (!this.initialized) {
 			return false;
 		}
 
 		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, keyCode, context));
+		this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context));
 
 		if (!context.isCancelled()) {
-			for (final Map.Entry<Integer[], Runnable> entry : this.keybindMap.entrySet()) {
+			for (final Map.Entry<Key[], Runnable> entry : this.keybindMap.entrySet()) {
 				boolean match = true;
-				for (final int key : entry.getKey()) {
-					if (!Keyboard.isKeyDown(key)) {
+				for (final Key bindKey : entry.getKey()) {
+					if (!bindKey.isDown()) {
 						match = false;
 						break;
 					}
@@ -360,7 +362,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		if (this.data.zoomable() && !context.isCancelled()) {
-			if ((keyCode == Keyboard.KEY_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+			if ((key == Key.NUMPAD_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
 				double tempZoomLevel = this.zoomLevel.getOrDefault();
 				tempZoomLevel += 0.1D;
 				tempZoomLevel = Math.min(1D, tempZoomLevel);
@@ -371,7 +373,7 @@ public abstract class UI implements IUI, IndexedElement {
 				}
 			}
 
-			if ((keyCode == Keyboard.KEY_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+			if ((key == Key.NUMPAD_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
 				double tempZoomLevel = this.zoomLevel.getOrDefault();
 				tempZoomLevel -= 0.1D;
 				tempZoomLevel = Math.max(0.1D, tempZoomLevel);
@@ -384,8 +386,8 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		if (JOID.inst().isDevMode() && !context.isCancelled()) {
-			if (keyCode == Keyboard.KEY_R && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || keyCode == Keyboard.KEY_F5) {
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
+				if (Key.LEFT_SHIFT.isDown()) {
 					double tempZoomLevel = this.zoomLevel.getOrDefault();
 					tempZoomLevel = 1D;
 					if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
@@ -396,7 +398,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 				this.reload();
 				context.cancel();
-			} else if (keyCode == Keyboard.KEY_F3 && this.devNode != null) {
+			} else if (key == Key.F3 && this.devNode != null) {
 				final boolean enabled = this.nodeList.contains(this.devNode);
 				if (enabled) {
 					this.nodeList.remove(this.devNode);
@@ -407,7 +409,7 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
-		this.keyPressed(c, keyCode, context);
+		this.keyPressed(c, key, context);
 		return context.isCancelled();
 	}
 
@@ -468,6 +470,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void draw(final double mouseX, final double mouseY) {
 		final long start = System.nanoTime();
+		final IRenderBridge render = BridgeHandler.getRender();
 
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
@@ -524,25 +527,22 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
-		GL11.glAlphaFunc(GL11.GL_GREATER, 0.0F);
+		render.alphaTest(0F);
 		if (this.data.projection()) {
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPushMatrix();
-			GL11.glLoadIdentity();
-			GL11.glOrtho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			render.pushProjection();
+			render.ortho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
 		}
 
 		final double translateX = this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
 		final double translateY = this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
-		GLTransformation.create().translate(GLVector.create(translateX, translateY)).apply(() -> {
+		Transformation.create().translate(Vector.create(translateX, translateY)).apply(() -> {
 			this.renderPipelineLevel = 0;
 			final AtomicDouble lastRenderPipelineLevel = new AtomicDouble(this.renderPipelineLevel);
 
 			if (this.zoomLevel.getOrDefault() != 1D) {
-				GL11.glTranslated(this.data.getAnchorPositionX(), this.data.getAnchorPositionY(), 0D);
-				GL11.glScaled(this.zoomLevel.getOrDefault(), this.zoomLevel.getOrDefault(), 1D);
-				GL11.glTranslated(-this.data.getAnchorPositionX(), -this.data.getAnchorPositionY(), 0D);
+				render.translate(this.data.getAnchorPositionX(), this.data.getAnchorPositionY(), 0D);
+				render.scale(this.zoomLevel.getOrDefault(), this.zoomLevel.getOrDefault(), 1D);
+				render.translate(-this.data.getAnchorPositionX(), -this.data.getAnchorPositionY(), 0D);
 			}
 
 			this.nodeList
@@ -550,12 +550,12 @@ public abstract class UI implements IUI, IndexedElement {
 			.stream()
 			.filter(node -> node.getZindex() < 0)
 			.forEach(node -> {
-				GL11.glTranslated(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
 				lastRenderPipelineLevel.set(this.renderPipelineLevel);
 				node.render(mx, my);
 			});
 
-			GL11.glTranslated(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+			render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
 			lastRenderPipelineLevel.set(this.renderPipelineLevel);
 			this.preDraw(mx, my);
 
@@ -564,12 +564,12 @@ public abstract class UI implements IUI, IndexedElement {
 			.stream()
 			.filter(node -> node.getZindex() >= 0 && node.getZindex() < 100)
 			.forEach(node -> {
-				GL11.glTranslated(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
 				lastRenderPipelineLevel.set(this.renderPipelineLevel);
 				node.render(mx, my);
 			});
 
-			GL11.glTranslated(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+			render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
 			lastRenderPipelineLevel.set(this.renderPipelineLevel);
 			this.postDraw(mx, my);
 
@@ -578,27 +578,22 @@ public abstract class UI implements IUI, IndexedElement {
 			.stream()
 			.filter(node -> node.getZindex() >= 100)
 			.forEach(node -> {
-				GL11.glTranslated(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
 				lastRenderPipelineLevel.set(this.renderPipelineLevel);
 				node.render(mx, my);
 			});
 
 			if (this.onTop) {
-				GL11.glPushMatrix();
-				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-				GL11.glEnable(GL11.GL_DEPTH_TEST);
-				GL11.glDepthFunc(GL11.GL_ALWAYS);
-				GL11.glDepthMask(true);
-				GL11.glDepthMask(false);
-				GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-				GL11.glClearDepth(10000D);
+				render.pushMatrix();
+				render.pushState();
+				render.depth(false, false);
 				for (final Node node : this.nodeList.reversed()) {
 					if (node.renderHover(mx, my)) {
 						break;
 					}
 				}
-				GL11.glPopAttrib();
-				GL11.glPopMatrix();
+				render.popState();
+				render.popMatrix();
 			}
 		});
 
@@ -613,9 +608,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		if (this.data.projection()) {
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPopMatrix();
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			render.popProjection();
 		}
 
 		final long end = System.nanoTime();
@@ -655,7 +648,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final double getMouseY() {
-		return this.getRelativeY((this.height - this.mouseY) * (this.viewportHeight / this.height));
+		return this.getRelativeY(this.mouseY * (this.viewportHeight / this.height));
 	}
 
 	public final double getRelativeX(double value) {
@@ -729,20 +722,21 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
 		final int stencilValue = this.stencilStack.size() + 1;
 		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
+		final IRenderBridge render = BridgeHandler.getRender();
 		if (stencilValue == 1) {
-			GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-			GL11.glEnable(GL11.GL_STENCIL_TEST);
+			render.clearStencil();
+			render.stencilTest(true);
 		}
 
-		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue - 1, 0xFF);
-		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INCR);
+		render.stencilFunction(StencilFunction.EQUAL, stencilValue - 1, 0xFF);
+		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
 
-		GL11.glColorMask(false, false, false, false);
+		render.colorMask(false);
 		DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED);
-		GL11.glColorMask(true, true, true, true);
+		render.colorMask(true);
 
-		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
-		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
+		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
 	}
 
 	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
@@ -762,37 +756,39 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
 		final int stencilValue = this.stencilStack.size() + 1;
 		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
+		final IRenderBridge render = BridgeHandler.getRender();
 		if (stencilValue == 1) {
-			GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
-			GL11.glEnable(GL11.GL_STENCIL_TEST);
+			render.clearStencil();
+			render.stencilTest(true);
 		}
 
-		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue - 1, 0xFF);
-		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_INCR);
+		render.stencilFunction(StencilFunction.EQUAL, stencilValue - 1, 0xFF);
+		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
 
-		GL11.glColorMask(false, false, false, false);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glAlphaFunc(GL11.GL_GREATER, 0.5F);
+		render.pushState();
+		render.colorMask(false);
+		render.alphaTest(0.5F);
 		DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
-		GL11.glColorMask(true, true, true, true);
+		render.popState();
 
-		GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
-		GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
+		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
 	}
 
 	public final void stopMask() {
 		this.stencilStack.pop();
 		final int stencilValue = this.stencilStack.size();
+		final IRenderBridge render = BridgeHandler.getRender();
 		if (stencilValue == 0) {
-			GL11.glDisable(GL11.GL_STENCIL_TEST);
-			GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+			render.stencilTest(false);
+			render.clearStencil();
 		} else {
-			GL11.glStencilFunc(GL11.GL_EQUAL, stencilValue, 0xFF);
-			GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP);
+			render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
+			render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
 		}
 	}
 
-	public final void keybind(final @NonNull Runnable runnable, final @NonNull Integer... keys) {
+	public final void keybind(final @NonNull Runnable runnable, final @NonNull Key... keys) {
 		this.keybindMap.put(keys, runnable);
 	}
 
@@ -891,15 +887,15 @@ public abstract class UI implements IUI, IndexedElement {
 
 	/* [ Static Utils ] */
 	public static boolean isCtrlKeyDown() {
-		return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
+		return Key.LEFT_CONTROL.isDown() || Key.RIGHT_CONTROL.isDown();
 	}
 
 	public static boolean isShiftKeyDown()  {
-		return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
 	}
 
 	public static boolean isAltKeyDown() {
-		return Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU);
+		return Key.LEFT_ALT.isDown() || Key.RIGHT_ALT.isDown();
 	}
 
 	/* [ DTO Section ] */

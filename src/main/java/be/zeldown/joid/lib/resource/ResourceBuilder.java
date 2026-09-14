@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
 import be.zeldown.joid.lib.resource.dto.resolver.ResourceResolver;
@@ -52,7 +53,7 @@ public final class ResourceBuilder {
 		return this;
 	}
 
-	public final @NonNull ResourceBuilder interpolation(final int interpolation) {
+	public final @NonNull ResourceBuilder interpolation(final @NonNull TextureFilter interpolation) {
 		this.properties.interpolation(interpolation);
 		return this;
 	}

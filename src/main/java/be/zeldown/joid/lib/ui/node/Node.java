@@ -20,10 +20,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -32,9 +28,10 @@ import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.animation.animator.TweenAnimator;
 import be.zeldown.joid.lib.animation.tweenengine.TweenEquation;
 import be.zeldown.joid.lib.animation.tweenengine.TweenEquations;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.opengl.GLHelper;
 import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
 import be.zeldown.joid.lib.shader.pipeline.ShaderPipeline;
 import be.zeldown.joid.lib.ui.core.UI;
@@ -80,6 +77,7 @@ import be.zeldown.joid.lib.ui.node.property.watch.WatchProperty;
 import be.zeldown.joid.lib.utils.align.Align;
 import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
+import be.zeldown.joid.lib.utils.key.Key;
 import be.zeldown.joid.lib.utils.list.IndexedConcurrentList;
 import be.zeldown.joid.lib.utils.list.IndexedLinkedList;
 import be.zeldown.joid.lib.utils.signal.ISignal;
@@ -201,8 +199,8 @@ public abstract class Node implements INode {
 	private ClickType lastClickType;
 	private long      lastClickTime;
 
-	private char lastKey;
-	private int  lastKeyCode;
+	private char lastCharacter;
+	private Key  lastKey;
 	private long lastKeyTime;
 
 	private long lastUpdate;
@@ -271,16 +269,17 @@ public abstract class Node implements INode {
 
 	public final void render(final double mouseX, final double mouseY) {
 		final long now = System.nanoTime();
-		GLHelper.pushMatrix();
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.pushMatrix();
 		Color.reset();
 		if (this.parent != null) {
-			GL11.glTranslated(this.parent.x, this.parent.y, 0D);
+			render.translate(this.parent.x, this.parent.y, 0D);
 			if (this.position == PositionProperty.ABSOLUTE) {
-				GL11.glTranslated(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
+				render.translate(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
 			}
 		}
 
-		GL11.glTranslated(0D, 0D, this.zlevel);
+		render.translate(0D, 0D, this.zlevel);
 
 		if (this.isVisible()) {
 			if (this.aspectRatio >= 0D) {
@@ -402,7 +401,7 @@ public abstract class Node implements INode {
 				}
 			}
 
-			if (this.dragging && Mouse.isGrabbed()) {
+			if (this.dragging && BridgeHandler.getWindow().isMouseGrabbed()) {
 				this.stopDragging();
 			}
 
@@ -506,27 +505,14 @@ public abstract class Node implements INode {
 						this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
 
 						if (this.draggedNode != null) {
-							final boolean scissor = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
-							final boolean stencil = GL11.glIsEnabled(GL11.GL_STENCIL_TEST);
-							if (scissor) {
-								GL11.glDisable(GL11.GL_SCISSOR_TEST);
-							}
+							render.pushState();
+							render.stencilTest(false);
 
-							if (stencil) {
-								GL11.glDisable(GL11.GL_STENCIL_TEST);
-							}
-
-							GL11.glTranslated(-this.parent.x, -this.parent.y, 0D);
+							render.translate(-this.parent.x, -this.parent.y, 0D);
 							this.draggedNode.render(mouseX, mouseY);
-							GL11.glTranslated(this.parent.x, this.parent.y, 0D);
+							render.translate(this.parent.x, this.parent.y, 0D);
 
-							if (scissor) {
-								GL11.glEnable(GL11.GL_SCISSOR_TEST);
-							}
-
-							if (stencil) {
-								GL11.glEnable(GL11.GL_STENCIL_TEST);
-							}
+							render.popState();
 						}
 					}, mouseX, mouseY);
 				}, this.overflow != OverflowProperty.NONE);
@@ -546,7 +532,7 @@ public abstract class Node implements INode {
 			}
 		}
 		Color.reset();
-		GLHelper.popMatrix();
+		render.popMatrix();
 		this.renderTime = System.nanoTime() - now;
 	}
 
@@ -699,7 +685,7 @@ public abstract class Node implements INode {
 
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, value, context));
 		if (!context.isCancelled() && this.isHovered(mouseX, mouseY) && value != 0) {
-			final double mappedScrollSpeed = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.scrollSpeed * 2 : this.scrollSpeed;
+			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
 			if (this.hasOverflowX()) {
 				this.scrollX(value > 0 ? 30 : -30, mappedScrollSpeed);
 				context.cancel();
@@ -719,29 +705,29 @@ public abstract class Node implements INode {
 		}
 	}
 
-	public final void onKeyPressed(final char c, final int keyCode, final @NonNull InternalContext context) {
-		this.lastKey = c;
-		this.lastKeyCode = keyCode;
+	public final void onKeyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+		this.lastCharacter = c;
+		this.lastKey = key;
 		this.lastKeyTime = System.currentTimeMillis();
 
 		if (this.scrollbar != null) {
-			this.scrollbar.onKeyPressed(c, keyCode, context);
+			this.scrollbar.onKeyPressed(c, key, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.onKeyPressed(c, keyCode, context);
+			this.skeleton.onKeyPressed(c, key, context);
 		}
 
 		if (this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
-			this.executePreCallback(Node.CALLBACK_KEY_PRESSED, context, c, keyCode);
+			this.executePreCallback(Node.CALLBACK_KEY_PRESSED, context, c, key);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onKeyPressed(c, keyCode, context));
-		this.keyPressed(c, keyCode, context);
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onKeyPressed(c, keyCode, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onKeyPressed(c, key, context));
+		this.keyPressed(c, key, context);
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onKeyPressed(c, key, context));
 
 		if (this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
-			this.executePostCallback(Node.CALLBACK_KEY_PRESSED, context, c, keyCode);
+			this.executePostCallback(Node.CALLBACK_KEY_PRESSED, context, c, key);
 		}
 	}
 

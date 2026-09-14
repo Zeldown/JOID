@@ -1,7 +1,5 @@
 package be.zeldown.joid.demo.ui.video;
 
-import org.lwjgl.input.Keyboard;
-
 import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.demo.ui.UIDemo;
 import be.zeldown.joid.internal.JOID;
@@ -12,6 +10,7 @@ import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
 import be.zeldown.joid.lib.ui.node.impl.design.video.VideoPlayerNode;
+import be.zeldown.joid.lib.utils.key.Key;
 
 public class UIDemoVideo extends UIDemo {
 
@@ -62,7 +61,7 @@ public class UIDemoVideo extends UIDemo {
 				this.player.position(this.bounceX, this.bounceY);
 				this.player.size(UIDemoVideo.SMALL_W, UIDemoVideo.SMALL_H);
 			}
-		}, Keyboard.KEY_F);
+		}, Key.F);
 
 		this.keybind(() -> {
 			if (this.player.isPlaying()) {
@@ -70,7 +69,7 @@ public class UIDemoVideo extends UIDemo {
 			} else {
 				this.player.resume();
 			}
-		}, Keyboard.KEY_SPACE);
+		}, Key.SPACE);
 	}
 
 	@Override

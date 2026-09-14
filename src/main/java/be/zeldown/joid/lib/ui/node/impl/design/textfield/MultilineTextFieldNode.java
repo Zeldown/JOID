@@ -3,8 +3,7 @@ package be.zeldown.joid.lib.ui.node.impl.design.textfield;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import org.lwjgl.input.Keyboard;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.draw.text.builder.utils.TextOverflow;
@@ -16,8 +15,8 @@ import be.zeldown.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldC
 import be.zeldown.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldFocusCallback;
 import be.zeldown.joid.lib.utils.align.Align;
 import be.zeldown.joid.lib.utils.click.ClickType;
-import be.zeldown.joid.lib.utils.clipboard.ClipboardUtils;
 import be.zeldown.joid.lib.utils.context.InternalContext;
+import be.zeldown.joid.lib.utils.key.Key;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -50,7 +49,7 @@ public class MultilineTextFieldNode extends Node {
 	private boolean firstInput;
 	private boolean inputting;
 	private long    lastInput;
-	private int     inputType;
+	private Key     inputType;
 
 	protected MultilineTextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -182,31 +181,31 @@ public class MultilineTextFieldNode extends Node {
 		if (this.inputting && System.currentTimeMillis() - this.lastInput >= (this.firstInput ? 500 : 100)) {
 			this.firstInput = false;
 
-			if (!Keyboard.isKeyDown(this.inputType)) {
+			if (!this.inputType.isDown()) {
 				this.inputting = false;
 				return;
 			}
 
-			if (this.inputType == Keyboard.KEY_DELETE) {
+			if (this.inputType == Key.DELETE) {
 				if (this.cursorPos >= this.text.length()) {
 					this.inputting = false;
 					return;
 				}
 
-				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.nextWordIndex() : this.cursorPos + 1));
-			} else if (this.inputType == Keyboard.KEY_BACK) {
+				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() : this.cursorPos + 1));
+			} else if (this.inputType == Key.BACKSPACE) {
 				if (this.cursorPos <= 0) {
 					this.inputting = false;
 					return;
 				}
 
-				final int backStart = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.previousWordIndex() : this.cursorPos - 1;
+				final int backStart = Key.LEFT_CONTROL.isDown() ? this.previousWordIndex() : this.cursorPos - 1;
 				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
 				this.decreaseCursor(this.cursorPos - backStart);
-			} else if (this.inputType == Keyboard.KEY_LEFT) {
-				this.decreaseCursor(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.cursorPos - this.previousWordIndex() : 1);
-			} else if (this.inputType == Keyboard.KEY_RIGHT) {
-				this.increaseCursor(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.nextWordIndex() - this.cursorPos : 1);
+			} else if (this.inputType == Key.LEFT) {
+				this.decreaseCursor(Key.LEFT_CONTROL.isDown() ? this.cursorPos - this.previousWordIndex() : 1);
+			} else if (this.inputType == Key.RIGHT) {
+				this.increaseCursor(Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() - this.cursorPos : 1);
 			}
 
 			this.lastInput = System.currentTimeMillis();
@@ -214,13 +213,13 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	@Override
-	public final void keyPressed(final char c, final int keyCode, final @NonNull InternalContext context) {
+	public final void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !this.focused) {
 			return;
 		}
 
 		context.cancel(() -> {
-			if (keyCode == Keyboard.KEY_UP) {
+			if (key == Key.UP) {
 				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
 				if (cursorLineCol[0] <= 0) {
 					return;
@@ -243,7 +242,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
 					if (this.selectionStart == -1) {
 						this.selectionStart = this.cursorPos;
 					}
@@ -260,7 +259,7 @@ public class MultilineTextFieldNode extends Node {
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_DOWN) {
+			if (key == Key.DOWN) {
 				final List<String> lines = this.getLines();
 				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
 				if (cursorLineCol[0] >= lines.size() - 1) {
@@ -283,7 +282,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
 					if (this.selectionStart == -1) {
 						this.selectionStart = this.cursorPos;
 					}
@@ -300,8 +299,8 @@ public class MultilineTextFieldNode extends Node {
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_LEFT) {
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			if (key == Key.LEFT) {
+				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
 					if (this.selectionStart == -1) {
 						this.selectionStart = this.cursorPos;
 					}
@@ -309,13 +308,13 @@ public class MultilineTextFieldNode extends Node {
 					this.selectionStart = -1;
 				}
 
-				this.holdInput(keyCode);
-				this.decreaseCursor(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.cursorPos - this.previousWordIndex() : 1);
+				this.holdInput(key);
+				this.decreaseCursor(Key.LEFT_CONTROL.isDown() ? this.cursorPos - this.previousWordIndex() : 1);
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_RIGHT) {
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			if (key == Key.RIGHT) {
+				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
 					if (this.selectionStart == -1) {
 						this.selectionStart = this.cursorPos;
 					}
@@ -323,82 +322,82 @@ public class MultilineTextFieldNode extends Node {
 					this.selectionStart = -1;
 				}
 
-				this.holdInput(keyCode);
-				this.increaseCursor(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.nextWordIndex() - this.cursorPos : 1);
+				this.holdInput(key);
+				this.increaseCursor(Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() - this.cursorPos : 1);
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_ESCAPE) {
+			if (key == Key.ESCAPE) {
 				this.focused(false);
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_BACK) {
+			if (key == Key.BACKSPACE) {
 				if (this.deleteSelection(true) || this.cursorPos <= 0) {
 					return;
 				}
 
-				this.holdInput(keyCode);
-				final int backStart = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.previousWordIndex() : this.cursorPos - 1;
+				this.holdInput(key);
+				final int backStart = Key.LEFT_CONTROL.isDown() ? this.previousWordIndex() : this.cursorPos - 1;
 				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
 				this.decreaseCursor(this.cursorPos - backStart);
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_DELETE) {
+			if (key == Key.DELETE) {
 				if (this.deleteSelection(true) || this.cursorPos >= this.text.length()) {
 					return;
 				}
 
-				this.holdInput(keyCode);
-				final int deleteEnd = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? this.nextWordIndex() : this.cursorPos + 1;
+				this.holdInput(key);
+				final int deleteEnd = Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() : this.cursorPos + 1;
 				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_HOME) {
+			if (key == Key.HOME) {
 				this.cursorPos = 0;
 				this.decreaseCursor(0);
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_END) {
+			if (key == Key.END) {
 				this.cursorPos = this.text.length();
 				this.increaseCursor(0);
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_A && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if (key == Key.A && Key.LEFT_CONTROL.isDown()) {
 				this.selectionStart = 0;
 				this.cursorPos = this.text.length();
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_C && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if (key == Key.C && Key.LEFT_CONTROL.isDown()) {
 				if (this.selectionStart == -1) {
 					return;
 				}
 
 				if (this.selectionStart < this.cursorPos) {
-					ClipboardUtils.setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
+					BridgeHandler.getWindow().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
 				} else {
-					ClipboardUtils.setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
+					BridgeHandler.getWindow().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
 				}
 
 				return;
 			}
 
-			if (keyCode == Keyboard.KEY_X && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if (key == Key.X && Key.LEFT_CONTROL.isDown()) {
 				if (this.selectionStart == -1) {
 					return;
 				}
 
 				if (this.selectionStart < this.cursorPos) {
-					ClipboardUtils.setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
+					BridgeHandler.getWindow().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
 					this.setText(this.text.substring(0, this.selectionStart) + this.text.substring(this.cursorPos));
 					this.cursorPos -= this.cursorPos - this.selectionStart;
 				} else {
-					ClipboardUtils.setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
+					BridgeHandler.getWindow().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
 					this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.selectionStart));
 				}
 
@@ -406,9 +405,9 @@ public class MultilineTextFieldNode extends Node {
 				return;
 			}
 
-			String textToAdd = keyCode == Keyboard.KEY_RETURN || keyCode == Keyboard.KEY_NUMPADENTER ? "\n" : Character.toString(c);
-			if (keyCode == Keyboard.KEY_V && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-				textToAdd = ClipboardUtils.getClipboard();
+			String textToAdd = key == Key.ENTER || key == Key.NUMPAD_ENTER ? "\n" : Character.toString(c);
+			if (key == Key.V && Key.LEFT_CONTROL.isDown()) {
+				textToAdd = BridgeHandler.getWindow().getClipboard();
 			}
 
 			textToAdd = textToAdd.replace("\r", "\n").replace(System.lineSeparator(), "\n");
@@ -458,11 +457,11 @@ public class MultilineTextFieldNode extends Node {
 		}
 	}
 
-	private final void holdInput(final int keyCode) {
+	private final void holdInput(final @NonNull Key key) {
 		this.firstInput = true;
 		this.inputting  = true;
 		this.lastInput  = System.currentTimeMillis();
-		this.inputType  = keyCode;
+		this.inputType  = key;
 	}
 
 	@Override
@@ -474,7 +473,7 @@ public class MultilineTextFieldNode extends Node {
 		}
 
 		context.cancel(() -> {
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+			if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
 				if (this.selectionStart == -1) {
 					this.selectionStart = this.cursorPos;
 				}

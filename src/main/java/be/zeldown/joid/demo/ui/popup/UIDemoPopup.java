@@ -2,8 +2,6 @@ package be.zeldown.joid.demo.ui.popup;
 
 import java.util.Random;
 
-import org.lwjgl.input.Keyboard;
-
 import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import be.zeldown.joid.internal.JOID;
@@ -12,6 +10,7 @@ import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.data.popup.UIDataPopup;
 import be.zeldown.joid.lib.utils.context.InternalContext;
+import be.zeldown.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
 @UIDataPopup(active = true)
@@ -30,8 +29,8 @@ public class UIDemoPopup extends UI {
 	}
 
 	@Override
-	public void keyPressed(final char c, final int keyCode, final @NonNull InternalContext context) {
-		if (!context.isCancelled() && keyCode == Keyboard.KEY_K && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+	public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+		if (!context.isCancelled() && key == Key.K && Key.LEFT_CONTROL.isDown()) {
 			context.cancel(() -> JOID.open(new UIDemoPopup()));
 		}
 	}

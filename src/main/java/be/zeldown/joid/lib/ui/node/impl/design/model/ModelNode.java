@@ -1,7 +1,7 @@
 package be.zeldown.joid.lib.ui.node.impl.design.model;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.draw.model.utils.IDrawableModel;
 import be.zeldown.joid.lib.ui.node.Node;
@@ -57,14 +57,15 @@ public class ModelNode extends Node {
 		final double drawY = super.getY() + super.getHeight() / 2D;
 		final double drawZ = modelDepth / 2D * sizeZ;
 
-		GL11.glPushMatrix();
-		GL11.glTranslated(drawX, drawY, drawZ);
-		GL11.glRotated(this.rotationYaw, 0D, 1D, 0D);
-		GL11.glRotated(this.rotationPitch, 1D, 0D, 0D);
-		GL11.glTranslated(-drawX, -drawY, -drawZ);
-		GL11.glTranslated(0D, 0D, drawZ);
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.pushMatrix();
+		render.translate(drawX, drawY, drawZ);
+		render.rotate(this.rotationYaw, 0D, 1D, 0D);
+		render.rotate(this.rotationPitch, 1D, 0D, 0D);
+		render.translate(-drawX, -drawY, -drawZ);
+		render.translate(0D, 0D, drawZ);
 		DrawUtils.MODEL.drawModel(drawX, drawY, sizeX, sizeY, sizeZ, this.model);
-		GL11.glPopMatrix();
+		render.popMatrix();
 
 		super.getUi().setRenderPipelineLevel(super.getUi().getRenderPipelineLevel() + (this.pipeLineLevel == -1D ? modelDiagonal * sizeZ : this.pipeLineLevel));
 	}

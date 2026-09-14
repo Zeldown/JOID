@@ -1,7 +1,6 @@
 package be.zeldown.joid.lib.ui.node.hover.impl;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.hover.HoverElement;
 import lombok.NonNull;
@@ -17,7 +16,7 @@ public class NodeHoverElement extends CustomHoverElement {
 					node.load(parentNode.getUi());
 				}
 
-				GL11.glTranslated(-node.getX(), -node.getY(), 0);
+				BridgeHandler.getRender().translate(-node.getX(), -node.getY(), 0);
 				node.render(mouseX, mouseY);
 			}
 

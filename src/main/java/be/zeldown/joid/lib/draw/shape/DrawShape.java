@@ -1,17 +1,20 @@
 package be.zeldown.joid.lib.draw.shape;
 
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector4f;
 
-import org.lwjgl.opengl.GL11;
-
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.state.BlendState;
+import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
+import be.zeldown.joid.lib.render.tessellator.Tessellator;
 import be.zeldown.joid.lib.shader.impl.CircleShader;
 import be.zeldown.joid.lib.shader.impl.RoundedShader;
-import be.zeldown.joid.lib.tessellator.T9R;
 import be.zeldown.joid.lib.utils.bezier.Bezier;
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,8 +22,6 @@ import lombok.NonNull;
 public final class DrawShape {
 
 	@Getter private static DrawShape instance;
-
-	private static int EMPTY_TEXTURE = -1;
 
 	public DrawShape() {
 		if (DrawShape.instance != null) {
@@ -75,26 +76,47 @@ public final class DrawShape {
 	}
 
 	public void drawPolygon(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
-		this.drawShape(GL11.GL_POLYGON, color, points);
+		this.drawShape(DrawMode.POLYGON, color, points);
 	}
 
 	public void drawLine(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
-		GL11.glEnable(GL11.GL_LINE_SMOOTH);
-		this.drawShape(GL11.GL_LINE_STRIP, color, points);
-		GL11.glDisable(GL11.GL_LINE_SMOOTH);
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.lineSmooth(true);
+		this.drawShape(DrawMode.LINE_STRIP, color, points);
+		render.lineSmooth(false);
 	}
 
 	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Vector2d @NonNull... points) {
-		GL11.glEnable(GL11.GL_LINE_STIPPLE);
-		GL11.glLineStipple(pattern, (short) 0xAAAA);
-		this.drawLine(color, stroke, points);
-		GL11.glDisable(GL11.GL_LINE_STIPPLE);
+		final List<Vector2d> dashes = new ArrayList<>();
+		for (int i = 0; i + 1 < points.length; i++) {
+			final Vector2d start = points[i];
+			final Vector2d end = points[i + 1];
+			final double length = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
+			for (double offset = 0D; offset < length; offset += pattern * 2D) {
+				final double from = offset / length;
+				final double to = Math.min(length, offset + pattern) / length;
+				dashes.add(new Vector2d(start.x + (end.x - start.x) * from, start.y + (end.y - start.y) * from));
+				dashes.add(new Vector2d(start.x + (end.x - start.x) * to, start.y + (end.y - start.y) * to));
+			}
+		}
+
+		if (dashes.isEmpty()) {
+			return;
+		}
+
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.lineWidth(stroke);
+		render.lineSmooth(true);
+		this.drawShape(DrawMode.LINES, color, dashes.toArray(new Vector2d[0]));
+		render.lineSmooth(false);
+		render.lineWidth(1F);
 	}
 
 	public void drawLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d @NonNull... points) {
-		GL11.glLineWidth(stroke);
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.lineWidth(stroke);
 		this.drawLine(color, points);
-		GL11.glLineWidth(1F);
+		render.lineWidth(1F);
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
@@ -108,9 +130,10 @@ public final class DrawShape {
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
-		GL11.glLineWidth(stroke);
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.lineWidth(stroke);
 		this.drawCurvedLine(color, start, end, control);
-		GL11.glLineWidth(1F);
+		render.lineWidth(1F);
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
@@ -124,12 +147,13 @@ public final class DrawShape {
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
-		GL11.glLineWidth(stroke);
+		final IRenderBridge render = BridgeHandler.getRender();
+		render.lineWidth(stroke);
 		this.drawCurvedLine(color, start, startControl, end, endControl);
-		GL11.glLineWidth(1F);
+		render.lineWidth(1F);
 	}
 
-	public void drawShape(final int mode, final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
+	public void drawShape(final @NonNull DrawMode mode, final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
 		double minX = Double.MAX_VALUE;
 		double minY = Double.MAX_VALUE;
 		double maxX = Double.MIN_VALUE;
@@ -142,62 +166,36 @@ public final class DrawShape {
 			maxY = Math.max(maxY, point.y);
 		}
 
-		final T9R tessellator = T9R.inst();
-		GL11.glPushMatrix();
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		final int texture = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
+		final IRenderBridge render = BridgeHandler.getRender();
+		final Tessellator tessellator = Tessellator.inst();
+		render.pushMatrix();
+		render.blend(BlendState.NORMAL);
+		render.resetTexture();
 		color.bind(() -> {
-			DrawShape.bindEmptyTexture();
 			tessellator.start(mode);
 			for (final Vector2d point : points) {
 				tessellator.addVertex(point.x, point.y, 0D);
 			}
 			tessellator.draw();
 		}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glPopMatrix();
+		render.blend(BlendState.DISABLED);
+		render.popMatrix();
 	}
 
 	public void drawRawRect(final double x, final double y, final double width, final double height) {
-		final T9R tessellator = T9R.inst();
-		GL11.glPushMatrix();
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		DrawShape.bindEmptyTexture();
-		tessellator.start(GL11.GL_POLYGON);
+		final IRenderBridge render = BridgeHandler.getRender();
+		final Tessellator tessellator = Tessellator.inst();
+		render.pushMatrix();
+		render.blend(BlendState.NORMAL);
+		render.resetTexture();
+		tessellator.start(DrawMode.POLYGON);
 		tessellator.addVertex(x, y + height, 0D);
 		tessellator.addVertex(x + width, y + height, 0D);
 		tessellator.addVertex(x + width, y, 0D);
 		tessellator.addVertex(x, y, 0D);
 		tessellator.draw();
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glPopMatrix();
-	}
-
-	public static void bindEmptyTexture() {
-		if (DrawShape.EMPTY_TEXTURE == -1) {
-			DrawShape.EMPTY_TEXTURE = GL11.glGenTextures();
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, DrawShape.EMPTY_TEXTURE);
-
-			final byte[] whitePixel = {(byte) 255, (byte) 255, (byte) 255, (byte) 255};
-
-			final ByteBuffer buffer = ByteBuffer.allocateDirect(4);
-			buffer.put(whitePixel);
-			buffer.flip();
-
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-			GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-			return;
-		}
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, DrawShape.EMPTY_TEXTURE);
+		render.blend(BlendState.DISABLED);
+		render.popMatrix();
 	}
 
 }
