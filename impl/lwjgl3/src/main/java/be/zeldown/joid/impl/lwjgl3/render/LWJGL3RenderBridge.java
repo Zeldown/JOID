@@ -1,11 +1,5 @@
 package be.zeldown.joid.impl.lwjgl3.render;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
 import org.lwjgl.opengl.GL13C;
@@ -17,10 +11,13 @@ import org.lwjgl.opengl.GL33C;
 
 import be.zeldown.joid.impl.lwjgl3.render.framebuffer.LWJGL3FrameBuffer;
 import be.zeldown.joid.impl.lwjgl3.render.shader.LWJGL3Shader;
+import be.zeldown.joid.impl.lwjgl3.render.shader.LWJGL3ShaderTranslator;
 import be.zeldown.joid.impl.lwjgl3.render.texture.LWJGL3Texture;
 import be.zeldown.joid.lib.bridge.render.RenderBridge;
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderStage;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.state.RenderState;
 import be.zeldown.joid.lib.bridge.render.state.StencilFunction;
@@ -34,10 +31,10 @@ import lombok.NonNull;
 
 public final class LWJGL3RenderBridge extends RenderBridge {
 
-	private static final int POSITION_LOCATION = 0;
-	private static final int TEXTURE_LOCATION  = 1;
-	private static final int COLOR_LOCATION    = 2;
-	private static final int NORMAL_LOCATION   = 3;
+	public static final int POSITION_LOCATION = 0;
+	public static final int TEXTURE_LOCATION  = 1;
+	public static final int COLOR_LOCATION    = 2;
+	public static final int NORMAL_LOCATION   = 3;
 
 	private final int           vertexArray;
 	private final int           vertexBuffer;
@@ -54,7 +51,7 @@ public final class LWJGL3RenderBridge extends RenderBridge {
 		this.aliasedLineWidthRange = LWJGL3RenderBridge.getFloats(GL12C.GL_ALIASED_LINE_WIDTH_RANGE);
 		this.smoothLineWidthRange  = LWJGL3RenderBridge.getFloats(GL12C.GL_SMOOTH_LINE_WIDTH_RANGE);
 		this.emptyTexture          = LWJGL3Texture.create().allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
-		this.fixedShader           = LWJGL3Shader.create(this, LWJGL3RenderBridge.read(LWJGL3RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), LWJGL3RenderBridge.read(LWJGL3RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
+		this.fixedShader           = (LWJGL3Shader) this.createShader(ShaderSource.read(ShaderStage.VERTEX, LWJGL3RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, LWJGL3RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
 
 		GL30C.glBindVertexArray(this.vertexArray);
 		GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, this.vertexBuffer);
@@ -118,8 +115,8 @@ public final class LWJGL3RenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public @NonNull IShader createShader(final @NonNull InputStream vertex, final @NonNull InputStream fragment, final @NonNull BlendState blend) {
-		return LWJGL3Shader.create(this, LWJGL3RenderBridge.read(vertex), LWJGL3RenderBridge.read(fragment), blend);
+	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
+		return LWJGL3Shader.create(this, LWJGL3ShaderTranslator.translate(vertex), LWJGL3ShaderTranslator.translate(fragment), blend);
 	}
 
 	public int getSampler(final TextureFilter filter, final TextureWrap wrap) {
@@ -299,14 +296,6 @@ public final class LWJGL3RenderBridge extends RenderBridge {
 			return GL11C.GL_INVERT;
 		default:
 			return GL11C.GL_KEEP;
-		}
-	}
-
-	private static String read(final InputStream stream) {
-		try {
-			return IOUtils.toString(stream, StandardCharsets.UTF_8);
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
 		}
 	}
 

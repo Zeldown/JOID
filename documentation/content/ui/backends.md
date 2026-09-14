@@ -24,7 +24,7 @@ Every bridge implements `IBridge`, and `BridgeHandler` exposes one `BridgeRegist
 
 The repository is a multi-module Gradle build. `core` contains the neutral library, and each backend is a module under `impl/` with its own `build.gradle`, its shaders and a ready-to-run `DemoWindow` (`./gradlew :vulkan:runDemo`). LWJGL 3 and Vulkan share the `glfw` window module and the `openal` audio module.
 
-| Module | Stack | Register | Shaders |
+| Module | Stack | Register | Generated shaders |
 |---|---|---|---|
 | `lwjgl2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `LWJGL2Backend.register()` | GLSL 120 |
 | `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` | GLSL 330 |
@@ -112,15 +112,15 @@ The contract every backend follows:
 
 ### Shaders
 
-Shaders are backend assets loaded from `/assets/shaders/<name>/<name>.vsh` and `.fsh`, so each backend module ships the language of its engine:
+Shaders live in the `core` module and are written once in JOID GLSL (see [Custom Shaders](../shaders/custom.md)). The core parses each stage into a `ShaderSource` — varyings, uniforms, samplers, the built-ins it uses and its body — and passes both stages to `createShader(ShaderSource, ShaderSource, BlendState)`. The backend only generates the declarations of its language in front of the body:
 
-| Backend | Language | Conventions |
+| Backend | Language | Generated declarations |
 |---|---|---|
-| LWJGL 2 | GLSL 120 | Fixed attributes (`gl_Vertex`, `gl_Color`, `gl_MultiTexCoord0`). |
-| LWJGL 3 | GLSL 330 | Attributes at locations `0` position, `1` uv, `2` color, `3` normal. Uniforms `uProjectionMatrix` and `uModelViewMatrix`. Output `out vec4 fragColor`. |
-| Vulkan | GLSL 450 | Same attributes. Vertex uniforms in a `std140` block at `binding = 0`, fragment uniforms at `binding = 1`, samplers from `binding = 2`. Varyings `vPosition`, `vTexCoord`, `vColor` at locations `0`, `1`, `2`. Output `layout(location = 0) out vec4 fragColor`. |
+| LWJGL 2 | GLSL 120 | `#define` of the built-ins onto `gl_Vertex`, `gl_MultiTexCoord0`, `gl_Color`, `gl_ProjectionMatrix`, `gl_ModelViewMatrix`, `gl_FragColor`… and of `texture` onto `texture2D`. Varyings become `varying`. |
+| LWJGL 3 | GLSL 330 | Attributes at locations `0` position, `1` uv, `2` color, `3` normal, built-in uniforms, `in` / `out` varyings, `out vec4 fragColor`. |
+| Vulkan | GLSL 450 | Same attributes, the uniforms of both stages in a single `std140` block at `binding = 0`, samplers from `binding = 1`, varying locations shared by both stages, `layout(location = 0) out vec4 fragColor`. |
 
-Samplers that are not set through a `SamplerUniform` receive the currently bound texture. The LWJGL 3 and Vulkan backends wrap the fragment `main` to apply the render state alpha test, which is why the output must be named `fragColor`.
+Every generated header ends with a `#line` directive, so compilation errors point to the original file. Samplers that are not set through a `SamplerUniform` receive the currently bound texture. The LWJGL 3 and Vulkan backends draw without a bound shader through `/assets/shaders/fixed`, and wrap the fragment `main` to apply the render state alpha test.
 
 ## See also
 

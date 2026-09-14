@@ -1,10 +1,8 @@
 package be.zeldown.joid.impl.lwjgl2.render.shader;
 
-import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
@@ -38,9 +36,7 @@ import lombok.NonNull;
 @Getter
 public final class LWJGL2Shader implements IShader {
 
-	private static final Map<Integer, LWJGL2Shader> SHADER_MAP      = new HashMap<>();
-	private static final FloatBuffer                MATRIX_BUFFER   = BufferUtils.createFloatBuffer(16);
-	private static final FloatBuffer                IDENTITY_BUFFER = (FloatBuffer) BufferUtils.createFloatBuffer(16).put(new float[] {1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F}).flip();
+	private static final Map<Integer, LWJGL2Shader> SHADER_MAP = new HashMap<>();
 
 	private final Map<String, LWJGL2SamplerUniform> samplerMap;
 	private final Map<String, Integer>              locationMap;
@@ -84,7 +80,12 @@ public final class LWJGL2Shader implements IShader {
 		}
 
 		this.samplerMap.values().forEach(LWJGL2SamplerUniform::bind);
-		this.uploadMatrices();
+
+		final int lighting = this.getLocation("uLighting");
+		if (lighting != -1) {
+			GL20.glUniform1i(lighting, GL11.glIsEnabled(GL11.GL_LIGHTING) ? 1 : 0);
+		}
+
 		this.bound = true;
 	}
 
@@ -152,23 +153,6 @@ public final class LWJGL2Shader implements IShader {
 
 	public int getLocation(final String name) {
 		return this.locationMap.computeIfAbsent(name, key -> GL20.glGetUniformLocation(this.program, key));
-	}
-
-	private void uploadMatrices() {
-		final int model = this.getLocation("uModelMatrix");
-		final int view = this.getLocation("uViewMatrix");
-		final int projection = this.getLocation("uProjectionMatrix");
-		if (model == -1 || view == -1 || projection == -1) {
-			return;
-		}
-
-		LWJGL2Shader.MATRIX_BUFFER.clear();
-		GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, LWJGL2Shader.MATRIX_BUFFER);
-		GL20.glUniformMatrix4(model, false, LWJGL2Shader.MATRIX_BUFFER);
-		GL20.glUniformMatrix4(view, false, LWJGL2Shader.IDENTITY_BUFFER);
-		LWJGL2Shader.MATRIX_BUFFER.clear();
-		GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, LWJGL2Shader.MATRIX_BUFFER);
-		GL20.glUniformMatrix4(projection, false, LWJGL2Shader.MATRIX_BUFFER);
 	}
 
 	private static boolean link(final int program, final String vertexSource, final String fragmentSource) {

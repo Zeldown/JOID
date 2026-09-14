@@ -1,15 +1,10 @@
 package be.zeldown.joid.impl.lwjgl2.render;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -19,11 +14,13 @@ import org.lwjgl.opengl.GL30;
 
 import be.zeldown.joid.impl.lwjgl2.render.framebuffer.LWJGL2FrameBuffer;
 import be.zeldown.joid.impl.lwjgl2.render.shader.LWJGL2Shader;
+import be.zeldown.joid.impl.lwjgl2.render.shader.LWJGL2ShaderTranslator;
 import be.zeldown.joid.impl.lwjgl2.render.state.LWJGL2StateSnapshot;
 import be.zeldown.joid.impl.lwjgl2.render.texture.LWJGL2Texture;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.state.StencilFunction;
 import be.zeldown.joid.lib.bridge.render.state.StencilOperation;
@@ -290,8 +287,8 @@ public final class LWJGL2RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public @NonNull IShader createShader(final @NonNull InputStream vertex, final @NonNull InputStream fragment, final @NonNull BlendState blend) {
-		return LWJGL2Shader.create(LWJGL2RenderBridge.read(vertex), LWJGL2RenderBridge.read(fragment), blend);
+	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
+		return LWJGL2Shader.create(LWJGL2ShaderTranslator.translate(vertex), LWJGL2ShaderTranslator.translate(fragment), blend);
 	}
 
 	public static void toggle(final int capability, final boolean enabled) {
@@ -414,14 +411,6 @@ public final class LWJGL2RenderBridge implements IRenderBridge {
 			return GL11.GL_INVERT;
 		default:
 			return GL11.GL_KEEP;
-		}
-	}
-
-	private static String read(final InputStream stream) {
-		try {
-			return IOUtils.toString(stream, StandardCharsets.UTF_8);
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
 		}
 	}
 

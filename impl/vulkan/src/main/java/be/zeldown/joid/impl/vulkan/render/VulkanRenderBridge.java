@@ -1,16 +1,11 @@
 package be.zeldown.joid.impl.vulkan.render;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.vulkan.KHRSwapchain;
@@ -37,6 +32,7 @@ import be.zeldown.joid.impl.vulkan.render.framebuffer.VulkanFrameBuffer;
 import be.zeldown.joid.impl.vulkan.render.pipeline.VulkanPipelineCache;
 import be.zeldown.joid.impl.vulkan.render.pipeline.VulkanPipelineKey;
 import be.zeldown.joid.impl.vulkan.render.shader.VulkanShader;
+import be.zeldown.joid.impl.vulkan.render.shader.VulkanShaderTranslator;
 import be.zeldown.joid.impl.vulkan.render.shader.uniform.VulkanSamplerUniform;
 import be.zeldown.joid.impl.vulkan.render.shader.uniform.VulkanUniformBlock;
 import be.zeldown.joid.impl.vulkan.render.shader.uniform.VulkanUniformMember;
@@ -44,6 +40,8 @@ import be.zeldown.joid.impl.vulkan.render.texture.VulkanTexture;
 import be.zeldown.joid.lib.bridge.render.RenderBridge;
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderStage;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.state.RenderState;
 import be.zeldown.joid.lib.bridge.render.state.StencilFunction;
@@ -109,7 +107,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 		this.samplers     = this.createSamplers();
 		this.emptyTexture = new VulkanTexture(this).allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
-		this.fixedShader  = VulkanShader.create(this, VulkanRenderBridge.read(VulkanRenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), VulkanRenderBridge.read(VulkanRenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
+		this.fixedShader  = (VulkanShader) this.createShader(ShaderSource.read(ShaderStage.VERTEX, VulkanRenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, VulkanRenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
 	}
 
 	public void beginFrame() {
@@ -257,8 +255,8 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public @NonNull IShader createShader(final @NonNull InputStream vertex, final @NonNull InputStream fragment, final @NonNull BlendState blend) {
-		return VulkanShader.create(this, VulkanRenderBridge.read(vertex), VulkanRenderBridge.read(fragment), blend);
+	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
+		return VulkanShader.create(this, VulkanShaderTranslator.translateVertex(vertex, fragment), VulkanShaderTranslator.translateFragment(vertex, fragment), blend);
 	}
 
 	public void dispose(final @NonNull Runnable destroyer) {
@@ -571,14 +569,6 @@ public final class VulkanRenderBridge extends RenderBridge {
 			return VK10.VK_STENCIL_OP_INVERT;
 		default:
 			return VK10.VK_STENCIL_OP_KEEP;
-		}
-	}
-
-	private static String read(final InputStream stream) {
-		try {
-			return IOUtils.toString(stream, StandardCharsets.UTF_8);
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
 		}
 	}
 

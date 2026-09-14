@@ -8,6 +8,8 @@ import java.util.Random;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderStage;
 import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
 import be.zeldown.joid.lib.bridge.render.shader.uniform.Float4Uniform;
 import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
@@ -97,7 +99,7 @@ public class CustomFontProvider implements FontProvider {
 			e.printStackTrace();
 		}
 
-		SHADER = BridgeHandler.RENDER.get().createShader(vert, frag, BlendState.NORMAL);
+		SHADER = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, vert), ShaderSource.read(ShaderStage.FRAGMENT, frag), BlendState.NORMAL);
 
 		TEXEL_UNIFORM    = CustomFontProvider.SHADER.getFloat2Uniform("texel");
 		PX_RANGE_UNIFORM = CustomFontProvider.SHADER.getFloatUniform("pxRange");

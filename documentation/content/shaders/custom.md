@@ -4,69 +4,54 @@ Write your own shaders and wire them into the pipeline.
 
 ## The flow
 
-1. Write your `.vsh` / `.fsh` shader files and put them in `/assets/shaders/<name>/`.
+1. Write your `.vsh` / `.fsh` files in JOID GLSL and put them in `/assets/shaders/<name>/`.
 2. Extend `ShaderImpl` to load and expose uniforms.
 3. Implement a `ShaderPass` that binds the shader.
 4. Optionally wrap in a `NodeEffect` for ergonomic use.
 
 ## 1. Shader files
 
-Shaders are assets of the backend: each backend module loads `/assets/shaders/<name>/<name>.vsh` and `.fsh` written in the language of its engine — GLSL 120 for LWJGL 2, GLSL 330 for LWJGL 3, Vulkan GLSL 450 for Vulkan. Ship one version per backend you target; see [Backends](../ui/backends.md#shaders) for the conventions of each language. The example below is the LWJGL 2 version.
+Shaders are written once, in JOID GLSL, and every backend translates them when they are loaded — GLSL 120 on LWJGL 2, GLSL 330 on LWJGL 3, Vulkan GLSL 450 on Vulkan. JOID GLSL is regular GLSL without the engine-specific parts:
+
+- No `#version` line.
+- Vertex attributes, matrices and the fragment output are built-in — use them without declaring them.
+- Declare varyings with `out` in the vertex shader and `in` in the fragment shader, one per line. `flat` is allowed.
+- Declare uniforms and samplers as `uniform` lines, one per line.
+- Sample textures with `texture(...)` and write the final color to `fragColor`.
+
+| Built-in | Type | Stage |
+|---|---|---|
+| `aPosition` | `vec3` | vertex |
+| `aTexCoord` | `vec2` | vertex |
+| `aColor` | `vec4` | vertex |
+| `aNormal` | `vec3` | vertex |
+| `uProjectionMatrix` | `mat4` | vertex, fragment |
+| `uModelViewMatrix` | `mat4` | vertex, fragment |
+| `uNormalMatrix` | `mat3` | vertex, fragment |
+| `uLighting` | `bool` | vertex, fragment |
+| `fragColor` | `vec4` | fragment |
+
+As long as the LWJGL 2 backend is supported, stick to the features GLSL 120 shares with newer versions: no bitwise operators, `uint`, `switch` or uniform blocks.
 
 **`/assets/shaders/outline/outline.vsh`**:
 ```glsl
-#version 120
-
-varying vec2 vPosition;
-varying vec2 vTexCoord;
-varying vec4 vColor;
+out vec2 vTexCoord;
 
 void main() {
-    vPosition = gl_Vertex.xy;
-    vTexCoord = gl_MultiTexCoord0.xy;
-    vColor = gl_Color;
-    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+    vTexCoord = aTexCoord;
+    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);
 }
 ```
 
 **`/assets/shaders/outline/outline.fsh`**:
 ```glsl
-#version 120
-
-varying vec2 vTexCoord;
-uniform sampler2D tex;
-uniform vec4 u_OutlineColor;
-uniform float u_Thickness;
-uniform vec2 u_TexelSize;
-
-void main() {
-    vec4 color = texture2D(tex, vTexCoord);
-    float alpha = 0.0;
-    for (int i = -1; i <= 1; i++) {
-        for (int j = -1; j <= 1; j++) {
-            vec2 offset = vec2(i, j) * u_TexelSize * u_Thickness;
-            alpha = max(alpha, texture2D(tex, vTexCoord + offset).a);
-        }
-    }
-    gl_FragColor = color.a > 0.5 ? color : vec4(u_OutlineColor.rgb, alpha * u_OutlineColor.a);
-}
-```
-
-### Other backends
-
-On LWJGL 3, the same fragment shader is written in GLSL 330 with explicit inputs and output:
-
-```glsl
-#version 330 core
-
 in vec2 vTexCoord;
+
 uniform sampler2D tex;
 uniform vec4 u_OutlineColor;
 uniform float u_Thickness;
 uniform vec2 u_TexelSize;
 
-out vec4 fragColor;
-
 void main() {
     vec4 color = texture(tex, vTexCoord);
     float alpha = 0.0;
@@ -80,37 +65,7 @@ void main() {
 }
 ```
 
-On Vulkan, uniforms live in a `std140` block, samplers have a binding and every input has a location:
-
-```glsl
-#version 450
-
-layout(location = 1) in vec2 vTexCoord;
-
-layout(std140, binding = 1) uniform FragmentUniforms {
-    vec4 u_OutlineColor;
-    float u_Thickness;
-    vec2 u_TexelSize;
-};
-
-layout(binding = 2) uniform sampler2D tex;
-
-layout(location = 0) out vec4 fragColor;
-
-void main() {
-    vec4 color = texture(tex, vTexCoord);
-    float alpha = 0.0;
-    for (int i = -1; i <= 1; i++) {
-        for (int j = -1; j <= 1; j++) {
-            vec2 offset = vec2(i, j) * u_TexelSize * u_Thickness;
-            alpha = max(alpha, texture(tex, vTexCoord + offset).a);
-        }
-    }
-    fragColor = color.a > 0.5 ? color : vec4(u_OutlineColor.rgb, alpha * u_OutlineColor.a);
-}
-```
-
-The Java side is identical on every backend: uniforms are looked up by name.
+Compilation errors report the line numbers of your own file. The Java side is identical on every backend: uniforms are looked up by name.
 
 ## 2. Shader class
 

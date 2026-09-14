@@ -1,10 +1,9 @@
 package be.zeldown.joid.lib.bridge.render;
 
-import java.io.InputStream;
-
 import be.zeldown.joid.lib.bridge.IBridge;
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.state.StencilFunction;
 import be.zeldown.joid.lib.bridge.render.state.StencilOperation;
@@ -59,6 +58,6 @@ public interface IRenderBridge extends IBridge {
 
 	public @NonNull ITexture createTexture();
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter);
-	public @NonNull IShader createShader(final @NonNull InputStream vertex, final @NonNull InputStream fragment, final @NonNull BlendState blend);
+	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend);
 
 }
