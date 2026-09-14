@@ -97,7 +97,7 @@ public class CustomFontProvider implements FontProvider {
 			e.printStackTrace();
 		}
 
-		SHADER = BridgeHandler.getRender().createShader(vert, frag, BlendState.NORMAL);
+		SHADER = BridgeHandler.RENDER.get().createShader(vert, frag, BlendState.NORMAL);
 
 		TEXEL_UNIFORM    = CustomFontProvider.SHADER.getFloat2Uniform("texel");
 		PX_RANGE_UNIFORM = CustomFontProvider.SHADER.getFloatUniform("pxRange");

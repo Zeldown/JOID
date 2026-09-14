@@ -63,12 +63,12 @@ public class PopTransition extends Transition {
         }
         @Override public void pre(UI ui, double mx, double my) {
             final double scale = 0.75D + getAnimator().getValue() * 0.25D;
-            BridgeHandler.getRender().pushMatrix();
-            BridgeHandler.getRender().translate(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0D);
-            BridgeHandler.getRender().scale(scale, scale, 1D);
-            BridgeHandler.getRender().translate(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0D);
+            BridgeHandler.RENDER.get().pushMatrix();
+            BridgeHandler.RENDER.get().translate(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0D);
+            BridgeHandler.RENDER.get().scale(scale, scale, 1D);
+            BridgeHandler.RENDER.get().translate(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0D);
         }
-        @Override public void post(UI ui, double mx, double my) { BridgeHandler.getRender().popMatrix(); }
+        @Override public void post(UI ui, double mx, double my) { BridgeHandler.RENDER.get().popMatrix(); }
     }
 
     public static class PopOutTransition extends Transition.Out {
@@ -96,10 +96,10 @@ public class SlideTransition extends Transition {
         }
         @Override public void pre(UI ui, double mx, double my) {
             final float offset = (1F - getAnimator().getValue()) * (float) ui.getWidth();
-            BridgeHandler.getRender().pushMatrix();
-            BridgeHandler.getRender().translate(offset, 0D, 0D);
+            BridgeHandler.RENDER.get().pushMatrix();
+            BridgeHandler.RENDER.get().translate(offset, 0D, 0D);
         }
-        @Override public void post(UI ui, double mx, double my) { BridgeHandler.getRender().popMatrix(); }
+        @Override public void post(UI ui, double mx, double my) { BridgeHandler.RENDER.get().popMatrix(); }
     }
 
     public static class SlideOut extends Transition.Out {
@@ -110,10 +110,10 @@ public class SlideTransition extends Transition {
         }
         @Override public void pre(UI ui, double mx, double my) {
             final float offset = (1F - getAnimator().getValue()) * -(float) ui.getWidth();
-            BridgeHandler.getRender().pushMatrix();
-            BridgeHandler.getRender().translate(offset, 0D, 0D);
+            BridgeHandler.RENDER.get().pushMatrix();
+            BridgeHandler.RENDER.get().translate(offset, 0D, 0D);
         }
-        @Override public void post(UI ui, double mx, double my) { BridgeHandler.getRender().popMatrix(); }
+        @Override public void post(UI ui, double mx, double my) { BridgeHandler.RENDER.get().popMatrix(); }
     }
 }
 ```

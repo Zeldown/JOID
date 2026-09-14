@@ -29,7 +29,7 @@ public class PopTransition extends Transition {
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
 			final double scale = 0.75D + super.getAnimator().getValue() * 0.25D;
 
-			final IRenderBridge render = BridgeHandler.getRender();
+			final IRenderBridge render = BridgeHandler.RENDER.get();
 			render.pushMatrix();
 			render.translate(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
 			render.scale(scale, scale, 1D);
@@ -38,7 +38,7 @@ public class PopTransition extends Transition {
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			BridgeHandler.getRender().popMatrix();
+			BridgeHandler.RENDER.get().popMatrix();
 		}
 
 	}
@@ -58,7 +58,7 @@ public class PopTransition extends Transition {
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
 			final double scale = 0.75D + super.getAnimator().getValue() * 0.25D;
 
-			final IRenderBridge render = BridgeHandler.getRender();
+			final IRenderBridge render = BridgeHandler.RENDER.get();
 			render.pushMatrix();
 			render.translate(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
 			render.scale(scale, scale, 1D);
@@ -67,7 +67,7 @@ public class PopTransition extends Transition {
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			BridgeHandler.getRender().popMatrix();
+			BridgeHandler.RENDER.get().popMatrix();
 		}
 
 	}

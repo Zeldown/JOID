@@ -20,7 +20,7 @@ public interface IResourceDecoder {
 Cycle de vie :
 
 1. **`init`** — juste après construction, avec le `ResourceData` parent attaché.
-2. **`prepare`** — appelée sur le thread de rendu avant decode. Créez ici les textures placeholder avec `BridgeHandler.getRender().createTexture()`.
+2. **`prepare`** — appelée sur le thread de rendu avant decode. Créez ici les textures placeholder avec `BridgeHandler.RENDER.get().createTexture()`.
 3. **`decode`** — décode les octets en pixels. Peut tourner sur un thread de fond (mode async).
 4. **`upload`** — thread de rendu. Upload les pixels décodés via `ITexture.allocate` et `upload`.
 5. **`update`** — à chaque frame avant le rendu de la ressource. Remplacez la texture courante avec `resource.texture(...)` quand elle change (frames vidéo).
@@ -93,7 +93,7 @@ public class SVGResourceDecoder implements IResourceDecoder {
 
     @Override
     public void prepare(ResourceData resource) {
-        resource.texture(BridgeHandler.getRender().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
+        resource.texture(BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
     }
 
     @Override

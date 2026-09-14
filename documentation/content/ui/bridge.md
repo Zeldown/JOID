@@ -9,11 +9,11 @@ Each backend branch (`impl/lwjgl-2`, `impl/lwjgl-3`, `impl/vulkan`) ships a `Dem
 - Registers the window, render and audio bridges of its backend (see [Backends](backends.md)).
 - Listens to mouse and keyboard.
 - Loops `update` → `render` → present.
-- Registers itself as a `UIBridge` when you call `BridgeHandler.register(window)`.
+- Registers itself as a `UIBridge` when you call `BridgeHandler.UI.register(window)`.
 
 ```java
 final DemoWindow window = new DemoWindow();
-BridgeHandler.register(window);
+BridgeHandler.UI.register(window);
 JOID.inst().setDevMode(true).setDemoMode(true).load();
 window.run();
 ```
@@ -74,7 +74,7 @@ public class MyBridge extends UIBridge {
 Register it once at startup:
 
 ```java
-BridgeHandler.register(new MyBridge());
+BridgeHandler.UI.register(new MyBridge());
 ```
 
 ## Wiring input
@@ -98,12 +98,12 @@ Every backend `DemoWindow` contains a complete loop for its windowing library �
 
 ## Multiple bridges
 
-A real app often has multiple bridges — e.g., one for in-world UIs, one for main menu. `BridgeHandler` routes each `UI` to the appropriate bridge based on `canHandle(Class<? extends UI>)`.
+A real app often has multiple bridges — e.g., one for in-world UIs, one for main menu. `BridgeHandler.UI` routes each `UI` to the appropriate bridge based on `canHandle(Class<? extends UI>)`. When several bridges can handle the same `UI`, the one with the highest `getIndex()` wins, then the latest registered.
 
 ```java
-BridgeHandler.register(new MainMenuBridge());
-BridgeHandler.register(new HUDBridge());
-BridgeHandler.register(new WorldUIBridge());
+BridgeHandler.UI.register(new MainMenuBridge());
+BridgeHandler.UI.register(new HUDBridge());
+BridgeHandler.UI.register(new WorldUIBridge());
 
 // JOID.open() automatically picks the right bridge for the UI class.
 JOID.open(new SettingsUI());  // → MainMenuBridge (because it canHandle SettingsUI)

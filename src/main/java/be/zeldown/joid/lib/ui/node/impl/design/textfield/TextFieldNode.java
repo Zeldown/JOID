@@ -274,9 +274,9 @@ public class TextFieldNode extends Node {
 				}
 
 				if (this.selectionStart < this.cursorPos) {
-					BridgeHandler.getWindow().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
+					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
 				} else {
-					BridgeHandler.getWindow().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
+					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
 				}
 
 				return;
@@ -288,11 +288,11 @@ public class TextFieldNode extends Node {
 				}
 
 				if (this.selectionStart < this.cursorPos) {
-					BridgeHandler.getWindow().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
+					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
 					this.setText(this.text.substring(0, this.selectionStart) + this.text.substring(this.cursorPos));
 					this.cursorPos -= this.cursorPos - this.selectionStart;
 				} else {
-					BridgeHandler.getWindow().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
+					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
 					this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.selectionStart));
 				}
 
@@ -302,7 +302,7 @@ public class TextFieldNode extends Node {
 
 			String textToAdd = Character.toString(c);
 			if (key == Key.V && Key.LEFT_CONTROL.isDown()) {
-				textToAdd = BridgeHandler.getWindow().getClipboard();
+				textToAdd = BridgeHandler.WINDOW.get().getClipboard();
 			}
 
 			final char[] achar = textToAdd.toCharArray();

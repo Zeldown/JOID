@@ -80,7 +80,7 @@ public final class DrawShape {
 	}
 
 	public void drawLine(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.lineSmooth(true);
 		this.drawShape(DrawMode.LINE_STRIP, color, points);
 		render.lineSmooth(false);
@@ -104,7 +104,7 @@ public final class DrawShape {
 			return;
 		}
 
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.lineWidth(stroke);
 		render.lineSmooth(true);
 		this.drawShape(DrawMode.LINES, color, dashes.toArray(new Vector2d[0]));
@@ -113,7 +113,7 @@ public final class DrawShape {
 	}
 
 	public void drawLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d @NonNull... points) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.lineWidth(stroke);
 		this.drawLine(color, points);
 		render.lineWidth(1F);
@@ -130,7 +130,7 @@ public final class DrawShape {
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.lineWidth(stroke);
 		this.drawCurvedLine(color, start, end, control);
 		render.lineWidth(1F);
@@ -147,7 +147,7 @@ public final class DrawShape {
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.lineWidth(stroke);
 		this.drawCurvedLine(color, start, startControl, end, endControl);
 		render.lineWidth(1F);
@@ -166,7 +166,7 @@ public final class DrawShape {
 			maxY = Math.max(maxY, point.y);
 		}
 
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final Tessellator tessellator = Tessellator.inst();
 		render.pushMatrix();
 		render.blend(BlendState.NORMAL);
@@ -183,7 +183,7 @@ public final class DrawShape {
 	}
 
 	public void drawRawRect(final double x, final double y, final double width, final double height) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final Tessellator tessellator = Tessellator.inst();
 		render.pushMatrix();
 		render.blend(BlendState.NORMAL);

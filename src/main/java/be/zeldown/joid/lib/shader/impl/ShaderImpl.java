@@ -15,7 +15,7 @@ public abstract class ShaderImpl {
 
 	protected void load(final @NonNull InputStream vertexShader, final @NonNull InputStream fragmentShader) {
 		try {
-			this.shader = BridgeHandler.getRender().createShader(vertexShader, fragmentShader, BlendState.NORMAL);
+			this.shader = BridgeHandler.RENDER.get().createShader(vertexShader, fragmentShader, BlendState.NORMAL);
 		} catch (final Exception e) {
 			System.err.println("Erreur lors du chargement du shader " + vertexShader + "/" + fragmentShader + ": " + e.getMessage());
 			e.printStackTrace();

@@ -61,7 +61,7 @@ public final class DrawResource {
 	}
 
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushMatrix();
 		render.blend(BlendState.NORMAL);
 		resource.bind(TextureWrap.CLAMP_TO_BORDER, () -> {

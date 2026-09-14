@@ -21,7 +21,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void load() {
-		final IWindowBridge window = BridgeHandler.getWindow();
+		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		final double width = window.getWidth();
 		final double height = window.getHeight();
 		this.uiList.forEach(ui -> ui.load(width, height));
@@ -100,8 +100,8 @@ public abstract class UIBridge implements IUIBridge {
 				return;
 			}
 
-			final IWindowBridge window = BridgeHandler.getWindow();
-			final IRenderBridge render = BridgeHandler.getRender();
+			final IWindowBridge window = BridgeHandler.WINDOW.get();
+			final IRenderBridge render = BridgeHandler.RENDER.get();
 			final Iterator<UI> iterator = this.uiList.iterator();
 
 			double renderPipeline = 0D;

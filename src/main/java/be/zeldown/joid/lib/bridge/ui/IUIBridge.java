@@ -2,12 +2,12 @@ package be.zeldown.joid.lib.bridge.ui;
 
 import java.util.List;
 
+import be.zeldown.joid.lib.bridge.IBridge;
 import be.zeldown.joid.lib.ui.core.UI;
-import be.zeldown.joid.lib.utils.list.IndexedElement;
 import be.zeldown.joid.lib.utils.list.IndexedList;
 import lombok.NonNull;
 
-public interface IUIBridge extends IndexedElement {
+public interface IUIBridge extends IBridge {
 
 	void open(final @NonNull UI ui);
 	void close(final @NonNull UI ui);

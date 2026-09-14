@@ -22,7 +22,7 @@ public final class DrawModel {
 	}
 
 	public void drawModel(final double x, final double y, final double sizeX, final double sizeY, final double sizeZ, final @NonNull IDrawableModel model) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushMatrix();
 		render.translate(x, y, 0D);
 		render.scale(sizeX, sizeY, sizeZ);

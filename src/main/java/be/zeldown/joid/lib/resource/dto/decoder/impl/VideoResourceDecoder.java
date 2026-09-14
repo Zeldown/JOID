@@ -91,7 +91,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		this.textures = new ITexture[] {render.createTexture(), render.createTexture()};
 		resource.texture(this.textures[0]);
 		this.textures[0].allocate(1, 1).upload(new int[] {0}, 1, 1);

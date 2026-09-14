@@ -57,7 +57,7 @@ public class ModelNode extends Node {
 		final double drawY = super.getY() + super.getHeight() / 2D;
 		final double drawZ = modelDepth / 2D * sizeZ;
 
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushMatrix();
 		render.translate(drawX, drawY, drawZ);
 		render.rotate(this.rotationYaw, 0D, 1D, 0D);

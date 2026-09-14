@@ -1,9 +1,10 @@
 package be.zeldown.joid.lib.bridge.window;
 
+import be.zeldown.joid.lib.bridge.IBridge;
 import be.zeldown.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
-public interface IWindowBridge {
+public interface IWindowBridge extends IBridge {
 
 	public int getWidth();
 	public int getHeight();

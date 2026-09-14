@@ -25,16 +25,16 @@ public class FrameBuffer {
 	}
 
 	public static @NonNull FrameBuffer create(final int width, final int height, final @NonNull TextureFilter filter) {
-		return new FrameBuffer(BridgeHandler.getRender().createFrameBuffer(width, height, filter), filter);
+		return new FrameBuffer(BridgeHandler.RENDER.get().createFrameBuffer(width, height, filter), filter);
 	}
 
 	public @NonNull FrameBuffer bind() {
-		BridgeHandler.getRender().frameBuffer(this.handle);
+		BridgeHandler.RENDER.get().frameBuffer(this.handle);
 		return this;
 	}
 
 	public @NonNull FrameBuffer unbind() {
-		BridgeHandler.getRender().frameBuffer(null);
+		BridgeHandler.RENDER.get().frameBuffer(null);
 		return this;
 	}
 
@@ -52,7 +52,7 @@ public class FrameBuffer {
 			throw new RuntimeException("You have to fill the framebuffer before drawing it.");
 		}
 
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.blend(BlendState.NORMAL);
 		render.texture(this.handle.getTexture(), this.filter, TextureWrap.CLAMP_TO_BORDER);
 

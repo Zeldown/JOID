@@ -45,7 +45,7 @@ public class TransformNodeEffect<T extends Node> extends NodeEffect<T> {
 	/* [ Internal Section ] */
 	@Override
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
-		BridgeHandler.getRender().pushMatrix();
+		BridgeHandler.RENDER.get().pushMatrix();
 		for (final TransformOperation operation : this.transformationSupplier.get().getOperations()) {
 			operation.transform();
 		}
@@ -53,7 +53,7 @@ public class TransformNodeEffect<T extends Node> extends NodeEffect<T> {
 
 	@Override
 	public void post(final @NonNull T node, final double mouseX, final double mouseY) {
-		BridgeHandler.getRender().popMatrix();
+		BridgeHandler.RENDER.get().popMatrix();
 	}
 
 	/* [ Setter Section ] */

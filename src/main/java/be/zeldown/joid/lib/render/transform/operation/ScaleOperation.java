@@ -20,7 +20,7 @@ public class ScaleOperation implements TransformOperation {
 		final double pivotX = this.pivot.getX();
 		final double pivotY = this.pivot.getY();
 		final double pivotZ = this.pivot.getZ();
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.translate(pivotX, pivotY, pivotZ);
 		render.scale(x, y, z);
 		render.translate(-pivotX, -pivotY, -pivotZ);
@@ -34,7 +34,7 @@ public class ScaleOperation implements TransformOperation {
 		final double pivotX = this.pivot.getX();
 		final double pivotY = this.pivot.getY();
 		final double pivotZ = this.pivot.getZ();
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.translate(pivotX, pivotY, pivotZ);
 		render.scale(1 / x, 1 / y, 1 / z);
 		render.translate(-pivotX, -pivotY, -pivotZ);

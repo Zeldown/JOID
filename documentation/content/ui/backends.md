@@ -9,7 +9,16 @@ JOID's core is engine-agnostic. Nodes, effects, the shader pipeline, fonts, reso
 | `IRenderBridge` | Matrix stacks, render state, textures, framebuffers, shaders, draw calls. |
 | `IAudioBridge` | Streaming audio sources used by the video player. |
 
-`BridgeHandler.getWindow()`, `getRender()` and `getAudio()` throw an `IllegalStateException` with an explicit message when the matching bridge was never registered.
+Every bridge implements `IBridge`, and `BridgeHandler` exposes one `BridgeRegistry` per bridge type: `UI`, `WINDOW`, `RENDER` and `AUDIO`. A registry keeps every registered bridge ordered by `getIndex()` — `0` by default, the latest registration wins on ties.
+
+| Method | Result |
+|---|---|
+| `register(bridge)` | Adds the bridge to the registry. |
+| `get()` | The bridge with the highest priority. Throws an `IllegalStateException` with an explicit message when none was registered. |
+| `find(filter)` | The highest-priority bridge matching the predicate, or `null`. |
+| `getBridge(MyBridge.class)` | The highest-priority bridge of that class, or `null`. |
+
+`BridgeHandler.UI` is a `UIBridgeRegistry`: it adds `get(ui)` and `get(MyUI.class)`, which return the bridge able to handle the `UI`.
 
 ## Available backends
 
@@ -28,7 +37,7 @@ Register once the `Display` exists, then register your `IUIBridge`:
 ```java
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 LWJGL2Backend.register();
-BridgeHandler.register(myBridge);
+BridgeHandler.UI.register(myBridge);
 JOID.inst().load();
 ```
 
@@ -61,7 +70,7 @@ GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
 final long window = GLFW.glfwCreateWindow(1920, 1080, "My app", 0L, 0L);
 VulkanBackend.register(window);
 
-final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.getRender();
+final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.RENDER.get();
 while (!GLFW.glfwWindowShouldClose(window)) {
     GLFW.glfwPollEvents();
     bridge.update();

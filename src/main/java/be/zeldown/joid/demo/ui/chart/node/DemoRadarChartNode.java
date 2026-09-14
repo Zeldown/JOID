@@ -40,7 +40,7 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 
 		DrawUtils.SHAPE.drawPolygon(new Color(89, 34, 30), points);
 
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		render.lineSmooth(true);
 		render.lineWidth(6F);

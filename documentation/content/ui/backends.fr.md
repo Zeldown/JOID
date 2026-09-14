@@ -9,7 +9,16 @@ Le cœur de JOID est agnostique au moteur. Les nœuds, les effets, le pipeline d
 | `IRenderBridge` | Piles de matrices, état de rendu, textures, framebuffers, shaders, appels de dessin. |
 | `IAudioBridge` | Sources audio en streaming utilisées par le lecteur vidéo. |
 
-`BridgeHandler.getWindow()`, `getRender()` et `getAudio()` lèvent une `IllegalStateException` avec un message explicite si le bridge correspondant n'a jamais été enregistré.
+Tous les bridges implémentent `IBridge`, et `BridgeHandler` expose un `BridgeRegistry` par type de bridge : `UI`, `WINDOW`, `RENDER` et `AUDIO`. Un registre garde tous les bridges enregistrés triés par `getIndex()` — `0` par défaut, le dernier enregistré l'emporte à égalité.
+
+| Méthode | Résultat |
+|---|---|
+| `register(bridge)` | Ajoute le bridge au registre. |
+| `get()` | Le bridge le plus prioritaire. Lève une `IllegalStateException` avec un message explicite si aucun n'a été enregistré. |
+| `find(filter)` | Le bridge le plus prioritaire qui correspond au prédicat, ou `null`. |
+| `getBridge(MyBridge.class)` | Le bridge le plus prioritaire de cette classe, ou `null`. |
+
+`BridgeHandler.UI` est un `UIBridgeRegistry` : il ajoute `get(ui)` et `get(MyUI.class)`, qui retournent le bridge capable de gérer l'`UI`.
 
 ## Backends disponibles
 
@@ -28,7 +37,7 @@ Enregistrez le backend une fois le `Display` créé, puis enregistrez votre `IUI
 ```java
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 LWJGL2Backend.register();
-BridgeHandler.register(myBridge);
+BridgeHandler.UI.register(myBridge);
 JOID.inst().load();
 ```
 
@@ -61,7 +70,7 @@ GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
 final long window = GLFW.glfwCreateWindow(1920, 1080, "My app", 0L, 0L);
 VulkanBackend.register(window);
 
-final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.getRender();
+final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.RENDER.get();
 while (!GLFW.glfwWindowShouldClose(window)) {
     GLFW.glfwPollEvents();
     bridge.update();

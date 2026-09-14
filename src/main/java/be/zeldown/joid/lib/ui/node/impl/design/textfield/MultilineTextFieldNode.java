@@ -379,9 +379,9 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				if (this.selectionStart < this.cursorPos) {
-					BridgeHandler.getWindow().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
+					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
 				} else {
-					BridgeHandler.getWindow().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
+					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
 				}
 
 				return;
@@ -393,11 +393,11 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				if (this.selectionStart < this.cursorPos) {
-					BridgeHandler.getWindow().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
+					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
 					this.setText(this.text.substring(0, this.selectionStart) + this.text.substring(this.cursorPos));
 					this.cursorPos -= this.cursorPos - this.selectionStart;
 				} else {
-					BridgeHandler.getWindow().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
+					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
 					this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.selectionStart));
 				}
 
@@ -407,7 +407,7 @@ public class MultilineTextFieldNode extends Node {
 
 			String textToAdd = key == Key.ENTER || key == Key.NUMPAD_ENTER ? "\n" : Character.toString(c);
 			if (key == Key.V && Key.LEFT_CONTROL.isDown()) {
-				textToAdd = BridgeHandler.getWindow().getClipboard();
+				textToAdd = BridgeHandler.WINDOW.get().getClipboard();
 			}
 
 			textToAdd = textToAdd.replace("\r", "\n").replace(System.lineSeparator(), "\n");

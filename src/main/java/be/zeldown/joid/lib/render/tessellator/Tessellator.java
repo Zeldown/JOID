@@ -94,7 +94,7 @@ public final class Tessellator {
 			Tessellator.byteBuffer.limit(count * VertexBuffer.STRIDE);
 
 			final DrawMode mode = this.drawMode == DrawMode.LINES || this.drawMode == DrawMode.LINE_STRIP || this.drawMode == DrawMode.LINE_LOOP ? DrawMode.LINES : DrawMode.TRIANGLES;
-			BridgeHandler.getRender().draw(mode, VertexBuffer.create(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
+			BridgeHandler.RENDER.get().draw(mode, VertexBuffer.create(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
 		}
 
 		if (this.rawBufferSize > 0x20000 && this.rawBufferIndex < this.rawBufferSize << 3) {

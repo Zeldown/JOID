@@ -49,7 +49,7 @@ public final class VideoAudioPlayer {
 	public void play() {
 		if (!this.initialized) {
 			try {
-				this.source = BridgeHandler.getAudio().createSource(this.sampleRate, this.channels);
+				this.source = BridgeHandler.AUDIO.get().createSource(this.sampleRate, this.channels);
 				this.initialized = true;
 			} catch (final Exception e) {
 				e.printStackTrace();

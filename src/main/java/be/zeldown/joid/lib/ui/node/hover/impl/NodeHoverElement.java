@@ -16,7 +16,7 @@ public class NodeHoverElement extends CustomHoverElement {
 					node.load(parentNode.getUi());
 				}
 
-				BridgeHandler.getRender().translate(-node.getX(), -node.getY(), 0);
+				BridgeHandler.RENDER.get().translate(-node.getX(), -node.getY(), 0);
 				node.render(mouseX, mouseY);
 			}
 

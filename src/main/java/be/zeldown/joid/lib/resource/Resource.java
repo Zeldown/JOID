@@ -180,11 +180,11 @@ public final class Resource {
 
 		final ITexture texture = this.getTexture();
 		if (texture == null) {
-			BridgeHandler.getRender().resetTexture();
+			BridgeHandler.RENDER.get().resetTexture();
 			return;
 		}
 
-		BridgeHandler.getRender().texture(texture, this.properties.getInterpolation(), wrap);
+		BridgeHandler.RENDER.get().texture(texture, this.properties.getInterpolation(), wrap);
 	}
 
 	public final void prepareBind() {
@@ -198,7 +198,7 @@ public final class Resource {
 	}
 
 	public final void unbind() {
-		BridgeHandler.getRender().resetTexture();
+		BridgeHandler.RENDER.get().resetTexture();
 	}
 
 	public final void clear() {

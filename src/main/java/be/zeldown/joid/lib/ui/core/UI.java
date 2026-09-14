@@ -470,7 +470,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void draw(final double mouseX, final double mouseY) {
 		final long start = System.nanoTime();
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
@@ -722,7 +722,7 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
 		final int stencilValue = this.stencilStack.size() + 1;
 		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (stencilValue == 1) {
 			render.clearStencil();
 			render.stencilTest(true);
@@ -756,7 +756,7 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
 		final int stencilValue = this.stencilStack.size() + 1;
 		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (stencilValue == 1) {
 			render.clearStencil();
 			render.stencilTest(true);
@@ -778,7 +778,7 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void stopMask() {
 		this.stencilStack.pop();
 		final int stencilValue = this.stencilStack.size();
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (stencilValue == 0) {
 			render.stencilTest(false);
 			render.clearStencil();
@@ -870,7 +870,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	/* [ Getter Section ] */
 	public final IUIBridge getBridge() {
-		return BridgeHandler.get(this);
+		return BridgeHandler.UI.get(this);
 	}
 
 	/* [ Setter Section ] */

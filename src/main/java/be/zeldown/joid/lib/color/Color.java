@@ -188,7 +188,7 @@ public final class Color {
 
 	public void bind() {
 		this.update();
-		BridgeHandler.getRender().color(this.r, this.g, this.b, this.a);
+		BridgeHandler.RENDER.get().color(this.r, this.g, this.b, this.a);
 	}
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
@@ -197,7 +197,7 @@ public final class Color {
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas, final boolean hasTexture) {
 		if (this.isGradient()) {
-			final IRenderBridge render = BridgeHandler.getRender();
+			final IRenderBridge render = BridgeHandler.RENDER.get();
 			final IShader previousShader = render.getShader();
 			this.gradient.use(hasTexture, runnable, canvas);
 			render.shader(previousShader);
@@ -438,7 +438,7 @@ public final class Color {
 	}
 
 	public static void reset() {
-		BridgeHandler.getRender().color(1F, 1F, 1F, 1F);
+		BridgeHandler.RENDER.get().color(1F, 1F, 1F, 1F);
 	}
 
 	public static @NonNull Color transition(final @NonNull Color color1, final @NonNull Color color2, final float progress) {

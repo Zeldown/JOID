@@ -269,7 +269,7 @@ public abstract class Node implements INode {
 
 	public final void render(final double mouseX, final double mouseY) {
 		final long now = System.nanoTime();
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushMatrix();
 		Color.reset();
 		if (this.parent != null) {
@@ -401,7 +401,7 @@ public abstract class Node implements INode {
 				}
 			}
 
-			if (this.dragging && BridgeHandler.getWindow().isMouseGrabbed()) {
+			if (this.dragging && BridgeHandler.WINDOW.get().isMouseGrabbed()) {
 				this.stopDragging();
 			}
 

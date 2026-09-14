@@ -80,7 +80,7 @@ public final class JOID {
 
 	@SuppressWarnings("unchecked")
 	public static <T extends UI> T getUI(final @NonNull Class<T> uiClass) {
-		final IUIBridge bridge = BridgeHandler.get(uiClass);
+		final IUIBridge bridge = BridgeHandler.UI.get(uiClass);
 		if (bridge != null) {
 			for (final UI ui : bridge.getUiList()) {
 				if (uiClass.isInstance(ui)) {
@@ -93,7 +93,7 @@ public final class JOID {
 	}
 
 	public static IUIBridge open(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.get(ui);
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
 		if (bridge == null) {
 			return null;
 		}
@@ -107,7 +107,7 @@ public final class JOID {
 			return JOID.open(ui);
 		}
 
-		final IUIBridge bridge = BridgeHandler.get(ui);
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
 		if (bridge == null) {
 			return null;
 		}
@@ -122,7 +122,7 @@ public final class JOID {
 	}
 
 	public static void close(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.get(ui);
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
 		if (bridge != null && ui.onClose()) {
 			bridge.close(ui);
 		}
@@ -134,7 +134,7 @@ public final class JOID {
 			return;
 		}
 
-		final IUIBridge bridge = BridgeHandler.get(ui);
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
 		ui.properlyClose();
 		bridge.close(ui);
 	}

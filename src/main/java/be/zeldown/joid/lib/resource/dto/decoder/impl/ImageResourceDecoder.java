@@ -40,7 +40,7 @@ public class ImageResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
-		resource.texture(BridgeHandler.getRender().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
+		resource.texture(BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
 	}
 
 	@Override

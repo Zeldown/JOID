@@ -9,11 +9,11 @@ Chaque branche de backend (`impl/lwjgl-2`, `impl/lwjgl-3`, `impl/vulkan`) fourni
 - Enregistre les bridges de fenêtre, de rendu et d'audio de son backend (voir [Backends](backends.md)).
 - Écoute souris et clavier.
 - Boucle `update` → `render` → présentation.
-- S'enregistre comme `UIBridge` quand vous appelez `BridgeHandler.register(window)`.
+- S'enregistre comme `UIBridge` quand vous appelez `BridgeHandler.UI.register(window)`.
 
 ```java
 final DemoWindow window = new DemoWindow();
-BridgeHandler.register(window);
+BridgeHandler.UI.register(window);
 JOID.inst().setDevMode(true).setDemoMode(true).load();
 window.run();
 ```
@@ -74,7 +74,7 @@ public class MyBridge extends UIBridge {
 Enregistrez-le une fois au démarrage :
 
 ```java
-BridgeHandler.register(new MyBridge());
+BridgeHandler.UI.register(new MyBridge());
 ```
 
 ## Câbler les entrées
@@ -98,12 +98,12 @@ Chaque `DemoWindow` de backend contient une boucle complète pour sa bibliothèq
 
 ## Plusieurs bridges
 
-Une vraie app a souvent plusieurs bridges — par exemple un pour les UIs in-world, un pour le menu principal. `BridgeHandler` route chaque `UI` vers le bridge approprié selon `canHandle(Class<? extends UI>)`.
+Une vraie app a souvent plusieurs bridges — par exemple un pour les UIs in-world, un pour le menu principal. `BridgeHandler.UI` route chaque `UI` vers le bridge approprié selon `canHandle(Class<? extends UI>)`. Quand plusieurs bridges peuvent gérer la même `UI`, celui qui a le plus grand `getIndex()` l'emporte, puis le dernier enregistré.
 
 ```java
-BridgeHandler.register(new MainMenuBridge());
-BridgeHandler.register(new HUDBridge());
-BridgeHandler.register(new WorldUIBridge());
+BridgeHandler.UI.register(new MainMenuBridge());
+BridgeHandler.UI.register(new HUDBridge());
+BridgeHandler.UI.register(new WorldUIBridge());
 
 // JOID.open() choisit automatiquement le bon bridge selon la classe d'UI.
 JOID.open(new SettingsUI());  // → MainMenuBridge (car il canHandle SettingsUI)

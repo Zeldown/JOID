@@ -39,7 +39,7 @@ public final class ShaderPipeline {
 
 			final boolean needsFBO = passes.size() > 1 || ShaderPipeline.pipelineDepth > 1 || passes.stream().anyMatch(p -> p.expansion() > 0F || !p.supportsDirectBind());
 			if (!needsFBO) {
-				final IRenderBridge render = BridgeHandler.getRender();
+				final IRenderBridge render = BridgeHandler.RENDER.get();
 				final IShader previousShader = render.getShader();
 				passes.get(0).bindDirect(node);
 				baseDraw.run();
@@ -74,7 +74,7 @@ public final class ShaderPipeline {
 		try {
 			passes.sort(Comparator.comparingInt(ShaderPass::priority));
 			if (passes.size() == 1 && ShaderPipeline.pipelineDepth <= 1 && passes.get(0).expansion() == 0F && passes.get(0).supportsDirectBind()) {
-				final IRenderBridge render = BridgeHandler.getRender();
+				final IRenderBridge render = BridgeHandler.RENDER.get();
 				final IShader previousShader = render.getShader();
 				passes.get(0).bindDirect(null);
 				baseDraw.run();
@@ -119,7 +119,7 @@ public final class ShaderPipeline {
 		final FrameBuffer fboA = fbos[0];
 		final FrameBuffer fboB = fbos[1];
 
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 
 		/* [ Pass 0 : Base ] */
@@ -178,7 +178,7 @@ public final class ShaderPipeline {
 	}
 
 	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final double x, final double y, final double w, final double h) {
-		final IRenderBridge render = BridgeHandler.getRender();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.blend(BlendState.NORMAL);
 		render.texture(frameBuffer.getHandle().getTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
 		render.color(1F, 1F, 1F, 1F);

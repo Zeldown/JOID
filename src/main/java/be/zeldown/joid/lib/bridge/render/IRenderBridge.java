@@ -2,6 +2,7 @@ package be.zeldown.joid.lib.bridge.render;
 
 import java.io.InputStream;
 
+import be.zeldown.joid.lib.bridge.IBridge;
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
@@ -14,7 +15,7 @@ import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.NonNull;
 
-public interface IRenderBridge {
+public interface IRenderBridge extends IBridge {
 
 	public void pushMatrix();
 	public void popMatrix();

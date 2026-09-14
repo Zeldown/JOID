@@ -71,7 +71,7 @@ public class CustomHoverElement implements HoverElement {
 			final double absoluteY = ui.getAbsoluteY(y);
 			final double absoluteWidth = ui.getAbsoluteWidth(elementWidth);
 
-			final double screenWidth = BridgeHandler.getWindow().getWidth();
+			final double screenWidth = BridgeHandler.WINDOW.get().getWidth();
 
 			if (absoluteX + absoluteWidth > screenWidth) {
 				x -= absoluteX + absoluteWidth - screenWidth;
@@ -82,9 +82,9 @@ public class CustomHoverElement implements HoverElement {
 			}
 		}
 
-		BridgeHandler.getRender().translate(x, y, 0);
+		BridgeHandler.RENDER.get().translate(x, y, 0);
 		this.element.render(node, mouseX, mouseY);
-		BridgeHandler.getRender().translate(-x, -y, 0);
+		BridgeHandler.RENDER.get().translate(-x, -y, 0);
 	}
 
 	public enum HoverElementPosition {

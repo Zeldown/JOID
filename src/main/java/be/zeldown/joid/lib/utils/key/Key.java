@@ -134,7 +134,7 @@ public enum Key {
 	UNKNOWN;
 
 	public boolean isDown() {
-		return BridgeHandler.getWindow().isKeyDown(this);
+		return BridgeHandler.WINDOW.get().isKeyDown(this);
 	}
 
 }

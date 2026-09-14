@@ -9,7 +9,7 @@ Chaque branche de backend embarque une `DemoWindow` prête à l'emploi qui ouvre
 ```java
 public static void main(final String[] args) {
     final DemoWindow window = new DemoWindow();
-    BridgeHandler.register(window);
+    BridgeHandler.UI.register(window);
     JOID.inst().setDevMode(true).setDemoMode(true).load();
     window.run();
 }
