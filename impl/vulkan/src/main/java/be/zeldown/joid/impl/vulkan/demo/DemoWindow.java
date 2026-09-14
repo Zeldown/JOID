@@ -3,13 +3,12 @@ package be.zeldown.joid.impl.vulkan.demo;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.Configuration;
 
-import be.zeldown.joid.impl.glfw.GLFWDemoWindow;
-import be.zeldown.joid.impl.vulkan.VulkanBackend;
-import be.zeldown.joid.impl.vulkan.render.VulkanRenderBridge;
+import be.zeldown.joid.impl.vulkan.Backend;
+import be.zeldown.joid.impl.vulkan.render.RenderBridge;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 
-public class DemoWindow extends GLFWDemoWindow {
+public class DemoWindow extends be.zeldown.joid.impl.glfw.DemoWindow {
 
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);
@@ -26,17 +25,17 @@ public class DemoWindow extends GLFWDemoWindow {
 
 	@Override
 	protected void registerBackend(final long window) {
-		VulkanBackend.register(window);
+		Backend.register(window);
 	}
 
 	@Override
 	protected void beginFrame() {
-		((VulkanRenderBridge) BridgeHandler.RENDER.get()).beginFrame();
+		((RenderBridge) BridgeHandler.RENDER.get()).beginFrame();
 	}
 
 	@Override
 	protected void endFrame() {
-		final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.RENDER.get();
+		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
 		render.endFrame();
 		render.present();
 	}

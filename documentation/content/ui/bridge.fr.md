@@ -18,7 +18,7 @@ JOID.inst().setDevMode(true).setDemoMode(true).load();
 window.run();
 ```
 
-Lancez-la avec `./gradlew :lwjgl3:runDemo` (ou `:lwjgl2`, `:vulkan`). Avec LWJGL 2, appelez `LWJGL2Backend.register()` avant de créer la fenêtre.
+Lancez-la avec `./gradlew :lwjgl3:runDemo` (ou `:lwjgl2`, `:vulkan`). Avec LWJGL 2, appelez `be.zeldown.joid.impl.lwjgl2.Backend.register()` avant de créer la fenêtre.
 
 ## Écrire votre propre bridge
 
@@ -92,7 +92,7 @@ bridge.update();
 bridge.draw();
 ```
 
-Chaque `DemoWindow` de backend contient une boucle complète pour sa bibliothèque de fenêtrage — polling `Mouse` / `Keyboard` sur LWJGL 2, callbacks GLFW dans la `GLFWDemoWindow` partagée par LWJGL 3 et Vulkan.
+Chaque `DemoWindow` de backend contient une boucle complète pour sa bibliothèque de fenêtrage — polling `Mouse` / `Keyboard` sur LWJGL 2, callbacks GLFW dans la `DemoWindow` du module `glfw`, partagée par LWJGL 3 et Vulkan.
 
 `UIBridge` gère déjà le tracking du drag et ESC-to-close ; il suffit de lui fournir les événements.
 

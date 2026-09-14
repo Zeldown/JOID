@@ -26,17 +26,21 @@ Le dépôt est un build Gradle multi-modules. `core` contient la bibliothèque n
 
 | Module | Stack | Enregistrement | Shaders générés |
 |---|---|---|---|
-| `lwjgl2` | LWJGL 2.9.1 — pipeline fixe OpenGL, OpenAL | `LWJGL2Backend.register()` | GLSL 120 |
-| `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` | GLSL 330 |
-| `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` | GLSL 450 Vulkan |
+| `lwjgl2` | LWJGL 2.9.1 — pipeline fixe OpenGL, OpenAL | `Backend.register()` | GLSL 120 |
+| `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `Backend.register(window)` | GLSL 330 |
+| `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `Backend.register(window)` | GLSL 450 Vulkan |
+
+Les classes d'implémentation sont nommées par rôle — `Backend`, `RenderBridge`, `Shader`, `Texture`… — et leur package, `be.zeldown.joid.impl.<module>`, indique le moteur auquel elles appartiennent.
 
 ### LWJGL 2
 
 Enregistrez le backend une fois le `Display` créé, puis enregistrez votre `IUIBridge` :
 
 ```java
+import be.zeldown.joid.impl.lwjgl2.Backend;
+
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
-LWJGL2Backend.register();
+Backend.register();
 BridgeHandler.UI.register(myBridge);
 JOID.inst().load();
 ```
@@ -48,6 +52,8 @@ Le backend LWJGL 2 traduit chaque appel nativement vers le pipeline fixe et rest
 Créez une fenêtre GLFW avec un contexte OpenGL 3.3 core et un stencil buffer, rendez-la courante, puis enregistrez :
 
 ```java
+import be.zeldown.joid.impl.lwjgl3.Backend;
+
 GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
 GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
@@ -55,7 +61,7 @@ GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 8);
 final long window = GLFW.glfwCreateWindow(1920, 1080, "My app", 0L, 0L);
 GLFW.glfwMakeContextCurrent(window);
 GL.createCapabilities();
-LWJGL3Backend.register(window);
+Backend.register(window);
 ```
 
 Les natives sont résolues depuis Maven pour l'OS courant par le `build.gradle` du module.
@@ -65,12 +71,15 @@ Les natives sont résolues depuis Maven pour l'OS courant par le `build.gradle` 
 Vulkan possède la swapchain, l'hôte pilote donc la frame explicitement :
 
 ```java
+import be.zeldown.joid.impl.vulkan.Backend;
+import be.zeldown.joid.impl.vulkan.render.RenderBridge;
+
 Configuration.STACK_SIZE.set(1024);
 GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
 final long window = GLFW.glfwCreateWindow(1920, 1080, "My app", 0L, 0L);
-VulkanBackend.register(window);
+Backend.register(window);
 
-final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.RENDER.get();
+final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
 while (!GLFW.glfwWindowShouldClose(window)) {
     GLFW.glfwPollEvents();
     bridge.update();

@@ -4,12 +4,11 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
-import be.zeldown.joid.impl.glfw.GLFWDemoWindow;
-import be.zeldown.joid.impl.lwjgl3.LWJGL3Backend;
+import be.zeldown.joid.impl.lwjgl3.Backend;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 
-public class DemoWindow extends GLFWDemoWindow {
+public class DemoWindow extends be.zeldown.joid.impl.glfw.DemoWindow {
 
 	public static void main(final String[] args) {
 		final DemoWindow window = new DemoWindow();
@@ -32,7 +31,7 @@ public class DemoWindow extends GLFWDemoWindow {
 	protected void registerBackend(final long window) {
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
-		LWJGL3Backend.register(window);
+		Backend.register(window);
 	}
 
 	@Override

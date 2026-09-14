@@ -26,17 +26,21 @@ The repository is a multi-module Gradle build. `core` contains the neutral libra
 
 | Module | Stack | Register | Generated shaders |
 |---|---|---|---|
-| `lwjgl2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `LWJGL2Backend.register()` | GLSL 120 |
-| `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` | GLSL 330 |
-| `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` | Vulkan GLSL 450 |
+| `lwjgl2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `Backend.register()` | GLSL 120 |
+| `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `Backend.register(window)` | GLSL 330 |
+| `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `Backend.register(window)` | Vulkan GLSL 450 |
+
+Implementation classes are named by role — `Backend`, `RenderBridge`, `Shader`, `Texture`… — and their package, `be.zeldown.joid.impl.<module>`, tells which engine they belong to.
 
 ### LWJGL 2
 
 Register once the `Display` exists, then register your `IUIBridge`:
 
 ```java
+import be.zeldown.joid.impl.lwjgl2.Backend;
+
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
-LWJGL2Backend.register();
+Backend.register();
 BridgeHandler.UI.register(myBridge);
 JOID.inst().load();
 ```
@@ -48,6 +52,8 @@ The LWJGL 2 backend maps every call natively onto the fixed pipeline and restore
 Create a GLFW window with an OpenGL 3.3 core context and a stencil buffer, make it current, then register:
 
 ```java
+import be.zeldown.joid.impl.lwjgl3.Backend;
+
 GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
 GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
 GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
@@ -55,7 +61,7 @@ GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 8);
 final long window = GLFW.glfwCreateWindow(1920, 1080, "My app", 0L, 0L);
 GLFW.glfwMakeContextCurrent(window);
 GL.createCapabilities();
-LWJGL3Backend.register(window);
+Backend.register(window);
 ```
 
 Natives are resolved from Maven for the current OS by the module `build.gradle`.
@@ -65,12 +71,15 @@ Natives are resolved from Maven for the current OS by the module `build.gradle`.
 Vulkan owns the swapchain, so the host drives the frame explicitly:
 
 ```java
+import be.zeldown.joid.impl.vulkan.Backend;
+import be.zeldown.joid.impl.vulkan.render.RenderBridge;
+
 Configuration.STACK_SIZE.set(1024);
 GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
 final long window = GLFW.glfwCreateWindow(1920, 1080, "My app", 0L, 0L);
-VulkanBackend.register(window);
+Backend.register(window);
 
-final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.RENDER.get();
+final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
 while (!GLFW.glfwWindowShouldClose(window)) {
     GLFW.glfwPollEvents();
     bridge.update();

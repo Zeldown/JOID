@@ -11,8 +11,8 @@ import org.lwjgl.opengl.PixelFormat;
 
 import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.demo.ui.UIDemoChoice;
-import be.zeldown.joid.impl.lwjgl2.LWJGL2Backend;
-import be.zeldown.joid.impl.lwjgl2.window.LWJGL2WindowBridge;
+import be.zeldown.joid.impl.lwjgl2.Backend;
+import be.zeldown.joid.impl.lwjgl2.window.WindowBridge;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
@@ -41,7 +41,7 @@ public class DemoWindow extends UIBridge {
 	}
 
 	public static void main(final String[] args) throws LWJGLException {
-		LWJGL2Backend.register();
+		Backend.register();
 		final DemoWindow window = new DemoWindow();
 		BridgeHandler.UI.register(window);
 		JOID.inst().setDevMode(true).setDemoMode(true).load();
@@ -105,7 +105,7 @@ public class DemoWindow extends UIBridge {
 
 			while (Keyboard.next()) {
 				if (Keyboard.getEventKeyState()) {
-					super.keyTyped(Keyboard.getEventCharacter(), LWJGL2WindowBridge.getKey(Keyboard.getEventKey()));
+					super.keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()));
 				}
 			}
 
