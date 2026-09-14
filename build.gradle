@@ -23,7 +23,7 @@ allprojects {
     }
 
     group = "be.zeldown.joid"
-    version = "6.5.4"
+    version = "7.0.0"
 }
 
 ext {
