@@ -1,0 +1,22 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
+archivesBaseName = "joid-lwjgl3"
+
+dependencies {
+    compile project(':glfw')
+    compile project(':openal')
+
+    compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+}
+
+apply from: rootProject.file('gradle/backend.gradle')
+
+/* Demo */
+task runDemo(type: JavaExec) {
+    main = "be.zeldown.joid.impl.lwjgl3.demo.DemoWindow"
+    classpath = sourceSets.main.runtimeClasspath
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+}

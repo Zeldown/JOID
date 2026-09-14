@@ -1,0 +1,46 @@
+package be.zeldown.joid.impl.lwjgl3.demo;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.system.Platform;
+
+import be.zeldown.joid.impl.glfw.GLFWDemoWindow;
+import be.zeldown.joid.impl.lwjgl3.LWJGL3Backend;
+import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
+
+public class DemoWindow extends GLFWDemoWindow {
+
+	public static void main(final String[] args) {
+		final DemoWindow window = new DemoWindow();
+		BridgeHandler.UI.register(window);
+		JOID.inst().setDevMode(true).setDemoMode(true).load();
+		window.run();
+	}
+
+	@Override
+	protected void configureWindow() {
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, Platform.get() == Platform.MACOSX ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_DEPTH_BITS, 24);
+		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 8);
+	}
+
+	@Override
+	protected void registerBackend(final long window) {
+		GLFW.glfwMakeContextCurrent(window);
+		GL.createCapabilities();
+		LWJGL3Backend.register(window);
+	}
+
+	@Override
+	protected void beginFrame() {}
+
+	@Override
+	protected void endFrame() {
+		GLFW.glfwSwapBuffers(super.getWindow());
+	}
+
+}
