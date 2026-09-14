@@ -17,6 +17,10 @@ uniform vec2 u_GradientStartPos;
 uniform vec2 u_GradientEndPos;
 uniform vec4 u_GradientCanvas;
 
+vec2 snappedPosition() {
+    return floor(vPosition * 256.0 + 0.5) / 256.0;
+}
+
 vec4 computeBorderColor() {
     if (u_HasGradient == 0) {
         return u_BorderColor;
@@ -25,9 +29,9 @@ vec4 computeBorderColor() {
     vec2 normalizedPos;
     if (u_GradientCanvas.z > u_GradientCanvas.x && u_GradientCanvas.w > u_GradientCanvas.y) {
         vec2 rectSize = vec2(u_GradientCanvas.z - u_GradientCanvas.x, u_GradientCanvas.w - u_GradientCanvas.y);
-        normalizedPos = (vPosition - u_GradientCanvas.xy) / rectSize;
+        normalizedPos = (snappedPosition() - u_GradientCanvas.xy) / rectSize;
     } else {
-        normalizedPos = vPosition;
+        normalizedPos = snappedPosition();
     }
 
     vec2 direction = u_GradientEndPos - u_GradientStartPos;
@@ -44,8 +48,8 @@ void main() {
     vec4 original = texture(tex, vTexCoord);
 
     if (u_Fill == 0) {
-        bool outsideX = vPosition.x < u_Rect.x || vPosition.x > u_Rect.z;
-        bool outsideY = vPosition.y < u_Rect.y || vPosition.y > u_Rect.w;
+        bool outsideX = snappedPosition().x < u_Rect.x || snappedPosition().x > u_Rect.z;
+        bool outsideY = snappedPosition().y < u_Rect.y || snappedPosition().y > u_Rect.w;
         if (outsideX && outsideY) {
             fragColor = original;
             return;

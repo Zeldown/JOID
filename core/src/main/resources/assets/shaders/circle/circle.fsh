@@ -8,8 +8,12 @@ uniform int type;
 
 uniform sampler2D tex;
 
+vec2 snappedPosition() {
+    return floor(vPosition * 256.0 + 0.5) / 256.0;
+}
+
 void main() {
-    float dist = length(vPosition - center);
+    float dist = length(snappedPosition() - center);
 
     vec4 baseColor = texture(tex, vTexCoord) * vColor;
     if (type == 1) {

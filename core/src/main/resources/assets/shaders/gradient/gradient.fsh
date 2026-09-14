@@ -12,13 +12,17 @@ uniform int hasTexture;
 
 uniform vec4 canvas;
 
+vec2 snappedPosition() {
+    return floor(vPosition * 256.0 + 0.5) / 256.0;
+}
+
 void main() {
     vec2 normalizedPos;
     if (canvas.z > canvas.x && canvas.w > canvas.y) {
         vec2 rectSize = vec2(canvas.z - canvas.x, canvas.w - canvas.y);
-        normalizedPos = (vPosition - canvas.xy) / rectSize;
+        normalizedPos = (snappedPosition() - canvas.xy) / rectSize;
     } else {
-        normalizedPos = vPosition;
+        normalizedPos = snappedPosition();
     }
 
     vec2 direction = endPos - startPos;

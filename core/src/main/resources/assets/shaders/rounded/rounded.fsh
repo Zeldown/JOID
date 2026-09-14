@@ -8,9 +8,13 @@ uniform int u_Type;
 
 uniform sampler2D tex;
 
+vec2 snappedPosition() {
+    return floor(vPosition * 256.0 + 0.5) / 256.0;
+}
+
 void main() {
-    vec2 tl = u_InnerRect.xy - vPosition;
-    vec2 br = vPosition - u_InnerRect.zw;
+    vec2 tl = u_InnerRect.xy - snappedPosition();
+    vec2 br = snappedPosition() - u_InnerRect.zw;
     vec2 distances = max(br, tl);
 
     float distanceToCorner = length(max(vec2(0.0), distances)) - u_Radius;

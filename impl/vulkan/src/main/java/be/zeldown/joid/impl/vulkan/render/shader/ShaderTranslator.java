@@ -25,7 +25,7 @@ public final class ShaderTranslator {
 		if (vertexStage) {
 			for (final ShaderBuiltin builtin : source.getBuiltins()) {
 				if (builtin.getKind() == ShaderBuiltin.Kind.ATTRIBUTE) {
-					builder.append("layout(location = ").append(ShaderTranslator.getLocation(builtin)).append(") in ").append(builtin.getType()).append(' ').append(builtin.getIdentifier()).append(";\n");
+					builder.append("layout(location = ").append(ShaderTranslator.getLocation(builtin)).append(") in ").append(builtin.getType()).append(' ').append(builtin == ShaderBuiltin.COLOR ? "joid_Color" : builtin.getIdentifier()).append(";\n");
 				}
 			}
 		} else {
@@ -37,6 +37,10 @@ public final class ShaderTranslator {
 			if (builtin.getKind() == ShaderBuiltin.Kind.UNIFORM && (vertex.getBuiltins().contains(builtin) || fragment.getBuiltins().contains(builtin))) {
 				block.append('\t').append(builtin.getType()).append(' ').append(builtin.getIdentifier()).append(";\n");
 			}
+		}
+
+		if (vertex.getBuiltins().contains(ShaderBuiltin.COLOR)) {
+			block.append("\tvec4 joid_CurrentColor;\n\tint joid_VertexColor;\n");
 		}
 
 		final List<String> uniformNames = new ArrayList<>();
@@ -74,6 +78,10 @@ public final class ShaderTranslator {
 				varyingNames.add(varying.getName());
 			}
 			builder.append("layout(location = ").append(varyingNames.indexOf(varying.getName())).append(") ").append(varying.isFlat() ? "flat " : "").append(vertexStage ? "out " : "in ").append(varying.getDeclaration()).append(";\n");
+		}
+
+		if (vertexStage && source.getBuiltins().contains(ShaderBuiltin.COLOR)) {
+			builder.append("#define aColor (joid_VertexColor != 0 ? joid_Color : joid_CurrentColor)\n");
 		}
 
 		return builder.append("#line 1\n").append(source.getBody()).toString();

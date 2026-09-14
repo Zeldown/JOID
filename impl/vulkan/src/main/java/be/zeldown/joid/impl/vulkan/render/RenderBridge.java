@@ -233,8 +233,8 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			this.applyDynamicState(stack, state, target != null, topology);
-			final long vertexOffset = this.writeVertices(state, buffer);
-			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader);
+			final long vertexOffset = this.writeVertices(buffer);
+			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer.isColor());
 			final long descriptorSet = this.descriptorCache.get(shader, this.uniformStream.getBuffer().getBuffer(), this.getImages(state, shader));
 
 			VK10.vkCmdBindDescriptorSets(this.commandBuffer, VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, shader.getPipelineLayout(), 0, stack.longs(descriptorSet), dynamicOffsets);
@@ -368,31 +368,20 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		VK10.vkCmdSetStencilReference(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilReference());
 	}
 
-	private long writeVertices(final RenderState state, final VertexBuffer buffer) {
+	private long writeVertices(final VertexBuffer buffer) {
 		final int size = buffer.getCount() * VertexBuffer.STRIDE;
 		final long offset = this.vertexStream.allocate(size);
 		final long address = this.vertexStream.getBuffer().getAddress() + offset;
 		MemoryUtil.memCopy(MemoryUtil.memAddress(buffer.getBuffer()), address, size);
-		if (buffer.isTexture() && buffer.isColor() && buffer.isNormal()) {
+		if (buffer.isTexture() && buffer.isNormal()) {
 			return offset;
 		}
 
-		final byte red = RenderBridge.toByte(state.getRed());
-		final byte green = RenderBridge.toByte(state.getGreen());
-		final byte blue = RenderBridge.toByte(state.getBlue());
-		final byte alpha = RenderBridge.toByte(state.getAlpha());
 		for (int i = 0; i < buffer.getCount(); i++) {
 			final long vertex = address + (long) i * VertexBuffer.STRIDE;
 			if (!buffer.isTexture()) {
 				MemoryUtil.memPutFloat(vertex + VertexBuffer.TEXTURE_OFFSET, 0F);
 				MemoryUtil.memPutFloat(vertex + VertexBuffer.TEXTURE_OFFSET + 4, 0F);
-			}
-
-			if (!buffer.isColor()) {
-				MemoryUtil.memPutByte(vertex + VertexBuffer.COLOR_OFFSET, red);
-				MemoryUtil.memPutByte(vertex + VertexBuffer.COLOR_OFFSET + 1, green);
-				MemoryUtil.memPutByte(vertex + VertexBuffer.COLOR_OFFSET + 2, blue);
-				MemoryUtil.memPutByte(vertex + VertexBuffer.COLOR_OFFSET + 3, alpha);
 			}
 
 			if (!buffer.isNormal()) {
@@ -402,7 +391,7 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		return offset;
 	}
 
-	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final Shader shader) {
+	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final Shader shader, final boolean color) {
 		final UniformMember projection = shader.getMemberMap().get("uProjectionMatrix");
 		if (projection != null) {
 			final float[] matrix = super.getProjection().getMatrix().clone();
@@ -425,6 +414,13 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		final UniformMember lighting = shader.getMemberMap().get("uLighting");
 		if (lighting != null) {
 			lighting.putInt(state.isLighting() ? 1 : 0);
+		}
+
+		final UniformMember currentColor = shader.getMemberMap().get("joid_CurrentColor");
+		final UniformMember vertexColor = shader.getMemberMap().get("joid_VertexColor");
+		if (currentColor != null && vertexColor != null) {
+			currentColor.putFloats(state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
+			vertexColor.putInt(color ? 1 : 0);
 		}
 
 		final UniformMember alphaTest = shader.getMemberMap().get("joid_AlphaTest");
@@ -501,10 +497,6 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 			}
 		}
 		return samplers;
-	}
-
-	private static byte toByte(final float value) {
-		return (byte) Math.round(Math.max(0F, Math.min(1F, value)) * 255F);
 	}
 
 	private static int topology(final DrawMode mode) {

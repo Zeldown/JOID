@@ -7,6 +7,10 @@ uniform vec2 u_Direction;
 uniform float u_Radius;
 uniform vec2 u_TexelSize;
 
+vec2 snappedPosition() {
+    return floor(vPosition * 256.0 + 0.5) / 256.0;
+}
+
 void main() {
     vec4 color = vec4(0.0);
     float totalWeight = 0.0;
