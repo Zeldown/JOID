@@ -66,3 +66,10 @@ gradle.taskGraph.whenReady { graph ->
     test.inputs.property 'updateSnapshots', update
     test.systemProperty 'joid.snapshot.update', update
 }
+
+gradle.buildFinished {
+    def report = rootProject.file("build/snapshots/${project.name}/report.html")
+    if (test.state.failure != null && report.exists()) {
+        println "Snapshot report of ${project.name}: ${report.toPath().toUri().toASCIIString()}"
+    }
+}

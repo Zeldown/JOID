@@ -47,7 +47,7 @@ public final class SnapshotComparison {
 		SnapshotReport.write(report, "JOID cross-backend comparison", entries);
 		if (!failures.isEmpty()) {
 			failures.forEach(System.err::println);
-			System.err.println("Report: " + report);
+			System.err.println("Report: " + report.toPath().toUri().toASCIIString());
 			System.exit(1);
 		}
 	}

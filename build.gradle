@@ -60,6 +60,13 @@ task crossBackendTest(type: JavaExec) {
     args file('build/snapshots').absolutePath, 'lwjgl2', 'lwjgl3', 'vulkan'
 }
 
+gradle.buildFinished {
+    def report = file('build/snapshots/cross/report.html')
+    if (crossBackendTest.state.failure != null && report.exists()) {
+        println "Cross backend report: ${report.toPath().toUri().toASCIIString()}"
+    }
+}
+
 /* Scripts */
 task installLocalGitHook(type: Copy){
 	group = 'JOID'

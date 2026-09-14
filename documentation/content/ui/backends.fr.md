@@ -162,7 +162,7 @@ Les tests de snapshot nécessitent un GPU. Les hooks installés par `./gradlew i
 
 #### Rapport
 
-Chaque `report.html` liste les captures avec leur statut et leur nombre de pixels différents, et affiche la référence et le rendu de la capture sélectionnée selon huit modes : côte à côte, balayage, pelure d'oignon, clignotement, différence amplifiée, pixels surlignés, référence et rendu. La molette zoome autour du curseur jusqu'au pixel avec une grille, le glisser déplace la vue, et le survol d'un pixel affiche ses coordonnées, les deux couleurs et l'écart de chaque canal. `Next difference` regroupe les pixels différents en zones et zoome sur chacune, un pixel isolé est donc toujours retrouvé. Le rapport s'ouvre directement depuis le disque, sans serveur.
+Chaque `report.html` liste les captures avec leur statut et leur nombre de pixels différents, et affiche la référence et le rendu de la capture sélectionnée selon huit modes : côte à côte, balayage, pelure d'oignon, clignotement, différence amplifiée, pixels surlignés, référence et rendu. La molette zoome autour du curseur jusqu'au pixel avec une grille, le glisser déplace la vue, et le survol d'un pixel affiche ses coordonnées, les deux couleurs et l'écart de chaque canal. `Next difference` regroupe les pixels différents en zones et zoome sur chacune, un pixel isolé est donc toujours retrouvé. Le rapport s'ouvre directement depuis le disque, sans serveur. Quand un test échoue, Gradle affiche le lien du rapport à la fin du build.
 
 #### Scénarios
 

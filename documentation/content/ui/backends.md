@@ -162,7 +162,7 @@ Snapshot tests need a GPU. The hooks installed by `./gradlew installLocalGitHook
 
 #### Report
 
-Each `report.html` lists the shots with their status and their number of different pixels, and shows the reference and the render of the selected shot in eight modes: side by side, swipe, onion skin, blink, amplified difference, highlighted pixels, reference and render. The wheel zooms around the cursor down to single pixels with a pixel grid, dragging pans, and hovering a pixel shows its coordinates, both colors and the delta of each channel. `Next difference` groups the different pixels into regions and zooms on each one, so even a single pixel is found. The report opens straight from the disk, without a server.
+Each `report.html` lists the shots with their status and their number of different pixels, and shows the reference and the render of the selected shot in eight modes: side by side, swipe, onion skin, blink, amplified difference, highlighted pixels, reference and render. The wheel zooms around the cursor down to single pixels with a pixel grid, dragging pans, and hovering a pixel shows its coordinates, both colors and the delta of each channel. `Next difference` groups the different pixels into regions and zooms on each one, so even a single pixel is found. The report opens straight from the disk, without a server. When a test fails, Gradle prints the link of the report at the end of the build.
 
 #### Scenarios
 

@@ -118,7 +118,7 @@ public abstract class SnapshotSuite {
 			failures.add(shot.getKey() + ": " + difference.getPixels() + " pixels differ from the reference, maximum channel delta " + difference.getMaximum());
 		}
 
-		Assert.assertTrue(String.join(System.lineSeparator(), failures) + System.lineSeparator() + "Report: " + new File(output, "report.html"), failures.isEmpty());
+		Assert.assertTrue(String.join(System.lineSeparator(), failures) + System.lineSeparator() + "Report: " + new File(output, "report.html").toPath().toUri().toASCIIString(), failures.isEmpty());
 	}
 
 	private static File getOutput() {
