@@ -149,8 +149,8 @@ Attachez le comportement via l'API fluide. Chaque setter prend une lambda dont l
 
 ```java
 node.onInit((n) -> { });
-node.onRender((n, mouseX, mouseY, partialTicks) -> { });
-node.onDraw((n, mouseX, mouseY, partialTicks) -> { });
+node.onRender((n, mouseX, mouseY) -> { });
+node.onDraw((n, mouseX, mouseY) -> { });
 node.onUpdate((n) -> { });
 node.onReload((n) -> { });
 node.onAppend((n, child) -> { });

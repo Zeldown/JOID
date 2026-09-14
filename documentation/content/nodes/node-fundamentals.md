@@ -149,8 +149,8 @@ Attach behaviour via the fluent API. Each setter takes a lambda whose parameters
 
 ```java
 node.onInit((n) -> { });
-node.onRender((n, mouseX, mouseY, partialTicks) -> { });
-node.onDraw((n, mouseX, mouseY, partialTicks) -> { });
+node.onRender((n, mouseX, mouseY) -> { });
+node.onDraw((n, mouseX, mouseY) -> { });
 node.onUpdate((n) -> { });
 node.onReload((n) -> { });
 node.onAppend((n, child) -> { });

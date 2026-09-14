@@ -6,8 +6,8 @@ Chaque comportement interactif sur un `Node` est un callback. Attachez-les via d
 
 ```java
 node.onInit((n) -> { });                                                          // NodeInitCallback
-node.onRender((n, mouseX, mouseY, partialTicks) -> { });                          // NodeRenderCallback
-node.onDraw((n, mouseX, mouseY, partialTicks) -> { });                            // NodeDrawCallback
+node.onRender((n, mouseX, mouseY) -> { });                                        // NodeRenderCallback
+node.onDraw((n, mouseX, mouseY) -> { });                                          // NodeDrawCallback
 node.onUpdate((n) -> { });                                                        // NodeUpdateCallback
 node.onReload((n) -> { });                                                        // NodeReloadCallback
 node.onAppend((n, child) -> { });                                                 // NodeAppendCallback
