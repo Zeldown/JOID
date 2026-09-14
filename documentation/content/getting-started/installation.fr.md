@@ -47,7 +47,7 @@ Gradle legacy utilise `compile` ; Gradle moderne utilise `implementation`. Les d
 
 Les natives dépendent du backend :
 
-- **LWJGL 2** — le dossier `native/` de la branche `impl/lwjgl-2` contient les natives OpenGL et OpenAL (`lwjgl64.dll`, `OpenAL64.dll`, et leurs variantes de plateformes). Copiez-le à côté de votre projet et lancez avec `-Djava.library.path=./native`.
+- **LWJGL 2** — le dossier `impl/lwjgl2/native/` du dépôt contient les natives OpenGL et OpenAL (`lwjgl64.dll`, `OpenAL64.dll`, et leurs variantes de plateformes). Copiez-le à côté de votre projet et lancez avec `-Djava.library.path=./native`.
 - **LWJGL 3 et Vulkan** — les natives sont livrées sous forme de JARs classifiers Maven (`natives-windows`, `natives-linux`, `natives-macos`, `natives-macos-arm64`) que LWJGL extrait à l'exécution. Vulkan passe par le loader installé avec le driver GPU ; macOS nécessite en plus les natives `lwjgl-vulkan` (MoltenVK).
 
 > TIP: OpenAL est nécessaire pour l'audio du `VideoPlayerNode` sur tous les backends.

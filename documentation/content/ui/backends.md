@@ -22,13 +22,13 @@ Every bridge implements `IBridge`, and `BridgeHandler` exposes one `BridgeRegist
 
 ## Available backends
 
-The `main` branch contains the neutral library. Each backend lives in its own branch, ships its own `build.gradle`, its shaders and a ready-to-run `DemoWindow` (`./gradlew runDemo`).
+The repository is a multi-module Gradle build. `core` contains the neutral library, and each backend is a module under `impl/` with its own `build.gradle`, its shaders and a ready-to-run `DemoWindow` (`./gradlew :vulkan:runDemo`). LWJGL 3 and Vulkan share the `glfw` window module and the `openal` audio module.
 
-| Branch | Stack | Register | Shaders |
+| Module | Stack | Register | Shaders |
 |---|---|---|---|
-| `impl/lwjgl-2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `LWJGL2Backend.register()` | GLSL 120 |
-| `impl/lwjgl-3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` | GLSL 330 |
-| `impl/vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` | Vulkan GLSL 450 |
+| `lwjgl2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `LWJGL2Backend.register()` | GLSL 120 |
+| `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` | GLSL 330 |
+| `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` | Vulkan GLSL 450 |
 
 ### LWJGL 2
 
@@ -41,7 +41,7 @@ BridgeHandler.UI.register(myBridge);
 JOID.inst().load();
 ```
 
-The LWJGL 2 backend maps every call natively onto the fixed pipeline and restores the host state it changes, which makes it safe inside an existing LWJGL 2 host. It needs the `native/` folder on `java.library.path`.
+The LWJGL 2 backend maps every call natively onto the fixed pipeline and restores the host state it changes, which makes it safe inside an existing LWJGL 2 host. It needs the `native/` folder of the `lwjgl2` module on `java.library.path`.
 
 ### LWJGL 3
 
@@ -58,7 +58,7 @@ GL.createCapabilities();
 LWJGL3Backend.register(window);
 ```
 
-Natives are resolved from Maven for the current OS by the branch `build.gradle`.
+Natives are resolved from Maven for the current OS by the module `build.gradle`.
 
 ### Vulkan
 
@@ -91,7 +91,7 @@ while (!GLFW.glfwWindowShouldClose(window)) {
 
 ## Writing a backend
 
-A backend implements `IWindowBridge`, `IAudioBridge` and `IRenderBridge`, and never modifies the `main` branch.
+A backend implements `IWindowBridge`, `IAudioBridge` and `IRenderBridge`, and never modifies the `core` module. Add it as a module under `impl/`, include it in `settings.gradle` and apply `gradle/backend.gradle` to package it with the core.
 
 ### Render bridge
 
@@ -112,7 +112,7 @@ The contract every backend follows:
 
 ### Shaders
 
-Shaders are backend assets loaded from `/assets/shaders/<name>/<name>.vsh` and `.fsh`, so each branch ships the language of its engine:
+Shaders are backend assets loaded from `/assets/shaders/<name>/<name>.vsh` and `.fsh`, so each backend module ships the language of its engine:
 
 | Backend | Language | Conventions |
 |---|---|---|

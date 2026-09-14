@@ -61,20 +61,20 @@ dependencies {
 
 ### Native libraries
 
-The `impl/lwjgl-2` branch contains a `native/` folder with the required OpenGL and OpenAL native libraries. Make sure they are exposed to the JVM via `-Djava.library.path=./native` at launch. The LWJGL 3 and Vulkan backends resolve their natives from Maven.
+The `impl/lwjgl2` module contains a `native/` folder with the required OpenGL and OpenAL native libraries. Make sure they are exposed to the JVM via `-Djava.library.path=./native` at launch. The LWJGL 3 and Vulkan backends resolve their natives from Maven.
 
 ## Backends
 
-The `main` branch contains the engine-agnostic core. Each rendering engine lives in its own branch, with its own `build.gradle`, shaders and ready-to-run demo (`./gradlew runDemo`):
+JOID is a multi-module Gradle build. The `core` module contains the engine-agnostic library, and each rendering engine is a module under `impl/`, with its own `build.gradle`, shaders and ready-to-run demo (`./gradlew :vulkan:runDemo`). LWJGL 3 and Vulkan share the `glfw` window module and the `openal` audio module:
 
-| Branch | Engine | Entry point |
+| Module | Engine | Entry point |
 |---|---|---|
-| `main` | Engine-agnostic core | — |
-| `impl/lwjgl-2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `LWJGL2Backend.register()` |
-| `impl/lwjgl-3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` |
-| `impl/vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` |
+| `core` | Engine-agnostic core | — |
+| `lwjgl2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `LWJGL2Backend.register()` |
+| `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` |
+| `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` |
 
-Backends only implement the bridges — they never modify the core. See [Backends](documentation/content/ui/backends.md) to write a new one.
+Backends only implement the bridges — they never modify the `core` module. See [Backends](documentation/content/ui/backends.md) to write a new one.
 
 ## Features
 

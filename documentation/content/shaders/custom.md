@@ -11,7 +11,7 @@ Write your own shaders and wire them into the pipeline.
 
 ## 1. Shader files
 
-Shaders are assets of the backend: each backend branch loads `/assets/shaders/<name>/<name>.vsh` and `.fsh` written in the language of its engine — GLSL 120 for LWJGL 2, GLSL 330 for LWJGL 3, Vulkan GLSL 450 for Vulkan. Ship one version per backend you target; see [Backends](../ui/backends.md#shaders) for the conventions of each language. The example below is the LWJGL 2 version.
+Shaders are assets of the backend: each backend module loads `/assets/shaders/<name>/<name>.vsh` and `.fsh` written in the language of its engine — GLSL 120 for LWJGL 2, GLSL 330 for LWJGL 3, Vulkan GLSL 450 for Vulkan. Ship one version per backend you target; see [Backends](../ui/backends.md#shaders) for the conventions of each language. The example below is the LWJGL 2 version.
 
 **`/assets/shaders/outline/outline.vsh`**:
 ```glsl

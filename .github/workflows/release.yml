@@ -36,35 +36,25 @@ jobs:
           echo "COMMIT_SHA=${COMMIT_SHA}" >> $GITHUB_ENV
       - name: Update version in files
         run: |
-          sed -i "s/project.version = \".*\"/project.version = \"${TAG_NAME}\"/g" build.gradle
+          sed -i "s/^    version = \".*\"/    version = \"${TAG_NAME}\"/g" build.gradle
           sed -i "s/version-\([^[:space:]-]*\) \([^[:space:]-]*\)-/version-${TAG_NAME} (${COMMIT_SHA})-/g" README.md
           sed -i "s/joid-\([a-z0-9]*\)-[0-9]\+\.[0-9]\+\.[0-9]\+-prod\.jar/joid-\1-${TAG_NAME}-prod.jar/g" README.md
           sed -i "s|<version>[0-9]\+\.[0-9]\+\.[0-9]\+</version>|<version>${TAG_NAME}</version>|g" README.md
-          sed -i "s/public static final String VERSION = \".*\";/public static final String VERSION = \"${TAG_NAME}\";/g" src/main/java/be/zeldown/joid/internal/JOID.java
+          sed -i "s/public static final String VERSION = \".*\";/public static final String VERSION = \"${TAG_NAME}\";/g" core/src/main/java/be/zeldown/joid/internal/JOID.java
           git add README.md
           git add build.gradle
-          git add src/main/java/be/zeldown/joid/internal/JOID.java
+          git add core/src/main/java/be/zeldown/joid/internal/JOID.java
           git commit -m "update: update version to ${TAG_NAME} (:bookmark:)"
           git push origin HEAD:main
-      - name: Merge the version into the backends
-        run: |
-          for BRANCH in impl/lwjgl-2 impl/lwjgl-3 impl/vulkan; do
-            git checkout -B "${BRANCH}" "origin/${BRANCH}"
-            git merge --no-edit -m "update: merge version ${TAG_NAME} into ${BRANCH} (:bookmark:)" main
-            git push origin "HEAD:${BRANCH}"
-          done
 
   build:
-    name: Build ${{ matrix.backend }}
+    name: Build
     needs: update-version
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        backend: [lwjgl-2, lwjgl-3, vulkan]
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: impl/${{ matrix.backend }}
+          ref: main
       - name: Set up JDK 8
         uses: actions/setup-java@v4
         with:
@@ -77,10 +67,10 @@ jobs:
       - name: 'Upload artifacts'
         uses: actions/upload-artifact@v4
         with:
-          name: artifact-${{ matrix.backend }}
+          name: artifacts
           path: |
-            build/libs/${{ env.FILE_DEV }}
-            build/libs/${{ env.FILE_PROD }}
+            impl/*/build/libs/${{ env.FILE_DEV }}
+            impl/*/build/libs/${{ env.FILE_PROD }}
           retention-days: 1
 
   release:
@@ -91,8 +81,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: artifact-*
-          merge-multiple: true
+          name: artifacts
       - name: Generate Changelog
         run: echo "# Build Release" > ${{ github.workspace }}-CHANGELOG.txt
       - name: Release
@@ -101,5 +90,5 @@ jobs:
         with:
           body_path: ${{ github.workspace }}-CHANGELOG.txt
           files: |
-            ${{ env.FILE_PROD }}
-            ${{ env.FILE_DEV }}
+            **/${{ env.FILE_PROD }}
+            **/${{ env.FILE_DEV }}

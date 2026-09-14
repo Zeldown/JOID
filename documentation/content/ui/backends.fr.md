@@ -22,13 +22,13 @@ Tous les bridges implémentent `IBridge`, et `BridgeHandler` expose un `BridgeRe
 
 ## Backends disponibles
 
-La branche `main` contient la bibliothèque neutre. Chaque backend vit dans sa propre branche, avec son `build.gradle`, ses shaders et une `DemoWindow` prête à lancer (`./gradlew runDemo`).
+Le dépôt est un build Gradle multi-modules. `core` contient la bibliothèque neutre, et chaque backend est un module sous `impl/` avec son `build.gradle`, ses shaders et une `DemoWindow` prête à lancer (`./gradlew :vulkan:runDemo`). LWJGL 3 et Vulkan partagent le module de fenêtre `glfw` et le module audio `openal`.
 
-| Branche | Stack | Enregistrement | Shaders |
+| Module | Stack | Enregistrement | Shaders |
 |---|---|---|---|
-| `impl/lwjgl-2` | LWJGL 2.9.1 — pipeline fixe OpenGL, OpenAL | `LWJGL2Backend.register()` | GLSL 120 |
-| `impl/lwjgl-3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` | GLSL 330 |
-| `impl/vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` | GLSL 450 Vulkan |
+| `lwjgl2` | LWJGL 2.9.1 — pipeline fixe OpenGL, OpenAL | `LWJGL2Backend.register()` | GLSL 120 |
+| `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` | GLSL 330 |
+| `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` | GLSL 450 Vulkan |
 
 ### LWJGL 2
 
@@ -41,7 +41,7 @@ BridgeHandler.UI.register(myBridge);
 JOID.inst().load();
 ```
 
-Le backend LWJGL 2 traduit chaque appel nativement vers le pipeline fixe et restaure l'état de l'hôte qu'il modifie, ce qui le rend sûr à l'intérieur d'un hôte LWJGL 2 existant. Il nécessite le dossier `native/` dans le `java.library.path`.
+Le backend LWJGL 2 traduit chaque appel nativement vers le pipeline fixe et restaure l'état de l'hôte qu'il modifie, ce qui le rend sûr à l'intérieur d'un hôte LWJGL 2 existant. Il nécessite le dossier `native/` du module `lwjgl2` dans le `java.library.path`.
 
 ### LWJGL 3
 
@@ -58,7 +58,7 @@ GL.createCapabilities();
 LWJGL3Backend.register(window);
 ```
 
-Les natives sont résolues depuis Maven pour l'OS courant par le `build.gradle` de la branche.
+Les natives sont résolues depuis Maven pour l'OS courant par le `build.gradle` du module.
 
 ### Vulkan
 
@@ -91,7 +91,7 @@ while (!GLFW.glfwWindowShouldClose(window)) {
 
 ## Écrire un backend
 
-Un backend implémente `IWindowBridge`, `IAudioBridge` et `IRenderBridge`, et ne modifie jamais la branche `main`.
+Un backend implémente `IWindowBridge`, `IAudioBridge` et `IRenderBridge`, et ne modifie jamais le module `core`. Ajoutez-le comme module sous `impl/`, incluez-le dans `settings.gradle` et appliquez `gradle/backend.gradle` pour le packager avec le cœur.
 
 ### Bridge de rendu
 
@@ -112,7 +112,7 @@ Le contrat que respecte chaque backend :
 
 ### Shaders
 
-Les shaders sont des assets du backend chargés depuis `/assets/shaders/<name>/<name>.vsh` et `.fsh`, chaque branche fournit donc le langage de son moteur :
+Les shaders sont des assets du backend chargés depuis `/assets/shaders/<name>/<name>.vsh` et `.fsh`, chaque module de backend fournit donc le langage de son moteur :
 
 | Backend | Langage | Conventions |
 |---|---|---|

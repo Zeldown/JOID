@@ -4,7 +4,7 @@ The bridge is the glue between JOID and your host application. It owns the list 
 
 ## Backends and `DemoWindow`
 
-Each backend branch (`impl/lwjgl-2`, `impl/lwjgl-3`, `impl/vulkan`) ships a `DemoWindow` — a ready-to-use window that:
+Each backend module (`lwjgl2`, `lwjgl3`, `vulkan`) ships a `DemoWindow` — a ready-to-use window that:
 
 - Registers the window, render and audio bridges of its backend (see [Backends](backends.md)).
 - Listens to mouse and keyboard.
@@ -18,7 +18,7 @@ JOID.inst().setDevMode(true).setDemoMode(true).load();
 window.run();
 ```
 
-Run it from a backend branch with `./gradlew runDemo`. On `impl/lwjgl-2`, call `LWJGL2Backend.register()` before creating the window.
+Run it with `./gradlew :lwjgl3:runDemo` (or `:lwjgl2`, `:vulkan`). With LWJGL 2, call `LWJGL2Backend.register()` before creating the window.
 
 ## Writing your own bridge
 
@@ -92,7 +92,7 @@ bridge.update();
 bridge.draw();
 ```
 
-Every backend `DemoWindow` contains a complete loop for its windowing library — `Mouse` / `Keyboard` polling on LWJGL 2, GLFW callbacks on LWJGL 3 and Vulkan.
+Every backend `DemoWindow` contains a complete loop for its windowing library — `Mouse` / `Keyboard` polling on LWJGL 2, GLFW callbacks in the `GLFWDemoWindow` shared by LWJGL 3 and Vulkan.
 
 `UIBridge` already implements mouse drag tracking and ESC-to-close; you just need to feed it events.
 

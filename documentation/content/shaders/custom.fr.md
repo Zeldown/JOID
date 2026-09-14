@@ -11,7 +11,7 @@
 
 ## 1. Fichiers shader
 
-Les shaders sont des assets du backend : chaque branche de backend charge `/assets/shaders/<name>/<name>.vsh` et `.fsh` écrits dans le langage de son moteur — GLSL 120 pour LWJGL 2, GLSL 330 pour LWJGL 3, GLSL 450 Vulkan pour Vulkan. Fournissez une version par backend ciblé ; voir [Backends](../ui/backends.md#shaders) pour les conventions de chaque langage. L'exemple ci-dessous est la version LWJGL 2.
+Les shaders sont des assets du backend : chaque module de backend charge `/assets/shaders/<name>/<name>.vsh` et `.fsh` écrits dans le langage de son moteur — GLSL 120 pour LWJGL 2, GLSL 330 pour LWJGL 3, GLSL 450 Vulkan pour Vulkan. Fournissez une version par backend ciblé ; voir [Backends](../ui/backends.md#shaders) pour les conventions de chaque langage. L'exemple ci-dessous est la version LWJGL 2.
 
 **`/assets/shaders/outline/outline.vsh`** :
 ```glsl

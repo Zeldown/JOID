@@ -4,7 +4,7 @@ Le bridge est la colle entre JOID et votre application hôte. Il détient la lis
 
 ## Backends et `DemoWindow`
 
-Chaque branche de backend (`impl/lwjgl-2`, `impl/lwjgl-3`, `impl/vulkan`) fournit une `DemoWindow` — une fenêtre prête à l'emploi qui :
+Chaque module de backend (`lwjgl2`, `lwjgl3`, `vulkan`) fournit une `DemoWindow` — une fenêtre prête à l'emploi qui :
 
 - Enregistre les bridges de fenêtre, de rendu et d'audio de son backend (voir [Backends](backends.md)).
 - Écoute souris et clavier.
@@ -18,7 +18,7 @@ JOID.inst().setDevMode(true).setDemoMode(true).load();
 window.run();
 ```
 
-Lancez-la depuis une branche de backend avec `./gradlew runDemo`. Sur `impl/lwjgl-2`, appelez `LWJGL2Backend.register()` avant de créer la fenêtre.
+Lancez-la avec `./gradlew :lwjgl3:runDemo` (ou `:lwjgl2`, `:vulkan`). Avec LWJGL 2, appelez `LWJGL2Backend.register()` avant de créer la fenêtre.
 
 ## Écrire votre propre bridge
 
@@ -92,7 +92,7 @@ bridge.update();
 bridge.draw();
 ```
 
-Chaque `DemoWindow` de backend contient une boucle complète pour sa bibliothèque de fenêtrage — polling `Mouse` / `Keyboard` sur LWJGL 2, callbacks GLFW sur LWJGL 3 et Vulkan.
+Chaque `DemoWindow` de backend contient une boucle complète pour sa bibliothèque de fenêtrage — polling `Mouse` / `Keyboard` sur LWJGL 2, callbacks GLFW dans la `GLFWDemoWindow` partagée par LWJGL 3 et Vulkan.
 
 `UIBridge` gère déjà le tracking du drag et ESC-to-close ; il suffit de lui fournir les événements.
 
