@@ -37,7 +37,7 @@ JOID is distributed via GitHub Releases for every backend (`lwjgl2`, `lwjgl3`, `
 - **joid-<backend>-X.Y.Z-prod.jar** — production build (excludes dev/demo assets)
 - **joid-<backend>-X.Y.Z-dev.jar** — dev build (includes demo assets, fonts, demo textures)
 
-Download the desired artifact from the [Releases page](https://github.com/Zeldown/JOID/releases) and add it to your project's classpath. To build them from source, `./gradlew build` (with `-Pdev` for the dev flavour) copies every release artifact into `build/libs`.
+Download the desired artifact from the [Releases page](https://github.com/Zeldown/JOID/releases) and add it to your project's classpath. To build them from source, `./gradlew build` (with `-Pdev` for the dev flavour) copies every release artifact into `build/libs`. The jars only contain JOID code: add Guava 15.0, Gson 2.2.4, commons-lang3 3.1, commons-compress 1.8.1, commons-io 2.4 and vecmath 1.3.1 to your project, along with the libraries of your backend listed in [Installation](documentation/content/getting-started/installation.md).
 
 ### Gradle
 

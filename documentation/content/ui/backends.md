@@ -201,14 +201,14 @@ A backend does not have to live in the JOID repository: each release publishes t
 
 | Artifact | Contents |
 |---|---|
-| `joid-core-X.Y.Z-dev.jar` | The core with its embedded dependencies and the demo assets, to compile, test and run the demo. |
+| `joid-core-X.Y.Z-dev.jar` | The core and the demo assets, to compile, test and run the demo. |
 | `joid-core-X.Y.Z-prod.jar` | The same core without `assets/demo`, embedded in the prod jar of the backend. |
 | `joid-testkit-X.Y.Z.jar` | `SnapshotSuite`, `RenderBridgeContractSuite`, the scenarios, the report, `SnapshotBaseline` and `SnapshotComparison`. It needs JUnit 4. |
 | `joid-glfw-X.Y.Z.jar`, `joid-openal-X.Y.Z.jar` | The GLFW window and OpenAL audio bridges, for engines built on them. |
 | `joid-<backend>-X.Y.Z-dev.jar` | The official backends, with their `SnapshotBackend` to render a baseline. |
 | `joid-backend-template-X.Y.Z.zip` | A Gradle project to start from. |
 
-The template compiles against the jars of its `libs/` folder and declares JavaCV and FFmpeg like the core — video playback needs them at runtime and no jar embeds them. It compiles as is, with bridges that throw `UnsupportedOperationException` until they are implemented:
+The template compiles against the jars of its `libs/` folder and declares the libraries of the core — Guava, Gson, commons-lang3, commons-compress, commons-io and vecmath, plus JavaCV and FFmpeg for video — since no JOID jar embeds a third-party library. It compiles as is, with bridges that throw `UnsupportedOperationException` until they are implemented:
 
 | Command | Result |
 |---|---|

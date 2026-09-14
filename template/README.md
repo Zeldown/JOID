@@ -16,7 +16,7 @@ dependencies {
 }
 ```
 
-Video playback needs JavaCV and FFmpeg at runtime. They are declared in the `video` configuration, exactly like the JOID core, and are not embedded in the jars.
+The libraries of the JOID core are declared in the `libraries` configuration, and JavaCV and FFmpeg, needed by video playback, in the `video` configuration. No jar embeds them: the application that uses your backend declares them too.
 
 ## Implementing the backend
 
@@ -39,7 +39,7 @@ The render bridge contract — vertex layout, projection conventions, textures, 
 | `./gradlew updateSnapshots` | Replaces the references after an intended visual change. |
 | `./gradlew renderBaseline` | Renders the same scenarios with the official LWJGL 3 backend into `build/snapshots/lwjgl3`. |
 | `./gradlew crossBackendTest` | Runs the tests and the baseline, then compares your shots to the LWJGL 3 ones within one level per channel. |
-| `./gradlew build` | Builds `joid-engine-1.0.0-dev.jar`, with the demo assets, and `joid-engine-1.0.0-prod.jar`, without them. Both embed the JOID core and the `embed` jars. |
+| `./gradlew build` | Builds `joid-engine-1.0.0-dev.jar`, with the demo assets, and `joid-engine-1.0.0-prod.jar`, without them. Both embed the JOID core and the `embed` jars, and no third-party library. |
 | `./gradlew testDevJar testProdJar` | Runs the tests against the packaged jars instead of the classes: every test for the dev jar, the contract and unit tests for the prod jar. |
 | `./gradlew runDemo` | Launches `DemoWindow`. |
 

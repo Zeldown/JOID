@@ -201,14 +201,14 @@ Un backend n'a pas besoin de vivre dans le dépôt JOID : chaque release publie 
 
 | Artefact | Contenu |
 |---|---|
-| `joid-core-X.Y.Z-dev.jar` | Le cœur avec ses dépendances embarquées et les assets de démo, pour compiler, tester et lancer la démo. |
+| `joid-core-X.Y.Z-dev.jar` | Le cœur et les assets de démo, pour compiler, tester et lancer la démo. |
 | `joid-core-X.Y.Z-prod.jar` | Le même cœur sans `assets/demo`, embarqué dans le jar prod du backend. |
 | `joid-testkit-X.Y.Z.jar` | `SnapshotSuite`, `RenderBridgeContractSuite`, les scénarios, le rapport, `SnapshotBaseline` et `SnapshotComparison`. Il nécessite JUnit 4. |
 | `joid-glfw-X.Y.Z.jar`, `joid-openal-X.Y.Z.jar` | Les bridges de fenêtre GLFW et d'audio OpenAL, pour les moteurs qui les utilisent. |
 | `joid-<backend>-X.Y.Z-dev.jar` | Les backends officiels, avec leur `SnapshotBackend` pour rendre une référence. |
 | `joid-backend-template-X.Y.Z.zip` | Un projet Gradle de départ. |
 
-Le gabarit compile avec les jars de son dossier `libs/` et déclare JavaCV et FFmpeg comme le cœur — la lecture vidéo en a besoin à l'exécution et aucun jar ne les embarque. Il compile tel quel, avec des bridges qui lèvent `UnsupportedOperationException` tant qu'ils ne sont pas implémentés :
+Le gabarit compile avec les jars de son dossier `libs/` et déclare les bibliothèques du cœur — Guava, Gson, commons-lang3, commons-compress, commons-io et vecmath, plus JavaCV et FFmpeg pour la vidéo —, car aucun jar JOID n'embarque de bibliothèque tierce. Il compile tel quel, avec des bridges qui lèvent `UnsupportedOperationException` tant qu'ils ne sont pas implémentés :
 
 | Commande | Résultat |
 |---|---|

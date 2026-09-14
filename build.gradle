@@ -75,8 +75,9 @@ task backendTemplate(type: Zip) {
 task collectArtifacts(type: Copy) {
     group = 'JOID'
     description = 'Copies every release artifact into build/libs.'
-    dependsOn ':core:shadowJar', ':testkit:jar', ':glfw:jar', ':openal:jar', ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar'
-    from { [':core', ':lwjgl2', ':lwjgl3', ':vulkan'].collect { project(it).shadowJar.archivePath } }
+    dependsOn ':core:releaseJar', ':testkit:jar', ':glfw:jar', ':openal:jar', ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar'
+    from { project(':core').releaseJar.archivePath }
+    from { [':lwjgl2', ':lwjgl3', ':vulkan'].collect { project(it).shadowJar.archivePath } }
     from { [':testkit', ':glfw', ':openal'].collect { project(it).jar.archivePath } }
     from backendTemplate
     into file('build/libs')

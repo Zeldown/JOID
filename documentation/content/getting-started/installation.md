@@ -1,6 +1,6 @@
 # Installation
 
-JOID is shipped as a fat JAR through GitHub Releases. No Maven Central, no package manager — just drop the JAR in your classpath and point the JVM at the native libraries.
+JOID is shipped as JARs through GitHub Releases. They only contain JOID code: add the JAR of your backend and the libraries listed in *Dependencies* to your classpath, and point the JVM at the native libraries. No Maven Central, no package manager.
 
 ## Download
 
@@ -18,8 +18,10 @@ Each backend comes in two flavours:
 
 | Artifact | Contents | Use when |
 |---|---|---|
-| `joid-<backend>-X.Y.Z-prod.jar` | Library only, `assets/dev/*` and `assets/demo/*` stripped | Shipping your app |
+| `joid-<backend>-X.Y.Z-prod.jar` | Library only, `assets/demo/*` stripped | Shipping your app |
 | `joid-<backend>-X.Y.Z-dev.jar` | Includes demo fonts, demo textures, sample videos | Learning / developing |
+
+No JOID JAR embeds a third-party library. A backend JAR contains the core and the JOID modules it uses — `joid-glfw` and `joid-openal` for LWJGL 3 and Vulkan — and your project declares every other library.
 
 Building from source with `./gradlew build` (`-Pdev` for the dev flavour) copies every release artifact — backend, core, testkit, glfw and openal jars and the backend template — into `build/libs`.
 
@@ -31,7 +33,7 @@ dependencies {
 }
 ```
 
-Legacy Gradle uses `compile`; modern Gradle uses `implementation`. Both work.
+Legacy Gradle uses `compile`; modern Gradle uses `implementation`. Both work. Add the libraries listed in *Dependencies* as well.
 
 ## Maven
 
@@ -56,7 +58,7 @@ Natives depend on the backend:
 
 ## Dependencies
 
-JOID shades its small utility dependencies (Guava, Gson, commons-lang3, commons-compress, commons-io, vecmath) into the fat JAR. **Larger runtime dependencies stay external** so you can pick the exact classifiers you need and avoid bloating your artifact.
+JOID JARs contain no third-party library: **your project declares every library JOID uses**, at the versions JOID is built and tested with. This avoids duplicate classes when your application or its host already ships these libraries, and lets you pick the exact classifiers you need.
 
 Add these to your `build.gradle` alongside JOID:
 
@@ -66,6 +68,13 @@ dependencies {
 
     compile 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
+
+    compile 'com.google.guava:guava:15.0'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'org.apache.commons:commons-lang3:3.1'
+    compile 'org.apache.commons:commons-compress:1.8.1'
+    compile 'commons-io:commons-io:2.4'
+    compile 'java3d:vecmath:1.3.1'
 
     compile 'org.lwjgl.lwjgl:lwjgl:2.9.1'
 
@@ -85,6 +94,12 @@ The same Maven block:
 ```xml
 <dependencies>
     <dependency><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>1.18.34</version><scope>provided</scope></dependency>
+    <dependency><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>15.0</version></dependency>
+    <dependency><groupId>com.google.code.gson</groupId><artifactId>gson</artifactId><version>2.2.4</version></dependency>
+    <dependency><groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.1</version></dependency>
+    <dependency><groupId>org.apache.commons</groupId><artifactId>commons-compress</artifactId><version>1.8.1</version></dependency>
+    <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.4</version></dependency>
+    <dependency><groupId>java3d</groupId><artifactId>vecmath</artifactId><version>1.3.1</version></dependency>
     <dependency><groupId>org.lwjgl.lwjgl</groupId><artifactId>lwjgl</artifactId><version>2.9.1</version></dependency>
     <dependency><groupId>org.bytedeco</groupId><artifactId>javacv</artifactId><version>1.5.9</version><exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions></dependency>
     <dependency><groupId>org.bytedeco</groupId><artifactId>javacpp</artifactId><version>1.5.9</version></dependency>
@@ -124,6 +139,7 @@ dependencies {
 | Dependency | Purpose | Required |
 |---|---|---|
 | `lombok` | Code generation (`@Getter`, `@Setter`, `@NonNull`) | Compile-only — not shipped |
+| `guava`, `gson`, `commons-lang3`, `commons-compress`, `commons-io`, `vecmath` | Collections and caches, JSON, text, archives, file monitoring and vector math used by the core | Always — a host that already ships them provides them |
 | `lwjgl` | Engine bindings of the chosen backend | Always |
 | `javacv` + `javacpp` | Java bindings for FFmpeg | Only if using `VideoPlayerNode` |
 | `ffmpeg:6.0-1.5.9` (base) | FFmpeg API classes | Only if using `VideoPlayerNode` |
@@ -142,6 +158,12 @@ my-app/
 ├── my-app.jar                           # your code only — no shading
 ├── libraries/                           # every compile dependency, one JAR per artifact
 │   ├── joid-lwjgl2-6.0.0-prod.jar
+│   ├── guava-15.0.jar
+│   ├── gson-2.2.4.jar
+│   ├── commons-lang3-3.1.jar
+│   ├── commons-compress-1.8.1.jar
+│   ├── commons-io-2.4.jar
+│   ├── vecmath-1.3.1.jar
 │   ├── lwjgl-2.9.1.jar
 │   ├── javacv-1.5.9.jar
 │   ├── javacpp-1.5.9.jar

@@ -17,11 +17,11 @@ shadowJar {
         from module.sourceSets.main.output
     }
 
-    configurations = [project(':core').configurations.shadow]
+    configurations = []
     classifier = project.hasProperty('dev') ? 'dev' : 'prod'
 
     if (!project.hasProperty('dev')) {
-        exclude 'assets/demo/*'
+        exclude 'assets/demo/**'
         exclude "be/zeldown/joid/impl/${project.name}/snapshot/**"
     }
 }
