@@ -131,10 +131,10 @@ public class DraggableProperty {
 		return null;
 	}
 
-	public double lerp(final double fps, double value, final double target) {
+	public double lerp(final double frameTime, double value, final double target) {
 		final double diff = target - value;
 		final double absDiff = Math.abs(diff);
-		final double offset = 0.5D / ((fps == 0D ? 1D : fps) / 60D) * absDiff / 3D;
+		final double offset = Math.min(absDiff, 0.5D * frameTime / (1000D / 60D) * absDiff / 3D);
 		if (absDiff > 0.5D) {
 			value += diff > 0.0D ? offset : -offset;
 		} else {

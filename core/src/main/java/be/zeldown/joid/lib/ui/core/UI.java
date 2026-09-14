@@ -57,6 +57,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
+	private static final double FRAME_TIME = 1000D / 60D;
 
 	@NonNull private final UIDataObject         data;
 	@NonNull private final UIDataDebugObject    debug;
@@ -86,8 +87,10 @@ public abstract class UI implements IUI, IndexedElement {
 	private double viewportHeight;
 
 	private double fps;
+	private double frameTime;
 	private long   fpsCounter;
 	private long   lastFpsUpdate;
+	private long   lastFrame;
 	private long   renderTime;
 
 	private double  mouseX;
@@ -472,6 +475,10 @@ public abstract class UI implements IUI, IndexedElement {
 		final long start = System.nanoTime();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 
+		final long frame = BridgeHandler.CLOCK.get().nanoTime();
+		this.frameTime = this.lastFrame == 0L ? UI.FRAME_TIME : (frame - this.lastFrame) / 1_000_000D;
+		this.lastFrame = frame;
+
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
@@ -626,10 +633,10 @@ public abstract class UI implements IUI, IndexedElement {
 		if (this.lastFpsUpdate == 0L) {
 			this.fps = 0;
 			this.fpsCounter = 0;
-			this.lastFpsUpdate = System.currentTimeMillis();
-		} else {
+			this.lastFpsUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
+		} else if (this.frameTime > 0D) {
 			this.fpsCounter++;
-			final long now = System.currentTimeMillis();
+			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 			if (now - this.lastFpsUpdate >= 1000L) {
 				this.fps = this.fpsCounter / ((now - this.lastFpsUpdate) / 1000D);
 				this.fpsCounter = 0;
@@ -819,7 +826,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double diff = target - value;
 		final double absDiff = Math.abs(diff);
 
-		final double offset = Math.min(absDiff, speed / ((this.fps == 0D ? 60D : this.fps) / 60D) * absDiff / 3D);
+		final double offset = Math.min(absDiff, speed * this.frameTime / UI.FRAME_TIME * absDiff / 3D);
 
 		if (absDiff > snapDiff) {
 			value += diff > 0 ? offset : -offset;

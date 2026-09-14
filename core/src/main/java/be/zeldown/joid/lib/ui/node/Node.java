@@ -433,16 +433,16 @@ public abstract class Node implements INode {
 
 				if (this.dragged) {
 					if (this.draggable.getType() == DraggableType.MOVE) {
-						final double newAbsoluteX = this.draggable.lerp(this.getUi().getFps(), this.getAbsoluteX(), this.targetDragX);
-						final double newAbsoluteY = this.draggable.lerp(this.getUi().getFps(), this.getAbsoluteY(), this.targetDragY);
+						final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteX(), this.targetDragX);
+						final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteY(), this.targetDragY);
 						final double diffX = this.getAbsoluteX() - this.x;
 						final double diffY = this.getAbsoluteY() - this.y;
 
 						this.x = newAbsoluteX - diffX;
 						this.y = newAbsoluteY - diffY;
 					} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
-						final double newAbsoluteX = this.draggable.lerp(this.getUi().getFps(), this.draggedNode.getAbsoluteX(), this.targetDragX);
-						final double newAbsoluteY = this.draggable.lerp(this.getUi().getFps(), this.draggedNode.getAbsoluteY(), this.targetDragY);
+						final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteX(), this.targetDragX);
+						final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteY(), this.targetDragY);
 						this.draggedNode.x = newAbsoluteX;
 						this.draggedNode.y = newAbsoluteY;
 					}
