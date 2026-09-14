@@ -1,4 +1,4 @@
-package be.zeldown.joid.impl.lwjgl2;
+package be.zeldown.joid.impl.lwjgl2.snapshot;
 
 import java.nio.ByteBuffer;
 
@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 
+import be.zeldown.joid.impl.lwjgl2.Backend;
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
 import be.zeldown.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;

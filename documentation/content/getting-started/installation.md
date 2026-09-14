@@ -21,7 +21,7 @@ Each backend comes in two flavours:
 | `joid-<backend>-X.Y.Z-prod.jar` | Library only, `assets/dev/*` and `assets/demo/*` stripped | Shipping your app |
 | `joid-<backend>-X.Y.Z-dev.jar` | Includes demo fonts, demo textures, sample videos | Learning / developing |
 
-Building from source with `./gradlew build` (`-Pdev` for the dev flavour) copies the jar of every backend into `build/libs`.
+Building from source with `./gradlew build` (`-Pdev` for the dev flavour) copies every release artifact — backend, core, testkit, glfw and openal jars and the backend template — into `build/libs`.
 
 ## Gradle
 

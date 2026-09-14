@@ -101,7 +101,7 @@ while (!GLFW.glfwWindowShouldClose(window)) {
 
 ## Écrire un backend
 
-Un backend implémente `IWindowBridge`, `IAudioBridge` et `IRenderBridge`, et ne modifie jamais le module `core`. Ajoutez-le comme module sous `impl/`, incluez-le dans `settings.gradle` et appliquez `gradle/backend.gradle` pour le packager avec le cœur.
+Un backend implémente `IWindowBridge`, `IAudioBridge` et `IRenderBridge`, et ne modifie jamais le module `core`. Ajoutez-le comme module sous `impl/`, incluez-le dans `settings.gradle` et appliquez `gradle/backend.gradle` pour le packager avec le cœur. Il peut aussi vivre dans son propre dépôt et ne dépendre que des jars de JOID, comme le décrit la section *Backend dans son propre dépôt* plus bas.
 
 ### Bridge de rendu
 
@@ -135,7 +135,7 @@ Chaque en-tête généré se termine par une directive `#line`, pour que les err
 
 ### Tests
 
-Les tests de snapshot vivent dans le module `testkit`. Un backend implémente `ISnapshotBackend` dans ses sources `src/test` — créer une surface hors écran de la taille demandée, exécuter une frame, capturer une zone de ses pixels, la libérer et nommer le renderer — et étend `SnapshotSuite` :
+Les tests de snapshot vivent dans le module `testkit`. Un backend implémente `ISnapshotBackend` — créer une surface hors écran de la taille demandée, exécuter une frame, capturer une zone de ses pixels, la libérer et nommer le renderer — et étend `SnapshotSuite` et `RenderBridgeContractSuite` dans ses tests :
 
 ```java
 public class SnapshotTest extends SnapshotSuite {
@@ -148,9 +148,13 @@ public class SnapshotTest extends SnapshotSuite {
 }
 ```
 
-La suite enregistre un `ManualClockBridge`, vérifie que chaque shader du cœur compile, puis joue chaque scénario de `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` et `video`. Chaque scénario part du même état : aucune UI, l'horloge au même instant, une fenêtre 1920×1080, le mode dev désactivé, aucune touche enfoncée et aucun masque. Le temps n'avance qu'avec `wait` et `moveto`, par frames de 16 ms, et les lerps et le compteur de fps suivent le temps de frame mesuré sur l'horloge, chaque exécution rend donc les mêmes pixels. Chaque capture attend la fin du chargement des ressources, que chaque vidéo affiche l'image correspondant à l'horloge, puis deux frames consécutives identiques. Les vidéos et les GIF suivent l'horloge, une horloge en pause les fige donc, l'audio est coupé, et les ressources d'URL sont téléchargées une fois dans `.snapshots/cache` pour que les exécutions suivantes fonctionnent hors ligne.
+`RenderBridgeContractTest` étend `RenderBridgeContractSuite` de la même façon. La suite de contrat vérifie le bridge de rendu sans images de référence, en quelques secondes : chaque shader du cœur compile, la couleur courante et les couleurs de sommets sont dessinées, les textures `ARGB` affichent leur premier texel en haut à gauche, `resetTexture()` lie une texture blanche opaque, les framebuffers gardent ce qui y est dessiné, `popState()` restaure le framebuffer, le shader, le viewport et l'état des lignes, une texture peut être supprimée deux fois et la projection OpenGL place l'origine en haut à gauche de la capture.
+
+La suite de snapshot enregistre un `ManualClockBridge`, puis joue chaque scénario de `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` et `video`. Chaque scénario part du même état : aucune UI, l'horloge au même instant, une fenêtre 1920×1080, le mode dev désactivé, aucune touche enfoncée et aucun masque. Le temps n'avance qu'avec `wait` et `moveto`, par frames de 16 ms, et les lerps et le compteur de fps suivent le temps de frame mesuré sur l'horloge, chaque exécution rend donc les mêmes pixels. Chaque capture attend la fin du chargement des ressources, que chaque vidéo affiche l'image correspondant à l'horloge, puis deux frames consécutives identiques. Les vidéos et les GIF suivent l'horloge, une horloge en pause les fige donc, l'audio est coupé, et les ressources d'URL sont téléchargées une fois dans `.snapshots/cache` pour que les exécutions suivantes fonctionnent hors ligne.
 
 Les références sont propres à chaque machine et carte graphique : elles sont stockées dans `.snapshots/<module>/<renderer>/`, ignoré par git. Une capture sans référence est enregistrée à la première exécution ; ensuite, chaque capture doit correspondre à sa référence au pixel près. Les références des captures retirées des scénarios sont supprimées après l'exécution.
+
+Les suites lisent leurs dossiers dans des propriétés système, avec des valeurs par défaut qui fonctionnent depuis n'importe quel IDE ou outil de build : `joid.snapshot.references` (`.snapshots/references`), `joid.snapshot.output` (`build/snapshots/renders`), `joid.snapshot.cache` (`.snapshots/cache`) et `joid.snapshot.update`. Le build JOID les règle pour chaque module. Dans les backends JOID, `SnapshotBackend` vit dans le package `snapshot` des sources principales, pour que leur jar dev puisse rendre une référence, et leur jar prod l'exclut.
 
 | Commande | Résultat |
 |---|---|
@@ -190,6 +194,34 @@ Un scénario est un fichier texte avec une commande par ligne ; `#` commence un 
 Pour ajouter une capture, ajoutez ses commandes à un scénario — ou ajoutez un fichier de scénario et son test `matches…Snapshots` à `SnapshotSuite` — puis lancez `./gradlew test` : les nouvelles captures sont enregistrées comme références.
 
 `UIDemoVideo` masque son overlay de statistiques, qui affiche l'usage mémoire et les files du décodeur.
+
+## Backend dans son propre dépôt
+
+Un backend n'a pas besoin de vivre dans le dépôt JOID : chaque release publie les jars nécessaires pour en développer, tester et packager un ailleurs.
+
+| Artefact | Contenu |
+|---|---|
+| `joid-core-X.Y.Z-dev.jar` | Le cœur avec ses dépendances embarquées et les assets de démo, pour compiler, tester et lancer la démo. |
+| `joid-core-X.Y.Z-prod.jar` | Le même cœur sans `assets/demo`, embarqué dans le jar prod du backend. |
+| `joid-testkit-X.Y.Z.jar` | `SnapshotSuite`, `RenderBridgeContractSuite`, les scénarios, le rapport, `SnapshotBaseline` et `SnapshotComparison`. Il nécessite JUnit 4. |
+| `joid-glfw-X.Y.Z.jar`, `joid-openal-X.Y.Z.jar` | Les bridges de fenêtre GLFW et d'audio OpenAL, pour les moteurs qui les utilisent. |
+| `joid-<backend>-X.Y.Z-dev.jar` | Les backends officiels, avec leur `SnapshotBackend` pour rendre une référence. |
+| `joid-backend-template-X.Y.Z.zip` | Un projet Gradle de départ. |
+
+Le gabarit compile avec les jars de son dossier `libs/` et déclare JavaCV et FFmpeg comme le cœur — la lecture vidéo en a besoin à l'exécution et aucun jar ne les embarque. Il compile tel quel, avec des bridges qui lèvent `UnsupportedOperationException` tant qu'ils ne sont pas implémentés :
+
+| Commande | Résultat |
+|---|---|
+| `./gradlew test` | Les suites de contrat et de snapshot, avec les références dans `.snapshots/references`. |
+| `./gradlew renderBaseline` | Rend les scénarios avec le `SnapshotBackend` de `joid-lwjgl3-X.Y.Z-dev.jar`, dans sa propre JVM. |
+| `./gradlew crossBackendTest` | Compare les captures du backend à cette référence avec une tolérance d'un niveau par canal. |
+| `./gradlew build` | Un jar dev et un jar prod qui embarquent le cœur correspondant. |
+| `./gradlew testDevJar testProdJar` | Lance les tests sur les jars packagés. |
+| `./gradlew runDemo` | Lance la fenêtre de démo. |
+
+`SnapshotBaseline <classe du backend> <dossier de sortie>` rend chaque scénario avec un `ISnapshotBackend`, et `SnapshotComparison <dossier du rapport> <dossier de référence> <dossier comparé>...` compare des dossiers de captures, n'importe quel outil de build peut donc les lancer.
+
+La classe `Backend` du gabarit appelle `JOID.checkVersion(version)` avant d'enregistrer les bridges : elle affiche un avertissement et renvoie `false` quand le JOID chargé a une autre version majeure que celle ciblée par le backend. Un backend s'appuie sur `be.zeldown.joid.lib.bridge` et ses sous-packages — bridges, état de rendu, sources et uniforms de shaders, textures, framebuffers et sommets —, sur `be.zeldown.joid.internal.JOID` pour charger JOID et vérifier sa version, et sur `be.zeldown.joid.demo` pour sa fenêtre de démo.
 
 ## Voir aussi
 

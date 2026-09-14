@@ -57,6 +57,14 @@ public final class JOID {
 		return this;
 	}
 
+	public static boolean checkVersion(final @NonNull String version) {
+		final boolean compatible = version.split("[.]")[0].equals(JOID.VERSION.split("[.]")[0]);
+		if (!compatible) {
+			System.err.println("[JOID] This backend targets JOID " + version + " but JOID " + JOID.VERSION + " is loaded");
+		}
+		return compatible;
+	}
+
 	/* [ Setter Section ] */
 	public JOID setConfigDir(final @NonNull File configDir) {
 		this.configDir = configDir;

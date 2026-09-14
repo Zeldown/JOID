@@ -37,7 +37,7 @@ JOID is distributed via GitHub Releases for every backend (`lwjgl2`, `lwjgl3`, `
 - **joid-<backend>-X.Y.Z-prod.jar** — production build (excludes dev/demo assets)
 - **joid-<backend>-X.Y.Z-dev.jar** — dev build (includes demo assets, fonts, demo textures)
 
-Download the desired artifact from the [Releases page](https://github.com/Zeldown/JOID/releases) and add it to your project's classpath. To build them from source, `./gradlew build` (with `-Pdev` for the dev flavour) copies the jar of every backend into `build/libs`.
+Download the desired artifact from the [Releases page](https://github.com/Zeldown/JOID/releases) and add it to your project's classpath. To build them from source, `./gradlew build` (with `-Pdev` for the dev flavour) copies every release artifact into `build/libs`.
 
 ### Gradle
 
@@ -75,7 +75,7 @@ JOID is a multi-module Gradle build. The `core` module contains the engine-agnos
 | `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `Backend.register(window)` |
 | `testkit` | Snapshot test framework shared by the backends | — |
 
-Entry points live in the `be.zeldown.joid.impl.<module>` package of each backend. Backends only implement the bridges — they never modify the `core` module. See [Backends](documentation/content/ui/backends.md) to write a new one.
+Entry points live in the `be.zeldown.joid.impl.<module>` package of each backend. Backends only implement the bridges — they never modify the `core` module. See [Backends](documentation/content/ui/backends.md) to write a new one, in this repository or in your own from the `joid-backend-template` of each release.
 
 ## Tests
 

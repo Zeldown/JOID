@@ -1,4 +1,4 @@
-package be.zeldown.joid.impl.vulkan;
+package be.zeldown.joid.impl.vulkan.snapshot;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryStack;
@@ -8,6 +8,7 @@ import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkBufferImageCopy;
 import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 
+import be.zeldown.joid.impl.vulkan.Backend;
 import be.zeldown.joid.impl.vulkan.render.Context;
 import be.zeldown.joid.impl.vulkan.render.RenderBridge;
 import be.zeldown.joid.impl.vulkan.render.Swapchain;

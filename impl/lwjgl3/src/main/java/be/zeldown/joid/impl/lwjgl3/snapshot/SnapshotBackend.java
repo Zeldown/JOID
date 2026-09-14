@@ -1,4 +1,4 @@
-package be.zeldown.joid.impl.lwjgl3;
+package be.zeldown.joid.impl.lwjgl3.snapshot;
 
 import java.nio.ByteBuffer;
 
@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.system.Platform;
 
+import be.zeldown.joid.impl.lwjgl3.Backend;
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
 import be.zeldown.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;

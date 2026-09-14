@@ -53,15 +53,36 @@ subprojects {
 }
 
 /* Build */
-task collectJars(type: Copy) {
+task backendTemplate(type: Zip) {
     group = 'JOID'
-    description = 'Copies the jar of every backend into build/libs.'
-    dependsOn ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar'
-    from { ['lwjgl2', 'lwjgl3', 'vulkan'].collect { project(":$it").shadowJar.archivePath } }
+    description = 'Packages the template of a backend developed in its own repository.'
+    baseName = 'joid-backend-template'
+    destinationDir = file('build/distributions')
+    from('template') {
+        filter { line -> line.replace('@JOID_VERSION@', project.version.toString()) }
+        rename 'gitignore', '.gitignore'
+    }
+    from(rootDir) {
+        include 'gradlew.bat', 'gradle/wrapper/**'
+    }
+    from(rootDir) {
+        include 'gradlew'
+        fileMode = 0755
+        filter(org.apache.tools.ant.filters.FixCrLfFilter, eol: org.apache.tools.ant.filters.FixCrLfFilter.CrLf.newInstance('lf'))
+    }
+}
+
+task collectArtifacts(type: Copy) {
+    group = 'JOID'
+    description = 'Copies every release artifact into build/libs.'
+    dependsOn ':core:shadowJar', ':testkit:jar', ':glfw:jar', ':openal:jar', ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar'
+    from { [':core', ':lwjgl2', ':lwjgl3', ':vulkan'].collect { project(it).shadowJar.archivePath } }
+    from { [':testkit', ':glfw', ':openal'].collect { project(it).jar.archivePath } }
+    from backendTemplate
     into file('build/libs')
 }
 
-assemble.dependsOn collectJars
+assemble.dependsOn collectArtifacts
 
 /* Tests */
 task crossBackendTest(type: JavaExec) {
@@ -70,7 +91,7 @@ task crossBackendTest(type: JavaExec) {
     dependsOn ':lwjgl2:test', ':lwjgl3:test', ':vulkan:test'
     main = "be.zeldown.joid.test.snapshot.SnapshotComparison"
     classpath = project(':testkit').sourceSets.main.runtimeClasspath
-    args file('build/snapshots').absolutePath, 'lwjgl2', 'lwjgl3', 'vulkan'
+    args file('build/snapshots/cross').absolutePath, file('build/snapshots/lwjgl2').absolutePath, file('build/snapshots/lwjgl3').absolutePath, file('build/snapshots/vulkan').absolutePath
 }
 
 gradle.buildFinished {

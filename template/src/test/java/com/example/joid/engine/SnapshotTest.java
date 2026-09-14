@@ -1,14 +1,12 @@
-package be.zeldown.joid.impl.lwjgl2;
+package com.example.joid.engine;
 
-import be.zeldown.joid.impl.lwjgl2.snapshot.SnapshotBackend;
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
 import be.zeldown.joid.test.snapshot.SnapshotSuite;
-import lombok.NonNull;
 
 public class SnapshotTest extends SnapshotSuite {
 
 	@Override
-	protected @NonNull ISnapshotBackend createBackend() {
+	protected ISnapshotBackend createBackend() {
 		return new SnapshotBackend();
 	}
 

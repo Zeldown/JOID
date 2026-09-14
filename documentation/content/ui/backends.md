@@ -101,7 +101,7 @@ while (!GLFW.glfwWindowShouldClose(window)) {
 
 ## Writing a backend
 
-A backend implements `IWindowBridge`, `IAudioBridge` and `IRenderBridge`, and never modifies the `core` module. Add it as a module under `impl/`, include it in `settings.gradle` and apply `gradle/backend.gradle` to package it with the core.
+A backend implements `IWindowBridge`, `IAudioBridge` and `IRenderBridge`, and never modifies the `core` module. Add it as a module under `impl/`, include it in `settings.gradle` and apply `gradle/backend.gradle` to package it with the core. It can also live in its own repository and depend only on the JOID jars, as described in *Backend in its own repository* below.
 
 ### Render bridge
 
@@ -135,7 +135,7 @@ Every generated header ends with a `#line` directive, so compilation errors poin
 
 ### Tests
 
-Snapshot tests live in the `testkit` module. A backend implements `ISnapshotBackend` in its `src/test` sources — create an offscreen surface of the requested size, run a frame, capture a region of its pixels, release it and name the renderer — and extends `SnapshotSuite`:
+Snapshot tests live in the `testkit` module. A backend implements `ISnapshotBackend` — create an offscreen surface of the requested size, run a frame, capture a region of its pixels, release it and name the renderer — and extends `SnapshotSuite` and `RenderBridgeContractSuite` in its tests:
 
 ```java
 public class SnapshotTest extends SnapshotSuite {
@@ -148,9 +148,13 @@ public class SnapshotTest extends SnapshotSuite {
 }
 ```
 
-The suite registers a `ManualClockBridge`, checks that every core shader compiles, then plays each scenario of `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` and `video`. Every scenario starts from the same state: no UI, the clock at the same instant, a 1920×1080 window, dev mode off, no key held and no mask. Time only advances with `wait` and `moveto`, by frames of 16 ms, and lerps and the fps counter follow the frame time measured on the clock, so every run renders the same pixels. Each shot waits for the resources being loaded, for every video to display the frame matching the clock, then for two identical consecutive frames. Videos and GIFs follow the clock, so a paused clock freezes them, audio is muted, and URL resources are downloaded once into `.snapshots/cache` so later runs work offline.
+`RenderBridgeContractTest` extends `RenderBridgeContractSuite` the same way. The contract suite checks the render bridge without reference images, in a few seconds: every core shader compiles, the current color and vertex colors are drawn, `ARGB` textures show their first texel at the top-left, `resetTexture()` binds an opaque white texture, framebuffers keep what is drawn into them, `popState()` restores the framebuffer, shader, viewport and line state, a texture can be deleted twice and the OpenGL projection puts the origin at the top-left of the capture.
+
+The snapshot suite registers a `ManualClockBridge`, then plays each scenario of `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` and `video`. Every scenario starts from the same state: no UI, the clock at the same instant, a 1920×1080 window, dev mode off, no key held and no mask. Time only advances with `wait` and `moveto`, by frames of 16 ms, and lerps and the fps counter follow the frame time measured on the clock, so every run renders the same pixels. Each shot waits for the resources being loaded, for every video to display the frame matching the clock, then for two identical consecutive frames. Videos and GIFs follow the clock, so a paused clock freezes them, audio is muted, and URL resources are downloaded once into `.snapshots/cache` so later runs work offline.
 
 References belong to each machine and graphics card: they are stored in `.snapshots/<module>/<renderer>/`, which git ignores. A shot without reference is recorded on the first run; afterwards every shot must match its reference pixel for pixel. References of shots removed from the scenarios are deleted after the run.
+
+The suites read their folders from system properties, with defaults that work from any IDE or build tool: `joid.snapshot.references` (`.snapshots/references`), `joid.snapshot.output` (`build/snapshots/renders`), `joid.snapshot.cache` (`.snapshots/cache`) and `joid.snapshot.update`. The JOID build sets them for each module. In the JOID backends, `SnapshotBackend` lives in the `snapshot` package of the main sources, so their dev jar can render a baseline, and their prod jar leaves it out.
 
 | Command | Result |
 |---|---|
@@ -190,6 +194,34 @@ A scenario is a text file with one command per line; `#` starts a comment.
 To add a capture, add its commands to a scenario — or add a scenario file and its `matches…Snapshots` test to `SnapshotSuite` — then run `./gradlew test`: the new shots are recorded as references.
 
 `UIDemoVideo` masks its statistics overlay, which shows the memory usage and the decoder queues.
+
+## Backend in its own repository
+
+A backend does not have to live in the JOID repository: each release publishes the jars needed to develop, test and package one elsewhere.
+
+| Artifact | Contents |
+|---|---|
+| `joid-core-X.Y.Z-dev.jar` | The core with its embedded dependencies and the demo assets, to compile, test and run the demo. |
+| `joid-core-X.Y.Z-prod.jar` | The same core without `assets/demo`, embedded in the prod jar of the backend. |
+| `joid-testkit-X.Y.Z.jar` | `SnapshotSuite`, `RenderBridgeContractSuite`, the scenarios, the report, `SnapshotBaseline` and `SnapshotComparison`. It needs JUnit 4. |
+| `joid-glfw-X.Y.Z.jar`, `joid-openal-X.Y.Z.jar` | The GLFW window and OpenAL audio bridges, for engines built on them. |
+| `joid-<backend>-X.Y.Z-dev.jar` | The official backends, with their `SnapshotBackend` to render a baseline. |
+| `joid-backend-template-X.Y.Z.zip` | A Gradle project to start from. |
+
+The template compiles against the jars of its `libs/` folder and declares JavaCV and FFmpeg like the core — video playback needs them at runtime and no jar embeds them. It compiles as is, with bridges that throw `UnsupportedOperationException` until they are implemented:
+
+| Command | Result |
+|---|---|
+| `./gradlew test` | The contract and snapshot suites, with references in `.snapshots/references`. |
+| `./gradlew renderBaseline` | Renders the scenarios with the `SnapshotBackend` of `joid-lwjgl3-X.Y.Z-dev.jar`, in its own JVM. |
+| `./gradlew crossBackendTest` | Compares the shots of the backend to that baseline within one level per channel. |
+| `./gradlew build` | A dev jar and a prod jar that embed the matching core. |
+| `./gradlew testDevJar testProdJar` | Runs the tests against the packaged jars. |
+| `./gradlew runDemo` | Launches the demo window. |
+
+`SnapshotBaseline <backend class> <output directory>` renders every scenario with an `ISnapshotBackend`, and `SnapshotComparison <report directory> <reference directory> <candidate directory>...` compares directories of shots, so any build tool can run them.
+
+The `Backend` class of the template calls `JOID.checkVersion(version)` before registering the bridges: it prints a warning and returns `false` when the loaded JOID has another major version than the one the backend targets. A backend relies on `be.zeldown.joid.lib.bridge` and its subpackages — bridges, render state, shader sources and uniforms, textures, framebuffers and vertices —, on `be.zeldown.joid.internal.JOID` to load JOID and check its version, and on `be.zeldown.joid.demo` for its demo window.
 
 ## See also
 

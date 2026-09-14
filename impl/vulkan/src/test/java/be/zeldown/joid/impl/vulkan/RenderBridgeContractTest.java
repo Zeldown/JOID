@@ -1,11 +1,11 @@
 package be.zeldown.joid.impl.vulkan;
 
 import be.zeldown.joid.impl.vulkan.snapshot.SnapshotBackend;
+import be.zeldown.joid.test.contract.RenderBridgeContractSuite;
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
-import be.zeldown.joid.test.snapshot.SnapshotSuite;
 import lombok.NonNull;
 
-public class SnapshotTest extends SnapshotSuite {
+public class RenderBridgeContractTest extends RenderBridgeContractSuite {
 
 	@Override
 	protected @NonNull ISnapshotBackend createBackend() {

@@ -25,6 +25,20 @@ dependencies {
     compile "org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64"
 }
 
+task shadowJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    group = 'build'
+    description = 'Builds the core jar with its embedded dependencies for backends developed in their own repository.'
+    from sourceSets.main.output
+    configurations = [project.configurations.shadow]
+    classifier = project.hasProperty('dev') ? 'dev' : 'prod'
+
+    if (!project.hasProperty('dev')) {
+        exclude 'assets/demo/*'
+    }
+}
+
+build.dependsOn shadowJar
+
 task updateVersion() {
     group = 'JOID'
     description = 'Writes the project version into JOID.VERSION.'

@@ -22,6 +22,7 @@ shadowJar {
 
     if (!project.hasProperty('dev')) {
         exclude 'assets/demo/*'
+        exclude "be/zeldown/joid/impl/${project.name}/snapshot/**"
     }
 }
 
@@ -29,6 +30,7 @@ build.dependsOn shadowJar
 
 
 dependencies {
+    compileOnly project(':testkit')
     testCompile project(':testkit')
 }
 
@@ -43,6 +45,7 @@ test {
     def output = rootProject.file("build/snapshots/${project.name}")
 
     workingDir = file("$buildDir/snapshot")
+    forkEvery = 1
     inputs.files fileTree(references)
     outputs.dir output
 

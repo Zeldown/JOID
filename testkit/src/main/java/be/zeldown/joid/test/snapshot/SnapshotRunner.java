@@ -1,12 +1,12 @@
 package be.zeldown.joid.test.snapshot;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,6 +42,8 @@ public final class SnapshotRunner {
 	private static final int   MASK       = 0xFFFF00FF;
 	private static final Color BACKGROUND = new Color(50, 50, 50);
 
+	private static final List<String> SCENARIOS = Arrays.asList("dev", "popup", "video", "static", "window", "transition", "interaction");
+
 	private static final String SHIFTED_DIGITS  = ")!@#$%^&*(";
 	private static final String SYMBOLS         = " '-,./;=[\\]`";
 	private static final String SHIFTED_SYMBOLS = " \"_<>?:+{|}~";
@@ -70,7 +72,7 @@ public final class SnapshotRunner {
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
 		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
-		ResourceResolver.register(new SnapshotUrlResolver(new File(System.getProperty("joid.snapshot.cache"))));
+		ResourceResolver.register(new SnapshotUrlResolver(SnapshotSettings.getCache()));
 		runner.resize(SnapshotRunner.WIDTH, SnapshotRunner.HEIGHT);
 
 		JOID.inst().setDevMode(false).setDemoMode(true).load();
@@ -85,6 +87,10 @@ public final class SnapshotRunner {
 
 	public @NonNull String getRenderer() {
 		return this.backend.getRenderer().replaceAll("[^A-Za-z0-9]+", "-").replaceAll("^-|-$", "");
+	}
+
+	public static @NonNull List<String> getScenarios() {
+		return SnapshotRunner.SCENARIOS;
 	}
 
 	public static @NonNull List<String> getShots(final @NonNull String scenario) {

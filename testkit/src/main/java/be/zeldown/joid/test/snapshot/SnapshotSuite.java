@@ -11,17 +11,11 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
-import be.zeldown.joid.lib.bridge.BridgeHandler;
-import be.zeldown.joid.lib.bridge.render.shader.IShader;
-import be.zeldown.joid.lib.bridge.render.shader.source.ShaderStage;
-import be.zeldown.joid.lib.bridge.render.state.BlendState;
-import be.zeldown.joid.test.CoreShaders;
 import lombok.NonNull;
 
 public abstract class SnapshotSuite {
 
-	private static final List<SnapshotEntry> ENTRIES   = new ArrayList<>();
-	private static final String[]            SCENARIOS = {"dev", "popup", "video", "static", "window", "transition", "interaction"};
+	private static final List<SnapshotEntry> ENTRIES = new ArrayList<>();
 
 	private static SnapshotRunner runner;
 
@@ -34,19 +28,10 @@ public abstract class SnapshotSuite {
 			return;
 		}
 
-		SnapshotReport.write(new File(SnapshotSuite.getOutput(), "report.html"), "JOID snapshots - " + SnapshotSuite.runner.getRenderer(), SnapshotSuite.ENTRIES);
+		SnapshotReport.write(new File(SnapshotSettings.getOutput(), "report.html"), "JOID snapshots - " + SnapshotSuite.runner.getRenderer(), SnapshotSuite.ENTRIES);
 		SnapshotSuite.ENTRIES.clear();
 		SnapshotSuite.runner.stop();
 		SnapshotSuite.runner = null;
-	}
-
-	@Test
-	public void compilesCoreShaders() {
-		this.getRunner();
-		for (final String name : CoreShaders.getNames()) {
-			final IShader shader = BridgeHandler.RENDER.get().createShader(CoreShaders.read(name, ShaderStage.VERTEX), CoreShaders.read(name, ShaderStage.FRAGMENT), BlendState.NORMAL);
-			Assert.assertTrue("The " + name + " shader does not compile", shader.isActive());
-		}
 	}
 
 	@Test
@@ -92,9 +77,9 @@ public abstract class SnapshotSuite {
 	}
 
 	private void verify(final String scenario) {
-		final File references = new File(System.getProperty("joid.snapshot.references"), this.getRunner().getRenderer());
-		final File output = SnapshotSuite.getOutput();
-		final boolean update = Boolean.getBoolean("joid.snapshot.update");
+		final File references = new File(SnapshotSettings.getReferences(), this.getRunner().getRenderer());
+		final File output = SnapshotSettings.getOutput();
+		final boolean update = SnapshotSettings.isUpdate();
 
 		final List<String> failures = new ArrayList<>();
 		for (final Map.Entry<String, SnapshotImage> shot : this.getRunner().run(scenario).entrySet()) {
@@ -121,17 +106,13 @@ public abstract class SnapshotSuite {
 		Assert.assertTrue(String.join(System.lineSeparator(), failures) + System.lineSeparator() + "Report: " + new File(output, "report.html").toPath().toUri().toASCIIString(), failures.isEmpty());
 	}
 
-	private static File getOutput() {
-		return new File(System.getProperty("joid.snapshot.output"));
-	}
-
 	private static void pruneReferences() {
 		final Set<String> shots = new HashSet<>();
-		for (final String scenario : SnapshotSuite.SCENARIOS) {
+		for (final String scenario : SnapshotRunner.getScenarios()) {
 			shots.addAll(SnapshotRunner.getShots(scenario));
 		}
 
-		final File[] renderers = new File(System.getProperty("joid.snapshot.references")).listFiles(File::isDirectory);
+		final File[] renderers = SnapshotSettings.getReferences().listFiles(File::isDirectory);
 		if (renderers == null) {
 			return;
 		}

@@ -1,0 +1,181 @@
+apply plugin: 'java'
+
+group = 'com.example.joid'
+version = '1.0.0'
+archivesBaseName = 'joid-engine'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+    joidVersion = '@JOID_VERSION@'
+    lwjglVersion = '3.3.4'
+    lwjglNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? 'natives-windows' : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-macos-arm64' : 'natives-macos') : 'natives-linux'
+    macOs = org.gradle.internal.os.OperatingSystem.current().isMacOsX()
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    joidDev
+    joidProd
+    embed
+    video
+    baseline
+    compile.extendsFrom joidDev, embed, video
+}
+
+dependencies {
+    joidDev files("libs/joid-core-${joidVersion}-dev.jar")
+    joidProd files("libs/joid-core-${joidVersion}-prod.jar")
+
+    video("org.bytedeco:javacv:1.5.9") { transitive = false }
+    video "org.bytedeco:javacpp:1.5.9"
+    video("org.bytedeco:ffmpeg:6.0-1.5.9") { transitive = false }
+
+    video "org.bytedeco:ffmpeg:6.0-1.5.9:windows-x86_64"
+    video "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-x86_64"
+    video "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-arm64"
+    video "org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64"
+
+    testCompile files("libs/joid-testkit-${joidVersion}.jar")
+    testCompile "junit:junit:4.13.2"
+
+    baseline files("libs/joid-lwjgl3-${joidVersion}-dev.jar")
+    ['lwjgl', 'lwjgl-glfw', 'lwjgl-opengl', 'lwjgl-openal'].each { module ->
+        baseline "org.lwjgl:$module:$lwjglVersion"
+        baseline "org.lwjgl:$module:$lwjglVersion:$lwjglNatives"
+    }
+}
+
+/* Packaging */
+task devJar(type: Jar) {
+    group = 'build'
+    description = 'Builds the dev jar, with the JOID core and its demo assets.'
+    classifier = 'dev'
+    from sourceSets.main.output
+    from({ (configurations.joidDev + configurations.embed).collect { zipTree(it) } }) {
+        exclude 'META-INF/MANIFEST.MF'
+    }
+}
+
+task prodJar(type: Jar) {
+    group = 'build'
+    description = 'Builds the prod jar, with the JOID core and without the demo assets.'
+    classifier = 'prod'
+    from sourceSets.main.output
+    from({ (configurations.joidProd + configurations.embed).collect { zipTree(it) } }) {
+        exclude 'META-INF/MANIFEST.MF'
+    }
+}
+
+assemble.dependsOn devJar, prodJar
+
+/* Tests */
+def snapshots = { Test testTask, String name ->
+    def output = file("$buildDir/snapshots/$name")
+    testTask.workingDir = file("$buildDir/snapshot/$name")
+    testTask.forkEvery = 1
+    testTask.inputs.files fileTree('.snapshots/references')
+    testTask.outputs.dir output
+    testTask.systemProperty 'joid.snapshot.references', file('.snapshots/references').absolutePath
+    testTask.systemProperty 'joid.snapshot.output', output.absolutePath
+    testTask.systemProperty 'joid.snapshot.cache', file('.snapshots/cache').absolutePath
+    testTask.testLogging.exceptionFormat = 'full'
+    testTask.testLogging.events 'failed'
+    if (macOs) {
+        testTask.jvmArgs '-XstartOnFirstThread'
+    }
+    testTask.doFirst {
+        delete testTask.workingDir, output
+        testTask.workingDir.mkdirs()
+    }
+}
+
+task testDevJar(type: Test) {
+    group = 'verification'
+    description = 'Runs every test against the dev jar.'
+    dependsOn devJar
+    testClassesDir = sourceSets.test.output.classesDir
+    classpath = files(devJar.archivePath) + sourceSets.test.output + configurations.testRuntime - configurations.joidDev - configurations.embed
+}
+
+task testProdJar(type: Test) {
+    group = 'verification'
+    description = 'Runs the contract and unit tests against the prod jar.'
+    dependsOn prodJar
+    testClassesDir = sourceSets.test.output.classesDir
+    classpath = files(prodJar.archivePath) + sourceSets.test.output + configurations.testRuntime - configurations.joidDev - configurations.embed
+    exclude '**/SnapshotTest.class'
+}
+
+snapshots(test, archivesBaseName)
+snapshots(testDevJar, "${archivesBaseName}-dev")
+snapshots(testProdJar, "${archivesBaseName}-prod")
+
+task updateSnapshots {
+    group = 'JOID'
+    description = 'Runs the snapshot tests and replaces the reference snapshots.'
+    dependsOn test
+}
+
+gradle.taskGraph.whenReady { graph ->
+    def update = graph.hasTask(updateSnapshots)
+    test.inputs.property 'updateSnapshots', update
+    test.systemProperty 'joid.snapshot.update', update
+}
+
+task renderBaseline(type: JavaExec) {
+    group = 'JOID'
+    description = 'Renders the snapshot scenarios with the official LWJGL 3 backend.'
+    main = 'be.zeldown.joid.test.snapshot.SnapshotBaseline'
+    classpath = configurations.baseline + files("libs/joid-testkit-${joidVersion}.jar") + configurations.video
+    workingDir = file("$buildDir/snapshot/lwjgl3")
+    systemProperty 'joid.snapshot.cache', file('.snapshots/cache').absolutePath
+    args 'be.zeldown.joid.impl.lwjgl3.snapshot.SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
+    if (macOs) {
+        jvmArgs '-XstartOnFirstThread'
+    }
+    doFirst {
+        delete workingDir
+        workingDir.mkdirs()
+    }
+}
+
+task crossBackendTest(type: JavaExec) {
+    group = 'JOID'
+    description = 'Compares the snapshots of this backend to the official LWJGL 3 rendering.'
+    dependsOn test, renderBaseline
+    main = 'be.zeldown.joid.test.snapshot.SnapshotComparison'
+    classpath = files("libs/joid-testkit-${joidVersion}.jar") + configurations.joidDev
+    args file("$buildDir/snapshots/cross").absolutePath, file("$buildDir/snapshots/lwjgl3").absolutePath, file("$buildDir/snapshots/$archivesBaseName").absolutePath
+}
+
+renderBaseline.mustRunAfter test
+
+gradle.buildFinished {
+    tasks.withType(Test).each { testTask ->
+        def report = new File(testTask.systemProperties['joid.snapshot.output'].toString(), 'report.html')
+        if (testTask.state.failure != null && report.exists()) {
+            println "Snapshot report of ${testTask.name}: ${report.toPath().toUri().toASCIIString()}"
+        }
+    }
+
+    def report = file("$buildDir/snapshots/cross/report.html")
+    if (crossBackendTest.state.failure != null && report.exists()) {
+        println "Cross backend report: ${report.toPath().toUri().toASCIIString()}"
+    }
+}
+
+/* Demo */
+task runDemo(type: JavaExec) {
+    group = 'JOID'
+    description = 'Launches the demo window.'
+    main = 'com.example.joid.engine.demo.DemoWindow'
+    classpath = sourceSets.main.runtimeClasspath
+    if (macOs) {
+        jvmArgs '-XstartOnFirstThread'
+    }
+}
