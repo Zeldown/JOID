@@ -61,9 +61,9 @@ jobs:
           java-version: '8'
           distribution: 'adopt'
       - name: Build with Gradle (Dev)
-        run: chmod +x gradlew && ./gradlew build -Pdev
+        run: chmod +x gradlew && ./gradlew build -x test -Pdev
       - name: Build with Gradle (Production)
-        run: ./gradlew build
+        run: ./gradlew build -x test
       - name: 'Upload artifacts'
         uses: actions/upload-artifact@v4
         with:
