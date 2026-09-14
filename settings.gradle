@@ -2,8 +2,8 @@ rootProject.name = 'JOID'
 
 include 'core'
 include 'glfw', 'openal'
-include 'lwjgl2', 'lwjgl3'
+include 'lwjgl2', 'lwjgl3', 'vulkan'
 
-['glfw', 'openal', 'lwjgl2', 'lwjgl3'].each { name ->
+['glfw', 'openal', 'lwjgl2', 'lwjgl3', 'vulkan'].each { name ->
     project(":$name").projectDir = file("impl/$name")
 }
