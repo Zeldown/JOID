@@ -18,6 +18,11 @@ public class DemoWindow extends be.zeldown.joid.impl.glfw.DemoWindow {
 	}
 
 	@Override
+	protected String getEngineName() {
+		return "LWJGL 3";
+	}
+
+	@Override
 	protected void configureWindow() {
 		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
 		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);

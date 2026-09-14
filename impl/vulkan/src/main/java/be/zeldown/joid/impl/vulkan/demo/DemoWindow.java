@@ -19,6 +19,11 @@ public class DemoWindow extends be.zeldown.joid.impl.glfw.DemoWindow {
 	}
 
 	@Override
+	protected String getEngineName() {
+		return "Vulkan";
+	}
+
+	@Override
 	protected void configureWindow() {
 		GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
 	}

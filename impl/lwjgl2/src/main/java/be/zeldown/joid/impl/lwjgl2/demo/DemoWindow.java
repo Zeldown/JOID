@@ -34,7 +34,7 @@ public class DemoWindow extends UIBridge {
 	public DemoWindow() throws LWJGLException {
 		Display.setDisplayMode(new DisplayMode(1920, 1080));
 		Display.setResizable(true);
-		Display.setTitle("JOID - Demo");
+		Display.setTitle("JOID - Demo (LWJGL 2)");
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 
 		this.identity();
