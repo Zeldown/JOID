@@ -1,32 +1,7 @@
 #!/bin/sh
 
-if ! git diff --cached --name-only | grep -qE '^(core/|impl/|gradle/|build\.gradle|settings\.gradle)'; then
-    exit 0
-fi
-
 echo ""
-echo "🚀 Running pre-commit hook"
-echo ""
+echo "🚀 Running pre-commit hook on the staged changes"
 echo ""
 
-echo "🔍 Running unit, snapshot and cross-backend tests"
-./gradlew check crossBackendTest --offline
-status=$?
-if [ $status -ne 0 ]; then
-    echo ""
-    echo ""
-    echo "❌ Commit rejected due to failing tests"
-    echo "   Open build/snapshots/<module>/report.html to inspect the differences"
-    echo "   Run ./gradlew updateSnapshots if the visual change is intended"
-    echo ""
-    echo ""
-    exit $status
-fi
-
-echo ""
-echo ""
-echo "✅ Done with tests"
-echo ""
-echo ""
-
-exit $status
+git diff --cached --name-only | sh scripts/run-tests index

@@ -1,0 +1,81 @@
+#!/bin/sh
+
+mode=$1
+files=$(cat)
+
+if ! printf '%s\n' "$files" | grep -qE '^(core/|impl/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
+    echo "🔍 No source change, tests skipped"
+    echo ""
+    exit 0
+fi
+
+stashed=0
+restore() {
+    if [ $stashed -eq 1 ]; then
+        echo ""
+        echo "🧹 Restoring the changes left out of the test"
+        git reset -q --hard
+        git stash pop -q --index || echo "⚠️  Unable to restore them, run: git stash pop --index"
+    fi
+}
+
+before=$(git rev-parse -q --verify refs/stash)
+if [ "$mode" = "index" ]; then
+    git stash push -q --keep-index --include-untracked -m "joid-tests"
+else
+    git stash push -q --include-untracked -m "joid-tests"
+fi
+
+if [ "$(git rev-parse -q --verify refs/stash)" != "$before" ]; then
+    stashed=1
+fi
+trap restore EXIT
+
+all=0
+if printf '%s\n' "$files" | grep -qE '^(core/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
+    all=1
+fi
+
+modules=""
+for module in lwjgl2 lwjgl3 vulkan; do
+    if [ $all -eq 1 ] || printf '%s\n' "$files" | grep -q "^impl/$module/"; then
+        modules="$modules $module"
+    elif [ "$module" != "lwjgl2" ] && printf '%s\n' "$files" | grep -qE '^impl/(glfw|openal)/'; then
+        modules="$modules $module"
+    fi
+done
+
+tasks=""
+if [ $all -eq 1 ]; then
+    tasks=":core:check :testkit:check"
+fi
+
+for module in lwjgl2 lwjgl3 vulkan; do
+    case " $modules " in
+        *" $module "*)
+            tasks="$tasks :$module:check"
+            ;;
+        *)
+            if [ -d "build/snapshots/$module" ]; then
+                tasks="$tasks -x :$module:test"
+            fi
+            ;;
+    esac
+done
+
+echo "🔍 Testing$modules, then comparing the backends"
+echo ""
+./gradlew $tasks crossBackendTest --offline
+status=$?
+
+echo ""
+if [ $status -ne 0 ]; then
+    echo "❌ Tests failed"
+    echo "   Open build/snapshots/<module>/report.html or build/snapshots/cross/report.html to inspect the differences"
+    echo "   Run ./gradlew updateSnapshots if the visual change is intended"
+else
+    echo "✅ Done with tests"
+fi
+echo ""
+
+exit $status

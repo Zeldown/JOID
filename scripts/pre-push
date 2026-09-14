@@ -1,54 +1,24 @@
 #!/bin/sh
 
 echo ""
-echo "🚀 Running pre-push hook"
-echo ""
-echo ""
-
-echo "🔍 Stashing changes"
-git stash -q --keep-index
-
-echo ""
+echo "🚀 Running pre-push hook on the pushed commits"
 echo ""
 
-echo "🔍 Checking build status"
-./gradlew check
-status=$?
-if [ $status -ne 0 ]; then
-    echo ""
-    echo ""
-    echo "❌ Push rejected due to failing gradle check"
-    echo ""
-    echo ""
-    exit $status
-fi
+zero=0000000000000000000000000000000000000000
+files=""
+while read -r local_ref local_sha remote_ref remote_sha; do
+    if [ "$local_sha" = "$zero" ]; then
+        continue
+    fi
 
-echo ""
-echo ""
+    if [ "$remote_sha" = "$zero" ]; then
+        changed=$(git ls-files)
+    else
+        changed=$(git diff --name-only "$remote_sha" "$local_sha" 2>/dev/null) || changed=$(git ls-files)
+    fi
 
-echo "🎉 Running Gradle tests"
-./gradlew test
-status=$?
-if [ $status -ne 0 ]; then
-    echo ""
-    echo ""
-    echo "❌ Push rejected due to failing gradle test"
-    echo ""
-    echo ""
-    exit $status
-fi
+    files="$files
+$changed"
+done
 
-echo ""
-echo ""
-
-echo "🧹 Popping changes from the stash"
-git stash pop -q
-
-echo ""
-echo ""
-echo "✅ Done with unit tests"
-echo ""
-echo ""
-
-# Exit with the captured status
-exit $status
+printf '%s\n' "$files" | sh scripts/run-tests head
