@@ -78,7 +78,7 @@ Entry points live in the `be.zeldown.joid.impl.<module>` package of each backend
 
 ## Tests
 
-`./gradlew test` runs the shader unit tests, then renders the demo UIs offscreen on each backend with a controlled clock and compares them pixel by pixel to the references in `impl/<module>/src/test/snapshots`. `./gradlew crossBackendTest` also compares the backends to each other, and `./gradlew test -PupdateSnapshots` accepts an intended visual change. These tests need a GPU and run before each commit through the hook installed by `./gradlew installLocalGitHook`. See [Backends](documentation/content/ui/backends.md#tests).
+`./gradlew test` runs the shader unit tests, then renders the demo UIs offscreen on each backend with a controlled clock and compares them pixel by pixel to the references in `impl/<module>/src/test/snapshots`. `./gradlew crossBackendTest` also compares the backends to each other, and `./gradlew updateSnapshots` accepts an intended visual change. These tests need a GPU and run before each commit through the hook installed by `./gradlew installLocalGitHook`. See [Backends](documentation/content/ui/backends.md#tests).
 
 ## Features
 

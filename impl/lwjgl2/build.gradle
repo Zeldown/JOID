@@ -12,6 +12,8 @@ apply from: rootProject.file('gradle/backend.gradle')
 
 /* Demo */
 task runDemo(type: JavaExec) {
+    group = 'JOID'
+    description = 'Launches the LWJGL 2 demo window.'
     main = "be.zeldown.joid.impl.lwjgl2.demo.DemoWindow"
     classpath = sourceSets.main.runtimeClasspath
     jvmArgs "-Djava.library.path=${file('native').absolutePath}"

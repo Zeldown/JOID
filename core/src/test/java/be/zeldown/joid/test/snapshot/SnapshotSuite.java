@@ -73,7 +73,7 @@ public abstract class SnapshotSuite {
 			}
 
 			if (!reference.exists()) {
-				failures.add(shot.getKey() + ": no reference snapshot, run ./gradlew test -PupdateSnapshots");
+				failures.add(shot.getKey() + ": no reference snapshot, run ./gradlew updateSnapshots");
 				continue;
 			}
 

@@ -152,7 +152,7 @@ The suite registers a `ManualClockBridge`, checks that every core shader compile
 | Command | Result |
 |---|---|
 | `./gradlew test` | Shader unit tests and snapshot tests of every module. Rendered shots and differences are written to `build/snapshots`. |
-| `./gradlew test -PupdateSnapshots` | Replaces the references after an intended visual change. |
+| `./gradlew updateSnapshots` | Replaces the references after an intended visual change. |
 | `./gradlew crossBackendTest` | Runs the tests, then compares the `lwjgl3` and `vulkan` shots to `lwjgl2`, tolerating up to 2000 pixels per shot for sub-pixel rasterization differences. Differences are written to `build/snapshots/cross`. |
 
 Snapshot tests need a GPU. The pre-commit hook installed by `./gradlew installLocalGitHook` runs `check` and `crossBackendTest` whenever a commit touches the sources or the build.

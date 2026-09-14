@@ -32,18 +32,22 @@ dependencies {
     testCompile project(':core').sourceSets.test.output
 }
 
+task updateSnapshots {
+    group = 'JOID'
+    description = 'Runs the snapshot tests of this backend and replaces its reference snapshots.'
+    dependsOn test
+}
+
 test {
     def references = file('src/test/snapshots')
     def output = rootProject.file("build/snapshots/${project.name}")
 
     workingDir = file("$buildDir/snapshot")
     inputs.dir references
-    inputs.property 'updateSnapshots', project.hasProperty('updateSnapshots')
     outputs.dir output
 
     systemProperty 'joid.snapshot.references', references.absolutePath
     systemProperty 'joid.snapshot.output', output.absolutePath
-    systemProperty 'joid.snapshot.update', project.hasProperty('updateSnapshots')
 
     testLogging {
         exceptionFormat 'full'
@@ -54,4 +58,10 @@ test {
         delete workingDir, output
         workingDir.mkdirs()
     }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    def update = graph.hasTask(updateSnapshots)
+    test.inputs.property 'updateSnapshots', update
+    test.systemProperty 'joid.snapshot.update', update
 }

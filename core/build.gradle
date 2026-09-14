@@ -26,6 +26,8 @@ dependencies {
 }
 
 task updateVersion() {
+    group = 'JOID'
+    description = 'Writes the project version into JOID.VERSION.'
     def javaFile = file('src/main/java/be/zeldown/joid/internal/JOID.java')
     if (javaFile.exists()) {
         javaFile.text = javaFile.text.replaceAll(

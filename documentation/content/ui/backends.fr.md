@@ -152,7 +152,7 @@ La suite enregistre un `ManualClockBridge`, vérifie que chaque shader du cœur 
 | Commande | Résultat |
 |---|---|
 | `./gradlew test` | Tests unitaires des shaders et tests de snapshot de chaque module. Les captures et les différences sont écrites dans `build/snapshots`. |
-| `./gradlew test -PupdateSnapshots` | Remplace les références après un changement visuel voulu. |
+| `./gradlew updateSnapshots` | Remplace les références après un changement visuel voulu. |
 | `./gradlew crossBackendTest` | Lance les tests, puis compare les captures `lwjgl3` et `vulkan` à `lwjgl2`, en tolérant jusqu'à 2000 pixels par capture pour les différences de rastérisation sous-pixel. Les différences sont écrites dans `build/snapshots/cross`. |
 
 Les tests de snapshot nécessitent un GPU. Le hook pre-commit installé par `./gradlew installLocalGitHook` lance `check` et `crossBackendTest` dès qu'un commit touche les sources ou le build.

@@ -14,6 +14,8 @@ apply from: rootProject.file('gradle/backend.gradle')
 
 /* Demo */
 task runDemo(type: JavaExec) {
+    group = 'JOID'
+    description = 'Launches the LWJGL 3 demo window.'
     main = "be.zeldown.joid.impl.lwjgl3.demo.DemoWindow"
     classpath = sourceSets.main.runtimeClasspath
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
