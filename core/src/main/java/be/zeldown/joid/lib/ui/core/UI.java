@@ -819,7 +819,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double diff = target - value;
 		final double absDiff = Math.abs(diff);
 
-		final double offset = speed / ((this.fps == 0D ? 1D : this.fps) / 60D) * absDiff / 3D;
+		final double offset = Math.min(absDiff, speed / ((this.fps == 0D ? 60D : this.fps) / 60D) * absDiff / 3D);
 
 		if (absDiff > snapDiff) {
 			value += diff > 0 ? offset : -offset;
