@@ -15,8 +15,6 @@ import lombok.NonNull;
 public final class SnapshotBackend implements ISnapshotBackend {
 
 	private Pbuffer buffer;
-	private int     width;
-	private int     height;
 
 	@Override
 	public void create(final int width, final int height) {
@@ -27,8 +25,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 			throw new IllegalStateException("Unable to create the LWJGL 2 pbuffer", e);
 		}
 
-		this.width  = width;
-		this.height = height;
 		Backend.register();
 	}
 
@@ -38,10 +34,10 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public @NonNull SnapshotImage capture() {
-		final ByteBuffer pixels = BufferUtils.createByteBuffer(this.width * this.height * 4);
-		GL11.glReadPixels(0, 0, this.width, this.height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
-		return SnapshotImage.fromBytes(pixels, this.width, this.height, true, false);
+	public @NonNull SnapshotImage capture(final int width, final int height) {
+		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
+		GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
+		return SnapshotImage.fromBytes(pixels, width, height, true, false);
 	}
 
 	@Override
@@ -52,6 +48,11 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	@Override
 	public void destroy() {
 		this.buffer.destroy();
+	}
+
+	@Override
+	public @NonNull String getRenderer() {
+		return GL11.glGetString(GL11.GL_RENDERER);
 	}
 
 }

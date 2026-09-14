@@ -3,11 +3,12 @@ package be.zeldown.joid.lib.bridge.clock;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.Setter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ManualClockBridge implements IClockBridge {
 
-	private long time;
+	@Setter private long time;
 
 	public static @NonNull ManualClockBridge create(final long time) {
 		return new ManualClockBridge(time);

@@ -5,6 +5,7 @@ import java.util.Random;
 import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.ui.core.UI;
@@ -18,7 +19,7 @@ public class UIDemoPopup extends UI {
 
 	@Override
 	public void init() {
-		final Random random = new Random();
+		final Random random = new Random(BridgeHandler.CLOCK.get().currentTimeMillis());
 
 		DemoTextFieldNode
 		.create(random.nextInt(1920 - 500) + 50, random.nextInt(1080 - 100) + 50, 400)

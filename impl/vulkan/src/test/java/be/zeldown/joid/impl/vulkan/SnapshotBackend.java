@@ -6,6 +6,7 @@ import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.vulkan.KHRSwapchain;
 import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkBufferImageCopy;
+import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 
 import be.zeldown.joid.impl.vulkan.render.Context;
 import be.zeldown.joid.impl.vulkan.render.RenderBridge;
@@ -47,13 +48,12 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public @NonNull SnapshotImage capture() {
+	public @NonNull SnapshotImage capture(final int width, final int height) {
 		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
 		final Context context = render.getContext();
 		final Swapchain swapchain = render.getSwapchain();
-		final int width = swapchain.getWidth();
-		final int height = swapchain.getHeight();
 		final long image = swapchain.getImages()[render.getImageIndex()];
+		final int offset = swapchain.getHeight() - height;
 
 		final Buffer buffer = Buffer.create(context, (long) width * height * 4L, VK10.VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 		context.submit(command -> {
@@ -62,6 +62,7 @@ public final class SnapshotBackend implements ISnapshotBackend {
 
 				final VkBufferImageCopy.Buffer copy = VkBufferImageCopy.calloc(1, stack);
 				copy.imageSubresource().aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).mipLevel(0).baseArrayLayer(0).layerCount(1);
+				copy.imageOffset().set(0, offset, 0);
 				copy.imageExtent().set(width, height, 1);
 				VK10.vkCmdCopyImageToBuffer(command, image, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer.getBuffer(), copy);
 
@@ -84,6 +85,15 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	public void destroy() {
 		GLFW.glfwDestroyWindow(this.window);
 		GLFW.glfwTerminate();
+	}
+
+	@Override
+	public @NonNull String getRenderer() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
+			VK10.vkGetPhysicalDeviceProperties(((RenderBridge) BridgeHandler.RENDER.get()).getContext().getPhysicalDevice(), properties);
+			return properties.deviceNameString();
+		}
 	}
 
 }

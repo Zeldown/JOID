@@ -16,7 +16,7 @@ if [ $status -ne 0 ]; then
     echo ""
     echo ""
     echo "❌ Commit rejected due to failing tests"
-    echo "   Rendered snapshots and differences are in build/snapshots"
+    echo "   Open build/snapshots/<module>/report.html to inspect the differences"
     echo "   Run ./gradlew updateSnapshots if the visual change is intended"
     echo ""
     echo ""

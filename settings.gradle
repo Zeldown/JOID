@@ -3,6 +3,7 @@ rootProject.name = 'JOID'
 include 'core'
 include 'glfw', 'openal'
 include 'lwjgl2', 'lwjgl3', 'vulkan'
+include 'testkit'
 
 ['glfw', 'openal', 'lwjgl2', 'lwjgl3', 'vulkan'].each { name ->
     project(":$name").projectDir = file("impl/$name")

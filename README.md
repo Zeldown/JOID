@@ -73,12 +73,13 @@ JOID is a multi-module Gradle build. The `core` module contains the engine-agnos
 | `lwjgl2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `Backend.register()` |
 | `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `Backend.register(window)` |
 | `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `Backend.register(window)` |
+| `testkit` | Snapshot test framework shared by the backends | — |
 
 Entry points live in the `be.zeldown.joid.impl.<module>` package of each backend. Backends only implement the bridges — they never modify the `core` module. See [Backends](documentation/content/ui/backends.md) to write a new one.
 
 ## Tests
 
-`./gradlew test` runs the shader unit tests, then renders the demo UIs offscreen on each backend with a controlled clock and compares them pixel by pixel to the references in `impl/<module>/src/test/snapshots`. `./gradlew crossBackendTest` also compares the backends to each other, and `./gradlew updateSnapshots` accepts an intended visual change. These tests need a GPU and run before each commit through the hook installed by `./gradlew installLocalGitHook`. See [Backends](documentation/content/ui/backends.md#tests).
+`./gradlew test` runs the shader unit tests, then renders the demo UIs offscreen on each backend with a controlled clock and compares them pixel by pixel to references recorded per machine in `.snapshots`. `./gradlew crossBackendTest` also requires every backend to render the same pixels, and `./gradlew updateSnapshots` accepts an intended visual change. Each run writes an interactive `report.html` to `build/snapshots` to inspect every difference down to the pixel. These tests need a GPU and run before each commit through the hook installed by `./gradlew installLocalGitHook`. See [Backends](documentation/content/ui/backends.md#tests).
 
 ## Features
 

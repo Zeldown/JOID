@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+:root {
+	--background: #0f0f12;
+	--panel: #18181b;
+	--hover: #202026;
+	--line: #2e2e33;
+	--text: #e4e4e7;
+	--muted: #8b8b94;
+	--green: #4ade80;
+	--blue: #60a5fa;
+	--red: #f87171;
+	--accent: #a78bfa;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+html, body {
+	height: 100%;
+	margin: 0;
+	background: var(--background);
+	color: var(--text);
+	font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body {
+	display: grid;
+	grid-template-columns: 320px minmax(0, 1fr);
+}
+
+aside {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	border-right: 1px solid var(--line);
+	background: var(--panel);
+}
+
+aside header {
+	padding: 14px;
+	border-bottom: 1px solid var(--line);
+}
+
+h1 {
+	margin: 0 0 4px;
+	font-size: 14px;
+}
+
+.muted {
+	color: var(--muted);
+}
+
+.filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 10px;
+}
+
+button {
+	padding: 5px 9px;
+	border: 1px solid var(--line);
+	border-radius: 6px;
+	background: var(--background);
+	color: var(--text);
+	font: inherit;
+	cursor: pointer;
+}
+
+button:hover {
+	background: var(--hover);
+}
+
+button.active {
+	border-color: var(--accent);
+	background: #26213a;
+	color: #fff;
+}
+
+input[type=search] {
+	width: 100%;
+	margin-top: 10px;
+	padding: 6px 9px;
+	border: 1px solid var(--line);
+	border-radius: 6px;
+	background: var(--background);
+	color: var(--text);
+	font: inherit;
+}
+
+#list {
+	flex: 1;
+	overflow: auto;
+}
+
+.item {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 8px 14px;
+	border-bottom: 1px solid var(--line);
+	cursor: pointer;
+	word-break: break-all;
+}
+
+.item:hover {
+	background: var(--hover);
+}
+
+.item.selected {
+	background: #26213a;
+}
+
+.badge {
+	flex-shrink: 0;
+	padding: 1px 7px;
+	border: 1px solid currentColor;
+	border-radius: 10px;
+	font-size: 11px;
+	white-space: nowrap;
+}
+
+.identical {
+	color: var(--green);
+}
+
+.recorded, .updated {
+	color: var(--blue);
+}
+
+.different {
+	color: var(--red);
+}
+
+main {
+	display: grid;
+	grid-template-rows: auto auto minmax(0, 1fr) auto;
+	min-width: 0;
+	min-height: 0;
+}
+
+.bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 14px;
+	border-bottom: 1px solid var(--line);
+}
+
+.group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.spacer {
+	flex: 1;
+}
+
+#control {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--muted);
+}
+
+#control output {
+	min-width: 48px;
+	color: var(--text);
+	font-variant-numeric: tabular-nums;
+}
+
+#stage {
+	position: relative;
+	overflow: hidden;
+	background: repeating-conic-gradient(#1b1b1f 0% 25%, #141417 0% 50%) 50% / 24px 24px;
+	cursor: crosshair;
+}
+
+#stage.dragging {
+	cursor: grabbing;
+}
+
+canvas {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+#loading {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: var(--muted);
+}
+
+#inspector {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 14px;
+	min-height: 38px;
+	padding: 8px 14px;
+	border-top: 1px solid var(--line);
+	font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+	font-size: 12px;
+}
+
+.swatch {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	margin-right: 6px;
+	border: 1px solid var(--line);
+	vertical-align: -3px;
+}
+
+.legend {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--muted);
+}
+
+.heat {
+	width: 90px;
+	height: 10px;
+	border-radius: 2px;
+	background: linear-gradient(90deg, rgb(255, 220, 0), rgb(255, 0, 0));
+}
+</style>
+</head>
+<body>
+<aside>
+	<header>
+		<h1>__TITLE__</h1>
+		<div id="summary" class="muted"></div>
+		<div class="filters">
+			<button data-filter="all" class="active">All</button>
+			<button data-filter="different">Different</button>
+			<button data-filter="recorded">Recorded</button>
+			<button data-filter="identical">Identical</button>
+		</div>
+		<input id="search" type="search" placeholder="Filter shots">
+	</header>
+	<div id="list"></div>
+</aside>
+<main>
+	<div class="bar">
+		<strong id="name"></strong>
+		<span id="status" class="badge"></span>
+		<span id="stats" class="muted"></span>
+	</div>
+	<div class="bar">
+		<div class="group">
+			<button data-mode="side" title="1">Side by side</button>
+			<button data-mode="swipe" title="2">Swipe</button>
+			<button data-mode="onion" title="3">Onion skin</button>
+			<button data-mode="blink" title="4">Blink</button>
+			<button data-mode="difference" title="5">Difference</button>
+			<button data-mode="highlight" title="6">Highlight</button>
+			<button data-mode="reference" title="7">Reference</button>
+			<button data-mode="render" title="8">Render</button>
+		</div>
+		<label id="control"><span id="controlLabel"></span><input id="controlInput" type="range"><output id="controlValue"></output></label>
+		<span id="legend" class="legend" hidden>delta 1<span class="heat"></span>32+</span>
+		<span class="spacer"></span>
+		<div class="group">
+			<button id="previousRegion" title="P">Previous difference</button>
+			<button id="nextRegion" title="N">Next difference</button>
+		</div>
+		<span id="regionInfo" class="muted"></span>
+		<div class="group">
+			<button id="fit" title="F">Fit</button>
+			<button id="actual" title="0">1:1</button>
+		</div>
+		<span id="zoomInfo" class="muted"></span>
+	</div>
+	<div id="stage">
+		<canvas id="canvas"></canvas>
+		<div id="loading" hidden>Loading</div>
+	</div>
+	<div id="inspector" class="muted">Hover the image to inspect a pixel. Wheel to zoom, drag to pan. Keys: arrows select a shot, 1-8 modes, N / P differences, F fit, 0 actual size, space swaps blink.</div>
+</main>
+<script>
+const ENTRIES = __ENTRIES__;
+const MODES = ["side", "swipe", "onion", "blink", "difference", "highlight", "reference", "render"];
+const CONTROLS = {
+	swipe: {label: "Position", min: 0, max: 100, step: 1, unit: "%"},
+	onion: {label: "Opacity", min: 0, max: 100, step: 1, unit: "%"},
+	blink: {label: "Interval", min: 100, max: 2000, step: 50, unit: " ms"},
+	difference: {label: "Gain", min: 1, max: 255, step: 1, unit: "x"},
+	highlight: {label: "Threshold", min: 0, max: 254, step: 1, unit: ""}
+};
+
+const shots = new Map();
+const pending = new Set();
+const params = {swipe: 50, onion: 50, blink: 600, difference: 64, highlight: 0};
+const state = {index: -1, mode: "side", filter: "all", query: "", zoom: 1, centerX: 0, centerY: 0, region: -1, blink: false, fitted: false};
+
+const canvas = document.getElementById("canvas");
+const context = canvas.getContext("2d");
+const list = document.getElementById("list");
+
+let composite = null;
+let compositeKey = "";
+let blinkTimer = null;
+let pointer = null;
+let drag = null;
+
+function element(id) {
+	return document.getElementById(id);
+}
+
+function ratio() {
+	return window.devicePixelRatio || 1;
+}
+
+function visibleEntries() {
+	return ENTRIES
+		.map((entry, index) => ({entry, index}))
+		.filter(({entry}) => state.filter === "all" || entry.status === state.filter || state.filter === "recorded" && entry.status === "updated")
+		.filter(({entry}) => entry.name.toLowerCase().includes(state.query));
+}
+
+function renderList() {
+	list.textContent = "";
+	for (const {entry, index} of visibleEntries()) {
+		const item = document.createElement("div");
+		item.className = "item" + (index === state.index ? " selected" : "");
+
+		const name = document.createElement("span");
+		name.textContent = entry.name;
+
+		const badge = document.createElement("span");
+		badge.className = "badge " + entry.status;
+		badge.textContent = entry.status === "different" ? entry.pixels + " px" : entry.status;
+
+		item.append(name, badge);
+		item.addEventListener("click", () => select(index));
+		list.appendChild(item);
+	}
+
+	const counts = {};
+	for (const entry of ENTRIES) {
+		counts[entry.status] = (counts[entry.status] || 0) + 1;
+	}
+	element("summary").textContent = ENTRIES.length + " shots: " + Object.keys(counts).map(key => counts[key] + " " + key).join(", ");
+
+	const selected = list.querySelector(".selected");
+	if (selected) {
+		selected.scrollIntoView({block: "nearest"});
+	}
+}
+
+function select(index) {
+	if (!(index >= 0 && index < ENTRIES.length)) {
+		return;
+	}
+
+	const entry = ENTRIES[index];
+	state.index = index;
+	state.region = -1;
+	state.fitted = false;
+	composite = null;
+	history.replaceState(null, "", "#" + encodeURIComponent(entry.name));
+
+	element("name").textContent = entry.name;
+	element("status").className = "badge " + entry.status;
+	element("status").textContent = entry.status;
+	element("stats").textContent = "";
+	element("regionInfo").textContent = "";
+	renderList();
+
+	if (shots.has(index)) {
+		show();
+		return;
+	}
+
+	element("loading").hidden = false;
+	draw();
+	if (!pending.has(index)) {
+		pending.add(index);
+		const script = document.createElement("script");
+		script.src = "report/" + index + ".js";
+		document.body.appendChild(script);
+	}
+}
+
+function loadImage(source) {
+	return new Promise((resolve, reject) => {
+		const image = new Image();
+		image.onload = () => resolve(image);
+		image.onerror = reject;
+		image.src = source;
+	});
+}
+
+function readPixels(image) {
+	const target = document.createElement("canvas");
+	target.width = image.width;
+	target.height = image.height;
+	const targetContext = target.getContext("2d");
+	targetContext.drawImage(image, 0, 0);
+	return {canvas: target, width: image.width, height: image.height, data: targetContext.getImageData(0, 0, image.width, image.height).data};
+}
+
+window.joidShot = async function (index, render, reference) {
+	const renderImage = await loadImage(render);
+	const referenceImage = reference ? await loadImage(reference) : renderImage;
+	const shot = {render: readPixels(renderImage), reference: readPixels(referenceImage)};
+	analyze(shot);
+	shots.set(index, shot);
+	if (index === state.index) {
+		show();
+	}
+};
+
+function channelDelta(shot, x, y) {
+	const a = shot.reference.data;
+	const b = shot.render.data;
+	const i = (y * shot.reference.width + x) * 4;
+	const j = (y * shot.render.width + x) * 4;
+	return [a[i] - b[j], a[i + 1] - b[j + 1], a[i + 2] - b[j + 2], a[i + 3] - b[j + 3]];
+}
+
+function analyze(shot) {
+	shot.width = Math.min(shot.reference.width, shot.render.width);
+	shot.height = Math.min(shot.reference.height, shot.render.height);
+	shot.sizeMismatch = shot.reference.width !== shot.render.width || shot.reference.height !== shot.render.height;
+
+	const buckets = new Map();
+	let pixels = 0;
+	let maximum = 0;
+	let left = shot.width;
+	let top = shot.height;
+	let right = -1;
+	let bottom = -1;
+	for (let y = 0; y < shot.height; y++) {
+		for (let x = 0; x < shot.width; x++) {
+			const delta = channelDelta(shot, x, y).reduce((current, value) => Math.max(current, Math.abs(value)), 0);
+			if (delta === 0) {
+				continue;
+			}
+
+			pixels++;
+			maximum = Math.max(maximum, delta);
+			left = Math.min(left, x);
+			top = Math.min(top, y);
+			right = Math.max(right, x);
+			bottom = Math.max(bottom, y);
+
+			const key = (y >> 5) * 4096 + (x >> 5);
+			const bucket = buckets.get(key);
+			if (bucket) {
+				bucket.count++;
+				bucket.x += x;
+				bucket.y += y;
+			} else {
+				buckets.set(key, {count: 1, x, y});
+			}
+		}
+	}
+
+	shot.pixels = pixels;
+	shot.maximum = maximum;
+	shot.bounds = pixels > 0 ? {left, top, right, bottom} : null;
+	shot.regions = Array.from(buckets.values())
+		.map(bucket => ({x: Math.floor(bucket.x / bucket.count), y: Math.floor(bucket.y / bucket.count), count: bucket.count}))
+		.sort((first, second) => first.y - second.y || first.x - second.x);
+}
+
+function show() {
+	const shot = shots.get(state.index);
+	if (!shot) {
+		return;
+	}
+
+	element("loading").hidden = true;
+	const parts = [shot.render.width + " x " + shot.render.height];
+	if (shot.sizeMismatch) {
+		parts.push("reference " + shot.reference.width + " x " + shot.reference.height);
+	}
+
+	parts.push(shot.pixels + " different pixels");
+	if (shot.bounds) {
+		parts.push("max delta " + shot.maximum);
+		parts.push("bounds " + shot.bounds.left + "," + shot.bounds.top + " to " + shot.bounds.right + "," + shot.bounds.bottom);
+	}
+	element("stats").textContent = parts.join("  |  ");
+
+	if (!state.fitted) {
+		state.fitted = true;
+		fit();
+	}
+	updateRegionInfo();
+	draw();
+}
+
+function setMode(mode) {
+	state.mode = mode;
+	for (const button of document.querySelectorAll("[data-mode]")) {
+		button.classList.toggle("active", button.dataset.mode === mode);
+	}
+
+	const control = CONTROLS[mode];
+	element("control").hidden = !control;
+	element("legend").hidden = mode !== "highlight";
+	if (control) {
+		const input = element("controlInput");
+		input.min = control.min;
+		input.max = control.max;
+		input.step = control.step;
+		input.value = params[mode];
+		element("controlLabel").textContent = control.label;
+		element("controlValue").textContent = params[mode] + control.unit;
+	}
+
+	clearInterval(blinkTimer);
+	if (mode === "blink") {
+		blinkTimer = setInterval(() => {
+			state.blink = !state.blink;
+			draw();
+		}, params.blink);
+	}
+	draw();
+}
+
+function getComposite(shot) {
+	const key = state.index + ":" + state.mode + ":" + params[state.mode];
+	if (composite && compositeKey === key) {
+		return composite;
+	}
+
+	const target = document.createElement("canvas");
+	target.width = shot.width;
+	target.height = shot.height;
+	const targetContext = target.getContext("2d");
+	const output = targetContext.createImageData(shot.width, shot.height);
+	const pixels = output.data;
+	const reference = shot.reference.data;
+	for (let y = 0; y < shot.height; y++) {
+		for (let x = 0; x < shot.width; x++) {
+			const delta = channelDelta(shot, x, y);
+			const k = (y * shot.width + x) * 4;
+			if (state.mode === "difference") {
+				pixels[k] = Math.min(255, Math.abs(delta[0]) * params.difference);
+				pixels[k + 1] = Math.min(255, Math.abs(delta[1]) * params.difference);
+				pixels[k + 2] = Math.min(255, Math.abs(delta[2]) * params.difference);
+			} else {
+				const magnitude = Math.max(Math.abs(delta[0]), Math.abs(delta[1]), Math.abs(delta[2]), Math.abs(delta[3]));
+				if (magnitude > params.highlight) {
+					const heat = Math.min(1, (magnitude - 1) / 31);
+					pixels[k] = 255;
+					pixels[k + 1] = Math.round(220 * (1 - heat));
+					pixels[k + 2] = 0;
+				} else {
+					const i = (y * shot.reference.width + x) * 4;
+					const gray = (reference[i] * 0.299 + reference[i + 1] * 0.587 + reference[i + 2] * 0.114) * 0.35;
+					pixels[k] = gray;
+					pixels[k + 1] = gray;
+					pixels[k + 2] = gray;
+				}
+			}
+			pixels[k + 3] = 255;
+		}
+	}
+
+	targetContext.putImageData(output, 0, 0);
+	composite = target;
+	compositeKey = key;
+	return composite;
+}
+
+function panes() {
+	if (state.mode === "side") {
+		const half = Math.floor(canvas.width / 2);
+		return [{x: 0, width: half}, {x: half, width: canvas.width - half}];
+	}
+	return [{x: 0, width: canvas.width}];
+}
+
+function applyView(pane) {
+	context.beginPath();
+	context.rect(pane.x, 0, pane.width, canvas.height);
+	context.clip();
+	context.translate(pane.x + pane.width / 2, canvas.height / 2);
+	context.scale(state.zoom, state.zoom);
+	context.translate(-state.centerX, -state.centerY);
+}
+
+function drawImage(image, pane, alpha, clipLeft) {
+	context.save();
+	if (clipLeft !== undefined) {
+		context.beginPath();
+		context.rect(clipLeft, 0, pane.x + pane.width - clipLeft, canvas.height);
+		context.clip();
+	}
+	applyView(pane);
+	context.globalAlpha = alpha;
+	context.imageSmoothingEnabled = false;
+	context.drawImage(image, 0, 0);
+	context.restore();
+}
+
+function drawOverlay(pane, shot, label) {
+	context.save();
+	applyView(pane);
+	context.lineWidth = 1 / state.zoom;
+	context.strokeStyle = "rgba(255, 255, 255, 0.3)";
+	context.strokeRect(0, 0, shot.width, shot.height);
+
+	if (state.zoom >= 12) {
+		const halfWidth = pane.width / 2 / state.zoom;
+		const halfHeight = canvas.height / 2 / state.zoom;
+		const left = Math.max(0, Math.floor(state.centerX - halfWidth));
+		const right = Math.min(shot.width, Math.ceil(state.centerX + halfWidth));
+		const top = Math.max(0, Math.floor(state.centerY - halfHeight));
+		const bottom = Math.min(shot.height, Math.ceil(state.centerY + halfHeight));
+		context.strokeStyle = "rgba(128, 128, 128, 0.35)";
+		context.beginPath();
+		for (let x = left; x <= right; x++) {
+			context.moveTo(x, top);
+			context.lineTo(x, bottom);
+		}
+		for (let y = top; y <= bottom; y++) {
+			context.moveTo(left, y);
+			context.lineTo(right, y);
+		}
+		context.stroke();
+	}
+
+	if (state.zoom < 4 * ratio()) {
+		context.lineWidth = 2 * ratio() / state.zoom;
+		context.strokeStyle = "rgba(248, 113, 113, 0.9)";
+		for (const marker of shot.regions) {
+			context.beginPath();
+			context.arc(marker.x + 0.5, marker.y + 0.5, 12 * ratio() / state.zoom, 0, Math.PI * 2);
+			context.stroke();
+		}
+	}
+
+	const region = shot.regions[state.region];
+	if (region) {
+		const size = Math.max(6, 24 / state.zoom);
+		context.lineWidth = 2 / state.zoom;
+		context.strokeStyle = "#a78bfa";
+		context.strokeRect(region.x + 0.5 - size, region.y + 0.5 - size, size * 2, size * 2);
+	}
+
+	if (pointer && pointer.inside) {
+		context.lineWidth = 2 / state.zoom;
+		context.strokeStyle = "#22d3ee";
+		context.strokeRect(pointer.x, pointer.y, 1, 1);
+	}
+	context.restore();
+
+	const fontSize = Math.round(12 * ratio());
+	context.font = fontSize + "px system-ui, sans-serif";
+	const padding = Math.round(6 * ratio());
+	const width = context.measureText(label).width + padding * 2;
+	context.fillStyle = "rgba(0, 0, 0, 0.7)";
+	context.fillRect(pane.x + padding, padding, width, fontSize + padding * 2);
+	context.fillStyle = "#e4e4e7";
+	context.fillText(label, pane.x + padding * 2, padding * 2 + fontSize * 0.85);
+}
+
+function draw() {
+	context.setTransform(1, 0, 0, 1, 0, 0);
+	context.clearRect(0, 0, canvas.width, canvas.height);
+	element("zoomInfo").textContent = Math.round(state.zoom * 100 / ratio()) + "%";
+
+	const shot = shots.get(state.index);
+	if (!shot) {
+		return;
+	}
+
+	const reference = shot.reference.canvas;
+	const render = shot.render.canvas;
+	const [first, second] = panes();
+	switch (state.mode) {
+	case "side":
+		drawImage(reference, first, 1);
+		drawOverlay(first, shot, "Reference");
+		drawImage(render, second, 1);
+		drawOverlay(second, shot, "Render");
+		context.fillStyle = "#2e2e33";
+		context.fillRect(second.x - 1, 0, 2, canvas.height);
+		break;
+	case "swipe": {
+		const divider = first.x + first.width * params.swipe / 100;
+		drawImage(reference, first, 1);
+		drawImage(render, first, 1, divider);
+		drawOverlay(first, shot, "Reference | Render");
+		context.fillStyle = "#a78bfa";
+		context.fillRect(divider - 1, 0, 2, canvas.height);
+		break;
+	}
+	case "onion":
+		drawImage(reference, first, 1);
+		drawImage(render, first, params.onion / 100);
+		drawOverlay(first, shot, "Render over reference at " + params.onion + "%");
+		break;
+	case "blink":
+		drawImage(state.blink ? render : reference, first, 1);
+		drawOverlay(first, shot, state.blink ? "Render" : "Reference");
+		break;
+	case "difference":
+		drawImage(getComposite(shot), first, 1);
+		drawOverlay(first, shot, "Absolute difference x" + params.difference);
+		break;
+	case "highlight":
+		drawImage(getComposite(shot), first, 1);
+		drawOverlay(first, shot, "Pixels with a delta above " + params.highlight);
+		break;
+	case "reference":
+		drawImage(reference, first, 1);
+		drawOverlay(first, shot, "Reference");
+		break;
+	default:
+		drawImage(render, first, 1);
+		drawOverlay(first, shot, "Render");
+		break;
+	}
+}
+
+function resize() {
+	const bounds = element("stage").getBoundingClientRect();
+	canvas.width = Math.max(1, Math.round(bounds.width * ratio()));
+	canvas.height = Math.max(1, Math.round(bounds.height * ratio()));
+	draw();
+}
+
+function fit() {
+	const shot = shots.get(state.index);
+	if (!shot) {
+		return;
+	}
+
+	const pane = panes()[0];
+	state.zoom = Math.min(pane.width / shot.width, canvas.height / shot.height) * 0.98;
+	state.centerX = shot.width / 2;
+	state.centerY = shot.height / 2;
+	draw();
+}
+
+function actualSize() {
+	state.zoom = ratio();
+	draw();
+}
+
+function locate(event) {
+	const bounds = canvas.getBoundingClientRect();
+	const screenX = (event.clientX - bounds.left) * ratio();
+	const screenY = (event.clientY - bounds.top) * ratio();
+	const pane = panes().find(candidate => screenX >= candidate.x && screenX < candidate.x + candidate.width) || panes()[0];
+	const imageX = state.centerX + (screenX - pane.x - pane.width / 2) / state.zoom;
+	const imageY = state.centerY + (screenY - canvas.height / 2) / state.zoom;
+	return {pane, screenX, screenY, imageX, imageY, x: Math.floor(imageX), y: Math.floor(imageY), inside: false};
+}
+
+function swatch(values) {
+	const box = document.createElement("span");
+	box.className = "swatch";
+	box.style.background = "rgba(" + values[0] + ", " + values[1] + ", " + values[2] + ", " + values[3] / 255 + ")";
+	return box;
+}
+
+function field(label, values, highlight) {
+	const span = document.createElement("span");
+	if (label !== "delta") {
+		span.appendChild(swatch(values));
+	}
+	span.appendChild(document.createTextNode(label + " " + values.map(value => label === "delta" && value > 0 ? "+" + value : String(value)).join(", ")));
+	if (highlight) {
+		span.className = "different";
+	}
+	return span;
+}
+
+function inspect(point) {
+	const shot = shots.get(state.index);
+	const inspector = element("inspector");
+	if (!shot || point.x < 0 || point.y < 0 || point.x >= shot.width || point.y >= shot.height) {
+		inspector.textContent = "Outside the image";
+		return;
+	}
+
+	point.inside = true;
+	const a = shot.reference.data;
+	const b = shot.render.data;
+	const i = (point.y * shot.reference.width + point.x) * 4;
+	const j = (point.y * shot.render.width + point.x) * 4;
+	const reference = [a[i], a[i + 1], a[i + 2], a[i + 3]];
+	const render = [b[j], b[j + 1], b[j + 2], b[j + 3]];
+	const delta = render.map((value, channel) => value - reference[channel]);
+
+	inspector.textContent = "";
+	inspector.classList.remove("muted");
+	const position = document.createElement("span");
+	position.textContent = "x " + point.x + "  y " + point.y;
+	inspector.append(position, field("reference", reference, false), field("render", render, false), field("delta", delta, delta.some(value => value !== 0)));
+}
+
+function goToRegion(step) {
+	const shot = shots.get(state.index);
+	if (!shot || shot.regions.length === 0) {
+		return;
+	}
+
+	state.region = (state.region + step + shot.regions.length) % shot.regions.length;
+	const region = shot.regions[state.region];
+	state.centerX = region.x + 0.5;
+	state.centerY = region.y + 0.5;
+	state.zoom = Math.max(state.zoom, 16 * ratio());
+	updateRegionInfo();
+	draw();
+}
+
+function updateRegionInfo() {
+	const shot = shots.get(state.index);
+	if (!shot) {
+		element("regionInfo").textContent = "";
+		return;
+	}
+
+	if (shot.regions.length === 0) {
+		element("regionInfo").textContent = "no difference";
+		return;
+	}
+
+	const current = state.region >= 0 ? state.region + 1 + " / " : "";
+	const region = shot.regions[state.region];
+	element("regionInfo").textContent = current + shot.regions.length + " regions" + (region ? " (" + region.count + " px around " + region.x + "," + region.y + ")" : "");
+}
+
+canvas.addEventListener("wheel", event => {
+	event.preventDefault();
+	const point = locate(event);
+	const zoom = Math.min(128 * ratio(), Math.max(0.02, state.zoom * (event.deltaY < 0 ? 1.25 : 0.8)));
+	state.centerX = point.imageX - (point.screenX - point.pane.x - point.pane.width / 2) / zoom;
+	state.centerY = point.imageY - (point.screenY - canvas.height / 2) / zoom;
+	state.zoom = zoom;
+	pointer = locate(event);
+	inspect(pointer);
+	draw();
+}, {passive: false});
+
+canvas.addEventListener("mousedown", event => {
+	drag = {x: event.clientX, y: event.clientY, centerX: state.centerX, centerY: state.centerY};
+	element("stage").classList.add("dragging");
+});
+
+window.addEventListener("mouseup", () => {
+	drag = null;
+	element("stage").classList.remove("dragging");
+});
+
+canvas.addEventListener("mousemove", event => {
+	if (drag) {
+		state.centerX = drag.centerX - (event.clientX - drag.x) * ratio() / state.zoom;
+		state.centerY = drag.centerY - (event.clientY - drag.y) * ratio() / state.zoom;
+	}
+
+	pointer = locate(event);
+	inspect(pointer);
+	draw();
+});
+
+canvas.addEventListener("mouseleave", () => {
+	pointer = null;
+	draw();
+});
+
+for (const button of document.querySelectorAll("[data-filter]")) {
+	button.addEventListener("click", () => {
+		state.filter = button.dataset.filter;
+		for (const other of document.querySelectorAll("[data-filter]")) {
+			other.classList.toggle("active", other === button);
+		}
+		renderList();
+	});
+}
+
+for (const button of document.querySelectorAll("[data-mode]")) {
+	button.addEventListener("click", () => setMode(button.dataset.mode));
+}
+
+element("search").addEventListener("input", event => {
+	state.query = event.target.value.toLowerCase();
+	renderList();
+});
+
+element("controlInput").addEventListener("input", event => {
+	params[state.mode] = Number(event.target.value);
+	element("controlValue").textContent = params[state.mode] + CONTROLS[state.mode].unit;
+	if (state.mode === "blink") {
+		setMode("blink");
+	} else {
+		draw();
+	}
+});
+
+element("fit").addEventListener("click", fit);
+element("actual").addEventListener("click", actualSize);
+element("nextRegion").addEventListener("click", () => goToRegion(1));
+element("previousRegion").addEventListener("click", () => goToRegion(-1));
+window.addEventListener("resize", resize);
+
+window.addEventListener("keydown", event => {
+	if (event.target === element("search")) {
+		return;
+	}
+
+	const visible = visibleEntries().map(item => item.index);
+	const position = visible.indexOf(state.index);
+	if (event.key === "ArrowDown") {
+		event.preventDefault();
+		select(visible[Math.min(visible.length - 1, position + 1)]);
+	} else if (event.key === "ArrowUp") {
+		event.preventDefault();
+		select(visible[Math.max(0, position - 1)]);
+	} else if (event.key >= "1" && event.key <= "8") {
+		setMode(MODES[Number(event.key) - 1]);
+	} else if (event.key === "n" || event.key === "N") {
+		goToRegion(1);
+	} else if (event.key === "p" || event.key === "P") {
+		goToRegion(-1);
+	} else if (event.key === "f" || event.key === "F") {
+		fit();
+	} else if (event.key === "0") {
+		actualSize();
+	} else if (event.key === " ") {
+		event.preventDefault();
+		state.blink = !state.blink;
+		draw();
+	}
+});
+
+const firstDifferent = ENTRIES.findIndex(entry => entry.status === "different");
+const fromHash = ENTRIES.findIndex(entry => entry.name === decodeURIComponent(location.hash.slice(1)));
+setMode(firstDifferent >= 0 ? "highlight" : "side");
+resize();
+select(fromHash >= 0 ? fromHash : Math.max(0, firstDifferent));
+</script>
+</body>
+</html>

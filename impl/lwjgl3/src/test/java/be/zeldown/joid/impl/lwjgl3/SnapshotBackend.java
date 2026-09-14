@@ -16,8 +16,6 @@ import lombok.NonNull;
 public final class SnapshotBackend implements ISnapshotBackend {
 
 	private long window;
-	private int  width;
-	private int  height;
 
 	@Override
 	public void create(final int width, final int height) {
@@ -39,8 +37,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 			throw new IllegalStateException("Unable to create the GLFW window");
 		}
 
-		this.width  = width;
-		this.height = height;
 		GLFW.glfwMakeContextCurrent(this.window);
 		GLFW.glfwSwapInterval(0);
 		GL.createCapabilities();
@@ -53,12 +49,12 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public @NonNull SnapshotImage capture() {
-		final ByteBuffer pixels = BufferUtils.createByteBuffer(this.width * this.height * 4);
+	public @NonNull SnapshotImage capture(final int width, final int height) {
+		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
 		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
 		GL11C.glReadBuffer(GL11C.GL_BACK);
-		GL11C.glReadPixels(0, 0, this.width, this.height, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixels);
-		return SnapshotImage.fromBytes(pixels, this.width, this.height, true, false);
+		GL11C.glReadPixels(0, 0, width, height, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixels);
+		return SnapshotImage.fromBytes(pixels, width, height, true, false);
 	}
 
 	@Override
@@ -70,6 +66,11 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	public void destroy() {
 		GLFW.glfwDestroyWindow(this.window);
 		GLFW.glfwTerminate();
+	}
+
+	@Override
+	public @NonNull String getRenderer() {
+		return GL11C.glGetString(GL11C.GL_RENDERER);
 	}
 
 }

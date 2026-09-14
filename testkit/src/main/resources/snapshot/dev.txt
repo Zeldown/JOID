@@ -1,0 +1,7 @@
+dev true
+ui be.zeldown.joid.demo.ui.simple.UIDemoSimple
+wait 2000
+shot dev-hidden
+key F3
+wait 100
+shot dev-panel

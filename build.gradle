@@ -56,7 +56,7 @@ task crossBackendTest(type: JavaExec) {
     description = 'Runs the snapshot tests of every backend, then compares the LWJGL 3 and Vulkan shots to LWJGL 2.'
     dependsOn ':lwjgl2:test', ':lwjgl3:test', ':vulkan:test'
     main = "be.zeldown.joid.test.snapshot.SnapshotComparison"
-    classpath = project(':core').sourceSets.test.runtimeClasspath
+    classpath = project(':testkit').sourceSets.main.runtimeClasspath
     args file('build/snapshots').absolutePath, 'lwjgl2', 'lwjgl3', 'vulkan'
 }
 

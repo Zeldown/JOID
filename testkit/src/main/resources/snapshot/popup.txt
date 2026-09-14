@@ -1,0 +1,8 @@
+ui be.zeldown.joid.demo.ui.UIDemoChoice
+wait 1500
+key LEFT_CONTROL+K
+wait 500
+shot popup-open
+key LEFT_CONTROL+K
+wait 500
+shot popup-stacked

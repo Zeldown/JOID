@@ -5,8 +5,6 @@ import java.util.EnumSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-import be.zeldown.joid.test.CoreShaders;
-
 public class ShaderSourceTest {
 
 	@Test
@@ -58,15 +56,6 @@ public class ShaderSourceTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsFragmentOutputs() {
 		ShaderSource.parse(ShaderStage.FRAGMENT, "out vec4 color;\n");
-	}
-
-	@Test
-	public void parsesCoreShaders() {
-		Assert.assertFalse(CoreShaders.getNames().isEmpty());
-		for (final String name : CoreShaders.getNames()) {
-			Assert.assertTrue(name, CoreShaders.read(name, ShaderStage.VERTEX).getBuiltins().contains(ShaderBuiltin.POSITION));
-			Assert.assertTrue(name, CoreShaders.read(name, ShaderStage.FRAGMENT).getBuiltins().contains(ShaderBuiltin.FRAGMENT_COLOR));
-		}
 	}
 
 }

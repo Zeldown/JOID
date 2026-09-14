@@ -1,0 +1,117 @@
+ui be.zeldown.joid.demo.ui.textfield.UIDemoTextField
+wait 800
+move 800 540
+wait 100
+press LEFT
+release LEFT
+wait 100
+type Hello, JOID! (1+1=2) ~ok?
+key LEFT_CONTROL+BACKSPACE
+key BACKSPACE
+type ok
+down LEFT_SHIFT
+key LEFT
+key LEFT
+up LEFT_SHIFT
+wait 200
+move 800 700
+wait 100
+press LEFT
+release LEFT
+wait 100
+type multi line: [a] {b} <c> "d" #f %h ^i &j *k _l |m ~n
+key ENTER
+type second
+wait 300
+shot inter-textfield
+ui be.zeldown.joid.demo.ui.slider.UIDemoSlider
+wait 800
+move 770 540
+wait 100
+press LEFT
+moveto 1150 540 600
+wait 300
+release LEFT
+wait 800
+shot inter-slider
+ui be.zeldown.joid.demo.ui.checkbox.UIDemoCheckbox
+wait 800
+move 960 540
+wait 100
+press LEFT
+release LEFT
+wait 800
+shot inter-checkbox
+ui be.zeldown.joid.demo.ui.toggle.UIDemoToggle
+wait 800
+move 960 540
+wait 100
+press LEFT
+release LEFT
+wait 800
+shot inter-toggle
+ui be.zeldown.joid.demo.ui.sw.UIDemoSwitch
+wait 800
+move 1100 515
+wait 100
+press LEFT
+release LEFT
+wait 800
+shot inter-switch
+ui be.zeldown.joid.demo.ui.selector.UIDemoSelector
+wait 800
+move 700 540
+wait 100
+press LEFT
+release LEFT
+wait 800
+shot inter-selector
+ui be.zeldown.joid.demo.ui.overflow.UIDemoOverflow
+wait 800
+move 960 330
+wait 100
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+wait 1200
+shot inter-overflow
+ui be.zeldown.joid.demo.ui.overflow.UIDemoOverflow
+move 960 330
+wait 16
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+wait 1200
+shot inter-overflow-loading
+ui be.zeldown.joid.demo.ui.draggable.UIDemoDraggable
+wait 800
+move 960 540
+wait 100
+press LEFT
+moveto 110 260 700
+wait 200
+release LEFT
+wait 1500
+shot inter-draggable
+ui be.zeldown.joid.demo.ui.reorderable.UIDemoReorderable
+wait 800
+move 480 130
+wait 100
+press LEFT
+moveto 480 330 700
+wait 300
+release LEFT
+wait 1500
+shot inter-reorderable
+ui be.zeldown.joid.demo.ui.simple.UIDemoSimple
+wait 800
+move 1100 540
+wait 800
+shot inter-hover
+ui be.zeldown.joid.demo.ui.UIDemoChoice
+wait 1500
+move 960 75
+wait 800
+shot inter-choice-hover

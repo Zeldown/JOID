@@ -1,0 +1,12 @@
+resize 1280 720
+ui be.zeldown.joid.demo.ui.simple.UIDemoSimple
+wait 1000
+shot window-simple-1280x720
+resize 1024 768
+wait 500
+shot window-simple-1024x768
+resize 1920 1080
+ui be.zeldown.joid.demo.ui.UIDemoChoice
+zoom 0.5
+wait 1500
+shot window-choice-zoom

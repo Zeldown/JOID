@@ -1,0 +1,7 @@
+archivesBaseName = "joid-testkit"
+
+dependencies {
+    compile project(':core')
+
+    compile "junit:junit:4.13.2"
+}

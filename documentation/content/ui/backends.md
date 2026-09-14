@@ -23,7 +23,7 @@ Every bridge implements `IBridge`, and `BridgeHandler` exposes one `BridgeRegist
 
 ## Available backends
 
-The repository is a multi-module Gradle build. `core` contains the neutral library, and each backend is a module under `impl/` with its own `build.gradle`, its shaders and a ready-to-run `DemoWindow` (`./gradlew :vulkan:runDemo`). LWJGL 3 and Vulkan share the `glfw` window module and the `openal` audio module.
+The repository is a multi-module Gradle build. `core` contains the neutral library, and each backend is a module under `impl/` with its own `build.gradle`, its shaders and a ready-to-run `DemoWindow` (`./gradlew :vulkan:runDemo`). LWJGL 3 and Vulkan share the `glfw` window module and the `openal` audio module. The `testkit` module contains the snapshot test framework shared by the backends.
 
 | Module | Stack | Register | Generated shaders |
 |---|---|---|---|
@@ -134,7 +134,7 @@ Every generated header ends with a `#line` directive, so compilation errors poin
 
 ### Tests
 
-Each backend implements `ISnapshotBackend` in its `src/test` sources — create an offscreen surface, run a frame, capture its pixels, release it — and extends `SnapshotSuite`:
+Snapshot tests live in the `testkit` module. A backend implements `ISnapshotBackend` in its `src/test` sources — create an offscreen surface of the requested size, run a frame, capture a region of its pixels, release it and name the renderer — and extends `SnapshotSuite`:
 
 ```java
 public class SnapshotTest extends SnapshotSuite {
@@ -147,15 +147,46 @@ public class SnapshotTest extends SnapshotSuite {
 }
 ```
 
-The suite registers a `ManualClockBridge`, checks that every core shader compiles, then plays the `static` and `interaction` scenarios of `core/src/test/resources/snapshot` on the demo UIs. Time only advances by frames of 16 ms, and each shot waits for the resources being loaded then for two identical consecutive frames, so every run renders the same pixels. Shots are compared to the references in `src/test/snapshots` with a tolerance of 8 per channel.
+The suite registers a `ManualClockBridge`, checks that every core shader compiles, then plays each scenario of `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window` and `dev`. Every scenario starts from the same state: no UI, the clock at the same instant, a 1920×1080 window, dev mode off and no key held. Time only advances with `wait` and `moveto`, by frames of 16 ms, and lerps and the fps counter follow the frame time measured on the clock, so every run renders the same pixels. Each shot waits for the resources being loaded, then for two identical consecutive frames.
+
+References belong to each machine and graphics card: they are stored in `.snapshots/<module>/<renderer>/`, which git ignores. A shot without reference is recorded on the first run; afterwards every shot must match its reference pixel for pixel.
 
 | Command | Result |
 |---|---|
-| `./gradlew test` | Shader unit tests and snapshot tests of every module. Rendered shots and differences are written to `build/snapshots`. |
-| `./gradlew updateSnapshots` | Replaces the references after an intended visual change. |
-| `./gradlew crossBackendTest` | Runs the tests, then compares the `lwjgl3` and `vulkan` shots to `lwjgl2`, tolerating up to 2000 pixels per shot for sub-pixel rasterization differences. Differences are written to `build/snapshots/cross`. |
+| `./gradlew test` | Shader unit tests and snapshot tests of every module. Renders and an interactive `report.html` are written to `build/snapshots/<module>`. |
+| `./gradlew updateSnapshots` | Replaces the references after an intended visual change. `./gradlew :vulkan:updateSnapshots` updates a single module. |
+| `./gradlew crossBackendTest` | Runs the tests, then requires the `lwjgl3` and `vulkan` shots to be identical to `lwjgl2`, pixel for pixel. The comparison is shown in `build/snapshots/cross/report.html`. |
 
 Snapshot tests need a GPU. The pre-commit hook installed by `./gradlew installLocalGitHook` runs `check` and `crossBackendTest` whenever a commit touches the sources or the build.
+
+#### Report
+
+Each `report.html` lists the shots with their status and their number of different pixels, and shows the reference and the render of the selected shot in eight modes: side by side, swipe, onion skin, blink, amplified difference, highlighted pixels, reference and render. The wheel zooms around the cursor down to single pixels with a pixel grid, dragging pans, and hovering a pixel shows its coordinates, both colors and the delta of each channel. `Next difference` groups the different pixels into regions and zooms on each one, so even a single pixel is found. The report opens straight from the disk, without a server.
+
+#### Scenarios
+
+A scenario is a text file with one command per line; `#` starts a comment.
+
+| Command | Effect |
+|---|---|
+| `ui <class>` | Closes every UI, opens the UI and moves the mouse out of the window. |
+| `open <class>` | Opens the UI through `JOID.open`, with its transitions and popups. |
+| `wait <ms>` | Advances the clock frame by frame. |
+| `move <x> <y>` | Moves the mouse. |
+| `moveto <x> <y> <ms>` | Moves the mouse progressively, dragging while a button is pressed. |
+| `press <button>` / `release` | Presses or releases a `ClickType`. |
+| `scroll <value>` | Scrolls, `120` per notch. |
+| `type <text>` | Types the text, holding `LEFT_SHIFT` for uppercase letters and shifted symbols. |
+| `key <KEY>[+<KEY>...]` | Holds every key of the combination and sends the last one, for example `key LEFT_CONTROL+K`. |
+| `down <KEY>` / `up <KEY>` | Holds or releases a key for the following commands. |
+| `resize <width> <height>` | Resizes the window, up to 1920×1080. |
+| `zoom <level>` | Sets the zoom level of the opened UIs. |
+| `dev <true\|false>` | Enables or disables dev mode for the UIs opened afterwards. |
+| `shot <name>` | Captures the window as `<name>.png`. |
+
+To add a capture, add its commands to a scenario — or add a scenario file and its `matches…Snapshots` test to `SnapshotSuite` — then run `./gradlew test`: the new shots are recorded as references.
+
+`UIDemoVideo` and `UIDemoResource` are not captured: video decoding and GIF animation run on a real-time thread, and the resource demo downloads its images.
 
 ## See also
 

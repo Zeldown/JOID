@@ -8,6 +8,7 @@ out/
 bin/
 libs/
 build/
+.snapshots/
 cmake-build-*/
 
 modules.xml

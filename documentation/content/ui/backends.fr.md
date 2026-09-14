@@ -23,7 +23,7 @@ Tous les bridges implémentent `IBridge`, et `BridgeHandler` expose un `BridgeRe
 
 ## Backends disponibles
 
-Le dépôt est un build Gradle multi-modules. `core` contient la bibliothèque neutre, et chaque backend est un module sous `impl/` avec son `build.gradle`, ses shaders et une `DemoWindow` prête à lancer (`./gradlew :vulkan:runDemo`). LWJGL 3 et Vulkan partagent le module de fenêtre `glfw` et le module audio `openal`.
+Le dépôt est un build Gradle multi-modules. `core` contient la bibliothèque neutre, et chaque backend est un module sous `impl/` avec son `build.gradle`, ses shaders et une `DemoWindow` prête à lancer (`./gradlew :vulkan:runDemo`). LWJGL 3 et Vulkan partagent le module de fenêtre `glfw` et le module audio `openal`. Le module `testkit` contient le framework de tests de snapshot partagé par les backends.
 
 | Module | Stack | Enregistrement | Shaders générés |
 |---|---|---|---|
@@ -134,7 +134,7 @@ Chaque en-tête généré se termine par une directive `#line`, pour que les err
 
 ### Tests
 
-Chaque backend implémente `ISnapshotBackend` dans ses sources `src/test` — créer une surface hors écran, exécuter une frame, capturer ses pixels, la libérer — et étend `SnapshotSuite` :
+Les tests de snapshot vivent dans le module `testkit`. Un backend implémente `ISnapshotBackend` dans ses sources `src/test` — créer une surface hors écran de la taille demandée, exécuter une frame, capturer une zone de ses pixels, la libérer et nommer le renderer — et étend `SnapshotSuite` :
 
 ```java
 public class SnapshotTest extends SnapshotSuite {
@@ -147,15 +147,46 @@ public class SnapshotTest extends SnapshotSuite {
 }
 ```
 
-La suite enregistre un `ManualClockBridge`, vérifie que chaque shader du cœur compile, puis joue les scénarios `static` et `interaction` de `core/src/test/resources/snapshot` sur les UIs de démo. Le temps n'avance que par frames de 16 ms, et chaque capture attend la fin du chargement des ressources puis deux frames consécutives identiques, chaque exécution rend donc les mêmes pixels. Les captures sont comparées aux références de `src/test/snapshots` avec une tolérance de 8 par canal.
+La suite enregistre un `ManualClockBridge`, vérifie que chaque shader du cœur compile, puis joue chaque scénario de `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window` et `dev`. Chaque scénario part du même état : aucune UI, l'horloge au même instant, une fenêtre 1920×1080, le mode dev désactivé et aucune touche enfoncée. Le temps n'avance qu'avec `wait` et `moveto`, par frames de 16 ms, et les lerps et le compteur de fps suivent le temps de frame mesuré sur l'horloge, chaque exécution rend donc les mêmes pixels. Chaque capture attend la fin du chargement des ressources, puis deux frames consécutives identiques.
+
+Les références sont propres à chaque machine et carte graphique : elles sont stockées dans `.snapshots/<module>/<renderer>/`, ignoré par git. Une capture sans référence est enregistrée à la première exécution ; ensuite, chaque capture doit correspondre à sa référence au pixel près.
 
 | Commande | Résultat |
 |---|---|
-| `./gradlew test` | Tests unitaires des shaders et tests de snapshot de chaque module. Les captures et les différences sont écrites dans `build/snapshots`. |
-| `./gradlew updateSnapshots` | Remplace les références après un changement visuel voulu. |
-| `./gradlew crossBackendTest` | Lance les tests, puis compare les captures `lwjgl3` et `vulkan` à `lwjgl2`, en tolérant jusqu'à 2000 pixels par capture pour les différences de rastérisation sous-pixel. Les différences sont écrites dans `build/snapshots/cross`. |
+| `./gradlew test` | Tests unitaires des shaders et tests de snapshot de chaque module. Les rendus et un `report.html` interactif sont écrits dans `build/snapshots/<module>`. |
+| `./gradlew updateSnapshots` | Remplace les références après un changement visuel voulu. `./gradlew :vulkan:updateSnapshots` ne met à jour qu'un module. |
+| `./gradlew crossBackendTest` | Lance les tests, puis exige que les captures `lwjgl3` et `vulkan` soient identiques à `lwjgl2`, au pixel près. La comparaison est affichée dans `build/snapshots/cross/report.html`. |
 
 Les tests de snapshot nécessitent un GPU. Le hook pre-commit installé par `./gradlew installLocalGitHook` lance `check` et `crossBackendTest` dès qu'un commit touche les sources ou le build.
+
+#### Rapport
+
+Chaque `report.html` liste les captures avec leur statut et leur nombre de pixels différents, et affiche la référence et le rendu de la capture sélectionnée selon huit modes : côte à côte, balayage, pelure d'oignon, clignotement, différence amplifiée, pixels surlignés, référence et rendu. La molette zoome autour du curseur jusqu'au pixel avec une grille, le glisser déplace la vue, et le survol d'un pixel affiche ses coordonnées, les deux couleurs et l'écart de chaque canal. `Next difference` regroupe les pixels différents en zones et zoome sur chacune, un pixel isolé est donc toujours retrouvé. Le rapport s'ouvre directement depuis le disque, sans serveur.
+
+#### Scénarios
+
+Un scénario est un fichier texte avec une commande par ligne ; `#` commence un commentaire.
+
+| Commande | Effet |
+|---|---|
+| `ui <class>` | Ferme toutes les UIs, ouvre l'UI et sort la souris de la fenêtre. |
+| `open <class>` | Ouvre l'UI via `JOID.open`, avec ses transitions et ses popups. |
+| `wait <ms>` | Avance l'horloge frame par frame. |
+| `move <x> <y>` | Déplace la souris. |
+| `moveto <x> <y> <ms>` | Déplace la souris progressivement, en glissant tant qu'un bouton est enfoncé. |
+| `press <button>` / `release` | Enfonce ou relâche un `ClickType`. |
+| `scroll <value>` | Scrolle, `120` par cran. |
+| `type <text>` | Tape le texte, en maintenant `LEFT_SHIFT` pour les majuscules et les symboles décalés. |
+| `key <KEY>[+<KEY>...]` | Maintient chaque touche de la combinaison et envoie la dernière, par exemple `key LEFT_CONTROL+K`. |
+| `down <KEY>` / `up <KEY>` | Maintient ou relâche une touche pour les commandes suivantes. |
+| `resize <width> <height>` | Redimensionne la fenêtre, jusqu'à 1920×1080. |
+| `zoom <level>` | Règle le zoom des UIs ouvertes. |
+| `dev <true\|false>` | Active ou désactive le mode dev pour les UIs ouvertes ensuite. |
+| `shot <name>` | Capture la fenêtre sous `<name>.png`. |
+
+Pour ajouter une capture, ajoutez ses commandes à un scénario — ou ajoutez un fichier de scénario et son test `matches…Snapshots` à `SnapshotSuite` — puis lancez `./gradlew test` : les nouvelles captures sont enregistrées comme références.
+
+`UIDemoVideo` et `UIDemoResource` ne sont pas capturées : le décodage vidéo et l'animation des GIF tournent sur un thread en temps réel, et la démo de ressources télécharge ses images.
 
 ## Voir aussi
 

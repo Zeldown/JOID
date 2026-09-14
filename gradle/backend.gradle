@@ -29,7 +29,7 @@ build.dependsOn shadowJar
 
 
 dependencies {
-    testCompile project(':core').sourceSets.test.output
+    testCompile project(':testkit')
 }
 
 task updateSnapshots {
@@ -39,11 +39,11 @@ task updateSnapshots {
 }
 
 test {
-    def references = file('src/test/snapshots')
+    def references = rootProject.file(".snapshots/${project.name}")
     def output = rootProject.file("build/snapshots/${project.name}")
 
     workingDir = file("$buildDir/snapshot")
-    inputs.dir references
+    inputs.files fileTree(references)
     outputs.dir output
 
     systemProperty 'joid.snapshot.references', references.absolutePath
