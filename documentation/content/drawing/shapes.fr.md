@@ -1,6 +1,6 @@
 # Shapes
 
-`DrawShape` est la façade pour chaque primitif de forme que JOID peut rendre hors de l'arbre de nœuds. Accessible via `DrawUtils.SHAPE` ou directement via `DrawShape.getInstance()` — les deux retournent le même singleton. Chaque méthode est `void` et écrit immédiatement dans le contexte GL courant.
+`DrawShape` est la façade pour chaque primitif de forme que JOID peut rendre hors de l'arbre de nœuds. Accessible via `DrawUtils.SHAPE` ou directement via `DrawShape.getInstance()` — les deux retournent le même singleton. Chaque méthode est `void` et dessine immédiatement via le bridge de rendu.
 
 ## Rectangles
 
@@ -100,7 +100,7 @@ void drawLine(Color color, Vector2d... points)
 void drawLine(Color color, float stroke, Vector2d... points)
 ```
 
-Line strip connectant chaque paire consécutive de points. `GL_LINE_SMOOTH` est activé pendant l'appel. La variante avec stroke positionne `glLineWidth` autour du draw.
+Line strip connectant chaque paire consécutive de points. Le lissage des lignes est activé pendant l'appel. La variante avec stroke positionne la largeur de ligne autour du draw.
 
 ```java
 DrawUtils.SHAPE.drawLine(Color.WHITE,
@@ -120,7 +120,7 @@ DrawUtils.SHAPE.drawLine(Color.WHITE, 2F,
 void drawDashedLine(Color color, int pattern, float stroke, Vector2d... points)
 ```
 
-Line strip utilisant `GL_LINE_STIPPLE` avec un pattern dash/gap fixe (`0xAAAA`). Le paramètre `pattern` est le facteur stipple — plus grand = tirets plus longs.
+Chaque segment est découpé en tirets de `pattern` pixels séparés par des espaces de même longueur, dessinés en lignes lissées de largeur `stroke`. Plus grand = tirets plus longs.
 
 ```java
 DrawUtils.SHAPE.drawDashedLine(Color.decode("#4ade80"), 2, 1F,
@@ -174,27 +174,17 @@ DrawUtils.SHAPE.drawPolygon(Color.decode("#a78bfa"),
 ### `drawShape`
 
 ```java
-void drawShape(int mode, Color color, Vector2d... points)
+void drawShape(DrawMode mode, Color color, Vector2d... points)
 ```
 
-Plus bas niveau : n'importe quel mode GL (`GL_TRIANGLES`, `GL_QUADS`, `GL_LINE_LOOP`, …) avec des sommets arbitraires. Toutes les autres méthodes de forme finissent par appeler `drawShape`.
+Plus bas niveau : n'importe quel `DrawMode` (`TRIANGLES`, `QUADS`, `POLYGON`, `LINE_LOOP`, …) avec des sommets arbitraires. Toutes les autres méthodes de forme finissent par appeler `drawShape`.
 
 ```java
-DrawUtils.SHAPE.drawShape(GL11.GL_LINE_LOOP, Color.RED,
+DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.RED,
     new Vector2d(0, 0), new Vector2d(100, 0),
     new Vector2d(100, 100), new Vector2d(0, 100)
 );
 ```
-
-## Utilitaires
-
-### `bindEmptyTexture`
-
-```java
-static void bindEmptyTexture()
-```
-
-Bind une texture 1×1 blanche créée paresseusement pour que les quad draws suivants utilisent les couleurs des sommets sans échantillonner une texture obsolète. Appelé automatiquement par `drawShape` et `drawRawRect` — vous l'invoquez rarement directement.
 
 ## Voir aussi
 

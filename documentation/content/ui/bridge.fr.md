@@ -2,23 +2,23 @@
 
 Le bridge est la colle entre JOID et votre application hôte. Il détient la liste des UIs actives, dispatche les événements d'entrée, et pilote le rendu.
 
-## La `DemoWindow` intégrée
+## Backends et `DemoWindow`
 
-Pour les apps autonomes et les tests rapides, JOID ship `DemoWindow` — une fenêtre LWJGL 2 prête à l'emploi qui :
+Chaque branche de backend (`impl/lwjgl-2`, `impl/lwjgl-3`, `impl/vulkan`) fournit une `DemoWindow` — une fenêtre prête à l'emploi qui :
 
-- Crée un contexte GL redimensionnable 1920×1080.
+- Enregistre les bridges de fenêtre, de rendu et d'audio de son backend (voir [Backends](backends.md)).
 - Écoute souris et clavier.
-- Boucle `update` → `render` → `Display.update()`.
-- S'enregistre automatiquement comme `UIBridge` quand vous appelez `BridgeHandler.register(window)`.
+- Boucle `update` → `render` → présentation.
+- S'enregistre comme `UIBridge` quand vous appelez `BridgeHandler.register(window)`.
 
 ```java
-JOID.inst().setDevMode(true).setDemoMode(true).load();
 final DemoWindow window = new DemoWindow();
 BridgeHandler.register(window);
+JOID.inst().setDevMode(true).setDemoMode(true).load();
 window.run();
 ```
 
-Utilisez-la telle quelle pour outils, démos ou prototypes.
+Lancez-la depuis une branche de backend avec `./gradlew runDemo`. Sur `impl/lwjgl-2`, appelez `LWJGL2Backend.register()` avant de créer la fenêtre.
 
 ## Écrire votre propre bridge
 
@@ -79,33 +79,20 @@ BridgeHandler.register(new MyBridge());
 
 ## Câbler les entrées
 
-Votre boucle principale doit forwarder les inputs vers le bridge :
+Votre boucle principale transmet les événements de votre bibliothèque de fenêtrage au bridge. Les boutons de souris passent par `ClickType.from(button)` et les touches par l'enum neutre `Key` ; la position de la souris est lue depuis le bridge de fenêtre, en pixels depuis le coin supérieur gauche.
 
 ```java
-while (running) {
-    while (Mouse.next()) {
-        final int button = Mouse.getEventButton();
-        final boolean state = Mouse.getEventButtonState();
-        if (state && button != -1) {
-            bridge.mousePressed(ClickType.from(button));
-        } else if (button != -1) {
-            bridge.mouseReleased(ClickType.from(button));
-        }
-        final int scroll = Mouse.getEventDWheel();
-        if (scroll != 0) bridge.mouseScroll(scroll);
-    }
+bridge.mousePressed(ClickType.from(button));
+bridge.mouseReleased(ClickType.from(button));
+bridge.mouseDragged(clickType, System.currentTimeMillis() - pressTime);
+bridge.mouseScroll(wheelDelta);
+bridge.keyTyped(character, key);
 
-    while (Keyboard.next()) {
-        if (Keyboard.getEventKeyState()) {
-            bridge.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-        }
-    }
-
-    bridge.update();
-    bridge.draw();
-    Display.update();
-}
+bridge.update();
+bridge.draw();
 ```
+
+Chaque `DemoWindow` de backend contient une boucle complète pour sa bibliothèque de fenêtrage — polling `Mouse` / `Keyboard` sur LWJGL 2, callbacks GLFW sur LWJGL 3 et Vulkan.
 
 `UIBridge` gère déjà le tracking du drag et ESC-to-close ; il suffit de lui fournir les événements.
 
@@ -130,7 +117,7 @@ Les bridges sont itérés dans l'ordre d'enregistrement. Le premier dont `canHan
 
 ## Bonnes pratiques
 
-- **Un bridge par contexte de rendu.** N'essayez pas de multiplexer plusieurs contextes GL dans un seul bridge.
+- **Un bridge par contexte de rendu.** N'essayez pas de multiplexer plusieurs contextes de rendu dans un seul bridge.
 - **Gardez `drawHover` rapide.** Il tourne après chaque render de nœud. Utilisez le système de police cache de l'hôte.
 - **Ne manipulez jamais `uiList` directement.** Passez par `open`/`close`/`add`/`remove` pour garder l'état interne cohérent.
 - **Enregistrez les bridges avant d'ouvrir une UI.** `JOID.open()` échoue silencieusement si aucun bridge ne gère la classe d'UI.
@@ -138,4 +125,5 @@ Les bridges sont itérés dans l'ordre d'enregistrement. Le premier dont `canHan
 ## Voir aussi
 
 - [UI Class](ui-class.md) — comment les UIs s'accrochent au bridge.
+- [Backends](backends.md) — les bridges de fenêtre, de rendu et d'audio.
 - [Transitions](transitions.md) — animations in/out pilotées par `open` / `close`.

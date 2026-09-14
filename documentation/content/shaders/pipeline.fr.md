@@ -1,6 +1,6 @@
 # Shader Pipeline
 
-Le pipeline de shaders de JOID compose des effets GL multi-passes par-dessus la sortie rendue d'un nœud. Il gère le pool de framebuffers, la projection, le blending et l'expansion imbriquée — il vous suffit de fournir une liste de `ShaderPass`.
+Le pipeline de shaders de JOID compose des effets GPU multi-passes par-dessus la sortie rendue d'un nœud. Il gère le pool de framebuffers, la projection, le blending et l'expansion imbriquée — il vous suffit de fournir une liste de `ShaderPass`.
 
 ## La classe `ShaderPipeline`
 

@@ -1,6 +1,6 @@
 # VideoPlayerNode
 
-Lecteur vidéo complet. Lit MP4, MOV, WebM, MKV, AVI, GIF, APNG — tout ce que FFmpeg peut décoder. Audio streamé via OpenAL, synchronisé à la vidéo.
+Lecteur vidéo complet. Lit MP4, MOV, WebM, MKV, AVI, GIF, APNG — tout ce que FFmpeg peut décoder. Audio streamé via le bridge audio, synchronisé à la vidéo.
 
 ## Créer
 
@@ -94,7 +94,7 @@ this.keybind(() -> {
     } else {
         player.position(100, 100).size(640, 360);
     }
-}, Keyboard.KEY_F);
+}, Key.F);
 ```
 
 ## Exemple — barre de progression cliquable
@@ -135,7 +135,7 @@ Pour GIF/APNG, le loop est activé par défaut (`isLoopByDefault`).
 
 ## Bonnes pratiques
 
-- **Utilisez `release()` avant de swap plusieurs fois.** Le décodeur détient un thread, un fichier temp et une source OpenAL — le cleanup compte pour les apps longues.
+- **Utilisez `release()` avant de swap plusieurs fois.** Le décodeur détient un thread, un fichier temp et une source audio — le cleanup compte pour les apps longues.
 - **Mettez `autoplay(false)` pour une lecture déclenchée par l'utilisateur.** Sinon la vidéo démarre dès le décodage.
 - **Préférez `.location(x, y, z) + setAudioListener` pour l'audio monde.** Régler le volume manuellement à chaque frame est moins efficient.
 - **Ne gardez pas de référence à un décodeur disposé.** Appelez `getDecoder()` à chaque fois — il retourne `null` après release.

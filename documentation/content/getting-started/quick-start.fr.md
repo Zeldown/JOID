@@ -4,20 +4,18 @@ Ce tutoriel met une fenêtre JOID à l'écran en moins de 30 lignes, puis montre
 
 ## Une fenêtre minimale
 
-JOID embarque une `DemoWindow` prête à l'emploi qui ouvre une fenêtre LWJGL 2, s'enregistre comme bridge d'UI, et lance la boucle principale. Pour votre propre hôte vous implémenteriez `UIBridge` vous-même (voir [Bridge](../ui/bridge.md)), mais pour démarrer :
+Chaque branche de backend embarque une `DemoWindow` prête à l'emploi qui ouvre une fenêtre, enregistre les bridges de son moteur, s'enregistre comme bridge d'UI et lance la boucle principale. Pour votre propre hôte vous implémenteriez `UIBridge` vous-même (voir [Bridge](../ui/bridge.md) et [Backends](../ui/backends.md)), mais pour démarrer :
 
 ```java
 public static void main(final String[] args) {
+    final DemoWindow window = new DemoWindow();
+    BridgeHandler.register(window);
     JOID.inst().setDevMode(true).setDemoMode(true).load();
-    try {
-        final DemoWindow window = new DemoWindow();
-        BridgeHandler.register(window);
-        window.run();
-    } catch (final LWJGLException e) {
-        e.printStackTrace();
-    }
+    window.run();
 }
 ```
+
+Depuis une branche de backend, `./gradlew runDemo` lance la démo complète.
 
 Les deux flags sur `JOID.inst()` activent les gestes de debug (`setDevMode`) et chargent la police `DemoFont` embarquée (`setDemoMode`) pour que vous ayez une police utilisable sans devoir shipper votre propre atlas. Les deux valent `false` par défaut — voir [Bootstrap](core-concepts.md#bootstrap) pour la liste complète des flags et ce qu'ils activent.
 

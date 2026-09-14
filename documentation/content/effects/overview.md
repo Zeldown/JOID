@@ -28,7 +28,7 @@ RoundedNodeEffect<?> rounded = node.getEffect(RoundedNodeEffect.class);
 
 ### Pre / Post effects
 
-Effects that bracket the node's render with `pre(node)` / `post(node)` — typically GL state changes (stencil, scissor, transform). Example: `MaskNodeEffect`, `TransformNodeEffect`.
+Effects that bracket the node's render with `pre(node)` / `post(node)` — typically render state changes (stencil, transform). Example: `MaskNodeEffect`, `TransformNodeEffect`.
 
 ### Shader effects
 
@@ -71,7 +71,7 @@ myEffect.priority(100);
 | [BlurNodeEffect](blur.md) | Shader | Gaussian blur |
 | [BorderNodeEffect](border.md) | Shader | Outline with gradient support |
 | `MaskNodeEffect` | Pre/Post | Stencil mask to a shape |
-| `TransformNodeEffect` | Pre/Post | GL translate/scale/rotate |
+| `TransformNodeEffect` | Pre/Post | translate/scale/rotate |
 
 > Looking for a gradient effect? Gradients are now first-class on [`Color`](../drawing/color.md) — use `Color.toGradient(other)` directly on `RectNode.color(...)`, `BorderNodeEffect.create(...)`, or any `TextInfo`. The dedicated `GradientNodeEffect` was removed in 6.2.0.
 
@@ -83,5 +83,5 @@ myEffect.priority(100);
 
 ## See also
 
-- [Shader Pipeline](../shaders/pipeline.md) — how effects compose into GL passes.
+- [Shader Pipeline](../shaders/pipeline.md) — how effects compose into shader passes.
 - [Custom Shaders](../shaders/custom.md) — write your own effect.

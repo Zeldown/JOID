@@ -1,6 +1,6 @@
 # Models
 
-`DrawModel` renders any object implementing `IDrawableModel` into the current GL context. It handles lighting setup, back-face disabling, and a 180° Y rotation so that standard OBJ models face the camera.
+`DrawModel` renders any object implementing `IDrawableModel` through the render bridge. It handles lighting setup, back-face disabling, and a 180° Y rotation so that standard OBJ models face the camera.
 
 ```java
 DrawUtils.MODEL.method(...);
@@ -45,22 +45,20 @@ public interface IDrawableModel {
 }
 ```
 
-- `render()` — called inside `drawModel`, issues the actual vertex/index GL calls.
+- `render()` — called inside `drawModel`, issues the model draw calls through the render bridge.
 - `getWidth / getHeight / getDepth` — bounding-box dimensions, useful for layout or centering.
 
 JOID doesn't ship a model loader — `ModelNode` consumes whatever `IDrawableModel` you pass it. A common pairing is `net.obj` for OBJ parsing, but anything producing `IDrawableModel` works.
 
-## GL state inside `drawModel`
+## Render state inside `drawModel`
 
-Every call sets up:
+Every call sets up through the render bridge:
 
-- `GL_CULL_FACE` disabled (both sides of every triangle visible).
-- `GL_LIGHTING`, `GL_LIGHT0`, `GL_LIGHT1` enabled.
-- `GL_COLOR_MATERIAL` enabled with `GL_FRONT_AND_BACK` / `GL_AMBIENT_AND_DIFFUSE`.
-- `GL_SHADE_MODEL` set to `GL_FLAT`.
-- Ambient light model: `(0.6, 0.6, 0.6, 1.0)`.
+- `cull(false)` — both sides of every triangle visible.
+- `lighting(true)` — two directional lights, color material on ambient and diffuse, flat shading.
+- Ambient light: `(0.6, 0.6, 0.6, 1.0)`.
 
-All of the above is restored after `render()` returns.
+Lighting is disabled and the matrix popped after `render()` returns.
 
 ## See also
 

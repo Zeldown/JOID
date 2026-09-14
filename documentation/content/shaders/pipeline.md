@@ -1,6 +1,6 @@
 # Shader Pipeline
 
-JOID's shader pipeline composes multi-pass GL effects on top of a node's rendered output. It handles framebuffer pooling, projection, blending, and nested expansion — you just provide a list of `ShaderPass` objects.
+JOID's shader pipeline composes multi-pass GPU effects on top of a node's rendered output. It handles framebuffer pooling, projection, blending, and nested expansion — you just provide a list of `ShaderPass` objects.
 
 ## The `ShaderPipeline` class
 

@@ -1,10 +1,10 @@
 # Introduction
 
-A component-based UI toolkit built on LWJGL 2. Pure Java, no CSS, no XML, no runtime parser — the code you write is the layout the GPU draws.
+A component-based UI toolkit that runs on any rendering engine through bridges — LWJGL 2, LWJGL 3 (OpenGL 3.3) and Vulkan backends are provided. Pure Java, no CSS, no XML, no runtime parser — the code you write is the layout the GPU draws.
 
 ## What it is
 
-JOID gives you a retained-mode node tree, a reactive state system built around `Signal<T>`, a shader pipeline for composable GL effects, and a `Bridge` interface that adapts the library to any LWJGL host. You build the tree once, mutate it through signals, and JOID handles composition and rendering. There is no DSL to learn, no scene-graph format to serialize, no runtime engine to boot — the library is a set of chainable classes that you wire together in Java.
+JOID gives you a retained-mode node tree, a reactive state system built around `Signal<T>`, a shader pipeline for composable GPU effects, and a set of bridges that adapt the library to any host and any rendering engine. You build the tree once, mutate it through signals, and JOID handles composition and rendering. There is no DSL to learn, no scene-graph format to serialize, no runtime engine to boot — the library is a set of chainable classes that you wire together in Java.
 
 ## Why not a CSS-driven UI
 
@@ -30,17 +30,17 @@ The `watch` callback fires, the target node updates exactly the property it was 
 
 ## Host-agnostic by design
 
-JOID talks to its host through a single `Bridge` interface — viewport dimensions, input events, GL context hooks. Every host is a small adapter class; nothing else about the library changes between environments.
+JOID talks to its host through bridges — UI hosting, window and input, rendering, audio. Every host is a small adapter class; nothing else about the library changes between environments.
 
-The same node tree, the same effects, the same signals, and the same stores run inside a standalone LWJGL window, an editor panel embedded in a larger engine, a debug overlay bolted onto a game, or any custom runtime that exposes an OpenGL context. Swap the `Bridge`, keep the UI. That's the core reason JOID exists as a separate, self-contained library.
+The same node tree, the same effects, the same signals, and the same stores run inside a standalone window, an editor panel embedded in a larger engine, a debug overlay bolted onto a game, or any custom runtime. Swap the bridges, keep the UI — see [Backends](../ui/backends.md). That's the core reason JOID exists as a separate, self-contained library.
 
 ## What JOID is not
 
-JOID is not a browser runtime: there is no DOM, no CSS, no HTML subset. It is not immediate-mode: nodes are retained, and you mutate the tree through signals and direct setters. It is not a replacement for every UI toolkit — for native OS menus or accessibility tree integration, pick Swing or JavaFX. JOID targets rendered, GPU-composed UIs that live inside an existing OpenGL application.
+JOID is not a browser runtime: there is no DOM, no CSS, no HTML subset. It is not immediate-mode: nodes are retained, and you mutate the tree through signals and direct setters. It is not a replacement for every UI toolkit — for native OS menus or accessibility tree integration, pick Swing or JavaFX. JOID targets rendered, GPU-composed UIs that live inside an existing OpenGL or Vulkan application.
 
 ## Who it's for
 
-Developers who embed UI into an LWJGL-based application — games, tools, editors, overlays — and want to own the rendering path without pulling in a web runtime. Anyone comfortable with Java 8+ who prefers compiler guarantees over stylesheet debugging.
+Developers who embed UI into a Java application rendered with OpenGL or Vulkan — games, tools, editors, overlays — and want to own the rendering path without pulling in a web runtime. Anyone comfortable with Java 8+ who prefers compiler guarantees over stylesheet debugging.
 
 ## Next steps
 

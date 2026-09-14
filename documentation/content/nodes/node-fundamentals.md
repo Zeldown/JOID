@@ -74,7 +74,7 @@ node.zlevel(double);
 ```
 
 - `zindex` reorders within the same parent. Higher = drawn later (on top).
-- `zlevel` translates the node along Z in GL — useful for tooltips that must always render above siblings.
+- `zlevel` translates the node along Z — useful for tooltips that must always render above siblings.
 
 ## Hover
 

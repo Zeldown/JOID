@@ -4,20 +4,18 @@ This walkthrough gets a JOID window on screen in under 30 lines, then shows how 
 
 ## A minimal window
 
-JOID ships a ready-to-use `DemoWindow` that opens an LWJGL 2 window, registers itself as the UI bridge, and runs the main loop. For your own host you'd implement `UIBridge` yourself (see [Bridge](../ui/bridge.md)), but to get started:
+Every backend branch ships a ready-to-use `DemoWindow` that opens a window, registers the bridges of its engine, registers itself as the UI bridge and runs the main loop. For your own host you'd implement `UIBridge` yourself (see [Bridge](../ui/bridge.md) and [Backends](../ui/backends.md)), but to get started:
 
 ```java
 public static void main(final String[] args) {
+    final DemoWindow window = new DemoWindow();
+    BridgeHandler.register(window);
     JOID.inst().setDevMode(true).setDemoMode(true).load();
-    try {
-        final DemoWindow window = new DemoWindow();
-        BridgeHandler.register(window);
-        window.run();
-    } catch (final LWJGLException e) {
-        e.printStackTrace();
-    }
+    window.run();
 }
 ```
+
+From a backend branch, `./gradlew runDemo` launches the complete demo.
 
 The two flags on `JOID.inst()` turn on the debug gestures (`setDevMode`) and load the bundled `DemoFont` (`setDemoMode`) so you have a usable font without shipping your own atlas. Both default to `false` — see [Bootstrap](core-concepts.md#bootstrap) for the full list of flags and what each one enables.
 

@@ -12,7 +12,7 @@ public interface IResourceDecoder {
     default public void prepare(final @NonNull ResourceData resource) {}
     default public void decode(final @NonNull ResourceData resource) {}
     default public void upload(final @NonNull ResourceData resource) {}
-    default public void bind(final @NonNull ResourceData resource) {}
+    default public void update(final @NonNull ResourceData resource) {}
     default public void clear(final @NonNull ResourceData resource) {}
 }
 ```
@@ -20,10 +20,10 @@ public interface IResourceDecoder {
 Lifecycle:
 
 1. **`init`** — right after construction, with the `ResourceData` parent attached.
-2. **`prepare`** — called on the GL thread before decode. Allocate placeholder textures here.
+2. **`prepare`** — called on the render thread before decode. Create placeholder textures here with `BridgeHandler.getRender().createTexture()`.
 3. **`decode`** — decode bytes into pixels. May run on a background thread (async mode).
-4. **`upload`** — GL thread. Upload decoded pixels to GPU.
-5. **`bind`** — every frame when the resource is rendered. Bind the current texture.
+4. **`upload`** — render thread. Upload decoded pixels through `ITexture.allocate` and `upload`.
+5. **`update`** — every frame before the resource is rendered. Swap the current texture with `resource.texture(...)` when it changes (video frames).
 6. **`clear`** — release GPU resources when the cache evicts or the node is destroyed.
 
 ## Built-in decoders
@@ -44,7 +44,7 @@ Animated formats — MP4, MOV, WebM, MKV, AVI, GIF, APNG. Backed by FFmpeg via J
 Features:
 - Ring-buffered frame queue (5 frames).
 - Ping-pong textures for tear-free playback.
-- OpenAL audio streaming synced to video.
+- Audio streaming through the audio bridge, synced to video.
 - Seek, pause, resume, loop.
 - Optional 3D spatial audio.
 
@@ -92,6 +92,11 @@ public class SVGResourceDecoder implements IResourceDecoder {
     }
 
     @Override
+    public void prepare(ResourceData resource) {
+        resource.texture(BridgeHandler.getRender().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
+    }
+
+    @Override
     public void decode(ResourceData resource) {
         // Parse SVG, rasterize to int[] ARGB
         final BufferedImage img = rasterize(stream);
@@ -103,22 +108,11 @@ public class SVGResourceDecoder implements IResourceDecoder {
 
     @Override
     public void upload(ResourceData resource) {
-        final int tex = GL11.glGenTextures();
-        AllocatedTextureUtil.allocateTexture(tex, width, height);
-        AllocatedTextureUtil.uploadTexture(tex, pixels, width, height);
-        resource.textureId(tex);
-    }
-
-    @Override
-    public void bind(ResourceData resource) {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, resource.getTextureId()[0]);
+        resource.getTextures()[0].allocate(width, height).upload(pixels, width, height);
     }
 
     @Override
     public void clear(ResourceData resource) {
-        if (resource.getTextureId() != null) {
-            GL11.glDeleteTextures(resource.getTextureId()[0]);
-        }
         this.pixels = null;
     }
 }
@@ -140,9 +134,9 @@ new Resource(builder, new ResourceData(uniqueId, svg(stream)));
 
 ## Best practices
 
-- **Use `AllocatedTextureUtil`.** Handles GL texture allocation and mipmap setup consistently.
+- **Create textures through the render bridge.** `createTexture()`, `allocate` and `upload` work on every backend.
 - **Don't hold the InputStream forever.** Consume it during `decode` and drop the reference.
-- **Guard GL calls in `upload` and `clear` by GL thread.** These run on the render thread; others can be any thread.
+- **Keep texture calls in `prepare`, `upload` and `update`.** These run on the render thread; `decode` can run on any thread.
 
 ## See also
 

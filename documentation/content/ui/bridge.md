@@ -2,23 +2,23 @@
 
 The bridge is the glue between JOID and your host application. It owns the list of active UIs, dispatches input events, and drives rendering.
 
-## The built-in `DemoWindow`
+## Backends and `DemoWindow`
 
-For standalone apps and quick tests, JOID ships `DemoWindow` — a ready-to-use LWJGL 2 window that:
+Each backend branch (`impl/lwjgl-2`, `impl/lwjgl-3`, `impl/vulkan`) ships a `DemoWindow` — a ready-to-use window that:
 
-- Creates a 1920×1080 resizable GL context.
+- Registers the window, render and audio bridges of its backend (see [Backends](backends.md)).
 - Listens to mouse and keyboard.
-- Loops `update` → `render` → `Display.update()`.
-- Registers itself as a `UIBridge` automatically when you call `BridgeHandler.register(window)`.
+- Loops `update` → `render` → present.
+- Registers itself as a `UIBridge` when you call `BridgeHandler.register(window)`.
 
 ```java
-JOID.inst().setDevMode(true).setDemoMode(true).load();
 final DemoWindow window = new DemoWindow();
 BridgeHandler.register(window);
+JOID.inst().setDevMode(true).setDemoMode(true).load();
 window.run();
 ```
 
-Use it as-is for tools, demos, or prototypes.
+Run it from a backend branch with `./gradlew runDemo`. On `impl/lwjgl-2`, call `LWJGL2Backend.register()` before creating the window.
 
 ## Writing your own bridge
 
@@ -79,33 +79,20 @@ BridgeHandler.register(new MyBridge());
 
 ## Wiring input
 
-Your main loop must forward input to the bridge:
+Your main loop forwards the events of your windowing library to the bridge. Mouse buttons go through `ClickType.from(button)` and keys through the engine-neutral `Key` enum; the mouse position is read from the window bridge, in pixels from the top-left corner.
 
 ```java
-while (running) {
-    while (Mouse.next()) {
-        final int button = Mouse.getEventButton();
-        final boolean state = Mouse.getEventButtonState();
-        if (state && button != -1) {
-            bridge.mousePressed(ClickType.from(button));
-        } else if (button != -1) {
-            bridge.mouseReleased(ClickType.from(button));
-        }
-        final int scroll = Mouse.getEventDWheel();
-        if (scroll != 0) bridge.mouseScroll(scroll);
-    }
+bridge.mousePressed(ClickType.from(button));
+bridge.mouseReleased(ClickType.from(button));
+bridge.mouseDragged(clickType, System.currentTimeMillis() - pressTime);
+bridge.mouseScroll(wheelDelta);
+bridge.keyTyped(character, key);
 
-    while (Keyboard.next()) {
-        if (Keyboard.getEventKeyState()) {
-            bridge.keyTyped(Keyboard.getEventCharacter(), Keyboard.getEventKey());
-        }
-    }
-
-    bridge.update();
-    bridge.draw();
-    Display.update();
-}
+bridge.update();
+bridge.draw();
 ```
+
+Every backend `DemoWindow` contains a complete loop for its windowing library — `Mouse` / `Keyboard` polling on LWJGL 2, GLFW callbacks on LWJGL 3 and Vulkan.
 
 `UIBridge` already implements mouse drag tracking and ESC-to-close; you just need to feed it events.
 
@@ -130,7 +117,7 @@ Bridges are iterated in registration order. The first one whose `canHandle(ui)` 
 
 ## Best practices
 
-- **One bridge per rendering context.** Don't try to multiplex different GL contexts in one bridge.
+- **One bridge per rendering context.** Don't try to multiplex different rendering contexts in one bridge.
 - **Keep `drawHover` fast.** It runs after every node render. Use your host's cached font system.
 - **Never manipulate `uiList` directly.** Go through `open`/`close`/`add`/`remove` to keep internal state consistent.
 - **Register bridges before opening any UI.** `JOID.open()` fails silently if no bridge can handle the UI class.
@@ -138,4 +125,5 @@ Bridges are iterated in registration order. The first one whose `canHandle(ui)` 
 ## See also
 
 - [UI Class](ui-class.md) — how UIs hook into the bridge.
+- [Backends](backends.md) — the window, render and audio bridges.
 - [Transitions](transitions.md) — in/out animations driven by the bridge `open` / `close`.

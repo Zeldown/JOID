@@ -17,6 +17,7 @@
 			"items": [
 				{ "title": "UI Class", "path": "ui/ui-class" },
 				{ "title": "Bridge", "path": "ui/bridge" },
+				{ "title": "Backends", "path": "ui/backends" },
 				{ "title": "Transitions", "path": "ui/transitions" }
 			]
 		},
@@ -137,6 +138,7 @@
 			"group": "changelog",
 			"items": [
 				{ "title": "Overview", "path": "changelog/index" },
+				{ "title": "7.0.0", "path": "changelog/7.0.0" },
 				{ "title": "6.0.0", "path": "changelog/6.0.0" }
 			]
 		}

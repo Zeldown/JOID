@@ -76,9 +76,9 @@ Resource sprite = ResourceBuilder.create()
     .of(spriteSheet);
 ```
 
-## GL state
+## Render state
 
-Every draw call pushes the matrix, enables `GL_BLEND` with `(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)` and `GL_POINT_SMOOTH`, binds the resource texture with `GL_CLAMP` wrap on both axes, draws a textured quad, and restores the state. You don't need to preconfigure blending.
+Every draw call pushes the matrix, enables `BlendState.NORMAL` (`SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`), binds the resource texture with `TextureWrap.CLAMP_TO_BORDER`, draws a textured quad through the `Tessellator`, then disables blending and pops the matrix. You don't need to preconfigure blending.
 
 ## See also
 

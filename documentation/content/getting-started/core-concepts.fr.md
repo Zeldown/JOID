@@ -96,7 +96,7 @@ Une UI bien construite est majoritairement *des nœuds de design à l'intérieur
 Les effets sont un post-processing appliqué à la sortie rendue d'un nœud. Il en existe deux saveurs :
 
 - **Effets de forme** : `RoundedNodeEffect`, `CircleNodeEffect` — modifient la silhouette.
-- **Effets de shader** : `BlurNodeEffect`, `BorderNodeEffect`, `RoundedNodeEffect`, `CircleNodeEffect` — passes GL complètes composées via le [Shader Pipeline](../shaders/pipeline.md). Les gradients sont natifs sur `Color` (voir [`Color.toGradient`](../drawing/color.md)).
+- **Effets de shader** : `BlurNodeEffect`, `BorderNodeEffect`, `RoundedNodeEffect`, `CircleNodeEffect` — passes de shader complètes composées via le [Shader Pipeline](../shaders/pipeline.md). Les gradients sont natifs sur `Color` (voir [`Color.toGradient`](../drawing/color.md)).
 
 Chaînez plusieurs effets ; ils se composent par ordre de priorité.
 
@@ -159,6 +159,6 @@ Chaque frame :
    - les effets shader construisent une liste `ShaderPass` et la déléguent à `ShaderPipeline.render(node, passes, baseDraw)`,
    - `baseDraw` masque aux bounds du nœud, rend les enfants et appelle votre `draw()`.
 
-Vous n'avez presque jamais besoin de vous en soucier en interne — mais le savoir aide à débugger les états GL.
+Vous n'avez presque jamais besoin de vous en soucier en interne — mais le savoir aide à débugger les états de rendu.
 
 Ensuite, sautez dans [UI Class](../ui/ui-class.md) ou [Node Fundamentals](../nodes/node-fundamentals.md) selon ce que vous voulez construire en premier.

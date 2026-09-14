@@ -1,17 +1,17 @@
 # Custom Shaders
 
-Write your own GL shaders and wire them into the pipeline.
+Write your own shaders and wire them into the pipeline.
 
 ## The flow
 
 1. Write your `.vsh` / `.fsh` shader files and put them in `/assets/shaders/<name>/`.
-2. Extend `GLShaderImpl` to load and expose uniforms.
+2. Extend `ShaderImpl` to load and expose uniforms.
 3. Implement a `ShaderPass` that binds the shader.
 4. Optionally wrap in a `NodeEffect` for ergonomic use.
 
 ## 1. Shader files
 
-JOID uses GLSL 1.20 (`#version 120`) for LWJGL 2 compatibility.
+Shaders are assets of the backend: each backend branch loads `/assets/shaders/<name>/<name>.vsh` and `.fsh` written in the language of its engine — GLSL 120 for LWJGL 2, GLSL 330 for LWJGL 3, Vulkan GLSL 450 for Vulkan. Ship one version per backend you target; see [Backends](../ui/backends.md#shaders) for the conventions of each language. The example below is the LWJGL 2 version.
 
 **`/assets/shaders/outline/outline.vsh`**:
 ```glsl
@@ -52,19 +52,79 @@ void main() {
 }
 ```
 
+### Other backends
+
+On LWJGL 3, the same fragment shader is written in GLSL 330 with explicit inputs and output:
+
+```glsl
+#version 330 core
+
+in vec2 vTexCoord;
+uniform sampler2D tex;
+uniform vec4 u_OutlineColor;
+uniform float u_Thickness;
+uniform vec2 u_TexelSize;
+
+out vec4 fragColor;
+
+void main() {
+    vec4 color = texture(tex, vTexCoord);
+    float alpha = 0.0;
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            vec2 offset = vec2(i, j) * u_TexelSize * u_Thickness;
+            alpha = max(alpha, texture(tex, vTexCoord + offset).a);
+        }
+    }
+    fragColor = color.a > 0.5 ? color : vec4(u_OutlineColor.rgb, alpha * u_OutlineColor.a);
+}
+```
+
+On Vulkan, uniforms live in a `std140` block, samplers have a binding and every input has a location:
+
+```glsl
+#version 450
+
+layout(location = 1) in vec2 vTexCoord;
+
+layout(std140, binding = 1) uniform FragmentUniforms {
+    vec4 u_OutlineColor;
+    float u_Thickness;
+    vec2 u_TexelSize;
+};
+
+layout(binding = 2) uniform sampler2D tex;
+
+layout(location = 0) out vec4 fragColor;
+
+void main() {
+    vec4 color = texture(tex, vTexCoord);
+    float alpha = 0.0;
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            vec2 offset = vec2(i, j) * u_TexelSize * u_Thickness;
+            alpha = max(alpha, texture(tex, vTexCoord + offset).a);
+        }
+    }
+    fragColor = color.a > 0.5 ? color : vec4(u_OutlineColor.rgb, alpha * u_OutlineColor.a);
+}
+```
+
+The Java side is identical on every backend: uniforms are looked up by name.
+
 ## 2. Shader class
 
 ```java
 package your.package.shader;
 
 import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.shader.impl.GLShaderImpl;
-import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
-import be.zeldown.joid.lib.shader.uniform.Float4Uniform;
-import be.zeldown.joid.lib.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.shader.impl.ShaderImpl;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float4Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
 import lombok.NonNull;
 
-public class OutlineShader extends GLShaderImpl {
+public class OutlineShader extends ShaderImpl {
 
     private static final OutlineShader INSTANCE = new OutlineShader();
 
@@ -194,7 +254,7 @@ Done — your custom effect is now composable with all the built-ins.
 
 ## Best practices
 
-- **Use `BooleanUniform` / `IntUniform` / `FloatUniform` / `Float2Uniform` / etc.** from `lib/shader/uniform` rather than binding raw GL calls.
+- **Use `BooleanUniform` / `IntUniform` / `FloatUniform` / `Float2Uniform` / etc.** from `lib/bridge/render/shader/uniform` rather than engine calls.
 - **Don't leak uniform lookups.** The shader caches them; repeated `getXUniform(name)` is cheap.
 - **Test at multiple scale factors.** The pipeline supersamples on high-DPI displays — make sure your `u_TexelSize` accounts for it.
 - **Respect the `supportsDirectBind()` contract.** If your shader needs to read the previous framebuffer, return false.

@@ -1,17 +1,17 @@
 # Custom Shaders
 
-Écrire vos propres shaders GL et les câbler dans le pipeline.
+Écrire vos propres shaders et les câbler dans le pipeline.
 
 ## Le flow
 
 1. Écrivez vos fichiers shader `.vsh` / `.fsh` et placez-les dans `/assets/shaders/<name>/`.
-2. Étendez `GLShaderImpl` pour charger et exposer les uniforms.
+2. Étendez `ShaderImpl` pour charger et exposer les uniforms.
 3. Implémentez un `ShaderPass` qui bind le shader.
 4. Optionnellement, enveloppez dans un `NodeEffect` pour un usage ergonomique.
 
 ## 1. Fichiers shader
 
-JOID utilise GLSL 1.20 (`#version 120`) pour la compatibilité LWJGL 2.
+Les shaders sont des assets du backend : chaque branche de backend charge `/assets/shaders/<name>/<name>.vsh` et `.fsh` écrits dans le langage de son moteur — GLSL 120 pour LWJGL 2, GLSL 330 pour LWJGL 3, GLSL 450 Vulkan pour Vulkan. Fournissez une version par backend ciblé ; voir [Backends](../ui/backends.md#shaders) pour les conventions de chaque langage. L'exemple ci-dessous est la version LWJGL 2.
 
 **`/assets/shaders/outline/outline.vsh`** :
 ```glsl
@@ -52,19 +52,79 @@ void main() {
 }
 ```
 
+### Autres backends
+
+Sur LWJGL 3, le même fragment shader s'écrit en GLSL 330 avec des entrées et une sortie explicites :
+
+```glsl
+#version 330 core
+
+in vec2 vTexCoord;
+uniform sampler2D tex;
+uniform vec4 u_OutlineColor;
+uniform float u_Thickness;
+uniform vec2 u_TexelSize;
+
+out vec4 fragColor;
+
+void main() {
+    vec4 color = texture(tex, vTexCoord);
+    float alpha = 0.0;
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            vec2 offset = vec2(i, j) * u_TexelSize * u_Thickness;
+            alpha = max(alpha, texture(tex, vTexCoord + offset).a);
+        }
+    }
+    fragColor = color.a > 0.5 ? color : vec4(u_OutlineColor.rgb, alpha * u_OutlineColor.a);
+}
+```
+
+Sur Vulkan, les uniforms vivent dans un bloc `std140`, les samplers ont un binding et chaque entrée a une location :
+
+```glsl
+#version 450
+
+layout(location = 1) in vec2 vTexCoord;
+
+layout(std140, binding = 1) uniform FragmentUniforms {
+    vec4 u_OutlineColor;
+    float u_Thickness;
+    vec2 u_TexelSize;
+};
+
+layout(binding = 2) uniform sampler2D tex;
+
+layout(location = 0) out vec4 fragColor;
+
+void main() {
+    vec4 color = texture(tex, vTexCoord);
+    float alpha = 0.0;
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            vec2 offset = vec2(i, j) * u_TexelSize * u_Thickness;
+            alpha = max(alpha, texture(tex, vTexCoord + offset).a);
+        }
+    }
+    fragColor = color.a > 0.5 ? color : vec4(u_OutlineColor.rgb, alpha * u_OutlineColor.a);
+}
+```
+
+Le côté Java est identique sur tous les backends : les uniforms sont récupérés par nom.
+
 ## 2. Classe shader
 
 ```java
 package your.package.shader;
 
 import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.shader.impl.GLShaderImpl;
-import be.zeldown.joid.lib.shader.uniform.Float2Uniform;
-import be.zeldown.joid.lib.shader.uniform.Float4Uniform;
-import be.zeldown.joid.lib.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.shader.impl.ShaderImpl;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float4Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
 import lombok.NonNull;
 
-public class OutlineShader extends GLShaderImpl {
+public class OutlineShader extends ShaderImpl {
 
     private static final OutlineShader INSTANCE = new OutlineShader();
 
@@ -194,7 +254,7 @@ Voilà — votre effet custom se compose maintenant avec tous les intégrés.
 
 ## Bonnes pratiques
 
-- **Utilisez `BooleanUniform` / `IntUniform` / `FloatUniform` / `Float2Uniform` / etc.** depuis `lib/shader/uniform` plutôt que des appels GL bruts.
+- **Utilisez `BooleanUniform` / `IntUniform` / `FloatUniform` / `Float2Uniform` / etc.** depuis `lib/bridge/render/shader/uniform` plutôt que des appels moteur.
 - **Ne fuitez pas les lookups d'uniform.** Le shader les met en cache ; des `getXUniform(name)` répétés sont peu coûteux.
 - **Testez à plusieurs scale factors.** Le pipeline supersample sur les écrans high-DPI — assurez-vous que votre `u_TexelSize` en tient compte.
 - **Respectez le contrat `supportsDirectBind()`.** Si votre shader doit lire le framebuffer précédent, retournez `false`.

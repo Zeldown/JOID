@@ -14,14 +14,15 @@
 
 **Build GPU-composed UIs in pure Java — no CSS, no XML, no runtime parser.**
 <br><br>
-Welcome to JOID, a flexible component-based UI toolkit for LWJGL 2 made for developers who want to own their rendering path and ship interfaces that stand out. No default theme, no stylesheet dialect to fight — the code you write is the layout the GPU draws.
+Welcome to JOID, a flexible component-based UI toolkit for OpenGL and Vulkan applications, made for developers who want to own their rendering path and ship interfaces that stand out. No default theme, no stylesheet dialect to fight — the code you write is the layout the GPU draws.
 <br><br>
-Under the hood: a retained-mode node tree, reactive signals that only notify the nodes watching them, a composable shader pipeline for custom GL effects, and a `Bridge` interface that drops the library into any OpenGL host — games, tools, editors, overlays.
+Under the hood: a retained-mode node tree, reactive signals that only notify the nodes watching them, a composable shader pipeline for custom GPU effects, and a set of bridges that drop the library into any host and any rendering engine — games, tools, editors, overlays.
 <br><br>
 No DSL to learn, no scene-graph format to serialize, no runtime engine to boot. Just chainable Java classes and a compiler that catches UI bugs the way it catches everything else — rename a node and every reference follows, wire the wrong signal type and you get a build error instead of a silent runtime failure.
 <br><br>
 
 [Installation](#installation)
+[Backends](#backends)
 [Features](#features)
 [Documentation](#documentation)
 [License](#license)
@@ -31,10 +32,10 @@ No DSL to learn, no scene-graph format to serialize, no runtime engine to boot. 
 
 ## Installation
 
-JOID is distributed via GitHub Releases as two artifacts:
+JOID is distributed via GitHub Releases for every backend (`lwjgl2`, `lwjgl3`, `vulkan`), each as two artifacts:
 
-- **joid-X.Y.Z-prod.jar** — production build (excludes dev/demo assets)
-- **joid-X.Y.Z-dev.jar** — dev build (includes demo assets, fonts, demo textures)
+- **joid-<backend>-X.Y.Z-prod.jar** — production build (excludes dev/demo assets)
+- **joid-<backend>-X.Y.Z-dev.jar** — dev build (includes demo assets, fonts, demo textures)
 
 Download the desired artifact from the [Releases page](https://github.com/Zeldown/JOID/releases) and add it to your project's classpath.
 
@@ -42,7 +43,7 @@ Download the desired artifact from the [Releases page](https://github.com/Zeldow
 
 ```groovy
 dependencies {
-    compile files('libs/joid-6.5.4-prod.jar')
+    compile files('libs/joid-lwjgl2-6.5.4-prod.jar')
 }
 ```
 
@@ -54,24 +55,37 @@ dependencies {
     <artifactId>joid</artifactId>
     <version>6.5.4</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/libs/joid-6.5.4-prod.jar</systemPath>
+    <systemPath>${project.basedir}/libs/joid-lwjgl2-6.5.4-prod.jar</systemPath>
 </dependency>
 ```
 
 ### Native libraries
 
-The repository contains a `native/` folder with the required OpenGL and OpenAL native libraries. Make sure they are exposed to the JVM via `-Djava.library.path=./native` at launch.
+The `impl/lwjgl-2` branch contains a `native/` folder with the required OpenGL and OpenAL native libraries. Make sure they are exposed to the JVM via `-Djava.library.path=./native` at launch. The LWJGL 3 and Vulkan backends resolve their natives from Maven.
+
+## Backends
+
+The `main` branch contains the engine-agnostic core. Each rendering engine lives in its own branch, with its own `build.gradle`, shaders and ready-to-run demo (`./gradlew runDemo`):
+
+| Branch | Engine | Entry point |
+|---|---|---|
+| `main` | Engine-agnostic core | — |
+| `impl/lwjgl-2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `LWJGL2Backend.register()` |
+| `impl/lwjgl-3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `LWJGL3Backend.register(window)` |
+| `impl/vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `VulkanBackend.register(window)` |
+
+Backends only implement the bridges — they never modify the core. See [Backends](documentation/content/ui/backends.md) to write a new one.
 
 ## Features
 
 - 🧱 **Node-based UI** — Hierarchical component system with layout nodes (flex, grid, scrollbar, container) and design nodes (shapes, text, images, text fields, sliders, charts, video…)
 - 🎨 **MSDF font rendering** — Crisp text at any scale using Multi-channel Signed Distance Fields
-- 🌈 **Shader pipeline** — Composable multi-pass GL effects: blur, border, gradient, circle, rounded corners
+- 🌈 **Shader pipeline** — Composable multi-pass GPU effects: blur, border, gradient, circle, rounded corners
 - ✨ **Tween animations** — Full Universal Tween Engine integration (easing, paths, timelines, callbacks)
 - 🎯 **Reactive signals** — Observable values with conditional watches that auto-reload nodes
 - 💾 **Persistent stores** — `@UIStoreData`-annotated fields auto-serialized to JSON
 - 🎬 **Video playback** — `VideoPlayerNode` with FFmpeg-backed decoding (MP4/MOV/WEBM/MKV/AVI/GIF/APNG)
-- 🔌 **Bridge pattern** — Host-agnostic integration via `IUIBridge`
+- 🔌 **Bridge pattern** — Host- and engine-agnostic integration via `IUIBridge`, `IWindowBridge`, `IRenderBridge` and `IAudioBridge`
 
 ## Documentation
 
@@ -114,5 +128,5 @@ Request one via Discord DM to **`zeldown`** — see [COMMERCIAL.md](COMMERCIAL.m
 
 - [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine
 - [msdfgen](https://github.com/Chlumsky/msdfgen) by **Viktor Chlumský** — MSDF font atlases
-- [LWJGL 2.9](https://www.lwjgl.org/) — OpenGL / OpenAL Java bindings
+- [LWJGL](https://www.lwjgl.org/) — OpenGL / Vulkan / OpenAL Java bindings used by the backends
 - [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco** — Video decoding

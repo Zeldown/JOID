@@ -6,18 +6,26 @@ JOID est distribué sous forme de fat JAR via les GitHub Releases. Pas de Maven 
 
 Récupérez la dernière release sur [github.com/Zeldown/JOID/releases](https://github.com/Zeldown/JOID/releases).
 
-Deux artefacts sont publiés par version :
+Chaque version est publiée pour chaque backend. Choisissez l'artefact correspondant à votre moteur :
+
+| Backend | Préfixe d'artefact | Stack |
+|---|---|---|
+| LWJGL 2 | `joid-lwjgl2` | LWJGL 2.9.1 — pipeline fixe OpenGL, OpenAL |
+| LWJGL 3 | `joid-lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL |
+| Vulkan | `joid-vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL |
+
+Chaque backend existe en deux variantes :
 
 | Artefact | Contenu | Utiliser quand |
 |---|---|---|
-| `joid-X.Y.Z-prod.jar` | Bibliothèque seule, `assets/dev/*` et `assets/demo/*` retirés | Vous shippez votre app |
-| `joid-X.Y.Z-dev.jar` | Inclut polices de démo, textures de démo, vidéos d'exemple | Apprentissage / développement |
+| `joid-<backend>-X.Y.Z-prod.jar` | Bibliothèque seule, `assets/dev/*` et `assets/demo/*` retirés | Vous shippez votre app |
+| `joid-<backend>-X.Y.Z-dev.jar` | Inclut polices de démo, textures de démo, vidéos d'exemple | Apprentissage / développement |
 
 ## Gradle
 
 ```groovy
 dependencies {
-    compile files('libs/joid-6.0.0-prod.jar')
+    compile files('libs/joid-lwjgl2-6.0.0-prod.jar')
 }
 ```
 
@@ -31,21 +39,18 @@ Gradle legacy utilise `compile` ; Gradle moderne utilise `implementation`. Les d
     <artifactId>joid</artifactId>
     <version>6.0.0</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/libs/joid-6.0.0-prod.jar</systemPath>
+    <systemPath>${project.basedir}/libs/joid-lwjgl2-6.0.0-prod.jar</systemPath>
 </dependency>
 ```
 
 ## Bibliothèques natives
 
-JOID s'appuie sur LWJGL 2 pour OpenGL/OpenAL. Le dossier `native/` dans le repo JOID contient les natives d'exécution (`lwjgl64.dll`, `OpenAL64.dll`, et leurs variantes de plateformes).
+Les natives dépendent du backend :
 
-Copiez ce dossier à côté de votre projet et lancez avec :
+- **LWJGL 2** — le dossier `native/` de la branche `impl/lwjgl-2` contient les natives OpenGL et OpenAL (`lwjgl64.dll`, `OpenAL64.dll`, et leurs variantes de plateformes). Copiez-le à côté de votre projet et lancez avec `-Djava.library.path=./native`.
+- **LWJGL 3 et Vulkan** — les natives sont livrées sous forme de JARs classifiers Maven (`natives-windows`, `natives-linux`, `natives-macos`, `natives-macos-arm64`) que LWJGL extrait à l'exécution. Vulkan passe par le loader installé avec le driver GPU ; macOS nécessite en plus les natives `lwjgl-vulkan` (MoltenVK).
 
-```
--Djava.library.path=./native
-```
-
-> TIP: Si vous avez déjà les natives LWJGL 2 d'un autre projet, elles sont compatibles. Assurez-vous simplement que `OpenAL64.dll` (ou `libopenal.so` / `libopenal.dylib`) est présent — nécessaire pour l'audio du `VideoPlayerNode`.
+> TIP: OpenAL est nécessaire pour l'audio du `VideoPlayerNode` sur tous les backends.
 
 ## Dépendances
 
@@ -55,7 +60,7 @@ Ajoutez ceci à votre `build.gradle` à côté de JOID :
 
 ```groovy
 dependencies {
-    compile files('libs/joid-6.0.0-prod.jar')
+    compile files('libs/joid-lwjgl2-6.0.0-prod.jar')
 
     compile 'org.projectlombok:lombok:1.18.34'
     annotationProcessor 'org.projectlombok:lombok:1.18.34'
@@ -89,12 +94,35 @@ Le bloc Maven équivalent :
 </dependencies>
 ```
 
+### Backends LWJGL 3 et Vulkan
+
+Remplacez la ligne `lwjgl 2.9.1` par les modules LWJGL 3 de votre backend et leurs natives :
+
+```groovy
+dependencies {
+    compile 'org.lwjgl:lwjgl:3.3.4'
+    compile 'org.lwjgl:lwjgl-glfw:3.3.4'
+    compile 'org.lwjgl:lwjgl-openal:3.3.4'
+    compile 'org.lwjgl:lwjgl-opengl:3.3.4'
+    compile 'org.lwjgl:lwjgl-vulkan:3.3.4'
+    compile 'org.lwjgl:lwjgl-shaderc:3.3.4'
+
+    runtime 'org.lwjgl:lwjgl:3.3.4:natives-windows'
+    runtime 'org.lwjgl:lwjgl-glfw:3.3.4:natives-windows'
+    runtime 'org.lwjgl:lwjgl-openal:3.3.4:natives-windows'
+    runtime 'org.lwjgl:lwjgl-opengl:3.3.4:natives-windows'
+    runtime 'org.lwjgl:lwjgl-shaderc:3.3.4:natives-windows'
+}
+```
+
+`lwjgl-opengl` n'est utile qu'au backend LWJGL 3, `lwjgl-vulkan` et `lwjgl-shaderc` qu'au backend Vulkan. Utilisez le classifier de natives de chaque plateforme que vous shippez.
+
 ### Rôle de chaque dépendance
 
 | Dépendance | Utilité | Requis |
 |---|---|---|
 | `lombok` | Génération de code (`@Getter`, `@Setter`, `@NonNull`) | Compile seulement — non shippée |
-| `lwjgl 2.9.1` | Bindings OpenGL + OpenAL | Toujours |
+| `lwjgl` | Bindings du moteur du backend choisi | Toujours |
 | `javacv` + `javacpp` | Bindings Java pour FFmpeg | Seulement si `VideoPlayerNode` est utilisé |
 | `ffmpeg:6.0-1.5.9` (base) | Classes de l'API FFmpeg | Seulement si `VideoPlayerNode` est utilisé |
 | `ffmpeg:…:<plateforme>` | Natives `.dll` / `.so` / `.dylib` pour l'OS cible | Ne shippez que celles ciblées |
@@ -111,7 +139,7 @@ Exemple de disposition pour un zip distributable :
 my-app/
 ├── my-app.jar                           # votre code seul — pas de shading
 ├── libraries/                           # toutes les dépendances compile, un JAR par artefact
-│   ├── joid-6.0.0-prod.jar
+│   ├── joid-lwjgl2-6.0.0-prod.jar
 │   ├── lwjgl-2.9.1.jar
 │   ├── javacv-1.5.9.jar
 │   ├── javacpp-1.5.9.jar
@@ -120,7 +148,7 @@ my-app/
 │   ├── ffmpeg-6.0-1.5.9-macosx-x86_64.jar
 │   ├── ffmpeg-6.0-1.5.9-macosx-arm64.jar
 │   └── ffmpeg-6.0-1.5.9-linux-x86_64.jar
-├── native/                              # natives LWJGL 2 (OpenGL + OpenAL)
+├── native/                              # natives du backend LWJGL 2 (OpenGL + OpenAL)
 │   ├── lwjgl64.dll
 │   ├── OpenAL64.dll
 │   └── …

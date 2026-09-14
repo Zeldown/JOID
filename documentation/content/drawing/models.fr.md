@@ -1,6 +1,6 @@
 # Models
 
-`DrawModel` rend tout objet implémentant `IDrawableModel` dans le contexte GL courant. Il gère le setup de la lumière, la désactivation du back-face, et une rotation 180° sur Y pour que les modèles OBJ standards fassent face à la caméra.
+`DrawModel` rend tout objet implémentant `IDrawableModel` via le bridge de rendu. Il gère le setup de la lumière, la désactivation du back-face, et une rotation 180° sur Y pour que les modèles OBJ standards fassent face à la caméra.
 
 ```java
 DrawUtils.MODEL.method(...);
@@ -45,22 +45,20 @@ public interface IDrawableModel {
 }
 ```
 
-- `render()` — appelée dans `drawModel`, émet les appels GL de sommets/indices.
+- `render()` — appelée dans `drawModel`, émet les appels de dessin du modèle via le bridge de rendu.
 - `getWidth / getHeight / getDepth` — dimensions de la bounding box, utile pour layout ou centrage.
 
 JOID n'embarque pas de loader de modèles — `ModelNode` consomme n'importe quel `IDrawableModel` que vous lui passez. Un pairing commun est `net.obj` pour parser OBJ, mais tout ce qui produit un `IDrawableModel` fonctionne.
 
-## État GL dans `drawModel`
+## État de rendu dans `drawModel`
 
-Chaque appel configure :
+Chaque appel configure via le bridge de rendu :
 
-- `GL_CULL_FACE` désactivé (les deux côtés de chaque triangle sont visibles).
-- `GL_LIGHTING`, `GL_LIGHT0`, `GL_LIGHT1` activés.
-- `GL_COLOR_MATERIAL` activé avec `GL_FRONT_AND_BACK` / `GL_AMBIENT_AND_DIFFUSE`.
-- `GL_SHADE_MODEL` sur `GL_FLAT`.
+- `cull(false)` — les deux côtés de chaque triangle sont visibles.
+- `lighting(true)` — deux lumières directionnelles, color material sur l'ambiante et la diffuse, shading flat.
 - Lumière ambiante : `(0.6, 0.6, 0.6, 1.0)`.
 
-Tout ça est restauré après le retour de `render()`.
+L'éclairage est désactivé et la matrice pop après le retour de `render()`.
 
 ## Voir aussi
 

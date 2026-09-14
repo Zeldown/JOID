@@ -96,7 +96,7 @@ A well-built UI is mostly *design nodes inside structure nodes*.
 Effects are post-processing applied to a node's rendered output. They come in two flavors:
 
 - **Shape effects**: `RoundedNodeEffect`, `CircleNodeEffect` — modify the silhouette.
-- **Shader effects**: `BlurNodeEffect`, `BorderNodeEffect`, `RoundedNodeEffect`, `CircleNodeEffect` — full GL shader passes composed through the [Shader Pipeline](../shaders/pipeline.md). Gradients are first-class on `Color` itself (see [`Color.toGradient`](../drawing/color.md)).
+- **Shader effects**: `BlurNodeEffect`, `BorderNodeEffect`, `RoundedNodeEffect`, `CircleNodeEffect` — full shader passes composed through the [Shader Pipeline](../shaders/pipeline.md). Gradients are first-class on `Color` itself (see [`Color.toGradient`](../drawing/color.md)).
 
 Chain multiple effects; they compose in order of priority.
 
@@ -159,6 +159,6 @@ Each frame:
    - shader effects build a `ShaderPass` list and delegate to `ShaderPipeline.render(node, passes, baseDraw)`,
    - `baseDraw` masks to the node's bounds, renders children, and calls your `draw()`.
 
-You almost never need to care about this internally — but knowing it helps when debugging GL states.
+You almost never need to care about this internally — but knowing it helps when debugging render states.
 
 Now jump into [UI Class](../ui/ui-class.md) or [Node Fundamentals](../nodes/node-fundamentals.md) depending on what you want to build first.

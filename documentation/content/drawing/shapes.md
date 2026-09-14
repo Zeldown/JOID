@@ -1,6 +1,6 @@
 # Shapes
 
-`DrawShape` is the facade for every shape primitive JOID can render without going through the node tree. Reach it through `DrawUtils.SHAPE` or directly via `DrawShape.getInstance()` — both return the same singleton. Every method is `void` and writes into the current GL context immediately.
+`DrawShape` is the facade for every shape primitive JOID can render without going through the node tree. Reach it through `DrawUtils.SHAPE` or directly via `DrawShape.getInstance()` — both return the same singleton. Every method is `void` and draws through the render bridge immediately.
 
 ## Rectangles
 
@@ -98,7 +98,7 @@ void drawLine(Color color, Vector2d... points)
 void drawLine(Color color, float stroke, Vector2d... points)
 ```
 
-Line strip connecting every consecutive pair of points. `GL_LINE_SMOOTH` is enabled for the duration of the call. The stroke overload sets `glLineWidth` around the draw.
+Line strip connecting every consecutive pair of points. Line smoothing is enabled for the duration of the call. The stroke overload sets the line width around the draw.
 
 ```java
 DrawUtils.SHAPE.drawLine(Color.WHITE,
@@ -118,7 +118,7 @@ DrawUtils.SHAPE.drawLine(Color.WHITE, 2F,
 void drawDashedLine(Color color, int pattern, float stroke, Vector2d... points)
 ```
 
-Line strip using `GL_LINE_STIPPLE` with a fixed dash/gap pattern (`0xAAAA`). The `pattern` parameter is the stipple factor — higher values produce longer dashes.
+Each segment is split into dashes of `pattern` pixels separated by gaps of the same length, drawn as smoothed lines of width `stroke`. Higher values produce longer dashes.
 
 ```java
 DrawUtils.SHAPE.drawDashedLine(Color.decode("#4ade80"), 2, 1F,
@@ -169,27 +169,17 @@ DrawUtils.SHAPE.drawPolygon(Color.decode("#a78bfa"),
 ### `drawShape`
 
 ```java
-void drawShape(int mode, Color color, Vector2d... points)
+void drawShape(DrawMode mode, Color color, Vector2d... points)
 ```
 
-Lower-level: any GL primitive mode (`GL_TRIANGLES`, `GL_QUADS`, `GL_LINE_LOOP`, …) with arbitrary vertices. Every other shape method in this class eventually calls `drawShape`.
+Lower-level: any `DrawMode` (`TRIANGLES`, `QUADS`, `POLYGON`, `LINE_LOOP`, …) with arbitrary vertices. Every other shape method in this class eventually calls `drawShape`.
 
 ```java
-DrawUtils.SHAPE.drawShape(GL11.GL_LINE_LOOP, Color.RED,
+DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.RED,
     new Vector2d(0, 0), new Vector2d(100, 0),
     new Vector2d(100, 100), new Vector2d(0, 100)
 );
 ```
-
-## Utilities
-
-### `bindEmptyTexture`
-
-```java
-static void bindEmptyTexture()
-```
-
-Binds a lazily created 1×1 white texture so subsequent quad draws use vertex colors without sampling a stale texture. Called automatically by `drawShape` and `drawRawRect` — you rarely invoke it directly.
 
 ## See also
 

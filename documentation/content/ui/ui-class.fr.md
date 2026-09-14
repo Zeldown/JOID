@@ -99,13 +99,13 @@ Interne. Appelle `onDetach()` sur tous les nœuds, sauvegarde stores et properti
 
 ## Raccourcis clavier
 
-Enregistrez des shortcuts globaux avec `keybind(Runnable, Integer... keys)` :
+Enregistrez des shortcuts globaux avec `keybind(Runnable, Key... keys)` :
 
 ```java
 @Override
 public void init() {
-    this.keybind(() -> JOID.open(new SettingsUI()), Keyboard.KEY_ESCAPE);
-    this.keybind(() -> this.reload(), Keyboard.KEY_R, Keyboard.KEY_LCONTROL);
+    this.keybind(() -> JOID.open(new SettingsUI()), Key.ESCAPE);
+    this.keybind(() -> this.reload(), Key.R, Key.LEFT_CONTROL);
 }
 ```
 

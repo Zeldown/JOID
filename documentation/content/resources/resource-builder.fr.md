@@ -10,7 +10,7 @@ Une seule méthode statique gère tous les types de source supportés :
 Resource res = Resource.of(myStream);              // InputStream
 Resource res = Resource.of(myImage);               // BufferedImage
 Resource res = Resource.of("https://...");         // String URL — télécharge en async
-Resource res = Resource.of(textureId);             // Integer — enrobe un id de texture GL
+Resource res = Resource.of(texture);               // ITexture — enrobe une texture créée par le bridge de rendu
 
 Resource res = Resource.of(input, callback);       // n'importe lequel + notification quand prêt
 ```

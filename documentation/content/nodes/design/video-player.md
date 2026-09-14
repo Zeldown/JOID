@@ -1,6 +1,6 @@
 # VideoPlayerNode
 
-Full-featured video player. Plays MP4, MOV, WebM, MKV, AVI, GIF, APNG — anything FFmpeg can decode. Audio streamed through OpenAL, synced to video.
+Full-featured video player. Plays MP4, MOV, WebM, MKV, AVI, GIF, APNG — anything FFmpeg can decode. Audio streamed through the audio bridge, synced to video.
 
 ## Create
 
@@ -94,7 +94,7 @@ this.keybind(() -> {
     } else {
         player.position(100, 100).size(640, 360);
     }
-}, Keyboard.KEY_F);
+}, Key.F);
 ```
 
 ## Example — progress scrubber
@@ -135,7 +135,7 @@ For GIF/APNG, looping is enabled by default (`isLoopByDefault`).
 
 ## Best practices
 
-- **Use `release()` before swapping many times.** The decoder holds a thread, temp file, and OpenAL source — cleaning up matters for long-running apps.
+- **Use `release()` before swapping many times.** The decoder holds a thread, temp file, and audio source — cleaning up matters for long-running apps.
 - **Set `autoplay(false)` for user-triggered playback.** Otherwise the video starts as soon as the resource decodes.
 - **Prefer `.location(x, y, z) + setAudioListener` for world audio.** Setting volume manually each frame is less efficient.
 - **Don't keep a reference to a disposed decoder.** Call `getDecoder()` each time — it returns `null` after release.

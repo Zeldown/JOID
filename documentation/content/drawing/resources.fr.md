@@ -76,9 +76,9 @@ Resource sprite = ResourceBuilder.create()
     .of(spriteSheet);
 ```
 
-## État GL
+## État de rendu
 
-Chaque appel push la matrice, active `GL_BLEND` avec `(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)` et `GL_POINT_SMOOTH`, bind la texture de la ressource avec `GL_CLAMP` sur les deux axes, dessine un quad texturé et restaure l'état. Vous n'avez pas à préconfigurer le blending.
+Chaque appel push la matrice, active `BlendState.NORMAL` (`SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`), bind la texture de la ressource avec `TextureWrap.CLAMP_TO_BORDER`, dessine un quad texturé via le `Tessellator`, puis désactive le blending et pop la matrice. Vous n'avez pas à préconfigurer le blending.
 
 ## Voir aussi
 

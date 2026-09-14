@@ -74,7 +74,7 @@ node.zlevel(double);
 ```
 
 - `zindex` réordonne parmi les enfants du même parent. Plus grand = dessiné plus tard (au-dessus).
-- `zlevel` translate le nœud sur Z en GL — utile pour les tooltips qui doivent toujours rendre au-dessus des siblings.
+- `zlevel` translate le nœud sur Z — utile pour les tooltips qui doivent toujours rendre au-dessus des siblings.
 
 ## Hover
 

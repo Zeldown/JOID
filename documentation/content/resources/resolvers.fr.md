@@ -32,7 +32,7 @@ JOID embarque quatre resolvers, enregistrés automatiquement :
 | `InputStreamResourceResolver` | `InputStream` | Détection magic-bytes → image ou vidéo. Sync. |
 | `BufferedImageResourceResolver` | `BufferedImage` | Enrobe l'image dans `ImageResourceDecoder`. Sync. |
 | `UrlResourceResolver` | `String` | Télécharge sur un thread (avec fallback HTTPS → HTTP). Async. |
-| `TextureIdResourceResolver` | `Integer` | Enrobe un id de texture GL existant sans décodeur. Sync. |
+| `TextureResourceResolver` | `ITexture` | Enrobe une texture créée par le bridge de rendu, sans décodeur. Sync. |
 
 Les builtins sont enregistrés dans le static initializer de `ResourceResolver` et vivent en bas du registre — vos resolvers custom prennent toujours priorité.
 

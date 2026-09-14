@@ -30,7 +30,7 @@ node.onClick((n, mouseX, mouseY, clickType) -> { });                            
 ## Keyboard
 
 ```java
-node.onKeyPressed((n, character, keyCode) -> { });                                // NodeKeyPressedCallback
+node.onKeyPressed((n, character, key) -> { });                                    // NodeKeyPressedCallback
 ```
 
 ## Scroll (overflow = SCROLL)
@@ -109,7 +109,7 @@ ClickType.FORWARD
 ClickType.OTHER
 ```
 
-`ClickType.from(int button)` maps a LWJGL mouse button number to one of the above (`0 → LEFT`, `1 → RIGHT`, `2 → MIDDLE`, `3 → BACK`, `4 → FORWARD`, anything else → `OTHER`).
+`ClickType.from(int button)` maps a mouse button index to one of the above (`0 → LEFT`, `1 → RIGHT`, `2 → MIDDLE`, `3 → BACK`, `4 → FORWARD`, anything else → `OTHER`).
 
 ## Examples
 
