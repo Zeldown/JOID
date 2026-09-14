@@ -32,6 +32,7 @@ ext {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'io.franzbecker.gradle-lombok'
+    apply plugin: 'eclipse'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -43,6 +44,8 @@ subprojects {
     dependencies {
         compile "org.projectlombok:lombok:1.18.34"
     }
+
+    eclipse.project.name = "JOID-${name}"
 }
 
 /* Scripts */
