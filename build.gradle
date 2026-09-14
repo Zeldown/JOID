@@ -13,6 +13,8 @@ plugins {
     id 'io.franzbecker.gradle-lombok' version '1.8' apply false
 }
 
+apply plugin: 'base'
+
 allprojects {
     repositories {
     	mavenLocal()
@@ -49,6 +51,17 @@ subprojects {
 
     eclipse.project.name = "JOID-${name}"
 }
+
+/* Build */
+task collectJars(type: Copy) {
+    group = 'JOID'
+    description = 'Copies the jar of every backend into build/libs.'
+    dependsOn ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar'
+    from { ['lwjgl2', 'lwjgl3', 'vulkan'].collect { project(":$it").shadowJar.archivePath } }
+    into file('build/libs')
+}
+
+assemble.dependsOn collectJars
 
 /* Tests */
 task crossBackendTest(type: JavaExec) {

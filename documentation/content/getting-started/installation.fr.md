@@ -21,6 +21,8 @@ Chaque backend existe en deux variantes :
 | `joid-<backend>-X.Y.Z-prod.jar` | Bibliothèque seule, `assets/dev/*` et `assets/demo/*` retirés | Vous shippez votre app |
 | `joid-<backend>-X.Y.Z-dev.jar` | Inclut polices de démo, textures de démo, vidéos d'exemple | Apprentissage / développement |
 
+Un build depuis les sources avec `./gradlew build` (`-Pdev` pour la variante dev) copie le jar de chaque backend dans `build/libs`.
+
 ## Gradle
 
 ```groovy
