@@ -22,6 +22,12 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	private long window;
 
 	@Override
+	public void destroy() {
+		GLFW.glfwDestroyWindow(this.window);
+		GLFW.glfwTerminate();
+	}
+
+	@Override
 	public void create(final int width, final int height) {
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
@@ -37,6 +43,11 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		}
 
 		Backend.register(this.window);
+	}
+
+	@Override
+	public void present() {
+		((RenderBridge) BridgeHandler.RENDER.get()).present();
 	}
 
 	@Override
@@ -74,17 +85,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		final SnapshotImage snapshot = SnapshotImage.fromBytes(MemoryUtil.memByteBuffer(buffer.getAddress(), width * height * 4), width, height, false, bgra);
 		buffer.destroy();
 		return snapshot;
-	}
-
-	@Override
-	public void present() {
-		((RenderBridge) BridgeHandler.RENDER.get()).present();
-	}
-
-	@Override
-	public void destroy() {
-		GLFW.glfwDestroyWindow(this.window);
-		GLFW.glfwTerminate();
 	}
 
 	@Override

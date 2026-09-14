@@ -55,9 +55,9 @@ public abstract class UI implements IUI, IndexedElement {
 
 	@Getter private static UI current;
 
+	private static final double FRAME_TIME = 1000D / 60D;
 	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
-	private static final double FRAME_TIME = 1000D / 60D;
 
 	@NonNull private final UIDataObject         data;
 	@NonNull private final UIDataDebugObject    debug;
@@ -88,10 +88,10 @@ public abstract class UI implements IUI, IndexedElement {
 
 	private double fps;
 	private double frameTime;
-	private long   fpsCounter;
-	private long   lastFpsUpdate;
 	private long   lastFrame;
+	private long   fpsCounter;
 	private long   renderTime;
+	private long   lastFpsUpdate;
 
 	private double  mouseX;
 	private double  mouseY;

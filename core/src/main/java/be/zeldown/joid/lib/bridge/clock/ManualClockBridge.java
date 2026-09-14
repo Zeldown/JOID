@@ -19,13 +19,13 @@ public final class ManualClockBridge implements IClockBridge {
 	}
 
 	@Override
-	public long currentTimeMillis() {
-		return this.time;
+	public long nanoTime() {
+		return this.time * 1_000_000L;
 	}
 
 	@Override
-	public long nanoTime() {
-		return this.time * 1_000_000L;
+	public long currentTimeMillis() {
+		return this.time;
 	}
 
 }

@@ -3,13 +3,13 @@ package be.zeldown.joid.lib.bridge.clock;
 public final class SystemClockBridge implements IClockBridge {
 
 	@Override
-	public long currentTimeMillis() {
-		return System.currentTimeMillis();
+	public long nanoTime() {
+		return System.nanoTime();
 	}
 
 	@Override
-	public long nanoTime() {
-		return System.nanoTime();
+	public long currentTimeMillis() {
+		return System.currentTimeMillis();
 	}
 
 }

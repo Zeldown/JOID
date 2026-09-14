@@ -42,17 +42,17 @@ public final class SnapshotReport {
 		SnapshotReport.writeText(file, SnapshotReport.readTemplate().replace("__TITLE__", safeTitle).replace("__ENTRIES__", json.toString()));
 	}
 
-	private static String encode(final File file) {
-		try {
-			return "data:image/png;base64," + Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath()));
+	private static String readTemplate() {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotReport.class.getResourceAsStream(SnapshotReport.TEMPLATE), StandardCharsets.UTF_8))) {
+			return reader.lines().collect(Collectors.joining("\n"));
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
 		}
 	}
 
-	private static String readTemplate() {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotReport.class.getResourceAsStream(SnapshotReport.TEMPLATE), StandardCharsets.UTF_8))) {
-			return reader.lines().collect(Collectors.joining("\n"));
+	private static String encode(final File file) {
+		try {
+			return "data:image/png;base64," + Base64.getEncoder().encodeToString(Files.readAllBytes(file.toPath()));
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
 		}

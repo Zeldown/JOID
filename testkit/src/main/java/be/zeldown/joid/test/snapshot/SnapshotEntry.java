@@ -14,11 +14,11 @@ public final class SnapshotEntry {
 	private final String         name;
 	private final SnapshotStatus status;
 	private final int            pixels;
-	private final File           reference;
 	private final File           render;
+	private final File           reference;
 
 	public static @NonNull SnapshotEntry create(final @NonNull String name, final @NonNull SnapshotStatus status, final int pixels, final @NonNull File reference, final @NonNull File render) {
-		return new SnapshotEntry(name, status, pixels, reference, render);
+		return new SnapshotEntry(name, status, pixels, render, reference);
 	}
 
 }

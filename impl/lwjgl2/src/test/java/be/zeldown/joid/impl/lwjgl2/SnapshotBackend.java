@@ -17,6 +17,11 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	private Pbuffer buffer;
 
 	@Override
+	public void destroy() {
+		this.buffer.destroy();
+	}
+
+	@Override
 	public void create(final int width, final int height) {
 		try {
 			this.buffer = new Pbuffer(width, height, new PixelFormat().withDepthBits(24).withStencilBits(8), null);
@@ -29,6 +34,11 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
+	public void present() {
+		GL11.glFlush();
+	}
+
+	@Override
 	public void frame(final @NonNull Runnable draw) {
 		draw.run();
 	}
@@ -38,16 +48,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
 		GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
 		return SnapshotImage.fromBytes(pixels, width, height, true, false);
-	}
-
-	@Override
-	public void present() {
-		GL11.glFlush();
-	}
-
-	@Override
-	public void destroy() {
-		this.buffer.destroy();
 	}
 
 	@Override

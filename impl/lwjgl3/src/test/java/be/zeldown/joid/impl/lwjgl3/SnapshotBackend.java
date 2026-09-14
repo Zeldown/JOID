@@ -18,6 +18,12 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	private long window;
 
 	@Override
+	public void destroy() {
+		GLFW.glfwDestroyWindow(this.window);
+		GLFW.glfwTerminate();
+	}
+
+	@Override
 	public void create(final int width, final int height) {
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
@@ -44,6 +50,11 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
+	public void present() {
+		GLFW.glfwSwapBuffers(this.window);
+	}
+
+	@Override
 	public void frame(final @NonNull Runnable draw) {
 		draw.run();
 	}
@@ -55,17 +66,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		GL11C.glReadBuffer(GL11C.GL_BACK);
 		GL11C.glReadPixels(0, 0, width, height, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixels);
 		return SnapshotImage.fromBytes(pixels, width, height, true, false);
-	}
-
-	@Override
-	public void present() {
-		GLFW.glfwSwapBuffers(this.window);
-	}
-
-	@Override
-	public void destroy() {
-		GLFW.glfwDestroyWindow(this.window);
-		GLFW.glfwTerminate();
 	}
 
 	@Override
