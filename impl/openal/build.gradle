@@ -1,0 +1,10 @@
+archivesBaseName = "joid-openal"
+
+dependencies {
+    compile project(':core')
+
+    compile "org.lwjgl:lwjgl:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
+}

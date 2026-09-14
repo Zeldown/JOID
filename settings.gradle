@@ -1,3 +1,8 @@
 rootProject.name = 'JOID'
 
 include 'core'
+include 'glfw', 'openal'
+
+['glfw', 'openal'].each { name ->
+    project(":$name").projectDir = file("impl/$name")
+}

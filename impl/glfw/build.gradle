@@ -1,0 +1,10 @@
+archivesBaseName = "joid-glfw"
+
+dependencies {
+    compile project(':core')
+
+    compile "org.lwjgl:lwjgl:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+}
