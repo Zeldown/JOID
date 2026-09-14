@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,6 +23,7 @@ import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
 import be.zeldown.joid.lib.video.VideoAudioPlayer;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 public final class VideoResourceDecoder implements IResourceDecoder {
@@ -34,13 +36,17 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	private FFmpegFrameGrabber grabber;
 	private VideoAudioPlayer audioPlayer;
 
-	private ArrayBlockingQueue<int[]> frameQueue;
+	private ArrayBlockingQueue<DecodedFrame> frameQueue;
 	private final AtomicBoolean paused = new AtomicBoolean(false);
 	private final AtomicBoolean running = new AtomicBoolean(false);
 	private final AtomicInteger decodedFrameIndex = new AtomicInteger(0);
 
 	private volatile boolean ended;
+	private volatile double loopOffset;
 	private volatile int displayedFrameIndex;
+
+	private long startTime;
+	private long pauseTime;
 
 	private final Object grabberLock = new Object();
 	private volatile boolean released;
@@ -175,26 +181,32 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 			return;
 		}
 
-		if (this.ended && !this.loop) {
-			this.running.set(false);
-			if (this.audioPlayer != null) {
-				this.audioPlayer.stop();
-			}
-			return;
+		final double time = this.getPlaybackTime();
+		DecodedFrame frame = null;
+		DecodedFrame next = this.frameQueue.peek();
+		while (next != null && next.getTime() <= time) {
+			frame = this.frameQueue.poll();
+			next = this.frameQueue.peek();
 		}
 
-		final int[] pixels = this.frameQueue.poll();
-		if (pixels != null) {
+		if (frame != null) {
 			final int nextBuffer = 1 - this.currentBuffer;
 			if (!this.texturesAllocated) {
 				this.textures[0].allocate(resource.getWidth(), resource.getHeight());
 				this.textures[1].allocate(resource.getWidth(), resource.getHeight());
 				this.texturesAllocated = true;
 			}
-			this.textures[nextBuffer].upload(pixels, resource.getWidth(), resource.getHeight());
+			this.textures[nextBuffer].upload(frame.getPixels(), resource.getWidth(), resource.getHeight());
 			this.currentBuffer = nextBuffer;
-			this.displayedFrameIndex++;
+			this.displayedFrameIndex = (int) Math.round(frame.getMediaTime() * this.frameRate);
 			resource.texture(this.textures[this.currentBuffer]);
+		}
+
+		if (this.ended && next == null && !this.loop) {
+			this.running.set(false);
+			if (this.audioPlayer != null) {
+				this.audioPlayer.stop();
+			}
 		}
 	}
 
@@ -286,6 +298,8 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		}
 
 		this.displayedFrameIndex = 0;
+		this.loopOffset = 0D;
+		this.startTime = BridgeHandler.CLOCK.get().nanoTime();
 		this.ended = false;
 		this.running.set(true);
 		this.paused.set(false);
@@ -299,7 +313,10 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	public @NonNull VideoResourceDecoder pause() {
-		this.paused.set(true);
+		if (!this.paused.getAndSet(true)) {
+			this.pauseTime = BridgeHandler.CLOCK.get().nanoTime();
+		}
+
 		if (this.audioPlayer != null) {
 			this.audioPlayer.pause();
 		}
@@ -307,7 +324,10 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	public @NonNull VideoResourceDecoder resume() {
-		this.paused.set(false);
+		if (this.paused.getAndSet(false)) {
+			this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
+		}
+
 		if (this.audioPlayer != null) {
 			this.audioPlayer.resume();
 		}
@@ -316,6 +336,13 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 
 	public @NonNull VideoResourceDecoder stop() {
 		this.running.set(false);
+		if (this.decodeThread != null) {
+			try {
+				this.decodeThread.join(1000L);
+			} catch (final InterruptedException ignored) {}
+			this.decodeThread = null;
+		}
+
 		if (this.audioPlayer != null) {
 			this.audioPlayer.stop();
 		}
@@ -395,11 +422,31 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	/* [ Getter Section ] */
+	public boolean isPaused() {
+		return this.paused.get();
+	}
+
+	public boolean isPlaying() {
+		return this.running.get() && !this.paused.get();
+	}
+
 	public double getProgress() {
 		if (this.totalFrames <= 0) {
 			return 0D;
 		}
 		return Math.min((double) this.displayedFrameIndex / this.totalFrames, 1D);
+	}
+
+	public boolean isSynchronized() {
+		if (!this.running.get() || this.paused.get() || this.frameQueue == null) {
+			return true;
+		}
+
+		final DecodedFrame next = this.frameQueue.peek();
+		if (next == null) {
+			return this.ended;
+		}
+		return this.ended || this.frameQueue.remainingCapacity() == 0 || next.getTime() > this.getPlaybackTime();
 	}
 
 	public double getCurrentVideoTime() {
@@ -409,15 +456,12 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this.displayedFrameIndex / this.frameRate;
 	}
 
-	public boolean isPlaying() {
-		return this.running.get() && !this.paused.get();
-	}
-
-	public boolean isPaused() {
-		return this.paused.get();
-	}
-
 	/* [ Internal Section ] */
+	private double getPlaybackTime() {
+		final long now = this.paused.get() ? this.pauseTime : BridgeHandler.CLOCK.get().nanoTime();
+		return (now - this.startTime) / 1000000000D;
+	}
+
 	private void seekInternal(final long microseconds) {
 		synchronized (this.grabberLock) {
 			if (this.released) {
@@ -436,7 +480,11 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 				e.printStackTrace();
 			}
 
+			final long now = BridgeHandler.CLOCK.get().nanoTime();
 			this.displayedFrameIndex = (int) (microseconds / 1000000D * this.frameRate);
+			this.startTime = now - microseconds * 1000L;
+			this.pauseTime = now;
+			this.loopOffset = 0D;
 			this.ended = false;
 
 			if (this.audioPlayer != null) {
@@ -452,17 +500,9 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 
 		this.decodeThread = new Thread(() -> {
 			try {
-				final double frameDurationNs = 1000000000D / this.frameRate;
-				long nextFrameTime = System.nanoTime();
-
+				double lastTime = 0D;
 				while (this.running.get() && !Thread.currentThread().isInterrupted()) {
-					if (this.paused.get()) {
-						Thread.sleep(10L);
-						nextFrameTime = System.nanoTime();
-						continue;
-					}
-
-					boolean hasImage = false;
+					final DecodedFrame decoded;
 					synchronized (this.grabberLock) {
 						if (this.released || this.grabber == null) {
 							return;
@@ -471,13 +511,9 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 						final Frame frame = this.grabber.grab();
 						if (frame == null) {
 							if (this.loop) {
+								this.loopOffset = lastTime + 1D / this.frameRate;
 								this.grabber.setTimestamp(0);
 								this.decodedFrameIndex.set(0);
-								this.displayedFrameIndex = 0;
-								if (this.audioPlayer != null) {
-									this.audioPlayer.flush();
-								}
-								nextFrameTime = System.nanoTime();
 								continue;
 							}
 							this.ended = true;
@@ -488,25 +524,19 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 							this.audioPlayer.pushSamples(frame.samples);
 						}
 
-						if (frame.image != null) {
-							hasImage = true;
-							final int[] pixels = this.frameToPixels(frame, this.grabber.getImageWidth(), this.grabber.getImageHeight());
-							if (!this.frameQueue.offer(pixels)) {
-								this.frameQueue.poll();
-								this.frameQueue.offer(pixels);
-							}
-							this.decodedFrameIndex.incrementAndGet();
+						if (frame.image == null) {
+							continue;
 						}
+
+						final double mediaTime = frame.timestamp / 1000000D;
+						lastTime = this.loopOffset + mediaTime;
+						decoded = new DecodedFrame(lastTime, this.frameToPixels(frame, this.grabber.getImageWidth(), this.grabber.getImageHeight()), mediaTime);
+						this.decodedFrameIndex.incrementAndGet();
 					}
 
-					if (hasImage) {
-						nextFrameTime += (long) frameDurationNs;
-						final long sleepMs = (nextFrameTime - System.nanoTime()) / 1000000L;
-						if (sleepMs > 0L) {
-							Thread.sleep(sleepMs);
-						} else {
-							nextFrameTime = System.nanoTime();
-						}
+					boolean queued = false;
+					while (!queued && this.running.get()) {
+						queued = this.frameQueue.offer(decoded, 50L, TimeUnit.MILLISECONDS);
 					}
 				}
 			} catch (final InterruptedException ignored) {
@@ -541,6 +571,16 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		}
 
 		return pixels;
+	}
+
+	@Getter
+	@RequiredArgsConstructor
+	public static final class DecodedFrame {
+
+		private final double time;
+		private final int[]  pixels;
+		private final double mediaTime;
+
 	}
 
 }

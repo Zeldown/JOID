@@ -22,6 +22,15 @@ public final class SnapshotImage {
 	private final int   height;
 	private final int[] pixels;
 
+	public static @NonNull SnapshotImage read(final @NonNull File file) {
+		try {
+			final BufferedImage image = ImageIO.read(file);
+			return new SnapshotImage(image.getWidth(), image.getHeight(), image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth()));
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+
 	public static @NonNull SnapshotImage fromBytes(final @NonNull ByteBuffer buffer, final int width, final int height, final boolean bottomUp, final boolean bgra) {
 		final int[] pixels = new int[width * height];
 		for (int y = 0; y < height; y++) {
@@ -37,15 +46,6 @@ public final class SnapshotImage {
 		return new SnapshotImage(width, height, pixels);
 	}
 
-	public static @NonNull SnapshotImage read(final @NonNull File file) {
-		try {
-			final BufferedImage image = ImageIO.read(file);
-			return new SnapshotImage(image.getWidth(), image.getHeight(), image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth()));
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-
 	public void write(final @NonNull File file) {
 		file.getParentFile().mkdirs();
 		final BufferedImage image = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
@@ -59,6 +59,14 @@ public final class SnapshotImage {
 
 	public boolean isSame(final @NonNull SnapshotImage other) {
 		return this.width == other.getWidth() && this.height == other.getHeight() && Arrays.equals(this.pixels, other.getPixels());
+	}
+
+	public void fill(final int x, final int y, final int width, final int height, final int color) {
+		for (int row = Math.max(0, y); row < Math.min(this.height, y + height); row++) {
+			for (int column = Math.max(0, x); column < Math.min(this.width, x + width); column++) {
+				this.pixels[column + row * this.width] = color;
+			}
+		}
 	}
 
 	public @NonNull SnapshotDifference compare(final @NonNull SnapshotImage reference, final int tolerance) {

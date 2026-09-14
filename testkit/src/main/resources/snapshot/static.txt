@@ -22,6 +22,14 @@ shot static-UIDemoFlex
 ui be.zeldown.joid.demo.ui.reorderable.UIDemoReorderable
 wait 3500
 shot static-UIDemoReorderable
+ui be.zeldown.joid.demo.ui.resource.UIDemoResource
+wait 3500
+shot static-UIDemoResource
+mask 1600 0 320 175
+ui be.zeldown.joid.demo.ui.video.UIDemoVideo
+wait 3500
+shot static-UIDemoVideo
+unmask
 ui be.zeldown.joid.demo.ui.shader.UIDemoShader
 wait 3500
 shot static-UIDemoShader

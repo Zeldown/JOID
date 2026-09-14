@@ -2,6 +2,7 @@ package be.zeldown.joid.impl.lwjgl2.render;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -33,7 +34,8 @@ import lombok.NonNull;
 
 public final class RenderBridge implements IRenderBridge {
 
-	private static final FloatBuffer AMBIENT_BUFFER = (FloatBuffer) BufferUtils.createFloatBuffer(4).put(new float[] {0.6F, 0.6F, 0.6F, 1F}).flip();
+	private static final FloatBuffer AMBIENT_BUFFER  = (FloatBuffer) BufferUtils.createFloatBuffer(4).put(new float[] {0.6F, 0.6F, 0.6F, 1F}).flip();
+	private static final IntBuffer   VIEWPORT_BUFFER = BufferUtils.createIntBuffer(16);
 
 	private final Deque<StateSnapshot> stateStack;
 
@@ -174,6 +176,16 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public float getLineWidth() {
+		return GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+	}
+
+	@Override
+	public boolean isLineSmooth() {
+		return GL11.glIsEnabled(GL11.GL_LINE_SMOOTH);
+	}
+
+	@Override
 	public void stencilTest(final boolean test) {
 		RenderBridge.toggle(GL11.GL_STENCIL_TEST, test);
 	}
@@ -191,6 +203,18 @@ public final class RenderBridge implements IRenderBridge {
 	@Override
 	public void viewport(final int x, final int y, final int width, final int height) {
 		GL11.glViewport(x, y, width, height);
+	}
+
+	@Override
+	public int getViewportWidth() {
+		GL11.glGetInteger(GL11.GL_VIEWPORT, RenderBridge.VIEWPORT_BUFFER);
+		return RenderBridge.VIEWPORT_BUFFER.get(2);
+	}
+
+	@Override
+	public int getViewportHeight() {
+		GL11.glGetInteger(GL11.GL_VIEWPORT, RenderBridge.VIEWPORT_BUFFER);
+		return RenderBridge.VIEWPORT_BUFFER.get(3);
 	}
 
 	@Override

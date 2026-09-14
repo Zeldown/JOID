@@ -2,8 +2,10 @@ package be.zeldown.joid.test.snapshot;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -18,7 +20,8 @@ import lombok.NonNull;
 
 public abstract class SnapshotSuite {
 
-	private static final List<SnapshotEntry> ENTRIES = new ArrayList<>();
+	private static final List<SnapshotEntry> ENTRIES   = new ArrayList<>();
+	private static final String[]            SCENARIOS = {"dev", "popup", "video", "static", "window", "transition", "interaction"};
 
 	private static SnapshotRunner runner;
 
@@ -26,6 +29,7 @@ public abstract class SnapshotSuite {
 
 	@AfterClass
 	public static void stopRunner() {
+		SnapshotSuite.pruneReferences();
 		if (SnapshotSuite.runner == null) {
 			return;
 		}
@@ -46,18 +50,8 @@ public abstract class SnapshotSuite {
 	}
 
 	@Test
-	public void matchesStaticSnapshots() {
-		this.verify("static");
-	}
-
-	@Test
-	public void matchesInteractionSnapshots() {
-		this.verify("interaction");
-	}
-
-	@Test
-	public void matchesTransitionSnapshots() {
-		this.verify("transition");
+	public void matchesDevSnapshots() {
+		this.verify("dev");
 	}
 
 	@Test
@@ -66,13 +60,28 @@ public abstract class SnapshotSuite {
 	}
 
 	@Test
+	public void matchesVideoSnapshots() {
+		this.verify("video");
+	}
+
+	@Test
+	public void matchesStaticSnapshots() {
+		this.verify("static");
+	}
+
+	@Test
 	public void matchesWindowSnapshots() {
 		this.verify("window");
 	}
 
 	@Test
-	public void matchesDevSnapshots() {
-		this.verify("dev");
+	public void matchesTransitionSnapshots() {
+		this.verify("transition");
+	}
+
+	@Test
+	public void matchesInteractionSnapshots() {
+		this.verify("interaction");
 	}
 
 	private SnapshotRunner getRunner() {
@@ -114,6 +123,31 @@ public abstract class SnapshotSuite {
 
 	private static File getOutput() {
 		return new File(System.getProperty("joid.snapshot.output"));
+	}
+
+	private static void pruneReferences() {
+		final Set<String> shots = new HashSet<>();
+		for (final String scenario : SnapshotSuite.SCENARIOS) {
+			shots.addAll(SnapshotRunner.getShots(scenario));
+		}
+
+		final File[] renderers = new File(System.getProperty("joid.snapshot.references")).listFiles(File::isDirectory);
+		if (renderers == null) {
+			return;
+		}
+
+		for (final File renderer : renderers) {
+			final File[] references = renderer.listFiles((directory, name) -> name.endsWith(".png") && !shots.contains(name.substring(0, name.length() - 4)));
+			if (references == null) {
+				continue;
+			}
+
+			for (final File reference : references) {
+				if (reference.delete()) {
+					System.out.println("Removed orphan reference " + reference);
+				}
+			}
+		}
 	}
 
 }

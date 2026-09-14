@@ -30,7 +30,7 @@ public final class SnapshotComparison {
 					continue;
 				}
 
-				final SnapshotDifference difference = SnapshotImage.read(candidate).compare(SnapshotImage.read(shot), 0);
+				final SnapshotDifference difference = SnapshotImage.read(candidate).compare(SnapshotImage.read(shot), 1);
 				if (difference.getPixels() == 0) {
 					identical++;
 					entries.add(SnapshotEntry.create(name, SnapshotStatus.IDENTICAL, 0, shot, candidate));

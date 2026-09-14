@@ -39,12 +39,16 @@ public interface IRenderBridge extends IBridge {
 	public void alphaTest(final float threshold);
 	public void lineWidth(final float width);
 	public void lineSmooth(final boolean smooth);
+	public float getLineWidth();
+	public boolean isLineSmooth();
 
 	public void stencilTest(final boolean test);
 	public void stencilFunction(final @NonNull StencilFunction function, final int reference, final int mask);
 	public void stencilOperation(final @NonNull StencilOperation fail, final @NonNull StencilOperation depthFail, final @NonNull StencilOperation pass);
 
 	public void viewport(final int x, final int y, final int width, final int height);
+	public int getViewportWidth();
+	public int getViewportHeight();
 	public void clear(final float red, final float green, final float blue, final float alpha);
 	public void clearStencil();
 

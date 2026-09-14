@@ -48,6 +48,7 @@ test {
 
     systemProperty 'joid.snapshot.references', references.absolutePath
     systemProperty 'joid.snapshot.output', output.absolutePath
+    systemProperty 'joid.snapshot.cache', rootProject.file('.snapshots/cache').absolutePath
 
     testLogging {
         exceptionFormat 'full'

@@ -138,6 +138,16 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public final float getLineWidth() {
+		return this.state.getLineWidth();
+	}
+
+	@Override
+	public final boolean isLineSmooth() {
+		return this.state.isLineSmooth();
+	}
+
+	@Override
 	public final void stencilTest(final boolean test) {
 		this.state.setStencilTest(test);
 	}
@@ -162,6 +172,16 @@ public abstract class RenderBridge implements IRenderBridge {
 		this.state.setViewportY(y);
 		this.state.setViewportWidth(width);
 		this.state.setViewportHeight(height);
+	}
+
+	@Override
+	public final int getViewportWidth() {
+		return this.state.getViewportWidth();
+	}
+
+	@Override
+	public final int getViewportHeight() {
+		return this.state.getViewportHeight();
 	}
 
 	@Override

@@ -1,10 +1,12 @@
 package be.zeldown.joid.test.snapshot;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +21,8 @@ import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.resource.ResourceBuilder;
+import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.resolver.ResourceResolver;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.key.Key;
@@ -26,32 +30,38 @@ import lombok.NonNull;
 
 public final class SnapshotRunner {
 
-	private static final int    WIDTH           = 1920;
-	private static final int    HEIGHT          = 1080;
-	private static final long   START_TIME      = 1735689600000L;
-	private static final long   FRAME_TIME      = 16L;
-	private static final int    SETTLE_ATTEMPTS = 300;
-	private static final long   SETTLE_DELAY    = 10L;
-	private static final int    LOAD_ATTEMPTS   = 3000;
-	private static final Color  BACKGROUND      = new Color(50, 50, 50);
+	private static final int WIDTH  = 1920;
+	private static final int HEIGHT = 1080;
+
+	private static final long FRAME_TIME      = 16L;
+	private static final int  SETTLE_ATTEMPTS = 300;
+	private static final long SETTLE_DELAY    = 10L;
+	private static final int  LOAD_ATTEMPTS   = 3000;
+	private static final long START_TIME      = 1735689600000L;
+
+	private static final int   MASK       = 0xFFFF00FF;
+	private static final Color BACKGROUND = new Color(50, 50, 50);
+
+	private static final String SHIFTED_DIGITS  = ")!@#$%^&*(";
 	private static final String SYMBOLS         = " '-,./;=[\\]`";
 	private static final String SHIFTED_SYMBOLS = " \"_<>?:+{|}~";
-	private static final String SHIFTED_DIGITS  = ")!@#$%^&*(";
 	private static final Key[]  SYMBOL_KEYS     = {Key.SPACE, Key.APOSTROPHE, Key.MINUS, Key.COMMA, Key.PERIOD, Key.SLASH, Key.SEMICOLON, Key.EQUAL, Key.LEFT_BRACKET, Key.BACKSLASH, Key.RIGHT_BRACKET, Key.GRAVE_ACCENT};
 
-	private final ISnapshotBackend     backend;
 	private final ManualClockBridge    clock;
+	private final List<int[]>          masks;
 	private final SnapshotWindowBridge window;
 	private final SnapshotUIBridge     bridge;
+	private final ISnapshotBackend     backend;
 
 	private ClickType pressed;
 	private long      pressTime;
 
 	private SnapshotRunner(final ISnapshotBackend backend) {
-		this.backend = backend;
 		this.clock   = ManualClockBridge.create(SnapshotRunner.START_TIME);
+		this.masks   = new ArrayList<>();
 		this.window  = new SnapshotWindowBridge();
 		this.bridge  = new SnapshotUIBridge();
+		this.backend = backend;
 	}
 
 	public static @NonNull SnapshotRunner start(final @NonNull ISnapshotBackend backend) {
@@ -59,6 +69,8 @@ public final class SnapshotRunner {
 		backend.create(SnapshotRunner.WIDTH, SnapshotRunner.HEIGHT);
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
+		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
+		ResourceResolver.register(new SnapshotUrlResolver(new File(System.getProperty("joid.snapshot.cache"))));
 		runner.resize(SnapshotRunner.WIDTH, SnapshotRunner.HEIGHT);
 
 		JOID.inst().setDevMode(false).setDemoMode(true).load();
@@ -75,9 +87,14 @@ public final class SnapshotRunner {
 		return this.backend.getRenderer().replaceAll("[^A-Za-z0-9]+", "-").replaceAll("^-|-$", "");
 	}
 
+	public static @NonNull List<String> getShots(final @NonNull String scenario) {
+		return SnapshotRunner.read(scenario).stream().map(String::trim).filter(line -> line.startsWith("shot ")).map(line -> line.substring(5).trim()).collect(Collectors.toList());
+	}
+
 	public @NonNull Map<String, SnapshotImage> run(final @NonNull String scenario) {
 		this.bridge.closeAll();
 		this.window.getKeys().clear();
+		this.masks.clear();
 		this.clock.setTime(SnapshotRunner.START_TIME);
 		JOID.inst().setDevMode(false);
 		this.resize(SnapshotRunner.WIDTH, SnapshotRunner.HEIGHT);
@@ -140,6 +157,12 @@ public final class SnapshotRunner {
 			case "dev":
 				JOID.inst().setDevMode(Boolean.parseBoolean(arguments[1]));
 				break;
+			case "mask":
+				this.masks.add(new int[] {Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]), Integer.parseInt(arguments[3]), Integer.parseInt(arguments[4])});
+				break;
+			case "unmask":
+				this.masks.clear();
+				break;
 			case "shot":
 				shots.put(arguments[1], this.settle(arguments[1]));
 				break;
@@ -150,25 +173,6 @@ public final class SnapshotRunner {
 		return shots;
 	}
 
-	private void show(final String type, final boolean open) {
-		final UI ui;
-		try {
-			ui = (UI) Class.forName(type).newInstance();
-		} catch (final ReflectiveOperationException e) {
-			throw new IllegalArgumentException("Unable to create the snapshot UI " + type, e);
-		}
-
-		if (open) {
-			JOID.open(ui);
-		} else {
-			this.bridge.closeAll();
-			this.bridge.add(ui);
-			this.window.setMouseX(-5000D);
-			this.window.setMouseY(-5000D);
-		}
-		this.settle(type);
-	}
-
 	private void type(final String text) {
 		for (final char character : text.toCharArray()) {
 			final boolean shift = SnapshotRunner.isShifted(character) && this.window.getKeys().add(Key.LEFT_SHIFT);
@@ -176,6 +180,20 @@ public final class SnapshotRunner {
 			if (shift) {
 				this.window.getKeys().remove(Key.LEFT_SHIFT);
 			}
+		}
+	}
+
+	private void zoom(final double level) {
+		for (final UI ui : this.bridge.getUiList()) {
+			ui.load(this.window.getWidth(), this.window.getHeight(), level);
+		}
+	}
+
+	private void advance(final long duration) {
+		for (long elapsed = 0L; elapsed < duration; elapsed += SnapshotRunner.FRAME_TIME) {
+			this.clock.advance(SnapshotRunner.FRAME_TIME);
+			this.render(false);
+			this.awaitPlayback();
 		}
 	}
 
@@ -203,17 +221,23 @@ public final class SnapshotRunner {
 		this.bridge.load();
 	}
 
-	private void zoom(final double level) {
-		for (final UI ui : this.bridge.getUiList()) {
-			ui.load(this.window.getWidth(), this.window.getHeight(), level);
+	private void show(final String type, final boolean open) {
+		final UI ui;
+		try {
+			ui = (UI) Class.forName(type).newInstance();
+		} catch (final ReflectiveOperationException e) {
+			throw new IllegalArgumentException("Unable to create the snapshot UI " + type, e);
 		}
-	}
 
-	private void advance(final long duration) {
-		for (long elapsed = 0L; elapsed < duration; elapsed += SnapshotRunner.FRAME_TIME) {
-			this.clock.advance(SnapshotRunner.FRAME_TIME);
-			this.render(false);
+		if (open) {
+			JOID.open(ui);
+		} else {
+			this.bridge.closeAll();
+			this.bridge.add(ui);
+			this.window.setMouseX(-5000D);
+			this.window.setMouseY(-5000D);
 		}
+		this.settle(type);
 	}
 
 	private void moveTo(final double x, final double y, final long duration) {
@@ -232,20 +256,11 @@ public final class SnapshotRunner {
 		}
 	}
 
-	private SnapshotImage settle(final String name) {
-		SnapshotImage previous = null;
-		SnapshotImage current = this.render(true);
-		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous)); attempt++) {
-			this.awaitResources();
+	private void awaitPlayback() {
+		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS && !SnapshotRunner.isPlaybackSynchronized(); attempt++) {
 			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
-			previous = current;
-			current = this.render(true);
+			this.render(false);
 		}
-
-		if (!current.isSame(previous)) {
-			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing");
-		}
-		return current;
 	}
 
 	private void awaitResources() {
@@ -256,6 +271,26 @@ public final class SnapshotRunner {
 			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
 		}
 		throw new IllegalStateException("A resource never finished loading");
+	}
+
+	private SnapshotImage settle(final String name) {
+		SnapshotImage previous = null;
+		SnapshotImage current = this.mask(this.render(true));
+		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous) || !SnapshotRunner.isPlaybackSynchronized()); attempt++) {
+			this.awaitResources();
+			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+			previous = current;
+			current = this.mask(this.render(true));
+		}
+
+		if (!current.isSame(previous)) {
+			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing");
+		}
+
+		if (!SnapshotRunner.isPlaybackSynchronized()) {
+			throw new IllegalStateException(name + " never caught up with the clock while playing a video");
+		}
+		return current;
 	}
 
 	private SnapshotImage render(final boolean capture) {
@@ -271,16 +306,23 @@ public final class SnapshotRunner {
 		return image;
 	}
 
-	private static List<String> read(final String scenario) {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotRunner.class.getResourceAsStream("/snapshot/" + scenario + ".txt"), StandardCharsets.UTF_8))) {
-			return reader.lines().collect(Collectors.toList());
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
+	private SnapshotImage mask(final SnapshotImage image) {
+		for (final int[] mask : this.masks) {
+			image.fill(mask[0], mask[1], mask[2], mask[3], SnapshotRunner.MASK);
+		}
+		return image;
+	}
+
+	private static void sleep(final long duration) {
+		try {
+			Thread.sleep(duration);
+		} catch (final InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 	}
 
-	private static boolean isShifted(final char character) {
-		return character >= 'A' && character <= 'Z' || SnapshotRunner.SHIFTED_DIGITS.indexOf(character) >= 0 || SnapshotRunner.SHIFTED_SYMBOLS.indexOf(character) > 0;
+	private static boolean isPlaybackSynchronized() {
+		return ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().map(data -> data.getDecoder(VideoResourceDecoder.class)).allMatch(decoder -> decoder == null || decoder.isSynchronized());
 	}
 
 	private static Key getKey(final char character) {
@@ -301,11 +343,15 @@ public final class SnapshotRunner {
 		return symbol >= 0 ? SnapshotRunner.SYMBOL_KEYS[symbol] : Key.UNKNOWN;
 	}
 
-	private static void sleep(final long duration) {
-		try {
-			Thread.sleep(duration);
-		} catch (final InterruptedException e) {
-			Thread.currentThread().interrupt();
+	private static boolean isShifted(final char character) {
+		return character >= 'A' && character <= 'Z' || SnapshotRunner.SHIFTED_DIGITS.indexOf(character) >= 0 || SnapshotRunner.SHIFTED_SYMBOLS.indexOf(character) > 0;
+	}
+
+	private static List<String> read(final String scenario) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotRunner.class.getResourceAsStream("/snapshot/" + scenario + ".txt"), StandardCharsets.UTF_8))) {
+			return reader.lines().collect(Collectors.toList());
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
 		}
 	}
 

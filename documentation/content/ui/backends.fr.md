@@ -119,6 +119,7 @@ Le contrat que respecte chaque backend :
 - Les framebuffers n'ont qu'un attachement couleur — ni profondeur ni stencil.
 - `pushState()` / `popState()` restaurent tout ce qui a été réglé via le bridge, y compris le framebuffer lié, le viewport et le shader courant.
 - `lighting(true)` signifie un terme ambiant de `0.6` plus une lumière directionnelle selon l'axe de vue, appliquée par sommet en flat shading.
+- Les lignes lissées sont dessinées par le cœur : le `Tessellator` étend chaque segment d'une ligne dessinée avec `lineSmooth(true)` en quad dans l'espace écran, et le shader `line` calcule la couverture antialiasée d'OpenGL, les backends ne dessinent donc que des triangles. `isLineSmooth()`, `getLineWidth()`, `getViewportWidth()` et `getViewportHeight()` exposent l'état dont il a besoin.
 
 ### Shaders
 
@@ -147,17 +148,17 @@ public class SnapshotTest extends SnapshotSuite {
 }
 ```
 
-La suite enregistre un `ManualClockBridge`, vérifie que chaque shader du cœur compile, puis joue chaque scénario de `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window` et `dev`. Chaque scénario part du même état : aucune UI, l'horloge au même instant, une fenêtre 1920×1080, le mode dev désactivé et aucune touche enfoncée. Le temps n'avance qu'avec `wait` et `moveto`, par frames de 16 ms, et les lerps et le compteur de fps suivent le temps de frame mesuré sur l'horloge, chaque exécution rend donc les mêmes pixels. Chaque capture attend la fin du chargement des ressources, puis deux frames consécutives identiques.
+La suite enregistre un `ManualClockBridge`, vérifie que chaque shader du cœur compile, puis joue chaque scénario de `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` et `video`. Chaque scénario part du même état : aucune UI, l'horloge au même instant, une fenêtre 1920×1080, le mode dev désactivé, aucune touche enfoncée et aucun masque. Le temps n'avance qu'avec `wait` et `moveto`, par frames de 16 ms, et les lerps et le compteur de fps suivent le temps de frame mesuré sur l'horloge, chaque exécution rend donc les mêmes pixels. Chaque capture attend la fin du chargement des ressources, que chaque vidéo affiche l'image correspondant à l'horloge, puis deux frames consécutives identiques. Les vidéos et les GIF suivent l'horloge, une horloge en pause les fige donc, l'audio est coupé, et les ressources d'URL sont téléchargées une fois dans `.snapshots/cache` pour que les exécutions suivantes fonctionnent hors ligne.
 
-Les références sont propres à chaque machine et carte graphique : elles sont stockées dans `.snapshots/<module>/<renderer>/`, ignoré par git. Une capture sans référence est enregistrée à la première exécution ; ensuite, chaque capture doit correspondre à sa référence au pixel près.
+Les références sont propres à chaque machine et carte graphique : elles sont stockées dans `.snapshots/<module>/<renderer>/`, ignoré par git. Une capture sans référence est enregistrée à la première exécution ; ensuite, chaque capture doit correspondre à sa référence au pixel près. Les références des captures retirées des scénarios sont supprimées après l'exécution.
 
 | Commande | Résultat |
 |---|---|
 | `./gradlew test` | Tests unitaires des shaders et tests de snapshot de chaque module. Les rendus et un `report.html` interactif sont écrits dans `build/snapshots/<module>`. |
 | `./gradlew updateSnapshots` | Remplace les références après un changement visuel voulu. `./gradlew :vulkan:updateSnapshots` ne met à jour qu'un module. |
-| `./gradlew crossBackendTest` | Lance les tests, puis exige que les captures `lwjgl3` et `vulkan` soient identiques à `lwjgl2`, au pixel près. La comparaison est affichée dans `build/snapshots/cross/report.html`. |
+| `./gradlew crossBackendTest` | Lance les tests, puis compare les captures `lwjgl3` et `vulkan` à `lwjgl2` avec une tolérance d'un niveau par canal, qui absorbe les arrondis d'antialiasing de chaque driver. La comparaison est affichée dans `build/snapshots/cross/report.html`. |
 
-Les tests de snapshot nécessitent un GPU. Le hook pre-commit installé par `./gradlew installLocalGitHook` lance `check` et `crossBackendTest` dès qu'un commit touche les sources ou le build.
+Les tests de snapshot nécessitent un GPU. Les hooks installés par `./gradlew installLocalGitHook` lancent `scripts/run-tests` : le hook pre-commit teste les changements indexés et le hook pre-push les commits poussés, après avoir mis de côté tout le reste. Seuls les modules touchés par les changements sont testés — `core`, `testkit` et le build testent tous les backends, `glfw` et `openal` testent LWJGL 3 et Vulkan — et la comparaison entre backends réutilise les derniers rendus des autres backends.
 
 #### Rapport
 
@@ -182,11 +183,13 @@ Un scénario est un fichier texte avec une commande par ligne ; `#` commence un 
 | `resize <width> <height>` | Redimensionne la fenêtre, jusqu'à 1920×1080. |
 | `zoom <level>` | Règle le zoom des UIs ouvertes. |
 | `dev <true\|false>` | Active ou désactive le mode dev pour les UIs ouvertes ensuite. |
+| `mask <x> <y> <width> <height>` | Remplit le rectangle dans les captures suivantes, pour exclure un contenu qui ne peut pas être déterministe comme l'usage mémoire. |
+| `unmask` | Retire les masques. |
 | `shot <name>` | Capture la fenêtre sous `<name>.png`. |
 
 Pour ajouter une capture, ajoutez ses commandes à un scénario — ou ajoutez un fichier de scénario et son test `matches…Snapshots` à `SnapshotSuite` — puis lancez `./gradlew test` : les nouvelles captures sont enregistrées comme références.
 
-`UIDemoVideo` et `UIDemoResource` ne sont pas capturées : le décodage vidéo et l'animation des GIF tournent sur un thread en temps réel, et la démo de ressources télécharge ses images.
+`UIDemoVideo` masque son overlay de statistiques, qui affiche l'usage mémoire et les files du décodeur.
 
 ## Voir aussi
 

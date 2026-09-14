@@ -6,6 +6,13 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 import be.zeldown.joid.lib.bridge.BridgeHandler;
+import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.shader.IShader;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
+import be.zeldown.joid.lib.bridge.render.shader.source.ShaderStage;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
+import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.Getter;
@@ -51,7 +58,10 @@ public final class Tessellator {
 		this.isDrawing = false;
 
 		final int count = Tessellator.getOutputCount(this.drawMode, this.vertexCount);
-		if (count > 0) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (count > 0 && this.isLineMode() && render.isLineSmooth() && render.getShader() == null) {
+			this.drawSmoothLines(render, count / 2);
+		} else if (count > 0) {
 			Tessellator.ensureCapacity(count);
 			Tessellator.intBuffer.clear();
 
@@ -93,8 +103,8 @@ public final class Tessellator {
 			Tessellator.byteBuffer.position(0);
 			Tessellator.byteBuffer.limit(count * VertexBuffer.STRIDE);
 
-			final DrawMode mode = this.drawMode == DrawMode.LINES || this.drawMode == DrawMode.LINE_STRIP || this.drawMode == DrawMode.LINE_LOOP ? DrawMode.LINES : DrawMode.TRIANGLES;
-			BridgeHandler.RENDER.get().draw(mode, VertexBuffer.create(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
+			final DrawMode mode = this.isLineMode() ? DrawMode.LINES : DrawMode.TRIANGLES;
+			render.draw(mode, VertexBuffer.create(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
 		}
 
 		if (this.rawBufferSize > 0x20000 && this.rawBufferIndex < this.rawBufferSize << 3) {
@@ -270,8 +280,57 @@ public final class Tessellator {
 		return new Tessellator();
 	}
 
+	private boolean isLineMode() {
+		return this.drawMode == DrawMode.LINES || this.drawMode == DrawMode.LINE_STRIP || this.drawMode == DrawMode.LINE_LOOP;
+	}
+
 	private void putVertex(final int index) {
 		Tessellator.intBuffer.put(this.rawBuffer, index * 8, 8);
+	}
+
+	private int getSegmentVertex(final int segment, final int point) {
+		switch (this.drawMode) {
+		case LINE_STRIP:
+			return segment + point;
+		case LINE_LOOP:
+			return (segment + point) % this.vertexCount;
+		default:
+			return segment * 2 + point;
+		}
+	}
+
+	private void drawSmoothLines(final IRenderBridge render, final int segments) {
+		Tessellator.ensureCapacity(segments * 6);
+		Tessellator.intBuffer.clear();
+		for (int segment = 0; segment < segments; segment++) {
+			final int start = this.getSegmentVertex(segment, 0);
+			final int end = this.getSegmentVertex(segment, 1);
+			this.putLineVertex(start, end, -1, -1);
+			this.putLineVertex(start, end, 1, -1);
+			this.putLineVertex(end, start, 1, 1);
+			this.putLineVertex(start, end, -1, -1);
+			this.putLineVertex(end, start, 1, 1);
+			this.putLineVertex(end, start, -1, 1);
+		}
+
+		Tessellator.byteBuffer.position(0);
+		Tessellator.byteBuffer.limit(segments * 6 * VertexBuffer.STRIDE);
+
+		LineShader.SHADER.bind();
+		LineShader.WIDTH.setValue(render.getLineWidth());
+		LineShader.VIEWPORT.setValue(render.getViewportWidth(), render.getViewportHeight());
+		render.draw(DrawMode.TRIANGLES, VertexBuffer.create(Tessellator.byteBuffer, segments * 6, true, this.hasColor, true));
+		LineShader.SHADER.unbind();
+	}
+
+	private void putLineVertex(final int vertex, final int other, final int side, final int end) {
+		final int offset = vertex * 8;
+		Tessellator.intBuffer.put(this.rawBuffer, offset, 3);
+		Tessellator.intBuffer.put(this.rawBuffer[other * 8]);
+		Tessellator.intBuffer.put(this.rawBuffer[other * 8 + 1]);
+		Tessellator.intBuffer.put(this.rawBuffer[offset + 5]);
+		Tessellator.intBuffer.put(side * 127 & 255 | (end * 127 & 255) << 8);
+		Tessellator.intBuffer.put(this.rawBuffer[offset + 7]);
 	}
 
 	private static int getOutputCount(final @NonNull DrawMode drawMode, final int vertexCount) {
@@ -302,6 +361,14 @@ public final class Tessellator {
 
 		Tessellator.byteBuffer = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder());
 		Tessellator.intBuffer = Tessellator.byteBuffer.asIntBuffer();
+	}
+
+	private static final class LineShader {
+
+		private static final IShader       SHADER   = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, Tessellator.class.getResourceAsStream("/assets/shaders/line/line.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, Tessellator.class.getResourceAsStream("/assets/shaders/line/line.fsh")), BlendState.NORMAL);
+		private static final FloatUniform  WIDTH    = LineShader.SHADER.getFloatUniform("u_Width");
+		private static final Float2Uniform VIEWPORT = LineShader.SHADER.getFloat2Uniform("u_Viewport");
+
 	}
 
 }
