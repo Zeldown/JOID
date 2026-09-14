@@ -1,0 +1,28 @@
+def embeddedModules = []
+def collectModules
+collectModules = { current ->
+    current.configurations.compile.dependencies.withType(ProjectDependency).each { dependency ->
+        def module = dependency.dependencyProject
+        if (!embeddedModules.contains(module)) {
+            evaluationDependsOn(module.path)
+            embeddedModules << module
+            collectModules(module)
+        }
+    }
+}
+collectModules(project)
+
+shadowJar {
+    embeddedModules.each { module ->
+        from module.sourceSets.main.output
+    }
+
+    configurations = [project(':core').configurations.shadow]
+    classifier = project.hasProperty('dev') ? 'dev' : 'prod'
+
+    if (!project.hasProperty('dev')) {
+        exclude 'assets/demo/*'
+    }
+}
+
+build.dependsOn shadowJar
