@@ -137,12 +137,16 @@ public final class Context {
 	}
 
 	public long[] createImage(final int width, final int height, final int format, final int usage) {
+		return this.createImage(width, height, format, usage, 1);
+	}
+
+	public long[] createImage(final int width, final int height, final int format, final int usage, final int levels) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageCreateInfo info = VkImageCreateInfo.calloc(stack)
 					.sType$Default()
 					.imageType(VK10.VK_IMAGE_TYPE_2D)
 					.format(format)
-					.mipLevels(1)
+					.mipLevels(levels)
 					.arrayLayers(1)
 					.samples(VK10.VK_SAMPLE_COUNT_1_BIT)
 					.tiling(VK10.VK_IMAGE_TILING_OPTIMAL)
@@ -176,13 +180,17 @@ public final class Context {
 	}
 
 	public long createImageView(final long image, final int format, final int aspect) {
+		return this.createImageView(image, format, aspect, 1);
+	}
+
+	public long createImageView(final long image, final int format, final int aspect, final int levels) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageViewCreateInfo info = VkImageViewCreateInfo.calloc(stack)
 					.sType$Default()
 					.image(image)
 					.viewType(VK10.VK_IMAGE_VIEW_TYPE_2D)
 					.format(format);
-			info.subresourceRange().aspectMask(aspect).baseMipLevel(0).levelCount(1).baseArrayLayer(0).layerCount(1);
+			info.subresourceRange().aspectMask(aspect).baseMipLevel(0).levelCount(levels).baseArrayLayer(0).layerCount(1);
 
 			final LongBuffer view = stack.mallocLong(1);
 			Context.check(VK10.vkCreateImageView(this.device, info, null, view), "vkCreateImageView");
@@ -211,6 +219,10 @@ public final class Context {
 	}
 
 	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout) {
+		Context.transition(buffer, image, aspect, oldLayout, newLayout, 0, 1);
+	}
+
+	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout, final int baseLevel, final int levels) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageMemoryBarrier.Buffer barrier = VkImageMemoryBarrier.calloc(1, stack)
 					.sType$Default()
@@ -221,7 +233,7 @@ public final class Context {
 					.image(image)
 					.srcAccessMask(Context.getAccess(oldLayout))
 					.dstAccessMask(Context.getAccess(newLayout));
-			barrier.subresourceRange().aspectMask(aspect).baseMipLevel(0).levelCount(1).baseArrayLayer(0).layerCount(1);
+			barrier.subresourceRange().aspectMask(aspect).baseMipLevel(baseLevel).levelCount(levels).baseArrayLayer(0).layerCount(1);
 			VK10.vkCmdPipelineBarrier(buffer, VK10.VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK10.VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, null, null, barrier);
 		}
 	}

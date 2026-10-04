@@ -69,6 +69,11 @@ public final class Resource {
 		return this;
 	}
 
+	public final @NonNull Resource mipmap(final boolean mipmap) {
+		this.properties.mipmap(mipmap);
+		return this;
+	}
+
 	public final @NonNull Resource textureCoords(final double u, final double v, final double u2, final double v2) {
 		this.properties.textureCoords(u, v, u2, v2);
 		return this;
@@ -190,6 +195,12 @@ public final class Resource {
 	public final void prepareBind() {
 		if (!this.isGenerated()) {
 			this.generate();
+		}
+
+		if (this.properties.isMipmap() && this.data.getTextures() != null) {
+			for (final ITexture texture : this.data.getTextures()) {
+				texture.mipmap(true);
+			}
 		}
 
 		if (this.isLoaded() && !this.isUploaded() && this.getData() != null) {

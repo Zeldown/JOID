@@ -68,6 +68,11 @@ public final class ResourceBuilder {
 		return this;
 	}
 
+	public final @NonNull ResourceBuilder mipmap(final boolean mipmap) {
+		this.properties.mipmap(mipmap);
+		return this;
+	}
+
 	public final @NonNull ResourceBuilder textureCoords(final double u, final double v, final double u2, final double v2) {
 		this.properties.textureCoords(u, v, u2, v2);
 		return this;

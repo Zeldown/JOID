@@ -89,7 +89,7 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		final Texture texture = state.getTexture() == null ? this.emptyTexture : (Texture) state.getTexture();
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
 		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
-		GL33C.glBindSampler(0, this.getSampler(state.getTextureFilter(), state.getTextureWrap()));
+		GL33C.glBindSampler(0, this.getSampler(state.getTextureFilter(), state.getTextureWrap(), texture.isMipmapped()));
 
 		GL30C.glBindVertexArray(this.vertexArray);
 		GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, this.vertexBuffer);
@@ -118,8 +118,8 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		return Shader.create(this, ShaderTranslator.translate(vertex), ShaderTranslator.translate(fragment), blend);
 	}
 
-	public int getSampler(final TextureFilter filter, final TextureWrap wrap) {
-		return this.samplers[RenderBridge.getSamplerIndex(filter, wrap)];
+	public int getSampler(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
+		return this.samplers[RenderBridge.getSamplerIndex(filter, wrap, mipmapped)];
 	}
 
 	private void applyTarget(final RenderState state) {
@@ -150,24 +150,31 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 	}
 
 	private static int[] createSamplers() {
-		final int[] samplers = new int[TextureFilter.values().length * TextureWrap.values().length];
+		final int[] samplers = new int[TextureFilter.values().length * TextureWrap.values().length * 2];
 		for (final TextureFilter filter : TextureFilter.values()) {
 			for (final TextureWrap wrap : TextureWrap.values()) {
-				final int sampler = GL33C.glGenSamplers();
-				final int textureFilter = filter == TextureFilter.LINEAR ? GL11C.GL_LINEAR : GL11C.GL_NEAREST;
-				final int textureWrap = RenderBridge.wrap(wrap);
-				GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_MIN_FILTER, textureFilter);
-				GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_MAG_FILTER, textureFilter);
-				GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_WRAP_S, textureWrap);
-				GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_WRAP_T, textureWrap);
-				samplers[RenderBridge.getSamplerIndex(filter, wrap)] = sampler;
+				samplers[RenderBridge.getSamplerIndex(filter, wrap, false)] = RenderBridge.createSampler(filter, wrap, false);
+				samplers[RenderBridge.getSamplerIndex(filter, wrap, true)] = RenderBridge.createSampler(filter, wrap, true);
 			}
 		}
 		return samplers;
 	}
 
-	private static int getSamplerIndex(final TextureFilter filter, final TextureWrap wrap) {
-		return filter.ordinal() * TextureWrap.values().length + wrap.ordinal();
+	private static int createSampler(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
+		final boolean linear = filter == TextureFilter.LINEAR;
+		final int sampler = GL33C.glGenSamplers();
+		final int magFilter = linear ? GL11C.GL_LINEAR : GL11C.GL_NEAREST;
+		final int minFilter = linear ? mipmapped ? GL11C.GL_LINEAR_MIPMAP_LINEAR : GL11C.GL_LINEAR : GL11C.GL_NEAREST;
+		final int textureWrap = RenderBridge.wrap(wrap);
+		GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_MIN_FILTER, minFilter);
+		GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_MAG_FILTER, magFilter);
+		GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_WRAP_S, textureWrap);
+		GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_WRAP_T, textureWrap);
+		return sampler;
+	}
+
+	private static int getSamplerIndex(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
+		return (mipmapped ? TextureFilter.values().length * TextureWrap.values().length : 0) + filter.ordinal() * TextureWrap.values().length + wrap.ordinal();
 	}
 
 	private static float[] getFloats(final int name) {

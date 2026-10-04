@@ -8,6 +8,7 @@ import lombok.NonNull;
 public class ResourceProperties {
 
 	private boolean       async;
+	private boolean       mipmap;
 	private TextureFilter interpolation = TextureFilter.NEAREST;
 	private double[]      textureCoords;
 
@@ -40,6 +41,11 @@ public class ResourceProperties {
 		return this;
 	}
 
+	public final @NonNull ResourceProperties mipmap(final boolean mipmap) {
+		this.mipmap = mipmap;
+		return this;
+	}
+
 	public final @NonNull ResourceProperties textureCoords(final double u, final double v, final double u2, final double v2) {
 		this.textureCoords = new double[] {u, v, u2, v2};
 		return this;
@@ -48,6 +54,7 @@ public class ResourceProperties {
 	public final @NonNull ResourceProperties copy() {
 		final ResourceProperties copy = new ResourceProperties();
 		copy.async = this.async;
+		copy.mipmap = this.mipmap;
 		copy.interpolation = this.interpolation;
 		copy.textureCoords = this.textureCoords;
 		return copy;
@@ -55,6 +62,7 @@ public class ResourceProperties {
 
 	public final @NonNull ResourceProperties copy(final @NonNull ResourceProperties properties) {
 		this.async = properties.async;
+		this.mipmap = properties.mipmap;
 		this.interpolation = properties.interpolation;
 		this.textureCoords = properties.textureCoords;
 		return this;

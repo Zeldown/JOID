@@ -27,7 +27,9 @@ import lombok.NonNull;
 
 public abstract class RenderBridgeContractSuite {
 
-	private static final int SIZE = 64;
+	private static final int SIZE     = 64;
+	private static final int ATLAS    = 256;
+	private static final int MINIFIED = 7;
 
 	private static final int RED   = 0xFFFF0000;
 	private static final int BLUE  = 0xFF0000FF;
@@ -108,6 +110,26 @@ public abstract class RenderBridgeContractSuite {
 		RenderBridgeContractSuite.assertPixel(image, 48, 16, RenderBridgeContractSuite.GREEN);
 		RenderBridgeContractSuite.assertPixel(image, 16, 48, RenderBridgeContractSuite.BLUE);
 		RenderBridgeContractSuite.assertPixel(image, 48, 48, RenderBridgeContractSuite.WHITE);
+	}
+
+	@Test
+	public void minifiesThroughMipmaps() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final int[] pixels = RenderBridgeContractSuite.checkerboard();
+
+		final ITexture plain = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
+		final ITexture mipmapped = render.createTexture().mipmap(true).allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
+
+		final double plainDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(plain));
+		final double mipmapDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(mipmapped));
+
+		plain.delete();
+		mipmapped.delete();
+
+		Assert.assertFalse("A texture must not be mipmapped by default", plain.isMipmapped());
+		Assert.assertTrue("A texture asked to mipmap must report it", mipmapped.isMipmapped());
+		Assert.assertTrue("A mipmapped checkerboard must minify to its average (deviation " + mipmapDeviation + ")", mipmapDeviation < 16D);
+		Assert.assertTrue("Mipmaps must reduce the minification error (plain " + plainDeviation + ", mipmapped " + mipmapDeviation + ")", mipmapDeviation <= plainDeviation);
 	}
 
 	@Test
@@ -209,6 +231,37 @@ public abstract class RenderBridgeContractSuite {
 		final SnapshotImage image = RenderBridgeContractSuite.backend.capture(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		RenderBridgeContractSuite.backend.present();
 		return image;
+	}
+
+	private static int[] checkerboard() {
+		final int[] pixels = new int[RenderBridgeContractSuite.ATLAS * RenderBridgeContractSuite.ATLAS];
+		for (int y = 0; y < RenderBridgeContractSuite.ATLAS; y++) {
+			for (int x = 0; x < RenderBridgeContractSuite.ATLAS; x++) {
+				pixels[x + y * RenderBridgeContractSuite.ATLAS] = (x + y & 1) == 0 ? RenderBridgeContractSuite.WHITE : RenderBridgeContractSuite.BLACK;
+			}
+		}
+		return pixels;
+	}
+
+	private static SnapshotImage minify(final ITexture texture) {
+		return RenderBridgeContractSuite.render(bridge -> {
+			bridge.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0.5F, 0.5F, RenderBridgeContractSuite.MINIFIED, RenderBridgeContractSuite.MINIFIED, true, 0));
+		});
+	}
+
+	private static double deviation(final SnapshotImage image) {
+		double sum = 0D;
+		int count = 0;
+		for (int y = 2; y < RenderBridgeContractSuite.MINIFIED - 1; y++) {
+			for (int x = 2; x < RenderBridgeContractSuite.MINIFIED - 1; x++) {
+				final int pixel = image.getPixels()[x + y * image.getWidth()];
+				final double luma = ((pixel >> 16 & 255) + (pixel >> 8 & 255) + (pixel & 255)) / 3D;
+				sum += Math.abs(luma - 127.5D);
+				count++;
+			}
+		}
+		return sum / count;
 	}
 
 	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {

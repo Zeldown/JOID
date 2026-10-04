@@ -237,7 +237,7 @@ public final class RenderBridge implements IRenderBridge {
 	public void texture(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, ((Texture) texture).getId());
-		RenderBridge.applyTextureParameters(filter, wrap);
+		RenderBridge.applyTextureParameters(filter, wrap, ((Texture) texture).isMipmapped());
 	}
 
 	@Override
@@ -324,10 +324,16 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	public static void applyTextureParameters(final TextureFilter filter, final TextureWrap wrap) {
-		final int textureFilter = filter == TextureFilter.LINEAR ? GL11.GL_LINEAR : GL11.GL_NEAREST;
+		RenderBridge.applyTextureParameters(filter, wrap, false);
+	}
+
+	public static void applyTextureParameters(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
+		final boolean linear = filter == TextureFilter.LINEAR;
+		final int minFilter = linear ? (mipmapped ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_LINEAR) : GL11.GL_NEAREST;
+		final int magFilter = linear ? GL11.GL_LINEAR : GL11.GL_NEAREST;
 		final int textureWrap = RenderBridge.wrap(wrap);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, textureFilter);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, textureFilter);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, minFilter);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, magFilter);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, textureWrap);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, textureWrap);
 	}

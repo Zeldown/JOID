@@ -281,8 +281,8 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		return this.stagingBuffer;
 	}
 
-	public long getSampler(final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
-		return this.samplers[filter.ordinal() * TextureWrap.values().length + wrap.ordinal()];
+	public long getSampler(final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap, final boolean mipmapped) {
+		return this.samplers[(mipmapped ? TextureFilter.values().length * TextureWrap.values().length : 0) + filter.ordinal() * TextureWrap.values().length + wrap.ordinal()];
 	}
 
 	private void requireFrame() {
@@ -460,13 +460,13 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 			final Texture stateTexture = (Texture) state.getTexture();
 			if (sampler != null && sampler.getTexture() != null && sampler.getTexture().getView() != VK10.VK_NULL_HANDLE) {
 				images[index] = sampler.getTexture().getView();
-				images[index + 1] = this.getSampler(sampler.getFilter(), sampler.getWrap());
+				images[index + 1] = this.getSampler(sampler.getFilter(), sampler.getWrap(), sampler.getTexture().isMipmapped());
 			} else if (stateTexture != null && stateTexture.getView() != VK10.VK_NULL_HANDLE) {
 				images[index] = stateTexture.getView();
-				images[index + 1] = this.getSampler(state.getTextureFilter(), state.getTextureWrap());
+				images[index + 1] = this.getSampler(state.getTextureFilter(), state.getTextureWrap(), stateTexture.isMipmapped());
 			} else {
 				images[index] = this.emptyTexture.getView();
-				images[index + 1] = this.getSampler(TextureFilter.NEAREST, TextureWrap.REPEAT);
+				images[index + 1] = this.getSampler(TextureFilter.NEAREST, TextureWrap.REPEAT, false);
 			}
 			index += 2;
 		}
@@ -474,29 +474,37 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 	}
 
 	private long[] createSamplers() {
-		final long[] samplers = new long[TextureFilter.values().length * TextureWrap.values().length];
+		final int count = TextureFilter.values().length * TextureWrap.values().length;
+		final long[] samplers = new long[count * 2];
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			for (final TextureFilter filter : TextureFilter.values()) {
 				for (final TextureWrap wrap : TextureWrap.values()) {
-					final int filterMode = filter == TextureFilter.LINEAR ? VK10.VK_FILTER_LINEAR : VK10.VK_FILTER_NEAREST;
-					final int addressMode = RenderBridge.addressMode(wrap);
-					final VkSamplerCreateInfo info = VkSamplerCreateInfo.calloc(stack)
-							.sType$Default()
-							.magFilter(filterMode)
-							.minFilter(filterMode)
-							.mipmapMode(VK10.VK_SAMPLER_MIPMAP_MODE_NEAREST)
-							.addressModeU(addressMode)
-							.addressModeV(addressMode)
-							.addressModeW(addressMode)
-							.borderColor(VK10.VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK);
-
-					final LongBuffer sampler = stack.mallocLong(1);
-					Context.check(VK10.vkCreateSampler(this.context.getDevice(), info, null, sampler), "vkCreateSampler");
-					samplers[filter.ordinal() * TextureWrap.values().length + wrap.ordinal()] = sampler.get(0);
+					final int index = filter.ordinal() * TextureWrap.values().length + wrap.ordinal();
+					samplers[index] = this.createSampler(stack, filter, wrap, false);
+					samplers[count + index] = this.createSampler(stack, filter, wrap, true);
 				}
 			}
 		}
 		return samplers;
+	}
+
+	private long createSampler(final MemoryStack stack, final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
+		final int addressMode = RenderBridge.addressMode(wrap);
+		final int filterMode = filter == TextureFilter.LINEAR ? VK10.VK_FILTER_LINEAR : VK10.VK_FILTER_NEAREST;
+		final VkSamplerCreateInfo info = VkSamplerCreateInfo.calloc(stack)
+				.sType$Default()
+				.magFilter(filterMode)
+				.minFilter(filterMode)
+				.mipmapMode(mipmapped && filter == TextureFilter.LINEAR ? VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR : VK10.VK_SAMPLER_MIPMAP_MODE_NEAREST)
+				.addressModeU(addressMode)
+				.addressModeV(addressMode)
+				.addressModeW(addressMode)
+				.maxLod(mipmapped && filter == TextureFilter.LINEAR ? VK10.VK_LOD_CLAMP_NONE : 0F)
+				.borderColor(VK10.VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK);
+
+		final LongBuffer sampler = stack.mallocLong(1);
+		Context.check(VK10.vkCreateSampler(this.context.getDevice(), info, null, sampler), "vkCreateSampler");
+		return sampler.get(0);
 	}
 
 	private static int topology(final DrawMode mode) {

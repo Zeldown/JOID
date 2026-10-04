@@ -42,7 +42,7 @@ public final class SamplerUniform extends ShaderUniform implements be.zeldown.jo
 
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + this.unit);
 		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, this.texture.getId());
-		GL33C.glBindSampler(this.unit, bridge.getSampler(this.filter, this.wrap));
+		GL33C.glBindSampler(this.unit, bridge.getSampler(this.filter, this.wrap, this.texture.isMipmapped()));
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
 		GL20C.glUniform1i(super.getLocation(), this.unit);
 	}
