@@ -47,6 +47,7 @@ import be.zeldown.joid.lib.utils.key.Key;
 import be.zeldown.joid.lib.utils.list.IndexedConcurrentList;
 import be.zeldown.joid.lib.utils.list.IndexedElement;
 import be.zeldown.joid.lib.utils.signal.impl.primitive.DoubleSignal;
+import be.zeldown.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -258,6 +259,7 @@ public abstract class UI implements IUI, IndexedElement {
 			});
 
 			this.fileMonitor = new FileAlterationMonitor(500);
+			this.fileMonitor.setThreadFactory(ThreadUtils.daemonFactory("UI/" + this.getClass().getName() + "/monitor"));
 			this.fileMonitor.addObserver(observer);
 			try {
 				this.fileMonitor.start();
@@ -448,7 +450,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.nodeList.forEach(Node::onDetach);
 
 		if (this.fileMonitor != null) {
-			new Thread(() -> {
+			ThreadUtils.daemonThread(() -> {
 				try {
 					final Field runningField = FileAlterationMonitor.class.getDeclaredField("running");
 					runningField.setAccessible(true);

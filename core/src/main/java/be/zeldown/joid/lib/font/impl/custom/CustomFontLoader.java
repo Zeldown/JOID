@@ -14,12 +14,13 @@ import com.google.gson.JsonObject;
 import be.zeldown.joid.lib.font.dto.font.Font;
 import be.zeldown.joid.lib.font.dto.font.FontInfo;
 import be.zeldown.joid.lib.font.dto.font.FontInputStream;
+import be.zeldown.joid.lib.utils.thread.ThreadUtils;
 import lombok.NonNull;
 
 public final class CustomFontLoader {
 
 	private static final Gson GSON = new GsonBuilder().create();
-	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5);
+	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5, ThreadUtils.daemonFactory("CustomFontLoader"));
 
 	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull FontInputStream fontInputStream) {
 		final CompletableFuture<CustomFont> future = new CompletableFuture<>();

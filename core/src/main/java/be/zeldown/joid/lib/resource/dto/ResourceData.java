@@ -7,13 +7,14 @@ import java.util.concurrent.Executors;
 
 import be.zeldown.joid.lib.bridge.render.texture.ITexture;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
+import be.zeldown.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public final class ResourceData {
 
-	private static final ExecutorService ASYNC_EXECUTOR = Executors.newFixedThreadPool(16);
+	private static final ExecutorService ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
 	private String           uniqueId;
 	private IResourceDecoder decoder;
@@ -93,7 +94,7 @@ public final class ResourceData {
 	/* [ Internal Section ] */
 	public final void dispatch(final @NonNull Runnable task, final boolean async) {
 		if (async) {
-			final Thread thread = new Thread(task, "ResourceTask/" + this.uniqueId);
+			final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
 			this.tasks.add(thread);
 			thread.start();
 		} else {
