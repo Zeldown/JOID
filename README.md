@@ -1,7 +1,7 @@
 <div align="center">
 
 # JOID
-## Java OpenGL Interface Development
+## Java Open Interface Development
 
 <div align="center">
   <img align="center" src="https://img.shields.io/badge/version-7.0.1 (e3dd96b)-blue">
@@ -15,7 +15,7 @@
 
 **Build GPU-composed UIs in pure Java — no CSS, no XML, no runtime parser.**
 <br><br>
-Welcome to JOID, a flexible component-based UI toolkit for OpenGL and Vulkan applications, made for developers who want to own their rendering path and ship interfaces that stand out. No default theme, no stylesheet dialect to fight — the code you write is the layout the GPU draws.
+Welcome to JOID, a flexible component-based UI toolkit for any Java application that owns its rendering path — OpenGL, Vulkan, or any engine you bridge it to — made for developers who want to ship interfaces that stand out. No default theme, no stylesheet dialect to fight — the code you write is the layout the GPU draws.
 <br><br>
 Under the hood: a retained-mode node tree, reactive signals that only notify the nodes watching them, a composable shader pipeline for custom GPU effects, and a set of bridges that drop the library into any host and any rendering engine — games, tools, editors, overlays.
 <br><br>

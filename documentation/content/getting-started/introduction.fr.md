@@ -36,11 +36,11 @@ Le même arbre de nœuds, les mêmes effets, les mêmes signaux et les mêmes st
 
 ## Ce que JOID n'est pas
 
-JOID n'est pas un runtime de navigateur : il n'y a ni DOM, ni CSS, ni sous-ensemble HTML. Ce n'est pas un mode immédiat : les nœuds sont retenus, et vous mutez l'arbre via des signaux et des setters directs. Ce n'est pas un remplacement pour tous les toolkits d'UI — pour les menus natifs de l'OS ou l'intégration à l'arbre d'accessibilité, préférez Swing ou JavaFX. JOID vise les UIs rendues et composées par le GPU qui vivent à l'intérieur d'une application OpenGL ou Vulkan existante.
+JOID n'est pas un runtime de navigateur : il n'y a ni DOM, ni CSS, ni sous-ensemble HTML. Ce n'est pas un mode immédiat : les nœuds sont retenus, et vous mutez l'arbre via des signaux et des setters directs. Ce n'est pas un remplacement pour tous les toolkits d'UI — pour les menus natifs de l'OS ou l'intégration à l'arbre d'accessibilité, préférez Swing ou JavaFX. JOID vise les UIs rendues et composées par le GPU qui vivent à l'intérieur d'une application existante, quel que soit le moteur qui la dessine.
 
 ## À qui c'est destiné
 
-Les développeurs qui intègrent des UIs dans une application Java rendue avec OpenGL ou Vulkan — jeux, outils, éditeurs, overlays — et qui veulent maîtriser le chemin de rendu sans embarquer un runtime web. Quiconque est à l'aise avec Java 8+ et préfère les garanties du compilateur au débogage de cascade de styles.
+Les développeurs qui intègrent des UIs dans une application Java, quel que soit le moteur qui la dessine — jeux, outils, éditeurs, overlays — et qui veulent maîtriser le chemin de rendu sans embarquer un runtime web. Quiconque est à l'aise avec Java 8+ et préfère les garanties du compilateur au débogage de cascade de styles.
 
 ## Prochaines étapes
 

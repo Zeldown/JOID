@@ -36,11 +36,11 @@ The same node tree, the same effects, the same signals, and the same stores run 
 
 ## What JOID is not
 
-JOID is not a browser runtime: there is no DOM, no CSS, no HTML subset. It is not immediate-mode: nodes are retained, and you mutate the tree through signals and direct setters. It is not a replacement for every UI toolkit — for native OS menus or accessibility tree integration, pick Swing or JavaFX. JOID targets rendered, GPU-composed UIs that live inside an existing OpenGL or Vulkan application.
+JOID is not a browser runtime: there is no DOM, no CSS, no HTML subset. It is not immediate-mode: nodes are retained, and you mutate the tree through signals and direct setters. It is not a replacement for every UI toolkit — for native OS menus or accessibility tree integration, pick Swing or JavaFX. JOID targets rendered, GPU-composed UIs that live inside an existing application, whatever engine draws it.
 
 ## Who it's for
 
-Developers who embed UI into a Java application rendered with OpenGL or Vulkan — games, tools, editors, overlays — and want to own the rendering path without pulling in a web runtime. Anyone comfortable with Java 8+ who prefers compiler guarantees over stylesheet debugging.
+Developers who embed UI into a Java application, whatever engine draws it — games, tools, editors, overlays — and want to own the rendering path without pulling in a web runtime. Anyone comfortable with Java 8+ who prefers compiler guarantees over stylesheet debugging.
 
 ## Next steps
 
