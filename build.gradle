@@ -49,6 +49,16 @@ subprojects {
         testCompile "junit:junit:4.13.2"
     }
 
+    tasks.withType(Jar) {
+        from(rootProject.file('LICENSE')) {
+            into 'META-INF'
+        }
+
+        from(rootProject.file('NOTICE')) {
+            into 'META-INF'
+        }
+    }
+
     eclipse.project.name = "JOID-${name}"
 }
 
@@ -63,7 +73,7 @@ task backendTemplate(type: Zip) {
         rename 'gitignore', '.gitignore'
     }
     from(rootDir) {
-        include 'gradlew.bat', 'gradle/wrapper/**'
+        include 'gradlew.bat', 'gradle/wrapper/**', 'LICENSE', 'NOTICE'
     }
     from(rootDir) {
         include 'gradlew'

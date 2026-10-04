@@ -7,6 +7,7 @@
   <img align="center" src="https://img.shields.io/badge/version-7.0.1 (e3dd96b)-blue">
   <img align="center" src="https://img.shields.io/badge/maintainer-Zeldown-orange">
   <img align="center" src="https://img.shields.io/maintenance/yes/9999">
+  <img align="center" src="https://img.shields.io/badge/license-Apache--2.0-blue">
   <img align="center" src="https://github.com/Zeldown/JOID/actions/workflows/release.yml/badge.svg">
 </div>
 
@@ -106,32 +107,21 @@ Full reference · Searchable (`Ctrl+K`) · English & French · Per-page PDF expo
 
 ## License
 
-JOID is released under the **JOID Community Source License v1.0** — a source-available, copyleft, non-commercial-by-default license.
+JOID is released under the **Apache License 2.0** — see [LICENSE](LICENSE).
 
-Full text: [LICENSE.md](LICENSE.md) (English, authoritative) · [LICENSE.fr.md](LICENSE.fr.md) (French, informational).
+Use it in anything: commercial or not, open or closed, forked or embedded. Nothing to request, no revenue share, no non-commercial boundary.
 
-### What you get for free
+When you redistribute JOID, modified or not, the license asks you to:
 
-- Use JOID in **any non-commercial project** — general gameplay UIs (HUD, settings, scoreboard, inventory, chat, minimap, launcher, login screen), internal tools, open-source projects, and Minecraft servers that accept donations without building a shop on top of JOID.
-- Fork, modify and redistribute the source, as long as modifications stay under the same license.
+- ship a copy of the license and keep the copyright, patent, trademark and attribution notices;
+- state the files you changed;
+- pass the [NOTICE](NOTICE) content on with your distribution.
 
-### What you owe in return
-
-- **Attribution** — include a [NOTICE](NOTICE) entry in your project (repo root, about screen, partners page, Discord, or equivalent) that links back to the JOID repository.
-- **Share-alike** — if you distribute or publicly host a modified JOID, publish your modifications under the same license within 90 days.
-- **No sublicensing, no reselling JOID itself, no white-label consulting that is primarily JOID repackaging.**
-
-### Commercial use
-
-Any UI whose **primary purpose** generates direct revenue (in-game shops, paid cosmetic selectors, donations tied to rewards, paid launcher features…) requires a written commercial agreement.
-
-Request one via Discord DM to **`zeldown`** — see [COMMERCIAL.md](COMMERCIAL.md) for the procedure (typical response time: 24–48h). The public record of granted licenses is kept in [COMMERCIAL_GRANTS.md](COMMERCIAL_GRANTS.md).
-
-> This summary is informational. The license text in [LICENSE.md](LICENSE.md) prevails in case of conflict.
+It also grants you the patents of every contributor, and reserves the **JOID** name as a trademark: give your fork another name. Section 4 of the [LICENSE](LICENSE) has the exact wording.
 
 ## Credits
 
-- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine
-- [msdfgen](https://github.com/Chlumsky/msdfgen) by **Viktor Chlumský** — MSDF font atlases
-- [LWJGL](https://www.lwjgl.org/) — OpenGL / Vulkan / OpenAL Java bindings used by the backends
-- [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco** — Video decoding
+- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine (Apache-2.0, bundled in `lib/animation/tweenengine`)
+- [msdfgen](https://github.com/Chlumsky/msdfgen) and [msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen) by **Viktor Chlumský** — MSDF font atlases (MIT, generator bundled in `msdf/`)
+- [LWJGL](https://www.lwjgl.org/) — OpenGL / Vulkan / OpenAL Java bindings used by the backends (BSD-3-Clause)
+- [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco** — Video decoding (Apache-2.0; the FFmpeg builds carry their own terms)

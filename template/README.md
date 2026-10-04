@@ -44,3 +44,7 @@ The render bridge contract — vertex layout, projection conventions, textures, 
 | `./gradlew runDemo` | Launches `DemoWindow`. |
 
 Every run writes an interactive `report.html` next to the renders, and its link is printed at the end of the build when a test fails.
+
+## License
+
+JOID is licensed under the [Apache License 2.0](https://github.com/Zeldown/JOID/blob/main/LICENSE), and so is this template. Your backend stays yours: license it as you want, as long as you keep the JOID notices in what you redistribute.
