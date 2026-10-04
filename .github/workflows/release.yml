@@ -37,10 +37,12 @@ jobs:
           sed -i "s/joid-\([a-z0-9]*\)-[0-9]\+\.[0-9]\+\.[0-9]\+-prod\.jar/joid-\1-${TAG_NAME}-prod.jar/g" README.md
           sed -i "s|<version>[0-9]\+\.[0-9]\+\.[0-9]\+</version>|<version>${TAG_NAME}</version>|g" README.md
           sed -i "s/public static final String VERSION = \".*\";/public static final String VERSION = \"${TAG_NAME}\";/g" core/src/main/java/be/zeldown/joid/internal/JOID.java
+          sed -i "s/\"version\": \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\": \"${TAG_NAME}\"/g" documentation/nav.json
           git add README.md
           git add build.gradle
           git add core/src/main/java/be/zeldown/joid/internal/JOID.java
-          git commit -m "update: update version to ${TAG_NAME} (:bookmark:)"
+          git add documentation/nav.json
+          git commit -m "update: update version to ${TAG_NAME} (🔖)"
           git push origin HEAD:main
 
   build:
