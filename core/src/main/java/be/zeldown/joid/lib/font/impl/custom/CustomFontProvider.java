@@ -139,6 +139,7 @@ public class CustomFontProvider implements FontProvider {
 		boolean italic = info.isItalic();
 
 		double currentX = x;
+		int previousChar = -1;
 		Color lastColor = null;
 		for (int i = 0; i < text.length(); i++) {
 			final char c = text.charAt(i);
@@ -219,6 +220,10 @@ public class CustomFontProvider implements FontProvider {
 				}
 			}
 
+			if (previousChar != -1) {
+				currentX += activeFont.getFontInfo().getKerning(previousChar, (int) c) * fontSize;
+			}
+
 			final PlaneBounds planeBounds = glyph.getPlaneBounds();
 			if (planeBounds != null) {
 				final Metrics metrics =  activeFont.getFontInfo().getMetrics();
@@ -238,6 +243,7 @@ public class CustomFontProvider implements FontProvider {
 			}
 
 			currentX += glyph.getAdvance() * fontSize + letterSpacing;
+			previousChar = (int) c;
 		}
 
 		CustomFontProvider.SHADER.unbind();
@@ -340,6 +346,7 @@ public class CustomFontProvider implements FontProvider {
 
 		Font activeFont = font.getRegular();
 		double totalWidth = 0D;
+		int previousChar = -1;
 
 		for (int i = 0; i < text.length(); i++) {
 			final char c = text.charAt(i);
@@ -377,7 +384,11 @@ public class CustomFontProvider implements FontProvider {
 				continue;
 			}
 
+			if (previousChar != -1) {
+				totalWidth += activeFont.getFontInfo().getKerning(previousChar, (int) c) * fontSize;
+			}
 			totalWidth += glyph.getAdvance() * fontSize + letterSpacing;
+			previousChar = (int) c;
 		}
 
 		totalWidth -= letterSpacing;
