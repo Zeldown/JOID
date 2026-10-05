@@ -7,6 +7,5 @@ assets/dev/fonts/Montserrat-SemiBold|Montserrat-SemiBold.ttf
 assets/dev/fonts/Montserrat-Bold|Montserrat-Bold.ttf
 assets/dev/fonts/Montserrat-ExtraBold|Montserrat-ExtraBold.ttf
 assets/dev/fonts/Montserrat-Black|Montserrat-Black.ttf
-assets/demo/fonts/Montserrat-Regular|Montserrat-Regular.ttf
 assets/demo/fonts/Batuphat-Script|Batuphat Script.otf
 assets/demo/fonts/Space-Grotesk|SpaceGrotesk-Regular.ttf

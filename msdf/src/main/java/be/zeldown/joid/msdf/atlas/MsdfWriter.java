@@ -17,17 +17,19 @@ import be.zeldown.joid.msdf.font.Kerning;
 public final class MsdfWriter {
 
 	private static final int BYTES   = 3;
-	private static final int VERSION = 2;
+	private static final int VERSION = 3;
 
 	private static final byte[] MAGIC = {'J', 'O', 'I', 'D', 'M', 'S', 'D', 'F'};
 
-	public static void write(final File file, final List<GlyphEntry> glyphs, final Kerning kerning, final double[] metrics, final double size, final double range, final int[] pixels, final int width, final int height) throws IOException {
+	public static void write(final File file, final List<GlyphEntry> glyphs, final Kerning kerning, final double[] metrics, final int weight, final boolean italic, final double size, final double range, final int[] pixels, final int width, final int height) throws IOException {
 		try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file))) {
 			output.write(MsdfWriter.MAGIC);
 
 			final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
 			try (DataOutputStream data = new DataOutputStream(new DeflaterOutputStream(output, deflater, 1 << 16))) {
 				data.writeByte(MsdfWriter.VERSION);
+				data.writeShort(weight);
+				data.writeBoolean(italic);
 				data.writeInt(width);
 				data.writeInt(height);
 				data.writeFloat((float) range);
@@ -46,10 +48,10 @@ public final class MsdfWriter {
 						data.writeFloat((float) glyph.getBottom());
 						data.writeFloat((float) glyph.getRight());
 						data.writeFloat((float) glyph.getTop());
-						data.writeFloat(glyph.getX() - 0.5F);
-						data.writeFloat(height - glyph.getY() - glyph.getHeight() - 0.5F);
-						data.writeFloat(glyph.getX() + glyph.getWidth() - 0.5F);
-						data.writeFloat(height - glyph.getY() - 0.5F);
+						data.writeShort(glyph.getX());
+						data.writeShort(height - glyph.getY() - glyph.getHeight());
+						data.writeShort(glyph.getX() + glyph.getWidth());
+						data.writeShort(height - glyph.getY());
 					}
 				}
 

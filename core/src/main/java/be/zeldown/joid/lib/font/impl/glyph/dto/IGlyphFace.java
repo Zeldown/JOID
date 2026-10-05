@@ -1,0 +1,28 @@
+package be.zeldown.joid.lib.font.impl.glyph.dto;
+
+import be.zeldown.joid.lib.font.FontWeight;
+import lombok.NonNull;
+
+public interface IGlyphFace {
+
+	public @NonNull FontWeight getWeight();
+
+	public boolean isItalic();
+
+	public float getAscender();
+
+	public float getDescender();
+
+	public float getLineHeight();
+
+	public float getUnderlineY();
+
+	public float getUnderlineThickness();
+
+	public boolean hasGlyph(final int codepoint);
+
+	public float getAdvance(final int codepoint);
+
+	public float getKerning(final int previous, final int current);
+
+}

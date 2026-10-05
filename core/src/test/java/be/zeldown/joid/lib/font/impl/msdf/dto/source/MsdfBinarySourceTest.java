@@ -9,6 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfBounds;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
 
@@ -28,6 +29,21 @@ public class MsdfBinarySourceTest {
 		Assert.assertTrue(MsdfBinarySourceTest.face.getAtlas().getWidth() > 0);
 		Assert.assertTrue(MsdfBinarySourceTest.face.getMetrics().getAscender() > 0F);
 		Assert.assertTrue(MsdfBinarySourceTest.face.getMetrics().getDescender() < 0F);
+	}
+
+	@Test
+	public void readsTheStyle() throws IOException {
+		Assert.assertSame(FontWeight.REGULAR, MsdfBinarySourceTest.face.getWeight());
+		Assert.assertFalse(MsdfBinarySourceTest.face.isItalic());
+		Assert.assertSame(FontWeight.BLACK, MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Black/font.msdf")).read().getWeight());
+	}
+
+	@Test
+	public void overridesTheStyle() throws IOException {
+		final MsdfFace face = MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf")).weight(FontWeight.LIGHT).italic(true).read();
+		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
+		Assert.assertTrue(face.isItalic());
+		Assert.assertEquals(MsdfBinarySourceTest.face.getGlyphs().size(), face.getGlyphs().size());
 	}
 
 	@Test

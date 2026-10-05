@@ -16,6 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import be.zeldown.joid.lib.asset.Asset;
+import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfAtlas;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfBounds;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
@@ -28,9 +29,7 @@ import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MsdfJsonSource implements IMsdfSource {
-
-	private static final float ATLAS_OFFSET = 0.5F;
+public final class MsdfJsonSource extends MsdfSource {
 
 	private static final Gson GSON = new GsonBuilder().create();
 
@@ -42,7 +41,7 @@ public final class MsdfJsonSource implements IMsdfSource {
 	}
 
 	@Override
-	public @NonNull MsdfFace read() throws IOException {
+	protected @NonNull MsdfFace parse() throws IOException {
 		final JsonObject root;
 		try (InputStream stream = this.json.open()) {
 			root = MsdfJsonSource.GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
@@ -57,7 +56,7 @@ public final class MsdfJsonSource implements IMsdfSource {
 			throw new IOException("Unable to decode the atlas texture " + this.texture.getUniqueId());
 		}
 
-		return new MsdfFace(MsdfJsonSource.atlas(root.getAsJsonObject("atlas")), MsdfJsonSource.metrics(root.getAsJsonObject("metrics")), MsdfJsonSource.glyphs(root), MsdfJsonSource.kerningPairs(root), image);
+		return MsdfFace.create(MsdfJsonSource.atlas(root.getAsJsonObject("atlas")), MsdfJsonSource.metrics(root.getAsJsonObject("metrics")), MsdfJsonSource.glyphs(root), MsdfJsonSource.kerningPairs(root), image, FontWeight.REGULAR, false);
 	}
 
 	private static @NonNull MsdfAtlas atlas(final @NonNull JsonObject json) {
@@ -86,7 +85,7 @@ public final class MsdfJsonSource implements IMsdfSource {
 		for (final JsonElement element : root.getAsJsonArray("glyphs")) {
 			final JsonObject glyph = element.getAsJsonObject();
 			final int codepoint = glyph.get("unicode").getAsInt();
-			glyphs.put(codepoint, new MsdfGlyph(codepoint, MsdfJsonSource.number(glyph, "advance"), MsdfJsonSource.bounds(glyph, "planeBounds", 0F), MsdfJsonSource.bounds(glyph, "atlasBounds", MsdfJsonSource.ATLAS_OFFSET)));
+			glyphs.put(codepoint, new MsdfGlyph(codepoint, MsdfJsonSource.number(glyph, "advance"), MsdfJsonSource.bounds(glyph, "planeBounds"), MsdfJsonSource.bounds(glyph, "atlasBounds")));
 		}
 		return glyphs;
 	}
@@ -96,12 +95,12 @@ public final class MsdfJsonSource implements IMsdfSource {
 		return element == null ? 0F : element.getAsFloat();
 	}
 
-	private static MsdfBounds bounds(final @NonNull JsonObject glyph, final @NonNull String name, final float offset) {
+	private static MsdfBounds bounds(final @NonNull JsonObject glyph, final @NonNull String name) {
 		final JsonObject bounds = glyph.getAsJsonObject(name);
 		if (bounds == null) {
 			return null;
 		}
-		return new MsdfBounds(MsdfJsonSource.number(bounds, "left") + offset, MsdfJsonSource.number(bounds, "bottom") + offset, MsdfJsonSource.number(bounds, "right") + offset, MsdfJsonSource.number(bounds, "top") + offset);
+		return new MsdfBounds(MsdfJsonSource.number(bounds, "left"), MsdfJsonSource.number(bounds, "bottom"), MsdfJsonSource.number(bounds, "right"), MsdfJsonSource.number(bounds, "top"));
 	}
 
 }

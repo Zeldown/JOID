@@ -1,6 +1,10 @@
 package be.zeldown.joid.lib.font.impl.msdf;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,24 +18,35 @@ public final class MsdfFontLoader {
 
 	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5, ThreadUtils.daemonFactory("MsdfFontLoader"));
 
-	public static @NonNull CompletableFuture<MsdfFont> load(final @NonNull Object regular) {
-		return MsdfFontLoader.load(regular, null);
+	public static @NonNull CompletableFuture<MsdfFont> load(final @NonNull Object @NonNull... faces) {
+		if (faces.length == 0) {
+			final CompletableFuture<MsdfFont> future = new CompletableFuture<>();
+			future.completeExceptionally(new IllegalArgumentException("A msdf font needs at least one face"));
+			return future;
+		}
+
+		final List<CompletableFuture<MsdfFace>> futures = new ArrayList<>(faces.length);
+		for (final Object handle : faces) {
+			futures.add(MsdfFontLoader.read(handle));
+		}
+
+		return CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).thenApply(done -> {
+			final MsdfFace[] loaded = new MsdfFace[futures.size()];
+			for (int i = 0; i < loaded.length; i++) {
+				loaded[i] = futures.get(i).join();
+			}
+			return MsdfFont.create(loaded);
+		});
 	}
 
-	public static @NonNull CompletableFuture<MsdfFont> load(final @NonNull Object regular, final Object bold) {
-		final IMsdfSource regularSource = MsdfFontLoader.source(regular);
-		final IMsdfSource boldSource = bold == null || bold == regular ? null : MsdfFontLoader.source(bold);
-
-		final CompletableFuture<MsdfFont> future = new CompletableFuture<>();
-		MsdfFontLoader.EXECUTOR.submit(() -> {
+	private static @NonNull CompletableFuture<MsdfFace> read(final @NonNull Object handle) {
+		return CompletableFuture.supplyAsync(() -> {
 			try {
-				final MsdfFace regularFace = regularSource.read();
-				future.complete(new MsdfFont(regularFace, boldSource == null ? regularFace : boldSource.read()));
-			} catch (final Throwable throwable) {
-				future.completeExceptionally(throwable);
+				return MsdfFontLoader.source(handle).read();
+			} catch (final IOException exception) {
+				throw new CompletionException(exception);
 			}
-		});
-		return future;
+		}, MsdfFontLoader.EXECUTOR);
 	}
 
 	private static @NonNull IMsdfSource source(final @NonNull Object handle) {

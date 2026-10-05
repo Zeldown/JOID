@@ -3,6 +3,7 @@ package be.zeldown.joid.demo;
 import java.io.InputStream;
 
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.internal.font.InternalFont;
 import be.zeldown.joid.lib.font.impl.msdf.MsdfFont;
 import be.zeldown.joid.lib.font.impl.msdf.MsdfFontLoader;
 
@@ -13,14 +14,13 @@ public class DemoFont {
 	public static MsdfFont SPACE_GROTESK;
 
 	public static void load() {
-		DemoFont.MONTSERRAT = MsdfFontLoader.load(DemoFont.get("/assets/demo/fonts/Montserrat-Regular/")).join();
-		DemoFont.BATUPHAT = MsdfFontLoader.load(DemoFont.get("/assets/demo/fonts/Batuphat-Script/")).join();
-		DemoFont.SPACE_GROTESK = MsdfFontLoader.load(DemoFont.get("/assets/demo/fonts/Space-Grotesk/")).join();
+		DemoFont.MONTSERRAT = InternalFont.MONTSERRAT;
+		DemoFont.BATUPHAT = MsdfFontLoader.load(DemoFont.get("Batuphat-Script")).join();
+		DemoFont.SPACE_GROTESK = MsdfFontLoader.load(DemoFont.get("Space-Grotesk")).join();
 	}
 
-	private static InputStream get(final String path) {
-		final String folder = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
-		return JOID.class.getResourceAsStream(folder + "/font.msdf");
+	private static InputStream get(final String name) {
+		return JOID.class.getResourceAsStream("/assets/demo/fonts/" + name + "/font.msdf");
 	}
 
 	public static boolean isLoaded() {

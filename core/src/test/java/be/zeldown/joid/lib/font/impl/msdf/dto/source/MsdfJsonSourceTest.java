@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfBounds;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
 
@@ -62,12 +63,25 @@ public class MsdfJsonSourceTest {
 	}
 
 	@Test
-	public void shiftsTheAtlasBoundsOntoTexelEdges() {
+	public void keepsTheAtlasBoundsAsWritten() {
 		final MsdfBounds bounds = MsdfJsonSourceTest.face.getGlyph('A').getAtlasBounds();
-		Assert.assertEquals(1F, bounds.getLeft(), 0F);
-		Assert.assertEquals(1F, bounds.getBottom(), 0F);
-		Assert.assertEquals(2F, bounds.getRight(), 0F);
-		Assert.assertEquals(2F, bounds.getTop(), 0F);
+		Assert.assertEquals(0.5F, bounds.getLeft(), 0F);
+		Assert.assertEquals(0.5F, bounds.getBottom(), 0F);
+		Assert.assertEquals(1.5F, bounds.getRight(), 0F);
+		Assert.assertEquals(1.5F, bounds.getTop(), 0F);
+	}
+
+	@Test
+	public void startsRegularAndUpright() {
+		Assert.assertSame(FontWeight.REGULAR, MsdfJsonSourceTest.face.getWeight());
+		Assert.assertFalse(MsdfJsonSourceTest.face.isItalic());
+	}
+
+	@Test
+	public void takesTheStyleOfTheSource() throws IOException {
+		final MsdfFace face = MsdfJsonSource.of(MsdfJsonSourceTest.stream(MsdfJsonSourceTest.JSON), new ByteArrayInputStream(MsdfJsonSourceTest.png())).weight(FontWeight.BOLD).italic(true).read();
+		Assert.assertSame(FontWeight.BOLD, face.getWeight());
+		Assert.assertTrue(face.isItalic());
 	}
 
 	@Test

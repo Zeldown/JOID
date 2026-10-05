@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.zip.InflaterInputStream;
 
 import be.zeldown.joid.lib.asset.Asset;
+import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfAtlas;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfBounds;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
@@ -22,11 +23,10 @@ import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MsdfBinarySource implements IMsdfSource {
+public final class MsdfBinarySource extends MsdfSource {
 
-	private static final int   BYTES        = 3;
-	private static final int   VERSION      = 2;
-	private static final float ATLAS_OFFSET = 0.5F;
+	private static final int BYTES   = 3;
+	private static final int VERSION = 3;
 
 	private static final byte[] MAGIC = {'J', 'O', 'I', 'D', 'M', 'S', 'D', 'F'};
 
@@ -37,7 +37,7 @@ public final class MsdfBinarySource implements IMsdfSource {
 	}
 
 	@Override
-	public @NonNull MsdfFace read() throws IOException {
+	protected @NonNull MsdfFace parse() throws IOException {
 		try (InputStream stream = this.asset.open()) {
 			return MsdfBinarySource.parse(stream);
 		}
@@ -56,6 +56,8 @@ public final class MsdfBinarySource implements IMsdfSource {
 			throw new IOException("Unsupported msdf font version " + version);
 		}
 
+		final FontWeight weight = FontWeight.of(input.readUnsignedShort());
+		final boolean italic = input.readBoolean();
 		final int width = input.readInt();
 		final int height = input.readInt();
 		final MsdfAtlas atlas = new MsdfAtlas(input.readFloat(), input.readFloat(), width, height);
@@ -71,8 +73,8 @@ public final class MsdfBinarySource implements IMsdfSource {
 				continue;
 			}
 
-			final MsdfBounds planeBounds = MsdfBinarySource.bounds(input, 0F);
-			glyphs.put(codepoint, new MsdfGlyph(codepoint, advance, planeBounds, MsdfBinarySource.bounds(input, MsdfBinarySource.ATLAS_OFFSET)));
+			final MsdfBounds planeBounds = new MsdfBounds(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
+			glyphs.put(codepoint, new MsdfGlyph(codepoint, advance, planeBounds, new MsdfBounds(input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort())));
 		}
 
 		final int unitsPerEm = input.readUnsignedShort();
@@ -91,7 +93,7 @@ public final class MsdfBinarySource implements IMsdfSource {
 			}
 		}
 
-		return new MsdfFace(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height));
+		return MsdfFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), weight, italic);
 	}
 
 	private static int paeth(final int left, final int up, final int corner) {
@@ -113,10 +115,6 @@ public final class MsdfBinarySource implements IMsdfSource {
 		} while ((part & 0x80) != 0);
 
 		return value;
-	}
-
-	private static @NonNull MsdfBounds bounds(final @NonNull DataInputStream input, final float offset) throws IOException {
-		return new MsdfBounds(input.readFloat() + offset, input.readFloat() + offset, input.readFloat() + offset, input.readFloat() + offset);
 	}
 
 	private static @NonNull BufferedImage image(final @NonNull DataInputStream input, final int width, final int height) throws IOException {

@@ -2,6 +2,7 @@ package be.zeldown.joid.demo.ui.font;
 
 import be.zeldown.joid.demo.DemoFont;
 import be.zeldown.joid.demo.ui.UIDemo;
+import be.zeldown.joid.demo.ui.font.markup.DemoMarkup;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.draw.text.builder.utils.TextOverflow;
@@ -14,22 +15,23 @@ import be.zeldown.joid.lib.utils.align.Align;
 public class UIDemoFont extends UIDemo {
 
 	private static final TextInfo[] FONTS = {
-			TextInfo.create(DemoFont.MONTSERRAT, 25, Color.WHITE).lineHeight(-5.5F),
-			TextInfo.create(DemoFont.BATUPHAT, 25, Color.WHITE).lineHeight(-5.5F),
-			TextInfo.create(DemoFont.SPACE_GROTESK, 25, Color.WHITE)
+			TextInfo.create(DemoFont.MONTSERRAT, 25, Color.WHITE).lineHeight(-5.5F).markups(DemoMarkup.inst()),
+			TextInfo.create(DemoFont.BATUPHAT, 25, Color.WHITE).lineHeight(-5.5F).markups(DemoMarkup.inst()),
+			TextInfo.create(DemoFont.SPACE_GROTESK, 25, Color.WHITE).markups(DemoMarkup.inst())
 	};
 
 	private static final String[] TEXTS = {
 			"lorem impsum",
-			"§oitalic",
+			"<i>italic</i>",
 			"spacing",
 			"n-spacing",
-			"§00 §11 §22 §33 §44 §55 §66 §77 §88 §99 §aa §bb §cc §dd §ee §ff §pp",
+			"<w=100>100 <w=200>200 <w=300>300 <w=400>400 <w=500>500 <w=600>600 <w=700>700 <w=800>800 <w=900>900",
+			"<c=ff5555>red</c> <c=55ff55>green</c> <c=5555ff>blue</c> <b>bold</b> <u>underline</u>",
 			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
 			"splitted text splitted text splitted text splitted text splitted splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text splitted text",
 			"overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow",
 			"colored shadow text",
-			"§cshadow §ltext"
+			"<c=ff5555>shadow <b>text</b> <u>underline</u>"
 	};
 
 	@Override

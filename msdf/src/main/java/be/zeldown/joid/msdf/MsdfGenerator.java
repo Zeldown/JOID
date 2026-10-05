@@ -13,6 +13,7 @@ import java.util.Map;
 import be.zeldown.joid.msdf.atlas.GlyphEntry;
 import be.zeldown.joid.msdf.atlas.MsdfWriter;
 import be.zeldown.joid.msdf.atlas.Packer;
+import be.zeldown.joid.msdf.font.FontFile;
 import be.zeldown.joid.msdf.font.Glyphs;
 import be.zeldown.joid.msdf.font.Kerning;
 import be.zeldown.joid.msdf.geometry.Coloring;
@@ -65,12 +66,13 @@ public final class MsdfGenerator {
 			}
 		});
 
-		final Kerning kerning = Kerning.read(file, font, codepoints);
+		final FontFile source = FontFile.read(file);
+		final Kerning kerning = Kerning.read(source, font, codepoints);
 		output.mkdirs();
 
 		final File target = new File(output, "font.msdf");
-		MsdfWriter.write(target, glyphs, kerning, metrics, size, range, pixels, width, height);
-		System.out.println(file.getName() + " -> " + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px, " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
+		MsdfWriter.write(target, glyphs, kerning, metrics, source.getWeight(), source.isItalic(), size, range, pixels, width, height);
+		System.out.println(file.getName() + " -> weight " + source.getWeight() + (source.isItalic() ? " italic, " : ", ") + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px, " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	private static double measure(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {
