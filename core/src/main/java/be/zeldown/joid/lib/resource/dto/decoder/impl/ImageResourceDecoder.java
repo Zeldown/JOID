@@ -10,6 +10,7 @@ import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
+import be.zeldown.joid.lib.utils.image.ImageUtils;
 import lombok.NonNull;
 
 public class ImageResourceDecoder implements IResourceDecoder {
@@ -46,6 +47,7 @@ public class ImageResourceDecoder implements IResourceDecoder {
 
 		resource.data(new int[1][resource.getWidth() * resource.getHeight()]);
 		this.image.getRGB(0, 0, resource.getWidth(), resource.getHeight(), resource.getData()[0], 0, resource.getWidth());
+		ImageUtils.bleedAlpha(resource.getData()[0], resource.getWidth(), resource.getHeight());
 	}
 
 	@Override

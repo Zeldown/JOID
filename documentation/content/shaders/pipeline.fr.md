@@ -68,7 +68,9 @@ public class MyShaderPass implements ShaderPass {
 }
 ```
 
-Le pipeline transmet à chaque passe un `ShaderPassContext`, calculé une fois par dessin : la zone dessinée (`getX`, `getY`, `getWidth`, `getHeight`), la marge `getExpansion()` autour, le pixel scale `getScale()` de la transformation courante, et la taille de la texture d'entrée en pixels avec son texel (`getTexelWidth`, `getTexelHeight`). Convertissez les tailles logiques en pixels avec l'échelle — un rayon de `r` unités fait `r * context.getScale().getX()` pixels — sans jamais mesurer vous-même la fenêtre ou le nœud.
+Le pipeline transmet à chaque passe un `ShaderPassContext`, calculé une fois par dessin : la zone dessinée (`getX`, `getY`, `getWidth`, `getHeight`), la marge `getExpansion()` autour, la grille de pixels `getGrid()` de la transformation courante, la région couverte par la texture (`getRegionX`, `getRegionY`, `getRegionWidth`, `getRegionHeight`) — la zone étendue agrandie jusqu'aux pixels entiers de la fenêtre, pour que le résultat soit recopié pixel pour pixel — et la taille de la texture en pixels avec son texel (`getTexelWidth`, `getTexelHeight`). Convertissez les tailles logiques en pixels avec la grille — un rayon de `r` unités fait `r * context.getGrid().getScaleX()` pixels — sans jamais mesurer vous-même la fenêtre ou le nœud.
+
+Les textures du pipeline contiennent des couleurs prémultipliées : `bindForTexture` lit une texture prémultipliée et son shader doit écrire une couleur prémultipliée (`vec4(rgb * a, a)`). Le pipeline compose chaque résultat avec `BlendState.PREMULTIPLIED`, pour que les bords semi-transparents gardent leur couleur au lieu de s'assombrir.
 
 ## Cheat-sheet de priorités
 

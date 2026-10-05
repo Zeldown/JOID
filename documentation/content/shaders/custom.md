@@ -61,7 +61,8 @@ void main() {
             alpha = max(alpha, texture(tex, vTexCoord + offset).a);
         }
     }
-    fragColor = color.a > 0.5 ? color : vec4(u_OutlineColor.rgb, alpha * u_OutlineColor.a);
+    float outline = alpha * u_OutlineColor.a;
+    fragColor = color.a > 0.5 ? color : vec4(u_OutlineColor.rgb * outline, outline);
 }
 ```
 
@@ -156,7 +157,7 @@ public class OutlineShaderPass implements ShaderPass {
         if (!OutlineShader.inst().isAvailable()) return;
 
         // the pipeline sized the texture at the pixel scale of the current transform
-        OutlineShader.inst().bind((float) (this.thickness * context.getScale().getX()), this.color, context.getTexelWidth(), context.getTexelHeight());
+        OutlineShader.inst().bind((float) (this.thickness * context.getGrid().getScaleX()), this.color, context.getTexelWidth(), context.getTexelHeight());
     }
 }
 ```

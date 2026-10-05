@@ -9,7 +9,7 @@ import java.util.Map;
 
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
-import be.zeldown.joid.lib.bridge.render.matrix.PixelScale;
+import be.zeldown.joid.lib.bridge.render.matrix.PixelGrid;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
@@ -60,10 +60,10 @@ public final class ShaderPipeline {
 			passes.sort(Comparator.comparingInt(ShaderPass::priority));
 
 			final IRenderBridge render = BridgeHandler.RENDER.get();
-			final PixelScale scale = render.getPixelScale();
+			final PixelGrid grid = render.getPixelGrid();
 			if (passes.size() == 1 && ShaderPipeline.pipelineDepth == 1 && passes.get(0).expansion() == 0F && passes.get(0).supportsDirectBind()) {
 				final IShader previousShader = render.getShader();
-				passes.get(0).bindDirect(ShaderPassContext.create(x, y, width, height, 0D, scale));
+				passes.get(0).bindDirect(ShaderPassContext.create(x, y, width, height, 0D, grid));
 				baseDraw.run();
 				passes.get(0).unbind();
 				render.shader(previousShader);
@@ -74,7 +74,7 @@ public final class ShaderPipeline {
 			for (final ShaderPass pass : passes) {
 				expansion = Math.max(expansion, pass.expansion());
 			}
-			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, scale), passes, baseDraw);
+			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, grid), passes, baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}
@@ -94,7 +94,7 @@ public final class ShaderPipeline {
 
 	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final double x, final double y, final double w, final double h) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.blend(BlendState.NORMAL);
+		render.blend(BlendState.PREMULTIPLIED);
 		render.texture(frameBuffer.getHandle().getTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
 		render.color(1F, 1F, 1F, 1F);
 
@@ -116,10 +116,10 @@ public final class ShaderPipeline {
 			return;
 		}
 
-		final double expX = context.getX() - context.getExpansion();
-		final double expY = context.getY() - context.getExpansion();
-		final double expW = context.getWidth() + context.getExpansion() * 2D;
-		final double expH = context.getHeight() + context.getExpansion() * 2D;
+		final double expX = context.getRegionX();
+		final double expY = context.getRegionY();
+		final double expW = context.getRegionWidth();
+		final double expH = context.getRegionHeight();
 		final int pixelW = context.getTextureWidth();
 		final int pixelH = context.getTextureHeight();
 
@@ -134,7 +134,7 @@ public final class ShaderPipeline {
 		fboA.bind();
 		render.viewport(0, 0, pixelW, pixelH);
 		render.clear(0F, 0F, 0F, 0F);
-		render.blend(BlendState.COMPOSITE);
+		render.blend(BlendState.NORMAL);
 
 		render.pushProjection();
 		render.ortho(expX, expX + expW, expY + expH, expY, -1000D, 1000D);

@@ -20,7 +20,7 @@ import be.zeldown.joid.impl.lwjgl2.render.state.StateSnapshot;
 import be.zeldown.joid.impl.lwjgl2.render.texture.Texture;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
-import be.zeldown.joid.lib.bridge.render.matrix.PixelScale;
+import be.zeldown.joid.lib.bridge.render.matrix.PixelGrid;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
@@ -149,8 +149,8 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public @NonNull PixelScale getPixelScale() {
-		return PixelScale.of(RenderBridge.matrix(GL11.GL_PROJECTION_MATRIX), RenderBridge.matrix(GL11.GL_MODELVIEW_MATRIX), this.getViewportWidth(), this.getViewportHeight());
+	public @NonNull PixelGrid getPixelGrid() {
+		return PixelGrid.of(RenderBridge.matrix(GL11.GL_PROJECTION_MATRIX), RenderBridge.matrix(GL11.GL_MODELVIEW_MATRIX), this.getViewportWidth(), this.getViewportHeight());
 	}
 
 	@Override

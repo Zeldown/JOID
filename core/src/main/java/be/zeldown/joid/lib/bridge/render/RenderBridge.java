@@ -5,7 +5,7 @@ import java.util.Deque;
 
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import be.zeldown.joid.lib.bridge.render.matrix.MatrixStack;
-import be.zeldown.joid.lib.bridge.render.matrix.PixelScale;
+import be.zeldown.joid.lib.bridge.render.matrix.PixelGrid;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.state.RenderState;
@@ -116,8 +116,8 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public final @NonNull PixelScale getPixelScale() {
-		return PixelScale.of(this.projection.getMatrix(), this.modelView.getMatrix(), this.getViewportWidth(), this.getViewportHeight());
+	public final @NonNull PixelGrid getPixelGrid() {
+		return PixelGrid.of(this.projection.getMatrix(), this.modelView.getMatrix(), this.getViewportWidth(), this.getViewportHeight());
 	}
 
 	@Override

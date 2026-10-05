@@ -47,7 +47,7 @@ public class BlurShaderPass implements ShaderPass {
 			return;
 		}
 
-		final double scale = this.horizontal ? context.getScale().getX() : context.getScale().getY();
+		final double scale = this.horizontal ? context.getGrid().getScaleX() : context.getGrid().getScaleY();
 		BlurShader.inst().bind((float) (this.radius * scale), this.horizontal ? 1F : 0F, this.horizontal ? 0F : 1F, context.getTexelWidth(), context.getTexelHeight());
 	}
 

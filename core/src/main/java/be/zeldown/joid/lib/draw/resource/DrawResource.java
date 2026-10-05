@@ -2,6 +2,7 @@ package be.zeldown.joid.lib.draw.resource;
 
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.matrix.PixelGrid;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
 import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
@@ -37,18 +38,23 @@ public final class DrawResource {
 
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final PixelGrid grid = render.getPixelGrid();
+		final double left = grid.snapX(x);
+		final double top = grid.snapY(y);
+		final double right = grid.snapX(x + width);
+		final double bottom = grid.snapY(y + height);
 		render.pushMatrix();
 		render.blend(BlendState.NORMAL);
-		resource.bind(TextureWrap.CLAMP_TO_BORDER, () -> {
+		resource.bind(grid.isAligned() ? TextureWrap.CLAMP_TO_EDGE : TextureWrap.CLAMP_TO_BORDER, () -> {
 			final double[] textureCoords = resource.getProperties().getTextureCoords();
 
 			final Tessellator tess = Tessellator.inst();
 			tess.start(DrawMode.QUADS);
 			if (textureCoords == null || textureCoords.length != 4) {
-				tess.addVertexWithUV(x, y + height, 0D, 0D, 1D);
-				tess.addVertexWithUV(x + width, y + height, 0D, 1D, 1D);
-				tess.addVertexWithUV(x + width, y, 0D, 1D, 0D);
-				tess.addVertexWithUV(x, y, 0D, 0D, 0D);
+				tess.addVertexWithUV(left, bottom, 0D, 0D, 1D);
+				tess.addVertexWithUV(right, bottom, 0D, 1D, 1D);
+				tess.addVertexWithUV(right, top, 0D, 1D, 0D);
+				tess.addVertexWithUV(left, top, 0D, 0D, 0D);
 			} else {
 				final double u = textureCoords[0];
 				final double v = textureCoords[1];
@@ -58,10 +64,10 @@ public final class DrawResource {
 				final double widthFactor = 1F / width;
 				final double heightFactor = 1F / height;
 
-				tess.addVertexWithUV(x, y + drawHeight, 0D, u * widthFactor, (v + drawHeight) * heightFactor);
-				tess.addVertexWithUV(x + drawWidth, y + drawHeight, 0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
-				tess.addVertexWithUV(x + drawWidth, y, 0D, (u + drawWidth) * widthFactor, v * heightFactor);
-				tess.addVertexWithUV(x, y, 0D, u * widthFactor, v * heightFactor);
+				tess.addVertexWithUV(left, top + drawHeight, 0D, u * widthFactor, (v + drawHeight) * heightFactor);
+				tess.addVertexWithUV(left + drawWidth, top + drawHeight, 0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
+				tess.addVertexWithUV(left + drawWidth, top, 0D, (u + drawWidth) * widthFactor, v * heightFactor);
+				tess.addVertexWithUV(left, top, 0D, u * widthFactor, v * heightFactor);
 			}
 			tess.draw();
 

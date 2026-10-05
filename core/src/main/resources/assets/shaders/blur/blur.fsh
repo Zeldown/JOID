@@ -22,15 +22,9 @@ void main() {
         float offset = float(i) * stepSize;
         float weight = exp(-(offset * offset) * invSigma2);
         vec4 s = texture(tex, vTexCoord + u_Direction * offset * u_TexelSize);
-        color += vec4(s.rgb * s.a, s.a) * weight;
+        color += s * weight;
         totalWeight += weight;
     }
 
-    color /= totalWeight;
-
-    if (color.a > 0.001) {
-        color.rgb /= color.a;
-    }
-
-    fragColor = color;
+    fragColor = color / totalWeight;
 }

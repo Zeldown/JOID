@@ -9,9 +9,9 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BlendState {
 
-	public static final BlendState NORMAL    = BlendState.create(Equation.ADD, Factor.SRC_ALPHA, Factor.ONE_MINUS_SRC_ALPHA);
-	public static final BlendState COMPOSITE = BlendState.create(Equation.ADD, Factor.SRC_ALPHA, Factor.ONE_MINUS_SRC_ALPHA, Factor.ONE, Factor.ONE_MINUS_SRC_ALPHA);
-	public static final BlendState DISABLED  = new BlendState(false, Equation.ADD, Factor.ONE, Factor.ZERO, Factor.ONE, Factor.ZERO);
+	public static final BlendState NORMAL        = BlendState.create(Equation.ADD, Factor.SRC_ALPHA, Factor.ONE_MINUS_SRC_ALPHA, Factor.ONE, Factor.ONE_MINUS_SRC_ALPHA);
+	public static final BlendState DISABLED      = new BlendState(false, Equation.ADD, Factor.ONE, Factor.ZERO, Factor.ONE, Factor.ZERO);
+	public static final BlendState PREMULTIPLIED = BlendState.create(Equation.ADD, Factor.ONE, Factor.ONE_MINUS_SRC_ALPHA);
 
 	private final boolean  enabled;
 	private final Equation equation;

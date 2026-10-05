@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.render.matrix.MatrixStack;
-import be.zeldown.joid.lib.bridge.render.matrix.PixelScale;
+import be.zeldown.joid.lib.bridge.render.matrix.PixelGrid;
 
 public class UIViewTest {
 
@@ -61,15 +61,26 @@ public class UIViewTest {
 	}
 
 	@Test
+	public void neverStretchesTheCanvas() {
+		final double[][] windows = {{1920D, 1200D}, {1920D, 1017D}, {1440D, 900D}, {1904D, 1001D}, {2560D, 1600D}, {1366D, 768D}};
+		for (final double[] window : windows) {
+			final UIView view = UIView.create(960D, 540D).resize(window[0], window[1]);
+			Assert.assertEquals(view.toScreenWidth(1D), view.toScreenHeight(1D), UIViewTest.EPSILON);
+			Assert.assertTrue(view.getViewportWidth() >= 1920D - UIViewTest.EPSILON);
+			Assert.assertTrue(view.getViewportHeight() >= 1080D - UIViewTest.EPSILON);
+		}
+	}
+
+	@Test
 	public void rendersExactlyWhatItMaps() {
 		final UIView view = UIView.create(960D, 540D).resize(2560D, 1440D).interfaceScale(0.5D).zoom(1.2D);
 		final MatrixStack projection = new MatrixStack();
 		final MatrixStack modelView = new MatrixStack();
 		final double[] measured = new double[4];
 		view.render(UIViewTest.bridge(projection, modelView), true, () -> {
-			final PixelScale scale = PixelScale.of(projection.getMatrix(), modelView.getMatrix(), 2560, 1440);
-			measured[0] = scale.getX();
-			measured[1] = scale.getY();
+			final PixelGrid grid = PixelGrid.of(projection.getMatrix(), modelView.getMatrix(), 2560, 1440);
+			measured[0] = grid.getScaleX();
+			measured[1] = grid.getScaleY();
 			measured[2] = UIViewTest.project(projection, modelView, 123D, 456D, 0) * 2560D;
 			measured[3] = UIViewTest.project(projection, modelView, 123D, 456D, 1) * 1440D;
 		});
@@ -97,6 +108,15 @@ public class UIViewTest {
 		Assert.assertEquals(320D, view.getOffsetX(), UIViewTest.EPSILON);
 		Assert.assertEquals(0D, view.toUiX(320D), UIViewTest.EPSILON);
 		Assert.assertEquals(1920D, view.toUiX(2240D), UIViewTest.EPSILON);
+	}
+
+	@Test
+	public void extendsTheCanvasOfA16By10Window() {
+		final UIView view = UIView.create(960D, 540D).resize(1920D, 1200D);
+		Assert.assertEquals(1920D, view.getViewportWidth(), UIViewTest.EPSILON);
+		Assert.assertEquals(1200D, view.getViewportHeight(), UIViewTest.EPSILON);
+		Assert.assertEquals(60D, view.getOffsetY(), UIViewTest.EPSILON);
+		Assert.assertEquals(60D, view.toScreenY(0D), UIViewTest.EPSILON);
 	}
 
 	@Test

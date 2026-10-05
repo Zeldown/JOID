@@ -80,6 +80,8 @@ Resource sprite = ResourceBuilder.create()
 
 Chaque appel push la matrice, active `BlendState.NORMAL` (`SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`), bind la texture de la ressource avec `TextureWrap.CLAMP_TO_BORDER`, dessine un quad texturé via le `Tessellator`, puis désactive le blending et pop la matrice. Vous n'avez pas à préconfigurer le blending.
 
+Quand la transformation n'est ni tournée ni cisaillée, les coins du quad tombent sur des pixels entiers de la fenêtre : une image dessinée en `100.5` ou sous une échelle fractionnaire reste nette au lieu d'être rééchantillonnée entre deux pixels, au prix de déplacements par pixels entiers. Le décodeur donne à chaque pixel transparent la couleur du pixel visible le plus proche, pour que le filtrage linéaire n'assombrisse jamais les bords d'une image transparente.
+
 ## Voir aussi
 
 - `ResourceBuilder` — comment charger et configurer les ressources.

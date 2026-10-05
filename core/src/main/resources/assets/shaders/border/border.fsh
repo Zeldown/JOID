@@ -75,7 +75,7 @@ void main() {
         float insideRect = smoothstep(0.0, 0.01, original.a);
         float touchesEdge = smoothstep(0.0, 1.0, (original.a - minAlpha) / reference);
         float borderMask = insideRect * touchesEdge;
-        fragColor = vec4(mix(originalStraight, borderColor.rgb, borderMask * borderColor.a), original.a);
+        fragColor = vec4(mix(originalStraight, borderColor.rgb, borderMask * borderColor.a) * original.a, original.a);
     } else {
         float maxAlpha = original.a;
         float refAlpha = original.a;
@@ -96,8 +96,6 @@ void main() {
         float outerFade = refAlpha > 0.001 ? smoothstep(0.0, refAlpha, maxAlpha) : 0.0;
         float borderAlpha = borderColor.a * haloFactor * outerFade;
         float outAlpha = original.a + borderAlpha * (1.0 - original.a);
-        vec3 outRGB = (original.rgb + borderColor.rgb * borderAlpha * (1.0 - original.a)) / max(outAlpha, 0.001);
-
-        fragColor = vec4(outRGB, outAlpha);
+        fragColor = vec4(original.rgb + borderColor.rgb * borderAlpha * (1.0 - original.a), outAlpha);
     }
 }

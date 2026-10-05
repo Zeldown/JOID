@@ -10,10 +10,7 @@ public final class UIView {
 	public static final double WIDTH  = 1920D;
 	public static final double HEIGHT = 1080D;
 
-	private static final double SNAP      = 0.005D;
-	private static final double RATIO     = UIView.WIDTH / UIView.HEIGHT;
-	private static final double MIN_ZOOM  = 0.1D;
-	private static final double TOLERANCE = 0.2D;
+	private static final double MIN_ZOOM = 0.1D;
 
 	private final double anchorX;
 	private final double anchorY;
@@ -97,22 +94,11 @@ public final class UIView {
 	}
 
 	public @NonNull UIView resize(final double width, final double height) {
+		final double fit = Math.min(width / UIView.WIDTH, height / UIView.HEIGHT);
 		this.width = width;
 		this.height = height;
-
-		double marginX = 0D;
-		double marginY = 0D;
-		final double ratio = width / height;
-		if (Math.abs(ratio - UIView.RATIO) > UIView.TOLERANCE) {
-			if (ratio < UIView.RATIO || Math.abs(ratio - UIView.RATIO) < UIView.SNAP) {
-				marginY = (height - width / UIView.RATIO) / 2D;
-			} else {
-				marginX = (width - height * UIView.RATIO) / 2D;
-			}
-		}
-
-		this.viewportWidth = UIView.WIDTH * (width / (width - marginX * 2D));
-		this.viewportHeight = UIView.HEIGHT * (height / (height - marginY * 2D));
+		this.viewportWidth = width / fit;
+		this.viewportHeight = height / fit;
 		return this;
 	}
 
