@@ -1,11 +1,11 @@
-package be.zeldown.joid.lib.font.dto.data;
+package be.zeldown.joid.lib.font.impl.msdf.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class Metrics {
+public class MsdfMetrics {
 
 	private final float lineHeight;
 	private final float ascender;

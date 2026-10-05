@@ -1,10 +1,10 @@
 package be.zeldown.joid.lib.font;
 
-import be.zeldown.joid.lib.font.dto.font.FontBounds;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.font.dto.FontBounds;
+import be.zeldown.joid.lib.font.dto.TextInfo;
 import lombok.NonNull;
 
-public interface FontProvider {
+public interface IFontProvider {
 
 	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info);
 

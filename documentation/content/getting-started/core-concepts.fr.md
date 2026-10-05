@@ -32,7 +32,7 @@ Laissez `false` en production — les gestes de debug et le file-watcher sont in
 
 ### `setDemoMode(boolean)`
 
-Charge la `DemoFont` embarquée (shippée avec l'artefact `-dev`) pour que les snippets du quick-start, les UIs de démo et les exemples de doc aient une police utilisable sans que vous fournissiez votre propre atlas MSDF. Une fois vos polices shippées via un `CustomFontProvider`, désactivez-le.
+Charge la `DemoFont` embarquée (shippée avec l'artefact `-dev`) pour que les snippets du quick-start, les UIs de démo et les exemples de doc aient une police utilisable sans que vous fournissiez votre propre atlas MSDF. Une fois vos polices chargées avec `MsdfFontLoader`, désactivez-le.
 
 `load()` doit être appelée **exactement une fois**, avant d'enregistrer des bridges ou d'ouvrir des UIs.
 

@@ -93,7 +93,7 @@ Dès lors, le handle fonctionne partout :
 
 ```java
 Resource.of(new ResourceLocation(MOD_ID, "textures/gui/panel.png"));
-CustomFontLoader.load(new ResourceLocation(MOD_ID, "fonts/Inter/font.msdf")).thenAccept(font -> this.font = font);
+MsdfFontLoader.load(new ResourceLocation(MOD_ID, "fonts/Inter/font.msdf")).thenAccept(font -> this.font = font);
 ```
 
 `register(...)` insère en tête : le registre est parcouru du plus récent au plus ancien, et un localisateur personnalisé bat un localisateur fourni sur un handle que les deux acceptent.

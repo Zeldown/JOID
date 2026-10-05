@@ -5,7 +5,7 @@ import be.zeldown.joid.demo.ui.UIDemo;
 import be.zeldown.joid.demo.ui.textfield.node.DemoMultilineTextFieldNode;
 import be.zeldown.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.font.dto.TextInfo;
 
 public class UIDemoTextField extends UIDemo {
 

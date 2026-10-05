@@ -7,7 +7,7 @@ import be.zeldown.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.font.dto.TextInfo;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.core.data.popup.UIDataPopup;
 import be.zeldown.joid.lib.utils.context.InternalContext;

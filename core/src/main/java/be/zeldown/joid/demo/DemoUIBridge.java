@@ -8,7 +8,7 @@ import be.zeldown.joid.lib.bridge.ui.IUIBridge;
 import be.zeldown.joid.lib.bridge.ui.UIBridge;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.font.dto.TextInfo;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.utils.align.Align;
 import lombok.NonNull;

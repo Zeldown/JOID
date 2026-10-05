@@ -9,22 +9,22 @@ import be.zeldown.joid.impl.lwjgl2.snapshot.SnapshotBackend;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
-import be.zeldown.joid.lib.font.impl.custom.CustomFont;
-import be.zeldown.joid.lib.font.impl.custom.CustomFontLoader;
+import be.zeldown.joid.lib.font.dto.TextInfo;
+import be.zeldown.joid.lib.font.impl.msdf.MsdfFont;
+import be.zeldown.joid.lib.font.impl.msdf.MsdfFontLoader;
 
 public class FontKerningTest {
 
 	private static final float SIZE = 100F;
 
 	private static SnapshotBackend backend;
-	private static CustomFont      font;
+	private static MsdfFont      font;
 
 	@BeforeClass
 	public static void load() {
 		FontKerningTest.backend = new SnapshotBackend();
 		FontKerningTest.backend.create(64, 64);
-		FontKerningTest.font = CustomFontLoader.load(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf"))).join();
+		FontKerningTest.font = MsdfFontLoader.load(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf"))).join();
 	}
 
 	@AfterClass
@@ -44,7 +44,7 @@ public class FontKerningTest {
 	@Test
 	public void measuresTheExactKerningOffset() {
 		final TextInfo info = TextInfo.create(FontKerningTest.font, FontKerningTest.SIZE, Color.WHITE);
-		final float kerning = FontKerningTest.font.getRegular().getFontInfo().getKerning('A', 'V');
+		final float kerning = FontKerningTest.font.getRegular().getKerning('A', 'V');
 		Assert.assertEquals(info.getWidth("A") + info.getWidth("V") + kerning * FontKerningTest.SIZE, info.getWidth("AV"), 0.001D);
 	}
 
@@ -57,7 +57,7 @@ public class FontKerningTest {
 	@Test
 	public void accumulatesKerningOverAWord() {
 		final TextInfo info = TextInfo.create(FontKerningTest.font, FontKerningTest.SIZE, Color.WHITE);
-		final float kerning = FontKerningTest.font.getRegular().getFontInfo().getKerning('A', 'V') + FontKerningTest.font.getRegular().getFontInfo().getKerning('V', 'A');
+		final float kerning = FontKerningTest.font.getRegular().getKerning('A', 'V') + FontKerningTest.font.getRegular().getKerning('V', 'A');
 		Assert.assertEquals(info.getWidth("A") * 2D + info.getWidth("V") + kerning * FontKerningTest.SIZE, info.getWidth("AVA"), 0.001D);
 	}
 

@@ -3,7 +3,7 @@ package be.zeldown.joid.lib.ui.node.impl.design.text;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.draw.text.builder.Text;
 import be.zeldown.joid.lib.draw.text.utils.TextMode;
-import be.zeldown.joid.lib.font.dto.font.FontBounds;
+import be.zeldown.joid.lib.font.dto.FontBounds;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.node.Node;
 import lombok.Getter;

@@ -1,14 +1,14 @@
 # Custom Fonts
 
-JOID rend le texte via des atlas MSDF (Multi-channel Signed Distance Field) — nets à n'importe quelle échelle. Chargez vos polices avec `CustomFontLoader`, construisez un `TextInfo`, et alimentez un `Text` / `TextNode`.
+JOID rend le texte via des atlas MSDF (Multi-channel Signed Distance Field) — nets à n'importe quelle échelle. Chargez vos polices avec `MsdfFontLoader`, construisez un `TextInfo`, et alimentez un `Text` / `TextNode`.
 
-## `CustomFontLoader.load`
+## `MsdfFontLoader.load`
 
-`CustomFontLoader` est asynchrone — il délègue la lecture et l'upload de texture à un pool d'exécuteurs et renvoie un `CompletableFuture` qui porte le `CustomFont` terminé.
+`MsdfFontLoader` est asynchrone — il délègue la lecture et l'upload de texture à un pool d'exécuteurs et renvoie un `CompletableFuture` qui porte le `MsdfFont` terminé.
 
 ```java
-static CompletableFuture<CustomFont> load(Object packed)
-static CompletableFuture<CustomFont> load(Object regular, Object bold)
+static CompletableFuture<MsdfFont> load(Object packed)
+static CompletableFuture<MsdfFont> load(Object regular, Object bold)
 ```
 
 Chaque handle désigne un fichier `font.msdf`, produit par le générateur décrit dans [Atlas MSDF](msdf-atlas.md). Il porte ensemble l'atlas, les métriques des glyphes et la table de crénage. Tout ce qu'un [localisateur d'asset](../resources/assets.md) reconnaît convient — un `InputStream`, un `File`, une URL, ou un handle à vous.
@@ -16,29 +16,31 @@ Chaque handle désigne un fichier `font.msdf`, produit par le générateur décr
 Chargement minimal :
 
 ```java
-CustomFontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
-    .thenAccept(customFont -> this.interFont = customFont);
+MsdfFontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
+    .thenAccept(font -> this.interFont = font);
 ```
 
 Atlas regular et bold :
 
 ```java
-CustomFontLoader.load(
+MsdfFontLoader.load(
     getClass().getResourceAsStream("/fonts/Inter-Regular/font.msdf"),
     getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf")
-).thenAccept(customFont -> {
-    // customFont.getRegular() et customFont.getBold() sont des Font
+).thenAccept(font -> {
+    // font.getRegular() et font.getBold() sont les deux graisses MsdfFace
 });
 ```
 
-Avec l'overload à un flux, la même police est stockée en regular et en bold sur le wrapper `CustomFont`.
+Avec un seul handle, la même graisse sert de regular et de bold.
 
-Le couple `font.json` + `font.png` des anciens atlas se charge toujours, via les surcharges à `FontInputStream` :
+Le couple `font.json` + `font.png` des anciens atlas se charge toujours. Enveloppez les deux fichiers dans un `MsdfJsonSource` et passez-le là où un handle est attendu — même à côté d'un atlas packé :
 
 ```java
-static CompletableFuture<CustomFont> load(FontInputStream regular)
-static CompletableFuture<CustomFont> load(FontInputStream regular, FontInputStream bold)
+MsdfFontLoader.load(MsdfJsonSource.of(json, png));
+MsdfFontLoader.load(handleRegular, MsdfJsonSource.of(jsonBold, pngBold));
 ```
+
+Les deux sont des `IMsdfSource`, comme tout ce que vous écrirez vous-même : le chargeur lit la source qu'on lui donne.
 
 ### Crénage
 
@@ -96,27 +98,24 @@ DrawUtils.TEXT.drawText(x, y, "Hello", info, Align.START, Align.START);
 
 ## Variantes bold
 
-`CustomFont` possède deux `Font` — `regular` et `bold`. Créez deux `TextInfo`, un par graisse :
+`MsdfFont` porte deux graisses — `regular` et `bold`. Un `TextInfo` se construit depuis la police elle-même, et le code de style `§l` bascule sur la graisse bold à l'intérieur du texte :
 
 ```java
-final TextInfo regularInfo = TextInfo.create(customFont.getRegular(), 16, Color.WHITE);
-final TextInfo boldInfo    = TextInfo.create(customFont.getBold(),    16, Color.WHITE);
+final TextInfo info = TextInfo.create(police, 16, Color.WHITE);
 
-Text.create()
-    .add(TextElement.create("Normal ", regularInfo))
-    .add(TextElement.create("Bold",    boldInfo));
+Text.create("Normal §lGras", info);
 ```
 
-Si vous n'avez qu'un seul atlas, `CustomFont` fallback sur la police regular dans les deux cas.
+Avec un seul atlas, les deux graisses sont identiques : `§l` n'a alors aucun effet visible.
 
 ## Chargement asynchrone
 
-`CustomFontLoader.load(...)` retourne immédiatement. Le future se complète sur le pool d'exécuteurs une fois la lecture et l'upload terminés : c'est vous qui choisissez comment attendre.
+`MsdfFontLoader.load(...)` retourne immédiatement. Le future se complète sur le pool d'exécuteurs une fois la lecture et l'upload terminés : c'est vous qui choisissez comment attendre.
 
 ```java
-CustomFontLoader.load(flux).thenAccept(font -> this.police = font);                 // continuer quand c'est prêt
-CustomFontLoader.load(flux).exceptionally(erreur -> { erreur.printStackTrace(); return null; });
-this.police = CustomFontLoader.load(flux).join();                                   // bloquer, au démarrage
+MsdfFontLoader.load(flux).thenAccept(font -> this.police = font);                 // continuer quand c'est prêt
+MsdfFontLoader.load(flux).exceptionally(erreur -> { erreur.printStackTrace(); return null; });
+this.police = MsdfFontLoader.load(flux).join();                                   // bloquer, au démarrage
 CompletableFuture.allOf(regular, bold, italic).join();                        // attendre toute une famille
 ```
 
@@ -131,6 +130,17 @@ Un atlas MSDF ne contient que les caractères déclarés dans le `charset.txt` a
 - **Chargez les polices une fois, au démarrage.** Elles sont réutilisées entre toutes les UIs.
 - **Cachez `TextInfo`.** Un par style logique (titre, body, code) — réutilisez par nœud.
 - **Pré-dimensionnez votre atlas.** 2048×2048 tient ~500 glyphes à 48 px. Pour CJK, 4096×4096 ou plusieurs atlas par script.
+
+## Autres implémentations de police
+
+MSDF est une implémentation du contrat de police, pas le contrat lui-même. Tout ce qui dessine ou mesure du texte — `TextInfo`, `TextNode`, `DrawUtils` — ne connaît que deux interfaces de `be.zeldown.joid.lib.font` :
+
+| Interface | Rôle |
+|---|---|
+| `IFont` | Ce que porte un `TextInfo`. Fournit son provider. |
+| `IFontProvider` | Dessine et mesure une chaîne pour un `TextInfo`. |
+
+Les classes MSDF vivent à part, dans `be.zeldown.joid.lib.font.impl.msdf`. Un backend qui a son propre rendu de texte — la police bitmap d'un jeu, l'API texte d'une plateforme — implémente ces deux interfaces dans son propre paquet `impl/<nom>`, et tous les nœuds de texte fonctionnent avec, sans changement.
 
 ## Voir aussi
 

@@ -32,7 +32,7 @@ Leave it `false` in production — the debug gestures and file-watcher are unnec
 
 ### `setDemoMode(boolean)`
 
-Loads the bundled `DemoFont` (shipped with the `-dev` artifact) so the quick-start snippets, demo UIs, and documentation examples have a usable font without you providing your own MSDF atlas. Once you ship your own fonts via a `CustomFontProvider`, turn it off.
+Loads the bundled `DemoFont` (shipped with the `-dev` artifact) so the quick-start snippets, demo UIs, and documentation examples have a usable font without you providing your own MSDF atlas. Once you load your own fonts with `MsdfFontLoader`, turn it off.
 
 `load()` must be called **exactly once**, before registering bridges or opening UIs.
 

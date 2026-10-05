@@ -89,15 +89,15 @@ assets/
 Chargez-le avec un seul flux :
 
 ```java
-CustomFontLoader.load(getClass().getResourceAsStream("/assets/fonts/MaPolice/font.msdf")).thenAccept(font -> this.maPolice = font);
+MsdfFontLoader.load(getClass().getResourceAsStream("/assets/fonts/MaPolice/font.msdf")).thenAccept(font -> this.maPolice = font);
 ```
 
 ## Atlas hérités
 
-Le couple `font.json` + `font.png` produit par [msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen) se charge toujours, via les surcharges à `FontInputStream` :
+Le couple `font.json` + `font.png` produit par [msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen) se charge toujours, une fois les deux fichiers enveloppés dans un `MsdfJsonSource` :
 
 ```java
-CustomFontLoader.load(new FontInputStream(fluxJson, fluxPng)).thenAccept(font -> this.maPolice = font);
+MsdfFontLoader.load(MsdfJsonSource.of(fluxJson, fluxPng)).thenAccept(font -> this.maPolice = font);
 ```
 
 Ces atlas ne portent aucun crénage : `msdf-atlas-gen` ne lit que la table `kern`, que la plupart des polices modernes ne fournissent plus.
@@ -111,10 +111,10 @@ Générez un atlas par graisse, puis chargez chacun séparément et associez-les
 ./msdf.sh --font Inter-Bold.ttf    --output assets/fonts/Inter-Bold
 ```
 
-Une graisse normale et une grasse peuvent aussi être réunies dans un seul `CustomFont`, celui dans lequel puise le style `§l` :
+Une graisse normale et une grasse peuvent aussi être réunies dans un seul `MsdfFont`, celui dans lequel puise le style `§l` :
 
 ```java
-CustomFontLoader.load(fluxRegular, fluxBold).thenAccept(font -> this.maPolice = font);
+MsdfFontLoader.load(fluxRegular, fluxBold).thenAccept(font -> this.maPolice = font);
 ```
 
 ## Bonnes pratiques

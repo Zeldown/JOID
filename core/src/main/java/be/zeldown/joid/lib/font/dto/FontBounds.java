@@ -1,4 +1,4 @@
-package be.zeldown.joid.lib.font.dto.font;
+package be.zeldown.joid.lib.font.dto;
 
 import lombok.Getter;
 import lombok.NonNull;

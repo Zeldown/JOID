@@ -30,7 +30,7 @@ import be.zeldown.joid.demo.ui.watch.UIDemoWatch;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.text.builder.Text;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.font.dto.TextInfo;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.node.impl.design.shape.RectNode;
 import be.zeldown.joid.lib.ui.node.impl.design.text.TextNode;

@@ -1,14 +1,14 @@
 # Custom Fonts
 
-JOID renders text through MSDF (Multi-channel Signed Distance Field) atlases — crisp at any scale. Load your own fonts with `CustomFontLoader`, build a `TextInfo`, and feed it into a `Text` / `TextNode`.
+JOID renders text through MSDF (Multi-channel Signed Distance Field) atlases — crisp at any scale. Load your own fonts with `MsdfFontLoader`, build a `TextInfo`, and feed it into a `Text` / `TextNode`.
 
-## `CustomFontLoader.load`
+## `MsdfFontLoader.load`
 
-`CustomFontLoader` is asynchronous — it off-loads parsing and texture upload to an executor pool and returns a `CompletableFuture` carrying the finished `CustomFont`.
+`MsdfFontLoader` is asynchronous — it off-loads parsing and texture upload to an executor pool and returns a `CompletableFuture` carrying the finished `MsdfFont`.
 
 ```java
-static CompletableFuture<CustomFont> load(Object packed)
-static CompletableFuture<CustomFont> load(Object regular, Object bold)
+static CompletableFuture<MsdfFont> load(Object packed)
+static CompletableFuture<MsdfFont> load(Object regular, Object bold)
 ```
 
 Each handle names one `font.msdf` file, produced by the generator described in [MSDF Atlas](msdf-atlas.md). It carries the atlas, the glyph metrics and the kerning table together. Anything an [asset locator](../resources/assets.md) recognises works — an `InputStream`, a `File`, a URL, or a handle of your own.
@@ -16,29 +16,31 @@ Each handle names one `font.msdf` file, produced by the generator described in [
 Minimal load:
 
 ```java
-CustomFontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
-    .thenAccept(customFont -> this.interFont = customFont);
+MsdfFontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
+    .thenAccept(font -> this.interFont = font);
 ```
 
 Both regular and bold atlases:
 
 ```java
-CustomFontLoader.load(
+MsdfFontLoader.load(
     getClass().getResourceAsStream("/fonts/Inter-Regular/font.msdf"),
     getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf")
-).thenAccept(customFont -> {
-    // customFont.getRegular() and customFont.getBold() are Font instances
+).thenAccept(font -> {
+    // font.getRegular() and font.getBold() are the two MsdfFace weights
 });
 ```
 
-If the single-stream overload is used, the same font is stored as both regular and bold on the `CustomFont` wrapper.
+With a single handle, the same face serves as both regular and bold.
 
-The `font.json` + `font.png` pair of older atlases still loads, through the `FontInputStream` overloads:
+The `font.json` + `font.png` pair of older atlases still loads. Wrap both files in an `MsdfJsonSource` and pass it wherever a handle is expected — even next to a packed atlas:
 
 ```java
-static CompletableFuture<CustomFont> load(FontInputStream regular)
-static CompletableFuture<CustomFont> load(FontInputStream regular, FontInputStream bold)
+MsdfFontLoader.load(MsdfJsonSource.of(json, png));
+MsdfFontLoader.load(regularHandle, MsdfJsonSource.of(boldJson, boldPng));
 ```
+
+Both are `IMsdfSource`s, and so is anything you write yourself: the loader reads whatever source it is handed.
 
 ### Kerning
 
@@ -96,27 +98,24 @@ DrawUtils.TEXT.drawText(x, y, "Hello", info, Align.START, Align.START);
 
 ## Bold variants
 
-`CustomFont` owns two `Font` instances — `regular` and `bold`. Create two `TextInfo` objects, one per weight:
+`MsdfFont` holds two faces — `regular` and `bold`. A `TextInfo` is built from the font itself, and the `§l` style code switches to the bold face inside the text:
 
 ```java
-final TextInfo regularInfo = TextInfo.create(customFont.getRegular(), 16, Color.WHITE);
-final TextInfo boldInfo    = TextInfo.create(customFont.getBold(),    16, Color.WHITE);
+final TextInfo info = TextInfo.create(font, 16, Color.WHITE);
 
-Text.create()
-    .add(TextElement.create("Normal ", regularInfo))
-    .add(TextElement.create("Bold",    boldInfo));
+Text.create("Normal §lBold", info);
 ```
 
-If you only have a single atlas, `CustomFont` falls back to the regular font for both.
+With a single atlas both faces are the same, so `§l` has no visible effect.
 
 ## Asynchronous loading
 
-`CustomFontLoader.load(...)` returns immediately. The future completes on the fixed-size executor pool once parsing and upload finish, so you choose how to wait:
+`MsdfFontLoader.load(...)` returns immediately. The future completes on the fixed-size executor pool once parsing and upload finish, so you choose how to wait:
 
 ```java
-CustomFontLoader.load(stream).thenAccept(font -> this.font = font);                 // continue when ready
-CustomFontLoader.load(stream).exceptionally(error -> { error.printStackTrace(); return null; });
-this.font = CustomFontLoader.load(stream).join();                                   // block, at startup
+MsdfFontLoader.load(stream).thenAccept(font -> this.font = font);                 // continue when ready
+MsdfFontLoader.load(stream).exceptionally(error -> { error.printStackTrace(); return null; });
+this.font = MsdfFontLoader.load(stream).join();                                   // block, at startup
 CompletableFuture.allOf(regular, bold, italic).join();                        // wait for a whole family
 ```
 
@@ -131,6 +130,17 @@ An MSDF atlas only contains the characters declared in the `charset.txt` at gene
 - **Load fonts once, at startup.** They're reused across every UI.
 - **Cache `TextInfo`.** One per logical style (heading, body, code) — reuse per node.
 - **Pre-size your atlas.** 2048×2048 fits ~500 glyphs at 48px. For CJK, use 4096×4096 or split by script.
+
+## Other font implementations
+
+MSDF is one implementation of the font contract, not the contract itself. Everything that draws or measures text — `TextInfo`, `TextNode`, `DrawUtils` — only knows two interfaces from `be.zeldown.joid.lib.font`:
+
+| Interface | Role |
+|---|---|
+| `IFont` | What a `TextInfo` holds. Hands out its provider. |
+| `IFontProvider` | Draws and measures a string for a `TextInfo`. |
+
+The MSDF classes live apart, in `be.zeldown.joid.lib.font.impl.msdf`. A backend with its own text rendering — a game's bitmap font, a platform text API — implements those two interfaces in its own `impl/<name>` package, and every text node works with it unchanged.
 
 ## See also
 

@@ -1,8 +1,7 @@
-package be.zeldown.joid.lib.font.dto.text;
+package be.zeldown.joid.lib.font.dto;
 
 import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.font.dto.font.FontBounds;
-import be.zeldown.joid.lib.font.dto.font.IFont;
+import be.zeldown.joid.lib.font.IFont;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;

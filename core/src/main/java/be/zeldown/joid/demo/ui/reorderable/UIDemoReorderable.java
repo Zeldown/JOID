@@ -5,7 +5,7 @@ import be.zeldown.joid.demo.ui.UIDemo;
 import be.zeldown.joid.demo.ui.overflow.node.DemoScrollbarNode;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.text.builder.Text;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.font.dto.TextInfo;
 import be.zeldown.joid.lib.ui.node.impl.design.shape.RectNode;
 import be.zeldown.joid.lib.ui.node.impl.design.text.TextNode;
 import be.zeldown.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;

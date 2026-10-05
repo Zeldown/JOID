@@ -3,7 +3,7 @@ package be.zeldown.joid.lib.draw.text.builder;
 import java.util.function.Supplier;
 
 import be.zeldown.joid.lib.draw.text.builder.modifier.ITextModifier;
-import be.zeldown.joid.lib.font.dto.text.TextInfo;
+import be.zeldown.joid.lib.font.dto.TextInfo;
 import lombok.Getter;
 import lombok.NonNull;
 
