@@ -19,13 +19,13 @@ public class DemoPushTransition extends Transition {
 		private final Transformation transformation = Transformation.create().translate(Vector.X(() -> 1920D * (1F - super.getAnimator().getValue())));
 
 		@Override
-		public void init(final @NonNull UI ui) {}
-
-		@Override
 		public void start() {
 			final Timeline timeline = super.getAnimator().sequence(1000F, 1F, TweenEquations.QUART_OUT).getTimeline();
 			this.start(timeline);
 		}
+
+		@Override
+		public void init(final @NonNull UI ui) {}
 
 		@Override
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
@@ -44,13 +44,13 @@ public class DemoPushTransition extends Transition {
 		private final Transformation transformation = Transformation.create().translate(Vector.X(() -> -1920D * (1F - super.getAnimator().getValue())));
 
 		@Override
-		public void init(final @NonNull UI ui) {}
-
-		@Override
 		public void start() {
 			final Timeline timeline = super.getAnimator().sequence(1000F, 0F, TweenEquations.QUART_IN).getTimeline();
 			this.start(timeline);
 		}
+
+		@Override
+		public void init(final @NonNull UI ui) {}
 
 		@Override
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {

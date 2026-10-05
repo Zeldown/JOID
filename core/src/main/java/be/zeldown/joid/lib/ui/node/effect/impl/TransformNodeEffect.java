@@ -26,10 +26,6 @@ public class TransformNodeEffect<T extends Node> extends NodeEffect<T> {
 		this.transformationSupplier = () -> transformation;
 	}
 
-	public static <T extends Node> TransformNodeEffect<T> create(final @NonNull Transformation transformation) {
-		return new TransformNodeEffect<>(transformation);
-	}
-
 	public static <T extends Node> TransformNodeEffect<T> create(final @NonNull ScaleOperation scale) {
 		return new TransformNodeEffect<>(Transformation.create(scale));
 	}
@@ -40,6 +36,10 @@ public class TransformNodeEffect<T extends Node> extends NodeEffect<T> {
 
 	public static <T extends Node> TransformNodeEffect<T> create(final @NonNull TranslateOperation translate) {
 		return new TransformNodeEffect<>(Transformation.create(translate));
+	}
+
+	public static <T extends Node> TransformNodeEffect<T> create(final @NonNull Transformation transformation) {
+		return new TransformNodeEffect<>(transformation);
 	}
 
 	@Override

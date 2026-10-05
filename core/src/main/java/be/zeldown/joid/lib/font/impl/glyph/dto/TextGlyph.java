@@ -10,16 +10,16 @@ import lombok.NonNull;
 public final class TextGlyph<F extends IGlyphFace> implements ITextGlyph {
 
 	private final F         face;
-	private final int       index;
 	private final double    x;
+	private final int       index;
 	private final double    size;
 	private final double    advance;
-	private final double    baseline;
 	private final boolean   shadow;
+	private final double    baseline;
 	private final TextStyle style;
 
-	private int    codepoint;
 	private Color  color;
+	private int    codepoint;
 	private double offsetX;
 	private double offsetY;
 
@@ -38,10 +38,6 @@ public final class TextGlyph<F extends IGlyphFace> implements ITextGlyph {
 
 	public static <F extends IGlyphFace> @NonNull TextGlyph<F> create(final @NonNull F face, final int index, final int codepoint, final @NonNull TextStyle style, final double x, final double baseline, final double size, final double advance, final @NonNull Color color) {
 		return new TextGlyph<>(face, index, codepoint, style, x, baseline, size, advance, color, false);
-	}
-
-	public @NonNull TextGlyph<F> shadow(final double x, final double y, final @NonNull Color color) {
-		return new TextGlyph<>(this.face, this.index, this.codepoint, this.style, this.x + x, this.baseline + y, this.size, this.advance, color, true).offset(this.offsetX, this.offsetY);
 	}
 
 	public boolean isSlanted() {
@@ -95,6 +91,10 @@ public final class TextGlyph<F extends IGlyphFace> implements ITextGlyph {
 		this.offsetX = x;
 		this.offsetY = y;
 		return this;
+	}
+
+	public @NonNull TextGlyph<F> shadow(final double x, final double y, final @NonNull Color color) {
+		return new TextGlyph<>(this.face, this.index, this.codepoint, this.style, this.x + x, this.baseline + y, this.size, this.advance, color, true).offset(this.offsetX, this.offsetY);
 	}
 
 }

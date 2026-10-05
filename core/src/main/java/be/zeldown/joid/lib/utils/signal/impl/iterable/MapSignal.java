@@ -22,6 +22,36 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return instance;
 	}
 
+	public int size() {
+		return this.getOrDefault().size();
+	}
+
+	public Set<K> keySet() {
+		return this.getOrDefault().keySet();
+	}
+
+	public boolean isEmpty() {
+		return this.getOrDefault().isEmpty();
+	}
+
+	public V get(final K key) {
+		return this.getOrDefault().get(key);
+	}
+
+	public V remove(final K key) {
+		final V result = this.getOrDefault().remove(key);
+		this.publish();
+		return result;
+	}
+
+	public Collection<V> values() {
+		return this.getOrDefault().values();
+	}
+
+	public Set<Entry<K, V>> entrySet() {
+		return this.getOrDefault().entrySet();
+	}
+
 	public @NonNull MapSignal<K, V> clear() {
 		this.getOrDefault().clear();
 		this.publish();
@@ -32,40 +62,10 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return this.getOrDefault().containsKey(key);
 	}
 
-	public Set<Entry<K, V>> entrySet() {
-		return this.getOrDefault().entrySet();
-	}
-
-	public V get(final K key) {
-		return this.getOrDefault().get(key);
-	}
-
-	public boolean isEmpty() {
-		return this.getOrDefault().isEmpty();
-	}
-
-	public Set<K> keySet() {
-		return this.getOrDefault().keySet();
-	}
-
 	public V put(final K key, final V value) {
 		final V result = this.getOrDefault().put(key, value);
 		this.publish();
 		return result;
-	}
-
-	public V remove(final K key) {
-		final V result = this.getOrDefault().remove(key);
-		this.publish();
-		return result;
-	}
-
-	public int size() {
-		return this.getOrDefault().size();
-	}
-
-	public Collection<V> values() {
-		return this.getOrDefault().values();
 	}
 
 	@Override

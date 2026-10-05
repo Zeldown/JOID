@@ -20,29 +20,14 @@ public final class SamplerUniform extends ShaderUniform implements be.zeldown.jo
 	private final Shader shader;
 
 	private Texture       texture;
-	private TextureFilter filter;
 	private TextureWrap   wrap;
 	private int           previousTexture;
+	private TextureFilter filter;
 
 	public SamplerUniform(final int location, final int unit, final Shader shader) {
 		super(location);
 		this.unit   = unit;
 		this.shader = shader;
-	}
-
-	@Override
-	public void setValue(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
-		if (this.shader.isBound()) {
-			this.unbind();
-		}
-
-		this.texture = (Texture) texture;
-		this.filter  = filter;
-		this.wrap    = wrap;
-
-		if (this.shader.isBound()) {
-			this.bind();
-		}
 	}
 
 	public void bind() {
@@ -66,6 +51,21 @@ public final class SamplerUniform extends ShaderUniform implements be.zeldown.jo
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + this.unit);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.previousTexture);
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
+	}
+
+	@Override
+	public void setValue(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
+		if (this.shader.isBound()) {
+			this.unbind();
+		}
+
+		this.texture = (Texture) texture;
+		this.filter  = filter;
+		this.wrap    = wrap;
+
+		if (this.shader.isBound()) {
+			this.bind();
+		}
 	}
 
 }

@@ -17,6 +17,11 @@ public class ResourceDecoderTest {
 	private static final byte[] GIF = {'G', 'I', 'F', '8', '9', 'a', 1, 0, 1, 0, 0, 0, 0, 0, 0, 0};
 
 	@Test
+	public void picksTheImageDecoderOtherwise() {
+		Assert.assertTrue(ResourceDecoder.of(Asset.of(new ByteArrayInputStream(ResourceDecoderTest.PNG))) instanceof ImageResourceDecoder);
+	}
+
+	@Test
 	public void picksTheVideoDecoderOnAVideoHeader() {
 		final IResourceDecoder decoder = ResourceDecoder.of(Asset.of(new ByteArrayInputStream(ResourceDecoderTest.GIF)));
 		Assert.assertTrue(decoder instanceof VideoResourceDecoder);
@@ -24,8 +29,8 @@ public class ResourceDecoderTest {
 	}
 
 	@Test
-	public void picksTheImageDecoderOtherwise() {
-		Assert.assertTrue(ResourceDecoder.of(Asset.of(new ByteArrayInputStream(ResourceDecoderTest.PNG))) instanceof ImageResourceDecoder);
+	public void doesNotReadTheAssetWhenBuildingTheDecoder() {
+		ResourceDecoder.image(Asset.of(new ByteArrayInputStream("not an image".getBytes(StandardCharsets.UTF_8))));
 	}
 
 	@Test
@@ -33,11 +38,6 @@ public class ResourceDecoderTest {
 		final Asset asset = Asset.of(new ByteArrayInputStream(ResourceDecoderTest.PNG));
 		ResourceDecoder.of(asset);
 		Assert.assertArrayEquals(ResourceDecoderTest.PNG, asset.read());
-	}
-
-	@Test
-	public void doesNotReadTheAssetWhenBuildingTheDecoder() {
-		ResourceDecoder.image(Asset.of(new ByteArrayInputStream("not an image".getBytes(StandardCharsets.UTF_8))));
 	}
 
 }

@@ -18,16 +18,16 @@ public @interface UIDataPopup {
 		OUT,
 		IN_OUT;
 
-		public boolean isActive() {
-			return this != PopupTransition.NONE;
-		}
-
 		public boolean isIn() {
 			return this == PopupTransition.IN || this == PopupTransition.IN_OUT;
 		}
 
 		public boolean isOut() {
 			return this == PopupTransition.OUT || this == PopupTransition.IN_OUT;
+		}
+
+		public boolean isActive() {
+			return this != PopupTransition.NONE;
 		}
 
 	}

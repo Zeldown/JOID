@@ -20,9 +20,22 @@ public class MsdfFontLoaderTest {
 
 	private static final String[] WEIGHTS = {"Thin", "ExtraLight", "Light", "Regular", "Medium", "SemiBold", "Bold", "ExtraBold", "Black"};
 
+	@Test(timeout = 30000L)
+	public void restylesASource() {
+		final MsdfFont font = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"), MsdfBinarySource.of(MsdfFontLoaderTest.stream("Regular")).italic(true)).join();
+		Assert.assertFalse(font.getFace(FontWeight.REGULAR, false).isItalic());
+		Assert.assertTrue(font.getFace(FontWeight.REGULAR, true).isItalic());
+	}
+
+	@Test(timeout = 30000L)
+	public void loadsFromAnAsset() {
+		final Asset asset = Asset.of(MsdfFontLoaderTest.stream("Regular"));
+		Assert.assertTrue(MsdfFontLoader.load(asset).join().getFace(FontWeight.REGULAR, false).getGlyphs().size() > 200);
+	}
+
 	@Test(timeout = 10000L)
-	public void handsTheFailureBackToTheCaller() {
-		MsdfFontLoaderTest.fails(IOException.class, new ByteArrayInputStream("not a font at all".getBytes(StandardCharsets.UTF_8)));
+	public void refusesAnEmptyFamily() {
+		MsdfFontLoaderTest.fails(IllegalArgumentException.class);
 	}
 
 	@Test(timeout = 10000L)
@@ -30,9 +43,23 @@ public class MsdfFontLoaderTest {
 		MsdfFontLoaderTest.fails(IllegalArgumentException.class, new Object());
 	}
 
+	@Test(timeout = 60000L)
+	public void loadsEveryWeightOfAFamily() {
+		final Object[] handles = new Object[MsdfFontLoaderTest.WEIGHTS.length];
+		for (int i = 0; i < handles.length; i++) {
+			handles[handles.length - 1 - i] = MsdfFontLoaderTest.stream(MsdfFontLoaderTest.WEIGHTS[i]);
+		}
+
+		final MsdfFont font = MsdfFontLoader.load(handles).join();
+		Assert.assertEquals(FontWeight.values().length, font.getFamily().getFaces().size());
+		for (final FontWeight weight : FontWeight.values()) {
+			Assert.assertSame(weight, font.getFace(weight, false).getWeight());
+		}
+	}
+
 	@Test(timeout = 10000L)
-	public void refusesAnEmptyFamily() {
-		MsdfFontLoaderTest.fails(IllegalArgumentException.class);
+	public void handsTheFailureBackToTheCaller() {
+		MsdfFontLoaderTest.fails(IOException.class, new ByteArrayInputStream("not a font at all".getBytes(StandardCharsets.UTF_8)));
 	}
 
 	@Test(timeout = 30000L)
@@ -50,37 +77,10 @@ public class MsdfFontLoaderTest {
 	}
 
 	@Test(timeout = 30000L)
-	public void loadsFromAnAsset() {
-		final Asset asset = Asset.of(MsdfFontLoaderTest.stream("Regular"));
-		Assert.assertTrue(MsdfFontLoader.load(asset).join().getFace(FontWeight.REGULAR, false).getGlyphs().size() > 200);
-	}
-
-	@Test(timeout = 60000L)
-	public void loadsEveryWeightOfAFamily() {
-		final Object[] handles = new Object[MsdfFontLoaderTest.WEIGHTS.length];
-		for (int i = 0; i < handles.length; i++) {
-			handles[handles.length - 1 - i] = MsdfFontLoaderTest.stream(MsdfFontLoaderTest.WEIGHTS[i]);
-		}
-
-		final MsdfFont font = MsdfFontLoader.load(handles).join();
-		Assert.assertEquals(FontWeight.values().length, font.getFamily().getFaces().size());
-		for (final FontWeight weight : FontWeight.values()) {
-			Assert.assertSame(weight, font.getFace(weight, false).getWeight());
-		}
-	}
-
-	@Test(timeout = 30000L)
 	public void acceptsAnyMsdfSource() throws IOException {
 		final MsdfFace face = MsdfBinarySource.of(MsdfFontLoaderTest.stream("Regular")).read();
 		final IMsdfSource source = () -> face;
 		Assert.assertSame(face, MsdfFontLoader.load(source).join().getFace(FontWeight.REGULAR, false));
-	}
-
-	@Test(timeout = 30000L)
-	public void restylesASource() {
-		final MsdfFont font = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"), MsdfBinarySource.of(MsdfFontLoaderTest.stream("Regular")).italic(true)).join();
-		Assert.assertFalse(font.getFace(FontWeight.REGULAR, false).isItalic());
-		Assert.assertTrue(font.getFace(FontWeight.REGULAR, true).isItalic());
 	}
 
 	private static InputStream stream(final String weight) {

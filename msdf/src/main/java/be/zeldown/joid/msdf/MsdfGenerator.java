@@ -41,6 +41,34 @@ public final class MsdfGenerator {
 		MsdfGenerator.generate(font, output, codepoints, width, height, range, options.containsKey("size") ? Double.parseDouble(options.get("size")) : 0D);
 	}
 
+	public static int[] codepoints(final String charset) throws Exception {
+		final File file = new File(charset);
+		final String text = file.isFile() ? new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8) : charset;
+		final List<Integer> values = new ArrayList<>();
+		for (final String part : text.trim().split("(?<=\\])|,(?![^\\[]*\\])")) {
+			final String entry = part.trim().replace(",", "");
+			if (entry.isEmpty()) {
+				continue;
+			}
+
+			if (entry.startsWith("[")) {
+				final String[] bounds = entry.replace("[", "").replace("]", "").split("\\s+");
+				for (int codepoint = Integer.parseInt(bounds[0].trim()); codepoint <= Integer.parseInt(bounds[bounds.length - 1].trim()); codepoint++) {
+					values.add(codepoint);
+				}
+				continue;
+			}
+
+			values.add(Integer.parseInt(entry));
+		}
+
+		final int[] codepoints = new int[values.size()];
+		for (int i = 0; i < codepoints.length; i++) {
+			codepoints[i] = values.get(i);
+		}
+		return codepoints;
+	}
+
 	public static void generate(final File file, final File output, final int[] codepoints, final int width, final int height, final double range, final double requested) throws Exception {
 		final long start = System.currentTimeMillis();
 		final Font font = Glyphs.load(file);
@@ -75,47 +103,19 @@ public final class MsdfGenerator {
 		System.out.println(file.getName() + " -> weight " + source.getWeight() + (source.isItalic() ? " italic, " : ", ") + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px, " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
 	}
 
-	private static double measure(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {
-		if (!Packer.pack(glyphs, size, range, width, height)) {
-			throw new IllegalStateException("The glyphs do not fit in " + width + "x" + height + " at " + size + "px");
-		}
-		return size;
-	}
-
-	public static int[] codepoints(final String charset) throws Exception {
-		final File file = new File(charset);
-		final String text = file.isFile() ? new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8) : charset;
-		final List<Integer> values = new ArrayList<>();
-		for (final String part : text.trim().split("(?<=\\])|,(?![^\\[]*\\])")) {
-			final String entry = part.trim().replace(",", "");
-			if (entry.isEmpty()) {
-				continue;
-			}
-
-			if (entry.startsWith("[")) {
-				final String[] bounds = entry.replace("[", "").replace("]", "").split("\\s+");
-				for (int codepoint = Integer.parseInt(bounds[0].trim()); codepoint <= Integer.parseInt(bounds[bounds.length - 1].trim()); codepoint++) {
-					values.add(codepoint);
-				}
-				continue;
-			}
-
-			values.add(Integer.parseInt(entry));
-		}
-
-		final int[] codepoints = new int[values.size()];
-		for (int i = 0; i < codepoints.length; i++) {
-			codepoints[i] = values.get(i);
-		}
-		return codepoints;
-	}
-
 	private static Map<String, String> options(final String[] arguments) {
 		final Map<String, String> options = new HashMap<>();
 		for (int i = 0; i < arguments.length - 1; i += 2) {
 			options.put(arguments[i].replace("-", ""), arguments[i + 1]);
 		}
 		return options;
+	}
+
+	private static double measure(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {
+		if (!Packer.pack(glyphs, size, range, width, height)) {
+			throw new IllegalStateException("The glyphs do not fit in " + width + "x" + height + " at " + size + "px");
+		}
+		return size;
 	}
 
 }

@@ -14,14 +14,8 @@ public class RoundedShader extends ShaderImpl {
 		this.load(JOID.class.getResourceAsStream("/assets/shaders/rounded/rounded.vsh"), JOID.class.getResourceAsStream("/assets/shaders/rounded/rounded.fsh"));
 	}
 
-	public static void use(final float radius, final float x1, final float y1, final float x2, final float y2, final @NonNull Runnable runnable) {
-		if (!RoundedShader.INSTANCE.isAvailable()) {
-			return;
-		}
-
-		RoundedShader.INSTANCE.bind(radius, x1, y1, x2, y2);
-		runnable.run();
-		RoundedShader.INSTANCE.unbind();
+	public static @NonNull RoundedShader inst() {
+		return RoundedShader.INSTANCE;
 	}
 
 	public void bind(final float radius, final float x1, final float y1, final float x2, final float y2) {
@@ -40,8 +34,14 @@ public class RoundedShader extends ShaderImpl {
 		typeUniform.setValue(type.ordinal());
 	}
 
-	public static @NonNull RoundedShader inst() {
-		return RoundedShader.INSTANCE;
+	public static void use(final float radius, final float x1, final float y1, final float x2, final float y2, final @NonNull Runnable runnable) {
+		if (!RoundedShader.INSTANCE.isAvailable()) {
+			return;
+		}
+
+		RoundedShader.INSTANCE.bind(radius, x1, y1, x2, y2);
+		runnable.run();
+		RoundedShader.INSTANCE.unbind();
 	}
 
 	public enum RoundedShaderType {

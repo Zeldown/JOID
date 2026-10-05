@@ -23,21 +23,40 @@ public abstract class ChartNode extends Node {
 		super(x, y, width, height);
 	}
 
-	@Override
-	public final void drawSkeleton(final double mouseX, final double mouseY) {
-		super.draw(mouseX, mouseY);
+	public final Number getMin() {
+		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0);
+		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0);
+		return min == max ? 0 : min;
+	}
+
+	public final Number getMax() {
+		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0);
+		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0);
+		return min == max ? max == 0 ? 1 : max * 2 : max;
 	}
 
 	public final boolean isLoaded() {
 		return this.isMounted() && this.xAxis != null && this.yAxis != null && !this.getDataMap().isEmpty() && !this.getDataMap().values().stream().anyMatch(ChartData::isEmpty);
 	}
 
+	public final Number getAverage() {
+		return this.getDataMap().values().stream().mapToDouble(daya -> daya.getAverage().doubleValue()).average().orElse(0);
+	}
+
 	public final @NonNull Set<String> getLabels() {
 		return this.xAxis.getLabelSet();
 	}
 
-	public final @NonNull Map<String, ChartData> getDataMap() {
-		return this.xAxis.getDataMap();
+	public final Number getMin(final String data) {
+		final double min = this.getData(data).getMin().doubleValue();
+		final double max = this.getData(data).getMax().doubleValue();
+		return min == max ? 0 : min;
+	}
+
+	public final Number getMax(final String data) {
+		final double min = this.getData(data).getMin().doubleValue();
+		final double max = this.getData(data).getMax().doubleValue();
+		return min == max ? max == 0 ? 1 : max * 2 : max;
 	}
 
 	public final ChartData getData(final String data) {
@@ -48,38 +67,13 @@ public abstract class ChartNode extends Node {
 		return this.getData(data).getAverage();
 	}
 
-	public final Number getAverage() {
-		return this.getDataMap().values().stream().mapToDouble(daya -> daya.getAverage().doubleValue()).average().orElse(0);
+	public final @NonNull Map<String, ChartData> getDataMap() {
+		return this.xAxis.getDataMap();
 	}
 
-	public final Number getMin(final String data) {
-		final double min = this.getData(data).getMin().doubleValue();
-		final double max = this.getData(data).getMax().doubleValue();
-		return min == max ? 0 : min;
-	}
-
-	public final Number getMin() {
-		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0);
-		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0);
-		return min == max ? 0 : min;
-	}
-
-	public final Number getMax(final String data) {
-		final double min = this.getData(data).getMin().doubleValue();
-		final double max = this.getData(data).getMax().doubleValue();
-		return min == max ? max == 0 ? 1 : max * 2 : max;
-	}
-
-	public final Number getMax() {
-		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0);
-		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0);
-		return min == max ? max == 0 ? 1 : max * 2 : max;
-	}
-
-	public final <T extends ChartNode> @NonNull T axis(final @NonNull XChartAxis x, final @NonNull YChartAxis y) {
-		this.xAxis = x;
-		this.yAxis = y;
-		return (T) this;
+	@Override
+	public final void drawSkeleton(final double mouseX, final double mouseY) {
+		super.draw(mouseX, mouseY);
 	}
 
 	public final <T extends ChartNode> @NonNull T axis(final @NonNull XChartAxis x) {
@@ -88,6 +82,21 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final <T extends ChartNode> @NonNull T axis(final @NonNull YChartAxis y) {
+		this.yAxis = y;
+		return (T) this;
+	}
+
+	public final <T extends ChartNode> @NonNull T remove(final @NonNull String data) {
+		if (this.xAxis == null) {
+			throw new IllegalStateException("You must set the X axis before removing data");
+		}
+
+		this.xAxis.remove(data);
+		return (T) this;
+	}
+
+	public final <T extends ChartNode> @NonNull T axis(final @NonNull XChartAxis x, final @NonNull YChartAxis y) {
+		this.xAxis = x;
 		this.yAxis = y;
 		return (T) this;
 	}
@@ -101,15 +110,6 @@ public abstract class ChartNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends ChartNode> @NonNull T remove(final @NonNull String data) {
-		if (this.xAxis == null) {
-			throw new IllegalStateException("You must set the X axis before removing data");
-		}
-
-		this.xAxis.remove(data);
-		return (T) this;
-	}
-
 	public static class ChartAxis {
 
 		private final String name;
@@ -118,16 +118,16 @@ public abstract class ChartNode extends Node {
 			this.name = name;
 		}
 
-		public static @NonNull XChartAxis x(final @NonNull String name, final @NonNull String... labels) {
-			return new XChartAxis(name, labels);
+		public String getName() {
+			return this.name;
 		}
 
 		public static @NonNull YChartAxis y(final @NonNull String name) {
 			return new YChartAxis(name);
 		}
 
-		public String getName() {
-			return this.name;
+		public static @NonNull XChartAxis x(final @NonNull String name, final @NonNull String... labels) {
+			return new XChartAxis(name, labels);
 		}
 
 		@Getter
@@ -148,6 +148,11 @@ public abstract class ChartNode extends Node {
 				return this.dataMap.get(data);
 			}
 
+			public final @NonNull XChartAxis remove(final @NonNull String data) {
+				this.dataMap.remove(data);
+				return this;
+			}
+
 			public final @NonNull XChartAxis labelSet(final @NonNull String... labels) {
 				this.labelSet.clear();
 				Collections.addAll(this.labelSet, labels);
@@ -166,11 +171,6 @@ public abstract class ChartNode extends Node {
 
 			public final @NonNull XChartAxis data(final @NonNull String dataName, final @NonNull ChartData data) {
 				this.dataMap.put(dataName, data);
-				return this;
-			}
-
-			public final @NonNull XChartAxis remove(final @NonNull String data) {
-				this.dataMap.remove(data);
 				return this;
 			}
 
@@ -209,32 +209,16 @@ public abstract class ChartNode extends Node {
 			this(new HashMap<>());
 		}
 
-		protected ChartData(final Map<@NonNull String, @NonNull Number> dataMap) {
-			this.dataMap = dataMap;
-		}
-
 		public static @NonNull ChartData create() {
 			return new ChartData();
 		}
 
+		protected ChartData(final Map<@NonNull String, @NonNull Number> dataMap) {
+			this.dataMap = dataMap;
+		}
+
 		public static @NonNull ChartData create(final Map<@NonNull String, @NonNull Number> dataMap) {
 			return new ChartData(dataMap);
-		}
-
-		public boolean isEmpty() {
-			return this.dataMap == null || this.dataMap.isEmpty();
-		}
-
-		public Number get(final String label) {
-			return this.dataMap.get(label);
-		}
-
-		public boolean has(final String label) {
-			return this.dataMap.containsKey(label);
-		}
-
-		public Number getAverage() {
-			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).average().orElse(0);
 		}
 
 		public Number getMin() {
@@ -245,13 +229,29 @@ public abstract class ChartNode extends Node {
 			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).max().orElse(0);
 		}
 
-		public final <T extends ChartData> T add(final @NonNull String label, final Number data) {
-			this.dataMap.put(label, data);
-			return (T) this;
+		public boolean isEmpty() {
+			return this.dataMap == null || this.dataMap.isEmpty();
+		}
+
+		public Number getAverage() {
+			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).average().orElse(0);
+		}
+
+		public Number get(final String label) {
+			return this.dataMap.get(label);
+		}
+
+		public boolean has(final String label) {
+			return this.dataMap.containsKey(label);
 		}
 
 		public final <T extends ChartData> @NonNull T remove(final @NonNull String label) {
 			this.dataMap.remove(label);
+			return (T) this;
+		}
+
+		public final <T extends ChartData> T add(final @NonNull String label, final Number data) {
+			this.dataMap.put(label, data);
 			return (T) this;
 		}
 

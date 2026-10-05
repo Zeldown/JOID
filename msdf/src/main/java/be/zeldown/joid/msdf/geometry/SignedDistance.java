@@ -6,11 +6,12 @@ import lombok.Setter;
 @Getter
 public final class SignedDistance {
 
+	private int    side;
 	private double distance;
 	private double orthogonality;
-	private int    side;
 
-	@Setter private Edge edge;
+	@Setter
+	private Edge edge;
 
 	public SignedDistance() {
 		this.reset();
@@ -21,12 +22,6 @@ public final class SignedDistance {
 		this.orthogonality = 1D;
 		this.side = 0;
 		this.edge = null;
-	}
-
-	public void set(final double distance, final double orthogonality, final int side) {
-		this.distance = distance;
-		this.orthogonality = orthogonality;
-		this.side = side;
 	}
 
 	public void copy(final SignedDistance other) {
@@ -40,6 +35,12 @@ public final class SignedDistance {
 		final double current = Math.abs(this.distance);
 		final double candidate = Math.abs(other.distance);
 		return current < candidate || current == candidate && this.orthogonality < other.orthogonality;
+	}
+
+	public void set(final double distance, final double orthogonality, final int side) {
+		this.distance = distance;
+		this.orthogonality = orthogonality;
+		this.side = side;
 	}
 
 }

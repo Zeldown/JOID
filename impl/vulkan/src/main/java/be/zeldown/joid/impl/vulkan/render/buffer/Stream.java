@@ -8,13 +8,13 @@ import lombok.Getter;
 @Getter
 public final class Stream {
 
-	private final Context            context;
 	private final int                usage;
 	private final long               alignment;
+	private final Context            context;
 	private final Consumer<Runnable> disposer;
 
-	private Buffer buffer;
 	private long   offset;
+	private Buffer buffer;
 
 	public Stream(final Context context, final long capacity, final int usage, final long alignment, final Consumer<Runnable> disposer) {
 		this.context   = context;
@@ -22,6 +22,10 @@ public final class Stream {
 		this.alignment = alignment;
 		this.disposer  = disposer;
 		this.buffer    = Buffer.create(context, capacity, usage);
+	}
+
+	public void reset() {
+		this.offset = 0L;
 	}
 
 	public long allocate(final long size) {
@@ -36,10 +40,6 @@ public final class Stream {
 
 		this.offset = aligned + size;
 		return aligned;
-	}
-
-	public void reset() {
-		this.offset = 0L;
 	}
 
 }

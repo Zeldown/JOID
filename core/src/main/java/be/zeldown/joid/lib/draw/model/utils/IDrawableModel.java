@@ -5,7 +5,7 @@ public interface IDrawableModel {
 	public void render();
 
 	public double getWidth();
-	public double getHeight();
 	public double getDepth();
+	public double getHeight();
 
 }

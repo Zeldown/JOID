@@ -11,12 +11,12 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void create(final int width, final int height) {
+	public void present() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void present() {
+	public String getRenderer() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -26,12 +26,12 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public SnapshotImage capture(final int width, final int height) {
+	public void create(final int width, final int height) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public String getRenderer() {
+	public SnapshotImage capture(final int width, final int height) {
 		throw new UnsupportedOperationException();
 	}
 

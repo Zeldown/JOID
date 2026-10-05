@@ -32,16 +32,11 @@ public class MsdfFontProviderTest {
 	}
 
 	@Test
-	public void measuresTheExactKerningOffset() {
-		final TextInfo info = MsdfFontProviderTest.info();
-		final float kerning = MsdfFontProviderTest.regular.getKerning('A', 'V');
-		Assert.assertEquals(info.getWidth("A") + info.getWidth("V") + kerning * MsdfFontProviderTest.SIZE, info.getWidth("AV"), 0.001D);
-	}
-
-	@Test
-	public void leavesUnkernedPairsUntouched() {
-		final TextInfo info = MsdfFontProviderTest.info();
-		Assert.assertEquals(info.getWidth("H") + info.getWidth("H"), info.getWidth("HH"), 0.001D);
+	public void measuresTheRequestedWeight() {
+		final double regular = MsdfFontProviderTest.info().getWidth("Hello");
+		final double bold = MsdfFontProviderTest.info().weight(FontWeight.BOLD).getWidth("Hello");
+		Assert.assertTrue("Bold must be wider than regular (" + bold + " vs " + regular + ")", bold > regular);
+		Assert.assertEquals(bold, MsdfFontProviderTest.info().weight(FontWeight.BLACK).getWidth("Hello"), 0D);
 	}
 
 	@Test
@@ -52,16 +47,21 @@ public class MsdfFontProviderTest {
 	}
 
 	@Test
-	public void measuresTheRequestedWeight() {
-		final double regular = MsdfFontProviderTest.info().getWidth("Hello");
-		final double bold = MsdfFontProviderTest.info().weight(FontWeight.BOLD).getWidth("Hello");
-		Assert.assertTrue("Bold must be wider than regular (" + bold + " vs " + regular + ")", bold > regular);
-		Assert.assertEquals(bold, MsdfFontProviderTest.info().weight(FontWeight.BLACK).getWidth("Hello"), 0D);
+	public void keepsTheLineHeightOfTheFace() {
+		Assert.assertEquals(MsdfFontProviderTest.regular.getLineHeight() * MsdfFontProviderTest.SIZE, MsdfFontProviderTest.info().getHeight(), 0.001D);
 	}
 
 	@Test
-	public void keepsTheLineHeightOfTheFace() {
-		Assert.assertEquals(MsdfFontProviderTest.regular.getLineHeight() * MsdfFontProviderTest.SIZE, MsdfFontProviderTest.info().getHeight(), 0.001D);
+	public void leavesUnkernedPairsUntouched() {
+		final TextInfo info = MsdfFontProviderTest.info();
+		Assert.assertEquals(info.getWidth("H") + info.getWidth("H"), info.getWidth("HH"), 0.001D);
+	}
+
+	@Test
+	public void measuresTheExactKerningOffset() {
+		final TextInfo info = MsdfFontProviderTest.info();
+		final float kerning = MsdfFontProviderTest.regular.getKerning('A', 'V');
+		Assert.assertEquals(info.getWidth("A") + info.getWidth("V") + kerning * MsdfFontProviderTest.SIZE, info.getWidth("AV"), 0.001D);
 	}
 
 	private static TextInfo info() {

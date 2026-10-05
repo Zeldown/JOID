@@ -12,8 +12,8 @@ import lombok.NonNull;
 
 public final class WindowBridge implements IWindowBridge {
 
-	private static final Map<Key, Integer> CODE_MAP = new EnumMap<>(Key.class);
 	private static final Map<Integer, Key> KEY_MAP  = new HashMap<>();
+	private static final Map<Key, Integer> CODE_MAP = new EnumMap<>(Key.class);
 
 	static {
 		WindowBridge.map(Key.A, GLFW.GLFW_KEY_A);
@@ -188,24 +188,24 @@ public final class WindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isKeyDown(final @NonNull Key key) {
-		final Integer code = WindowBridge.CODE_MAP.get(key);
-		return code != null && GLFW.glfwGetKey(this.window, code) == GLFW.GLFW_PRESS;
-	}
-
-	@Override
 	public @NonNull String getClipboard() {
 		final String clipboard = GLFW.glfwGetClipboardString(this.window);
 		return clipboard == null ? "" : clipboard;
 	}
 
 	@Override
-	public void setClipboard(final @NonNull String text) {
-		GLFW.glfwSetClipboardString(this.window, text);
+	public boolean isKeyDown(final @NonNull Key key) {
+		final Integer code = WindowBridge.CODE_MAP.get(key);
+		return code != null && GLFW.glfwGetKey(this.window, code) == GLFW.GLFW_PRESS;
 	}
 
 	public static @NonNull Key getKey(final int code) {
 		return WindowBridge.KEY_MAP.getOrDefault(code, Key.UNKNOWN);
+	}
+
+	@Override
+	public void setClipboard(final @NonNull String text) {
+		GLFW.glfwSetClipboardString(this.window, text);
 	}
 
 	private static void map(final Key key, final int code) {

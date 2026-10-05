@@ -10,10 +10,10 @@ import lombok.NonNull;
 
 public class BorderShaderPass implements ShaderPass {
 
-	private final float borderWidth;
-	private final Color borderColor;
 	private final boolean fill;
 	private final BorderMode mode;
+	private final float borderWidth;
+	private final Color borderColor;
 
 	public BorderShaderPass(final float borderWidth, final @NonNull Color borderColor) {
 		this(borderWidth, borderColor, true, BorderMode.OUT);
@@ -31,16 +31,6 @@ public class BorderShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindDirect(final Node node) {
-		this.bindInternal(node);
-	}
-
-	@Override
-	public void bindForTexture(final Node node) {
-		this.bindInternal(node);
-	}
-
-	@Override
 	public void unbind() {
 		BorderShader.inst().unbind();
 	}
@@ -53,6 +43,16 @@ public class BorderShaderPass implements ShaderPass {
 	@Override
 	public float expansion() {
 		return this.borderWidth + 2F;
+	}
+
+	@Override
+	public void bindDirect(final Node node) {
+		this.bindInternal(node);
+	}
+
+	@Override
+	public void bindForTexture(final Node node) {
+		this.bindInternal(node);
 	}
 
 	private void bindInternal(final Node node) {

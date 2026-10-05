@@ -18,8 +18,8 @@ import lombok.NonNull;
 
 public final class WindowBridge implements IWindowBridge {
 
-	private static final Map<Key, Integer> CODE_MAP  = new EnumMap<>(Key.class);
 	private static final Key[]             KEY_ARRAY = new Key[Keyboard.KEYBOARD_SIZE];
+	private static final Map<Key, Integer> CODE_MAP  = new EnumMap<>(Key.class);
 
 	static {
 		Arrays.fill(WindowBridge.KEY_ARRAY, Key.UNKNOWN);
@@ -163,12 +163,6 @@ public final class WindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isKeyDown(final @NonNull Key key) {
-		final Integer code = WindowBridge.CODE_MAP.get(key);
-		return code != null && Keyboard.isKeyDown(code);
-	}
-
-	@Override
 	public @NonNull String getClipboard() {
 		try {
 			final Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
@@ -181,14 +175,20 @@ public final class WindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public void setClipboard(final @NonNull String text) {
-		try {
-			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
-		} catch (final Exception silent) {}
+	public boolean isKeyDown(final @NonNull Key key) {
+		final Integer code = WindowBridge.CODE_MAP.get(key);
+		return code != null && Keyboard.isKeyDown(code);
 	}
 
 	public static @NonNull Key getKey(final int code) {
 		return code < 0 || code >= WindowBridge.KEY_ARRAY.length ? Key.UNKNOWN : WindowBridge.KEY_ARRAY[code];
+	}
+
+	@Override
+	public void setClipboard(final @NonNull String text) {
+		try {
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
+		} catch (final Exception silent) {}
 	}
 
 	private static void map(final Key key, final int code) {

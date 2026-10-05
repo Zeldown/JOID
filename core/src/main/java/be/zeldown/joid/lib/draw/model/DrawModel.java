@@ -8,7 +8,8 @@ import lombok.NonNull;
 
 public final class DrawModel {
 
-	@Getter private static DrawModel instance;
+	@Getter
+	private static DrawModel instance;
 
 	public DrawModel() {
 		if (DrawModel.instance != null) {

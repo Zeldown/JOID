@@ -8,28 +8,28 @@ public enum Align {
 	CENTER,
 	END;
 
-	public boolean is(final @NonNull Align align) {
-		return this == align;
-	}
-
-	public boolean isStart() {
-		return this == Align.START;
+	public boolean isEnd() {
+		return this == Align.END;
 	}
 
 	public boolean isLeft() {
 		return this == Align.START;
 	}
 
-	public boolean isCenter() {
-		return this == Align.CENTER;
-	}
-
-	public boolean isEnd() {
-		return this == Align.END;
+	public boolean isStart() {
+		return this == Align.START;
 	}
 
 	public boolean isRight() {
 		return this == Align.END;
+	}
+
+	public boolean isCenter() {
+		return this == Align.CENTER;
+	}
+
+	public boolean is(final @NonNull Align align) {
+		return this == align;
 	}
 
 }

@@ -31,12 +31,14 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	};
 
-	public static int getPoolSize() {
-		return Timeline.pool.size();
-	}
+	private final List<BaseTween<?>> children = new ArrayList<>(10);
+	private Modes mode;
+	private Timeline parent;
+	private boolean isBuilt;
+	private Timeline current;
 
-	public static void ensurePoolCapacity(final int minCapacity) {
-		Timeline.pool.ensureCapacity(minCapacity);
+	private Timeline() {
+		this.reset();
 	}
 
 	public static Timeline createSequence() {
@@ -51,92 +53,25 @@ public final class Timeline extends BaseTween<Timeline> {
 		return tl;
 	}
 
-	private enum Modes {
-		SEQUENCE,
-		PARALLEL
-	}
+	@Override
+	public Timeline start() {
+		super.start();
 
-	private final List<BaseTween<?>> children = new ArrayList<>(10);
-	private Timeline current;
-	private Timeline parent;
-	private Modes mode;
-	private boolean isBuilt;
+		for (final BaseTween<?> obj : this.children) {
+			obj.start();
+		}
 
-	private Timeline() {
-		this.reset();
+		return this;
 	}
 
 	@Override
-	protected void reset() {
-		super.reset();
-
-		this.children.clear();
-		this.current = this.parent = null;
-
-		this.isBuilt = false;
-	}
-
-	private void setup(final Modes mode) {
-		this.mode = mode;
-		this.current = this;
-	}
-
-	public Timeline push(final Tween tween) {
-		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
+	public void free() {
+		for (int i = this.children.size() - 1; i >= 0; i--) {
+			final BaseTween<?> obj = this.children.remove(i);
+			obj.free();
 		}
 
-		this.current.children.add(tween);
-		return this;
-	}
-
-	public Timeline push(final Timeline timeline) {
-		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
-		}
-
-		if (timeline.current != timeline) {
-			throw new RuntimeException("You forgot to call a few 'end()' statements in your pushed timeline");
-		}
-
-		timeline.parent = this.current;
-		this.current.children.add(timeline);
-		return this;
-	}
-
-	public Timeline pushPause(final float time) {
-		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
-		}
-
-		this.current.children.add(Tween.mark().delay(time));
-		return this;
-	}
-
-	public Timeline beginSequence() {
-		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
-		}
-
-		final Timeline tl = Timeline.pool.get();
-		tl.parent = this.current;
-		tl.mode = Modes.SEQUENCE;
-		this.current.children.add(tl);
-		this.current = tl;
-		return this;
-	}
-
-	public Timeline beginParallel() {
-		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
-		}
-
-		final Timeline tl = Timeline.pool.get();
-		tl.parent = this.current;
-		tl.mode = Modes.PARALLEL;
-		this.current.children.add(tl);
-		this.current = tl;
-		return this;
+		Timeline.pool.free(this);
 	}
 
 	public Timeline end() {
@@ -152,12 +87,14 @@ public final class Timeline extends BaseTween<Timeline> {
 		return this;
 	}
 
-	public List<BaseTween<?>> getChildren() {
-		if (this.isBuilt) {
-			return Collections.unmodifiableList(this.current.children);
-		} else {
-			return this.current.children;
-		}
+	@Override
+	protected void reset() {
+		super.reset();
+
+		this.children.clear();
+		this.current = this.parent = null;
+
+		this.isBuilt = false;
 	}
 
 	@Override
@@ -193,25 +130,114 @@ public final class Timeline extends BaseTween<Timeline> {
 		return this;
 	}
 
-	@Override
-	public Timeline start() {
-		super.start();
+	public static int getPoolSize() {
+		return Timeline.pool.size();
+	}
 
-		for (final BaseTween<?> obj : this.children) {
-			obj.start();
+	public Timeline beginSequence() {
+		if (this.isBuilt) {
+			throw new RuntimeException("You can't push anything to a timeline once it is started");
 		}
 
+		final Timeline tl = Timeline.pool.get();
+		tl.parent = this.current;
+		tl.mode = Modes.SEQUENCE;
+		this.current.children.add(tl);
+		this.current = tl;
+		return this;
+	}
+
+	public Timeline beginParallel() {
+		if (this.isBuilt) {
+			throw new RuntimeException("You can't push anything to a timeline once it is started");
+		}
+
+		final Timeline tl = Timeline.pool.get();
+		tl.parent = this.current;
+		tl.mode = Modes.PARALLEL;
+		this.current.children.add(tl);
+		this.current = tl;
 		return this;
 	}
 
 	@Override
-	public void free() {
+	protected void forceEndValues() {
+		for (final BaseTween<?> obj : this.children) {
+			obj.forceToEnd(this.duration);
+		}
+	}
+
+	@Override
+	protected void forceStartValues() {
 		for (int i = this.children.size() - 1; i >= 0; i--) {
-			final BaseTween<?> obj = this.children.remove(i);
-			obj.free();
+			final BaseTween<?> obj = this.children.get(i);
+			obj.forceToStart();
+		}
+	}
+
+	public Timeline push(final Tween tween) {
+		if (this.isBuilt) {
+			throw new RuntimeException("You can't push anything to a timeline once it is started");
 		}
 
-		Timeline.pool.free(this);
+		this.current.children.add(tween);
+		return this;
+	}
+
+	public List<BaseTween<?>> getChildren() {
+		if (this.isBuilt) {
+			return Collections.unmodifiableList(this.current.children);
+		} else {
+			return this.current.children;
+		}
+	}
+
+	public Timeline pushPause(final float time) {
+		if (this.isBuilt) {
+			throw new RuntimeException("You can't push anything to a timeline once it is started");
+		}
+
+		this.current.children.add(Tween.mark().delay(time));
+		return this;
+	}
+
+	public Timeline push(final Timeline timeline) {
+		if (this.isBuilt) {
+			throw new RuntimeException("You can't push anything to a timeline once it is started");
+		}
+
+		if (timeline.current != timeline) {
+			throw new RuntimeException("You forgot to call a few 'end()' statements in your pushed timeline");
+		}
+
+		timeline.parent = this.current;
+		this.current.children.add(timeline);
+		return this;
+	}
+
+	@Override
+	protected boolean containsTarget(final Object target) {
+		for (final BaseTween<?> obj : this.children) {
+			if (obj.containsTarget(target)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static void ensurePoolCapacity(final int minCapacity) {
+		Timeline.pool.ensureCapacity(minCapacity);
+	}
+
+	@Override
+	protected boolean containsTarget(final Object target, final int tweenType) {
+		for (final BaseTween<?> obj : this.children) {
+			if (obj.containsTarget(target, tweenType)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -274,40 +300,14 @@ public final class Timeline extends BaseTween<Timeline> {
 		}
 	}
 
-	@Override
-	protected void forceStartValues() {
-		for (int i = this.children.size() - 1; i >= 0; i--) {
-			final BaseTween<?> obj = this.children.get(i);
-			obj.forceToStart();
-		}
+	private void setup(final Modes mode) {
+		this.mode = mode;
+		this.current = this;
 	}
 
-	@Override
-	protected void forceEndValues() {
-		for (final BaseTween<?> obj : this.children) {
-			obj.forceToEnd(this.duration);
-		}
-	}
-
-	@Override
-	protected boolean containsTarget(final Object target) {
-		for (final BaseTween<?> obj : this.children) {
-			if (obj.containsTarget(target)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	@Override
-	protected boolean containsTarget(final Object target, final int tweenType) {
-		for (final BaseTween<?> obj : this.children) {
-			if (obj.containsTarget(target, tweenType)) {
-				return true;
-			}
-		}
-		return false;
+	private enum Modes {
+		SEQUENCE,
+		PARALLEL;
 	}
 
 }

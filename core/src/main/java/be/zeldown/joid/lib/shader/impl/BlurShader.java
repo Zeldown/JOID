@@ -13,6 +13,10 @@ public class BlurShader extends ShaderImpl {
 		this.load(JOID.class.getResourceAsStream("/assets/shaders/blur/blur.vsh"), JOID.class.getResourceAsStream("/assets/shaders/blur/blur.fsh"));
 	}
 
+	public static @NonNull BlurShader inst() {
+		return BlurShader.INSTANCE;
+	}
+
 	public void bind(final float radius, final float dirX, final float dirY, final float texelW, final float texelH) {
 		BlurShader.INSTANCE.bind();
 
@@ -24,10 +28,6 @@ public class BlurShader extends ShaderImpl {
 
 		final Float2Uniform texelUniform = BlurShader.INSTANCE.shader.getFloat2Uniform("u_TexelSize");
 		texelUniform.setValue(texelW, texelH);
-	}
-
-	public static @NonNull BlurShader inst() {
-		return BlurShader.INSTANCE;
 	}
 
 }

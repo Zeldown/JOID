@@ -10,10 +10,10 @@ import be.zeldown.joid.lib.bridge.window.IWindowBridge;
 public final class BridgeHandler {
 
 	public static final UIBridgeRegistry              UI;
-	public static final BridgeRegistry<IWindowBridge> WINDOW;
-	public static final BridgeRegistry<IRenderBridge> RENDER;
 	public static final BridgeRegistry<IAudioBridge>  AUDIO;
 	public static final BridgeRegistry<IClockBridge>  CLOCK;
+	public static final BridgeRegistry<IWindowBridge> WINDOW;
+	public static final BridgeRegistry<IRenderBridge> RENDER;
 
 	static {
 		UI     = UIBridgeRegistry.create();

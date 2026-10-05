@@ -124,23 +124,8 @@ public final class Shader implements IShader {
 	}
 
 	@Override
-	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
-		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform());
-	}
-
-	@Override
-	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
-		return new BooleanUniform(this.memberMap.get(name));
-	}
-
-	@Override
 	public @NonNull IntUniform getIntUniform(final @NonNull String name) {
 		return new IntUniform(this.memberMap.get(name));
-	}
-
-	@Override
-	public @NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name) {
-		return new FloatArrayUniform(this.memberMap.get(name));
 	}
 
 	@Override
@@ -161,6 +146,21 @@ public final class Shader implements IShader {
 	@Override
 	public @NonNull Float4Uniform getFloat4Uniform(final @NonNull String name) {
 		return new Float4Uniform(this.memberMap.get(name));
+	}
+
+	@Override
+	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
+		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform());
+	}
+
+	@Override
+	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
+		return new BooleanUniform(this.memberMap.get(name));
+	}
+
+	@Override
+	public @NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name) {
+		return new FloatArrayUniform(this.memberMap.get(name));
 	}
 
 	@Override

@@ -28,6 +28,18 @@ public class FrameBuffer {
 		return new FrameBuffer(BridgeHandler.RENDER.get().createFrameBuffer(width, height, filter), filter);
 	}
 
+	public void delete() {
+		this.handle.delete();
+	}
+
+	public int getWidth() {
+		return this.handle.getWidth();
+	}
+
+	public int getHeight() {
+		return this.handle.getHeight();
+	}
+
 	public @NonNull FrameBuffer bind() {
 		BridgeHandler.RENDER.get().frameBuffer(this.handle);
 		return this;
@@ -67,18 +79,6 @@ public class FrameBuffer {
 		render.blend(BlendState.DISABLED);
 		render.resetTexture();
 		return this;
-	}
-
-	public int getWidth() {
-		return this.handle.getWidth();
-	}
-
-	public int getHeight() {
-		return this.handle.getHeight();
-	}
-
-	public void delete() {
-		this.handle.delete();
 	}
 
 }

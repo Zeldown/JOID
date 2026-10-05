@@ -20,6 +20,16 @@ public abstract class CheckboxNode extends Node {
 		super(x, y, width, height);
 	}
 
+	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
+		this.checked = checked;
+		return (T) this;
+	}
+
+	public final <T extends CheckboxNode> @NonNull T onChange(final @NonNull NodeCheckboxChangeCallback<T> callback) {
+		super.registerCallback(CheckboxNode.CALLBACK_CHANGE, callback);
+		return (T) this;
+	}
+
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
@@ -31,16 +41,6 @@ public abstract class CheckboxNode extends Node {
 				this.checked = !this.checked;
 			}, !this.checked);
 		});
-	}
-
-	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
-		this.checked = checked;
-		return (T) this;
-	}
-
-	public final <T extends CheckboxNode> @NonNull T onChange(final @NonNull NodeCheckboxChangeCallback<T> callback) {
-		super.registerCallback(CheckboxNode.CALLBACK_CHANGE, callback);
-		return (T) this;
 	}
 
 }

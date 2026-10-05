@@ -13,9 +13,9 @@ public interface IWindowBridge extends IBridge {
 	public double getMouseY();
 	public boolean isMouseGrabbed();
 
-	public boolean isKeyDown(final @NonNull Key key);
-
 	public @NonNull String getClipboard();
+
+	public boolean isKeyDown(final @NonNull Key key);
 	public void setClipboard(final @NonNull String text);
 
 }

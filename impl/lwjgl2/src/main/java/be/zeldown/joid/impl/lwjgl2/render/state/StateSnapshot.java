@@ -14,45 +14,45 @@ import lombok.NonNull;
 
 public final class StateSnapshot {
 
-	private static final FloatBuffer FLOAT_BUFFER = BufferUtils.createFloatBuffer(16);
 	private static final IntBuffer   INT_BUFFER   = BufferUtils.createIntBuffer(16);
 	private static final ByteBuffer  BYTE_BUFFER  = BufferUtils.createByteBuffer(16);
+	private static final FloatBuffer FLOAT_BUFFER = BufferUtils.createFloatBuffer(16);
 
 	private final int     program;
-	private final int     frameBuffer;
-	private final int[]   viewport;
-	private final boolean texture2D;
 	private final int     texture;
+	private final int[]   viewport;
+	private final int     frameBuffer;
+	private final boolean texture2D;
 
 	private final float[]       color;
 	private final float[]       clearColor;
 	private final boolean[]     colorMask;
 	private final BlendSnapshot blend;
 
+	private final boolean cull;
 	private final boolean depthTest;
 	private final boolean depthWrite;
-	private final boolean cull;
 
-	private final boolean lighting;
 	private final boolean light0;
 	private final boolean light1;
-	private final boolean colorMaterial;
 	private final int     shadeModel;
 	private final float[] ambient;
+	private final boolean lighting;
+	private final boolean colorMaterial;
 
+	private final float   lineWidth;
 	private final boolean alphaTest;
 	private final int     alphaFunction;
-	private final float   alphaReference;
-	private final float   lineWidth;
 	private final boolean lineSmooth;
+	private final float   alphaReference;
 
+	private final int     stencilMask;
+	private final int     stencilFail;
+	private final int     stencilPass;
 	private final boolean stencilTest;
 	private final int     stencilFunction;
 	private final int     stencilReference;
-	private final int     stencilMask;
-	private final int     stencilFail;
 	private final int     stencilDepthFail;
-	private final int     stencilPass;
 
 	private StateSnapshot() {
 		this.program     = GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM);

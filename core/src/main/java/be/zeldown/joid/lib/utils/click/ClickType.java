@@ -51,24 +51,24 @@ public enum ClickType {
 		return this == ClickType.LEFT;
 	}
 
+	public boolean isBack() {
+		return this == ClickType.BACK;
+	}
+
 	public boolean isRight() {
 		return this == ClickType.RIGHT;
+	}
+
+	public boolean isOther() {
+		return this == ClickType.OTHER;
 	}
 
 	public boolean isMiddle() {
 		return this == ClickType.MIDDLE;
 	}
 
-	public boolean isBack() {
-		return this == ClickType.BACK;
-	}
-
 	public boolean isForward() {
 		return this == ClickType.FORWARD;
-	}
-
-	public boolean isOther() {
-		return this == ClickType.OTHER;
 	}
 
 }

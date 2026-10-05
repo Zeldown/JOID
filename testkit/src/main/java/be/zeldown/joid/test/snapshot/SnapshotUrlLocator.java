@@ -37,6 +37,14 @@ public final class SnapshotUrlLocator implements IAssetLocator {
 		return new CachedAsset(url, new File(this.directory, SnapshotUrlLocator.hash(url)));
 	}
 
+	private static String hash(final String url) {
+		try {
+			return String.format("%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(url.getBytes(StandardCharsets.UTF_8))));
+		} catch (final NoSuchAlgorithmException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
 	private static void download(final @NonNull String url, final @NonNull File file) {
 		try {
 			final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -54,14 +62,6 @@ public final class SnapshotUrlLocator implements IAssetLocator {
 			Files.write(file.toPath(), output.toByteArray());
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
-		}
-	}
-
-	private static String hash(final String url) {
-		try {
-			return String.format("%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(url.getBytes(StandardCharsets.UTF_8))));
-		} catch (final NoSuchAlgorithmException e) {
-			throw new IllegalStateException(e);
 		}
 	}
 

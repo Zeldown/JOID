@@ -17,6 +17,10 @@ public class BorderShader extends ShaderImpl {
 		this.load(JOID.class.getResourceAsStream("/assets/shaders/border/border.vsh"), JOID.class.getResourceAsStream("/assets/shaders/border/border.fsh"));
 	}
 
+	public static @NonNull BorderShader inst() {
+		return BorderShader.INSTANCE;
+	}
+
 	public void bind(final float borderWidth, final @NonNull Color borderColor, final float texelW, final float texelH, final boolean fill, final int mode, final float rectX1, final float rectY1, final float rectX2, final float rectY2) {
 		BorderShader.INSTANCE.bind();
 
@@ -62,10 +66,6 @@ public class BorderShader extends ShaderImpl {
 			final IntUniform hasGradientUniform = BorderShader.INSTANCE.shader.getIntUniform("u_HasGradient");
 			hasGradientUniform.setValue(0);
 		}
-	}
-
-	public static @NonNull BorderShader inst() {
-		return BorderShader.INSTANCE;
 	}
 
 	public enum BorderMode {

@@ -19,15 +19,15 @@ public class BridgeRegistry<T extends IBridge> {
 		return new BridgeRegistry<>(name);
 	}
 
-	public final void register(final @NonNull T bridge) {
-		this.bridgeList.add(bridge);
-	}
-
 	public final @NonNull T get() {
 		if (this.bridgeList.isEmpty()) {
 			throw new IllegalStateException("No " + this.name.toLowerCase() + " bridge registered, call BridgeHandler." + this.name + ".register before using JOID");
 		}
 		return this.bridgeList.getLast();
+	}
+
+	public final void register(final @NonNull T bridge) {
+		this.bridgeList.add(bridge);
 	}
 
 	public final T find(final @NonNull Predicate<@NonNull T> filter) {

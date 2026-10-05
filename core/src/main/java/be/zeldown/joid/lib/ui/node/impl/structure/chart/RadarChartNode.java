@@ -19,19 +19,6 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		this.dataList = new LinkedList<>();
 	}
 
-	@Override
-	public final void drawSkeleton(final double mouseX, final double mouseY) {
-		super.draw(mouseX, mouseY);
-	}
-
-	public final boolean isLoaded() {
-		return this.isMounted() && this.dataList.size() >= 3 && !this.dataList.stream().anyMatch(DATA::isEmpty);
-	}
-
-	public final Number getAverage() {
-		return this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).average().orElse(0);
-	}
-
 	public final Number getMin() {
 		final double min = this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
 		final double max = this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
@@ -42,6 +29,19 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		final double min = this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
 		final double max = this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
 		return min == max ? max == 0 ? 1 : max * 2 : max;
+	}
+
+	public final boolean isLoaded() {
+		return this.isMounted() && this.dataList.size() >= 3 && !this.dataList.stream().anyMatch(DATA::isEmpty);
+	}
+
+	public final Number getAverage() {
+		return this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).average().orElse(0);
+	}
+
+	@Override
+	public final void drawSkeleton(final double mouseX, final double mouseY) {
+		super.draw(mouseX, mouseY);
 	}
 
 	public final <T extends RadarChartNode<DATA>> @NonNull T data(final @NonNull DATA data) {
@@ -76,6 +76,11 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 			return this.value == null;
 		}
 
+		public final <T extends RadarChartData> @NonNull T clear() {
+			this.value = null;
+			return (T) this;
+		}
+
 		public final <T extends RadarChartData> T value(final Number value) {
 			this.value = value;
 			return (T) this;
@@ -83,11 +88,6 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 
 		public final <T extends RadarChartData> T label(final String label) {
 			this.label = label;
-			return (T) this;
-		}
-
-		public final <T extends RadarChartData> @NonNull T clear() {
-			this.value = null;
 			return (T) this;
 		}
 

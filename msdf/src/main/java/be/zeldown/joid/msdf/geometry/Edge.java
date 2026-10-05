@@ -10,10 +10,11 @@ public final class Edge {
 
 	private final double[] x;
 	private final double[] y;
-	private final double[] lengths;
 	private final double    total;
+	private final double[] lengths;
 
-	@Setter private int color;
+	@Setter
+	private int color;
 
 	public Edge(final List<Vector2> points) {
 		this.x = new double[points.size()];
@@ -41,12 +42,12 @@ public final class Edge {
 		return new Vector2(this.x[this.x.length - 1], this.y[this.y.length - 1]);
 	}
 
-	public Vector2 startDirection() {
-		return this.directionAt(0, 1);
-	}
-
 	public Vector2 endDirection() {
 		return this.directionAt(this.x.length - 2, this.x.length - 1);
+	}
+
+	public Vector2 startDirection() {
+		return this.directionAt(0, 1);
 	}
 
 	public void distance(final double px, final double py, final SignedDistance result) {

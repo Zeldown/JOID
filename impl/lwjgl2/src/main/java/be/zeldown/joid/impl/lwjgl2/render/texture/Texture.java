@@ -44,6 +44,16 @@ public final class Texture implements ITexture {
 	}
 
 	@Override
+	public void delete() {
+		if (this.deleted) {
+			return;
+		}
+
+		GL11.glDeleteTextures(this.id);
+		this.deleted = true;
+	}
+
+	@Override
 	public @NonNull Texture mipmap(final boolean mipmap) {
 		if (this.mipmapped == mipmap) {
 			return this;
@@ -87,16 +97,6 @@ public final class Texture implements ITexture {
 
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, previous);
 		return this;
-	}
-
-	@Override
-	public void delete() {
-		if (this.deleted) {
-			return;
-		}
-
-		GL11.glDeleteTextures(this.id);
-		this.deleted = true;
 	}
 
 }

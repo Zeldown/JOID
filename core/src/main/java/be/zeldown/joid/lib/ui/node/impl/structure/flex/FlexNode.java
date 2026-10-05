@@ -7,18 +7,10 @@ import lombok.NonNull;
 
 public final class FlexNode extends Node {
 
-	private FlexDirection direction;
 	private Align align;
+	private FlexDirection direction;
 
 	private double margin;
-
-	private FlexNode(final double x, final double y, final double width, final double height, final @NonNull FlexDirection direction) {
-		super(x, y, width, height);
-
-		this.direction = direction;
-		this.align     = null;
-		this.margin    = 0D;
-	}
 
 	public static final @NonNull FlexNode vertical(final double x, final double y, final double width) {
 		return new FlexNode(x, y, width, 0, FlexDirection.COLUMN);
@@ -28,9 +20,32 @@ public final class FlexNode extends Node {
 		return new FlexNode(x, y, 0, height, FlexDirection.ROW);
 	}
 
+	private FlexNode(final double x, final double y, final double width, final double height, final @NonNull FlexDirection direction) {
+		super(x, y, width, height);
+
+		this.direction = direction;
+		this.align     = null;
+		this.margin    = 0D;
+	}
+
 	@Override
 	public void init(final @NonNull UI ui) {
 		this.updateFlex();
+	}
+
+	@Override
+	public void update() {
+		this.updateFlex();
+	}
+
+	public final @NonNull FlexNode align(final Align align) {
+		this.align = align;
+		return this;
+	}
+
+	public final @NonNull FlexNode margin(final double margin) {
+		this.margin = margin;
+		return this;
 	}
 
 	@Override
@@ -43,9 +58,9 @@ public final class FlexNode extends Node {
 		this.updateFlex();
 	}
 
-	@Override
-	public void update() {
-		this.updateFlex();
+	public final @NonNull FlexNode direction(final @NonNull FlexDirection direction) {
+		this.direction = direction;
+		return this;
 	}
 
 	private final void updateFlex() {
@@ -90,21 +105,6 @@ public final class FlexNode extends Node {
 
 			super.width(Math.max(0, offsetX - this.margin));
 		}
-	}
-
-	public final @NonNull FlexNode direction(final @NonNull FlexDirection direction) {
-		this.direction = direction;
-		return this;
-	}
-
-	public final @NonNull FlexNode align(final Align align) {
-		this.align = align;
-		return this;
-	}
-
-	public final @NonNull FlexNode margin(final double margin) {
-		this.margin = margin;
-		return this;
 	}
 
 	public static enum FlexDirection {

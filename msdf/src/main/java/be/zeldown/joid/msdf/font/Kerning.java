@@ -100,14 +100,33 @@ public final class Kerning {
 		}
 	}
 
-	private void parseFeature(final int lookupList, final int feature, final Set<Integer> parsed) {
-		final int lookups = this.file.unsigned(feature + 2);
-		for (int i = 0; i < lookups; i++) {
-			final int index = this.file.unsigned(feature + 4 + i * 2);
-			if (parsed.add(index)) {
-				this.parseLookup(lookupList + this.file.unsigned(lookupList + 2 + index * 2));
+	private int[] coverage(final int offset) {
+		final int format = this.file.unsigned(offset);
+		if (format == 1) {
+			final int count = this.file.unsigned(offset + 2);
+			final int[] glyphs = new int[count];
+			for (int i = 0; i < count; i++) {
+				glyphs[i] = this.file.unsigned(offset + 4 + i * 2);
+			}
+			return glyphs;
+		}
+
+		final int ranges = this.file.unsigned(offset + 2);
+		int total = 0;
+		for (int i = 0; i < ranges; i++) {
+			final int record = offset + 4 + i * 6;
+			total += this.file.unsigned(record + 2) - this.file.unsigned(record) + 1;
+		}
+
+		final int[] glyphs = new int[total];
+		int index = 0;
+		for (int i = 0; i < ranges; i++) {
+			final int record = offset + 4 + i * 6;
+			for (int glyph = this.file.unsigned(record); glyph <= this.file.unsigned(record + 2); glyph++) {
+				glyphs[index++] = glyph;
 			}
 		}
+		return glyphs;
 	}
 
 	private void parseLookup(final int offset) {
@@ -121,6 +140,45 @@ public final class Kerning {
 		for (final Map.Entry<Long, Integer> entry : lookup.entrySet()) {
 			if (entry.getValue() != 0) {
 				this.pairs.merge(entry.getKey(), entry.getValue(), Integer::sum);
+			}
+		}
+	}
+
+	private int[] classDefinition(final int offset) {
+		final int format = this.file.unsigned(offset);
+		if (format == 1) {
+			final int start = this.file.unsigned(offset + 2);
+			final int count = this.file.unsigned(offset + 4);
+			final int[] classes = new int[start + count];
+			for (int i = 0; i < count; i++) {
+				classes[start + i] = this.file.unsigned(offset + 6 + i * 2);
+			}
+			return classes;
+		}
+
+		final int ranges = this.file.unsigned(offset + 2);
+		int maximum = 0;
+		for (int i = 0; i < ranges; i++) {
+			maximum = Math.max(maximum, this.file.unsigned(offset + 4 + i * 6 + 2));
+		}
+
+		final int[] classes = new int[maximum + 1];
+		for (int i = 0; i < ranges; i++) {
+			final int record = offset + 4 + i * 6;
+			final int value = this.file.unsigned(record + 4);
+			for (int glyph = this.file.unsigned(record); glyph <= this.file.unsigned(record + 2); glyph++) {
+				classes[glyph] = value;
+			}
+		}
+		return classes;
+	}
+
+	private void parseFeature(final int lookupList, final int feature, final Set<Integer> parsed) {
+		final int lookups = this.file.unsigned(feature + 2);
+		for (int i = 0; i < lookups; i++) {
+			final int index = this.file.unsigned(feature + 4 + i * 2);
+			if (parsed.add(index)) {
+				this.parseLookup(lookupList + this.file.unsigned(lookupList + 2 + index * 2));
 			}
 		}
 	}
@@ -184,64 +242,6 @@ public final class Kerning {
 				this.pair(lookup, glyph, glyphSecond, this.file.signed(record + advance));
 			}
 		}
-	}
-
-	private int[] coverage(final int offset) {
-		final int format = this.file.unsigned(offset);
-		if (format == 1) {
-			final int count = this.file.unsigned(offset + 2);
-			final int[] glyphs = new int[count];
-			for (int i = 0; i < count; i++) {
-				glyphs[i] = this.file.unsigned(offset + 4 + i * 2);
-			}
-			return glyphs;
-		}
-
-		final int ranges = this.file.unsigned(offset + 2);
-		int total = 0;
-		for (int i = 0; i < ranges; i++) {
-			final int record = offset + 4 + i * 6;
-			total += this.file.unsigned(record + 2) - this.file.unsigned(record) + 1;
-		}
-
-		final int[] glyphs = new int[total];
-		int index = 0;
-		for (int i = 0; i < ranges; i++) {
-			final int record = offset + 4 + i * 6;
-			for (int glyph = this.file.unsigned(record); glyph <= this.file.unsigned(record + 2); glyph++) {
-				glyphs[index++] = glyph;
-			}
-		}
-		return glyphs;
-	}
-
-	private int[] classDefinition(final int offset) {
-		final int format = this.file.unsigned(offset);
-		if (format == 1) {
-			final int start = this.file.unsigned(offset + 2);
-			final int count = this.file.unsigned(offset + 4);
-			final int[] classes = new int[start + count];
-			for (int i = 0; i < count; i++) {
-				classes[start + i] = this.file.unsigned(offset + 6 + i * 2);
-			}
-			return classes;
-		}
-
-		final int ranges = this.file.unsigned(offset + 2);
-		int maximum = 0;
-		for (int i = 0; i < ranges; i++) {
-			maximum = Math.max(maximum, this.file.unsigned(offset + 4 + i * 6 + 2));
-		}
-
-		final int[] classes = new int[maximum + 1];
-		for (int i = 0; i < ranges; i++) {
-			final int record = offset + 4 + i * 6;
-			final int value = this.file.unsigned(record + 4);
-			for (int glyph = this.file.unsigned(record); glyph <= this.file.unsigned(record + 2); glyph++) {
-				classes[glyph] = value;
-			}
-		}
-		return classes;
 	}
 
 	private void pair(final Map<Long, Integer> target, final int first, final int second, final int value) {

@@ -22,35 +22,39 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public class TextFieldNode extends Node {
 
-	private static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeTextFieldChangeCallback.class);
 	private static final int CALLBACK_FOCUS  = NodeCallbackRegistry.next(NodeTextFieldFocusCallback.class);
 	private static final int CALLBACK_ENTER  = NodeCallbackRegistry.next(NodeTextFieldEnterCallback.class);
+	private static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeTextFieldChangeCallback.class);
 
 	private String   text;
-	private String   placeholder;
 	private TextInfo info;
-	private Align    horizontalAlignment;
+	private String   placeholder;
 	private Align    verticalAlignment;
+	private Align    horizontalAlignment;
 
 	private boolean focused;
-	private BiFunction<String, String, String> filter;
 	private int maxTextLength;
+	private BiFunction<String, String, String> filter;
 
-	private int selectionStart;
 	private int cursorPos;
+	private int selectionStart;
 
+	private double marginTop;
 	private double marginLeft;
 	private double marginRight;
-	private double marginTop;
 	private double marginBottom;
 	private double cursorMargin;
 
 	private double xOffset;
 
-	private boolean firstInput;
-	private boolean inputting;
-	private long    lastInput;
 	private Key     inputType;
+	private long    lastInput;
+	private boolean inputting;
+	private boolean firstInput;
+
+	public static @NonNull TextFieldNode create(final double x, final double y, final double width) {
+		return new TextFieldNode(x, y, width, 0D);
+	}
 
 	protected TextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -69,10 +73,6 @@ public class TextFieldNode extends Node {
 		this.marginHorizontal(2D);
 		this.marginVertical(10D);
 		this.cursorMargin(15D);
-	}
-
-	public static @NonNull TextFieldNode create(final double x, final double y, final double width) {
-		return new TextFieldNode(x, y, width, 0D);
 	}
 
 	public static @NonNull TextFieldNode create(final double x, final double y, final double width, final double height) {
@@ -184,6 +184,106 @@ public class TextFieldNode extends Node {
 
 			this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
 		}
+	}
+
+	public final <T extends TextFieldNode> @NonNull T margin(final double margin) {
+		this.marginLeft  = margin;
+		this.marginRight = margin;
+		this.marginTop   = margin;
+		this.marginBottom = margin;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T focused(final boolean focused) {
+		if (this.focused == focused) {
+			return (T) this;
+		}
+
+		super.executeCallback(TextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
+			this.focused = focused;
+		});
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T text(final @NonNull String text) {
+		this.setText(text);
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T marginTop(final double marginTop) {
+		this.marginTop = marginTop;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T marginVertical(final double margin) {
+		this.marginTop = margin;
+		this.marginBottom = margin;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T marginLeft(final double marginLeft) {
+		this.marginLeft = marginLeft;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T cursorPosition(final int cursorPos) {
+		this.cursorPos = Math.min(Math.max(0, cursorPos), this.text.length());
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T marginHorizontal(final double margin) {
+		this.marginLeft = margin;
+		this.marginRight = margin;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T marginRight(final double marginRight) {
+		this.marginRight = marginRight;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T info(final @NonNull TextInfo textInfo) {
+		this.info = textInfo;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T maxTextLength(final int maxTextLength) {
+		this.maxTextLength = maxTextLength;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T marginBottom(final double marginBottom) {
+		this.marginBottom = marginBottom;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T cursorMargin(final double cursorMargin) {
+		this.cursorMargin = cursorMargin;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T verticalAlign(final @NonNull Align align) {
+		this.verticalAlignment = align;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T horizontalAlign(final @NonNull Align align) {
+		this.horizontalAlignment = align;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T placeholder(final @NonNull String placeholder) {
+		this.placeholder = placeholder;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T margin(final double margin, final double cursorMargin) {
+		this.marginLeft   = margin;
+		this.marginRight  = margin;
+		this.marginTop    = margin;
+		this.marginBottom = margin;
+		this.cursorMargin = cursorMargin;
+		return (T) this;
 	}
 
 	@Override
@@ -327,24 +427,30 @@ public class TextFieldNode extends Node {
 		});
 	}
 
-	private final void setText(final String newText) {
-		final String oldText = this.text == null ? "" : this.text;
-		final String filtered = this.filter.apply(oldText, newText == null ? "" : newText);
-		final String accepted = this.maxTextLength >= 0 && filtered.length() > this.maxTextLength ? filtered.substring(0, this.maxTextLength) : filtered;
-		if (!accepted.equals(oldText)) {
-			this.executeCallback(TextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-				this.text = accepted;
-			}, oldText, accepted);
-		} else {
-			this.text = accepted;
-		}
+	public final <T extends TextFieldNode> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
+		super.registerCallback(TextFieldNode.CALLBACK_FOCUS, callback);
+		return (T) this;
 	}
 
-	private final void holdInput(final @NonNull Key key) {
-		this.firstInput = true;
-		this.inputting  = true;
-		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.inputType  = key;
+	public final <T extends TextFieldNode> @NonNull T onEnter(final @NonNull NodeTextFieldEnterCallback<T> callback) {
+		super.registerCallback(TextFieldNode.CALLBACK_ENTER, callback);
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T filter(final @NonNull BiFunction<String, String, String> filter) {
+		this.filter = filter;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
+		super.registerCallback(TextFieldNode.CALLBACK_CHANGE, callback);
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T align(final @NonNull Align horizontal, final @NonNull Align vertical) {
+		this.horizontalAlignment = horizontal;
+		this.verticalAlignment   = vertical;
+		return (T) this;
 	}
 
 	@Override
@@ -388,6 +494,45 @@ public class TextFieldNode extends Node {
 
 			this.focused(true);
 		});
+	}
+
+	private final int nextWordIndex() {
+		int index = this.cursorPos;
+		while (index < this.text.length() && this.text.charAt(index) != ' ') {
+			index++;
+		}
+
+		while (index < this.text.length() && this.text.charAt(index) == ' ') {
+			index++;
+		}
+
+		return index;
+	}
+
+	private final int previousWordIndex() {
+		int index = this.cursorPos;
+		while (index > 0 && this.text.charAt(index - 1) == ' ') {
+			index--;
+		}
+
+		while (index > 0 && this.text.charAt(index - 1) != ' ') {
+			index--;
+		}
+
+		return index;
+	}
+
+	private final void setText(final String newText) {
+		final String oldText = this.text == null ? "" : this.text;
+		final String filtered = this.filter.apply(oldText, newText == null ? "" : newText);
+		final String accepted = this.maxTextLength >= 0 && filtered.length() > this.maxTextLength ? filtered.substring(0, this.maxTextLength) : filtered;
+		if (!accepted.equals(oldText)) {
+			this.executeCallback(TextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+				this.text = accepted;
+			}, oldText, accepted);
+		} else {
+			this.text = accepted;
+		}
 	}
 
 	private final void decreaseCursor(final int value) {
@@ -441,30 +586,11 @@ public class TextFieldNode extends Node {
 		}
 	}
 
-	private final int previousWordIndex() {
-		int index = this.cursorPos;
-		while (index > 0 && this.text.charAt(index - 1) == ' ') {
-			index--;
-		}
-
-		while (index > 0 && this.text.charAt(index - 1) != ' ') {
-			index--;
-		}
-
-		return index;
-	}
-
-	private final int nextWordIndex() {
-		int index = this.cursorPos;
-		while (index < this.text.length() && this.text.charAt(index) != ' ') {
-			index++;
-		}
-
-		while (index < this.text.length() && this.text.charAt(index) == ' ') {
-			index++;
-		}
-
-		return index;
+	private final void holdInput(final @NonNull Key key) {
+		this.firstInput = true;
+		this.inputting  = true;
+		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.inputType  = key;
 	}
 
 	private final boolean deleteSelection(final boolean filter) {
@@ -500,132 +626,6 @@ public class TextFieldNode extends Node {
 
 		this.selectionStart = -1;
 		return true;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T text(final @NonNull String text) {
-		this.setText(text);
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T placeholder(final @NonNull String placeholder) {
-		this.placeholder = placeholder;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T info(final @NonNull TextInfo textInfo) {
-		this.info = textInfo;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T align(final @NonNull Align horizontal, final @NonNull Align vertical) {
-		this.horizontalAlignment = horizontal;
-		this.verticalAlignment   = vertical;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T horizontalAlign(final @NonNull Align align) {
-		this.horizontalAlignment = align;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T verticalAlign(final @NonNull Align align) {
-		this.verticalAlignment = align;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T focused(final boolean focused) {
-		if (this.focused == focused) {
-			return (T) this;
-		}
-
-		super.executeCallback(TextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
-			this.focused = focused;
-		});
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T filter(final @NonNull BiFunction<String, String, String> filter) {
-		this.filter = filter;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T maxTextLength(final int maxTextLength) {
-		this.maxTextLength = maxTextLength;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T margin(final double margin) {
-		this.marginLeft  = margin;
-		this.marginRight = margin;
-		this.marginTop   = margin;
-		this.marginBottom = margin;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T margin(final double margin, final double cursorMargin) {
-		this.marginLeft   = margin;
-		this.marginRight  = margin;
-		this.marginTop    = margin;
-		this.marginBottom = margin;
-		this.cursorMargin = cursorMargin;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T marginHorizontal(final double margin) {
-		this.marginLeft = margin;
-		this.marginRight = margin;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T marginVertical(final double margin) {
-		this.marginTop = margin;
-		this.marginBottom = margin;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T marginLeft(final double marginLeft) {
-		this.marginLeft = marginLeft;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T marginRight(final double marginRight) {
-		this.marginRight = marginRight;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T marginTop(final double marginTop) {
-		this.marginTop = marginTop;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T marginBottom(final double marginBottom) {
-		this.marginBottom = marginBottom;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T cursorMargin(final double cursorMargin) {
-		this.cursorMargin = cursorMargin;
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T cursorPosition(final int cursorPos) {
-		this.cursorPos = Math.min(Math.max(0, cursorPos), this.text.length());
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
-		super.registerCallback(TextFieldNode.CALLBACK_CHANGE, callback);
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
-		super.registerCallback(TextFieldNode.CALLBACK_FOCUS, callback);
-		return (T) this;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T onEnter(final @NonNull NodeTextFieldEnterCallback<T> callback) {
-		super.registerCallback(TextFieldNode.CALLBACK_ENTER, callback);
-		return (T) this;
 	}
 
 }

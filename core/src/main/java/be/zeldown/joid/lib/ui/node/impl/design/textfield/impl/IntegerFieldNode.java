@@ -9,6 +9,10 @@ public class IntegerFieldNode extends TextFieldNode {
 	private int maxValue = Integer.MAX_VALUE;
 	private int minValue = Integer.MIN_VALUE;
 
+	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width) {
+		return new IntegerFieldNode(x, y, width, 0);
+	}
+
 	protected IntegerFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		this.filter((oldValue, nextValue) -> {
@@ -36,12 +40,17 @@ public class IntegerFieldNode extends TextFieldNode {
 		});
 	}
 
-	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width) {
-		return new IntegerFieldNode(x, y, width, 0);
-	}
-
 	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width, final double height) {
 		return new IntegerFieldNode(x, y, width, height);
+	}
+
+	public final int getValue() {
+		return Integer.parseInt(this.getText());
+	}
+
+	public final <T extends IntegerFieldNode> @NonNull T value(final int value) {
+		this.text(Integer.toString(value));
+		return (T) this;
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T max(final int maxValue) {
@@ -58,15 +67,6 @@ public class IntegerFieldNode extends TextFieldNode {
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 		return (T) this;
-	}
-
-	public final <T extends IntegerFieldNode> @NonNull T value(final int value) {
-		this.text(Integer.toString(value));
-		return (T) this;
-	}
-
-	public final int getValue() {
-		return Integer.parseInt(this.getText());
 	}
 
 }

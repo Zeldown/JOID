@@ -24,6 +24,29 @@ public class AssetTest {
 
 	private static File file;
 
+	@Test
+	public void keepsAnAssetAsIs() {
+		final Asset asset = Asset.of(AssetTest.file);
+		Assert.assertSame(asset, Asset.of(asset));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAnUnknownHandle() {
+		Asset.of(new Object());
+	}
+
+	@Test
+	public void peeksPastTheEndOfAFile() {
+		Assert.assertEquals(AssetTest.CONTENT.length, Asset.of(AssetTest.file).peek(4096).length);
+	}
+
+	@Test
+	public void locatesAUrlWithoutOpeningIt() {
+		final Asset asset = Asset.of("https://example.invalid/image.png");
+		Assert.assertTrue(asset instanceof UrlAsset);
+		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());
+	}
+
 	@BeforeClass
 	public static void write() throws IOException {
 		AssetTest.file = File.createTempFile("joid-asset-", ".bin");
@@ -50,21 +73,12 @@ public class AssetTest {
 	}
 
 	@Test
-	public void locatesAUrlWithoutOpeningIt() {
-		final Asset asset = Asset.of("https://example.invalid/image.png");
-		Assert.assertTrue(asset instanceof UrlAsset);
-		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());
-	}
+	public void registersACustomLocator() throws IOException {
+		AssetLocator.register(new HandleLocator());
 
-	@Test
-	public void keepsAnAssetAsIs() {
-		final Asset asset = Asset.of(AssetTest.file);
-		Assert.assertSame(asset, Asset.of(asset));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesAnUnknownHandle() {
-		Asset.of(new Object());
+		final Asset asset = Asset.of(new Handle());
+		Assert.assertEquals("handle", asset.getUniqueId());
+		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
 	}
 
 	@Test
@@ -72,20 +86,6 @@ public class AssetTest {
 		final Asset asset = Asset.of(new ByteArrayInputStream(AssetTest.CONTENT));
 		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.peek(4));
 		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.peek(4));
-		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
-	}
-
-	@Test
-	public void peeksPastTheEndOfAFile() {
-		Assert.assertEquals(AssetTest.CONTENT.length, Asset.of(AssetTest.file).peek(4096).length);
-	}
-
-	@Test
-	public void registersACustomLocator() throws IOException {
-		AssetLocator.register(new HandleLocator());
-
-		final Asset asset = Asset.of(new Handle());
-		Assert.assertEquals("handle", asset.getUniqueId());
 		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
 	}
 

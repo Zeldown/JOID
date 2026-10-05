@@ -13,14 +13,6 @@ import com.example.joid.engine.render.RenderBridge;
 
 public class DemoWindow extends DemoUIBridge {
 
-	public static void main(final String[] args) {
-		Backend.register();
-		final DemoWindow window = new DemoWindow();
-		BridgeHandler.UI.register(window);
-		JOID.inst().setDevMode(true).setDemoMode(true).load();
-		window.run();
-	}
-
 	public void run() {
 		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
 		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
@@ -37,6 +29,14 @@ public class DemoWindow extends DemoUIBridge {
 			super.draw();
 			render.endFrame();
 		}
+	}
+
+	public static void main(final String[] args) {
+		Backend.register();
+		final DemoWindow window = new DemoWindow();
+		BridgeHandler.UI.register(window);
+		JOID.inst().setDevMode(true).setDemoMode(true).load();
+		window.run();
 	}
 
 }

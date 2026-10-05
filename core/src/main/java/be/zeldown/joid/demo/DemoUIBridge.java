@@ -16,6 +16,73 @@ import lombok.NonNull;
 public class DemoUIBridge extends UIBridge {
 
 	@Override
+	public void close(final @NonNull UI ui) {
+		this.remove(ui);
+	}
+
+	@Override
+	public int getIndex() {
+		return 0;
+	}
+
+	@Override
+	public void add(final @NonNull UI ui) {
+		super.getUiList().add(ui);
+		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
+	}
+
+	@Override
+	public void open(final @NonNull UI ui) {
+		if (!ui.getPopup().active()) {
+			for (final UI currentUi : super.getUiList()) {
+				final boolean result = currentUi.onClose();
+				if (currentUi.getTransition() != null && currentUi.getTransition().getOut() != null && currentUi.getTransition().getOut().isRunning()) {
+					currentUi.getTransition().getOut().getAnimator().setCallback(tween -> {
+						JOID.open(ui);
+					});
+					return;
+				}
+
+				if (!result) {
+					return;
+				}
+
+				this.close(currentUi);
+			}
+		}
+
+		this.add(ui);
+	}
+
+	@Override
+	public @NonNull IUIBridge getInstance() {
+		return this;
+	}
+
+	@Override
+	public void remove(final @NonNull UI ui) {
+		super.getUiList().remove(ui);
+	}
+
+	@Override
+	public boolean isOnTop(final @NonNull UI ui) {
+		if (this.getUiList().isEmpty()) {
+			return false;
+		}
+		return this.getUiList().ordered().getLast() == ui && ui.getData().active() && ui.getData().visible();
+	}
+
+	@Override
+	public boolean canHandle(final @NonNull UI ui) {
+		return true;
+	}
+
+	@Override
+	public boolean canHandle(final @NonNull Class<? extends UI> ui) {
+		return true;
+	}
+
+	@Override
 	public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
 		if (lines.isEmpty() || DemoFont.MONTSERRAT == null) {
 			return;
@@ -59,73 +126,6 @@ public class DemoUIBridge extends UIBridge {
 			DrawUtils.TEXT.drawText(x + paddingX, textY, line, info, Align.START, Align.START);
 			textY += lineHeight + lineGap;
 		}
-	}
-
-	@Override
-	public void open(final @NonNull UI ui) {
-		if (!ui.getPopup().active()) {
-			for (final UI currentUi : super.getUiList()) {
-				final boolean result = currentUi.onClose();
-				if (currentUi.getTransition() != null && currentUi.getTransition().getOut() != null && currentUi.getTransition().getOut().isRunning()) {
-					currentUi.getTransition().getOut().getAnimator().setCallback(tween -> {
-						JOID.open(ui);
-					});
-					return;
-				}
-
-				if (!result) {
-					return;
-				}
-
-				this.close(currentUi);
-			}
-		}
-
-		this.add(ui);
-	}
-
-	@Override
-	public void close(final @NonNull UI ui) {
-		this.remove(ui);
-	}
-
-	@Override
-	public void add(final @NonNull UI ui) {
-		super.getUiList().add(ui);
-		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
-	}
-
-	@Override
-	public void remove(final @NonNull UI ui) {
-		super.getUiList().remove(ui);
-	}
-
-	@Override
-	public boolean isOnTop(final @NonNull UI ui) {
-		if (this.getUiList().isEmpty()) {
-			return false;
-		}
-		return this.getUiList().ordered().getLast() == ui && ui.getData().active() && ui.getData().visible();
-	}
-
-	@Override
-	public boolean canHandle(final @NonNull Class<? extends UI> ui) {
-		return true;
-	}
-
-	@Override
-	public boolean canHandle(final @NonNull UI ui) {
-		return true;
-	}
-
-	@Override
-	public int getIndex() {
-		return 0;
-	}
-
-	@Override
-	public @NonNull IUIBridge getInstance() {
-		return this;
 	}
 
 }

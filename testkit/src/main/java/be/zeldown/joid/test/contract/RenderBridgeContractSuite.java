@@ -39,8 +39,6 @@ public abstract class RenderBridgeContractSuite {
 
 	private static ISnapshotBackend backend;
 
-	protected abstract @NonNull ISnapshotBackend createBackend();
-
 	@Before
 	public void startBackend() {
 		if (RenderBridgeContractSuite.backend == null) {
@@ -63,6 +61,12 @@ public abstract class RenderBridgeContractSuite {
 		render.lineSmooth(false);
 	}
 
+	@Test
+	public void drawsVertexColors() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN)));
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+	}
+
 	@AfterClass
 	public static void stopBackend() {
 		if (RenderBridgeContractSuite.backend == null) {
@@ -71,12 +75,6 @@ public abstract class RenderBridgeContractSuite {
 
 		RenderBridgeContractSuite.backend.destroy();
 		RenderBridgeContractSuite.backend = null;
-	}
-
-	@Test
-	public void drawsVertexColors() {
-		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN)));
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -113,26 +111,6 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
-	public void minifiesThroughMipmaps() {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final int[] pixels = RenderBridgeContractSuite.checkerboard();
-
-		final ITexture plain = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
-		final ITexture mipmapped = render.createTexture().mipmap(true).allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
-
-		final double plainDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(plain));
-		final double mipmapDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(mipmapped));
-
-		plain.delete();
-		mipmapped.delete();
-
-		Assert.assertFalse("A texture must not be mipmapped by default", plain.isMipmapped());
-		Assert.assertTrue("A texture asked to mipmap must report it", mipmapped.isMipmapped());
-		Assert.assertTrue("A mipmapped checkerboard must minify to its average (deviation " + mipmapDeviation + ")", mipmapDeviation < 16D);
-		Assert.assertTrue("Mipmaps must reduce the minification error (plain " + plainDeviation + ", mipmapped " + mipmapDeviation + ")", mipmapDeviation <= plainDeviation);
-	}
-
-	@Test
 	public void deletesTexturesTwice() {
 		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.WHITE}, 1, 1);
 		texture.delete();
@@ -165,6 +143,26 @@ public abstract class RenderBridgeContractSuite {
 		frameBuffer.delete();
 
 		RenderBridgeContractSuite.assertPixel(image, 60, 60, RenderBridgeContractSuite.RED);
+	}
+
+	@Test
+	public void minifiesThroughMipmaps() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final int[] pixels = RenderBridgeContractSuite.checkerboard();
+
+		final ITexture plain = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
+		final ITexture mipmapped = render.createTexture().mipmap(true).allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
+
+		final double plainDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(plain));
+		final double mipmapDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(mipmapped));
+
+		plain.delete();
+		mipmapped.delete();
+
+		Assert.assertFalse("A texture must not be mipmapped by default", plain.isMipmapped());
+		Assert.assertTrue("A texture asked to mipmap must report it", mipmapped.isMipmapped());
+		Assert.assertTrue("A mipmapped checkerboard must minify to its average (deviation " + mipmapDeviation + ")", mipmapDeviation < 16D);
+		Assert.assertTrue("Mipmaps must reduce the minification error (plain " + plainDeviation + ", mipmapped " + mipmapDeviation + ")", mipmapDeviation <= plainDeviation);
 	}
 
 	@Test
@@ -221,17 +219,7 @@ public abstract class RenderBridgeContractSuite {
 		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.BLUE);
 	}
 
-	private static SnapshotImage render(final Consumer<IRenderBridge> draw) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		RenderBridgeContractSuite.backend.frame(() -> {
-			render.clear(0F, 0F, 0F, 1F);
-			draw.accept(render);
-		});
-
-		final SnapshotImage image = RenderBridgeContractSuite.backend.capture(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
-		RenderBridgeContractSuite.backend.present();
-		return image;
-	}
+	protected abstract @NonNull ISnapshotBackend createBackend();
 
 	private static int[] checkerboard() {
 		final int[] pixels = new int[RenderBridgeContractSuite.ATLAS * RenderBridgeContractSuite.ATLAS];
@@ -241,13 +229,6 @@ public abstract class RenderBridgeContractSuite {
 			}
 		}
 		return pixels;
-	}
-
-	private static SnapshotImage minify(final ITexture texture) {
-		return RenderBridgeContractSuite.render(bridge -> {
-			bridge.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0.5F, 0.5F, RenderBridgeContractSuite.MINIFIED, RenderBridgeContractSuite.MINIFIED, true, 0));
-		});
 	}
 
 	private static double deviation(final SnapshotImage image) {
@@ -262,6 +243,25 @@ public abstract class RenderBridgeContractSuite {
 			}
 		}
 		return sum / count;
+	}
+
+	private static SnapshotImage minify(final ITexture texture) {
+		return RenderBridgeContractSuite.render(bridge -> {
+			bridge.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0.5F, 0.5F, RenderBridgeContractSuite.MINIFIED, RenderBridgeContractSuite.MINIFIED, true, 0));
+		});
+	}
+
+	private static SnapshotImage render(final Consumer<IRenderBridge> draw) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		RenderBridgeContractSuite.backend.frame(() -> {
+			render.clear(0F, 0F, 0F, 1F);
+			draw.accept(render);
+		});
+
+		final SnapshotImage image = RenderBridgeContractSuite.backend.capture(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
+		RenderBridgeContractSuite.backend.present();
+		return image;
 	}
 
 	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {

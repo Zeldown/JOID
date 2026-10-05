@@ -25,6 +25,16 @@ public class CircleShaderPass implements ShaderPass {
 	}
 
 	@Override
+	public void unbind() {
+		CircleShader.inst().unbind();
+	}
+
+	@Override
+	public int priority() {
+		return 100;
+	}
+
+	@Override
 	public void bindDirect(final Node node) {
 		if (!CircleShader.inst().isAvailable()) {
 			return;
@@ -40,16 +50,6 @@ public class CircleShaderPass implements ShaderPass {
 		}
 
 		CircleShader.inst().bind(this.radius, this.centerX, this.centerY, RoundedShaderType.TEXTURE);
-	}
-
-	@Override
-	public void unbind() {
-		CircleShader.inst().unbind();
-	}
-
-	@Override
-	public int priority() {
-		return 100;
 	}
 
 }

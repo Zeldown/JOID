@@ -30,12 +30,12 @@ public class ResourceNode extends Node {
 		this(x, y, 0, 0);
 	}
 
-	protected ResourceNode(final double x, final double y, final double width, final double height) {
-		super(x, y, width, height);
-	}
-
 	public static @NonNull ResourceNode create(final double x, final double y) {
 		return new ResourceNode(x, y);
+	}
+
+	protected ResourceNode(final double x, final double y, final double width, final double height) {
+		super(x, y, width, height);
 	}
 
 	public static @NonNull ResourceNode create(final double x, final double y, final double width, final double height) {
@@ -99,47 +99,15 @@ public class ResourceNode extends Node {
 		}
 	}
 
-	private void drawResource(final @NonNull Resource resource) {
-		if (this.stretchType == StretchType.CONTAIN) {
-			DrawUtils.RESOURCE.drawCenteredResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
-		} else {
-			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
-		}
-	}
-
-	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource) {
-		this.resource = resource;
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T resource(final @NonNull String url) {
-		this.resource = Resource.of(url);
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource, final Resource hoveredResource) {
-		this.resource = resource;
-		this.hoveredResource = hoveredResource;
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T resource(final @NonNull String url, final String hoveredUrl) {
-		this.resource = Resource.of(url);
-		if (hoveredUrl != null) {
-			this.hoveredResource = Resource.of(hoveredUrl);
-		}
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T hoverResource(final Resource resource) {
-		this.hoveredResource = resource;
-		return (T) this;
-	}
-
 	public final <T extends ResourceNode> @NonNull T hoverResource(final String url) {
 		if (url != null) {
 			this.hoveredResource = Resource.of(url);
 		}
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T hoveredColor(final Color color) {
+		this.hoveredColor = color;
 		return (T) this;
 	}
 
@@ -148,8 +116,18 @@ public class ResourceNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends ResourceNode> @NonNull T hoveredColor(final Color color) {
-		this.hoveredColor = color;
+	public final <T extends ResourceNode> @NonNull T resource(final @NonNull String url) {
+		this.resource = Resource.of(url);
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T hoverResource(final Resource resource) {
+		this.hoveredResource = resource;
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T stretch(final StretchType stretchType) {
+		this.stretchType = stretchType;
 		return (T) this;
 	}
 
@@ -165,9 +143,31 @@ public class ResourceNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends ResourceNode> @NonNull T stretch(final StretchType stretchType) {
-		this.stretchType = stretchType;
+	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource) {
+		this.resource = resource;
 		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T resource(final @NonNull String url, final String hoveredUrl) {
+		this.resource = Resource.of(url);
+		if (hoveredUrl != null) {
+			this.hoveredResource = Resource.of(hoveredUrl);
+		}
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource, final Resource hoveredResource) {
+		this.resource = resource;
+		this.hoveredResource = hoveredResource;
+		return (T) this;
+	}
+
+	private void drawResource(final @NonNull Resource resource) {
+		if (this.stretchType == StretchType.CONTAIN) {
+			DrawUtils.RESOURCE.drawCenteredResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
+		} else {
+			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
+		}
 	}
 
 	public static enum StretchType {

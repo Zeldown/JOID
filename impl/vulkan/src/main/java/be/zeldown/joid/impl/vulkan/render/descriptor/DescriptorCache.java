@@ -37,6 +37,20 @@ public final class DescriptorCache {
 		this.setMap   = new HashMap<>();
 	}
 
+	public void invalidate(final long handle, final @NonNull Consumer<Runnable> disposer) {
+		final Iterator<Map.Entry<List<Long>, long[]>> iterator = this.setMap.entrySet().iterator();
+		while (iterator.hasNext()) {
+			final Map.Entry<List<Long>, long[]> entry = iterator.next();
+			if (!entry.getKey().subList(1, entry.getKey().size()).contains(handle)) {
+				continue;
+			}
+
+			final long[] set = entry.getValue();
+			iterator.remove();
+			disposer.accept(() -> VK10.vkFreeDescriptorSets(this.context.getDevice(), set[1], set[0]));
+		}
+	}
+
 	public long get(final @NonNull Shader shader, final long uniformBuffer, final @NonNull long[] images) {
 		final List<Long> key = new ArrayList<>(images.length + 2);
 		key.add(shader.getDescriptorSetLayout());
@@ -56,17 +70,15 @@ public final class DescriptorCache {
 		return set[0];
 	}
 
-	public void invalidate(final long handle, final @NonNull Consumer<Runnable> disposer) {
-		final Iterator<Map.Entry<List<Long>, long[]>> iterator = this.setMap.entrySet().iterator();
-		while (iterator.hasNext()) {
-			final Map.Entry<List<Long>, long[]> entry = iterator.next();
-			if (!entry.getKey().subList(1, entry.getKey().size()).contains(handle)) {
-				continue;
-			}
+	private long createPool() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkDescriptorPoolSize.Buffer sizes = VkDescriptorPoolSize.calloc(2, stack);
+			sizes.get(0).type(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(DescriptorCache.POOL_SETS * 4);
+			sizes.get(1).type(VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER).descriptorCount(DescriptorCache.POOL_SETS * 4);
 
-			final long[] set = entry.getValue();
-			iterator.remove();
-			disposer.accept(() -> VK10.vkFreeDescriptorSets(this.context.getDevice(), set[1], set[0]));
+			final LongBuffer pool = stack.mallocLong(1);
+			Context.check(VK10.vkCreateDescriptorPool(this.context.getDevice(), VkDescriptorPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).maxSets(DescriptorCache.POOL_SETS).pPoolSizes(sizes), null, pool), "vkCreateDescriptorPool");
+			return pool.get(0);
 		}
 	}
 
@@ -87,18 +99,6 @@ public final class DescriptorCache {
 
 			Context.check(result, "vkAllocateDescriptorSets");
 			return new long[] {set.get(0), pool};
-		}
-	}
-
-	private long createPool() {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkDescriptorPoolSize.Buffer sizes = VkDescriptorPoolSize.calloc(2, stack);
-			sizes.get(0).type(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(DescriptorCache.POOL_SETS * 4);
-			sizes.get(1).type(VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER).descriptorCount(DescriptorCache.POOL_SETS * 4);
-
-			final LongBuffer pool = stack.mallocLong(1);
-			Context.check(VK10.vkCreateDescriptorPool(this.context.getDevice(), VkDescriptorPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).maxSets(DescriptorCache.POOL_SETS).pPoolSizes(sizes), null, pool), "vkCreateDescriptorPool");
-			return pool.get(0);
 		}
 	}
 

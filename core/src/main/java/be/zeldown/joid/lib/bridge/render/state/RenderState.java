@@ -14,39 +14,39 @@ import lombok.Setter;
 public final class RenderState {
 
 	private float red;
-	private float green;
 	private float blue;
+	private float green;
 	private float alpha;
 
-	private BlendState blend;
-	private boolean    depthTest;
-	private boolean    depthWrite;
 	private boolean    cull;
+	private float      lineWidth;
+	private BlendState blend;
 	private boolean    lighting;
+	private boolean    depthTest;
 	private boolean    colorMask;
 	private boolean    alphaTest;
-	private float      alphaThreshold;
-	private float      lineWidth;
+	private boolean    depthWrite;
 	private boolean    lineSmooth;
+	private float      alphaThreshold;
 
-	private boolean          stencilTest;
-	private StencilFunction  stencilFunction;
-	private int              stencilReference;
 	private int              stencilMask;
+	private boolean          stencilTest;
+	private int              stencilReference;
 	private StencilOperation stencilFail;
-	private StencilOperation stencilDepthFail;
 	private StencilOperation stencilPass;
+	private StencilFunction  stencilFunction;
+	private StencilOperation stencilDepthFail;
 
 	private int viewportX;
 	private int viewportY;
 	private int viewportWidth;
 	private int viewportHeight;
 
-	private IFrameBuffer  frameBuffer;
-	private ITexture      texture;
-	private TextureFilter textureFilter;
-	private TextureWrap   textureWrap;
 	private IShader       shader;
+	private ITexture      texture;
+	private TextureWrap   textureWrap;
+	private IFrameBuffer  frameBuffer;
+	private TextureFilter textureFilter;
 
 	public RenderState() {
 		this.red   = 1F;

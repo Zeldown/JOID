@@ -31,10 +31,10 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFace> {
 	private static final double HALF_TEXEL    = 0.5D;
 	private static final double BASELINE_LIFT = 0.025D;
 
-	private MsdfFace face;
 	private Color    color;
 	private double   runX;
 	private double   runY;
+	private MsdfFace face;
 	private double   runWidth;
 	private double   runHeight;
 
@@ -45,20 +45,8 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFace> {
 	}
 
 	@Override
-	protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
-		if (!MsdfShader.SHADER.isActive()) {
-			throw new IllegalStateException("The msdf font shader is not usable");
-		}
-
-		this.face = null;
-		this.color = null;
-		this.runX = runX;
-		this.runY = runY;
-		this.runWidth = runWidth;
-		this.runHeight = runHeight;
-
-		Color.reset();
-		MsdfShader.SHADER.bind();
+	protected void end() {
+		MsdfShader.SHADER.unbind();
 	}
 
 	@Override
@@ -107,15 +95,20 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFace> {
 	}
 
 	@Override
-	protected void end() {
-		MsdfShader.SHADER.unbind();
-	}
+	protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
+		if (!MsdfShader.SHADER.isActive()) {
+			throw new IllegalStateException("The msdf font shader is not usable");
+		}
 
-	private void bindFace(final @NonNull MsdfFace face) {
-		this.face = face;
-		face.getTexture().bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
-		MsdfShader.TEXEL.setValue(1F / face.getAtlas().getWidth(), 1F / face.getAtlas().getHeight());
-		MsdfShader.PX_RANGE.setValue(face.getAtlas().getDistanceRange());
+		this.face = null;
+		this.color = null;
+		this.runX = runX;
+		this.runY = runY;
+		this.runWidth = runWidth;
+		this.runHeight = runHeight;
+
+		Color.reset();
+		MsdfShader.SHADER.bind();
 	}
 
 	private void bindColor(final @NonNull Color color) {
@@ -135,18 +128,25 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFace> {
 		MsdfShader.GRADIENT_CANVAS.setValue((float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
 	}
 
+	private void bindFace(final @NonNull MsdfFace face) {
+		this.face = face;
+		face.getTexture().bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
+		MsdfShader.TEXEL.setValue(1F / face.getAtlas().getWidth(), 1F / face.getAtlas().getHeight());
+		MsdfShader.PX_RANGE.setValue(face.getAtlas().getDistanceRange());
+	}
+
 	private static final class MsdfShader {
 
 		private static final IShader SHADER = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, JOID.class.getResourceAsStream("/assets/shaders/font/font.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, JOID.class.getResourceAsStream("/assets/shaders/font/font.fsh")), BlendState.NORMAL);
 
-		private static final FloatUniform  PX_RANGE           = MsdfShader.SHADER.getFloatUniform("pxRange");
 		private static final Float2Uniform TEXEL              = MsdfShader.SHADER.getFloat2Uniform("texel");
 		private static final Float4Uniform COLOR              = MsdfShader.SHADER.getFloat4Uniform("color");
+		private static final FloatUniform  PX_RANGE           = MsdfShader.SHADER.getFloatUniform("pxRange");
 		private static final IntUniform    HAS_GRADIENT       = MsdfShader.SHADER.getIntUniform("u_HasGradient");
 		private static final Float4Uniform GRADIENT_END       = MsdfShader.SHADER.getFloat4Uniform("u_GradientEnd");
 		private static final Float4Uniform GRADIENT_START     = MsdfShader.SHADER.getFloat4Uniform("u_GradientStart");
-		private static final Float2Uniform GRADIENT_END_POS   = MsdfShader.SHADER.getFloat2Uniform("u_GradientEndPos");
 		private static final Float4Uniform GRADIENT_CANVAS    = MsdfShader.SHADER.getFloat4Uniform("u_GradientCanvas");
+		private static final Float2Uniform GRADIENT_END_POS   = MsdfShader.SHADER.getFloat2Uniform("u_GradientEndPos");
 		private static final Float2Uniform GRADIENT_START_POS = MsdfShader.SHADER.getFloat2Uniform("u_GradientStartPos");
 
 	}

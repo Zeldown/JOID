@@ -20,16 +20,14 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public abstract class GlyphFontProvider<F extends IGlyphFace> implements IFontProvider {
 
-	@Override
-	public final @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
-		final GlyphLayout<F> layout = this.layout(text, info);
-		return this.draw(layout, x, y, info, x, y, layout.getWidth(), this.getLineHeight(info));
-	}
+	protected abstract void end();
 
 	@Override
-	public final @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
-		return this.draw(this.layout(text, info), x, y, info, runX, runY, runWidth, runHeight);
+	public final double getLineHeight(final @NonNull TextInfo info) {
+		return this.getFace(info).getLineHeight() * info.getFontSize() + info.getLineHeight();
 	}
+
+	protected abstract void drawGlyph(final @NonNull TextGlyph<F> glyph);
 
 	@Override
 	public final double getWidth(final @NonNull String text, final @NonNull TextInfo info) {
@@ -39,11 +37,6 @@ public abstract class GlyphFontProvider<F extends IGlyphFace> implements IFontPr
 	@Override
 	public final double getHeight(final @NonNull String text, final @NonNull TextInfo info) {
 		return this.getLineHeight(info);
-	}
-
-	@Override
-	public final double getLineHeight(final @NonNull TextInfo info) {
-		return this.getFace(info).getLineHeight() * info.getFontSize() + info.getLineHeight();
 	}
 
 	public final @NonNull GlyphLayout<F> layout(final @NonNull String text, final @NonNull TextInfo info) {
@@ -92,37 +85,19 @@ public abstract class GlyphFontProvider<F extends IGlyphFace> implements IFontPr
 
 	protected abstract void begin(final double runX, final double runY, final double runWidth, final double runHeight);
 
-	protected abstract void drawGlyph(final @NonNull TextGlyph<F> glyph);
+	@Override
+	public final @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
+		final GlyphLayout<F> layout = this.layout(text, info);
+		return this.draw(layout, x, y, info, x, y, layout.getWidth(), this.getLineHeight(info));
+	}
 
-	protected abstract void end();
+	@Override
+	public final @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
+		return this.draw(this.layout(text, info), x, y, info, runX, runY, runWidth, runHeight);
+	}
 
 	private @NonNull F getFace(final @NonNull TextInfo info) {
 		return ((GlyphFont<F>) info.getFont()).getFace(info.getWeight(), info.isItalic());
-	}
-
-	private @NonNull FontBounds draw(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
-		if (layout.getPlacements().isEmpty()) {
-			return FontBounds.empty();
-		}
-
-		final List<TextGlyph<F>> glyphs = this.glyphs(layout, x, y, info);
-		for (final TextGlyph<F> glyph : glyphs) {
-			for (final ITextEffect effect : glyph.getStyle().getEffects()) {
-				effect.background(glyph);
-			}
-		}
-
-		final Color shadow = info.getShadowColor();
-		if (shadow != null) {
-			final List<TextGlyph<F>> shadows = new ArrayList<>(glyphs.size());
-			for (final TextGlyph<F> glyph : glyphs) {
-				shadows.add(glyph.shadow(info.getShadowX(), info.getShadowY(), shadow));
-			}
-			this.render(shadows, runX + info.getShadowX(), runY + info.getShadowY(), runWidth, runHeight);
-		}
-
-		this.render(glyphs, runX, runY, runWidth, runHeight);
-		return new FontBounds(layout.getWidth(), this.getLineHeight(info));
 	}
 
 	private @NonNull List<TextGlyph<F>> glyphs(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info) {
@@ -156,6 +131,31 @@ public abstract class GlyphFontProvider<F extends IGlyphFace> implements IFontPr
 				effect.decorate(glyph);
 			}
 		}
+	}
+
+	private @NonNull FontBounds draw(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
+		if (layout.getPlacements().isEmpty()) {
+			return FontBounds.empty();
+		}
+
+		final List<TextGlyph<F>> glyphs = this.glyphs(layout, x, y, info);
+		for (final TextGlyph<F> glyph : glyphs) {
+			for (final ITextEffect effect : glyph.getStyle().getEffects()) {
+				effect.background(glyph);
+			}
+		}
+
+		final Color shadow = info.getShadowColor();
+		if (shadow != null) {
+			final List<TextGlyph<F>> shadows = new ArrayList<>(glyphs.size());
+			for (final TextGlyph<F> glyph : glyphs) {
+				shadows.add(glyph.shadow(info.getShadowX(), info.getShadowY(), shadow));
+			}
+			this.render(shadows, runX + info.getShadowX(), runY + info.getShadowY(), runWidth, runHeight);
+		}
+
+		this.render(glyphs, runX, runY, runWidth, runHeight);
+		return new FontBounds(layout.getWidth(), this.getLineHeight(info));
 	}
 
 	private static @NonNull Color color(final @NonNull TextStyle style, final @NonNull TextInfo info) {

@@ -10,12 +10,16 @@ import be.zeldown.joid.lib.bridge.BridgeHandler;
 
 public class DemoWindow extends be.zeldown.joid.impl.glfw.DemoWindow {
 
-	public static void main(final String[] args) {
-		Configuration.STACK_SIZE.set(1024);
-		final DemoWindow window = new DemoWindow();
-		BridgeHandler.UI.register(window);
-		JOID.inst().setDevMode(true).setDemoMode(true).load();
-		window.run();
+	@Override
+	protected void endFrame() {
+		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
+		render.endFrame();
+		render.present();
+	}
+
+	@Override
+	protected void beginFrame() {
+		((RenderBridge) BridgeHandler.RENDER.get()).beginFrame();
 	}
 
 	@Override
@@ -28,21 +32,17 @@ public class DemoWindow extends be.zeldown.joid.impl.glfw.DemoWindow {
 		GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
 	}
 
+	public static void main(final String[] args) {
+		Configuration.STACK_SIZE.set(1024);
+		final DemoWindow window = new DemoWindow();
+		BridgeHandler.UI.register(window);
+		JOID.inst().setDevMode(true).setDemoMode(true).load();
+		window.run();
+	}
+
 	@Override
 	protected void registerBackend(final long window) {
 		Backend.register(window);
-	}
-
-	@Override
-	protected void beginFrame() {
-		((RenderBridge) BridgeHandler.RENDER.get()).beginFrame();
-	}
-
-	@Override
-	protected void endFrame() {
-		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
-		render.endFrame();
-		render.present();
 	}
 
 }

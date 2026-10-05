@@ -159,17 +159,6 @@ public final class OBJModel implements IDrawableModel {
 	}
 
 	@Override
-	public double getHeight() {
-		double minY = Double.MIN_VALUE;
-		double maxY = Double.MIN_VALUE;
-		for (final OBJVertex vertex : this.vertices) {
-			minY = Math.min(minY, vertex.getY());
-			maxY = Math.max(maxY, vertex.getY());
-		}
-		return maxY - minY;
-	}
-
-	@Override
 	public double getDepth() {
 		double minZ = Double.MIN_VALUE;
 		double maxZ = Double.MIN_VALUE;
@@ -180,64 +169,15 @@ public final class OBJModel implements IDrawableModel {
 		return maxZ - minZ;
 	}
 
-	private OBJVertex parseVertex(final @NonNull String line, final int lineCount) throws RuntimeException {
-		final OBJVertex vertex = null;
-		if (!OBJModel.isValidVertexLine(line)) {
-			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+	@Override
+	public double getHeight() {
+		double minY = Double.MIN_VALUE;
+		double maxY = Double.MIN_VALUE;
+		for (final OBJVertex vertex : this.vertices) {
+			minY = Math.min(minY, vertex.getY());
+			maxY = Math.max(maxY, vertex.getY());
 		}
-		final String values = line.substring(line.indexOf(" ") + 1);
-		final String[] tokens = values.split(" ");
-		try {
-			if (tokens.length == 2) {
-				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]));
-			}
-			if (tokens.length == 3) {
-				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
-			}
-		} catch (final NumberFormatException e) {
-			throw new RuntimeException(String.format("Number formatting error at line %d",lineCount), e);
-		}
-
-		return vertex;
-	}
-
-	private OBJVertex parseVertexNormal(final @NonNull String line, final int lineCount) throws RuntimeException {
-		final OBJVertex vertexNormal = null;
-		if (!OBJModel.isValidVertexNormalLine(line)) {
-			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
-		}
-		final String values = line.substring(line.indexOf(" ") + 1);
-		final String[] tokens = values.split(" ");
-		try {
-			if (tokens.length == 3) {
-				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
-			}
-		} catch (final NumberFormatException e) {
-			throw new RuntimeException(String.format("Number formatting error at line %d",lineCount), e);
-		}
-
-		return vertexNormal;
-	}
-
-	private OBJTextureCoordinate parseTextureCoordinate(final @NonNull String line, final int lineCount) throws RuntimeException {
-		final OBJTextureCoordinate textureCoordinate = null;
-		if (!OBJModel.isValidTextureCoordinateLine(line)) {
-			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
-		}
-		final String values = line.substring(line.indexOf(" ") + 1);
-		final String[] tokens = values.split(" ");
-		try {
-			if (tokens.length == 2) {
-				return new OBJTextureCoordinate(Float.parseFloat(tokens[0]), 1 - Float.parseFloat(tokens[1]));
-			}
-			if (tokens.length == 3) {
-				return new OBJTextureCoordinate(Float.parseFloat(tokens[0]), 1 - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
-			}
-		} catch (final NumberFormatException e) {
-			throw new RuntimeException(String.format("Number formatting error at line %d",lineCount), e);
-		}
-
-		return textureCoordinate;
+		return maxY - minY;
 	}
 
 	private OBJFace parseFace(final @NonNull String line, final int lineCount) throws RuntimeException {
@@ -320,31 +260,68 @@ public final class OBJModel implements IDrawableModel {
 		return group;
 	}
 
-	private static boolean isValidVertexLine(final @NonNull String line) {
-		if (OBJModel.vertexMatcher != null) {
-			OBJModel.vertexMatcher.reset();
+	private OBJVertex parseVertex(final @NonNull String line, final int lineCount) throws RuntimeException {
+		final OBJVertex vertex = null;
+		if (!OBJModel.isValidVertexLine(line)) {
+			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+		}
+		final String values = line.substring(line.indexOf(" ") + 1);
+		final String[] tokens = values.split(" ");
+		try {
+			if (tokens.length == 2) {
+				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]));
+			}
+			if (tokens.length == 3) {
+				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
+			}
+		} catch (final NumberFormatException e) {
+			throw new RuntimeException(String.format("Number formatting error at line %d",lineCount), e);
 		}
 
-		OBJModel.vertexMatcher = OBJModel.VERTEX_PATTERN.matcher(line);
-		return OBJModel.vertexMatcher.matches();
+		return vertex;
 	}
 
-	private static boolean isValidVertexNormalLine(final @NonNull String line) {
-		if (OBJModel.vertexNormalMatcher != null) {
-			OBJModel.vertexNormalMatcher.reset();
+	private OBJVertex parseVertexNormal(final @NonNull String line, final int lineCount) throws RuntimeException {
+		final OBJVertex vertexNormal = null;
+		if (!OBJModel.isValidVertexNormalLine(line)) {
+			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+		}
+		final String values = line.substring(line.indexOf(" ") + 1);
+		final String[] tokens = values.split(" ");
+		try {
+			if (tokens.length == 3) {
+				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
+			}
+		} catch (final NumberFormatException e) {
+			throw new RuntimeException(String.format("Number formatting error at line %d",lineCount), e);
 		}
 
-		OBJModel.vertexNormalMatcher = OBJModel.NORMAL_PATTERN.matcher(line);
-		return OBJModel.vertexNormalMatcher.matches();
+		return vertexNormal;
 	}
 
-	private static boolean isValidTextureCoordinateLine(final @NonNull String line) {
-		if (OBJModel.textureCoordinateMatcher != null) {
-			OBJModel.textureCoordinateMatcher.reset();
+	private OBJTextureCoordinate parseTextureCoordinate(final @NonNull String line, final int lineCount) throws RuntimeException {
+		final OBJTextureCoordinate textureCoordinate = null;
+		if (!OBJModel.isValidTextureCoordinateLine(line)) {
+			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+		}
+		final String values = line.substring(line.indexOf(" ") + 1);
+		final String[] tokens = values.split(" ");
+		try {
+			if (tokens.length == 2) {
+				return new OBJTextureCoordinate(Float.parseFloat(tokens[0]), 1 - Float.parseFloat(tokens[1]));
+			}
+			if (tokens.length == 3) {
+				return new OBJTextureCoordinate(Float.parseFloat(tokens[0]), 1 - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
+			}
+		} catch (final NumberFormatException e) {
+			throw new RuntimeException(String.format("Number formatting error at line %d",lineCount), e);
 		}
 
-		OBJModel.textureCoordinateMatcher = OBJModel.TEXTURE_PATTERN.matcher(line);
-		return OBJModel.textureCoordinateMatcher.matches();
+		return textureCoordinate;
+	}
+
+	private static boolean isFaceLine(final @NonNull String line) {
+		return OBJModel.isValidFaceLine(line) || OBJModel.isValidFaceTextureLine(line) || OBJModel.isValidFaceNormalLine(line) || OBJModel.isValidFaceVertexLine(line);
 	}
 
 	private static boolean isValidFaceLine(final @NonNull String line) {
@@ -356,13 +333,22 @@ public final class OBJModel implements IDrawableModel {
 		return OBJModel.faceMatcher.matches();
 	}
 
-	private static boolean isValidFaceTextureLine(final @NonNull String line) {
-		if (OBJModel.faceTextureMatcher != null) {
-			OBJModel.faceTextureMatcher.reset();
+	private static boolean isValidGroupLine(final @NonNull String line) {
+		if (OBJModel.groupMatcher != null) {
+			OBJModel.groupMatcher.reset();
 		}
 
-		OBJModel.faceTextureMatcher = OBJModel.FACE_TEXTURE_PATTERN.matcher(line);
-		return OBJModel.faceTextureMatcher.matches();
+		OBJModel.groupMatcher = OBJModel.GROUP_PATTERN.matcher(line);
+		return OBJModel.groupMatcher.matches();
+	}
+
+	private static boolean isValidVertexLine(final @NonNull String line) {
+		if (OBJModel.vertexMatcher != null) {
+			OBJModel.vertexMatcher.reset();
+		}
+
+		OBJModel.vertexMatcher = OBJModel.VERTEX_PATTERN.matcher(line);
+		return OBJModel.vertexMatcher.matches();
 	}
 
 	private static boolean isValidFaceNormalLine(final @NonNull String line) {
@@ -383,17 +369,31 @@ public final class OBJModel implements IDrawableModel {
 		return OBJModel.faceVertexMatcher.matches();
 	}
 
-	private static boolean isFaceLine(final @NonNull String line) {
-		return OBJModel.isValidFaceLine(line) || OBJModel.isValidFaceTextureLine(line) || OBJModel.isValidFaceNormalLine(line) || OBJModel.isValidFaceVertexLine(line);
-	}
-
-	private static boolean isValidGroupLine(final @NonNull String line) {
-		if (OBJModel.groupMatcher != null) {
-			OBJModel.groupMatcher.reset();
+	private static boolean isValidFaceTextureLine(final @NonNull String line) {
+		if (OBJModel.faceTextureMatcher != null) {
+			OBJModel.faceTextureMatcher.reset();
 		}
 
-		OBJModel.groupMatcher = OBJModel.GROUP_PATTERN.matcher(line);
-		return OBJModel.groupMatcher.matches();
+		OBJModel.faceTextureMatcher = OBJModel.FACE_TEXTURE_PATTERN.matcher(line);
+		return OBJModel.faceTextureMatcher.matches();
+	}
+
+	private static boolean isValidVertexNormalLine(final @NonNull String line) {
+		if (OBJModel.vertexNormalMatcher != null) {
+			OBJModel.vertexNormalMatcher.reset();
+		}
+
+		OBJModel.vertexNormalMatcher = OBJModel.NORMAL_PATTERN.matcher(line);
+		return OBJModel.vertexNormalMatcher.matches();
+	}
+
+	private static boolean isValidTextureCoordinateLine(final @NonNull String line) {
+		if (OBJModel.textureCoordinateMatcher != null) {
+			OBJModel.textureCoordinateMatcher.reset();
+		}
+
+		OBJModel.textureCoordinateMatcher = OBJModel.TEXTURE_PATTERN.matcher(line);
+		return OBJModel.textureCoordinateMatcher.matches();
 	}
 
 }

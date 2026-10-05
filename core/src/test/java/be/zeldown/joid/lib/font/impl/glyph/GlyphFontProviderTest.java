@@ -26,9 +26,9 @@ import lombok.Getter;
 
 public class GlyphFontProviderTest {
 
-	private static final Face     REGULAR  = new Face(FontWeight.REGULAR, false, 1F);
 	private static final Face     BOLD     = new Face(FontWeight.BOLD, false, 2F);
 	private static final Face     ITALIC   = new Face(FontWeight.REGULAR, true, 1F);
+	private static final Face     REGULAR  = new Face(FontWeight.REGULAR, false, 1F);
 	private static final Provider PROVIDER = new Provider();
 
 	private static final ITextMarkup MARKUP = (text, index, style) -> {
@@ -75,53 +75,17 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
-	public void measuresAdvancesKerningAndSpacing() {
-		Assert.assertEquals(11D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth("AV"), 1E-6D);
-		Assert.assertEquals(10D, GlyphFontProviderTest.info().getWidth("AB"), 1E-6D);
+	public void prefersAnItalicFace() {
+		GlyphFontProviderTest.draw("*A", GlyphFontProviderTest.info().italic(true));
+		Assert.assertSame(GlyphFontProviderTest.ITALIC, GlyphFontProviderTest.PROVIDER.drawn.get(0).getFace());
+		Assert.assertFalse(GlyphFontProviderTest.PROVIDER.drawn.get(0).isSlanted());
 	}
 
 	@Test
-	public void measuresNothingWithoutGlyph() {
-		Assert.assertEquals(0D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth(""), 0D);
-		Assert.assertEquals(0D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth("##"), 0D);
-	}
-
-	@Test
-	public void skipsMissingGlyphsWithoutBreakingKerning() {
-		final TextInfo info = GlyphFontProviderTest.info().letterSpacing(2F);
-		Assert.assertEquals(info.getWidth("AV"), info.getWidth("A#V"), 1E-6D);
-	}
-
-	@Test
-	public void switchesTheFaceThroughMarkup() {
-		final GlyphLayout<Face> layout = GlyphFontProviderTest.layout("*A*A", GlyphFontProviderTest.info());
-		Assert.assertSame(GlyphFontProviderTest.BOLD, layout.getPlacements().get(0).getFace());
-		Assert.assertSame(GlyphFontProviderTest.REGULAR, layout.getPlacements().get(1).getFace());
-		Assert.assertEquals(15D, layout.getWidth(), 1E-6D);
-	}
-
-	@Test
-	public void restartsKerningOnAFaceSwitch() {
-		Assert.assertEquals(15D, GlyphFontProviderTest.info().getWidth("A*V"), 1E-6D);
-	}
-
-	@Test
-	public void drawsMarkupAsTextWhenDisabled() {
-		Assert.assertEquals(10D, GlyphFontProviderTest.info().markups().getWidth("*A"), 1E-6D);
-	}
-
-	@Test
-	public void pointsEachGlyphBackToItsSource() {
-		final List<GlyphPlacement<Face>> placements = GlyphFontProviderTest.layout("*A\uD83D\uDE00B", GlyphFontProviderTest.info()).getPlacements();
-		Assert.assertEquals(3, placements.size());
-		Assert.assertEquals(1, placements.get(0).getIndex());
-		Assert.assertEquals(0x1F600, placements.get(1).getCodepoint());
-		Assert.assertEquals(4, placements.get(2).getIndex());
-	}
-
-	@Test
-	public void resolvesTheRequestedWeight() {
-		Assert.assertEquals(20D, GlyphFontProviderTest.info().weight(FontWeight.BLACK).getWidth("AB"), 1E-6D);
+	public void slantsAnUprightFace() {
+		GlyphFontProviderTest.draw("*A", GlyphFontProviderTest.info(GlyphFontProviderTest.REGULAR, GlyphFontProviderTest.BOLD).italic(true));
+		Assert.assertSame(GlyphFontProviderTest.BOLD, GlyphFontProviderTest.PROVIDER.drawn.get(0).getFace());
+		Assert.assertTrue(GlyphFontProviderTest.PROVIDER.drawn.get(0).isSlanted());
 	}
 
 	@Test
@@ -142,6 +106,17 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
+	public void resolvesTheRequestedWeight() {
+		Assert.assertEquals(20D, GlyphFontProviderTest.info().weight(FontWeight.BLACK).getWidth("AB"), 1E-6D);
+	}
+
+	@Test
+	public void measuresNothingWithoutGlyph() {
+		Assert.assertEquals(0D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth(""), 0D);
+		Assert.assertEquals(0D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth("##"), 0D);
+	}
+
+	@Test
 	public void shadowsTheTransformedGlyphs() {
 		GlyphFontProviderTest.draw("x", GlyphFontProviderTest.info().shadow(Color.BLACK).shadow(2F, 3F).effects(this.effect));
 		final TextGlyph<Face> shadow = GlyphFontProviderTest.PROVIDER.drawn.get(0);
@@ -153,17 +128,23 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
+	public void switchesTheFaceThroughMarkup() {
+		final GlyphLayout<Face> layout = GlyphFontProviderTest.layout("*A*A", GlyphFontProviderTest.info());
+		Assert.assertSame(GlyphFontProviderTest.BOLD, layout.getPlacements().get(0).getFace());
+		Assert.assertSame(GlyphFontProviderTest.REGULAR, layout.getPlacements().get(1).getFace());
+		Assert.assertEquals(15D, layout.getWidth(), 1E-6D);
+	}
+
+	@Test
+	public void restartsKerningOnAFaceSwitch() {
+		Assert.assertEquals(15D, GlyphFontProviderTest.info().getWidth("A*V"), 1E-6D);
+	}
+
+	@Test
 	public void spansEachGlyphUpToTheNextOne() {
 		GlyphFontProviderTest.draw("AV", GlyphFontProviderTest.info().letterSpacing(2F));
 		Assert.assertEquals(6D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getAdvance(), 1E-6D);
 		Assert.assertEquals(5D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getAdvance(), 1E-6D);
-	}
-
-	@Test
-	public void placesEveryGlyphOnTheBaseline() {
-		GlyphFontProviderTest.draw("*A*A", GlyphFontProviderTest.info());
-		Assert.assertEquals(10D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getBaseline(), 1E-6D);
-		Assert.assertEquals(10D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getBaseline(), 1E-6D);
 	}
 
 	@Test
@@ -175,23 +156,42 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
+	public void drawsMarkupAsTextWhenDisabled() {
+		Assert.assertEquals(10D, GlyphFontProviderTest.info().markups().getWidth("*A"), 1E-6D);
+	}
+
+	@Test
+	public void placesEveryGlyphOnTheBaseline() {
+		GlyphFontProviderTest.draw("*A*A", GlyphFontProviderTest.info());
+		Assert.assertEquals(10D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getBaseline(), 1E-6D);
+		Assert.assertEquals(10D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getBaseline(), 1E-6D);
+	}
+
+	@Test
+	public void pointsEachGlyphBackToItsSource() {
+		final List<GlyphPlacement<Face>> placements = GlyphFontProviderTest.layout("*A\uD83D\uDE00B", GlyphFontProviderTest.info()).getPlacements();
+		Assert.assertEquals(3, placements.size());
+		Assert.assertEquals(1, placements.get(0).getIndex());
+		Assert.assertEquals(0x1F600, placements.get(1).getCodepoint());
+		Assert.assertEquals(4, placements.get(2).getIndex());
+	}
+
+	@Test
 	public void keepsTheTextColorWhenNotColored() {
 		GlyphFontProviderTest.draw("~A", GlyphFontProviderTest.info().color(Color.WHITE).colored(false));
 		Assert.assertSame(Color.WHITE, GlyphFontProviderTest.PROVIDER.drawn.get(0).getColor());
 	}
 
 	@Test
-	public void prefersAnItalicFace() {
-		GlyphFontProviderTest.draw("*A", GlyphFontProviderTest.info().italic(true));
-		Assert.assertSame(GlyphFontProviderTest.ITALIC, GlyphFontProviderTest.PROVIDER.drawn.get(0).getFace());
-		Assert.assertFalse(GlyphFontProviderTest.PROVIDER.drawn.get(0).isSlanted());
+	public void measuresAdvancesKerningAndSpacing() {
+		Assert.assertEquals(11D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth("AV"), 1E-6D);
+		Assert.assertEquals(10D, GlyphFontProviderTest.info().getWidth("AB"), 1E-6D);
 	}
 
 	@Test
-	public void slantsAnUprightFace() {
-		GlyphFontProviderTest.draw("*A", GlyphFontProviderTest.info(GlyphFontProviderTest.REGULAR, GlyphFontProviderTest.BOLD).italic(true));
-		Assert.assertSame(GlyphFontProviderTest.BOLD, GlyphFontProviderTest.PROVIDER.drawn.get(0).getFace());
-		Assert.assertTrue(GlyphFontProviderTest.PROVIDER.drawn.get(0).isSlanted());
+	public void skipsMissingGlyphsWithoutBreakingKerning() {
+		final TextInfo info = GlyphFontProviderTest.info().letterSpacing(2F);
+		Assert.assertEquals(info.getWidth("AV"), info.getWidth("A#V"), 1E-6D);
 	}
 
 	private static TextInfo info() {
@@ -202,12 +202,12 @@ public class GlyphFontProviderTest {
 		return TextInfo.create(new Font(FontFamily.of(faces)), 10F).markups(GlyphFontProviderTest.MARKUP);
 	}
 
-	private static GlyphLayout<Face> layout(final String text, final TextInfo info) {
-		return GlyphFontProviderTest.PROVIDER.layout(text, info);
-	}
-
 	private static void draw(final String text, final TextInfo info) {
 		GlyphFontProviderTest.PROVIDER.drawText(0D, 0D, text, info);
+	}
+
+	private static GlyphLayout<Face> layout(final String text, final TextInfo info) {
+		return GlyphFontProviderTest.PROVIDER.layout(text, info);
 	}
 
 	@Getter
@@ -280,8 +280,8 @@ public class GlyphFontProviderTest {
 		private List<String> events = new ArrayList<>();
 
 		@Override
-		protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
-			this.events.add("begin");
+		protected void end() {
+			this.events.add("end");
 		}
 
 		@Override
@@ -291,8 +291,8 @@ public class GlyphFontProviderTest {
 		}
 
 		@Override
-		protected void end() {
-			this.events.add("end");
+		protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
+			this.events.add("begin");
 		}
 
 	}

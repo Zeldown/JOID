@@ -20,8 +20,8 @@ public abstract class SwitchNode extends Node {
 
 	public static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeSwitchChangeCallback.class);
 
-	private final ListSignal<String> stateList;
 	private final IntegerSignal stateIndex;
+	private final ListSignal<String> stateList;
 
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -33,24 +33,15 @@ public abstract class SwitchNode extends Node {
 		super.watch(this.stateIndex, WatchProperty.CLEAR_CHILDREN, WatchProperty.RELOAD);
 	}
 
-	public final <T extends SwitchNode> @NonNull T state(final @NonNull List<String> stateList, final @NonNull String state) {
-		assert !stateList.isEmpty() && stateList.contains(state);
-		this.stateList.set(new LinkedList<>(stateList));
-		this.stateIndex.set(stateList.indexOf(state));
-		return (T) this;
+	public final @NonNull String getState() {
+		return this.stateList.get(this.stateIndex.getOrDefault());
 	}
 
-	public final <T extends SwitchNode> @NonNull T state(final @NonNull List<String> stateList, final int index) {
-		assert !stateList.isEmpty() && index >= 0 && index < stateList.size();
-		this.stateList.set(stateList);
-		this.stateIndex.set(index);
-		return (T) this;
-	}
-
-	public final <T extends SwitchNode> @NonNull T state(final @NonNull String... stateList) {
-		assert stateList.length > 0;
-		this.stateList.set(new LinkedList<>(Arrays.asList(stateList)));
-		this.stateIndex.set(0);
+	public final <T extends SwitchNode> @NonNull T index(final int index) {
+		assert this.stateList.getOrDefault() != null && !this.stateList.isEmpty() && index >= 0 && index < this.stateList.size();
+		super.executeCallback(SwitchNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+			this.stateIndex.set(index);
+		}, this.stateList.get(index));
 		return (T) this;
 	}
 
@@ -62,20 +53,29 @@ public abstract class SwitchNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends SwitchNode> @NonNull T index(final int index) {
-		assert this.stateList.getOrDefault() != null && !this.stateList.isEmpty() && index >= 0 && index < this.stateList.size();
-		super.executeCallback(SwitchNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-			this.stateIndex.set(index);
-		}, this.stateList.get(index));
+	public final <T extends SwitchNode> @NonNull T state(final @NonNull String... stateList) {
+		assert stateList.length > 0;
+		this.stateList.set(new LinkedList<>(Arrays.asList(stateList)));
+		this.stateIndex.set(0);
 		return (T) this;
 	}
 
-	public final @NonNull String getState() {
-		return this.stateList.get(this.stateIndex.getOrDefault());
+	public final <T extends SwitchNode> @NonNull T state(final @NonNull List<String> stateList, final int index) {
+		assert !stateList.isEmpty() && index >= 0 && index < stateList.size();
+		this.stateList.set(stateList);
+		this.stateIndex.set(index);
+		return (T) this;
 	}
 
 	public final <T extends SwitchNode> @NonNull T onChange(final @NonNull NodeSwitchChangeCallback<T> callback) {
 		super.registerCallback(SwitchNode.CALLBACK_CHANGE, callback);
+		return (T) this;
+	}
+
+	public final <T extends SwitchNode> @NonNull T state(final @NonNull List<String> stateList, final @NonNull String state) {
+		assert !stateList.isEmpty() && stateList.contains(state);
+		this.stateList.set(new LinkedList<>(stateList));
+		this.stateIndex.set(stateList.indexOf(state));
 		return (T) this;
 	}
 

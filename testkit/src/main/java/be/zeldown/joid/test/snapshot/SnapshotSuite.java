@@ -19,8 +19,6 @@ public abstract class SnapshotSuite {
 
 	private static SnapshotRunner runner;
 
-	protected abstract @NonNull ISnapshotBackend createBackend();
-
 	@AfterClass
 	public static void stopRunner() {
 		SnapshotSuite.pruneReferences();
@@ -68,6 +66,8 @@ public abstract class SnapshotSuite {
 	public void matchesInteractionSnapshots() {
 		this.verify("interaction");
 	}
+
+	protected abstract @NonNull ISnapshotBackend createBackend();
 
 	private SnapshotRunner getRunner() {
 		if (SnapshotSuite.runner == null) {

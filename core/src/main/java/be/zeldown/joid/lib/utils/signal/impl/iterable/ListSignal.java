@@ -11,6 +11,10 @@ public class ListSignal<E> extends Signal<List<E>> {
 
 	public ListSignal() {}
 
+	public ListSignal(final List<E> value) {
+		super(value);
+	}
+
 	public ListSignal(final Collection<E> value) {
 		this(new ArrayList<>(value));
 	}
@@ -21,14 +25,12 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return instance;
 	}
 
-	public ListSignal(final List<E> value) {
-		super(value);
+	public int size() {
+		return this.getOrDefault().size();
 	}
 
-	public @NonNull ListSignal<E> clear() {
-		this.getOrDefault().clear();
-		this.publish();
-		return this;
+	public boolean isEmpty() {
+		return this.getOrDefault().isEmpty();
 	}
 
 	public boolean add(final E e) {
@@ -37,20 +39,12 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return success;
 	}
 
-	public boolean contains(final E e) {
-		return this.getOrDefault().contains(e);
-	}
-
 	public E get(final int index) {
 		return this.getOrDefault().get(index);
 	}
 
 	public int indexOf(final E e) {
 		return this.getOrDefault().indexOf(e);
-	}
-
-	public boolean isEmpty() {
-		return this.getOrDefault().isEmpty();
 	}
 
 	public boolean remove(final E e) {
@@ -65,14 +59,20 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return result;
 	}
 
+	public boolean contains(final E e) {
+		return this.getOrDefault().contains(e);
+	}
+
+	public @NonNull ListSignal<E> clear() {
+		this.getOrDefault().clear();
+		this.publish();
+		return this;
+	}
+
 	public E set(final int index, final E element) {
 		final E result = this.getOrDefault().set(index, element);
 		this.publish();
 		return result;
-	}
-
-	public int size() {
-		return this.getOrDefault().size();
 	}
 
 	@Override

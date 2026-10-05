@@ -64,36 +64,12 @@ public final class MsdfWriter {
 		}
 	}
 
-	private static void kerning(final DataOutputStream data, final Map<Long, Integer> pairs) throws IOException {
-		final Map<Integer, Map<Integer, Integer>> groups = new TreeMap<>();
-		for (final Map.Entry<Long, Integer> entry : pairs.entrySet()) {
-			groups.computeIfAbsent((int) (entry.getKey() >> 32), key -> new TreeMap<>()).put(entry.getKey().intValue(), entry.getValue());
-		}
-
-		MsdfWriter.variable(data, groups.size());
-		int first = 0;
-		for (final Map.Entry<Integer, Map<Integer, Integer>> group : groups.entrySet()) {
-			MsdfWriter.variable(data, group.getKey() - first);
-			MsdfWriter.variable(data, group.getValue().size());
-			first = group.getKey();
-
-			int second = 0;
-			for (final Map.Entry<Integer, Integer> entry : group.getValue().entrySet()) {
-				MsdfWriter.variable(data, entry.getKey() - second);
-				MsdfWriter.variable(data, entry.getValue() << 1 ^ entry.getValue() >> 31);
-				second = entry.getKey();
-			}
-		}
-	}
-
-	private static void variable(final DataOutputStream data, final int value) throws IOException {
-		int remaining = value;
-		while ((remaining & ~0x7F) != 0) {
-			data.writeByte(remaining & 0x7F | 0x80);
-			remaining >>>= 7;
-		}
-
-		data.writeByte(remaining);
+	private static int paeth(final int left, final int up, final int corner) {
+		final int estimate = left + up - corner;
+		final int leftDistance = Math.abs(estimate - left);
+		final int upDistance = Math.abs(estimate - up);
+		final int cornerDistance = Math.abs(estimate - corner);
+		return leftDistance <= upDistance && leftDistance <= cornerDistance ? left : upDistance <= cornerDistance ? up : corner;
 	}
 
 	private static byte[] scanlines(final int[] pixels, final int width, final int height) {
@@ -158,12 +134,36 @@ public final class MsdfWriter {
 		return output;
 	}
 
-	private static int paeth(final int left, final int up, final int corner) {
-		final int estimate = left + up - corner;
-		final int leftDistance = Math.abs(estimate - left);
-		final int upDistance = Math.abs(estimate - up);
-		final int cornerDistance = Math.abs(estimate - corner);
-		return leftDistance <= upDistance && leftDistance <= cornerDistance ? left : upDistance <= cornerDistance ? up : corner;
+	private static void variable(final DataOutputStream data, final int value) throws IOException {
+		int remaining = value;
+		while ((remaining & ~0x7F) != 0) {
+			data.writeByte(remaining & 0x7F | 0x80);
+			remaining >>>= 7;
+		}
+
+		data.writeByte(remaining);
+	}
+
+	private static void kerning(final DataOutputStream data, final Map<Long, Integer> pairs) throws IOException {
+		final Map<Integer, Map<Integer, Integer>> groups = new TreeMap<>();
+		for (final Map.Entry<Long, Integer> entry : pairs.entrySet()) {
+			groups.computeIfAbsent((int) (entry.getKey() >> 32), key -> new TreeMap<>()).put(entry.getKey().intValue(), entry.getValue());
+		}
+
+		MsdfWriter.variable(data, groups.size());
+		int first = 0;
+		for (final Map.Entry<Integer, Map<Integer, Integer>> group : groups.entrySet()) {
+			MsdfWriter.variable(data, group.getKey() - first);
+			MsdfWriter.variable(data, group.getValue().size());
+			first = group.getKey();
+
+			int second = 0;
+			for (final Map.Entry<Integer, Integer> entry : group.getValue().entrySet()) {
+				MsdfWriter.variable(data, entry.getKey() - second);
+				MsdfWriter.variable(data, entry.getValue() << 1 ^ entry.getValue() >> 31);
+				second = entry.getKey();
+			}
+		}
 	}
 
 }

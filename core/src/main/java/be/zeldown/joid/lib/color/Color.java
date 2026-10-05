@@ -12,19 +12,19 @@ import lombok.NonNull;
 
 public final class Color {
 
-	public static final Color WHITE       = new Color(1F, 1F, 1F, 1F);
-	public static final Color YELLOW      = new Color(1F, 1F, 0F, 1F);
 	public static final Color RED         = new Color(1F, 0F, 0F, 1F);
 	public static final Color BLUE        = new Color(0F, 0F, 1F, 1F);
-	public static final Color GREEN       = new Color(0F, 1F, 0F, 1F);
-	public static final Color BLACK       = new Color(0F, 0F, 0F, 1F);
 	public static final Color GRAY        = new Color(0.5F, 0.5F, 0.5F, 1F);
 	public static final Color CYAN        = new Color(0F, 1F, 1F, 1F);
-	public static final Color DARKGRAY    = new Color(0.3F, 0.3F, 0.3F, 1F);
-	public static final Color LIGHTGRAY   = new Color(0.7F, 0.7F, 0.7F, 1F);
 	public static final Color PINK        = new Color(1F, 0.7F, 0.7F, 1F);
+	public static final Color WHITE       = new Color(1F, 1F, 1F, 1F);
+	public static final Color GREEN       = new Color(0F, 1F, 0F, 1F);
+	public static final Color BLACK       = new Color(0F, 0F, 0F, 1F);
+	public static final Color YELLOW      = new Color(1F, 1F, 0F, 1F);
 	public static final Color ORANGE      = new Color(1F, 0.8F, 0F, 1F);
 	public static final Color MAGENTA     = new Color(1F, 0F, 1F, 1F);
+	public static final Color DARKGRAY    = new Color(0.3F, 0.3F, 0.3F, 1F);
+	public static final Color LIGHTGRAY   = new Color(0.7F, 0.7F, 0.7F, 1F);
 	public static final Color TRANSPARENT = new Color(0F, 0F, 0F, 0F);
 
 	public static final Color RAINBOW = new Color(1F, 1F, 1F, 1F, color -> {
@@ -50,35 +50,6 @@ public final class Color {
 	public Consumer<Color> update;
 	public ColorGradient gradient;
 
-	public Color(final Color color) {
-		this(color.r, color.g, color.b, color.a);
-	}
-
-	public Color(final ColorGradient gradient) {
-		this(gradient.getStartColor());
-		this.gradient = gradient;
-	}
-
-	public Color(final java.awt.Color color) {
-		this(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
-	}
-
-	public Color(final FloatBuffer buffer) {
-		this(buffer.get(), buffer.get(), buffer.get(), buffer.get());
-	}
-
-	public Color(final float r, final float g, final float b) {
-		this(r, g, b, 1F);
-	}
-
-	public Color(final int r, final int g, final int b) {
-		this(r / 255F, g / 255F, b / 255F, 1F);
-	}
-
-	public Color(final int r, final int g, final int b, final int a) {
-		this(r / 255F, g / 255F, b / 255F, a / 255F);
-	}
-
 	public Color(final int value) {
 		final int r = (value & 0x00FF0000) >> 16;
 		final int g = (value & 0x0000FF00) >> 8;
@@ -98,20 +69,51 @@ public final class Color {
 		this.a = a / 255F;
 	}
 
-	public Color(final float r, final float g, final float b, final float a) {
-		this.r = Math.min(r, 1);
-		this.g = Math.min(g, 1);
-		this.b = Math.min(b, 1);
-		this.a = Math.min(a, 1);
+	public Color(final Color color) {
+		this(color.r, color.g, color.b, color.a);
 	}
 
-	public Color(final float r, final float g, final float b, final float a, final Consumer<Color> update) {
-		this.r = Math.min(r, 1);
-		this.g = Math.min(g, 1);
-		this.b = Math.min(b, 1);
-		this.a = Math.min(a, 1);
+	public Color(final FloatBuffer buffer) {
+		this(buffer.get(), buffer.get(), buffer.get(), buffer.get());
+	}
 
-		this.update = update;
+	public static @NonNull Color RAINBOW() {
+		return new Color(java.awt.Color.HSBtoRGB(BridgeHandler.CLOCK.get().currentTimeMillis() % 3000L / 3000F, 0.8F, 0.8F));
+	}
+
+	public static @NonNull Color LOADING() {
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final float color = (float) ((Math.sin(2 * Math.PI * (now % 4000) / 2000) + 1) / 50F) + 0.15F;
+		return new Color(color, color, color);
+	}
+
+	public Color(final java.awt.Color color) {
+		this(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+	}
+
+	public Color(final ColorGradient gradient) {
+		this(gradient.getStartColor());
+		this.gradient = gradient;
+	}
+
+	public static @NonNull Color fill(final int color) {
+		return new Color(color, color, color);
+	}
+
+	public Color(final int r, final int g, final int b) {
+		this(r / 255F, g / 255F, b / 255F, 1F);
+	}
+
+	public static @NonNull Color fill(final float color) {
+		return new Color(color, color, color);
+	}
+
+	public static @NonNull Color RAINBOW(final long time) {
+		return new Color(java.awt.Color.HSBtoRGB(time % 3000L / 3000F, 0.8F, 0.8F));
+	}
+
+	public Color(final float r, final float g, final float b) {
+		this(r, g, b, 1F);
 	}
 
 	public static @NonNull Color decode(final @NonNull String nm) {
@@ -156,282 +158,24 @@ public final class Color {
 		throw new NumberFormatException("Invalid color: " + hex);
 	}
 
-	public @NonNull String encode() {
-		String hexRed = Integer.toHexString(this.getRed());
-		String hexGreen = Integer.toHexString(this.getGreen());
-		String hexBlue = Integer.toHexString(this.getBlue());
-		String hexAlpha = Integer.toHexString(this.getAlpha());
-
-		hexRed = this.padZero(hexRed);
-		hexGreen = this.padZero(hexGreen);
-		hexBlue = this.padZero(hexBlue);
-		hexAlpha = this.padZero(hexAlpha);
-
-		final String hexCode = "#" + hexRed + hexGreen + hexBlue + hexAlpha;
-		return hexCode.toUpperCase();
+	public Color(final int r, final int g, final int b, final int a) {
+		this(r / 255F, g / 255F, b / 255F, a / 255F);
 	}
 
-	private @NonNull String padZero(final @NonNull String str) {
-		return str.length() == 1 ? "0" + str : str;
+	public Color(final float r, final float g, final float b, final float a) {
+		this.r = Math.min(r, 1);
+		this.g = Math.min(g, 1);
+		this.b = Math.min(b, 1);
+		this.a = Math.min(a, 1);
 	}
 
-	public static @NonNull Color fill(final float color) {
-		return new Color(color, color, color);
-	}
+	public Color(final float r, final float g, final float b, final float a, final Consumer<Color> update) {
+		this.r = Math.min(r, 1);
+		this.g = Math.min(g, 1);
+		this.b = Math.min(b, 1);
+		this.a = Math.min(a, 1);
 
-	public static @NonNull Color fill(final int color) {
-		return new Color(color, color, color);
-	}
-
-	public void bind() {
-		this.update();
-		BridgeHandler.RENDER.get().color(this.r, this.g, this.b, this.a);
-	}
-
-	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
-		this.bind(runnable, canvas, false);
-	}
-
-	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas, final boolean hasTexture) {
-		if (this.isGradient()) {
-			final IRenderBridge render = BridgeHandler.RENDER.get();
-			final IShader previousShader = render.getShader();
-			this.gradient.use(hasTexture, runnable, canvas);
-			render.shader(previousShader);
-		} else {
-			this.bind();
-			runnable.run();
-			Color.reset();
-		}
-	}
-
-	public int getRGB() {
-		return ((int)(this.a * 255) & 0xFF) << 24 | ((int)(this.r * 255) & 0xFF) << 16 | ((int)(this.g * 255) & 0xFF) << 8  | ((int)(this.b * 255) & 0xFF) << 0;
-	}
-
-	public @NonNull Color darker() {
-		return this.darker(0.5F);
-	}
-
-	public @NonNull Color darker(final float scale) {
-		final float factor = 1 - scale;
-		return new Color(this.r * factor, this.g * factor, this.b * factor, this.a);
-	}
-
-	public @NonNull Color brighter() {
-		return this.brighter(0.2F);
-	}
-
-	public int getRed() {
-		return (int) (this.r * 255F);
-	}
-
-	public int getGreen() {
-		return (int) (this.g * 255F);
-	}
-
-	public int getBlue() {
-		return (int) (this.b * 255F);
-	}
-
-	public int getAlpha() {
-		return (int) (this.a * 255F);
-	}
-
-	public int getRedByte() {
-		return (int) (this.r * 255F);
-	}
-
-	public int getGreenByte() {
-		return (int) (this.g * 255F);
-	}
-
-	public int getBlueByte() {
-		return (int) (this.b * 255F);
-	}
-
-	public int getAlphaByte() {
-		return (int) (this.a * 255F);
-	}
-
-	public @NonNull Color brighter(final float scale) {
-		final float factor = scale + 1F;
-		return new Color(this.r * factor, this.g * factor, this.b * factor, this.a);
-	}
-
-	public @NonNull Color multiply(final @NonNull Color c) {
-		return new Color(this.r * c.r, this.g * c.g, this.b * c.b, this.a * c.a);
-	}
-
-	public void add(final @NonNull Color c) {
-		this.r += c.r;
-		this.g += c.g;
-		this.b += c.b;
-		this.a += c.a;
-	}
-
-	public void scale(final float value) {
-		this.r *= value;
-		this.g *= value;
-		this.b *= value;
-		this.a *= value;
-	}
-
-	public @NonNull Color addToCopy(final @NonNull Color c) {
-		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
-		copy.r += c.r;
-		copy.g += c.g;
-		copy.b += c.b;
-		copy.a += c.a;
-		return copy;
-	}
-
-	public @NonNull Color scaleCopy(final float value) {
-		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
-		copy.r *= value;
-		copy.g *= value;
-		copy.b *= value;
-		copy.a *= value;
-		return copy;
-	}
-
-	public @NonNull Color to(final @NonNull Color target, final float progress) {
-		return Color.transition(this, target, progress);
-	}
-
-	public @NonNull Color toGradient(final @NonNull Color target) {
-		return this.toGradient(target, new Vector4f(0F, 0F, 1F, 0F));
-	}
-
-	public @NonNull Color toGradient(final @NonNull Color target, final @NonNull Vector4f direction) {
-		return Color.gradient(this, target, direction);
-	}
-
-	public @NonNull float[] RGBtoHSB(final float[] hsbvals) {
-		final float[] values = hsbvals == null ? new float[3] : hsbvals;
-		float hue, saturation, brightness;
-
-		int cmax = this.getRed() > this.getGreen() ? this.getRed() : this.getGreen();
-		if (this.getBlue() > cmax) {
-			cmax = this.getBlue();
-		}
-
-		int cmin = this.getRed() < this.getGreen() ? this.getRed() : this.getGreen();
-		if (this.getBlue() < cmin) {
-			cmin = this.getBlue();
-		}
-
-		brightness = cmax / 255F;
-		if (cmax != 0) {
-			saturation = (float) (cmax - cmin) / (float) cmax;
-		} else {
-			saturation = 0;
-		}
-
-		if (saturation == 0) {
-			hue = 0;
-		} else {
-			final float redc = (float) (cmax - this.getRed()) / (float) (cmax - cmin);
-			final float greenc = (float) (cmax - this.getGreen()) / (float) (cmax - cmin);
-			final float bluec = (float) (cmax - this.getBlue()) / (float) (cmax - cmin);
-			if (this.getRed() == cmax) {
-				hue = bluec - greenc;
-			} else if (this.getGreen() == cmax) {
-				hue = 2F + redc - bluec;
-			} else {
-				hue = 4F + greenc - redc;
-			}
-
-			hue = hue / 6F;
-			if (hue < 0) {
-				hue = hue + 1F;
-			}
-		}
-		values[0] = hue;
-		values[1] = saturation;
-		values[2] = brightness;
-		return values;
-	}
-
-	public @NonNull Color copy() {
-		return new Color(this.r, this.g, this.b, this.a, this.update);
-	}
-
-	public @NonNull Color copyAlpha(final float alpha) {
-		return new Color(this.r, this.g, this.b, alpha, this.update);
-	}
-
-	public @NonNull Color copyRed(final float red) {
-		return new Color(red, this.g, this.b, this.a, this.update);
-	}
-
-	public @NonNull Color copyGreen(final float green) {
-		return new Color(this.r, green, this.b, this.a, this.update);
-	}
-
-	public @NonNull Color copyBlue(final float blue) {
-		return new Color(this.r, this.g, blue, this.a, this.update);
-	}
-
-	public @NonNull Color update() {
-		if (this.update != null) {
-			this.update.accept(this);
-		}
-		return this;
-	}
-
-	public boolean isGradient() {
-		return this.gradient != null;
-	}
-
-	public static @NonNull float[] RGBtoHSB(final int r, final int g, final int b, final float[] hsbvals) {
-		final float[] values = hsbvals == null ? new float[3] : hsbvals;
-		float hue, saturation, brightness;
-
-		int cmax = r > g ? r : g;
-		if (b > cmax) {
-			cmax = b;
-		}
-
-		int cmin = r < g ? r : g;
-		if (b < cmin) {
-			cmin = b;
-		}
-
-		brightness = cmax / 255F;
-		if (cmax != 0) {
-			saturation = (float) (cmax - cmin) / (float) cmax;
-		} else {
-			saturation = 0;
-		}
-
-		if (saturation == 0) {
-			hue = 0;
-		} else {
-			final float redc = (float) (cmax - r) / (float) (cmax - cmin);
-			final float greenc = (float) (cmax - g) / (float) (cmax - cmin);
-			final float bluec = (float) (cmax - b) / (float) (cmax - cmin);
-			if (r == cmax) {
-				hue = bluec - greenc;
-			} else if (g == cmax) {
-				hue = 2F + redc - bluec;
-			} else {
-				hue = 4F + greenc - redc;
-			}
-
-			hue = hue / 6F;
-			if (hue < 0) {
-				hue = hue + 1F;
-			}
-		}
-		values[0] = hue;
-		values[1] = saturation;
-		values[2] = brightness;
-		return values;
-	}
-
-	public static void reset() {
-		BridgeHandler.RENDER.get().color(1F, 1F, 1F, 1F);
+		this.update = update;
 	}
 
 	public static @NonNull Color transition(final @NonNull Color color1, final @NonNull Color color2, final float progress) {
@@ -495,18 +239,279 @@ public final class Color {
 		return new Color(new ColorGradient(color1, color2, direction));
 	}
 
-	public static @NonNull Color RAINBOW() {
-		return new Color(java.awt.Color.HSBtoRGB(BridgeHandler.CLOCK.get().currentTimeMillis() % 3000L / 3000F, 0.8F, 0.8F));
+	public void bind() {
+		this.update();
+		BridgeHandler.RENDER.get().color(this.r, this.g, this.b, this.a);
 	}
 
-	public static @NonNull Color RAINBOW(final long time) {
-		return new Color(java.awt.Color.HSBtoRGB(time % 3000L / 3000F, 0.8F, 0.8F));
+	public int getRGB() {
+		return ((int)(this.a * 255) & 0xFF) << 24 | ((int)(this.r * 255) & 0xFF) << 16 | ((int)(this.g * 255) & 0xFF) << 8  | ((int)(this.b * 255) & 0xFF) << 0;
 	}
 
-	public static @NonNull Color LOADING() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final float color = (float) ((Math.sin(2 * Math.PI * (now % 4000) / 2000) + 1) / 50F) + 0.15F;
-		return new Color(color, color, color);
+	public int getRed() {
+		return (int) (this.r * 255F);
+	}
+
+	public int getBlue() {
+		return (int) (this.b * 255F);
+	}
+
+	public int getGreen() {
+		return (int) (this.g * 255F);
+	}
+
+	public int getAlpha() {
+		return (int) (this.a * 255F);
+	}
+
+	public int getRedByte() {
+		return (int) (this.r * 255F);
+	}
+
+	public int getBlueByte() {
+		return (int) (this.b * 255F);
+	}
+
+	public int getGreenByte() {
+		return (int) (this.g * 255F);
+	}
+
+	public int getAlphaByte() {
+		return (int) (this.a * 255F);
+	}
+
+	public static void reset() {
+		BridgeHandler.RENDER.get().color(1F, 1F, 1F, 1F);
+	}
+
+	public boolean isGradient() {
+		return this.gradient != null;
+	}
+
+	public @NonNull Color copy() {
+		return new Color(this.r, this.g, this.b, this.a, this.update);
+	}
+
+	public @NonNull Color darker() {
+		return this.darker(0.5F);
+	}
+
+	public @NonNull Color update() {
+		if (this.update != null) {
+			this.update.accept(this);
+		}
+		return this;
+	}
+
+	public @NonNull String encode() {
+		String hexRed = Integer.toHexString(this.getRed());
+		String hexGreen = Integer.toHexString(this.getGreen());
+		String hexBlue = Integer.toHexString(this.getBlue());
+		String hexAlpha = Integer.toHexString(this.getAlpha());
+
+		hexRed = this.padZero(hexRed);
+		hexGreen = this.padZero(hexGreen);
+		hexBlue = this.padZero(hexBlue);
+		hexAlpha = this.padZero(hexAlpha);
+
+		final String hexCode = "#" + hexRed + hexGreen + hexBlue + hexAlpha;
+		return hexCode.toUpperCase();
+	}
+
+	public @NonNull Color brighter() {
+		return this.brighter(0.2F);
+	}
+
+	public void scale(final float value) {
+		this.r *= value;
+		this.g *= value;
+		this.b *= value;
+		this.a *= value;
+	}
+
+	public void add(final @NonNull Color c) {
+		this.r += c.r;
+		this.g += c.g;
+		this.b += c.b;
+		this.a += c.a;
+	}
+
+	public @NonNull Color copyRed(final float red) {
+		return new Color(red, this.g, this.b, this.a, this.update);
+	}
+
+	public @NonNull Color darker(final float scale) {
+		final float factor = 1 - scale;
+		return new Color(this.r * factor, this.g * factor, this.b * factor, this.a);
+	}
+
+	public @NonNull Color copyBlue(final float blue) {
+		return new Color(this.r, this.g, blue, this.a, this.update);
+	}
+
+	public @NonNull Color brighter(final float scale) {
+		final float factor = scale + 1F;
+		return new Color(this.r * factor, this.g * factor, this.b * factor, this.a);
+	}
+
+	public @NonNull Color scaleCopy(final float value) {
+		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
+		copy.r *= value;
+		copy.g *= value;
+		copy.b *= value;
+		copy.a *= value;
+		return copy;
+	}
+
+	public @NonNull Color copyAlpha(final float alpha) {
+		return new Color(this.r, this.g, this.b, alpha, this.update);
+	}
+
+	public @NonNull Color copyGreen(final float green) {
+		return new Color(this.r, green, this.b, this.a, this.update);
+	}
+
+	public @NonNull Color multiply(final @NonNull Color c) {
+		return new Color(this.r * c.r, this.g * c.g, this.b * c.b, this.a * c.a);
+	}
+
+	public @NonNull Color addToCopy(final @NonNull Color c) {
+		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
+		copy.r += c.r;
+		copy.g += c.g;
+		copy.b += c.b;
+		copy.a += c.a;
+		return copy;
+	}
+
+	public @NonNull float[] RGBtoHSB(final float[] hsbvals) {
+		final float[] values = hsbvals == null ? new float[3] : hsbvals;
+		float hue, saturation, brightness;
+
+		int cmax = this.getRed() > this.getGreen() ? this.getRed() : this.getGreen();
+		if (this.getBlue() > cmax) {
+			cmax = this.getBlue();
+		}
+
+		int cmin = this.getRed() < this.getGreen() ? this.getRed() : this.getGreen();
+		if (this.getBlue() < cmin) {
+			cmin = this.getBlue();
+		}
+
+		brightness = cmax / 255F;
+		if (cmax != 0) {
+			saturation = (float) (cmax - cmin) / (float) cmax;
+		} else {
+			saturation = 0;
+		}
+
+		if (saturation == 0) {
+			hue = 0;
+		} else {
+			final float redc = (float) (cmax - this.getRed()) / (float) (cmax - cmin);
+			final float greenc = (float) (cmax - this.getGreen()) / (float) (cmax - cmin);
+			final float bluec = (float) (cmax - this.getBlue()) / (float) (cmax - cmin);
+			if (this.getRed() == cmax) {
+				hue = bluec - greenc;
+			} else if (this.getGreen() == cmax) {
+				hue = 2F + redc - bluec;
+			} else {
+				hue = 4F + greenc - redc;
+			}
+
+			hue = hue / 6F;
+			if (hue < 0) {
+				hue = hue + 1F;
+			}
+		}
+		values[0] = hue;
+		values[1] = saturation;
+		values[2] = brightness;
+		return values;
+	}
+
+	public @NonNull Color toGradient(final @NonNull Color target) {
+		return this.toGradient(target, new Vector4f(0F, 0F, 1F, 0F));
+	}
+
+	public @NonNull Color to(final @NonNull Color target, final float progress) {
+		return Color.transition(this, target, progress);
+	}
+
+	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
+		this.bind(runnable, canvas, false);
+	}
+
+	public @NonNull Color toGradient(final @NonNull Color target, final @NonNull Vector4f direction) {
+		return Color.gradient(this, target, direction);
+	}
+
+	public static @NonNull float[] RGBtoHSB(final int r, final int g, final int b, final float[] hsbvals) {
+		final float[] values = hsbvals == null ? new float[3] : hsbvals;
+		float hue, saturation, brightness;
+
+		int cmax = r > g ? r : g;
+		if (b > cmax) {
+			cmax = b;
+		}
+
+		int cmin = r < g ? r : g;
+		if (b < cmin) {
+			cmin = b;
+		}
+
+		brightness = cmax / 255F;
+		if (cmax != 0) {
+			saturation = (float) (cmax - cmin) / (float) cmax;
+		} else {
+			saturation = 0;
+		}
+
+		if (saturation == 0) {
+			hue = 0;
+		} else {
+			final float redc = (float) (cmax - r) / (float) (cmax - cmin);
+			final float greenc = (float) (cmax - g) / (float) (cmax - cmin);
+			final float bluec = (float) (cmax - b) / (float) (cmax - cmin);
+			if (r == cmax) {
+				hue = bluec - greenc;
+			} else if (g == cmax) {
+				hue = 2F + redc - bluec;
+			} else {
+				hue = 4F + greenc - redc;
+			}
+
+			hue = hue / 6F;
+			if (hue < 0) {
+				hue = hue + 1F;
+			}
+		}
+		values[0] = hue;
+		values[1] = saturation;
+		values[2] = brightness;
+		return values;
+	}
+
+	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas, final boolean hasTexture) {
+		if (this.isGradient()) {
+			final IRenderBridge render = BridgeHandler.RENDER.get();
+			final IShader previousShader = render.getShader();
+			this.gradient.use(hasTexture, runnable, canvas);
+			render.shader(previousShader);
+		} else {
+			this.bind();
+			runnable.run();
+			Color.reset();
+		}
+	}
+
+	private @NonNull String padZero(final @NonNull String str) {
+		return str.length() == 1 ? "0" + str : str;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) (this.r + this.g + this.b + this.a) * 255;
 	}
 
 	@Override
@@ -516,11 +521,6 @@ public final class Color {
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha(),
 				this.encode()
 				);
-	}
-
-	@Override
-	public int hashCode() {
-		return (int) (this.r + this.g + this.b + this.a) * 255;
 	}
 
 	@Override

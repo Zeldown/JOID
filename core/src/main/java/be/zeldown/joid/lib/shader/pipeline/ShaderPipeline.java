@@ -27,6 +27,25 @@ public final class ShaderPipeline {
 
 	private ShaderPipeline() {}
 
+	public static void cleanup() {
+		for (final FrameBuffer[] fbos : ShaderPipeline.FBO_POOL.values()) {
+			fbos[0].delete();
+			fbos[1].delete();
+		}
+		ShaderPipeline.FBO_POOL.clear();
+	}
+
+	public static int scaleFactor(final UI ui) {
+		if (ui == null || ui.getWidth() <= 0D) {
+			return 2;
+		}
+		return Math.max(1, (int) Math.ceil(ui.getViewportWidth() / ui.getWidth()));
+	}
+
+	public static void render(final Node node, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
+		ShaderPipeline.render(node, new ArrayList<>(Arrays.asList(passes)), baseDraw);
+	}
+
 	public static void render(final Node node, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
 		if (passes.isEmpty()) {
 			baseDraw.run();
@@ -54,10 +73,6 @@ public final class ShaderPipeline {
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}
-	}
-
-	public static void render(final Node node, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
-		ShaderPipeline.render(node, new ArrayList<>(Arrays.asList(passes)), baseDraw);
 	}
 
 	public static void render(final double x, final double y, final double width, final double height, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
@@ -89,11 +104,34 @@ public final class ShaderPipeline {
 		}
 	}
 
-	public static int scaleFactor(final UI ui) {
-		if (ui == null || ui.getWidth() <= 0D) {
-			return 2;
+	private static FrameBuffer[] getOrCreateFBOs(final int width, final int height) {
+		final long key = (long) ShaderPipeline.pipelineDepth << 32 | (long) width << 16 | height;
+		FrameBuffer[] fbos = ShaderPipeline.FBO_POOL.get(key);
+		if (fbos != null) {
+			return fbos;
 		}
-		return Math.max(1, (int) Math.ceil(ui.getViewportWidth() / ui.getWidth()));
+
+		fbos = new FrameBuffer[] {FrameBuffer.create(width, height, TextureFilter.LINEAR), FrameBuffer.create(width, height, TextureFilter.LINEAR)};
+		ShaderPipeline.FBO_POOL.put(key, fbos);
+		return fbos;
+	}
+
+	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final double x, final double y, final double w, final double h) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.blend(BlendState.NORMAL);
+		render.texture(frameBuffer.getHandle().getTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		render.color(1F, 1F, 1F, 1F);
+
+		final Tessellator tess = Tessellator.inst();
+		tess.start(DrawMode.QUADS);
+		tess.addVertexWithUV(x, y + h, 0D, 0D, 0D);
+		tess.addVertexWithUV(x + w, y + h, 0D, 1D, 0D);
+		tess.addVertexWithUV(x + w, y, 0D, 1D, 1D);
+		tess.addVertexWithUV(x, y, 0D, 0D, 1D);
+		tess.draw();
+
+		render.blend(BlendState.DISABLED);
+		render.resetTexture();
 	}
 
 	private static void renderMultiPass(final double nodeX, final double nodeY, final double nodeW, final double nodeH, final int scaleFactor, final Node node, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
@@ -172,44 +210,6 @@ public final class ShaderPipeline {
 		passes.get(passes.size() - 1).unbind();
 
 		render.popState();
-	}
-
-	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final double x, final double y, final double w, final double h) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.blend(BlendState.NORMAL);
-		render.texture(frameBuffer.getHandle().getTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
-		render.color(1F, 1F, 1F, 1F);
-
-		final Tessellator tess = Tessellator.inst();
-		tess.start(DrawMode.QUADS);
-		tess.addVertexWithUV(x, y + h, 0D, 0D, 0D);
-		tess.addVertexWithUV(x + w, y + h, 0D, 1D, 0D);
-		tess.addVertexWithUV(x + w, y, 0D, 1D, 1D);
-		tess.addVertexWithUV(x, y, 0D, 0D, 1D);
-		tess.draw();
-
-		render.blend(BlendState.DISABLED);
-		render.resetTexture();
-	}
-
-	private static FrameBuffer[] getOrCreateFBOs(final int width, final int height) {
-		final long key = (long) ShaderPipeline.pipelineDepth << 32 | (long) width << 16 | height;
-		FrameBuffer[] fbos = ShaderPipeline.FBO_POOL.get(key);
-		if (fbos != null) {
-			return fbos;
-		}
-
-		fbos = new FrameBuffer[] {FrameBuffer.create(width, height, TextureFilter.LINEAR), FrameBuffer.create(width, height, TextureFilter.LINEAR)};
-		ShaderPipeline.FBO_POOL.put(key, fbos);
-		return fbos;
-	}
-
-	public static void cleanup() {
-		for (final FrameBuffer[] fbos : ShaderPipeline.FBO_POOL.values()) {
-			fbos[0].delete();
-			fbos[1].delete();
-		}
-		ShaderPipeline.FBO_POOL.clear();
 	}
 
 }

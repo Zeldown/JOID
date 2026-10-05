@@ -11,16 +11,16 @@ public class TextMarkup {
 
 	private static final List<ITextMarkup> MARKUPS = new CopyOnWriteArrayList<>();
 
+	public static @NonNull List<ITextMarkup> getRegistered() {
+		return Collections.unmodifiableList(TextMarkup.MARKUPS);
+	}
+
 	public static void register(final @NonNull ITextMarkup markup) {
 		TextMarkup.MARKUPS.add(0, markup);
 	}
 
 	public static void unregister(final @NonNull ITextMarkup markup) {
 		TextMarkup.MARKUPS.remove(markup);
-	}
-
-	public static @NonNull List<ITextMarkup> getRegistered() {
-		return Collections.unmodifiableList(TextMarkup.MARKUPS);
 	}
 
 	public static int parse(final @NonNull List<ITextMarkup> markups, final @NonNull String text, final int index, final @NonNull TextStyle style) {

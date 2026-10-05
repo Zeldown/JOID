@@ -36,6 +36,12 @@ public final class FrameBuffer implements IFrameBuffer {
 	}
 
 	@Override
+	public void delete() {
+		GL30.glDeleteFramebuffers(this.id);
+		this.texture.delete();
+	}
+
+	@Override
 	public int getWidth() {
 		return this.texture.getWidth();
 	}
@@ -43,12 +49,6 @@ public final class FrameBuffer implements IFrameBuffer {
 	@Override
 	public int getHeight() {
 		return this.texture.getHeight();
-	}
-
-	@Override
-	public void delete() {
-		GL30.glDeleteFramebuffers(this.id);
-		this.texture.delete();
 	}
 
 }

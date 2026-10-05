@@ -13,16 +13,16 @@ public abstract class DoubleSliderNode extends SliderNode<Double> {
 		super(x, y, width, height);
 	}
 
+	public final <T extends DoubleSliderNode> @NonNull T values(final double value, final Double... values) {
+		return this.valueSet(new LinkedHashSet<>(Arrays.asList(values)), value);
+	}
+
 	public final <T extends DoubleSliderNode> @NonNull T values(final double min, final double max, final double step, final double value) {
 		final Set<Double> values = new LinkedHashSet<>();
 		for (double i = min; i <= max; i += step) {
 			values.add(i);
 		}
 		return this.valueSet(values, value);
-	}
-
-	public final <T extends DoubleSliderNode> @NonNull T values(final double value, final Double... values) {
-		return this.valueSet(new LinkedHashSet<>(Arrays.asList(values)), value);
 	}
 
 }

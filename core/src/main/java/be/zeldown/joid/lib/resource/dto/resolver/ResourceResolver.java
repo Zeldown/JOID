@@ -15,12 +15,8 @@ public class ResourceResolver {
 	private static final List<IResourceResolver> RESOLVERS = new LinkedList<>();
 
 	static {
-		ResourceResolver.register(new BufferedImageResourceResolver());
 		ResourceResolver.register(new TextureResourceResolver());
-	}
-
-	public static void register(final @NonNull IResourceResolver resolver) {
-		ResourceResolver.RESOLVERS.add(0, resolver);
+		ResourceResolver.register(new BufferedImageResourceResolver());
 	}
 
 	public static boolean supports(final @NonNull Object input) {
@@ -30,6 +26,10 @@ public class ResourceResolver {
 			}
 		}
 		return false;
+	}
+
+	public static void register(final @NonNull IResourceResolver resolver) {
+		ResourceResolver.RESOLVERS.add(0, resolver);
 	}
 
 	public static @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {

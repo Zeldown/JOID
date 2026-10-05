@@ -35,6 +35,11 @@ public final class AudioSource implements IAudioSource {
 	}
 
 	@Override
+	public void stop() {
+		AL10.alSourceStop(this.source);
+	}
+
+	@Override
 	public void play() {
 		AL10.alSourcePlay(this.source);
 	}
@@ -45,17 +50,39 @@ public final class AudioSource implements IAudioSource {
 	}
 
 	@Override
-	public void stop() {
-		AL10.alSourceStop(this.source);
-	}
-
-	@Override
 	public void clear() {
 		AL10.alSourceStop(this.source);
 		final int queued = AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_QUEUED);
 		for (int i = 0; i < queued; i++) {
 			this.freeBufferQueue.push(AL10.alSourceUnqueueBuffers(this.source));
 		}
+	}
+
+	@Override
+	public void delete() {
+		AL10.alSourceStop(this.source);
+		AL10.alDeleteSources(this.source);
+		for (final int buffer : this.bufferList) {
+			AL10.alDeleteBuffers(buffer);
+		}
+
+		this.bufferList.clear();
+		this.freeBufferQueue.clear();
+	}
+
+	@Override
+	public boolean isPlaying() {
+		return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+	}
+
+	@Override
+	public int getQueuedBuffers() {
+		return AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_QUEUED);
+	}
+
+	@Override
+	public int getProcessedBuffers() {
+		return AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
 	}
 
 	@Override
@@ -77,33 +104,6 @@ public final class AudioSource implements IAudioSource {
 
 		AL10.alBufferData(buffer, this.format, this.uploadBuffer, this.sampleRate);
 		AL10.alSourceQueueBuffers(this.source, buffer);
-	}
-
-	@Override
-	public boolean isPlaying() {
-		return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
-	}
-
-	@Override
-	public int getQueuedBuffers() {
-		return AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_QUEUED);
-	}
-
-	@Override
-	public int getProcessedBuffers() {
-		return AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
-	}
-
-	@Override
-	public void delete() {
-		AL10.alSourceStop(this.source);
-		AL10.alDeleteSources(this.source);
-		for (final int buffer : this.bufferList) {
-			AL10.alDeleteBuffers(buffer);
-		}
-
-		this.bufferList.clear();
-		this.freeBufferQueue.clear();
 	}
 
 	private int nextBuffer() {

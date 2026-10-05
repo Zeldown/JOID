@@ -6,9 +6,9 @@ import lombok.Getter;
 @Getter
 public class UIScheduledTask {
 
-	private final Runnable task;
 	private final long delay;
 	private final long period;
+	private final Runnable task;
 
 	private long lastUpdate;
 	private long nextUpdate;
@@ -22,10 +22,6 @@ public class UIScheduledTask {
 		this.nextUpdate = this.lastUpdate + this.delay;
 	}
 
-	public boolean shouldRun() {
-		return BridgeHandler.CLOCK.get().currentTimeMillis() >= this.nextUpdate;
-	}
-
 	public boolean execute() {
 		this.task.run();
 		if (!this.isPeriodic()) {
@@ -35,6 +31,10 @@ public class UIScheduledTask {
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.nextUpdate = this.lastUpdate + this.period;
 		return true;
+	}
+
+	public boolean shouldRun() {
+		return BridgeHandler.CLOCK.get().currentTimeMillis() >= this.nextUpdate;
 	}
 
 	public boolean isPeriodic() {

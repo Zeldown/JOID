@@ -13,6 +13,26 @@ public class ShaderTranslatorTest {
 	private static final String FRAGMENT = "in vec2 vTexCoord;\nflat in vec4 vLitColor;\nuniform sampler2D tex;\n\nvoid main() {\n    fragColor = texture(tex, vTexCoord) * (uLighting ? vLitColor : vec4(1.0));\n}\n";
 
 	@Test
+	public void translatesCoreShaders() {
+		for (final String name : CoreShaders.getNames()) {
+			Assert.assertTrue(name, ShaderTranslator.translate(CoreShaders.read(name, ShaderStage.VERTEX)).startsWith("#version 330 core\n"));
+			Assert.assertTrue(name, ShaderTranslator.translate(CoreShaders.read(name, ShaderStage.FRAGMENT)).startsWith("#version 330 core\n"));
+		}
+	}
+
+	@Test
+	public void keepsBodyAfterLineDirective() {
+		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT);
+		Assert.assertTrue(ShaderTranslator.translate(source).endsWith("#line 1\n" + source.getBody()));
+	}
+
+	@Test
+	public void alwaysDeclaresFragmentOutput() {
+		final String fragment = ShaderTranslator.translate(ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {\n    discard;\n}\n"));
+		Assert.assertTrue(fragment.contains("out vec4 fragColor;\n"));
+	}
+
+	@Test
 	public void declaresAttributesAndMatrices() {
 		final String vertex = ShaderTranslator.translate(ShaderSource.parse(ShaderStage.VERTEX, ShaderTranslatorTest.VERTEX));
 		Assert.assertTrue(vertex.startsWith("#version 330 core\n"));
@@ -32,26 +52,6 @@ public class ShaderTranslatorTest {
 		Assert.assertTrue(fragment.contains("uniform sampler2D tex;\n"));
 		Assert.assertTrue(fragment.contains("in vec2 vTexCoord;\n"));
 		Assert.assertTrue(fragment.contains("flat in vec4 vLitColor;\n"));
-	}
-
-	@Test
-	public void alwaysDeclaresFragmentOutput() {
-		final String fragment = ShaderTranslator.translate(ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {\n    discard;\n}\n"));
-		Assert.assertTrue(fragment.contains("out vec4 fragColor;\n"));
-	}
-
-	@Test
-	public void keepsBodyAfterLineDirective() {
-		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT);
-		Assert.assertTrue(ShaderTranslator.translate(source).endsWith("#line 1\n" + source.getBody()));
-	}
-
-	@Test
-	public void translatesCoreShaders() {
-		for (final String name : CoreShaders.getNames()) {
-			Assert.assertTrue(name, ShaderTranslator.translate(CoreShaders.read(name, ShaderStage.VERTEX)).startsWith("#version 330 core\n"));
-			Assert.assertTrue(name, ShaderTranslator.translate(CoreShaders.read(name, ShaderStage.FRAGMENT)).startsWith("#version 330 core\n"));
-		}
 	}
 
 }

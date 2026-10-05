@@ -11,12 +11,12 @@ public class SetSignal<E> extends Signal<Set<E>> {
 
 	public SetSignal() {}
 
-	public SetSignal(final Collection<E> value) {
-		this(new HashSet<>(value));
-	}
-
 	public SetSignal(final Set<E> value) {
 		super(value);
+	}
+
+	public SetSignal(final Collection<E> value) {
+		this(new HashSet<>(value));
 	}
 
 	public static <E> SetSignal<E> of(final Set<E> defaultValue) {
@@ -25,10 +25,12 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return instance;
 	}
 
-	public @NonNull SetSignal<E> clear() {
-		this.getOrDefault().clear();
-		this.publish();
-		return this;
+	public int size() {
+		return this.getOrDefault().size();
+	}
+
+	public boolean isEmpty() {
+		return this.getOrDefault().isEmpty();
 	}
 
 	public boolean add(final E e) {
@@ -37,22 +39,20 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return success;
 	}
 
-	public boolean contains(final E e) {
-		return this.getOrDefault().contains(e);
-	}
-
-	public boolean isEmpty() {
-		return this.getOrDefault().isEmpty();
-	}
-
 	public boolean remove(final E e) {
 		final boolean success = this.getOrDefault().remove(e);
 		this.publish();
 		return success;
 	}
 
-	public int size() {
-		return this.getOrDefault().size();
+	public boolean contains(final E e) {
+		return this.getOrDefault().contains(e);
+	}
+
+	public @NonNull SetSignal<E> clear() {
+		this.getOrDefault().clear();
+		this.publish();
+		return this;
 	}
 
 	@Override

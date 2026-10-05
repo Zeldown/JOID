@@ -13,10 +13,6 @@ public class MutableInteger extends Number implements TweenAccessor<MutableInteg
 		this.value = value;
 	}
 
-	public void setValue(final int value) {
-		this.value = value;
-	}
-
 	@Override
 	public int intValue() {
 		return this.value;
@@ -37,15 +33,19 @@ public class MutableInteger extends Number implements TweenAccessor<MutableInteg
 		return this.value;
 	}
 
-	@Override
-	public int getValues(final MutableInteger target, final int tweenType, final float[] returnValues) {
-		returnValues[0] = target.value;
-		return 1;
+	public void setValue(final int value) {
+		this.value = value;
 	}
 
 	@Override
 	public void setValues(final MutableInteger target, final int tweenType, final float[] newValues) {
 		target.value = (int) newValues[0];
+	}
+
+	@Override
+	public int getValues(final MutableInteger target, final int tweenType, final float[] returnValues) {
+		returnValues[0] = target.value;
+		return 1;
 	}
 
 }

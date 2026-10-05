@@ -8,23 +8,13 @@ import be.zeldown.joid.lib.ui.node.Node;
 public class BlurShaderPass implements ShaderPass {
 
 	private final float radius;
-	private final boolean horizontal;
 	private final int priorityValue;
+	private final boolean horizontal;
 
 	public BlurShaderPass(final float radius, final boolean horizontal, final int iteration) {
 		this.radius = radius;
 		this.horizontal = horizontal;
 		this.priorityValue = 150 + iteration * 2 + (horizontal ? 0 : 1);
-	}
-
-	@Override
-	public void bindDirect(final Node node) {
-		this.bindInternal(node);
-	}
-
-	@Override
-	public void bindForTexture(final Node node) {
-		this.bindInternal(node);
 	}
 
 	@Override
@@ -40,6 +30,16 @@ public class BlurShaderPass implements ShaderPass {
 	@Override
 	public float expansion() {
 		return this.radius;
+	}
+
+	@Override
+	public void bindDirect(final Node node) {
+		this.bindInternal(node);
+	}
+
+	@Override
+	public void bindForTexture(final Node node) {
+		this.bindInternal(node);
 	}
 
 	private void bindInternal(final Node node) {

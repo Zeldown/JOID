@@ -20,11 +20,11 @@ public class UIDemoVideo extends UIDemo {
 
 	private VideoPlayerNode player;
 
-	private boolean fullscreen;
 	private double speedX = 90D;
 	private double speedY = 60D;
 	private double bounceX = 100D;
 	private double bounceY = 100D;
+	private boolean fullscreen;
 
 	private long lastBounceTime;
 

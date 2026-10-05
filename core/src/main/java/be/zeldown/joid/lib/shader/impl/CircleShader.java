@@ -14,6 +14,14 @@ public class CircleShader extends ShaderImpl {
 		this.load(JOID.class.getResourceAsStream("/assets/shaders/circle/circle.vsh"), JOID.class.getResourceAsStream("/assets/shaders/circle/circle.fsh"));
 	}
 
+	public static @NonNull CircleShader inst() {
+		return CircleShader.INSTANCE;
+	}
+
+	public void bind(final float radius, final float centerX, final float centerY) {
+		this.bind(radius, centerX, centerY, RoundedShaderType.AUTO);
+	}
+
 	public static void use(final float radius, final float centerX, final float centerY, final Runnable runnable) {
 		if (!CircleShader.INSTANCE.isAvailable()) {
 			return;
@@ -26,10 +34,6 @@ public class CircleShader extends ShaderImpl {
 		CircleShader.INSTANCE.unbind();
 	}
 
-	public void bind(final float radius, final float centerX, final float centerY) {
-		this.bind(radius, centerX, centerY, RoundedShaderType.AUTO);
-	}
-
 	public void bind(final float radius, final float centerX, final float centerY, final @NonNull RoundedShaderType type) {
 		CircleShader.INSTANCE.bind();
 		final FloatUniform radiusUniform = CircleShader.INSTANCE.shader.getFloatUniform("radius");
@@ -40,10 +44,6 @@ public class CircleShader extends ShaderImpl {
 
 		final IntUniform typeUniform = CircleShader.INSTANCE.shader.getIntUniform("type");
 		typeUniform.setValue(type.ordinal());
-	}
-
-	public static @NonNull CircleShader inst() {
-		return CircleShader.INSTANCE;
 	}
 
 	public enum RoundedShaderType {

@@ -11,8 +11,8 @@ import lombok.NonNull;
 public final class SamplerUniform implements be.zeldown.joid.lib.bridge.render.shader.uniform.SamplerUniform {
 
 	private Texture       texture;
-	private TextureFilter filter;
 	private TextureWrap   wrap;
+	private TextureFilter filter;
 
 	@Override
 	public void setValue(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {

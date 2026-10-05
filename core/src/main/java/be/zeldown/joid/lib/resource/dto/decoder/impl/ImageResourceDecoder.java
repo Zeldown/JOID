@@ -31,8 +31,8 @@ public class ImageResourceDecoder implements IResourceDecoder {
 	public void init(final @NonNull ResourceData resource) {}
 
 	@Override
-	public void prepare(final @NonNull ResourceData resource) {
-		resource.texture(BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
+	public void clear(final @NonNull ResourceData resource) {
+		this.image = null;
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class ImageResourceDecoder implements IResourceDecoder {
 	public void update(final @NonNull ResourceData resource) {}
 
 	@Override
-	public void clear(final @NonNull ResourceData resource) {
-		this.image = null;
+	public void prepare(final @NonNull ResourceData resource) {
+		resource.texture(BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
 	}
 
 	private static @NonNull BufferedImage read(final @NonNull Asset asset) {

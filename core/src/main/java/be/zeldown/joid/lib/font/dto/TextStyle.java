@@ -52,6 +52,14 @@ public final class TextStyle {
 		return new TextStyle(this, this.weight, this.italic, this.color, this.effects);
 	}
 
+	public @NonNull TextStyle getBase() {
+		return this.base == null ? this : this.base;
+	}
+
+	public @NonNull List<ITextEffect> getEffects() {
+		return Collections.unmodifiableList(this.effects);
+	}
+
 	public @NonNull TextStyle italic(final boolean italic) {
 		this.italic = italic;
 		return this;
@@ -77,14 +85,6 @@ public final class TextStyle {
 	public @NonNull TextStyle removeEffect(final @NonNull ITextEffect effect) {
 		this.effects.remove(effect);
 		return this;
-	}
-
-	public @NonNull TextStyle getBase() {
-		return this.base == null ? this : this.base;
-	}
-
-	public @NonNull List<ITextEffect> getEffects() {
-		return Collections.unmodifiableList(this.effects);
 	}
 
 }

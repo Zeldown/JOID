@@ -5,16 +5,16 @@ import lombok.NonNull;
 
 public class ContainerNode extends Node {
 
+	public static @NonNull ContainerNode create(final @NonNull Node parent) {
+		return new ContainerNode(0, 0, parent.getWidth(), parent.getHeight()).attach(parent);
+	}
+
 	protected ContainerNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 	}
 
 	public static @NonNull ContainerNode create(final double x, final double y, final double width, final double height) {
 		return new ContainerNode(x, y, width, height);
-	}
-
-	public static @NonNull ContainerNode create(final @NonNull Node parent) {
-		return new ContainerNode(0, 0, parent.getWidth(), parent.getHeight()).attach(parent);
 	}
 
 	@Override

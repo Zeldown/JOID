@@ -6,10 +6,10 @@ import lombok.NonNull;
 public final class SnapshotAudioSource implements IAudioSource {
 
 	@Override
-	public void play() {}
+	public void stop() {}
 
 	@Override
-	public void stop() {}
+	public void play() {}
 
 	@Override
 	public void pause() {}
@@ -18,10 +18,7 @@ public final class SnapshotAudioSource implements IAudioSource {
 	public void clear() {}
 
 	@Override
-	public void gain(final float gain) {}
-
-	@Override
-	public void queue(final @NonNull short[] samples) {}
+	public void delete() {}
 
 	@Override
 	public boolean isPlaying() {
@@ -39,6 +36,9 @@ public final class SnapshotAudioSource implements IAudioSource {
 	}
 
 	@Override
-	public void delete() {}
+	public void gain(final float gain) {}
+
+	@Override
+	public void queue(final @NonNull short[] samples) {}
 
 }

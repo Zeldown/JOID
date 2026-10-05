@@ -11,14 +11,23 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public abstract class ScrollbarNode extends Node {
 
-	@NonNull private final BoundingBox scroll;
+	@NonNull
+	private final BoundingBox scroll;
 
-	private boolean dragging;
 	private Node scrollNode;
+	private boolean dragging;
 
 	protected ScrollbarNode(final double x, final double y, final double width, final double height, final @NonNull BoundingBox scroll) {
 		super(x, y, width, height);
 		this.scroll = scroll;
+	}
+
+	public final double getScrollWidth() {
+		return this.scroll.getWidth() - super.getWidth();
+	}
+
+	public final double getScrollHeight() {
+		return this.scroll.getHeight() - super.getHeight();
 	}
 
 	@Override
@@ -51,6 +60,13 @@ public abstract class ScrollbarNode extends Node {
 		this.draw(mouseX, mouseY);
 	}
 
+	public abstract void drawScrollbar(final double mouseX, final double mouseY);
+
+	public final <T extends ScrollbarNode> @NonNull T scrollNode(final @NonNull Node scrollNode) {
+		this.scrollNode = scrollNode;
+		return (T) this;
+	}
+
 	@Override
 	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (!this.isHovered(mouseX, mouseY)) {
@@ -64,19 +80,4 @@ public abstract class ScrollbarNode extends Node {
 	public final void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.dragging = false;
 	}
-
-	public final <T extends ScrollbarNode> @NonNull T scrollNode(final @NonNull Node scrollNode) {
-		this.scrollNode = scrollNode;
-		return (T) this;
-	}
-
-	public final double getScrollHeight() {
-		return this.scroll.getHeight() - super.getHeight();
-	}
-
-	public final double getScrollWidth() {
-		return this.scroll.getWidth() - super.getWidth();
-	}
-
-	public abstract void drawScrollbar(final double mouseX, final double mouseY);
 }

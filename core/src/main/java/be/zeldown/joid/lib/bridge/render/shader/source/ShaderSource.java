@@ -24,10 +24,10 @@ public final class ShaderSource {
 
 	private final ShaderStage          stage;
 	private final List<ShaderVariable> inputs;
+	private final Set<ShaderBuiltin>   builtins;
 	private final List<ShaderVariable> outputs;
 	private final List<ShaderVariable> uniforms;
 	private final List<ShaderVariable> samplers;
-	private final Set<ShaderBuiltin>   builtins;
 
 	private String body;
 
@@ -38,14 +38,6 @@ public final class ShaderSource {
 		this.uniforms = new ArrayList<>();
 		this.samplers = new ArrayList<>();
 		this.builtins = EnumSet.noneOf(ShaderBuiltin.class);
-	}
-
-	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull InputStream stream) {
-		try {
-			return ShaderSource.parse(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
-		}
 	}
 
 	public static @NonNull ShaderSource parse(final @NonNull ShaderStage stage, final @NonNull String code) {
@@ -78,6 +70,14 @@ public final class ShaderSource {
 
 		source.body = body.toString();
 		return source;
+	}
+
+	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull InputStream stream) {
+		try {
+			return ShaderSource.parse(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	private void declare(final Matcher declaration) {

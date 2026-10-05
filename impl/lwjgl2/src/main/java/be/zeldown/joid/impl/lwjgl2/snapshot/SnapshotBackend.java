@@ -23,6 +23,21 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
+	public void present() {
+		GL11.glFlush();
+	}
+
+	@Override
+	public @NonNull String getRenderer() {
+		return GL11.glGetString(GL11.GL_RENDERER);
+	}
+
+	@Override
+	public void frame(final @NonNull Runnable draw) {
+		draw.run();
+	}
+
+	@Override
 	public void create(final int width, final int height) {
 		try {
 			this.buffer = new Pbuffer(width, height, new PixelFormat().withDepthBits(24).withStencilBits(8), null);
@@ -35,25 +50,10 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void present() {
-		GL11.glFlush();
-	}
-
-	@Override
-	public void frame(final @NonNull Runnable draw) {
-		draw.run();
-	}
-
-	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
 		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
 		GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
 		return SnapshotImage.fromBytes(pixels, width, height, true, false);
-	}
-
-	@Override
-	public @NonNull String getRenderer() {
-		return GL11.glGetString(GL11.GL_RENDERER);
 	}
 
 }

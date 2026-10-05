@@ -18,18 +18,28 @@ public final class Texture implements ITexture {
 
 	private final RenderBridge bridge;
 
-	private long    image;
-	private long    memory;
 	private long    view;
 	private int     width;
+	private long    image;
 	private int     height;
 	private int     levels;
+	private long    memory;
 	private boolean deleted;
 	private boolean mipmapped;
 
 	public Texture(final RenderBridge bridge) {
 		this.bridge = bridge;
 		this.levels = 1;
+	}
+
+	@Override
+	public void delete() {
+		if (this.deleted) {
+			return;
+		}
+
+		this.release();
+		this.deleted = true;
 	}
 
 	@Override
@@ -107,16 +117,6 @@ public final class Texture implements ITexture {
 			}
 		});
 		return this;
-	}
-
-	@Override
-	public void delete() {
-		if (this.deleted) {
-			return;
-		}
-
-		this.release();
-		this.deleted = true;
 	}
 
 	private void release() {

@@ -25,17 +25,20 @@ public class MsdfJsonSourceTest {
 
 	private static MsdfFace face;
 
-	@BeforeClass
-	public static void read() throws IOException {
-		MsdfJsonSourceTest.face = MsdfJsonSource.of(MsdfJsonSourceTest.stream(MsdfJsonSourceTest.JSON), new ByteArrayInputStream(MsdfJsonSourceTest.png())).read();
-	}
-
 	@Test
 	public void readsTheAtlas() {
 		Assert.assertEquals(4F, MsdfJsonSourceTest.face.getAtlas().getDistanceRange(), 0F);
 		Assert.assertEquals(32F, MsdfJsonSourceTest.face.getAtlas().getSize(), 0F);
 		Assert.assertEquals(2, MsdfJsonSourceTest.face.getAtlas().getWidth());
 		Assert.assertEquals(2, MsdfJsonSourceTest.face.getAtlas().getHeight());
+	}
+
+	@Test
+	public void readsTheGlyphs() {
+		Assert.assertEquals(2, MsdfJsonSourceTest.face.getGlyphs().size());
+		Assert.assertEquals(0.625F, MsdfJsonSourceTest.face.getGlyph('A').getAdvance(), 0F);
+		Assert.assertNull(MsdfJsonSourceTest.face.getGlyph(' ').getPlaneBounds());
+		Assert.assertNull(MsdfJsonSourceTest.face.getGlyph(' ').getAtlasBounds());
 	}
 
 	@Test
@@ -48,11 +51,15 @@ public class MsdfJsonSourceTest {
 	}
 
 	@Test
-	public void readsTheGlyphs() {
-		Assert.assertEquals(2, MsdfJsonSourceTest.face.getGlyphs().size());
-		Assert.assertEquals(0.625F, MsdfJsonSourceTest.face.getGlyph('A').getAdvance(), 0F);
-		Assert.assertNull(MsdfJsonSourceTest.face.getGlyph(' ').getPlaneBounds());
-		Assert.assertNull(MsdfJsonSourceTest.face.getGlyph(' ').getAtlasBounds());
+	public void readsTheKerning() {
+		Assert.assertEquals(-0.0625F, MsdfJsonSourceTest.face.getKerning('A', 'V'), 0F);
+		Assert.assertEquals(0F, MsdfJsonSourceTest.face.getKerning('V', 'A'), 0F);
+	}
+
+	@Test
+	public void startsRegularAndUpright() {
+		Assert.assertSame(FontWeight.REGULAR, MsdfJsonSourceTest.face.getWeight());
+		Assert.assertFalse(MsdfJsonSourceTest.face.isItalic());
 	}
 
 	@Test
@@ -71,10 +78,9 @@ public class MsdfJsonSourceTest {
 		Assert.assertEquals(1.5F, bounds.getTop(), 0F);
 	}
 
-	@Test
-	public void startsRegularAndUpright() {
-		Assert.assertSame(FontWeight.REGULAR, MsdfJsonSourceTest.face.getWeight());
-		Assert.assertFalse(MsdfJsonSourceTest.face.isItalic());
+	@BeforeClass
+	public static void read() throws IOException {
+		MsdfJsonSourceTest.face = MsdfJsonSource.of(MsdfJsonSourceTest.stream(MsdfJsonSourceTest.JSON), new ByteArrayInputStream(MsdfJsonSourceTest.png())).read();
 	}
 
 	@Test
@@ -84,25 +90,19 @@ public class MsdfJsonSourceTest {
 		Assert.assertTrue(face.isItalic());
 	}
 
-	@Test
-	public void readsTheKerning() {
-		Assert.assertEquals(-0.0625F, MsdfJsonSourceTest.face.getKerning('A', 'V'), 0F);
-		Assert.assertEquals(0F, MsdfJsonSourceTest.face.getKerning('V', 'A'), 0F);
-	}
-
 	@Test(expected = IOException.class)
 	public void refusesAnUndecodableTexture() throws IOException {
 		MsdfJsonSource.of(MsdfJsonSourceTest.stream(MsdfJsonSourceTest.JSON), MsdfJsonSourceTest.stream("not an image")).read();
-	}
-
-	private static ByteArrayInputStream stream(final String text) {
-		return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
 	}
 
 	private static byte[] png() throws IOException {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		ImageIO.write(new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB), "png", output);
 		return output.toByteArray();
+	}
+
+	private static ByteArrayInputStream stream(final String text) {
+		return new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
 	}
 
 }

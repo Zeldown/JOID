@@ -27,6 +27,10 @@ public abstract class Transition {
 			this.enabled = true;
 		}
 
+		public abstract void start();
+
+		public abstract void init(final @NonNull UI ui);
+
 		public void start(final @NonNull Timeline timeline) {
 			if (!this.enabled) {
 				return;
@@ -37,6 +41,13 @@ public abstract class Transition {
 			this.animator.start();
 		}
 
+		public void enable() {
+			this.enabled = true;
+		}
+
+		public void disable() {
+			this.enabled = false;
+		}
 		public final void update() {
 			if (!this.running) {
 				return;
@@ -44,17 +55,6 @@ public abstract class Transition {
 
 			this.animator.update();
 		}
-
-		public void disable() {
-			this.enabled = false;
-		}
-
-		public void enable() {
-			this.enabled = true;
-		}
-
-		public abstract void init(final @NonNull UI ui);
-		public abstract void start();
 		public abstract void pre(final @NonNull UI ui, final double mouseX, final double mouseY);
 		public abstract void post(final @NonNull UI ui, final double mouseX, final double mouseY);
 

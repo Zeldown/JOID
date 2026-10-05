@@ -31,6 +31,13 @@ public final class JOID {
 		this.demoMode = false;
 	}
 
+	public static @NonNull JOID inst() {
+		if (JOID.instance == null) {
+			JOID.instance = new JOID();
+		}
+		return JOID.instance;
+	}
+
 	public JOID load() {
 		System.out.println("=================================");
 		System.out.println("");
@@ -57,6 +64,38 @@ public final class JOID {
 		return this;
 	}
 
+	public JOID setDevMode(final boolean devMode) {
+		this.devMode = devMode;
+		return this;
+	}
+
+	public static void close(final @NonNull UI ui) {
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
+		if (bridge != null && ui.onClose()) {
+			bridge.close(ui);
+		}
+	}
+
+	public JOID setDemoMode(final boolean demoMode) {
+		this.demoMode = demoMode;
+		return this;
+	}
+
+	public static IUIBridge open(final @NonNull UI ui) {
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
+		if (bridge == null) {
+			return null;
+		}
+
+		bridge.open(ui);
+		return bridge;
+	}
+
+	public JOID setConfigDir(final @NonNull File configDir) {
+		this.configDir = configDir;
+		return this;
+	}
+
 	public static boolean checkVersion(final @NonNull String version) {
 		final boolean compatible = version.split("[.]")[0].equals(JOID.VERSION.split("[.]")[0]);
 		if (!compatible) {
@@ -65,23 +104,15 @@ public final class JOID {
 		return compatible;
 	}
 
-	public JOID setConfigDir(final @NonNull File configDir) {
-		this.configDir = configDir;
-		return this;
-	}
+	public static void close(final @NonNull UI ui, final boolean force) {
+		if (!force) {
+			JOID.close(ui);
+			return;
+		}
 
-	public JOID setDevMode(final boolean devMode) {
-		this.devMode = devMode;
-		return this;
-	}
-
-	public JOID setDemoMode(final boolean demoMode) {
-		this.demoMode = demoMode;
-		return this;
-	}
-
-	public static boolean isOpen(final @NonNull Class<? extends UI> uiClass) {
-		return JOID.getUI(uiClass) != null;
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
+		ui.properlyClose();
+		bridge.close(ui);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -96,16 +127,6 @@ public final class JOID {
 		}
 
 		return null;
-	}
-
-	public static IUIBridge open(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge == null) {
-			return null;
-		}
-
-		bridge.open(ui);
-		return bridge;
 	}
 
 	public static IUIBridge open(final @NonNull UI ui, final boolean force) {
@@ -127,29 +148,8 @@ public final class JOID {
 		return bridge;
 	}
 
-	public static void close(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge != null && ui.onClose()) {
-			bridge.close(ui);
-		}
-	}
-
-	public static void close(final @NonNull UI ui, final boolean force) {
-		if (!force) {
-			JOID.close(ui);
-			return;
-		}
-
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		ui.properlyClose();
-		bridge.close(ui);
-	}
-
-	public static @NonNull JOID inst() {
-		if (JOID.instance == null) {
-			JOID.instance = new JOID();
-		}
-		return JOID.instance;
+	public static boolean isOpen(final @NonNull Class<? extends UI> uiClass) {
+		return JOID.getUI(uiClass) != null;
 	}
 
 }

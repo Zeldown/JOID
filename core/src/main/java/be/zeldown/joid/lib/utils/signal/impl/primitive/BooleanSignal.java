@@ -12,14 +12,14 @@ public class BooleanSignal extends Signal<Boolean> {
 		super(value);
 	}
 
-	public void toggle() {
-		this.set(!this.getOrDefault());
-	}
-
 	public static BooleanSignal of(final boolean defaultValue) {
 		final BooleanSignal instance = new BooleanSignal();
 		instance.set(defaultValue);
 		return instance;
+	}
+
+	public void toggle() {
+		this.set(!this.getOrDefault());
 	}
 
 	@Override

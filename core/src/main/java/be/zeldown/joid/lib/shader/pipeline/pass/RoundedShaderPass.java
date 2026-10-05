@@ -9,14 +9,14 @@ import lombok.NonNull;
 
 public class RoundedShaderPass implements ShaderPass {
 
-	private final RoundedNodeEffect<?> effect;
 	private final Node node;
+	private final RoundedNodeEffect<?> effect;
 
-	private final float fixedRadius;
 	private final float fixedX1;
 	private final float fixedY1;
 	private final float fixedX2;
 	private final float fixedY2;
+	private final float fixedRadius;
 
 	public RoundedShaderPass(final @NonNull RoundedNodeEffect<?> effect, final @NonNull Node node) {
 		this.effect = effect;
@@ -39,16 +39,6 @@ public class RoundedShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindDirect(final Node node) {
-		this.bindShader(RoundedShaderType.AUTO);
-	}
-
-	@Override
-	public void bindForTexture(final Node node) {
-		this.bindShader(RoundedShaderType.TEXTURE);
-	}
-
-	@Override
 	public void unbind() {
 		RoundedShader.inst().unbind();
 	}
@@ -56,6 +46,16 @@ public class RoundedShaderPass implements ShaderPass {
 	@Override
 	public int priority() {
 		return 100;
+	}
+
+	@Override
+	public void bindDirect(final Node node) {
+		this.bindShader(RoundedShaderType.AUTO);
+	}
+
+	@Override
+	public void bindForTexture(final Node node) {
+		this.bindShader(RoundedShaderType.TEXTURE);
 	}
 
 	private void bindShader(final @NonNull RoundedShaderType type) {

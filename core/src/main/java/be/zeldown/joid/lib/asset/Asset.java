@@ -23,14 +23,12 @@ public abstract class Asset {
 		return AssetLocator.locate(handle);
 	}
 
-	public abstract @NonNull InputStream open() throws IOException;
+	public boolean isRemote() {
+		return false;
+	}
 
 	public boolean isReopenable() {
 		return true;
-	}
-
-	public boolean isRemote() {
-		return false;
 	}
 
 	public @NonNull byte[] peek(final int length) {
@@ -54,6 +52,18 @@ public abstract class Asset {
 		return output.toByteArray();
 	}
 
+	public abstract @NonNull InputStream open() throws IOException;
+
+	protected static @NonNull byte[] shrink(final @NonNull byte[] buffer, final int length) {
+		if (length == buffer.length) {
+			return buffer;
+		}
+
+		final byte[] shrunk = new byte[length];
+		System.arraycopy(buffer, 0, shrunk, 0, length);
+		return shrunk;
+	}
+
 	protected static int fill(final @NonNull InputStream stream, final @NonNull byte[] buffer) throws IOException {
 		int total = 0;
 		while (total < buffer.length) {
@@ -64,16 +74,6 @@ public abstract class Asset {
 			total += count;
 		}
 		return total;
-	}
-
-	protected static @NonNull byte[] shrink(final @NonNull byte[] buffer, final int length) {
-		if (length == buffer.length) {
-			return buffer;
-		}
-
-		final byte[] shrunk = new byte[length];
-		System.arraycopy(buffer, 0, shrunk, 0, length);
-		return shrunk;
 	}
 
 	@Override

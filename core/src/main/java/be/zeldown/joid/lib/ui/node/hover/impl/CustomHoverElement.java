@@ -16,12 +16,12 @@ public class CustomHoverElement implements HoverElement {
 	private final HoverElement element;
 	private final HoverElementPosition position;
 
-	public static @NonNull CustomHoverElement follow(final @NonNull HoverElement element) {
-		return new CustomHoverElement(element, HoverElementPosition.FOLLOW);
-	}
-
 	public static @NonNull CustomHoverElement fixed(final @NonNull HoverElement element) {
 		return new CustomHoverElement(element, HoverElementPosition.FIXED);
+	}
+
+	public static @NonNull CustomHoverElement follow(final @NonNull HoverElement element) {
+		return new CustomHoverElement(element, HoverElementPosition.FOLLOW);
 	}
 
 	public static @NonNull CustomHoverElement relative(final @NonNull HoverElement element) {
@@ -91,7 +91,7 @@ public class CustomHoverElement implements HoverElement {
 
 		FOLLOW,
 		FIXED,
-		RELATIVE,
+		RELATIVE;
 
 	}
 

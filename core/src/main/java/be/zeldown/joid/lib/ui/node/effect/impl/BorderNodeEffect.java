@@ -15,10 +15,10 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 
+	private boolean fill = true;
+	private BorderMode mode;
 	private Supplier<Color> colorSupplier;
 	private Supplier<Float> widthSupplier;
-	private BorderMode mode;
-	private boolean fill = true;
 
 	private BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
 		this.colorSupplier = () -> color;
@@ -44,23 +44,18 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fill, this.mode);
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Color color) {
-		this.colorSupplier = () -> color;
-		return (E) this;
-	}
-
-	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
-		this.colorSupplier = colorSupplier;
-		return (E) this;
-	}
-
 	public <E extends BorderNodeEffect<T>> @NonNull E width(final float width) {
 		this.widthSupplier = () -> width;
 		return (E) this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E width(final @NonNull Supplier<Float> widthSupplier) {
-		this.widthSupplier = widthSupplier;
+	public <E extends BorderNodeEffect<T>> @NonNull E fill(final boolean fill) {
+		this.fill = fill;
+		return (E) this;
+	}
+
+	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Color color) {
+		this.colorSupplier = () -> color;
 		return (E) this;
 	}
 
@@ -69,8 +64,13 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 		return (E) this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E fill(final boolean fill) {
-		this.fill = fill;
+	public <E extends BorderNodeEffect<T>> @NonNull E width(final @NonNull Supplier<Float> widthSupplier) {
+		this.widthSupplier = widthSupplier;
+		return (E) this;
+	}
+
+	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
+		this.colorSupplier = colorSupplier;
 		return (E) this;
 	}
 

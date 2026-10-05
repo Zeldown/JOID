@@ -8,11 +8,11 @@ import lombok.NonNull;
 
 public final class BlendSnapshot {
 
-	private final boolean enabled;
 	private final int     equation;
+	private final boolean enabled;
 	private final int     sourceColor;
-	private final int     destinationColor;
 	private final int     sourceAlpha;
+	private final int     destinationColor;
 	private final int     destinationAlpha;
 
 	private BlendSnapshot() {

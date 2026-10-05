@@ -47,16 +47,16 @@ public final class DevNode extends Node {
 	private static final Color UPDATE      = new Color(239, 57, 38);
 
 	private static final Color BLACK       = new Color(23, 23, 25);
-	private static final Color LIGHT_BLACK = new Color(56, 56, 62);
 	private static final Color WHITE       = new Color(250, 250, 250);
+	private static final Color LIGHT_BLACK = new Color(56, 56, 62);
 	private static final Color LIGHT_WHITE = new Color(161, 161, 170);
 
 	private static final Color[] GRID_COLORS = {DevNode.ACTION, DevNode.UPDATE};
 
-	private final BooleanSignal inspectSignal;
-	private final BooleanSignal reloadSignal;
 	private final BooleanSignal eyeSignal;
 	private final BooleanSignal gridSignal;
+	private final BooleanSignal reloadSignal;
+	private final BooleanSignal inspectSignal;
 
 	private final Signal<Node> inspectedNode;
 	private final BooleanSignal inspectedNodeLocked;
@@ -483,58 +483,6 @@ public final class DevNode extends Node {
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK, 10F);
 	}
 
-	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {
-		DrawUtils.SHAPE.drawRect(x, y, width, height, color.copyAlpha(0.3F * opacity));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y), new Vector2d(x + width, y));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y), new Vector2d(x, y + height));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x + width, y), new Vector2d(x + width, y + height));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y + height), new Vector2d(x + width, y + height));
-
-		final TextInfo textInfo = TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.WHITE.copyAlpha(opacity)).shadow().shadow(Color.BLACK.copyAlpha(0.7F * opacity));
-		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);
-		final Text nodeUpdateText = Text.create(node.getUpdateCount() + " update" + (node.getUpdateCount() > 1 ? "s" : ""), textInfo);
-		final Text nodeTimeText = Text.create(String.format("%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
-
-		final double margin = 15;
-		final double padding = 10;
-
-		final double infoBoxX = x;
-		final double infoBoxY = y - 35 < 0 ? y + height + 5 : y - 35;
-		final double infoBoxWidth = margin * 2 + padding * 2 + nodeNameText.getWidth() + nodeUpdateText.getWidth() + nodeTimeText.getWidth();
-
-		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.copyAlpha(0.8F * opacity), 5F);
-
-		double ox = infoBoxX + padding;
-		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeNameText.verticalAlign(Align.CENTER)).getWidth() + margin;
-		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.copyAlpha(opacity), 2);
-		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeUpdateText.verticalAlign(Align.CENTER)).getWidth() + margin;
-		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.copyAlpha(opacity), 2);
-		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.verticalAlign(Align.CENTER)).getWidth() + margin;
-	}
-
-	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final InternalContext context) {
-		if (context.isCancelled() || !super.isEnabled()) {
-			return;
-		}
-
-		if (this.inspectSignal.getOrDefault() && this.inspectedNode.getOrDefault() != null) {
-			if (clickType.isLeft() && !this.inspectedNodeLocked.getOrDefault()) {
-				this.inspectedNodeLocked.set(true);
-				this.inspectedNodeLocked.publish();
-				context.cancel();
-			} else if (clickType.isRight() && this.inspectedNodeLocked.getOrDefault()) {
-				this.inspectedNodeLocked.set(false);
-				this.inspectedNodeLocked.publish();
-				context.cancel();
-			}
-		}
-
-		if (clickType.isRight() && this.gridSignal.getOrDefault()) {
-			this.gridColorIndex = (this.gridColorIndex + 1) % DevNode.GRID_COLORS.length;
-		}
-	}
-
 	@Override
 	public void keyPressed(final char c, final Key key, final InternalContext context) {
 		if (context.isCancelled() || !super.isEnabled()) {
@@ -571,6 +519,58 @@ public final class DevNode extends Node {
 		this.inspectedNode.set(this.inspectedNode.getOrDefault().getParent());
 		this.inspectedNodeLocked.set(true);
 		this.inspectedNodeLocked.publish();
+	}
+
+	@Override
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final InternalContext context) {
+		if (context.isCancelled() || !super.isEnabled()) {
+			return;
+		}
+
+		if (this.inspectSignal.getOrDefault() && this.inspectedNode.getOrDefault() != null) {
+			if (clickType.isLeft() && !this.inspectedNodeLocked.getOrDefault()) {
+				this.inspectedNodeLocked.set(true);
+				this.inspectedNodeLocked.publish();
+				context.cancel();
+			} else if (clickType.isRight() && this.inspectedNodeLocked.getOrDefault()) {
+				this.inspectedNodeLocked.set(false);
+				this.inspectedNodeLocked.publish();
+				context.cancel();
+			}
+		}
+
+		if (clickType.isRight() && this.gridSignal.getOrDefault()) {
+			this.gridColorIndex = (this.gridColorIndex + 1) % DevNode.GRID_COLORS.length;
+		}
+	}
+
+	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {
+		DrawUtils.SHAPE.drawRect(x, y, width, height, color.copyAlpha(0.3F * opacity));
+		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y), new Vector2d(x + width, y));
+		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y), new Vector2d(x, y + height));
+		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x + width, y), new Vector2d(x + width, y + height));
+		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y + height), new Vector2d(x + width, y + height));
+
+		final TextInfo textInfo = TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.WHITE.copyAlpha(opacity)).shadow().shadow(Color.BLACK.copyAlpha(0.7F * opacity));
+		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);
+		final Text nodeUpdateText = Text.create(node.getUpdateCount() + " update" + (node.getUpdateCount() > 1 ? "s" : ""), textInfo);
+		final Text nodeTimeText = Text.create(String.format("%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
+
+		final double margin = 15;
+		final double padding = 10;
+
+		final double infoBoxX = x;
+		final double infoBoxY = y - 35 < 0 ? y + height + 5 : y - 35;
+		final double infoBoxWidth = margin * 2 + padding * 2 + nodeNameText.getWidth() + nodeUpdateText.getWidth() + nodeTimeText.getWidth();
+
+		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.copyAlpha(0.8F * opacity), 5F);
+
+		double ox = infoBoxX + padding;
+		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeNameText.verticalAlign(Align.CENTER)).getWidth() + margin;
+		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.copyAlpha(opacity), 2);
+		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeUpdateText.verticalAlign(Align.CENTER)).getWidth() + margin;
+		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.copyAlpha(opacity), 2);
+		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.verticalAlign(Align.CENTER)).getWidth() + margin;
 	}
 
 }

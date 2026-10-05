@@ -11,8 +11,8 @@ public class Signal<T> implements ISignal<T> {
 
 	private final transient Set<@NonNull SignalSubscriber<@NonNull T>> eventSet;
 
-	private volatile T defaultValue;
 	private volatile T value;
+	private volatile T defaultValue;
 
 	private transient boolean nextSilent = false;
 
@@ -38,31 +38,24 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	@Override
+	public T getOrDefault() {
+		return this.value != null ? this.value : this.defaultValue;
+	}
+
+	@Override
+	public boolean isPresent() {
+		return this.value != null;
+	}
+
+	@Override
 	public @NonNull Signal<T> reset() {
 		this.set(this.defaultValue);
 		return this;
 	}
 
 	@Override
-	public @NonNull Signal<T> set(final T value) {
-		final T oldValue = this.value;
-		this.value = value;
-		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
-			return this;
-		}
-
-		return this.publish();
-	}
-
-	@Override
-	public @NonNull Signal<T> subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
-		this.eventSet.add(subscriber);
-		return this;
-	}
-
-	@Override
-	public @NonNull Signal<T> unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
-		this.eventSet.remove(subscriber);
+	public @NonNull Signal<T> silent() {
+		this.nextSilent = true;
 		return this;
 	}
 
@@ -85,24 +78,31 @@ public class Signal<T> implements ISignal<T> {
 		return this;
 	}
 
+	@Override
+	public @NonNull Signal<T> set(final T value) {
+		final T oldValue = this.value;
+		this.value = value;
+		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
+			return this;
+		}
+
+		return this.publish();
+	}
+
 	public @NonNull Set<@NonNull SignalSubscriber<@NonNull T>> getEventSet() {
 		return this.eventSet;
 	}
 
 	@Override
-	public @NonNull Signal<T> silent() {
-		this.nextSilent = true;
+	public @NonNull Signal<T> subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
+		this.eventSet.add(subscriber);
 		return this;
 	}
 
 	@Override
-	public T getOrDefault() {
-		return this.value != null ? this.value : this.defaultValue;
-	}
-
-	@Override
-	public boolean isPresent() {
-		return this.value != null;
+	public @NonNull Signal<T> unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
+		this.eventSet.remove(subscriber);
+		return this;
 	}
 
 	@Override

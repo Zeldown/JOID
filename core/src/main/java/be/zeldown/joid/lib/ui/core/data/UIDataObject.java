@@ -14,17 +14,17 @@ import lombok.ToString;
 @NoArgsConstructor
 public final class UIDataObject implements UIData {
 
-	private boolean active          = true;
-	private boolean visible         = true;
 	private boolean pause           = true;
-	private boolean closeable       = true;
-	private boolean zoomable        = true;
-	private boolean projection      = true;
-	private boolean background      = true;
-	private String  backgroundColor = "#101010C0";
 	private double  zlevel          = 0D;
 	private Align   anchorX         = Align.CENTER;
 	private Align   anchorY         = Align.CENTER;
+	private boolean active          = true;
+	private boolean visible         = true;
+	private boolean zoomable        = true;
+	private boolean closeable       = true;
+	private boolean projection      = true;
+	private boolean background      = true;
+	private String  backgroundColor = "#101010C0";
 
 	private Color backgroundColorCache = Color.decode(this.backgroundColor);
 
@@ -44,23 +44,28 @@ public final class UIDataObject implements UIData {
 		this.backgroundColorCache = Color.decode(this.backgroundColor);
 	}
 
-	public static @NonNull Optional<UIDataObject> get(final @NonNull Class<? extends UI> clazz) {
-		Class<?> currentClass = clazz;
-		UIData data = currentClass.getAnnotation(UIData.class);
-		while (data == null && currentClass.getSuperclass() != null) {
-			currentClass = currentClass.getSuperclass();
-			data = currentClass.getAnnotation(UIData.class);
-		}
-		return data != null ? Optional.of(new UIDataObject(data)) : Optional.empty();
-	}
-
 	public static @NonNull UIDataObject getOrDefault(final @NonNull Class<? extends UI> clazz) {
 		return UIDataObject.get(clazz).orElse(new UIDataObject());
 	}
 
 	@Override
-	public Class<? extends Annotation> annotationType() {
-		return UIData.class;
+	public boolean pause() {
+		return this.pause;
+	}
+
+	@Override
+	public double zlevel() {
+		return this.zlevel;
+	}
+
+	@Override
+	public Align anchorX() {
+		return this.anchorX;
+	}
+
+	@Override
+	public Align anchorY() {
+		return this.anchorY;
 	}
 
 	@Override
@@ -74,8 +79,8 @@ public final class UIDataObject implements UIData {
 	}
 
 	@Override
-	public boolean pause() {
-		return this.pause;
+	public boolean zoomable() {
+		return this.zoomable;
 	}
 
 	@Override
@@ -96,26 +101,6 @@ public final class UIDataObject implements UIData {
 	@Override
 	public String backgroundColor() {
 		return this.backgroundColor;
-	}
-
-	@Override
-	public boolean zoomable() {
-		return this.zoomable;
-	}
-
-	@Override
-	public double zlevel() {
-		return this.zlevel;
-	}
-
-	@Override
-	public Align anchorX() {
-		return this.anchorX;
-	}
-
-	@Override
-	public Align anchorY() {
-		return this.anchorY;
 	}
 
 	public double getAnchorPositionX() {
@@ -144,6 +129,25 @@ public final class UIDataObject implements UIData {
 		}
 	}
 
+	public final @NonNull Color getBackgroundColor() {
+		return this.backgroundColorCache;
+	}
+
+	@Override
+	public Class<? extends Annotation> annotationType() {
+		return UIData.class;
+	}
+
+	public final @NonNull UIDataObject setPause(final boolean pause) {
+		this.pause = pause;
+		return this;
+	}
+
+	public final @NonNull UIDataObject setZlevel(final double zlevel) {
+		this.zlevel = zlevel;
+		return this;
+	}
+
 	public final @NonNull UIDataObject setActive(final boolean active) {
 		this.active = active;
 		return this;
@@ -154,18 +158,13 @@ public final class UIDataObject implements UIData {
 		return this;
 	}
 
-	public final @NonNull UIDataObject setPause(final boolean pause) {
-		this.pause = pause;
+	public final @NonNull UIDataObject setZoomable(final boolean zoomable) {
+		this.zoomable = zoomable;
 		return this;
 	}
 
 	public final @NonNull UIDataObject setCloseable(final boolean closeable) {
 		this.closeable = closeable;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setZoomable(final boolean zoomable) {
-		this.zoomable = zoomable;
 		return this;
 	}
 
@@ -179,17 +178,6 @@ public final class UIDataObject implements UIData {
 		return this;
 	}
 
-	public final @NonNull UIDataObject setBackgroundColor(final @NonNull String color) {
-		this.backgroundColor = color;
-		this.backgroundColorCache = Color.decode(color);
-		return this;
-	}
-
-	public final @NonNull UIDataObject setZlevel(final double zlevel) {
-		this.zlevel = zlevel;
-		return this;
-	}
-
 	public final @NonNull UIDataObject setAnchorX(final @NonNull Align anchorX) {
 		this.anchorX = anchorX;
 		return this;
@@ -200,8 +188,20 @@ public final class UIDataObject implements UIData {
 		return this;
 	}
 
-	public final @NonNull Color getBackgroundColor() {
-		return this.backgroundColorCache;
+	public final @NonNull UIDataObject setBackgroundColor(final @NonNull String color) {
+		this.backgroundColor = color;
+		this.backgroundColorCache = Color.decode(color);
+		return this;
+	}
+
+	public static @NonNull Optional<UIDataObject> get(final @NonNull Class<? extends UI> clazz) {
+		Class<?> currentClass = clazz;
+		UIData data = currentClass.getAnnotation(UIData.class);
+		while (data == null && currentClass.getSuperclass() != null) {
+			currentClass = currentClass.getSuperclass();
+			data = currentClass.getAnnotation(UIData.class);
+		}
+		return data != null ? Optional.of(new UIDataObject(data)) : Optional.empty();
 	}
 
 }

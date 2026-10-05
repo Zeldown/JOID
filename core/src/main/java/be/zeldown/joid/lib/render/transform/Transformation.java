@@ -17,7 +17,8 @@ import lombok.NonNull;
 @Getter
 public class Transformation {
 
-	@NonNull private final List<@NonNull TransformOperation> operations;
+	@NonNull
+	private final List<@NonNull TransformOperation> operations;
 
 	private Transformation() {
 		this.operations = new LinkedList<>();
@@ -31,32 +32,6 @@ public class Transformation {
 		return new Transformation().add(operation);
 	}
 
-	public @NonNull Transformation add(final @NonNull TransformOperation operation) {
-		this.operations.add(operation);
-		return this;
-	}
-
-	public @NonNull Transformation translate(final @NonNull Vector vector) {
-		this.operations.add(new TranslateOperation(vector));
-		return this;
-	}
-
-	public @NonNull Transformation rotate(final double angle, final @NonNull Rotation rotation, final @NonNull Vector pivot) {
-		this.operations.add(new RotateOperation(angle, rotation, pivot));
-		return this;
-	}
-
-	public @NonNull Transformation scale(final @NonNull Scale scale, final @NonNull Vector pivot) {
-		this.operations.add(new ScaleOperation(scale, pivot));
-		return this;
-	}
-
-	public void apply(final @NonNull Drawing drawing) {
-		this.operations.forEach(TransformOperation::transform);
-		drawing.draw();
-		this.operations.forEach(TransformOperation::reset);
-	}
-
 	public void apply() {
 		this.operations.forEach(TransformOperation::transform);
 	}
@@ -67,6 +42,32 @@ public class Transformation {
 
 	public void clear() {
 		this.operations.clear();
+	}
+
+	public void apply(final @NonNull Drawing drawing) {
+		this.operations.forEach(TransformOperation::transform);
+		drawing.draw();
+		this.operations.forEach(TransformOperation::reset);
+	}
+
+	public @NonNull Transformation translate(final @NonNull Vector vector) {
+		this.operations.add(new TranslateOperation(vector));
+		return this;
+	}
+
+	public @NonNull Transformation add(final @NonNull TransformOperation operation) {
+		this.operations.add(operation);
+		return this;
+	}
+
+	public @NonNull Transformation scale(final @NonNull Scale scale, final @NonNull Vector pivot) {
+		this.operations.add(new ScaleOperation(scale, pivot));
+		return this;
+	}
+
+	public @NonNull Transformation rotate(final double angle, final @NonNull Rotation rotation, final @NonNull Vector pivot) {
+		this.operations.add(new RotateOperation(angle, rotation, pivot));
+		return this;
 	}
 
 }

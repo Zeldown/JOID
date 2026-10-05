@@ -54,28 +54,29 @@ import lombok.NonNull;
 @Getter
 public abstract class UI implements IUI, IndexedElement {
 
-	@Getter private static UI current;
-
 	private static final double FRAME_TIME = 1000D / 60D;
 	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
+
+	@Getter
+	private static UI current;
 
 	@NonNull private final UIDataObject         data;
 	@NonNull private final UIDataDebugObject    debug;
 	@NonNull private final UIDataPopupObject    popup;
 
-	@NonNull private final Stack<StencilState>                  stencilStack;
 	@NonNull private final Map<Key[], Runnable>                 keybindMap;
+	@NonNull private final Stack<StencilState>                  stencilStack;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
+
+	private final DoubleSignal zoomLevel;
+	private final DoubleSignal scaledWidth;
+	private final DoubleSignal scaledHeight;
 
 	private transient Transition                             transition;
 	private transient FileAlterationMonitor                  fileMonitor;
 	private transient List<UIScheduledTask>                  scheduledTaskList;
 	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
-
-	private final DoubleSignal zoomLevel;
-	private final DoubleSignal scaledWidth;
-	private final DoubleSignal scaledHeight;
 
 	private boolean initialized;
 
@@ -88,16 +89,16 @@ public abstract class UI implements IUI, IndexedElement {
 	private double viewportHeight;
 
 	private double fps;
-	private double frameTime;
 	private long   lastFrame;
 	private long   fpsCounter;
 	private long   renderTime;
+	private double frameTime;
 	private long   lastFpsUpdate;
 
 	private double  mouseX;
 	private double  mouseY;
-	private double  renderPipelineLevel;
 	private boolean onTop;
+	private double  renderPipelineLevel;
 
 	private DevNode devNode;
 
@@ -272,154 +273,37 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	public final boolean onMousePressed(final @NonNull ClickType clickType) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		final InternalContext context = InternalContext.create();
-
-		this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
-		this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
-
-		this.mousePressed(mx, my, clickType, context);
-		return context.isCancelled();
+	@Override
+	public int getIndex() {
+		return 0;
 	}
 
-	public final boolean onMouseDragged(final @NonNull ClickType clickType, final long deltaTime) {
-		if (!this.initialized) {
-			return false;
+	public final void reload() {
+		if (this.devNode != null) {
+			this.devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
+			this.devNode.getReloadAnimator().start();
 		}
 
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, clickType, deltaTime, context));
-
-		this.mouseDragged(mx, my, clickType, deltaTime, context);
-		return context.isCancelled();
-	}
-
-	public final boolean onMouseReleased(final @NonNull ClickType clickType) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, clickType, context));
-
-		this.mouseReleased(mx, my, clickType, context);
-		return context.isCancelled();
-	}
-
-	public final boolean onMouseScroll(final int value) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && value != 0) {
-			this.zoomLevel.add(value / (Key.LEFT_SHIFT.isDown() ? 1000D : 10000D));
-			this.updateScaledSize();
-			return true;
-		}
-
-		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, value, context));
-
-		this.mouseScroll(mx, my, value, context);
-		return context.isCancelled();
-	}
-
-	public final boolean onKeyPressed(final char c, final @NonNull Key key) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context));
-
-		if (!context.isCancelled()) {
-			for (final Map.Entry<Key[], Runnable> entry : this.keybindMap.entrySet()) {
-				boolean match = true;
-				for (final Key bindKey : entry.getKey()) {
-					if (!bindKey.isDown()) {
-						match = false;
-						break;
-					}
-				}
-
-				if (match) {
-					entry.getValue().run();
-					context.cancel();
-				}
-			}
-		}
-
-		if (this.data.zoomable() && !context.isCancelled()) {
-			if ((key == Key.NUMPAD_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
-				double tempZoomLevel = this.zoomLevel.getOrDefault();
-				tempZoomLevel += 0.1D;
-				tempZoomLevel = Math.min(1D, tempZoomLevel);
-				if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
-					this.zoomLevel.set(tempZoomLevel);
-					this.updateScaledSize();
-					context.cancel();
-				}
-			}
-
-			if ((key == Key.NUMPAD_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
-				double tempZoomLevel = this.zoomLevel.getOrDefault();
-				tempZoomLevel -= 0.1D;
-				tempZoomLevel = Math.max(0.1D, tempZoomLevel);
-				if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
-					this.zoomLevel.set(tempZoomLevel);
-					this.updateScaledSize();
-					context.cancel();
-				}
-			}
-		}
-
-		if (JOID.inst().isDevMode() && !context.isCancelled()) {
-			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
-				if (Key.LEFT_SHIFT.isDown()) {
-					double tempZoomLevel = this.zoomLevel.getOrDefault();
-					tempZoomLevel = 1D;
-					if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
-						this.zoomLevel.set(tempZoomLevel);
-						this.updateScaledSize();
-					}
-				}
-
-				this.reload();
-				context.cancel();
-			} else if (key == Key.F3 && this.devNode != null) {
-				final boolean enabled = this.nodeList.contains(this.devNode);
-				if (enabled) {
-					this.nodeList.remove(this.devNode);
-				} else {
-					this.devNode.attach(this);
-				}
-				context.cancel();
-			}
-		}
-
-		this.keyPressed(c, key, context);
-		return context.isCancelled();
+		this.initialized = false;
+		this.load(this.width, this.height, this.zoomLevel.getOrDefault());
 	}
 
 	public final void onUpdate() {
 		this.nodeList.forEach(Node::onUpdate);
 		this.update();
+	}
+
+	public final void stopMask() {
+		this.stencilStack.pop();
+		final int stencilValue = this.stencilStack.size();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (stencilValue == 0) {
+			render.stencilTest(false);
+			render.clearStencil();
+		} else {
+			render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
+			render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+		}
 	}
 
 	public final boolean onClose() {
@@ -443,6 +327,14 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.properlyClose();
 		return true;
+	}
+
+	public final double getMouseX() {
+		return this.getRelativeX(this.mouseX * (this.viewportWidth / this.width));
+	}
+
+	public final double getMouseY() {
+		return this.getRelativeY(this.mouseY * (this.viewportHeight / this.height));
 	}
 
 	public final void properlyClose() {
@@ -470,6 +362,127 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		UIPropertyHook.save(this);
+	}
+
+	public final IUIBridge getBridge() {
+		return BridgeHandler.UI.get(this);
+	}
+
+	public final void updateScaledSize() {
+		final double tempScaledWidth = this.viewportWidth / this.zoomLevel.getOrDefault();
+		final double tempScaledHeight = this.viewportHeight / this.zoomLevel.getOrDefault();
+
+		if (this.scaledWidth.getOrDefault() != tempScaledWidth) {
+			this.scaledWidth.set(tempScaledWidth);
+		}
+
+		if (this.scaledHeight.getOrDefault() != tempScaledHeight) {
+			this.scaledHeight.set(tempScaledHeight);
+		}
+	}
+
+	public static boolean isAltKeyDown() {
+		return Key.LEFT_ALT.isDown() || Key.RIGHT_ALT.isDown();
+	}
+
+	public static boolean isCtrlKeyDown() {
+		return Key.LEFT_CONTROL.isDown() || Key.RIGHT_CONTROL.isDown();
+	}
+
+	public static boolean isShiftKeyDown()  {
+		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
+	}
+
+	public final boolean onMouseScroll(final int value) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && value != 0) {
+			this.zoomLevel.add(value / (Key.LEFT_SHIFT.isDown() ? 1000D : 10000D));
+			this.updateScaledSize();
+			return true;
+		}
+
+		final InternalContext context = InternalContext.create();
+		this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, value, context));
+
+		this.mouseScroll(mx, my, value, context);
+		return context.isCancelled();
+	}
+
+	public final double getRelativeX(final double value) {
+		double relative = value - (this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX()));
+
+		if (this.zoomLevel.getOrDefault() != 1D) {
+			relative -= this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+			relative *= 1D / this.zoomLevel.getOrDefault();
+		}
+
+		return relative;
+	}
+
+	public final double getRelativeY(final double value) {
+		double relative = value - (this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY()));
+
+		if (this.zoomLevel.getOrDefault() != 1D) {
+			relative -= this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+			relative *= 1D / this.zoomLevel.getOrDefault();
+		}
+
+		return relative;
+	}
+
+	public final double getAbsoluteX(final double value) {
+		double absolute = value;
+		if (this.zoomLevel.getOrDefault() != 1D) {
+			absolute /= 1D / this.zoomLevel.getOrDefault();
+			absolute += this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+		}
+
+		absolute += this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
+		absolute /= this.viewportWidth / this.width;
+
+		return absolute;
+	}
+
+	public final double getAbsoluteY(final double value) {
+		double absolute = value;
+		if (this.zoomLevel.getOrDefault() != 1D) {
+			absolute /= 1D / this.zoomLevel.getOrDefault();
+			absolute += this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+		}
+
+		absolute += this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
+		absolute /= this.viewportHeight / this.height;
+
+		return absolute;
+	}
+
+	public final double getAbsoluteWidth(final double value) {
+		return value * this.zoomLevel.getOrDefault() / (this.viewportWidth / this.width);
+	}
+
+	public final double getAbsoluteHeight(final double value) {
+		return value * this.zoomLevel.getOrDefault() / (this.viewportHeight / this.height);
+	}
+
+	public final void schedule(final @NonNull Runnable runnable) {
+		this.schedule(runnable, 0L, -1L);
+	}
+
+	public final void setRenderPipelineLevel(final double level) {
+		this.renderPipelineLevel = level;
+	}
+
+	public final void add(final @NonNull Node @NonNull ... nodes) {
+		for (final Node node : nodes) {
+			node.load(this);
+			this.nodeList.add(node);
+		}
 	}
 
 	public final void draw(final double mouseX, final double mouseY) {
@@ -646,86 +659,163 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
+	public final @NonNull UI setTransition(final Transition transition) {
+		this.transition = transition;
+		return this;
+	}
+
+	public final boolean onMousePressed(final @NonNull ClickType clickType) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		final InternalContext context = InternalContext.create();
+
+		this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+		this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+
+		this.mousePressed(mx, my, clickType, context);
+		return context.isCancelled();
+	}
+
+	public final boolean onKeyPressed(final char c, final @NonNull Key key) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final InternalContext context = InternalContext.create();
+		this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context));
+
+		if (!context.isCancelled()) {
+			for (final Map.Entry<Key[], Runnable> entry : this.keybindMap.entrySet()) {
+				boolean match = true;
+				for (final Key bindKey : entry.getKey()) {
+					if (!bindKey.isDown()) {
+						match = false;
+						break;
+					}
+				}
+
+				if (match) {
+					entry.getValue().run();
+					context.cancel();
+				}
+			}
+		}
+
+		if (this.data.zoomable() && !context.isCancelled()) {
+			if ((key == Key.NUMPAD_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+				double tempZoomLevel = this.zoomLevel.getOrDefault();
+				tempZoomLevel += 0.1D;
+				tempZoomLevel = Math.min(1D, tempZoomLevel);
+				if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
+					this.zoomLevel.set(tempZoomLevel);
+					this.updateScaledSize();
+					context.cancel();
+				}
+			}
+
+			if ((key == Key.NUMPAD_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+				double tempZoomLevel = this.zoomLevel.getOrDefault();
+				tempZoomLevel -= 0.1D;
+				tempZoomLevel = Math.max(0.1D, tempZoomLevel);
+				if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
+					this.zoomLevel.set(tempZoomLevel);
+					this.updateScaledSize();
+					context.cancel();
+				}
+			}
+		}
+
+		if (JOID.inst().isDevMode() && !context.isCancelled()) {
+			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
+				if (Key.LEFT_SHIFT.isDown()) {
+					double tempZoomLevel = this.zoomLevel.getOrDefault();
+					tempZoomLevel = 1D;
+					if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
+						this.zoomLevel.set(tempZoomLevel);
+						this.updateScaledSize();
+					}
+				}
+
+				this.reload();
+				context.cancel();
+			} else if (key == Key.F3 && this.devNode != null) {
+				final boolean enabled = this.nodeList.contains(this.devNode);
+				if (enabled) {
+					this.nodeList.remove(this.devNode);
+				} else {
+					this.devNode.attach(this);
+				}
+				context.cancel();
+			}
+		}
+
+		this.keyPressed(c, key, context);
+		return context.isCancelled();
+	}
+
+	public final boolean onMouseReleased(final @NonNull ClickType clickType) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		final InternalContext context = InternalContext.create();
+		this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, clickType, context));
+
+		this.mouseReleased(mx, my, clickType, context);
+		return context.isCancelled();
+	}
+
+	public final void schedule(final @NonNull Runnable runnable, final long delay) {
+		this.schedule(runnable, delay, -1L);
+	}
+
+	public final void keybind(final @NonNull Runnable runnable, final @NonNull Key... keys) {
+		this.keybindMap.put(keys, runnable);
+	}
+
+	public final boolean onMouseDragged(final @NonNull ClickType clickType, final long deltaTime) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		final InternalContext context = InternalContext.create();
+		this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, clickType, deltaTime, context));
+
+		this.mouseDragged(mx, my, clickType, deltaTime, context);
+		return context.isCancelled();
+	}
+
+	public final void schedule(final @NonNull Runnable runnable, final long delay, final long period) {
+		this.scheduledTaskList.add(new UIScheduledTask(runnable, delay, period));
+	}
+
+	@SuppressWarnings("unchecked")
+	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
+		if (this.storeMap.containsKey(clazz)) {
+			return (T) this.storeMap.get(clazz);
+		}
+
+		final T store = UIStoreHook.useStore(clazz, args);
+		if (store.getData().context().isLocal()) {
+			this.storeMap.put(clazz, store);
+		}
+
+		return store;
+	}
+
 	public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
 		this.getBridge().drawHover(this, lines, mouseX, mouseY);
-	}
-
-	public final double getMouseX() {
-		return this.getRelativeX(this.mouseX * (this.viewportWidth / this.width));
-	}
-
-	public final double getMouseY() {
-		return this.getRelativeY(this.mouseY * (this.viewportHeight / this.height));
-	}
-
-	public final double getRelativeX(final double value) {
-		double relative = value - (this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX()));
-
-		if (this.zoomLevel.getOrDefault() != 1D) {
-			relative -= this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-			relative *= 1D / this.zoomLevel.getOrDefault();
-		}
-
-		return relative;
-	}
-
-	public final double getRelativeY(final double value) {
-		double relative = value - (this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY()));
-
-		if (this.zoomLevel.getOrDefault() != 1D) {
-			relative -= this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-			relative *= 1D / this.zoomLevel.getOrDefault();
-		}
-
-		return relative;
-	}
-
-	public final double getAbsoluteX(final double value) {
-		double absolute = value;
-		if (this.zoomLevel.getOrDefault() != 1D) {
-			absolute /= 1D / this.zoomLevel.getOrDefault();
-			absolute += this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-		}
-
-		absolute += this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
-		absolute /= this.viewportWidth / this.width;
-
-		return absolute;
-	}
-
-	public final double getAbsoluteY(final double value) {
-		double absolute = value;
-		if (this.zoomLevel.getOrDefault() != 1D) {
-			absolute /= 1D / this.zoomLevel.getOrDefault();
-			absolute += this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-		}
-
-		absolute += this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
-		absolute /= this.viewportHeight / this.height;
-
-		return absolute;
-	}
-
-	public final double getAbsoluteWidth(final double value) {
-		return value * this.zoomLevel.getOrDefault() / (this.viewportWidth / this.width);
-	}
-
-	public final double getAbsoluteHeight(final double value) {
-		return value * this.zoomLevel.getOrDefault() / (this.viewportHeight / this.height);
-	}
-
-	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeiht, final @NonNull Drawing drawing) {
-		this.mask(maskX, maskY, maskWidth, maskHeiht, drawing, true);
-	}
-
-	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
-		if (enabled) {
-			this.startMask(maskX, maskY, maskWidth, maskHeight);
-			drawing.draw();
-			this.stopMask();
-		} else {
-			drawing.draw();
-		}
 	}
 
 	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
@@ -748,18 +838,21 @@ public abstract class UI implements IUI, IndexedElement {
 		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
 	}
 
-	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
-		this.mask(resource, maskX, maskY, maskWidth, maskHeight, drawing, true);
+	public final double lerpByFramerate(final double value, final double target, final double speed, final double snapDiff, final boolean snap) {
+		final double diff = target - value;
+		final double absDiff = Math.abs(diff);
+
+		final double offset = Math.min(absDiff, speed * this.frameTime / UI.FRAME_TIME * absDiff / 3D);
+
+		if (absDiff > snapDiff) {
+			return value + (diff > 0 ? offset : -offset);
+		}
+
+		return snap ? target : value;
 	}
 
-	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
-		if (enabled) {
-			this.startMask(resource, maskX, maskY, maskWidth, maskHeight);
-			drawing.draw();
-			this.stopMask();
-		} else {
-			drawing.draw();
-		}
+	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeiht, final @NonNull Drawing drawing) {
+		this.mask(maskX, maskY, maskWidth, maskHeiht, drawing, true);
 	}
 
 	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
@@ -784,128 +877,36 @@ public abstract class UI implements IUI, IndexedElement {
 		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
 	}
 
-	public final void stopMask() {
-		this.stencilStack.pop();
-		final int stencilValue = this.stencilStack.size();
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (stencilValue == 0) {
-			render.stencilTest(false);
-			render.clearStencil();
+	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
+		if (enabled) {
+			this.startMask(maskX, maskY, maskWidth, maskHeight);
+			drawing.draw();
+			this.stopMask();
 		} else {
-			render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
-			render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+			drawing.draw();
 		}
 	}
 
-	public final void keybind(final @NonNull Runnable runnable, final @NonNull Key... keys) {
-		this.keybindMap.put(keys, runnable);
+	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
+		this.mask(resource, maskX, maskY, maskWidth, maskHeight, drawing, true);
 	}
 
-	public final void reload() {
-		if (this.devNode != null) {
-			this.devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
-			this.devNode.getReloadAnimator().start();
+	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
+		if (enabled) {
+			this.startMask(resource, maskX, maskY, maskWidth, maskHeight);
+			drawing.draw();
+			this.stopMask();
+		} else {
+			drawing.draw();
 		}
-
-		this.initialized = false;
-		this.load(this.width, this.height, this.zoomLevel.getOrDefault());
-	}
-
-	public final void updateScaledSize() {
-		final double tempScaledWidth = this.viewportWidth / this.zoomLevel.getOrDefault();
-		final double tempScaledHeight = this.viewportHeight / this.zoomLevel.getOrDefault();
-
-		if (this.scaledWidth.getOrDefault() != tempScaledWidth) {
-			this.scaledWidth.set(tempScaledWidth);
-		}
-
-		if (this.scaledHeight.getOrDefault() != tempScaledHeight) {
-			this.scaledHeight.set(tempScaledHeight);
-		}
-	}
-
-	public final double lerpByFramerate(final double value, final double target, final double speed, final double snapDiff, final boolean snap) {
-		final double diff = target - value;
-		final double absDiff = Math.abs(diff);
-
-		final double offset = Math.min(absDiff, speed * this.frameTime / UI.FRAME_TIME * absDiff / 3D);
-
-		if (absDiff > snapDiff) {
-			return value + (diff > 0 ? offset : -offset);
-		}
-
-		return snap ? target : value;
-	}
-
-	public final void schedule(final @NonNull Runnable runnable) {
-		this.schedule(runnable, 0L, -1L);
-	}
-
-	public final void schedule(final @NonNull Runnable runnable, final long delay) {
-		this.schedule(runnable, delay, -1L);
-	}
-
-	public final void schedule(final @NonNull Runnable runnable, final long delay, final long period) {
-		this.scheduledTaskList.add(new UIScheduledTask(runnable, delay, period));
-	}
-
-	public final void add(final @NonNull Node @NonNull ... nodes) {
-		for (final Node node : nodes) {
-			node.load(this);
-			this.nodeList.add(node);
-		}
-	}
-
-	public final void setRenderPipelineLevel(final double level) {
-		this.renderPipelineLevel = level;
-	}
-
-	@SuppressWarnings("unchecked")
-	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
-		if (this.storeMap.containsKey(clazz)) {
-			return (T) this.storeMap.get(clazz);
-		}
-
-		final T store = UIStoreHook.useStore(clazz, args);
-		if (store.getData().context().isLocal()) {
-			this.storeMap.put(clazz, store);
-		}
-
-		return store;
-	}
-
-	public final IUIBridge getBridge() {
-		return BridgeHandler.UI.get(this);
-	}
-
-	public final @NonNull UI setTransition(final Transition transition) {
-		this.transition = transition;
-		return this;
-	}
-
-	@Override
-	public int getIndex() {
-		return 0;
-	}
-
-	public static boolean isCtrlKeyDown() {
-		return Key.LEFT_CONTROL.isDown() || Key.RIGHT_CONTROL.isDown();
-	}
-
-	public static boolean isShiftKeyDown()  {
-		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
-	}
-
-	public static boolean isAltKeyDown() {
-		return Key.LEFT_ALT.isDown() || Key.RIGHT_ALT.isDown();
 	}
 
 	@Getter
 	private class StencilState {
 
-		public final int value;
 		public final double x;
 		public final double y;
+		public final int value;
 		public final double width;
 		public final double height;
 

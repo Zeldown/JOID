@@ -12,13 +12,11 @@ public abstract class UIStore {
 	public void init() {}
 	public void destroy() {}
 
+	public void load(final @NonNull JsonObject json) {}
+
 	public void save() {
 		UIStoreHook.saveStore(this);
 	}
-
-	public void save(final @NonNull JsonObject json) {}
-	public void load(final @NonNull JsonObject json) {}
-
 	public UIStoreData getData() {
 		if (this.data == null) {
 			if (!this.getClass().isAnnotationPresent(UIStoreData.class)) {
@@ -30,5 +28,7 @@ public abstract class UIStore {
 
 		return this.data;
 	}
+
+	public void save(final @NonNull JsonObject json) {}
 
 }

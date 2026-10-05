@@ -18,6 +18,10 @@ public class GradientShader extends ShaderImpl {
 		this.load(JOID.class.getResourceAsStream("/assets/shaders/gradient/gradient.vsh"), JOID.class.getResourceAsStream("/assets/shaders/gradient/gradient.fsh"));
 	}
 
+	public static @NonNull GradientShader inst() {
+		return GradientShader.INSTANCE;
+	}
+
 	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final Runnable runnable, final @NonNull Vector4f canvas) {
 		GradientShader.use(startPos, endPos, startColor, endColor, false, runnable, canvas);
 	}
@@ -51,10 +55,6 @@ public class GradientShader extends ShaderImpl {
 		}
 
 		GradientShader.INSTANCE.unbind();
-	}
-
-	public static @NonNull GradientShader inst() {
-		return GradientShader.INSTANCE;
 	}
 
 }

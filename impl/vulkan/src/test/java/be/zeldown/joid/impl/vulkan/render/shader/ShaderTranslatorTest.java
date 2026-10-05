@@ -15,11 +15,13 @@ public class ShaderTranslatorTest {
 	private static final String BLOCK = "layout(std140, binding = 0) uniform JoidUniforms {\n\tmat4 uProjectionMatrix;\n\tmat4 uModelViewMatrix;\n\tbool uLighting;\n\tvec4 joid_CurrentColor;\n\tint joid_VertexColor;\n\tfloat u_Scale;\n\tvec4 u_Color;\n};\n";
 
 	@Test
-	public void sharesUniformBlockBetweenStages() {
-		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, ShaderTranslatorTest.VERTEX);
-		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT);
-		Assert.assertTrue(ShaderTranslator.translateVertex(vertex, fragment).contains(ShaderTranslatorTest.BLOCK));
-		Assert.assertTrue(ShaderTranslator.translateFragment(vertex, fragment).contains(ShaderTranslatorTest.BLOCK));
+	public void compilesCoreShaders() {
+		for (final String name : CoreShaders.getNames()) {
+			final ShaderSource vertex = CoreShaders.read(name, ShaderStage.VERTEX);
+			final ShaderSource fragment = CoreShaders.read(name, ShaderStage.FRAGMENT);
+			Assert.assertTrue(name, ShaderCompiler.compileVertex(ShaderTranslator.translateVertex(vertex, fragment)).remaining() > 0);
+			Assert.assertTrue(name, ShaderCompiler.compileFragment(ShaderTranslator.translateFragment(vertex, fragment)).remaining() > 0);
+		}
 	}
 
 	@Test
@@ -47,13 +49,11 @@ public class ShaderTranslatorTest {
 	}
 
 	@Test
-	public void compilesCoreShaders() {
-		for (final String name : CoreShaders.getNames()) {
-			final ShaderSource vertex = CoreShaders.read(name, ShaderStage.VERTEX);
-			final ShaderSource fragment = CoreShaders.read(name, ShaderStage.FRAGMENT);
-			Assert.assertTrue(name, ShaderCompiler.compileVertex(ShaderTranslator.translateVertex(vertex, fragment)).remaining() > 0);
-			Assert.assertTrue(name, ShaderCompiler.compileFragment(ShaderTranslator.translateFragment(vertex, fragment)).remaining() > 0);
-		}
+	public void sharesUniformBlockBetweenStages() {
+		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, ShaderTranslatorTest.VERTEX);
+		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT);
+		Assert.assertTrue(ShaderTranslator.translateVertex(vertex, fragment).contains(ShaderTranslatorTest.BLOCK));
+		Assert.assertTrue(ShaderTranslator.translateFragment(vertex, fragment).contains(ShaderTranslatorTest.BLOCK));
 	}
 
 }

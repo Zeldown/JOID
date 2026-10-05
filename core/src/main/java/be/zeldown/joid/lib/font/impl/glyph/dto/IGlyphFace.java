@@ -5,8 +5,6 @@ import lombok.NonNull;
 
 public interface IGlyphFace {
 
-	public @NonNull FontWeight getWeight();
-
 	public boolean isItalic();
 
 	public float getAscender();
@@ -18,6 +16,8 @@ public interface IGlyphFace {
 	public float getUnderlineY();
 
 	public float getUnderlineThickness();
+
+	public @NonNull FontWeight getWeight();
 
 	public boolean hasGlyph(final int codepoint);
 

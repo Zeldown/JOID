@@ -17,43 +17,43 @@ import lombok.NonNull;
 public final class ShaderReflection {
 
 	private static final int OP_NAME               = 5;
-	private static final int OP_MEMBER_NAME        = 6;
-	private static final int OP_TYPE_BOOL          = 20;
 	private static final int OP_TYPE_INT           = 21;
-	private static final int OP_TYPE_FLOAT         = 22;
-	private static final int OP_TYPE_VECTOR        = 23;
-	private static final int OP_TYPE_MATRIX        = 24;
-	private static final int OP_TYPE_SAMPLED_IMAGE = 27;
-	private static final int OP_TYPE_ARRAY         = 28;
-	private static final int OP_TYPE_STRUCT        = 30;
-	private static final int OP_TYPE_POINTER       = 32;
 	private static final int OP_CONSTANT           = 43;
 	private static final int OP_VARIABLE           = 59;
 	private static final int OP_DECORATE           = 71;
+	private static final int OP_TYPE_BOOL          = 20;
+	private static final int OP_TYPE_FLOAT         = 22;
+	private static final int OP_TYPE_ARRAY         = 28;
+	private static final int OP_MEMBER_NAME        = 6;
+	private static final int OP_TYPE_VECTOR        = 23;
+	private static final int OP_TYPE_MATRIX        = 24;
+	private static final int OP_TYPE_STRUCT        = 30;
+	private static final int OP_TYPE_POINTER       = 32;
 	private static final int OP_MEMBER_DECORATE    = 72;
+	private static final int OP_TYPE_SAMPLED_IMAGE = 27;
 
+	private static final int DECORATION_OFFSET        = 35;
+	private static final int DECORATION_BINDING       = 33;
 	private static final int DECORATION_ARRAY_STRIDE  = 6;
 	private static final int DECORATION_MATRIX_STRIDE = 7;
-	private static final int DECORATION_BINDING       = 33;
-	private static final int DECORATION_OFFSET        = 35;
 
-	private static final int STORAGE_UNIFORM_CONSTANT = 0;
 	private static final int STORAGE_UNIFORM          = 2;
+	private static final int STORAGE_UNIFORM_CONSTANT = 0;
 
-	private final Map<Integer, UniformBlock> blockMap;
 	private final Map<String, Integer>       samplerMap;
+	private final Map<Integer, UniformBlock> blockMap;
 
+	private final Map<Integer, int[]>                typeMap;
 	private final Map<Integer, String>               nameMap;
+	private final Set<Integer>                       sampledImageSet;
+	private final Map<Integer, int[]>                structMap;
+	private final Map<Integer, int[]>                variableMap;
+	private final Map<Integer, Integer>              bindingMap;
+	private final Map<Integer, Integer>              pointerMap;
+	private final Map<Integer, Integer>              constantMap;
+	private final Map<Integer, Integer>              arrayStrideMap;
 	private final Map<Integer, Map<Integer, String>> memberNameMap;
 	private final Map<Integer, Map<Integer, int[]>>  memberDecorationMap;
-	private final Map<Integer, Integer>              bindingMap;
-	private final Map<Integer, Integer>              arrayStrideMap;
-	private final Map<Integer, int[]>                typeMap;
-	private final Map<Integer, int[]>                structMap;
-	private final Map<Integer, Integer>              pointerMap;
-	private final Map<Integer, int[]>                variableMap;
-	private final Map<Integer, Integer>              constantMap;
-	private final Set<Integer>                       sampledImageSet;
 
 	private ShaderReflection(final ByteBuffer module) {
 		this.blockMap            = new HashMap<>();
@@ -76,6 +76,22 @@ public final class ShaderReflection {
 
 	public static @NonNull ShaderReflection reflect(final @NonNull ByteBuffer module) {
 		return new ShaderReflection(module);
+	}
+
+	private void resolve() {
+		for (final Map.Entry<Integer, int[]> variable : this.variableMap.entrySet()) {
+			final Integer binding = this.bindingMap.get(variable.getKey());
+			final Integer type = this.pointerMap.get(variable.getValue()[0]);
+			if (binding == null || type == null) {
+				continue;
+			}
+
+			if (variable.getValue()[1] == ShaderReflection.STORAGE_UNIFORM_CONSTANT && this.sampledImageSet.contains(type)) {
+				this.samplerMap.put(this.nameMap.get(variable.getKey()), binding);
+			} else if (variable.getValue()[1] == ShaderReflection.STORAGE_UNIFORM && this.structMap.containsKey(type)) {
+				this.blockMap.put(binding, this.createBlock(binding, type));
+			}
+		}
 	}
 
 	private void parse(final IntBuffer words) {
@@ -141,41 +157,6 @@ public final class ShaderReflection {
 		}
 	}
 
-	private void resolve() {
-		for (final Map.Entry<Integer, int[]> variable : this.variableMap.entrySet()) {
-			final Integer binding = this.bindingMap.get(variable.getKey());
-			final Integer type = this.pointerMap.get(variable.getValue()[0]);
-			if (binding == null || type == null) {
-				continue;
-			}
-
-			if (variable.getValue()[1] == ShaderReflection.STORAGE_UNIFORM_CONSTANT && this.sampledImageSet.contains(type)) {
-				this.samplerMap.put(this.nameMap.get(variable.getKey()), binding);
-			} else if (variable.getValue()[1] == ShaderReflection.STORAGE_UNIFORM && this.structMap.containsKey(type)) {
-				this.blockMap.put(binding, this.createBlock(binding, type));
-			}
-		}
-	}
-
-	private UniformBlock createBlock(final int binding, final int struct) {
-		final int[] memberTypes = this.structMap.get(struct);
-		final Map<Integer, String> memberNames = this.memberNameMap.getOrDefault(struct, new HashMap<>());
-		final Map<Integer, int[]> memberDecorations = this.memberDecorationMap.getOrDefault(struct, new HashMap<>());
-
-		int size = 0;
-		for (int i = 0; i < memberTypes.length; i++) {
-			final int[] decoration = memberDecorations.getOrDefault(i, new int[2]);
-			size = Math.max(size, decoration[0] + this.getSize(memberTypes[i], decoration[1]));
-		}
-
-		final UniformBlock block = UniformBlock.create(binding, size);
-		for (int i = 0; i < memberTypes.length; i++) {
-			final int[] decoration = memberDecorations.getOrDefault(i, new int[2]);
-			block.getMemberMap().put(memberNames.get(i), new UniformMember(block.getData(), decoration[0], this.arrayStrideMap.getOrDefault(memberTypes[i], 0), decoration[1]));
-		}
-		return block;
-	}
-
 	private int getSize(final int type, final int matrixStride) {
 		final int[] definition = this.typeMap.get(type);
 		if (definition == null) {
@@ -196,6 +177,25 @@ public final class ShaderReflection {
 		default:
 			return 0;
 		}
+	}
+
+	private UniformBlock createBlock(final int binding, final int struct) {
+		final int[] memberTypes = this.structMap.get(struct);
+		final Map<Integer, String> memberNames = this.memberNameMap.getOrDefault(struct, new HashMap<>());
+		final Map<Integer, int[]> memberDecorations = this.memberDecorationMap.getOrDefault(struct, new HashMap<>());
+
+		int size = 0;
+		for (int i = 0; i < memberTypes.length; i++) {
+			final int[] decoration = memberDecorations.getOrDefault(i, new int[2]);
+			size = Math.max(size, decoration[0] + this.getSize(memberTypes[i], decoration[1]));
+		}
+
+		final UniformBlock block = UniformBlock.create(binding, size);
+		for (int i = 0; i < memberTypes.length; i++) {
+			final int[] decoration = memberDecorations.getOrDefault(i, new int[2]);
+			block.getMemberMap().put(memberNames.get(i), new UniformMember(block.getData(), decoration[0], this.arrayStrideMap.getOrDefault(memberTypes[i], 0), decoration[1]));
+		}
+		return block;
 	}
 
 	private static String readString(final IntBuffer words, final int start, final int end) {

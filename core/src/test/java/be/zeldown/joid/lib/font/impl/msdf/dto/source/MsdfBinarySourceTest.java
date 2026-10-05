@@ -17,9 +17,21 @@ public class MsdfBinarySourceTest {
 
 	private static MsdfFace face;
 
-	@BeforeClass
-	public static void read() throws IOException {
-		MsdfBinarySourceTest.face = MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf")).read();
+	@Test
+	public void readsEveryGlyph() {
+		Assert.assertTrue(MsdfBinarySourceTest.face.getGlyphs().size() > 200);
+		Assert.assertNotNull(MsdfBinarySourceTest.face.getGlyph('A'));
+		Assert.assertTrue(MsdfBinarySourceTest.face.getGlyph('A').getAdvance() > 0F);
+		Assert.assertNotNull(MsdfBinarySourceTest.face.getGlyph('A').getPlaneBounds());
+		Assert.assertNull(MsdfBinarySourceTest.face.getGlyph(' ').getPlaneBounds());
+		Assert.assertNull(MsdfBinarySourceTest.face.getGlyph(0x4E00));
+	}
+
+	@Test
+	public void ignoresUnknownPairs() {
+		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning('H', 'H'), 0F);
+		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning('o', 'o'), 0F);
+		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning(0, 0), 0F);
 	}
 
 	@Test
@@ -32,28 +44,29 @@ public class MsdfBinarySourceTest {
 	}
 
 	@Test
+	public void readsTheKerningPairs() {
+		Assert.assertTrue("The atlas must declare kerning pairs", MsdfBinarySourceTest.face.getKerningPairs().size() > 1000);
+		Assert.assertTrue("AV must kern tighter", MsdfBinarySourceTest.face.getKerning('A', 'V') < 0F);
+		Assert.assertTrue("AW must kern tighter", MsdfBinarySourceTest.face.getKerning('A', 'W') < 0F);
+		Assert.assertTrue("To must kern tighter", MsdfBinarySourceTest.face.getKerning('T', 'o') < 0F);
+	}
+
+	@Test
+	public void keepsPositiveAndNegativePairs() {
+		Assert.assertTrue("LT must kern tighter", MsdfBinarySourceTest.face.getKerning('L', 'T') < -0.05F);
+		Assert.assertTrue("AA must kern wider", MsdfBinarySourceTest.face.getKerning('A', 'A') > 0F);
+	}
+
+	@BeforeClass
+	public static void read() throws IOException {
+		MsdfBinarySourceTest.face = MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf")).read();
+	}
+
+	@Test
 	public void readsTheStyle() throws IOException {
 		Assert.assertSame(FontWeight.REGULAR, MsdfBinarySourceTest.face.getWeight());
 		Assert.assertFalse(MsdfBinarySourceTest.face.isItalic());
 		Assert.assertSame(FontWeight.BLACK, MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Black/font.msdf")).read().getWeight());
-	}
-
-	@Test
-	public void overridesTheStyle() throws IOException {
-		final MsdfFace face = MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf")).weight(FontWeight.LIGHT).italic(true).read();
-		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
-		Assert.assertTrue(face.isItalic());
-		Assert.assertEquals(MsdfBinarySourceTest.face.getGlyphs().size(), face.getGlyphs().size());
-	}
-
-	@Test
-	public void readsEveryGlyph() {
-		Assert.assertTrue(MsdfBinarySourceTest.face.getGlyphs().size() > 200);
-		Assert.assertNotNull(MsdfBinarySourceTest.face.getGlyph('A'));
-		Assert.assertTrue(MsdfBinarySourceTest.face.getGlyph('A').getAdvance() > 0F);
-		Assert.assertNotNull(MsdfBinarySourceTest.face.getGlyph('A').getPlaneBounds());
-		Assert.assertNull(MsdfBinarySourceTest.face.getGlyph(' ').getPlaneBounds());
-		Assert.assertNull(MsdfBinarySourceTest.face.getGlyph(0x4E00));
 	}
 
 	@Test
@@ -67,24 +80,11 @@ public class MsdfBinarySourceTest {
 	}
 
 	@Test
-	public void readsTheKerningPairs() {
-		Assert.assertTrue("The atlas must declare kerning pairs", MsdfBinarySourceTest.face.getKerningPairs().size() > 1000);
-		Assert.assertTrue("AV must kern tighter", MsdfBinarySourceTest.face.getKerning('A', 'V') < 0F);
-		Assert.assertTrue("AW must kern tighter", MsdfBinarySourceTest.face.getKerning('A', 'W') < 0F);
-		Assert.assertTrue("To must kern tighter", MsdfBinarySourceTest.face.getKerning('T', 'o') < 0F);
-	}
-
-	@Test
-	public void ignoresUnknownPairs() {
-		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning('H', 'H'), 0F);
-		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning('o', 'o'), 0F);
-		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning(0, 0), 0F);
-	}
-
-	@Test
-	public void keepsPositiveAndNegativePairs() {
-		Assert.assertTrue("LT must kern tighter", MsdfBinarySourceTest.face.getKerning('L', 'T') < -0.05F);
-		Assert.assertTrue("AA must kern wider", MsdfBinarySourceTest.face.getKerning('A', 'A') > 0F);
+	public void overridesTheStyle() throws IOException {
+		final MsdfFace face = MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf")).weight(FontWeight.LIGHT).italic(true).read();
+		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
+		Assert.assertTrue(face.isItalic());
+		Assert.assertEquals(MsdfBinarySourceTest.face.getGlyphs().size(), face.getGlyphs().size());
 	}
 
 	@Test(expected = IOException.class)

@@ -18,18 +18,18 @@ public class FloatSignal extends Signal<Float> {
 		return instance;
 	}
 
+	public void increment() {
+		final float updatedValue = this.getOrDefault() + 1F;
+		this.set(updatedValue);
+	}
+
+	public void decrement() {
+		final float updatedValue = this.getOrDefault() - 1F;
+		this.set(updatedValue);
+	}
+
 	public void add(final float value) {
 		final float updatedValue = this.getOrDefault() + value;
-		this.set(updatedValue);
-	}
-
-	public void subtract(final float value) {
-		final float updatedValue = this.getOrDefault() - value;
-		this.set(updatedValue);
-	}
-
-	public void multiply(final float value) {
-		final float updatedValue = this.getOrDefault() * value;
 		this.set(updatedValue);
 	}
 
@@ -41,13 +41,13 @@ public class FloatSignal extends Signal<Float> {
 		this.set(updatedValue);
 	}
 
-	public void increment() {
-		final float updatedValue = this.getOrDefault() + 1F;
+	public void subtract(final float value) {
+		final float updatedValue = this.getOrDefault() - value;
 		this.set(updatedValue);
 	}
 
-	public void decrement() {
-		final float updatedValue = this.getOrDefault() - 1F;
+	public void multiply(final float value) {
+		final float updatedValue = this.getOrDefault() * value;
 		this.set(updatedValue);
 	}
 

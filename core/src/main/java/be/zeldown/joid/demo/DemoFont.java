@@ -9,8 +9,8 @@ import be.zeldown.joid.lib.font.impl.msdf.MsdfFontLoader;
 
 public class DemoFont {
 
-	public static MsdfFont MONTSERRAT;
 	public static MsdfFont BATUPHAT;
+	public static MsdfFont MONTSERRAT;
 	public static MsdfFont SPACE_GROTESK;
 
 	public static void load() {
@@ -19,12 +19,12 @@ public class DemoFont {
 		DemoFont.SPACE_GROTESK = MsdfFontLoader.load(DemoFont.get("Space-Grotesk")).join();
 	}
 
-	private static InputStream get(final String name) {
-		return JOID.class.getResourceAsStream("/assets/demo/fonts/" + name + "/font.msdf");
-	}
-
 	public static boolean isLoaded() {
 		return DemoFont.MONTSERRAT != null && DemoFont.BATUPHAT != null && DemoFont.SPACE_GROTESK != null;
+	}
+
+	private static InputStream get(final String name) {
+		return JOID.class.getResourceAsStream("/assets/demo/fonts/" + name + "/font.msdf");
 	}
 
 }

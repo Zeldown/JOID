@@ -7,19 +7,19 @@ import lombok.Setter;
 @Getter
 public final class GlyphEntry {
 
+	private final Shape   shape;
 	private final int     codepoint;
 	private final double  advance;
-	private final Shape   shape;
 	private final double[] bounds;
 
 	@Setter private int x;
 	@Setter private int y;
 	@Setter private int width;
 	@Setter private int height;
-	@Setter private double left;
-	@Setter private double bottom;
-	@Setter private double right;
 	@Setter private double top;
+	@Setter private double left;
+	@Setter private double right;
+	@Setter private double bottom;
 
 	public GlyphEntry(final int codepoint, final double advance, final Shape shape) {
 		this.codepoint = codepoint;

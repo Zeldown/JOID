@@ -32,34 +32,14 @@ public class DemoWindow extends DemoUIBridge {
 		this.identity();
 	}
 
-	public static void main(final String[] args) throws LWJGLException {
-		Backend.register();
-		final DemoWindow window = new DemoWindow();
-		BridgeHandler.UI.register(window);
-		JOID.inst().setDevMode(true).setDemoMode(true).load();
-		window.run();
-	}
-
-	public void run() {
-		this.init();
-		this.loop();
-	}
-
 	public void init() {
 		JOID.open(new UIDemoChoice());
 		super.load();
 	}
 
-	private void identity() {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.ortho(0D, Display.getWidth(), Display.getHeight(), 0D, 0D, 10000D);
-		render.viewport(0, 0, Display.getWidth(), Display.getHeight());
-	}
-
-	private void render() {
-		BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
-		DrawUtils.SHAPE.drawRect(0, 0, Display.getWidth(), Display.getHeight(), new Color(50, 50, 50));
-		super.draw();
+	public void run() {
+		this.init();
+		this.loop();
 	}
 
 	public void loop() {
@@ -113,6 +93,26 @@ public class DemoWindow extends DemoUIBridge {
 
 		Display.destroy();
 		System.exit(0);
+	}
+
+	public static void main(final String[] args) throws LWJGLException {
+		Backend.register();
+		final DemoWindow window = new DemoWindow();
+		BridgeHandler.UI.register(window);
+		JOID.inst().setDevMode(true).setDemoMode(true).load();
+		window.run();
+	}
+
+	private void render() {
+		BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
+		DrawUtils.SHAPE.drawRect(0, 0, Display.getWidth(), Display.getHeight(), new Color(50, 50, 50));
+		super.draw();
+	}
+
+	private void identity() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.ortho(0D, Display.getWidth(), Display.getHeight(), 0D, 0D, 10000D);
+		render.viewport(0, 0, Display.getWidth(), Display.getHeight());
 	}
 
 }

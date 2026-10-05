@@ -34,29 +34,29 @@ public final class SnapshotRunner {
 	private static final int HEIGHT = 1080;
 
 	private static final long FRAME_TIME      = 16L;
-	private static final int  SETTLE_ATTEMPTS = 300;
+	private static final long START_TIME      = 1735689600000L;
 	private static final long SETTLE_DELAY    = 10L;
 	private static final int  LOAD_ATTEMPTS   = 3000;
-	private static final long START_TIME      = 1735689600000L;
+	private static final int  SETTLE_ATTEMPTS = 300;
 
 	private static final int   MASK       = 0xFFFF00FF;
 	private static final Color BACKGROUND = new Color(50, 50, 50);
 
 	private static final List<String> SCENARIOS = Arrays.asList("dev", "popup", "video", "static", "window", "transition", "interaction");
 
-	private static final String SHIFTED_DIGITS  = ")!@#$%^&*(";
 	private static final String SYMBOLS         = " '-,./;=[\\]`";
-	private static final String SHIFTED_SYMBOLS = " \"_<>?:+{|}~";
 	private static final Key[]  SYMBOL_KEYS     = {Key.SPACE, Key.APOSTROPHE, Key.MINUS, Key.COMMA, Key.PERIOD, Key.SLASH, Key.SEMICOLON, Key.EQUAL, Key.LEFT_BRACKET, Key.BACKSLASH, Key.RIGHT_BRACKET, Key.GRAVE_ACCENT};
+	private static final String SHIFTED_DIGITS  = ")!@#$%^&*(";
+	private static final String SHIFTED_SYMBOLS = " \"_<>?:+{|}~";
 
-	private final ManualClockBridge    clock;
 	private final List<int[]>          masks;
-	private final SnapshotWindowBridge window;
+	private final ManualClockBridge    clock;
 	private final SnapshotUIBridge     bridge;
 	private final ISnapshotBackend     backend;
+	private final SnapshotWindowBridge window;
 
-	private ClickType pressed;
 	private long      pressTime;
+	private ClickType pressed;
 
 	private SnapshotRunner(final ISnapshotBackend backend) {
 		this.clock   = ManualClockBridge.create(SnapshotRunner.START_TIME);
@@ -179,6 +179,23 @@ public final class SnapshotRunner {
 		return shots;
 	}
 
+	private void awaitPlayback() {
+		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS && !SnapshotRunner.isPlaybackSynchronized(); attempt++) {
+			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+			this.render(false);
+		}
+	}
+
+	private void awaitResources() {
+		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS; attempt++) {
+			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> !data.isGenerated() || data.isLoaded())) {
+				return;
+			}
+			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+		}
+		throw new IllegalStateException("A resource never finished loading");
+	}
+
 	private void type(final String text) {
 		for (final char character : text.toCharArray()) {
 			final boolean shift = SnapshotRunner.isShifted(character) && this.window.getKeys().add(Key.LEFT_SHIFT);
@@ -215,6 +232,46 @@ public final class SnapshotRunner {
 
 		this.bridge.keyTyped((char) 0, key);
 		this.window.getKeys().removeAll(added);
+	}
+
+	private SnapshotImage settle(final String name) {
+		SnapshotImage previous = null;
+		SnapshotImage current = this.mask(this.render(true));
+		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous) || !SnapshotRunner.isPlaybackSynchronized()); attempt++) {
+			this.awaitResources();
+			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+			previous = current;
+			current = this.mask(this.render(true));
+		}
+
+		if (!current.isSame(previous)) {
+			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing");
+		}
+
+		if (!SnapshotRunner.isPlaybackSynchronized()) {
+			throw new IllegalStateException(name + " never caught up with the clock while playing a video");
+		}
+		return current;
+	}
+
+	private SnapshotImage render(final boolean capture) {
+		this.bridge.update();
+		this.backend.frame(() -> {
+			BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
+			DrawUtils.SHAPE.drawRect(0, 0, this.window.getWidth(), this.window.getHeight(), SnapshotRunner.BACKGROUND);
+			this.bridge.draw();
+		});
+
+		final SnapshotImage image = capture ? this.backend.capture(this.window.getWidth(), this.window.getHeight()) : null;
+		this.backend.present();
+		return image;
+	}
+
+	private SnapshotImage mask(final SnapshotImage image) {
+		for (final int[] mask : this.masks) {
+			image.fill(mask[0], mask[1], mask[2], mask[3], SnapshotRunner.MASK);
+		}
+		return image;
 	}
 
 	private void resize(final int width, final int height) {
@@ -260,63 +317,6 @@ public final class SnapshotRunner {
 			}
 			this.render(false);
 		}
-	}
-
-	private void awaitPlayback() {
-		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS && !SnapshotRunner.isPlaybackSynchronized(); attempt++) {
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
-			this.render(false);
-		}
-	}
-
-	private void awaitResources() {
-		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS; attempt++) {
-			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> !data.isGenerated() || data.isLoaded())) {
-				return;
-			}
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
-		}
-		throw new IllegalStateException("A resource never finished loading");
-	}
-
-	private SnapshotImage settle(final String name) {
-		SnapshotImage previous = null;
-		SnapshotImage current = this.mask(this.render(true));
-		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous) || !SnapshotRunner.isPlaybackSynchronized()); attempt++) {
-			this.awaitResources();
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
-			previous = current;
-			current = this.mask(this.render(true));
-		}
-
-		if (!current.isSame(previous)) {
-			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing");
-		}
-
-		if (!SnapshotRunner.isPlaybackSynchronized()) {
-			throw new IllegalStateException(name + " never caught up with the clock while playing a video");
-		}
-		return current;
-	}
-
-	private SnapshotImage render(final boolean capture) {
-		this.bridge.update();
-		this.backend.frame(() -> {
-			BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
-			DrawUtils.SHAPE.drawRect(0, 0, this.window.getWidth(), this.window.getHeight(), SnapshotRunner.BACKGROUND);
-			this.bridge.draw();
-		});
-
-		final SnapshotImage image = capture ? this.backend.capture(this.window.getWidth(), this.window.getHeight()) : null;
-		this.backend.present();
-		return image;
-	}
-
-	private SnapshotImage mask(final SnapshotImage image) {
-		for (final int[] mask : this.masks) {
-			image.fill(mask[0], mask[1], mask[2], mask[3], SnapshotRunner.MASK);
-		}
-		return image;
 	}
 
 	private static void sleep(final long duration) {

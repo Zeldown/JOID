@@ -25,6 +25,21 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
+	public void present() {
+		GLFW.glfwSwapBuffers(this.window);
+	}
+
+	@Override
+	public @NonNull String getRenderer() {
+		return GL11C.glGetString(GL11C.GL_RENDERER);
+	}
+
+	@Override
+	public void frame(final @NonNull Runnable draw) {
+		draw.run();
+	}
+
+	@Override
 	public void create(final int width, final int height) {
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
@@ -51,27 +66,12 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void present() {
-		GLFW.glfwSwapBuffers(this.window);
-	}
-
-	@Override
-	public void frame(final @NonNull Runnable draw) {
-		draw.run();
-	}
-
-	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
 		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
 		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
 		GL11C.glReadBuffer(GL11C.GL_BACK);
 		GL11C.glReadPixels(0, 0, width, height, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixels);
 		return SnapshotImage.fromBytes(pixels, width, height, true, false);
-	}
-
-	@Override
-	public @NonNull String getRenderer() {
-		return GL11C.glGetString(GL11C.GL_RENDERER);
 	}
 
 }

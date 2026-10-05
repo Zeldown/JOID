@@ -20,16 +20,20 @@ public class ResourceDecoder {
 		return ResourceDecoder.image(asset);
 	}
 
+	public static @NonNull IResourceDecoder video(final @NonNull File file) {
+		return new VideoResourceDecoder(file);
+	}
+
 	public static @NonNull IResourceDecoder image(final @NonNull Asset asset) {
 		return new ImageResourceDecoder(asset);
 	}
 
-	public static @NonNull IResourceDecoder image(final @NonNull BufferedImage image) {
-		return new ImageResourceDecoder(image);
-	}
-
 	public static @NonNull IResourceDecoder video(final @NonNull Asset asset) {
 		return new VideoResourceDecoder(asset);
+	}
+
+	public static @NonNull IResourceDecoder image(final @NonNull BufferedImage image) {
+		return new ImageResourceDecoder(image);
 	}
 
 	public static @NonNull IResourceDecoder video(final @NonNull Asset asset, final boolean loopByDefault) {
@@ -38,10 +42,6 @@ public class ResourceDecoder {
 			decoder.loop(true);
 		}
 		return decoder;
-	}
-
-	public static @NonNull IResourceDecoder video(final @NonNull File file) {
-		return new VideoResourceDecoder(file);
 	}
 
 }

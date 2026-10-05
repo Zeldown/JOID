@@ -21,62 +21,14 @@ import lombok.NonNull;
 
 public final class DrawShape {
 
-	@Getter private static DrawShape instance;
+	@Getter
+	private static DrawShape instance;
 
 	public DrawShape() {
 		if (DrawShape.instance != null) {
 			throw new RuntimeException("Attempted to create a duplicate instance of DrawShape.");
 		}
 		DrawShape.instance = this;
-	}
-
-	public void drawRect(final double x, final double y, final double width, final double height, final @NonNull Color color) {
-		this.drawPolygon(color, new Vector2d(x, y + height), new Vector2d(x + width, y + height), new Vector2d(x + width, y), new Vector2d(x, y));
-	}
-
-	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
-		RoundedShader.use(radius, (float) (x + radius), (float) (y + radius), (float) (x + width - radius), (float) (y + height - radius), () -> {
-			this.drawRect(x, y, width, height, color);
-		});
-	}
-
-	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom) {
-		RoundedShader.use(radius, (float) (x + (roundedLeft ? radius : 0)), (float) (y + (roundedTop ? radius : 0)), (float) (x + width - (roundedRight ? radius : 0)), (float) (y + height - (roundedBottom ? radius : 0)), () -> {
-			this.drawRect(x, y, width, height, color);
-		});
-	}
-
-	public void drawCircle(final double x, final double y, final @NonNull Color color, final double radius) {
-		final double diameter = radius * 2D;
-		CircleShader.use((float) radius, (float) x, (float) y, () -> {
-			this.drawRect(x - radius, y - radius, diameter, diameter, color);
-		});
-	}
-
-	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
-		this.drawBorder(x, y, x2, y2, color, 1D);
-	}
-
-	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
-		this.drawRect(x, y - stroke, x2 - x, stroke, color);
-		this.drawRect(x - stroke, y, stroke, y2 - y, color);
-		this.drawRect(x, y2, x2 - x, stroke, color);
-		this.drawRect(x2, y, stroke, y2 - y, color);
-	}
-
-	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
-		this.drawFilledBorder(x, y, x2, y2, color, 1D);
-	}
-
-	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
-		this.drawRect(x - stroke, y - stroke, x2 - x + stroke + stroke, stroke, color);
-		this.drawRect(x - stroke, y, stroke, y2 - y, color);
-		this.drawRect(x - stroke, y2, x2 - x + stroke + stroke, stroke, color);
-		this.drawRect(x2, y, stroke, y2 - y, color);
-	}
-
-	public void drawPolygon(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
-		this.drawShape(DrawMode.POLYGON, color, points);
 	}
 
 	public void drawLine(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
@@ -86,30 +38,31 @@ public final class DrawShape {
 		render.lineSmooth(false);
 	}
 
-	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Vector2d @NonNull... points) {
-		final List<Vector2d> dashes = new ArrayList<>();
-		for (int i = 0; i + 1 < points.length; i++) {
-			final Vector2d start = points[i];
-			final Vector2d end = points[i + 1];
-			final double length = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
-			for (double offset = 0D; offset < length; offset += pattern * 2D) {
-				final double from = offset / length;
-				final double to = Math.min(length, offset + pattern) / length;
-				dashes.add(new Vector2d(start.x + (end.x - start.x) * from, start.y + (end.y - start.y) * from));
-				dashes.add(new Vector2d(start.x + (end.x - start.x) * to, start.y + (end.y - start.y) * to));
-			}
-		}
+	public void drawPolygon(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
+		this.drawShape(DrawMode.POLYGON, color, points);
+	}
 
-		if (dashes.isEmpty()) {
-			return;
-		}
-
+	public void drawRawRect(final double x, final double y, final double width, final double height) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.lineWidth(stroke);
-		render.lineSmooth(true);
-		this.drawShape(DrawMode.LINES, color, dashes.toArray(new Vector2d[0]));
-		render.lineSmooth(false);
-		render.lineWidth(1F);
+		final Tessellator tessellator = Tessellator.inst();
+		render.pushMatrix();
+		render.blend(BlendState.NORMAL);
+		render.resetTexture();
+		tessellator.start(DrawMode.POLYGON);
+		tessellator.addVertex(x, y + height, 0D);
+		tessellator.addVertex(x + width, y + height, 0D);
+		tessellator.addVertex(x + width, y, 0D);
+		tessellator.addVertex(x, y, 0D);
+		tessellator.draw();
+		render.blend(BlendState.DISABLED);
+		render.popMatrix();
+	}
+
+	public void drawCircle(final double x, final double y, final @NonNull Color color, final double radius) {
+		final double diameter = radius * 2D;
+		CircleShader.use((float) radius, (float) x, (float) y, () -> {
+			this.drawRect(x - radius, y - radius, diameter, diameter, color);
+		});
 	}
 
 	public void drawLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d @NonNull... points) {
@@ -119,38 +72,16 @@ public final class DrawShape {
 		render.lineWidth(1F);
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
-		Vector2d last = start;
-		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
-		for (float t = 0F; t < 1F; t += 1F / distance) {
-			final Vector2d point = Bezier.quadratic(t, start, end, control);
-			DrawUtils.SHAPE.drawLine(color, last, point);
-			last = point;
-		}
+	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
+		this.drawBorder(x, y, x2, y2, color, 1D);
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.lineWidth(stroke);
-		this.drawCurvedLine(color, start, end, control);
-		render.lineWidth(1F);
+	public void drawRect(final double x, final double y, final double width, final double height, final @NonNull Color color) {
+		this.drawPolygon(color, new Vector2d(x, y + height), new Vector2d(x + width, y + height), new Vector2d(x + width, y), new Vector2d(x, y));
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
-		Vector2d last = start;
-		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
-		for (float t = 0F; t < 1F; t += 1F / distance) {
-			final Vector2d point = Bezier.cubic(t, start, startControl, end, endControl);
-			DrawUtils.SHAPE.drawLine(color, last, point);
-			last = point;
-		}
-	}
-
-	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.lineWidth(stroke);
-		this.drawCurvedLine(color, start, startControl, end, endControl);
-		render.lineWidth(1F);
+	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
+		this.drawFilledBorder(x, y, x2, y2, color, 1D);
 	}
 
 	public void drawShape(final @NonNull DrawMode mode, final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
@@ -182,20 +113,90 @@ public final class DrawShape {
 		render.popMatrix();
 	}
 
-	public void drawRawRect(final double x, final double y, final double width, final double height) {
+	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
+		this.drawRect(x, y - stroke, x2 - x, stroke, color);
+		this.drawRect(x - stroke, y, stroke, y2 - y, color);
+		this.drawRect(x, y2, x2 - x, stroke, color);
+		this.drawRect(x2, y, stroke, y2 - y, color);
+	}
+
+	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Vector2d @NonNull... points) {
+		final List<Vector2d> dashes = new ArrayList<>();
+		for (int i = 0; i + 1 < points.length; i++) {
+			final Vector2d start = points[i];
+			final Vector2d end = points[i + 1];
+			final double length = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
+			for (double offset = 0D; offset < length; offset += pattern * 2D) {
+				final double from = offset / length;
+				final double to = Math.min(length, offset + pattern) / length;
+				dashes.add(new Vector2d(start.x + (end.x - start.x) * from, start.y + (end.y - start.y) * from));
+				dashes.add(new Vector2d(start.x + (end.x - start.x) * to, start.y + (end.y - start.y) * to));
+			}
+		}
+
+		if (dashes.isEmpty()) {
+			return;
+		}
+
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final Tessellator tessellator = Tessellator.inst();
-		render.pushMatrix();
-		render.blend(BlendState.NORMAL);
-		render.resetTexture();
-		tessellator.start(DrawMode.POLYGON);
-		tessellator.addVertex(x, y + height, 0D);
-		tessellator.addVertex(x + width, y + height, 0D);
-		tessellator.addVertex(x + width, y, 0D);
-		tessellator.addVertex(x, y, 0D);
-		tessellator.draw();
-		render.blend(BlendState.DISABLED);
-		render.popMatrix();
+		render.lineWidth(stroke);
+		render.lineSmooth(true);
+		this.drawShape(DrawMode.LINES, color, dashes.toArray(new Vector2d[0]));
+		render.lineSmooth(false);
+		render.lineWidth(1F);
+	}
+
+	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
+		this.drawRect(x - stroke, y - stroke, x2 - x + stroke + stroke, stroke, color);
+		this.drawRect(x - stroke, y, stroke, y2 - y, color);
+		this.drawRect(x - stroke, y2, x2 - x + stroke + stroke, stroke, color);
+		this.drawRect(x2, y, stroke, y2 - y, color);
+	}
+
+	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
+		Vector2d last = start;
+		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
+		for (float t = 0F; t < 1F; t += 1F / distance) {
+			final Vector2d point = Bezier.quadratic(t, start, end, control);
+			DrawUtils.SHAPE.drawLine(color, last, point);
+			last = point;
+		}
+	}
+
+	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
+		RoundedShader.use(radius, (float) (x + radius), (float) (y + radius), (float) (x + width - radius), (float) (y + height - radius), () -> {
+			this.drawRect(x, y, width, height, color);
+		});
+	}
+
+	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.lineWidth(stroke);
+		this.drawCurvedLine(color, start, end, control);
+		render.lineWidth(1F);
+	}
+
+	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
+		Vector2d last = start;
+		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
+		for (float t = 0F; t < 1F; t += 1F / distance) {
+			final Vector2d point = Bezier.cubic(t, start, startControl, end, endControl);
+			DrawUtils.SHAPE.drawLine(color, last, point);
+			last = point;
+		}
+	}
+
+	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.lineWidth(stroke);
+		this.drawCurvedLine(color, start, startControl, end, endControl);
+		render.lineWidth(1F);
+	}
+
+	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom) {
+		RoundedShader.use(radius, (float) (x + (roundedLeft ? radius : 0)), (float) (y + (roundedTop ? radius : 0)), (float) (x + width - (roundedRight ? radius : 0)), (float) (y + height - (roundedBottom ? radius : 0)), () -> {
+			this.drawRect(x, y, width, height, color);
+		});
 	}
 
 }

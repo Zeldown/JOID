@@ -62,6 +62,28 @@ public final class Msdf {
 		return pixels;
 	}
 
+	private static int clamp(final double value) {
+		final int scaled = (int) (value * 255D + 0.5D);
+		return scaled < 0 ? 0 : scaled > 255 ? 255 : scaled;
+	}
+
+	private static double median(final double first, final double second, final double third) {
+		return Math.max(Math.min(first, second), Math.min(Math.max(first, second), third));
+	}
+
+	private static void reconcile(final double[] field, final double[] truth, final double tolerance) {
+		for (int i = 0; i < truth.length; i++) {
+			final double value = truth[i];
+			if (Math.abs(value - 0.5D) <= tolerance || Msdf.median(field[i * 3], field[i * 3 + 1], field[i * 3 + 2]) >= 0.5D == value >= 0.5D) {
+				continue;
+			}
+
+			field[i * 3] = value;
+			field[i * 3 + 1] = value;
+			field[i * 3 + 2] = value;
+		}
+	}
+
 	private static void correct(final double[] field, final int width, final int height, final double threshold) {
 		final List<Integer> clashes = new ArrayList<>();
 		for (int y = 0; y < height; y++) {
@@ -81,19 +103,6 @@ public final class Msdf {
 			field[index] = median;
 			field[index + 1] = median;
 			field[index + 2] = median;
-		}
-	}
-
-	private static void reconcile(final double[] field, final double[] truth, final double tolerance) {
-		for (int i = 0; i < truth.length; i++) {
-			final double value = truth[i];
-			if (Math.abs(value - 0.5D) <= tolerance || Msdf.median(field[i * 3], field[i * 3 + 1], field[i * 3 + 2]) >= 0.5D == value >= 0.5D) {
-				continue;
-			}
-
-			field[i * 3] = value;
-			field[i * 3 + 1] = value;
-			field[i * 3 + 2] = value;
 		}
 	}
 
@@ -133,15 +142,6 @@ public final class Msdf {
 		}
 
 		return Math.abs(b1 - a1) >= threshold && !(b0 == b1 && b0 == b2) && Math.abs(a2 - 0.5D) >= Math.abs(b2 - 0.5D);
-	}
-
-	private static double median(final double first, final double second, final double third) {
-		return Math.max(Math.min(first, second), Math.min(Math.max(first, second), third));
-	}
-
-	private static int clamp(final double value) {
-		final int scaled = (int) (value * 255D + 0.5D);
-		return scaled < 0 ? 0 : scaled > 255 ? 255 : scaled;
 	}
 
 }

@@ -30,6 +30,16 @@ public class TextMarkupTest {
 		return 2;
 	};
 
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesAReadOnlyRegistry() {
+		TextMarkup.getRegistered().add(TextMarkupTest.BOLD);
+	}
+
+	@Test
+	public void skipsMarkupsThatDoNotMatch() {
+		Assert.assertEquals(0, TextMarkup.parse(Arrays.asList(TextMarkupTest.BOLD, TextMarkupTest.STARS), "text", 0, TextMarkupTest.style()));
+	}
+
 	@Test
 	public void consumesNothingWithoutMarkup() {
 		final TextStyle style = TextMarkupTest.style();
@@ -47,11 +57,6 @@ public class TextMarkupTest {
 	}
 
 	@Test
-	public void skipsMarkupsThatDoNotMatch() {
-		Assert.assertEquals(0, TextMarkup.parse(Arrays.asList(TextMarkupTest.BOLD, TextMarkupTest.STARS), "text", 0, TextMarkupTest.style()));
-	}
-
-	@Test
 	public void givesPriorityToTheLatestRegistration() {
 		TextMarkup.register(TextMarkupTest.BOLD);
 		TextMarkup.register(TextMarkupTest.STARS);
@@ -63,11 +68,6 @@ public class TextMarkupTest {
 		}
 		Assert.assertFalse(TextMarkup.getRegistered().contains(TextMarkupTest.BOLD));
 		Assert.assertFalse(TextMarkup.getRegistered().contains(TextMarkupTest.STARS));
-	}
-
-	@Test(expected = UnsupportedOperationException.class)
-	public void exposesAReadOnlyRegistry() {
-		TextMarkup.getRegistered().add(TextMarkupTest.BOLD);
 	}
 
 	private static TextStyle style() {

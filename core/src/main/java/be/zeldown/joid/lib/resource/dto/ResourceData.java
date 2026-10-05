@@ -16,17 +16,17 @@ public final class ResourceData {
 
 	private static final ExecutorService ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
+	private final List<Thread> tasks = new CopyOnWriteArrayList<>();
+
 	private String           uniqueId;
 	private IResourceDecoder decoder;
 
-	private final List<Thread> tasks = new CopyOnWriteArrayList<>();
-
-	private ITexture[] textures;
 	private int[][]    data;
+	private ITexture[] textures;
 
-	private boolean generated;
 	private boolean loaded;
 	private boolean uploaded;
+	private boolean generated;
 
 	private int width;
 	private int height;
@@ -36,66 +36,6 @@ public final class ResourceData {
 		this.decoder  = decoder;
 		if (this.decoder != null) {
 			this.decoder.init(this);
-		}
-	}
-
-	public final @NonNull ResourceData uniqueId(final @NonNull String uniqueId) {
-		this.uniqueId = uniqueId;
-		return this;
-	}
-
-	public final @NonNull ResourceData decoder(final IResourceDecoder decoder) {
-		this.decoder = decoder;
-		return this;
-	}
-
-	public final @NonNull ResourceData texture(final @NonNull ITexture texture) {
-		this.textures = new ITexture[] {texture};
-		return this;
-	}
-
-	public final @NonNull ResourceData textures(final ITexture[] textures) {
-		this.textures = textures;
-		return this;
-	}
-
-	public final @NonNull ResourceData data(final int[][] data) {
-		this.data = data;
-		return this;
-	}
-
-	public final @NonNull ResourceData generated(final boolean generated) {
-		this.generated = generated;
-		return this;
-	}
-
-	public final @NonNull ResourceData loaded(final boolean loaded) {
-		this.loaded = loaded;
-		return this;
-	}
-
-	public final @NonNull ResourceData uploaded(final boolean uploaded) {
-		this.uploaded = uploaded;
-		return this;
-	}
-
-	public final @NonNull ResourceData width(final int width) {
-		this.width = width;
-		return this;
-	}
-
-	public final @NonNull ResourceData height(final int height) {
-		this.height = height;
-		return this;
-	}
-
-	public final void dispatch(final @NonNull Runnable task, final boolean async) {
-		if (async) {
-			final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
-			this.tasks.add(thread);
-			thread.start();
-		} else {
-			task.run();
 		}
 	}
 
@@ -111,6 +51,40 @@ public final class ResourceData {
 				Thread.currentThread().interrupt();
 			}
 		}
+	}
+
+	public final void clear() {
+		if (this.textures != null) {
+			for (final ITexture texture : this.textures) {
+				texture.delete();
+			}
+		}
+
+		this.data = null;
+		if (this.decoder != null) {
+			this.decoder.clear(this);
+		}
+	}
+
+	public final void upload() {
+		if (this.data == null) {
+			return;
+		}
+
+		if (this.decoder == null) {
+			for (int i = 0; i < this.textures.length; i++) {
+				if (this.data[i] == null) {
+					continue;
+				}
+
+				this.textures[i].allocate(this.width, this.height).upload(this.data[i], this.width, this.height);
+			}
+		} else {
+			this.decoder.upload(this);
+		}
+
+		this.uploaded = true;
+		this.data = null;
 	}
 
 	public final void generate(final boolean async) {
@@ -139,37 +113,63 @@ public final class ResourceData {
 		}
 	}
 
-	public final void upload() {
-		if (this.data == null) {
-			return;
-		}
-
-		if (this.decoder == null) {
-			for (int i = 0; i < this.textures.length; i++) {
-				if (this.data[i] == null) {
-					continue;
-				}
-
-				this.textures[i].allocate(this.width, this.height).upload(this.data[i], this.width, this.height);
-			}
-		} else {
-			this.decoder.upload(this);
-		}
-
-		this.uploaded = true;
-		this.data = null;
+	public final @NonNull ResourceData width(final int width) {
+		this.width = width;
+		return this;
 	}
 
-	public final void clear() {
-		if (this.textures != null) {
-			for (final ITexture texture : this.textures) {
-				texture.delete();
-			}
-		}
+	public final @NonNull ResourceData data(final int[][] data) {
+		this.data = data;
+		return this;
+	}
 
-		this.data = null;
-		if (this.decoder != null) {
-			this.decoder.clear(this);
+	public final @NonNull ResourceData height(final int height) {
+		this.height = height;
+		return this;
+	}
+
+	public final @NonNull ResourceData loaded(final boolean loaded) {
+		this.loaded = loaded;
+		return this;
+	}
+
+	public final @NonNull ResourceData uploaded(final boolean uploaded) {
+		this.uploaded = uploaded;
+		return this;
+	}
+
+	public final @NonNull ResourceData generated(final boolean generated) {
+		this.generated = generated;
+		return this;
+	}
+
+	public final @NonNull ResourceData textures(final ITexture[] textures) {
+		this.textures = textures;
+		return this;
+	}
+
+	public final @NonNull ResourceData decoder(final IResourceDecoder decoder) {
+		this.decoder = decoder;
+		return this;
+	}
+
+	public final @NonNull ResourceData uniqueId(final @NonNull String uniqueId) {
+		this.uniqueId = uniqueId;
+		return this;
+	}
+
+	public final @NonNull ResourceData texture(final @NonNull ITexture texture) {
+		this.textures = new ITexture[] {texture};
+		return this;
+	}
+
+	public final void dispatch(final @NonNull Runnable task, final boolean async) {
+		if (async) {
+			final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
+			this.tasks.add(thread);
+			thread.start();
+		} else {
+			task.run();
 		}
 	}
 

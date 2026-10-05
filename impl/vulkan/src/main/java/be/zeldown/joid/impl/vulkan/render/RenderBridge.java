@@ -61,28 +61,28 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 	private static final long STAGING_CAPACITY = 4L << 20;
 
 	private final Context         context;
-	private final Swapchain       swapchain;
-	private final PipelineCache   pipelineCache;
-	private final DescriptorCache descriptorCache;
-	private final List<Runnable>  garbage;
-	private final Stream          vertexStream;
-	private final Stream          uniformStream;
-	private final VkCommandBuffer commandBuffer;
-	private final long            imageSemaphore;
 	private final long            frameFence;
 	private final long[]          samplers;
-	private final Texture         emptyTexture;
 	private final Shader          fixedShader;
+	private final Swapchain       swapchain;
+	private final Stream          vertexStream;
+	private final long            imageSemaphore;
+	private final Stream          uniformStream;
+	private final Texture         emptyTexture;
+	private final List<Runnable>  garbage;
+	private final PipelineCache   pipelineCache;
+	private final VkCommandBuffer commandBuffer;
+	private final DescriptorCache descriptorCache;
 
-	private Buffer      stagingBuffer;
-	private int         imageIndex;
-	private boolean     frameActive;
-	private boolean     screenCleared;
-	private boolean     passActive;
-	private FrameBuffer passTarget;
 	private int         passWidth;
+	private int         imageIndex;
 	private int         passHeight;
+	private boolean     passActive;
 	private long        boundPipeline;
+	private boolean     frameActive;
+	private Buffer      stagingBuffer;
+	private boolean     screenCleared;
+	private FrameBuffer passTarget;
 
 	public RenderBridge(final long window) {
 		this.context         = new Context(window);
@@ -107,6 +107,55 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		this.samplers     = this.createSamplers();
 		this.emptyTexture = new Texture(this).allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
 		this.fixedShader  = (Shader) this.createShader(ShaderSource.read(ShaderStage.VERTEX, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
+	}
+
+	public void dispose(final @NonNull Runnable destroyer) {
+		if (this.frameActive) {
+			this.garbage.add(destroyer);
+		} else {
+			destroyer.run();
+		}
+	}
+
+	public void present() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkPresentInfoKHR info = VkPresentInfoKHR.calloc(stack)
+					.sType$Default()
+					.swapchainCount(1)
+					.pSwapchains(stack.longs(this.swapchain.getSwapchain()))
+					.pImageIndices(stack.ints(this.imageIndex));
+			final int result = KHRSwapchain.vkQueuePresentKHR(this.context.getQueue(), info);
+			if (result != KHRSwapchain.VK_ERROR_OUT_OF_DATE_KHR && result != KHRSwapchain.VK_SUBOPTIMAL_KHR) {
+				Context.check(result, "vkQueuePresentKHR");
+			}
+		}
+	}
+
+	public void endFrame() {
+		this.requireFrame();
+		if (!this.screenCleared) {
+			this.beginPass(null);
+		}
+
+		this.endPass();
+		Context.transition(this.commandBuffer, this.swapchain.getImages()[this.imageIndex], VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, KHRSwapchain.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+		Context.check(VK10.vkEndCommandBuffer(this.commandBuffer), "vkEndCommandBuffer");
+
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkSubmitInfo submit = VkSubmitInfo.calloc(stack)
+					.sType$Default()
+					.waitSemaphoreCount(1)
+					.pWaitSemaphores(stack.longs(this.imageSemaphore))
+					.pWaitDstStageMask(stack.ints(VK10.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT))
+					.pCommandBuffers(stack.pointers(this.commandBuffer));
+			Context.check(VK10.vkResetFences(this.context.getDevice(), this.frameFence), "vkResetFences");
+			Context.check(VK10.vkQueueSubmit(this.context.getQueue(), submit, this.frameFence), "vkQueueSubmit");
+			Context.check(VK10.vkWaitForFences(this.context.getDevice(), this.frameFence, true, -1L), "vkWaitForFences");
+		}
+
+		this.frameActive = false;
+		this.garbage.forEach(Runnable::run);
+		this.garbage.clear();
 	}
 
 	public void beginFrame() {
@@ -144,58 +193,6 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		this.boundPipeline = VK10.VK_NULL_HANDLE;
 	}
 
-	public void endFrame() {
-		this.requireFrame();
-		if (!this.screenCleared) {
-			this.beginPass(null);
-		}
-
-		this.endPass();
-		Context.transition(this.commandBuffer, this.swapchain.getImages()[this.imageIndex], VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, KHRSwapchain.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-		Context.check(VK10.vkEndCommandBuffer(this.commandBuffer), "vkEndCommandBuffer");
-
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkSubmitInfo submit = VkSubmitInfo.calloc(stack)
-					.sType$Default()
-					.waitSemaphoreCount(1)
-					.pWaitSemaphores(stack.longs(this.imageSemaphore))
-					.pWaitDstStageMask(stack.ints(VK10.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT))
-					.pCommandBuffers(stack.pointers(this.commandBuffer));
-			Context.check(VK10.vkResetFences(this.context.getDevice(), this.frameFence), "vkResetFences");
-			Context.check(VK10.vkQueueSubmit(this.context.getQueue(), submit, this.frameFence), "vkQueueSubmit");
-			Context.check(VK10.vkWaitForFences(this.context.getDevice(), this.frameFence, true, -1L), "vkWaitForFences");
-		}
-
-		this.frameActive = false;
-		this.garbage.forEach(Runnable::run);
-		this.garbage.clear();
-	}
-
-	public void present() {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkPresentInfoKHR info = VkPresentInfoKHR.calloc(stack)
-					.sType$Default()
-					.swapchainCount(1)
-					.pSwapchains(stack.longs(this.swapchain.getSwapchain()))
-					.pImageIndices(stack.ints(this.imageIndex));
-			final int result = KHRSwapchain.vkQueuePresentKHR(this.context.getQueue(), info);
-			if (result != KHRSwapchain.VK_ERROR_OUT_OF_DATE_KHR && result != KHRSwapchain.VK_SUBOPTIMAL_KHR) {
-				Context.check(result, "vkQueuePresentKHR");
-			}
-		}
-	}
-
-	@Override
-	public void clear(final float red, final float green, final float blue, final float alpha) {
-		this.requireFrame();
-		this.beginPass((FrameBuffer) super.getState().getFrameBuffer());
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).colorAttachment(0);
-			attachment.clearValue().color().float32(0, red).float32(1, green).float32(2, blue).float32(3, alpha);
-			VK10.vkCmdClearAttachments(this.commandBuffer, attachment, this.createClearRect(stack));
-		}
-	}
-
 	@Override
 	public void clearStencil() {
 		this.requireFrame();
@@ -209,6 +206,26 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 			attachment.clearValue().depthStencil().stencil(0);
 			VK10.vkCmdClearAttachments(this.commandBuffer, attachment, this.createClearRect(stack));
 		}
+	}
+
+	@Override
+	public @NonNull ITexture createTexture() {
+		return new Texture(this);
+	}
+
+	public void releaseHandle(final long handle) {
+		this.descriptorCache.invalidate(handle, this::dispose);
+	}
+
+	public @NonNull Buffer getStagingBuffer(final long size) {
+		if (this.stagingBuffer == null || this.stagingBuffer.getSize() < size) {
+			if (this.stagingBuffer != null) {
+				this.stagingBuffer.destroy();
+			}
+
+			this.stagingBuffer = Buffer.create(this.context, Math.max(size, RenderBridge.STAGING_CAPACITY), VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+		}
+		return this.stagingBuffer;
 	}
 
 	@Override
@@ -244,8 +261,18 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 	}
 
 	@Override
-	public @NonNull ITexture createTexture() {
-		return new Texture(this);
+	public void clear(final float red, final float green, final float blue, final float alpha) {
+		this.requireFrame();
+		this.beginPass((FrameBuffer) super.getState().getFrameBuffer());
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).colorAttachment(0);
+			attachment.clearValue().color().float32(0, red).float32(1, green).float32(2, blue).float32(3, alpha);
+			VK10.vkCmdClearAttachments(this.commandBuffer, attachment, this.createClearRect(stack));
+		}
+	}
+
+	public long getSampler(final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap, final boolean mipmapped) {
+		return this.samplers[(mipmapped ? TextureFilter.values().length * TextureWrap.values().length : 0) + filter.ordinal() * TextureWrap.values().length + wrap.ordinal()];
 	}
 
 	@Override
@@ -258,37 +285,35 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		return Shader.create(this, ShaderTranslator.translateVertex(vertex, fragment), ShaderTranslator.translateFragment(vertex, fragment), blend);
 	}
 
-	public void dispose(final @NonNull Runnable destroyer) {
-		if (this.frameActive) {
-			this.garbage.add(destroyer);
-		} else {
-			destroyer.run();
-		}
-	}
-
-	public void releaseHandle(final long handle) {
-		this.descriptorCache.invalidate(handle, this::dispose);
-	}
-
-	public @NonNull Buffer getStagingBuffer(final long size) {
-		if (this.stagingBuffer == null || this.stagingBuffer.getSize() < size) {
-			if (this.stagingBuffer != null) {
-				this.stagingBuffer.destroy();
+	private void endPass() {
+		if (this.passActive) {
+			VK10.vkCmdEndRenderPass(this.commandBuffer);
+			if (this.passTarget != null) {
+				Context.transition(this.commandBuffer, this.passTarget.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			}
-
-			this.stagingBuffer = Buffer.create(this.context, Math.max(size, RenderBridge.STAGING_CAPACITY), VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+			this.passActive = false;
 		}
-		return this.stagingBuffer;
-	}
-
-	public long getSampler(final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap, final boolean mipmapped) {
-		return this.samplers[(mipmapped ? TextureFilter.values().length * TextureWrap.values().length : 0) + filter.ordinal() * TextureWrap.values().length + wrap.ordinal()];
 	}
 
 	private void requireFrame() {
 		if (!this.frameActive) {
 			throw new IllegalStateException("Vulkan rendering must happen between beginFrame and endFrame");
 		}
+	}
+
+	private long[] createSamplers() {
+		final int count = TextureFilter.values().length * TextureWrap.values().length;
+		final long[] samplers = new long[count * 2];
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			for (final TextureFilter filter : TextureFilter.values()) {
+				for (final TextureWrap wrap : TextureWrap.values()) {
+					final int index = filter.ordinal() * TextureWrap.values().length + wrap.ordinal();
+					samplers[index] = this.createSampler(stack, filter, wrap, false);
+					samplers[count + index] = this.createSampler(stack, filter, wrap, true);
+				}
+			}
+		}
+		return samplers;
 	}
 
 	private void beginPass(final FrameBuffer target) {
@@ -325,49 +350,6 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		this.boundPipeline = VK10.VK_NULL_HANDLE;
 	}
 
-	private void endPass() {
-		if (this.passActive) {
-			VK10.vkCmdEndRenderPass(this.commandBuffer);
-			if (this.passTarget != null) {
-				Context.transition(this.commandBuffer, this.passTarget.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-			}
-			this.passActive = false;
-		}
-	}
-
-	private VkClearRect.Buffer createClearRect(final MemoryStack stack) {
-		final VkClearRect.Buffer rect = VkClearRect.calloc(1, stack).baseArrayLayer(0).layerCount(1);
-		rect.rect().extent().set(this.passWidth, this.passHeight);
-		return rect;
-	}
-
-	private void applyDynamicState(final MemoryStack stack, final RenderState state, final boolean offscreen, final int topology) {
-		final VkViewport.Buffer viewport = VkViewport.calloc(1, stack).x(state.getViewportX()).width(state.getViewportWidth()).minDepth(0F).maxDepth(1F);
-		if (offscreen) {
-			viewport.y(state.getViewportY()).height(state.getViewportHeight());
-		} else {
-			viewport.y(this.passHeight - state.getViewportY()).height(-state.getViewportHeight());
-		}
-		VK10.vkCmdSetViewport(this.commandBuffer, 0, viewport);
-
-		final VkRect2D.Buffer scissor = VkRect2D.calloc(1, stack);
-		scissor.extent().set(this.passWidth, this.passHeight);
-		VK10.vkCmdSetScissor(this.commandBuffer, 0, scissor);
-
-		VK10.vkCmdSetLineWidth(this.commandBuffer, this.context.isWideLines() ? state.getLineWidth() : 1F);
-		VK13.vkCmdSetPrimitiveTopology(this.commandBuffer, topology);
-		VK13.vkCmdSetCullMode(this.commandBuffer, state.isCull() ? VK10.VK_CULL_MODE_BACK_BIT : VK10.VK_CULL_MODE_NONE);
-		VK13.vkCmdSetFrontFace(this.commandBuffer, offscreen ? VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE : VK10.VK_FRONT_FACE_CLOCKWISE);
-		VK13.vkCmdSetDepthTestEnable(this.commandBuffer, state.isDepthTest());
-		VK13.vkCmdSetDepthWriteEnable(this.commandBuffer, state.isDepthWrite());
-		VK13.vkCmdSetDepthCompareOp(this.commandBuffer, VK10.VK_COMPARE_OP_LESS);
-		VK13.vkCmdSetStencilTestEnable(this.commandBuffer, state.isStencilTest());
-		VK13.vkCmdSetStencilOp(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, RenderBridge.operation(state.getStencilFail()), RenderBridge.operation(state.getStencilPass()), RenderBridge.operation(state.getStencilDepthFail()), RenderBridge.compare(state.getStencilFunction()));
-		VK10.vkCmdSetStencilCompareMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilMask());
-		VK10.vkCmdSetStencilWriteMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, 0xFF);
-		VK10.vkCmdSetStencilReference(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilReference());
-	}
-
 	private long writeVertices(final VertexBuffer buffer) {
 		final int size = buffer.getCount() * VertexBuffer.STRIDE;
 		final long offset = this.vertexStream.allocate(size);
@@ -389,6 +371,45 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 			}
 		}
 		return offset;
+	}
+
+	private VkClearRect.Buffer createClearRect(final MemoryStack stack) {
+		final VkClearRect.Buffer rect = VkClearRect.calloc(1, stack).baseArrayLayer(0).layerCount(1);
+		rect.rect().extent().set(this.passWidth, this.passHeight);
+		return rect;
+	}
+
+	private long[] getImages(final RenderState state, final Shader shader) {
+		final long[] images = new long[shader.getSamplerBindings().size() * 2];
+		int index = 0;
+		for (final String name : shader.getSamplerBindings().keySet()) {
+			final SamplerUniform sampler = shader.getSamplerMap().get(name);
+			final Texture stateTexture = (Texture) state.getTexture();
+			if (sampler != null && sampler.getTexture() != null && sampler.getTexture().getView() != VK10.VK_NULL_HANDLE) {
+				images[index] = sampler.getTexture().getView();
+				images[index + 1] = this.getSampler(sampler.getFilter(), sampler.getWrap(), sampler.getTexture().isMipmapped());
+			} else if (stateTexture != null && stateTexture.getView() != VK10.VK_NULL_HANDLE) {
+				images[index] = stateTexture.getView();
+				images[index + 1] = this.getSampler(state.getTextureFilter(), state.getTextureWrap(), stateTexture.isMipmapped());
+			} else {
+				images[index] = this.emptyTexture.getView();
+				images[index + 1] = this.getSampler(TextureFilter.NEAREST, TextureWrap.REPEAT, false);
+			}
+			index += 2;
+		}
+		return images;
+	}
+
+	private IntBuffer uploadBlocks(final MemoryStack stack, final Shader shader) {
+		final IntBuffer offsets = stack.mallocInt(shader.getBlocks().size());
+		for (final UniformBlock block : shader.getBlocks()) {
+			final ByteBuffer data = block.getData();
+			final long offset = this.uniformStream.allocate(data.capacity());
+			MemoryUtil.memCopy(MemoryUtil.memAddress(data), this.uniformStream.getBuffer().getAddress() + offset, data.capacity());
+			offsets.put((int) offset);
+		}
+		offsets.flip();
+		return offsets;
 	}
 
 	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final Shader shader, final boolean color) {
@@ -440,52 +461,31 @@ public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.Render
 		return this.uploadBlocks(stack, shader);
 	}
 
-	private IntBuffer uploadBlocks(final MemoryStack stack, final Shader shader) {
-		final IntBuffer offsets = stack.mallocInt(shader.getBlocks().size());
-		for (final UniformBlock block : shader.getBlocks()) {
-			final ByteBuffer data = block.getData();
-			final long offset = this.uniformStream.allocate(data.capacity());
-			MemoryUtil.memCopy(MemoryUtil.memAddress(data), this.uniformStream.getBuffer().getAddress() + offset, data.capacity());
-			offsets.put((int) offset);
+	private void applyDynamicState(final MemoryStack stack, final RenderState state, final boolean offscreen, final int topology) {
+		final VkViewport.Buffer viewport = VkViewport.calloc(1, stack).x(state.getViewportX()).width(state.getViewportWidth()).minDepth(0F).maxDepth(1F);
+		if (offscreen) {
+			viewport.y(state.getViewportY()).height(state.getViewportHeight());
+		} else {
+			viewport.y(this.passHeight - state.getViewportY()).height(-state.getViewportHeight());
 		}
-		offsets.flip();
-		return offsets;
-	}
+		VK10.vkCmdSetViewport(this.commandBuffer, 0, viewport);
 
-	private long[] getImages(final RenderState state, final Shader shader) {
-		final long[] images = new long[shader.getSamplerBindings().size() * 2];
-		int index = 0;
-		for (final String name : shader.getSamplerBindings().keySet()) {
-			final SamplerUniform sampler = shader.getSamplerMap().get(name);
-			final Texture stateTexture = (Texture) state.getTexture();
-			if (sampler != null && sampler.getTexture() != null && sampler.getTexture().getView() != VK10.VK_NULL_HANDLE) {
-				images[index] = sampler.getTexture().getView();
-				images[index + 1] = this.getSampler(sampler.getFilter(), sampler.getWrap(), sampler.getTexture().isMipmapped());
-			} else if (stateTexture != null && stateTexture.getView() != VK10.VK_NULL_HANDLE) {
-				images[index] = stateTexture.getView();
-				images[index + 1] = this.getSampler(state.getTextureFilter(), state.getTextureWrap(), stateTexture.isMipmapped());
-			} else {
-				images[index] = this.emptyTexture.getView();
-				images[index + 1] = this.getSampler(TextureFilter.NEAREST, TextureWrap.REPEAT, false);
-			}
-			index += 2;
-		}
-		return images;
-	}
+		final VkRect2D.Buffer scissor = VkRect2D.calloc(1, stack);
+		scissor.extent().set(this.passWidth, this.passHeight);
+		VK10.vkCmdSetScissor(this.commandBuffer, 0, scissor);
 
-	private long[] createSamplers() {
-		final int count = TextureFilter.values().length * TextureWrap.values().length;
-		final long[] samplers = new long[count * 2];
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			for (final TextureFilter filter : TextureFilter.values()) {
-				for (final TextureWrap wrap : TextureWrap.values()) {
-					final int index = filter.ordinal() * TextureWrap.values().length + wrap.ordinal();
-					samplers[index] = this.createSampler(stack, filter, wrap, false);
-					samplers[count + index] = this.createSampler(stack, filter, wrap, true);
-				}
-			}
-		}
-		return samplers;
+		VK10.vkCmdSetLineWidth(this.commandBuffer, this.context.isWideLines() ? state.getLineWidth() : 1F);
+		VK13.vkCmdSetPrimitiveTopology(this.commandBuffer, topology);
+		VK13.vkCmdSetCullMode(this.commandBuffer, state.isCull() ? VK10.VK_CULL_MODE_BACK_BIT : VK10.VK_CULL_MODE_NONE);
+		VK13.vkCmdSetFrontFace(this.commandBuffer, offscreen ? VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE : VK10.VK_FRONT_FACE_CLOCKWISE);
+		VK13.vkCmdSetDepthTestEnable(this.commandBuffer, state.isDepthTest());
+		VK13.vkCmdSetDepthWriteEnable(this.commandBuffer, state.isDepthWrite());
+		VK13.vkCmdSetDepthCompareOp(this.commandBuffer, VK10.VK_COMPARE_OP_LESS);
+		VK13.vkCmdSetStencilTestEnable(this.commandBuffer, state.isStencilTest());
+		VK13.vkCmdSetStencilOp(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, RenderBridge.operation(state.getStencilFail()), RenderBridge.operation(state.getStencilPass()), RenderBridge.operation(state.getStencilDepthFail()), RenderBridge.compare(state.getStencilFunction()));
+		VK10.vkCmdSetStencilCompareMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilMask());
+		VK10.vkCmdSetStencilWriteMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, 0xFF);
+		VK10.vkCmdSetStencilReference(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilReference());
 	}
 
 	private long createSampler(final MemoryStack stack, final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {

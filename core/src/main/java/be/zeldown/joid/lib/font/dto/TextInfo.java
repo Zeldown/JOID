@@ -50,28 +50,86 @@ public final class TextInfo {
 		return new TextInfo(font, fontSize, color);
 	}
 
-	public final @NonNull FontBounds getBounds(final @NonNull String text) {
-		return new FontBounds(this.getWidth(text), this.getHeight(text));
-	}
-
-	public final double getWidth(final @NonNull String text) {
-		return this.font.getFontProvider().getWidth(text, this);
-	}
-
-	public final double getHeight(final @NonNull String text) {
-		return this.font.getFontProvider().getHeight(text, this);
-	}
-
 	public final double getHeight() {
 		return this.font.getFontProvider().getLineHeight(this);
+	}
+
+	public final @NonNull TextInfo copy() {
+		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.markups, this.effects);
+	}
+
+	public final @NonNull TextInfo shadow() {
+		this.shadowColor = this.color.darker(0.3F);
+		return this;
+	}
+
+	public final @NonNull TextStyle getStyle() {
+		return TextStyle.create(this.weight, this.italic, this.color, this.effects);
+	}
+
+	public final double dh(final double value) {
+		return this.getHeight() / value;
+	}
+
+	public final double ah(final double value) {
+		return this.getHeight() + value;
 	}
 
 	public final @NonNull List<ITextMarkup> getMarkups() {
 		return this.markups == null ? TextMarkup.getRegistered() : Arrays.asList(this.markups);
 	}
 
-	public final @NonNull TextStyle getStyle() {
-		return TextStyle.create(this.weight, this.italic, this.color, this.effects);
+	public final @NonNull TextInfo font(final IFont font) {
+		this.font = font;
+		return this;
+	}
+
+	public final double getWidth(final @NonNull String text) {
+		return this.font.getFontProvider().getWidth(text, this);
+	}
+
+	public final @NonNull TextInfo shadow(final Color color) {
+		this.shadowColor = color;
+		return this;
+	}
+
+	public final double getHeight(final @NonNull String text) {
+		return this.font.getFontProvider().getHeight(text, this);
+	}
+
+	public final @NonNull TextInfo italic(final boolean italic) {
+		this.italic = italic;
+		return this;
+	}
+
+	public final @NonNull TextInfo fontSize(final float fontSize) {
+		this.fontSize = fontSize;
+		return this;
+	}
+
+	public final @NonNull TextInfo colored(final boolean colored) {
+		this.colored = colored;
+		return this;
+	}
+
+	public final @NonNull TextInfo color(final @NonNull Color color) {
+		this.color = color;
+		return this;
+	}
+
+	public final @NonNull TextInfo lineHeight(final float lineHeight) {
+		this.lineHeight = lineHeight;
+		return this;
+	}
+
+	public final @NonNull TextInfo shadow(final float x, final float y) {
+		this.shadowX = x;
+		this.shadowY = y;
+		return this;
+	}
+
+	public final @NonNull FontBounds getBounds(final @NonNull String text) {
+		return new FontBounds(this.getWidth(text), this.getHeight(text));
 	}
 
 	public final double dw(final @NonNull String text, final double value) {
@@ -82,30 +140,12 @@ public final class TextInfo {
 		return this.getHeight(text) / value;
 	}
 
-	public final double dh(final double value) {
-		return this.getHeight() / value;
-	}
-
 	public final double aw(final @NonNull String text, final double value) {
 		return this.getWidth(text) + value;
 	}
 
 	public final double ah(final @NonNull String text, final double value) {
 		return this.getHeight(text) + value;
-	}
-
-	public final double ah(final double value) {
-		return this.getHeight() + value;
-	}
-
-	public final @NonNull TextInfo font(final IFont font) {
-		this.font = font;
-		return this;
-	}
-
-	public final @NonNull TextInfo fontSize(final float fontSize) {
-		this.fontSize = fontSize;
-		return this;
 	}
 
 	public final @NonNull TextInfo weight(final @NonNull FontWeight weight) {
@@ -118,26 +158,6 @@ public final class TextInfo {
 		return this;
 	}
 
-	public final @NonNull TextInfo lineHeight(final float lineHeight) {
-		this.lineHeight = lineHeight;
-		return this;
-	}
-
-	public final @NonNull TextInfo color(final @NonNull Color color) {
-		this.color = color;
-		return this;
-	}
-
-	public final @NonNull TextInfo colored(final boolean colored) {
-		this.colored = colored;
-		return this;
-	}
-
-	public final @NonNull TextInfo italic(final boolean italic) {
-		this.italic = italic;
-		return this;
-	}
-
 	public final @NonNull TextInfo markups(final @NonNull ITextMarkup @NonNull... markups) {
 		this.markups = markups;
 		return this;
@@ -146,26 +166,6 @@ public final class TextInfo {
 	public final @NonNull TextInfo effects(final @NonNull ITextEffect @NonNull... effects) {
 		this.effects = effects;
 		return this;
-	}
-
-	public final @NonNull TextInfo shadow(final Color color) {
-		this.shadowColor = color;
-		return this;
-	}
-
-	public final @NonNull TextInfo shadow() {
-		this.shadowColor = this.color.darker(0.3F);
-		return this;
-	}
-
-	public final @NonNull TextInfo shadow(final float x, final float y) {
-		this.shadowX = x;
-		this.shadowY = y;
-		return this;
-	}
-
-	public final @NonNull TextInfo copy() {
-		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.markups, this.effects);
 	}
 
 	@Override

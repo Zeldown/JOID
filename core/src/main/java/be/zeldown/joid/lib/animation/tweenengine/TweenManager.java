@@ -8,17 +8,87 @@ import java.util.List;
 
 public class TweenManager {
 
-	public static void setAutoRemove(final BaseTween<?> object, final boolean value) {
-		object.isAutoRemoveEnabled = value;
-	}
-
-	public static void setAutoStart(final BaseTween<?> object, final boolean value) {
-		object.isAutoStartEnabled = value;
-	}
-
 	private final Object lock = new Object();
 	private final ArrayList<BaseTween<?>> objects = new ArrayList<>(20);
 	private boolean isPaused = false;
+
+	public int size() {
+		synchronized (this.lock) {
+			return this.objects.size();
+		}
+	}
+
+	public void pause() {
+		this.isPaused = true;
+	}
+
+	public void resume() {
+		this.isPaused = false;
+	}
+
+	public void killAll() {
+		synchronized (this.lock) {
+			for (final BaseTween<?> obj : this.objects) {
+				obj.kill();
+			}
+		}
+	}
+
+	public int getRunningTweensCount() {
+		synchronized (this.lock) {
+			return TweenManager.getTweensCount(this.objects);
+		}
+	}
+
+	public void update(final float delta) {
+		synchronized (this.lock) {
+			for (int i = this.objects.size() - 1; i >= 0; i--) {
+				final BaseTween<?> obj = this.objects.get(i);
+				if (obj.isFinished() && obj.isAutoRemoveEnabled) {
+					this.objects.remove(i);
+					obj.free();
+				}
+			}
+
+			if (!this.isPaused) {
+				if (delta >= 0) {
+					for (final BaseTween<?> element : this.objects) {
+						element.update(delta);
+					}
+				} else {
+					for (int i = this.objects.size() - 1; i >= 0; i--) {
+						this.objects.get(i).update(delta);
+					}
+				}
+			}
+		}
+	}
+
+	public int getRunningTimelinesCount() {
+		synchronized (this.lock) {
+			return TweenManager.getTimelinesCount(this.objects);
+		}
+	}
+
+	public List<BaseTween<?>> getObjects() {
+		synchronized (this.lock) {
+			return Collections.unmodifiableList(new ArrayList<>(this.objects));
+		}
+	}
+
+	public void killTarget(final Object target) {
+		synchronized (this.lock) {
+			for (final BaseTween<?> obj : this.objects) {
+				obj.killTarget(target);
+			}
+		}
+	}
+
+	public void ensureCapacity(final int minCapacity) {
+		synchronized (this.lock) {
+			this.objects.ensureCapacity(minCapacity);
+		}
+	}
 
 	public TweenManager add(final BaseTween<?> object) {
 		synchronized (this.lock) {
@@ -46,6 +116,14 @@ public class TweenManager {
 		return false;
 	}
 
+	public void killTarget(final Object target, final int tweenType) {
+		synchronized (this.lock) {
+			for (final BaseTween<?> obj : this.objects) {
+				obj.killTarget(target, tweenType);
+			}
+		}
+	}
+
 	public boolean containsTarget(final Object target, final int tweenType) {
 		synchronized (this.lock) {
 			for (final BaseTween<?> obj : this.objects) {
@@ -58,90 +136,12 @@ public class TweenManager {
 		return false;
 	}
 
-	public void killAll() {
-		synchronized (this.lock) {
-			for (final BaseTween<?> obj : this.objects) {
-				obj.kill();
-			}
-		}
+	public static void setAutoStart(final BaseTween<?> object, final boolean value) {
+		object.isAutoStartEnabled = value;
 	}
 
-	public void killTarget(final Object target) {
-		synchronized (this.lock) {
-			for (final BaseTween<?> obj : this.objects) {
-				obj.killTarget(target);
-			}
-		}
-	}
-
-	public void killTarget(final Object target, final int tweenType) {
-		synchronized (this.lock) {
-			for (final BaseTween<?> obj : this.objects) {
-				obj.killTarget(target, tweenType);
-			}
-		}
-	}
-
-	public void ensureCapacity(final int minCapacity) {
-		synchronized (this.lock) {
-			this.objects.ensureCapacity(minCapacity);
-		}
-	}
-
-	public void pause() {
-		this.isPaused = true;
-	}
-
-	public void resume() {
-		this.isPaused = false;
-	}
-
-	public void update(final float delta) {
-		synchronized (this.lock) {
-			for (int i = this.objects.size() - 1; i >= 0; i--) {
-				final BaseTween<?> obj = this.objects.get(i);
-				if (obj.isFinished() && obj.isAutoRemoveEnabled) {
-					this.objects.remove(i);
-					obj.free();
-				}
-			}
-
-			if (!this.isPaused) {
-				if (delta >= 0) {
-					for (final BaseTween<?> element : this.objects) {
-						element.update(delta);
-					}
-				} else {
-					for (int i = this.objects.size() - 1; i >= 0; i--) {
-						this.objects.get(i).update(delta);
-					}
-				}
-			}
-		}
-	}
-
-	public int size() {
-		synchronized (this.lock) {
-			return this.objects.size();
-		}
-	}
-
-	public int getRunningTweensCount() {
-		synchronized (this.lock) {
-			return TweenManager.getTweensCount(this.objects);
-		}
-	}
-
-	public int getRunningTimelinesCount() {
-		synchronized (this.lock) {
-			return TweenManager.getTimelinesCount(this.objects);
-		}
-	}
-
-	public List<BaseTween<?>> getObjects() {
-		synchronized (this.lock) {
-			return Collections.unmodifiableList(new ArrayList<>(this.objects));
-		}
+	public static void setAutoRemove(final BaseTween<?> object, final boolean value) {
+		object.isAutoRemoveEnabled = value;
 	}
 
 	private static int getTweensCount(final List<BaseTween<?>> objs) {

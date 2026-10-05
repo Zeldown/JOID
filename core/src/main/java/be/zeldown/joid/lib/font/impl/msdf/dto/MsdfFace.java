@@ -37,14 +37,6 @@ public final class MsdfFace implements IGlyphFace {
 		return new MsdfFace(atlas, metrics, glyphs, kerningPairs, MsdfFace.BUILDER.of(image), weight, italic);
 	}
 
-	public @NonNull MsdfFace style(final @NonNull FontWeight weight, final boolean italic) {
-		return new MsdfFace(this.atlas, this.metrics, this.glyphs, this.kerningPairs, this.texture, weight, italic);
-	}
-
-	public MsdfGlyph getGlyph(final int codepoint) {
-		return this.glyphs.get(codepoint);
-	}
-
 	@Override
 	public float getAscender() {
 		return this.metrics.getAscender();
@@ -81,6 +73,10 @@ public final class MsdfFace implements IGlyphFace {
 		return glyph == null ? 0F : glyph.getAdvance();
 	}
 
+	public MsdfGlyph getGlyph(final int codepoint) {
+		return this.glyphs.get(codepoint);
+	}
+
 	@Override
 	public float getKerning(final int previous, final int current) {
 		final Float value = this.kerningPairs.get(MsdfFace.pair(previous, current));
@@ -89,6 +85,10 @@ public final class MsdfFace implements IGlyphFace {
 
 	public static long pair(final int previous, final int current) {
 		return (long) previous << 32 | current & 0xFFFFFFFFL;
+	}
+
+	public @NonNull MsdfFace style(final @NonNull FontWeight weight, final boolean italic) {
+		return new MsdfFace(this.atlas, this.metrics, this.glyphs, this.kerningPairs, this.texture, weight, italic);
 	}
 
 }

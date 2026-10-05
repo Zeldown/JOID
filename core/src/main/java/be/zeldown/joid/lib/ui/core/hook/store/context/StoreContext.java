@@ -12,12 +12,12 @@ public enum StoreContext {
 		this.global = global;
 	}
 
-	public boolean isGlobal() {
-		return this.global;
-	}
-
 	public boolean isLocal() {
 		return !this.global;
+	}
+
+	public boolean isGlobal() {
+		return this.global;
 	}
 
 }

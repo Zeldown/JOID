@@ -7,6 +7,18 @@ import lombok.NonNull;
 
 public class NodeHoverElement extends CustomHoverElement {
 
+	public static @NonNull NodeHoverElement fixed(final @NonNull Node node) {
+		return new NodeHoverElement(node, HoverElementPosition.FIXED);
+	}
+
+	public static @NonNull NodeHoverElement follow(final @NonNull Node node) {
+		return new NodeHoverElement(node, HoverElementPosition.FOLLOW);
+	}
+
+	public static @NonNull NodeHoverElement relative(final @NonNull Node node) {
+		return new NodeHoverElement(node, HoverElementPosition.RELATIVE);
+	}
+
 	protected NodeHoverElement(final @NonNull Node node, final HoverElementPosition position) {
 		super(new HoverElement() {
 
@@ -41,18 +53,6 @@ public class NodeHoverElement extends CustomHoverElement {
 			}
 
 		}, position);
-	}
-
-	public static @NonNull NodeHoverElement follow(final @NonNull Node node) {
-		return new NodeHoverElement(node, HoverElementPosition.FOLLOW);
-	}
-
-	public static @NonNull NodeHoverElement fixed(final @NonNull Node node) {
-		return new NodeHoverElement(node, HoverElementPosition.FIXED);
-	}
-
-	public static @NonNull NodeHoverElement relative(final @NonNull Node node) {
-		return new NodeHoverElement(node, HoverElementPosition.RELATIVE);
 	}
 
 }

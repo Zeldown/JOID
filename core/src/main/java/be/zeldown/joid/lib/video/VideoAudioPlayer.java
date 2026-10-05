@@ -25,25 +25,32 @@ public final class VideoAudioPlayer {
 
 	private volatile float volume = 1F;
 
+	private boolean playing;
 	private IAudioSource source;
 	private boolean initialized;
-	private boolean playing;
 	private boolean buffersQueued;
 
 	private int pendingOffset;
-	private short[] pendingSamples;
 	private boolean needsFlush = true;
+	private short[] pendingSamples;
 
 	private float posX;
 	private float posY;
 	private float posZ;
-	private boolean positional;
 	private float maxDistance = 50F;
+	private boolean positional;
 	private float referenceDistance = 5F;
 
 	public VideoAudioPlayer(final int sampleRate, final int channels) {
 		this.sampleRate = sampleRate;
 		this.channels = channels;
+	}
+
+	public void stop() {
+		this.playing = false;
+		if (this.source != null) {
+			this.source.stop();
+		}
 	}
 
 	public void play() {
@@ -69,20 +76,6 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	public void resume() {
-		this.playing = true;
-		if (this.source != null) {
-			this.source.play();
-		}
-	}
-
-	public void stop() {
-		this.playing = false;
-		if (this.source != null) {
-			this.source.stop();
-		}
-	}
-
 	public void flush() {
 		this.sampleQueue.clear();
 		this.pendingSamples = null;
@@ -90,6 +83,13 @@ public final class VideoAudioPlayer {
 		this.buffersQueued = false;
 		if (this.source != null) {
 			this.source.clear();
+		}
+	}
+
+	public void resume() {
+		this.playing = true;
+		if (this.source != null) {
+			this.source.play();
 		}
 	}
 
@@ -153,6 +153,38 @@ public final class VideoAudioPlayer {
 		}
 	}
 
+	public void cleanup() {
+		if (this.source != null) {
+			this.source.stop();
+			this.source.delete();
+			this.source = null;
+		}
+
+		this.sampleQueue.clear();
+		this.pendingSamples = null;
+		this.initialized = false;
+	}
+
+	public int getQueueSize() {
+		return this.sampleQueue.size();
+	}
+
+	public void setVolume(final float volume) {
+		this.volume = volume;
+	}
+
+	public static AudioListener getAudioListener() {
+		return VideoAudioPlayer.audioListener;
+	}
+
+	public void setMaxDistance(final float distance) {
+		this.maxDistance = distance;
+	}
+
+	public void setReferenceDistance(final float distance) {
+		this.referenceDistance = distance;
+	}
+
 	public void pushSamples(final @NonNull Buffer[] samples) {
 		if (samples.length == 0 || samples[0] == null) {
 			return;
@@ -194,14 +226,6 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	public int getQueueSize() {
-		return this.sampleQueue.size();
-	}
-
-	public void setVolume(final float volume) {
-		this.volume = volume;
-	}
-
 	public void setLocation(final float x, final float y, final float z) {
 		this.posX = x;
 		this.posY = y;
@@ -209,47 +233,8 @@ public final class VideoAudioPlayer {
 		this.positional = true;
 	}
 
-	public void setReferenceDistance(final float distance) {
-		this.referenceDistance = distance;
-	}
-
-	public void setMaxDistance(final float distance) {
-		this.maxDistance = distance;
-	}
-
-	public void cleanup() {
-		if (this.source != null) {
-			this.source.stop();
-			this.source.delete();
-			this.source = null;
-		}
-
-		this.sampleQueue.clear();
-		this.pendingSamples = null;
-		this.initialized = false;
-	}
-
-	private float computeDistanceVolume() {
-		if (VideoAudioPlayer.audioListener == null) {
-			return 1F;
-		}
-
-		final Vector3f listenerPos = VideoAudioPlayer.audioListener.getListenerPosition();
-		final double dx = listenerPos.x - this.posX;
-		final double dy = listenerPos.y - this.posY;
-		final double dz = listenerPos.z - this.posZ;
-		final double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-		if (distance <= this.referenceDistance) {
-			return 1F;
-		}
-
-		if (distance >= this.maxDistance) {
-			return 0F;
-		}
-
-		final float t = (float) ((distance - this.referenceDistance) / (this.maxDistance - this.referenceDistance));
-		return (1F - t) * (1F - t);
+	public static void setAudioListener(final AudioListener audioListener) {
+		VideoAudioPlayer.audioListener = audioListener;
 	}
 
 	private short[] mergeNextChunk() {
@@ -297,12 +282,27 @@ public final class VideoAudioPlayer {
 		return chunk;
 	}
 
-	public static AudioListener getAudioListener() {
-		return VideoAudioPlayer.audioListener;
-	}
+	private float computeDistanceVolume() {
+		if (VideoAudioPlayer.audioListener == null) {
+			return 1F;
+		}
 
-	public static void setAudioListener(final AudioListener audioListener) {
-		VideoAudioPlayer.audioListener = audioListener;
+		final Vector3f listenerPos = VideoAudioPlayer.audioListener.getListenerPosition();
+		final double dx = listenerPos.x - this.posX;
+		final double dy = listenerPos.y - this.posY;
+		final double dz = listenerPos.z - this.posZ;
+		final double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+		if (distance <= this.referenceDistance) {
+			return 1F;
+		}
+
+		if (distance >= this.maxDistance) {
+			return 0F;
+		}
+
+		final float t = (float) ((distance - this.referenceDistance) / (this.maxDistance - this.referenceDistance));
+		return (1F - t) * (1F - t);
 	}
 
 }

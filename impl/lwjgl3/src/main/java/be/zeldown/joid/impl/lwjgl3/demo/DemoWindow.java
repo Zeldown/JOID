@@ -10,12 +10,13 @@ import be.zeldown.joid.lib.bridge.BridgeHandler;
 
 public class DemoWindow extends be.zeldown.joid.impl.glfw.DemoWindow {
 
-	public static void main(final String[] args) {
-		final DemoWindow window = new DemoWindow();
-		BridgeHandler.UI.register(window);
-		JOID.inst().setDevMode(true).setDemoMode(true).load();
-		window.run();
+	@Override
+	protected void endFrame() {
+		GLFW.glfwSwapBuffers(super.getWindow());
 	}
+
+	@Override
+	protected void beginFrame() {}
 
 	@Override
 	protected String getEngineName() {
@@ -32,19 +33,18 @@ public class DemoWindow extends be.zeldown.joid.impl.glfw.DemoWindow {
 		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 8);
 	}
 
+	public static void main(final String[] args) {
+		final DemoWindow window = new DemoWindow();
+		BridgeHandler.UI.register(window);
+		JOID.inst().setDevMode(true).setDemoMode(true).load();
+		window.run();
+	}
+
 	@Override
 	protected void registerBackend(final long window) {
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
 		Backend.register(window);
-	}
-
-	@Override
-	protected void beginFrame() {}
-
-	@Override
-	protected void endFrame() {
-		GLFW.glfwSwapBuffers(super.getWindow());
 	}
 
 }

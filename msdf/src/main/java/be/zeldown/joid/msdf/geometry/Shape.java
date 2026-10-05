@@ -11,9 +11,21 @@ public final class Shape {
 
 	private final List<List<Edge>> contours = new ArrayList<>();
 
-	public void add(final List<Edge> contour) {
-		if (!contour.isEmpty()) {
-			this.contours.add(contour);
+	public void orient() {
+		for (int i = 0; i < this.contours.size(); i++) {
+			final List<Edge> contour = this.contours.get(i);
+			final Vector2 point = contour.get(0).start();
+
+			int depth = 0;
+			for (int j = 0; j < this.contours.size(); j++) {
+				if (i != j && Shape.contains(this.contours.get(j), point)) {
+					depth++;
+				}
+			}
+
+			if (Shape.area(contour) >= 0D != ((depth & 1) == 0)) {
+				this.contours.set(i, Shape.reverse(contour));
+			}
 		}
 	}
 
@@ -41,38 +53,20 @@ public final class Shape {
 		return new double[] {minX, minY, maxX, maxY};
 	}
 
-	public void orient() {
-		for (int i = 0; i < this.contours.size(); i++) {
-			final List<Edge> contour = this.contours.get(i);
-			final Vector2 point = contour.get(0).start();
-
-			int depth = 0;
-			for (int j = 0; j < this.contours.size(); j++) {
-				if (i != j && Shape.contains(this.contours.get(j), point)) {
-					depth++;
-				}
-			}
-
-			if (Shape.area(contour) >= 0D != ((depth & 1) == 0)) {
-				this.contours.set(i, Shape.reverse(contour));
-			}
+	public void add(final List<Edge> contour) {
+		if (!contour.isEmpty()) {
+			this.contours.add(contour);
 		}
 	}
 
-	private static boolean contains(final List<Edge> contour, final Vector2 point) {
-		boolean inside = false;
+	private static double area(final List<Edge> contour) {
+		double sum = 0D;
 		for (final Edge edge : contour) {
 			for (int i = 0; i < edge.getX().length - 1; i++) {
-				final double ax = edge.getX()[i];
-				final double ay = edge.getY()[i];
-				final double bx = edge.getX()[i + 1];
-				final double by = edge.getY()[i + 1];
-				if (ay > point.getY() != by > point.getY() && point.getX() < (bx - ax) * (point.getY() - ay) / (by - ay) + ax) {
-					inside = !inside;
-				}
+				sum += edge.getX()[i] * edge.getY()[i + 1] - edge.getX()[i + 1] * edge.getY()[i];
 			}
 		}
-		return inside;
+		return sum / 2D;
 	}
 
 	private static List<Edge> reverse(final List<Edge> contour) {
@@ -92,14 +86,20 @@ public final class Shape {
 		return reversed;
 	}
 
-	private static double area(final List<Edge> contour) {
-		double sum = 0D;
+	private static boolean contains(final List<Edge> contour, final Vector2 point) {
+		boolean inside = false;
 		for (final Edge edge : contour) {
 			for (int i = 0; i < edge.getX().length - 1; i++) {
-				sum += edge.getX()[i] * edge.getY()[i + 1] - edge.getX()[i + 1] * edge.getY()[i];
+				final double ax = edge.getX()[i];
+				final double ay = edge.getY()[i];
+				final double bx = edge.getX()[i + 1];
+				final double by = edge.getY()[i + 1];
+				if (ay > point.getY() != by > point.getY() && point.getX() < (bx - ax) * (point.getY() - ay) / (by - ay) + ax) {
+					inside = !inside;
+				}
 			}
 		}
-		return sum / 2D;
+		return inside;
 	}
 
 }

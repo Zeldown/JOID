@@ -17,13 +17,13 @@ public class PopTransition extends Transition {
 	public static class PopInTransition extends Transition.In {
 
 		@Override
-		public void init(final @NonNull UI ui) {}
-
-		@Override
 		public void start() {
 			final Timeline timeline = super.getAnimator().sequence(130F, 1F, TweenEquations.QUART_OUT).getTimeline();
 			this.start(timeline);
 		}
+
+		@Override
+		public void init(final @NonNull UI ui) {}
 
 		@Override
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
@@ -46,13 +46,13 @@ public class PopTransition extends Transition {
 	public static class PopOutTransition extends Transition.Out {
 
 		@Override
-		public void init(final @NonNull UI ui) {}
-
-		@Override
 		public void start() {
 			final Timeline timeline = super.getAnimator().sequence(130F, 0F, TweenEquations.QUART_IN).getTimeline();
 			this.start(timeline);
 		}
+
+		@Override
+		public void init(final @NonNull UI ui) {}
 
 		@Override
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {

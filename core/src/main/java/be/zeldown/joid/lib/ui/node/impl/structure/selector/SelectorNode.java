@@ -16,8 +16,8 @@ public abstract class SelectorNode extends Node {
 
 	private SelectorDirection direction;
 
-	private boolean active;
 	private Node selected;
+	private boolean active;
 
 	protected SelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -25,6 +25,10 @@ public abstract class SelectorNode extends Node {
 		this.direction = SelectorDirection.DOWN;
 		this.active    = false;
 		this.selected  = null;
+	}
+
+	public final boolean isSelected(final @NonNull Node node) {
+		return this.selected == node;
 	}
 
 	@Override
@@ -59,6 +63,26 @@ public abstract class SelectorNode extends Node {
 	}
 
 	public abstract void drawBackground(final double mouseX, final double mouseY);
+
+	public final <T extends SelectorNode> @NonNull T active(final boolean active) {
+		this.active = active;
+		return (T) this;
+	}
+
+	public final <T extends SelectorNode> @NonNull T selected(final @NonNull Node selected) {
+		this.selected = selected;
+		return (T) this;
+	}
+
+	public final <T extends SelectorNode> @NonNull T direction(final @NonNull SelectorDirection direction) {
+		this.direction = direction;
+		return (T) this;
+	}
+
+	public final <T extends SelectorNode> @NonNull T onChange(final @NonNull NodeSelectorChangeCallback<T> callback) {
+		super.registerCallback(SelectorNode.CALLBACK_CHANGE, callback);
+		return (T) this;
+	}
 
 	@Override
 	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
@@ -95,30 +119,6 @@ public abstract class SelectorNode extends Node {
 		if (this.selected.isHovered(mouseX, mouseY)) {
 			context.cancel(() -> this.active = true);
 		}
-	}
-
-	public final boolean isSelected(final @NonNull Node node) {
-		return this.selected == node;
-	}
-
-	public final <T extends SelectorNode> @NonNull T direction(final @NonNull SelectorDirection direction) {
-		this.direction = direction;
-		return (T) this;
-	}
-
-	public final <T extends SelectorNode> @NonNull T active(final boolean active) {
-		this.active = active;
-		return (T) this;
-	}
-
-	public final <T extends SelectorNode> @NonNull T selected(final @NonNull Node selected) {
-		this.selected = selected;
-		return (T) this;
-	}
-
-	public final <T extends SelectorNode> @NonNull T onChange(final @NonNull NodeSelectorChangeCallback<T> callback) {
-		super.registerCallback(SelectorNode.CALLBACK_CHANGE, callback);
-		return (T) this;
 	}
 
 	public static enum SelectorDirection {

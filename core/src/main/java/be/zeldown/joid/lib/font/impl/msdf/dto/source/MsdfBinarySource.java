@@ -43,6 +43,27 @@ public final class MsdfBinarySource extends MsdfSource {
 		}
 	}
 
+	private static int paeth(final int left, final int up, final int corner) {
+		final int estimate = left + up - corner;
+		final int leftDistance = Math.abs(estimate - left);
+		final int upDistance = Math.abs(estimate - up);
+		final int cornerDistance = Math.abs(estimate - corner);
+		return leftDistance <= upDistance && leftDistance <= cornerDistance ? left : upDistance <= cornerDistance ? up : corner;
+	}
+
+	private static int variable(final @NonNull DataInputStream input) throws IOException {
+		int value = 0;
+		int shift = 0;
+		int part;
+		do {
+			part = input.readUnsignedByte();
+			value |= (part & 0x7F) << shift;
+			shift += 7;
+		} while ((part & 0x80) != 0);
+
+		return value;
+	}
+
 	private static @NonNull MsdfFace parse(final @NonNull InputStream stream) throws IOException {
 		final byte[] magic = new byte[MsdfBinarySource.MAGIC.length];
 		new DataInputStream(stream).readFully(magic);
@@ -94,27 +115,6 @@ public final class MsdfBinarySource extends MsdfSource {
 		}
 
 		return MsdfFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), weight, italic);
-	}
-
-	private static int paeth(final int left, final int up, final int corner) {
-		final int estimate = left + up - corner;
-		final int leftDistance = Math.abs(estimate - left);
-		final int upDistance = Math.abs(estimate - up);
-		final int cornerDistance = Math.abs(estimate - corner);
-		return leftDistance <= upDistance && leftDistance <= cornerDistance ? left : upDistance <= cornerDistance ? up : corner;
-	}
-
-	private static int variable(final @NonNull DataInputStream input) throws IOException {
-		int value = 0;
-		int shift = 0;
-		int part;
-		do {
-			part = input.readUnsignedByte();
-			value |= (part & 0x7F) << shift;
-			shift += 7;
-		} while ((part & 0x80) != 0);
-
-		return value;
 	}
 
 	private static @NonNull BufferedImage image(final @NonNull DataInputStream input, final int width, final int height) throws IOException {

@@ -33,6 +33,15 @@ public class IntegerSignal extends Signal<Integer> {
 		this.set(updatedValue);
 	}
 
+	public void divide(final int value) {
+		if (value == 0) {
+			throw new ArithmeticException("Division by zero");
+		}
+
+		final int updatedValue = this.getOrDefault() / value;
+		this.set(updatedValue);
+	}
+
 	public void subtract(final int value) {
 		final int updatedValue = this.getOrDefault() - value;
 		this.set(updatedValue);
@@ -40,15 +49,6 @@ public class IntegerSignal extends Signal<Integer> {
 
 	public void multiply(final int value) {
 		final int updatedValue = this.getOrDefault() * value;
-		this.set(updatedValue);
-	}
-
-	public void divide(final int value) {
-		if (value == 0) {
-			throw new ArithmeticException("Division by zero");
-		}
-
-		final int updatedValue = this.getOrDefault() / value;
 		this.set(updatedValue);
 	}
 

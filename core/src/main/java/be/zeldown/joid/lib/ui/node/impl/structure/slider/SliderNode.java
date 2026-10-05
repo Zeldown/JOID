@@ -22,8 +22,8 @@ public abstract class SliderNode<O> extends Node {
 	private O      value;
 	private Set<O> valueSet;
 
-	private SliderCursorNode cursor;
 	private Signal<O>        signal;
+	private SliderCursorNode cursor;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -69,19 +69,24 @@ public abstract class SliderNode<O> extends Node {
 		this.drawSlider(mouseX, mouseY);
 	}
 
-	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (!super.isHovered()) {
-			return;
+	public abstract void drawSlider(final double mouseX, final double mouseY);
+
+	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull O value) {
+		if (!this.valueSet.contains(value)) {
+			throw new IllegalArgumentException("The value is not in the value set");
 		}
 
-		context.cancel(() -> {
-			this.cursor.x(mouseX - super.getAbsoluteX() - this.cursor.getWidth() / 2);
-			this.cursor.dragging(true);
-		});
+		this.value = value;
+		if (super.getUi() != null) {
+			this.init(super.getUi());
+		}
+		return (T) this;
 	}
 
-	public abstract void drawSlider(final double mouseX, final double mouseY);
+	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
+		this.signal = signal;
+		return (T) this;
+	}
 
 	public final <T extends SliderNode<O>> @NonNull T cursor(final @NonNull SliderCursorNode cursor) {
 		if (this.cursor != null) {
@@ -102,26 +107,21 @@ public abstract class SliderNode<O> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull O value) {
-		if (!this.valueSet.contains(value)) {
-			throw new IllegalArgumentException("The value is not in the value set");
-		}
-
-		this.value = value;
-		if (super.getUi() != null) {
-			this.init(super.getUi());
-		}
-		return (T) this;
-	}
-
-	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
-		this.signal = signal;
-		return (T) this;
-	}
-
 	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull NodeSliderChangeCallback<T, O> callback) {
 		super.registerCallback(SliderNode.CALLBACK_CHANGE, callback);
 		return (T) this;
+	}
+
+	@Override
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		if (!super.isHovered()) {
+			return;
+		}
+
+		context.cancel(() -> {
+			this.cursor.x(mouseX - super.getAbsoluteX() - this.cursor.getWidth() / 2);
+			this.cursor.dragging(true);
+		});
 	}
 
 }

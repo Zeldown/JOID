@@ -10,8 +10,8 @@ import lombok.NonNull;
 
 public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<E> {
 
-	private final LinkedList<E> orderedList;
 	private final List<E> reversedList;
+	private final LinkedList<E> orderedList;
 
 	public IndexedLinkedList() {
 		this.orderedList = new LinkedList<>();
@@ -21,6 +21,42 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 	public IndexedLinkedList(final List<E> list) {
 		this.orderedList = new LinkedList<>(list);
 		this.reversedList = Lists.reverse(this.orderedList);
+	}
+
+	@Override
+	public int size() {
+		return Math.min(this.orderedList.size(), this.reversedList.size());
+	}
+
+	@Override
+	public E getLast() {
+		return this.orderedList.getLast();
+	}
+
+	@Override
+	public void clear() {
+		this.orderedList.clear();
+		this.reversedList.clear();
+	}
+
+	@Override
+	public E getFirst() {
+		return this.orderedList.getFirst();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return this.orderedList.isEmpty();
+	}
+
+	@Override
+	public E get(final int index) {
+		return this.orderedList.get(index);
+	}
+
+	@Override
+	public Iterator<E> iterator() {
+		return this.orderedList.iterator();
 	}
 
 	@Override
@@ -38,50 +74,14 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 	}
 
 	@Override
+	public @NonNull List<E> reversed() {
+		return this.reversedList;
+	}
+
+	@Override
 	public void remove(final E element) {
 		this.orderedList.remove(element);
 		this.reversedList.remove(element);
-	}
-
-	@Override
-	public void clear() {
-		this.orderedList.clear();
-		this.reversedList.clear();
-	}
-
-	@Override
-	public @NonNull IndexedLinkedList<E> copy() {
-		return new IndexedLinkedList<>(this.orderedList);
-	}
-
-	@Override
-	public int size() {
-		return Math.min(this.orderedList.size(), this.reversedList.size());
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return this.orderedList.isEmpty();
-	}
-
-	@Override
-	public boolean contains(final E element) {
-		return this.orderedList.contains(element);
-	}
-
-	@Override
-	public E get(final int index) {
-		return this.orderedList.get(index);
-	}
-
-	@Override
-	public E getFirst() {
-		return this.orderedList.getFirst();
-	}
-
-	@Override
-	public E getLast() {
-		return this.orderedList.getLast();
 	}
 
 	@Override
@@ -90,8 +90,13 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 	}
 
 	@Override
-	public @NonNull List<E> reversed() {
-		return this.reversedList;
+	public boolean contains(final E element) {
+		return this.orderedList.contains(element);
+	}
+
+	@Override
+	public @NonNull IndexedLinkedList<E> copy() {
+		return new IndexedLinkedList<>(this.orderedList);
 	}
 
 	@Override
@@ -127,11 +132,6 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 		}
 
 		return list;
-	}
-
-	@Override
-	public Iterator<E> iterator() {
-		return this.orderedList.iterator();
 	}
 
 }

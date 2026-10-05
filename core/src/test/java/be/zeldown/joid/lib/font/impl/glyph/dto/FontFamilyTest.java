@@ -11,6 +11,11 @@ import lombok.Getter;
 
 public class FontFamilyTest {
 
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAnEmptyFamily() {
+		FontFamily.of();
+	}
+
 	@Test
 	public void sortsTheFacesByWeight() {
 		final Face bold = new Face(FontWeight.BOLD, false);
@@ -25,26 +30,6 @@ public class FontFamilyTest {
 		for (final int weight : new int[] {300, 400, 600, 700}) {
 			Assert.assertEquals(weight, family.resolve(FontWeight.of(weight), false).getWeight().getValue());
 		}
-	}
-
-	@Test
-	public void looksUpToMediumFirstForNormalWeights() {
-		Assert.assertEquals(500, FontFamilyTest.family(300, 500, 600).resolve(FontWeight.REGULAR, false).getWeight().getValue());
-		Assert.assertEquals(300, FontFamilyTest.family(300, 600).resolve(FontWeight.REGULAR, false).getWeight().getValue());
-		Assert.assertEquals(300, FontFamilyTest.family(300, 600).resolve(FontWeight.MEDIUM, false).getWeight().getValue());
-		Assert.assertEquals(600, FontFamilyTest.family(600, 900).resolve(FontWeight.REGULAR, false).getWeight().getValue());
-	}
-
-	@Test
-	public void looksLighterFirstForLightWeights() {
-		Assert.assertEquals(200, FontFamilyTest.family(100, 200, 400).resolve(FontWeight.LIGHT, false).getWeight().getValue());
-		Assert.assertEquals(400, FontFamilyTest.family(400, 700).resolve(FontWeight.THIN, false).getWeight().getValue());
-	}
-
-	@Test
-	public void looksHeavierFirstForBoldWeights() {
-		Assert.assertEquals(900, FontFamilyTest.family(400, 900).resolve(FontWeight.SEMI_BOLD, false).getWeight().getValue());
-		Assert.assertEquals(700, FontFamilyTest.family(400, 700).resolve(FontWeight.BLACK, false).getWeight().getValue());
 	}
 
 	@Test
@@ -68,13 +53,28 @@ public class FontFamilyTest {
 	}
 
 	@Test
+	public void looksHeavierFirstForBoldWeights() {
+		Assert.assertEquals(900, FontFamilyTest.family(400, 900).resolve(FontWeight.SEMI_BOLD, false).getWeight().getValue());
+		Assert.assertEquals(700, FontFamilyTest.family(400, 700).resolve(FontWeight.BLACK, false).getWeight().getValue());
+	}
+
+	@Test
+	public void looksLighterFirstForLightWeights() {
+		Assert.assertEquals(200, FontFamilyTest.family(100, 200, 400).resolve(FontWeight.LIGHT, false).getWeight().getValue());
+		Assert.assertEquals(400, FontFamilyTest.family(400, 700).resolve(FontWeight.THIN, false).getWeight().getValue());
+	}
+
+	@Test
 	public void acceptsTheSameWeightInBothStyles() {
 		Assert.assertEquals(2, FontFamily.of(new Face(FontWeight.BOLD, false), new Face(FontWeight.BOLD, true)).getFaces().size());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesAnEmptyFamily() {
-		FontFamily.of();
+	@Test
+	public void looksUpToMediumFirstForNormalWeights() {
+		Assert.assertEquals(500, FontFamilyTest.family(300, 500, 600).resolve(FontWeight.REGULAR, false).getWeight().getValue());
+		Assert.assertEquals(300, FontFamilyTest.family(300, 600).resolve(FontWeight.REGULAR, false).getWeight().getValue());
+		Assert.assertEquals(300, FontFamilyTest.family(300, 600).resolve(FontWeight.MEDIUM, false).getWeight().getValue());
+		Assert.assertEquals(600, FontFamilyTest.family(600, 900).resolve(FontWeight.REGULAR, false).getWeight().getValue());
 	}
 
 	private static FontFamily<Face> family(final int... weights) {

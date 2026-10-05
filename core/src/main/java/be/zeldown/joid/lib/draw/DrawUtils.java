@@ -7,10 +7,10 @@ import be.zeldown.joid.lib.draw.text.DrawText;
 
 public final class DrawUtils {
 
-	public static final DrawResource RESOURCE;
-	public static final DrawShape    SHAPE;
 	public static final DrawText     TEXT;
+	public static final DrawShape    SHAPE;
 	public static final DrawModel    MODEL;
+	public static final DrawResource RESOURCE;
 
 	static {
 		RESOURCE = new DrawResource();

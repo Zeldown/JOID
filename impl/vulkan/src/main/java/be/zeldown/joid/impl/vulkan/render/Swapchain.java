@@ -18,22 +18,22 @@ import lombok.Getter;
 @Getter
 public final class Swapchain {
 
-	private final Context context;
-	private final long    window;
 	private final int     format;
+	private final long    window;
 	private final int     colorSpace;
-	private final long    clearRenderPass;
+	private final Context context;
 	private final long    loadRenderPass;
+	private final long    clearRenderPass;
 
-	private long   swapchain;
 	private int    width;
 	private int    height;
-	private long[] images;
 	private long[] views;
-	private long[] framebuffers;
+	private long[] images;
+	private long   swapchain;
+	private long   depthView;
 	private long   depthImage;
 	private long   depthMemory;
-	private long   depthView;
+	private long[] framebuffers;
 
 	public Swapchain(final Context context, final long window) {
 		this.context = context;
@@ -61,17 +61,17 @@ public final class Swapchain {
 		this.create();
 	}
 
+	public void recreate() {
+		VK10.vkDeviceWaitIdle(this.context.getDevice());
+		this.destroyResources();
+		this.create();
+	}
+
 	public boolean isOutdated() {
 		final int[] width = new int[1];
 		final int[] height = new int[1];
 		GLFW.glfwGetFramebufferSize(this.window, width, height);
 		return width[0] != this.width || height[0] != this.height;
-	}
-
-	public void recreate() {
-		VK10.vkDeviceWaitIdle(this.context.getDevice());
-		this.destroyResources();
-		this.create();
 	}
 
 	private void create() {
@@ -137,6 +137,17 @@ public final class Swapchain {
 		}
 	}
 
+	private void destroyResources() {
+		for (int i = 0; i < this.images.length; i++) {
+			VK10.vkDestroyFramebuffer(this.context.getDevice(), this.framebuffers[i], null);
+			VK10.vkDestroyImageView(this.context.getDevice(), this.views[i], null);
+		}
+
+		VK10.vkDestroyImageView(this.context.getDevice(), this.depthView, null);
+		VK10.vkDestroyImage(this.context.getDevice(), this.depthImage, null);
+		VK10.vkFreeMemory(this.context.getDevice(), this.depthMemory, null);
+	}
+
 	private int selectPresentMode(final MemoryStack stack) {
 		final IntBuffer count = stack.mallocInt(1);
 		KHRSurface.vkGetPhysicalDeviceSurfacePresentModesKHR(this.context.getPhysicalDevice(), this.context.getSurface(), count, null);
@@ -154,17 +165,6 @@ public final class Swapchain {
 			}
 		}
 		return selected;
-	}
-
-	private void destroyResources() {
-		for (int i = 0; i < this.images.length; i++) {
-			VK10.vkDestroyFramebuffer(this.context.getDevice(), this.framebuffers[i], null);
-			VK10.vkDestroyImageView(this.context.getDevice(), this.views[i], null);
-		}
-
-		VK10.vkDestroyImageView(this.context.getDevice(), this.depthView, null);
-		VK10.vkDestroyImage(this.context.getDevice(), this.depthImage, null);
-		VK10.vkFreeMemory(this.context.getDevice(), this.depthMemory, null);
 	}
 
 }

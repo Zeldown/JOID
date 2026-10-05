@@ -34,6 +34,14 @@ public final class FrameBuffer implements IFrameBuffer {
 	}
 
 	@Override
+	public void delete() {
+		final long framebuffer = this.framebuffer;
+		final Context context = this.bridge.getContext();
+		this.bridge.dispose(() -> VK10.vkDestroyFramebuffer(context.getDevice(), framebuffer, null));
+		this.texture.delete();
+	}
+
+	@Override
 	public int getWidth() {
 		return this.texture.getWidth();
 	}
@@ -41,14 +49,6 @@ public final class FrameBuffer implements IFrameBuffer {
 	@Override
 	public int getHeight() {
 		return this.texture.getHeight();
-	}
-
-	@Override
-	public void delete() {
-		final long framebuffer = this.framebuffer;
-		final Context context = this.bridge.getContext();
-		this.bridge.dispose(() -> VK10.vkDestroyFramebuffer(context.getDevice(), framebuffer, null));
-		this.texture.delete();
 	}
 
 }

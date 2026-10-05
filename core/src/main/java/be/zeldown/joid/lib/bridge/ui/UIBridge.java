@@ -14,7 +14,8 @@ import lombok.NonNull;
 
 public abstract class UIBridge implements IUIBridge {
 
-	@NonNull private final IndexedLinkedList<@NonNull UI> uiList;
+	@NonNull
+	private final IndexedLinkedList<@NonNull UI> uiList;
 
 	public UIBridge() {
 		this.uiList = new IndexedLinkedList<>();
@@ -25,73 +26,6 @@ public abstract class UIBridge implements IUIBridge {
 		final double width = window.getWidth();
 		final double height = window.getHeight();
 		this.uiList.forEach(ui -> ui.load(width, height));
-	}
-
-	public final void mousePressed(final @NonNull ClickType clickType) {
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMousePressed(clickType) || ui.getPopup().active()) {
-				break;
-			}
-		}
-	}
-
-	public final void mouseDragged(final @NonNull ClickType clickType, final long delaTime) {
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseDragged(clickType, delaTime) || ui.getPopup().active()) {
-				break;
-			}
-		}
-	}
-
-	public final void mouseReleased(final @NonNull ClickType clickType) {
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseReleased(clickType) || ui.getPopup().active()) {
-				break;
-			}
-		}
-	}
-
-	public final void mouseScroll(final int value) {
-		if (value == 0) {
-			return;
-		}
-
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseScroll(value) || ui.getPopup().active()) {
-				break;
-			}
-		}
-	}
-
-	public final void keyTyped(final char c, final @NonNull Key key) {
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (!ui.getData().active() || !ui.getData().visible()) {
-				continue;
-			}
-
-			if (key == Key.ESCAPE && ui.getData().closeable() && ui.onClose()) {
-				this.close(ui);
-				return;
-			}
-
-			if (ui.onKeyPressed(c, key) || ui.getPopup().active()) {
-				break;
-			}
-		}
-	}
-
-	public final void update() {
-		this.uiList.forEach(UI::onUpdate);
 	}
 
 	public final void draw() {
@@ -125,14 +59,81 @@ public abstract class UIBridge implements IUIBridge {
 		}
 	}
 
-	@Override
-	public @NonNull IndexedLinkedList<@NonNull UI> getUiList() {
-		return this.uiList;
+	public final void update() {
+		this.uiList.forEach(UI::onUpdate);
 	}
 
 	@Override
 	public boolean isOpened(final @NonNull UI ui) {
 		return this.uiList.contains(ui);
+	}
+
+	public final void mouseScroll(final int value) {
+		if (value == 0) {
+			return;
+		}
+
+		final List<UI> uiList = this.uiList.reversed();
+		for (int i = 0; i < uiList.size(); i++) {
+			final UI ui = uiList.get(i);
+			if (ui.getData().active() && ui.getData().visible() && ui.onMouseScroll(value) || ui.getPopup().active()) {
+				break;
+			}
+		}
+	}
+
+	@Override
+	public @NonNull IndexedLinkedList<@NonNull UI> getUiList() {
+		return this.uiList;
+	}
+
+	public final void keyTyped(final char c, final @NonNull Key key) {
+		final List<UI> uiList = this.uiList.reversed();
+		for (int i = 0; i < uiList.size(); i++) {
+			final UI ui = uiList.get(i);
+			if (!ui.getData().active() || !ui.getData().visible()) {
+				continue;
+			}
+
+			if (key == Key.ESCAPE && ui.getData().closeable() && ui.onClose()) {
+				this.close(ui);
+				return;
+			}
+
+			if (ui.onKeyPressed(c, key) || ui.getPopup().active()) {
+				break;
+			}
+		}
+	}
+
+	public final void mousePressed(final @NonNull ClickType clickType) {
+		final List<UI> uiList = this.uiList.reversed();
+		for (int i = 0; i < uiList.size(); i++) {
+			final UI ui = uiList.get(i);
+			if (ui.getData().active() && ui.getData().visible() && ui.onMousePressed(clickType) || ui.getPopup().active()) {
+				break;
+			}
+		}
+	}
+
+	public final void mouseReleased(final @NonNull ClickType clickType) {
+		final List<UI> uiList = this.uiList.reversed();
+		for (int i = 0; i < uiList.size(); i++) {
+			final UI ui = uiList.get(i);
+			if (ui.getData().active() && ui.getData().visible() && ui.onMouseReleased(clickType) || ui.getPopup().active()) {
+				break;
+			}
+		}
+	}
+
+	public final void mouseDragged(final @NonNull ClickType clickType, final long delaTime) {
+		final List<UI> uiList = this.uiList.reversed();
+		for (int i = 0; i < uiList.size(); i++) {
+			final UI ui = uiList.get(i);
+			if (ui.getData().active() && ui.getData().visible() && ui.onMouseDragged(clickType, delaTime) || ui.getPopup().active()) {
+				break;
+			}
+		}
 	}
 
 }
