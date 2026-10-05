@@ -1,110 +1,96 @@
 # MSDF Atlas
 
-How to generate the `.png` + `.json` pair that JOID's font system consumes.
+How to turn a `.ttf` or `.otf` into the `font.msdf` file JOID's font system consumes.
 
-## Tool: `msdf-atlas-gen`
+## The generator
 
-Download from [github.com/Chlumsky/msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen/releases).
-
-## Generate a font
-
-The exact command used to produce the fonts JOID ships with:
+JOID ships its own generator in the `:msdf` module. It is pure Java, runs on any OS, needs no native binary, and reads the kerning straight out of the font — both the legacy `kern` table and the `GPOS` pair positioning that modern fonts use.
 
 ```bash
-msdf-atlas-gen.exe -font font.ttf -charset charset.txt -dimensions 2048 2048 -imageout font.png -json font.json -type msdf -pxrange 24 -coloringstrategy distance
+./gradlew :msdf:generateFont -Pfont=/path/to/Inter-Regular.ttf -Poutput=assets/fonts/Inter-Regular
 ```
 
-Point `-font` at your TTF/OTF source, drop the characters you want in `charset.txt`, and you're done. The other flags are JOID's proven defaults.
+It writes a single `font.msdf` next to the `-Poutput` path.
 
 ### Parameters
 
-| Flag | Purpose |
-|---|---|
-| `-font` | Source TTF/OTF file |
-| `-charset` | List of characters to include (one per line) |
-| `-dimensions` | Atlas size in pixels |
-| `-imageout` | Output PNG path |
-| `-json` | Output JSON path (glyph metrics) |
-| `-type msdf` | Multi-channel SDF — best quality for UI fonts |
-| `-pxrange` | Distance field range (higher = smoother at small sizes, more blur at large sizes; 24 is a good default) |
-| `-coloringstrategy distance` | MSDF coloring algorithm (don't touch unless you know what you're doing) |
+| Property | Default | Purpose |
+|---|---|---|
+| `-Pfont` | — | Source `.ttf` or `.otf` file |
+| `-Poutput` | `build/font` | Directory that receives `font.msdf` |
+| `-Pcharset` | `msdf/charset.txt` | Codepoints to include |
+| `-Prange` | `24` | Distance field range in pixels — higher is smoother at small sizes, blurrier at large ones |
+| `-Pwidth` / `-Pheight` | `2048` | Atlas size in pixels |
+
+The glyph resolution is not a parameter: the generator binary-searches the largest em size whose glyphs still fit the atlas, and writes it into the file.
+
+### Regenerating the fonts JOID ships
+
+`msdf/fonts.txt` maps each bundled atlas to its source file. Point the task at a directory holding those files:
+
+```bash
+./gradlew :msdf:rebuildFonts -Pfonts=/path/to/font/sources
+```
 
 ## Charset
 
-The `charset.txt` file contains the characters to include, one per line or in a single line. A good starting set:
+`charset.txt` accepts ranges and single codepoints:
 
 ```
-ABCDEFGHIJKLMNOPQRSTUVWXYZ
-abcdefghijklmnopqrstuvwxyz
-0123456789
-!@#$%^&*()_+-=[]{}|;:,.<>?/~`'"\
- éèêëàâäôöûüùçÉÈÊËÀÂÄÔÖÛÜÙÇ
+[32, 563]
 ```
 
-For CJK, use a subset — full CJK is 30k+ glyphs and won't fit in a 2048×2048 atlas.
+That range covers Latin, Latin-1, Latin Extended-A and part of Extended-B — the set JOID's own fonts use. Codepoints the font does not provide are skipped, so the same charset works for every source.
 
-## Output structure
+For CJK, use a subset: a full CJK set runs past 30k glyphs and will not fit a 2048×2048 atlas.
 
-JOID expects this layout:
+## The `.msdf` file
+
+One file holds everything: atlas metrics, glyph bounds, kerning pairs and the multi-channel distance field, deflated as a whole. The field is stored with the same adaptive row filtering a PNG uses, so a complete font weighs about the same as the raw `.png` would on its own, with the metrics and the kerning table carried along for free.
 
 ```
 assets/
 └── fonts/
     └── MyFont/
-        ├── font.png
-        └── font.json
+        └── font.msdf
 ```
 
-Load them by passing the two streams to `FontLoader.load(pngStream, jsonStream)`.
+Load it with a single stream:
 
-## JSON schema
-
-`font.json` structure (simplified):
-
-```json
-{
-    "atlas": {
-        "type": "msdf",
-        "distanceRange": 24,
-        "size": 32,
-        "width": 2048,
-        "height": 2048,
-        "yOrigin": "bottom"
-    },
-    "metrics": {
-        "emSize": 1,
-        "lineHeight": 1.171875,
-        "ascender": 0.9296875,
-        "descender": -0.2421875,
-        ...
-    },
-    "glyphs": [
-        { "unicode": 65, "advance": 0.6, "planeBounds": {...}, "atlasBounds": {...} },
-        ...
-    ]
-}
+```java
+FontLoader.load(getClass().getResourceAsStream("/assets/fonts/MyFont/font.msdf"), font -> this.myFont = font);
 ```
 
-JOID's `FontLoader` handles both `yOrigin: bottom` and `yOrigin: top`.
+## Legacy atlases
+
+The `font.json` + `font.png` pair produced by [msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen) still loads, through the `FontInputStream` overloads:
+
+```java
+FontLoader.load(new FontInputStream(jsonStream, pngStream), font -> this.myFont = font);
+```
+
+Those atlases carry no kerning: `msdf-atlas-gen` reads only the `kern` table, which most modern fonts no longer ship.
 
 ## Multiple weights
 
-Generate one atlas per weight:
+Generate one atlas per weight, then load each one separately and bind them to different `TextInfo`s:
 
 ```bash
-msdf-atlas-gen -font Inter-Regular.ttf -imageout Regular/font.png -json Regular/font.json ...
-msdf-atlas-gen -font Inter-Bold.ttf -imageout Bold/font.png -json Bold/font.json ...
-msdf-atlas-gen -font Inter-Italic.ttf -imageout Italic/font.png -json Italic/font.json ...
+./gradlew :msdf:generateFont -Pfont=Inter-Regular.ttf -Poutput=assets/fonts/Inter-Regular
+./gradlew :msdf:generateFont -Pfont=Inter-Bold.ttf    -Poutput=assets/fonts/Inter-Bold
 ```
 
-Load each separately and bind them to different `TextInfo`s.
+A regular and a bold atlas can also be paired into one `CustomFont`, which is what the `§l` style switch draws from:
+
+```java
+FontLoader.load(regularStream, boldStream, font -> this.myFont = font);
+```
 
 ## Best practices
 
-- **`-pxrange 24`** is a good general-purpose default.
-- **`-dimensions 2048 2048`** fits most Latin fonts. Check the `overflow` warning — if the atlas overflows, bump to 4096 or trim the charset.
-- **Keep the PNG alpha channel.** Some tools strip it; JOID needs RGBA.
-- **Regenerate when changing the source font.** Even minor tweaks (spacing, hinting) require a new atlas.
+- **Keep the range at 24.** It is the value every bundled font uses.
+- **2048×2048 fits most Latin fonts.** If the generator reports a small em size, trim the charset rather than growing the atlas.
+- **Regenerate after any change to the source font.** Spacing, outlines and kerning are all baked into the file.
 
 ## See also
 

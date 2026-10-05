@@ -4,27 +4,20 @@ JOID rend le texte via des atlas MSDF (Multi-channel Signed Distance Field) — 
 
 ## `FontLoader.load`
 
-`FontLoader` est asynchrone — il délègue le parsing JSON et l'upload de texture à un pool d'exécuteurs et remet le `CustomFont` terminé à un callback.
+`FontLoader` est asynchrone — il délègue la lecture et l'upload de texture à un pool d'exécuteurs et remet le `CustomFont` terminé à un callback.
 
 ```java
-static void load(FontInputStream regular, Consumer<CustomFont> callback)
-static void load(FontInputStream regular, FontInputStream bold, Consumer<CustomFont> callback)
+static void load(InputStream packed, Consumer<CustomFont> callback)
+static void load(InputStream regular, InputStream bold, Consumer<CustomFont> callback)
 ```
 
-Un `FontInputStream` apparie les métadonnées JSON et l'atlas PNG :
-
-```java
-public FontInputStream(InputStream data, InputStream texture)            // data = .json, texture = .png
-```
+Chaque flux est un fichier `font.msdf`, produit par le générateur décrit dans [Atlas MSDF](msdf-atlas.md). Il porte ensemble l'atlas, les métriques des glyphes et la table de crénage.
 
 Chargement minimal :
 
 ```java
 FontLoader.load(
-    new FontInputStream(
-        getClass().getResourceAsStream("/fonts/Inter/font.json"),
-        getClass().getResourceAsStream("/fonts/Inter/font.png")
-    ),
+    getClass().getResourceAsStream("/fonts/Inter/font.msdf"),
     customFont -> this.interFont = customFont
 );
 ```
@@ -33,15 +26,26 @@ Atlas regular et bold :
 
 ```java
 FontLoader.load(
-    new FontInputStream(regularJson, regularPng),
-    new FontInputStream(boldJson, boldPng),
+    getClass().getResourceAsStream("/fonts/Inter-Regular/font.msdf"),
+    getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf"),
     customFont -> {
         // customFont.getRegular() et customFont.getBold() sont des Font
     }
 );
 ```
 
-Avec l'overload à un argument, la même police est stockée en regular et en bold sur le wrapper `CustomFont`.
+Avec l'overload à un flux, la même police est stockée en regular et en bold sur le wrapper `CustomFont`.
+
+Le couple `font.json` + `font.png` des anciens atlas se charge toujours, via les surcharges à `FontInputStream` :
+
+```java
+static void load(FontInputStream regular, Consumer<CustomFont> callback)
+static void load(FontInputStream regular, FontInputStream bold, Consumer<CustomFont> callback)
+```
+
+### Crénage
+
+Les paires de crénage voyagent dans le fichier `font.msdf` et s'appliquent seules, au dessin comme à la mesure — `TextInfo.getWidth`, le retour à la ligne et les curseurs des champs de texte en tiennent compte. Rien à activer.
 
 ## `DemoFont.MONTSERRAT` embarqué
 

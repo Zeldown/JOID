@@ -1,7 +1,5 @@
 package be.zeldown.joid.lib.font.dto.font;
 
-import java.io.InputStream;
-
 import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.resource.ResourceBuilder;
 import lombok.Getter;
@@ -15,7 +13,7 @@ public class Font {
 	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).blocking().linear();
 
 	@NonNull private final FontInfo fontInfo;
-	@NonNull private final InputStream atlas;
+	@NonNull private final Object atlas;
 
 	private Resource texture;
 

@@ -85,7 +85,7 @@ Entry points live in the `be.zeldown.joid.impl.<module>` package of each backend
 ## Features
 
 - 🧱 **Node-based UI** — Hierarchical component system with layout nodes (flex, grid, scrollbar, container) and design nodes (shapes, text, images, text fields, sliders, charts, video…)
-- 🎨 **MSDF font rendering** — Crisp text at any scale using Multi-channel Signed Distance Fields
+- 🎨 **MSDF font rendering** — Crisp text at any scale using Multi-channel Signed Distance Fields, with kerning, from atlases JOID generates itself
 - 🌈 **Shader pipeline** — Composable multi-pass GPU effects: blur, border, gradient, circle, rounded corners
 - ✨ **Tween animations** — Full Universal Tween Engine integration (easing, paths, timelines, callbacks)
 - 🎯 **Reactive signals** — Observable values with conditional watches that auto-reload nodes
@@ -122,6 +122,6 @@ It also grants you the patents of every contributor, and reserves the **JOID** n
 ## Credits
 
 - [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine (Apache-2.0, bundled in `lib/animation/tweenengine`)
-- [msdfgen](https://github.com/Chlumsky/msdfgen) and [msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen) by **Viktor Chlumský** — MSDF font atlases (MIT, generator bundled in `msdf/`)
+- [msdfgen](https://github.com/Chlumsky/msdfgen) by **Viktor Chlumský** — the multi-channel signed distance field algorithm, which JOID reimplements in Java in the `msdf/` module
 - [LWJGL](https://www.lwjgl.org/) — OpenGL / Vulkan / OpenAL Java bindings used by the backends (BSD-3-Clause)
 - [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco** — Video decoding (Apache-2.0; the FFmpeg builds carry their own terms)

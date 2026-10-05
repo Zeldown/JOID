@@ -4,6 +4,7 @@ include 'core'
 include 'glfw', 'openal'
 include 'lwjgl2', 'lwjgl3', 'vulkan'
 include 'testkit'
+include 'msdf'
 
 ['glfw', 'openal', 'lwjgl2', 'lwjgl3', 'vulkan'].each { name ->
     project(":$name").projectDir = file("impl/$name")

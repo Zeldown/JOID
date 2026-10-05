@@ -1,5 +1,6 @@
 package be.zeldown.joid.lib.font.impl.custom;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +15,7 @@ import com.google.gson.JsonObject;
 import be.zeldown.joid.lib.font.dto.font.Font;
 import be.zeldown.joid.lib.font.dto.font.FontInfo;
 import be.zeldown.joid.lib.font.dto.font.FontInputStream;
+import be.zeldown.joid.lib.font.dto.font.MsdfFile;
 import be.zeldown.joid.lib.utils.thread.ThreadUtils;
 import lombok.NonNull;
 
@@ -36,6 +38,30 @@ public final class CustomFontLoader {
 			future.complete(new CustomFont(regular, bold));
 		});
 		return future;
+	}
+
+	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull InputStream packed) {
+		return CustomFontLoader.load(packed, null);
+	}
+
+	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull InputStream regular, final InputStream bold) {
+		final CompletableFuture<CustomFont> future = new CompletableFuture<>();
+		CustomFontLoader.EXECUTOR.submit(() -> {
+			try {
+				final Font regularFont = CustomFontLoader.read(regular);
+				future.complete(new CustomFont(regularFont, bold == null ? regularFont : CustomFontLoader.read(bold)));
+			} catch (final Throwable throwable) {
+				future.completeExceptionally(throwable);
+			}
+		});
+		return future;
+	}
+
+	private static @NonNull Font read(final InputStream stream) {
+		final MsdfFile file = MsdfFile.read(stream);
+		final Font font = new Font(file.getFontInfo(), file.getImage());
+		font.getTexture();
+		return font;
 	}
 
 	private static void loadFont(final @NonNull FontInputStream regularInputStream, final @NonNull FontInputStream boldInputStream, final @NonNull BiConsumer<@NonNull Font, @NonNull Font> callback) {

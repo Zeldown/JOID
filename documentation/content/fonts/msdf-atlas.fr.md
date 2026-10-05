@@ -1,112 +1,98 @@
-# MSDF Atlas
+# Atlas MSDF
 
-Comment générer la paire `.png` + `.json` que le système de polices de JOID consomme.
+Comment transformer un `.ttf` ou un `.otf` en fichier `font.msdf`, celui que le système de polices de JOID consomme.
 
-## Outil : `msdf-atlas-gen`
+## Le générateur
 
-Téléchargez depuis [github.com/Chlumsky/msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen/releases).
-
-## Générer une police
-
-La commande exacte utilisée pour produire les polices livrées avec JOID :
+JOID embarque son propre générateur dans le module `:msdf`. Il est écrit en Java pur, tourne sur n'importe quel OS, ne demande aucun binaire natif, et lit le crénage directement dans la police — aussi bien la table `kern` historique que le positionnement par paires `GPOS` qu'utilisent les polices modernes.
 
 ```bash
-msdf-atlas-gen.exe -font font.ttf -charset charset.txt -dimensions 2048 2048 -imageout font.png -json font.json -type msdf -pxrange 24 -coloringstrategy distance
+./gradlew :msdf:generateFont -Pfont=/chemin/vers/Inter-Regular.ttf -Poutput=assets/fonts/Inter-Regular
 ```
 
-Pointez `-font` vers votre source TTF/OTF, mettez les caractères voulus dans `charset.txt`, et c'est tout. Les autres flags sont les défauts validés de JOID.
+Il écrit un unique `font.msdf` dans le dossier `-Poutput`.
 
 ### Paramètres
 
-| Flag | Rôle |
-|---|---|
-| `-font` | Fichier source TTF/OTF |
-| `-charset` | Liste de caractères à inclure (un par ligne) |
-| `-dimensions` | Taille de l'atlas en pixels |
-| `-imageout` | Chemin PNG en sortie |
-| `-json` | Chemin JSON en sortie (metrics de glyphes) |
-| `-type msdf` | SDF multi-canal — meilleure qualité pour les polices UI |
-| `-pxrange` | Portée du distance field (plus haut = plus lisse aux petites tailles, plus flou aux grandes ; 24 est un bon défaut) |
-| `-coloringstrategy distance` | Algo de coloration MSDF (ne pas toucher sauf si vous savez ce que vous faites) |
+| Propriété | Défaut | Rôle |
+|---|---|---|
+| `-Pfont` | — | Fichier source `.ttf` ou `.otf` |
+| `-Poutput` | `build/font` | Dossier qui reçoit `font.msdf` |
+| `-Pcharset` | `msdf/charset.txt` | Points de code à inclure |
+| `-Prange` | `24` | Portée du champ de distance en pixels — plus haut adoucit en petit, floute en grand |
+| `-Pwidth` / `-Pheight` | `2048` | Taille de l'atlas en pixels |
 
-## Charset
+La résolution des glyphes n'est pas un paramètre : le générateur cherche par dichotomie la plus grande taille d'em dont les glyphes tiennent encore dans l'atlas, et l'inscrit dans le fichier.
 
-Le fichier `charset.txt` contient les caractères à inclure, un par ligne ou sur une seule ligne. Un bon set de départ :
+### Régénérer les polices livrées avec JOID
 
-```
-ABCDEFGHIJKLMNOPQRSTUVWXYZ
-abcdefghijklmnopqrstuvwxyz
-0123456789
-!@#$%^&*()_+-=[]{}|;:,.<>?/~`'"\
- éèêëàâäôöûüùçÉÈÊËÀÂÄÔÖÛÜÙÇ
+`msdf/fonts.txt` associe chaque atlas embarqué à son fichier source. Pointez la tâche vers un dossier contenant ces fichiers :
+
+```bash
+./gradlew :msdf:rebuildFonts -Pfonts=/chemin/vers/les/sources
 ```
 
-Pour CJK, utilisez un sous-ensemble — le CJK complet fait 30 000+ glyphes et ne tient pas dans un atlas 2048×2048.
+## Jeu de caractères
 
-## Structure de sortie
+`charset.txt` accepte des plages et des points de code isolés :
 
-JOID attend cette disposition :
+```
+[32, 563]
+```
+
+Cette plage couvre le latin, le latin-1, le latin étendu A et une partie de l'étendu B — le jeu qu'utilisent les polices de JOID. Les points de code absents de la police sont ignorés, le même jeu convient donc à toutes les sources.
+
+Pour le CJK, prenez un sous-ensemble : un jeu complet dépasse les 30 000 glyphes et ne tiendra pas dans un atlas 2048×2048.
+
+## Le fichier `.msdf`
+
+Un seul fichier contient tout : métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul, les métriques et la table de crénage venant en prime.
 
 ```
 assets/
 └── fonts/
-    └── MyFont/
-        ├── font.png
-        └── font.json
+    └── MaPolice/
+        └── font.msdf
 ```
 
-Chargez-les en passant les deux streams à `FontLoader.load(pngStream, jsonStream)`.
+Chargez-le avec un seul flux :
 
-## Schéma JSON
-
-Structure `font.json` (simplifiée) :
-
-```json
-{
-    "atlas": {
-        "type": "msdf",
-        "distanceRange": 24,
-        "size": 32,
-        "width": 2048,
-        "height": 2048,
-        "yOrigin": "bottom"
-    },
-    "metrics": {
-        "emSize": 1,
-        "lineHeight": 1.171875,
-        "ascender": 0.9296875,
-        "descender": -0.2421875,
-        ...
-    },
-    "glyphs": [
-        { "unicode": 65, "advance": 0.6, "planeBounds": {...}, "atlasBounds": {...} },
-        ...
-    ]
-}
+```java
+FontLoader.load(getClass().getResourceAsStream("/assets/fonts/MaPolice/font.msdf"), font -> this.maPolice = font);
 ```
 
-Le `FontLoader` de JOID gère à la fois `yOrigin: bottom` et `yOrigin: top`.
+## Atlas hérités
 
-## Plusieurs poids
+Le couple `font.json` + `font.png` produit par [msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen) se charge toujours, via les surcharges à `FontInputStream` :
 
-Générez un atlas par poids :
+```java
+FontLoader.load(new FontInputStream(fluxJson, fluxPng), font -> this.maPolice = font);
+```
+
+Ces atlas ne portent aucun crénage : `msdf-atlas-gen` ne lit que la table `kern`, que la plupart des polices modernes ne fournissent plus.
+
+## Plusieurs graisses
+
+Générez un atlas par graisse, puis chargez chacun séparément et associez-les à des `TextInfo` différents :
 
 ```bash
-msdf-atlas-gen -font Inter-Regular.ttf -imageout Regular/font.png -json Regular/font.json ...
-msdf-atlas-gen -font Inter-Bold.ttf -imageout Bold/font.png -json Bold/font.json ...
-msdf-atlas-gen -font Inter-Italic.ttf -imageout Italic/font.png -json Italic/font.json ...
+./gradlew :msdf:generateFont -Pfont=Inter-Regular.ttf -Poutput=assets/fonts/Inter-Regular
+./gradlew :msdf:generateFont -Pfont=Inter-Bold.ttf    -Poutput=assets/fonts/Inter-Bold
 ```
 
-Chargez chacun séparément et liez-les à des `TextInfo` différents.
+Une graisse normale et une grasse peuvent aussi être réunies dans un seul `CustomFont`, celui dans lequel puise le style `§l` :
+
+```java
+FontLoader.load(fluxRegular, fluxBold, font -> this.maPolice = font);
+```
 
 ## Bonnes pratiques
 
-- **`-pxrange 24`** est un bon défaut général.
-- **`-dimensions 2048 2048`** tient la plupart des polices Latines. Surveillez l'avertissement `overflow` — si l'atlas déborde, passez à 4096 ou réduisez le charset.
-- **Conservez le canal alpha du PNG.** Certains outils l'enlèvent ; JOID a besoin de RGBA.
-- **Régénérez au changement de police source.** Même des ajustements mineurs (espacement, hinting) imposent un nouvel atlas.
+- **Gardez la portée à 24.** C'est la valeur de toutes les polices embarquées.
+- **2048×2048 suffit à la plupart des polices latines.** Si le générateur annonce une petite taille d'em, réduisez le jeu de caractères plutôt que d'agrandir l'atlas.
+- **Régénérez après toute modification de la police source.** Chasse, contours et crénage sont tous figés dans le fichier.
 
 ## Voir aussi
 
-- [Custom Fonts](custom-font.md) — chargement et utilisation des polices.
+- [Polices personnalisées](custom-font.md) — charger et utiliser une police.
 - [TextNode](../nodes/design/text.md).

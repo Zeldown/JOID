@@ -4,27 +4,20 @@ JOID renders text through MSDF (Multi-channel Signed Distance Field) atlases —
 
 ## `FontLoader.load`
 
-`FontLoader` is asynchronous — it off-loads JSON parsing and texture upload to an executor pool and hands the finished `CustomFont` to a callback.
+`FontLoader` is asynchronous — it off-loads parsing and texture upload to an executor pool and hands the finished `CustomFont` to a callback.
 
 ```java
-static void load(FontInputStream regular, Consumer<CustomFont> callback)
-static void load(FontInputStream regular, FontInputStream bold, Consumer<CustomFont> callback)
+static void load(InputStream packed, Consumer<CustomFont> callback)
+static void load(InputStream regular, InputStream bold, Consumer<CustomFont> callback)
 ```
 
-A `FontInputStream` pairs the JSON metadata with the PNG atlas:
-
-```java
-public FontInputStream(InputStream data, InputStream texture)            // data = .json, texture = .png
-```
+Each stream is one `font.msdf` file, produced by the generator described in [MSDF Atlas](msdf-atlas.md). It carries the atlas, the glyph metrics and the kerning table together.
 
 Minimal load:
 
 ```java
 FontLoader.load(
-    new FontInputStream(
-        getClass().getResourceAsStream("/fonts/Inter/font.json"),
-        getClass().getResourceAsStream("/fonts/Inter/font.png")
-    ),
+    getClass().getResourceAsStream("/fonts/Inter/font.msdf"),
     customFont -> this.interFont = customFont
 );
 ```
@@ -33,15 +26,26 @@ Both regular and bold atlases:
 
 ```java
 FontLoader.load(
-    new FontInputStream(regularJson, regularPng),
-    new FontInputStream(boldJson, boldPng),
+    getClass().getResourceAsStream("/fonts/Inter-Regular/font.msdf"),
+    getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf"),
     customFont -> {
         // customFont.getRegular() and customFont.getBold() are Font instances
     }
 );
 ```
 
-If the single-argument overload is used, the same font is stored as both regular and bold on the `CustomFont` wrapper.
+If the single-stream overload is used, the same font is stored as both regular and bold on the `CustomFont` wrapper.
+
+The `font.json` + `font.png` pair of older atlases still loads, through the `FontInputStream` overloads:
+
+```java
+static void load(FontInputStream regular, Consumer<CustomFont> callback)
+static void load(FontInputStream regular, FontInputStream bold, Consumer<CustomFont> callback)
+```
+
+### Kerning
+
+Kerning pairs travel inside the `font.msdf` file and apply on their own, both when text is drawn and when it is measured — `TextInfo.getWidth`, line wrapping and text field cursors all account for them. Nothing to enable.
 
 ## Bundled `DemoFont.MONTSERRAT`
 

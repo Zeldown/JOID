@@ -1,7 +1,8 @@
 package be.zeldown.joid.demo;
 
+import java.io.InputStream;
+
 import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.font.dto.font.FontInputStream;
 import be.zeldown.joid.lib.font.impl.custom.CustomFont;
 import be.zeldown.joid.lib.font.impl.custom.CustomFontLoader;
 
@@ -17,12 +18,12 @@ public class DemoFont {
 		DemoFont.SPACE_GROTESK = CustomFontLoader.load(DemoFont.get("/assets/demo/fonts/Space-Grotesk/")).join();
 	}
 
-	private static FontInputStream get(String path) {
+	private static InputStream get(String path) {
 		if (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
 		}
 
-		return new FontInputStream(JOID.class.getResourceAsStream(path + "/font.json"), JOID.class.getResourceAsStream(path + "/font.png"));
+		return JOID.class.getResourceAsStream(path + "/font.msdf");
 	}
 
 	public static boolean isLoaded() {
