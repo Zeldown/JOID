@@ -60,12 +60,12 @@ public final class MsdfGenerator {
 			}
 		});
 
-		final Map<Long, Float> kerning = Kerning.read(file, font, codepoints);
+		final Kerning kerning = Kerning.read(file, font, codepoints);
 		output.mkdirs();
 
 		final File target = new File(output, "font.msdf");
 		MsdfWriter.write(target, glyphs, kerning, metrics, size, range, pixels, width, height);
-		System.out.println(file.getName() + " -> " + glyphs.size() + " glyphs, " + kerning.size() + " kerning pairs, size " + size + "px, " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
+		System.out.println(file.getName() + " -> " + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px, " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	private static double measure(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {

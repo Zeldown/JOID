@@ -46,7 +46,7 @@ For CJK, use a subset: a full CJK set runs past 30k glyphs and will not fit a 20
 
 ## The `.msdf` file
 
-One file holds everything: atlas metrics, glyph bounds, kerning pairs and the multi-channel distance field, deflated as a whole. The field is stored with the same adaptive row filtering a PNG uses, so a complete font weighs about the same as the raw `.png` would on its own, with the metrics and the kerning table carried along for free.
+One file holds everything: atlas metrics, glyph bounds, kerning pairs and the multi-channel distance field, deflated as a whole. The field is stored with the same adaptive row filtering a PNG uses, so a complete font weighs about the same as the raw `.png` would on its own. The kerning table is grouped by first codepoint and written as variable-length deltas in font units, which costs a tenth of what a flat pair list would: fifty thousand pairs fit in fifteen kilobytes.
 
 ```
 assets/

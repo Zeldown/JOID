@@ -4,6 +4,7 @@ import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
+import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
 import java.io.File;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public final class Glyphs {
 
 	public static Shape outline(final Font font, final int codepoint) {
 		final GlyphVector vector = font.createGlyphVector(Glyphs.CONTEXT, new String(Character.toChars(codepoint)));
-		final PathIterator iterator = vector.getGlyphOutline(0).getPathIterator(null);
+		final PathIterator iterator = new Area(vector.getGlyphOutline(0)).getPathIterator(null);
 		final Shape shape = new Shape();
 
 		final double[] segment = new double[6];

@@ -8,17 +8,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
+
+import be.zeldown.joid.msdf.font.Kerning;
 
 public final class MsdfWriter {
 
 	private static final int BYTES   = 3;
-	private static final int VERSION = 1;
+	private static final int VERSION = 2;
 
 	private static final byte[] MAGIC = {'J', 'O', 'I', 'D', 'M', 'S', 'D', 'F'};
 
-	public static void write(final File file, final List<GlyphEntry> glyphs, final Map<Long, Float> kerning, final double[] metrics, final double size, final double range, final int[] pixels, final int width, final int height) throws IOException {
+	public static void write(final File file, final List<GlyphEntry> glyphs, final Kerning kerning, final double[] metrics, final double size, final double range, final int[] pixels, final int width, final int height) throws IOException {
 		try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file))) {
 			output.write(MsdfWriter.MAGIC);
 
@@ -50,17 +53,45 @@ public final class MsdfWriter {
 					}
 				}
 
-				data.writeInt(kerning.size());
-				for (final Map.Entry<Long, Float> entry : kerning.entrySet()) {
-					data.writeInt((int) (entry.getKey() >> 32));
-					data.writeInt(entry.getKey().intValue());
-					data.writeFloat(entry.getValue());
-				}
+				data.writeShort(kerning.getUnitsPerEm());
+				MsdfWriter.kerning(data, kerning.getKerning());
 
 				data.write(MsdfWriter.scanlines(pixels, width, height));
 			}
 			deflater.end();
 		}
+	}
+
+	private static void kerning(final DataOutputStream data, final Map<Long, Integer> pairs) throws IOException {
+		final Map<Integer, Map<Integer, Integer>> groups = new TreeMap<>();
+		for (final Map.Entry<Long, Integer> entry : pairs.entrySet()) {
+			groups.computeIfAbsent((int) (entry.getKey() >> 32), key -> new TreeMap<>()).put(entry.getKey().intValue(), entry.getValue());
+		}
+
+		MsdfWriter.variable(data, groups.size());
+		int first = 0;
+		for (final Map.Entry<Integer, Map<Integer, Integer>> group : groups.entrySet()) {
+			MsdfWriter.variable(data, group.getKey() - first);
+			MsdfWriter.variable(data, group.getValue().size());
+			first = group.getKey();
+
+			int second = 0;
+			for (final Map.Entry<Integer, Integer> entry : group.getValue().entrySet()) {
+				MsdfWriter.variable(data, entry.getKey() - second);
+				MsdfWriter.variable(data, entry.getValue() << 1 ^ entry.getValue() >> 31);
+				second = entry.getKey();
+			}
+		}
+	}
+
+	private static void variable(final DataOutputStream data, final int value) throws IOException {
+		int remaining = value;
+		while ((remaining & ~0x7F) != 0) {
+			data.writeByte(remaining & 0x7F | 0x80);
+			remaining >>>= 7;
+		}
+
+		data.writeByte(remaining);
 	}
 
 	private static byte[] scanlines(final int[] pixels, final int width, final int height) {

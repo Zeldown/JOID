@@ -46,7 +46,7 @@ Pour le CJK, prenez un sous-ensemble : un jeu complet dépasse les 30 000 glyphe
 
 ## Le fichier `.msdf`
 
-Un seul fichier contient tout : métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul, les métriques et la table de crénage venant en prime.
+Un seul fichier contient tout : métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul. La table de crénage est groupée par premier codepoint et écrite en deltas de taille variable, en unités de fonte : elle coûte un dixième d'une liste de paires à plat, cinquante mille paires tenant dans quinze kilo-octets.
 
 ```
 assets/

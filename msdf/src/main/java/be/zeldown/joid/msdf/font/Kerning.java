@@ -3,42 +3,59 @@ package be.zeldown.joid.msdf.font;
 import java.awt.Font;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+
+import lombok.Getter;
 
 public final class Kerning {
 
+	private static final int KERN = 0x6B65726E;
+
 	private final byte[] data;
+	private final int[]  glyphs;
 	private final Map<String, Integer> tables = new HashMap<>();
 	private final Map<Long, Integer> pairs = new HashMap<>();
+	@Getter private final Map<Long, Integer> kerning = new LinkedHashMap<>();
 
+	@Getter
 	private int unitsPerEm = 1000;
 
-	private Kerning(final byte[] data) {
+	private Kerning(final byte[] data, final int[] glyphs) {
 		this.data = data;
+		this.glyphs = glyphs;
 	}
 
-	public static Map<Long, Float> read(final File file, final Font font, final int[] codepoints) throws Exception {
-		final Kerning reader = new Kerning(Files.readAllBytes(file.toPath()));
-		reader.parse();
-
+	public static Kerning read(final File file, final Font font, final int[] codepoints) throws Exception {
 		final Map<Integer, Integer> glyphs = new HashMap<>();
 		for (final int codepoint : codepoints) {
 			glyphs.put(codepoint, Glyphs.code(font, codepoint));
 		}
 
-		final Map<Long, Float> kerning = new LinkedHashMap<>();
+		final int[] sorted = new int[glyphs.size()];
+		int index = 0;
+		for (final int glyph : glyphs.values()) {
+			sorted[index++] = glyph;
+		}
+
+		Arrays.sort(sorted);
+		final Kerning reader = new Kerning(Files.readAllBytes(file.toPath()), sorted);
+		reader.parse();
+
 		for (final int first : codepoints) {
 			for (final int second : codepoints) {
 				final Integer value = reader.pairs.get((long) glyphs.get(first) << 32 | glyphs.get(second) & 0xFFFFFFFFL);
 				if (value != null && value != 0) {
-					kerning.put((long) first << 32 | second & 0xFFFFFFFFL, (float) value / reader.unitsPerEm);
+					reader.kerning.put((long) first << 32 | second & 0xFFFFFFFFL, value);
 				}
 			}
 		}
 
-		return kerning;
+		return reader;
 	}
 
 	private void parse() {
@@ -54,14 +71,14 @@ public final class Kerning {
 			this.unitsPerEm = this.unsigned(head + 18);
 		}
 
-		final Integer kern = this.tables.get("kern");
-		if (kern != null) {
-			this.parseKern(kern);
-		}
-
 		final Integer gpos = this.tables.get("GPOS");
 		if (gpos != null) {
 			this.parseGpos(gpos);
+		}
+
+		final Integer kern = this.tables.get("kern");
+		if (kern != null && this.pairs.isEmpty()) {
+			this.parseKern(kern);
 		}
 	}
 
@@ -75,7 +92,7 @@ public final class Kerning {
 				final int pairs = this.unsigned(subtable + 6);
 				for (int pair = 0; pair < pairs; pair++) {
 					final int record = subtable + 14 + pair * 6;
-					this.pair(this.unsigned(record), this.unsigned(record + 2), this.signed(record + 4));
+					this.pair(this.pairs, this.unsigned(record), this.unsigned(record + 2), this.signed(record + 4));
 				}
 			}
 
@@ -84,21 +101,47 @@ public final class Kerning {
 	}
 
 	private void parseGpos(final int offset) {
+		final int featureList = offset + this.unsigned(offset + 6);
 		final int lookupList = offset + this.unsigned(offset + 8);
-		final int lookups = this.unsigned(lookupList);
-		for (int i = 0; i < lookups; i++) {
-			final int lookup = lookupList + this.unsigned(lookupList + 2 + i * 2);
-			final int type = this.unsigned(lookup);
-			final int subtables = this.unsigned(lookup + 4);
-			for (int subtable = 0; subtable < subtables; subtable++) {
-				this.parseLookup(type, lookup + this.unsigned(lookup + 6 + subtable * 2));
+		final int features = this.unsigned(featureList);
+		final Set<Integer> parsed = new HashSet<>();
+
+		for (int i = 0; i < features; i++) {
+			final int record = featureList + 2 + i * 6;
+			if (this.integer(record) == Kerning.KERN) {
+				this.parseFeature(lookupList, featureList + this.unsigned(record + 4), parsed);
 			}
 		}
 	}
 
-	private void parseLookup(final int type, final int offset) {
+	private void parseFeature(final int lookupList, final int feature, final Set<Integer> parsed) {
+		final int lookups = this.unsigned(feature + 2);
+		for (int i = 0; i < lookups; i++) {
+			final int index = this.unsigned(feature + 4 + i * 2);
+			if (parsed.add(index)) {
+				this.parseLookup(lookupList + this.unsigned(lookupList + 2 + index * 2));
+			}
+		}
+	}
+
+	private void parseLookup(final int offset) {
+		final Map<Long, Integer> lookup = new HashMap<>();
+		final int type = this.unsigned(offset);
+		final int subtables = this.unsigned(offset + 4);
+		for (int i = 0; i < subtables; i++) {
+			this.parseSubtable(lookup, type, offset + this.unsigned(offset + 6 + i * 2));
+		}
+
+		for (final Map.Entry<Long, Integer> entry : lookup.entrySet()) {
+			if (entry.getValue() != 0) {
+				this.pairs.merge(entry.getKey(), entry.getValue(), Integer::sum);
+			}
+		}
+	}
+
+	private void parseSubtable(final Map<Long, Integer> lookup, final int type, final int offset) {
 		if (type == 9) {
-			this.parseLookup(this.unsigned(offset + 2), offset + this.integer(offset + 4));
+			this.parseSubtable(lookup, this.unsigned(offset + 2), offset + this.integer(offset + 4));
 			return;
 		}
 
@@ -124,7 +167,7 @@ public final class Kerning {
 				final int values = this.unsigned(set);
 				for (int value = 0; value < values; value++) {
 					final int record = set + 2 + value * (2 + firstSize + secondSize);
-					this.pair(coverage[i], this.unsigned(record), this.signed(record + 2 + advance));
+					this.pair(lookup, coverage[i], this.unsigned(record), this.signed(record + 2 + advance));
 				}
 			}
 			return;
@@ -145,17 +188,14 @@ public final class Kerning {
 				continue;
 			}
 
-			for (int glyphSecond = 0; glyphSecond < secondClassMap.length; glyphSecond++) {
-				final int secondClass = secondClassMap[glyphSecond];
+			for (final int glyphSecond : this.glyphs) {
+				final int secondClass = glyphSecond < secondClassMap.length ? secondClassMap[glyphSecond] : 0;
 				if (secondClass >= secondCount) {
 					continue;
 				}
 
 				final int record = offset + 16 + (firstClass * secondCount + secondClass) * (firstSize + secondSize);
-				final int value = this.signed(record + advance);
-				if (value != 0) {
-					this.pair(glyph, glyphSecond, value);
-				}
+				this.pair(lookup, glyph, glyphSecond, this.signed(record + advance));
 			}
 		}
 	}
@@ -218,9 +258,9 @@ public final class Kerning {
 		return classes;
 	}
 
-	private void pair(final int first, final int second, final int value) {
-		if (value != 0) {
-			this.pairs.put((long) first << 32 | second & 0xFFFFFFFFL, value);
+	private void pair(final Map<Long, Integer> target, final int first, final int second, final int value) {
+		if (Arrays.binarySearch(this.glyphs, first) >= 0 && Arrays.binarySearch(this.glyphs, second) >= 0) {
+			target.putIfAbsent((long) first << 32 | second & 0xFFFFFFFFL, value);
 		}
 	}
 

@@ -34,12 +34,12 @@ public final class GlyphEntry {
 
 	public void measure(final double size, final double range) {
 		final double margin = range / size / 2D;
-		this.left = Math.floor((this.bounds[0] - margin) * size) / size;
-		this.bottom = Math.floor((this.bounds[1] - margin) * size) / size;
-		this.right = Math.ceil((this.bounds[2] + margin) * size) / size;
-		this.top = Math.ceil((this.bounds[3] + margin) * size) / size;
-		this.width = (int) Math.round((this.right - this.left) * size);
-		this.height = (int) Math.round((this.top - this.bottom) * size);
+		this.left = this.bounds[0] - margin;
+		this.bottom = this.bounds[1] - margin;
+		this.width = (int) Math.ceil((this.bounds[2] + margin - this.left) * size);
+		this.height = (int) Math.ceil((this.bounds[3] + margin - this.bottom) * size);
+		this.right = this.left + this.width / size;
+		this.top = this.bottom + this.height / size;
 	}
 
 }

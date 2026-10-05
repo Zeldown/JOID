@@ -67,17 +67,15 @@ public final class Edge {
 			double parameter = (qx * bx + qy * by) / square;
 			parameter = parameter < 0D ? 0D : parameter > 1D ? 1D : parameter;
 
-			final double dx = qx - bx * parameter;
-			final double dy = qy - by * parameter;
+			final double dx = parameter <= 0D ? qx : parameter >= 1D ? px - this.x[i + 1] : qx - bx * parameter;
+			final double dy = parameter <= 0D ? qy : parameter >= 1D ? py - this.y[i + 1] : qy - by * parameter;
 			final double distance = Math.sqrt(dx * dx + dy * dy);
 			if (distance > Math.abs(result.getDistance())) {
 				continue;
 			}
 
 			final double sign = qx * by - qy * bx;
-			final double ex = parameter <= 0D ? qx : px - this.x[i + 1];
-			final double ey = parameter <= 0D ? qy : py - this.y[i + 1];
-			final double orthogonal = parameter <= 0D || parameter >= 1D ? Math.abs((ex * bx + ey * by) / (Math.sqrt(square) * Math.max(distance, 1E-12D))) : 0D;
+			final double orthogonal = parameter <= 0D || parameter >= 1D ? Math.abs((dx * bx + dy * by) / (Math.sqrt(square) * Math.max(distance, 1E-12D))) : 0D;
 			if (distance == Math.abs(result.getDistance()) && orthogonal >= result.getOrthogonality()) {
 				continue;
 			}

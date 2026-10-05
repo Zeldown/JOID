@@ -20,7 +20,7 @@ import lombok.NonNull;
 public final class MsdfFile {
 
 	public static final int BYTES   = 3;
-	public static final int VERSION = 1;
+	public static final int VERSION = 2;
 
 	public static final byte[] MAGIC = {'J', 'O', 'I', 'D', 'M', 'S', 'D', 'F'};
 
@@ -68,16 +68,39 @@ public final class MsdfFile {
 				glyphs.put(unicode, new Glyph(unicode, advance, null, null));
 			}
 
-			final int kerningCount = input.readInt();
-			final Map<Long, Float> kerning = new HashMap<>(kerningCount * 2);
-			for (int i = 0; i < kerningCount; i++) {
-				kerning.put((long) input.readInt() << 32 | input.readInt() & 0xFFFFFFFFL, input.readFloat());
+			final int unitsPerEm = input.readUnsignedShort();
+			final int groups = MsdfFile.variable(input);
+			final Map<Long, Float> kerning = new HashMap<>();
+			int first = 0;
+			for (int group = 0; group < groups; group++) {
+				first += MsdfFile.variable(input);
+				final int pairs = MsdfFile.variable(input);
+
+				int second = 0;
+				for (int pair = 0; pair < pairs; pair++) {
+					second += MsdfFile.variable(input);
+					final int value = MsdfFile.variable(input);
+					kerning.put((long) first << 32 | second & 0xFFFFFFFFL, (value >>> 1 ^ -(value & 1)) / (float) unitsPerEm);
+				}
 			}
 
 			return new MsdfFile(new FontInfo(atlas, metrics, glyphs, kerning), MsdfFile.image(input, width, height));
 		} catch (final IOException exception) {
 			throw new RuntimeException("Unable to read the msdf font", exception);
 		}
+	}
+
+	private static int variable(final DataInputStream input) throws IOException {
+		int value = 0;
+		int shift = 0;
+		int part;
+		do {
+			part = input.readUnsignedByte();
+			value |= (part & 0x7F) << shift;
+			shift += 7;
+		} while ((part & 0x80) != 0);
+
+		return value;
 	}
 
 	private static BufferedImage image(final DataInputStream input, final int width, final int height) throws IOException {

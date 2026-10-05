@@ -12,7 +12,9 @@ public final class Msdf {
 		}
 
 		final double[] field = new double[width * height * 3];
+		final double[] truth = new double[width * height];
 		final SignedDistance candidate = new SignedDistance();
+		final SignedDistance shortest = new SignedDistance();
 		final SignedDistance[] closest = {new SignedDistance(), new SignedDistance(), new SignedDistance()};
 
 		for (int y = 0; y < height; y++) {
@@ -20,12 +22,17 @@ public final class Msdf {
 				final double px = left + (x + 0.5D) / size;
 				final double py = top - (y + 0.5D) / size;
 
+				shortest.reset();
 				closest[0].reset();
 				closest[1].reset();
 				closest[2].reset();
 
 				for (final Edge edge : edges) {
 					edge.distance(px, py, candidate);
+					if (candidate.closerThan(shortest)) {
+						shortest.copy(candidate);
+					}
+
 					for (int channel = 0; channel < 3; channel++) {
 						if ((edge.getColor() & 1 << channel) != 0 && candidate.closerThan(closest[channel])) {
 							closest[channel].copy(candidate);
@@ -34,6 +41,7 @@ public final class Msdf {
 					}
 				}
 
+				truth[x + y * width] = 0.5D - shortest.getDistance() * size / range;
 				for (int channel = 0; channel < 3; channel++) {
 					final Edge edge = closest[channel].getEdge();
 					if (edge != null) {
@@ -45,6 +53,7 @@ public final class Msdf {
 		}
 
 		Msdf.correct(field, width, height, 1.001D / range);
+		Msdf.reconcile(field, truth, 1D / range);
 
 		final int[] pixels = new int[width * height];
 		for (int i = 0; i < pixels.length; i++) {
@@ -72,6 +81,19 @@ public final class Msdf {
 			field[index] = median;
 			field[index + 1] = median;
 			field[index + 2] = median;
+		}
+	}
+
+	private static void reconcile(final double[] field, final double[] truth, final double tolerance) {
+		for (int i = 0; i < truth.length; i++) {
+			final double value = truth[i];
+			if (Math.abs(value - 0.5D) <= tolerance || Msdf.median(field[i * 3], field[i * 3 + 1], field[i * 3 + 2]) >= 0.5D == value >= 0.5D) {
+				continue;
+			}
+
+			field[i * 3] = value;
+			field[i * 3 + 1] = value;
+			field[i * 3 + 2] = value;
 		}
 	}
 
