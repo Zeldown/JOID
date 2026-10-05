@@ -13,23 +13,23 @@ public enum Align {
 	}
 
 	public boolean isStart() {
-		return this == START;
+		return this == Align.START;
 	}
 
 	public boolean isLeft() {
-		return this == START;
+		return this == Align.START;
 	}
 
 	public boolean isCenter() {
-		return this == CENTER;
+		return this == Align.CENTER;
 	}
 
 	public boolean isEnd() {
-		return this == END;
+		return this == Align.END;
 	}
 
 	public boolean isRight() {
-		return this == END;
+		return this == Align.END;
 	}
 
 }

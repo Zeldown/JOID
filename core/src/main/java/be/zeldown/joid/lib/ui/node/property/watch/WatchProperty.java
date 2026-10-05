@@ -20,7 +20,7 @@ public enum WatchProperty {
 
 	private final @NonNull Consumer<@NonNull Node> callback;
 
-	WatchProperty(final @NonNull Consumer<@NonNull Node> callback) {
+	private WatchProperty(final @NonNull Consumer<@NonNull Node> callback) {
 		this.callback = callback;
 	}
 

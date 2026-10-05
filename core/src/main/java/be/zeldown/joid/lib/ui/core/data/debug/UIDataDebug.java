@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Target(java.lang.annotation.ElementType.TYPE)
 public @interface UIDataDebug {
 
-	boolean profiler()  default true;
-	boolean hotreload() default true;
+	public boolean profiler()  default true;
+	public boolean hotreload() default true;
 
 }

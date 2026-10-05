@@ -9,7 +9,8 @@ public enum TextOverflow {
 	DOT("."),
 	HYPHEN("-");
 
-	@Getter String overflow;
+	@Getter
+	private final String overflow;
 
 	private TextOverflow(final String overflow) {
 		this.overflow = overflow;

@@ -208,7 +208,7 @@ public final class DevNode extends Node {
 				.attach(flex);
 
 				CircleNode
-				.create(0, flex.dh(2) - 3.5, 7)
+				.create(0, flex.dh(2) - 3.5D, 7)
 				.color(DevNode.LIGHT_WHITE)
 				.attach(flex);
 

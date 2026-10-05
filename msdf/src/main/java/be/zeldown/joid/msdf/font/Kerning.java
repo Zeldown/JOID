@@ -2,6 +2,7 @@ package be.zeldown.joid.msdf.font;
 
 import java.awt.Font;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public final class Kerning {
 		final int count = this.unsigned(offset + 4);
 		for (int i = 0; i < count; i++) {
 			final int record = offset + 12 + i * 16;
-			this.tables.put(new String(this.data, record, 4, java.nio.charset.StandardCharsets.US_ASCII), this.integer(record + 8));
+			this.tables.put(new String(this.data, record, 4, StandardCharsets.US_ASCII), this.integer(record + 8));
 		}
 
 		final Integer head = this.tables.get("head");

@@ -11,13 +11,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeMousePressedCallback<T extends Node> extends NodeCallback {
 
-	void apply(final @NonNull T node, final double mouseX, final double mouseY, final @NonNull ClickType clickType);
+	public void apply(final @NonNull T node, final double mouseX, final double mouseY, final @NonNull ClickType clickType);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final @NonNull ClickType clickType) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final @NonNull ClickType clickType) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final @NonNull ClickType clickType) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final @NonNull ClickType clickType) {
 		context.cancel(() -> this.apply(node, mouseX, mouseY, clickType));
 	}
 

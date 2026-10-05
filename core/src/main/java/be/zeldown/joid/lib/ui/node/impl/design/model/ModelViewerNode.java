@@ -73,7 +73,7 @@ public class ModelViewerNode extends ModelNode {
 		}
 
 		if(super.getSize() != this.targetSize) {
-			super.size(super.getUi().lerpByFramerate(this.getSize(), this.targetSize, 0.1D, 0.0D, true));
+			super.size(super.getUi().lerpByFramerate(this.getSize(), this.targetSize, 0.1D, 0D, true));
 		}
 
 		super.draw(mouseX, mouseY);

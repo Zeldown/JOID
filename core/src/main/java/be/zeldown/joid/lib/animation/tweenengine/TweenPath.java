@@ -2,6 +2,6 @@ package be.zeldown.joid.lib.animation.tweenengine;
 
 public interface TweenPath {
 
-	public float compute(float t, float[] points, int pointsCnt);
+	public float compute(final float t, final float[] points, final int pointsCnt);
 
 }

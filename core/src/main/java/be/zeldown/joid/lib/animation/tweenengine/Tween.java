@@ -405,12 +405,12 @@ public final class Tween extends BaseTween<Tween> {
 		assert this.getCurrentTime() >= 0;
 		assert this.getCurrentTime() <= this.duration;
 
-		if (this.duration < 0.00000000001f && delta > -0.00000000001f) {
+		if (this.duration < 0.00000000001F && delta > -0.00000000001F) {
 			this.accessor.setValues(this.target, this.type, this.isReverse(step) ? this.targetValues : this.startValues);
 			return;
 		}
 
-		if (this.duration < 0.00000000001f && delta < 0.00000000001f) {
+		if (this.duration < 0.00000000001F && delta < 0.00000000001F) {
 			this.accessor.setValues(this.target, this.type, this.isReverse(step) ? this.startValues : this.targetValues);
 			return;
 		}

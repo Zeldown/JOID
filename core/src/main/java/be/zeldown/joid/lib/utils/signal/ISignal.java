@@ -4,16 +4,16 @@ import lombok.NonNull;
 
 public interface ISignal<T> {
 
-	ISignal<T> reset();
-	ISignal<T> set(final T value);
+	public ISignal<T> reset();
+	public ISignal<T> set(final T value);
 
-	ISignal<T> subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber);
-	ISignal<T> unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber);
+	public ISignal<T> subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber);
+	public ISignal<T> unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber);
 
-	ISignal<T> publish();
-	ISignal<T> silent();
+	public ISignal<T> publish();
+	public ISignal<T> silent();
 
-	T getOrDefault();
-	boolean isPresent();
+	public T getOrDefault();
+	public boolean isPresent();
 
 }

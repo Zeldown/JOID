@@ -6,11 +6,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-@Retention(RUNTIME)
 @Target(METHOD)
+@Retention(RUNTIME)
 public @interface NodeCallbackMethod {
 
-	Type value();
+	public Type value();
 
 	public enum Type {
 		PRE, POST;

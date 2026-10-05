@@ -12,13 +12,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeWatchCallback<T extends Node> extends NodeCallback {
 
-	void apply(final @NonNull T node, final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties);
+	public void apply(final @NonNull T node, final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
 		context.cancel(() -> this.apply(node, signal, properties));
 	}
 

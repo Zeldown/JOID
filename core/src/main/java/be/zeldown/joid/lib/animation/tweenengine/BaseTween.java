@@ -27,8 +27,8 @@ public abstract class BaseTween<T> {
 	private int callbackTriggers;
 	private Object userData;
 
-	boolean isAutoRemoveEnabled;
-	boolean isAutoStartEnabled;
+	protected boolean isAutoRemoveEnabled;
+	protected boolean isAutoStartEnabled;
 
 	protected void reset() {
 		this.step = -2;
@@ -192,9 +192,9 @@ public abstract class BaseTween<T> {
 
 	protected abstract void forceEndValues();
 
-	protected abstract boolean containsTarget(Object target);
+	protected abstract boolean containsTarget(final Object target);
 
-	protected abstract boolean containsTarget(Object target, int tweenType);
+	protected abstract boolean containsTarget(final Object target, final int tweenType);
 
 	protected void initializeOverride() {}
 

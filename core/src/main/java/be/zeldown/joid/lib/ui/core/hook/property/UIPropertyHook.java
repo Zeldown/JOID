@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +95,7 @@ public final class UIPropertyHook {
 			}
 
 			for (final Field field : clazz.getDeclaredFields()) {
-				if (!field.isAnnotationPresent(UIProperty.class) || java.lang.reflect.Modifier.isFinal(field.getModifiers())) {
+				if (!field.isAnnotationPresent(UIProperty.class) || Modifier.isFinal(field.getModifiers())) {
 					continue;
 				}
 

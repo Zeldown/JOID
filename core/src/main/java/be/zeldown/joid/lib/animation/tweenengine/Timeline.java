@@ -22,7 +22,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	};
 
-	static final Pool<Timeline> pool = new Pool<Timeline>(10, Timeline.poolCallback) {
+	private static final Pool<Timeline> pool = new Pool<Timeline>(10, Timeline.poolCallback) {
 
 		@Override
 		protected Timeline create() {

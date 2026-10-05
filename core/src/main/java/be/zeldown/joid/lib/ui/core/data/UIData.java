@@ -10,19 +10,19 @@ import be.zeldown.joid.lib.utils.align.Align;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 public @interface UIData {
 
-	boolean active()          default true;
-	boolean visible()         default true;
-	boolean pause()           default true;
-	boolean closeable()       default true;
+	public boolean active()          default true;
+	public boolean visible()         default true;
+	public boolean pause()           default true;
+	public boolean closeable()       default true;
 
-	boolean zoomable()        default true;
-	boolean projection()      default true;
-	boolean background()      default true;
-	String  backgroundColor() default "#101010c0";
+	public boolean zoomable()        default true;
+	public boolean projection()      default true;
+	public boolean background()      default true;
+	public String  backgroundColor() default "#101010c0";
 
-	double zlevel()           default 0D;
+	public double zlevel()           default 0D;
 
-	Align anchorX()           default Align.CENTER;
-	Align anchorY()           default Align.CENTER;
+	public Align anchorX()           default Align.CENTER;
+	public Align anchorY()           default Align.CENTER;
 
 }

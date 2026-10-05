@@ -10,13 +10,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeSwitchChangeCallback<T extends SwitchNode> extends NodeCallback {
 
-	void apply(final @NonNull T node, final @NonNull String value);
+	public void apply(final @NonNull T node, final @NonNull String value);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String value) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String value) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String value) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String value) {
 		context.cancel(() -> this.apply(node, value));
 	}
 

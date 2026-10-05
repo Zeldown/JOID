@@ -8,7 +8,7 @@ public enum StoreContext {
 
 	private final boolean global;
 
-	StoreContext(final boolean global) {
+	private StoreContext(final boolean global) {
 		this.global = global;
 	}
 

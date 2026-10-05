@@ -10,13 +10,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeCheckboxChangeCallback<T extends CheckboxNode> extends NodeCallback {
 
-	void apply(final @NonNull T node, final boolean checked);
+	public void apply(final @NonNull T node, final boolean checked);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final boolean checked) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final boolean checked) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final boolean checked) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final boolean checked) {
 		context.cancel(() -> this.apply(node, checked));
 	}
 

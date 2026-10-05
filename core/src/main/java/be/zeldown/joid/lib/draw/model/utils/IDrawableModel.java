@@ -2,10 +2,10 @@ package be.zeldown.joid.lib.draw.model.utils;
 
 public interface IDrawableModel {
 
-	void render();
+	public void render();
 
-	double getWidth();
-	double getHeight();
-	double getDepth();
+	public double getWidth();
+	public double getHeight();
+	public double getDepth();
 
 }

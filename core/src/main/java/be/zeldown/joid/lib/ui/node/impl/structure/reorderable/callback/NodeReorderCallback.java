@@ -11,13 +11,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeReorderCallback extends NodeCallback {
 
-	void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child);
+	public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {}
+	public default void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
+	public default void post(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
 		context.cancel(() -> this.apply(node, child));
 	}
 

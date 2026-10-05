@@ -149,11 +149,11 @@ public final class Tessellator {
 	}
 
 	public void setColor(final float r, final float g, final float b) {
-		this.setColor((int) (r * 255.0F), (int) (g * 255.0F), (int) (b * 255.0F));
+		this.setColor((int) (r * 255F), (int) (g * 255F), (int) (b * 255F));
 	}
 
 	public void setColor(final float r, final float g, final float b, final float a) {
-		this.setColor((int) (r * 255.0F), (int) (g * 255.0F), (int) (b * 255.0F), (int) (a * 255.0F));
+		this.setColor((int) (r * 255F), (int) (g * 255F), (int) (b * 255F), (int) (a * 255F));
 	}
 
 	public void setColor(final byte r, final byte g, final byte n) {
@@ -260,9 +260,9 @@ public final class Tessellator {
 
 	public void setNormal(final float x, final float y, final float z) {
 		this.hasNormals = true;
-		final byte normalX = (byte) (int) (x * 127.0F);
-		final byte normalY = (byte) (int) (y * 127.0F);
-		final byte normalZ = (byte) (int) (z * 127.0F);
+		final byte normalX = (byte) (int) (x * 127F);
+		final byte normalY = (byte) (int) (y * 127F);
+		final byte normalZ = (byte) (int) (z * 127F);
 		this.normal = normalX & 255 | (normalY & 255) << 8 | (normalZ & 255) << 16;
 	}
 

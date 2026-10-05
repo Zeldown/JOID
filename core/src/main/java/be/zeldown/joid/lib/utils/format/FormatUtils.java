@@ -37,8 +37,8 @@ public final class FormatUtils {
 		final String suffix = e.getValue();
 
 		final long truncated = value / (divideBy / 10);
-		final boolean hasDecimal = truncated < 100 && (truncated / 10d) != (truncated / 10);
-		return hasDecimal ? (truncated / 10d) + suffix : (truncated / 10) + suffix;
+		final boolean hasDecimal = truncated < 100 && (truncated / 10D) != (truncated / 10);
+		return hasDecimal ? (truncated / 10D) + suffix : (truncated / 10) + suffix;
 	}
 
 }

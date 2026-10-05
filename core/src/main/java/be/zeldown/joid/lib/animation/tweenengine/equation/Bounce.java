@@ -28,10 +28,10 @@ public abstract class Bounce extends TweenEquation {
 				return 7.5625F * t * t;
 			} else if (t < (2F / 2.75F)) {
 				return 7.5625F * (t -= (1.5F / 2.75F)) * t + 0.75F;
-			} else if (t < (2.5 / 2.75)) {
-				return 7.5625F * (t -= (2.25F / 2.75f)) * t + 0.9375F;
+			} else if (t < (2.5D / 2.75D)) {
+				return 7.5625F * (t -= (2.25F / 2.75F)) * t + 0.9375F;
 			} else {
-				return 7.5625F * (t -= (2.625F / 2.75f)) * t + 0.984375F;
+				return 7.5625F * (t -= (2.625F / 2.75F)) * t + 0.984375F;
 			}
 		}
 

@@ -10,13 +10,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeSnapCallback<T extends Node> extends NodeCallback {
 
-	void apply(final @NonNull T node, final @NonNull Node snapNode);
+	public void apply(final @NonNull T node, final @NonNull Node snapNode);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Node snapNode) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Node snapNode) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Node snapNode) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Node snapNode) {
 		context.cancel(() -> this.apply(node, snapNode));
 	}
 

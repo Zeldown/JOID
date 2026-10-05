@@ -11,7 +11,7 @@ import be.zeldown.joid.lib.ui.core.hook.store.context.StoreContext;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UIStoreData {
 
-	String id()            default "";
-	StoreContext context() default StoreContext.LOCAL;
+	public String id()            default "";
+	public StoreContext context() default StoreContext.LOCAL;
 
 }

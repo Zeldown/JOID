@@ -10,13 +10,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeTextFieldEnterCallback<T extends Node> extends NodeCallback {
 
-	void apply(final @NonNull T node, final @NonNull String text);
+	public void apply(final @NonNull T node, final @NonNull String text);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String text) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String text) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String text) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String text) {
 		context.cancel(() -> this.apply(node, text));
 	}
 

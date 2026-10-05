@@ -20,7 +20,7 @@ public class ProgressNode extends Node {
 	protected ProgressNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.progress  = 0.0F;
+		this.progress  = 0F;
 		this.direction = ProgressDirection.LEFT_TO_RIGHT;
 		this.colors    = new Color[] {Color.BLACK, Color.WHITE};
 		this.resources = new Resource[] {null, null};

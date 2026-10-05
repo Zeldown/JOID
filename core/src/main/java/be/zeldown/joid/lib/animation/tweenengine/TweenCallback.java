@@ -14,9 +14,9 @@ public interface TweenCallback {
 	public static final int ANY_BACKWARD  = 0xF0;
 	public static final int ANY           = 0xFF;
 
-	public void onEvent(int type, BaseTween<?> source);
+	public void onEvent(final int type, final BaseTween<?> source);
 
-	default TweenCallback andThen(final TweenCallback that) {
+	public default TweenCallback andThen(final TweenCallback that) {
 		return (type, source) -> {
 			this.onEvent(type, source);
 			that.onEvent(type, source);

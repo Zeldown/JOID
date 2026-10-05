@@ -71,7 +71,7 @@ public class MaskNodeEffect<T extends Node> extends NodeEffect<T> {
 	}
 
 	public static <T extends Node> @NonNull MaskNodeEffect<T> create(final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
-		return MaskNodeEffect.create(() -> 0.0, () -> 0.0, widthSupplier, heightSupplier);
+		return MaskNodeEffect.create(() -> 0D, () -> 0D, widthSupplier, heightSupplier);
 	}
 
 	public static <T extends Node> @NonNull MaskNodeEffect<T> create(final @NonNull Resource resource, final double width, final double height) {

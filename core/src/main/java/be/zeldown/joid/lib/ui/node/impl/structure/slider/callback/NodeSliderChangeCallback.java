@@ -10,13 +10,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeSliderChangeCallback<T extends SliderNode<O>, O> extends NodeCallback {
 
-	void apply(final @NonNull T node, final @NonNull O value);
+	public void apply(final @NonNull T node, final @NonNull O value);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull O value) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull O value) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull O value) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull O value) {
 		context.cancel(() -> this.apply(node, value));
 	}
 

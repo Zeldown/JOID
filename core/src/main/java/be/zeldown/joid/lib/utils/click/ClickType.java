@@ -16,17 +16,17 @@ public enum ClickType {
 	public static @NonNull ClickType from(final int button) {
 		switch (button) {
 		case 0:
-			return LEFT;
+			return ClickType.LEFT;
 		case 1:
-			return RIGHT;
+			return ClickType.RIGHT;
 		case 2:
-			return MIDDLE;
+			return ClickType.MIDDLE;
 		case 3:
-			return BACK;
+			return ClickType.BACK;
 		case 4:
-			return FORWARD;
+			return ClickType.FORWARD;
 		default:
-			return OTHER;
+			return ClickType.OTHER;
 		}
 	}
 
@@ -48,27 +48,27 @@ public enum ClickType {
 	}
 
 	public boolean isLeft() {
-		return this == LEFT;
+		return this == ClickType.LEFT;
 	}
 
 	public boolean isRight() {
-		return this == RIGHT;
+		return this == ClickType.RIGHT;
 	}
 
 	public boolean isMiddle() {
-		return this == MIDDLE;
+		return this == ClickType.MIDDLE;
 	}
 
 	public boolean isBack() {
-		return this == BACK;
+		return this == ClickType.BACK;
 	}
 
 	public boolean isForward() {
-		return this == FORWARD;
+		return this == ClickType.FORWARD;
 	}
 
 	public boolean isOther() {
-		return this == OTHER;
+		return this == ClickType.OTHER;
 	}
 
 }

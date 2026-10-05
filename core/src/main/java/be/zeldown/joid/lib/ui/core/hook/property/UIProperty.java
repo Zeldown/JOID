@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UIProperty {
 
-	String value() default "";
+	public String value() default "";
 
 }

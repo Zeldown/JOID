@@ -135,7 +135,7 @@ public class DraggableProperty {
 		final double absDiff = Math.abs(diff);
 		final double offset = Math.min(absDiff, 0.5D * frameTime / (1000D / 60D) * absDiff / 3D);
 		if (absDiff > 0.5D) {
-			value += diff > 0.0D ? offset : -offset;
+			value += diff > 0D ? offset : -offset;
 		} else {
 			value = target;
 		}

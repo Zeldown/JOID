@@ -35,7 +35,7 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 		for (int i = 0; i < size; i++) {
 			final Number value = super.getDataList().get(i).getValue();
 			final double p = value.doubleValue() / super.getMax().doubleValue();
-			points[i] = this.getPoint(i, super.dh(2) * p * 0.8);
+			points[i] = this.getPoint(i, super.dh(2) * p * 0.8D);
 		}
 
 		DrawUtils.SHAPE.drawPolygon(new Color(89, 34, 30), points);

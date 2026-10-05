@@ -11,13 +11,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeAnimationCallback<T extends Node> extends NodeCallback {
 
-	void apply(final @NonNull T node, final @NonNull TweenAnimator animator, final float value);
+	public void apply(final @NonNull T node, final @NonNull TweenAnimator animator, final float value);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull TweenAnimator animator, final float value) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull TweenAnimator animator, final float value) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull TweenAnimator animator, final float value) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull TweenAnimator animator, final float value) {
 		context.cancel(() -> this.apply(node, animator, value));
 	}
 

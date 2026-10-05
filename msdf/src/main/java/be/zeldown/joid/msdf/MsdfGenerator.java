@@ -80,7 +80,7 @@ public final class MsdfGenerator {
 		return size;
 	}
 
-	static int[] codepoints(final String charset) throws Exception {
+	public static int[] codepoints(final String charset) throws Exception {
 		final File file = new File(charset);
 		final String text = file.isFile() ? new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8) : charset;
 		final List<Integer> values = new ArrayList<>();

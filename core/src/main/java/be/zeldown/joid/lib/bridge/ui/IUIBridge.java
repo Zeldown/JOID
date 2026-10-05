@@ -9,21 +9,21 @@ import lombok.NonNull;
 
 public interface IUIBridge extends IBridge {
 
-	void open(final @NonNull UI ui);
-	void close(final @NonNull UI ui);
+	public void open(final @NonNull UI ui);
+	public void close(final @NonNull UI ui);
 
-	void add(final @NonNull UI ui);
-	void remove(final @NonNull UI ui);
+	public void add(final @NonNull UI ui);
+	public void remove(final @NonNull UI ui);
 
-	void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY);
+	public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY);
 
-	boolean isOpened(final @NonNull UI ui);
-	boolean isOnTop(final @NonNull UI ui);
+	public boolean isOpened(final @NonNull UI ui);
+	public boolean isOnTop(final @NonNull UI ui);
 
-	@NonNull IndexedList<@NonNull UI> getUiList();
+	@NonNull public IndexedList<@NonNull UI> getUiList();
 
-	@NonNull IUIBridge getInstance();
-	boolean canHandle(final @NonNull UI ui);
-	boolean canHandle(final @NonNull Class<? extends UI> clazz);
+	@NonNull public IUIBridge getInstance();
+	public boolean canHandle(final @NonNull UI ui);
+	public boolean canHandle(final @NonNull Class<? extends UI> clazz);
 
 }

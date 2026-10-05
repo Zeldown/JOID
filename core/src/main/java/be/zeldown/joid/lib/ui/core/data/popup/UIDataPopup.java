@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 @Target(java.lang.annotation.ElementType.TYPE)
 public @interface UIDataPopup {
 
-	boolean         active()     default false;
-	PopupTransition transition() default PopupTransition.IN_OUT;
+	public boolean         active()     default false;
+	public PopupTransition transition() default PopupTransition.IN_OUT;
 
 	public enum PopupTransition {
 
@@ -19,15 +19,15 @@ public @interface UIDataPopup {
 		IN_OUT;
 
 		public boolean isActive() {
-			return this != NONE;
+			return this != PopupTransition.NONE;
 		}
 
 		public boolean isIn() {
-			return this == IN || this == IN_OUT;
+			return this == PopupTransition.IN || this == PopupTransition.IN_OUT;
 		}
 
 		public boolean isOut() {
-			return this == OUT || this == IN_OUT;
+			return this == PopupTransition.OUT || this == PopupTransition.IN_OUT;
 		}
 
 	}

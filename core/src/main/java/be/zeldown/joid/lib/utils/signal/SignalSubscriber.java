@@ -5,6 +5,6 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface SignalSubscriber<T> {
 
-	boolean update(final @NonNull T value);
+	public boolean update(final @NonNull T value);
 
 }

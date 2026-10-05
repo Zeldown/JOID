@@ -10,13 +10,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeScrollUpdateCallback<T extends Node> extends NodeCallback {
 
-	void apply(final @NonNull T node, final double value);
+	public void apply(final @NonNull T node, final double value);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final double value) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final double value) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final double value) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final double value) {
 		context.cancel(() -> this.apply(node, value));
 	}
 

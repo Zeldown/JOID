@@ -34,7 +34,7 @@ public class FloatSignal extends Signal<Float> {
 	}
 
 	public void divide(final float value) {
-		if (value == 0.0f) {
+		if (value == 0F) {
 			throw new ArithmeticException("Division by zero");
 		}
 		final float updatedValue = this.getOrDefault() / value;
@@ -42,12 +42,12 @@ public class FloatSignal extends Signal<Float> {
 	}
 
 	public void increment() {
-		final float updatedValue = this.getOrDefault() + 1.0f;
+		final float updatedValue = this.getOrDefault() + 1F;
 		this.set(updatedValue);
 	}
 
 	public void decrement() {
-		final float updatedValue = this.getOrDefault() - 1.0f;
+		final float updatedValue = this.getOrDefault() - 1F;
 		this.set(updatedValue);
 	}
 

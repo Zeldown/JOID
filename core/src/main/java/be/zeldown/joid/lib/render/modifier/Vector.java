@@ -53,7 +53,7 @@ public class Vector {
 	}
 
 	public static @NonNull Vector create(final Supplier<Double> xSupplier, final Supplier<Double> ySupplier) {
-		return new Vector(xSupplier, ySupplier, () -> 0.0);
+		return new Vector(xSupplier, ySupplier, () -> 0D);
 	}
 
 	public static @NonNull Vector X(final double x) {
@@ -61,7 +61,7 @@ public class Vector {
 	}
 
 	public static @NonNull Vector X(final Supplier<Double> xSupplier) {
-		return new Vector(xSupplier, () -> 0.0, () -> 0.0);
+		return new Vector(xSupplier, () -> 0D, () -> 0D);
 	}
 
 	public static @NonNull Vector Y(final double y) {
@@ -69,7 +69,7 @@ public class Vector {
 	}
 
 	public static @NonNull Vector Y(final Supplier<Double> ySupplier) {
-		return new Vector(() -> 0.0, ySupplier, () -> 0.0);
+		return new Vector(() -> 0D, ySupplier, () -> 0D);
 	}
 
 	public static @NonNull Vector Z(final double z) {
@@ -77,7 +77,7 @@ public class Vector {
 	}
 
 	public static @NonNull Vector Z(final Supplier<Double> zSupplier) {
-		return new Vector(() -> 0.0, () -> 0.0, zSupplier);
+		return new Vector(() -> 0D, () -> 0D, zSupplier);
 	}
 
 	public @NonNull Vector x(final double x) {

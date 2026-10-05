@@ -11,13 +11,13 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeSelectorChangeCallback<T extends SelectorNode> extends NodeCallback {
 
-	void apply(final @NonNull T node, final @NonNull Node selected);
+	public void apply(final @NonNull T node, final @NonNull Node selected);
 
 	@NodeCallbackMethod(Type.PRE)
-	default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Node selected) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Node selected) {}
 
 	@NodeCallbackMethod(Type.POST)
-	default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Node selected) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull Node selected) {
 		context.cancel(() -> this.apply(node, selected));
 	}
 

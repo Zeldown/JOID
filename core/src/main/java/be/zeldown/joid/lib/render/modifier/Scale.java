@@ -53,7 +53,7 @@ public class Scale {
 	}
 
 	public static @NonNull Scale WIDTH(final Supplier<Double> widthSupplier) {
-		return new Scale(widthSupplier, () -> 1.0, () -> 1.0);
+		return new Scale(widthSupplier, () -> 1D, () -> 1D);
 	}
 
 	public static @NonNull Scale HEIGHT(final double height) {
@@ -61,7 +61,7 @@ public class Scale {
 	}
 
 	public static @NonNull Scale HEIGHT(final Supplier<Double> heightSupplier) {
-		return new Scale(() -> 1.0, heightSupplier, () -> 1.0);
+		return new Scale(() -> 1D, heightSupplier, () -> 1D);
 	}
 
 	public static @NonNull Scale DEPTH(final double depth) {
@@ -69,7 +69,7 @@ public class Scale {
 	}
 
 	public static @NonNull Scale DEPTH(final Supplier<Double> depthSupplier) {
-		return new Scale(() -> 1.0, () -> 1.0, depthSupplier);
+		return new Scale(() -> 1D, () -> 1D, depthSupplier);
 	}
 
 	public @NonNull Scale width(final double width) {
