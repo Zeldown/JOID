@@ -18,6 +18,7 @@ public interface IResourceDecoder {
     default public void update(final @NonNull ResourceData resource) {}
     default public void clear(final @NonNull ResourceData resource) {}
     default public boolean isSettled() { return true; }
+    default public boolean isScalable() { return false; }
 }
 ```
 
@@ -30,6 +31,8 @@ Lifecycle:
 5. **`request`** — render thread, before every draw. Receives the size the resource covers on screen, in pixels, every transform included, and whether the resource is async. Raster decoders ignore it; the vector decoder renders at that size.
 6. **`update`** — every frame before the resource is rendered. Swap the current texture with `resource.texture(...)` when it changes (video and animation frames).
 7. **`clear`** — release GPU resources when the cache evicts or the node is destroyed.
+
+`isScalable()` tells whether the decoder renders at the size `request(...)` receives, like the vector decoder: such a resource never gets automatic mipmaps, as it is never minified.
 
 `isSettled()` tells whether the decoder still has work that will change the image — a video frame not caught up yet, a vector size still rendering. Snapshot tests wait for every decoder to settle before a shot.
 

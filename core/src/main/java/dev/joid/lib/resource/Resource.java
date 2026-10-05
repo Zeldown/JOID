@@ -126,6 +126,10 @@ public final class Resource {
 		return this.data.getDecoder();
 	}
 
+	public final boolean isScalable() {
+		return this.data.getDecoder() != null && this.data.getDecoder().isScalable();
+	}
+
 	public final @NonNull Optional<IResourcePlayback> getPlayback() {
 		return this.data.getDecoder() instanceof IResourcePlayback ? Optional.of((IResourcePlayback) this.data.getDecoder()) : Optional.empty();
 	}

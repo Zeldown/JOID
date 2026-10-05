@@ -18,6 +18,7 @@ public interface IResourceDecoder {
     default public void update(final @NonNull ResourceData resource) {}
     default public void clear(final @NonNull ResourceData resource) {}
     default public boolean isSettled() { return true; }
+    default public boolean isScalable() { return false; }
 }
 ```
 
@@ -30,6 +31,8 @@ Cycle de vie :
 5. **`request`** — thread de rendu, avant chaque dessin. Reçoit la taille couverte à l'écran par la ressource, en pixels, transformations comprises, et si la ressource est async. Les décodeurs raster l'ignorent ; le décodeur vectoriel rend à cette taille.
 6. **`update`** — à chaque frame avant le rendu de la ressource. Remplacez la texture courante avec `resource.texture(...)` quand elle change (images de vidéo et d'animation).
 7. **`clear`** — libère les ressources GPU quand le cache évince ou le nœud est détruit.
+
+`isScalable()` indique si le décodeur rend à la taille reçue par `request(...)`, comme le décodeur vectoriel : une telle ressource ne reçoit jamais de mipmaps automatiques, puisqu'elle n'est jamais réduite.
 
 `isSettled()` indique si le décodeur a encore du travail qui changera l'image — une image vidéo pas encore rattrapée, une taille vectorielle encore en rendu. Les tests de snapshot attendent que chaque décodeur soit stable avant une capture.
 

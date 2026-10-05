@@ -156,6 +156,11 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		return !this.rendering && this.pending.get() == null;
 	}
 
+	@Override
+	public boolean isScalable() {
+		return true;
+	}
+
 	private boolean show(final ResourceData resource, final int width, final int height) {
 		final ITexture cached = this.textures.get(VectorResourceDecoder.key(width, height));
 		if (cached == null) {

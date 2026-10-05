@@ -60,8 +60,8 @@ public abstract class SnapshotSuite {
 	}
 
 	@Test
-	public void matchesFormatSnapshots() {
-		this.verify("format");
+	public void matchesResourceSnapshots() {
+		this.verify("resource");
 	}
 
 	@Test

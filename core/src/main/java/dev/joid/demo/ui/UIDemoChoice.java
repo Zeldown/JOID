@@ -17,7 +17,6 @@ import dev.joid.demo.ui.grid.UIDemoGrid;
 import dev.joid.demo.ui.overflow.UIDemoOverflow;
 import dev.joid.demo.ui.popup.UIDemoPopup;
 import dev.joid.demo.ui.reorderable.UIDemoReorderable;
-import dev.joid.demo.ui.resource.UIDemoFormat;
 import dev.joid.demo.ui.resource.UIDemoResource;
 import dev.joid.demo.ui.selector.UIDemoSelector;
 import dev.joid.demo.ui.shader.UIDemoShader;
@@ -62,7 +61,6 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoFlex.class);
 		UIDemoChoice.LIST.add(UIDemoReorderable.class);
 		UIDemoChoice.LIST.add(UIDemoResource.class);
-		UIDemoChoice.LIST.add(UIDemoFormat.class);
 		UIDemoChoice.LIST.add(UIDemoVideo.class);
 		UIDemoChoice.LIST.add(UIDemoShader.class);
 		UIDemoChoice.LIST.add(UIDemoWait.class);

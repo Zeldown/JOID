@@ -1,0 +1,17 @@
+ui dev.joid.demo.ui.resource.UIDemoResource
+wait 1500
+shot resource-start
+wait 700
+shot resource-later
+move 270 704
+wait 100
+press LEFT
+release LEFT
+wait 500
+shot resource-paused
+scale 0.5
+mask 480 660 60 60
+wait 500
+shot resource-scale
+unmask
+scale 1
