@@ -24,7 +24,6 @@ import dev.joid.demo.ui.store.UIDemoStore;
 import dev.joid.demo.ui.sw.UIDemoSwitch;
 import dev.joid.demo.ui.textfield.UIDemoTextField;
 import dev.joid.demo.ui.toggle.UIDemoToggle;
-import dev.joid.demo.ui.video.UIDemoVideo;
 import dev.joid.demo.ui.wait.UIDemoWait;
 import dev.joid.demo.ui.watch.UIDemoWatch;
 import dev.joid.internal.JOID;
@@ -55,7 +54,6 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoFlex.class);
 		UIDemoChoice.LIST.add(UIDemoReorderable.class);
 		UIDemoChoice.LIST.add(UIDemoResource.class);
-		UIDemoChoice.LIST.add(UIDemoVideo.class);
 		UIDemoChoice.LIST.add(UIDemoShader.class);
 		UIDemoChoice.LIST.add(UIDemoWait.class);
 		UIDemoChoice.LIST.add(UIDemoWatch.class);

@@ -10,6 +10,7 @@ import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.utils.key.Key;
 
 public class UIDemoResource extends UIDemo {
 
@@ -49,6 +50,26 @@ public class UIDemoResource extends UIDemo {
 					})
 					.attach(flex);
 		}).attach(this);
+
+		final ResourcePlayerNode video = ResourcePlayerNode
+				.create(430, 10, 640, 360)
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
+				.loop(true)
+				.attach(this);
+		this.keybind(() -> {
+			if (video.isPlaying()) {
+				video.pause();
+			} else {
+				video.resume();
+			}
+		}, Key.SPACE);
+		this.keybind(() -> {
+			if (video.getWidth() < this.getWidth()) {
+				video.bounds(0, 0, this.getWidth(), this.getHeight());
+			} else {
+				video.bounds(430, 10, 640, 360);
+			}
+		}, Key.F);
 	}
 
 }

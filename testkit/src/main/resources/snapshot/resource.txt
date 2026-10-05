@@ -7,8 +7,13 @@ move 270 704
 wait 100
 press LEFT
 release LEFT
+key SPACE
 wait 500
 shot resource-paused
+key F
+wait 500
+shot resource-fullscreen
+key F
 scale 0.5
 mask 480 660 60 60
 wait 500

@@ -27,11 +27,6 @@ shot static-UIDemoReorderable
 ui dev.joid.demo.ui.resource.UIDemoResource
 wait 3500
 shot static-UIDemoResource
-mask 1600 0 320 175
-ui dev.joid.demo.ui.video.UIDemoVideo
-wait 3500
-shot static-UIDemoVideo
-unmask
 ui dev.joid.demo.ui.shader.UIDemoShader
 wait 3500
 shot static-UIDemoShader

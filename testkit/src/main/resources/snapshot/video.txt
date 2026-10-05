@@ -1,9 +1,0 @@
-mask 1600 0 320 175
-ui dev.joid.demo.ui.video.UIDemoVideo
-wait 500
-shot video-playback-start
-wait 2000
-shot video-playback-later
-key SPACE
-wait 1000
-shot video-paused

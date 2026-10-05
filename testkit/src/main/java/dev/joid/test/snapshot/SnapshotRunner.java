@@ -42,7 +42,7 @@ public final class SnapshotRunner {
 	private static final int   MASK       = 0xFFFF00FF;
 	private static final Color BACKGROUND = new Color(50, 50, 50);
 
-	private static final List<String> SCENARIOS = Arrays.asList("dev", "popup", "video", "static", "window", "resource", "transition", "interaction");
+	private static final List<String> SCENARIOS = Arrays.asList("dev", "popup", "static", "window", "resource", "transition", "interaction");
 
 	private static final String SYMBOLS         = " '-,./;=[\\]`";
 	private static final Key[]  SYMBOL_KEYS     = {Key.SPACE, Key.APOSTROPHE, Key.MINUS, Key.COMMA, Key.PERIOD, Key.SLASH, Key.SEMICOLON, Key.EQUAL, Key.LEFT_BRACKET, Key.BACKSLASH, Key.RIGHT_BRACKET, Key.GRAVE_ACCENT};

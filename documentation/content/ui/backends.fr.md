@@ -151,7 +151,7 @@ public class SnapshotTest extends SnapshotSuite {
 
 `RenderBridgeContractTest` étend `RenderBridgeContractSuite` de la même façon. La suite de contrat vérifie le bridge de rendu sans images de référence, en quelques secondes : chaque shader du cœur compile, la couleur courante et les couleurs de sommets sont dessinées, les textures `ARGB` affichent leur premier texel en haut à gauche, `resetTexture()` lie une texture blanche opaque, les framebuffers gardent ce qui y est dessiné, `popState()` restaure le framebuffer, le shader, le viewport et l'état des lignes, une texture peut être supprimée deux fois et la projection OpenGL place l'origine en haut à gauche de la capture.
 
-La suite de snapshot enregistre un `ManualClockBridge`, puis joue chaque scénario de `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` et `video`. Chaque scénario part du même état : aucune UI, l'horloge au même instant, une fenêtre 1920×1080, le mode dev désactivé, aucune touche enfoncée et aucun masque. Le temps n'avance qu'avec `wait` et `moveto`, par frames de 16 ms, et les lerps et le compteur de fps suivent le temps de frame mesuré sur l'horloge, chaque exécution rend donc les mêmes pixels. Chaque capture attend la fin du chargement des ressources, que chaque vidéo affiche l'image correspondant à l'horloge, puis deux frames consécutives identiques. Les vidéos et les GIF suivent l'horloge, une horloge en pause les fige donc, l'audio est coupé, et les ressources d'URL sont téléchargées une fois dans `.snapshots/cache` pour que les exécutions suivantes fonctionnent hors ligne.
+La suite de snapshot enregistre un `ManualClockBridge`, puis joue chaque scénario de `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` et `resource`. Chaque scénario part du même état : aucune UI, l'horloge au même instant, une fenêtre 1920×1080, le mode dev désactivé, aucune touche enfoncée et aucun masque. Le temps n'avance qu'avec `wait` et `moveto`, par frames de 16 ms, et les lerps et le compteur de fps suivent le temps de frame mesuré sur l'horloge, chaque exécution rend donc les mêmes pixels. Chaque capture attend la fin du chargement des ressources, que chaque vidéo affiche l'image correspondant à l'horloge, puis deux frames consécutives identiques. Les vidéos et les GIF suivent l'horloge, une horloge en pause les fige donc, l'audio est coupé, et les ressources d'URL sont téléchargées une fois dans `.snapshots/cache` pour que les exécutions suivantes fonctionnent hors ligne.
 
 Les références sont propres à chaque machine et carte graphique : elles sont stockées dans `.snapshots/<module>/<renderer>/`, ignoré par git. Une capture sans référence est enregistrée à la première exécution ; ensuite, chaque capture doit correspondre à sa référence au pixel près. Les références des captures retirées des scénarios sont supprimées après l'exécution.
 
@@ -194,7 +194,7 @@ Un scénario est un fichier texte avec une commande par ligne ; `#` commence un 
 
 Pour ajouter une capture, ajoutez ses commandes à un scénario — ou ajoutez un fichier de scénario et son test `matches…Snapshots` à `SnapshotSuite` — puis lancez `./gradlew test` : les nouvelles captures sont enregistrées comme références.
 
-`UIDemoVideo` masque son overlay de statistiques, qui affiche l'usage mémoire et les files du décodeur.
+`resource-scale` masque le GIF dessiné à demi-échelle, dont les mipmaps ne sont pas générés à l'identique par tous les backends.
 
 ## Backend dans son propre dépôt
 

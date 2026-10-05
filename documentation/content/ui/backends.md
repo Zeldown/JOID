@@ -151,7 +151,7 @@ public class SnapshotTest extends SnapshotSuite {
 
 `RenderBridgeContractTest` extends `RenderBridgeContractSuite` the same way. The contract suite checks the render bridge without reference images, in a few seconds: every core shader compiles, the current color and vertex colors are drawn, `ARGB` textures show their first texel at the top-left, `resetTexture()` binds an opaque white texture, framebuffers keep what is drawn into them, `popState()` restores the framebuffer, shader, viewport and line state, a texture can be deleted twice and the OpenGL projection puts the origin at the top-left of the capture.
 
-The snapshot suite registers a `ManualClockBridge`, then plays each scenario of `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` and `video`. Every scenario starts from the same state: no UI, the clock at the same instant, a 1920×1080 window, dev mode off, no key held and no mask. Time only advances with `wait` and `moveto`, by frames of 16 ms, and lerps and the fps counter follow the frame time measured on the clock, so every run renders the same pixels. Each shot waits for the resources being loaded, for every video to display the frame matching the clock, then for two identical consecutive frames. Videos and GIFs follow the clock, so a paused clock freezes them, audio is muted, and URL resources are downloaded once into `.snapshots/cache` so later runs work offline.
+The snapshot suite registers a `ManualClockBridge`, then plays each scenario of `testkit/src/main/resources/snapshot` — `static`, `interaction`, `transition`, `popup`, `window`, `dev` and `resource`. Every scenario starts from the same state: no UI, the clock at the same instant, a 1920×1080 window, dev mode off, no key held and no mask. Time only advances with `wait` and `moveto`, by frames of 16 ms, and lerps and the fps counter follow the frame time measured on the clock, so every run renders the same pixels. Each shot waits for the resources being loaded, for every video to display the frame matching the clock, then for two identical consecutive frames. Videos and GIFs follow the clock, so a paused clock freezes them, audio is muted, and URL resources are downloaded once into `.snapshots/cache` so later runs work offline.
 
 References belong to each machine and graphics card: they are stored in `.snapshots/<module>/<renderer>/`, which git ignores. A shot without reference is recorded on the first run; afterwards every shot must match its reference pixel for pixel. References of shots removed from the scenarios are deleted after the run.
 
@@ -194,7 +194,7 @@ A scenario is a text file with one command per line; `#` starts a comment.
 
 To add a capture, add its commands to a scenario — or add a scenario file and its `matches…Snapshots` test to `SnapshotSuite` — then run `./gradlew test`: the new shots are recorded as references.
 
-`UIDemoVideo` masks its statistics overlay, which shows the memory usage and the decoder queues.
+`resource-scale` masks the GIF drawn at half scale, whose mipmaps are not generated identically by every backend.
 
 ## Backend in its own repository
 

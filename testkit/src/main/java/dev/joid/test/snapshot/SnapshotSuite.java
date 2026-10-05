@@ -45,11 +45,6 @@ public abstract class SnapshotSuite {
 	}
 
 	@Test
-	public void matchesVideoSnapshots() {
-		this.verify("video");
-	}
-
-	@Test
 	public void matchesStaticSnapshots() {
 		this.verify("static");
 	}
