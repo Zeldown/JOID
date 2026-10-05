@@ -94,6 +94,7 @@
 			"items": [
 				{ "title": "Assets", "path": "resources/assets" },
 				{ "title": "ResourceBuilder", "path": "resources/resource-builder" },
+				{ "title": "Formats", "path": "resources/formats" },
 				{ "title": "Resolvers", "path": "resources/resolvers" },
 				{ "title": "Decoders", "path": "resources/decoders" }
 			]

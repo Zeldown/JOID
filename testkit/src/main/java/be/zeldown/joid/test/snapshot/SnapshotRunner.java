@@ -22,7 +22,7 @@ import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.resource.ResourceBuilder;
-import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.key.Key;
@@ -42,7 +42,7 @@ public final class SnapshotRunner {
 	private static final int   MASK       = 0xFFFF00FF;
 	private static final Color BACKGROUND = new Color(50, 50, 50);
 
-	private static final List<String> SCENARIOS = Arrays.asList("dev", "popup", "video", "static", "window", "transition", "interaction");
+	private static final List<String> SCENARIOS = Arrays.asList("dev", "popup", "video", "static", "window", "format", "transition", "interaction");
 
 	private static final String SYMBOLS         = " '-,./;=[\\]`";
 	private static final Key[]  SYMBOL_KEYS     = {Key.SPACE, Key.APOSTROPHE, Key.MINUS, Key.COMMA, Key.PERIOD, Key.SLASH, Key.SEMICOLON, Key.EQUAL, Key.LEFT_BRACKET, Key.BACKSLASH, Key.RIGHT_BRACKET, Key.GRAVE_ACCENT};
@@ -270,7 +270,7 @@ public final class SnapshotRunner {
 	}
 
 	private void awaitPlayback() {
-		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS && !SnapshotRunner.isPlaybackSynchronized(); attempt++) {
+		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS && !SnapshotRunner.isSettled(); attempt++) {
 			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
 			this.render(false);
 		}
@@ -289,7 +289,7 @@ public final class SnapshotRunner {
 	private SnapshotImage settle(final String name) {
 		SnapshotImage previous = null;
 		SnapshotImage current = this.mask(this.render(true));
-		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous) || !SnapshotRunner.isPlaybackSynchronized()); attempt++) {
+		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous) || !SnapshotRunner.isSettled()); attempt++) {
 			this.awaitResources();
 			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
 			previous = current;
@@ -300,8 +300,8 @@ public final class SnapshotRunner {
 			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing");
 		}
 
-		if (!SnapshotRunner.isPlaybackSynchronized()) {
-			throw new IllegalStateException(name + " never caught up with the clock while playing a video");
+		if (!SnapshotRunner.isSettled()) {
+			throw new IllegalStateException(name + " never settled: a resource kept decoding or rendering");
 		}
 		return current;
 	}
@@ -334,8 +334,8 @@ public final class SnapshotRunner {
 		}
 	}
 
-	private static boolean isPlaybackSynchronized() {
-		return ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().map(data -> data.getDecoder(VideoResourceDecoder.class)).allMatch(decoder -> decoder == null || decoder.isSynchronized());
+	private static boolean isSettled() {
+		return ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().map(ResourceData::getDecoder).allMatch(decoder -> decoder == null || decoder.isSettled());
 	}
 
 	private static boolean isShifted(final char character) {

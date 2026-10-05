@@ -60,6 +60,11 @@ public abstract class SnapshotSuite {
 	}
 
 	@Test
+	public void matchesFormatSnapshots() {
+		this.verify("format");
+	}
+
+	@Test
 	public void matchesTransitionSnapshots() {
 		this.verify("transition");
 	}

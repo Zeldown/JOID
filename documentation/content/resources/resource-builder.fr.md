@@ -71,18 +71,9 @@ Resource res = Resource.of("https://example.com/image.png");
 
 Une `String` devient un `UrlAsset`, qui se déclare distant : son décodeur est choisi sur un thread dédié (avec fallback automatique HTTPS → HTTP pour les hôtes mal configurés), si bien que l'appel ne bloque jamais sur le réseau. Le download ne se déclenche qu'au cache miss — des appels `of(sameUrl)` consécutifs réutilisent le `Resource` caché.
 
-## Détection magic-bytes
+## Détection du format
 
-`ResourceFormat.decoder(asset)` lit les 12 premiers octets via `peek(...)` pour choisir le bon décodeur :
-
-| Signature / extension | Décodeur |
-|---|---|
-| `GIF87a` / `GIF89a` | `AnimatedResourceDecoder` (nombre de boucles du fichier) |
-| PNG avec un chunk `acTL` avant `IDAT` | `AnimatedResourceDecoder` (APNG) |
-| `ftyp` à l'offset 4 | `VideoResourceDecoder` (MP4/MOV) |
-| `1A 45 DF A3` | `VideoResourceDecoder` (WebM/MKV) |
-| `RIFF...AVI` | `VideoResourceDecoder` |
-| autre | `RasterResourceDecoder` (ImageIO) |
+`ResourceFormat.decoder(asset)` lit les 512 premiers octets de l'asset pour choisir son décodeur — SVG, WebP, GIF, APNG, vidéos, et ImageIO pour tout le reste. Voir [Formats](formats.md) pour chaque format et la façon dont il est reconnu.
 
 Pas besoin de pré-classifier — déposez n'importe quel format supporté et ça marche.
 

@@ -36,8 +36,9 @@ node.isPlaying();
 node.isPaused();
 node.getDuration();             // secondes
 node.getProgress();             // 0.0 → 1.0
-node.getVideo().get().getCurrentTime();  // secondes
-node.getVideo().get().getFrameRate();
+node.getPlayback();             // Optional<IPlayback>, pour vidéos et animations
+node.getVideo();                // Optional<VideoResourceDecoder>, pour les vidéos seulement
+node.getVideo().map(VideoResourceDecoder::getFrameRate).orElse(0D);
 ```
 
 ## Configuration
@@ -117,17 +118,9 @@ ProgressNode.create(0, 490, 854, 8)
 
 Changer la ressource avec `.resource(newResource)` libère le grabber, l'audio player et le thread du décodeur précédent avant de switcher.
 
-## Formats supportés
+## Formats pris en charge
 
-Détectés via magic bytes (en-tête), pas l'extension :
-
-- **MP4 / MOV** — box `ftyp`
-- **WebM / MKV** — en-tête EBML. Un WebM VP8 ou VP9 avec canal alpha garde sa transparence : JOID le décode avec libvpx, ce que les décodeurs propres à FFmpeg ne font pas.
-- **AVI** — `RIFF` + `AVI`
-- **GIF** — `GIF87a` / `GIF89a`
-- **APNG** — PNG avec un chunk `acTL`
-
-Une animation se joue autant de fois que son fichier l'indique, à l'infini pour la plupart des GIF.
+Les vidéos — MP4, MOV, WebM, MKV, AVI — se lisent via FFmpeg, avec leur son. GIF, APNG et WebP animé se lisent avec les mêmes contrôles et callbacks, sans son. Un WebM VP8 ou VP9 avec canal alpha garde sa transparence. Voir [Formats](../../resources/formats.md).
 
 ## Bonnes pratiques
 

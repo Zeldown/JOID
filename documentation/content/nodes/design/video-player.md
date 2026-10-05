@@ -36,8 +36,9 @@ node.isPlaying();
 node.isPaused();
 node.getDuration();             // seconds
 node.getProgress();             // 0.0 → 1.0
-node.getVideo().get().getCurrentTime();  // seconds
-node.getVideo().get().getFrameRate();
+node.getPlayback();             // Optional<IPlayback>, for videos and animations
+node.getVideo();                // Optional<VideoResourceDecoder>, for videos only
+node.getVideo().map(VideoResourceDecoder::getFrameRate).orElse(0D);
 ```
 
 ## Configuration
@@ -119,15 +120,7 @@ Changing the resource with `.resource(newResource)` releases the previous decode
 
 ## Supported formats
 
-Detected via magic bytes (header), not file extension:
-
-- **MP4 / MOV** — `ftyp` box
-- **WebM / MKV** — EBML header. A VP8 or VP9 WebM with an alpha channel keeps its transparency: JOID decodes it with libvpx, which FFmpeg's own decoders do not.
-- **AVI** — `RIFF` + `AVI`
-- **GIF** — `GIF87a` / `GIF89a`
-- **APNG** — PNG with an `acTL` chunk
-
-An animation plays as many times as its file says, forever for most GIFs.
+Videos — MP4, MOV, WebM, MKV, AVI — play through FFmpeg, with their audio. GIF, APNG and animated WebP play through the same controls and callbacks, without audio. A VP8 or VP9 WebM with an alpha channel keeps its transparency. See [Formats](../../resources/formats.md).
 
 ## Best practices
 

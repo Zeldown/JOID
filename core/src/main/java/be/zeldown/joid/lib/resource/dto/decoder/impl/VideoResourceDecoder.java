@@ -373,7 +373,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IPlayback {
 		return this.running.get() && !this.paused.get();
 	}
 
-	public boolean isSynchronized() {
+	@Override
+	public boolean isSettled() {
 		if (!this.running.get() || this.paused.get() || this.frameQueue == null) {
 			return true;
 		}

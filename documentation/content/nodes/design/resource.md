@@ -1,6 +1,6 @@
 # ResourceNode
 
-Displays a `Resource` — PNG, JPG, GIF, any format your loader produces.
+Displays a `Resource` — PNG, JPG, WebP, SVG, GIF, APNG, videos, any format registered in [Formats](../../resources/formats.md).
 
 ## Create
 

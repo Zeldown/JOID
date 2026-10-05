@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.parser.LoaderContext;
@@ -24,6 +25,8 @@ import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
 import be.zeldown.joid.lib.utils.image.ImageUtils;
 import be.zeldown.joid.lib.utils.thread.ThreadUtils;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -36,8 +39,9 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	private static final double          BUCKET   = 1.25D;
 	private static final ExecutorService RASTER   = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("ResourceVector"));
 
-	private final Asset               asset;
-	private final Map<Long, ITexture> textures;
+	private final Asset                   asset;
+	private final Map<Long, ITexture>     textures;
+	private final AtomicReference<Raster> pending;
 
 	private SVGDocument document;
 	private ITexture    texture;
@@ -46,14 +50,12 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	private int  requestedHeight;
 	private long changeTime;
 
-	private volatile int[]   pending;
-	private volatile int     pendingWidth;
-	private volatile int     pendingHeight;
 	private volatile boolean rendering;
 
 	public VectorResourceDecoder(final @NonNull Asset asset) {
 		this.asset = asset;
 		this.textures = new LinkedHashMap<>(VectorResourceDecoder.CACHE, 0.75F, true);
+		this.pending = new AtomicReference<>();
 	}
 
 	@Override
@@ -132,13 +134,10 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void update(final @NonNull ResourceData resource) {
-		final int[] pixels = this.pending;
-		if (pixels == null) {
-			return;
+		final Raster raster = this.pending.getAndSet(null);
+		if (raster != null) {
+			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(raster.width, raster.height).upload(raster.pixels, raster.width, raster.height));
 		}
-
-		this.pending = null;
-		this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(this.pendingWidth, this.pendingHeight).upload(pixels, this.pendingWidth, this.pendingHeight));
 	}
 
 	@Override
@@ -149,7 +148,12 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 		this.textures.clear();
 		this.document = null;
-		this.pending = null;
+		this.pending.set(null);
+	}
+
+	@Override
+	public boolean isSettled() {
+		return !this.rendering && this.pending.get() == null;
 	}
 
 	private boolean show(final ResourceData resource, final int width, final int height) {
@@ -174,17 +178,14 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	}
 
 	private void schedule(final int width, final int height) {
-		if (this.rendering) {
+		if (this.rendering || this.pending.get() != null) {
 			return;
 		}
 
 		this.rendering = true;
 		VectorResourceDecoder.RASTER.execute(() -> {
 			try {
-				final int[] pixels = this.render(width, height);
-				this.pendingWidth = width;
-				this.pendingHeight = height;
-				this.pending = pixels;
+				this.pending.set(new Raster(width, height, this.render(width, height)));
 			} finally {
 				this.rendering = false;
 			}
@@ -212,6 +213,15 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	private static long key(final int width, final int height) {
 		return (long) width << 32 | height & 0xFFFFFFFFL;
+	}
+
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class Raster {
+
+		private final int   width;
+		private final int   height;
+		private final int[] pixels;
+
 	}
 
 }

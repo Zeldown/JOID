@@ -1,0 +1,15 @@
+ui be.zeldown.joid.demo.ui.resource.UIDemoFormat
+wait 300
+shot format-start
+wait 700
+shot format-later
+move 1328 688
+wait 100
+press LEFT
+release LEFT
+wait 500
+shot format-paused
+scale 2
+wait 500
+shot format-scale
+scale 1
