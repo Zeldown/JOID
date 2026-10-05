@@ -1,14 +1,14 @@
-package dev.joid.lib.ui.node.impl.design.video.callback;
+package dev.joid.lib.ui.node.impl.design.resource.callback;
 
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
-import dev.joid.lib.ui.node.impl.design.video.VideoPlayerNode;
+import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface NodeVideoPlayCallback<T extends VideoPlayerNode> extends NodeCallback {
+public interface NodeResourcePlayerPauseCallback<T extends ResourcePlayerNode> extends NodeCallback {
 
 	public void apply(final @NonNull T node);
 

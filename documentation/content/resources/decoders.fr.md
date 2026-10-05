@@ -82,7 +82,7 @@ new VideoResourceDecoder(Asset);
 new VideoResourceDecoder(File);
 ```
 
-Pour le contrôle de la lecture, enveloppez dans un [VideoPlayerNode](../nodes/design/video-player.md) — il expose `play / pause / seek / volume` et des callbacks de progression.
+Pour le contrôle de la lecture, enveloppez dans un [ResourcePlayerNode](../nodes/design/resource-player.md) — il expose `play / pause / seek / volume` et des callbacks de progression.
 
 Pilotez la lecture de toute ressource animée via `Resource.getPlayback()` :
 
@@ -149,4 +149,4 @@ public class QoiResourceDecoder implements IResourceDecoder {
 - [ResourceBuilder](resource-builder.md).
 - [Resolvers](resolvers.md) — la couche de dispatch qui choisit le décodeur à utiliser.
 - [ResourceNode](../nodes/design/resource.md).
-- [VideoPlayerNode](../nodes/design/video-player.md).
+- [ResourcePlayerNode](../nodes/design/resource-player.md).

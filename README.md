@@ -93,7 +93,7 @@ Entry points live in the `dev.joid.impl.<module>` package of each backend. Backe
 - ✨ **Tween animations** — Full Universal Tween Engine integration (easing, paths, timelines, callbacks)
 - 🎯 **Reactive signals** — Observable values with conditional watches that auto-reload nodes
 - 💾 **Persistent stores** — `@UIStoreData`-annotated fields auto-serialized to JSON
-- 🎬 **Video playback** — `VideoPlayerNode` with FFmpeg-backed decoding (MP4/MOV/WEBM/MKV/AVI/GIF/APNG)
+- 🎬 **Video playback** — `ResourcePlayerNode` with FFmpeg-backed decoding (MP4/MOV/WEBM/MKV/AVI/GIF/APNG)
 - 🔌 **Bridge pattern** — Host- and engine-agnostic integration via `IUIBridge`, `IWindowBridge`, `IRenderBridge`, `IAudioBridge` and `IClockBridge`
 
 ## Documentation

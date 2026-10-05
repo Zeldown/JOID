@@ -1,4 +1,4 @@
-package dev.joid.lib.ui.node.impl.design.video;
+package dev.joid.lib.ui.node.impl.design.resource;
 
 import java.util.Optional;
 
@@ -10,22 +10,22 @@ import dev.joid.lib.resource.dto.playback.IResourcePlayback;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
-import dev.joid.lib.ui.node.impl.design.video.callback.NodeVideoEndCallback;
-import dev.joid.lib.ui.node.impl.design.video.callback.NodeVideoPauseCallback;
-import dev.joid.lib.ui.node.impl.design.video.callback.NodeVideoPlayCallback;
-import dev.joid.lib.ui.node.impl.design.video.callback.NodeVideoProgressCallback;
+import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerEndCallback;
+import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPauseCallback;
+import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPlayCallback;
+import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerProgressCallback;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 @SuppressWarnings("unchecked")
-public class VideoPlayerNode extends Node {
+public class ResourcePlayerNode extends Node {
 
-	public static final int CALLBACK_END      = NodeCallbackRegistry.next(NodeVideoEndCallback.class);
-	public static final int CALLBACK_PLAY     = NodeCallbackRegistry.next(NodeVideoPlayCallback.class);
-	public static final int CALLBACK_PAUSE    = NodeCallbackRegistry.next(NodeVideoPauseCallback.class);
-	public static final int CALLBACK_PROGRESS = NodeCallbackRegistry.next(NodeVideoProgressCallback.class);
+	public static final int CALLBACK_END      = NodeCallbackRegistry.next(NodeResourcePlayerEndCallback.class);
+	public static final int CALLBACK_PLAY     = NodeCallbackRegistry.next(NodeResourcePlayerPlayCallback.class);
+	public static final int CALLBACK_PAUSE    = NodeCallbackRegistry.next(NodeResourcePlayerPauseCallback.class);
+	public static final int CALLBACK_PROGRESS = NodeCallbackRegistry.next(NodeResourcePlayerProgressCallback.class);
 
 	private Resource resource;
 	private boolean wasPlaying;
@@ -38,19 +38,19 @@ public class VideoPlayerNode extends Node {
 
 	private StretchType stretchType = StretchType.STRETCH;
 
-	protected VideoPlayerNode(final double x, final double y, final double width, final double height) {
+	protected ResourcePlayerNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 	}
 
-	public static @NonNull VideoPlayerNode create(final double x, final double y) {
-		return new VideoPlayerNode(x, y, 0, 0);
+	public static @NonNull ResourcePlayerNode create(final double x, final double y) {
+		return new ResourcePlayerNode(x, y, 0, 0);
 	}
 
-	public static @NonNull VideoPlayerNode create(final double x, final double y, final double width, final double height) {
-		return new VideoPlayerNode(x, y, width, height);
+	public static @NonNull ResourcePlayerNode create(final double x, final double y, final double width, final double height) {
+		return new ResourcePlayerNode(x, y, width, height);
 	}
 
-	public final @NonNull VideoPlayerNode stop() {
+	public final @NonNull ResourcePlayerNode stop() {
 		this.getPlayback().ifPresent(IResourcePlayback::stop);
 		return this;
 	}
@@ -94,9 +94,9 @@ public class VideoPlayerNode extends Node {
 		if (playback.isPresent()) {
 			final boolean playing = playback.get().isPlaying();
 			if (playing && !this.wasPlaying) {
-				super.executeCallback(VideoPlayerNode.CALLBACK_PLAY, InternalContext.create());
+				super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, InternalContext.create());
 			} else if (!playing && this.wasPlaying && !playback.get().isPaused()) {
-				super.executeCallback(VideoPlayerNode.CALLBACK_END, InternalContext.create());
+				super.executeCallback(ResourcePlayerNode.CALLBACK_END, InternalContext.create());
 			}
 
 			this.wasPlaying = playing;
@@ -104,7 +104,7 @@ public class VideoPlayerNode extends Node {
 				final double progress = playback.get().getProgress();
 				if (progress != this.lastProgress) {
 					this.lastProgress = progress;
-					super.executeCallback(VideoPlayerNode.CALLBACK_PROGRESS, InternalContext.create(), progress, playback.get().getCurrentTime());
+					super.executeCallback(ResourcePlayerNode.CALLBACK_PROGRESS, InternalContext.create(), progress, playback.get().getCurrentTime());
 				}
 			}
 		}
@@ -117,55 +117,55 @@ public class VideoPlayerNode extends Node {
 		}
 	}
 
-	public final @NonNull VideoPlayerNode play() {
+	public final @NonNull ResourcePlayerNode play() {
 		this.getPlayback().ifPresent(IResourcePlayback::play);
 		return this;
 	}
 
-	public final @NonNull VideoPlayerNode pause() {
+	public final @NonNull ResourcePlayerNode pause() {
 		this.getPlayback().ifPresent(playback -> {
 			playback.pause();
-			super.executeCallback(VideoPlayerNode.CALLBACK_PAUSE, InternalContext.create());
+			super.executeCallback(ResourcePlayerNode.CALLBACK_PAUSE, InternalContext.create());
 		});
 		return this;
 	}
 
-	public final @NonNull VideoPlayerNode resume() {
+	public final @NonNull ResourcePlayerNode resume() {
 		this.getPlayback().ifPresent(IResourcePlayback::resume);
 		return this;
 	}
 
-	public final @NonNull VideoPlayerNode seek(final double seconds) {
+	public final @NonNull ResourcePlayerNode seek(final double seconds) {
 		this.getPlayback().ifPresent(playback -> playback.seek(seconds));
 		return this;
 	}
 
-	public final @NonNull VideoPlayerNode seekTo(final double seconds) {
+	public final @NonNull ResourcePlayerNode seekTo(final double seconds) {
 		return this.seek(seconds);
 	}
 
-	public final @NonNull VideoPlayerNode restart() {
+	public final @NonNull ResourcePlayerNode restart() {
 		this.getPlayback().ifPresent(playback -> playback.stop().seek(0D).play());
 		return this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T onPlay(final @NonNull NodeVideoPlayCallback<T> callback) {
-		super.registerCallback(VideoPlayerNode.CALLBACK_PLAY, callback);
+	public final <T extends ResourcePlayerNode> @NonNull T onPlay(final @NonNull NodeResourcePlayerPlayCallback<T> callback) {
+		super.registerCallback(ResourcePlayerNode.CALLBACK_PLAY, callback);
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T onPause(final @NonNull NodeVideoPauseCallback<T> callback) {
-		super.registerCallback(VideoPlayerNode.CALLBACK_PAUSE, callback);
+	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull NodeResourcePlayerPauseCallback<T> callback) {
+		super.registerCallback(ResourcePlayerNode.CALLBACK_PAUSE, callback);
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T onEnd(final @NonNull NodeVideoEndCallback<T> callback) {
-		super.registerCallback(VideoPlayerNode.CALLBACK_END, callback);
+	public final <T extends ResourcePlayerNode> @NonNull T onEnd(final @NonNull NodeResourcePlayerEndCallback<T> callback) {
+		super.registerCallback(ResourcePlayerNode.CALLBACK_END, callback);
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T onProgress(final @NonNull NodeVideoProgressCallback<T> callback) {
-		super.registerCallback(VideoPlayerNode.CALLBACK_PROGRESS, callback);
+	public final <T extends ResourcePlayerNode> @NonNull T onProgress(final @NonNull NodeResourcePlayerProgressCallback<T> callback) {
+		super.registerCallback(ResourcePlayerNode.CALLBACK_PROGRESS, callback);
 		return (T) this;
 	}
 
@@ -174,46 +174,46 @@ public class VideoPlayerNode extends Node {
 		this.release();
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T resource(final @NonNull Resource resource) {
+	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Resource resource) {
 		this.release();
 		this.resource = resource;
 		this.resourceStarted = false;
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T stretch(final @NonNull StretchType stretchType) {
+	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull StretchType stretchType) {
 		this.stretchType = stretchType;
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T autoplay(final boolean autoplay) {
+	public final <T extends ResourcePlayerNode> @NonNull T autoplay(final boolean autoplay) {
 		this.autoplay = autoplay;
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T loop(final boolean loop) {
+	public final <T extends ResourcePlayerNode> @NonNull T loop(final boolean loop) {
 		this.loop = loop;
 		this.getPlayback().ifPresent(playback -> playback.loop(loop));
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T volume(final float volume) {
+	public final <T extends ResourcePlayerNode> @NonNull T volume(final float volume) {
 		this.volume = volume;
 		this.getVideo().ifPresent(video -> video.volume(volume));
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T location(final float x, final float y, final float z) {
+	public final <T extends ResourcePlayerNode> @NonNull T location(final float x, final float y, final float z) {
 		this.getVideo().ifPresent(video -> video.location(x, y, z));
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T referenceDistance(final float distance) {
+	public final <T extends ResourcePlayerNode> @NonNull T referenceDistance(final float distance) {
 		this.getVideo().ifPresent(video -> video.referenceDistance(distance));
 		return (T) this;
 	}
 
-	public final <T extends VideoPlayerNode> @NonNull T maxDistance(final float distance) {
+	public final <T extends ResourcePlayerNode> @NonNull T maxDistance(final float distance) {
 		this.getVideo().ifPresent(video -> video.maxDistance(distance));
 		return (T) this;
 	}

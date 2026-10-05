@@ -75,7 +75,7 @@ ResourceNode.create(0, 0).resource(r).width(200).attach(parent);   // hauteur au
 
 ## Ressources animées
 
-JOID auto-détecte les streams GIF / APNG / MP4 / WebM / MKV via magic bytes — les animations reçoivent un `AnimatedResourceDecoder`, les vidéos un `VideoResourceDecoder`. `ResourceNode` les lit automatiquement. Pour le contrôle (pause, seek, callbacks) utilisez plutôt [VideoPlayerNode](video-player.md).
+JOID auto-détecte les streams GIF / APNG / MP4 / WebM / MKV via magic bytes — les animations reçoivent un `AnimatedResourceDecoder`, les vidéos un `VideoResourceDecoder`. `ResourceNode` les lit automatiquement. Pour le contrôle (pause, seek, callbacks) utilisez plutôt [ResourcePlayerNode](resource-player.md).
 
 ## Bonnes pratiques
 
@@ -87,4 +87,4 @@ JOID auto-détecte les streams GIF / APNG / MP4 / WebM / MKV via magic bytes —
 
 - [ResourceBuilder](../../resources/resource-builder.md)
 - [Decoders](../../resources/decoders.md)
-- [VideoPlayerNode](video-player.md)
+- [ResourcePlayerNode](resource-player.md)

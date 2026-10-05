@@ -87,7 +87,7 @@ See [Node Fundamentals](../nodes/node-fundamentals.md).
 Two families of nodes:
 
 - **Structure nodes** compute layout for their children — `FlexNode`, `GridNode`, `ContainerNode`, `ScrollbarNode`. You rarely override their rendering.
-- **Design nodes** draw content — `RectNode`, `CircleNode`, `TextNode`, `ResourceNode`, `TextFieldNode`, `VideoPlayerNode`. You style them with effects and colors.
+- **Design nodes** draw content — `RectNode`, `CircleNode`, `TextNode`, `ResourceNode`, `TextFieldNode`, `ResourcePlayerNode`. You style them with effects and colors.
 
 A well-built UI is mostly *design nodes inside structure nodes*.
 
@@ -136,14 +136,14 @@ Resource remote = Resource.of("https://example.com/image.png");
 Resource video = Resource.of(MyClass.class.getResourceAsStream("/movie.mp4"));  // auto-detected
 ```
 
-Put them into `ResourceNode`, `VideoPlayerNode`, or draw directly via `DrawUtils.RESOURCE`. See [ResourceBuilder](../resources/resource-builder.md).
+Put them into `ResourceNode`, `ResourcePlayerNode`, or draw directly via `DrawUtils.RESOURCE`. See [ResourceBuilder](../resources/resource-builder.md).
 
 ## Best practices
 
 - **Build in `init()`, mutate in signals.** Don't call `this.append(...)` from `draw()` — rebuild triggers a full reload, which is expensive.
 - **Use structure nodes for layout.** A hand-placed `RectNode` grid is a code smell; `GridNode` exists.
 - **Cache your `TextInfo`**. It holds font, size, color references — creating one per frame is wasteful.
-- **Release heavy resources.** `VideoPlayerNode` already does this via `detach()`; for your own heavy decoders, override `detach()` similarly.
+- **Release heavy resources.** `ResourcePlayerNode` already does this via `detach()`; for your own heavy decoders, override `detach()` similarly.
 - **Favor `toGradient(other)` over manual gradient shaders.** `Color` supports gradients natively and the renderer picks the right shader automatically.
 
 ## Rendering model

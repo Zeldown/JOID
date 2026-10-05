@@ -39,7 +39,7 @@
 						{ "title": "MultilineTextFieldNode", "path": "nodes/design/multiline-text-field" },
 						{ "title": "ProgressNode", "path": "nodes/design/progress" },
 						{ "title": "ModelNode", "path": "nodes/design/model" },
-						{ "title": "VideoPlayerNode", "path": "nodes/design/video-player" }
+						{ "title": "ResourcePlayerNode", "path": "nodes/design/resource-player" }
 					]
 				},
 				{

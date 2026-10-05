@@ -7,7 +7,7 @@ import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
-import dev.joid.lib.ui.node.impl.design.video.VideoPlayerNode;
+import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 
@@ -34,13 +34,13 @@ public class UIDemoResource extends UIDemo {
 			ResourceNode.create(0, 0).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"))).size(100, 100).attach(flex);
 			ResourceNode.create(0, 0).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.webp"))).size(100, 100).attach(flex);
 			ResourceNode.create(0, 0).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.png"))).size(100, 100).attach(flex);
-			VideoPlayerNode.create(0, 0, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm"))).loop(true).attach(flex);
-			VideoPlayerNode
+			ResourcePlayerNode.create(0, 0, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm"))).loop(true).attach(flex);
+			ResourcePlayerNode
 					.create(0, 0, 100, 100)
 					.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.webp")))
 					.loop(true)
 					.onClick((node, mouseX, mouseY, clickType) -> {
-						final VideoPlayerNode player = (VideoPlayerNode) node;
+						final ResourcePlayerNode player = (ResourcePlayerNode) node;
 						if (player.isPlaying()) {
 							player.pause();
 						} else {

@@ -57,7 +57,7 @@ Natives depend on the backend:
 - **LWJGL 2** — the `impl/lwjgl2/native/` folder of the repository contains the OpenGL and OpenAL natives (`lwjgl64.dll`, `OpenAL64.dll`, and their platform variants). Copy it next to your project and launch with `-Djava.library.path=./native`.
 - **LWJGL 3 and Vulkan** — natives ship as Maven classifier JARs (`natives-windows`, `natives-linux`, `natives-macos`, `natives-macos-arm64`) that LWJGL extracts at runtime. Vulkan talks to the loader installed with the GPU driver; macOS additionally needs the `lwjgl-vulkan` natives (MoltenVK).
 
-> TIP: OpenAL is required for `VideoPlayerNode` audio on every backend.
+> TIP: OpenAL is required for `ResourcePlayerNode` audio on every backend.
 
 ## Dependencies
 

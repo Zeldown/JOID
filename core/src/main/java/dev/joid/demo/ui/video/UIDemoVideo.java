@@ -10,7 +10,7 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
-import dev.joid.lib.ui.node.impl.design.video.VideoPlayerNode;
+import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
 import dev.joid.lib.utils.key.Key;
 
 public class UIDemoVideo extends UIDemo {
@@ -18,7 +18,7 @@ public class UIDemoVideo extends UIDemo {
 	private static final double SMALL_W = 640D;
 	private static final double SMALL_H = 360D;
 
-	private VideoPlayerNode player;
+	private ResourcePlayerNode player;
 
 	private double speedX = 90D;
 	private double speedY = 60D;
@@ -38,13 +38,13 @@ public class UIDemoVideo extends UIDemo {
 	public void init() {
 		final Resource resource = Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4"));
 
-		this.player = VideoPlayerNode
+		this.player = ResourcePlayerNode
 				.create(this.bounceX, this.bounceY, UIDemoVideo.SMALL_W, UIDemoVideo.SMALL_H)
 				.resource(resource)
 				.loop(true)
 				.volume(1F)
 				.onClick((n, mouseX, mouseY, clickType) -> {
-					final VideoPlayerNode video = (VideoPlayerNode) n;
+					final ResourcePlayerNode video = (ResourcePlayerNode) n;
 					if (video.isPlaying()) {
 						video.pause();
 					} else {

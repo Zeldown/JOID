@@ -61,7 +61,7 @@ double progress = resource.getPlayback().map(IResourcePlayback::getProgress).orE
 | `isPlaying()`, `isPaused()`, `isLoop()`, `isAutoplay()` | Playback state |
 | `getDuration()`, `getCurrentTime()`, `getProgress()` | Length and position, in seconds and from 0 to 1 |
 
-A [VideoPlayerNode](../nodes/design/video-player.md) drives any of them with the same controls and callbacks: an animated WebP plays, pauses and loops like a video.
+A [ResourcePlayerNode](../nodes/design/resource-player.md) drives any of them with the same controls and callbacks: an animated WebP plays, pauses and loops like a video.
 
 ## Transparent WebM
 
@@ -104,4 +104,4 @@ Every JOID JAR embeds what these formats need: FFmpeg with its natives, JSVG and
 - [ResourceBuilder](resource-builder.md).
 - [Decoders](decoders.md).
 - [ResourceNode](../nodes/design/resource.md).
-- [VideoPlayerNode](../nodes/design/video-player.md).
+- [ResourcePlayerNode](../nodes/design/resource-player.md).

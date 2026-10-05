@@ -1,4 +1,4 @@
-# VideoPlayerNode
+# ResourcePlayerNode
 
 Lecteur vidéo complet. Lit MP4, MOV, WebM, MKV, AVI via FFmpeg, ainsi que les animations GIF et APNG avec les mêmes contrôles de lecture. Audio streamé via le bridge audio, synchronisé à la vidéo.
 
@@ -7,7 +7,7 @@ Lecteur vidéo complet. Lit MP4, MOV, WebM, MKV, AVI via FFmpeg, ainsi que les a
 ```java
 final Resource video = Resource.of(getClass().getResourceAsStream("/intro.mp4"));
 
-VideoPlayerNode.create(0, 0, 854, 480)
+ResourcePlayerNode.create(0, 0, 854, 480)
     .resource(video)
     .loop(true)
     .volume(1F)
@@ -80,7 +80,7 @@ L'`AudioListener` est un `Supplier<Vector3f>` — vous fournissez votre propre l
 ## Exemple — toggle plein écran
 
 ```java
-final VideoPlayerNode player = VideoPlayerNode.create(100, 100, 640, 360)
+final ResourcePlayerNode player = ResourcePlayerNode.create(100, 100, 640, 360)
     .resource(video)
     .loop(true)
     .attach(this);
@@ -97,7 +97,7 @@ this.keybind(() -> {
 ## Exemple — barre de progression cliquable
 
 ```java
-final VideoPlayerNode player = VideoPlayerNode.create(0, 0, 854, 480)
+final ResourcePlayerNode player = ResourcePlayerNode.create(0, 0, 854, 480)
     .resource(video)
     .attach(this);
 
@@ -114,7 +114,7 @@ ProgressNode.create(0, 490, 854, 8)
 
 ## Cycle de vie & cleanup
 
-`VideoPlayerNode` override `detach()` pour libérer son décodeur automatiquement — pas de leak à la fermeture de l'UI ou au retrait via `clearChildren()`.
+`ResourcePlayerNode` override `detach()` pour libérer son décodeur automatiquement — pas de leak à la fermeture de l'UI ou au retrait via `clearChildren()`.
 
 Changer la ressource avec `.resource(newResource)` libère le grabber, l'audio player et le thread du décodeur précédent avant de switcher.
 

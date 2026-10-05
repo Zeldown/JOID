@@ -61,7 +61,7 @@ double progress = resource.getPlayback().map(IResourcePlayback::getProgress).orE
 | `isPlaying()`, `isPaused()`, `isLoop()`, `isAutoplay()` | État de la lecture |
 | `getDuration()`, `getCurrentTime()`, `getProgress()` | Durée et position, en secondes et de 0 à 1 |
 
-Un [VideoPlayerNode](../nodes/design/video-player.md) les pilote toutes avec les mêmes contrôles et callbacks : un WebP animé se lit, se met en pause et boucle comme une vidéo.
+Un [ResourcePlayerNode](../nodes/design/resource-player.md) les pilote toutes avec les mêmes contrôles et callbacks : un WebP animé se lit, se met en pause et boucle comme une vidéo.
 
 ## WebM transparent
 
@@ -104,4 +104,4 @@ Chaque JAR JOID embarque ce dont ces formats ont besoin : FFmpeg avec ses native
 - [ResourceBuilder](resource-builder.md).
 - [Decoders](decoders.md).
 - [ResourceNode](../nodes/design/resource.md).
-- [VideoPlayerNode](../nodes/design/video-player.md).
+- [ResourcePlayerNode](../nodes/design/resource-player.md).

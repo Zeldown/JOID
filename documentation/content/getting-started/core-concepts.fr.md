@@ -87,7 +87,7 @@ Voir [Node Fundamentals](../nodes/node-fundamentals.md).
 Deux familles de nœuds :
 
 - **Nœuds de structure** calculent le layout de leurs enfants — `FlexNode`, `GridNode`, `ContainerNode`, `ScrollbarNode`. Vous surchargez rarement leur rendu.
-- **Nœuds de design** dessinent du contenu — `RectNode`, `CircleNode`, `TextNode`, `ResourceNode`, `TextFieldNode`, `VideoPlayerNode`. Vous les stylisez avec des effets et des couleurs.
+- **Nœuds de design** dessinent du contenu — `RectNode`, `CircleNode`, `TextNode`, `ResourceNode`, `TextFieldNode`, `ResourcePlayerNode`. Vous les stylisez avec des effets et des couleurs.
 
 Une UI bien construite est majoritairement *des nœuds de design à l'intérieur de nœuds de structure*.
 
@@ -136,14 +136,14 @@ Resource remote = Resource.of("https://example.com/image.png");
 Resource video = Resource.of(MyClass.class.getResourceAsStream("/movie.mp4"));  // auto-détecté
 ```
 
-Placez-les dans un `ResourceNode`, un `VideoPlayerNode`, ou dessinez directement via `DrawUtils.RESOURCE`. Voir [ResourceBuilder](../resources/resource-builder.md).
+Placez-les dans un `ResourceNode`, un `ResourcePlayerNode`, ou dessinez directement via `DrawUtils.RESOURCE`. Voir [ResourceBuilder](../resources/resource-builder.md).
 
 ## Bonnes pratiques
 
 - **Construisez dans `init()`, mutez via des signaux.** Ne pas appeler `this.append(...)` depuis `draw()` — la reconstruction déclenche un reload complet coûteux.
 - **Utilisez des nœuds de structure pour le layout.** Une grille de `RectNode` positionnée à la main est un code smell ; `GridNode` existe.
 - **Mettez vos `TextInfo` en cache.** Ils contiennent la police, la taille, la couleur — en créer un par frame est du gaspillage.
-- **Libérez les ressources lourdes.** `VideoPlayerNode` le fait déjà via `detach()` ; pour vos propres décodeurs lourds, surchargez `detach()` de la même façon.
+- **Libérez les ressources lourdes.** `ResourcePlayerNode` le fait déjà via `detach()` ; pour vos propres décodeurs lourds, surchargez `detach()` de la même façon.
 - **Préférez `toGradient(other)` aux shaders de gradient manuels.** `Color` supporte les gradients nativement et le renderer choisit le bon shader automatiquement.
 
 ## Modèle de rendu

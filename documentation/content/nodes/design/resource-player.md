@@ -1,4 +1,4 @@
-# VideoPlayerNode
+# ResourcePlayerNode
 
 Full-featured video player. Plays MP4, MOV, WebM, MKV, AVI through FFmpeg, and GIF and APNG animations through the same playback controls. Audio streamed through the audio bridge, synced to video.
 
@@ -7,7 +7,7 @@ Full-featured video player. Plays MP4, MOV, WebM, MKV, AVI through FFmpeg, and G
 ```java
 final Resource video = Resource.of(getClass().getResourceAsStream("/intro.mp4"));
 
-VideoPlayerNode.create(0, 0, 854, 480)
+ResourcePlayerNode.create(0, 0, 854, 480)
     .resource(video)
     .loop(true)
     .volume(1F)
@@ -80,7 +80,7 @@ The `AudioListener` is a `Supplier<Vector3f>` — you provide your own listener 
 ## Example — fullscreen toggle
 
 ```java
-final VideoPlayerNode player = VideoPlayerNode.create(100, 100, 640, 360)
+final ResourcePlayerNode player = ResourcePlayerNode.create(100, 100, 640, 360)
     .resource(video)
     .loop(true)
     .attach(this);
@@ -97,7 +97,7 @@ this.keybind(() -> {
 ## Example — progress scrubber
 
 ```java
-final VideoPlayerNode player = VideoPlayerNode.create(0, 0, 854, 480)
+final ResourcePlayerNode player = ResourcePlayerNode.create(0, 0, 854, 480)
     .resource(video)
     .attach(this);
 
@@ -114,7 +114,7 @@ ProgressNode.create(0, 490, 854, 8)
 
 ## Lifecycle & cleanup
 
-`VideoPlayerNode` overrides `detach()` to release its decoder automatically — no leak when the UI closes or the node is removed via `clearChildren()`.
+`ResourcePlayerNode` overrides `detach()` to release its decoder automatically — no leak when the UI closes or the node is removed via `clearChildren()`.
 
 Changing the resource with `.resource(newResource)` releases the previous decoder's grabber, audio player, and thread before switching.
 
