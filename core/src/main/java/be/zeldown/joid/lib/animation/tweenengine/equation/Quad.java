@@ -37,7 +37,8 @@ public abstract class Quad extends TweenEquation {
 	public static final Quad INOUT = new Quad() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			if ((t *= 2F) < 1F) {
 				return 0.5F * t * t;
 			}

@@ -14,7 +14,7 @@ public final class FileAsset extends Asset {
 
 	private final File file;
 
-	private FileAsset(final @NonNull File file) {
+	private FileAsset(final File file) {
 		super(file.getAbsolutePath());
 		this.file = file;
 	}

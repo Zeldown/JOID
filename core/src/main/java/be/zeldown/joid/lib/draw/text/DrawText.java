@@ -37,40 +37,30 @@ public final class DrawText {
 		return this.getLines(width, Text.create(text, info)).stream().map(Text::getText).collect(Collectors.toList());
 	}
 
-	public FontBounds drawText(double x, double y, final @NonNull Text text) {
+	public FontBounds drawText(final double x, final double y, final @NonNull Text text) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
 		}
 
-		if (text.getHorizontalAlignment().isCenter()) {
-			x -= text.getWidth() / 2;
-		} else if (text.getHorizontalAlignment().isEnd()) {
-			x -= text.getWidth();
-		}
-
-		if (text.getVerticalAlignment().isCenter()) {
-			y -= text.getHeight() / 2;
-		} else if (text.getVerticalAlignment().isEnd()) {
-			y -= text.getHeight();
-		}
-
-		final double runX = x;
-		final double runY = y;
+		final double runX = text.getHorizontalAlignment().isCenter() ? x - text.getWidth() / 2 : text.getHorizontalAlignment().isEnd() ? x - text.getWidth() : x;
+		final double runY = text.getVerticalAlignment().isCenter() ? y - text.getHeight() / 2 : text.getVerticalAlignment().isEnd() ? y - text.getHeight() : y;
 		final double runWidth = text.getWidth();
 		final double runHeight = text.getHeight();
+
+		double penX = runX;
 
 		for (final TextElement element : text.getElementList()) {
 			final String drawText = text.getText(element);
 			final TextInfo info = element.getInfo();
 
-			double oy = y;
+			double oy = runY;
 			if (text.getVerticalAlignment().isCenter()) {
 				oy += (text.getHeight() - info.getHeight()) / 2;
 			} else if (text.getVerticalAlignment().isEnd()) {
 				oy += text.getHeight() - info.getHeight();
 			}
 
-			x += info.getFont().getFontProvider().drawText(x, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
+			penX += info.getFont().getFontProvider().drawText(penX, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
 		}
 
 		return text.getBounds();

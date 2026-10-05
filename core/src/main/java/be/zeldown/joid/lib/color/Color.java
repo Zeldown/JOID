@@ -50,20 +50,20 @@ public final class Color {
 	public Consumer<Color> update;
 	public ColorGradient gradient;
 
-	public Color(final @NonNull Color color) {
+	public Color(final Color color) {
 		this(color.r, color.g, color.b, color.a);
 	}
 
-	public Color(final @NonNull ColorGradient gradient) {
+	public Color(final ColorGradient gradient) {
 		this(gradient.getStartColor());
 		this.gradient = gradient;
 	}
 
-	public Color(final @NonNull java.awt.Color color) {
+	public Color(final java.awt.Color color) {
 		this(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
 	}
 
-	public Color(final @NonNull FloatBuffer buffer) {
+	public Color(final FloatBuffer buffer) {
 		this(buffer.get(), buffer.get(), buffer.get(), buffer.get());
 	}
 
@@ -114,7 +114,7 @@ public final class Color {
 		this.update = update;
 	}
 
-	public static @NonNull Color decode(@NonNull String nm) {
+	public static @NonNull Color decode(final @NonNull String nm) {
 		if ("rainbow".equalsIgnoreCase(nm.replace("#", ""))) {
 			return Color.RAINBOW();
 		}
@@ -139,16 +139,13 @@ public final class Color {
 			return new Color(new ColorGradient(Color.decode(parts[0].trim()), Color.decode(parts[1].trim()), direction));
 		}
 
-		if (!nm.startsWith("#")) {
-			nm = "#" + nm;
+		final String hex = nm.startsWith("#") ? nm : "#" + nm;
+		if (hex.length() == 7) {
+			return new Color(Integer.decode(hex.substring(0, 7)));
 		}
 
-		if (nm.length() == 7) {
-			return new Color(Integer.decode(nm.substring(0, 7)));
-		}
-
-		if (nm.length() == 9) {
-			final int intval = Integer.decode(nm);
+		if (hex.length() == 9) {
+			final int intval = Integer.decode(hex);
 			final int red    = intval >> 24 & 0xFF;
 			final int green  = intval >> 16 & 0xFF;
 			final int blue   = intval >>  8 & 0xFF;
@@ -156,7 +153,7 @@ public final class Color {
 			return new Color(red, green, blue, alpha);
 		}
 
-		throw new NumberFormatException("Invalid color: " + nm);
+		throw new NumberFormatException("Invalid color: " + hex);
 	}
 
 	public @NonNull String encode() {
@@ -216,9 +213,9 @@ public final class Color {
 		return this.darker(0.5F);
 	}
 
-	public @NonNull Color darker(float scale) {
-		scale = 1 - scale;
-		return new Color(this.r * scale,this.g * scale,this.b * scale,this.a);
+	public @NonNull Color darker(final float scale) {
+		final float factor = 1 - scale;
+		return new Color(this.r * factor, this.g * factor, this.b * factor, this.a);
 	}
 
 	public @NonNull Color brighter() {
@@ -257,9 +254,9 @@ public final class Color {
 		return (int) (this.a * 255F);
 	}
 
-	public @NonNull Color brighter(float scale) {
-		scale += 1F;
-		return new Color(this.r * scale, this.g * scale, this.b * scale, this.a);
+	public @NonNull Color brighter(final float scale) {
+		final float factor = scale + 1F;
+		return new Color(this.r * factor, this.g * factor, this.b * factor, this.a);
 	}
 
 	public @NonNull Color multiply(final @NonNull Color c) {
@@ -310,11 +307,9 @@ public final class Color {
 		return Color.gradient(this, target, direction);
 	}
 
-	public @NonNull float[] RGBtoHSB(float[] hsbvals) {
+	public @NonNull float[] RGBtoHSB(final float[] hsbvals) {
+		final float[] values = hsbvals == null ? new float[3] : hsbvals;
 		float hue, saturation, brightness;
-		if (hsbvals == null) {
-			hsbvals = new float[3];
-		}
 
 		int cmax = this.getRed() > this.getGreen() ? this.getRed() : this.getGreen();
 		if (this.getBlue() > cmax) {
@@ -352,10 +347,10 @@ public final class Color {
 				hue = hue + 1F;
 			}
 		}
-		hsbvals[0] = hue;
-		hsbvals[1] = saturation;
-		hsbvals[2] = brightness;
-		return hsbvals;
+		values[0] = hue;
+		values[1] = saturation;
+		values[2] = brightness;
+		return values;
 	}
 
 	public @NonNull Color copy() {
@@ -389,11 +384,9 @@ public final class Color {
 		return this.gradient != null;
 	}
 
-	public static @NonNull float[] RGBtoHSB(final int r, final int g, final int b, float[] hsbvals) {
+	public static @NonNull float[] RGBtoHSB(final int r, final int g, final int b, final float[] hsbvals) {
+		final float[] values = hsbvals == null ? new float[3] : hsbvals;
 		float hue, saturation, brightness;
-		if (hsbvals == null) {
-			hsbvals = new float[3];
-		}
 
 		int cmax = r > g ? r : g;
 		if (b > cmax) {
@@ -431,10 +424,10 @@ public final class Color {
 				hue = hue + 1F;
 			}
 		}
-		hsbvals[0] = hue;
-		hsbvals[1] = saturation;
-		hsbvals[2] = brightness;
-		return hsbvals;
+		values[0] = hue;
+		values[1] = saturation;
+		values[2] = brightness;
+		return values;
 	}
 
 	public static void reset() {

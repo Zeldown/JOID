@@ -11,7 +11,8 @@ public abstract class Elastic extends TweenEquation {
 	public static final Elastic IN = new Elastic() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			float a = this.a;
 			float p = this.p;
 			if (t == 0F) {
@@ -83,7 +84,8 @@ public abstract class Elastic extends TweenEquation {
 	public static final Elastic INOUT = new Elastic() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			float a = this.a;
 			float p = this.p;
 			if (t == 0F) {

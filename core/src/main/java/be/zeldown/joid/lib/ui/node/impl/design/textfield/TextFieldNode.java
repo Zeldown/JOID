@@ -327,24 +327,16 @@ public class TextFieldNode extends Node {
 		});
 	}
 
-	private final void setText(String newText) {
-		if (newText == null) {
-			newText = "";
-		}
-
+	private final void setText(final String newText) {
 		final String oldText = this.text == null ? "" : this.text;
-		newText = this.filter.apply(oldText, newText);
-		if (this.maxTextLength >= 0 && newText.length() > this.maxTextLength) {
-			newText = newText.substring(0, this.maxTextLength);
-		}
-
-		final String finalNewText = newText;
-		if (!finalNewText.equals(oldText)) {
+		final String filtered = this.filter.apply(oldText, newText == null ? "" : newText);
+		final String accepted = this.maxTextLength >= 0 && filtered.length() > this.maxTextLength ? filtered.substring(0, this.maxTextLength) : filtered;
+		if (!accepted.equals(oldText)) {
 			this.executeCallback(TextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-				this.text = finalNewText;
-			}, oldText, finalNewText);
+				this.text = accepted;
+			}, oldText, accepted);
 		} else {
-			this.text = finalNewText;
+			this.text = accepted;
 		}
 	}
 

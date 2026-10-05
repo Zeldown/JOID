@@ -24,7 +24,8 @@ public abstract class Back extends TweenEquation {
 	public static final Back OUT = new Back() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			final float s = this.bounce;
 			return (t -= 1) * t * ((s + 1) * t + s) + 1;
 		}
@@ -39,7 +40,8 @@ public abstract class Back extends TweenEquation {
 	public static final Back INOUT = new Back() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			float s = this.bounce;
 			if ((t *= 2) < 1) {
 				return 0.5F * (t * t * (((s *= (1.525F)) + 1) * t - s));

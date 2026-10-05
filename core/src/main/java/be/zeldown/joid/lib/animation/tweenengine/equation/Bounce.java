@@ -23,7 +23,8 @@ public abstract class Bounce extends TweenEquation {
 	public static final Bounce OUT = new Bounce() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			if (t < (1F / 2.75F)) {
 				return 7.5625F * t * t;
 			} else if (t < (2F / 2.75F)) {

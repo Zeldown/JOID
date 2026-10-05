@@ -174,46 +174,19 @@ public final class Tessellator {
 		this.setColor(k, l, i1, a);
 	}
 
-	public void setColor(int r, int g, int b, int a) {
+	public void setColor(final int r, final int g, final int b, final int a) {
 		if (!this.isColorDisabled) {
-			if (r > 255) {
-				r = 255;
-			}
-
-			if (g > 255) {
-				g = 255;
-			}
-
-			if (b > 255) {
-				b = 255;
-			}
-
-			if (a > 255) {
-				a = 255;
-			}
-
-			if (r < 0) {
-				r = 0;
-			}
-
-			if (g < 0) {
-				g = 0;
-			}
-
-			if (b < 0) {
-				b = 0;
-			}
-
-			if (a < 0) {
-				a = 0;
-			}
+			final int red = Math.max(0, Math.min(255, r));
+			final int green = Math.max(0, Math.min(255, g));
+			final int blue = Math.max(0, Math.min(255, b));
+			final int alpha = Math.max(0, Math.min(255, a));
 
 			this.hasColor = true;
 
 			if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
-				this.color = a << 24 | b << 16 | g << 8 | r;
+				this.color = alpha << 24 | blue << 16 | green << 8 | red;
 			} else {
-				this.color = r << 24 | g << 16 | b << 8 | a;
+				this.color = red << 24 | green << 16 | blue << 8 | alpha;
 			}
 		}
 	}

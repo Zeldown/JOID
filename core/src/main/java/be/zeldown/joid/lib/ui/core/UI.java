@@ -658,50 +658,52 @@ public abstract class UI implements IUI, IndexedElement {
 		return this.getRelativeY(this.mouseY * (this.viewportHeight / this.height));
 	}
 
-	public final double getRelativeX(double value) {
-		value -= this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
+	public final double getRelativeX(final double value) {
+		double relative = value - (this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX()));
 
 		if (this.zoomLevel.getOrDefault() != 1D) {
-			value -= this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-			value *= 1D / this.zoomLevel.getOrDefault();
+			relative -= this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+			relative *= 1D / this.zoomLevel.getOrDefault();
 		}
 
-		return value;
+		return relative;
 	}
 
-	public final double getRelativeY(double value) {
-		value -= this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
+	public final double getRelativeY(final double value) {
+		double relative = value - (this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY()));
 
 		if (this.zoomLevel.getOrDefault() != 1D) {
-			value -= this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-			value *= 1D / this.zoomLevel.getOrDefault();
+			relative -= this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+			relative *= 1D / this.zoomLevel.getOrDefault();
 		}
 
-		return value;
+		return relative;
 	}
 
-	public final double getAbsoluteX(double value) {
+	public final double getAbsoluteX(final double value) {
+		double absolute = value;
 		if (this.zoomLevel.getOrDefault() != 1D) {
-			value /= 1D / this.zoomLevel.getOrDefault();
-			value += this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+			absolute /= 1D / this.zoomLevel.getOrDefault();
+			absolute += this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
 		}
 
-		value += this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
-		value /= this.viewportWidth / this.width;
+		absolute += this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
+		absolute /= this.viewportWidth / this.width;
 
-		return value;
+		return absolute;
 	}
 
-	public final double getAbsoluteY(double value) {
+	public final double getAbsoluteY(final double value) {
+		double absolute = value;
 		if (this.zoomLevel.getOrDefault() != 1D) {
-			value /= 1D / this.zoomLevel.getOrDefault();
-			value += this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
+			absolute /= 1D / this.zoomLevel.getOrDefault();
+			absolute += this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
 		}
 
-		value += this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
-		value /= this.viewportHeight / this.height;
+		absolute += this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
+		absolute /= this.viewportHeight / this.height;
 
-		return value;
+		return absolute;
 	}
 
 	public final double getAbsoluteWidth(final double value) {
@@ -822,19 +824,17 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	public final double lerpByFramerate(double value, final double target, final double speed, final double snapDiff, final boolean snap) {
+	public final double lerpByFramerate(final double value, final double target, final double speed, final double snapDiff, final boolean snap) {
 		final double diff = target - value;
 		final double absDiff = Math.abs(diff);
 
 		final double offset = Math.min(absDiff, speed * this.frameTime / UI.FRAME_TIME * absDiff / 3D);
 
 		if (absDiff > snapDiff) {
-			value += diff > 0 ? offset : -offset;
-		} else if (snap){
-			value = target;
+			return value + (diff > 0 ? offset : -offset);
 		}
 
-		return value;
+		return snap ? target : value;
 	}
 
 	public final void schedule(final @NonNull Runnable runnable) {

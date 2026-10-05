@@ -11,7 +11,7 @@ public final class StreamAsset extends Asset {
 
 	private final BufferedInputStream stream;
 
-	private StreamAsset(final @NonNull InputStream stream) {
+	private StreamAsset(final InputStream stream) {
 		super(stream.toString());
 		this.stream = stream instanceof BufferedInputStream ? (BufferedInputStream) stream : new BufferedInputStream(stream);
 	}

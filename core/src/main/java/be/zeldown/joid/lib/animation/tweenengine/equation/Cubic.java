@@ -23,7 +23,8 @@ public abstract class Cubic extends TweenEquation {
 	public static final Cubic OUT = new Cubic() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			return (t -= 1F) * t * t + 1F;
 		}
 
@@ -37,7 +38,8 @@ public abstract class Cubic extends TweenEquation {
 	public static final Cubic INOUT = new Cubic() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			if ((t *= 2F) < 1F) {
 				return 0.5F * t * t * t;
 			}

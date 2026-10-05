@@ -37,7 +37,8 @@ public abstract class Expo extends TweenEquation {
 	public static final Expo INOUT = new Expo() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			if (t == 0F) {
 				return 0F;
 			}

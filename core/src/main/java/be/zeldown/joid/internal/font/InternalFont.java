@@ -30,12 +30,9 @@ public class InternalFont {
 		InternalFont.MONTSERRAT_BLACK = MsdfFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Black/")).join();
 	}
 
-	private static InputStream get(String path) {
-		if (path.endsWith("/")) {
-			path = path.substring(0, path.length() - 1);
-		}
-
-		return JOID.class.getResourceAsStream(path + "/font.msdf");
+	private static InputStream get(final String path) {
+		final String folder = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+		return JOID.class.getResourceAsStream(folder + "/font.msdf");
 	}
 
 }

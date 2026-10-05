@@ -7,22 +7,22 @@ import be.zeldown.joid.lib.animation.tweenengine.TweenPath;
 public class CatmullRom implements TweenPath {
 
 	@Override
-	public float compute(float t, final float[] points, final int pointsCnt) {
+	public float compute(final float t, final float[] points, final int pointsCnt) {
 		int segment = (int) Math.floor((pointsCnt - 1D) * t);
 		segment = Math.max(segment, 0);
 		segment = Math.min(segment, pointsCnt - 2);
 
-		t = t * (pointsCnt - 1F) - segment;
+		final float progress = t * (pointsCnt - 1F) - segment;
 
 		if (segment == 0F) {
-			return this.catmullRomSpline(points[0], points[0], points[1], points[2], t);
+			return this.catmullRomSpline(points[0], points[0], points[1], points[2], progress);
 		}
 
 		if (segment == pointsCnt - 2F) {
-			return this.catmullRomSpline(points[pointsCnt - 3], points[pointsCnt - 2], points[pointsCnt - 1], points[pointsCnt - 1], t);
+			return this.catmullRomSpline(points[pointsCnt - 3], points[pointsCnt - 2], points[pointsCnt - 1], points[pointsCnt - 1], progress);
 		}
 
-		return this.catmullRomSpline(points[segment - 1], points[segment], points[segment + 1], points[segment + 2], t);
+		return this.catmullRomSpline(points[segment - 1], points[segment], points[segment + 1], points[segment + 2], progress);
 	}
 
 	private float catmullRomSpline(final float a, final float b, final float c, final float d, final float t) {

@@ -23,7 +23,8 @@ public abstract class Quart extends TweenEquation {
 	public static final Quart OUT = new Quart() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			return -((t -= 1F) * t * t * t - 1F);
 		}
 
@@ -37,7 +38,8 @@ public abstract class Quart extends TweenEquation {
 	public static final Quart INOUT = new Quart() {
 
 		@Override
-		public final float compute(float t) {
+		public final float compute(final float time) {
+			float t = time;
 			if ((t *= 2F) < 1F) {
 				return 0.5F * t * t * t * t;
 			}

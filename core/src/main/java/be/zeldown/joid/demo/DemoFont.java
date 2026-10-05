@@ -18,12 +18,9 @@ public class DemoFont {
 		DemoFont.SPACE_GROTESK = MsdfFontLoader.load(DemoFont.get("/assets/demo/fonts/Space-Grotesk/")).join();
 	}
 
-	private static InputStream get(String path) {
-		if (path.endsWith("/")) {
-			path = path.substring(0, path.length() - 1);
-		}
-
-		return JOID.class.getResourceAsStream(path + "/font.msdf");
+	private static InputStream get(final String path) {
+		final String folder = path.endsWith("/") ? path.substring(0, path.length() - 1) : path;
+		return JOID.class.getResourceAsStream(folder + "/font.msdf");
 	}
 
 	public static boolean isLoaded() {

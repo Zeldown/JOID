@@ -180,13 +180,13 @@ public final class OBJModel implements IDrawableModel {
 		return maxZ - minZ;
 	}
 
-	private OBJVertex parseVertex(@NonNull String line, final int lineCount) throws RuntimeException {
+	private OBJVertex parseVertex(final @NonNull String line, final int lineCount) throws RuntimeException {
 		final OBJVertex vertex = null;
 		if (!OBJModel.isValidVertexLine(line)) {
 			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
 		}
-		line = line.substring(line.indexOf(" ") + 1);
-		final String[] tokens = line.split(" ");
+		final String values = line.substring(line.indexOf(" ") + 1);
+		final String[] tokens = values.split(" ");
 		try {
 			if (tokens.length == 2) {
 				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]));
@@ -201,13 +201,13 @@ public final class OBJModel implements IDrawableModel {
 		return vertex;
 	}
 
-	private OBJVertex parseVertexNormal(@NonNull String line, final int lineCount) throws RuntimeException {
+	private OBJVertex parseVertexNormal(final @NonNull String line, final int lineCount) throws RuntimeException {
 		final OBJVertex vertexNormal = null;
 		if (!OBJModel.isValidVertexNormalLine(line)) {
 			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
 		}
-		line = line.substring(line.indexOf(" ") + 1);
-		final String[] tokens = line.split(" ");
+		final String values = line.substring(line.indexOf(" ") + 1);
+		final String[] tokens = values.split(" ");
 		try {
 			if (tokens.length == 3) {
 				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
@@ -219,13 +219,13 @@ public final class OBJModel implements IDrawableModel {
 		return vertexNormal;
 	}
 
-	private OBJTextureCoordinate parseTextureCoordinate(@NonNull String line, final int lineCount) throws RuntimeException {
+	private OBJTextureCoordinate parseTextureCoordinate(final @NonNull String line, final int lineCount) throws RuntimeException {
 		final OBJTextureCoordinate textureCoordinate = null;
 		if (!OBJModel.isValidTextureCoordinateLine(line)) {
 			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
 		}
-		line = line.substring(line.indexOf(" ") + 1);
-		final String[] tokens = line.split(" ");
+		final String values = line.substring(line.indexOf(" ") + 1);
+		final String[] tokens = values.split(" ");
 		try {
 			if (tokens.length == 2) {
 				return new OBJTextureCoordinate(Float.parseFloat(tokens[0]), 1 - Float.parseFloat(tokens[1]));
