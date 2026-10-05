@@ -4,22 +4,20 @@ JOID renders text through MSDF (Multi-channel Signed Distance Field) atlases —
 
 ## `FontLoader.load`
 
-`FontLoader` is asynchronous — it off-loads parsing and texture upload to an executor pool and hands the finished `CustomFont` to a callback.
+`FontLoader` is asynchronous — it off-loads parsing and texture upload to an executor pool and returns a `CompletableFuture` carrying the finished `CustomFont`.
 
 ```java
-static void load(InputStream packed, Consumer<CustomFont> callback)
-static void load(InputStream regular, InputStream bold, Consumer<CustomFont> callback)
+static CompletableFuture<CustomFont> load(Object packed)
+static CompletableFuture<CustomFont> load(Object regular, Object bold)
 ```
 
-Each stream is one `font.msdf` file, produced by the generator described in [MSDF Atlas](msdf-atlas.md). It carries the atlas, the glyph metrics and the kerning table together.
+Each handle names one `font.msdf` file, produced by the generator described in [MSDF Atlas](msdf-atlas.md). It carries the atlas, the glyph metrics and the kerning table together. Anything an [asset locator](../resources/assets.md) recognises works — an `InputStream`, a `File`, a URL, or a handle of your own.
 
 Minimal load:
 
 ```java
-FontLoader.load(
-    getClass().getResourceAsStream("/fonts/Inter/font.msdf"),
-    customFont -> this.interFont = customFont
-);
+FontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
+    .thenAccept(customFont -> this.interFont = customFont);
 ```
 
 Both regular and bold atlases:
@@ -27,11 +25,10 @@ Both regular and bold atlases:
 ```java
 FontLoader.load(
     getClass().getResourceAsStream("/fonts/Inter-Regular/font.msdf"),
-    getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf"),
-    customFont -> {
-        // customFont.getRegular() and customFont.getBold() are Font instances
-    }
-);
+    getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf")
+).thenAccept(customFont -> {
+    // customFont.getRegular() and customFont.getBold() are Font instances
+});
 ```
 
 If the single-stream overload is used, the same font is stored as both regular and bold on the `CustomFont` wrapper.
@@ -39,8 +36,8 @@ If the single-stream overload is used, the same font is stored as both regular a
 The `font.json` + `font.png` pair of older atlases still loads, through the `FontInputStream` overloads:
 
 ```java
-static void load(FontInputStream regular, Consumer<CustomFont> callback)
-static void load(FontInputStream regular, FontInputStream bold, Consumer<CustomFont> callback)
+static CompletableFuture<CustomFont> load(FontInputStream regular)
+static CompletableFuture<CustomFont> load(FontInputStream regular, FontInputStream bold)
 ```
 
 ### Kerning
@@ -114,7 +111,16 @@ If you only have a single atlas, `CustomFont` falls back to the regular font for
 
 ## Asynchronous loading
 
-`FontLoader.load(...)` returns immediately; the callback fires on the fixed-size executor pool once parsing and upload finish. Kick the load off at application start so the font is ready before the UI that uses it opens.
+`FontLoader.load(...)` returns immediately. The future completes on the fixed-size executor pool once parsing and upload finish, so you choose how to wait:
+
+```java
+FontLoader.load(stream).thenAccept(font -> this.font = font);                 // continue when ready
+FontLoader.load(stream).exceptionally(error -> { error.printStackTrace(); return null; });
+this.font = FontLoader.load(stream).join();                                   // block, at startup
+CompletableFuture.allOf(regular, bold, italic).join();                        // wait for a whole family
+```
+
+A font that cannot be read completes the future exceptionally rather than failing silently, so never drop the returned future on the floor. Kick the load off at application start so the font is ready before the UI that uses it opens.
 
 ## Character set
 

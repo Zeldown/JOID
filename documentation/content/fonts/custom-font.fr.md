@@ -4,22 +4,20 @@ JOID rend le texte via des atlas MSDF (Multi-channel Signed Distance Field) — 
 
 ## `FontLoader.load`
 
-`FontLoader` est asynchrone — il délègue la lecture et l'upload de texture à un pool d'exécuteurs et remet le `CustomFont` terminé à un callback.
+`FontLoader` est asynchrone — il délègue la lecture et l'upload de texture à un pool d'exécuteurs et renvoie un `CompletableFuture` qui porte le `CustomFont` terminé.
 
 ```java
-static void load(InputStream packed, Consumer<CustomFont> callback)
-static void load(InputStream regular, InputStream bold, Consumer<CustomFont> callback)
+static CompletableFuture<CustomFont> load(Object packed)
+static CompletableFuture<CustomFont> load(Object regular, Object bold)
 ```
 
-Chaque flux est un fichier `font.msdf`, produit par le générateur décrit dans [Atlas MSDF](msdf-atlas.md). Il porte ensemble l'atlas, les métriques des glyphes et la table de crénage.
+Chaque handle désigne un fichier `font.msdf`, produit par le générateur décrit dans [Atlas MSDF](msdf-atlas.md). Il porte ensemble l'atlas, les métriques des glyphes et la table de crénage. Tout ce qu'un [localisateur d'asset](../resources/assets.md) reconnaît convient — un `InputStream`, un `File`, une URL, ou un handle à vous.
 
 Chargement minimal :
 
 ```java
-FontLoader.load(
-    getClass().getResourceAsStream("/fonts/Inter/font.msdf"),
-    customFont -> this.interFont = customFont
-);
+FontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
+    .thenAccept(customFont -> this.interFont = customFont);
 ```
 
 Atlas regular et bold :
@@ -27,11 +25,10 @@ Atlas regular et bold :
 ```java
 FontLoader.load(
     getClass().getResourceAsStream("/fonts/Inter-Regular/font.msdf"),
-    getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf"),
-    customFont -> {
-        // customFont.getRegular() et customFont.getBold() sont des Font
-    }
-);
+    getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf")
+).thenAccept(customFont -> {
+    // customFont.getRegular() et customFont.getBold() sont des Font
+});
 ```
 
 Avec l'overload à un flux, la même police est stockée en regular et en bold sur le wrapper `CustomFont`.
@@ -39,8 +36,8 @@ Avec l'overload à un flux, la même police est stockée en regular et en bold s
 Le couple `font.json` + `font.png` des anciens atlas se charge toujours, via les surcharges à `FontInputStream` :
 
 ```java
-static void load(FontInputStream regular, Consumer<CustomFont> callback)
-static void load(FontInputStream regular, FontInputStream bold, Consumer<CustomFont> callback)
+static CompletableFuture<CustomFont> load(FontInputStream regular)
+static CompletableFuture<CustomFont> load(FontInputStream regular, FontInputStream bold)
 ```
 
 ### Crénage
@@ -114,7 +111,16 @@ Si vous n'avez qu'un seul atlas, `CustomFont` fallback sur la police regular dan
 
 ## Chargement asynchrone
 
-`FontLoader.load(...)` retourne immédiatement ; le callback se déclenche sur le pool d'exécuteurs une fois le parsing et l'upload terminés. Lancez le chargement au démarrage de l'application pour que la police soit prête avant que l'UI qui l'utilise ne s'ouvre.
+`FontLoader.load(...)` retourne immédiatement. Le future se complète sur le pool d'exécuteurs une fois la lecture et l'upload terminés : c'est vous qui choisissez comment attendre.
+
+```java
+FontLoader.load(flux).thenAccept(font -> this.police = font);                 // continuer quand c'est prêt
+FontLoader.load(flux).exceptionally(erreur -> { erreur.printStackTrace(); return null; });
+this.police = FontLoader.load(flux).join();                                   // bloquer, au démarrage
+CompletableFuture.allOf(regular, bold, italic).join();                        // attendre toute une famille
+```
+
+Une police illisible complète le future exceptionnellement au lieu d'échouer en silence : ne jetez jamais le future renvoyé. Lancez le chargement au démarrage de l'application pour que la police soit prête avant que l'UI qui l'utilise ne s'ouvre.
 
 ## Jeu de caractères
 
