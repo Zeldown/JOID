@@ -55,7 +55,7 @@ boolean isEmpty()
 ListSignal<E> clear()
 ```
 
-Chaque écriture appelle `publish()` en interne.
+Chaque écriture appelle `publish()` en interne. Un signal construit avec une collection par défaut la copie à sa première écriture : le défaut reste intact et `reset()` le rétablit.
 
 ## Lecture
 
@@ -64,7 +64,7 @@ String current = name.getOrDefault();                        // retourne la vale
 boolean hasValue = name.isPresent();                          // value != null
 ```
 
-Il n'y a pas de `signal.get()` — lisez via `getOrDefault()`.
+Il n'y a pas de `signal.get()` — lisez via `getOrDefault()`. Deux signaux sont égaux quand leurs valeurs `getOrDefault()` sont égales.
 
 ## Subscribe / unsubscribe
 

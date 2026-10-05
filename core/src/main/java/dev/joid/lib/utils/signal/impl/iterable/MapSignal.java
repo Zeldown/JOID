@@ -1,6 +1,7 @@
 package dev.joid.lib.utils.signal.impl.iterable;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,7 +24,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public @NonNull MapSignal<K, V> clear() {
-		this.getOrDefault().clear();
+		this.mutable().clear();
 		this.publish();
 		return this;
 	}
@@ -49,13 +50,13 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public V put(final K key, final V value) {
-		final V result = this.getOrDefault().put(key, value);
+		final V result = this.mutable().put(key, value);
 		this.publish();
 		return result;
 	}
 
 	public V remove(final K key) {
-		final V result = this.getOrDefault().remove(key);
+		final V result = this.mutable().remove(key);
 		this.publish();
 		return result;
 	}
@@ -66,6 +67,14 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 
 	public Collection<V> values() {
 		return this.getOrDefault().values();
+	}
+
+	private Map<K, V> mutable() {
+		if (!this.isPresent()) {
+			this.silent().set(this.getOrDefault() == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.getOrDefault()));
+		}
+
+		return this.getOrDefault();
 	}
 
 	@Override

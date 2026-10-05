@@ -107,7 +107,7 @@ public class Signal<T> implements ISignal<T> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.value);
+		return Objects.hash(this.getOrDefault());
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class Signal<T> implements ISignal<T> {
 		}
 
 		final Signal<?> other = (Signal<?>) obj;
-		return Objects.equals(this.value, other.value);
+		return Objects.equals(this.getOrDefault(), other.getOrDefault());
 	}
 
 }

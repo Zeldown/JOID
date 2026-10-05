@@ -2,6 +2,7 @@ package dev.joid.lib.utils.signal.impl.iterable;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import dev.joid.lib.utils.signal.Signal;
@@ -26,19 +27,19 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	public @NonNull SetSignal<E> clear() {
-		this.getOrDefault().clear();
+		this.mutable().clear();
 		this.publish();
 		return this;
 	}
 
 	public boolean add(final E e) {
-		final boolean success = this.getOrDefault().add(e);
+		final boolean success = this.mutable().add(e);
 		this.publish();
 		return success;
 	}
 
 	public boolean remove(final E e) {
-		final boolean success = this.getOrDefault().remove(e);
+		final boolean success = this.mutable().remove(e);
 		this.publish();
 		return success;
 	}
@@ -53,6 +54,14 @@ public class SetSignal<E> extends Signal<Set<E>> {
 
 	public int size() {
 		return this.getOrDefault().size();
+	}
+
+	private Set<E> mutable() {
+		if (!this.isPresent()) {
+			this.silent().set(this.getOrDefault() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(this.getOrDefault()));
+		}
+
+		return this.getOrDefault();
 	}
 
 	@Override

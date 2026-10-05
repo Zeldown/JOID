@@ -1,0 +1,212 @@
+package dev.joid.lib.utils.signal;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
+
+public class SignalTest {
+
+	@Test
+	public void startsEmptyWithoutDefault() {
+		final Signal<String> signal = new Signal<>();
+		Assert.assertFalse(signal.isPresent());
+		Assert.assertNull(signal.getOrDefault());
+	}
+
+	@Test
+	public void fallsBackOnItsDefault() {
+		final Signal<String> signal = new Signal<>("joid");
+		Assert.assertFalse(signal.isPresent());
+		Assert.assertEquals("joid", signal.getOrDefault());
+	}
+
+	@Test
+	public void startsWithTheGivenValue() {
+		final Signal<String> signal = Signal.of("joid");
+		Assert.assertTrue(signal.isPresent());
+		Assert.assertEquals("joid", signal.getOrDefault());
+	}
+
+	@Test
+	public void keepsItsValueOverItsDefault() {
+		final Signal<String> signal = new Signal<>("joid").set("ui");
+		Assert.assertTrue(signal.isPresent());
+		Assert.assertEquals("ui", signal.getOrDefault());
+	}
+
+	@Test
+	public void resetsToItsDefault() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<>("joid").set("ui").subscribe(received::add).reset();
+		Assert.assertEquals("joid", signal.getOrDefault());
+		Assert.assertEquals(Collections.singletonList("joid"), received);
+	}
+
+	@Test
+	public void forgetsItsValueOnResetWithoutDefault() {
+		final Signal<String> signal = new Signal<String>().set("joid").reset();
+		Assert.assertFalse(signal.isPresent());
+		Assert.assertNull(signal.getOrDefault());
+	}
+
+	@Test
+	public void notifiesEveryChange() {
+		final List<String> received = new ArrayList<>();
+		new Signal<String>().subscribe(received::add).set("a").set("b");
+		Assert.assertEquals(Arrays.asList("a", "b"), received);
+	}
+
+	@Test
+	public void ignoresAnUnchangedValue() {
+		final List<String> received = new ArrayList<>();
+		new Signal<String>().subscribe(received::add).set(null).set("a").set(new String("a"));
+		Assert.assertEquals(Collections.singletonList("a"), received);
+	}
+
+	@Test
+	public void publishesItsValueOnDemand() {
+		final List<String> received = new ArrayList<>();
+		Signal.of("joid").subscribe(received::add).publish().publish();
+		Assert.assertEquals(Arrays.asList("joid", "joid"), received);
+	}
+
+	@Test
+	public void silencesOnlyTheNextPublish() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<String>().subscribe(received::add).silent().set("a");
+		Assert.assertEquals("a", signal.getOrDefault());
+		Assert.assertTrue(received.isEmpty());
+		signal.set("b");
+		Assert.assertEquals(Collections.singletonList("b"), received);
+	}
+
+	@Test
+	public void silencesAManualPublish() {
+		final List<String> received = new ArrayList<>();
+		Signal.of("joid").subscribe(received::add).silent().publish().publish();
+		Assert.assertEquals(Collections.singletonList("joid"), received);
+	}
+
+	@Test
+	public void exposesItsSubscribers() {
+		final SignalSubscriber<String> subscriber = value -> true;
+		Assert.assertEquals(Collections.singleton(subscriber), new Signal<String>().subscribe(subscriber).getEventSet());
+	}
+
+	@Test
+	public void notifiesASubscriberOnceWhenSubscribedTwice() {
+		final List<String> received = new ArrayList<>();
+		final SignalSubscriber<String> subscriber = received::add;
+		new Signal<String>().subscribe(subscriber).subscribe(subscriber).set("a");
+		Assert.assertEquals(Collections.singletonList("a"), received);
+	}
+
+	@Test
+	public void stopsNotifyingAnUnsubscribedSubscriber() {
+		final List<String> received = new ArrayList<>();
+		final SignalSubscriber<String> subscriber = received::add;
+		final Signal<String> signal = new Signal<String>().subscribe(subscriber).set("a").unsubscribe(subscriber).set("b");
+		Assert.assertEquals(Collections.singletonList("a"), received);
+		Assert.assertTrue(signal.getEventSet().isEmpty());
+	}
+
+	@Test
+	public void dropsASubscriberReturningFalse() {
+		final AtomicInteger calls = new AtomicInteger();
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<String>().subscribe(value -> {
+			calls.incrementAndGet();
+			return false;
+		}).subscribe(received::add).set("a").set("b");
+		Assert.assertEquals(1, calls.get());
+		Assert.assertEquals(Arrays.asList("a", "b"), received);
+		Assert.assertEquals(1, signal.getEventSet().size());
+	}
+
+	@Test
+	public void acceptsASubscriberDuringAPublish() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<>();
+		signal.subscribe(value -> {
+			signal.subscribe(received::add);
+			return false;
+		}).set("a").set("b");
+		Assert.assertEquals(Collections.singletonList("b"), received);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesANullSubscriber() {
+		new Signal<String>().subscribe(null);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesToUnsubscribeNull() {
+		new Signal<String>().unsubscribe(null);
+	}
+
+	@Test
+	public void takesTheValueOfACompletedStage() {
+		final Signal<String> signal = Signal.of(CompletableFuture.completedFuture("joid"));
+		Assert.assertTrue(signal.isPresent());
+		Assert.assertEquals("joid", signal.getOrDefault());
+	}
+
+	@Test
+	public void waitsForAPendingStage() {
+		final CompletableFuture<String> future = new CompletableFuture<>();
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = Signal.of(future).subscribe(received::add);
+		Assert.assertFalse(signal.isPresent());
+		future.complete("joid");
+		Assert.assertEquals("joid", signal.getOrDefault());
+		Assert.assertEquals(Collections.singletonList("joid"), received);
+	}
+
+	@Test
+	public void staysEmptyWhenTheStageFails() {
+		final CompletableFuture<String> future = new CompletableFuture<>();
+		final Signal<String> signal = Signal.of(future);
+		future.completeExceptionally(new IllegalStateException());
+		Assert.assertFalse(signal.isPresent());
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesANullStage() {
+		Signal.of((CompletionStage<String>) null);
+	}
+
+	@Test
+	public void equalsASignalHoldingTheSameValue() {
+		Assert.assertEquals(Signal.of("joid"), Signal.of("joid"));
+		Assert.assertEquals(Signal.of("joid").hashCode(), Signal.of("joid").hashCode());
+		Assert.assertEquals(new Signal<String>(), new Signal<String>());
+		Assert.assertEquals(new Signal<String>().hashCode(), new Signal<String>().hashCode());
+	}
+
+	@Test
+	public void comparesTheValueItWouldGive() {
+		Assert.assertEquals(new Signal<>("joid"), Signal.of("joid"));
+		Assert.assertEquals(new Signal<>("joid").hashCode(), Signal.of("joid").hashCode());
+		Assert.assertNotEquals(new Signal<>("joid"), new Signal<>("ui"));
+	}
+
+	@Test
+	public void differsFromAnotherValueOrAnotherKind() {
+		final Signal<String> signal = Signal.of("joid");
+		Assert.assertEquals(signal, signal);
+		Assert.assertNotEquals(Signal.of("ui"), signal);
+		Assert.assertNotEquals(new Signal<String>(), signal);
+		Assert.assertNotEquals(StringSignal.of("joid"), signal);
+		Assert.assertNotEquals(signal, null);
+	}
+
+}

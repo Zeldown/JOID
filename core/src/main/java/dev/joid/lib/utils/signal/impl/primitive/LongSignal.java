@@ -53,8 +53,20 @@ public class LongSignal extends Signal<Long> {
 	}
 
 	public void power(final int exponent) {
-		final long updatedValue = (long) Math.pow(this.getOrDefault(), exponent);
-		this.set(updatedValue);
+		if (exponent < 0) {
+			this.set((long) Math.pow(this.getOrDefault(), exponent));
+			return;
+		}
+
+		long result = 1L;
+		long base = this.getOrDefault();
+		for (int remaining = exponent; remaining > 0; remaining >>= 1) {
+			if ((remaining & 1) == 1) {
+				result *= base;
+			}
+			base *= base;
+		}
+		this.set(result);
 	}
 
 	@Override

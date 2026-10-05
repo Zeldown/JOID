@@ -17,13 +17,13 @@ public class StringSignal extends Signal<String> {
 	}
 
 	public void append(final String value) {
-		final String updatedValue = this.getOrDefault() + value;
-		this.set(updatedValue);
+		final String current = this.getOrDefault();
+		this.set(current == null ? value : current + value);
 	}
 
 	public void concat(final String str) {
-		final String updatedValue = this.getOrDefault().concat(str);
-		this.set(updatedValue);
+		final String current = this.getOrDefault();
+		this.set(current == null ? str : current.concat(str));
 	}
 
 	public void replace(final char oldChar, final char newChar) {
