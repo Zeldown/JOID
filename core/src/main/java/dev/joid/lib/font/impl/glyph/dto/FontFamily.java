@@ -15,8 +15,9 @@ import lombok.NonNull;
 
 public final class FontFamily<F extends IFontFace> {
 
-	private static final int NORMAL = 400;
-	private static final int MEDIUM = 500;
+	private static final int NORMAL      = 400;
+	private static final int MEDIUM      = 500;
+	private static final int TRACE_START = 2;
 
 	@Getter private final List<F> faces;
 	private final Set<FontWeight> warned = ConcurrentHashMap.newKeySet();
@@ -55,9 +56,24 @@ public final class FontFamily<F extends IFontFace> {
 
 		final F face = FontFamily.match(styled.isEmpty() ? this.faces : styled, weight.getValue());
 		if (face.getWeight() != weight && JOID.inst().isDevMode() && this.warned.add(weight)) {
-			System.err.println("[JOID] The font weight " + weight.getValue() + " is not loaded in this font family, " + face.getWeight().getValue() + " is drawn instead (loaded: " + this.faces.stream().map(loaded -> String.valueOf(loaded.getWeight().getValue())).distinct().collect(Collectors.joining(", ")) + ")");
+			this.warn(weight, face);
 		}
 		return face;
+	}
+
+	private void warn(final @NonNull FontWeight weight, final @NonNull F face) {
+		final StringBuilder warning = new StringBuilder("[JOID] The font weight ").append(weight.getValue()).append(" is not loaded in ").append(face.getName().isEmpty() ? "this font family" : "the family of " + face.getName());
+		warning.append(", ").append(face.getWeight().getValue()).append(" is drawn instead (loaded: ").append(this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", "))).append(")");
+
+		final StackTraceElement[] trace = new Throwable().getStackTrace();
+		for (int i = FontFamily.TRACE_START; i < trace.length; i++) {
+			warning.append(System.lineSeparator()).append("\tat ").append(trace[i]);
+		}
+		System.err.println(warning);
+	}
+
+	private static @NonNull String describe(final @NonNull IFontFace face) {
+		return face.getName().isEmpty() ? String.valueOf(face.getWeight().getValue()) : face.getWeight().getValue() + " " + face.getName();
 	}
 
 	private static boolean closer(final int candidate, final int current, final int desired) {

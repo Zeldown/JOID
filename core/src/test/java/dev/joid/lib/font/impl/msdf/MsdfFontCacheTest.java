@@ -57,6 +57,7 @@ public class MsdfFontCacheTest {
 	public void loadsAnOpenTypeFontThroughTheCache() {
 		final MsdfFontFace face = MsdfFontLoader.load(MsdfFontCacheTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).join().getFace(FontWeight.REGULAR, false);
 		Assert.assertTrue(face.hasGlyph('A'));
+		Assert.assertEquals("JOID Test Regular", face.getName());
 		Assert.assertTrue(face.getKerning('A', 'V') < 0F);
 		Assert.assertEquals(1, this.directory.list().length);
 	}

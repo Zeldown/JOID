@@ -19,12 +19,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfWriter {
 
-	private static final int BYTES   = 3;
-	private static final int VERSION = 3;
+	public static final int VERSION = 4;
+
+	private static final int BYTES = 3;
 
 	private static final byte[] MAGIC = {'J', 'O', 'I', 'D', 'M', 'S', 'D', 'F'};
 
-	public static void write(final File file, final List<GlyphEntry> glyphs, final Kerning kerning, final double[] metrics, final int weight, final boolean italic, final double size, final double range, final int[] pixels, final int width, final int height) throws IOException {
+	public static void write(final File file, final List<GlyphEntry> glyphs, final Kerning kerning, final double[] metrics, final String name, final int weight, final boolean italic, final double size, final double range, final int[] pixels, final int width, final int height) throws IOException {
 		try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file))) {
 			output.write(MsdfWriter.MAGIC);
 
@@ -33,6 +34,7 @@ public final class MsdfWriter {
 				data.writeByte(MsdfWriter.VERSION);
 				data.writeShort(weight);
 				data.writeBoolean(italic);
+				data.writeUTF(name);
 				data.writeInt(width);
 				data.writeInt(height);
 				data.writeFloat((float) range);

@@ -102,7 +102,17 @@ public class FontFamilyTest {
 			family.resolve(FontWeight.SEMI_BOLD, false);
 			family.resolve(FontWeight.BOLD, false);
 		});
-		Assert.assertEquals("[JOID] The font weight 600 is not loaded in this font family, 700 is drawn instead (loaded: 400, 700)" + System.lineSeparator(), output);
+		final String[] lines = output.split(System.lineSeparator());
+		Assert.assertEquals("[JOID] The font weight 600 is not loaded in this font family, 700 is drawn instead (loaded: 400, 700)", lines[0]);
+		Assert.assertTrue(lines[1], lines[1].startsWith("\tat dev.joid.lib.font.impl.glyph.dto.FontFamilyTest.lambda$"));
+		Assert.assertEquals(1, output.split("\\[JOID\\]", -1).length - 1);
+	}
+
+	@Test
+	public void namesTheFontInTheWarning() {
+		final FontFamily<Face> family = FontFamily.of(new Face(FontWeight.REGULAR, false, "Inter Regular"), new Face(FontWeight.BOLD, false, "Inter Bold"));
+		final String output = FontFamilyTest.capture(true, () -> family.resolve(FontWeight.LIGHT, false));
+		Assert.assertTrue(output, output.startsWith("[JOID] The font weight 300 is not loaded in the family of Inter Regular, 400 is drawn instead (loaded: 400 Inter Regular, 700 Inter Bold)"));
 	}
 
 	private static FontFamily<Face> family(final int... weights) {
@@ -134,6 +144,11 @@ public class FontFamilyTest {
 
 		private final FontWeight weight;
 		private final boolean    italic;
+		private final String     name;
+
+		private Face(final FontWeight weight, final boolean italic) {
+			this(weight, italic, "");
+		}
 
 		@Override
 		public float getAscender() {

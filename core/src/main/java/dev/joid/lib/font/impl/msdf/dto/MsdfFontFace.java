@@ -16,6 +16,7 @@ public final class MsdfFontFace implements IFontFace {
 	private static final float           HALF_TEXEL = 0.5F;
 	private static final ResourceBuilder BUILDER    = ResourceBuilder.create().cache(null).blocking().linear().mipmap(false);
 
+	private final String                  name;
 	private final float                   xHeight;
 	private final boolean                 italic;
 	private final MsdfAtlas               atlas;
@@ -25,19 +26,20 @@ public final class MsdfFontFace implements IFontFace {
 	private final Map<Long, Float>        kerningPairs;
 	private final Map<Integer, MsdfGlyph> glyphs;
 
-	private MsdfFontFace(final MsdfAtlas atlas, final MsdfMetrics metrics, final Map<Integer, MsdfGlyph> glyphs, final Map<Long, Float> kerningPairs, final Resource texture, final FontWeight weight, final boolean italic) {
+	private MsdfFontFace(final MsdfAtlas atlas, final MsdfMetrics metrics, final Map<Integer, MsdfGlyph> glyphs, final Map<Long, Float> kerningPairs, final Resource texture, final String name, final FontWeight weight, final boolean italic) {
 		this.atlas = atlas;
 		this.metrics = metrics;
 		this.glyphs = glyphs;
 		this.kerningPairs = kerningPairs;
 		this.texture = texture;
+		this.name = name;
 		this.weight = weight;
 		this.italic = italic;
 		this.xHeight = MsdfFontFace.measureXHeight(atlas, glyphs);
 	}
 
-	public static @NonNull MsdfFontFace create(final @NonNull MsdfAtlas atlas, final @NonNull MsdfMetrics metrics, final @NonNull Map<Integer, MsdfGlyph> glyphs, final @NonNull Map<Long, Float> kerningPairs, final @NonNull BufferedImage image, final @NonNull FontWeight weight, final boolean italic) {
-		return new MsdfFontFace(atlas, metrics, glyphs, kerningPairs, MsdfFontFace.BUILDER.of(image), weight, italic);
+	public static @NonNull MsdfFontFace create(final @NonNull MsdfAtlas atlas, final @NonNull MsdfMetrics metrics, final @NonNull Map<Integer, MsdfGlyph> glyphs, final @NonNull Map<Long, Float> kerningPairs, final @NonNull BufferedImage image, final @NonNull String name, final @NonNull FontWeight weight, final boolean italic) {
+		return new MsdfFontFace(atlas, metrics, glyphs, kerningPairs, MsdfFontFace.BUILDER.of(image), name, weight, italic);
 	}
 
 	@Override
@@ -91,7 +93,7 @@ public final class MsdfFontFace implements IFontFace {
 	}
 
 	public @NonNull MsdfFontFace style(final @NonNull FontWeight weight, final boolean italic) {
-		return new MsdfFontFace(this.atlas, this.metrics, this.glyphs, this.kerningPairs, this.texture, weight, italic);
+		return new MsdfFontFace(this.atlas, this.metrics, this.glyphs, this.kerningPairs, this.texture, this.name, weight, italic);
 	}
 
 	private static float measureXHeight(final MsdfAtlas atlas, final Map<Integer, MsdfGlyph> glyphs) {

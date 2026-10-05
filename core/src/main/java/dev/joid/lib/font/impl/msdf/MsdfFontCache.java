@@ -11,6 +11,7 @@ import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOID;
 import dev.joid.msdf.MsdfGenerator;
+import dev.joid.msdf.atlas.MsdfWriter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfFontCache {
 
-	private static final String SIGNATURE = JOID.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT;
+	private static final String SIGNATURE = JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT;
 
 	@Getter
 	private static File directory = MsdfFontCache.locateDirectory();

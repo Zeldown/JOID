@@ -64,7 +64,7 @@ public class MsdfFontFaceTest {
 		final Map<Long, Float> kerning = new HashMap<>();
 		kerning.put(MsdfFontFace.pair('A', 'V'), -0.0625F);
 		final MsdfGlyph glyph = new MsdfGlyph('A', 0.625F, new MsdfBounds(0F, 0F, 0.6F, 0.7F), new MsdfBounds(0F, 0F, 2F, 2F));
-		return MsdfFontFace.create(new MsdfAtlas(4F, 32F, 2, 2), new MsdfMetrics(1.25F, 0.875F, -0.25F, -0.125F, 0.0625F), Collections.singletonMap((int) 'A', glyph), kerning, new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB), FontWeight.REGULAR, false);
+		return MsdfFontFace.create(new MsdfAtlas(4F, 32F, 2, 2), new MsdfMetrics(1.25F, 0.875F, -0.25F, -0.125F, 0.0625F), Collections.singletonMap((int) 'A', glyph), kerning, new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB), "", FontWeight.REGULAR, false);
 	}
 
 }

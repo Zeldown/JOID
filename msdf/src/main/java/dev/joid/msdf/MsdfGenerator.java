@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
@@ -84,8 +85,8 @@ public final class MsdfGenerator {
 
 		final FontFile source = FontFile.read(data);
 		final Kerning kerning = Kerning.read(source, font, codepoints);
-		MsdfWriter.write(target, glyphs, kerning, metrics, source.getWeight(), source.isItalic(), size, range, pixels, width, height);
-		return "weight " + source.getWeight() + (source.isItalic() ? " italic, " : ", ") + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px";
+		MsdfWriter.write(target, glyphs, kerning, metrics, font.getFontName(Locale.ROOT), source.getWeight(), source.isItalic(), size, range, pixels, width, height);
+		return font.getFontName(Locale.ROOT) + ", weight " + source.getWeight() + (source.isItalic() ? " italic, " : ", ") + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px";
 	}
 
 	public static int[] codepoints(final String charset) throws Exception {

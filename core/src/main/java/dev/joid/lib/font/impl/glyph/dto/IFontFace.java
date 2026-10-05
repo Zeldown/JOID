@@ -18,4 +18,8 @@ public interface IFontFace {
 
 	public boolean hasGlyph(final int codepoint);
 
+	public default @NonNull String getName() {
+		return "";
+	}
+
 }

@@ -26,7 +26,8 @@ import lombok.NonNull;
 public final class MsdfBinarySource extends MsdfSource {
 
 	private static final int BYTES   = 3;
-	private static final int VERSION = 3;
+	private static final int LEGACY  = 3;
+	private static final int VERSION = 4;
 
 	private static final byte[] MAGIC = {'J', 'O', 'I', 'D', 'M', 'S', 'D', 'F'};
 
@@ -52,12 +53,13 @@ public final class MsdfBinarySource extends MsdfSource {
 
 		final DataInputStream input = new DataInputStream(new InflaterInputStream(stream));
 		final int version = input.readUnsignedByte();
-		if (version != MsdfBinarySource.VERSION) {
+		if (version < MsdfBinarySource.LEGACY || version > MsdfBinarySource.VERSION) {
 			throw new IOException("Unsupported msdf font version " + version);
 		}
 
 		final FontWeight weight = FontWeight.of(input.readUnsignedShort());
 		final boolean italic = input.readBoolean();
+		final String name = version > MsdfBinarySource.LEGACY ? input.readUTF() : "";
 		final int width = input.readInt();
 		final int height = input.readInt();
 		final MsdfAtlas atlas = new MsdfAtlas(input.readFloat(), input.readFloat(), width, height);
@@ -93,7 +95,7 @@ public final class MsdfBinarySource extends MsdfSource {
 			}
 		}
 
-		return MsdfFontFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), weight, italic);
+		return MsdfFontFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), name, weight, italic);
 	}
 
 	private static int paeth(final int left, final int up, final int corner) {

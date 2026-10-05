@@ -56,7 +56,7 @@ public final class MsdfJsonSource extends MsdfSource {
 			throw new IOException("Unable to decode the atlas texture " + this.texture.getUniqueId());
 		}
 
-		return MsdfFontFace.create(MsdfJsonSource.atlas(root.getAsJsonObject("atlas")), MsdfJsonSource.metrics(root.getAsJsonObject("metrics")), MsdfJsonSource.glyphs(root), MsdfJsonSource.kerningPairs(root), image, FontWeight.REGULAR, false);
+		return MsdfFontFace.create(MsdfJsonSource.atlas(root.getAsJsonObject("atlas")), MsdfJsonSource.metrics(root.getAsJsonObject("metrics")), MsdfJsonSource.glyphs(root), MsdfJsonSource.kerningPairs(root), image, "", FontWeight.REGULAR, false);
 	}
 
 	private static @NonNull MsdfAtlas atlas(final @NonNull JsonObject json) {

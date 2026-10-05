@@ -91,11 +91,17 @@ When the family has no face of the requested weight, the face with the closest w
 |---|---|---|---|---|---|---|---|---|---|
 | Drawn | 300 | 300 | 300 | 300 | 300 | 700 | 700 | 700 | 700 |
 
-In dev mode (`JOID.inst().setDevMode(true)`) the first fallback of each weight is reported once on the console:
+In dev mode (`JOID.inst().setDevMode(true)`) the first fallback of each weight is reported once on the console, with the exact font and the calls that asked for the weight:
 
 ```
-[JOID] The font weight 600 is not loaded in this font family, 700 is drawn instead (loaded: 300, 700)
+[JOID] The font weight 600 is not loaded in the family of Inter Bold, 700 is drawn instead (loaded: 300 Inter Light, 700 Inter Bold)
+	at dev.joid.lib.font.impl.glyph.GlyphFont.getFace(GlyphFont.java:20)
+	at dev.joid.lib.font.impl.glyph.GlyphFontProvider.layout(GlyphFontProvider.java:64)
+	...
+	at com.example.ui.UIProfile.init(UIProfile.java:42)
 ```
+
+A face read from a `font.msdf` written by an older generator carries no name, and the message then says `this font family`.
 
 Italic prefers the italic faces of the family. A family without one keeps its upright faces and slants them, so `italic(true)` always shows.
 

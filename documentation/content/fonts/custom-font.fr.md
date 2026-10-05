@@ -91,11 +91,17 @@ Quand la famille n'a pas de face de la graisse demandée, la face à la graisse 
 |---|---|---|---|---|---|---|---|---|---|
 | Dessinée | 300 | 300 | 300 | 300 | 300 | 700 | 700 | 700 | 700 |
 
-En mode dev (`JOID.inst().setDevMode(true)`), le premier repli de chaque graisse est signalé une fois dans la console :
+En mode dev (`JOID.inst().setDevMode(true)`), le premier repli de chaque graisse est signalé une fois dans la console, avec la police exacte et les appels qui ont demandé la graisse :
 
 ```
-[JOID] The font weight 600 is not loaded in this font family, 700 is drawn instead (loaded: 300, 700)
+[JOID] The font weight 600 is not loaded in the family of Inter Bold, 700 is drawn instead (loaded: 300 Inter Light, 700 Inter Bold)
+	at dev.joid.lib.font.impl.glyph.GlyphFont.getFace(GlyphFont.java:20)
+	at dev.joid.lib.font.impl.glyph.GlyphFontProvider.layout(GlyphFontProvider.java:64)
+	...
+	at com.example.ui.UIProfile.init(UIProfile.java:42)
 ```
+
+Une face lue depuis un `font.msdf` écrit par un ancien générateur ne porte pas de nom, et le message dit alors `this font family`.
 
 L'italique préfère les faces italiques de la famille. Une famille sans italique garde ses faces droites et les penche, donc `italic(true)` se voit toujours.
 
