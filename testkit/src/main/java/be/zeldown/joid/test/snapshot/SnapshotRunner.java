@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.asset.dto.locator.AssetLocator;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.clock.ManualClockBridge;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
@@ -22,7 +23,6 @@ import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.resource.ResourceBuilder;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
-import be.zeldown.joid.lib.resource.dto.resolver.ResourceResolver;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.key.Key;
@@ -72,7 +72,7 @@ public final class SnapshotRunner {
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
 		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
-		ResourceResolver.register(new SnapshotUrlResolver(SnapshotSettings.getCache()));
+		AssetLocator.register(new SnapshotUrlLocator(SnapshotSettings.getCache()));
 		runner.resize(SnapshotRunner.WIDTH, SnapshotRunner.HEIGHT);
 
 		JOID.inst().setDevMode(false).setDemoMode(true).load();

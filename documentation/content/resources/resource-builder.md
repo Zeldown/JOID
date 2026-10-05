@@ -15,7 +15,7 @@ Resource res = Resource.of(texture);               // ITexture — wraps a textu
 Resource res = Resource.of(input, callback);       // any of the above + notify when ready
 ```
 
-The input is dispatched to the appropriate [resolver](resolvers.md) based on its runtime type. Plug in your own resolver to handle custom inputs (file paths, bundled assets, MC `ResourceLocation`, etc.) — see [Resolvers](resolvers.md).
+Inputs that are already decoded go to a [resolver](resolvers.md); everything else becomes an [asset](assets.md) and is decoded from its bytes. To teach JOID a handle of your own — a MC `ResourceLocation`, a CDN key, an archive entry — register an asset locator, and it will work for textures, videos and fonts at once.
 
 All forms go through a default `ResourceBuilder` (`.async().linear()`) that writes into `ResourceBuilder.DEFAULT_CACHE` — a 5-minute TTL cache shared across every default load.
 
@@ -66,11 +66,11 @@ With `async()`, the decode happens on a background thread pool. The node renders
 Resource res = Resource.of("https://example.com/image.png");
 ```
 
-The default `UrlResourceResolver` downloads the URL on a dedicated thread (with automatic HTTPS → HTTP fallback for misconfigured hosts) and routes the bytes to the right decoder. The download only fires on cache miss — back-to-back `of(sameUrl)` calls reuse the cached `Resource`.
+A `String` becomes a `UrlAsset`, which reports itself as remote: its decoder is picked on a dedicated thread (with an automatic HTTPS → HTTP fallback for misconfigured hosts) so the call never blocks on the network. The download only fires on cache miss — back-to-back `of(sameUrl)` calls reuse the cached `Resource`.
 
 ## Magic-bytes detection
 
-`InputStream` and URL resolvers read the first 12 bytes (or the URL extension for URLs) to pick the right decoder:
+`ResourceDecoder.of(asset)` reads the first 12 bytes through `peek(...)` to pick the right decoder:
 
 | Signature / extension | Decoder |
 |---|---|
@@ -84,7 +84,7 @@ You don't need to pre-classify — drop any supported format in and it Just Work
 
 ## Resolving from inside a custom resolver
 
-If you write a resolver, you build the cached `Resource` through `compute(...)`:
+A custom input that names bytes belongs in an [asset locator](assets.md), not here. A resolver is for inputs that are already decoded, and builds its cached `Resource` through `compute(...)`:
 
 ```java
 public class MySourceResolver implements IResourceResolver {

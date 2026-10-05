@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import be.zeldown.joid.impl.lwjgl2.snapshot.SnapshotBackend;
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.font.dto.text.TextInfo;
 import be.zeldown.joid.lib.font.impl.custom.CustomFont;
@@ -23,7 +24,7 @@ public class FontKerningTest {
 	public static void load() {
 		FontKerningTest.backend = new SnapshotBackend();
 		FontKerningTest.backend.create(64, 64);
-		FontKerningTest.font = CustomFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf")).join();
+		FontKerningTest.font = CustomFontLoader.load(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf"))).join();
 	}
 
 	@AfterClass

@@ -5,21 +5,17 @@ Full-featured video player. Plays MP4, MOV, WebM, MKV, AVI, GIF, APNG — anythi
 ## Create
 
 ```java
-try {
-    final Resource video = Resource.of(getClass().getResourceAsStream("/intro.mp4"));
+final Resource video = Resource.of(getClass().getResourceAsStream("/intro.mp4"));
 
-    VideoPlayerNode.create(0, 0, 854, 480)
-        .resource(video)
-        .loop(true)
-        .volume(1F)
-        .autoplay(true)
-        .attach(parent);
-} catch (IOException e) {
-    e.printStackTrace();
-}
+VideoPlayerNode.create(0, 0, 854, 480)
+    .resource(video)
+    .loop(true)
+    .volume(1F)
+    .autoplay(true)
+    .attach(parent);
 ```
 
-> NOTE: `Resource.of(InputStream)` throws `IOException` for video streams — wrap in try/catch or propagate.
+> NOTE: nothing is read at this point. The stream becomes an [asset](../../resources/assets.md), and the copy FFmpeg needs is written on the resource worker when the decoder runs — an unreadable source surfaces there, not here.
 
 ## Playback control
 

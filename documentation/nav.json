@@ -92,7 +92,9 @@
 			"title": "Resources",
 			"group": "resources",
 			"items": [
+				{ "title": "Assets", "path": "resources/assets" },
 				{ "title": "ResourceBuilder", "path": "resources/resource-builder" },
+				{ "title": "Resolvers", "path": "resources/resolvers" },
 				{ "title": "Decoders", "path": "resources/decoders" }
 			]
 		},

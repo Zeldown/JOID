@@ -2,6 +2,7 @@ package be.zeldown.joid.lib.resource.dto.decoder.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -15,6 +16,7 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegLogCallback;
 import org.bytedeco.javacv.Frame;
 
+import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.render.texture.ITexture;
@@ -30,7 +32,9 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 
 	private static final int RING_BUFFER_SIZE = 5;
 
-	private final File file;
+	private final Asset asset;
+
+	private File file;
 
 	private Thread decodeThread;
 	private FFmpegFrameGrabber grabber;
@@ -70,25 +74,12 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	private float maxDistance = 50F;
 	private float referenceDistance = 5F;
 
-	public VideoResourceDecoder(final @NonNull InputStream inputStream) {
-		try {
-			this.file = File.createTempFile("joid-video-", ".mp4");
-			this.file.deleteOnExit();
-
-			final FileOutputStream fos = new FileOutputStream(this.file);
-			final byte[] buffer = new byte[8192];
-			int read;
-			while ((read = inputStream.read(buffer)) != -1) {
-				fos.write(buffer, 0, read);
-			}
-			fos.close();
-			inputStream.close();
-		} catch (final Exception e) {
-			throw new RuntimeException(e);
-		}
+	public VideoResourceDecoder(final @NonNull Asset asset) {
+		this.asset = asset;
 	}
 
 	public VideoResourceDecoder(final @NonNull File file) {
+		this.asset = null;
 		this.file = file;
 	}
 
@@ -112,6 +103,10 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 			}
 
 			try {
+				if (this.file == null) {
+					this.file = VideoResourceDecoder.extract(this.asset);
+				}
+
 				avutil.av_log_set_level(avutil.AV_LOG_QUIET);
 				FFmpegLogCallback.set();
 
@@ -397,6 +392,20 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	/* [ Static Section ] */
+	private static @NonNull File extract(final @NonNull Asset asset) throws IOException {
+		final File target = File.createTempFile("joid-video-", ".mp4");
+		target.deleteOnExit();
+
+		try (InputStream stream = asset.open(); FileOutputStream output = new FileOutputStream(target)) {
+			final byte[] buffer = new byte[8192];
+			int read;
+			while ((read = stream.read(buffer)) != -1) {
+				output.write(buffer, 0, read);
+			}
+		}
+		return target;
+	}
+
 	public static boolean isVideoHeader(final @NonNull byte[] header, final int read) {
 		if (read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a') {
 			return true;

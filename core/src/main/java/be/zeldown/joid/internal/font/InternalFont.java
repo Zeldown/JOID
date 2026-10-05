@@ -1,8 +1,7 @@
 package be.zeldown.joid.internal.font;
 
-import java.io.InputStream;
-
 import be.zeldown.joid.internal.JOID;
+import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.font.impl.custom.CustomFont;
 import be.zeldown.joid.lib.font.impl.custom.CustomFontLoader;
 
@@ -30,12 +29,12 @@ public class InternalFont {
 		InternalFont.MONTSERRAT_BLACK = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Black/")).join();
 	}
 
-	private static InputStream get(String path) {
+	private static Asset get(String path) {
 		if (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);
 		}
 
-		return JOID.class.getResourceAsStream(path + "/font.msdf");
+		return Asset.of(JOID.class.getResourceAsStream(path + "/font.msdf"));
 	}
 
 }

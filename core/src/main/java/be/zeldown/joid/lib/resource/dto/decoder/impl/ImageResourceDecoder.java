@@ -6,33 +6,25 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
-@AllArgsConstructor
 public class ImageResourceDecoder implements IResourceDecoder {
+
+	private final Asset asset;
 
 	private BufferedImage image;
 
-	public ImageResourceDecoder(final @NonNull InputStream inputStream) {
-		try {
-			this.image = ImageIO.read(inputStream);
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				inputStream.close();
-			} catch (final IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+	public ImageResourceDecoder(final @NonNull Asset asset) {
+		this.asset = asset;
+	}
 
-		if (this.image == null) {
-			throw new RuntimeException("Failed to decode image, ImageIO returned null.");
-		}
+	public ImageResourceDecoder(final @NonNull BufferedImage image) {
+		this.asset = null;
+		this.image = image;
 	}
 
 	@Override
@@ -45,6 +37,10 @@ public class ImageResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
+		if (this.image == null) {
+			this.image = ImageResourceDecoder.read(this.asset);
+		}
+
 		resource.width(this.image.getWidth());
 		resource.height(this.image.getHeight());
 
@@ -70,6 +66,20 @@ public class ImageResourceDecoder implements IResourceDecoder {
 	@Override
 	public void clear(final @NonNull ResourceData resource) {
 		this.image = null;
+	}
+
+	private static @NonNull BufferedImage read(final @NonNull Asset asset) {
+		final BufferedImage image;
+		try (InputStream stream = asset.open()) {
+			image = ImageIO.read(stream);
+		} catch (final IOException exception) {
+			throw new RuntimeException("Unable to read the image of " + asset.getUniqueId(), exception);
+		}
+
+		if (image == null) {
+			throw new RuntimeException("Failed to decode image, ImageIO returned null for " + asset.getUniqueId());
+		}
+		return image;
 	}
 
 }

@@ -1,6 +1,8 @@
 # Decoders
 
-The low-level objects that turn bytes into GPU textures. You rarely instantiate them directly — [resolvers](resolvers.md) pick the right decoder based on magic bytes or input type — but knowing the API helps when writing custom decoders.
+The low-level objects that turn bytes into GPU textures. You rarely instantiate them directly — `ResourceDecoder.of(asset)` picks one from the first bytes of an [asset](assets.md) — but knowing the API helps when writing custom decoders.
+
+A decoder holds its asset, not its bytes: nothing is read before `decode(...)` runs, on the resource worker.
 
 ## `IResourceDecoder`
 
@@ -33,7 +35,7 @@ Lifecycle:
 Static image formats (PNG, JPG, BMP). Uses Java's `ImageIO`. Single texture, no animation.
 
 ```java
-ResourceDecoder.image(InputStream);      // from stream
+ResourceDecoder.image(Asset);            // read lazily, in decode()
 ResourceDecoder.image(BufferedImage);    // from pre-decoded image
 ```
 
@@ -49,8 +51,8 @@ Features:
 - Optional 3D spatial audio.
 
 ```java
-ResourceDecoder.video(InputStream);
-ResourceDecoder.video(InputStream, boolean loopByDefault);
+ResourceDecoder.video(Asset);
+ResourceDecoder.video(Asset, boolean loopByDefault);
 ResourceDecoder.video(File);
 ```
 
@@ -74,7 +76,7 @@ VideoResourceDecoder.isVideoHeader(byte[] header, int read);   // returns true f
 VideoResourceDecoder.isLoopByDefault(byte[] header, int read); // returns true for GIF (loop on)
 ```
 
-`ResourceBuilder.of(InputStream)` uses these to route to the right decoder.
+`ResourceDecoder.of(Asset)` uses these on the asset's first 12 bytes, read through `peek(...)` so the asset stays untouched.
 
 ## Writing a custom decoder
 

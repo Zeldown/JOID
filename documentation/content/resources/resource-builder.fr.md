@@ -15,7 +15,7 @@ Resource res = Resource.of(texture);               // ITexture — enrobe une te
 Resource res = Resource.of(input, callback);       // n'importe lequel + notification quand prêt
 ```
 
-L'input est routé vers le [resolver](resolvers.md) approprié selon son type runtime. Branchez votre propre resolver pour gérer des inputs custom (chemins de fichiers, assets bundlés, `ResourceLocation` MC, etc.) — voir [Resolvers](resolvers.md).
+Les entrées déjà décodées partent vers un [résolveur](resolvers.md) ; tout le reste devient un [asset](assets.md) et se décode depuis ses octets. Pour apprendre à JOID un handle à vous — une `ResourceLocation` MC, une clé de CDN, une entrée d'archive — enregistrez un localisateur d'asset : il servira d'un coup les textures, les vidéos et les polices.
 
 Toutes les formes passent par un `ResourceBuilder` par défaut (`.async().linear()`) qui écrit dans `ResourceBuilder.DEFAULT_CACHE` — un cache à TTL de 5 minutes partagé entre tous les chargements par défaut.
 
@@ -66,11 +66,11 @@ Avec `async()`, le decode tourne sur un pool de threads en arrière-plan. Le nœ
 Resource res = Resource.of("https://example.com/image.png");
 ```
 
-Le `UrlResourceResolver` par défaut télécharge l'URL sur un thread dédié (avec fallback automatique HTTPS → HTTP pour les hôtes mal configurés) et route les octets vers le bon décodeur. Le download ne se déclenche qu'au cache miss — des appels `of(sameUrl)` consécutifs réutilisent le `Resource` caché.
+Une `String` devient un `UrlAsset`, qui se déclare distant : son décodeur est choisi sur un thread dédié (avec fallback automatique HTTPS → HTTP pour les hôtes mal configurés), si bien que l'appel ne bloque jamais sur le réseau. Le download ne se déclenche qu'au cache miss — des appels `of(sameUrl)` consécutifs réutilisent le `Resource` caché.
 
 ## Détection magic-bytes
 
-Les resolvers `InputStream` et URL lisent les 12 premiers octets (ou l'extension de l'URL) pour choisir le bon décodeur :
+`ResourceDecoder.of(asset)` lit les 12 premiers octets via `peek(...)` pour choisir le bon décodeur :
 
 | Signature / extension | Décodeur |
 |---|---|
@@ -84,7 +84,7 @@ Pas besoin de pré-classifier — déposez n'importe quel format supporté et ç
 
 ## Construire la Resource depuis un resolver custom
 
-Si vous écrivez un resolver, vous construisez le `Resource` caché via `compute(...)` :
+Une entrée custom qui désigne des octets relève d'un [localisateur d'asset](assets.md), pas d'ici. Un résolveur sert aux entrées déjà décodées, et construit son `Resource` caché via `compute(...)` :
 
 ```java
 public class MySourceResolver implements IResourceResolver {

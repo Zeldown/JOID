@@ -9,8 +9,10 @@ import java.util.function.Supplier;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
+import be.zeldown.joid.lib.resource.dto.decoder.ResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
 import be.zeldown.joid.lib.resource.dto.resolver.ResourceResolver;
 import lombok.Getter;
@@ -91,7 +93,25 @@ public final class ResourceBuilder {
 	}
 
 	public @NonNull Resource of(final @NonNull Object input, final Consumer<Resource> callback) {
-		return ResourceResolver.resolve(this, input, callback);
+		if (ResourceResolver.supports(input)) {
+			return ResourceResolver.resolve(this, input, callback);
+		}
+
+		final Asset asset = Asset.of(input);
+		if (asset.isRemote()) {
+			return this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), null), resource -> resource.dispatch(() -> {
+				resource.decoder(ResourceDecoder.of(asset));
+				if (callback != null) {
+					callback.accept(resource);
+				}
+			}));
+		}
+
+		final Resource resource = this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), ResourceDecoder.of(asset)));
+		if (callback != null) {
+			callback.accept(resource);
+		}
+		return resource;
 	}
 
 	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {

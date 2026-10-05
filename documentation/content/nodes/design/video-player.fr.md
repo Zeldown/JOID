@@ -5,21 +5,17 @@ Lecteur vidéo complet. Lit MP4, MOV, WebM, MKV, AVI, GIF, APNG — tout ce que 
 ## Créer
 
 ```java
-try {
-    final Resource video = Resource.of(getClass().getResourceAsStream("/intro.mp4"));
+final Resource video = Resource.of(getClass().getResourceAsStream("/intro.mp4"));
 
-    VideoPlayerNode.create(0, 0, 854, 480)
-        .resource(video)
-        .loop(true)
-        .volume(1F)
-        .autoplay(true)
-        .attach(parent);
-} catch (IOException e) {
-    e.printStackTrace();
-}
+VideoPlayerNode.create(0, 0, 854, 480)
+    .resource(video)
+    .loop(true)
+    .volume(1F)
+    .autoplay(true)
+    .attach(parent);
 ```
 
-> NOTE: `Resource.of(InputStream)` throw `IOException` pour les streams vidéo — wrappez en try/catch ou propagez.
+> NOTE: rien n'est lu à ce stade. Le flux devient un [asset](../../resources/assets.md), et la copie dont FFmpeg a besoin s'écrit sur le worker de ressources quand le décodeur tourne — une source illisible ressort là, pas ici.
 
 ## Contrôle de lecture
 
