@@ -22,8 +22,8 @@ shadowJar {
     rootProject.shadeLibraries(it)
 
     if (!project.hasProperty('dev')) {
-        exclude 'assets/demo/**'
-        exclude "dev/joid/impl/${project.name}/snapshot/**"
+        rootProject.excludeDevelopment(it)
+        exclude "dev/joid/impl/${project.name}/demo/**", "dev/joid/impl/${project.name}/snapshot/**"
     }
 }
 

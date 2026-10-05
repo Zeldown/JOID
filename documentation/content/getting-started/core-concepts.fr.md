@@ -28,11 +28,11 @@ Active des comportements réservés au développement. Quand `true` :
 - **Hot-reload** surveille les fichiers source et relance `init()` en cas de changement (même flag `@Debug`).
 - **Logs d'introspection de layout** pour les problèmes structurels.
 
-Laissez `false` en production — les gestes de debug et le file-watcher sont inutiles, et les bindings Alt peuvent entrer en conflit avec vos propres raccourcis.
+Laissez `false` en production — les gestes de debug et le file-watcher sont inutiles, et les bindings Alt peuvent entrer en conflit avec vos propres raccourcis. Seul l'artefact `-dev` contient le mode dev : sur un artefact `-prod`, `setDevMode(true)` lève une `IllegalStateException`.
 
 ### `setDemoMode(boolean)`
 
-Charge la `DemoFont` embarquée (shippée avec l'artefact `-dev`) pour que les snippets du quick-start, les UIs de démo et les exemples de doc aient une police utilisable sans que vous fournissiez votre propre atlas MSDF. Une fois vos polices chargées avec `MsdfFontLoader`, désactivez-le.
+Charge la `DemoFont` embarquée (shippée avec l'artefact `-dev`) pour que les snippets du quick-start, les UIs de démo et les exemples de doc aient une police utilisable sans que vous fournissiez votre propre atlas MSDF. Une fois vos polices chargées avec `MsdfFontLoader`, désactivez-le. Comme le mode dev, il n'existe que dans l'artefact `-dev` : sur un artefact `-prod`, `setDemoMode(true)` lève une `IllegalStateException`.
 
 `load()` doit être appelée **exactement une fois**, avant d'enregistrer des bridges ou d'ouvrir des UIs.
 

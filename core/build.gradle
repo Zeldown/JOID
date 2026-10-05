@@ -42,7 +42,7 @@ task releaseJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
     rootProject.shadeLibraries(it)
 
     if (!project.hasProperty('dev')) {
-        exclude 'assets/demo/**'
+        rootProject.excludeDevelopment(it)
     }
 }
 

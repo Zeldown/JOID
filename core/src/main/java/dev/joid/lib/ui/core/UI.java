@@ -91,7 +91,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private boolean onTop;
 	private double  renderPipelineLevel;
 
-	private DevNode devNode;
+	private Node devNode;
 
 	public UI() {
 		this.data = UIDataObject.getOrDefault(this.getClass());
@@ -719,8 +719,9 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void reload() {
 		if (this.devNode != null) {
-			this.devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
-			this.devNode.getReloadAnimator().start();
+			final DevNode devNode = (DevNode) this.devNode;
+			devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
+			devNode.getReloadAnimator().start();
 		}
 
 		this.initialized = false;

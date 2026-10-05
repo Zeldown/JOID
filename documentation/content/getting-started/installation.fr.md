@@ -18,8 +18,8 @@ Chaque backend existe en deux variantes :
 
 | Artefact | Contenu | Utiliser quand |
 |---|---|---|
-| `joid-<backend>-X.Y.Z-prod.jar` | Bibliothèque seule, `assets/demo/*` retirés | Vous shippez votre app |
-| `joid-<backend>-X.Y.Z-dev.jar` | Inclut polices de démo, textures de démo, vidéos d'exemple | Apprentissage / développement |
+| `joid-<backend>-X.Y.Z-prod.jar` | Bibliothèque seule — ni mode dev, ni mode démo, ni leurs classes et assets | Vous shippez votre app |
+| `joid-<backend>-X.Y.Z-dev.jar` | Ajoute le mode dev, le mode démo, les UIs et la fenêtre de démo, et leurs polices, textures et vidéos | Apprentissage / développement |
 
 Un JAR de backend contient le cœur, les modules JOID qu'il utilise — `joid-glfw` et `joid-openal` pour LWJGL 3 et Vulkan — et les bibliothèques média :
 

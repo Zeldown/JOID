@@ -33,6 +33,10 @@ ext {
         task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
     }
 
+    excludeDevelopment = { task ->
+        task.exclude 'assets/dev/**', 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**'
+    }
+
     lwjglVersion = "3.3.4"
     lwjglNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? "natives-windows" : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos") : "natives-linux"
 }

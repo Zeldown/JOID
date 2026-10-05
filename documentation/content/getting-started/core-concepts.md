@@ -28,11 +28,11 @@ Enables development-only behavior. When `true`:
 - **Hot-reload** watches source files and re-runs `init()` when they change (same `@Debug` flag).
 - **Layout introspection** logs are emitted for structural issues.
 
-Leave it `false` in production — the debug gestures and file-watcher are unnecessary overhead, and the Alt-key bindings may collide with your own shortcuts.
+Leave it `false` in production — the debug gestures and file-watcher are unnecessary overhead, and the Alt-key bindings may collide with your own shortcuts. Only the `-dev` artifact contains the dev mode: on a `-prod` artifact, `setDevMode(true)` throws an `IllegalStateException`.
 
 ### `setDemoMode(boolean)`
 
-Loads the bundled `DemoFont` (shipped with the `-dev` artifact) so the quick-start snippets, demo UIs, and documentation examples have a usable font without you providing your own MSDF atlas. Once you load your own fonts with `MsdfFontLoader`, turn it off.
+Loads the bundled `DemoFont` (shipped with the `-dev` artifact) so the quick-start snippets, demo UIs, and documentation examples have a usable font without you providing your own MSDF atlas. Once you load your own fonts with `MsdfFontLoader`, turn it off. Like the dev mode, it only exists in the `-dev` artifact: on a `-prod` artifact, `setDemoMode(true)` throws an `IllegalStateException`.
 
 `load()` must be called **exactly once**, before registering bridges or opening UIs.
 
