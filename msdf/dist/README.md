@@ -14,12 +14,18 @@ Java 8 or later is the only requirement.
 .\msdf.bat --font Inter-Regular.ttf --output fonts\Inter-Regular
 ```
 
-Both scripts wrap `java -jar joid-msdf-@JOID_VERSION@.jar`, which you can call directly. The command writes a single `font.msdf` in the output directory — atlas, glyph metrics, kerning pairs and the distance field, compressed as one file.
+Both scripts wrap `java -jar joid-msdf-@JOID_VERSION@.jar`, which you can call directly. The command writes a single `font.msdf` in the output directory — weight and style of the face, atlas, glyph metrics, kerning pairs and the distance field, compressed as one file.
 
 Drop that directory in your resources and load it with one stream:
 
 ```java
-CustomFontLoader.load(MyMod.class.getResourceAsStream("/assets/fonts/Inter-Regular/font.msdf"));
+MsdfFontLoader.load(MyMod.class.getResourceAsStream("/assets/fonts/Inter-Regular/font.msdf"));
+```
+
+Generate one atlas per weight and style of a family, then load them together: the weight and the italic flag are read from the font, and each `TextInfo` picks the weight it draws with.
+
+```java
+MsdfFontLoader.load(regularStream, italicStream, boldStream);
 ```
 
 ## Options

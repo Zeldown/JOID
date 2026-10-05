@@ -84,18 +84,21 @@ TextInfo.create(IFont font, float fontSize, Color color)
 
 T font(IFont font)
 T fontSize(float fontSize)
+T weight(FontWeight weight)
 T letterSpacing(float letterSpacing)
 T lineHeight(float lineHeight)
 T color(Color color)
 T colored(boolean colored)
 T italic(boolean italic)
+T markups(ITextMarkup... markups)
+T effects(ITextEffect... effects)
 T shadow(Color shadowColor)
 T shadow()                                         // par défaut color.darker(0.3F)
 T shadow(float x, float y)
 T copy()
 ```
 
-`TextInfo` n'a pas de setter `bold(boolean)` — shippez un atlas MSDF bold comme `IFont` séparé si vous avez besoin du gras. Utilisez `italic(true)` pour le rendu italique (nécessite que la police fournisse les glyphes italiques).
+`weight(FontWeight.BOLD)` dessine avec la face grasse de la famille, ou la graisse la plus proche qu'elle possède — voir [Graisses et styles](../../fonts/custom-font.md#graisses-et-styles). `italic(true)` utilise une face italique quand la famille en a une, et penche la face droite sinon. Le balisage et les effets stylent une chaîne de l'intérieur — voir [Balisage & effets](../../fonts/markup-effects.md).
 
 ## Texte réactif
 

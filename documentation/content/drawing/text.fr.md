@@ -48,7 +48,7 @@ FontBounds drawText(double x, double y, double width, double height, Text text, 
 ```java
 Text line = Text.create()
     .add(TextElement.create("HP: ", info))
-    .add(TextElement.create(() -> String.valueOf(hp.get()), infoBold))
+    .add(TextElement.create(() -> String.valueOf(hp.get()), info.copy().weight(FontWeight.BOLD)))
     .align(Align.CENTER, Align.CENTER);
 
 DrawUtils.TEXT.drawText(cx, cy, line);

@@ -77,7 +77,7 @@ For CJK, use a subset: a full CJK set runs past 30k glyphs and will not fit a 20
 
 ## The `.msdf` file
 
-One file holds everything: atlas metrics, glyph bounds, kerning pairs and the multi-channel distance field, deflated as a whole. The field is stored with the same adaptive row filtering a PNG uses, so a complete font weighs about the same as the raw `.png` would on its own. The kerning table is grouped by first codepoint and written as variable-length deltas in font units, which costs a tenth of what a flat pair list would: fifty thousand pairs fit in fifteen kilobytes.
+One file holds everything: the weight and style of the face, atlas metrics, glyph bounds, kerning pairs and the multi-channel distance field, deflated as a whole. The weight and the italic flag come from the `OS/2` table of the source font, so a family loads without telling JOID which file is which. The field is stored with the same adaptive row filtering a PNG uses, so a complete font weighs about the same as the raw `.png` would on its own. The kerning table is grouped by first codepoint and written as variable-length deltas in font units, which costs a tenth of what a flat pair list would: fifty thousand pairs fit in fifteen kilobytes.
 
 ```
 assets/
@@ -104,17 +104,18 @@ Those atlases carry no kerning: `msdf-atlas-gen` reads only the `kern` table, wh
 
 ## Multiple weights
 
-Generate one atlas per weight, then load each one separately and bind them to different `TextInfo`s:
+Generate one atlas per weight and style:
 
 ```bash
 ./msdf.sh --font Inter-Regular.ttf --output assets/fonts/Inter-Regular
+./msdf.sh --font Inter-Italic.ttf  --output assets/fonts/Inter-Italic
 ./msdf.sh --font Inter-Bold.ttf    --output assets/fonts/Inter-Bold
 ```
 
-A regular and a bold atlas can also be paired into one `MsdfFont`, which is what the `§l` style switch draws from:
+Then load them together as one family — each `TextInfo` picks its weight, see [Weights and styles](custom-font.md#weights-and-styles):
 
 ```java
-MsdfFontLoader.load(regularStream, boldStream).thenAccept(font -> this.myFont = font);
+MsdfFontLoader.load(regularStream, italicStream, boldStream).thenAccept(font -> this.myFont = font);
 ```
 
 ## Best practices
@@ -126,4 +127,5 @@ MsdfFontLoader.load(regularStream, boldStream).thenAccept(font -> this.myFont = 
 ## See also
 
 - [Custom Fonts](custom-font.md) — loading and using fonts.
+- [Markup & Effects](markup-effects.md) — styling a string from the inside.
 - [TextNode](../nodes/design/text.md).

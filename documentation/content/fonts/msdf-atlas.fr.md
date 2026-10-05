@@ -77,7 +77,7 @@ Pour le CJK, prenez un sous-ensemble : un jeu complet dépasse les 30 000 glyphe
 
 ## Le fichier `.msdf`
 
-Un seul fichier contient tout : métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul. La table de crénage est groupée par premier codepoint et écrite en deltas de taille variable, en unités de fonte : elle coûte un dixième d'une liste de paires à plat, cinquante mille paires tenant dans quinze kilo-octets.
+Un seul fichier contient tout : graisse et style de la face, métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. La graisse et l'indicateur d'italique viennent de la table `OS/2` de la police source : une famille se charge sans dire à JOID quel fichier est lequel. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul. La table de crénage est groupée par premier codepoint et écrite en deltas de taille variable, en unités de fonte : elle coûte un dixième d'une liste de paires à plat, cinquante mille paires tenant dans quinze kilo-octets.
 
 ```
 assets/
@@ -104,17 +104,18 @@ Ces atlas ne portent aucun crénage : `msdf-atlas-gen` ne lit que la table `kern
 
 ## Plusieurs graisses
 
-Générez un atlas par graisse, puis chargez chacun séparément et associez-les à des `TextInfo` différents :
+Générez un atlas par graisse et par style :
 
 ```bash
 ./msdf.sh --font Inter-Regular.ttf --output assets/fonts/Inter-Regular
+./msdf.sh --font Inter-Italic.ttf  --output assets/fonts/Inter-Italic
 ./msdf.sh --font Inter-Bold.ttf    --output assets/fonts/Inter-Bold
 ```
 
-Une graisse normale et une grasse peuvent aussi être réunies dans un seul `MsdfFont`, celui dans lequel puise le style `§l` :
+Puis chargez-les ensemble comme une seule famille — chaque `TextInfo` choisit sa graisse, voir [Graisses et styles](custom-font.md#graisses-et-styles) :
 
 ```java
-MsdfFontLoader.load(fluxRegular, fluxBold).thenAccept(font -> this.maPolice = font);
+MsdfFontLoader.load(fluxRegular, fluxItalic, fluxBold).thenAccept(font -> this.maPolice = font);
 ```
 
 ## Bonnes pratiques
@@ -126,4 +127,5 @@ MsdfFontLoader.load(fluxRegular, fluxBold).thenAccept(font -> this.maPolice = fo
 ## Voir aussi
 
 - [Polices personnalisées](custom-font.md) — charger et utiliser une police.
+- [Balisage & effets](markup-effects.md) — styler une chaîne de l'intérieur.
 - [TextNode](../nodes/design/text.md).

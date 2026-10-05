@@ -112,6 +112,7 @@
 			"group": "fonts",
 			"items": [
 				{ "title": "Custom Fonts", "path": "fonts/custom-font" },
+				{ "title": "Markup & Effects", "path": "fonts/markup-effects" },
 				{ "title": "MSDF Atlas", "path": "fonts/msdf-atlas" }
 			]
 		},
