@@ -7,20 +7,20 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.dto.ResourceData;
-import dev.joid.lib.resource.dto.animation.Animation;
-import dev.joid.lib.resource.dto.animation.IAnimationReader;
+import dev.joid.lib.resource.dto.animation.IResourceAnimationReader;
+import dev.joid.lib.resource.dto.animation.ResourceAnimation;
 import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
-import dev.joid.lib.resource.dto.playback.IPlayback;
+import dev.joid.lib.resource.dto.playback.IResourcePlayback;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class AnimatedResourceDecoder implements IResourceDecoder, IPlayback {
+public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
 	private final Asset            asset;
-	private final IAnimationReader reader;
+	private final IResourceAnimationReader reader;
 
-	private Animation animation;
+	private ResourceAnimation animation;
 	private ITexture  texture;
 
 	private Integer plays;
@@ -33,7 +33,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IPlayback {
 	private long    position;
 	private int     displayed = -1;
 
-	public AnimatedResourceDecoder(final @NonNull Asset asset, final @NonNull IAnimationReader reader) {
+	public AnimatedResourceDecoder(final @NonNull Asset asset, final @NonNull IResourceAnimationReader reader) {
 		this.asset = asset;
 		this.reader = reader;
 	}

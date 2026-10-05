@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class Animation {
+public final class ResourceAnimation {
 
 	private static final long MIN_DURATION = 10L;
 	private static final long DEFAULT_DURATION = 100L;
@@ -17,10 +17,10 @@ public final class Animation {
 	private final int                  width;
 	private final int                  height;
 	private final int                  plays;
-	private final List<AnimationFrame> frames;
+	private final List<ResourceAnimationFrame> frames;
 	private final long[]               ends;
 
-	private Animation(final int width, final int height, final int plays, final @NonNull List<AnimationFrame> frames) {
+	private ResourceAnimation(final int width, final int height, final int plays, final @NonNull List<ResourceAnimationFrame> frames) {
 		this.width = width;
 		this.height = height;
 		this.plays = plays;
@@ -28,16 +28,16 @@ public final class Animation {
 		this.ends = new long[frames.size()];
 		long end = 0L;
 		for (int i = 0; i < this.ends.length; i++) {
-			end += frames.get(i).getDuration() < Animation.MIN_DURATION ? Animation.DEFAULT_DURATION : frames.get(i).getDuration();
+			end += frames.get(i).getDuration() < ResourceAnimation.MIN_DURATION ? ResourceAnimation.DEFAULT_DURATION : frames.get(i).getDuration();
 			this.ends[i] = end;
 		}
 	}
 
-	public static @NonNull Animation create(final int width, final int height, final int plays, final @NonNull List<AnimationFrame> frames) {
+	public static @NonNull ResourceAnimation create(final int width, final int height, final int plays, final @NonNull List<ResourceAnimationFrame> frames) {
 		if (frames.isEmpty()) {
 			throw new IllegalArgumentException("An animation needs at least one frame");
 		}
-		return new Animation(width, height, plays, frames);
+		return new ResourceAnimation(width, height, plays, frames);
 	}
 
 	public long getDuration() {

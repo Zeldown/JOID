@@ -5,20 +5,20 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class AnimationCanvas {
+public final class ResourceAnimationCanvas {
 
 	private final int   width;
 	private final int   height;
 	private final int[] pixels;
 
-	private AnimationCanvas(final int width, final int height) {
+	private ResourceAnimationCanvas(final int width, final int height) {
 		this.width = width;
 		this.height = height;
 		this.pixels = new int[width * height];
 	}
 
-	public static @NonNull AnimationCanvas create(final int width, final int height) {
-		return new AnimationCanvas(width, height);
+	public static @NonNull ResourceAnimationCanvas create(final int width, final int height) {
+		return new ResourceAnimationCanvas(width, height);
 	}
 
 	public @NonNull int[] compose(final @NonNull int[] frame, final int x, final int y, final int frameWidth, final int frameHeight, final @NonNull Blend blend, final @NonNull Disposal disposal) {
@@ -31,7 +31,7 @@ public final class AnimationCanvas {
 			for (int column = left; column < right; column++) {
 				final int source = frame[(row - y) * frameWidth + column - x];
 				final int index = row * this.width + column;
-				this.pixels[index] = blend == Blend.SOURCE ? source : AnimationCanvas.over(source, this.pixels[index]);
+				this.pixels[index] = blend == Blend.SOURCE ? source : ResourceAnimationCanvas.over(source, this.pixels[index]);
 			}
 		}
 

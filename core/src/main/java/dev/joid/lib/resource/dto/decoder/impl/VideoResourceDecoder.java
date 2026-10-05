@@ -23,14 +23,14 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
-import dev.joid.lib.resource.dto.playback.IPlayback;
+import dev.joid.lib.resource.dto.playback.IResourcePlayback;
 import dev.joid.lib.video.VideoAudioPlayer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-public final class VideoResourceDecoder implements IResourceDecoder, IPlayback {
+public final class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
 	private static final int RING_BUFFER_SIZE = 5;
 

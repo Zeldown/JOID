@@ -15,20 +15,20 @@ import java.util.zip.CRC32;
 
 import javax.imageio.ImageIO;
 
-import dev.joid.lib.resource.dto.animation.Animation;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas.Blend;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas.Disposal;
-import dev.joid.lib.resource.dto.animation.AnimationFrame;
-import dev.joid.lib.resource.dto.animation.IAnimationReader;
+import dev.joid.lib.resource.dto.animation.IResourceAnimationReader;
+import dev.joid.lib.resource.dto.animation.ResourceAnimation;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas.Blend;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas.Disposal;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationFrame;
 import lombok.NonNull;
 
-public class ApngAnimationReader implements IAnimationReader {
+public class ApngResourceAnimationReader implements IResourceAnimationReader {
 
 	private static final byte[] SIGNATURE = {(byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10};
 
 	@Override
-	public @NonNull Animation read(final @NonNull InputStream stream) throws IOException {
+	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
 		final DataInputStream input = new DataInputStream(stream);
 		final byte[] signature = new byte[8];
 		input.readFully(signature);
@@ -76,7 +76,7 @@ public class ApngAnimationReader implements IAnimationReader {
 				break;
 			default:
 				if (!seenData && controls.isEmpty() && Character.isLowerCase(name.charAt(0)) || name.equals("PLTE")) {
-					ApngAnimationReader.chunk(header, name, data);
+					ApngResourceAnimationReader.chunk(header, name, data);
 				}
 				break;
 			}
@@ -93,34 +93,34 @@ public class ApngAnimationReader implements IAnimationReader {
 			throw new IOException("Not an animated PNG");
 		}
 
-		final AnimationCanvas canvas = AnimationCanvas.create(width, height);
-		final List<AnimationFrame> frames = new ArrayList<>();
+		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(width, height);
+		final List<ResourceAnimationFrame> frames = new ArrayList<>();
 		for (int i = 0; i < controls.size(); i++) {
 			final Control control = controls.get(i);
-			final BufferedImage image = ImageIO.read(new ByteArrayInputStream(ApngAnimationReader.png(ihdr, header.toByteArray(), control, datas.get(i).toByteArray())));
+			final BufferedImage image = ImageIO.read(new ByteArrayInputStream(ApngResourceAnimationReader.png(ihdr, header.toByteArray(), control, datas.get(i).toByteArray())));
 			if (image == null) {
 				throw new IOException("Unable to decode the frame " + i);
 			}
 
 			final int[] pixels = image.getRGB(0, 0, control.width, control.height, null, 0, control.width);
 			final Disposal disposal = i == 0 && control.disposal == Disposal.PREVIOUS ? Disposal.BACKGROUND : control.disposal;
-			frames.add(AnimationFrame.create(canvas.compose(pixels, control.x, control.y, control.width, control.height, control.blend, disposal), control.duration));
+			frames.add(ResourceAnimationFrame.create(canvas.compose(pixels, control.x, control.y, control.width, control.height, control.blend, disposal), control.duration));
 		}
-		return Animation.create(width, height, plays, frames);
+		return ResourceAnimation.create(width, height, plays, frames);
 	}
 
 	public static @NonNull Optional<Boolean> isAnimated(final @NonNull byte[] bytes) {
-		if (bytes.length < ApngAnimationReader.SIGNATURE.length) {
+		if (bytes.length < ApngResourceAnimationReader.SIGNATURE.length) {
 			return Optional.of(false);
 		}
 
-		for (int i = 0; i < ApngAnimationReader.SIGNATURE.length; i++) {
-			if (bytes[i] != ApngAnimationReader.SIGNATURE[i]) {
+		for (int i = 0; i < ApngResourceAnimationReader.SIGNATURE.length; i++) {
+			if (bytes[i] != ApngResourceAnimationReader.SIGNATURE[i]) {
 				return Optional.of(false);
 			}
 		}
 
-		int offset = ApngAnimationReader.SIGNATURE.length;
+		int offset = ApngResourceAnimationReader.SIGNATURE.length;
 		while (offset + 8 <= bytes.length) {
 			final int length = ByteBuffer.wrap(bytes, offset, 4).getInt();
 			final String name = new String(bytes, offset + 4, 4, StandardCharsets.US_ASCII);
@@ -138,13 +138,13 @@ public class ApngAnimationReader implements IAnimationReader {
 
 	private static byte[] png(final byte[] ihdr, final byte[] header, final Control control, final byte[] data) throws IOException {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		output.write(ApngAnimationReader.SIGNATURE);
+		output.write(ApngResourceAnimationReader.SIGNATURE);
 		final byte[] frameHeader = ihdr.clone();
 		ByteBuffer.wrap(frameHeader).putInt(0, control.width).putInt(4, control.height);
-		ApngAnimationReader.chunk(output, "IHDR", frameHeader);
+		ApngResourceAnimationReader.chunk(output, "IHDR", frameHeader);
 		output.write(header);
-		ApngAnimationReader.chunk(output, "IDAT", data);
-		ApngAnimationReader.chunk(output, "IEND", new byte[0]);
+		ApngResourceAnimationReader.chunk(output, "IDAT", data);
+		ApngResourceAnimationReader.chunk(output, "IEND", new byte[0]);
 		return output.toByteArray();
 	}
 

@@ -1,7 +1,7 @@
 package dev.joid.lib.resource.dto.format.impl;
 
 import dev.joid.lib.asset.Asset;
-import dev.joid.lib.resource.dto.animation.impl.ApngAnimationReader;
+import dev.joid.lib.resource.dto.animation.impl.ApngResourceAnimationReader;
 import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
 import dev.joid.lib.resource.dto.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.dto.decoder.impl.RasterResourceDecoder;
@@ -19,8 +19,8 @@ public class ApngResourceFormat implements IResourceFormat {
 
 	@Override
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-		final boolean animated = ApngAnimationReader.isAnimated(header).orElseGet(() -> ApngAnimationReader.isAnimated(asset.peek(ApngResourceFormat.CHUNKS)).orElse(false));
-		return animated ? new AnimatedResourceDecoder(asset, new ApngAnimationReader()) : new RasterResourceDecoder(asset);
+		final boolean animated = ApngResourceAnimationReader.isAnimated(header).orElseGet(() -> ApngResourceAnimationReader.isAnimated(asset.peek(ApngResourceFormat.CHUNKS)).orElse(false));
+		return animated ? new AnimatedResourceDecoder(asset, new ApngResourceAnimationReader()) : new RasterResourceDecoder(asset);
 	}
 
 }

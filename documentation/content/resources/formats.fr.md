@@ -44,11 +44,11 @@ GIF, APNG et WebP animé partagent `AnimatedResourceDecoder`. Le fichier est dé
 
 ## Lecture
 
-Animations et vidéos implémentent `IPlayback`, accessible via `Resource.getPlayback()` :
+Animations et vidéos implémentent `IResourcePlayback`, accessible via `Resource.getPlayback()` :
 
 ```java
 resource.getPlayback().ifPresent(playback -> playback.loop(false).seek(0D).play());
-double progress = resource.getPlayback().map(IPlayback::getProgress).orElse(0D);
+double progress = resource.getPlayback().map(IResourcePlayback::getProgress).orElse(0D);
 ```
 
 | Méthode | Effet |

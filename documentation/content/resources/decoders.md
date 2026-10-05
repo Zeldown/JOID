@@ -49,15 +49,15 @@ Transparent pixels take the color of their nearest visible pixel, so linear filt
 
 ### `AnimatedResourceDecoder`
 
-GIF, APNG and animated WebP. An `IAnimationReader` decodes the file once into an `Animation` — its composed frames and their durations — which the decoder plays from memory and uploads into one texture. It implements `IPlayback`.
+GIF, APNG and animated WebP. An `IResourceAnimationReader` decodes the file once into a `ResourceAnimation` — its composed frames and their durations — which the decoder plays from memory and uploads into one texture. It implements `IResourcePlayback`.
 
 ```java
-new AnimatedResourceDecoder(Asset, new GifAnimationReader());
-new AnimatedResourceDecoder(Asset, new ApngAnimationReader());
-new AnimatedResourceDecoder(Asset, new WebpAnimationReader());
+new AnimatedResourceDecoder(Asset, new GifResourceAnimationReader());
+new AnimatedResourceDecoder(Asset, new ApngResourceAnimationReader());
+new AnimatedResourceDecoder(Asset, new WebpResourceAnimationReader());
 ```
 
-A reader of your own composes its frames with `AnimationCanvas`, which applies the blending (`SOURCE`, `OVER`) and the disposal (`NONE`, `BACKGROUND`, `PREVIOUS`) of each frame.
+A reader of your own composes its frames with `ResourceAnimationCanvas`, which applies the blending (`SOURCE`, `OVER`) and the disposal (`NONE`, `BACKGROUND`, `PREVIOUS`) of each frame.
 
 ### `VectorResourceDecoder`
 
@@ -71,7 +71,7 @@ Features:
 - Ring-buffered frame queue (5 frames).
 - Ping-pong textures for tear-free playback.
 - Audio streaming through the audio bridge, synced to video.
-- Seek, pause, resume, loop through `IPlayback`.
+- Seek, pause, resume, loop through `IResourcePlayback`.
 - Optional 3D spatial audio.
 
 ```java
@@ -85,7 +85,7 @@ Control the playback of any animated resource through `Resource.getPlayback()`:
 
 ```java
 resource.getPlayback().ifPresent(playback -> playback.seek(10D).play());
-double progress = resource.getPlayback().map(IPlayback::getProgress).orElse(0D);
+double progress = resource.getPlayback().map(IResourcePlayback::getProgress).orElse(0D);
 ```
 
 ## Writing a custom decoder

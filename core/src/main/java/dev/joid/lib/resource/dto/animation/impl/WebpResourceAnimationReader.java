@@ -15,22 +15,22 @@ import org.apache.commons.io.IOUtils;
 
 import com.twelvemonkeys.imageio.plugins.webp.WebPImageReaderSpi;
 
-import dev.joid.lib.resource.dto.animation.Animation;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas.Blend;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas.Disposal;
-import dev.joid.lib.resource.dto.animation.AnimationFrame;
-import dev.joid.lib.resource.dto.animation.IAnimationReader;
+import dev.joid.lib.resource.dto.animation.IResourceAnimationReader;
+import dev.joid.lib.resource.dto.animation.ResourceAnimation;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas.Blend;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas.Disposal;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationFrame;
 import lombok.NonNull;
 
-public class WebpAnimationReader implements IAnimationReader {
+public class WebpResourceAnimationReader implements IResourceAnimationReader {
 
 	private static final int ANIMATION = 0x02;
 
 	@Override
-	public @NonNull Animation read(final @NonNull InputStream stream) throws IOException {
+	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
 		final byte[] bytes = IOUtils.toByteArray(stream);
-		if (!WebpAnimationReader.isWebp(bytes)) {
+		if (!WebpResourceAnimationReader.isWebp(bytes)) {
 			throw new IOException("Not a WebP file");
 		}
 
@@ -41,15 +41,15 @@ public class WebpAnimationReader implements IAnimationReader {
 		int offset = 12;
 		while (offset + 8 <= bytes.length) {
 			final String name = new String(bytes, offset, 4, StandardCharsets.US_ASCII);
-			final int size = WebpAnimationReader.read(bytes, offset + 4, 4);
+			final int size = WebpResourceAnimationReader.read(bytes, offset + 4, 4);
 			final int data = offset + 8;
 			switch (name) {
 			case "VP8X":
-				width = WebpAnimationReader.read(bytes, data + 4, 3) + 1;
-				height = WebpAnimationReader.read(bytes, data + 7, 3) + 1;
+				width = WebpResourceAnimationReader.read(bytes, data + 4, 3) + 1;
+				height = WebpResourceAnimationReader.read(bytes, data + 7, 3) + 1;
 				break;
 			case "ANIM":
-				plays = WebpAnimationReader.read(bytes, data + 4, 2);
+				plays = WebpResourceAnimationReader.read(bytes, data + 4, 2);
 				break;
 			case "ANMF":
 				frames.add(Control.read(bytes, data));
@@ -67,15 +67,15 @@ public class WebpAnimationReader implements IAnimationReader {
 		final ImageReader reader = new WebPImageReaderSpi().createReaderInstance(null);
 		try (MemoryCacheImageInputStream input = new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes))) {
 			reader.setInput(input);
-			final AnimationCanvas canvas = AnimationCanvas.create(width, height);
-			final List<AnimationFrame> animation = new ArrayList<>();
+			final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(width, height);
+			final List<ResourceAnimationFrame> animation = new ArrayList<>();
 			for (int i = 0; i < frames.size(); i++) {
 				final Control control = frames.get(i);
 				final BufferedImage image = reader.read(i);
 				final int[] pixels = image.getRGB(0, 0, control.width, control.height, null, 0, control.width);
-				animation.add(AnimationFrame.create(canvas.compose(pixels, control.x, control.y, control.width, control.height, control.blend, control.disposal), control.duration));
+				animation.add(ResourceAnimationFrame.create(canvas.compose(pixels, control.x, control.y, control.width, control.height, control.blend, control.disposal), control.duration));
 			}
-			return Animation.create(width, height, plays, animation);
+			return ResourceAnimation.create(width, height, plays, animation);
 		} finally {
 			reader.dispose();
 		}
@@ -86,7 +86,7 @@ public class WebpAnimationReader implements IAnimationReader {
 	}
 
 	public static boolean isAnimated(final @NonNull byte[] bytes) {
-		return WebpAnimationReader.isWebp(bytes) && bytes.length >= 21 && bytes[12] == 'V' && bytes[13] == 'P' && bytes[14] == '8' && bytes[15] == 'X' && (bytes[20] & WebpAnimationReader.ANIMATION) != 0;
+		return WebpResourceAnimationReader.isWebp(bytes) && bytes.length >= 21 && bytes[12] == 'V' && bytes[13] == 'P' && bytes[14] == '8' && bytes[15] == 'X' && (bytes[20] & WebpResourceAnimationReader.ANIMATION) != 0;
 	}
 
 	private static int read(final byte[] bytes, final int offset, final int length) {
@@ -109,11 +109,11 @@ public class WebpAnimationReader implements IAnimationReader {
 
 		private static Control read(final byte[] bytes, final int offset) {
 			final Control control = new Control();
-			control.x = WebpAnimationReader.read(bytes, offset, 3) * 2;
-			control.y = WebpAnimationReader.read(bytes, offset + 3, 3) * 2;
-			control.width = WebpAnimationReader.read(bytes, offset + 6, 3) + 1;
-			control.height = WebpAnimationReader.read(bytes, offset + 9, 3) + 1;
-			control.duration = WebpAnimationReader.read(bytes, offset + 12, 3);
+			control.x = WebpResourceAnimationReader.read(bytes, offset, 3) * 2;
+			control.y = WebpResourceAnimationReader.read(bytes, offset + 3, 3) * 2;
+			control.width = WebpResourceAnimationReader.read(bytes, offset + 6, 3) + 1;
+			control.height = WebpResourceAnimationReader.read(bytes, offset + 9, 3) + 1;
+			control.duration = WebpResourceAnimationReader.read(bytes, offset + 12, 3);
 			control.blend = (bytes[offset + 15] & 0x02) == 0 ? Blend.OVER : Blend.SOURCE;
 			control.disposal = (bytes[offset + 15] & 0x01) == 0 ? Disposal.NONE : Disposal.BACKGROUND;
 			return control;

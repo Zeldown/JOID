@@ -10,7 +10,7 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.resource.dto.ResourceProperties;
 import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
-import dev.joid.lib.resource.dto.playback.IPlayback;
+import dev.joid.lib.resource.dto.playback.IResourcePlayback;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -126,8 +126,8 @@ public final class Resource {
 		return this.data.getDecoder();
 	}
 
-	public final @NonNull Optional<IPlayback> getPlayback() {
-		return this.data.getDecoder() instanceof IPlayback ? Optional.of((IPlayback) this.data.getDecoder()) : Optional.empty();
+	public final @NonNull Optional<IResourcePlayback> getPlayback() {
+		return this.data.getDecoder() instanceof IResourcePlayback ? Optional.of((IResourcePlayback) this.data.getDecoder()) : Optional.empty();
 	}
 
 	public final @NonNull String getUniqueId() {

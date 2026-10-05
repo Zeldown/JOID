@@ -6,7 +6,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
-import dev.joid.lib.resource.dto.playback.IPlayback;
+import dev.joid.lib.resource.dto.playback.IResourcePlayback;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
@@ -51,7 +51,7 @@ public class VideoPlayerNode extends Node {
 	}
 
 	public final @NonNull VideoPlayerNode stop() {
-		this.getPlayback().ifPresent(IPlayback::stop);
+		this.getPlayback().ifPresent(IResourcePlayback::stop);
 		return this;
 	}
 
@@ -90,7 +90,7 @@ public class VideoPlayerNode extends Node {
 			});
 		}
 
-		final Optional<IPlayback> playback = this.getPlayback();
+		final Optional<IResourcePlayback> playback = this.getPlayback();
 		if (playback.isPresent()) {
 			final boolean playing = playback.get().isPlaying();
 			if (playing && !this.wasPlaying) {
@@ -118,7 +118,7 @@ public class VideoPlayerNode extends Node {
 	}
 
 	public final @NonNull VideoPlayerNode play() {
-		this.getPlayback().ifPresent(IPlayback::play);
+		this.getPlayback().ifPresent(IResourcePlayback::play);
 		return this;
 	}
 
@@ -131,7 +131,7 @@ public class VideoPlayerNode extends Node {
 	}
 
 	public final @NonNull VideoPlayerNode resume() {
-		this.getPlayback().ifPresent(IPlayback::resume);
+		this.getPlayback().ifPresent(IResourcePlayback::resume);
 		return this;
 	}
 
@@ -219,14 +219,14 @@ public class VideoPlayerNode extends Node {
 	}
 
 	public final double getDuration() {
-		return this.getPlayback().map(IPlayback::getDuration).orElse(0D);
+		return this.getPlayback().map(IResourcePlayback::getDuration).orElse(0D);
 	}
 
 	public final double getProgress() {
-		return this.getPlayback().map(IPlayback::getProgress).orElse(0D);
+		return this.getPlayback().map(IResourcePlayback::getProgress).orElse(0D);
 	}
 
-	public final @NonNull Optional<IPlayback> getPlayback() {
+	public final @NonNull Optional<IResourcePlayback> getPlayback() {
 		return this.resource == null ? Optional.empty() : this.resource.getPlayback();
 	}
 
@@ -235,11 +235,11 @@ public class VideoPlayerNode extends Node {
 	}
 
 	public final boolean isPaused() {
-		return this.getPlayback().map(IPlayback::isPaused).orElse(false);
+		return this.getPlayback().map(IResourcePlayback::isPaused).orElse(false);
 	}
 
 	public final boolean isPlaying() {
-		return this.getPlayback().map(IPlayback::isPlaying).orElse(false);
+		return this.getPlayback().map(IResourcePlayback::isPlaying).orElse(false);
 	}
 
 	private void release() {

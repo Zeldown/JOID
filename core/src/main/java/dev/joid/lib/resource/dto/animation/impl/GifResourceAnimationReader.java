@@ -14,21 +14,21 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.w3c.dom.Node;
 
-import dev.joid.lib.resource.dto.animation.Animation;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas.Blend;
-import dev.joid.lib.resource.dto.animation.AnimationCanvas.Disposal;
-import dev.joid.lib.resource.dto.animation.AnimationFrame;
-import dev.joid.lib.resource.dto.animation.IAnimationReader;
+import dev.joid.lib.resource.dto.animation.IResourceAnimationReader;
+import dev.joid.lib.resource.dto.animation.ResourceAnimation;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas.Blend;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationCanvas.Disposal;
+import dev.joid.lib.resource.dto.animation.ResourceAnimationFrame;
 import lombok.NonNull;
 
-public class GifAnimationReader implements IAnimationReader {
+public class GifResourceAnimationReader implements IResourceAnimationReader {
 
 	private static final String IMAGE_FORMAT  = "javax_imageio_gif_image_1.0";
 	private static final String STREAM_FORMAT = "javax_imageio_gif_stream_1.0";
 
 	@Override
-	public @NonNull Animation read(final @NonNull InputStream stream) throws IOException {
+	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
 		final Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
 		if (!readers.hasNext()) {
 			throw new IOException("No GIF reader available");
@@ -37,7 +37,7 @@ public class GifAnimationReader implements IAnimationReader {
 		final ImageReader reader = readers.next();
 		try (ImageInputStream input = ImageIO.createImageInputStream(stream)) {
 			reader.setInput(input, false);
-			final IIOMetadataNode screen = GifAnimationReader.child((IIOMetadataNode) reader.getStreamMetadata().getAsTree(GifAnimationReader.STREAM_FORMAT), "LogicalScreenDescriptor");
+			final IIOMetadataNode screen = GifResourceAnimationReader.child((IIOMetadataNode) reader.getStreamMetadata().getAsTree(GifResourceAnimationReader.STREAM_FORMAT), "LogicalScreenDescriptor");
 			final int count = reader.getNumImages(true);
 			int width = screen == null ? 0 : Integer.parseInt(screen.getAttribute("logicalScreenWidth"));
 			int height = screen == null ? 0 : Integer.parseInt(screen.getAttribute("logicalScreenHeight"));
@@ -47,22 +47,22 @@ public class GifAnimationReader implements IAnimationReader {
 			}
 
 			int plays = 1;
-			final AnimationCanvas canvas = AnimationCanvas.create(width, height);
-			final List<AnimationFrame> frames = new ArrayList<>();
+			final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(width, height);
+			final List<ResourceAnimationFrame> frames = new ArrayList<>();
 			for (int i = 0; i < count; i++) {
 				final BufferedImage image = reader.read(i);
-				final IIOMetadataNode root = (IIOMetadataNode) reader.getImageMetadata(i).getAsTree(GifAnimationReader.IMAGE_FORMAT);
-				final IIOMetadataNode descriptor = GifAnimationReader.child(root, "ImageDescriptor");
-				final IIOMetadataNode control = GifAnimationReader.child(root, "GraphicControlExtension");
-				plays = GifAnimationReader.plays(root, plays);
+				final IIOMetadataNode root = (IIOMetadataNode) reader.getImageMetadata(i).getAsTree(GifResourceAnimationReader.IMAGE_FORMAT);
+				final IIOMetadataNode descriptor = GifResourceAnimationReader.child(root, "ImageDescriptor");
+				final IIOMetadataNode control = GifResourceAnimationReader.child(root, "GraphicControlExtension");
+				plays = GifResourceAnimationReader.plays(root, plays);
 
 				final int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
 				final int x = descriptor == null ? 0 : Integer.parseInt(descriptor.getAttribute("imageLeftPosition"));
 				final int y = descriptor == null ? 0 : Integer.parseInt(descriptor.getAttribute("imageTopPosition"));
 				final long delay = control == null ? 0L : Long.parseLong(control.getAttribute("delayTime")) * 10L;
-				frames.add(AnimationFrame.create(canvas.compose(pixels, x, y, image.getWidth(), image.getHeight(), Blend.OVER, GifAnimationReader.disposal(control)), delay));
+				frames.add(ResourceAnimationFrame.create(canvas.compose(pixels, x, y, image.getWidth(), image.getHeight(), Blend.OVER, GifResourceAnimationReader.disposal(control)), delay));
 			}
-			return Animation.create(width, height, plays, frames);
+			return ResourceAnimation.create(width, height, plays, frames);
 		} finally {
 			reader.dispose();
 		}
@@ -84,7 +84,7 @@ public class GifAnimationReader implements IAnimationReader {
 	}
 
 	private static int plays(final IIOMetadataNode root, final int fallback) {
-		final IIOMetadataNode extensions = GifAnimationReader.child(root, "ApplicationExtensions");
+		final IIOMetadataNode extensions = GifResourceAnimationReader.child(root, "ApplicationExtensions");
 		if (extensions == null) {
 			return fallback;
 		}

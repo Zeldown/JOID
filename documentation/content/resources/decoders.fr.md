@@ -49,15 +49,15 @@ Les pixels transparents prennent la couleur de leur pixel visible le plus proche
 
 ### `AnimatedResourceDecoder`
 
-GIF, APNG et WebP animé. Un `IAnimationReader` décode une fois le fichier en `Animation` — ses images composées et leurs durées — que le décodeur lit en mémoire et upload dans une seule texture. Il implémente `IPlayback`.
+GIF, APNG et WebP animé. Un `IResourceAnimationReader` décode une fois le fichier en `ResourceAnimation` — ses images composées et leurs durées — que le décodeur lit en mémoire et upload dans une seule texture. Il implémente `IResourcePlayback`.
 
 ```java
-new AnimatedResourceDecoder(Asset, new GifAnimationReader());
-new AnimatedResourceDecoder(Asset, new ApngAnimationReader());
-new AnimatedResourceDecoder(Asset, new WebpAnimationReader());
+new AnimatedResourceDecoder(Asset, new GifResourceAnimationReader());
+new AnimatedResourceDecoder(Asset, new ApngResourceAnimationReader());
+new AnimatedResourceDecoder(Asset, new WebpResourceAnimationReader());
 ```
 
-Un lecteur maison compose ses images avec `AnimationCanvas`, qui applique le mélange (`SOURCE`, `OVER`) et la disposition (`NONE`, `BACKGROUND`, `PREVIOUS`) de chaque image.
+Un lecteur maison compose ses images avec `ResourceAnimationCanvas`, qui applique le mélange (`SOURCE`, `OVER`) et la disposition (`NONE`, `BACKGROUND`, `PREVIOUS`) de chaque image.
 
 ### `VectorResourceDecoder`
 
@@ -71,7 +71,7 @@ Fonctionnalités :
 - Queue de frames en ring buffer (5 frames).
 - Textures ping-pong pour une lecture sans tearing.
 - Streaming audio via le bridge audio, synchronisé à la vidéo.
-- Seek, pause, resume, loop via `IPlayback`.
+- Seek, pause, resume, loop via `IResourcePlayback`.
 - Spatial audio 3D optionnel.
 
 ```java
@@ -85,7 +85,7 @@ Pilotez la lecture de toute ressource animée via `Resource.getPlayback()` :
 
 ```java
 resource.getPlayback().ifPresent(playback -> playback.seek(10D).play());
-double progress = resource.getPlayback().map(IPlayback::getProgress).orElse(0D);
+double progress = resource.getPlayback().map(IResourcePlayback::getProgress).orElse(0D);
 ```
 
 ## Écrire un décodeur custom

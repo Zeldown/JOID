@@ -36,7 +36,7 @@ node.isPlaying();
 node.isPaused();
 node.getDuration();             // secondes
 node.getProgress();             // 0.0 → 1.0
-node.getPlayback();             // Optional<IPlayback>, pour vidéos et animations
+node.getPlayback();             // Optional<IResourcePlayback>, pour vidéos et animations
 node.getVideo();                // Optional<VideoResourceDecoder>, pour les vidéos seulement
 node.getVideo().map(VideoResourceDecoder::getFrameRate).orElse(0D);
 ```
