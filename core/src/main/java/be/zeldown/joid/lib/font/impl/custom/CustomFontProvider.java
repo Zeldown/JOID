@@ -380,7 +380,6 @@ public class CustomFontProvider implements FontProvider {
 
 			final Glyph glyph = activeFont.getFontInfo().getGlyphMap().get((int) c);
 			if (glyph == null) {
-				i++;
 				continue;
 			}
 
