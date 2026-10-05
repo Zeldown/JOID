@@ -122,7 +122,7 @@ Changing the resource with `.resource(newResource)` releases the previous decode
 Detected via magic bytes (header), not file extension:
 
 - **MP4 / MOV** — `ftyp` box
-- **WebM / MKV** — EBML header
+- **WebM / MKV** — EBML header. A VP8 or VP9 WebM with an alpha channel keeps its transparency: JOID decodes it with libvpx, which FFmpeg's own decoders do not.
 - **AVI** — `RIFF` + `AVI`
 - **GIF** — `GIF87a` / `GIF89a`
 - **APNG** — PNG with an `acTL` chunk

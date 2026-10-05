@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.ffmpeg.global.avutil;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegLogCallback;
@@ -39,7 +40,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IPlayback {
 	private final AtomicBoolean running = new AtomicBoolean(false);
 	private final AtomicInteger decodedFrameIndex = new AtomicInteger(0);
 
-	private File file;
+	private File   file;
+	private String codec;
 
 	private Thread decodeThread;
 	private FFmpegFrameGrabber grabber;
@@ -124,12 +126,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IPlayback {
 					this.file = VideoResourceDecoder.extract(this.asset);
 				}
 
-				avutil.av_log_set_level(avutil.AV_LOG_QUIET);
-				FFmpegLogCallback.set();
-
-				this.grabber = new FFmpegFrameGrabber(this.file);
-				this.grabber.setPixelFormat(avutil.AV_PIX_FMT_BGRA);
-				this.grabber.start();
+				this.grabber = this.open();
 
 				resource.width(this.grabber.getImageWidth());
 				resource.height(this.grabber.getImageHeight());
@@ -409,12 +406,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IPlayback {
 			this.released = false;
 
 			try {
-				avutil.av_log_set_level(avutil.AV_LOG_QUIET);
-				FFmpegLogCallback.set();
-
-				this.grabber = new FFmpegFrameGrabber(this.file);
-				this.grabber.setPixelFormat(avutil.AV_PIX_FMT_BGRA);
-				this.grabber.start();
+				this.grabber = this.open();
 
 				if (this.frameQueue == null) {
 					this.frameQueue = new ArrayBlockingQueue<>(VideoResourceDecoder.RING_BUFFER_SIZE);
@@ -434,6 +426,34 @@ public final class VideoResourceDecoder implements IResourceDecoder, IPlayback {
 				System.err.println("Failed to reopen video grabber: " + e.getMessage());
 			}
 		}
+	}
+
+	private FFmpegFrameGrabber open() throws Exception {
+		avutil.av_log_set_level(avutil.AV_LOG_QUIET);
+		FFmpegLogCallback.set();
+
+		final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(this.file);
+		grabber.setPixelFormat(avutil.AV_PIX_FMT_BGRA);
+		if (this.codec != null) {
+			grabber.setVideoCodecName(this.codec);
+		}
+		grabber.start();
+
+		if (this.codec != null || !"1".equals(grabber.getVideoMetadata("alpha_mode"))) {
+			return grabber;
+		}
+
+		if (grabber.getVideoCodec() == avcodec.AV_CODEC_ID_VP9) {
+			this.codec = "libvpx-vp9";
+		} else if (grabber.getVideoCodec() == avcodec.AV_CODEC_ID_VP8) {
+			this.codec = "libvpx";
+		} else {
+			return grabber;
+		}
+
+		grabber.stop();
+		grabber.release();
+		return this.open();
 	}
 
 	private double getPlaybackTime() {

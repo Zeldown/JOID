@@ -41,7 +41,7 @@ new RasterResourceDecoder(BufferedImage);    // from pre-decoded image
 
 ### `VideoResourceDecoder`
 
-Video formats — MP4, MOV, WebM, MKV, AVI. Backed by FFmpeg via JavaCV.
+Video formats — MP4, MOV, WebM, MKV, AVI. Backed by FFmpeg via JavaCV. A VP8 or VP9 WebM with an alpha channel keeps its transparency.
 
 Features:
 - Ring-buffered frame queue (5 frames).

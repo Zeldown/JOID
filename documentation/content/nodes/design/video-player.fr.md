@@ -122,7 +122,7 @@ Changer la ressource avec `.resource(newResource)` libère le grabber, l'audio p
 Détectés via magic bytes (en-tête), pas l'extension :
 
 - **MP4 / MOV** — box `ftyp`
-- **WebM / MKV** — en-tête EBML
+- **WebM / MKV** — en-tête EBML. Un WebM VP8 ou VP9 avec canal alpha garde sa transparence : JOID le décode avec libvpx, ce que les décodeurs propres à FFmpeg ne font pas.
 - **AVI** — `RIFF` + `AVI`
 - **GIF** — `GIF87a` / `GIF89a`
 - **APNG** — PNG avec un chunk `acTL`
