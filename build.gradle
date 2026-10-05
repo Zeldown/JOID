@@ -43,6 +43,10 @@ subprojects {
         options.encoding = 'UTF-8'
     }
 
+    compileTestJava {
+        options.encoding = 'UTF-8'
+    }
+
     dependencies {
         compile "org.projectlombok:lombok:1.18.34"
 
