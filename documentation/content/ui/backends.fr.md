@@ -31,14 +31,14 @@ Le dépôt est un build Gradle multi-modules. `core` contient la bibliothèque n
 | `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `Backend.register(window)` | GLSL 330 |
 | `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `Backend.register(window)` | GLSL 450 Vulkan |
 
-Les classes d'implémentation sont nommées par rôle — `Backend`, `RenderBridge`, `Shader`, `Texture`… — et leur package, `be.zeldown.joid.impl.<module>`, indique le moteur auquel elles appartiennent.
+Les classes d'implémentation sont nommées par rôle — `Backend`, `RenderBridge`, `Shader`, `Texture`… — et leur package, `dev.joid.impl.<module>`, indique le moteur auquel elles appartiennent.
 
 ### LWJGL 2
 
 Enregistrez le backend une fois le `Display` créé, puis enregistrez votre `IUIBridge` :
 
 ```java
-import be.zeldown.joid.impl.lwjgl2.Backend;
+import dev.joid.impl.lwjgl2.Backend;
 
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 Backend.register();
@@ -53,7 +53,7 @@ Le backend LWJGL 2 traduit chaque appel nativement vers le pipeline fixe et rest
 Créez une fenêtre GLFW avec un contexte OpenGL 3.3 core et un stencil buffer, rendez-la courante, puis enregistrez :
 
 ```java
-import be.zeldown.joid.impl.lwjgl3.Backend;
+import dev.joid.impl.lwjgl3.Backend;
 
 GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
 GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -72,8 +72,8 @@ Les natives sont résolues depuis Maven pour l'OS courant par le `build.gradle` 
 Vulkan possède la swapchain, l'hôte pilote donc la frame explicitement :
 
 ```java
-import be.zeldown.joid.impl.vulkan.Backend;
-import be.zeldown.joid.impl.vulkan.render.RenderBridge;
+import dev.joid.impl.vulkan.Backend;
+import dev.joid.impl.vulkan.render.RenderBridge;
 
 Configuration.STACK_SIZE.set(1024);
 GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
@@ -222,7 +222,7 @@ Le gabarit compile avec les jars de son dossier `libs/` et déclare les biblioth
 
 `SnapshotBaseline <classe du backend> <dossier de sortie>` rend chaque scénario avec un `ISnapshotBackend`, et `SnapshotComparison <dossier du rapport> <dossier de référence> <dossier comparé>...` compare des dossiers de captures, n'importe quel outil de build peut donc les lancer.
 
-La classe `Backend` du gabarit appelle `JOID.checkVersion(version)` avant d'enregistrer les bridges : elle affiche un avertissement et renvoie `false` quand le JOID chargé a une autre version majeure que celle ciblée par le backend. Un backend s'appuie sur `be.zeldown.joid.lib.bridge` et ses sous-packages — bridges, état de rendu, sources et uniforms de shaders, textures, framebuffers et sommets —, sur `be.zeldown.joid.internal.JOID` pour charger JOID et vérifier sa version, et sur `be.zeldown.joid.demo` pour sa fenêtre de démo.
+La classe `Backend` du gabarit appelle `JOID.checkVersion(version)` avant d'enregistrer les bridges : elle affiche un avertissement et renvoie `false` quand le JOID chargé a une autre version majeure que celle ciblée par le backend. Un backend s'appuie sur `dev.joid.lib.bridge` et ses sous-packages — bridges, état de rendu, sources et uniforms de shaders, textures, framebuffers et sommets —, sur `dev.joid.internal.JOID` pour charger JOID et vérifier sa version, et sur `dev.joid.demo` pour sa fenêtre de démo.
 
 ## Voir aussi
 

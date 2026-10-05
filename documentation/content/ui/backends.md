@@ -31,14 +31,14 @@ The repository is a multi-module Gradle build. `core` contains the neutral libra
 | `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `Backend.register(window)` | GLSL 330 |
 | `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `Backend.register(window)` | Vulkan GLSL 450 |
 
-Implementation classes are named by role — `Backend`, `RenderBridge`, `Shader`, `Texture`… — and their package, `be.zeldown.joid.impl.<module>`, tells which engine they belong to.
+Implementation classes are named by role — `Backend`, `RenderBridge`, `Shader`, `Texture`… — and their package, `dev.joid.impl.<module>`, tells which engine they belong to.
 
 ### LWJGL 2
 
 Register once the `Display` exists, then register your `IUIBridge`:
 
 ```java
-import be.zeldown.joid.impl.lwjgl2.Backend;
+import dev.joid.impl.lwjgl2.Backend;
 
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 Backend.register();
@@ -53,7 +53,7 @@ The LWJGL 2 backend maps every call natively onto the fixed pipeline and restore
 Create a GLFW window with an OpenGL 3.3 core context and a stencil buffer, make it current, then register:
 
 ```java
-import be.zeldown.joid.impl.lwjgl3.Backend;
+import dev.joid.impl.lwjgl3.Backend;
 
 GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
 GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -72,8 +72,8 @@ Natives are resolved from Maven for the current OS by the module `build.gradle`.
 Vulkan owns the swapchain, so the host drives the frame explicitly:
 
 ```java
-import be.zeldown.joid.impl.vulkan.Backend;
-import be.zeldown.joid.impl.vulkan.render.RenderBridge;
+import dev.joid.impl.vulkan.Backend;
+import dev.joid.impl.vulkan.render.RenderBridge;
 
 Configuration.STACK_SIZE.set(1024);
 GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
@@ -222,7 +222,7 @@ The template compiles against the jars of its `libs/` folder and declares the li
 
 `SnapshotBaseline <backend class> <output directory>` renders every scenario with an `ISnapshotBackend`, and `SnapshotComparison <report directory> <reference directory> <candidate directory>...` compares directories of shots, so any build tool can run them.
 
-The `Backend` class of the template calls `JOID.checkVersion(version)` before registering the bridges: it prints a warning and returns `false` when the loaded JOID has another major version than the one the backend targets. A backend relies on `be.zeldown.joid.lib.bridge` and its subpackages — bridges, render state, shader sources and uniforms, textures, framebuffers and vertices —, on `be.zeldown.joid.internal.JOID` to load JOID and check its version, and on `be.zeldown.joid.demo` for its demo window.
+The `Backend` class of the template calls `JOID.checkVersion(version)` before registering the bridges: it prints a warning and returns `false` when the loaded JOID has another major version than the one the backend targets. A backend relies on `dev.joid.lib.bridge` and its subpackages — bridges, render state, shader sources and uniforms, textures, framebuffers and vertices —, on `dev.joid.internal.JOID` to load JOID and check its version, and on `dev.joid.demo` for its demo window.
 
 ## See also
 

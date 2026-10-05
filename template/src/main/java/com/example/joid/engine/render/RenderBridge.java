@@ -1,15 +1,15 @@
 package com.example.joid.engine.render;
 
-import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
-import be.zeldown.joid.lib.bridge.render.shader.IShader;
-import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
-import be.zeldown.joid.lib.bridge.render.state.BlendState;
-import be.zeldown.joid.lib.bridge.render.texture.ITexture;
-import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
-import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
-import be.zeldown.joid.lib.bridge.render.vertex.VertexBuffer;
+import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
+import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderSource;
+import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 
-public final class RenderBridge extends be.zeldown.joid.lib.bridge.render.RenderBridge {
+public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge {
 
 	public void endFrame() {
 		throw new UnsupportedOperationException();

@@ -384,7 +384,7 @@
 
 	const GITHUB_REPO = 'https://github.com/Zeldown/JOID';
 	const GITHUB_BRANCH = 'main';
-	const GITHUB_SOURCE_ROOT = 'src/main/java/be/zeldown/joid';
+	const GITHUB_SOURCE_ROOT = 'src/main/java/dev/joid';
 
 	const pathToSource = {
 		'ui/ui-class': 'lib/ui/core/UI.java',

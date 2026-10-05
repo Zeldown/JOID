@@ -1,0 +1,29 @@
+package dev.joid.demo.ui.textfield;
+
+import dev.joid.demo.DemoFont;
+import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.textfield.node.DemoMultilineTextFieldNode;
+import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.font.dto.TextInfo;
+
+public class UIDemoTextField extends UIDemo {
+
+	@Override
+	public void init() {
+		DemoTextFieldNode
+		.create(1920 / 2 - 200, 1080 / 2 - 25, 400)
+		.info(TextInfo.create(DemoFont.MONTSERRAT, 30, Color.WHITE))
+		.placeholder("Placeholder")
+		.onChange((node, oldText, newText) -> System.out.println("Text: " + oldText + " -> " + newText))
+		.attach(this);
+
+		DemoMultilineTextFieldNode
+		.create(1920 / 2 - 200, 1080 / 2 - 25 + 100, 700, 400)
+		.info(TextInfo.create(DemoFont.MONTSERRAT, 30, Color.WHITE))
+		.placeholder("Placeholder")
+		.onChange((node, oldText, newText) -> System.out.println("Text: " + oldText + " -> " + newText))
+		.attach(this);
+	}
+
+}

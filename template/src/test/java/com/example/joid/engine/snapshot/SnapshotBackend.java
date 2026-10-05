@@ -1,7 +1,7 @@
 package com.example.joid.engine.snapshot;
 
-import be.zeldown.joid.test.snapshot.ISnapshotBackend;
-import be.zeldown.joid.test.snapshot.SnapshotImage;
+import dev.joid.test.snapshot.ISnapshotBackend;
+import dev.joid.test.snapshot.SnapshotImage;
 
 public final class SnapshotBackend implements ISnapshotBackend {
 

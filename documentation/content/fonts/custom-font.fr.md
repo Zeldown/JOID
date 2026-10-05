@@ -162,14 +162,14 @@ Un atlas MSDF ne contient que les caractères déclarés dans le `charset.txt` a
 
 ## Autres implémentations de police
 
-MSDF est une implémentation du contrat de police, pas le contrat lui-même. Tout ce qui dessine ou mesure du texte — `TextInfo`, `TextNode`, `DrawUtils` — ne connaît que deux interfaces de `be.zeldown.joid.lib.font` :
+MSDF est une implémentation du contrat de police, pas le contrat lui-même. Tout ce qui dessine ou mesure du texte — `TextInfo`, `TextNode`, `DrawUtils` — ne connaît que deux interfaces de `dev.joid.lib.font` :
 
 | Interface | Rôle |
 |---|---|
 | `IFont` | Ce que porte un `TextInfo`. Fournit son provider. |
 | `IFontProvider` | Dessine et mesure une chaîne pour un `TextInfo`. |
 
-Une police faite d'images de glyphes obtient le reste gratuitement depuis `be.zeldown.joid.lib.font.impl.glyph` : décrivez une face avec `IFontFace`, étendez `GlyphFont` et `GlyphFontProvider`, et dessinez un seul glyphe dans `drawGlyph`. Les familles, la résolution des graisses, le crénage, l'espacement, le balisage, les effets et les ombres viennent des classes de base. Les classes MSDF de `be.zeldown.joid.lib.font.impl.msdf` sont construites exactement ainsi.
+Une police faite d'images de glyphes obtient le reste gratuitement depuis `dev.joid.lib.font.impl.glyph` : décrivez une face avec `IFontFace`, étendez `GlyphFont` et `GlyphFontProvider`, et dessinez un seul glyphe dans `drawGlyph`. Les familles, la résolution des graisses, le crénage, l'espacement, le balisage, les effets et les ombres viennent des classes de base. Les classes MSDF de `dev.joid.lib.font.impl.msdf` sont construites exactement ainsi.
 
 ## Voir aussi
 

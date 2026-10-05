@@ -1,7 +1,7 @@
 package com.example.joid.engine.window;
 
-import be.zeldown.joid.lib.bridge.window.IWindowBridge;
-import be.zeldown.joid.lib.utils.key.Key;
+import dev.joid.lib.bridge.window.IWindowBridge;
+import dev.joid.lib.utils.key.Key;
 
 public final class WindowBridge implements IWindowBridge {
 

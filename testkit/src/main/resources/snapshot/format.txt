@@ -1,4 +1,4 @@
-ui be.zeldown.joid.demo.ui.resource.UIDemoFormat
+ui dev.joid.demo.ui.resource.UIDemoFormat
 wait 300
 shot format-start
 wait 700

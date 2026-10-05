@@ -1,7 +1,7 @@
 package com.example.joid.engine.render;
 
-import be.zeldown.joid.test.contract.RenderBridgeContractSuite;
-import be.zeldown.joid.test.snapshot.ISnapshotBackend;
+import dev.joid.test.contract.RenderBridgeContractSuite;
+import dev.joid.test.snapshot.ISnapshotBackend;
 
 import com.example.joid.engine.snapshot.SnapshotBackend;
 

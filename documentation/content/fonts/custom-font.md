@@ -162,14 +162,14 @@ An MSDF atlas only contains the characters declared in the `charset.txt` at gene
 
 ## Other font implementations
 
-MSDF is one implementation of the font contract, not the contract itself. Everything that draws or measures text — `TextInfo`, `TextNode`, `DrawUtils` — only knows two interfaces from `be.zeldown.joid.lib.font`:
+MSDF is one implementation of the font contract, not the contract itself. Everything that draws or measures text — `TextInfo`, `TextNode`, `DrawUtils` — only knows two interfaces from `dev.joid.lib.font`:
 
 | Interface | Role |
 |---|---|
 | `IFont` | What a `TextInfo` holds. Hands out its provider. |
 | `IFontProvider` | Draws and measures a string for a `TextInfo`. |
 
-A font made of glyph images gets the rest for free from `be.zeldown.joid.lib.font.impl.glyph`: describe one face with `IFontFace`, extend `GlyphFont` and `GlyphFontProvider`, and draw a single glyph in `drawGlyph`. Families, weight resolution, kerning, letter spacing, markup, effects and shadows come from the base classes. The MSDF classes in `be.zeldown.joid.lib.font.impl.msdf` are built exactly that way.
+A font made of glyph images gets the rest for free from `dev.joid.lib.font.impl.glyph`: describe one face with `IFontFace`, extend `GlyphFont` and `GlyphFontProvider`, and draw a single glyph in `drawGlyph`. Families, weight resolution, kerning, letter spacing, markup, effects and shadows come from the base classes. The MSDF classes in `dev.joid.lib.font.impl.msdf` are built exactly that way.
 
 ## See also
 

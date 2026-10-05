@@ -18,7 +18,7 @@ JOID.inst().setDevMode(true).setDemoMode(true).load();
 window.run();
 ```
 
-Run it with `./gradlew :lwjgl3:runDemo` (or `:lwjgl2`, `:vulkan`). With LWJGL 2, call `be.zeldown.joid.impl.lwjgl2.Backend.register()` before creating the window.
+Run it with `./gradlew :lwjgl3:runDemo` (or `:lwjgl2`, `:vulkan`). With LWJGL 2, call `dev.joid.impl.lwjgl2.Backend.register()` before creating the window.
 
 ## Writing your own bridge
 

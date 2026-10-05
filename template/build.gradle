@@ -140,11 +140,11 @@ gradle.taskGraph.whenReady { graph ->
 task renderBaseline(type: JavaExec) {
     group = 'JOID'
     description = 'Renders the snapshot scenarios with the official LWJGL 3 backend.'
-    main = 'be.zeldown.joid.test.snapshot.SnapshotBaseline'
+    main = 'dev.joid.test.snapshot.SnapshotBaseline'
     classpath = configurations.baseline + files("libs/joid-testkit-${joidVersion}.jar") + configurations.libraries + configurations.video
     workingDir = file("$buildDir/snapshot/lwjgl3")
     systemProperty 'joid.snapshot.cache', file('.snapshots/cache').absolutePath
-    args 'be.zeldown.joid.impl.lwjgl3.snapshot.SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
+    args 'dev.joid.impl.lwjgl3.snapshot.SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
     if (macOs) {
         jvmArgs '-XstartOnFirstThread'
     }
@@ -158,7 +158,7 @@ task crossBackendTest(type: JavaExec) {
     group = 'JOID'
     description = 'Compares the snapshots of this backend to the official LWJGL 3 rendering.'
     dependsOn test, renderBaseline
-    main = 'be.zeldown.joid.test.snapshot.SnapshotComparison'
+    main = 'dev.joid.test.snapshot.SnapshotComparison'
     classpath = files("libs/joid-testkit-${joidVersion}.jar") + configurations.joidDev + configurations.libraries
     args file("$buildDir/snapshots/cross").absolutePath, file("$buildDir/snapshots/lwjgl3").absolutePath, file("$buildDir/snapshots/$archivesBaseName").absolutePath
 }

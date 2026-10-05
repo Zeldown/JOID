@@ -73,11 +73,11 @@ Les erreurs de compilation indiquent les numéros de ligne de votre propre fichi
 ```java
 package your.package.shader;
 
-import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.shader.impl.ShaderImpl;
-import be.zeldown.joid.lib.bridge.render.shader.uniform.Float2Uniform;
-import be.zeldown.joid.lib.bridge.render.shader.uniform.Float4Uniform;
-import be.zeldown.joid.lib.bridge.render.shader.uniform.FloatUniform;
+import dev.joid.internal.JOID;
+import dev.joid.lib.shader.impl.ShaderImpl;
+import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
+import dev.joid.lib.bridge.render.shader.uniform.Float4Uniform;
+import dev.joid.lib.bridge.render.shader.uniform.FloatUniform;
 import lombok.NonNull;
 
 public class OutlineShader extends ShaderImpl {

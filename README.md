@@ -54,7 +54,7 @@ dependencies {
 
 ```xml
 <dependency>
-    <groupId>be.zeldown.joid</groupId>
+    <groupId>dev.joid</groupId>
     <artifactId>joid</artifactId>
     <version>7.0.1</version>
     <scope>system</scope>
@@ -79,7 +79,7 @@ JOID is a multi-module Gradle build. The `core` module contains the engine-agnos
 | `testkit` | Snapshot test framework shared by the backends | — |
 | `msdf` | Font atlas generator, `.ttf` or `.otf` to `font.msdf` | `MsdfGenerator` |
 
-Entry points live in the `be.zeldown.joid.impl.<module>` package of each backend. Backends only implement the bridges — they never modify the `core` module. See [Backends](documentation/content/ui/backends.md) to write a new one, in this repository or in your own from the `joid-backend-template` of each release.
+Entry points live in the `dev.joid.impl.<module>` package of each backend. Backends only implement the bridges — they never modify the `core` module. See [Backends](documentation/content/ui/backends.md) to write a new one, in this repository or in your own from the `joid-backend-template` of each release.
 
 ## Tests
 

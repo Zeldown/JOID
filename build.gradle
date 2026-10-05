@@ -22,14 +22,14 @@ allprojects {
         jcenter()
     }
 
-    group = "be.zeldown.joid"
+    group = "dev.joid"
     version = "7.0.1"
 }
 
 ext {
     shadeLibraries = { task ->
-        task.relocate 'com.github.weisj.jsvg', 'be.zeldown.joid.shaded.jsvg'
-        task.relocate 'com.twelvemonkeys', 'be.zeldown.joid.shaded.twelvemonkeys'
+        task.relocate 'com.github.weisj.jsvg', 'dev.joid.shaded.jsvg'
+        task.relocate 'com.twelvemonkeys', 'dev.joid.shaded.twelvemonkeys'
         task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
     }
 
@@ -135,7 +135,7 @@ task crossBackendTest(type: JavaExec) {
     group = 'JOID'
     description = 'Runs the snapshot tests of every backend, then compares the LWJGL 3 and Vulkan shots to LWJGL 2.'
     dependsOn ':lwjgl2:test', ':lwjgl3:test', ':vulkan:test'
-    main = "be.zeldown.joid.test.snapshot.SnapshotComparison"
+    main = "dev.joid.test.snapshot.SnapshotComparison"
     classpath = project(':testkit').sourceSets.main.runtimeClasspath
     args file('build/snapshots/cross').absolutePath, file('build/snapshots/lwjgl2').absolutePath, file('build/snapshots/lwjgl3').absolutePath, file('build/snapshots/vulkan').absolutePath
 }

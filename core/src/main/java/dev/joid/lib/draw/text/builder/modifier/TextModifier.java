@@ -1,0 +1,25 @@
+package dev.joid.lib.draw.text.builder.modifier;
+
+import dev.joid.lib.draw.text.builder.modifier.impl.TextCamelCaseModifier;
+import dev.joid.lib.draw.text.builder.modifier.impl.TextCapitalizeModifier;
+import dev.joid.lib.draw.text.builder.modifier.impl.TextLowerCaseModifier;
+import dev.joid.lib.draw.text.builder.modifier.impl.TextSnakeCaseModifier;
+import dev.joid.lib.draw.text.builder.modifier.impl.TextUpperCamelCaseModifier;
+import dev.joid.lib.draw.text.builder.modifier.impl.TextUpperCaseModifier;
+import dev.joid.lib.draw.text.builder.modifier.impl.TextWordCapitalizeModifier;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class TextModifier {
+
+	public static final ITextModifier LOWER_CASE       = new TextLowerCaseModifier();
+	public static final ITextModifier UPPER_CASE       = new TextUpperCaseModifier();
+	public static final ITextModifier SNAKE_CASE       = new TextSnakeCaseModifier();
+	public static final ITextModifier CAMEL_CASE       = new TextCamelCaseModifier();
+	public static final ITextModifier UPPER_CAMEL_CASE = new TextUpperCamelCaseModifier();
+
+	public static final ITextModifier CAPITALIZE       = new TextCapitalizeModifier();
+	public static final ITextModifier WORD_CAPITALIZE  = new TextWordCapitalizeModifier();
+
+}

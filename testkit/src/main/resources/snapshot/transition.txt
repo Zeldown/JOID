@@ -1,4 +1,4 @@
-ui be.zeldown.joid.demo.ui.UIDemoChoice
+ui dev.joid.demo.ui.UIDemoChoice
 wait 400
 shot transition-choice-in
 wait 1200

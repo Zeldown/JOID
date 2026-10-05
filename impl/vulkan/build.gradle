@@ -20,7 +20,7 @@ apply from: rootProject.file('gradle/backend.gradle')
 task runDemo(type: JavaExec) {
     group = 'JOID'
     description = 'Launches the Vulkan demo window.'
-    main = "be.zeldown.joid.impl.vulkan.demo.DemoWindow"
+    main = "dev.joid.impl.vulkan.demo.DemoWindow"
     classpath = sourceSets.main.runtimeClasspath
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmArgs "-XstartOnFirstThread"

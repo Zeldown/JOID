@@ -46,7 +46,7 @@ build.dependsOn releaseJar
 task updateVersion() {
     group = 'JOID'
     description = 'Writes the project version into JOID.VERSION.'
-    def javaFile = file('src/main/java/be/zeldown/joid/internal/JOID.java')
+    def javaFile = file('src/main/java/dev/joid/internal/JOID.java')
     if (javaFile.exists()) {
         javaFile.text = javaFile.text.replaceAll(
             /public static final String VERSION = "[^"]*";/,

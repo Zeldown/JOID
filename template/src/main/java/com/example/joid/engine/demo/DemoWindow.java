@@ -1,12 +1,12 @@
 package com.example.joid.engine.demo;
 
-import be.zeldown.joid.demo.DemoUIBridge;
-import be.zeldown.joid.demo.ui.UIDemoChoice;
-import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.bridge.BridgeHandler;
-import be.zeldown.joid.lib.bridge.window.IWindowBridge;
-import be.zeldown.joid.lib.color.Color;
-import be.zeldown.joid.lib.draw.DrawUtils;
+import dev.joid.demo.DemoUIBridge;
+import dev.joid.demo.ui.UIDemoChoice;
+import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.window.IWindowBridge;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.draw.DrawUtils;
 
 import com.example.joid.engine.Backend;
 import com.example.joid.engine.render.RenderBridge;

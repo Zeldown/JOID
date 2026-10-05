@@ -23,7 +23,7 @@ shadowJar {
 
     if (!project.hasProperty('dev')) {
         exclude 'assets/demo/**'
-        exclude "be/zeldown/joid/impl/${project.name}/snapshot/**"
+        exclude "dev/joid/impl/${project.name}/snapshot/**"
     }
 }
 

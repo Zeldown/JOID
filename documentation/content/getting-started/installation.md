@@ -24,7 +24,7 @@ Each backend comes in two flavours:
 A backend JAR contains the core, the JOID modules it uses — `joid-glfw` and `joid-openal` for LWJGL 3 and Vulkan — and the media libraries:
 
 - **FFmpeg** through JavaCV and JavaCPP, with its natives for Windows x64, Linux x64, macOS Intel and macOS ARM, extracted at runtime — about 95 MB of the JAR. It keeps its `org.bytedeco` packages, which JavaCPP needs to find its natives.
-- **JSVG** (SVG) and **TwelveMonkeys ImageIO** (WebP), relocated under `be.zeldown.joid.shaded`, so they never clash with copies your application or its host ships. JOID instantiates its WebP reader itself and registers nothing in ImageIO.
+- **JSVG** (SVG) and **TwelveMonkeys ImageIO** (WebP), relocated under `dev.joid.shaded`, so they never clash with copies your application or its host ships. JOID instantiates its WebP reader itself and registers nothing in ImageIO.
 
 Building from source with `./gradlew build` (`-Pdev` for the dev flavour) copies every release artifact — backend, core, testkit, glfw and openal jars and the backend template — into `build/libs`.
 
@@ -42,7 +42,7 @@ Legacy Gradle uses `compile`; modern Gradle uses `implementation`. Both work. Ad
 
 ```xml
 <dependency>
-    <groupId>be.zeldown.joid</groupId>
+    <groupId>dev.joid</groupId>
     <artifactId>joid</artifactId>
     <version>6.0.0</version>
     <scope>system</scope>

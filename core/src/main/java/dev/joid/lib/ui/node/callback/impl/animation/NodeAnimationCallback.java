@@ -1,0 +1,24 @@
+package dev.joid.lib.ui.node.callback.impl.animation;
+
+import dev.joid.lib.animation.animator.TweenAnimator;
+import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.NodeCallback;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.utils.context.InternalContext;
+import lombok.NonNull;
+
+@FunctionalInterface
+public interface NodeAnimationCallback<T extends Node> extends NodeCallback {
+
+	public void apply(final @NonNull T node, final @NonNull TweenAnimator animator, final float value);
+
+	@NodeCallbackMethod(Type.PRE)
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull TweenAnimator animator, final float value) {}
+
+	@NodeCallbackMethod(Type.POST)
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull TweenAnimator animator, final float value) {
+		context.cancel(() -> this.apply(node, animator, value));
+	}
+
+}

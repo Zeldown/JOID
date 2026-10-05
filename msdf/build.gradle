@@ -2,14 +2,14 @@ archivesBaseName = "joid-msdf"
 
 jar {
     manifest {
-        attributes 'Main-Class': 'be.zeldown.joid.msdf.MsdfGenerator'
+        attributes 'Main-Class': 'dev.joid.msdf.MsdfGenerator'
     }
 }
 
 task generateFont(type: JavaExec) {
     group = 'JOID'
     description = 'Packs one font file into a font.msdf atlas, from -Pfont and -Poutput.'
-    main = "be.zeldown.joid.msdf.MsdfGenerator"
+    main = "dev.joid.msdf.MsdfGenerator"
     classpath = sourceSets.main.runtimeClasspath
     args '--font', project.findProperty('font') ?: '',
          '--output', project.findProperty('output') ?: 'build/font',
@@ -22,7 +22,7 @@ task generateFont(type: JavaExec) {
 task rebuildFonts(type: JavaExec) {
     group = 'JOID'
     description = 'Regenerates every MSDF atlas of the project from the font files of -Pfonts.'
-    main = "be.zeldown.joid.msdf.FontRebuilder"
+    main = "dev.joid.msdf.FontRebuilder"
     classpath = sourceSets.main.runtimeClasspath
     args project.findProperty('fonts') ?: '', rootProject.file('core/src/main/resources').absolutePath, file('fonts.txt').absolutePath, file('charset.txt').absolutePath
 }

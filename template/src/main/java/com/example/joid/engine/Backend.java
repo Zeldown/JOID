@@ -1,7 +1,7 @@
 package com.example.joid.engine;
 
-import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.bridge.BridgeHandler;
+import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.BridgeHandler;
 
 import com.example.joid.engine.audio.AudioBridge;
 import com.example.joid.engine.render.RenderBridge;

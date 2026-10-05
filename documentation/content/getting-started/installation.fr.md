@@ -24,7 +24,7 @@ Chaque backend existe en deux variantes :
 Un JAR de backend contient le cœur, les modules JOID qu'il utilise — `joid-glfw` et `joid-openal` pour LWJGL 3 et Vulkan — et les bibliothèques média :
 
 - **FFmpeg** via JavaCV et JavaCPP, avec ses natives pour Windows x64, Linux x64, macOS Intel et macOS ARM, extraites à l'exécution — environ 95 Mo du JAR. Il garde ses packages `org.bytedeco`, dont JavaCPP a besoin pour trouver ses natives.
-- **JSVG** (SVG) et **TwelveMonkeys ImageIO** (WebP), relocalisés sous `be.zeldown.joid.shaded`, pour ne jamais entrer en conflit avec les copies que votre application ou son hôte embarque. JOID instancie lui-même son lecteur WebP et n'enregistre rien dans ImageIO.
+- **JSVG** (SVG) et **TwelveMonkeys ImageIO** (WebP), relocalisés sous `dev.joid.shaded`, pour ne jamais entrer en conflit avec les copies que votre application ou son hôte embarque. JOID instancie lui-même son lecteur WebP et n'enregistre rien dans ImageIO.
 
 Un build depuis les sources avec `./gradlew build` (`-Pdev` pour la variante dev) copie chaque artefact de release — jars des backends, du cœur, du testkit, de glfw et d'openal et gabarit de backend — dans `build/libs`.
 
@@ -42,7 +42,7 @@ Gradle legacy utilise `compile` ; Gradle moderne utilise `implementation`. Les d
 
 ```xml
 <dependency>
-    <groupId>be.zeldown.joid</groupId>
+    <groupId>dev.joid</groupId>
     <artifactId>joid</artifactId>
     <version>6.0.0</version>
     <scope>system</scope>
