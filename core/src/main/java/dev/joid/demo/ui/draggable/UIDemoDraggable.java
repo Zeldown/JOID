@@ -13,27 +13,6 @@ public class UIDemoDraggable extends UIDemo {
 	public void init() {
 		final DraggableProperty drag = DraggableProperty.screen().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP);
 
-		drag.snap(
-				RectNode
-				.create(50, 50, 100, 100)
-				.color(Color.BLUE)
-				.attach(this)
-				);
-
-		drag.snap(
-				RectNode
-				.create(50, 200, 100, 100)
-				.color(Color.BLUE)
-				.attach(this)
-				);
-
-		drag.snap(
-				RectNode
-				.create(50, 350, 100, 100)
-				.color(Color.BLUE)
-				.attach(this)
-				);
-
 		RectNode
 		.create(100, 100, 1920 - 200, 1080 - 200)
 		.color(Color.BLACK)
@@ -42,6 +21,27 @@ public class UIDemoDraggable extends UIDemo {
 			.create(100, 100, rect.aw(-200), rect.ah(-200))
 			.color(Color.WHITE)
 			.body(rect2 -> {
+				drag.snap(
+						RectNode
+						.create(50, 50, 100, 100)
+						.color(Color.BLUE)
+						.attach(rect2)
+						);
+
+				drag.snap(
+						RectNode
+						.create(50, 200, 100, 100)
+						.color(Color.BLUE)
+						.attach(rect2)
+						);
+
+				drag.snap(
+						RectNode
+						.create(50, 350, 100, 100)
+						.color(Color.BLUE)
+						.attach(rect2)
+						);
+
 				RectNode
 				.create(rect2.dw(2) - 50, rect2.dh(2) - 50, 100, 100)
 				.color(Color.RED)
@@ -61,7 +61,6 @@ public class UIDemoDraggable extends UIDemo {
 			.attach(rect);
 		})
 		.attach(this);
-
 	}
 
 }
