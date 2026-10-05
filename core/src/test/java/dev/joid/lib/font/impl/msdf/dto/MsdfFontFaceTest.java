@@ -61,6 +61,18 @@ public class MsdfFontFaceTest {
 		Assert.assertSame(face.getMetrics(), bold.getMetrics());
 	}
 
+	@Test
+	public void measuresTheXHeightInsideTheFieldMargin() {
+		final MsdfGlyph glyph = new MsdfGlyph('x', 0.5F, new MsdfBounds(0F, 0F, 0.5F, 0.6F), new MsdfBounds(0F, 0F, 2F, 2F));
+		final MsdfFontFace face = MsdfFontFace.create(new MsdfAtlas(4F, 32F, 2, 2), new MsdfMetrics(1.25F, 0.875F, -0.25F, -0.125F, 0.0625F), Collections.singletonMap((int) 'x', glyph), Collections.emptyMap(), new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB), "Test Regular", FontWeight.REGULAR, false);
+		Assert.assertEquals(0.6F - 2.5F / 32F, face.getXHeight(), 0F);
+	}
+
+	@Test
+	public void hasNoXHeightWithoutAnX() {
+		Assert.assertEquals(0F, MsdfFontFaceTest.face().getXHeight(), 0F);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAFaceWithoutName() {
 		MsdfFontFace.create(new MsdfAtlas(4F, 32F, 2, 2), new MsdfMetrics(1.25F, 0.875F, -0.25F, -0.125F, 0.0625F), Collections.emptyMap(), Collections.emptyMap(), new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB), "", FontWeight.REGULAR, false);

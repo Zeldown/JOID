@@ -1,5 +1,7 @@
 package dev.joid.lib.shader.pipeline.pass;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.RoundedShader.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.ShaderPass;
@@ -69,11 +71,12 @@ public class RoundedShaderPass implements ShaderPass {
 			return;
 		}
 
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
 		final float radius = this.effect.getRadius();
-		final float x1 = (float) (this.node.getX() + (this.effect.isLeft() ? radius : 0));
-		final float y1 = (float) (this.node.getY() + (this.effect.isTop() ? radius : 0));
-		final float x2 = (float) (this.node.getX() + this.node.getWidth() - (this.effect.isRight() ? radius : 0));
-		final float y2 = (float) (this.node.getY() + this.node.getHeight() - (this.effect.isBottom() ? radius : 0));
+		final float x1 = (float) (grid.snapX(this.node.getX()) + (this.effect.isLeft() ? radius : 0));
+		final float y1 = (float) (grid.snapY(this.node.getY()) + (this.effect.isTop() ? radius : 0));
+		final float x2 = (float) (grid.snapRight(this.node.getX(), this.node.getX() + this.node.getWidth()) - (this.effect.isRight() ? radius : 0));
+		final float y2 = (float) (grid.snapBottom(this.node.getY(), this.node.getY() + this.node.getHeight()) - (this.effect.isBottom() ? radius : 0));
 		RoundedShader.inst().bind(radius, x1, y1, x2, y2, type);
 	}
 

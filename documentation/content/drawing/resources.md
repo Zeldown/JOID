@@ -80,7 +80,7 @@ Resource sprite = ResourceBuilder.create()
 
 Every draw call pushes the matrix, enables `BlendState.NORMAL` (`SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`), binds the resource texture with `TextureWrap.CLAMP_TO_BORDER`, draws a textured quad through the `Tessellator`, then disables blending and pops the matrix. You don't need to preconfigure blending.
 
-When the transform is neither rotated nor skewed, the corners of the quad land on whole window pixels: an image drawn at `100.5` or under a fractional scale stays sharp instead of being resampled between two pixels, at the cost of moving by whole pixels. The decoder gives every transparent pixel the color of its nearest visible pixel, so linear filtering never darkens the edges of a transparent image.
+When the transform is neither rotated nor skewed, the corners of the quad land on whole window pixels, like every rectangle (see [Pixel alignment](draw-utils.md#pixel-alignment)): an image drawn at `100.5` or under a fractional scale stays sharp instead of being resampled between two pixels, and keeps at least one pixel. The decoder gives every transparent pixel the color of its nearest visible pixel, so linear filtering never darkens the edges of a transparent image.
 
 ## See also
 

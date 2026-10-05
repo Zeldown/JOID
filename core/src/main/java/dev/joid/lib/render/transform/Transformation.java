@@ -3,6 +3,7 @@ package dev.joid.lib.render.transform;
 import java.util.LinkedList;
 import java.util.List;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.render.context.Drawing;
 import dev.joid.lib.render.modifier.Rotation;
 import dev.joid.lib.render.modifier.Scale;
@@ -53,20 +54,21 @@ public class Transformation {
 	}
 
 	public void apply() {
+		BridgeHandler.RENDER.get().pushMatrix();
 		this.operations.forEach(TransformOperation::transform);
 	}
 
 	public void apply(final @NonNull Drawing drawing) {
-		this.operations.forEach(TransformOperation::transform);
+		this.apply();
 		try {
 			drawing.draw();
 		} finally {
-			this.operations.forEach(TransformOperation::reset);
+			this.reset();
 		}
 	}
 
 	public void reset() {
-		this.operations.forEach(TransformOperation::reset);
+		BridgeHandler.RENDER.get().popMatrix();
 	}
 
 	public void clear() {

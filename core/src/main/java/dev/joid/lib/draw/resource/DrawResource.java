@@ -70,8 +70,8 @@ public final class DrawResource {
 		final PixelGrid grid = render.getPixelGrid();
 		final double left = grid.snapX(x);
 		final double top = grid.snapY(y);
-		final double right = grid.snapX(x + width);
-		final double bottom = grid.snapY(y + height);
+		final double right = grid.snapRight(x, x + width);
+		final double bottom = grid.snapBottom(y, y + height);
 		final ResourceProperties properties = resource.getProperties();
 		if (properties.getTextureCoords() == null) {
 			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX());

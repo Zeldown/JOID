@@ -154,16 +154,14 @@ The shadow reuses the glyphs `apply` already changed, so a random or animated ef
 
 ### Examples
 
-An underline, snapped to whole pixels so it stays sharp:
+An underline: `drawRect` draws it as a line of constant thickness on the window pixels, so it stays sharp and keeps its weight at every scale:
 
 ```java
 public final class UnderlineTextEffect implements ITextEffect {
 
 	@Override
 	public void decorate(final ITextGlyph glyph) {
-		final double left = Math.round(glyph.getX());
-		final double right = Math.round(glyph.getX() + glyph.getAdvance());
-		DrawUtils.SHAPE.drawRect(left, Math.round(glyph.getUnderlineY()), right - left, Math.max(1D, Math.round(glyph.getUnderlineThickness())), glyph.getColor());
+		DrawUtils.SHAPE.drawRect(glyph.getX(), glyph.getUnderlineY(), glyph.getAdvance(), glyph.getUnderlineThickness(), glyph.getColor());
 	}
 
 }

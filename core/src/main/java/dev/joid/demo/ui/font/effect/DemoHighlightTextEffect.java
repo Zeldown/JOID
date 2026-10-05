@@ -20,10 +20,8 @@ public final class DemoHighlightTextEffect implements ITextEffect {
 
 	@Override
 	public void background(final @NonNull ITextGlyph glyph) {
-		final double left = Math.round(glyph.getX());
-		final double right = Math.round(glyph.getX() + glyph.getAdvance());
-		final double top = Math.round(glyph.getBaseline() - glyph.getAscender());
-		DrawUtils.SHAPE.drawRect(left, top, right - left, Math.round(glyph.getBaseline() - glyph.getDescender()) - top, DemoHighlightTextEffect.COLOR);
+		final double top = glyph.getBaseline() - glyph.getAscender();
+		DrawUtils.SHAPE.drawRect(glyph.getX(), top, glyph.getAdvance(), glyph.getBaseline() - glyph.getDescender() - top, DemoHighlightTextEffect.COLOR);
 	}
 
 }

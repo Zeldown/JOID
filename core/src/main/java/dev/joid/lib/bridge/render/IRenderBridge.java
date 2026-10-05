@@ -20,6 +20,7 @@ public interface IRenderBridge extends IBridge {
 	public void popMatrix();
 	public void pushMatrix();
 	public void loadIdentity();
+	public void quantize(final double motionX, final double motionY);
 	public void scale(final double x, final double y, final double z);
 	public void translate(final double x, final double y, final double z);
 	public void rotate(final double angle, final double x, final double y, final double z);

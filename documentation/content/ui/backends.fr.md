@@ -121,6 +121,7 @@ Le contrat que respecte chaque backend :
 - `lighting(true)` signifie un terme ambiant de `0.6` plus une lumière directionnelle selon l'axe de vue, appliquée par sommet en flat shading.
 - Les lignes lissées sont dessinées par le cœur : le `Tessellator` étend chaque segment d'une ligne dessinée avec `lineSmooth(true)` en quad dans l'espace écran, et le shader `line` calcule la couverture antialiasée d'OpenGL, les backends ne dessinent donc que des triangles. `isLineSmooth()`, `getLineWidth()`, `getViewportWidth()` et `getViewportHeight()` exposent l'état dont il a besoin.
 - `getPixelGrid()` situe les pixels de la fenêtre dans la transformation courante : le nombre de pixels couverts par une unité, et l'endroit où chaque unité tombe sur la fenêtre. `RenderBridge` la calcule depuis ses matrices ; un bridge natif lit ses matrices de projection et de modèle-vue et renvoie `PixelGrid.of(projection, modelView, viewportWidth, viewportHeight)`. Les effets dimensionnent leurs textures avec et les alignent sur les pixels de la fenêtre, et les images y accrochent leurs coins.
+- `translate` reste exact. `quantize(motionX, motionY)` arrondit à des pixels entiers de la fenêtre un mouvement déjà appliqué — par une translation ou par les coordonnées dessinées ensuite : il translate de `grid.quantizeX(motionX) - motionX` et `grid.quantizeY(motionY) - motionY`, où `grid` est `getPixelGrid()`. Les nœuds en mouvement et `Transformation` l'appellent. `RenderBridge` l'implémente ; un bridge natif applique la même translation à sa propre matrice.
 
 ### Shaders
 

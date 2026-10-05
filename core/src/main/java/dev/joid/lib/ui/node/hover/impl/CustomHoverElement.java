@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.hover.impl;
 
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.hover.HoverElement;
@@ -78,9 +79,14 @@ public class CustomHoverElement implements HoverElement {
 			}
 		}
 
-		BridgeHandler.RENDER.get().translate(x, y, 0);
-		this.element.render(node, mouseX, mouseY);
-		BridgeHandler.RENDER.get().translate(-x, -y, 0);
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.pushMatrix();
+		try {
+			render.translate(x, y, 0);
+			this.element.render(node, mouseX, mouseY);
+		} finally {
+			render.popMatrix();
+		}
 	}
 
 	public enum HoverElementPosition {

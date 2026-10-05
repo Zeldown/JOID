@@ -121,6 +121,7 @@ The contract every backend follows:
 - `lighting(true)` means an ambient term of `0.6` plus a directional light along the view axis, applied per vertex with flat shading.
 - Smooth lines are drawn by the core: the `Tessellator` expands each segment of a line drawn with `lineSmooth(true)` into a quad in screen space, and the `line` shader computes the OpenGL antialiased coverage, so backends only draw triangles. `isLineSmooth()`, `getLineWidth()`, `getViewportWidth()` and `getViewportHeight()` expose the state it needs.
 - `getPixelGrid()` places the window pixels at the current transform: the number of pixels covered by one unit, and where each unit lands on the window. `RenderBridge` computes it from its matrices; a native bridge reads its projection and model-view matrices and returns `PixelGrid.of(projection, modelView, viewportWidth, viewportHeight)`. Effects size their textures from it and align them on the window pixels, and images snap their corners to it.
+- `translate` stays exact. `quantize(motionX, motionY)` rounds a motion already applied — by a translation or by the coordinates drawn next — to whole window pixels: it translates by `grid.quantizeX(motionX) - motionX` and `grid.quantizeY(motionY) - motionY`, where `grid` is `getPixelGrid()`. Nodes in motion and `Transformation` call it. `RenderBridge` implements it; a native bridge applies the same translation to its own matrix.
 
 ### Shaders
 

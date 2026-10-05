@@ -154,16 +154,14 @@ L'ombre réutilise les glyphes déjà modifiés par `apply` : un effet aléatoir
 
 ### Exemples
 
-Un soulignement, calé sur les pixels pour rester net :
+Un soulignement : `drawRect` le dessine comme un trait d'épaisseur constante sur les pixels de la fenêtre, pour qu'il reste net et garde son poids à toutes les échelles :
 
 ```java
 public final class UnderlineTextEffect implements ITextEffect {
 
 	@Override
 	public void decorate(final ITextGlyph glyph) {
-		final double left = Math.round(glyph.getX());
-		final double right = Math.round(glyph.getX() + glyph.getAdvance());
-		DrawUtils.SHAPE.drawRect(left, Math.round(glyph.getUnderlineY()), right - left, Math.max(1D, Math.round(glyph.getUnderlineThickness())), glyph.getColor());
+		DrawUtils.SHAPE.drawRect(glyph.getX(), glyph.getUnderlineY(), glyph.getAdvance(), glyph.getUnderlineThickness(), glyph.getColor());
 	}
 
 }

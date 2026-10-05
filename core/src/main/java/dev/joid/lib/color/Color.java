@@ -477,11 +477,22 @@ public final class Color {
 	}
 
 	public @NonNull Color copy() {
-		return new Color(this.r, this.g, this.b, this.a, this.update);
+		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
+		if (this.isGradient()) {
+			copy.gradient = new ColorGradient(this.gradient.getStartColor().copy(), this.gradient.getEndColor().copy(), new Vector4f(this.gradient.getDirection()));
+		}
+		return copy;
 	}
 
 	public @NonNull Color copyAlpha(final float alpha) {
-		return new Color(this.r, this.g, this.b, alpha, this.update);
+		final Color copy = new Color(this.r, this.g, this.b, alpha, this.update);
+		if (this.isGradient()) {
+			final Color start = this.gradient.getStartColor();
+			final Color end = this.gradient.getEndColor();
+			final float scale = this.a > 0F ? alpha / this.a : 0F;
+			copy.gradient = new ColorGradient(start.copyAlpha(this.a > 0F ? start.a * scale : alpha), end.copyAlpha(this.a > 0F ? end.a * scale : alpha), new Vector4f(this.gradient.getDirection()));
+		}
+		return copy;
 	}
 
 	public @NonNull Color copyRed(final float red) {

@@ -68,6 +68,16 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public void quantize(final double motionX, final double motionY) {
+		if (motionX == 0D && motionY == 0D) {
+			return;
+		}
+
+		final PixelGrid grid = this.getPixelGrid();
+		GL11.glTranslated(grid.quantizeX(motionX) - motionX, grid.quantizeY(motionY) - motionY, 0D);
+	}
+
+	@Override
 	public void scale(final double x, final double y, final double z) {
 		GL11.glScaled(x, y, z);
 	}

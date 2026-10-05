@@ -10,7 +10,7 @@
 void drawRect(double x, double y, double width, double height, Color color)
 ```
 
-Rectangle axe-aligné rempli. Transparence via `color.a`. Routé en interne par `drawPolygon` avec quatre points de coin.
+Rectangle axe-aligné rempli. Transparence via `color.a`. Routé en interne par `drawPolygon` avec quatre points de coin. Ses bords tombent sur les pixels de la fenêtre ; sur un axe où il couvre moins de trois pixels, il est dessiné comme un trait — un nombre entier de pixels centré sur sa position exacte, et un pixel à opacité proportionnelle sous le pixel — donc un soulignement, un séparateur ou un curseur garde la même épaisseur et le même poids partout. Voir [Alignement sur les pixels](draw-utils.md#alignement-sur-les-pixels).
 
 ```java
 DrawUtils.SHAPE.drawRect(0, 0, 200, 100, Color.WHITE);
@@ -26,7 +26,7 @@ void drawRoundedRect(double x, double y, double width, double height, Color colo
                      boolean roundedRight, boolean roundedBottom)
 ```
 
-Rectangle à coins arrondis, rendu via `RoundedShader` — le même shader qui back `RoundedNodeEffect`. La variante à quatre coins désactive l'arrondi sur des côtés spécifiques (onglets, layouts avec entailles).
+Rectangle à coins arrondis, rendu via `RoundedShader` — le même shader qui back `RoundedNodeEffect`. La variante à quatre coins désactive l'arrondi sur des côtés spécifiques (onglets, layouts avec entailles). Le rectangle se cale sur les pixels de la fenêtre comme `drawRect`, et les coins sont antialiasés à l'intérieur.
 
 ```java
 DrawUtils.SHAPE.drawRoundedRect(40, 40, 120, 60, Color.decode("#1f2937"), 8F);
@@ -41,7 +41,7 @@ DrawUtils.SHAPE.drawRoundedRect(40, 40, 120, 60, Color.decode("#1f2937"),
 void drawRawRect(double x, double y, double width, double height)
 ```
 
-Draw de quad sans binder une couleur. Utile quand un shader est déjà actif et doit peindre la sortie — utilisé en interne par `RectNode` quand des gradients sont en jeu.
+Draw de quad sans binder une couleur, calé comme `drawRect`. Utile quand un shader est déjà actif et doit peindre la sortie — utilisé en interne par `RectNode` quand des gradients sont en jeu.
 
 ```java
 Color.WHITE.bind();
@@ -72,7 +72,7 @@ void drawBorder(double x, double y, double x2, double y2, Color color)
 void drawBorder(double x, double y, double x2, double y2, Color color, double stroke)
 ```
 
-Quatre rectangles fins dessinés **à l'extérieur** de la box définie par `(x, y) → (x2, y2)`. À utiliser pour des contours nets 1-pixel.
+Quatre traits dessinés **à l'extérieur** de la box définie par `(x, y) → (x2, y2)`. Leurs bords intérieurs tombent sur les bords de la box et leur épaisseur est un nombre entier de pixels, le même sur chaque côté, avec une opacité proportionnelle sous le pixel. À utiliser pour des contours nets 1-pixel.
 
 ```java
 DrawUtils.SHAPE.drawBorder(10, 10, 210, 110, Color.decode("#374151"), 1D);

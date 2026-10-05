@@ -2,6 +2,8 @@ package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.function.Supplier;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
@@ -89,16 +91,17 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 			return;
 		}
 
-		final double x = node.getX();
-		final double y = node.getY();
-		final double width = node.getWidth();
-		final double height = node.getHeight();
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
+		final double x = grid.snapX(node.getX());
+		final double y = grid.snapY(node.getY());
+		final double maxX = grid.snapRight(node.getX(), node.getX() + node.getWidth());
+		final double maxY = grid.snapBottom(node.getY(), node.getY() + node.getHeight());
 		final float radius = this.getRadius();
 		final boolean left = this.isLeft();
 		final boolean right = this.isRight();
 		final boolean top = this.isTop();
 		final boolean bottom = this.isBottom();
-		RoundedShader.inst().bind(radius, (float) (x + (left ? radius : 0)), (float) (y + (top ? radius : 0)), (float) (x + width - (right ? radius : 0)), (float) (y + height - (bottom ? radius : 0)));
+		RoundedShader.inst().bind(radius, (float) (x + (left ? radius : 0)), (float) (y + (top ? radius : 0)), (float) (maxX - (right ? radius : 0)), (float) (maxY - (bottom ? radius : 0)));
 	}
 
 	@Override

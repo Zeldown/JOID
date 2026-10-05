@@ -12,6 +12,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -20,6 +21,9 @@ import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
+import dev.joid.lib.render.modifier.Scale;
+import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.transform.Transformation;
 import dev.joid.test.shader.CoreShaders;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
@@ -222,6 +226,47 @@ public abstract class RenderBridgeContractSuite {
 		texture.delete();
 
 		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.BLUE);
+	}
+
+	@Test
+	public void keepsTranslationsExact() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.pushMatrix();
+		try {
+			render.scale(0.75D, 0.75D, 1D);
+			render.translate(10.3D, 0D, 0D);
+			Assert.assertEquals(7.725D, render.getPixelGrid().toScreenX(0D), 1E-4D);
+		} finally {
+			render.popMatrix();
+		}
+	}
+
+	@Test
+	public void quantizesAMotionToWholePixels() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.pushMatrix();
+		try {
+			render.scale(0.75D, 0.75D, 1D);
+			render.translate(10.3D, 0D, 0D);
+			render.quantize(10.3D, -4.1D);
+			final PixelGrid grid = render.getPixelGrid();
+			Assert.assertEquals(8D, grid.toScreenX(0D), 1E-4D);
+			Assert.assertEquals(Math.rint(grid.toScreenY(-4.1D)), grid.toScreenY(-4.1D), 1E-4D);
+		} finally {
+			render.popMatrix();
+		}
+	}
+
+	@Test
+	public void restoresTheMatrixAfterATransformation() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final double before = render.getPixelGrid().toScreenX(0D);
+		final Transformation transformation = Transformation.create().translate(Vector.create(10.3D, 4.6D)).scale(Scale.create(1.5D, 1.5D, 1D), Vector.create(40D, 40D));
+		transformation.apply();
+		final double during = render.getPixelGrid().toScreenX(0D);
+		transformation.reset();
+		Assert.assertNotEquals(before, during, 1E-4D);
+		Assert.assertEquals(before, render.getPixelGrid().toScreenX(0D), 0D);
 	}
 
 	private static SnapshotImage render(final Consumer<IRenderBridge> draw) {

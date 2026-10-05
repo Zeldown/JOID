@@ -30,6 +30,7 @@ import dev.joid.lib.animation.tweenengine.TweenEquation;
 import dev.joid.lib.animation.tweenengine.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.shader.pipeline.ShaderPass;
@@ -196,6 +197,12 @@ public abstract class Node implements INode {
 	private double lastWidth;
 	private double lastHeight;
 
+	private double  restX;
+	private double  restY;
+	private double  drawnX;
+	private double  drawnY;
+	private boolean moving;
+
 	private long      lastClickTime;
 	private ClickType lastClickType;
 
@@ -225,8 +232,8 @@ public abstract class Node implements INode {
 		this.hoverElementList  = new LinkedList<>();
 		this.hoverSupplierList = new LinkedList<>();
 
-		this.defaultX = this.x = x;
-		this.defaultY = this.y = y;
+		this.defaultX = this.x = this.drawnX = x;
+		this.defaultY = this.y = this.drawnY = y;
 
 		this.defaultWidth  = this.width  = this.lastWidth  = width;
 		this.defaultHeight = this.height = this.lastHeight = height;
@@ -334,6 +341,8 @@ public abstract class Node implements INode {
 					}
 				}
 
+				boolean scrollsX = false;
+				boolean scrollsY = false;
 				if (this.overflow == OverflowProperty.SCROLL) {
 					if (!this.hasOverflowY()) {
 						this.maxScrollX = 0;
@@ -349,9 +358,7 @@ public abstract class Node implements INode {
 
 						if (this.hasOverflowX()) {
 							this.maxScrollX += scrollOffset;
-							this.children.forEach(child -> {
-								child.x = child.defaultX + this.scrollX;
-							});
+							scrollsX = true;
 						}
 					}
 
@@ -369,9 +376,7 @@ public abstract class Node implements INode {
 
 						if (this.hasOverflowY()) {
 							this.maxScrollY += scrollOffset;
-							this.children.forEach(child -> {
-								child.y = child.defaultY + this.scrollY;
-							});
+							scrollsY = true;
 						}
 					}
 				}
@@ -387,6 +392,21 @@ public abstract class Node implements INode {
 				if (this.targetScrollY != this.scrollY) {
 					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
 					this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
+				}
+
+				if (scrollsX || scrollsY) {
+					final PixelGrid grid = render.getPixelGrid();
+					final double offsetX = grid.quantizeX(this.scrollX);
+					final double offsetY = grid.quantizeY(this.scrollY);
+					for (final Node child : this.children) {
+						if (scrollsX) {
+							child.x = child.defaultX + offsetX;
+						}
+
+						if (scrollsY) {
+							child.y = child.defaultY + offsetY;
+						}
+					}
 				}
 
 				if (this.scrollbar != null) {
@@ -453,6 +473,22 @@ public abstract class Node implements INode {
 					}
 				}
 
+				if (this.x != this.drawnX || this.y != this.drawnY) {
+					if (!this.moving) {
+						this.restX = this.drawnX;
+						this.restY = this.drawnY;
+						this.moving = true;
+					}
+				} else {
+					this.moving = false;
+				}
+
+				this.drawnX = this.x;
+				this.drawnY = this.y;
+				if (this.moving) {
+					render.quantize(this.x - this.restX, this.y - this.restY);
+				}
+
 				final boolean wasMounted = this.mounted;
 				this.mounted = this.isMounted();
 
@@ -506,13 +542,14 @@ public abstract class Node implements INode {
 
 							if (this.draggedNode != null) {
 								render.pushState();
+								render.pushMatrix();
 								try {
 									render.stencilTest(false);
 
 									render.translate(-this.parent.x, -this.parent.y, 0D);
 									this.draggedNode.render(mouseX, mouseY);
-									render.translate(this.parent.x, this.parent.y, 0D);
 								} finally {
+									render.popMatrix();
 									render.popState();
 								}
 							}

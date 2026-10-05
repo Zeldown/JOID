@@ -115,6 +115,8 @@ Color tinted = color.multiply(Color.RED);    // multiplication composante par co
 Color additive = color.addToCopy(otherColor);
 ```
 
+`copy` et `copyAlpha` gardent un dégradé. L'alpha d'un dégradé est celui de sa couleur de départ, et `copyAlpha` met les deux extrémités à l'échelle du même rapport : un fondu de l'opaque au transparent reste un fondu à mi-opacité.
+
 ## Conversion HSB
 
 ```java

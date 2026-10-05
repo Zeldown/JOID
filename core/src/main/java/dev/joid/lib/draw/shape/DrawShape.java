@@ -8,6 +8,8 @@ import javax.vecmath.Vector4f;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
+import dev.joid.lib.bridge.render.matrix.PixelGrid.Span;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.color.Color;
@@ -32,25 +34,30 @@ public final class DrawShape {
 	}
 
 	public void drawRect(final double x, final double y, final double width, final double height, final @NonNull Color color) {
-		this.drawPolygon(color, new Vector2d(x, y + height), new Vector2d(x + width, y + height), new Vector2d(x + width, y), new Vector2d(x, y));
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
+		final Span horizontal = grid.spanX(x, width);
+		final Span vertical = grid.spanY(y, height);
+		this.drawEdges(horizontal.getStart(), vertical.getStart(), horizontal.getEnd(), vertical.getEnd(), DrawShape.cover(color, horizontal.getCoverage() * vertical.getCoverage()));
 	}
 
 	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
-		RoundedShader.use(radius, (float) (x + radius), (float) (y + radius), (float) (x + width - radius), (float) (y + height - radius), () -> {
-			this.drawRect(x, y, width, height, color);
-		});
+		this.drawRoundedRect(x, y, width, height, color, radius, true, true, true, true);
 	}
 
 	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom) {
-		RoundedShader.use(radius, (float) (x + (roundedLeft ? radius : 0)), (float) (y + (roundedTop ? radius : 0)), (float) (x + width - (roundedRight ? radius : 0)), (float) (y + height - (roundedBottom ? radius : 0)), () -> {
-			this.drawRect(x, y, width, height, color);
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
+		final double left = grid.snapX(x);
+		final double top = grid.snapY(y);
+		final double right = grid.snapRight(x, x + width);
+		final double bottom = grid.snapBottom(y, y + height);
+		RoundedShader.use(radius, (float) (left + (roundedLeft ? radius : 0)), (float) (top + (roundedTop ? radius : 0)), (float) (right - (roundedRight ? radius : 0)), (float) (bottom - (roundedBottom ? radius : 0)), () -> {
+			this.drawRect(left, top, right - left, bottom - top, color);
 		});
 	}
 
 	public void drawCircle(final double x, final double y, final @NonNull Color color, final double radius) {
-		final double diameter = radius * 2D;
 		CircleShader.use((float) radius, (float) x, (float) y, () -> {
-			this.drawRect(x - radius, y - radius, diameter, diameter, color);
+			this.drawPolygon(color, new Vector2d(x - radius, y + radius), new Vector2d(x + radius, y + radius), new Vector2d(x + radius, y - radius), new Vector2d(x - radius, y - radius));
 		});
 	}
 
@@ -59,10 +66,17 @@ public final class DrawShape {
 	}
 
 	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
-		this.drawRect(x, y - stroke, x2 - x, stroke, color);
-		this.drawRect(x - stroke, y, stroke, y2 - y, color);
-		this.drawRect(x, y2, x2 - x, stroke, color);
-		this.drawRect(x2, y, stroke, y2 - y, color);
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
+		final double left = grid.snapX(x);
+		final double top = grid.snapY(y);
+		final double right = grid.snapX(x2);
+		final double bottom = grid.snapY(y2);
+		final Color horizontal = DrawShape.cover(color, stroke * grid.getScaleY());
+		final Color vertical = DrawShape.cover(color, stroke * grid.getScaleX());
+		this.drawEdges(left, grid.snapHeight(y, -stroke), right, top, horizontal);
+		this.drawEdges(grid.snapWidth(x, -stroke), top, left, bottom, vertical);
+		this.drawEdges(left, bottom, right, grid.snapHeight(y2, stroke), horizontal);
+		this.drawEdges(right, top, grid.snapWidth(x2, stroke), bottom, vertical);
 	}
 
 	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
@@ -70,10 +84,19 @@ public final class DrawShape {
 	}
 
 	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
-		this.drawRect(x - stroke, y - stroke, x2 - x + stroke + stroke, stroke, color);
-		this.drawRect(x - stroke, y, stroke, y2 - y, color);
-		this.drawRect(x - stroke, y2, x2 - x + stroke + stroke, stroke, color);
-		this.drawRect(x2, y, stroke, y2 - y, color);
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
+		final double left = grid.snapX(x);
+		final double top = grid.snapY(y);
+		final double right = grid.snapX(x2);
+		final double bottom = grid.snapY(y2);
+		final double outerLeft = grid.snapWidth(x, -stroke);
+		final double outerRight = grid.snapWidth(x2, stroke);
+		final Color horizontal = DrawShape.cover(color, stroke * grid.getScaleY());
+		final Color vertical = DrawShape.cover(color, stroke * grid.getScaleX());
+		this.drawEdges(outerLeft, grid.snapHeight(y, -stroke), outerRight, top, horizontal);
+		this.drawEdges(outerLeft, top, left, bottom, vertical);
+		this.drawEdges(outerLeft, bottom, outerRight, grid.snapHeight(y2, stroke), horizontal);
+		this.drawEdges(right, top, outerRight, bottom, vertical);
 	}
 
 	public void drawPolygon(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
@@ -189,20 +212,31 @@ public final class DrawShape {
 	public void drawRawRect(final double x, final double y, final double width, final double height) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final Tessellator tessellator = Tessellator.inst();
+		final PixelGrid grid = render.getPixelGrid();
+		final Span horizontal = grid.spanX(x, width);
+		final Span vertical = grid.spanY(y, height);
 		render.pushMatrix();
 		try {
 			render.blend(BlendState.NORMAL);
 			render.resetTexture();
 			tessellator.start(DrawMode.POLYGON);
-			tessellator.addVertex(x, y + height, 0D);
-			tessellator.addVertex(x + width, y + height, 0D);
-			tessellator.addVertex(x + width, y, 0D);
-			tessellator.addVertex(x, y, 0D);
+			tessellator.addVertex(horizontal.getStart(), vertical.getEnd(), 0D);
+			tessellator.addVertex(horizontal.getEnd(), vertical.getEnd(), 0D);
+			tessellator.addVertex(horizontal.getEnd(), vertical.getStart(), 0D);
+			tessellator.addVertex(horizontal.getStart(), vertical.getStart(), 0D);
 			tessellator.draw();
 		} finally {
 			render.blend(BlendState.DISABLED);
 			render.popMatrix();
 		}
+	}
+
+	private void drawEdges(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
+		this.drawPolygon(color, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
+	}
+
+	private static Color cover(final Color color, final double coverage) {
+		return Math.abs(coverage) >= 1D ? color : color.copyAlpha((float) (color.a * Math.abs(coverage)));
 	}
 
 }

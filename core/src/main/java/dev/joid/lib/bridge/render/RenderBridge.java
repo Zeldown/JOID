@@ -54,6 +54,16 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public final void quantize(final double motionX, final double motionY) {
+		if (motionX == 0D && motionY == 0D) {
+			return;
+		}
+
+		final PixelGrid grid = this.getPixelGrid();
+		this.modelView.translate(grid.quantizeX(motionX) - motionX, grid.quantizeY(motionY) - motionY, 0D);
+	}
+
+	@Override
 	public final void scale(final double x, final double y, final double z) {
 		this.modelView.scale(x, y, z);
 	}

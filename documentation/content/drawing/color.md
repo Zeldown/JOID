@@ -115,6 +115,8 @@ Color tinted = color.multiply(Color.RED);    // component-wise multiply
 Color additive = color.addToCopy(otherColor);
 ```
 
+`copy` and `copyAlpha` keep a gradient. The alpha of a gradient is the alpha of its start color, and `copyAlpha` scales both ends by the same ratio, so a fade from opaque to transparent stays a fade at half opacity.
+
 ## HSB conversion
 
 ```java
