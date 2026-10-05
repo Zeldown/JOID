@@ -41,7 +41,7 @@ new RasterResourceDecoder(BufferedImage);    // depuis une image pré-décodée
 
 ### `VideoResourceDecoder`
 
-Formats animés — MP4, MOV, WebM, MKV, AVI, GIF, APNG. Backed par FFmpeg via JavaCV.
+Formats vidéo — MP4, MOV, WebM, MKV, AVI. Backed par FFmpeg via JavaCV.
 
 Fonctionnalités :
 - Queue de frames en ring buffer (5 frames).

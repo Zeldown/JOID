@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.decoder.impl.AnimatedResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.RasterResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
 
@@ -29,6 +30,13 @@ public class ResourceFormatTest {
 			Assert.assertTrue(decoder instanceof VideoResourceDecoder);
 			Assert.assertFalse(((VideoResourceDecoder) decoder).isLoop());
 		}
+	}
+
+	@Test
+	public void picksTheAnimatedDecoderForGifAndApng() {
+		Assert.assertTrue(ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/blink.gif"))) instanceof AnimatedResourceDecoder);
+		Assert.assertTrue(ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/blink.png"))) instanceof AnimatedResourceDecoder);
+		Assert.assertTrue(ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/still.png"))) instanceof RasterResourceDecoder);
 	}
 
 	@Test

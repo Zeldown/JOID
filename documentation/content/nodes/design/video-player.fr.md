@@ -1,6 +1,6 @@
 # VideoPlayerNode
 
-Lecteur vidéo complet. Lit MP4, MOV, WebM, MKV, AVI, GIF, APNG — tout ce que FFmpeg peut décoder. Audio streamé via le bridge audio, synchronisé à la vidéo.
+Lecteur vidéo complet. Lit MP4, MOV, WebM, MKV, AVI via FFmpeg, ainsi que les animations GIF et APNG avec les mêmes contrôles de lecture. Audio streamé via le bridge audio, synchronisé à la vidéo.
 
 ## Créer
 
@@ -125,9 +125,9 @@ Détectés via magic bytes (en-tête), pas l'extension :
 - **WebM / MKV** — en-tête EBML
 - **AVI** — `RIFF` + `AVI`
 - **GIF** — `GIF87a` / `GIF89a`
-- **APNG** — PNG avec chunk `acTL` (détecté par FFmpeg)
+- **APNG** — PNG avec un chunk `acTL`
 
-Un GIF boucle par défaut.
+Une animation se joue autant de fois que son fichier l'indique, à l'infini pour la plupart des GIF.
 
 ## Bonnes pratiques
 

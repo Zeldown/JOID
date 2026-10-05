@@ -77,7 +77,8 @@ A `String` becomes a `UrlAsset`, which reports itself as remote: its decoder is 
 
 | Signature / extension | Decoder |
 |---|---|
-| `GIF87a` / `GIF89a` | `VideoResourceDecoder` (loop enabled) |
+| `GIF87a` / `GIF89a` | `AnimatedResourceDecoder` (loop count of the file) |
+| PNG with an `acTL` chunk before `IDAT` | `AnimatedResourceDecoder` (APNG) |
 | `ftyp` at offset 4 | `VideoResourceDecoder` (MP4/MOV) |
 | `1A 45 DF A3` | `VideoResourceDecoder` (WebM/MKV) |
 | `RIFF...AVI` | `VideoResourceDecoder` |

@@ -1,6 +1,6 @@
 # VideoPlayerNode
 
-Full-featured video player. Plays MP4, MOV, WebM, MKV, AVI, GIF, APNG — anything FFmpeg can decode. Audio streamed through the audio bridge, synced to video.
+Full-featured video player. Plays MP4, MOV, WebM, MKV, AVI through FFmpeg, and GIF and APNG animations through the same playback controls. Audio streamed through the audio bridge, synced to video.
 
 ## Create
 
@@ -125,9 +125,9 @@ Detected via magic bytes (header), not file extension:
 - **WebM / MKV** — EBML header
 - **AVI** — `RIFF` + `AVI`
 - **GIF** — `GIF87a` / `GIF89a`
-- **APNG** — PNG with `acTL` chunk (detected by FFmpeg)
+- **APNG** — PNG with an `acTL` chunk
 
-A GIF loops by default.
+An animation plays as many times as its file says, forever for most GIFs.
 
 ## Best practices
 

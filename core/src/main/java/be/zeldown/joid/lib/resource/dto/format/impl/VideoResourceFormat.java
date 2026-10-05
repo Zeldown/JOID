@@ -10,16 +10,12 @@ public class VideoResourceFormat implements IResourceFormat {
 
 	@Override
 	public boolean supports(final @NonNull byte[] header) {
-		return VideoResourceFormat.isGif(header) || VideoResourceFormat.isMp4(header) || VideoResourceFormat.isMatroska(header) || VideoResourceFormat.isAvi(header);
+		return VideoResourceFormat.isMp4(header) || VideoResourceFormat.isMatroska(header) || VideoResourceFormat.isAvi(header);
 	}
 
 	@Override
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-		return new VideoResourceDecoder(asset).loop(VideoResourceFormat.isGif(header));
-	}
-
-	private static boolean isGif(final byte[] header) {
-		return header.length >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a';
+		return new VideoResourceDecoder(asset);
 	}
 
 	private static boolean isMp4(final byte[] header) {

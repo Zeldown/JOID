@@ -77,7 +77,8 @@ Une `String` devient un `UrlAsset`, qui se déclare distant : son décodeur est 
 
 | Signature / extension | Décodeur |
 |---|---|
-| `GIF87a` / `GIF89a` | `VideoResourceDecoder` (loop activé) |
+| `GIF87a` / `GIF89a` | `AnimatedResourceDecoder` (nombre de boucles du fichier) |
+| PNG avec un chunk `acTL` avant `IDAT` | `AnimatedResourceDecoder` (APNG) |
 | `ftyp` à l'offset 4 | `VideoResourceDecoder` (MP4/MOV) |
 | `1A 45 DF A3` | `VideoResourceDecoder` (WebM/MKV) |
 | `RIFF...AVI` | `VideoResourceDecoder` |
