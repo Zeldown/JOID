@@ -1,6 +1,6 @@
 # Atlas MSDF
 
-Comment transformer un `.ttf` ou un `.otf` en fichier `font.msdf`, celui que le système de polices de JOID consomme.
+Comment transformer un `.ttf` ou un `.otf` en fichier `font.msdf`, celui que le système de polices de JOID consomme. `MsdfFontLoader` accepte aussi directement le fichier de police et génère ce fichier à l'exécution — voir [Fichiers de police](custom-font.md#fichiers-de-police).
 
 ## Le générateur
 

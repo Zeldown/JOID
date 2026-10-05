@@ -10,7 +10,7 @@ JOID rend le texte via des atlas MSDF (Multi-channel Signed Distance Field) — 
 static CompletableFuture<MsdfFont> load(Object... faces)
 ```
 
-Chaque handle désigne un fichier `font.msdf`, produit par le générateur décrit dans [Atlas MSDF](msdf-atlas.md). Il porte ensemble l'atlas, les métriques des glyphes, la table de crénage, ainsi que la graisse et le style de la face. Tout ce qu'un [localisateur d'asset](../resources/assets.md) reconnaît convient — un `InputStream`, un `File`, une URL, ou un handle à vous.
+Chaque handle désigne une face : un fichier `font.msdf`, produit par le générateur décrit dans [Atlas MSDF](msdf-atlas.md), ou directement le fichier de police — voir [Fichiers de police](#fichiers-de-police). Un `font.msdf` porte ensemble l'atlas, les métriques des glyphes, la table de crénage, ainsi que la graisse et le style de la face. Tout ce qu'un [localisateur d'asset](../resources/assets.md) reconnaît convient — un `InputStream`, un `File`, une URL, ou un handle à vous.
 
 Chargement minimal :
 
@@ -32,9 +32,28 @@ MsdfFontLoader.load(
 
 Une police, un seul enregistrement : chaque `TextInfo` construit dessus choisit sa graisse. Deux faces de même graisse et de même style, une liste vide ou un fichier illisible complètent le future en erreur, avec un message qui nomme le problème.
 
+### Fichiers de police
+
+Un handle `.ttf`, `.otf` ou `.ttc` se charge comme un `font.msdf` : le loader le reconnaît à son en-tête, génère son atlas avec les réglages par défaut du générateur et le met en cache.
+
+```java
+MsdfFontLoader.load(new File("fonts/Inter-Regular.ttf"), new File("fonts/Inter-Bold.ttf"))
+    .thenAccept(font -> this.inter = font);
+```
+
+Le premier chargement d'une police prend quelques secondes sur le pool du loader. `MsdfFontCache` garde ensuite l'atlas sous le SHA-256 du fichier de police et de la version de JOID : les lancements suivants le lisent comme n'importe quel `font.msdf`, toutes les applications JOID de la machine le partagent, et une mise à jour de JOID le génère à nouveau.
+
+| Système | Cache |
+|---|---|
+| Windows | `%LOCALAPPDATA%\joid\msdf` |
+| macOS | `~/Library/Caches/joid/msdf` |
+| Linux | `$XDG_CACHE_HOME/joid/msdf`, ou `~/.cache/joid/msdf` |
+
+`MsdfFontCache.directory(File)` déplace le cache, avant le premier chargement. Livrez plutôt des fichiers `font.msdf` quand le premier lancement doit être instantané, ou quand l'atlas demande un autre charset, une autre portée ou une autre taille.
+
 ### Sources
 
-Un handle devient un `MsdfBinarySource`. Construisez la source vous-même quand une face doit être présentée autrement que ce que déclare son fichier — une police aux métadonnées fausses, ou une famille assemblée à partir de fichiers sans rapport :
+Un handle devient un `MsdfBinarySource`, ou un `MsdfOpenTypeSource` pour un fichier de police. Construisez la source vous-même quand une face doit être présentée autrement que ce que déclare son fichier — une police aux métadonnées fausses, ou une famille assemblée à partir de fichiers sans rapport :
 
 ```java
 MsdfFontLoader.load(

@@ -25,6 +25,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfGenerator {
 
+	public static final int    WIDTH   = 2048;
+	public static final int    HEIGHT  = 2048;
+	public static final double RANGE   = 24D;
+	public static final String CHARSET = "[32, 563]";
+
 	private static final double ANGLE = 3D;
 
 	public static void main(final String[] arguments) throws Exception {
@@ -36,17 +41,25 @@ public final class MsdfGenerator {
 
 		final File font = new File(options.get("font"));
 		final File output = new File(options.getOrDefault("output", "output"));
-		final int width = Integer.parseInt(options.getOrDefault("width", "2048"));
-		final int height = Integer.parseInt(options.getOrDefault("height", "2048"));
-		final double range = Double.parseDouble(options.getOrDefault("range", "24"));
-		final int[] codepoints = MsdfGenerator.codepoints(options.getOrDefault("charset", "[32, 563]"));
+		final int width = Integer.parseInt(options.getOrDefault("width", String.valueOf(MsdfGenerator.WIDTH)));
+		final int height = Integer.parseInt(options.getOrDefault("height", String.valueOf(MsdfGenerator.HEIGHT)));
+		final double range = Double.parseDouble(options.getOrDefault("range", String.valueOf(MsdfGenerator.RANGE)));
+		final int[] codepoints = MsdfGenerator.codepoints(options.getOrDefault("charset", MsdfGenerator.CHARSET));
 
 		MsdfGenerator.generate(font, output, codepoints, width, height, range, options.containsKey("size") ? Double.parseDouble(options.get("size")) : 0D);
 	}
 
 	public static void generate(final File file, final File output, final int[] codepoints, final int width, final int height, final double range, final double requested) throws Exception {
 		final long start = System.currentTimeMillis();
-		final Font font = Glyphs.load(file);
+		final File target = new File(output, "font.msdf");
+		output.mkdirs();
+
+		final String summary = MsdfGenerator.generate(Files.readAllBytes(file.toPath()), target, codepoints, width, height, range, requested);
+		System.out.println(file.getName() + " -> " + summary + ", " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
+	}
+
+	public static String generate(final byte[] data, final File target, final int[] codepoints, final int width, final int height, final double range, final double requested) throws Exception {
+		final Font font = Glyphs.load(data);
 		final double[] metrics = Glyphs.metrics(font);
 
 		final List<GlyphEntry> glyphs = new ArrayList<>();
@@ -69,13 +82,10 @@ public final class MsdfGenerator {
 			}
 		});
 
-		final FontFile source = FontFile.read(file);
+		final FontFile source = FontFile.read(data);
 		final Kerning kerning = Kerning.read(source, font, codepoints);
-		output.mkdirs();
-
-		final File target = new File(output, "font.msdf");
 		MsdfWriter.write(target, glyphs, kerning, metrics, source.getWeight(), source.isItalic(), size, range, pixels, width, height);
-		System.out.println(file.getName() + " -> weight " + source.getWeight() + (source.isItalic() ? " italic, " : ", ") + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px, " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
+		return "weight " + source.getWeight() + (source.isItalic() ? " italic, " : ", ") + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px";
 	}
 
 	public static int[] codepoints(final String charset) throws Exception {

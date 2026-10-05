@@ -6,7 +6,7 @@ import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +25,8 @@ public final class Glyphs {
 
 	private static final FontRenderContext CONTEXT = new FontRenderContext(null, false, true);
 
-	public static Font load(final File file) throws Exception {
-		return Font.createFont(Font.TRUETYPE_FONT, file).deriveFont((float) Glyphs.UNITS);
+	public static Font load(final byte[] data) throws Exception {
+		return Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(data)).deriveFont((float) Glyphs.UNITS);
 	}
 
 	public static int code(final Font font, final int codepoint) {

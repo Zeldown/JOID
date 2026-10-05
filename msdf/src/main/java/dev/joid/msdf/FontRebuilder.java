@@ -16,8 +16,8 @@ public final class FontRebuilder {
 		final File resources = new File(arguments[1]);
 		final File list = new File(arguments[2]);
 		final File charset = new File(arguments[3]);
-		final int atlas = arguments.length > 4 ? Integer.parseInt(arguments[4]) : 2048;
-		final double range = arguments.length > 5 ? Double.parseDouble(arguments[5]) : 24D;
+		final int atlas = arguments.length > 4 ? Integer.parseInt(arguments[4]) : MsdfGenerator.WIDTH;
+		final double range = arguments.length > 5 ? Double.parseDouble(arguments[5]) : MsdfGenerator.RANGE;
 
 		final int[] codepoints = MsdfGenerator.codepoints(charset.getAbsolutePath());
 		final List<String> entries = Files.readAllLines(list.toPath(), StandardCharsets.UTF_8);

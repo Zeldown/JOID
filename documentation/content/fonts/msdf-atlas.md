@@ -1,6 +1,6 @@
 # MSDF Atlas
 
-How to turn a `.ttf` or `.otf` into the `font.msdf` file JOID's font system consumes.
+How to turn a `.ttf` or `.otf` into the `font.msdf` file JOID's font system consumes. `MsdfFontLoader` also takes the font file itself and generates that file at runtime — see [Font files](custom-font.md#font-files).
 
 ## The generator
 

@@ -8,9 +8,11 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.dto.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.dto.source.MsdfBinarySource;
+import dev.joid.lib.font.impl.msdf.dto.source.MsdfOpenTypeSource;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -53,7 +55,12 @@ public final class MsdfFontLoader {
 	}
 
 	private static @NonNull IMsdfSource source(final @NonNull Object handle) {
-		return handle instanceof IMsdfSource ? (IMsdfSource) handle : MsdfBinarySource.of(handle);
+		if (handle instanceof IMsdfSource) {
+			return (IMsdfSource) handle;
+		}
+
+		final Asset asset = Asset.of(handle);
+		return MsdfOpenTypeSource.supports(asset.peek(MsdfOpenTypeSource.HEADER)) ? MsdfOpenTypeSource.of(asset) : MsdfBinarySource.of(asset);
 	}
 
 }

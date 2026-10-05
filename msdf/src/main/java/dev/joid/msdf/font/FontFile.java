@@ -1,9 +1,6 @@
 package dev.joid.msdf.font;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +27,8 @@ public final class FontFile {
 		}
 	}
 
-	public static FontFile read(final File file) throws IOException {
-		return new FontFile(Files.readAllBytes(file.toPath()));
+	public static FontFile read(final byte[] data) {
+		return new FontFile(data);
 	}
 
 	public boolean isItalic() {

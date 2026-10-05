@@ -1,11 +1,15 @@
 archivesBaseName = "joid-core"
 
+evaluationDependsOn(':msdf')
+
 configurations {
     shade
     compile.extendsFrom shade
 }
 
 dependencies {
+    compile project(':msdf')
+
     compile "com.google.guava:guava:15.0"
     compile "com.google.code.gson:gson:2.2.4"
 
@@ -32,6 +36,7 @@ task releaseJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
     group = 'build'
     description = 'Builds the dev or prod jar of the core, with the media libraries and the FFmpeg natives embedded.'
     from sourceSets.main.output
+    from project(':msdf').sourceSets.main.output
     configurations = [project.configurations.shade]
     classifier = project.hasProperty('dev') ? 'dev' : 'prod'
     rootProject.shadeLibraries(it)

@@ -10,7 +10,7 @@ JOID renders text through MSDF (Multi-channel Signed Distance Field) atlases —
 static CompletableFuture<MsdfFont> load(Object... faces)
 ```
 
-Each handle names one `font.msdf` file, produced by the generator described in [MSDF Atlas](msdf-atlas.md). It carries the atlas, the glyph metrics, the kerning table, and the weight and style of the face. Anything an [asset locator](../resources/assets.md) recognises works — an `InputStream`, a `File`, a URL, or a handle of your own.
+Each handle names one face: a `font.msdf` file, produced by the generator described in [MSDF Atlas](msdf-atlas.md), or the font file itself — see [Font files](#font-files). A `font.msdf` carries the atlas, the glyph metrics, the kerning table, and the weight and style of the face. Anything an [asset locator](../resources/assets.md) recognises works — an `InputStream`, a `File`, a URL, or a handle of your own.
 
 Minimal load:
 
@@ -32,9 +32,28 @@ MsdfFontLoader.load(
 
 One font, one registration: every `TextInfo` built on it chooses its weight. Two faces with the same weight and style, an empty list or an unreadable file complete the future exceptionally with a message naming the problem.
 
+### Font files
+
+A `.ttf`, `.otf` or `.ttc` handle loads like a `font.msdf`: the loader recognises it by its header, generates its atlas with the defaults of the generator and caches it.
+
+```java
+MsdfFontLoader.load(new File("fonts/Inter-Regular.ttf"), new File("fonts/Inter-Bold.ttf"))
+    .thenAccept(font -> this.inter = font);
+```
+
+The first load of a font takes a few seconds on the loader pool. `MsdfFontCache` then keeps the atlas under the SHA-256 of the font file and of the JOID version: the next launches read it like any `font.msdf`, every JOID application of the machine shares it, and an update of JOID generates it again.
+
+| System | Cache |
+|---|---|
+| Windows | `%LOCALAPPDATA%\joid\msdf` |
+| macOS | `~/Library/Caches/joid/msdf` |
+| Linux | `$XDG_CACHE_HOME/joid/msdf`, or `~/.cache/joid/msdf` |
+
+`MsdfFontCache.directory(File)` moves the cache, before the first load. Ship `font.msdf` files instead when the first launch must be instant, or when the atlas needs another charset, range or size.
+
 ### Sources
 
-A handle is turned into an `MsdfBinarySource`. Build the source yourself when a face needs to be presented differently from what its file declares — a font whose metadata lies, or a family assembled from unrelated files:
+A handle is turned into an `MsdfBinarySource`, or an `MsdfOpenTypeSource` for a font file. Build the source yourself when a face needs to be presented differently from what its file declares — a font whose metadata lies, or a family assembled from unrelated files:
 
 ```java
 MsdfFontLoader.load(
