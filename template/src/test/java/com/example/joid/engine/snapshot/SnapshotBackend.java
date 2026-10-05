@@ -1,4 +1,4 @@
-package com.example.joid.engine;
+package com.example.joid.engine.snapshot;
 
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
 import be.zeldown.joid.test.snapshot.SnapshotImage;

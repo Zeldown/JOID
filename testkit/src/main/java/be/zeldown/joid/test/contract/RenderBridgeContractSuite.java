@@ -20,7 +20,7 @@ import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
 import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.bridge.render.vertex.VertexBuffer;
-import be.zeldown.joid.test.CoreShaders;
+import be.zeldown.joid.test.shader.CoreShaders;
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
 import be.zeldown.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;

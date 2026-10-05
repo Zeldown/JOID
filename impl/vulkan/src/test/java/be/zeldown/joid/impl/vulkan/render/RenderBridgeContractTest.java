@@ -1,4 +1,4 @@
-package be.zeldown.joid.impl.vulkan;
+package be.zeldown.joid.impl.vulkan.render;
 
 import be.zeldown.joid.impl.vulkan.snapshot.SnapshotBackend;
 import be.zeldown.joid.test.contract.RenderBridgeContractSuite;

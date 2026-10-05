@@ -1,6 +1,5 @@
-package be.zeldown.joid.impl.lwjgl3;
+package be.zeldown.joid.impl.lwjgl2.snapshot;
 
-import be.zeldown.joid.impl.lwjgl3.snapshot.SnapshotBackend;
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
 import be.zeldown.joid.test.snapshot.SnapshotSuite;
 import lombok.NonNull;

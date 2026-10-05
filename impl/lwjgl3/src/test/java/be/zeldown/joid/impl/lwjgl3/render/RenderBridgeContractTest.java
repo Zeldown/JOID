@@ -1,6 +1,6 @@
-package be.zeldown.joid.impl.lwjgl2;
+package be.zeldown.joid.impl.lwjgl3.render;
 
-import be.zeldown.joid.impl.lwjgl2.snapshot.SnapshotBackend;
+import be.zeldown.joid.impl.lwjgl3.snapshot.SnapshotBackend;
 import be.zeldown.joid.test.contract.RenderBridgeContractSuite;
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
 import lombok.NonNull;

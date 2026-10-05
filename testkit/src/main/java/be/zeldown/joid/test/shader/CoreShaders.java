@@ -1,4 +1,4 @@
-package be.zeldown.joid.test;
+package be.zeldown.joid.test.shader;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

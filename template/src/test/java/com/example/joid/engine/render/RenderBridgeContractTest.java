@@ -1,14 +1,14 @@
-package be.zeldown.joid.impl.lwjgl3;
+package com.example.joid.engine.render;
 
-import be.zeldown.joid.impl.lwjgl3.snapshot.SnapshotBackend;
 import be.zeldown.joid.test.contract.RenderBridgeContractSuite;
 import be.zeldown.joid.test.snapshot.ISnapshotBackend;
-import lombok.NonNull;
+
+import com.example.joid.engine.snapshot.SnapshotBackend;
 
 public class RenderBridgeContractTest extends RenderBridgeContractSuite {
 
 	@Override
-	protected @NonNull ISnapshotBackend createBackend() {
+	protected ISnapshotBackend createBackend() {
 		return new SnapshotBackend();
 	}
 

@@ -1,4 +1,4 @@
-package be.zeldown.joid.test;
+package be.zeldown.joid.test.shader;
 
 import org.junit.Assert;
 import org.junit.Test;

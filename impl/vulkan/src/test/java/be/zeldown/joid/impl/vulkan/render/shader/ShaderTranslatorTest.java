@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderStage;
-import be.zeldown.joid.test.CoreShaders;
+import be.zeldown.joid.test.shader.CoreShaders;
 
 public class ShaderTranslatorTest {
 
