@@ -25,7 +25,6 @@ public final class DrawText {
 		DrawText.instance = this;
 	}
 
-	/* [ Raw Section ] */
 	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {
 		return this.drawText(x, y, Text.create(text, info).align(horizontalAlign, verticalAlign));
 	}
@@ -38,7 +37,6 @@ public final class DrawText {
 		return this.getLines(width, Text.create(text, info)).stream().map(Text::getText).collect(Collectors.toList());
 	}
 
-	/* [ Text Section ] */
 	public FontBounds drawText(double x, double y, final @NonNull Text text) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();

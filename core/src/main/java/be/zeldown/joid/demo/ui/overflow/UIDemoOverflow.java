@@ -20,7 +20,6 @@ public class UIDemoOverflow extends UIDemo {
 	public void init() {
 		final ContainerNode container = ContainerNode.create(0D, 0D, 1920D, 1080D);
 
-		/* append children */
 		container.body(() -> {
 			RectNode.create(
 					1920D / 4D,

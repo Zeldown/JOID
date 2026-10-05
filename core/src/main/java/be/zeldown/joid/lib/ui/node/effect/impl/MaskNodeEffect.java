@@ -90,7 +90,6 @@ public class MaskNodeEffect<T extends Node> extends NodeEffect<T> {
 		return effect;
 	}
 
-	/* [ Internal Section ] */
 	@Override
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
 		if (this.resource != null) {
@@ -105,7 +104,6 @@ public class MaskNodeEffect<T extends Node> extends NodeEffect<T> {
 		node.getUi().stopMask();
 	}
 
-	/* [ Setter Section ] */
 	public <E extends MaskNodeEffect<T>> @NonNull E x(final double x) {
 		this.xSupplier = () -> x;
 		return (E) this;

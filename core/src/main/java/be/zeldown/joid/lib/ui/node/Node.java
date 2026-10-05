@@ -245,7 +245,6 @@ public abstract class Node implements INode {
 		this.scrollSpeed = 1D;
 	}
 
-	/* [ Bridge Section ] */
 	public final void load(final @NonNull UI ui) {
 		this.executeCallback(Node.CALLBACK_INIT, InternalContext.create(), () -> {
 			this.ui = ui;
@@ -731,7 +730,6 @@ public abstract class Node implements INode {
 		}
 	}
 
-	/* [ Utility Section ] */
 	public final void reload() {
 		this.executeCallback(Node.CALLBACK_RELOAD, InternalContext.create(), () -> {
 			this.children.forEach(Node::reload);
@@ -957,7 +955,6 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	/* [ Getter Section ] */
 	public final boolean hasUi() {
 		return this.ui != null;
 	}
@@ -1260,12 +1257,10 @@ public abstract class Node implements INode {
 		return fields;
 	}
 
-	/* [ Hook Section ] */
 	public final <T extends UIStore> T useStore(final @NonNull Class<T> clazz) {
 		return this.getUi().useStore(clazz);
 	}
 
-	/* [ Setter Section ] */
 	public final <T extends Node> @NonNull T layer(final @NonNull NodeLayer layer) {
 		this.layerList.add(layer);
 		return (T) this;
@@ -1598,7 +1593,6 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends Node> @NonNull T onClick(final @NonNull NodeMousePressedCallback<T> callback) {
 		return this.registerCallback(Node.CALLBACK_CLICK, callback);
 	}
@@ -1699,13 +1693,11 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_HOVER_END, callback);
 	}
 
-	/* [ Abstract Section ] */
 	@Override
 	public int getIndex() {
 		return this.zindex;
 	}
 
-	/* [ Java Section ] */
 	public @NonNull JsonObject toJson() {
 		final JsonObject json = new JsonObject();
 		json.addProperty("index", this.getIndex());

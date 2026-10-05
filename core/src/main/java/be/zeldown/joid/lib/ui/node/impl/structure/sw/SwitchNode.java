@@ -74,7 +74,6 @@ public abstract class SwitchNode extends Node {
 		return this.stateList.get(this.stateIndex.getOrDefault());
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends SwitchNode> @NonNull T onChange(final @NonNull NodeSwitchChangeCallback<T> callback) {
 		super.registerCallback(SwitchNode.CALLBACK_CHANGE, callback);
 		return (T) this;

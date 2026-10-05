@@ -44,7 +44,6 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fill, this.mode);
 	}
 
-	/* [ Setter Section ] */
 	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Color color) {
 		this.colorSupplier = () -> color;
 		return (E) this;

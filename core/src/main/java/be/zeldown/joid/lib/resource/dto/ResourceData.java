@@ -31,7 +31,6 @@ public final class ResourceData {
 	private int width;
 	private int height;
 
-	/* [ Constructor ] */
 	public ResourceData(final @NonNull String uniqueId, final IResourceDecoder decoder) {
 		this.uniqueId = uniqueId;
 		this.decoder  = decoder;
@@ -40,7 +39,6 @@ public final class ResourceData {
 		}
 	}
 
-	/* [ Query Section ] */
 	public final @NonNull ResourceData uniqueId(final @NonNull String uniqueId) {
 		this.uniqueId = uniqueId;
 		return this;
@@ -91,7 +89,6 @@ public final class ResourceData {
 		return this;
 	}
 
-	/* [ Internal Section ] */
 	public final void dispatch(final @NonNull Runnable task, final boolean async) {
 		if (async) {
 			final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
@@ -176,7 +173,6 @@ public final class ResourceData {
 		}
 	}
 
-	/* [ Getter Section ] */
 	public final <T extends IResourceDecoder> T getDecoder(final @NonNull Class<T> clazz) {
 		if (this.decoder == null || !clazz.isAssignableFrom(this.decoder.getClass())) {
 			return null;
@@ -184,7 +180,6 @@ public final class ResourceData {
 		return clazz.cast(this.decoder);
 	}
 
-	/* [ Java Section ] */
 	@Override
 	protected void finalize() throws Throwable {
 		this.clear();

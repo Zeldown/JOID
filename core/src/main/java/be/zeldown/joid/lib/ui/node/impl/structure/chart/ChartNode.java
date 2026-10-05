@@ -28,7 +28,6 @@ public abstract class ChartNode extends Node {
 		super.draw(mouseX, mouseY);
 	}
 
-	/* [ ChartData ] */
 	public final boolean isLoaded() {
 		return this.isMounted() && this.xAxis != null && this.yAxis != null && !this.getDataMap().isEmpty() && !this.getDataMap().values().stream().anyMatch(ChartData::isEmpty);
 	}
@@ -77,7 +76,6 @@ public abstract class ChartNode extends Node {
 		return min == max ? max == 0 ? 1 : max * 2 : max;
 	}
 
-	/* [ ChartAxis ] */
 	public final <T extends ChartNode> @NonNull T axis(final @NonNull XChartAxis x, final @NonNull YChartAxis y) {
 		this.xAxis = x;
 		this.yAxis = y;

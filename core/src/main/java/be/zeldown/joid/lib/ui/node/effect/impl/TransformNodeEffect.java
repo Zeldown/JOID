@@ -42,7 +42,6 @@ public class TransformNodeEffect<T extends Node> extends NodeEffect<T> {
 		return new TransformNodeEffect<>(Transformation.create(translate));
 	}
 
-	/* [ Internal Section ] */
 	@Override
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
 		BridgeHandler.RENDER.get().pushMatrix();
@@ -56,7 +55,6 @@ public class TransformNodeEffect<T extends Node> extends NodeEffect<T> {
 		BridgeHandler.RENDER.get().popMatrix();
 	}
 
-	/* [ Setter Section ] */
 	public <E extends TransformNodeEffect<T>> @NonNull E transformation(final @NonNull Transformation transformation) {
 		this.transformationSupplier = () -> transformation;
 		return (E) this;

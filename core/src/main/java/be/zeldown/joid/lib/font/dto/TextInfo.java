@@ -38,7 +38,6 @@ public final class TextInfo {
 		return new TextInfo(font, fontSize, color);
 	}
 
-	/* [ Getter Section ] */
 	public final @NonNull FontBounds getBounds(final @NonNull String text) {
 		return new FontBounds(this.getWidth(text), this.getHeight(text));
 	}
@@ -79,7 +78,6 @@ public final class TextInfo {
 		return this.getHeight() + value;
 	}
 
-	/* [ Builder Section ] */
 	public final @NonNull TextInfo font(final IFont font) {
 		this.font = font;
 		return this;

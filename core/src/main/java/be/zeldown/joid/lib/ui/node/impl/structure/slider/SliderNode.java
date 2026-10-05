@@ -119,7 +119,6 @@ public abstract class SliderNode<O> extends Node {
 		return (T) this;
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull NodeSliderChangeCallback<T, O> callback) {
 		super.registerCallback(SliderNode.CALLBACK_CHANGE, callback);
 		return (T) this;

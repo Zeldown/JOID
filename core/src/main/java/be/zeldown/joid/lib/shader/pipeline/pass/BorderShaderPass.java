@@ -55,7 +55,6 @@ public class BorderShaderPass implements ShaderPass {
 		return this.borderWidth + 2F;
 	}
 
-	/* [ Internal Section ] */
 	private void bindInternal(final Node node) {
 		if (!BorderShader.inst().isAvailable()) {
 			return;

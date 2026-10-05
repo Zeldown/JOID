@@ -14,7 +14,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public final class UIDataObject implements UIData {
 
-	/* [ Default Section ] */
 	private boolean active          = true;
 	private boolean visible         = true;
 	private boolean pause           = true;
@@ -27,7 +26,6 @@ public final class UIDataObject implements UIData {
 	private Align   anchorX         = Align.CENTER;
 	private Align   anchorY         = Align.CENTER;
 
-	/* [ Cache Section ] */
 	private Color backgroundColorCache = Color.decode(this.backgroundColor);
 
 	public UIDataObject(final @NonNull UIData data) {
@@ -60,7 +58,6 @@ public final class UIDataObject implements UIData {
 		return UIDataObject.get(clazz).orElse(new UIDataObject());
 	}
 
-	/* [ Annotation Section ] */
 	@Override
 	public Class<? extends Annotation> annotationType() {
 		return UIData.class;
@@ -147,7 +144,6 @@ public final class UIDataObject implements UIData {
 		}
 	}
 
-	/* [ Setter Section ] */
 	public final @NonNull UIDataObject setActive(final boolean active) {
 		this.active = active;
 		return this;
@@ -204,7 +200,6 @@ public final class UIDataObject implements UIData {
 		return this;
 	}
 
-	/* [ Getter Section ] */
 	public final @NonNull Color getBackgroundColor() {
 		return this.backgroundColorCache;
 	}

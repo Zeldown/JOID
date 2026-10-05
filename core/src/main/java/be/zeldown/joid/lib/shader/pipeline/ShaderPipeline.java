@@ -122,7 +122,6 @@ public final class ShaderPipeline {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 
-		/* [ Pass 0 : Base ] */
 		render.pushState();
 		fboA.bind();
 		render.viewport(0, 0, pixelW, pixelH);
@@ -141,7 +140,6 @@ public final class ShaderPipeline {
 		render.popProjection();
 		render.popState();
 
-		/* [ Post-Processing Passes ] */
 		FrameBuffer src = fboA;
 		FrameBuffer dst = fboB;
 
@@ -169,7 +167,6 @@ public final class ShaderPipeline {
 			dst = temp;
 		}
 
-		/* [ Final Pass ] */
 		passes.get(passes.size() - 1).bindForTexture(node);
 		ShaderPipeline.drawTexturedQuad(src, expX, expY, expW, expH);
 		passes.get(passes.size() - 1).unbind();

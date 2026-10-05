@@ -65,7 +65,6 @@ public final class JOID {
 		return compatible;
 	}
 
-	/* [ Setter Section ] */
 	public JOID setConfigDir(final @NonNull File configDir) {
 		this.configDir = configDir;
 		return this;
@@ -81,7 +80,6 @@ public final class JOID {
 		return this;
 	}
 
-	/* [ UI Section ] */
 	public static boolean isOpen(final @NonNull Class<? extends UI> uiClass) {
 		return JOID.getUI(uiClass) != null;
 	}
@@ -147,7 +145,6 @@ public final class JOID {
 		bridge.close(ui);
 	}
 
-	/* [ Singleton Section ] */
 	public static @NonNull JOID inst() {
 		if (JOID.instance == null) {
 			JOID.instance = new JOID();

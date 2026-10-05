@@ -13,7 +13,6 @@ public interface IndexedList<E extends IndexedElement> extends Iterable<E> {
 
 	public @NonNull IndexedList<E> copy();
 
-	/* [ Getter Methods ] */
 	public int size();
 	public boolean isEmpty();
 	public boolean contains(final E element);

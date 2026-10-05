@@ -41,15 +41,15 @@ public class Rotation {
 	}
 
 	public static @NonNull Rotation create() {
-	    return new Rotation(0, 0, 0);
+		return new Rotation(0, 0, 0);
 	}
 
 	public static @NonNull Rotation create(final double yaw, final double pitch, final double roll) {
-	    return new Rotation(yaw, pitch, roll);
+		return new Rotation(yaw, pitch, roll);
 	}
 
 	public static @NonNull Rotation create(final Supplier<Double> yawSupplier, final Supplier<Double> pitchSupplier, final Supplier<Double> rollSupplier) {
-	    return new Rotation(yawSupplier, pitchSupplier, rollSupplier);
+		return new Rotation(yawSupplier, pitchSupplier, rollSupplier);
 	}
 
 }

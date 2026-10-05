@@ -282,7 +282,6 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		}
 	}
 
-	/* [ Control Section ] */
 	public @NonNull VideoResourceDecoder play() {
 		if (this.running.get()) {
 			return this;
@@ -391,7 +390,6 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this;
 	}
 
-	/* [ Static Section ] */
 	private static @NonNull File extract(final @NonNull Asset asset) throws IOException {
 		final File target = File.createTempFile("joid-video-", ".mp4");
 		target.deleteOnExit();
@@ -430,7 +428,6 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a';
 	}
 
-	/* [ Getter Section ] */
 	public boolean isPaused() {
 		return this.paused.get();
 	}
@@ -465,7 +462,6 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this.displayedFrameIndex / this.frameRate;
 	}
 
-	/* [ Internal Section ] */
 	private double getPlaybackTime() {
 		final long now = this.paused.get() ? this.pauseTime : BridgeHandler.CLOCK.get().nanoTime();
 		return (now - this.startTime) / 1000000000D;

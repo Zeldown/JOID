@@ -39,7 +39,6 @@ public class DraggableProperty {
 	public static final DraggableProperty screen() { return new DraggableProperty().area(DraggableAreaType.SCREEN); }
 	public static final DraggableProperty disabled() { return new DraggableProperty().enabled(node -> false); }
 
-	/* [ Worker Section ] */
 	public final double[] getBounds(final @NonNull Node node) {
 		double boundX = 0;
 		double boundY = 0;
@@ -143,7 +142,6 @@ public class DraggableProperty {
 		return value;
 	}
 
-	/* [ Setter Section ] */
 	public final @NonNull DraggableProperty enabled(final @NonNull Predicate<@NonNull Node> enabled) {
 		this.enabled = enabled;
 		return this;
@@ -193,7 +191,6 @@ public class DraggableProperty {
 		return this;
 	}
 
-	/* [ Getter Section ] */
 	public final boolean isEnabled(final @NonNull Node node) {
 		return this.enabled.test(node);
 	}

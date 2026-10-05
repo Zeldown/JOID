@@ -811,7 +811,6 @@ public class MultilineTextFieldNode extends Node {
 		return (T) this;
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends MultilineTextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
 		super.registerCallback(MultilineTextFieldNode.CALLBACK_CHANGE, callback);
 		return (T) this;

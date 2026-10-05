@@ -42,7 +42,6 @@ public class BlurShaderPass implements ShaderPass {
 		return this.radius;
 	}
 
-	/* [ Internal Section ] */
 	private void bindInternal(final Node node) {
 		if (!BlurShader.inst().isAvailable()) {
 			return;

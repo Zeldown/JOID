@@ -116,7 +116,6 @@ public abstract class SelectorNode extends Node {
 		return (T) this;
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends SelectorNode> @NonNull T onChange(final @NonNull NodeSelectorChangeCallback<T> callback) {
 		super.registerCallback(SelectorNode.CALLBACK_CHANGE, callback);
 		return (T) this;

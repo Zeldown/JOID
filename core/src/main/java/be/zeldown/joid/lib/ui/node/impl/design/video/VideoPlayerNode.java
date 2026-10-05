@@ -114,7 +114,6 @@ public class VideoPlayerNode extends Node {
 		}
 	}
 
-	/* [ Control Section ] */
 	public final @NonNull VideoPlayerNode play() {
 		final VideoResourceDecoder decoder = this.getDecoder();
 		if (decoder != null) {
@@ -170,7 +169,6 @@ public class VideoPlayerNode extends Node {
 		return this;
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends VideoPlayerNode> @NonNull T onPlay(final @NonNull NodeVideoPlayCallback<T> callback) {
 		super.registerCallback(VideoPlayerNode.CALLBACK_PLAY, callback);
 		return (T) this;
@@ -196,7 +194,6 @@ public class VideoPlayerNode extends Node {
 		this.release();
 	}
 
-	/* [ Setter Section ] */
 	public final <T extends VideoPlayerNode> @NonNull T resource(final @NonNull Resource resource) {
 		this.release();
 		this.resource = resource;
@@ -256,7 +253,6 @@ public class VideoPlayerNode extends Node {
 		return (T) this;
 	}
 
-	/* [ Internal Section ] */
 	private void release() {
 		if (this.resource == null) {
 			return;
@@ -268,7 +264,6 @@ public class VideoPlayerNode extends Node {
 		}
 	}
 
-	/* [ Getter Section ] */
 	public final VideoResourceDecoder getDecoder() {
 		if (this.resource == null || !(this.resource.getDecoder() instanceof VideoResourceDecoder)) {
 			return null;

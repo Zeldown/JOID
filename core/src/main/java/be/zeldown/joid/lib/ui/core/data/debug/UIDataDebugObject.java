@@ -13,7 +13,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public final class UIDataDebugObject implements UIDataDebug {
 
-	/* [ Default Section ] */
 	private boolean profiler = true;
 	private boolean hotreload = true;
 
@@ -36,7 +35,6 @@ public final class UIDataDebugObject implements UIDataDebug {
 		return UIDataDebugObject.get(clazz).orElse(new UIDataDebugObject());
 	}
 
-	/* [ Annotation Section ] */
 	@Override
 	public Class<? extends Annotation> annotationType() {
 		return UIDataPopup.class;
@@ -52,7 +50,6 @@ public final class UIDataDebugObject implements UIDataDebug {
 		return this.hotreload;
 	}
 
-	/* [ Setter Section ] */
 	public @NonNull UIDataDebugObject setProfiler(final boolean profiler) {
 		this.profiler = profiler;
 		return this;

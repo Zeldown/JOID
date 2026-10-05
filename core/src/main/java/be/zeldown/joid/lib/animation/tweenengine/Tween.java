@@ -11,10 +11,6 @@ import be.zeldown.joid.lib.animation.tweenengine.equation.Quad;
 
 public final class Tween extends BaseTween<Tween> {
 
-	// -------------------------------------------------------------------------
-	// Static -- misc
-	// -------------------------------------------------------------------------
-
 	public static final int INFINITY = -1;
 
 	private static int combinedAttrsLimit = 3;
@@ -31,10 +27,6 @@ public final class Tween extends BaseTween<Tween> {
 	public static String getVersion() {
 		return "6.3.3";
 	}
-
-	// -------------------------------------------------------------------------
-	// Static -- pool
-	// -------------------------------------------------------------------------
 
 	private static final Pool.Callback<Tween> poolCallback = new Pool.Callback<Tween>() {
 
@@ -67,10 +59,6 @@ public final class Tween extends BaseTween<Tween> {
 		Tween.pool.ensureCapacity(minCapacity);
 	}
 
-	// -------------------------------------------------------------------------
-	// Static -- tween accessors
-	// -------------------------------------------------------------------------
-
 	private static final Map<Class<?>, TweenAccessor<?>> registeredAccessors = new HashMap<>();
 
 	static {
@@ -84,10 +72,6 @@ public final class Tween extends BaseTween<Tween> {
 	public static TweenAccessor<?> getRegisteredAccessor(final Class<?> someClass) {
 		return Tween.registeredAccessors.get(someClass);
 	}
-
-	// -------------------------------------------------------------------------
-	// Static -- factories
-	// -------------------------------------------------------------------------
 
 	public static Tween to(final Object target, final int tweenType, final float duration) {
 		final Tween tween = Tween.pool.get();
@@ -127,11 +111,6 @@ public final class Tween extends BaseTween<Tween> {
 		return tween;
 	}
 
-	// -------------------------------------------------------------------------
-	// Attributes
-	// -------------------------------------------------------------------------
-
-	// Main
 	private Object target;
 	private Class<?> targetClass;
 	private TweenAccessor<Object> accessor;
@@ -139,24 +118,17 @@ public final class Tween extends BaseTween<Tween> {
 	private TweenEquation equation;
 	private TweenPath path;
 
-	// General
 	private boolean isFrom;
 	private boolean isRelative;
 	private int combinedAttrsCnt;
 	private int waypointsCnt;
 
-	// Values
 	private final float[] startValues = new float[Tween.combinedAttrsLimit];
 	private final float[] targetValues = new float[Tween.combinedAttrsLimit];
 	private final float[] waypoints = new float[Tween.waypointsLimit * Tween.combinedAttrsLimit];
 
-	// Buffers
 	private float[] accessorBuffer = new float[Tween.combinedAttrsLimit];
 	private float[] pathBuffer = new float[(2 + Tween.waypointsLimit) * Tween.combinedAttrsLimit];
-
-	// -------------------------------------------------------------------------
-	// Setup
-	// -------------------------------------------------------------------------
 
 	private Tween() {
 		this.reset();
@@ -208,10 +180,6 @@ public final class Tween extends BaseTween<Tween> {
 
 		return parentClass;
 	}
-
-	// -------------------------------------------------------------------------
-	// Public API
-	// -------------------------------------------------------------------------
 
 	public Tween ease(final TweenEquation easeEquation) {
 		this.equation = easeEquation;
@@ -336,10 +304,6 @@ public final class Tween extends BaseTween<Tween> {
 		return this;
 	}
 
-	// -------------------------------------------------------------------------
-	// Getters
-	// -------------------------------------------------------------------------
-
 	public Object getTarget() {
 		return this.target;
 	}
@@ -367,10 +331,6 @@ public final class Tween extends BaseTween<Tween> {
 	public Class<?> getTargetClass() {
 		return this.targetClass;
 	}
-
-	// -------------------------------------------------------------------------
-	// Overrides
-	// -------------------------------------------------------------------------
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -477,10 +437,6 @@ public final class Tween extends BaseTween<Tween> {
 		this.accessor.setValues(this.target, this.type, this.accessorBuffer);
 	}
 
-	// -------------------------------------------------------------------------
-	// BaseTween impl.
-	// -------------------------------------------------------------------------
-
 	@Override
 	protected void forceStartValues() {
 		if (this.target == null) {
@@ -508,10 +464,6 @@ public final class Tween extends BaseTween<Tween> {
 	protected boolean containsTarget(final Object target, final int tweenType) {
 		return this.target == target && this.type == tweenType;
 	}
-
-	// -------------------------------------------------------------------------
-	// Helpers
-	// -------------------------------------------------------------------------
 
 	private void throwCombinedAttrsLimitReached() {
 		final String msg = "You cannot combine more than " + Tween.combinedAttrsLimit + " "

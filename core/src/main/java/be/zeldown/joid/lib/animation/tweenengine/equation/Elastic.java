@@ -120,8 +120,6 @@ public abstract class Elastic extends TweenEquation {
 
 	};
 
-	// -------------------------------------------------------------------------
-
 	protected float a;
 	protected float p;
 	protected boolean setA = false;

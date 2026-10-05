@@ -229,7 +229,6 @@ public final class VideoAudioPlayer {
 		this.initialized = false;
 	}
 
-	/* [ Internal Section ] */
 	private float computeDistanceVolume() {
 		if (VideoAudioPlayer.audioListener == null) {
 			return 1F;
@@ -298,7 +297,6 @@ public final class VideoAudioPlayer {
 		return chunk;
 	}
 
-	/* [ Static Section ] */
 	public static AudioListener getAudioListener() {
 		return VideoAudioPlayer.audioListener;
 	}

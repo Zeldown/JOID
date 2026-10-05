@@ -7,13 +7,11 @@ import java.util.function.Consumer;
 @SuppressWarnings("unchecked")
 public abstract class BaseTween<T> {
 
-	// General
 	private int step;
 	private int repeatCnt;
 	private boolean isIterationStep;
 	private boolean isYoyo;
 
-	// Timings
 	protected float delay;
 	protected float duration;
 	private float repeatDelay;
@@ -25,16 +23,12 @@ public abstract class BaseTween<T> {
 	private boolean isKilled;
 	private boolean isPaused;
 
-	// Misc
 	private TweenCallback callback;
 	private int callbackTriggers;
 	private Object userData;
 
-	// Package access
 	boolean isAutoRemoveEnabled;
 	boolean isAutoStartEnabled;
-
-	// -------------------------------------------------------------------------
 
 	protected void reset() {
 		this.step = -2;
@@ -50,10 +44,6 @@ public abstract class BaseTween<T> {
 
 		this.isAutoRemoveEnabled = this.isAutoStartEnabled = true;
 	}
-
-	// -------------------------------------------------------------------------
-	// Public API
-	// -------------------------------------------------------------------------
 
 	public T build() {
 		return (T) this;
@@ -142,10 +132,6 @@ public abstract class BaseTween<T> {
 		return (T) this;
 	}
 
-	// -------------------------------------------------------------------------
-	// Getters
-	// -------------------------------------------------------------------------
-
 	public float getDelay() {
 		return this.delay;
 	}
@@ -202,10 +188,6 @@ public abstract class BaseTween<T> {
 		return this.isPaused;
 	}
 
-	// -------------------------------------------------------------------------
-	// Abstract API
-	// -------------------------------------------------------------------------
-
 	protected abstract void forceStartValues();
 
 	protected abstract void forceEndValues();
@@ -213,10 +195,6 @@ public abstract class BaseTween<T> {
 	protected abstract boolean containsTarget(Object target);
 
 	protected abstract boolean containsTarget(Object target, int tweenType);
-
-	// -------------------------------------------------------------------------
-	// Protected API
-	// -------------------------------------------------------------------------
 
 	protected void initializeOverride() {}
 
@@ -269,10 +247,6 @@ public abstract class BaseTween<T> {
 			this.kill();
 		}
 	}
-
-	// -------------------------------------------------------------------------
-	// Update engine
-	// -------------------------------------------------------------------------
 
 	public void update(final float delta) {
 		if (!this.isStarted || this.isPaused || this.isKilled) {

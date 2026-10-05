@@ -133,7 +133,6 @@ public class TextElement {
 		return (T) new TextElement(this.text, this.info, modifier);
 	}
 
-	/* [ Getter Section ] */
 	public final @NonNull String getRawText() {
 		return this.text.get().toString();
 	}

@@ -22,7 +22,6 @@ public final class Resource {
 
 	private ResourceProperties properties;
 
-	/* [ Constructor ] */
 	protected Resource(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
 		this.builder    = builder;
 		this.properties = builder.getProperties().copy();
@@ -37,7 +36,6 @@ public final class Resource {
 		return Resource.DEFAULT_BUILDER.of(input, callback);
 	}
 
-	/* [ Query Section ] */
 	public final @NonNull Resource properties(final @NonNull ResourceProperties properties) {
 		this.properties = properties;
 		return this;
@@ -98,7 +96,6 @@ public final class Resource {
 		return new Resource(this.builder, this.data);
 	}
 
-	/* [ Getter Section ] */
 	public final @NonNull String getUniqueId() {
 		return this.data.getUniqueId();
 	}
@@ -147,7 +144,6 @@ public final class Resource {
 		return this.data;
 	}
 
-	/* [ Internal Section ] */
 	public final void dispatch(final @NonNull Runnable task) {
 		this.data.dispatch(task, this.properties.isAsync());
 	}

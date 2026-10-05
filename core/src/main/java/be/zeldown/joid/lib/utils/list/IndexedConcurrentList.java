@@ -55,7 +55,6 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 		return new IndexedConcurrentList<>(this.orderedList);
 	}
 
-	/* [ Getter Methods ] */
 	@Override
 	public int size() {
 		return Math.min(this.orderedList.size(), this.reversedList.size());

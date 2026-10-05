@@ -208,7 +208,6 @@ public final class Text {
 		return new Text(this.elementList).overflow(this.overflow).align(this.horizontalAlignment, this.verticalAlignment).modifier(modifier);
 	}
 
-	/* [ Builder Section ] */
 	public final @NonNull Text align(final @NonNull Align horizontal, final @NonNull Align vertical) {
 		this.horizontalAlignment = horizontal;
 		this.verticalAlignment   = vertical;
@@ -237,7 +236,6 @@ public final class Text {
 		return this;
 	}
 
-	/* [ Getter Section ] */
 	public final @NonNull String getRawText() {
 		if (this.elementList.isEmpty()) {
 			return "";

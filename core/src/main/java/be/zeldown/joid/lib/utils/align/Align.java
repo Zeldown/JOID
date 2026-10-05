@@ -8,7 +8,6 @@ public enum Align {
 	CENTER,
 	END;
 
-	/* [ Utils Section ] */
 	public boolean is(final @NonNull Align align) {
 		return this == align;
 	}

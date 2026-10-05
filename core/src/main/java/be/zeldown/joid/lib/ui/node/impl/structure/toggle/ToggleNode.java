@@ -48,7 +48,6 @@ public abstract class ToggleNode<F, S> extends Node {
 		return (T) (this.toggle ? this.state.getToggle() : this.state.getBack());
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends ToggleNode<F, S>> @NonNull T onChange(final @NonNull NodeToggleChangeCallback<T, F, S> callback) {
 		super.registerCallback(ToggleNode.CALLBACK_CHANGE, callback);
 		return (T) this;

@@ -7,9 +7,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class TweenManager {
-	// -------------------------------------------------------------------------
-	// Static API
-	// -------------------------------------------------------------------------
 
 	public static void setAutoRemove(final BaseTween<?> object, final boolean value) {
 		object.isAutoRemoveEnabled = value;
@@ -18,10 +15,6 @@ public class TweenManager {
 	public static void setAutoStart(final BaseTween<?> object, final boolean value) {
 		object.isAutoStartEnabled = value;
 	}
-
-	// -------------------------------------------------------------------------
-	// Public API
-	// -------------------------------------------------------------------------
 
 	private final Object lock = new Object();
 	private final ArrayList<BaseTween<?>> objects = new ArrayList<>(20);
@@ -150,10 +143,6 @@ public class TweenManager {
 			return Collections.unmodifiableList(new ArrayList<>(this.objects));
 		}
 	}
-
-	// -------------------------------------------------------------------------
-	// Helpers
-	// -------------------------------------------------------------------------
 
 	private static int getTweensCount(final List<BaseTween<?>> objs) {
 		int cnt = 0;

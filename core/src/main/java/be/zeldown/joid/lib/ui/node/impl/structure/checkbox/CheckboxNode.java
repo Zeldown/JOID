@@ -38,7 +38,6 @@ public abstract class CheckboxNode extends Node {
 		return (T) this;
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends CheckboxNode> @NonNull T onChange(final @NonNull NodeCheckboxChangeCallback<T> callback) {
 		super.registerCallback(CheckboxNode.CALLBACK_CHANGE, callback);
 		return (T) this;

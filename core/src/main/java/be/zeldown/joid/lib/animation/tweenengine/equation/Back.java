@@ -55,8 +55,6 @@ public abstract class Back extends TweenEquation {
 
 	};
 
-	// -------------------------------------------------------------------------
-
 	protected float bounce = 1.70158f;
 
 	public Back s(final float s) {

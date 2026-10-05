@@ -28,7 +28,6 @@ public class CircleNodeEffect<T extends Node> extends NodeEffect<T> {
 		return new CircleShaderPass(node);
 	}
 
-	/* [ Internal Section ] */
 	@Override
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
 		if (!CircleShader.inst().isAvailable()) {

@@ -24,7 +24,6 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		super.draw(mouseX, mouseY);
 	}
 
-	/* [ RadarChartNode ] */
 	public final boolean isLoaded() {
 		return this.isMounted() && this.dataList.size() >= 3 && !this.dataList.stream().anyMatch(DATA::isEmpty);
 	}

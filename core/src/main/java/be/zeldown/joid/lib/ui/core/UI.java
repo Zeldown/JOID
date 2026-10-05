@@ -131,7 +131,6 @@ public abstract class UI implements IUI, IndexedElement {
 		this.devNode = null;
 	}
 
-	/* [ Bridge Section ] */
 	public final void load(final double finalWidth, final double finalHeight) {
 		this.load(finalWidth, finalHeight, 1D);
 	}
@@ -651,7 +650,6 @@ public abstract class UI implements IUI, IndexedElement {
 		this.getBridge().drawHover(this, lines, mouseX, mouseY);
 	}
 
-	/* [ Utility Section ] */
 	public final double getMouseX() {
 		return this.getRelativeX(this.mouseX * (this.viewportWidth / this.width));
 	}
@@ -862,7 +860,6 @@ public abstract class UI implements IUI, IndexedElement {
 		this.renderPipelineLevel = level;
 	}
 
-	/* [ Hook Section ] */
 	@SuppressWarnings("unchecked")
 	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
 		if (this.storeMap.containsKey(clazz)) {
@@ -877,24 +874,20 @@ public abstract class UI implements IUI, IndexedElement {
 		return store;
 	}
 
-	/* [ Getter Section ] */
 	public final IUIBridge getBridge() {
 		return BridgeHandler.UI.get(this);
 	}
 
-	/* [ Setter Section ] */
 	public final @NonNull UI setTransition(final Transition transition) {
 		this.transition = transition;
 		return this;
 	}
 
-	/* [ Abstract Methods ] */
 	@Override
 	public int getIndex() {
 		return 0;
 	}
 
-	/* [ Static Utils ] */
 	public static boolean isCtrlKeyDown() {
 		return Key.LEFT_CONTROL.isDown() || Key.RIGHT_CONTROL.isDown();
 	}
@@ -907,7 +900,6 @@ public abstract class UI implements IUI, IndexedElement {
 		return Key.LEFT_ALT.isDown() || Key.RIGHT_ALT.isDown();
 	}
 
-	/* [ DTO Section ] */
 	@Getter
 	private class StencilState {
 

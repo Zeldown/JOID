@@ -54,7 +54,6 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 		return new IndexedLinkedList<>(this.orderedList);
 	}
 
-	/* [ Getter Methods ] */
 	@Override
 	public int size() {
 		return Math.min(this.orderedList.size(), this.reversedList.size());

@@ -43,7 +43,6 @@ public class RectNode extends Node {
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
 	}
 
-	/* [ Getter Section ] */
 	public final @NonNull Color getColor() {
 		return this.color.get();
 	}
@@ -60,7 +59,6 @@ public class RectNode extends Node {
 		return this.hoveredBorderColor.get();
 	}
 
-	/* [ Setter Section ] */
 	public final <T extends RectNode> @NonNull T color(final @NonNull Color color) {
 		this.color(() -> color);
 		return (T) this;
@@ -135,7 +133,6 @@ public class RectNode extends Node {
 		return (T) this;
 	}
 
-	/* [ Internal Section ] */
 	private void applyBorderEffect() {
 		super.removeEffect((Class<? extends NodeEffect<?>>) (Class<?>) BorderNodeEffect.class);
 		if (this.borderStroke > 0D) {

@@ -621,7 +621,6 @@ public class TextFieldNode extends Node {
 		return (T) this;
 	}
 
-	/* [ Callback Section ] */
 	public final <T extends TextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
 		super.registerCallback(TextFieldNode.CALLBACK_CHANGE, callback);
 		return (T) this;

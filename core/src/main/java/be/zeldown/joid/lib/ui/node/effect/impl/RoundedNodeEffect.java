@@ -83,7 +83,6 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 		return new RoundedShaderPass(this, node);
 	}
 
-	/* [ Internal Section ] */
 	@Override
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
 		if (!RoundedShader.inst().isAvailable()) {
@@ -111,7 +110,6 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 		RoundedShader.inst().unbind();
 	}
 
-	/* [ Setter Section ] */
 	public <E extends RoundedNodeEffect<T>> @NonNull E radius(final float radius) {
 		this.radiusSupplier = () -> radius;
 		return (E) this;

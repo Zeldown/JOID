@@ -25,7 +25,6 @@ public class TweenAnimator {
 	private Timeline     timeline;
 	private long         lastUpdate;
 
-	/* [ Construct Section ] */
 	private TweenAnimator(final float value) {
 		this.clear();
 		this.value = value;
@@ -39,7 +38,6 @@ public class TweenAnimator {
 		return new TweenAnimator(value);
 	}
 
-	/* [ Manage Section ] */
 	public void clear() {
 		this.value      = 0F;
 		this.speed      = 1F;
@@ -48,7 +46,6 @@ public class TweenAnimator {
 		this.lastUpdate = 0L;
 	}
 
-	/* [ Timeline Section ] */
 	public @NonNull TweenAnimator sequence(final float duration, final float value) {
 		return this.sequence(duration, value, TweenEquations.LINEAR);
 	}
@@ -85,7 +82,6 @@ public class TweenAnimator {
 		return this;
 	}
 
-	/* [ Start Section ] */
 	public @NonNull TweenAnimator start() {
 		assert this.timeline != null;
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
@@ -93,7 +89,6 @@ public class TweenAnimator {
 		return this;
 	}
 
-	/* [ Update Section ] */
 	public @NonNull TweenAnimator update() {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.update(now - this.lastUpdate);

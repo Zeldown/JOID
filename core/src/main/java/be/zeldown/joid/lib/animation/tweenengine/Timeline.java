@@ -8,10 +8,6 @@ import java.util.List;
 
 public final class Timeline extends BaseTween<Timeline> {
 
-	// -------------------------------------------------------------------------
-	// Static -- pool
-	// -------------------------------------------------------------------------
-
 	private static final Pool.Callback<Timeline> poolCallback = new Pool.Callback<Timeline>() {
 
 		@Override
@@ -43,10 +39,6 @@ public final class Timeline extends BaseTween<Timeline> {
 		Timeline.pool.ensureCapacity(minCapacity);
 	}
 
-	// -------------------------------------------------------------------------
-	// Static -- factories
-	// -------------------------------------------------------------------------
-
 	public static Timeline createSequence() {
 		final Timeline tl = Timeline.pool.get();
 		tl.setup(Modes.SEQUENCE);
@@ -59,10 +51,6 @@ public final class Timeline extends BaseTween<Timeline> {
 		return tl;
 	}
 
-	// -------------------------------------------------------------------------
-	// Attributes
-	// -------------------------------------------------------------------------
-
 	private enum Modes {
 		SEQUENCE,
 		PARALLEL
@@ -73,10 +61,6 @@ public final class Timeline extends BaseTween<Timeline> {
 	private Timeline parent;
 	private Modes mode;
 	private boolean isBuilt;
-
-	// -------------------------------------------------------------------------
-	// Setup
-	// -------------------------------------------------------------------------
 
 	private Timeline() {
 		this.reset();
@@ -96,10 +80,6 @@ public final class Timeline extends BaseTween<Timeline> {
 		this.mode = mode;
 		this.current = this;
 	}
-
-	// -------------------------------------------------------------------------
-	// Public API
-	// -------------------------------------------------------------------------
 
 	public Timeline push(final Tween tween) {
 		if (this.isBuilt) {
@@ -179,10 +159,6 @@ public final class Timeline extends BaseTween<Timeline> {
 			return this.current.children;
 		}
 	}
-
-	// -------------------------------------------------------------------------
-	// Overrides
-	// -------------------------------------------------------------------------
 
 	@Override
 	public Timeline build() {
@@ -297,10 +273,6 @@ public final class Timeline extends BaseTween<Timeline> {
 			}
 		}
 	}
-
-	// -------------------------------------------------------------------------
-	// BaseTween impl.
-	// -------------------------------------------------------------------------
 
 	@Override
 	protected void forceStartValues() {

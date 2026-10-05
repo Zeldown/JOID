@@ -40,7 +40,7 @@ public class MsdfFontProvider implements IFontProvider {
 
 	private static final float BASELINE_LIFT = 0.025F;
 
-	private static final char CHAR_OPERATOR         = '\u00a7'; /* § */
+	private static final char CHAR_OPERATOR         = '\u00a7';
 	private static final String CHAR_OPERATOR_ATLAS = "0123456789abcdefklmnopr";
 	private static final String AZ_ATLAS            = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -304,7 +304,6 @@ public class MsdfFontProvider implements IFontProvider {
 		color.update();
 	}
 
-	/* [ Provider Section ] */
 	@Override
 	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
 		final FontBounds bounds = this.getBounds(text, info);
@@ -395,7 +394,6 @@ public class MsdfFontProvider implements IFontProvider {
 		return new FontBounds(totalWidth, this.getLineHeight(info));
 	}
 
-	/* [ Instance Section ] */
 	public static @NonNull MsdfFontProvider inst() {
 		return MsdfFontProvider.INSTANCE;
 	}

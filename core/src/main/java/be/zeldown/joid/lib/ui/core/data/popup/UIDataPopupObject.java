@@ -12,7 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public final class UIDataPopupObject implements UIDataPopup {
 
-	/* [ Default Section ] */
 	private boolean         active     = false;
 	private PopupTransition transition = PopupTransition.IN_OUT;
 
@@ -35,7 +34,6 @@ public final class UIDataPopupObject implements UIDataPopup {
 		return UIDataPopupObject.get(clazz).orElse(new UIDataPopupObject());
 	}
 
-	/* [ Annotation Section ] */
 	@Override
 	public Class<? extends Annotation> annotationType() {
 		return UIDataPopup.class;
@@ -51,7 +49,6 @@ public final class UIDataPopupObject implements UIDataPopup {
 		return this.transition;
 	}
 
-	/* [ Setter Section ] */
 	public @NonNull UIDataPopupObject setActive(final boolean active) {
 		this.active = active;
 		return this;

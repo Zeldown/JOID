@@ -65,13 +65,11 @@ public abstract class ScrollbarNode extends Node {
 		this.dragging = false;
 	}
 
-	/* [ Setter Section ] */
 	public final <T extends ScrollbarNode> @NonNull T scrollNode(final @NonNull Node scrollNode) {
 		this.scrollNode = scrollNode;
 		return (T) this;
 	}
 
-	/* [ Getter Section ] */
 	public final double getScrollHeight() {
 		return this.scroll.getHeight() - super.getHeight();
 	}
@@ -80,7 +78,5 @@ public abstract class ScrollbarNode extends Node {
 		return this.scroll.getWidth() - super.getWidth();
 	}
 
-	/* [ Abstract Section ] */
 	public abstract void drawScrollbar(final double mouseX, final double mouseY);
-
 }

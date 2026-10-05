@@ -39,7 +39,6 @@ public final class ResourceBuilder {
 		return new ResourceBuilder();
 	}
 
-	/* [ Query Section ] */
 	public final @NonNull ResourceBuilder cache(final Cache<String, ResourceData> cache) {
 		this.cache = cache;
 		return this;
@@ -87,7 +86,6 @@ public final class ResourceBuilder {
 		return copy;
 	}
 
-	/* [ Resource Section ] */
 	public @NonNull Resource of(final @NonNull Object input) {
 		return this.of(input, null);
 	}
@@ -148,7 +146,6 @@ public final class ResourceBuilder {
 		this.cache.invalidateAll();
 	}
 
-	/* [ Static Section ] */
 	public static @NonNull List<@NonNull ResourceBuilder> getBuilders() {
 		return ResourceBuilder.BUILDER_LIST;
 	}
