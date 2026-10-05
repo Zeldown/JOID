@@ -2,8 +2,11 @@ package be.zeldown.joid.test.snapshot;
 
 import java.io.File;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SnapshotSettings {
 
 	public static boolean isUpdate() {

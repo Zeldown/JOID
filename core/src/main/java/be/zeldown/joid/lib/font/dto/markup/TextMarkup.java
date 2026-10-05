@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import be.zeldown.joid.lib.font.dto.TextStyle;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TextMarkup {
 
 	private static final List<ITextMarkup> MARKUPS = new CopyOnWriteArrayList<>();

@@ -16,8 +16,11 @@ import com.google.gson.JsonObject;
 
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.ui.core.UI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIPropertyHook {
 
 	private static final Gson GSON = new GsonBuilder().create();

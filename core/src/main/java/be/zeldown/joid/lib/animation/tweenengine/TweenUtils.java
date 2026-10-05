@@ -13,8 +13,11 @@ import be.zeldown.joid.lib.animation.tweenengine.equation.Quad;
 import be.zeldown.joid.lib.animation.tweenengine.equation.Quart;
 import be.zeldown.joid.lib.animation.tweenengine.equation.Quint;
 import be.zeldown.joid.lib.animation.tweenengine.equation.Sine;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TweenUtils {
 
 	private static TweenEquation[] easings;

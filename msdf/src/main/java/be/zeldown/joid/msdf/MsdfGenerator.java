@@ -19,7 +19,10 @@ import be.zeldown.joid.msdf.font.Kerning;
 import be.zeldown.joid.msdf.geometry.Coloring;
 import be.zeldown.joid.msdf.geometry.Msdf;
 import be.zeldown.joid.msdf.geometry.Shape;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfGenerator {
 
 	private static final double ANGLE = 3D;

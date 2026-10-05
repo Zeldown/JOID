@@ -8,7 +8,10 @@ import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.callback.NodeCallback;
 import be.zeldown.joid.lib.ui.node.callback.NodeCallbackMethod;
 import be.zeldown.joid.lib.utils.context.InternalContext;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NodeCallbackRegistry {
 
 	private static final Map<Integer, Class<? extends NodeCallback>> REGISTRY = new HashMap<>();

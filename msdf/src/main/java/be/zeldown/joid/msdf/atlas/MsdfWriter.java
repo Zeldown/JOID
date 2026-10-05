@@ -13,7 +13,10 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 import be.zeldown.joid.msdf.font.Kerning;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfWriter {
 
 	private static final int BYTES   = 3;

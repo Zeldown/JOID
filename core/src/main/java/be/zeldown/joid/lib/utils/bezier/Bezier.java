@@ -2,8 +2,11 @@ package be.zeldown.joid.lib.utils.bezier;
 
 import javax.vecmath.Vector2d;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Bezier {
 
 	public static @NonNull Vector2d quadratic(final double t, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {

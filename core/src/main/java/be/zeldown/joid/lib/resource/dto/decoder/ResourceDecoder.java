@@ -6,8 +6,11 @@ import java.io.File;
 import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.ImageResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResourceDecoder {
 
 	private static final int HEADER = 12;

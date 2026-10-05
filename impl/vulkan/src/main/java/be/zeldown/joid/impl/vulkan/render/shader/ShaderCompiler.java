@@ -5,8 +5,11 @@ import java.nio.ByteOrder;
 
 import org.lwjgl.util.shaderc.Shaderc;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderCompiler {
 
 	private static final String ALPHA_TEST_MAIN = "\nlayout(std140, binding = 15) uniform JoidAlphaTest {\n\tint joid_AlphaTest;\n\tfloat joid_AlphaThreshold;\n};\n\nvoid main() {\n\tjoid_main();\n\tif (joid_AlphaTest != 0 && fragColor.a <= joid_AlphaThreshold) {\n\t\tdiscard;\n\t}\n}\n";

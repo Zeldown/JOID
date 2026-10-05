@@ -6,7 +6,10 @@ import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.internal.font.InternalFont;
 import be.zeldown.joid.lib.font.impl.msdf.MsdfFont;
 import be.zeldown.joid.lib.font.impl.msdf.MsdfFontLoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DemoFont {
 
 	public static MsdfFont BATUPHAT;

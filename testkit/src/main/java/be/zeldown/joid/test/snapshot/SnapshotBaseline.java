@@ -3,6 +3,10 @@ package be.zeldown.joid.test.snapshot;
 import java.io.File;
 import java.util.Map;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SnapshotBaseline {
 
 	public static void main(final String[] arguments) throws ReflectiveOperationException {

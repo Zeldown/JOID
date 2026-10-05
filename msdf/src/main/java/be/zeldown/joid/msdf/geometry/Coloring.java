@@ -3,6 +3,10 @@ package be.zeldown.joid.msdf.geometry;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Coloring {
 
 	private static final int[] COLORS = {3, 5, 6};

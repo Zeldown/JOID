@@ -4,8 +4,11 @@ import be.zeldown.joid.lib.bridge.render.shader.source.ShaderBuiltin;
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderStage;
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderVariable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderTranslator {
 
 	public static @NonNull String translate(final @NonNull ShaderSource source) {

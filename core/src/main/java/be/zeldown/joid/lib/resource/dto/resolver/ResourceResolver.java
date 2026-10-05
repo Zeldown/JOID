@@ -8,8 +8,11 @@ import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.resource.ResourceBuilder;
 import be.zeldown.joid.lib.resource.dto.resolver.impl.BufferedImageResourceResolver;
 import be.zeldown.joid.lib.resource.dto.resolver.impl.TextureResourceResolver;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResourceResolver {
 
 	private static final List<IResourceResolver> RESOLVERS = new LinkedList<>();

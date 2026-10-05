@@ -4,7 +4,10 @@ import be.zeldown.joid.lib.draw.model.DrawModel;
 import be.zeldown.joid.lib.draw.resource.DrawResource;
 import be.zeldown.joid.lib.draw.shape.DrawShape;
 import be.zeldown.joid.lib.draw.text.DrawText;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DrawUtils {
 
 	public static final DrawText     TEXT;

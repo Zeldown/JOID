@@ -11,6 +11,8 @@ public final class Backend {
 
 	public static final String JOID_VERSION = "@JOID_VERSION@";
 
+	private Backend() {}
+
 	public static void register() {
 		JOID.checkVersion(Backend.JOID_VERSION);
 		BridgeHandler.AUDIO.register(new AudioBridge());

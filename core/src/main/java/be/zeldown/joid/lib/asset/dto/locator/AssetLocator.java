@@ -7,8 +7,11 @@ import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.asset.dto.locator.impl.FileAssetLocator;
 import be.zeldown.joid.lib.asset.dto.locator.impl.StreamAssetLocator;
 import be.zeldown.joid.lib.asset.dto.locator.impl.UrlAssetLocator;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AssetLocator {
 
 	private static final List<IAssetLocator> LOCATORS = new LinkedList<>();

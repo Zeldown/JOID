@@ -5,7 +5,10 @@ import java.io.InputStream;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.font.impl.msdf.MsdfFont;
 import be.zeldown.joid.lib.font.impl.msdf.MsdfFontLoader;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class InternalFont {
 
 	public static MsdfFont MONTSERRAT;

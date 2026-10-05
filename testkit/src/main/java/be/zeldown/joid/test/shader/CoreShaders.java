@@ -16,8 +16,11 @@ import java.util.stream.Stream;
 
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderStage;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CoreShaders {
 
 	private static final String DIRECTORY = "/assets/shaders";

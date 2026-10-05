@@ -14,9 +14,12 @@ import com.google.gson.JsonObject;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.ui.core.hook.store.context.StoreContext;
 import be.zeldown.joid.lib.ui.core.hook.store.data.UIStoreData;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIStoreHook {
 
 	private static final Gson GSON = new GsonBuilder().create();

@@ -3,6 +3,10 @@ package be.zeldown.joid.msdf.geometry;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Msdf {
 
 	public static int[] generate(final Shape shape, final int width, final int height, final double size, final double left, final double top, final double range) {

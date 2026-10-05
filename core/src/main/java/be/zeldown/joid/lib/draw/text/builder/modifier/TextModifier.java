@@ -7,7 +7,10 @@ import be.zeldown.joid.lib.draw.text.builder.modifier.impl.TextSnakeCaseModifier
 import be.zeldown.joid.lib.draw.text.builder.modifier.impl.TextUpperCamelCaseModifier;
 import be.zeldown.joid.lib.draw.text.builder.modifier.impl.TextUpperCaseModifier;
 import be.zeldown.joid.lib.draw.text.builder.modifier.impl.TextWordCapitalizeModifier;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TextModifier {
 
 	public static final ITextModifier LOWER_CASE       = new TextLowerCaseModifier();

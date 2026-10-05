@@ -18,14 +18,15 @@ import be.zeldown.joid.lib.render.framebuffer.FrameBuffer;
 import be.zeldown.joid.lib.render.tessellator.Tessellator;
 import be.zeldown.joid.lib.ui.core.UI;
 import be.zeldown.joid.lib.ui.node.Node;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderPipeline {
 
 	private static final Map<Long, FrameBuffer[]> FBO_POOL = new HashMap<>();
 	private static int pipelineDepth = 0;
-
-	private ShaderPipeline() {}
 
 	public static void cleanup() {
 		for (final FrameBuffer[] fbos : ShaderPipeline.FBO_POOL.values()) {

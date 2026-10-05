@@ -6,7 +6,10 @@ import be.zeldown.joid.lib.bridge.clock.SystemClockBridge;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.ui.UIBridgeRegistry;
 import be.zeldown.joid.lib.bridge.window.IWindowBridge;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BridgeHandler {
 
 	public static final UIBridgeRegistry              UI;

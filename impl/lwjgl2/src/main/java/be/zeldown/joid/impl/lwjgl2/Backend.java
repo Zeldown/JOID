@@ -4,7 +4,10 @@ import be.zeldown.joid.impl.lwjgl2.audio.AudioBridge;
 import be.zeldown.joid.impl.lwjgl2.render.RenderBridge;
 import be.zeldown.joid.impl.lwjgl2.window.WindowBridge;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Backend {
 
 	public static void register() {

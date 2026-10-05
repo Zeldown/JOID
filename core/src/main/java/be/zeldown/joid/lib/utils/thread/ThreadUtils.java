@@ -3,8 +3,11 @@ package be.zeldown.joid.lib.utils.thread;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ThreadUtils {
 
 	public static @NonNull ThreadFactory daemonFactory(final @NonNull String name) {

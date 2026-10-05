@@ -13,7 +13,10 @@ import java.util.List;
 import be.zeldown.joid.msdf.geometry.Edge;
 import be.zeldown.joid.msdf.geometry.Shape;
 import be.zeldown.joid.msdf.geometry.Vector2;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Glyphs {
 
 	public static final double UNITS = 1000D;

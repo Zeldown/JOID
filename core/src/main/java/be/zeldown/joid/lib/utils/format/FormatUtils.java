@@ -4,8 +4,11 @@ import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FormatUtils {
 
 	private static final NavigableMap<Long, String> SUFFIX_MAP = new TreeMap<>();
