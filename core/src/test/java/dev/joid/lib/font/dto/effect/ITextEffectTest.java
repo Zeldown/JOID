@@ -8,6 +8,7 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.dto.TextStyle;
 import dev.joid.lib.font.impl.glyph.dto.IFontFace;
 import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
+import lombok.NonNull;
 
 public class ITextEffectTest {
 
@@ -29,6 +30,11 @@ public class ITextEffectTest {
 		@Override
 		public boolean isItalic() {
 			return false;
+		}
+
+		@Override
+		public @NonNull String getName() {
+			return "Test";
 		}
 
 		@Override

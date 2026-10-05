@@ -109,7 +109,7 @@ public class MsdfBinarySourceTest {
 
 	@Test
 	public void undoesEveryRowFilter() throws IOException {
-		final Resource texture = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(3))).read().getTexture();
+		final Resource texture = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).read().getTexture();
 		texture.getDecoder().decode(texture.getResourceData());
 		final int[] pixels = texture.getData();
 		for (int y = 0; y < MsdfBinarySourceTest.PIXELS.length; y++) {
@@ -121,29 +121,34 @@ public class MsdfBinarySourceTest {
 	}
 
 	@Test(expected = IOException.class)
-	public void refusesAnotherVersion() throws IOException {
-		MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(2))).read();
+	public void refusesAnOlderVersion() throws IOException {
+		MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(3))).read();
+	}
+
+	@Test(expected = IOException.class)
+	public void refusesANewerVersion() throws IOException {
+		MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(5))).read();
 	}
 
 	@Test
 	public void readsTheNameOfTheFace() throws IOException {
 		Assert.assertEquals("Synthetic Light Italic", MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).read().getName());
-		Assert.assertEquals("", MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(3))).read().getName());
+		Assert.assertEquals("Synthetic Light Italic", MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).weight(FontWeight.BLACK).read().getName());
 	}
 
 	@Test
 	public void overridesOnlyWhatIsAsked() throws IOException {
-		final MsdfFontFace weighted = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(3))).weight(FontWeight.BLACK).read();
+		final MsdfFontFace weighted = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).weight(FontWeight.BLACK).read();
 		Assert.assertSame(FontWeight.BLACK, weighted.getWeight());
 		Assert.assertTrue(weighted.isItalic());
-		final MsdfFontFace upright = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(3))).italic(false).read();
+		final MsdfFontFace upright = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).italic(false).read();
 		Assert.assertSame(FontWeight.LIGHT, upright.getWeight());
 		Assert.assertFalse(upright.isItalic());
 	}
 
 	@Test
 	public void readsEveryFieldOfTheFormat() throws IOException {
-		final MsdfFontFace face = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(3))).read();
+		final MsdfFontFace face = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).read();
 		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
 		Assert.assertTrue(face.isItalic());
 		Assert.assertEquals(4F, face.getAtlas().getDistanceRange(), 0F);
@@ -173,9 +178,7 @@ public class MsdfBinarySourceTest {
 			data.writeByte(version);
 			data.writeShort(300);
 			data.writeBoolean(true);
-			if (version > 3) {
-				data.writeUTF("Synthetic Light Italic");
-			}
+			data.writeUTF("Synthetic Light Italic");
 			data.writeInt(2);
 			data.writeInt(MsdfBinarySourceTest.PIXELS.length);
 			data.writeFloat(4F);

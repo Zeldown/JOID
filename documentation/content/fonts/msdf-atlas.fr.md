@@ -69,7 +69,7 @@ Pour le CJK, prenez un sous-ensemble : un jeu complet dépasse les 30 000 glyphe
 
 ## Le fichier `.msdf`
 
-Un seul fichier contient tout : nom, graisse et style de la face, métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. La graisse et l'indicateur d'italique viennent de la table `OS/2` de la police source : une famille se charge sans dire à JOID quel fichier est lequel, et le nom est le nom complet de la police — `Montserrat Regular` — qu'affichent les avertissements du mode dev. Les fichiers écrits par un ancien générateur se chargent sans nom. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul. La table de crénage est groupée par premier codepoint et écrite en deltas de taille variable, en unités de fonte : elle coûte un dixième d'une liste de paires à plat, cinquante mille paires tenant dans quinze kilo-octets.
+Un seul fichier contient tout : nom, graisse et style de la face, métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. La graisse et l'indicateur d'italique viennent de la table `OS/2` de la police source : une famille se charge sans dire à JOID quel fichier est lequel, et le nom est le nom complet de la police — `Montserrat Regular` — qu'affichent les avertissements du mode dev. Seul le format du JOID en cours se charge : un fichier écrit par un ancien générateur est refusé et doit être généré à nouveau, alors qu'un fichier de police chargé directement régénère son cache tout seul. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul. La table de crénage est groupée par premier codepoint et écrite en deltas de taille variable, en unités de fonte : elle coûte un dixième d'une liste de paires à plat, cinquante mille paires tenant dans quinze kilo-octets.
 
 ```
 assets/
@@ -83,16 +83,6 @@ Chargez-le avec un seul flux :
 ```java
 MsdfFontLoader.load(getClass().getResourceAsStream("/assets/fonts/MaPolice/font.msdf")).thenAccept(font -> this.maPolice = font);
 ```
-
-## Atlas hérités
-
-Le couple `font.json` + `font.png` produit par [msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen) se charge toujours, une fois les deux fichiers enveloppés dans un `MsdfJsonSource` :
-
-```java
-MsdfFontLoader.load(MsdfJsonSource.of(fluxJson, fluxPng)).thenAccept(font -> this.maPolice = font);
-```
-
-Ces atlas ne portent aucun crénage : `msdf-atlas-gen` ne lit que la table `kern`, que la plupart des polices modernes ne fournissent plus.
 
 ## Plusieurs graisses
 

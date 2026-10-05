@@ -23,6 +23,7 @@ import dev.joid.lib.font.impl.glyph.dto.IFontFace;
 import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 
 public class GlyphFontProviderTest {
 
@@ -265,6 +266,11 @@ public class GlyphFontProviderTest {
 		private final FontWeight weight;
 		private final boolean    italic;
 		private final float      scale;
+
+		@Override
+		public @NonNull String getName() {
+			return "Test";
+		}
 
 		@Override
 		public float getAscender() {

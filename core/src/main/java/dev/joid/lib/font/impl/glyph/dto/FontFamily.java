@@ -60,7 +60,7 @@ public final class FontFamily<F extends IFontFace> {
 	}
 
 	private void warn(final @NonNull FontWeight weight, final @NonNull F face) {
-		final StringBuilder warning = new StringBuilder("[JOID] The font weight ").append(weight.getValue()).append(" is not loaded in ").append(face.getName().isEmpty() ? "this font family" : "the family of " + face.getName());
+		final StringBuilder warning = new StringBuilder("[JOID] The font weight ").append(weight.getValue()).append(" is not loaded in the family of ").append(face.getName());
 		warning.append(", ").append(face.getWeight().getValue()).append(" is drawn instead (loaded: ").append(this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", "))).append(")");
 
 		for (final StackTraceElement element : FontUsage.getOrigin().orElseGet(FontFamily::locate)) {
@@ -79,7 +79,7 @@ public final class FontFamily<F extends IFontFace> {
 	}
 
 	private static @NonNull String describe(final @NonNull IFontFace face) {
-		return face.getName().isEmpty() ? String.valueOf(face.getWeight().getValue()) : face.getWeight().getValue() + " " + face.getName();
+		return face.getWeight().getValue() + " " + face.getName();
 	}
 
 	private static boolean closer(final int candidate, final int current, final int desired) {

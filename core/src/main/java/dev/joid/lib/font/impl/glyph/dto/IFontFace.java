@@ -12,14 +12,11 @@ public interface IFontFace {
 	public float getLineHeight();
 	public float getUnderlineY();
 	public float getUnderlineThickness();
+	public @NonNull String getName();
 	public @NonNull FontWeight getWeight();
 	public float getAdvance(final int codepoint);
 	public float getKerning(final int previous, final int current);
 
 	public boolean hasGlyph(final int codepoint);
-
-	public default @NonNull String getName() {
-		return "";
-	}
 
 }

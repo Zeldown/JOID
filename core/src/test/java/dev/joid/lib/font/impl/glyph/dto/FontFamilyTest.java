@@ -104,7 +104,7 @@ public class FontFamilyTest {
 			family.resolve(FontWeight.BOLD, false);
 		});
 		final String[] lines = output.split(System.lineSeparator());
-		Assert.assertEquals("[JOID] The font weight 600 is not loaded in this font family, 700 is drawn instead (loaded: 400, 700)", lines[0]);
+		Assert.assertEquals("[JOID] The font weight 600 is not loaded in the family of Test 700, 700 is drawn instead (loaded: 400 Test 400, 700 Test 700)", lines[0]);
 		Assert.assertTrue(lines[1], lines[1].startsWith("\tat dev.joid.lib.font.impl.glyph.dto.FontFamilyTest.lambda$"));
 		Assert.assertEquals(1, output.split("\\[JOID\\]", -1).length - 1);
 	}
@@ -156,7 +156,7 @@ public class FontFamilyTest {
 		private final String     name;
 
 		private Face(final FontWeight weight, final boolean italic) {
-			this(weight, italic, "");
+			this(weight, italic, "Test " + weight.getValue());
 		}
 
 		@Override

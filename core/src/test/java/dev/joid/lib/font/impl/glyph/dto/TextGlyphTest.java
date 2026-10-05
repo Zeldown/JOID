@@ -8,6 +8,7 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.dto.TextStyle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 
 public class TextGlyphTest {
 
@@ -82,6 +83,11 @@ public class TextGlyphTest {
 
 		private final FontWeight weight;
 		private final boolean    italic;
+
+		@Override
+		public @NonNull String getName() {
+			return "Test";
+		}
 
 		@Override
 		public float getAscender() {

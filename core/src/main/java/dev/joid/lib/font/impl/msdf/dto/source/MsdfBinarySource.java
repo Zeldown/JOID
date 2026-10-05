@@ -57,13 +57,13 @@ public final class MsdfBinarySource extends MsdfSource {
 
 		final DataInputStream input = new DataInputStream(new InflaterInputStream(stream));
 		final int version = input.readUnsignedByte();
-		if (version < 3 || version > MsdfWriter.VERSION) {
-			throw new IOException("Unsupported msdf font version " + version);
+		if (version != MsdfWriter.VERSION) {
+			throw new IOException("Unsupported msdf font version " + version + ", only the version " + MsdfWriter.VERSION + " loads: generate it again");
 		}
 
 		final FontWeight weight = FontWeight.of(input.readUnsignedShort());
 		final boolean italic = input.readBoolean();
-		final String name = version > 3 ? input.readUTF() : "";
+		final String name = input.readUTF();
 		final int width = input.readInt();
 		final int height = input.readInt();
 		final MsdfAtlas atlas = new MsdfAtlas(input.readFloat(), input.readFloat(), width, height);

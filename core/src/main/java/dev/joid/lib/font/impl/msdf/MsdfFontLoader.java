@@ -52,7 +52,7 @@ public final class MsdfFontLoader {
 				final IMsdfSource source = MsdfFontLoader.source(handle);
 				final MsdfFontFace face = source.read();
 				if (JOID.inst().isDevMode()) {
-					System.out.println("[JOID] Font " + (face.getName().isEmpty() ? "without a name" : face.getName()) + " " + source.describe() + " in " + String.format("%.2f", (System.nanoTime() - start) / 1000000F) + "ms");
+					System.out.println("[JOID] Font " + face.getName() + " " + source.describe() + " in " + String.format("%.2f", (System.nanoTime() - start) / 1000000F) + "ms");
 				}
 				return face;
 			} catch (final IOException exception) {

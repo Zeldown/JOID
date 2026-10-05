@@ -63,12 +63,6 @@ MsdfFontLoader.load(
 );
 ```
 
-The `font.json` + `font.png` pair of older atlases still loads through an `MsdfJsonSource`. Those files declare no weight, so they start as regular and upright — set the style on the source:
-
-```java
-MsdfFontLoader.load(regularHandle, MsdfJsonSource.of(boldJson, boldPng).weight(FontWeight.BOLD));
-```
-
 All of them are `IMsdfSource`s, and so is anything you write yourself: the loader reads whatever source it is handed.
 
 ### Kerning
@@ -100,8 +94,6 @@ In dev mode (`JOID.inst().setDevMode(true)`) the first fallback of each weight i
 	...
 	at com.example.ui.UIProfile.init(UIProfile.java:42)
 ```
-
-A face read from a `font.msdf` written by an older generator carries no name, and the message then says `this font family`.
 
 Italic prefers the italic faces of the family. A family without one keeps its upright faces and slants them, so `italic(true)` always shows.
 

@@ -23,6 +23,11 @@ public final class DemoFace implements IFontFace {
 	}
 
 	@Override
+	public @NonNull String getName() {
+		return "Demo";
+	}
+
+	@Override
 	public float getAscender() {
 		return 0.8F;
 	}

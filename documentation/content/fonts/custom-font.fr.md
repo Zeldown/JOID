@@ -63,12 +63,6 @@ MsdfFontLoader.load(
 );
 ```
 
-Le couple `font.json` + `font.png` des anciens atlas se charge toujours via un `MsdfJsonSource`. Ces fichiers ne déclarent aucune graisse : ils démarrent en regular et droits — réglez le style sur la source :
-
-```java
-MsdfFontLoader.load(handleRegular, MsdfJsonSource.of(jsonBold, pngBold).weight(FontWeight.BOLD));
-```
-
 Ce sont tous des `IMsdfSource`, comme tout ce que vous écrirez vous-même : le chargeur lit la source qu'on lui donne.
 
 ### Crénage
@@ -100,8 +94,6 @@ En mode dev (`JOID.inst().setDevMode(true)`), le premier repli de chaque graisse
 	...
 	at com.example.ui.UIProfile.init(UIProfile.java:42)
 ```
-
-Une face lue depuis un `font.msdf` écrit par un ancien générateur ne porte pas de nom, et le message dit alors `this font family`.
 
 L'italique préfère les faces italiques de la famille. Une famille sans italique garde ses faces droites et les penche, donc `italic(true)` se voit toujours.
 
