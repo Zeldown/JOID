@@ -7,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import be.zeldown.joid.lib.asset.Asset;
+import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.AnimatedResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.RasterResourceDecoder;
@@ -37,6 +38,19 @@ public class ResourceFormatTest {
 		Assert.assertTrue(ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/blink.gif"))) instanceof AnimatedResourceDecoder);
 		Assert.assertTrue(ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/blink.png"))) instanceof AnimatedResourceDecoder);
 		Assert.assertTrue(ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/still.png"))) instanceof RasterResourceDecoder);
+	}
+
+	@Test
+	public void decodesAnimatedAndStillWebp() {
+		Assert.assertTrue(ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/blink.webp"))) instanceof AnimatedResourceDecoder);
+
+		final IResourceDecoder still = ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/still.webp")));
+		Assert.assertTrue(still instanceof RasterResourceDecoder);
+		final ResourceData data = new ResourceData("still.webp", null);
+		still.decode(data);
+		Assert.assertEquals(8, data.getWidth());
+		Assert.assertEquals(0xFFFF0000, data.getData()[0][0]);
+		Assert.assertEquals(0, data.getData()[0][63] >>> 24);
 	}
 
 	@Test

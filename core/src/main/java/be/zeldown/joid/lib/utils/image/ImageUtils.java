@@ -1,11 +1,29 @@
 package be.zeldown.joid.lib.utils.image;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageReader;
+import javax.imageio.spi.ImageReaderSpi;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ImageUtils {
+
+	public static @NonNull BufferedImage read(final @NonNull InputStream stream, final @NonNull ImageReaderSpi spi) throws IOException {
+		final ImageReader reader = spi.createReaderInstance(null);
+		try (MemoryCacheImageInputStream input = new MemoryCacheImageInputStream(stream)) {
+			reader.setInput(input);
+			return reader.read(0);
+		} finally {
+			reader.dispose();
+		}
+	}
 
 	public static void bleedAlpha(final @NonNull int[] pixels, final int width, final int height) {
 		final int[] queue = new int[pixels.length];

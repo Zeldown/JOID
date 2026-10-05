@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
+import javax.imageio.spi.ImageReaderSpi;
 
 import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.bridge.BridgeHandler;
@@ -15,17 +16,25 @@ import lombok.NonNull;
 
 public class RasterResourceDecoder implements IResourceDecoder {
 
-	private final Asset asset;
+	private final Asset          asset;
+	private final ImageReaderSpi reader;
 
 	private BufferedImage image;
 
 	public RasterResourceDecoder(final @NonNull Asset asset) {
 		this.asset = asset;
+		this.reader = null;
 	}
 
 	public RasterResourceDecoder(final @NonNull BufferedImage image) {
 		this.asset = null;
+		this.reader = null;
 		this.image = image;
+	}
+
+	public RasterResourceDecoder(final @NonNull Asset asset, final @NonNull ImageReaderSpi reader) {
+		this.asset = asset;
+		this.reader = reader;
 	}
 
 	@Override
@@ -39,7 +48,7 @@ public class RasterResourceDecoder implements IResourceDecoder {
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
 		if (this.image == null) {
-			this.image = RasterResourceDecoder.read(this.asset);
+			this.image = RasterResourceDecoder.read(this.asset, this.reader);
 		}
 
 		resource.width(this.image.getWidth());
@@ -70,10 +79,10 @@ public class RasterResourceDecoder implements IResourceDecoder {
 		this.image = null;
 	}
 
-	private static @NonNull BufferedImage read(final @NonNull Asset asset) {
+	private static @NonNull BufferedImage read(final @NonNull Asset asset, final ImageReaderSpi reader) {
 		final BufferedImage image;
 		try (InputStream stream = asset.open()) {
-			image = ImageIO.read(stream);
+			image = reader == null ? ImageIO.read(stream) : ImageUtils.read(stream, reader);
 		} catch (final IOException exception) {
 			throw new RuntimeException("Unable to read the image of " + asset.getUniqueId(), exception);
 		}

@@ -1,5 +1,10 @@
 archivesBaseName = "joid-core"
 
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
 dependencies {
     compile "com.google.guava:guava:15.0"
     compile "com.google.code.gson:gson:2.2.4"
@@ -10,21 +15,26 @@ dependencies {
 
     compile "java3d:vecmath:1.3.1"
 
-    compile("org.bytedeco:javacv:1.5.9") { transitive = false }
-    compile "org.bytedeco:javacpp:1.5.9"
-    compile("org.bytedeco:ffmpeg:6.0-1.5.9") { transitive = false }
+    shade "com.github.weisj:jsvg:2.0.0"
+    shade "com.twelvemonkeys.imageio:imageio-webp:3.12.0"
 
-    compile "org.bytedeco:ffmpeg:6.0-1.5.9:windows-x86_64"
-    compile "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-x86_64"
-    compile "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-arm64"
-    compile "org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64"
+    shade("org.bytedeco:javacv:1.5.9") { transitive = false }
+    shade "org.bytedeco:javacpp:1.5.9"
+    shade("org.bytedeco:ffmpeg:6.0-1.5.9") { transitive = false }
+
+    shade "org.bytedeco:ffmpeg:6.0-1.5.9:windows-x86_64"
+    shade "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-x86_64"
+    shade "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-arm64"
+    shade "org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64"
 }
 
-task releaseJar(type: Jar) {
+task releaseJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     group = 'build'
-    description = 'Builds the dev or prod jar of the core, without third-party libraries.'
+    description = 'Builds the dev or prod jar of the core, with the media libraries and the FFmpeg natives embedded.'
     from sourceSets.main.output
+    configurations = [project.configurations.shade]
     classifier = project.hasProperty('dev') ? 'dev' : 'prod'
+    rootProject.shadeLibraries(it)
 
     if (!project.hasProperty('dev')) {
         exclude 'assets/demo/**'

@@ -17,8 +17,9 @@ shadowJar {
         from module.sourceSets.main.output
     }
 
-    configurations = []
+    configurations = embeddedModules.collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null }
     classifier = project.hasProperty('dev') ? 'dev' : 'prod'
+    rootProject.shadeLibraries(it)
 
     if (!project.hasProperty('dev')) {
         exclude 'assets/demo/**'

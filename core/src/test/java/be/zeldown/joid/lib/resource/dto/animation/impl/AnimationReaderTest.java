@@ -29,6 +29,20 @@ public class AnimationReaderTest {
 	}
 
 	@Test
+	public void composesTheFramesOfAWebp() throws IOException {
+		final Animation animation = AnimationReaderTest.read(new WebpAnimationReader(), "blink.webp");
+		AnimationReaderTest.assertFrames(animation, "blink-webp", 60L, 90L, 120L);
+		Assert.assertEquals(3, animation.getPlays());
+	}
+
+	@Test
+	public void tellsAnAnimatedWebpFromAStillOne() throws IOException {
+		Assert.assertTrue(WebpAnimationReader.isAnimated(AnimationReaderTest.bytes("blink.webp")));
+		Assert.assertFalse(WebpAnimationReader.isAnimated(AnimationReaderTest.bytes("still.webp")));
+		Assert.assertTrue(WebpAnimationReader.isWebp(AnimationReaderTest.bytes("still.webp")));
+	}
+
+	@Test
 	public void tellsAnApngFromAStillPng() throws IOException {
 		Assert.assertTrue(ApngAnimationReader.isAnimated(AnimationReaderTest.bytes("blink.png")).get());
 		Assert.assertFalse(ApngAnimationReader.isAnimated(AnimationReaderTest.bytes("still.png")).get());

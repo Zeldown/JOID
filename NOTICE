@@ -10,3 +10,26 @@ This product includes software developed by Aurelien Ribon:
 
   The classes under be.zeldown.joid.lib.animation.tweenengine are derived
   from it.
+
+The release jars embed the following software:
+
+  JSVG
+  https://github.com/weisJ/jsvg
+  Copyright Jannis Weis
+  Licensed under the MIT License
+  Relocated under be.zeldown.joid.shaded.jsvg.
+
+  TwelveMonkeys ImageIO
+  https://github.com/haraldk/TwelveMonkeys
+  Copyright Harald Kuhr
+  Licensed under the BSD 3-Clause License
+  Relocated under be.zeldown.joid.shaded.twelvemonkeys.
+
+  JavaCV and JavaCPP
+  https://github.com/bytedeco
+  Copyright Samuel Audet
+  Licensed under the Apache License, Version 2.0
+
+  FFmpeg, built by the JavaCPP Presets
+  https://ffmpeg.org
+  Licensed under the GNU Lesser General Public License, version 2.1 or later

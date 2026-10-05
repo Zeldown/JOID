@@ -27,6 +27,12 @@ allprojects {
 }
 
 ext {
+    shadeLibraries = { task ->
+        task.relocate 'com.github.weisj.jsvg', 'be.zeldown.joid.shaded.jsvg'
+        task.relocate 'com.twelvemonkeys', 'be.zeldown.joid.shaded.twelvemonkeys'
+        task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+    }
+
     lwjglVersion = "3.3.4"
     lwjglNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? "natives-windows" : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos") : "natives-linux"
 }

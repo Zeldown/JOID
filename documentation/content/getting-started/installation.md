@@ -1,6 +1,6 @@
 # Installation
 
-JOID is shipped as JARs through GitHub Releases. They only contain JOID code: add the JAR of your backend and the libraries listed in *Dependencies* to your classpath, and point the JVM at the native libraries. No Maven Central, no package manager.
+JOID is shipped as JARs through GitHub Releases. They contain JOID and every library it decodes media with: add the JAR of your backend and the few libraries listed in *Dependencies* to your classpath, and point the JVM at the native libraries of your engine. No Maven Central, no package manager.
 
 ## Download
 
@@ -21,7 +21,10 @@ Each backend comes in two flavours:
 | `joid-<backend>-X.Y.Z-prod.jar` | Library only, `assets/demo/*` stripped | Shipping your app |
 | `joid-<backend>-X.Y.Z-dev.jar` | Includes demo fonts, demo textures, sample videos | Learning / developing |
 
-No JOID JAR embeds a third-party library. A backend JAR contains the core and the JOID modules it uses — `joid-glfw` and `joid-openal` for LWJGL 3 and Vulkan — and your project declares every other library.
+A backend JAR contains the core, the JOID modules it uses — `joid-glfw` and `joid-openal` for LWJGL 3 and Vulkan — and the media libraries:
+
+- **FFmpeg** through JavaCV and JavaCPP, with its natives for Windows x64, Linux x64, macOS Intel and macOS ARM, extracted at runtime — about 95 MB of the JAR. It keeps its `org.bytedeco` packages, which JavaCPP needs to find its natives.
+- **JSVG** (SVG) and **TwelveMonkeys ImageIO** (WebP), relocated under `be.zeldown.joid.shaded`, so they never clash with copies your application or its host ships. JOID instantiates its WebP reader itself and registers nothing in ImageIO.
 
 Building from source with `./gradlew build` (`-Pdev` for the dev flavour) copies every release artifact — backend, core, testkit, glfw and openal jars and the backend template — into `build/libs`.
 
@@ -58,7 +61,7 @@ Natives depend on the backend:
 
 ## Dependencies
 
-JOID JARs contain no third-party library: **your project declares every library JOID uses**, at the versions JOID is built and tested with. This avoids duplicate classes when your application or its host already ships these libraries, and lets you pick the exact classifiers you need.
+**Your project declares the libraries JOID shares with its host**, at the versions JOID is built and tested with: the ones Minecraft 1.7.10 already ships, some of which appear in the JOID API (`ResourceBuilder` caches are Guava caches, stores read Gson objects), and the LWJGL of your backend. Everything else is inside the JAR.
 
 Add these to your `build.gradle` alongside JOID:
 
@@ -78,14 +81,6 @@ dependencies {
 
     compile 'org.lwjgl.lwjgl:lwjgl:2.9.1'
 
-    compile('org.bytedeco:javacv:1.5.9') { transitive = false }
-    compile 'org.bytedeco:javacpp:1.5.9'
-    compile('org.bytedeco:ffmpeg:6.0-1.5.9') { transitive = false }
-
-    compile 'org.bytedeco:ffmpeg:6.0-1.5.9:windows-x86_64'
-    compile 'org.bytedeco:ffmpeg:6.0-1.5.9:macosx-x86_64'
-    compile 'org.bytedeco:ffmpeg:6.0-1.5.9:macosx-arm64'
-    compile 'org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64'
 }
 ```
 
@@ -101,13 +96,6 @@ The same Maven block:
     <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.4</version></dependency>
     <dependency><groupId>java3d</groupId><artifactId>vecmath</artifactId><version>1.3.1</version></dependency>
     <dependency><groupId>org.lwjgl.lwjgl</groupId><artifactId>lwjgl</artifactId><version>2.9.1</version></dependency>
-    <dependency><groupId>org.bytedeco</groupId><artifactId>javacv</artifactId><version>1.5.9</version><exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions></dependency>
-    <dependency><groupId>org.bytedeco</groupId><artifactId>javacpp</artifactId><version>1.5.9</version></dependency>
-    <dependency><groupId>org.bytedeco</groupId><artifactId>ffmpeg</artifactId><version>6.0-1.5.9</version><exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions></dependency>
-    <dependency><groupId>org.bytedeco</groupId><artifactId>ffmpeg</artifactId><version>6.0-1.5.9</version><classifier>windows-x86_64</classifier></dependency>
-    <dependency><groupId>org.bytedeco</groupId><artifactId>ffmpeg</artifactId><version>6.0-1.5.9</version><classifier>macosx-x86_64</classifier></dependency>
-    <dependency><groupId>org.bytedeco</groupId><artifactId>ffmpeg</artifactId><version>6.0-1.5.9</version><classifier>macosx-arm64</classifier></dependency>
-    <dependency><groupId>org.bytedeco</groupId><artifactId>ffmpeg</artifactId><version>6.0-1.5.9</version><classifier>linux-x86_64</classifier></dependency>
 </dependencies>
 ```
 
@@ -141,15 +129,10 @@ dependencies {
 | `lombok` | Code generation (`@Getter`, `@Setter`, `@NonNull`) | Compile-only — not shipped |
 | `guava`, `gson`, `commons-lang3`, `commons-compress`, `commons-io`, `vecmath` | Collections and caches, JSON, text, archives, file monitoring and vector math used by the core | Always — a host that already ships them provides them |
 | `lwjgl` | Engine bindings of the chosen backend | Always |
-| `javacv` + `javacpp` | Java bindings for FFmpeg | Only if using `VideoPlayerNode` |
-| `ffmpeg:6.0-1.5.9` (base) | FFmpeg API classes | Only if using `VideoPlayerNode` |
-| `ffmpeg:…:<platform>` | Native `.dll` / `.so` / `.dylib` for the target OS | Only ship the ones you target |
-
-> NOTE: `transitive = false` on `javacv` and `ffmpeg` prevents Gradle from pulling every classifier for every platform (~700 MB). Declare only the classifiers you actually ship.
 
 ### Shipping for production
 
-**Don't fat-JAR your app.** The recommended layout is a thin application JAR that references every dependency JAR from a sibling `libraries/` folder, loaded via the classpath. This keeps the application artifact small, lets you swap or patch a single dependency without rebuilding, and avoids the corner cases where `shadowJar` / Maven Shade rewrites classes inside `javacpp` / `ffmpeg` and breaks native extraction.
+**Don't fat-JAR your app.** The recommended layout is a thin application JAR that references every dependency JAR from a sibling `libraries/` folder, loaded via the classpath. This keeps the application artifact small, lets you swap or patch a single dependency without rebuilding, and never shades the JOID JAR a second time: JavaCPP finds the FFmpeg natives through their original `org.bytedeco` packages.
 
 Example layout for a distributable zip:
 
@@ -164,14 +147,7 @@ my-app/
 │   ├── commons-compress-1.8.1.jar
 │   ├── commons-io-2.4.jar
 │   ├── vecmath-1.3.1.jar
-│   ├── lwjgl-2.9.1.jar
-│   ├── javacv-1.5.9.jar
-│   ├── javacpp-1.5.9.jar
-│   ├── ffmpeg-6.0-1.5.9.jar
-│   ├── ffmpeg-6.0-1.5.9-windows-x86_64.jar
-│   ├── ffmpeg-6.0-1.5.9-macosx-x86_64.jar
-│   ├── ffmpeg-6.0-1.5.9-macosx-arm64.jar
-│   └── ffmpeg-6.0-1.5.9-linux-x86_64.jar
+│   └── lwjgl-2.9.1.jar
 ├── native/                              # LWJGL 2 backend natives (OpenGL + OpenAL)
 │   ├── lwjgl64.dll
 │   ├── OpenAL64.dll
@@ -211,8 +187,6 @@ dist.dependsOn distApp
 ```
 
 After `gradle dist`, zip `build/dist/` together with your `native/` folder and launcher.
-
-If you drop video support, you can remove `javacv`, `javacpp`, and every `ffmpeg` entry from `libraries/` — `VideoPlayerNode` is the only consumer, and JOID fails gracefully if its classes are missing at runtime.
 
 ## Verification
 

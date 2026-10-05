@@ -9,6 +9,7 @@ import be.zeldown.joid.lib.resource.dto.decoder.impl.RasterResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.format.impl.ApngResourceFormat;
 import be.zeldown.joid.lib.resource.dto.format.impl.GifResourceFormat;
 import be.zeldown.joid.lib.resource.dto.format.impl.VideoResourceFormat;
+import be.zeldown.joid.lib.resource.dto.format.impl.WebpResourceFormat;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -24,6 +25,7 @@ public class ResourceFormat {
 		ResourceFormat.register(new GifResourceFormat());
 		ResourceFormat.register(new ApngResourceFormat());
 		ResourceFormat.register(new VideoResourceFormat());
+		ResourceFormat.register(new WebpResourceFormat());
 	}
 
 	public static void register(final @NonNull IResourceFormat format) {
