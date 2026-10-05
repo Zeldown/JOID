@@ -25,8 +25,6 @@ import be.zeldown.joid.lib.bridge.ui.IUIBridge;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.render.context.Drawing;
-import be.zeldown.joid.lib.render.modifier.Vector;
-import be.zeldown.joid.lib.render.transform.Transformation;
 import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.ui.core.data.UIDataObject;
 import be.zeldown.joid.lib.ui.core.data.debug.UIDataDebugObject;
@@ -37,10 +35,10 @@ import be.zeldown.joid.lib.ui.core.hook.store.UIStoreHook;
 import be.zeldown.joid.lib.ui.core.task.UIScheduledTask;
 import be.zeldown.joid.lib.ui.core.transition.Transition;
 import be.zeldown.joid.lib.ui.core.transition.impl.PopTransition;
+import be.zeldown.joid.lib.ui.core.view.UIView;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.impl.dev.DevNode;
 import be.zeldown.joid.lib.ui.node.property.draggable.DraggableProperty;
-import be.zeldown.joid.lib.utils.align.Align;
 import be.zeldown.joid.lib.utils.click.ClickType;
 import be.zeldown.joid.lib.utils.context.InternalContext;
 import be.zeldown.joid.lib.utils.key.Key;
@@ -69,6 +67,7 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private final Stack<StencilState>                  stencilStack;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
+	private final UIView       view;
 	private final DoubleSignal zoomLevel;
 	private final DoubleSignal scaledWidth;
 	private final DoubleSignal scaledHeight;
@@ -79,14 +78,6 @@ public abstract class UI implements IUI, IndexedElement {
 	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
 
 	private boolean initialized;
-
-	private double x;
-	private double y;
-	private double width;
-	private double height;
-
-	private double viewportWidth;
-	private double viewportHeight;
 
 	private double fps;
 	private long   lastFrame;
@@ -125,6 +116,7 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
+		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
 		this.zoomLevel = new DoubleSignal(1D);
 		this.scaledWidth = new DoubleSignal(1920D);
 		this.scaledHeight = new DoubleSignal(1080D);
@@ -143,30 +135,8 @@ public abstract class UI implements IUI, IndexedElement {
 			System.out.println("Starting load...");
 		}
 
-		this.width  = finalWidth;
-		this.height = finalHeight;
-		this.zoomLevel.set(zoomLevel);
-
-		final double baseRatio = 16D / 9D;
-		final double ratio = this.width / this.height;
-
-		if (Math.abs(ratio - baseRatio) > 0.2D) {
-			if (ratio < baseRatio || Math.abs(ratio - baseRatio) < 0.005D) {
-				this.x = 0;
-				this.y = (this.height - this.width / baseRatio) / 2;
-			} else {
-				this.x = (this.width - this.height * baseRatio) / 2;
-				this.y = 0;
-			}
-		} else {
-			this.x = 0;
-			this.y = 0;
-		}
-
-		this.viewportWidth  = 1920D * (this.width / (this.width - this.x * 2D));
-		this.viewportHeight = 1080D * (this.height / (this.height - this.y * 2D));
-
-		this.updateScaledSize();
+		this.view.resize(finalWidth, finalHeight).zoom(zoomLevel);
+		this.refreshView();
 
 		if (!this.initialized) {
 			UIPropertyHook.load(this);
@@ -228,7 +198,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 					final long start = System.nanoTime();
 					UI.this.initialized = false;
-					UI.this.load(UI.this.width, UI.this.height, UI.this.zoomLevel.getOrDefault());
+					UI.this.load(UI.this.view.getWidth(), UI.this.view.getHeight(), UI.this.view.getZoom());
 					final long end = System.nanoTime();
 
 					System.out.println("Reload completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
@@ -285,7 +255,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		this.initialized = false;
-		this.load(this.width, this.height, this.zoomLevel.getOrDefault());
+		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
 	}
 
 	public final void onUpdate() {
@@ -329,12 +299,20 @@ public abstract class UI implements IUI, IndexedElement {
 		return true;
 	}
 
+	public final double getWidth() {
+		return this.view.getWidth();
+	}
+
 	public final double getMouseX() {
-		return this.getRelativeX(this.mouseX * (this.viewportWidth / this.width));
+		return this.view.toUiX(this.mouseX);
 	}
 
 	public final double getMouseY() {
-		return this.getRelativeY(this.mouseY * (this.viewportHeight / this.height));
+		return this.view.toUiY(this.mouseY);
+	}
+
+	public final double getHeight() {
+		return this.view.getHeight();
 	}
 
 	public final void properlyClose() {
@@ -368,19 +346,6 @@ public abstract class UI implements IUI, IndexedElement {
 		return BridgeHandler.UI.get(this);
 	}
 
-	public final void updateScaledSize() {
-		final double tempScaledWidth = this.viewportWidth / this.zoomLevel.getOrDefault();
-		final double tempScaledHeight = this.viewportHeight / this.zoomLevel.getOrDefault();
-
-		if (this.scaledWidth.getOrDefault() != tempScaledWidth) {
-			this.scaledWidth.set(tempScaledWidth);
-		}
-
-		if (this.scaledHeight.getOrDefault() != tempScaledHeight) {
-			this.scaledHeight.set(tempScaledHeight);
-		}
-	}
-
 	public static boolean isAltKeyDown() {
 		return Key.LEFT_ALT.isDown() || Key.RIGHT_ALT.isDown();
 	}
@@ -393,6 +358,11 @@ public abstract class UI implements IUI, IndexedElement {
 		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
 	}
 
+	public final void zoom(final double zoom) {
+		this.view.zoom(zoom);
+		this.refreshView();
+	}
+
 	public final boolean onMouseScroll(final int value) {
 		if (!this.initialized) {
 			return false;
@@ -402,8 +372,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && value != 0) {
-			this.zoomLevel.add(value / (Key.LEFT_SHIFT.isDown() ? 1000D : 10000D));
-			this.updateScaledSize();
+			this.zoom(this.view.getZoom() + value / (Key.LEFT_SHIFT.isDown() ? 1000D : 10000D));
 			return true;
 		}
 
@@ -412,62 +381,6 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.mouseScroll(mx, my, value, context);
 		return context.isCancelled();
-	}
-
-	public final double getRelativeX(final double value) {
-		double relative = value - (this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX()));
-
-		if (this.zoomLevel.getOrDefault() != 1D) {
-			relative -= this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-			relative *= 1D / this.zoomLevel.getOrDefault();
-		}
-
-		return relative;
-	}
-
-	public final double getRelativeY(final double value) {
-		double relative = value - (this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY()));
-
-		if (this.zoomLevel.getOrDefault() != 1D) {
-			relative -= this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-			relative *= 1D / this.zoomLevel.getOrDefault();
-		}
-
-		return relative;
-	}
-
-	public final double getAbsoluteX(final double value) {
-		double absolute = value;
-		if (this.zoomLevel.getOrDefault() != 1D) {
-			absolute /= 1D / this.zoomLevel.getOrDefault();
-			absolute += this.data.getAnchorPositionX() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-		}
-
-		absolute += this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
-		absolute /= this.viewportWidth / this.width;
-
-		return absolute;
-	}
-
-	public final double getAbsoluteY(final double value) {
-		double absolute = value;
-		if (this.zoomLevel.getOrDefault() != 1D) {
-			absolute /= 1D / this.zoomLevel.getOrDefault();
-			absolute += this.data.getAnchorPositionY() * 2D * (1D - this.zoomLevel.getOrDefault()) / 2D;
-		}
-
-		absolute += this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
-		absolute /= this.viewportHeight / this.height;
-
-		return absolute;
-	}
-
-	public final double getAbsoluteWidth(final double value) {
-		return value * this.zoomLevel.getOrDefault() / (this.viewportWidth / this.width);
-	}
-
-	public final double getAbsoluteHeight(final double value) {
-		return value * this.zoomLevel.getOrDefault() / (this.viewportHeight / this.height);
 	}
 
 	public final void schedule(final @NonNull Runnable runnable) {
@@ -509,12 +422,11 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 		this.scheduledTaskList.removeAll(toRemove);
 
-		double tempZoomLevel = this.zoomLevel.getOrDefault();
-		tempZoomLevel = Math.min(1D, tempZoomLevel);
-		tempZoomLevel = Math.max(0.1D, tempZoomLevel);
-		if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
-			this.zoomLevel.set(tempZoomLevel);
-			this.updateScaledSize();
+		final IUIBridge bridge = this.getBridge();
+		final double interfaceScale = bridge == null ? 1D : bridge.getInterfaceScale(this);
+		if (interfaceScale != this.view.getInterfaceScale()) {
+			this.view.interfaceScale(interfaceScale);
+			this.refreshView();
 		}
 
 		final double mx = this.getMouseX();
@@ -531,7 +443,7 @@ public abstract class UI implements IUI, IndexedElement {
 					opacity = this.transition.getOut().getAnimator().getValue() * (this.data.getBackgroundColor().getAlpha() / 255F);
 				}
 			}
-			DrawUtils.SHAPE.drawRect(0, 0, this.width, this.height, this.data.getBackgroundColor().copyAlpha(opacity));
+			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().copyAlpha(opacity));
 		}
 
 		this.drawBackground(mx, my);
@@ -549,22 +461,9 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		render.alphaTest(0F);
-		if (this.data.projection()) {
-			render.pushProjection();
-			render.ortho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
-		}
-
-		final double translateX = this.data.anchorX() == Align.START ? 0 : (this.viewportWidth - 1920D) / (1920D / this.data.getAnchorPositionX());
-		final double translateY = this.data.anchorY() == Align.START ? 0 : (this.viewportHeight - 1080D) / (1080D / this.data.getAnchorPositionY());
-		Transformation.create().translate(Vector.create(translateX, translateY)).apply(() -> {
+		this.view.render(render, this.data.projection(), () -> {
 			this.renderPipelineLevel = 0;
 			final AtomicDouble lastRenderPipelineLevel = new AtomicDouble(this.renderPipelineLevel);
-
-			if (this.zoomLevel.getOrDefault() != 1D) {
-				render.translate(this.data.getAnchorPositionX(), this.data.getAnchorPositionY(), 0D);
-				render.scale(this.zoomLevel.getOrDefault(), this.zoomLevel.getOrDefault(), 1D);
-				render.translate(-this.data.getAnchorPositionX(), -this.data.getAnchorPositionY(), 0D);
-			}
 
 			this.nodeList
 			.ordered()
@@ -626,10 +525,6 @@ public abstract class UI implements IUI, IndexedElement {
 			if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
 				this.transition.getOut().post(this, mx, my);
 			}
-		}
-
-		if (this.data.projection()) {
-			render.popProjection();
 		}
 
 		final long end = System.nanoTime();
@@ -708,23 +603,17 @@ public abstract class UI implements IUI, IndexedElement {
 
 		if (this.data.zoomable() && !context.isCancelled()) {
 			if ((key == Key.NUMPAD_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
-				double tempZoomLevel = this.zoomLevel.getOrDefault();
-				tempZoomLevel += 0.1D;
-				tempZoomLevel = Math.min(1D, tempZoomLevel);
-				if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
-					this.zoomLevel.set(tempZoomLevel);
-					this.updateScaledSize();
+				final double previous = this.view.getZoom();
+				this.zoom(previous + 0.1D);
+				if (this.view.getZoom() != previous) {
 					context.cancel();
 				}
 			}
 
 			if ((key == Key.NUMPAD_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
-				double tempZoomLevel = this.zoomLevel.getOrDefault();
-				tempZoomLevel -= 0.1D;
-				tempZoomLevel = Math.max(0.1D, tempZoomLevel);
-				if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
-					this.zoomLevel.set(tempZoomLevel);
-					this.updateScaledSize();
+				final double previous = this.view.getZoom();
+				this.zoom(previous - 0.1D);
+				if (this.view.getZoom() != previous) {
 					context.cancel();
 				}
 			}
@@ -733,12 +622,7 @@ public abstract class UI implements IUI, IndexedElement {
 		if (JOID.inst().isDevMode() && !context.isCancelled()) {
 			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
 				if (Key.LEFT_SHIFT.isDown()) {
-					double tempZoomLevel = this.zoomLevel.getOrDefault();
-					tempZoomLevel = 1D;
-					if (tempZoomLevel != this.zoomLevel.getOrDefault()) {
-						this.zoomLevel.set(tempZoomLevel);
-						this.updateScaledSize();
-					}
+					this.zoom(1D);
 				}
 
 				this.reload();
@@ -898,6 +782,20 @@ public abstract class UI implements IUI, IndexedElement {
 			this.stopMask();
 		} else {
 			drawing.draw();
+		}
+	}
+
+	private void refreshView() {
+		if (this.zoomLevel.getOrDefault() != this.view.getZoom()) {
+			this.zoomLevel.set(this.view.getZoom());
+		}
+
+		if (this.scaledWidth.getOrDefault() != this.view.getVisibleWidth()) {
+			this.scaledWidth.set(this.view.getVisibleWidth());
+		}
+
+		if (this.scaledHeight.getOrDefault() != this.view.getVisibleHeight()) {
+			this.scaledHeight.set(this.view.getVisibleHeight());
 		}
 	}
 

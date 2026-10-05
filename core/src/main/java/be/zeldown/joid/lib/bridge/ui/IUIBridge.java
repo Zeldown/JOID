@@ -23,6 +23,10 @@ public interface IUIBridge extends IBridge {
 	public boolean canHandle(final @NonNull UI ui);
 
 	@NonNull public IndexedList<@NonNull UI> getUiList();
+
+	public default double getInterfaceScale(final @NonNull UI ui) {
+		return 1D;
+	}
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz);
 	public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY);
 

@@ -143,6 +143,24 @@ private double zoomLevelConfig = 1D;
 // Automatically persisted on close, restored on load.
 ```
 
+## Coordinates and scale
+
+A UI is designed on a 1920×1080 canvas. `ui.getView()` returns the `UIView` that maps this canvas onto the window, and every conversion goes through it — drawing, mouse, tooltips, effect resolution:
+
+1. the canvas fits the window, widened or heightened when the window ratio differs, and placed by `anchorX` / `anchorY`;
+2. the **interface scale** chosen by the host is applied around the anchor (see [Interface scale](bridge.md#interface-scale));
+3. the **zoom** of the user (CTRL + `+` / `-`) is applied around the anchor.
+
+```java
+ui.getMouseX();                       // mouse on the canvas, every transform included
+ui.getView().toScreenX(x);            // canvas → window pixels (also toScreenY / toScreenWidth / toScreenHeight)
+ui.getView().toUiX(screenX);          // window pixels → canvas (also toUiY)
+ui.getView().getVisibleWidth();       // canvas width visible on screen, mirrored by the scaledWidth signal
+ui.zoom(0.8D);
+```
+
+The zoom ranges from `0.1` to `max(1, 1 / interface scale)`, so a shrunk interface can still be zoomed back to full size. The `zoomLevel`, `scaledWidth` and `scaledHeight` signals follow every change.
+
 ## Best practices
 
 - **One UI, one responsibility.** Don't cram a settings menu, a minimap, and a chat into one `UI`. Use multiple UIs and open/close them individually.

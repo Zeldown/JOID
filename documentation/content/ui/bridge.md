@@ -96,6 +96,19 @@ Every backend `DemoWindow` contains a complete loop for its windowing library �
 
 `UIBridge` already implements mouse drag tracking and ESC-to-close; you just need to feed it events.
 
+## Interface scale
+
+A host that lets its users choose the size of the interface — a game GUI scale, an accessibility setting — tells JOID through `getInterfaceScale(UI)`. The bridge decides which UIs follow it and returns a normalized factor, `1` meaning full size:
+
+```java
+@Override
+public double getInterfaceScale(final @NonNull UI ui) {
+    return ui instanceof HudUI ? this.settings.getGuiScale() / (double) this.settings.getMaxGuiScale() : 1D;
+}
+```
+
+The UI does the rest: it draws around its anchor at that scale, converts the mouse, places tooltips and sizes effects accordingly, and updates its `scaledWidth` / `scaledHeight` signals when the value changes. The bridge keeps passing the raw window size and the raw mouse position, in pixels — never rescale them yourself.
+
 ## Multiple bridges
 
 A real app often has multiple bridges — e.g., one for in-world UIs, one for main menu. `BridgeHandler.UI` routes each `UI` to the appropriate bridge based on `canHandle(Class<? extends UI>)`. When several bridges can handle the same `UI`, the one with the highest `getIndex()` wins, then the latest registered.

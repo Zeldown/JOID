@@ -67,18 +67,14 @@ public class CustomHoverElement implements HoverElement {
 		final double elementHeight = this.element.getHeight();
 
 		if (ui != null && elementWidth > 0 && elementHeight > 0) {
-			final double absoluteX = ui.getAbsoluteX(x);
-			final double absoluteY = ui.getAbsoluteY(y);
-			final double absoluteWidth = ui.getAbsoluteWidth(elementWidth);
-
-			final double screenWidth = BridgeHandler.WINDOW.get().getWidth();
-
-			if (absoluteX + absoluteWidth > screenWidth) {
-				x -= absoluteX + absoluteWidth - screenWidth;
+			final double right = ui.getView().toUiX(ui.getWidth());
+			final double top = ui.getView().toUiY(0D);
+			if (x + elementWidth > right) {
+				x = right - elementWidth;
 			}
 
-			if (absoluteY < 0) {
-				y -= absoluteY;
+			if (y < top) {
+				y = top;
 			}
 		}
 

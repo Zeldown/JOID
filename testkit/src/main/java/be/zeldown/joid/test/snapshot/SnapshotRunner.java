@@ -160,6 +160,9 @@ public final class SnapshotRunner {
 			case "zoom":
 				this.zoom(Double.parseDouble(arguments[1]));
 				break;
+			case "scale":
+				this.bridge.interfaceScale(Double.parseDouble(arguments[1]));
+				break;
 			case "dev":
 				JOID.inst().setDevMode(Boolean.parseBoolean(arguments[1]));
 				break;

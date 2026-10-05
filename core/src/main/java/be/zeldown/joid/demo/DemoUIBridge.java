@@ -105,17 +105,19 @@ public class DemoUIBridge extends UIBridge {
 		double x = mouseX + 14D;
 		double y = mouseY + 14D;
 
-		if (x + width > ui.getWidth() - 4D) {
+		final double left = ui.getView().toUiX(0D) + 4D;
+		final double top = ui.getView().toUiY(0D) + 4D;
+		if (x + width > ui.getView().toUiX(ui.getWidth()) - 4D) {
 			x = mouseX - width - 14D;
 		}
-		if (y + height > ui.getHeight() - 4D) {
+		if (y + height > ui.getView().toUiY(ui.getHeight()) - 4D) {
 			y = mouseY - height - 14D;
 		}
-		if (x < 4D) {
-			x = 4D;
+		if (x < left) {
+			x = left;
 		}
-		if (y < 4D) {
-			y = 4D;
+		if (y < top) {
+			y = top;
 		}
 
 		DrawUtils.SHAPE.drawRoundedRect(x, y, width, height, Color.decode("#27272a"), 6F);

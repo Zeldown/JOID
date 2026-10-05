@@ -143,6 +143,24 @@ private double zoomLevelConfig = 1D;
 // Automatiquement persisté à la fermeture, restauré au chargement.
 ```
 
+## Coordonnées et échelle
+
+Une UI se conçoit sur un canevas de 1920×1080. `ui.getView()` renvoie la `UIView` qui place ce canevas dans la fenêtre, et toutes les conversions passent par elle — dessin, souris, infobulles, résolution des effets :
+
+1. le canevas remplit la fenêtre, élargi ou rehaussé quand le ratio de la fenêtre diffère, et placé selon `anchorX` / `anchorY` ;
+2. l'**échelle d'interface** choisie par l'hôte s'applique autour de l'ancre (voir [Échelle d'interface](bridge.md#chelle-d-interface)) ;
+3. le **zoom** de l'utilisateur (CTRL + `+` / `-`) s'applique autour de l'ancre.
+
+```java
+ui.getMouseX();                       // souris sur le canevas, toutes transformations comprises
+ui.getView().toScreenX(x);            // canevas → pixels de la fenêtre (aussi toScreenY / toScreenWidth / toScreenHeight)
+ui.getView().toUiX(screenX);          // pixels de la fenêtre → canevas (aussi toUiY)
+ui.getView().getVisibleWidth();       // largeur du canevas visible à l'écran, reflétée par le signal scaledWidth
+ui.zoom(0.8D);
+```
+
+Le zoom va de `0.1` à `max(1, 1 / échelle d'interface)` : une interface réduite peut toujours être zoomée jusqu'à sa pleine taille. Les signaux `zoomLevel`, `scaledWidth` et `scaledHeight` suivent chaque changement.
+
 ## Bonnes pratiques
 
 - **Une UI, une responsabilité.** N'amalgamez pas menu de paramètres, minimap et chat dans une seule `UI`. Utilisez plusieurs UIs ouvertes/fermées individuellement.

@@ -96,6 +96,19 @@ Chaque `DemoWindow` de backend contient une boucle complète pour sa bibliothèq
 
 `UIBridge` gère déjà le tracking du drag et ESC-to-close ; il suffit de lui fournir les événements.
 
+## Échelle d'interface
+
+Un hôte qui laisse ses utilisateurs choisir la taille de l'interface — un GUI scale de jeu, un réglage d'accessibilité — l'indique à JOID via `getInterfaceScale(UI)`. Le bridge décide des UIs concernées et renvoie un facteur normalisé, `1` valant la pleine taille :
+
+```java
+@Override
+public double getInterfaceScale(final @NonNull UI ui) {
+    return ui instanceof HudUI ? this.settings.getGuiScale() / (double) this.settings.getMaxGuiScale() : 1D;
+}
+```
+
+L'UI fait le reste : elle se dessine autour de son ancre à cette échelle, convertit la souris, place les infobulles, dimensionne les effets, et met à jour ses signaux `scaledWidth` / `scaledHeight` quand la valeur change. Le bridge continue de transmettre la taille brute de la fenêtre et la position brute de la souris, en pixels — ne les remettez jamais à l'échelle vous-même.
+
 ## Plusieurs bridges
 
 Une vraie app a souvent plusieurs bridges — par exemple un pour les UIs in-world, un pour le menu principal. `BridgeHandler.UI` route chaque `UI` vers le bridge approprié selon `canHandle(Class<? extends UI>)`. Quand plusieurs bridges peuvent gérer la même `UI`, celui qui a le plus grand `getIndex()` l'emporte, puis le dernier enregistré.

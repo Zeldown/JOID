@@ -130,10 +130,10 @@ public class DraggableProperty {
 			break;
 		case SCREEN:
 			final UI ui = node.getUi();
-			boundX = ui.getRelativeX(0);
-			boundY = ui.getRelativeY(0);
-			boundWidth = ui.getRelativeX(ui.getWidth() * (ui.getViewportWidth() / ui.getWidth())) - ui.getRelativeX(0);
-			boundHeight = ui.getRelativeY(ui.getHeight() * (ui.getViewportHeight() / ui.getHeight())) - ui.getRelativeY(0);
+			boundX = ui.getView().toUiX(0D);
+			boundY = ui.getView().toUiY(0D);
+			boundWidth = ui.getView().toUiX(ui.getWidth()) - boundX;
+			boundHeight = ui.getView().toUiY(ui.getHeight()) - boundY;
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid DraggableAreaType: " + this.areaType);
