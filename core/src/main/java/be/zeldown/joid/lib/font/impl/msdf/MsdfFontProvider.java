@@ -18,12 +18,15 @@ import be.zeldown.joid.lib.font.impl.glyph.GlyphFontProvider;
 import be.zeldown.joid.lib.font.impl.glyph.dto.TextGlyph;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfAtlas;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfBounds;
-import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
+import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfGlyph;
 import be.zeldown.joid.lib.render.tessellator.Tessellator;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-public final class MsdfFontProvider extends GlyphFontProvider<MsdfFace> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 
 	private static final MsdfFontProvider INSTANCE = new MsdfFontProvider();
 
@@ -34,11 +37,9 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFace> {
 	private Color    color;
 	private double   runX;
 	private double   runY;
-	private MsdfFace face;
 	private double   runWidth;
 	private double   runHeight;
-
-	private MsdfFontProvider() {}
+	private MsdfFontFace face;
 
 	public static @NonNull MsdfFontProvider inst() {
 		return MsdfFontProvider.INSTANCE;
@@ -50,8 +51,8 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFace> {
 	}
 
 	@Override
-	protected void drawGlyph(final @NonNull TextGlyph<MsdfFace> glyph) {
-		final MsdfFace face = glyph.getFace();
+	protected void drawGlyph(final @NonNull TextGlyph<MsdfFontFace> glyph) {
+		final MsdfFontFace face = glyph.getFace();
 		final MsdfGlyph msdf = face.getGlyph(glyph.getCodepoint());
 		if (msdf == null || msdf.getPlaneBounds() == null || msdf.getAtlasBounds() == null) {
 			return;
@@ -128,7 +129,7 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFace> {
 		MsdfShader.GRADIENT_CANVAS.setValue((float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
 	}
 
-	private void bindFace(final @NonNull MsdfFace face) {
+	private void bindFace(final @NonNull MsdfFontFace face) {
 		this.face = face;
 		face.getTexture().bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
 		MsdfShader.TEXEL.setValue(1F / face.getAtlas().getWidth(), 1F / face.getAtlas().getHeight());

@@ -4,25 +4,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.font.FontWeight;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
-public final class FontFamily<F extends IGlyphFace> {
+public final class FontFamily<F extends IFontFace> {
 
 	private static final int NORMAL = 400;
 	private static final int MEDIUM = 500;
 
-	private final List<F> faces;
+	@Getter private final List<F> faces;
+	private final Set<FontWeight> warned = ConcurrentHashMap.newKeySet();
 
 	private FontFamily(final List<F> faces) {
 		this.faces = faces;
 	}
 
 	@SafeVarargs
-	public static <F extends IGlyphFace> @NonNull FontFamily<F> of(final @NonNull F @NonNull... faces) {
+	public static <F extends IFontFace> @NonNull FontFamily<F> of(final @NonNull F @NonNull... faces) {
 		if (faces.length == 0) {
 			throw new IllegalArgumentException("A font family needs at least one face");
 		}
@@ -31,7 +35,7 @@ public final class FontFamily<F extends IGlyphFace> {
 		for (final F face : faces) {
 			for (final F other : sorted) {
 				if (other.getWeight() == face.getWeight() && other.isItalic() == face.isItalic()) {
-					throw new IllegalArgumentException("Two faces share the weight " + face.getWeight() + (face.isItalic() ? " italic" : ""));
+					throw new IllegalArgumentException("Two faces share the weight " + face.getWeight().getValue() + (face.isItalic() ? " italic" : ""));
 				}
 			}
 			sorted.add(face);
@@ -49,41 +53,31 @@ public final class FontFamily<F extends IGlyphFace> {
 			}
 		}
 
-		return FontFamily.match(styled.isEmpty() ? this.faces : styled, weight.getValue());
+		final F face = FontFamily.match(styled.isEmpty() ? this.faces : styled, weight.getValue());
+		if (face.getWeight() != weight && JOID.inst().isDevMode() && this.warned.add(weight)) {
+			System.err.println("[JOID] The font weight " + weight.getValue() + " is not loaded in this font family, " + face.getWeight().getValue() + " is drawn instead (loaded: " + this.faces.stream().map(loaded -> String.valueOf(loaded.getWeight().getValue())).distinct().collect(Collectors.joining(", ")) + ")");
+		}
+		return face;
 	}
 
-	private static <F extends IGlyphFace> @NonNull F match(final @NonNull List<F> faces, final int desired) {
-		F lighter = null;
-		F heavier = null;
-		F within = null;
+	private static boolean closer(final int candidate, final int current, final int desired) {
+		final int distance = Math.abs(candidate - desired);
+		final int best = Math.abs(current - desired);
+		if (distance != best) {
+			return distance < best;
+		}
+
+		return desired == FontFamily.NORMAL || desired > FontFamily.MEDIUM ? candidate > current : candidate < current;
+	}
+
+	private static <F extends IFontFace> @NonNull F match(final @NonNull List<F> faces, final int desired) {
+		F match = faces.get(0);
 		for (final F face : faces) {
-			final int weight = face.getWeight().getValue();
-			if (weight == desired) {
-				return face;
-			}
-
-			if (weight < desired && (lighter == null || weight > lighter.getWeight().getValue())) {
-				lighter = face;
-			}
-
-			if (weight > desired && (heavier == null || weight < heavier.getWeight().getValue())) {
-				heavier = face;
-			}
-
-			if (weight > desired && weight <= FontFamily.MEDIUM && (within == null || weight < within.getWeight().getValue())) {
-				within = face;
+			if (FontFamily.closer(face.getWeight().getValue(), match.getWeight().getValue(), desired)) {
+				match = face;
 			}
 		}
-
-		if (desired >= FontFamily.NORMAL && desired <= FontFamily.MEDIUM) {
-			return within != null ? within : lighter != null ? lighter : heavier;
-		}
-
-		if (desired < FontFamily.NORMAL) {
-			return lighter != null ? lighter : heavier;
-		}
-
-		return heavier != null ? heavier : lighter;
+		return match;
 	}
 
 }

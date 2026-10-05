@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public final class GlyphPlacement<F extends IGlyphFace> {
+public final class GlyphPlacement<F extends IFontFace> {
 
 	private final int       index;
 	private final int       codepoint;

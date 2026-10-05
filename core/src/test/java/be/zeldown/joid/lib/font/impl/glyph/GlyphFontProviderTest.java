@@ -19,7 +19,7 @@ import be.zeldown.joid.lib.font.dto.markup.ITextMarkup;
 import be.zeldown.joid.lib.font.impl.glyph.dto.FontFamily;
 import be.zeldown.joid.lib.font.impl.glyph.dto.GlyphLayout;
 import be.zeldown.joid.lib.font.impl.glyph.dto.GlyphPlacement;
-import be.zeldown.joid.lib.font.impl.glyph.dto.IGlyphFace;
+import be.zeldown.joid.lib.font.impl.glyph.dto.IFontFace;
 import be.zeldown.joid.lib.font.impl.glyph.dto.TextGlyph;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -72,6 +72,7 @@ public class GlyphFontProviderTest {
 	public void reset() {
 		GlyphFontProviderTest.PROVIDER.events = this.events;
 		GlyphFontProviderTest.PROVIDER.drawn.clear();
+		GlyphFontProviderTest.PROVIDER.runs.clear();
 	}
 
 	@Test
@@ -103,6 +104,31 @@ public class GlyphFontProviderTest {
 				"background A", "background B",
 				"begin", "draw A shadow", "draw B shadow", "end", "decorate A shadow", "decorate B shadow",
 				"begin", "draw A", "draw B", "end", "decorate A", "decorate B"), this.events);
+	}
+
+	@Test
+	public void drawsInsideTheGivenRun() {
+		final FontBounds bounds = GlyphFontProviderTest.PROVIDER.drawText(5D, 6D, "AB", GlyphFontProviderTest.info().shadow(Color.BLACK).shadow(2F, 3F), 1D, 2D, 300D, 40D);
+		Assert.assertEquals(10D, bounds.getWidth(), 1E-6D);
+		Assert.assertEquals(12D, bounds.getHeight(), 1E-6D);
+		Assert.assertArrayEquals(new double[] {3D, 5D, 300D, 40D}, GlyphFontProviderTest.PROVIDER.runs.get(0), 1E-6D);
+		Assert.assertArrayEquals(new double[] {1D, 2D, 300D, 40D}, GlyphFontProviderTest.PROVIDER.runs.get(1), 1E-6D);
+	}
+
+	@Test
+	public void drawsNothingWithoutGlyph() {
+		final FontBounds bounds = GlyphFontProviderTest.PROVIDER.drawText(0D, 0D, "##", GlyphFontProviderTest.info().shadow(Color.BLACK));
+		Assert.assertEquals(0D, bounds.getWidth(), 0D);
+		Assert.assertEquals(0D, bounds.getHeight(), 0D);
+		Assert.assertTrue(this.events.isEmpty());
+	}
+
+	@Test
+	public void wrapsAPlainTextInItsOwnRun() {
+		GlyphFontProviderTest.PROVIDER.drawText(5D, 6D, "AB", GlyphFontProviderTest.info());
+		Assert.assertArrayEquals(new double[] {5D, 6D, 10D, 12D}, GlyphFontProviderTest.PROVIDER.runs.get(0), 1E-6D);
+		Assert.assertEquals(5D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getX(), 1E-6D);
+		Assert.assertEquals(10D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getX(), 1E-6D);
 	}
 
 	@Test
@@ -177,6 +203,12 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
+	public void measuresTheLineHeightForAnyText() {
+		Assert.assertEquals(15D, GlyphFontProviderTest.PROVIDER.getHeight("AV", GlyphFontProviderTest.info().lineHeight(3F)), 1E-6D);
+		Assert.assertEquals(15D, GlyphFontProviderTest.PROVIDER.getHeight("", GlyphFontProviderTest.info().lineHeight(3F)), 1E-6D);
+	}
+
+	@Test
 	public void keepsTheTextColorWhenNotColored() {
 		GlyphFontProviderTest.draw("~A", GlyphFontProviderTest.info().color(Color.WHITE).colored(false));
 		Assert.assertSame(Color.WHITE, GlyphFontProviderTest.PROVIDER.drawn.get(0).getColor());
@@ -212,7 +244,7 @@ public class GlyphFontProviderTest {
 
 	@Getter
 	@AllArgsConstructor
-	private static final class Face implements IGlyphFace {
+	private static final class Face implements IFontFace {
 
 		private final FontWeight weight;
 		private final boolean    italic;
@@ -275,6 +307,7 @@ public class GlyphFontProviderTest {
 
 	private static final class Provider extends GlyphFontProvider<Face> {
 
+		private final List<double[]>        runs  = new ArrayList<>();
 		private final List<TextGlyph<Face>> drawn = new ArrayList<>();
 
 		private List<String> events = new ArrayList<>();
@@ -293,6 +326,7 @@ public class GlyphFontProviderTest {
 		@Override
 		protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
 			this.events.add("begin");
+			this.runs.add(new double[] {runX, runY, runWidth, runHeight});
 		}
 
 	}

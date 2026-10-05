@@ -198,13 +198,13 @@ public final class DevNode extends Node {
 			.body(flex -> {
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(inspectedNode.getClass().getSimpleName(), TextInfo.create(InternalFont.MONTSERRAT, 17, DevNode.WHITE).weight(FontWeight.SEMI_BOLD), Align.START, Align.CENTER))
+				.text(Text.create(inspectedNode.getClass().getSimpleName(), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE), Align.START, Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(inspectedNode.getUpdateCount() + " update"  + (inspectedNode.getUpdateCount() > 1 ? "s" : ""), TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.LIGHT_WHITE).weight(FontWeight.MEDIUM), Align.START, Align.CENTER))
+				.text(Text.create(inspectedNode.getUpdateCount() + " update"  + (inspectedNode.getUpdateCount() > 1 ? "s" : ""), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 
@@ -215,7 +215,7 @@ public final class DevNode extends Node {
 
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(String.format("%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.LIGHT_WHITE).weight(FontWeight.MEDIUM), Align.START, Align.CENTER))
+				.text(Text.create(String.format("%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 			})
@@ -228,9 +228,9 @@ public final class DevNode extends Node {
 				FlexNode
 				.vertical(10, 10, container.aw(-20))
 				.body(scroll -> {
-					final TextInfo categoryInfo = TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.LIGHT_WHITE).weight(FontWeight.MEDIUM);
-					final TextInfo labelInfo = TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.ACTION.brighter(0.3F)).weight(FontWeight.SEMI_BOLD);
-					final TextInfo valueInfo = TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.ACTION).weight(FontWeight.MEDIUM);
+					final TextInfo categoryInfo = TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE);
+					final TextInfo labelInfo = TextInfo.create(InternalFont.MONTSERRAT, FontWeight.SEMI_BOLD, 15, DevNode.ACTION.brighter(0.3F));
+					final TextInfo valueInfo = TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.ACTION);
 
 					TextNode
 					.create(0, 0)
@@ -384,7 +384,7 @@ public final class DevNode extends Node {
 
 		TextNode
 		.create(157 + super.aw(-157) / 2, super.getHeight() - super.getDefaultHeight() + super.getDefaultHeight() / 2)
-		.text(Text.create(String.format("%.0f fps", super.getUi().getFps()), TextInfo.create(InternalFont.MONTSERRAT, 17, DevNode.WHITE).weight(FontWeight.MEDIUM), Align.CENTER, Align.CENTER))
+		.text(Text.create(String.format("%.0f fps", super.getUi().getFps()), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
 		.<TextNode>onUpdate(node -> node.getText().text(String.format("%.0f fps", super.getUi().getFps())))
 		.anchor(Align.CENTER)
 		.attach(this);

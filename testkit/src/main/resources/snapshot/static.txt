@@ -16,6 +16,17 @@ shot static-UIDemoDraggable
 ui be.zeldown.joid.demo.ui.font.UIDemoFont
 wait 3500
 shot static-UIDemoFont
+ui be.zeldown.joid.demo.ui.font.UIDemoFontWeight
+wait 3500
+shot static-UIDemoFontWeight
+ui be.zeldown.joid.demo.ui.font.UIDemoTextMarkup
+wait 3500
+shot static-UIDemoTextMarkup
+ui be.zeldown.joid.demo.ui.font.UIDemoTextEffect
+wait 3500
+shot static-UIDemoTextEffect
+wait 400
+shot static-UIDemoTextEffect-later
 ui be.zeldown.joid.demo.ui.flex.UIDemoFlex
 wait 3500
 shot static-UIDemoFlex

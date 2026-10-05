@@ -3,7 +3,7 @@ package be.zeldown.joid.lib.font.impl.glyph.dto;
 import be.zeldown.joid.lib.font.FontWeight;
 import lombok.NonNull;
 
-public interface IGlyphFace {
+public interface IFontFace {
 
 	public boolean isItalic();
 

@@ -3,7 +3,7 @@ package be.zeldown.joid.lib.font.impl.msdf.dto.source;
 import java.io.IOException;
 
 import be.zeldown.joid.lib.font.FontWeight;
-import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
+import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
@@ -13,8 +13,8 @@ public abstract class MsdfSource implements IMsdfSource {
 	private FontWeight weight;
 
 	@Override
-	public final @NonNull MsdfFace read() throws IOException {
-		final MsdfFace face = this.parse();
+	public final @NonNull MsdfFontFace read() throws IOException {
+		final MsdfFontFace face = this.parse();
 		if (this.weight == null && this.italic == null) {
 			return face;
 		}
@@ -22,7 +22,7 @@ public abstract class MsdfSource implements IMsdfSource {
 		return face.style(this.weight == null ? face.getWeight() : this.weight, this.italic == null ? face.isItalic() : this.italic);
 	}
 
-	protected abstract @NonNull MsdfFace parse() throws IOException;
+	protected abstract @NonNull MsdfFontFace parse() throws IOException;
 
 	public final <T extends MsdfSource> @NonNull T italic(final boolean italic) {
 		this.italic = italic;

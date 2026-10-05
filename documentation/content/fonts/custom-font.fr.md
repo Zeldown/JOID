@@ -58,23 +58,29 @@ Les paires de crénage voyagent dans le fichier `font.msdf` et s'appliquent seul
 
 ## Graisses et styles
 
-`FontWeight` nomme les neuf graisses CSS, de `THIN` (100) à `BLACK` (900). Un `TextInfo` en demande une, et la police la résout comme un navigateur résout `font-weight` :
+Comme une `font-family` CSS assemblée à partir de règles `@font-face`, un seul `MsdfFont` contient toutes les faces d'une police, et chaque texte choisit sa graisse. `FontWeight` nomme les neuf graisses, de `THIN` (100) à `BLACK` (900) :
 
 ```java
-final TextInfo corps = TextInfo.create(inter, 16, Color.WHITE);
-final TextInfo titre = corps.copy().weight(FontWeight.BOLD).fontSize(28);
-final TextInfo citation = corps.copy().italic(true);
+final TextInfo corps = TextInfo.create(InternalFont.MONTSERRAT, 16, Color.WHITE);
+final TextInfo titre = TextInfo.create(InternalFont.MONTSERRAT, FontWeight.BOLD, 28, Color.WHITE);
+final TextInfo citation = corps.copy().weight(FontWeight.LIGHT).italic(true);
 ```
 
-| Demandée | Face dessinée quand la graisse exacte manque |
-|---|---|
-| 400 – 500 | la face plus grasse la plus proche jusqu'à 500, puis les plus maigres, puis les plus grasses |
-| sous 400 | d'abord les plus maigres, puis les plus grasses |
-| au-dessus de 500 | d'abord les plus grasses, puis les plus maigres |
+Quand la famille n'a pas de face de la graisse demandée, la face à la graisse la plus proche est dessinée. Deux faces à égale distance sont départagées comme en CSS : 400 prend la plus grasse, 500 et en dessous prennent la plus maigre, au-dessus de 500 la plus grasse. Avec Light (300) et Bold (700) chargées :
+
+| Demandée | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 |
+|---|---|---|---|---|---|---|---|---|---|
+| Dessinée | 300 | 300 | 300 | 300 | 300 | 700 | 700 | 700 | 700 |
+
+En mode dev (`JOID.inst().setDevMode(true)`), le premier repli de chaque graisse est signalé une fois dans la console :
+
+```
+[JOID] The font weight 600 is not loaded in this font family, 700 is drawn instead (loaded: 300, 700)
+```
 
 L'italique préfère les faces italiques de la famille. Une famille sans italique garde ses faces droites et les penche, donc `italic(true)` se voit toujours.
 
-`FontWeight.of(int)` convertit une graisse numérique en la graisse nommée la plus proche.
+`FontWeight.of(int)` convertit n'importe quelle graisse numérique en la graisse nommée la plus proche : `FontWeight.of(600)` vaut `SEMI_BOLD`, `FontWeight.of(650)` vaut `BOLD`.
 
 ## Polices embarquées
 
@@ -85,7 +91,8 @@ L'italique préfère les faces italiques de la famille. Une famille sans italiqu
 ```java
 TextInfo.create(IFont font, float fontSize)
 TextInfo.create(IFont font, float fontSize, Color color)
-MsdfFont.info(float fontSize)
+TextInfo.create(IFont font, FontWeight weight, float fontSize)
+TextInfo.create(IFont font, FontWeight weight, float fontSize, Color color)
 ```
 
 Setters (chaînables, retournent le même `TextInfo`) :
@@ -162,7 +169,7 @@ MSDF est une implémentation du contrat de police, pas le contrat lui-même. Tou
 | `IFont` | Ce que porte un `TextInfo`. Fournit son provider. |
 | `IFontProvider` | Dessine et mesure une chaîne pour un `TextInfo`. |
 
-Une police faite d'images de glyphes obtient le reste gratuitement depuis `be.zeldown.joid.lib.font.impl.glyph` : décrivez une face avec `IGlyphFace`, étendez `GlyphFont` et `GlyphFontProvider`, et dessinez un seul glyphe dans `drawGlyph`. Les familles, la résolution des graisses, le crénage, l'espacement, le balisage, les effets et les ombres viennent des classes de base. Les classes MSDF de `be.zeldown.joid.lib.font.impl.msdf` sont construites exactement ainsi.
+Une police faite d'images de glyphes obtient le reste gratuitement depuis `be.zeldown.joid.lib.font.impl.glyph` : décrivez une face avec `IFontFace`, étendez `GlyphFont` et `GlyphFontProvider`, et dessinez un seul glyphe dans `drawGlyph`. Les familles, la résolution des graisses, le crénage, l'espacement, le balisage, les effets et les ombres viennent des classes de base. Les classes MSDF de `be.zeldown.joid.lib.font.impl.msdf` sont construites exactement ainsi.
 
 ## Voir aussi
 

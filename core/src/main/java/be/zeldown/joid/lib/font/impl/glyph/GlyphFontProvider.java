@@ -13,12 +13,12 @@ import be.zeldown.joid.lib.font.dto.markup.ITextMarkup;
 import be.zeldown.joid.lib.font.dto.markup.TextMarkup;
 import be.zeldown.joid.lib.font.impl.glyph.dto.GlyphLayout;
 import be.zeldown.joid.lib.font.impl.glyph.dto.GlyphPlacement;
-import be.zeldown.joid.lib.font.impl.glyph.dto.IGlyphFace;
+import be.zeldown.joid.lib.font.impl.glyph.dto.IFontFace;
 import be.zeldown.joid.lib.font.impl.glyph.dto.TextGlyph;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
-public abstract class GlyphFontProvider<F extends IGlyphFace> implements IFontProvider {
+public abstract class GlyphFontProvider<F extends IFontFace> implements IFontProvider {
 
 	protected abstract void end();
 

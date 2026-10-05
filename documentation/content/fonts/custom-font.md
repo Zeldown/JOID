@@ -58,23 +58,29 @@ Kerning pairs travel inside the `font.msdf` file and apply on their own, both wh
 
 ## Weights and styles
 
-`FontWeight` names the nine CSS weights, from `THIN` (100) to `BLACK` (900). A `TextInfo` asks for one, and the font resolves it the way a browser resolves `font-weight`:
+Like a CSS `font-family` assembled from `@font-face` rules, one `MsdfFont` holds every face of a typeface, and each text picks its weight. `FontWeight` names the nine weights, from `THIN` (100) to `BLACK` (900):
 
 ```java
-final TextInfo body = TextInfo.create(inter, 16, Color.WHITE);
-final TextInfo title = body.copy().weight(FontWeight.BOLD).fontSize(28);
-final TextInfo quote = body.copy().italic(true);
+final TextInfo body = TextInfo.create(InternalFont.MONTSERRAT, 16, Color.WHITE);
+final TextInfo title = TextInfo.create(InternalFont.MONTSERRAT, FontWeight.BOLD, 28, Color.WHITE);
+final TextInfo quote = body.copy().weight(FontWeight.LIGHT).italic(true);
 ```
 
-| Requested | Face drawn when the exact weight is missing |
-|---|---|
-| 400 – 500 | the closest heavier face up to 500, then lighter faces, then heavier ones |
-| below 400 | lighter faces first, then heavier ones |
-| above 500 | heavier faces first, then lighter ones |
+When the family has no face of the requested weight, the face with the closest weight is drawn. Two faces at the same distance are separated the CSS way: 400 takes the heavier one, 500 and below take the lighter one, above 500 takes the heavier one. With Light (300) and Bold (700) loaded:
+
+| Requested | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 |
+|---|---|---|---|---|---|---|---|---|---|
+| Drawn | 300 | 300 | 300 | 300 | 300 | 700 | 700 | 700 | 700 |
+
+In dev mode (`JOID.inst().setDevMode(true)`) the first fallback of each weight is reported once on the console:
+
+```
+[JOID] The font weight 600 is not loaded in this font family, 700 is drawn instead (loaded: 300, 700)
+```
 
 Italic prefers the italic faces of the family. A family without one keeps its upright faces and slants them, so `italic(true)` always shows.
 
-`FontWeight.of(int)` turns a numeric weight into the closest named one.
+`FontWeight.of(int)` turns any numeric weight into the closest named one: `FontWeight.of(600)` is `SEMI_BOLD`, `FontWeight.of(650)` is `BOLD`.
 
 ## Bundled fonts
 
@@ -85,7 +91,8 @@ Italic prefers the italic faces of the family. A family without one keeps its up
 ```java
 TextInfo.create(IFont font, float fontSize)
 TextInfo.create(IFont font, float fontSize, Color color)
-MsdfFont.info(float fontSize)
+TextInfo.create(IFont font, FontWeight weight, float fontSize)
+TextInfo.create(IFont font, FontWeight weight, float fontSize, Color color)
 ```
 
 Setters (all chainable, return the same `TextInfo` instance):
@@ -162,7 +169,7 @@ MSDF is one implementation of the font contract, not the contract itself. Everyt
 | `IFont` | What a `TextInfo` holds. Hands out its provider. |
 | `IFontProvider` | Draws and measures a string for a `TextInfo`. |
 
-A font made of glyph images gets the rest for free from `be.zeldown.joid.lib.font.impl.glyph`: describe one face with `IGlyphFace`, extend `GlyphFont` and `GlyphFontProvider`, and draw a single glyph in `drawGlyph`. Families, weight resolution, kerning, letter spacing, markup, effects and shadows come from the base classes. The MSDF classes in `be.zeldown.joid.lib.font.impl.msdf` are built exactly that way.
+A font made of glyph images gets the rest for free from `be.zeldown.joid.lib.font.impl.glyph`: describe one face with `IFontFace`, extend `GlyphFont` and `GlyphFontProvider`, and draw a single glyph in `drawGlyph`. Families, weight resolution, kerning, letter spacing, markup, effects and shadows come from the base classes. The MSDF classes in `be.zeldown.joid.lib.font.impl.msdf` are built exactly that way.
 
 ## See also
 

@@ -12,7 +12,7 @@ import org.junit.Test;
 import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.font.FontWeight;
-import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
+import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import be.zeldown.joid.lib.font.impl.msdf.dto.source.IMsdfSource;
 import be.zeldown.joid.lib.font.impl.msdf.dto.source.MsdfBinarySource;
 
@@ -78,7 +78,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 30000L)
 	public void acceptsAnyMsdfSource() throws IOException {
-		final MsdfFace face = MsdfBinarySource.of(MsdfFontLoaderTest.stream("Regular")).read();
+		final MsdfFontFace face = MsdfBinarySource.of(MsdfFontLoaderTest.stream("Regular")).read();
 		final IMsdfSource source = () -> face;
 		Assert.assertSame(face, MsdfFontLoader.load(source).join().getFace(FontWeight.REGULAR, false));
 	}

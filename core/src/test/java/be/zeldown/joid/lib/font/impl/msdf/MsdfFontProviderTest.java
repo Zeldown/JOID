@@ -8,14 +8,14 @@ import be.zeldown.joid.internal.JOID;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.dto.TextInfo;
-import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
+import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 
 public class MsdfFontProviderTest {
 
 	private static final float SIZE = 100F;
 
 	private static MsdfFont font;
-	private static MsdfFace regular;
+	private static MsdfFontFace regular;
 
 	@BeforeClass
 	public static void load() {

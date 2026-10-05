@@ -81,6 +81,8 @@ TextNode.create(40, 40, 200, 40)
 ```java
 TextInfo.create(IFont font, float fontSize)
 TextInfo.create(IFont font, float fontSize, Color color)
+TextInfo.create(IFont font, FontWeight weight, float fontSize)
+TextInfo.create(IFont font, FontWeight weight, float fontSize, Color color)
 
 T font(IFont font)
 T fontSize(float fontSize)

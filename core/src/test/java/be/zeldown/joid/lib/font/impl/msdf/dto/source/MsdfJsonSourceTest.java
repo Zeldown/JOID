@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfBounds;
-import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
+import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 
 public class MsdfJsonSourceTest {
 
@@ -23,7 +23,7 @@ public class MsdfJsonSourceTest {
 			+ "\"glyphs\":[{\"unicode\":32,\"advance\":0.25},{\"unicode\":65,\"advance\":0.625,\"planeBounds\":{\"left\":0,\"bottom\":-0.125,\"right\":0.625,\"top\":0.75},\"atlasBounds\":{\"left\":0.5,\"bottom\":0.5,\"right\":1.5,\"top\":1.5}}],"
 			+ "\"kerning\":[{\"unicode1\":65,\"unicode2\":86,\"advance\":-0.0625}]}";
 
-	private static MsdfFace face;
+	private static MsdfFontFace face;
 
 	@Test
 	public void readsTheAtlas() {
@@ -85,9 +85,20 @@ public class MsdfJsonSourceTest {
 
 	@Test
 	public void takesTheStyleOfTheSource() throws IOException {
-		final MsdfFace face = MsdfJsonSource.of(MsdfJsonSourceTest.stream(MsdfJsonSourceTest.JSON), new ByteArrayInputStream(MsdfJsonSourceTest.png())).weight(FontWeight.BOLD).italic(true).read();
+		final MsdfFontFace face = MsdfJsonSource.of(MsdfJsonSourceTest.stream(MsdfJsonSourceTest.JSON), new ByteArrayInputStream(MsdfJsonSourceTest.png())).weight(FontWeight.BOLD).italic(true).read();
 		Assert.assertSame(FontWeight.BOLD, face.getWeight());
 		Assert.assertTrue(face.isItalic());
+	}
+
+	@Test
+	public void fillsWhatTheAtlasLeavesOut() throws IOException {
+		final String json = "{\"atlas\":{\"width\":2,\"height\":2},\"metrics\":{},\"glyphs\":[{\"unicode\":65}]}";
+		final MsdfFontFace face = MsdfJsonSource.of(MsdfJsonSourceTest.stream(json), new ByteArrayInputStream(MsdfJsonSourceTest.png())).read();
+		Assert.assertTrue(face.getKerningPairs().isEmpty());
+		Assert.assertEquals(0F, face.getAtlas().getDistanceRange(), 0F);
+		Assert.assertEquals(0F, face.getLineHeight(), 0F);
+		Assert.assertEquals(0F, face.getAdvance('A'), 0F);
+		Assert.assertNull(face.getGlyph('A').getPlaneBounds());
 	}
 
 	@Test(expected = IOException.class)

@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class TextGlyph<F extends IGlyphFace> implements ITextGlyph {
+public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 
 	private final F         face;
 	private final double    x;
@@ -36,7 +36,7 @@ public final class TextGlyph<F extends IGlyphFace> implements ITextGlyph {
 		this.shadow = shadow;
 	}
 
-	public static <F extends IGlyphFace> @NonNull TextGlyph<F> create(final @NonNull F face, final int index, final int codepoint, final @NonNull TextStyle style, final double x, final double baseline, final double size, final double advance, final @NonNull Color color) {
+	public static <F extends IFontFace> @NonNull TextGlyph<F> create(final @NonNull F face, final int index, final int codepoint, final @NonNull TextStyle style, final double x, final double baseline, final double size, final double advance, final @NonNull Color color) {
 		return new TextGlyph<>(face, index, codepoint, style, x, baseline, size, advance, color, false);
 	}
 

@@ -8,12 +8,15 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
+import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import be.zeldown.joid.lib.font.impl.msdf.dto.source.IMsdfSource;
 import be.zeldown.joid.lib.font.impl.msdf.dto.source.MsdfBinarySource;
 import be.zeldown.joid.lib.utils.thread.ThreadUtils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfFontLoader {
 
 	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5, ThreadUtils.daemonFactory("MsdfFontLoader"));
@@ -25,13 +28,13 @@ public final class MsdfFontLoader {
 			return future;
 		}
 
-		final List<CompletableFuture<MsdfFace>> futures = new ArrayList<>(faces.length);
+		final List<CompletableFuture<MsdfFontFace>> futures = new ArrayList<>(faces.length);
 		for (final Object handle : faces) {
 			futures.add(MsdfFontLoader.read(handle));
 		}
 
 		return CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).thenApply(done -> {
-			final MsdfFace[] loaded = new MsdfFace[futures.size()];
+			final MsdfFontFace[] loaded = new MsdfFontFace[futures.size()];
 			for (int i = 0; i < loaded.length; i++) {
 				loaded[i] = futures.get(i).join();
 			}
@@ -43,7 +46,7 @@ public final class MsdfFontLoader {
 		return handle instanceof IMsdfSource ? (IMsdfSource) handle : MsdfBinarySource.of(handle);
 	}
 
-	private static @NonNull CompletableFuture<MsdfFace> read(final @NonNull Object handle) {
+	private static @NonNull CompletableFuture<MsdfFontFace> read(final @NonNull Object handle) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				return MsdfFontLoader.source(handle).read();

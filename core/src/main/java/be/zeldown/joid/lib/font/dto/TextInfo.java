@@ -1,6 +1,7 @@
 package be.zeldown.joid.lib.font.dto;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import be.zeldown.joid.lib.color.Color;
@@ -9,7 +10,6 @@ import be.zeldown.joid.lib.font.IFont;
 import be.zeldown.joid.lib.font.dto.effect.ITextEffect;
 import be.zeldown.joid.lib.font.dto.markup.ITextMarkup;
 import be.zeldown.joid.lib.font.dto.markup.TextMarkup;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -31,23 +31,27 @@ public final class TextInfo {
 	private float shadowX;
 	private float shadowY;
 
-	@Getter(AccessLevel.NONE) private ITextMarkup[] markups;
-	@Getter(AccessLevel.NONE) private ITextEffect[] effects;
-
-	private TextInfo(final IFont font, final float fontSize) {
-		this(font, fontSize, Color.BLACK);
-	}
-
-	private TextInfo(final IFont font, final float fontSize, final Color color) {
-		this(font, fontSize, FontWeight.REGULAR, 0, 0, color, true, false, null, fontSize / 13.5F, fontSize / 13.5F, null, new ITextEffect[0]);
-	}
+	private ITextMarkup[] markups;
+	private ITextEffect[] effects;
 
 	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
-		return new TextInfo(font, fontSize);
+		return new TextInfo(font, FontWeight.REGULAR, fontSize, Color.BLACK);
+	}
+
+	private TextInfo(final IFont font, final FontWeight weight, final float fontSize, final Color color) {
+		this(font, fontSize, weight, 0, 0, color, true, false, null, fontSize / 13.5F, fontSize / 13.5F, null, new ITextEffect[0]);
 	}
 
 	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize, final @NonNull Color color) {
-		return new TextInfo(font, fontSize, color);
+		return new TextInfo(font, FontWeight.REGULAR, fontSize, color);
+	}
+
+	public static final @NonNull TextInfo create(final @NonNull IFont font, final @NonNull FontWeight weight, final float fontSize) {
+		return new TextInfo(font, weight, fontSize, Color.BLACK);
+	}
+
+	public static final @NonNull TextInfo create(final @NonNull IFont font, final @NonNull FontWeight weight, final float fontSize, final @NonNull Color color) {
+		return new TextInfo(font, weight, fontSize, color);
 	}
 
 	public final double getHeight() {
@@ -76,7 +80,11 @@ public final class TextInfo {
 	}
 
 	public final @NonNull List<ITextMarkup> getMarkups() {
-		return this.markups == null ? TextMarkup.getRegistered() : Arrays.asList(this.markups);
+		return this.markups == null ? TextMarkup.getRegistered() : Collections.unmodifiableList(Arrays.asList(this.markups));
+	}
+
+	public final @NonNull List<ITextEffect> getEffects() {
+		return Collections.unmodifiableList(Arrays.asList(this.effects));
 	}
 
 	public final @NonNull TextInfo font(final IFont font) {

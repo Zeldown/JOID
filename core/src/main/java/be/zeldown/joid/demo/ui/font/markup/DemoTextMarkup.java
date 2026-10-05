@@ -3,23 +3,25 @@ package be.zeldown.joid.demo.ui.font.markup;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import be.zeldown.joid.demo.ui.font.effect.DemoUnderlineEffect;
+import be.zeldown.joid.demo.ui.font.effect.DemoHighlightTextEffect;
+import be.zeldown.joid.demo.ui.font.effect.DemoUnderlineTextEffect;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.dto.TextStyle;
 import be.zeldown.joid.lib.font.dto.markup.ITextMarkup;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-public final class DemoMarkup implements ITextMarkup {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DemoTextMarkup implements ITextMarkup {
 
-	private static final DemoMarkup INSTANCE = new DemoMarkup();
+	private static final DemoTextMarkup INSTANCE = new DemoTextMarkup();
 
-	private static final Pattern TAG = Pattern.compile("<(?:([biu])|w=(\\d{3})|c=([0-9a-fA-F]{6})|(/[biuwc]))>");
+	private static final Pattern TAG = Pattern.compile("<(?:([biuh])|w=(\\d{3})|c=([0-9a-fA-F]{6})|(/[biuhwc]))>");
 
-	private DemoMarkup() {}
-
-	public static @NonNull DemoMarkup inst() {
-		return DemoMarkup.INSTANCE;
+	public static @NonNull DemoTextMarkup inst() {
+		return DemoTextMarkup.INSTANCE;
 	}
 
 	@Override
@@ -28,7 +30,7 @@ public final class DemoMarkup implements ITextMarkup {
 			return 0;
 		}
 
-		final Matcher matcher = DemoMarkup.TAG.matcher(text).region(index, text.length());
+		final Matcher matcher = DemoTextMarkup.TAG.matcher(text).region(index, text.length());
 		if (!matcher.lookingAt()) {
 			return 0;
 		}
@@ -42,7 +44,10 @@ public final class DemoMarkup implements ITextMarkup {
 			style.italic(true);
 			break;
 		case "u":
-			style.effect(DemoUnderlineEffect.inst());
+			style.effect(DemoUnderlineTextEffect.inst());
+			break;
+		case "h":
+			style.effect(DemoHighlightTextEffect.inst());
 			break;
 		case "w":
 			style.weight(FontWeight.of(Integer.parseInt(matcher.group(2))));
@@ -54,7 +59,10 @@ public final class DemoMarkup implements ITextMarkup {
 			style.italic(base.isItalic());
 			break;
 		case "/u":
-			style.removeEffect(DemoUnderlineEffect.inst());
+			style.removeEffect(DemoUnderlineTextEffect.inst());
+			break;
+		case "/h":
+			style.removeEffect(DemoHighlightTextEffect.inst());
 			break;
 		case "/c":
 			style.color(base.getColor());

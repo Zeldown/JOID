@@ -33,13 +33,13 @@ It returns how many characters the code takes, after changing the style, or `0` 
 A minimal tag markup:
 
 ```java
-public final class TagMarkup implements ITextMarkup {
+public final class TagTextMarkup implements ITextMarkup {
 
 	private static final Pattern TAG = Pattern.compile("<(/?)(b|i)>");
 
 	@Override
 	public int parse(final String text, final int index, final TextStyle style) {
-		final Matcher matcher = TagMarkup.TAG.matcher(text).region(index, text.length());
+		final Matcher matcher = TagTextMarkup.TAG.matcher(text).region(index, text.length());
 		if (!matcher.lookingAt()) {
 			return 0;
 		}
@@ -59,7 +59,7 @@ public final class TagMarkup implements ITextMarkup {
 ### Registering
 
 ```java
-TextMarkup.register(new TagMarkup());       // every TextInfo, the latest registration is tried first
+TextMarkup.register(new TagTextMarkup());   // every TextInfo, the latest registration is tried first
 TextMarkup.unregister(markup);
 
 TextInfo.create(font, 16).markups(markup);  // only these markups for this TextInfo
@@ -73,10 +73,10 @@ A `TextInfo` follows the registered markups until `markups(...)` is called on it
 Nothing in JOID reads `§` codes. A host that has them, like a Minecraft integration, registers its own markup once at startup:
 
 ```java
-public final class FormattingMarkup implements ITextMarkup {
+public final class FormattingTextMarkup implements ITextMarkup {
 
-	private static final ITextEffect UNDERLINE  = new Underline();
-	private static final ITextEffect OBFUSCATED = new Obfuscated();
+	private static final ITextEffect UNDERLINE  = new UnderlineTextEffect();
+	private static final ITextEffect OBFUSCATED = new ObfuscatedTextEffect();
 
 	private static final String   CODES  = "0123456789abcdef";
 	private static final String[] COLORS = {"000000", "0000aa", "00aa00", "00aaaa", "aa0000", "aa00aa", "ffaa00", "aaaaaa", "555555", "5555ff", "55ff55", "55ffff", "ff5555", "ff55ff", "ffff55", "ffffff"};
@@ -88,17 +88,17 @@ public final class FormattingMarkup implements ITextMarkup {
 		}
 
 		final char code = Character.toLowerCase(text.charAt(index + 1));
-		final int color = FormattingMarkup.CODES.indexOf(code);
+		final int color = FormattingTextMarkup.CODES.indexOf(code);
 		if (color >= 0) {
-			style.reset().color(Color.decode("#" + FormattingMarkup.COLORS[color]));
+			style.reset().color(Color.decode("#" + FormattingTextMarkup.COLORS[color]));
 		} else if (code == 'l') {
 			style.weight(FontWeight.BOLD);
 		} else if (code == 'o') {
 			style.italic(true);
 		} else if (code == 'n') {
-			style.effect(FormattingMarkup.UNDERLINE);
+			style.effect(FormattingTextMarkup.UNDERLINE);
 		} else if (code == 'k') {
-			style.effect(FormattingMarkup.OBFUSCATED);
+			style.effect(FormattingTextMarkup.OBFUSCATED);
 		} else if (code == 'r') {
 			style.reset();
 		} else {
@@ -157,7 +157,7 @@ The shadow reuses the glyphs `apply` already changed, so a random or animated ef
 An underline, snapped to whole pixels so it stays sharp:
 
 ```java
-public final class Underline implements ITextEffect {
+public final class UnderlineTextEffect implements ITextEffect {
 
 	@Override
 	public void decorate(final ITextGlyph glyph) {
@@ -172,11 +172,11 @@ public final class Underline implements ITextEffect {
 A wave, which moves each glyph without touching the layout:
 
 ```java
-public final class Wave implements ITextEffect {
+public final class WaveTextEffect implements ITextEffect {
 
 	@Override
 	public void apply(final ITextGlyph glyph) {
-		glyph.offset(0D, Math.sin(System.currentTimeMillis() / 150D + glyph.getIndex()) * glyph.getSize() / 8D);
+		glyph.offset(0D, Math.sin(BridgeHandler.CLOCK.get().currentTimeMillis() / 150D + glyph.getIndex()) * glyph.getSize() / 8D);
 	}
 
 }
@@ -185,14 +185,14 @@ public final class Wave implements ITextEffect {
 Scrambled characters that keep the width of the original one:
 
 ```java
-public final class Obfuscated implements ITextEffect {
+public final class ObfuscatedTextEffect implements ITextEffect {
 
 	private static final String POOL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 	@Override
 	public void apply(final ITextGlyph glyph) {
 		for (int attempt = 0; attempt < 8; attempt++) {
-			final char candidate = Obfuscated.POOL.charAt(ThreadLocalRandom.current().nextInt(Obfuscated.POOL.length()));
+			final char candidate = ObfuscatedTextEffect.POOL.charAt(ThreadLocalRandom.current().nextInt(ObfuscatedTextEffect.POOL.length()));
 			if (glyph.hasGlyph(candidate) && glyph.getAdvance(candidate) == glyph.getAdvance(glyph.getCodepoint())) {
 				glyph.codepoint(candidate);
 				return;
@@ -206,7 +206,7 @@ public final class Obfuscated implements ITextEffect {
 A highlight behind the text:
 
 ```java
-public final class Highlight implements ITextEffect {
+public final class HighlightTextEffect implements ITextEffect {
 
 	@Override
 	public void background(final ITextGlyph glyph) {
@@ -215,6 +215,10 @@ public final class Highlight implements ITextEffect {
 
 }
 ```
+
+## In the demo
+
+`UIDemoTextMarkup` and `UIDemoTextEffect` run all of the above: `DemoTextMarkup` reads `<b>`, `<i>`, `<u>`, `<h>`, `<w=NNN>` and `<c=RRGGBB>` with their closing tags, and the `demo.ui.font.effect` package holds an underline, a highlight, a wave, a rainbow and a scramble effect.
 
 ## Measuring
 

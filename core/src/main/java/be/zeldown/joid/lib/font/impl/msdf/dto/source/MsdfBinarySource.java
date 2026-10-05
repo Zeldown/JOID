@@ -13,7 +13,7 @@ import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfAtlas;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfBounds;
-import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
+import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfGlyph;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfMetrics;
 import lombok.AccessLevel;
@@ -37,7 +37,7 @@ public final class MsdfBinarySource extends MsdfSource {
 	}
 
 	@Override
-	protected @NonNull MsdfFace parse() throws IOException {
+	protected @NonNull MsdfFontFace parse() throws IOException {
 		try (InputStream stream = this.asset.open()) {
 			return MsdfBinarySource.parse(stream);
 		}
@@ -64,7 +64,7 @@ public final class MsdfBinarySource extends MsdfSource {
 		return value;
 	}
 
-	private static @NonNull MsdfFace parse(final @NonNull InputStream stream) throws IOException {
+	private static @NonNull MsdfFontFace parse(final @NonNull InputStream stream) throws IOException {
 		final byte[] magic = new byte[MsdfBinarySource.MAGIC.length];
 		new DataInputStream(stream).readFully(magic);
 		if (!Arrays.equals(magic, MsdfBinarySource.MAGIC)) {
@@ -110,11 +110,11 @@ public final class MsdfBinarySource extends MsdfSource {
 			for (int pair = 0; pair < pairs; pair++) {
 				second += MsdfBinarySource.variable(input);
 				final int value = MsdfBinarySource.variable(input);
-				kerningPairs.put(MsdfFace.pair(first, second), (value >>> 1 ^ -(value & 1)) / (float) unitsPerEm);
+				kerningPairs.put(MsdfFontFace.pair(first, second), (value >>> 1 ^ -(value & 1)) / (float) unitsPerEm);
 			}
 		}
 
-		return MsdfFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), weight, italic);
+		return MsdfFontFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), weight, italic);
 	}
 
 	private static @NonNull BufferedImage image(final @NonNull DataInputStream input, final int width, final int height) throws IOException {

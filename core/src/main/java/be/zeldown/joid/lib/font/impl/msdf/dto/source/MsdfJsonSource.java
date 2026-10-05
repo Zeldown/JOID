@@ -19,7 +19,7 @@ import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.font.FontWeight;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfAtlas;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfBounds;
-import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFace;
+import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfGlyph;
 import be.zeldown.joid.lib.font.impl.msdf.dto.MsdfMetrics;
 import lombok.AccessLevel;
@@ -41,7 +41,7 @@ public final class MsdfJsonSource extends MsdfSource {
 	}
 
 	@Override
-	protected @NonNull MsdfFace parse() throws IOException {
+	protected @NonNull MsdfFontFace parse() throws IOException {
 		final JsonObject root;
 		try (InputStream stream = this.json.open()) {
 			root = MsdfJsonSource.GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), JsonObject.class);
@@ -56,7 +56,7 @@ public final class MsdfJsonSource extends MsdfSource {
 			throw new IOException("Unable to decode the atlas texture " + this.texture.getUniqueId());
 		}
 
-		return MsdfFace.create(MsdfJsonSource.atlas(root.getAsJsonObject("atlas")), MsdfJsonSource.metrics(root.getAsJsonObject("metrics")), MsdfJsonSource.glyphs(root), MsdfJsonSource.kerningPairs(root), image, FontWeight.REGULAR, false);
+		return MsdfFontFace.create(MsdfJsonSource.atlas(root.getAsJsonObject("atlas")), MsdfJsonSource.metrics(root.getAsJsonObject("metrics")), MsdfJsonSource.glyphs(root), MsdfJsonSource.kerningPairs(root), image, FontWeight.REGULAR, false);
 	}
 
 	private static @NonNull MsdfAtlas atlas(final @NonNull JsonObject json) {
@@ -75,7 +75,7 @@ public final class MsdfJsonSource extends MsdfSource {
 
 		for (final JsonElement element : root.getAsJsonArray("kerning")) {
 			final JsonObject pair = element.getAsJsonObject();
-			kerningPairs.put(MsdfFace.pair(pair.get("unicode1").getAsInt(), pair.get("unicode2").getAsInt()), MsdfJsonSource.number(pair, "advance"));
+			kerningPairs.put(MsdfFontFace.pair(pair.get("unicode1").getAsInt(), pair.get("unicode2").getAsInt()), MsdfJsonSource.number(pair, "advance"));
 		}
 		return kerningPairs;
 	}

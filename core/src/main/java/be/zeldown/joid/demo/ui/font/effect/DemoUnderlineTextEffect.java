@@ -3,16 +3,17 @@ package be.zeldown.joid.demo.ui.font.effect;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.font.dto.effect.ITextEffect;
 import be.zeldown.joid.lib.font.dto.effect.ITextGlyph;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-public final class DemoUnderlineEffect implements ITextEffect {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DemoUnderlineTextEffect implements ITextEffect {
 
-	private static final DemoUnderlineEffect INSTANCE = new DemoUnderlineEffect();
+	private static final DemoUnderlineTextEffect INSTANCE = new DemoUnderlineTextEffect();
 
-	private DemoUnderlineEffect() {}
-
-	public static @NonNull DemoUnderlineEffect inst() {
-		return DemoUnderlineEffect.INSTANCE;
+	public static @NonNull DemoUnderlineTextEffect inst() {
+		return DemoUnderlineTextEffect.INSTANCE;
 	}
 
 	@Override
