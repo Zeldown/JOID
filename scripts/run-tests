@@ -3,7 +3,7 @@
 mode=$1
 files=$(cat)
 
-if ! printf '%s\n' "$files" | grep -qE '^(core/|impl/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
+if ! printf '%s\n' "$files" | grep -qE '^(core/|msdf/|impl/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
     echo "🔍 No source change, tests skipped"
     echo ""
     exit 0
@@ -32,7 +32,7 @@ fi
 trap restore EXIT
 
 all=0
-if printf '%s\n' "$files" | grep -qE '^(core/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
+if printf '%s\n' "$files" | grep -qE '^(core/|msdf/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
     all=1
 fi
 
@@ -47,7 +47,7 @@ done
 
 tasks=""
 if [ $all -eq 1 ]; then
-    tasks=":core:check :testkit:check"
+    tasks=":msdf:check :core:check :testkit:check"
 fi
 
 for module in lwjgl2 lwjgl3 vulkan; do
