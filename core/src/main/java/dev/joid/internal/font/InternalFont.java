@@ -18,7 +18,7 @@ public class InternalFont {
 	}
 
 	private static InputStream get(final String weight) {
-		return JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-" + weight + "/font.msdf");
+		return JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-" + weight + ".ttf");
 	}
 
 }

@@ -18,11 +18,3 @@ task generateFont(type: JavaExec) {
          '--width', project.findProperty('width') ?: '2048',
          '--height', project.findProperty('height') ?: '2048'
 }
-
-task rebuildFonts(type: JavaExec) {
-    group = 'JOID'
-    description = 'Regenerates every MSDF atlas of the project from the font files of -Pfonts.'
-    main = "dev.joid.msdf.FontRebuilder"
-    classpath = sourceSets.main.runtimeClasspath
-    args project.findProperty('fonts') ?: '', rootProject.file('core/src/main/resources').absolutePath, file('fonts.txt').absolutePath, file('charset.txt').absolutePath
-}

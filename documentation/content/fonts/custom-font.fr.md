@@ -109,7 +109,7 @@ L'italique préfère les faces italiques de la famille. Une famille sans italiqu
 
 ## Polices embarquées
 
-`InternalFont.MONTSERRAT` est chargée au démarrage de JOID et contient les neuf graisses de Montserrat. `DemoFont.MONTSERRAT` pointe vers la même famille quand JOID tourne avec `setDemoMode(true)`, à côté de `DemoFont.BATUPHAT` et `DemoFont.SPACE_GROTESK`. Pratique pour bootstrapper les snippets du quick-start et les UIs de démo — shippez votre propre atlas en production.
+`InternalFont.MONTSERRAT` contient les neuf graisses de Montserrat avec lesquelles dessine le mode dev, et se charge au démarrage de JOID en mode dev ou démo. `DemoFont.MONTSERRAT` pointe vers la même famille quand JOID tourne avec `setDemoMode(true)`, à côté de `DemoFont.PACIFICO` et `DemoFont.SPACE_GROTESK`. Elles sont livrées en `.ttf` sous `assets/dev/fonts` et `assets/demo/fonts`, avec leur SIL Open Font License, et seulement dans les artefacts `-dev`. Pratique pour bootstrapper les snippets du quick-start et les UIs de démo — shippez vos propres polices en production.
 
 ## Construire un `TextInfo`
 

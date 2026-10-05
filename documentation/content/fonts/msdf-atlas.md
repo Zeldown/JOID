@@ -49,14 +49,6 @@ In a clone of the repository, the `:msdf` module exposes the same generator as a
 
 `./gradlew msdfGenerator` packages that module into the release zip, in `build/distributions`.
 
-### Regenerating the fonts JOID ships
-
-`msdf/fonts.txt` maps each bundled atlas to its source file. Point the task at a directory holding those files:
-
-```bash
-./gradlew :msdf:rebuildFonts -Pfonts=/path/to/font/sources
-```
-
 ## Charset
 
 `charset.txt`, shipped next to the jar in the release zip, accepts ranges and single codepoints:
@@ -77,7 +69,7 @@ For CJK, use a subset: a full CJK set runs past 30k glyphs and will not fit a 20
 
 ## The `.msdf` file
 
-One file holds everything: the weight and style of the face, atlas metrics, glyph bounds, kerning pairs and the multi-channel distance field, deflated as a whole. The weight and the italic flag come from the `OS/2` table of the source font, so a family loads without telling JOID which file is which. The field is stored with the same adaptive row filtering a PNG uses, so a complete font weighs about the same as the raw `.png` would on its own. The kerning table is grouped by first codepoint and written as variable-length deltas in font units, which costs a tenth of what a flat pair list would: fifty thousand pairs fit in fifteen kilobytes.
+One file holds everything: the name, weight and style of the face, atlas metrics, glyph bounds, kerning pairs and the multi-channel distance field, deflated as a whole. The weight and the italic flag come from the `OS/2` table of the source font, so a family loads without telling JOID which file is which, and the name is the full name of the font — `Montserrat Regular` — that the dev mode warnings print. Files written by an older generator load without a name. The field is stored with the same adaptive row filtering a PNG uses, so a complete font weighs about the same as the raw `.png` would on its own. The kerning table is grouped by first codepoint and written as variable-length deltas in font units, which costs a tenth of what a flat pair list would: fifty thousand pairs fit in fifteen kilobytes.
 
 ```
 assets/

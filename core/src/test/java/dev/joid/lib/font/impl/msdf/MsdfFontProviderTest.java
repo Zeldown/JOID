@@ -19,7 +19,7 @@ public class MsdfFontProviderTest {
 
 	@BeforeClass
 	public static void load() {
-		MsdfFontProviderTest.font = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf"), JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Bold/font.msdf")).join();
+		MsdfFontProviderTest.font = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf"), JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Bold.ttf")).join();
 		MsdfFontProviderTest.regular = MsdfFontProviderTest.font.getFace(FontWeight.REGULAR, false);
 	}
 

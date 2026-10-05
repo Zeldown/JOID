@@ -14,7 +14,7 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.dto.source.IMsdfSource;
-import dev.joid.lib.font.impl.msdf.dto.source.MsdfBinarySource;
+import dev.joid.lib.font.impl.msdf.dto.source.MsdfOpenTypeSource;
 
 public class MsdfFontLoaderTest {
 
@@ -22,7 +22,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 30000L)
 	public void restylesASource() {
-		final MsdfFont font = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"), MsdfBinarySource.of(MsdfFontLoaderTest.stream("Regular")).italic(true)).join();
+		final MsdfFont font = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"), MsdfOpenTypeSource.of(MsdfFontLoaderTest.stream("Regular")).italic(true)).join();
 		Assert.assertFalse(font.getFace(FontWeight.REGULAR, false).isItalic());
 		Assert.assertTrue(font.getFace(FontWeight.REGULAR, true).isItalic());
 	}
@@ -78,13 +78,13 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 30000L)
 	public void acceptsAnyMsdfSource() throws IOException {
-		final MsdfFontFace face = MsdfBinarySource.of(MsdfFontLoaderTest.stream("Regular")).read();
+		final MsdfFontFace face = MsdfOpenTypeSource.of(MsdfFontLoaderTest.stream("Regular")).read();
 		final IMsdfSource source = () -> face;
 		Assert.assertSame(face, MsdfFontLoader.load(source).join().getFace(FontWeight.REGULAR, false));
 	}
 
 	private static InputStream stream(final String weight) {
-		return JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-" + weight + "/font.msdf");
+		return JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-" + weight + ".ttf");
 	}
 
 	private static void fails(final Class<? extends Throwable> cause, final Object... faces) {

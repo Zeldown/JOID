@@ -27,7 +27,7 @@ public class UIDemoFont extends UIDemo {
 
 	private static final TextInfo[] FONTS = {
 			TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE).lineHeight(1F),
-			TextInfo.create(DemoFont.BATUPHAT, 20, Color.WHITE).lineHeight(0.98F),
+			TextInfo.create(DemoFont.PACIFICO, 20, Color.WHITE).lineHeight(0.98F),
 			TextInfo.create(DemoFont.SPACE_GROTESK, 20, Color.WHITE)
 	};
 
@@ -98,7 +98,7 @@ public class UIDemoFont extends UIDemo {
 			TextNode.create(0, 0).text(Text.create("<b>spaced</b> <c=ffff55>markup</c> <u>keeps</u> its <h>spacing</h>", UIDemoFont.MARKUP.copy().letterSpacing(0.3F))).attach(flex);
 			TextNode.create(0, 0).text(Text.create("<b>measured</b> <w=900>with</w> <c=55ff55>markup</c> <u>ends here</u>", UIDemoFont.MARKUP, Align.END)).width(flex.getWidth()).attach(flex);
 			TextNode.create(0, 0).text(Text.create("<b>centered</b> <w=100>with</w> <i>markup</i>", UIDemoFont.MARKUP, Align.CENTER)).width(flex.getWidth()).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=ff5555>red</c> <u>underline</u> <h>highlight</h>", UIDemoFont.MARKUP.copy().font(DemoFont.BATUPHAT))).attach(flex);
+			TextNode.create(0, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=ff5555>red</c> <u>underline</u> <h>highlight</h>", UIDemoFont.MARKUP.copy().font(DemoFont.PACIFICO))).attach(flex);
 			TextNode.create(0, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=ff5555>red</c> <u>underline</u> <h>highlight</h>", UIDemoFont.MARKUP.copy().font(DemoFont.SPACE_GROTESK))).attach(flex);
 		}).attach(this);
 		FlexNode.vertical(970D, 615D, 940D).margin(14D).body(flex -> {
@@ -110,7 +110,7 @@ public class UIDemoFont extends UIDemo {
 			TextNode.create(0, 0).text(Text.create("the shadow scrambles <u>like</u> the text", UIDemoFont.EFFECT.copy().effects(DemoScrambleTextEffect.inst()).shadow(Color.BLACK))).attach(flex);
 			TextNode.create(0, 0).text(Text.create("<b>markup</b> <u>adds</u> <h>effects</h> under the rainbow", UIDemoFont.EFFECT.copy().effects(DemoRainbowTextEffect.inst()))).attach(flex);
 			TextNode.create(0, 0).text(Text.create("spaced <u>wave</u> and <h>highlight</h>", UIDemoFont.EFFECT.copy().letterSpacing(0.36F).effects(DemoWaveTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<i>italic</i> <b>rainbow</b> <u>scramble</u>", UIDemoFont.EFFECT.copy().font(DemoFont.BATUPHAT).effects(DemoRainbowTextEffect.inst(), DemoScrambleTextEffect.inst()))).attach(flex);
+			TextNode.create(0, 0).text(Text.create("<i>italic</i> <b>rainbow</b> <u>scramble</u>", UIDemoFont.EFFECT.copy().font(DemoFont.PACIFICO).effects(DemoRainbowTextEffect.inst(), DemoScrambleTextEffect.inst()))).attach(flex);
 			TextNode.create(0, 0).text(Text.create("<w=300>light</w> <b>wave</b> with a <h>highlight</h>", UIDemoFont.EFFECT.copy().font(DemoFont.SPACE_GROTESK).effects(DemoWaveTextEffect.inst()).shadow(Color.BLACK))).attach(flex);
 		}).attach(this);
 	}

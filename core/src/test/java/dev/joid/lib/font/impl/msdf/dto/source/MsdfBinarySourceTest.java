@@ -12,7 +12,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.FontWeight;
+import dev.joid.lib.font.impl.msdf.MsdfFontCache;
 import dev.joid.lib.font.impl.msdf.dto.MsdfBounds;
 import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.resource.Resource;
@@ -71,14 +73,15 @@ public class MsdfBinarySourceTest {
 
 	@BeforeClass
 	public static void read() throws IOException {
-		MsdfBinarySourceTest.face = MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf")).read();
+		MsdfBinarySourceTest.face = MsdfBinarySourceTest.montserrat("Regular").read();
 	}
 
 	@Test
 	public void readsTheStyle() throws IOException {
 		Assert.assertSame(FontWeight.REGULAR, MsdfBinarySourceTest.face.getWeight());
 		Assert.assertFalse(MsdfBinarySourceTest.face.isItalic());
-		Assert.assertSame(FontWeight.BLACK, MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Black/font.msdf")).read().getWeight());
+		Assert.assertEquals("Montserrat Regular", MsdfBinarySourceTest.face.getName());
+		Assert.assertSame(FontWeight.BLACK, MsdfBinarySourceTest.montserrat("Black").read().getWeight());
 	}
 
 	@Test
@@ -93,7 +96,7 @@ public class MsdfBinarySourceTest {
 
 	@Test
 	public void overridesTheStyle() throws IOException {
-		final MsdfFontFace face = MsdfBinarySource.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat-Regular/font.msdf")).weight(FontWeight.LIGHT).italic(true).read();
+		final MsdfFontFace face = MsdfBinarySourceTest.montserrat("Regular").weight(FontWeight.LIGHT).italic(true).read();
 		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
 		Assert.assertTrue(face.isItalic());
 		Assert.assertEquals(MsdfBinarySourceTest.face.getGlyphs().size(), face.getGlyphs().size());
@@ -120,6 +123,12 @@ public class MsdfBinarySourceTest {
 	@Test(expected = IOException.class)
 	public void refusesAnotherVersion() throws IOException {
 		MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(2))).read();
+	}
+
+	@Test
+	public void readsTheNameOfTheFace() throws IOException {
+		Assert.assertEquals("Synthetic Light Italic", MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).read().getName());
+		Assert.assertEquals("", MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(3))).read().getName());
 	}
 
 	@Test
@@ -153,6 +162,10 @@ public class MsdfBinarySourceTest {
 		Assert.assertEquals(0.04F, face.getKerning('A', 'W'), 1E-6F);
 	}
 
+	private static MsdfBinarySource montserrat(final String weight) throws IOException {
+		return MsdfBinarySource.of(MsdfFontCache.resolve(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-" + weight + ".ttf")).read()));
+	}
+
 	private static byte[] synthetic(final int version) throws IOException {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		output.write("JOIDMSDF".getBytes(StandardCharsets.US_ASCII));
@@ -160,6 +173,9 @@ public class MsdfBinarySourceTest {
 			data.writeByte(version);
 			data.writeShort(300);
 			data.writeBoolean(true);
+			if (version > 3) {
+				data.writeUTF("Synthetic Light Italic");
+			}
 			data.writeInt(2);
 			data.writeInt(MsdfBinarySourceTest.PIXELS.length);
 			data.writeFloat(4F);

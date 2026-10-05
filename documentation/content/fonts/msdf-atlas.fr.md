@@ -49,14 +49,6 @@ Dans un clone du dépôt, le module `:msdf` expose le même générateur sous fo
 
 `./gradlew msdfGenerator` empaquette ce module dans le zip de release, dans `build/distributions`.
 
-### Régénérer les polices livrées avec JOID
-
-`msdf/fonts.txt` associe chaque atlas embarqué à son fichier source. Pointez la tâche vers un dossier contenant ces fichiers :
-
-```bash
-./gradlew :msdf:rebuildFonts -Pfonts=/chemin/vers/les/sources
-```
-
 ## Jeu de caractères
 
 `charset.txt`, livré à côté du jar dans le zip de release, accepte des plages et des points de code isolés :
@@ -77,7 +69,7 @@ Pour le CJK, prenez un sous-ensemble : un jeu complet dépasse les 30 000 glyphe
 
 ## Le fichier `.msdf`
 
-Un seul fichier contient tout : graisse et style de la face, métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. La graisse et l'indicateur d'italique viennent de la table `OS/2` de la police source : une famille se charge sans dire à JOID quel fichier est lequel. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul. La table de crénage est groupée par premier codepoint et écrite en deltas de taille variable, en unités de fonte : elle coûte un dixième d'une liste de paires à plat, cinquante mille paires tenant dans quinze kilo-octets.
+Un seul fichier contient tout : nom, graisse et style de la face, métriques de l'atlas, boîtes des glyphes, paires de crénage et champ de distance multicanal, le tout compressé d'un bloc. La graisse et l'indicateur d'italique viennent de la table `OS/2` de la police source : une famille se charge sans dire à JOID quel fichier est lequel, et le nom est le nom complet de la police — `Montserrat Regular` — qu'affichent les avertissements du mode dev. Les fichiers écrits par un ancien générateur se chargent sans nom. Le champ est stocké avec le même filtrage de lignes adaptatif qu'un PNG, si bien qu'une police complète pèse à peu près ce que pèserait le `.png` seul. La table de crénage est groupée par premier codepoint et écrite en deltas de taille variable, en unités de fonte : elle coûte un dixième d'une liste de paires à plat, cinquante mille paires tenant dans quinze kilo-octets.
 
 ```
 assets/

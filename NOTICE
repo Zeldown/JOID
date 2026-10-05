@@ -34,6 +34,21 @@ The release jars embed the following software:
   https://ffmpeg.org
   Licensed under the GNU Lesser General Public License, version 2.1 or later
 
+The dev jars also embed the following fonts, licensed under the SIL Open
+Font License, Version 1.1, whose text sits next to each font file:
+
+  Montserrat
+  https://github.com/JulietaUla/Montserrat
+  Copyright 2011 The Montserrat Project Authors
+
+  Space Grotesk
+  https://github.com/floriankarsten/space-grotesk
+  Copyright 2020 The Space Grotesk Project Authors
+
+  Pacifico
+  https://github.com/googlefonts/Pacifico
+  Copyright 2018 The Pacifico Project Authors
+
 The LWJGL 2 backend jar also embeds:
 
   The LWJGL 2 natives
