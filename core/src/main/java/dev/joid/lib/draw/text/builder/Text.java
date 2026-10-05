@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.draw.text.builder.utils.TextOverflow;
+import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.utils.align.Align;
@@ -102,14 +103,14 @@ public final class Text {
 
 	public final double getWidth() {
 		if (this.width <= 0) {
-			this.width = this.elementList.stream().mapToDouble(text -> text.getInfo().getWidth(this.modifier != null ? this.modifier.modify(text.getText()) : text.getText())).sum();
+			this.width = this.elementList.stream().mapToDouble(text -> FontUsage.trace(text.getOrigin(), () -> text.getInfo().getWidth(this.modifier != null ? this.modifier.modify(text.getText()) : text.getText()))).sum();
 		}
 		return this.width;
 	}
 
 	public final double getHeight() {
 		if (this.height <= 0) {
-			this.height = this.elementList.stream().mapToDouble(text -> text.getInfo().getHeight(this.modifier != null ? this.modifier.modify(text.getText()) : text.getText())).max().orElse(0);
+			this.height = this.elementList.stream().mapToDouble(text -> FontUsage.trace(text.getOrigin(), () -> text.getInfo().getHeight(this.modifier != null ? this.modifier.modify(text.getText()) : text.getText()))).max().orElse(0);
 		}
 		return this.height;
 	}

@@ -1,6 +1,7 @@
 package dev.joid.lib.font.impl.glyph.dto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -9,15 +10,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
 import lombok.Getter;
 import lombok.NonNull;
 
 public final class FontFamily<F extends IFontFace> {
 
-	private static final int NORMAL      = 400;
-	private static final int MEDIUM      = 500;
-	private static final int TRACE_START = 2;
+	private static final int NORMAL = 400;
+	private static final int MEDIUM = 500;
 
 	@Getter private final List<F> faces;
 	private final Set<FontWeight> warned = ConcurrentHashMap.newKeySet();
@@ -65,11 +66,19 @@ public final class FontFamily<F extends IFontFace> {
 		final StringBuilder warning = new StringBuilder("[JOID] The font weight ").append(weight.getValue()).append(" is not loaded in ").append(face.getName().isEmpty() ? "this font family" : "the family of " + face.getName());
 		warning.append(", ").append(face.getWeight().getValue()).append(" is drawn instead (loaded: ").append(this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", "))).append(")");
 
-		final StackTraceElement[] trace = new Throwable().getStackTrace();
-		for (int i = FontFamily.TRACE_START; i < trace.length; i++) {
-			warning.append(System.lineSeparator()).append("\tat ").append(trace[i]);
+		for (final StackTraceElement element : FontUsage.getOrigin().orElseGet(FontFamily::locate)) {
+			warning.append(System.lineSeparator()).append("\tat ").append(element);
 		}
 		System.err.println(warning);
+	}
+
+	private static @NonNull StackTraceElement[] locate() {
+		final StackTraceElement[] trace = new Throwable().getStackTrace();
+		int start = 0;
+		while (start < trace.length && (trace[start].getClassName().equals(FontFamily.class.getName()) || trace[start].getClassName().startsWith("java."))) {
+			start++;
+		}
+		return Arrays.copyOfRange(trace, start, trace.length);
 	}
 
 	private static @NonNull String describe(final @NonNull IFontFace face) {

@@ -1,7 +1,9 @@
 package dev.joid.lib.draw.text.builder;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
+import dev.joid.internal.JOID;
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.dto.TextInfo;
 import lombok.Getter;
@@ -10,6 +12,8 @@ import lombok.NonNull;
 @Getter
 @SuppressWarnings("unchecked")
 public class TextElement {
+
+	private final StackTraceElement[] origin;
 
 	private TextInfo         info;
 	private Supplier<Object> text;
@@ -20,9 +24,14 @@ public class TextElement {
 	}
 
 	protected TextElement(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info, final ITextModifier modifier) {
+		this(text, info, modifier, JOID.inst().isDevMode() ? TextElement.locate() : null);
+	}
+
+	private TextElement(final Supplier<Object> text, final TextInfo info, final ITextModifier modifier, final StackTraceElement[] origin) {
 		this.text = text;
 		this.info = info;
 		this.modifier = modifier;
+		this.origin = origin;
 	}
 
 	public static final @NonNull TextElement create(final int text, final @NonNull TextInfo info) {
@@ -114,23 +123,23 @@ public class TextElement {
 	}
 
 	public final <T extends TextElement> @NonNull T copy() {
-		return (T) new TextElement(this.text, this.info, this.modifier);
+		return (T) new TextElement(this.text, this.info, this.modifier, this.origin);
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Object text) {
-		return (T) new TextElement(text, this.info, this.modifier);
+		return (T) new TextElement(() -> text.toString(), this.info, this.modifier, this.origin);
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Supplier<@NonNull Object> text) {
-		return (T) new TextElement(text, this.info, this.modifier);
+		return (T) new TextElement(text, this.info, this.modifier, this.origin);
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithInfo(final @NonNull TextInfo info) {
-		return (T) new TextElement(this.text, info, this.modifier);
+		return (T) new TextElement(this.text, info, this.modifier, this.origin);
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithModifier(final ITextModifier modifier) {
-		return (T) new TextElement(this.text, this.info, modifier);
+		return (T) new TextElement(this.text, this.info, modifier, this.origin);
 	}
 
 	public final @NonNull String getText() {
@@ -140,6 +149,15 @@ public class TextElement {
 
 	public final @NonNull String getRawText() {
 		return this.text.get().toString();
+	}
+
+	private static @NonNull StackTraceElement[] locate() {
+		final StackTraceElement[] trace = new Throwable().getStackTrace();
+		int start = 0;
+		while (start < trace.length && (trace[start].getClassName().equals(TextElement.class.getName()) || trace[start].getClassName().equals(Text.class.getName()))) {
+			start++;
+		}
+		return Arrays.copyOfRange(trace, start, trace.length);
 	}
 
 }

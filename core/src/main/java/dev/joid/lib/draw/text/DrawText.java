@@ -8,6 +8,7 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.draw.text.builder.TextElement;
 import dev.joid.lib.draw.text.builder.utils.TextOverflow;
 import dev.joid.lib.draw.text.utils.TextMode;
+import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.utils.align.Align;
@@ -41,15 +42,17 @@ public final class DrawText {
 		for (final TextElement element : text.getElementList()) {
 			final String drawText = text.getText(element);
 			final TextInfo info = element.getInfo();
+			final double pen = penX;
+			penX += FontUsage.trace(element.getOrigin(), () -> {
+				double oy = runY;
+				if (text.getVerticalAlignment().isCenter()) {
+					oy += (text.getHeight() - info.getHeight()) / 2;
+				} else if (text.getVerticalAlignment().isEnd()) {
+					oy += text.getHeight() - info.getHeight();
+				}
 
-			double oy = runY;
-			if (text.getVerticalAlignment().isCenter()) {
-				oy += (text.getHeight() - info.getHeight()) / 2;
-			} else if (text.getVerticalAlignment().isEnd()) {
-				oy += text.getHeight() - info.getHeight();
-			}
-
-			penX += info.getFont().getFontProvider().drawText(penX, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
+				return info.getFont().getFontProvider().drawText(pen, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
+			});
 		}
 
 		return text.getBounds();
@@ -84,10 +87,10 @@ public final class DrawText {
 				double overflowWidth = 0;
 				for (final TextElement element : text.getElementList()) {
 					final String elementText = text.getText(element);
-					final double overflowStrWidth = element.getInfo().getWidth(overflowStr);
+					final double overflowStrWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(overflowStr));
 					for (int i = 0; i <= elementText.length(); i++) {
 						final String subText = elementText.substring(0, i);
-						final double subTextWidth = element.getInfo().getWidth(subText);
+						final double subTextWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(subText));
 						if (overflowWidth + subTextWidth + overflowStrWidth > width && !subText.isEmpty()) {
 							overflowText.add(element.copyWithText(subText.substring(0, subText.length() - 1)));
 							overflow = true;
@@ -99,7 +102,7 @@ public final class DrawText {
 						break;
 					}
 
-					overflowWidth += element.getInfo().getWidth(elementText);
+					overflowWidth += FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(elementText));
 					overflowText.add(element);
 				}
 
@@ -189,7 +192,8 @@ public final class DrawText {
 					lastSplit = foundSplit;
 				}
 
-				final double elementWidth = element.getInfo().getWidth(elementText.substring(lastSplit, i + 1));
+				final String part = elementText.substring(lastSplit, i + 1);
+				final double elementWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(part));
 				if (currentText.getWidth() + elementWidth >= width) {
 					int foundSplit = i;
 					for (int j = i - 1; j >= lastSplit; j--) {

@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -106,6 +107,14 @@ public class FontFamilyTest {
 		Assert.assertEquals("[JOID] The font weight 600 is not loaded in this font family, 700 is drawn instead (loaded: 400, 700)", lines[0]);
 		Assert.assertTrue(lines[1], lines[1].startsWith("\tat dev.joid.lib.font.impl.glyph.dto.FontFamilyTest.lambda$"));
 		Assert.assertEquals(1, output.split("\\[JOID\\]", -1).length - 1);
+	}
+
+	@Test
+	public void pointsTheWarningAtTheOriginOfTheText() {
+		final FontFamily<Face> family = FontFamilyTest.family(400);
+		final StackTraceElement[] origin = {new StackTraceElement("com.example.Screen", "init", "Screen.java", 42)};
+		final String output = FontFamilyTest.capture(true, () -> FontUsage.trace(origin, () -> family.resolve(FontWeight.BOLD, false).getWeight().getValue()));
+		Assert.assertEquals("\tat com.example.Screen.init(Screen.java:42)", output.split(System.lineSeparator())[1]);
 	}
 
 	@Test

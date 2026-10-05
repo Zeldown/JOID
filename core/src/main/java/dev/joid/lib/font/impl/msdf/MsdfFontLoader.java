@@ -8,6 +8,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.dto.source.IMsdfSource;
@@ -47,7 +48,13 @@ public final class MsdfFontLoader {
 	private static @NonNull CompletableFuture<MsdfFontFace> read(final @NonNull Object handle) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				return MsdfFontLoader.source(handle).read();
+				final long start = System.nanoTime();
+				final IMsdfSource source = MsdfFontLoader.source(handle);
+				final MsdfFontFace face = source.read();
+				if (JOID.inst().isDevMode()) {
+					System.out.println("[JOID] Font " + (face.getName().isEmpty() ? "without a name" : face.getName()) + " " + source.describe() + " in " + String.format("%.2f", (System.nanoTime() - start) / 1000000F) + "ms");
+				}
+				return face;
 			} catch (final IOException exception) {
 				throw new CompletionException(exception);
 			}

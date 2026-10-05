@@ -41,6 +41,11 @@ public final class MsdfJsonSource extends MsdfSource {
 	}
 
 	@Override
+	public @NonNull String describe() {
+		return "read from a json atlas";
+	}
+
+	@Override
 	protected @NonNull MsdfFontFace parse() throws IOException {
 		final JsonObject root;
 		try (InputStream stream = this.json.open()) {

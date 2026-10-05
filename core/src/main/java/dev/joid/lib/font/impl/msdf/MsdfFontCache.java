@@ -29,26 +29,33 @@ public final class MsdfFontCache {
 		MsdfFontCache.directory = directory;
 	}
 
+	public static @NonNull File locate(final @NonNull byte[] font) {
+		return new File(MsdfFontCache.directory, Hashing.sha256().newHasher().putBytes(MsdfFontCache.SIGNATURE.getBytes(StandardCharsets.UTF_8)).putBytes(font).hash() + ".msdf");
+	}
+
 	public static @NonNull File resolve(final @NonNull byte[] font) throws IOException {
-		final File file = new File(MsdfFontCache.directory, Hashing.sha256().newHasher().putBytes(MsdfFontCache.SIGNATURE.getBytes(StandardCharsets.UTF_8)).putBytes(font).hash() + ".msdf");
-		if (file.isFile()) {
-			return file;
+		final File file = MsdfFontCache.locate(font);
+		if (!file.isFile()) {
+			MsdfFontCache.generate(font, file);
+		}
+		return file;
+	}
+
+	public static void generate(final @NonNull byte[] font, final @NonNull File file) throws IOException {
+		final File directory = file.getAbsoluteFile().getParentFile();
+		if (!directory.isDirectory() && !directory.mkdirs()) {
+			throw new IOException("Unable to create the msdf cache " + directory.getAbsolutePath());
 		}
 
-		if (!MsdfFontCache.directory.isDirectory() && !MsdfFontCache.directory.mkdirs()) {
-			throw new IOException("Unable to create the msdf cache " + MsdfFontCache.directory.getAbsolutePath());
-		}
-
-		final File temporary = File.createTempFile("msdf-", ".tmp", MsdfFontCache.directory);
+		final File temporary = File.createTempFile("msdf-", ".tmp", directory);
 		try {
 			MsdfGenerator.generate(font, temporary, MsdfGenerator.codepoints(MsdfGenerator.CHARSET), MsdfGenerator.WIDTH, MsdfGenerator.HEIGHT, MsdfGenerator.RANGE, 0D);
 			Files.move(temporary.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
 		} catch (final Exception exception) {
-			throw new IOException("Unable to generate the msdf atlas of the font in " + MsdfFontCache.directory.getAbsolutePath(), exception);
+			throw new IOException("Unable to generate the msdf atlas of the font in " + directory.getAbsolutePath(), exception);
 		} finally {
 			Files.deleteIfExists(temporary.toPath());
 		}
-		return file;
 	}
 
 	private static @NonNull File locateDirectory() {

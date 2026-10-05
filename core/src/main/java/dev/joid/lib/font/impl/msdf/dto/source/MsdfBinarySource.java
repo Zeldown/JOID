@@ -38,6 +38,11 @@ public final class MsdfBinarySource extends MsdfSource {
 	}
 
 	@Override
+	public @NonNull String describe() {
+		return "read from a .msdf file";
+	}
+
+	@Override
 	protected @NonNull MsdfFontFace parse() throws IOException {
 		try (InputStream stream = this.asset.open()) {
 			return MsdfBinarySource.parse(stream);
