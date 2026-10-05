@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public final class Backend {
 
 	public static void register() {
+		Natives.install();
 		BridgeHandler.AUDIO.register(new AudioBridge());
 		BridgeHandler.WINDOW.register(new WindowBridge());
 		BridgeHandler.RENDER.register(new RenderBridge());

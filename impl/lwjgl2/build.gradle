@@ -2,11 +2,33 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 archivesBaseName = "joid-lwjgl2"
 
+configurations {
+    natives
+}
+
 dependencies {
     compile project(':core')
 
     compile "org.lwjgl.lwjgl:lwjgl:2.9.1"
+
+    natives "org.lwjgl.lwjgl:lwjgl-platform:2.9.1:natives-windows"
+    natives "org.lwjgl.lwjgl:lwjgl-platform:2.9.1:natives-linux"
+    natives "org.lwjgl.lwjgl:lwjgl-platform:2.9.1:natives-osx"
 }
+
+task extractNatives(type: Sync) {
+    description = 'Unpacks the LWJGL 2 natives of every platform into the resources of the backend.'
+    into "$buildDir/natives/dev/joid/impl/lwjgl2/natives"
+    ['windows', 'linux', 'osx'].each { platform ->
+        from({ zipTree(configurations.natives.files.find { file -> file.name.endsWith("natives-${platform}.jar") }) }) {
+            into platform
+            exclude '**/*jinput*', 'META-INF/**'
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir "$buildDir/natives"
+processResources.dependsOn extractNatives
 
 apply from: rootProject.file('gradle/backend.gradle')
 
@@ -16,10 +38,4 @@ task runDemo(type: JavaExec) {
     description = 'Launches the LWJGL 2 demo window.'
     main = "dev.joid.impl.lwjgl2.demo.DemoWindow"
     classpath = sourceSets.main.runtimeClasspath
-    jvmArgs "-Djava.library.path=${file('native').absolutePath}"
-}
-
-
-test {
-    jvmArgs "-Djava.library.path=${file('native').absolutePath}"
 }

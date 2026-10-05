@@ -64,7 +64,7 @@ dependencies {
 
 ### Native libraries
 
-The `impl/lwjgl2` module contains a `native/` folder with the required OpenGL and OpenAL native libraries. Make sure they are exposed to the JVM via `-Djava.library.path=./native` at launch. The LWJGL 3 and Vulkan backends resolve their natives from Maven.
+The LWJGL 2 backend embeds the LWJGL 2 and OpenAL natives of Windows, Linux and macOS and extracts the ones of the running platform on first use, unless the launcher already provides them, as Minecraft does. The LWJGL 3 and Vulkan backends resolve their natives from Maven, and LWJGL 3 extracts them at runtime.
 
 ## Backends
 

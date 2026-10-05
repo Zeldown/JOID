@@ -1,6 +1,6 @@
 # Installation
 
-JOID est distribué sous forme de JARs via les GitHub Releases. Ils contiennent JOID et toutes les bibliothèques avec lesquelles il décode les médias : ajoutez le JAR de votre backend et les quelques bibliothèques listées dans *Dépendances* à votre classpath, et pointez la JVM vers les bibliothèques natives de votre moteur. Pas de Maven Central, pas de gestionnaire de paquets.
+JOID est distribué sous forme de JARs via les GitHub Releases. Ils contiennent JOID et toutes les bibliothèques avec lesquelles il décode les médias : ajoutez le JAR de votre backend et les quelques bibliothèques listées dans *Dépendances* à votre classpath. Pas de Maven Central, pas de gestionnaire de paquets.
 
 ## Téléchargement
 
@@ -25,6 +25,7 @@ Un JAR de backend contient le cœur, les modules JOID qu'il utilise — `joid-gl
 
 - **FFmpeg** via JavaCV et JavaCPP, avec ses natives pour Windows x64, Linux x64, macOS Intel et macOS ARM, extraites à l'exécution — environ 95 Mo du JAR. Il garde ses packages `org.bytedeco`, dont JavaCPP a besoin pour trouver ses natives.
 - **JSVG** (SVG) et **TwelveMonkeys ImageIO** (WebP), relocalisés sous `dev.joid.shaded`, pour ne jamais entrer en conflit avec les copies que votre application ou son hôte embarque. JOID instancie lui-même son lecteur WebP et n'enregistre rien dans ImageIO.
+- **Les natives LWJGL 2 et OpenAL** de Windows, Linux et macOS dans `joid-lwjgl2`, extraites à l'exécution — voir *Bibliothèques natives*.
 
 Un build depuis les sources avec `./gradlew build` (`-Pdev` pour la variante dev) copie chaque artefact de release — jars des backends, du cœur, du testkit, de glfw et d'openal et gabarit de backend — dans `build/libs`.
 
@@ -54,7 +55,7 @@ Gradle legacy utilise `compile` ; Gradle moderne utilise `implementation`. Les d
 
 Les natives dépendent du backend :
 
-- **LWJGL 2** — le dossier `impl/lwjgl2/native/` du dépôt contient les natives OpenGL et OpenAL (`lwjgl64.dll`, `OpenAL64.dll`, et leurs variantes de plateformes). Copiez-le à côté de votre projet et lancez avec `-Djava.library.path=./native`.
+- **LWJGL 2** — le JAR du backend embarque les natives LWJGL 2 et OpenAL de Windows, Linux et macOS. À la première utilisation, JOID extrait celles de la plateforme courante dans un dossier temporaire et y fait pointer LWJGL via `org.lwjgl.librarypath`. Quand le launcher les fournit déjà — `org.lwjgl.librarypath` défini, ou natives présentes dans `java.library.path`, comme dans Minecraft — JOID n'y touche pas.
 - **LWJGL 3 et Vulkan** — les natives sont livrées sous forme de JARs classifiers Maven (`natives-windows`, `natives-linux`, `natives-macos`, `natives-macos-arm64`) que LWJGL extrait à l'exécution. Vulkan passe par le loader installé avec le driver GPU ; macOS nécessite en plus les natives `lwjgl-vulkan` (MoltenVK).
 
 > TIP: OpenAL est nécessaire pour l'audio du `ResourcePlayerNode` sur tous les backends.
@@ -148,22 +149,18 @@ my-app/
 │   ├── commons-io-2.4.jar
 │   ├── vecmath-1.3.1.jar
 │   └── lwjgl-2.9.1.jar
-├── native/                              # natives du backend LWJGL 2 (OpenGL + OpenAL)
-│   ├── lwjgl64.dll
-│   ├── OpenAL64.dll
-│   └── …
 └── run.bat                              # launcher
 ```
 
 Un launcher minimal (`run.bat` sous Windows, `run.sh` sur *nix) :
 
 ```bat
-java -Djava.library.path=./native -cp "my-app.jar;libraries/*" com.myapp.Main
+java -cp "my-app.jar;libraries/*" com.myapp.Main
 ```
 
 ```bash
 #!/bin/sh
-java -Djava.library.path=./native -cp "my-app.jar:libraries/*" com.myapp.Main
+java -cp "my-app.jar:libraries/*" com.myapp.Main
 ```
 
 Le wildcard `libraries/*` étend tous les JARs du dossier — la JVM les récupère sans qu'il soit nécessaire de les lister un par un. Les JARs classifiers de FFmpeg contiennent les binaires natifs `.dll` / `.so` / `.dylib` ; JavaCPP les extrait depuis le classpath à l'exécution, il suffit donc qu'ils soient présents dans `libraries/`.
@@ -186,7 +183,7 @@ task distApp(type: Jar) {
 dist.dependsOn distApp
 ```
 
-Après `gradle dist`, zippez `build/dist/` avec votre dossier `native/` et le launcher.
+Après `gradle dist`, zippez `build/dist/` avec le launcher.
 
 ## Vérification
 

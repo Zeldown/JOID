@@ -46,7 +46,7 @@ BridgeHandler.UI.register(myBridge);
 JOID.inst().load();
 ```
 
-Le backend LWJGL 2 traduit chaque appel nativement vers le pipeline fixe et restaure l'état de l'hôte qu'il modifie, ce qui le rend sûr à l'intérieur d'un hôte LWJGL 2 existant. Il nécessite le dossier `native/` du module `lwjgl2` dans le `java.library.path`.
+Le backend LWJGL 2 traduit chaque appel nativement vers le pipeline fixe et restaure l'état de l'hôte qu'il modifie, ce qui le rend sûr à l'intérieur d'un hôte LWJGL 2 existant. Il embarque ses natives et ne les extrait que si l'hôte ne les fournit pas.
 
 ### LWJGL 3
 

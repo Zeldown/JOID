@@ -9,6 +9,7 @@ import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 
 import dev.joid.impl.lwjgl2.Backend;
+import dev.joid.impl.lwjgl2.Natives;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;
@@ -24,6 +25,7 @@ public final class SnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public void create(final int width, final int height) {
+		Natives.install();
 		try {
 			this.buffer = new Pbuffer(width, height, new PixelFormat().withDepthBits(24).withStencilBits(8), null);
 			this.buffer.makeCurrent();

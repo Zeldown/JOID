@@ -33,3 +33,14 @@ The release jars embed the following software:
   FFmpeg, built by the JavaCPP Presets
   https://ffmpeg.org
   Licensed under the GNU Lesser General Public License, version 2.1 or later
+
+The LWJGL 2 backend jar also embeds:
+
+  The LWJGL 2 natives
+  https://www.lwjgl.org
+  Copyright Lightweight Java Game Library Project
+  Licensed under the BSD 3-Clause License
+
+  OpenAL Soft, as built for LWJGL 2
+  https://openal-soft.org
+  Licensed under the GNU Library General Public License, version 2 or later

@@ -46,7 +46,7 @@ BridgeHandler.UI.register(myBridge);
 JOID.inst().load();
 ```
 
-The LWJGL 2 backend maps every call natively onto the fixed pipeline and restores the host state it changes, which makes it safe inside an existing LWJGL 2 host. It needs the `native/` folder of the `lwjgl2` module on `java.library.path`.
+The LWJGL 2 backend maps every call natively onto the fixed pipeline and restores the host state it changes, which makes it safe inside an existing LWJGL 2 host. It embeds its natives and only extracts them when the host does not provide them.
 
 ### LWJGL 3
 

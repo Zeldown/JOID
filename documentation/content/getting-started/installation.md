@@ -1,6 +1,6 @@
 # Installation
 
-JOID is shipped as JARs through GitHub Releases. They contain JOID and every library it decodes media with: add the JAR of your backend and the few libraries listed in *Dependencies* to your classpath, and point the JVM at the native libraries of your engine. No Maven Central, no package manager.
+JOID is shipped as JARs through GitHub Releases. They contain JOID and every library it decodes media with: add the JAR of your backend and the few libraries listed in *Dependencies* to your classpath. No Maven Central, no package manager.
 
 ## Download
 
@@ -25,6 +25,7 @@ A backend JAR contains the core, the JOID modules it uses — `joid-glfw` and `j
 
 - **FFmpeg** through JavaCV and JavaCPP, with its natives for Windows x64, Linux x64, macOS Intel and macOS ARM, extracted at runtime — about 95 MB of the JAR. It keeps its `org.bytedeco` packages, which JavaCPP needs to find its natives.
 - **JSVG** (SVG) and **TwelveMonkeys ImageIO** (WebP), relocated under `dev.joid.shaded`, so they never clash with copies your application or its host ships. JOID instantiates its WebP reader itself and registers nothing in ImageIO.
+- **LWJGL 2 and OpenAL natives** for Windows, Linux and macOS in `joid-lwjgl2`, extracted at runtime — see *Native libraries*.
 
 Building from source with `./gradlew build` (`-Pdev` for the dev flavour) copies every release artifact — backend, core, testkit, glfw and openal jars and the backend template — into `build/libs`.
 
@@ -54,7 +55,7 @@ Legacy Gradle uses `compile`; modern Gradle uses `implementation`. Both work. Ad
 
 Natives depend on the backend:
 
-- **LWJGL 2** — the `impl/lwjgl2/native/` folder of the repository contains the OpenGL and OpenAL natives (`lwjgl64.dll`, `OpenAL64.dll`, and their platform variants). Copy it next to your project and launch with `-Djava.library.path=./native`.
+- **LWJGL 2** — the backend JAR embeds the LWJGL 2 and OpenAL natives of Windows, Linux and macOS. On first use, JOID extracts the ones of the running platform to a temporary folder and points LWJGL at it through `org.lwjgl.librarypath`. When the launcher already provides them — `org.lwjgl.librarypath` set, or the natives found in `java.library.path`, as in Minecraft — JOID leaves them untouched.
 - **LWJGL 3 and Vulkan** — natives ship as Maven classifier JARs (`natives-windows`, `natives-linux`, `natives-macos`, `natives-macos-arm64`) that LWJGL extracts at runtime. Vulkan talks to the loader installed with the GPU driver; macOS additionally needs the `lwjgl-vulkan` natives (MoltenVK).
 
 > TIP: OpenAL is required for `ResourcePlayerNode` audio on every backend.
@@ -148,22 +149,18 @@ my-app/
 │   ├── commons-io-2.4.jar
 │   ├── vecmath-1.3.1.jar
 │   └── lwjgl-2.9.1.jar
-├── native/                              # LWJGL 2 backend natives (OpenGL + OpenAL)
-│   ├── lwjgl64.dll
-│   ├── OpenAL64.dll
-│   └── …
 └── run.bat                              # launcher
 ```
 
 A minimal launcher (`run.bat` on Windows, `run.sh` on *nix):
 
 ```bat
-java -Djava.library.path=./native -cp "my-app.jar;libraries/*" com.myapp.Main
+java -cp "my-app.jar;libraries/*" com.myapp.Main
 ```
 
 ```bash
 #!/bin/sh
-java -Djava.library.path=./native -cp "my-app.jar:libraries/*" com.myapp.Main
+java -cp "my-app.jar:libraries/*" com.myapp.Main
 ```
 
 The `libraries/*` wildcard expands to every JAR inside the folder — the JVM picks them up without listing each one. The FFmpeg classifier JARs contain the native `.dll` / `.so` / `.dylib` binaries; JavaCPP extracts them from the classpath at runtime, so they just need to be present in `libraries/`.
@@ -186,7 +183,7 @@ task distApp(type: Jar) {
 dist.dependsOn distApp
 ```
 
-After `gradle dist`, zip `build/dist/` together with your `native/` folder and launcher.
+After `gradle dist`, zip `build/dist/` together with your launcher.
 
 ## Verification
 
