@@ -33,7 +33,7 @@ public interface IResourceResolver {
 
 | Résolveur | Entrée | Comportement |
 |---|---|---|
-| `BufferedImageResourceResolver` | `BufferedImage` | Enveloppe l'image dans un `ImageResourceDecoder`. |
+| `BufferedImageResourceResolver` | `BufferedImage` | Enveloppe l'image dans un `RasterResourceDecoder`. |
 | `TextureResourceResolver` | `ITexture` | Enveloppe une texture du bridge de rendu, sans décodeur. |
 
 ## Ordre de résolution
@@ -43,7 +43,7 @@ public interface IResourceResolver {
 ```
 Resource.of(handle)
 ├─ un résolveur le prend ───────────► IResourceResolver
-└─ sinon ─► Asset.of(handle) ─► ResourceDecoder.of(asset)
+└─ sinon ─► Asset.of(handle) ─► ResourceFormat.decoder(asset)
 ```
 
 Enregistrer un résolveur permet donc de confisquer complètement un type d'entrée, y compris un type que la couche asset revendiquerait. Si rien ne correspond et qu'aucun localisateur ne reconnaît le handle, `Asset.of(...)` lève `IllegalArgumentException`.
@@ -71,7 +71,7 @@ public class PixelsResolver implements IResourceResolver {
         final Pixels pixels = (Pixels) input;
         final String uniqueId = "pixels:" + pixels.getId();
 
-        final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, ResourceDecoder.image(pixels.toBufferedImage())));
+        final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, new RasterResourceDecoder(pixels.toBufferedImage())));
         if (callback != null) {
             callback.accept(resource);
         }

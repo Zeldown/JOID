@@ -1,5 +1,6 @@
 package be.zeldown.joid.lib.resource;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import be.zeldown.joid.lib.bridge.BridgeHandler;
@@ -9,6 +10,7 @@ import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.playback.IPlayback;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -124,6 +126,10 @@ public final class Resource {
 		return this.data.getDecoder();
 	}
 
+	public final @NonNull Optional<IPlayback> getPlayback() {
+		return this.data.getDecoder() instanceof IPlayback ? Optional.of((IPlayback) this.data.getDecoder()) : Optional.empty();
+	}
+
 	public final @NonNull String getUniqueId() {
 		return this.data.getUniqueId();
 	}
@@ -170,6 +176,13 @@ public final class Resource {
 		this.bindTextureOnly(wrap);
 		runnable.run();
 		this.unbind();
+	}
+
+	public final void request(final int width, final int height) {
+		final IResourceDecoder decoder = this.data.getDecoder();
+		if (decoder != null && width > 0 && height > 0) {
+			decoder.request(this.data, width, height, this.properties.isAsync());
+		}
 	}
 
 	public final void bindTextureOnly(final @NonNull TextureWrap wrap) {

@@ -1,6 +1,6 @@
 # Decoders
 
-Les objets bas niveau qui transforment des octets en textures GPU. Vous les instanciez rarement directement — `ResourceDecoder.of(asset)` en choisit un d'après les premiers octets d'un [asset](assets.md) — mais connaître l'API aide pour écrire des décodeurs custom.
+Les objets bas niveau qui transforment des octets en textures GPU. Vous les instanciez rarement directement — `ResourceFormat.decoder(asset)` en choisit un d'après les premiers octets d'un [asset](assets.md) — mais connaître l'API aide pour écrire des décodeurs custom.
 
 Un décodeur porte son asset, pas ses octets : rien n'est lu avant que `decode(...)` tourne, sur le worker de ressources.
 
@@ -30,13 +30,13 @@ Cycle de vie :
 
 ## Décodeurs intégrés
 
-### `ImageResourceDecoder`
+### `RasterResourceDecoder`
 
 Formats d'image statique (PNG, JPG, BMP). Utilise le `ImageIO` de Java. Texture unique, pas d'animation.
 
 ```java
-ResourceDecoder.image(Asset);            // lu paresseusement, dans decode()
-ResourceDecoder.image(BufferedImage);    // depuis une image pré-décodée
+new RasterResourceDecoder(Asset);            // lu paresseusement, dans decode()
+new RasterResourceDecoder(BufferedImage);    // depuis une image pré-décodée
 ```
 
 ### `VideoResourceDecoder`
@@ -51,36 +51,26 @@ Fonctionnalités :
 - Spatial audio 3D optionnel.
 
 ```java
-ResourceDecoder.video(Asset);
-ResourceDecoder.video(Asset, boolean loopByDefault);
-ResourceDecoder.video(File);
+new VideoResourceDecoder(Asset);
+new VideoResourceDecoder(File);
 ```
 
 Pour le contrôle de la lecture, enveloppez dans un [VideoPlayerNode](../nodes/design/video-player.md) — il expose `play / pause / seek / volume` et des callbacks de progression.
 
-Accès aux internals du décodeur via `Resource.getDecoder()` :
+Pilotez la lecture de toute ressource animée via `Resource.getPlayback()` :
 
 ```java
-VideoResourceDecoder vrd = (VideoResourceDecoder) resource.getDecoder();
-vrd.play();
-vrd.seek(10D);
-double progress = vrd.getProgress();
+resource.getPlayback().ifPresent(playback -> playback.seek(10D).play());
+double progress = resource.getPlayback().map(IPlayback::getProgress).orElse(0D);
 ```
 
-## Helpers magic bytes
+## Détection du format
 
-Utilitaires de détection statiques sur `VideoResourceDecoder` :
-
-```java
-VideoResourceDecoder.isVideoHeader(byte[] header, int read);   // true pour MP4/MOV/WebM/MKV/AVI/GIF
-VideoResourceDecoder.isLoopByDefault(byte[] header, int read); // true pour GIF (loop on)
-```
-
-`ResourceDecoder.of(Asset)` les applique aux 12 premiers octets de l'asset, lus via `peek(...)` pour ne pas le consommer.
+`ResourceFormat.decoder(asset)` lit les 512 premiers octets de l'asset via `peek(...)`, sans le consommer, et demande à chaque `IResourceFormat` enregistré s'il les reconnaît, le dernier enregistré en premier. Si aucun ne les reconnaît, l'asset est lu comme une image raster.
 
 ## Écrire un décodeur custom
 
-Implémentez `IResourceDecoder` et enregistrez-le manuellement via `ResourceDecoder` ou en construisant directement un `ResourceData` :
+Implémentez `IResourceDecoder`, puis dirigez-y les octets avec un `IResourceFormat` enregistré via `ResourceFormat.register(...)`, ou construisez directement un `ResourceData` :
 
 ```java
 public class SVGResourceDecoder implements IResourceDecoder {

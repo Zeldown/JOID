@@ -36,8 +36,8 @@ node.isPlaying();
 node.isPaused();
 node.getDuration();             // secondes
 node.getProgress();             // 0.0 → 1.0
-node.getDecoder().getCurrentVideoTime();  // secondes
-node.getDecoder().getFrameRate();
+node.getVideo().get().getCurrentTime();  // secondes
+node.getVideo().get().getFrameRate();
 ```
 
 ## Configuration
@@ -127,14 +127,14 @@ Détectés via magic bytes (en-tête), pas l'extension :
 - **GIF** — `GIF87a` / `GIF89a`
 - **APNG** — PNG avec chunk `acTL` (détecté par FFmpeg)
 
-Pour GIF/APNG, le loop est activé par défaut (`isLoopByDefault`).
+Un GIF boucle par défaut.
 
 ## Bonnes pratiques
 
 - **Utilisez `release()` avant de swap plusieurs fois.** Le décodeur détient un thread, un fichier temp et une source audio — le cleanup compte pour les apps longues.
 - **Mettez `autoplay(false)` pour une lecture déclenchée par l'utilisateur.** Sinon la vidéo démarre dès le décodage.
 - **Préférez `.location(x, y, z) + setAudioListener` pour l'audio monde.** Régler le volume manuellement à chaque frame est moins efficient.
-- **Ne gardez pas de référence à un décodeur disposé.** Appelez `getDecoder()` à chaque fois — il retourne `null` après release.
+- **Ne gardez pas de référence à un décodeur disposé.** Appelez `getPlayback()` ou `getVideo()` à chaque fois — ils sont vides une fois la ressource partie.
 
 ## Voir aussi
 

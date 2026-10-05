@@ -6,7 +6,6 @@ import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.resource.Resource;
-import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
 import be.zeldown.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,9 +16,6 @@ public class ResourceNode extends Node {
 
 	private Resource resource;
 	private Resource hoveredResource;
-
-	private boolean resourceStarted;
-	private boolean hoveredResourceStarted;
 
 	private Color color = Color.WHITE;
 	private Color hoveredColor;
@@ -46,16 +42,10 @@ public class ResourceNode extends Node {
 	public void draw(final double mouseX, final double mouseY) {
 		if (this.resource != null) {
 			this.resource.prepareBind();
-			if (!this.resourceStarted && this.resource.getDecoder() instanceof VideoResourceDecoder) {
-				this.resourceStarted = true;
-			}
 		}
 
 		if (this.hoveredResource != null) {
 			this.hoveredResource.prepareBind();
-			if (!this.hoveredResourceStarted && this.hoveredResource.getDecoder() instanceof VideoResourceDecoder) {
-				this.hoveredResourceStarted = true;
-			}
 		}
 
 		if (this.resource == null || !this.resource.isLoaded()) {

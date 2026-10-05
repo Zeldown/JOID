@@ -22,13 +22,14 @@ import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.render.texture.ITexture;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
 import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.playback.IPlayback;
 import be.zeldown.joid.lib.video.VideoAudioPlayer;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-public final class VideoResourceDecoder implements IResourceDecoder {
+public final class VideoResourceDecoder implements IResourceDecoder, IPlayback {
 
 	private static final int RING_BUFFER_SIZE = 5;
 
@@ -86,6 +87,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	@Override
 	public void init(final @NonNull ResourceData resource) {}
 
+	@Override
 	public @NonNull VideoResourceDecoder stop() {
 		this.running.set(false);
 		if (this.decodeThread != null) {
@@ -265,6 +267,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		}
 	}
 
+	@Override
 	public @NonNull VideoResourceDecoder play() {
 		if (this.running.get()) {
 			return this;
@@ -289,6 +292,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this;
 	}
 
+	@Override
 	public @NonNull VideoResourceDecoder pause() {
 		if (!this.paused.getAndSet(true)) {
 			this.pauseTime = BridgeHandler.CLOCK.get().nanoTime();
@@ -300,6 +304,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this;
 	}
 
+	@Override
 	public @NonNull VideoResourceDecoder resume() {
 		if (this.paused.getAndSet(false)) {
 			this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
@@ -311,6 +316,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this;
 	}
 
+	@Override
 	public @NonNull VideoResourceDecoder seek(final double seconds) {
 		this.seekInternal((long) (seconds * 1000000D));
 		return this;
@@ -321,6 +327,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this;
 	}
 
+	@Override
 	public @NonNull VideoResourceDecoder loop(final boolean loop) {
 		this.loop = loop;
 		return this;
@@ -353,15 +360,18 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this;
 	}
 
+	@Override
 	public @NonNull VideoResourceDecoder autoplay(final boolean autoplay) {
 		this.autoplay = autoplay;
 		return this;
 	}
 
+	@Override
 	public boolean isPaused() {
 		return this.paused.get();
 	}
 
+	@Override
 	public boolean isPlaying() {
 		return this.running.get() && !this.paused.get();
 	}
@@ -378,30 +388,7 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this.ended || this.frameQueue.remainingCapacity() == 0 || next.getTime() > this.getPlaybackTime();
 	}
 
-	public static boolean isVideoHeader(final @NonNull byte[] header, final int read) {
-		if (read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a') {
-			return true;
-		}
-
-		if (read >= 8 && header[4] == 'f' && header[5] == 't' && header[6] == 'y' && header[7] == 'p') {
-			return true;
-		}
-
-		if (read >= 4 && header[0] == (byte) 0x1A && header[1] == (byte) 0x45 && header[2] == (byte) 0xDF && header[3] == (byte) 0xA3) {
-			return true;
-		}
-
-		if (read >= 12 && header[0] == 'R' && header[1] == 'I' && header[2] == 'F' && header[3] == 'F' && header[8] == 'A' && header[9] == 'V' && header[10] == 'I' && header[11] == ' ') {
-			return true;
-		}
-
-		return false;
-	}
-
-	public static boolean isLoopByDefault(final @NonNull byte[] header, final int read) {
-		return read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a';
-	}
-
+	@Override
 	public double getProgress() {
 		if (this.totalFrames <= 0) {
 			return 0D;
@@ -409,7 +396,8 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return Math.min((double) this.displayedFrameIndex / this.totalFrames, 1D);
 	}
 
-	public double getCurrentVideoTime() {
+	@Override
+	public double getCurrentTime() {
 		if (this.frameRate <= 0D) {
 			return 0D;
 		}

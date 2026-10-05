@@ -13,17 +13,17 @@ import be.zeldown.joid.lib.resource.dto.decoder.IResourceDecoder;
 import be.zeldown.joid.lib.utils.image.ImageUtils;
 import lombok.NonNull;
 
-public class ImageResourceDecoder implements IResourceDecoder {
+public class RasterResourceDecoder implements IResourceDecoder {
 
 	private final Asset asset;
 
 	private BufferedImage image;
 
-	public ImageResourceDecoder(final @NonNull Asset asset) {
+	public RasterResourceDecoder(final @NonNull Asset asset) {
 		this.asset = asset;
 	}
 
-	public ImageResourceDecoder(final @NonNull BufferedImage image) {
+	public RasterResourceDecoder(final @NonNull BufferedImage image) {
 		this.asset = null;
 		this.image = image;
 	}
@@ -39,7 +39,7 @@ public class ImageResourceDecoder implements IResourceDecoder {
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
 		if (this.image == null) {
-			this.image = ImageResourceDecoder.read(this.asset);
+			this.image = RasterResourceDecoder.read(this.asset);
 		}
 
 		resource.width(this.image.getWidth());

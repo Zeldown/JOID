@@ -4,6 +4,7 @@ import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.render.matrix.PixelGrid;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
+import be.zeldown.joid.lib.bridge.render.texture.ITexture;
 import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
 import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
@@ -72,8 +73,15 @@ public final class DrawResource {
 		final double right = grid.snapX(x + width);
 		final double bottom = grid.snapY(y + height);
 		final ResourceProperties properties = resource.getProperties();
-		if (!properties.getMipmap().isPresent() && properties.getTextureCoords() == null && properties.getInterpolation() == TextureFilter.LINEAR && (Math.round((right - left) * grid.getScaleX()) < resource.getWidth() || Math.round((bottom - top) * grid.getScaleY()) < resource.getHeight())) {
-			properties.mipmap(true);
+		if (properties.getTextureCoords() == null) {
+			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX());
+			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY());
+			resource.request(pixelWidth, pixelHeight);
+
+			final ITexture texture = resource.getTexture();
+			if (!properties.getMipmap().isPresent() && properties.getInterpolation() == TextureFilter.LINEAR && texture != null && (pixelWidth < texture.getWidth() || pixelHeight < texture.getHeight())) {
+				properties.mipmap(true);
+			}
 		}
 
 		render.pushMatrix();

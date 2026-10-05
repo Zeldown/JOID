@@ -1,9 +1,12 @@
 package be.zeldown.joid.lib.ui.node.impl.design.video;
 
+import java.util.Optional;
+
 import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.draw.DrawUtils;
 import be.zeldown.joid.lib.resource.Resource;
 import be.zeldown.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
+import be.zeldown.joid.lib.resource.dto.playback.IPlayback;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import be.zeldown.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
@@ -48,10 +51,7 @@ public class VideoPlayerNode extends Node {
 	}
 
 	public final @NonNull VideoPlayerNode stop() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.stop();
-		}
+		this.getPlayback().ifPresent(IPlayback::stop);
 		return this;
 	}
 
@@ -81,35 +81,30 @@ public class VideoPlayerNode extends Node {
 
 		if (!this.resourceStarted) {
 			this.resourceStarted = true;
-			final VideoResourceDecoder decoder = this.getDecoder();
-			if (decoder != null) {
-				decoder.stop();
-				decoder.seek(0D);
-				decoder.loop(this.loop);
-				decoder.volume(this.volume);
-				decoder.autoplay(this.autoplay);
-
+			this.getVideo().ifPresent(video -> video.volume(this.volume));
+			this.getPlayback().ifPresent(playback -> {
+				playback.stop().seek(0D).loop(this.loop).autoplay(this.autoplay);
 				if (this.autoplay) {
-					decoder.play();
+					playback.play();
 				}
-			}
+			});
 		}
 
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			final boolean playing = decoder.isPlaying();
+		final Optional<IPlayback> playback = this.getPlayback();
+		if (playback.isPresent()) {
+			final boolean playing = playback.get().isPlaying();
 			if (playing && !this.wasPlaying) {
 				super.executeCallback(VideoPlayerNode.CALLBACK_PLAY, InternalContext.create());
-			} else if (!playing && this.wasPlaying && !decoder.isPaused()) {
+			} else if (!playing && this.wasPlaying && !playback.get().isPaused()) {
 				super.executeCallback(VideoPlayerNode.CALLBACK_END, InternalContext.create());
 			}
 
 			this.wasPlaying = playing;
 			if (playing) {
-				final double progress = decoder.getProgress();
+				final double progress = playback.get().getProgress();
 				if (progress != this.lastProgress) {
 					this.lastProgress = progress;
-					super.executeCallback(VideoPlayerNode.CALLBACK_PROGRESS, InternalContext.create(), progress, decoder.getCurrentVideoTime());
+					super.executeCallback(VideoPlayerNode.CALLBACK_PROGRESS, InternalContext.create(), progress, playback.get().getCurrentTime());
 				}
 			}
 		}
@@ -123,35 +118,25 @@ public class VideoPlayerNode extends Node {
 	}
 
 	public final @NonNull VideoPlayerNode play() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.play();
-		}
+		this.getPlayback().ifPresent(IPlayback::play);
 		return this;
 	}
 
 	public final @NonNull VideoPlayerNode pause() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.pause();
+		this.getPlayback().ifPresent(playback -> {
+			playback.pause();
 			super.executeCallback(VideoPlayerNode.CALLBACK_PAUSE, InternalContext.create());
-		}
+		});
 		return this;
 	}
 
 	public final @NonNull VideoPlayerNode resume() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.resume();
-		}
+		this.getPlayback().ifPresent(IPlayback::resume);
 		return this;
 	}
 
 	public final @NonNull VideoPlayerNode seek(final double seconds) {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.seek(seconds);
-		}
+		this.getPlayback().ifPresent(playback -> playback.seek(seconds));
 		return this;
 	}
 
@@ -160,12 +145,7 @@ public class VideoPlayerNode extends Node {
 	}
 
 	public final @NonNull VideoPlayerNode restart() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.stop();
-			decoder.seek(0D);
-			decoder.play();
-		}
+		this.getPlayback().ifPresent(playback -> playback.stop().seek(0D).play());
 		return this;
 	}
 
@@ -213,82 +193,57 @@ public class VideoPlayerNode extends Node {
 
 	public final <T extends VideoPlayerNode> @NonNull T loop(final boolean loop) {
 		this.loop = loop;
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.loop(loop);
-		}
+		this.getPlayback().ifPresent(playback -> playback.loop(loop));
 		return (T) this;
 	}
 
 	public final <T extends VideoPlayerNode> @NonNull T volume(final float volume) {
 		this.volume = volume;
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.volume(volume);
-		}
+		this.getVideo().ifPresent(video -> video.volume(volume));
 		return (T) this;
 	}
 
 	public final <T extends VideoPlayerNode> @NonNull T location(final float x, final float y, final float z) {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.location(x, y, z);
-		}
+		this.getVideo().ifPresent(video -> video.location(x, y, z));
 		return (T) this;
 	}
 
 	public final <T extends VideoPlayerNode> @NonNull T referenceDistance(final float distance) {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.referenceDistance(distance);
-		}
+		this.getVideo().ifPresent(video -> video.referenceDistance(distance));
 		return (T) this;
 	}
 
 	public final <T extends VideoPlayerNode> @NonNull T maxDistance(final float distance) {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.maxDistance(distance);
-		}
+		this.getVideo().ifPresent(video -> video.maxDistance(distance));
 		return (T) this;
 	}
 
 	public final double getDuration() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		return decoder != null ? decoder.getDuration() : 0D;
+		return this.getPlayback().map(IPlayback::getDuration).orElse(0D);
 	}
 
 	public final double getProgress() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		return decoder != null ? decoder.getProgress() : 0D;
+		return this.getPlayback().map(IPlayback::getProgress).orElse(0D);
 	}
 
-	public final VideoResourceDecoder getDecoder() {
-		if (this.resource == null || !(this.resource.getDecoder() instanceof VideoResourceDecoder)) {
-			return null;
-		}
-		return (VideoResourceDecoder) this.resource.getDecoder();
+	public final @NonNull Optional<IPlayback> getPlayback() {
+		return this.resource == null ? Optional.empty() : this.resource.getPlayback();
+	}
+
+	public final @NonNull Optional<VideoResourceDecoder> getVideo() {
+		return this.resource == null || !(this.resource.getDecoder() instanceof VideoResourceDecoder) ? Optional.empty() : Optional.of((VideoResourceDecoder) this.resource.getDecoder());
 	}
 
 	public final boolean isPaused() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		return decoder != null && decoder.isPaused();
+		return this.getPlayback().map(IPlayback::isPaused).orElse(false);
 	}
 
 	public final boolean isPlaying() {
-		final VideoResourceDecoder decoder = this.getDecoder();
-		return decoder != null && decoder.isPlaying();
+		return this.getPlayback().map(IPlayback::isPlaying).orElse(false);
 	}
 
 	private void release() {
-		if (this.resource == null) {
-			return;
-		}
-
-		final VideoResourceDecoder decoder = this.getDecoder();
-		if (decoder != null) {
-			decoder.release();
-		}
+		this.getVideo().ifPresent(VideoResourceDecoder::release);
 	}
 
 }

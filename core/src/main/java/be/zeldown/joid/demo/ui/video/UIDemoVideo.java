@@ -123,10 +123,10 @@ public class UIDemoVideo extends UIDemo {
 		final long usedMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
 		final long totalMB = runtime.totalMemory() / 1048576L;
 
-		final VideoResourceDecoder decoder = this.player.getDecoder();
+		final VideoResourceDecoder decoder = this.player.getVideo().orElse(null);
 		final double progress = decoder != null ? decoder.getProgress() : 0D;
 		final double duration = decoder != null ? decoder.getDuration() : 0D;
-		final double currentTime = decoder != null ? decoder.getCurrentVideoTime() : 0D;
+		final double currentTime = decoder != null ? decoder.getCurrentTime() : 0D;
 		final int videoQueueSize = decoder != null && decoder.getFrameQueue() != null ? decoder.getFrameQueue().size() : 0;
 		final int audioQueueSize = decoder != null && decoder.getAudioPlayer() != null ? decoder.getAudioPlayer().getQueueSize() : 0;
 		final double videoFps = decoder != null ? decoder.getFrameRate() : 0D;

@@ -33,7 +33,7 @@ public interface IResourceResolver {
 
 | Resolver | Input | Behaviour |
 |---|---|---|
-| `BufferedImageResourceResolver` | `BufferedImage` | Wraps the image in an `ImageResourceDecoder`. |
+| `BufferedImageResourceResolver` | `BufferedImage` | Wraps the image in an `RasterResourceDecoder`. |
 | `TextureResourceResolver` | `ITexture` | Wraps a texture owned by the render bridge, with no decoder. |
 
 ## Resolution order
@@ -43,7 +43,7 @@ public interface IResourceResolver {
 ```
 Resource.of(handle)
 ├─ a resolver supports it ──────────► IResourceResolver
-└─ otherwise ─► Asset.of(handle) ─► ResourceDecoder.of(asset)
+└─ otherwise ─► Asset.of(handle) ─► ResourceFormat.decoder(asset)
 ```
 
 Registering a resolver therefore lets you take an input type over completely, including one the asset layer would otherwise claim. If nothing matches and no locator recognises the handle either, `Asset.of(...)` throws `IllegalArgumentException`.
@@ -71,7 +71,7 @@ public class PixelsResolver implements IResourceResolver {
         final Pixels pixels = (Pixels) input;
         final String uniqueId = "pixels:" + pixels.getId();
 
-        final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, ResourceDecoder.image(pixels.toBufferedImage())));
+        final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, new RasterResourceDecoder(pixels.toBufferedImage())));
         if (callback != null) {
             callback.accept(resource);
         }

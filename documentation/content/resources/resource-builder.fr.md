@@ -73,7 +73,7 @@ Une `String` devient un `UrlAsset`, qui se déclare distant : son décodeur est 
 
 ## Détection magic-bytes
 
-`ResourceDecoder.of(asset)` lit les 12 premiers octets via `peek(...)` pour choisir le bon décodeur :
+`ResourceFormat.decoder(asset)` lit les 12 premiers octets via `peek(...)` pour choisir le bon décodeur :
 
 | Signature / extension | Décodeur |
 |---|---|
@@ -81,7 +81,7 @@ Une `String` devient un `UrlAsset`, qui se déclare distant : son décodeur est 
 | `ftyp` à l'offset 4 | `VideoResourceDecoder` (MP4/MOV) |
 | `1A 45 DF A3` | `VideoResourceDecoder` (WebM/MKV) |
 | `RIFF...AVI` | `VideoResourceDecoder` |
-| autre | `ImageResourceDecoder` (ImageIO) |
+| autre | `RasterResourceDecoder` (ImageIO) |
 
 Pas besoin de pré-classifier — déposez n'importe quel format supporté et ça marche.
 
@@ -102,7 +102,7 @@ public class MySourceResolver implements IResourceResolver {
         final MySource source = (MySource) input;
         final String uniqueId = source.getId();
 
-        final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, ResourceDecoder.image(source.openStream())));
+        final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, new RasterResourceDecoder(Asset.of(source.openStream()))));
 
         if (callback != null) {
             callback.accept(resource);
@@ -116,7 +116,7 @@ Pour un load async (download / IO sur un worker thread), utilisez l'overload à 
 
 ```java
 return builder.compute(url, () -> new ResourceData(url, null), resource -> new MyDownloadThread(url, stream -> {
-    resource.decoder(ResourceDecoder.image(stream));
+    resource.decoder(new RasterResourceDecoder(Asset.of(stream)));
     if (callback != null) {
         callback.accept(resource);
     }
@@ -151,5 +151,5 @@ Utile pour le hot-reload en dev.
 ## Voir aussi
 
 - [Resolvers](resolvers.md) — `IResourceResolver`, registry, et écrire des resolvers custom pour de nouveaux types d'input.
-- [Decoders](decoders.md) — `ImageResourceDecoder`, `VideoResourceDecoder`.
+- [Decoders](decoders.md) — `RasterResourceDecoder`, `VideoResourceDecoder`.
 - [ResourceNode](../nodes/design/resource.md) — rendre des ressources en tant que nœuds.

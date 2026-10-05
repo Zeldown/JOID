@@ -12,8 +12,8 @@ import com.google.common.cache.CacheBuilder;
 import be.zeldown.joid.lib.asset.Asset;
 import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import be.zeldown.joid.lib.resource.dto.ResourceData;
-import be.zeldown.joid.lib.resource.dto.decoder.ResourceDecoder;
 import be.zeldown.joid.lib.resource.dto.ResourceProperties;
+import be.zeldown.joid.lib.resource.dto.format.ResourceFormat;
 import be.zeldown.joid.lib.resource.dto.resolver.ResourceResolver;
 import lombok.Getter;
 import lombok.NonNull;
@@ -98,14 +98,14 @@ public final class ResourceBuilder {
 		final Asset asset = Asset.of(input);
 		if (asset.isRemote()) {
 			return this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), null), resource -> resource.dispatch(() -> {
-				resource.decoder(ResourceDecoder.of(asset));
+				resource.decoder(ResourceFormat.decoder(asset));
 				if (callback != null) {
 					callback.accept(resource);
 				}
 			}));
 		}
 
-		final Resource resource = this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), ResourceDecoder.of(asset)));
+		final Resource resource = this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), ResourceFormat.decoder(asset)));
 		if (callback != null) {
 			callback.accept(resource);
 		}
