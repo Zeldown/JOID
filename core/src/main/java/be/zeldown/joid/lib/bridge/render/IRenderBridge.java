@@ -2,6 +2,7 @@ package be.zeldown.joid.lib.bridge.render;
 
 import be.zeldown.joid.lib.bridge.IBridge;
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
+import be.zeldown.joid.lib.bridge.render.matrix.PixelScale;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
@@ -37,6 +38,7 @@ public interface IRenderBridge extends IBridge {
 	public void lineWidth(final float width);
 	public void shader(final IShader shader);
 	public @NonNull ITexture createTexture();
+	public @NonNull PixelScale getPixelScale();
 	public void colorMask(final boolean write);
 	public void stencilTest(final boolean test);
 	public void lighting(final boolean lighting);

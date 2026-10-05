@@ -24,7 +24,7 @@ ShaderPipeline.render(x, y, width, height, baseDraw, pass1, pass2, ...);
 1. **Tri des passes par `priority()`** — plus bas en premier.
 2. **Voie rapide** — s'il y a exactement 1 pass, pas d'expansion, et `supportsDirectBind()` est `true`, bind le shader directement et draw. Pas de FBO.
 3. **Voie multi-passe** :
-   - Rend `baseDraw` dans FBO A (dimensionné pour le nœud + expansion max).
+   - Rend `baseDraw` dans FBO A, dimensionné pour le nœud + expansion max au pixel scale de la transformation courante — un texel par pixel écran, zoom et échelle d'interface compris.
    - Pour chaque passe sauf la dernière : bind le shader de la passe → blit FBO A sur FBO B avec ce shader → swap A et B.
    - Bind la dernière passe → blit sur l'écran → unbind.
 4. Le pool FBO est indexé par `(pipelineDepth, width, height)` pour que les appels imbriqués aient des framebuffers séparés.
@@ -37,12 +37,12 @@ Une passe implémente `ShaderPass` :
 public class MyShaderPass implements ShaderPass {
 
     @Override
-    public void bindDirect(Node node) {
+    public void bindDirect(@NonNull ShaderPassContext context) {
         // Bind votre shader pour la voie simple (pas de texture intermédiaire).
     }
 
     @Override
-    public void bindForTexture(Node node) {
+    public void bindForTexture(@NonNull ShaderPassContext context) {
         // Bind votre shader en sachant que l'entrée sera la texture du FBO précédent.
     }
 
@@ -67,6 +67,8 @@ public class MyShaderPass implements ShaderPass {
     }
 }
 ```
+
+Le pipeline transmet à chaque passe un `ShaderPassContext`, calculé une fois par dessin : la zone dessinée (`getX`, `getY`, `getWidth`, `getHeight`), la marge `getExpansion()` autour, le pixel scale `getScale()` de la transformation courante, et la taille de la texture d'entrée en pixels avec son texel (`getTexelWidth`, `getTexelHeight`). Convertissez les tailles logiques en pixels avec l'échelle — un rayon de `r` unités fait `r * context.getScale().getX()` pixels — sans jamais mesurer vous-même la fenêtre ou le nœud.
 
 ## Cheat-sheet de priorités
 

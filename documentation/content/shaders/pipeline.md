@@ -24,7 +24,7 @@ ShaderPipeline.render(x, y, width, height, baseDraw, pass1, pass2, ...);
 1. **Sort passes by `priority()`** — low first.
 2. **Fast path** — if exactly 1 pass, no expansion, and `supportsDirectBind()` is true, bind the shader directly and draw. No FBO.
 3. **Multi-pass path**:
-   - Render `baseDraw` into FBO A (sized for the node + max expansion).
+   - Render `baseDraw` into FBO A, sized for the node + max expansion at the pixel scale of the current transform — one texel per screen pixel, zoom and interface scale included.
    - For each pass except the last: bind pass shader → blit FBO A onto FBO B using that shader → swap A and B.
    - Bind the last pass → blit onto the screen → unbind.
 4. FBO pool is keyed by `(pipelineDepth, width, height)` so nested calls get separate framebuffers.
@@ -37,12 +37,12 @@ A pass implements `ShaderPass`:
 public class MyShaderPass implements ShaderPass {
 
     @Override
-    public void bindDirect(Node node) {
+    public void bindDirect(@NonNull ShaderPassContext context) {
         // Bind your shader for the simple path (no intermediate texture).
     }
 
     @Override
-    public void bindForTexture(Node node) {
+    public void bindForTexture(@NonNull ShaderPassContext context) {
         // Bind your shader knowing the input will be the previous FBO's texture.
     }
 
@@ -67,6 +67,8 @@ public class MyShaderPass implements ShaderPass {
     }
 }
 ```
+
+The pipeline hands every pass a `ShaderPassContext`, computed once per draw: the drawn area (`getX`, `getY`, `getWidth`, `getHeight`), the `getExpansion()` margin around it, the `getScale()` pixel scale of the current transform, and the size of the input texture in pixels with its texel (`getTexelWidth`, `getTexelHeight`). Convert logical sizes to pixels with the scale — a radius of `r` units is `r * context.getScale().getX()` pixels — and never measure the window or the node yourself.
 
 ## Priority cheat-sheet
 

@@ -3,6 +3,7 @@ package be.zeldown.joid.lib.shader.pipeline.pass;
 import be.zeldown.joid.lib.shader.impl.RoundedShader;
 import be.zeldown.joid.lib.shader.impl.RoundedShader.RoundedShaderType;
 import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import be.zeldown.joid.lib.ui.node.Node;
 import be.zeldown.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import lombok.NonNull;
@@ -49,12 +50,12 @@ public class RoundedShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindDirect(final Node node) {
+	public void bindDirect(final @NonNull ShaderPassContext context) {
 		this.bindShader(RoundedShaderType.AUTO);
 	}
 
 	@Override
-	public void bindForTexture(final Node node) {
+	public void bindForTexture(final @NonNull ShaderPassContext context) {
 		this.bindShader(RoundedShaderType.TEXTURE);
 	}
 

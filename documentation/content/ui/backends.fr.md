@@ -120,6 +120,7 @@ Le contrat que respecte chaque backend :
 - `pushState()` / `popState()` restaurent tout ce qui a été réglé via le bridge, y compris le framebuffer lié, le viewport et le shader courant.
 - `lighting(true)` signifie un terme ambiant de `0.6` plus une lumière directionnelle selon l'axe de vue, appliquée par sommet en flat shading.
 - Les lignes lissées sont dessinées par le cœur : le `Tessellator` étend chaque segment d'une ligne dessinée avec `lineSmooth(true)` en quad dans l'espace écran, et le shader `line` calcule la couverture antialiasée d'OpenGL, les backends ne dessinent donc que des triangles. `isLineSmooth()`, `getLineWidth()`, `getViewportWidth()` et `getViewportHeight()` exposent l'état dont il a besoin.
+- `getPixelScale()` donne le nombre de pixels de la fenêtre couverts par une unité dans la transformation courante. `RenderBridge` le calcule depuis ses matrices ; un bridge natif lit ses matrices de projection et de modèle-vue et renvoie `PixelScale.of(projection, modelView, viewportWidth, viewportHeight)`. Les effets et les dessins dépendants de la résolution dimensionnent leurs textures avec.
 
 ### Shaders
 

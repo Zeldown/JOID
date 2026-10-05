@@ -9,6 +9,7 @@ import java.util.Map;
 
 import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
+import be.zeldown.joid.lib.bridge.render.matrix.PixelScale;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
 import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
@@ -16,7 +17,7 @@ import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
 import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.render.framebuffer.FrameBuffer;
 import be.zeldown.joid.lib.render.tessellator.Tessellator;
-import be.zeldown.joid.lib.ui.core.UI;
+import be.zeldown.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import be.zeldown.joid.lib.ui.node.Node;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -36,44 +37,12 @@ public final class ShaderPipeline {
 		ShaderPipeline.FBO_POOL.clear();
 	}
 
-	public static int scaleFactor(final UI ui) {
-		if (ui == null || ui.getWidth() <= 0D) {
-			return 2;
-		}
-		return Math.max(1, (int) Math.ceil(ui.getViewportWidth() / ui.getWidth()));
-	}
-
-	public static void render(final Node node, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
+	public static void render(final @NonNull Node node, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
 		ShaderPipeline.render(node, new ArrayList<>(Arrays.asList(passes)), baseDraw);
 	}
 
-	public static void render(final Node node, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
-		if (passes.isEmpty()) {
-			baseDraw.run();
-			return;
-		}
-
-		ShaderPipeline.pipelineDepth++;
-		try {
-			passes.sort(Comparator.comparingInt(ShaderPass::priority));
-
-			final boolean needsFBO = passes.size() > 1 || ShaderPipeline.pipelineDepth > 1 || passes.stream().anyMatch(p -> p.expansion() > 0F || !p.supportsDirectBind());
-			if (!needsFBO) {
-				final IRenderBridge render = BridgeHandler.RENDER.get();
-				final IShader previousShader = render.getShader();
-				passes.get(0).bindDirect(node);
-				baseDraw.run();
-				passes.get(0).unbind();
-				render.shader(previousShader);
-				return;
-			}
-
-			if (node != null) {
-				ShaderPipeline.renderMultiPass(node.getX(), node.getY(), node.getWidth(), node.getHeight(), ShaderPipeline.scaleFactor(node.getUi()), node, passes, baseDraw);
-			}
-		} finally {
-			ShaderPipeline.pipelineDepth--;
-		}
+	public static void render(final @NonNull Node node, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
+		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), passes, baseDraw);
 	}
 
 	public static void render(final double x, final double y, final double width, final double height, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
@@ -89,17 +58,23 @@ public final class ShaderPipeline {
 		ShaderPipeline.pipelineDepth++;
 		try {
 			passes.sort(Comparator.comparingInt(ShaderPass::priority));
-			if (passes.size() == 1 && ShaderPipeline.pipelineDepth <= 1 && passes.get(0).expansion() == 0F && passes.get(0).supportsDirectBind()) {
-				final IRenderBridge render = BridgeHandler.RENDER.get();
+
+			final IRenderBridge render = BridgeHandler.RENDER.get();
+			final PixelScale scale = render.getPixelScale();
+			if (passes.size() == 1 && ShaderPipeline.pipelineDepth == 1 && passes.get(0).expansion() == 0F && passes.get(0).supportsDirectBind()) {
 				final IShader previousShader = render.getShader();
-				passes.get(0).bindDirect(null);
+				passes.get(0).bindDirect(ShaderPassContext.create(x, y, width, height, 0D, scale));
 				baseDraw.run();
 				passes.get(0).unbind();
 				render.shader(previousShader);
 				return;
 			}
 
-			ShaderPipeline.renderMultiPass(x, y, width, height, 2, null, passes, baseDraw);
+			float expansion = 0F;
+			for (final ShaderPass pass : passes) {
+				expansion = Math.max(expansion, pass.expansion());
+			}
+			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, scale), passes, baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}
@@ -135,24 +110,18 @@ public final class ShaderPipeline {
 		render.resetTexture();
 	}
 
-	private static void renderMultiPass(final double nodeX, final double nodeY, final double nodeW, final double nodeH, final int scaleFactor, final Node node, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
-		if (nodeW <= 0D || nodeH <= 0D) {
+	private static void renderMultiPass(final @NonNull ShaderPassContext context, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
+		if (context.getWidth() <= 0D || context.getHeight() <= 0D) {
 			baseDraw.run();
 			return;
 		}
 
-		float expansion = 0F;
-		for (final ShaderPass pass : passes) {
-			expansion = Math.max(expansion, pass.expansion());
-		}
-
-		final double expX = nodeX - expansion;
-		final double expY = nodeY - expansion;
-		final double expW = nodeW + expansion * 2D;
-		final double expH = nodeH + expansion * 2D;
-
-		final int pixelW = Math.max(1, (int) Math.ceil(expW * scaleFactor));
-		final int pixelH = Math.max(1, (int) Math.ceil(expH * scaleFactor));
+		final double expX = context.getX() - context.getExpansion();
+		final double expY = context.getY() - context.getExpansion();
+		final double expW = context.getWidth() + context.getExpansion() * 2D;
+		final double expH = context.getHeight() + context.getExpansion() * 2D;
+		final int pixelW = context.getTextureWidth();
+		final int pixelH = context.getTextureHeight();
 
 		final FrameBuffer[] fbos = ShaderPipeline.getOrCreateFBOs(pixelW, pixelH);
 		final FrameBuffer fboA = fbos[0];
@@ -193,7 +162,7 @@ public final class ShaderPipeline {
 			render.pushMatrix();
 			render.loadIdentity();
 
-			passes.get(i).bindForTexture(node);
+			passes.get(i).bindForTexture(context);
 			ShaderPipeline.drawTexturedQuad(src, expX, expY, expW, expH);
 			passes.get(i).unbind();
 
@@ -206,7 +175,7 @@ public final class ShaderPipeline {
 			dst = temp;
 		}
 
-		passes.get(passes.size() - 1).bindForTexture(node);
+		passes.get(passes.size() - 1).bindForTexture(context);
 		ShaderPipeline.drawTexturedQuad(src, expX, expY, expW, expH);
 		passes.get(passes.size() - 1).unbind();
 

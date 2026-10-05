@@ -2,8 +2,8 @@ package be.zeldown.joid.lib.shader.pipeline.pass;
 
 import be.zeldown.joid.lib.shader.impl.BlurShader;
 import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
-import be.zeldown.joid.lib.shader.pipeline.ShaderPipeline;
-import be.zeldown.joid.lib.ui.node.Node;
+import be.zeldown.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import lombok.NonNull;
 
 public class BlurShaderPass implements ShaderPass {
 
@@ -33,29 +33,22 @@ public class BlurShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindDirect(final Node node) {
-		this.bindInternal(node);
+	public void bindDirect(final @NonNull ShaderPassContext context) {
+		this.bindInternal(context);
 	}
 
 	@Override
-	public void bindForTexture(final Node node) {
-		this.bindInternal(node);
+	public void bindForTexture(final @NonNull ShaderPassContext context) {
+		this.bindInternal(context);
 	}
 
-	private void bindInternal(final Node node) {
+	private void bindInternal(final @NonNull ShaderPassContext context) {
 		if (!BlurShader.inst().isAvailable()) {
 			return;
 		}
 
-		final int scaleFactor = ShaderPipeline.scaleFactor(node != null ? node.getUi() : null);
-		final double nodeW = node != null ? node.getWidth() : 200D;
-		final double nodeH = node != null ? node.getHeight() : 120D;
-		final float pixelW = (float) Math.ceil((nodeW + this.radius * 2F) * scaleFactor);
-		final float pixelH = (float) Math.ceil((nodeH + this.radius * 2F) * scaleFactor);
-		final float texelW = 1F / Math.max(1F, pixelW);
-		final float texelH = 1F / Math.max(1F, pixelH);
-
-		BlurShader.inst().bind(this.radius * scaleFactor, this.horizontal ? 1F : 0F, this.horizontal ? 0F : 1F, texelW, texelH);
+		final double scale = this.horizontal ? context.getScale().getX() : context.getScale().getY();
+		BlurShader.inst().bind((float) (this.radius * scale), this.horizontal ? 1F : 0F, this.horizontal ? 0F : 1F, context.getTexelWidth(), context.getTexelHeight());
 	}
 
 }

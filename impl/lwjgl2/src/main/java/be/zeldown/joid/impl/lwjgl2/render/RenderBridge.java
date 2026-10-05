@@ -20,6 +20,7 @@ import be.zeldown.joid.impl.lwjgl2.render.state.StateSnapshot;
 import be.zeldown.joid.impl.lwjgl2.render.texture.Texture;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.render.framebuffer.IFrameBuffer;
+import be.zeldown.joid.lib.bridge.render.matrix.PixelScale;
 import be.zeldown.joid.lib.bridge.render.shader.IShader;
 import be.zeldown.joid.lib.bridge.render.shader.source.ShaderSource;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
@@ -35,6 +36,7 @@ import lombok.NonNull;
 public final class RenderBridge implements IRenderBridge {
 
 	private static final IntBuffer   VIEWPORT_BUFFER = BufferUtils.createIntBuffer(16);
+	private static final FloatBuffer MATRIX_BUFFER   = BufferUtils.createFloatBuffer(16);
 	private static final FloatBuffer AMBIENT_BUFFER  = (FloatBuffer) BufferUtils.createFloatBuffer(4).put(new float[] {0.6F, 0.6F, 0.6F, 1F}).flip();
 
 	private final Deque<StateSnapshot> stateStack;
@@ -144,6 +146,11 @@ public final class RenderBridge implements IRenderBridge {
 	@Override
 	public @NonNull ITexture createTexture() {
 		return Texture.create();
+	}
+
+	@Override
+	public @NonNull PixelScale getPixelScale() {
+		return PixelScale.of(RenderBridge.matrix(GL11.GL_PROJECTION_MATRIX), RenderBridge.matrix(GL11.GL_MODELVIEW_MATRIX), this.getViewportWidth(), this.getViewportHeight());
 	}
 
 	@Override
@@ -353,6 +360,14 @@ public final class RenderBridge implements IRenderBridge {
 		default:
 			return GL11.GL_TRIANGLES;
 		}
+	}
+
+	private static float[] matrix(final int name) {
+		final float[] matrix = new float[16];
+		RenderBridge.MATRIX_BUFFER.clear();
+		GL11.glGetFloat(name, RenderBridge.MATRIX_BUFFER);
+		RenderBridge.MATRIX_BUFFER.get(matrix);
+		return matrix;
 	}
 
 	private static int wrap(final TextureWrap wrap) {

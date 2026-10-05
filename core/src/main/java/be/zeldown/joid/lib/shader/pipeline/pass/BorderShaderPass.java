@@ -4,8 +4,7 @@ import be.zeldown.joid.lib.color.Color;
 import be.zeldown.joid.lib.shader.impl.BorderShader;
 import be.zeldown.joid.lib.shader.impl.BorderShader.BorderMode;
 import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
-import be.zeldown.joid.lib.shader.pipeline.ShaderPipeline;
-import be.zeldown.joid.lib.ui.node.Node;
+import be.zeldown.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import lombok.NonNull;
 
 public class BorderShaderPass implements ShaderPass {
@@ -46,36 +45,23 @@ public class BorderShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindDirect(final Node node) {
-		this.bindInternal(node);
+	public void bindDirect(final @NonNull ShaderPassContext context) {
+		this.bindInternal(context);
 	}
 
 	@Override
-	public void bindForTexture(final Node node) {
-		this.bindInternal(node);
+	public void bindForTexture(final @NonNull ShaderPassContext context) {
+		this.bindInternal(context);
 	}
 
-	private void bindInternal(final Node node) {
+	private void bindInternal(final @NonNull ShaderPassContext context) {
 		if (!BorderShader.inst().isAvailable()) {
 			return;
 		}
 
-		final int scaleFactor = ShaderPipeline.scaleFactor(node != null ? node.getUi() : null);
-		final double nodeW = node != null ? node.getWidth() : 200D;
-		final double nodeH = node != null ? node.getHeight() : 120D;
-		final double expandedW = nodeW + this.expansion() * 2D;
-		final double expandedH = nodeH + this.expansion() * 2D;
-		final float pixelW = (float) Math.ceil(expandedW * scaleFactor);
-		final float pixelH = (float) Math.ceil(expandedH * scaleFactor);
-		final float texelW = 1F / Math.max(1F, pixelW);
-		final float texelH = 1F / Math.max(1F, pixelH);
-
-		final float rectX1 = node != null ? (float) node.getX() : 0F;
-		final float rectY1 = node != null ? (float) node.getY() : 0F;
-		final float rectX2 = rectX1 + (float) nodeW;
-		final float rectY2 = rectY1 + (float) nodeH;
-
-		BorderShader.inst().bind(this.borderWidth * scaleFactor, this.borderColor, texelW, texelH, this.fill, this.mode.ordinal(), rectX1, rectY1, rectX2, rectY2);
+		final float x = (float) context.getX();
+		final float y = (float) context.getY();
+		BorderShader.inst().bind((float) (this.borderWidth * context.getScale().getX()), this.borderColor, context.getTexelWidth(), context.getTexelHeight(), this.fill, this.mode.ordinal(), x, y, x + (float) context.getWidth(), y + (float) context.getHeight());
 	}
 
 }

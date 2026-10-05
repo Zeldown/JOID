@@ -3,6 +3,7 @@ package be.zeldown.joid.lib.shader.pipeline.pass;
 import be.zeldown.joid.lib.shader.impl.CircleShader;
 import be.zeldown.joid.lib.shader.impl.CircleShader.RoundedShaderType;
 import be.zeldown.joid.lib.shader.pipeline.ShaderPass;
+import be.zeldown.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import be.zeldown.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
@@ -35,7 +36,7 @@ public class CircleShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindDirect(final Node node) {
+	public void bindDirect(final @NonNull ShaderPassContext context) {
 		if (!CircleShader.inst().isAvailable()) {
 			return;
 		}
@@ -44,7 +45,7 @@ public class CircleShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindForTexture(final Node node) {
+	public void bindForTexture(final @NonNull ShaderPassContext context) {
 		if (!CircleShader.inst().isAvailable()) {
 			return;
 		}

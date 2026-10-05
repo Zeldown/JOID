@@ -1,6 +1,7 @@
 package be.zeldown.joid.lib.shader.pipeline;
 
-import be.zeldown.joid.lib.ui.node.Node;
+import be.zeldown.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import lombok.NonNull;
 
 public interface ShaderPass {
 
@@ -8,12 +9,16 @@ public interface ShaderPass {
 
 	public int priority();
 
-	default public float expansion() { return 0F; }
+	public default float expansion() {
+		return 0F;
+	}
 
-	public void bindDirect(final Node node);
+	public default boolean supportsDirectBind() {
+		return false;
+	}
 
-	public void bindForTexture(final Node node);
+	public void bindDirect(final @NonNull ShaderPassContext context);
 
-	default public boolean supportsDirectBind() { return false; }
+	public void bindForTexture(final @NonNull ShaderPassContext context);
 
 }

@@ -123,13 +123,13 @@ public class OutlineShaderPass implements ShaderPass {
     }
 
     @Override
-    public void bindDirect(final Node node) {
-        this.bindInternal(node);
+    public void bindDirect(final @NonNull ShaderPassContext context) {
+        this.bindInternal(context);
     }
 
     @Override
-    public void bindForTexture(final Node node) {
-        this.bindInternal(node);
+    public void bindForTexture(final @NonNull ShaderPassContext context) {
+        this.bindInternal(context);
     }
 
     @Override
@@ -152,18 +152,11 @@ public class OutlineShaderPass implements ShaderPass {
         return false;  // on échantillonne le framebuffer
     }
 
-    private void bindInternal(final Node node) {
+    private void bindInternal(final @NonNull ShaderPassContext context) {
         if (!OutlineShader.inst().isAvailable()) return;
 
-        final int scaleFactor = ShaderPipeline.scaleFactor(node != null ? node.getUi() : null);
-        final double w = node != null ? node.getWidth() : 200D;
-        final double h = node != null ? node.getHeight() : 120D;
-        final float pixelW = (float) Math.ceil((w + this.thickness * 2F) * scaleFactor);
-        final float pixelH = (float) Math.ceil((h + this.thickness * 2F) * scaleFactor);
-        final float texelW = 1F / Math.max(1F, pixelW);
-        final float texelH = 1F / Math.max(1F, pixelH);
-
-        OutlineShader.inst().bind(this.thickness * scaleFactor, this.color, texelW, texelH);
+        // le pipeline a dimensionné la texture au pixel scale de la transformation courante
+        OutlineShader.inst().bind((float) (this.thickness * context.getScale().getX()), this.color, context.getTexelWidth(), context.getTexelHeight());
     }
 }
 ```

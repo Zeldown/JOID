@@ -120,6 +120,7 @@ The contract every backend follows:
 - `pushState()` / `popState()` restore everything set through the bridge, including the bound framebuffer, the viewport and the current shader.
 - `lighting(true)` means an ambient term of `0.6` plus a directional light along the view axis, applied per vertex with flat shading.
 - Smooth lines are drawn by the core: the `Tessellator` expands each segment of a line drawn with `lineSmooth(true)` into a quad in screen space, and the `line` shader computes the OpenGL antialiased coverage, so backends only draw triangles. `isLineSmooth()`, `getLineWidth()`, `getViewportWidth()` and `getViewportHeight()` expose the state it needs.
+- `getPixelScale()` gives the number of window pixels covered by one unit at the current transform. `RenderBridge` computes it from its matrices; a native bridge reads its projection and model-view matrices and returns `PixelScale.of(projection, modelView, viewportWidth, viewportHeight)`. Effects and resolution-dependent drawing size their textures from it.
 
 ### Shaders
 
