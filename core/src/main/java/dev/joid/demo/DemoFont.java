@@ -14,16 +14,16 @@ public class DemoFont {
 
 	public static MsdfFont PACIFICO;
 	public static MsdfFont MONTSERRAT;
-	public static MsdfFont SPACE_GROTESK;
+	public static MsdfFont PLAYFAIR_DISPLAY;
 
 	public static void load() {
 		DemoFont.MONTSERRAT = InternalFont.MONTSERRAT;
 		DemoFont.PACIFICO = MsdfFontLoader.load(DemoFont.get("Pacifico/Pacifico-Regular.ttf")).join();
-		DemoFont.SPACE_GROTESK = MsdfFontLoader.load(DemoFont.get("Space-Grotesk/SpaceGrotesk-Regular.ttf")).join();
+		DemoFont.PLAYFAIR_DISPLAY = MsdfFontLoader.load(DemoFont.get("Playfair-Display/PlayfairDisplay.ttf")).join();
 	}
 
 	public static boolean isLoaded() {
-		return DemoFont.MONTSERRAT != null && DemoFont.PACIFICO != null && DemoFont.SPACE_GROTESK != null;
+		return DemoFont.MONTSERRAT != null && DemoFont.PACIFICO != null && DemoFont.PLAYFAIR_DISPLAY != null;
 	}
 
 	private static InputStream get(final String file) {

@@ -109,7 +109,7 @@ Italic prefers the italic faces of the family. A family without one keeps its up
 
 ## Bundled fonts
 
-`InternalFont.MONTSERRAT` holds the nine Montserrat weights the dev mode draws with, and loads when JOID starts in dev or demo mode. `DemoFont.MONTSERRAT` points to the same family once JOID runs with `setDemoMode(true)`, next to `DemoFont.PACIFICO` and `DemoFont.SPACE_GROTESK`. They ship as `.ttf` files under `assets/dev/fonts` and `assets/demo/fonts`, with their SIL Open Font License, and only in the `-dev` artifacts. Great for bootstrapping the quick-start and demo UIs — ship your own fonts for production.
+`InternalFont.MONTSERRAT` holds the nine Montserrat weights the dev mode draws with, and loads when JOID starts in dev or demo mode. `DemoFont.MONTSERRAT` points to the same family once JOID runs with `setDemoMode(true)`, next to `DemoFont.PACIFICO` and `DemoFont.PLAYFAIR_DISPLAY`. They ship as `.ttf` files under `assets/dev/fonts` and `assets/demo/fonts`, with their SIL Open Font License, and only in the `-dev` artifacts. Great for bootstrapping the quick-start and demo UIs — ship your own fonts for production.
 
 ## Build a `TextInfo`
 

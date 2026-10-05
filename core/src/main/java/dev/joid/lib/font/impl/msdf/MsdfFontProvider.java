@@ -93,21 +93,20 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 		final MsdfBounds plane = msdf.getPlaneBounds();
 		final MsdfBounds bounds = msdf.getAtlasBounds();
 		final double size = glyph.getSize();
-		final double height = this.getVerticalSize(face, size);
 		final float pixelX = (float) (atlas.getSize() / (atlas.getWidth() * size * this.grid.getScaleX()));
-		final float pixelY = (float) (atlas.getSize() / (atlas.getHeight() * height * this.grid.getScaleY()));
+		final float pixelY = (float) (atlas.getSize() / (atlas.getHeight() * size * this.grid.getScaleY()));
 		if (pixelX != this.pixelX || pixelY != this.pixelY) {
 			this.bindPixel(pixelX, pixelY);
 		}
 
 		final double inset = MsdfFontProvider.HALF_TEXEL / atlas.getSize();
-		final double baseline = this.grid.snapY(glyph.getBaseline() - MsdfFontProvider.BASELINE_LIFT * size) + glyph.getOffsetY();
+		final double baseline = glyph.getBaseline() + glyph.getOffsetY() - MsdfFontProvider.BASELINE_LIFT * size;
 		final double origin = glyph.getX() + glyph.getOffsetX();
 
 		final double left = origin + (plane.getLeft() + inset) * size;
 		final double right = origin + (plane.getRight() - inset) * size;
-		final double top = baseline - (plane.getTop() - inset) * height;
-		final double bottom = baseline - (plane.getBottom() + inset) * height;
+		final double top = baseline - (plane.getTop() - inset) * size;
+		final double bottom = baseline - (plane.getBottom() + inset) * size;
 		final double topSlant = glyph.isSlanted() ? (baseline - top) * MsdfFontProvider.SLANT : 0D;
 		final double bottomSlant = glyph.isSlanted() ? (baseline - bottom) * MsdfFontProvider.SLANT : 0D;
 
@@ -153,11 +152,6 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 		this.pixelX = pixelX;
 		this.pixelY = pixelY;
 		MsdfShader.PIXEL.setValue(pixelX, pixelY);
-	}
-
-	private double getVerticalSize(final @NonNull MsdfFontFace face, final double size) {
-		final double xHeight = face.getXHeight() * size * this.grid.getScaleY();
-		return this.grid.isAligned() && xHeight > 0D ? size * Math.max(1D, Math.round(xHeight)) / xHeight : size;
 	}
 
 	private static final class MsdfShader {

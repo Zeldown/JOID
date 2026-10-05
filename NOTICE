@@ -41,13 +41,13 @@ Font License, Version 1.1, whose text sits next to each font file:
   https://github.com/JulietaUla/Montserrat
   Copyright 2011 The Montserrat Project Authors
 
-  Space Grotesk
-  https://github.com/floriankarsten/space-grotesk
-  Copyright 2020 The Space Grotesk Project Authors
-
   Pacifico
   https://github.com/googlefonts/Pacifico
   Copyright 2018 The Pacifico Project Authors
+
+  Playfair Display
+  https://github.com/clauseggers/Playfair-Display
+  Copyright 2017 The Playfair Display Project Authors
 
 The LWJGL 2 backend jar also embeds:
 

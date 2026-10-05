@@ -13,11 +13,9 @@ import lombok.NonNull;
 @Getter
 public final class MsdfFontFace implements IFontFace {
 
-	private static final float           HALF_TEXEL = 0.5F;
-	private static final ResourceBuilder BUILDER    = ResourceBuilder.create().cache(null).blocking().linear().mipmap(false);
+	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).blocking().linear().mipmap(false);
 
 	private final String                  name;
-	private final float                   xHeight;
 	private final boolean                 italic;
 	private final MsdfAtlas               atlas;
 	private final Resource                texture;
@@ -35,7 +33,6 @@ public final class MsdfFontFace implements IFontFace {
 		this.name = name;
 		this.weight = weight;
 		this.italic = italic;
-		this.xHeight = MsdfFontFace.measureXHeight(atlas, glyphs);
 	}
 
 	public static @NonNull MsdfFontFace create(final @NonNull MsdfAtlas atlas, final @NonNull MsdfMetrics metrics, final @NonNull Map<Integer, MsdfGlyph> glyphs, final @NonNull Map<Long, Float> kerningPairs, final @NonNull BufferedImage image, final @NonNull String name, final @NonNull FontWeight weight, final boolean italic) {
@@ -94,14 +91,6 @@ public final class MsdfFontFace implements IFontFace {
 
 	public @NonNull MsdfFontFace style(final @NonNull FontWeight weight, final boolean italic) {
 		return new MsdfFontFace(this.atlas, this.metrics, this.glyphs, this.kerningPairs, this.texture, this.name, weight, italic);
-	}
-
-	private static float measureXHeight(final MsdfAtlas atlas, final Map<Integer, MsdfGlyph> glyphs) {
-		final MsdfGlyph glyph = glyphs.get((int) 'x');
-		if (glyph == null || glyph.getPlaneBounds() == null) {
-			return 0F;
-		}
-		return glyph.getPlaneBounds().getTop() - (atlas.getDistanceRange() / 2F + MsdfFontFace.HALF_TEXEL) / atlas.getSize();
 	}
 
 }

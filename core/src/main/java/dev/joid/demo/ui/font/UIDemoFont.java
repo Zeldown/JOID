@@ -26,9 +26,9 @@ public class UIDemoFont extends UIDemo {
 	private static final MsdfFont LIGHT_BOLD = MsdfFont.create(DemoFont.MONTSERRAT.getFace(FontWeight.LIGHT, false), DemoFont.MONTSERRAT.getFace(FontWeight.BOLD, false));
 
 	private static final TextInfo[] FONTS = {
-			TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE).lineHeight(1F),
-			TextInfo.create(DemoFont.PACIFICO, 20, Color.WHITE).lineHeight(0.98F),
-			TextInfo.create(DemoFont.SPACE_GROTESK, 20, Color.WHITE)
+			TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE).lineHeight(1.33F),
+			TextInfo.create(DemoFont.PACIFICO, 20, Color.WHITE).lineHeight(1.425F),
+			TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 20, Color.WHITE).lineHeight(1.425F)
 	};
 
 	private static final String[] TEXTS = {
@@ -54,7 +54,7 @@ public class UIDemoFont extends UIDemo {
 			final Align align = i == 0 ? Align.START : i == 1 ? Align.CENTER : Align.END;
 			FlexNode.vertical(10D + i * 640D, 10D, 620D).margin(3D).body(flex -> {
 				for (final String text : UIDemoFont.TEXTS) {
-					final boolean italic = text.equals("italic");
+					final boolean italic = "italic".equals(text);
 					final boolean spacing = text.contains("spacing");
 					final boolean negativeSpacing = text.contains("n-spacing");
 					final boolean hasShadow = text.contains("shadow");
@@ -99,7 +99,7 @@ public class UIDemoFont extends UIDemo {
 			TextNode.create(0, 0).text(Text.create("<b>measured</b> <w=900>with</w> <c=55ff55>markup</c> <u>ends here</u>", UIDemoFont.MARKUP, Align.END)).width(flex.getWidth()).attach(flex);
 			TextNode.create(0, 0).text(Text.create("<b>centered</b> <w=100>with</w> <i>markup</i>", UIDemoFont.MARKUP, Align.CENTER)).width(flex.getWidth()).attach(flex);
 			TextNode.create(0, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=ff5555>red</c> <u>underline</u> <h>highlight</h>", UIDemoFont.MARKUP.copy().font(DemoFont.PACIFICO))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=ff5555>red</c> <u>underline</u> <h>highlight</h>", UIDemoFont.MARKUP.copy().font(DemoFont.SPACE_GROTESK))).attach(flex);
+			TextNode.create(0, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=ff5555>red</c> <u>underline</u> <h>highlight</h>", UIDemoFont.MARKUP.copy().font(DemoFont.PLAYFAIR_DISPLAY))).attach(flex);
 		}).attach(this);
 		FlexNode.vertical(970D, 615D, 940D).margin(14D).body(flex -> {
 			TextNode.create(0, 0).text(Text.create("a wave moves every glyph without touching the layout", UIDemoFont.EFFECT.copy().effects(DemoWaveTextEffect.inst()))).attach(flex);
@@ -111,7 +111,7 @@ public class UIDemoFont extends UIDemo {
 			TextNode.create(0, 0).text(Text.create("<b>markup</b> <u>adds</u> <h>effects</h> under the rainbow", UIDemoFont.EFFECT.copy().effects(DemoRainbowTextEffect.inst()))).attach(flex);
 			TextNode.create(0, 0).text(Text.create("spaced <u>wave</u> and <h>highlight</h>", UIDemoFont.EFFECT.copy().letterSpacing(0.36F).effects(DemoWaveTextEffect.inst()))).attach(flex);
 			TextNode.create(0, 0).text(Text.create("<i>italic</i> <b>rainbow</b> <u>scramble</u>", UIDemoFont.EFFECT.copy().font(DemoFont.PACIFICO).effects(DemoRainbowTextEffect.inst(), DemoScrambleTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<w=300>light</w> <b>wave</b> with a <h>highlight</h>", UIDemoFont.EFFECT.copy().font(DemoFont.SPACE_GROTESK).effects(DemoWaveTextEffect.inst()).shadow(Color.BLACK))).attach(flex);
+			TextNode.create(0, 0).text(Text.create("<w=300>light</w> <b>wave</b> with a <h>highlight</h>", UIDemoFont.EFFECT.copy().font(DemoFont.PLAYFAIR_DISPLAY).effects(DemoWaveTextEffect.inst()).shadow(Color.BLACK))).attach(flex);
 		}).attach(this);
 	}
 
