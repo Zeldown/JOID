@@ -1,14 +1,20 @@
 package be.zeldown.joid.lib.ui.core.hook.property;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,21 +39,19 @@ public final class UIPropertyHook {
 			return;
 		}
 
-		final JsonObject json = UIPropertyHook.loadFile(ui);
-		if (json == null) {
+		final Optional<JsonObject> json = UIPropertyHook.loadFile(ui);
+		if (!json.isPresent()) {
 			return;
 		}
 
 		for (final Field field : fields) {
-			final UIProperty property = field.getAnnotation(UIProperty.class);
-			final String key = property.value().isEmpty() ? field.getName() : property.value();
-			if (!json.has(key)) {
+			final String key = UIPropertyHook.getKey(field);
+			if (!json.get().has(key)) {
 				continue;
 			}
 
 			try {
-				final Object value = UIPropertyHook.GSON.fromJson(json.get(key), field.getType());
-				field.set(ui, value);
+				field.set(ui, UIPropertyHook.GSON.fromJson(json.get().get(key), field.getGenericType()));
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
@@ -60,14 +64,9 @@ public final class UIPropertyHook {
 			return;
 		}
 
-		final JsonObject json = UIPropertyHook.loadFile(ui);
-		if (json == null) {
-			return;
-		}
-
+		final JsonObject json = UIPropertyHook.loadFile(ui).orElseGet(JsonObject::new);
 		for (final Field field : fields) {
-			final UIProperty property = field.getAnnotation(UIProperty.class);
-			final String key = property.value().isEmpty() ? field.getName() : property.value();
+			final String key = UIPropertyHook.getKey(field);
 			try {
 				final Object value = field.get(ui);
 				json.remove(key);
@@ -75,13 +74,22 @@ public final class UIPropertyHook {
 					continue;
 				}
 
-				json.addProperty(key, UIPropertyHook.GSON.toJson(value));
+				json.add(key, UIPropertyHook.GSON.toJsonTree(value, field.getGenericType()));
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		UIPropertyHook.saveFile(ui, json);
+	}
+
+	private static @NonNull File getFile(final @NonNull UI ui) {
+		return new File(new File(JOID.inst().getConfigDir(), "property"), ui.getClass().getName() + ".property");
+	}
+
+	private static @NonNull String getKey(final @NonNull Field field) {
+		final UIProperty property = field.getAnnotation(UIProperty.class);
+		return property.value().isEmpty() ? field.getName() : property.value();
 	}
 
 	private static @NonNull List<Field> getFields(final @NonNull UI ui) {
@@ -113,48 +121,35 @@ public final class UIPropertyHook {
 		return fields;
 	}
 
-	private static @NonNull JsonObject loadFile(final @NonNull UI ui) {
-		final File parent = new File(JOID.inst().getConfigDir(), "property");
-		final File file = new File(parent, ui.getClass().getName() + ".dat");
-		try {
-			if (!parent.exists()) {
-				parent.mkdirs();
-			}
+	private static @NonNull Optional<JsonObject> loadFile(final @NonNull UI ui) {
+		final File file = UIPropertyHook.getFile(ui);
+		if (!file.exists()) {
+			return Optional.empty();
+		}
 
-			if (!file.exists()) {
-				return null;
-			}
-
-			final FileReader reader = new FileReader(file);
-			final JsonObject object = UIPropertyHook.GSON.fromJson(reader, JsonObject.class);
-			reader.close();
-			return object;
+		try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+			return Optional.ofNullable(UIPropertyHook.GSON.fromJson(reader, JsonObject.class));
 		} catch (final Exception e) {
 			System.err.println("Failed to load property file: " + file.getAbsolutePath());
 			e.printStackTrace();
-			file.delete();
 		}
 
-		return null;
+		if (!file.delete()) {
+			System.err.println("Failed to delete corrupted property file: " + file.getAbsolutePath());
+		}
+		return Optional.empty();
 	}
 
 	private static void saveFile(final @NonNull UI ui, final @NonNull JsonObject json) {
-		final File parent = new File(JOID.inst().getConfigDir(), "property");
-		final File file = new File(parent, ui.getClass().getName() + ".zui");
-		try {
-			if (!file.exists()) {
-				if (!parent.exists()) {
-					parent.mkdirs();
-				}
+		final File file = UIPropertyHook.getFile(ui);
+		final File parent = file.getParentFile();
+		if (!parent.exists() && !parent.mkdirs()) {
+			System.err.println("Failed to create property directory: " + parent.getAbsolutePath());
+			return;
+		}
 
-				if (!file.createNewFile()) {
-					System.err.println("Failed to create property file: " + file.getAbsolutePath());
-				}
-			}
-
-			final FileWriter writer = new FileWriter(file);
+		try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
 			UIPropertyHook.GSON.toJson(json, writer);
-			writer.close();
 		} catch (final Exception e) {
 			System.err.println("Failed to save property file: " + file.getAbsolutePath());
 			e.printStackTrace();

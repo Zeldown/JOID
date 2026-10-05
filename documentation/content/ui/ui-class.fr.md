@@ -143,6 +143,8 @@ private double zoomLevelConfig = 1D;
 // Automatiquement persisté à la fermeture, restauré au chargement.
 ```
 
+Chaque UI garde ses propriétés dans `config/property/<nom de la classe>.property`, en JSON : tout type que Gson sait écrire fait l'aller-retour — primitifs, chaînes, listes, maps et objets simples, génériques compris. `@UIProperty("key")` nomme l'entrée `key` au lieu du champ, et un champ remis à `null` est retiré du fichier, pour que le prochain chargement garde sa valeur par défaut. Un fichier corrompu est supprimé et les valeurs par défaut restent.
+
 ## Coordonnées et échelle
 
 Une UI se conçoit sur un canevas de 1920×1080. `ui.getView()` renvoie la `UIView` qui place ce canevas dans la fenêtre, et toutes les conversions passent par elle — dessin, souris, infobulles, résolution des effets :
