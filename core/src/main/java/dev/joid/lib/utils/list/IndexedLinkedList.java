@@ -25,28 +25,25 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 
 	@Override
 	public void add(final E element) {
+		this.orderedList.remove(element);
 		for (int i = 0; i < this.orderedList.size(); i++) {
 			if (this.orderedList.get(i).getIndex() > element.getIndex()) {
 				this.orderedList.add(i, element);
-				break;
+				return;
 			}
 		}
 
-		if (!this.orderedList.contains(element)) {
-			this.orderedList.add(element);
-		}
+		this.orderedList.add(element);
 	}
 
 	@Override
 	public void remove(final E element) {
 		this.orderedList.remove(element);
-		this.reversedList.remove(element);
 	}
 
 	@Override
 	public void clear() {
 		this.orderedList.clear();
-		this.reversedList.clear();
 	}
 
 	@Override
@@ -56,7 +53,7 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 
 	@Override
 	public int size() {
-		return Math.min(this.orderedList.size(), this.reversedList.size());
+		return this.orderedList.size();
 	}
 
 	@Override
@@ -71,12 +68,12 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 
 	@Override
 	public E getLast() {
-		return this.orderedList.getLast();
+		return this.orderedList.isEmpty() ? null : this.orderedList.getLast();
 	}
 
 	@Override
 	public E getFirst() {
-		return this.orderedList.getFirst();
+		return this.orderedList.isEmpty() ? null : this.orderedList.getFirst();
 	}
 
 	@Override

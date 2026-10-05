@@ -145,7 +145,7 @@ public final class Color {
 		}
 
 		if (hex.length() == 9) {
-			final int intval = Integer.decode(hex);
+			final int intval = Integer.parseUnsignedInt(hex.substring(1), 16);
 			final int red    = intval >> 24 & 0xFF;
 			final int green  = intval >> 16 & 0xFF;
 			final int blue   = intval >>  8 & 0xFF;

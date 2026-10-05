@@ -26,28 +26,25 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 
 	@Override
 	public void add(final E element) {
+		this.orderedList.remove(element);
 		for (int i = 0; i < this.orderedList.size(); i++) {
 			if (this.orderedList.get(i).getIndex() > element.getIndex()) {
 				this.orderedList.add(i, element);
-				break;
+				return;
 			}
 		}
 
-		if (!this.orderedList.contains(element)) {
-			this.orderedList.add(element);
-		}
+		this.orderedList.add(element);
 	}
 
 	@Override
 	public void remove(final E element) {
 		this.orderedList.remove(element);
-		this.reversedList.remove(element);
 	}
 
 	@Override
 	public void clear() {
 		this.orderedList.clear();
-		this.reversedList.clear();
 	}
 
 	@Override
@@ -57,7 +54,7 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 
 	@Override
 	public int size() {
-		return Math.min(this.orderedList.size(), this.reversedList.size());
+		return this.orderedList.size();
 	}
 
 	@Override
@@ -81,6 +78,10 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 
 	@Override
 	public E getFirst() {
+		if (this.isEmpty()) {
+			return null;
+		}
+
 		return this.orderedList.get(0);
 	}
 
