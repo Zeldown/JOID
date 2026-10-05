@@ -58,8 +58,11 @@ public class Transformation {
 
 	public void apply(final @NonNull Drawing drawing) {
 		this.operations.forEach(TransformOperation::transform);
-		drawing.draw();
-		this.operations.forEach(TransformOperation::reset);
+		try {
+			drawing.draw();
+		} finally {
+			this.operations.forEach(TransformOperation::reset);
+		}
 	}
 
 	public void reset() {

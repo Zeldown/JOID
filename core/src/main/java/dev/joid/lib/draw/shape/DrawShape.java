@@ -170,33 +170,39 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final Tessellator tessellator = Tessellator.inst();
 		render.pushMatrix();
-		render.blend(BlendState.NORMAL);
-		render.resetTexture();
-		color.bind(() -> {
-			tessellator.start(mode);
-			for (final Vector2d point : points) {
-				tessellator.addVertex(point.x, point.y, 0D);
-			}
-			tessellator.draw();
-		}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
-		render.blend(BlendState.DISABLED);
-		render.popMatrix();
+		try {
+			render.blend(BlendState.NORMAL);
+			render.resetTexture();
+			color.bind(() -> {
+				tessellator.start(mode);
+				for (final Vector2d point : points) {
+					tessellator.addVertex(point.x, point.y, 0D);
+				}
+				tessellator.draw();
+			}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
+		} finally {
+			render.blend(BlendState.DISABLED);
+			render.popMatrix();
+		}
 	}
 
 	public void drawRawRect(final double x, final double y, final double width, final double height) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final Tessellator tessellator = Tessellator.inst();
 		render.pushMatrix();
-		render.blend(BlendState.NORMAL);
-		render.resetTexture();
-		tessellator.start(DrawMode.POLYGON);
-		tessellator.addVertex(x, y + height, 0D);
-		tessellator.addVertex(x + width, y + height, 0D);
-		tessellator.addVertex(x + width, y, 0D);
-		tessellator.addVertex(x, y, 0D);
-		tessellator.draw();
-		render.blend(BlendState.DISABLED);
-		render.popMatrix();
+		try {
+			render.blend(BlendState.NORMAL);
+			render.resetTexture();
+			tessellator.start(DrawMode.POLYGON);
+			tessellator.addVertex(x, y + height, 0D);
+			tessellator.addVertex(x + width, y + height, 0D);
+			tessellator.addVertex(x + width, y, 0D);
+			tessellator.addVertex(x, y, 0D);
+			tessellator.draw();
+		} finally {
+			render.blend(BlendState.DISABLED);
+			render.popMatrix();
+		}
 	}
 
 }

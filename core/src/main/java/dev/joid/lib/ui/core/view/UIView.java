@@ -109,18 +109,20 @@ public final class UIView {
 		}
 
 		render.pushMatrix();
-		render.translate(this.getOffsetX(), this.getOffsetY(), 0D);
-		if (this.getScale() != 1D) {
-			render.translate(this.anchorX, this.anchorY, 0D);
-			render.scale(this.getScale(), this.getScale(), 1D);
-			render.translate(-this.anchorX, -this.anchorY, 0D);
-		}
+		try {
+			render.translate(this.getOffsetX(), this.getOffsetY(), 0D);
+			if (this.getScale() != 1D) {
+				render.translate(this.anchorX, this.anchorY, 0D);
+				render.scale(this.getScale(), this.getScale(), 1D);
+				render.translate(-this.anchorX, -this.anchorY, 0D);
+			}
 
-		draw.run();
-		render.popMatrix();
-
-		if (projection) {
-			render.popProjection();
+			draw.run();
+		} finally {
+			render.popMatrix();
+			if (projection) {
+				render.popProjection();
+			}
 		}
 	}
 

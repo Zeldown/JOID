@@ -50,11 +50,13 @@ public class GradientShader extends ShaderImpl {
 		final Float4Uniform canvasUniform = GradientShader.INSTANCE.shader.getFloat4Uniform("canvas");
 		canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
 
-		if (runnable != null) {
-			runnable.run();
+		try {
+			if (runnable != null) {
+				runnable.run();
+			}
+		} finally {
+			GradientShader.INSTANCE.unbind();
 		}
-
-		GradientShader.INSTANCE.unbind();
 	}
 
 }

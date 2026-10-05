@@ -107,20 +107,23 @@ public abstract class UIBridge implements IUIBridge {
 
 			double renderPipeline = 0D;
 			render.pushMatrix();
-			render.translate(0D, 0D, -2000D);
-			while (iterator.hasNext()) {
-				final UI ui = iterator.next();
-				if (!ui.getData().visible()) {
-					continue;
-				}
+			try {
+				render.translate(0D, 0D, -2000D);
+				while (iterator.hasNext()) {
+					final UI ui = iterator.next();
+					if (!ui.getData().visible()) {
+						continue;
+					}
 
-				renderPipeline += ui.getData().zlevel();
-				render.translate(0D, 0D, renderPipeline);
-				ui.draw(window.getMouseX(), window.getMouseY());
-				renderPipeline = ui.getRenderPipelineLevel() + 10D;
+					renderPipeline += ui.getData().zlevel();
+					render.translate(0D, 0D, renderPipeline);
+					ui.draw(window.getMouseX(), window.getMouseY());
+					renderPipeline = ui.getRenderPipelineLevel() + 10D;
+				}
+				render.translate(0D, 0D, -renderPipeline);
+			} finally {
+				render.popMatrix();
 			}
-			render.translate(0D, 0D, -renderPipeline);
-			render.popMatrix();
 		} catch (final Exception throwable) {
 			throwable.printStackTrace();
 		}

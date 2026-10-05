@@ -24,10 +24,13 @@ public class CircleShader extends ShaderImpl {
 		}
 
 		CircleShader.INSTANCE.bind(radius, centerX, centerY);
-		if (runnable != null) {
-			runnable.run();
+		try {
+			if (runnable != null) {
+				runnable.run();
+			}
+		} finally {
+			CircleShader.INSTANCE.unbind();
 		}
-		CircleShader.INSTANCE.unbind();
 	}
 
 	public void bind(final float radius, final float centerX, final float centerY) {

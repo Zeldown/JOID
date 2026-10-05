@@ -104,70 +104,57 @@ public final class ShaderPipeline {
 			return;
 		}
 
-		final double expX = context.getRegionX();
-		final double expY = context.getRegionY();
-		final double expW = context.getRegionWidth();
-		final double expH = context.getRegionHeight();
-		final int pixelW = context.getTextureWidth();
-		final int pixelH = context.getTextureHeight();
-
-		final FrameBuffer[] fbos = ShaderPipeline.getOrCreateFBOs(pixelW, pixelH);
-		final FrameBuffer fboA = fbos[0];
-		final FrameBuffer fboB = fbos[1];
-
+		final FrameBuffer[] fbos = ShaderPipeline.getOrCreateFBOs(context.getTextureWidth(), context.getTextureHeight());
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
+		try {
+			ShaderPipeline.drawInto(fbos[0], context, () -> {
+				render.blend(BlendState.NORMAL);
+				baseDraw.run();
+			});
 
+			FrameBuffer src = fbos[0];
+			FrameBuffer dst = fbos[1];
+			for (int i = 0; i < passes.size() - 1; i++) {
+				final ShaderPass pass = passes.get(i);
+				final FrameBuffer source = src;
+				ShaderPipeline.drawInto(dst, context, () -> ShaderPipeline.drawPass(pass, context, source));
+				src = dst;
+				dst = source;
+			}
+
+			ShaderPipeline.drawPass(passes.get(passes.size() - 1), context, src);
+		} finally {
+			render.popState();
+		}
+	}
+
+	private static void drawInto(final @NonNull FrameBuffer target, final @NonNull ShaderPassContext context, final @NonNull Runnable draw) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
-		fboA.bind();
-		render.viewport(0, 0, pixelW, pixelH);
-		render.clear(0F, 0F, 0F, 0F);
-		render.blend(BlendState.NORMAL);
-
 		render.pushProjection();
-		render.ortho(expX, expX + expW, expY + expH, expY, -1000D, 1000D);
 		render.pushMatrix();
-		render.loadIdentity();
-
-		baseDraw.run();
-		render.blend(BlendState.NORMAL);
-
-		render.popMatrix();
-		render.popProjection();
-		render.popState();
-
-		FrameBuffer src = fboA;
-		FrameBuffer dst = fboB;
-
-		for (int i = 0; i < passes.size() - 1; i++) {
-			render.pushState();
-			dst.bind();
-			render.viewport(0, 0, pixelW, pixelH);
+		try {
+			target.bind();
+			render.viewport(0, 0, context.getTextureWidth(), context.getTextureHeight());
 			render.clear(0F, 0F, 0F, 0F);
-
-			render.pushProjection();
-			render.ortho(expX, expX + expW, expY + expH, expY, -1000D, 1000D);
-			render.pushMatrix();
+			render.ortho(context.getRegionX(), context.getRegionX() + context.getRegionWidth(), context.getRegionY() + context.getRegionHeight(), context.getRegionY(), -1000D, 1000D);
 			render.loadIdentity();
-
-			passes.get(i).bindForTexture(context);
-			ShaderPipeline.drawTexturedQuad(src, expX, expY, expW, expH);
-			passes.get(i).unbind();
-
+			draw.run();
+		} finally {
 			render.popMatrix();
 			render.popProjection();
 			render.popState();
-
-			final FrameBuffer temp = src;
-			src = dst;
-			dst = temp;
 		}
+	}
 
-		passes.get(passes.size() - 1).bindForTexture(context);
-		ShaderPipeline.drawTexturedQuad(src, expX, expY, expW, expH);
-		passes.get(passes.size() - 1).unbind();
-
-		render.popState();
+	private static void drawPass(final @NonNull ShaderPass pass, final @NonNull ShaderPassContext context, final @NonNull FrameBuffer source) {
+		pass.bindForTexture(context);
+		try {
+			ShaderPipeline.drawTexturedQuad(source, context.getRegionX(), context.getRegionY(), context.getRegionWidth(), context.getRegionHeight());
+		} finally {
+			pass.unbind();
+		}
 	}
 
 	private static FrameBuffer[] getOrCreateFBOs(final int width, final int height) {

@@ -519,69 +519,74 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		render.alphaTest(0F);
-		this.view.render(render, this.data.projection(), () -> {
-			this.renderPipelineLevel = 0;
-			final AtomicDouble lastRenderPipelineLevel = new AtomicDouble(this.renderPipelineLevel);
+		try {
+			this.view.render(render, this.data.projection(), () -> {
+				this.renderPipelineLevel = 0;
+				final AtomicDouble lastRenderPipelineLevel = new AtomicDouble(this.renderPipelineLevel);
 
-			this.nodeList
-			.ordered()
-			.stream()
-			.filter(node -> node.getZindex() < 0)
-			.forEach(node -> {
+				this.nodeList
+				.ordered()
+				.stream()
+				.filter(node -> node.getZindex() < 0)
+				.forEach(node -> {
+					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					node.render(mx, my);
+				});
+
 				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
 				lastRenderPipelineLevel.set(this.renderPipelineLevel);
-				node.render(mx, my);
-			});
+				this.preDraw(mx, my);
 
-			render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-			lastRenderPipelineLevel.set(this.renderPipelineLevel);
-			this.preDraw(mx, my);
+				this.nodeList
+				.ordered()
+				.stream()
+				.filter(node -> node.getZindex() >= 0 && node.getZindex() < 100)
+				.forEach(node -> {
+					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					node.render(mx, my);
+				});
 
-			this.nodeList
-			.ordered()
-			.stream()
-			.filter(node -> node.getZindex() >= 0 && node.getZindex() < 100)
-			.forEach(node -> {
 				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
 				lastRenderPipelineLevel.set(this.renderPipelineLevel);
-				node.render(mx, my);
-			});
+				this.postDraw(mx, my);
 
-			render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-			lastRenderPipelineLevel.set(this.renderPipelineLevel);
-			this.postDraw(mx, my);
+				this.nodeList
+				.ordered()
+				.stream()
+				.filter(node -> node.getZindex() >= 100)
+				.forEach(node -> {
+					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					node.render(mx, my);
+				});
 
-			this.nodeList
-			.ordered()
-			.stream()
-			.filter(node -> node.getZindex() >= 100)
-			.forEach(node -> {
-				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-				lastRenderPipelineLevel.set(this.renderPipelineLevel);
-				node.render(mx, my);
-			});
-
-			if (this.onTop) {
-				render.pushMatrix();
-				render.pushState();
-				render.depth(false, false);
-				for (final Node node : this.nodeList.reversed()) {
-					if (node.renderHover(mx, my)) {
-						break;
+				if (this.onTop) {
+					render.pushMatrix();
+					render.pushState();
+					try {
+						render.depth(false, false);
+						for (final Node node : this.nodeList.reversed()) {
+							if (node.renderHover(mx, my)) {
+								break;
+							}
+						}
+					} finally {
+						render.popState();
+						render.popMatrix();
 					}
 				}
-				render.popState();
-				render.popMatrix();
-			}
-		});
+			});
+		} finally {
+			if (this.transition != null) {
+				if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
+					this.transition.getIn().post(this, mx, my);
+				}
 
-		if (this.transition != null) {
-			if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
-				this.transition.getIn().post(this, mx, my);
-			}
-
-			if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
-				this.transition.getOut().post(this, mx, my);
+				if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
+					this.transition.getOut().post(this, mx, my);
+				}
 			}
 		}
 
@@ -623,8 +628,11 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
 		if (enabled) {
 			this.startMask(maskX, maskY, maskWidth, maskHeight);
-			drawing.draw();
-			this.stopMask();
+			try {
+				drawing.draw();
+			} finally {
+				this.stopMask();
+			}
 		} else {
 			drawing.draw();
 		}
@@ -637,8 +645,11 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
 		if (enabled) {
 			this.startMask(resource, maskX, maskY, maskWidth, maskHeight);
-			drawing.draw();
-			this.stopMask();
+			try {
+				drawing.draw();
+			} finally {
+				this.stopMask();
+			}
 		} else {
 			drawing.draw();
 		}
@@ -690,10 +701,13 @@ public abstract class UI implements IUI, IndexedElement {
 		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
 
 		render.pushState();
-		render.colorMask(false);
-		render.alphaTest(0.5F);
-		DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
-		render.popState();
+		try {
+			render.colorMask(false);
+			render.alphaTest(0.5F);
+			DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
+		} finally {
+			render.popState();
+		}
 
 		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
 		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);

@@ -270,268 +270,275 @@ public abstract class Node implements INode {
 		final long now = System.nanoTime();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushMatrix();
-		Color.reset();
-		if (this.parent != null) {
-			render.translate(this.parent.x, this.parent.y, 0D);
-			if (this.position == PositionProperty.ABSOLUTE) {
-				render.translate(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
-			}
-		}
-
-		render.translate(0D, 0D, this.zlevel);
-
-		if (this.isVisible()) {
-			if (this.aspectRatio >= 0D) {
-				if (this.width != 0) {
-					this.height = this.width * this.aspectRatio;
-				} else if (this.height != 0) {
-					this.width = this.height * this.aspectRatio;
+		try {
+			Color.reset();
+			if (this.parent != null) {
+				render.translate(this.parent.x, this.parent.y, 0D);
+				if (this.position == PositionProperty.ABSOLUTE) {
+					render.translate(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
 				}
 			}
 
-			if (this.width != this.lastWidth) {
-				if (this.anchorX.isCenter()) {
-					this.x += (this.lastWidth - this.width) / 2;
-				} else if (this.anchorX.isEnd()) {
-					this.x += this.lastWidth - this.width;
+			render.translate(0D, 0D, this.zlevel);
+
+			if (this.isVisible()) {
+				if (this.aspectRatio >= 0D) {
+					if (this.width != 0) {
+						this.height = this.width * this.aspectRatio;
+					} else if (this.height != 0) {
+						this.width = this.height * this.aspectRatio;
+					}
 				}
-				this.lastWidth = this.width;
-			}
 
-			if (this.height != this.lastHeight) {
-				if (this.anchorY.isCenter()) {
-					this.y += (this.lastHeight - this.height) / 2;
-				} else if (this.anchorY.isEnd()) {
-					this.y += this.lastHeight - this.height;
+				if (this.width != this.lastWidth) {
+					if (this.anchorX.isCenter()) {
+						this.x += (this.lastWidth - this.width) / 2;
+					} else if (this.anchorX.isEnd()) {
+						this.x += this.lastWidth - this.width;
+					}
+					this.lastWidth = this.width;
 				}
-				this.lastHeight = this.height;
-			}
 
-			if (!this.hovered && this.isHovered(mouseX, mouseY)) {
-				this.hoverAnimator.sequence(this.hoverDuration, 100F, this.hoverEquation).start();
-				this.executeCallback(Node.CALLBACK_HOVER_START, InternalContext.create(), mouseX, mouseY);
-			}
-
-			if (this.hovered && !this.isHovered(mouseX, mouseY)) {
-				this.hoverAnimator.sequence(this.hoverDuration, 0F, this.hoverEquation).start();
-				this.executeCallback(Node.CALLBACK_HOVER_END, InternalContext.create(), mouseX, mouseY);
-			}
-
-			this.hovered = this.isHovered(mouseX, mouseY);
-			this.hoverAnimator.update();
-
-			if (this.hovered) {
-				this.executeCallback(Node.CALLBACK_HOVER, InternalContext.create(), mouseX, mouseY);
-			}
-
-			for (final Entry<TweenAnimator, Float> entry : this.animatorMap.entrySet()) {
-				final TweenAnimator animator = entry.getKey().update();
-				final float value = animator.getValue();
-				if (value != entry.getValue()) {
-					this.executeCallback(Node.CALLBACK_ANIMATION, InternalContext.create(), animator, value);
-					entry.setValue(value);
+				if (this.height != this.lastHeight) {
+					if (this.anchorY.isCenter()) {
+						this.y += (this.lastHeight - this.height) / 2;
+					} else if (this.anchorY.isEnd()) {
+						this.y += this.lastHeight - this.height;
+					}
+					this.lastHeight = this.height;
 				}
-			}
 
-			if (this.overflow == OverflowProperty.SCROLL) {
-				if (!this.hasOverflowY()) {
-					this.maxScrollX = 0;
-					double scrollOffset = Double.MIN_VALUE;
-					for (final Node child : this.children) {
-						this.maxScrollX = Math.max(this.maxScrollX, child.defaultX + child.width - this.width);
-						if (scrollOffset == Double.MIN_VALUE) {
-							scrollOffset = child.defaultX;
-						} else {
-							scrollOffset = Math.min(scrollOffset, child.defaultX);
+				if (!this.hovered && this.isHovered(mouseX, mouseY)) {
+					this.hoverAnimator.sequence(this.hoverDuration, 100F, this.hoverEquation).start();
+					this.executeCallback(Node.CALLBACK_HOVER_START, InternalContext.create(), mouseX, mouseY);
+				}
+
+				if (this.hovered && !this.isHovered(mouseX, mouseY)) {
+					this.hoverAnimator.sequence(this.hoverDuration, 0F, this.hoverEquation).start();
+					this.executeCallback(Node.CALLBACK_HOVER_END, InternalContext.create(), mouseX, mouseY);
+				}
+
+				this.hovered = this.isHovered(mouseX, mouseY);
+				this.hoverAnimator.update();
+
+				if (this.hovered) {
+					this.executeCallback(Node.CALLBACK_HOVER, InternalContext.create(), mouseX, mouseY);
+				}
+
+				for (final Entry<TweenAnimator, Float> entry : this.animatorMap.entrySet()) {
+					final TweenAnimator animator = entry.getKey().update();
+					final float value = animator.getValue();
+					if (value != entry.getValue()) {
+						this.executeCallback(Node.CALLBACK_ANIMATION, InternalContext.create(), animator, value);
+						entry.setValue(value);
+					}
+				}
+
+				if (this.overflow == OverflowProperty.SCROLL) {
+					if (!this.hasOverflowY()) {
+						this.maxScrollX = 0;
+						double scrollOffset = Double.MIN_VALUE;
+						for (final Node child : this.children) {
+							this.maxScrollX = Math.max(this.maxScrollX, child.defaultX + child.width - this.width);
+							if (scrollOffset == Double.MIN_VALUE) {
+								scrollOffset = child.defaultX;
+							} else {
+								scrollOffset = Math.min(scrollOffset, child.defaultX);
+							}
+						}
+
+						if (this.hasOverflowX()) {
+							this.maxScrollX += scrollOffset;
+							this.children.forEach(child -> {
+								child.x = child.defaultX + this.scrollX;
+							});
 						}
 					}
 
+					if (!this.hasOverflowX()) {
+						this.maxScrollY = 0;
+						double scrollOffset = Double.MIN_VALUE;
+						for (final Node child : this.children) {
+							this.maxScrollY = Math.max(this.maxScrollY, child.defaultY + child.height - this.height);
+							if (scrollOffset == Double.MIN_VALUE) {
+								scrollOffset = child.defaultY;
+							} else {
+								scrollOffset = Math.min(scrollOffset, child.defaultY);
+							}
+						}
+
+						if (this.hasOverflowY()) {
+							this.maxScrollY += scrollOffset;
+							this.children.forEach(child -> {
+								child.y = child.defaultY + this.scrollY;
+							});
+						}
+					}
+				}
+
+				this.targetScrollX = Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0);
+				this.targetScrollY = Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0);
+
+				if (this.targetScrollX != this.scrollX) {
+					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
+					this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed, speed, true);
+				}
+
+				if (this.targetScrollY != this.scrollY) {
+					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
+					this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
+				}
+
+				if (this.scrollbar != null) {
 					if (this.hasOverflowX()) {
-						this.maxScrollX += scrollOffset;
-						this.children.forEach(child -> {
-							child.x = child.defaultX + this.scrollX;
-						});
-					}
-				}
-
-				if (!this.hasOverflowX()) {
-					this.maxScrollY = 0;
-					double scrollOffset = Double.MIN_VALUE;
-					for (final Node child : this.children) {
-						this.maxScrollY = Math.max(this.maxScrollY, child.defaultY + child.height - this.height);
-						if (scrollOffset == Double.MIN_VALUE) {
-							scrollOffset = child.defaultY;
-						} else {
-							scrollOffset = Math.min(scrollOffset, child.defaultY);
-						}
+						final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollX / this.maxScrollX)));
+						this.scrollbar.x(this.scrollbar.getDefaultX() + this.scrollbar.getScrollWidth() * percent);
 					}
 
 					if (this.hasOverflowY()) {
-						this.maxScrollY += scrollOffset;
-						this.children.forEach(child -> {
-							child.y = child.defaultY + this.scrollY;
-						});
+						final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollY / this.maxScrollY)));
+						this.scrollbar.y(this.scrollbar.getDefaultY() + this.scrollbar.getScrollHeight() * percent);
 					}
 				}
-			}
 
-			this.targetScrollX = Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0);
-			this.targetScrollY = Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0);
-
-			if (this.targetScrollX != this.scrollX) {
-				final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-				this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed, speed, true);
-			}
-
-			if (this.targetScrollY != this.scrollY) {
-				final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-				this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
-			}
-
-			if (this.scrollbar != null) {
-				if (this.hasOverflowX()) {
-					final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollX / this.maxScrollX)));
-					this.scrollbar.x(this.scrollbar.getDefaultX() + this.scrollbar.getScrollWidth() * percent);
+				if (this.dragging && BridgeHandler.WINDOW.get().isMouseGrabbed()) {
+					this.stopDragging();
 				}
 
-				if (this.hasOverflowY()) {
-					final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollY / this.maxScrollY)));
-					this.scrollbar.y(this.scrollbar.getDefaultY() + this.scrollbar.getScrollHeight() * percent);
-				}
-			}
+				if (this.draggable != null && this.draggable.isEnabled(this)) {
+					if (!this.dragging && this.draggable.getAreaType() != DraggableAreaType.FREE) {
+						final double[] bounds = this.draggable.getBounds(this);
+						final double boundX = bounds[0];
+						final double boundY = bounds[1];
+						final double boundWidth = bounds[2];
+						final double boundHeight = bounds[3];
 
-			if (this.dragging && BridgeHandler.WINDOW.get().isMouseGrabbed()) {
-				this.stopDragging();
-			}
+						final boolean inside = this.getAbsoluteX() >= boundX && this.getAbsoluteY() >= boundY && this.getAbsoluteX() + this.width <= boundX + boundWidth && this.getAbsoluteY() + this.height <= boundY + boundHeight;
+						if (!inside) {
+							if (this.targetDragX < boundX) {
+								this.targetDragX = boundX;
+							} else if (this.targetDragX + this.width > boundX + boundWidth) {
+								this.targetDragX = boundX + boundWidth - this.width;
+							}
 
-			if (this.draggable != null && this.draggable.isEnabled(this)) {
-				if (!this.dragging && this.draggable.getAreaType() != DraggableAreaType.FREE) {
-					final double[] bounds = this.draggable.getBounds(this);
-					final double boundX = bounds[0];
-					final double boundY = bounds[1];
-					final double boundWidth = bounds[2];
-					final double boundHeight = bounds[3];
+							if (this.targetDragY < boundY) {
+								this.targetDragY = boundY;
+							} else if (this.targetDragY + this.height > boundY + boundHeight) {
+								this.targetDragY = boundY + boundHeight - this.height;
+							}
 
-					final boolean inside = this.getAbsoluteX() >= boundX && this.getAbsoluteY() >= boundY && this.getAbsoluteX() + this.width <= boundX + boundWidth && this.getAbsoluteY() + this.height <= boundY + boundHeight;
-					if (!inside) {
-						if (this.targetDragX < boundX) {
-							this.targetDragX = boundX;
-						} else if (this.targetDragX + this.width > boundX + boundWidth) {
-							this.targetDragX = boundX + boundWidth - this.width;
+							this.dragged = true;
+						}
+					}
+
+					if (this.dragged) {
+						if (this.draggable.getType() == DraggableType.MOVE) {
+							final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteX(), this.targetDragX);
+							final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteY(), this.targetDragY);
+							final double diffX = this.getAbsoluteX() - this.x;
+							final double diffY = this.getAbsoluteY() - this.y;
+
+							this.x = newAbsoluteX - diffX;
+							this.y = newAbsoluteY - diffY;
+						} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
+							final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteX(), this.targetDragX);
+							final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteY(), this.targetDragY);
+							this.draggedNode.x = newAbsoluteX;
+							this.draggedNode.y = newAbsoluteY;
 						}
 
-						if (this.targetDragY < boundY) {
-							this.targetDragY = boundY;
-						} else if (this.targetDragY + this.height > boundY + boundHeight) {
-							this.targetDragY = boundY + boundHeight - this.height;
+						if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
+							this.dragged = false;
+						}
+					}
+				}
+
+				final boolean wasMounted = this.mounted;
+				this.mounted = this.isMounted();
+
+				if (!wasMounted && this.mounted) {
+					this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
+				}
+
+				final List<NodeEffect<Node>> shaderEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
+				final List<NodeEffect<Node>> otherEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
+
+				final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
+				final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
+
+				otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
+
+				final Runnable maskDraw = () -> {
+					this.ui.mask(this.x, this.y, this.width, this.height, () -> {
+						if (this.overflow != OverflowProperty.NONE) {
+							this.children.forEach(child -> child.overflowArea = this);
+						} else if (this.overflowArea != null) {
+							this.children.forEach(child -> child.overflowArea = this.overflowArea);
 						}
 
-						this.dragged = true;
-					}
-				}
+						if (this.skeleton != null && !this.mounted) {
+							this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+								this.skeleton.render(mouseX, mouseY);
+							}, mouseX, mouseY);
+							return;
+						}
 
-				if (this.dragged) {
-					if (this.draggable.getType() == DraggableType.MOVE) {
-						final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteX(), this.targetDragX);
-						final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteY(), this.targetDragY);
-						final double diffX = this.getAbsoluteX() - this.x;
-						final double diffY = this.getAbsoluteY() - this.y;
-
-						this.x = newAbsoluteX - diffX;
-						this.y = newAbsoluteY - diffY;
-					} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
-						final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteX(), this.targetDragX);
-						final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteY(), this.targetDragY);
-						this.draggedNode.x = newAbsoluteX;
-						this.draggedNode.y = newAbsoluteY;
-					}
-
-					if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
-						this.dragged = false;
-					}
-				}
-			}
-
-			final boolean wasMounted = this.mounted;
-			this.mounted = this.isMounted();
-
-			if (!wasMounted && this.mounted) {
-				this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
-			}
-
-			final List<NodeEffect<Node>> shaderEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
-			final List<NodeEffect<Node>> otherEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
-
-			final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
-			final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
-
-			otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
-
-			final Runnable maskDraw = () -> {
-				this.ui.mask(this.x, this.y, this.width, this.height, () -> {
-					if (this.overflow != OverflowProperty.NONE) {
-						this.children.forEach(child -> child.overflowArea = this);
-					} else if (this.overflowArea != null) {
-						this.children.forEach(child -> child.overflowArea = this.overflowArea);
-					}
-
-					if (this.skeleton != null && !this.mounted) {
 						this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
-							this.skeleton.render(mouseX, mouseY);
-						}, mouseX, mouseY);
-						return;
-					}
-
-					this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
-						this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-						this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
-							final Runnable selfDraw = () -> {
-								if (this.mounted) {
-									this.draw(mouseX, mouseY);
+							this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
+							this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
+								final Runnable selfDraw = () -> {
+									if (this.mounted) {
+										this.draw(mouseX, mouseY);
+									} else {
+										this.drawSkeleton(mouseX, mouseY);
+									}
+								};
+								if (selfShaderEffects.isEmpty()) {
+									selfDraw.run();
 								} else {
-									this.drawSkeleton(mouseX, mouseY);
+									final List<ShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+									ShaderPipeline.render(this, selfPasses, selfDraw);
 								}
-							};
-							if (selfShaderEffects.isEmpty()) {
-								selfDraw.run();
-							} else {
-								final List<ShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-								ShaderPipeline.render(this, selfPasses, selfDraw);
+							}, mouseX, mouseY);
+
+							this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
+							this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
+
+							if (this.draggedNode != null) {
+								render.pushState();
+								try {
+									render.stencilTest(false);
+
+									render.translate(-this.parent.x, -this.parent.y, 0D);
+									this.draggedNode.render(mouseX, mouseY);
+									render.translate(this.parent.x, this.parent.y, 0D);
+								} finally {
+									render.popState();
+								}
 							}
 						}, mouseX, mouseY);
+					}, this.overflow != OverflowProperty.NONE);
+				};
 
-						this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
-						this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
+				try {
+					if (!subtreeShaderEffects.isEmpty()) {
+						final List<ShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+						ShaderPipeline.render(this, subtreePasses, maskDraw);
+					} else {
+						maskDraw.run();
+					}
+				} finally {
+					otherEffects.forEach(effect -> effect.post(this, mouseX, mouseY));
+				}
 
-						if (this.draggedNode != null) {
-							render.pushState();
-							render.stencilTest(false);
-
-							render.translate(-this.parent.x, -this.parent.y, 0D);
-							this.draggedNode.render(mouseX, mouseY);
-							render.translate(this.parent.x, this.parent.y, 0D);
-
-							render.popState();
-						}
-					}, mouseX, mouseY);
-				}, this.overflow != OverflowProperty.NONE);
-			};
-
-			if (!subtreeShaderEffects.isEmpty()) {
-				final List<ShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-				ShaderPipeline.render(this, subtreePasses, maskDraw);
-			} else {
-				maskDraw.run();
+				if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.hasOverflowX() || this.hasOverflowY())) {
+					this.scrollbar.render(mouseX, mouseY);
+				}
 			}
-
-			otherEffects.forEach(effect -> effect.post(this, mouseX, mouseY));
-
-			if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.hasOverflowX() || this.hasOverflowY())) {
-				this.scrollbar.render(mouseX, mouseY);
-			}
+		} finally {
+			Color.reset();
+			render.popMatrix();
 		}
-		Color.reset();
-		render.popMatrix();
 		this.renderTime = System.nanoTime() - now;
 	}
 

@@ -25,18 +25,20 @@ public final class DrawModel {
 	public void drawModel(final double x, final double y, final double sizeX, final double sizeY, final double sizeZ, final @NonNull IDrawableModel model) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushMatrix();
-		render.translate(x, y, 0D);
-		render.scale(sizeX, sizeY, sizeZ);
-		render.rotate(180D, 0D, 1D, 0D);
+		try {
+			render.translate(x, y, 0D);
+			render.scale(sizeX, sizeY, sizeZ);
+			render.rotate(180D, 0D, 1D, 0D);
 
-		render.cull(false);
-		render.lighting(true);
+			render.cull(false);
+			render.lighting(true);
 
-		model.render();
+			model.render();
+		} finally {
+			render.lighting(false);
 
-		render.lighting(false);
-
-		render.popMatrix();
+			render.popMatrix();
+		}
 	}
 
 }

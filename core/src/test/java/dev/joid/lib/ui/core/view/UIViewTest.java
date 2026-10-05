@@ -129,6 +129,23 @@ public class UIViewTest {
 	}
 
 	@Test
+	public void restoresTheMatricesWhenTheDrawFails() {
+		final MatrixStack projection = new MatrixStack();
+		final MatrixStack modelView = new MatrixStack();
+		projection.ortho(0D, 640D, 360D, 0D, 0D, 1D);
+		final float[] host = projection.getMatrix().clone();
+		try {
+			UIView.create(960D, 540D).resize(2560D, 1440D).zoom(0.5D).render(UIViewTest.bridge(projection, modelView), true, () -> {
+				throw new IllegalStateException("draw failed");
+			});
+			Assert.fail("The failure of the draw must reach the caller");
+		} catch (final IllegalStateException expected) {
+			Assert.assertArrayEquals(host, projection.getMatrix(), 0F);
+			Assert.assertArrayEquals(new MatrixStack().getMatrix(), modelView.getMatrix(), 0F);
+		}
+	}
+
+	@Test
 	public void keepsTheHostProjectionWhenAsked() {
 		final MatrixStack projection = new MatrixStack();
 		projection.ortho(0D, 640D, 360D, 0D, 0D, 1D);

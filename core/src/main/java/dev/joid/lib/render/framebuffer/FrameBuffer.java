@@ -40,8 +40,11 @@ public class FrameBuffer {
 
 	public @NonNull FrameBuffer fill(final @NonNull Runnable runnable) {
 		this.bind();
-		runnable.run();
-		this.unbind();
+		try {
+			runnable.run();
+		} finally {
+			this.unbind();
+		}
 
 		this.filled = true;
 		return this;

@@ -174,8 +174,11 @@ public final class Resource {
 
 	public final void bind(final @NonNull TextureWrap wrap, final @NonNull Runnable runnable) {
 		this.bindTextureOnly(wrap);
-		runnable.run();
-		this.unbind();
+		try {
+			runnable.run();
+		} finally {
+			this.unbind();
+		}
 	}
 
 	public final void request(final int width, final int height) {

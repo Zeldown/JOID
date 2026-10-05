@@ -59,13 +59,16 @@ public class ModelNode extends Node {
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushMatrix();
-		render.translate(drawX, drawY, drawZ);
-		render.rotate(this.rotationYaw, 0D, 1D, 0D);
-		render.rotate(this.rotationPitch, 1D, 0D, 0D);
-		render.translate(-drawX, -drawY, -drawZ);
-		render.translate(0D, 0D, drawZ);
-		DrawUtils.MODEL.drawModel(drawX, drawY, sizeX, sizeY, sizeZ, this.model);
-		render.popMatrix();
+		try {
+			render.translate(drawX, drawY, drawZ);
+			render.rotate(this.rotationYaw, 0D, 1D, 0D);
+			render.rotate(this.rotationPitch, 1D, 0D, 0D);
+			render.translate(-drawX, -drawY, -drawZ);
+			render.translate(0D, 0D, drawZ);
+			DrawUtils.MODEL.drawModel(drawX, drawY, sizeX, sizeY, sizeZ, this.model);
+		} finally {
+			render.popMatrix();
+		}
 
 		super.getUi().setRenderPipelineLevel(super.getUi().getRenderPipelineLevel() + (this.pipeLineLevel == -1D ? modelDiagonal * sizeZ : this.pipeLineLevel));
 	}

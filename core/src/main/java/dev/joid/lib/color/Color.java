@@ -267,12 +267,18 @@ public final class Color {
 		if (this.isGradient()) {
 			final IRenderBridge render = BridgeHandler.RENDER.get();
 			final IShader previousShader = render.getShader();
-			this.gradient.use(hasTexture, runnable, canvas);
-			render.shader(previousShader);
+			try {
+				this.gradient.use(hasTexture, runnable, canvas);
+			} finally {
+				render.shader(previousShader);
+			}
 		} else {
 			this.bind();
-			runnable.run();
-			Color.reset();
+			try {
+				runnable.run();
+			} finally {
+				Color.reset();
+			}
 		}
 	}
 
