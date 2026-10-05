@@ -157,8 +157,8 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	}
 
 	@Override
-	public boolean isScalable() {
-		return true;
+	public boolean isMipmappable() {
+		return false;
 	}
 
 	private boolean show(final ResourceData resource, final int width, final int height) {

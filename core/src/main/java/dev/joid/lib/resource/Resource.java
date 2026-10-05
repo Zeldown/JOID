@@ -126,8 +126,8 @@ public final class Resource {
 		return this.data.getDecoder();
 	}
 
-	public final boolean isScalable() {
-		return this.data.getDecoder() != null && this.data.getDecoder().isScalable();
+	public final boolean isMipmappable() {
+		return this.data.getDecoder() == null || this.data.getDecoder().isMipmappable();
 	}
 
 	public final @NonNull Optional<IResourcePlayback> getPlayback() {
@@ -217,7 +217,7 @@ public final class Resource {
 			this.generate();
 		}
 
-		if (this.properties.getMipmap().orElse(false) && this.data.getTextures() != null) {
+		if (this.properties.getMipmap().orElse(false) && this.isMipmappable() && this.data.getTextures() != null) {
 			for (final ITexture texture : this.data.getTextures()) {
 				texture.mipmap(true);
 			}

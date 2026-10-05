@@ -18,8 +18,8 @@ public interface IResourceDecoder {
 		return true;
 	}
 
-	public default boolean isScalable() {
-		return false;
+	public default boolean isMipmappable() {
+		return true;
 	}
 
 }
