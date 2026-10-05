@@ -94,7 +94,7 @@ public final class MsdfGenerator {
 		final String text = file.isFile() ? new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8) : charset;
 		final List<Integer> values = new ArrayList<>();
 		for (final String part : text.trim().split("(?<=\\])|,(?![^\\[]*\\])")) {
-			final String entry = part.trim().replace(",", "");
+			final String entry = part.replace(",", "").trim();
 			if (entry.isEmpty()) {
 				continue;
 			}
