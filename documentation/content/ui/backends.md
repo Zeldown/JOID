@@ -15,6 +15,7 @@ Every bridge implements `IBridge`, and `BridgeHandler` exposes one `BridgeRegist
 | Method | Result |
 |---|---|
 | `register(bridge)` | Adds the bridge to the registry. |
+| `unregister(bridge)` | Removes the bridge from the registry. |
 | `get()` | The bridge with the highest priority. Throws an `IllegalStateException` with an explicit message when none was registered. |
 | `find(filter)` | The highest-priority bridge matching the predicate, or `null`. |
 | `getBridge(MyBridge.class)` | The highest-priority bridge of that class, or `null`. |

@@ -23,6 +23,10 @@ public class BridgeRegistry<T extends IBridge> {
 		this.bridgeList.add(bridge);
 	}
 
+	public final void unregister(final @NonNull T bridge) {
+		this.bridgeList.remove(bridge);
+	}
+
 	public final @NonNull T get() {
 		if (this.bridgeList.isEmpty()) {
 			throw new IllegalStateException("No " + this.name.toLowerCase() + " bridge registered, call BridgeHandler." + this.name + ".register before using JOID");

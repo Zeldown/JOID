@@ -15,6 +15,7 @@ Tous les bridges implémentent `IBridge`, et `BridgeHandler` expose un `BridgeRe
 | Méthode | Résultat |
 |---|---|
 | `register(bridge)` | Ajoute le bridge au registre. |
+| `unregister(bridge)` | Retire le bridge du registre. |
 | `get()` | Le bridge le plus prioritaire. Lève une `IllegalStateException` avec un message explicite si aucun n'a été enregistré. |
 | `find(filter)` | Le bridge le plus prioritaire qui correspond au prédicat, ou `null`. |
 | `getBridge(MyBridge.class)` | Le bridge le plus prioritaire de cette classe, ou `null`. |
