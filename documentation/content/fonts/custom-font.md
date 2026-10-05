@@ -1,10 +1,10 @@
 # Custom Fonts
 
-JOID renders text through MSDF (Multi-channel Signed Distance Field) atlases — crisp at any scale. Load your own fonts with `FontLoader`, build a `TextInfo`, and feed it into a `Text` / `TextNode`.
+JOID renders text through MSDF (Multi-channel Signed Distance Field) atlases — crisp at any scale. Load your own fonts with `CustomFontLoader`, build a `TextInfo`, and feed it into a `Text` / `TextNode`.
 
-## `FontLoader.load`
+## `CustomFontLoader.load`
 
-`FontLoader` is asynchronous — it off-loads parsing and texture upload to an executor pool and returns a `CompletableFuture` carrying the finished `CustomFont`.
+`CustomFontLoader` is asynchronous — it off-loads parsing and texture upload to an executor pool and returns a `CompletableFuture` carrying the finished `CustomFont`.
 
 ```java
 static CompletableFuture<CustomFont> load(Object packed)
@@ -16,14 +16,14 @@ Each handle names one `font.msdf` file, produced by the generator described in [
 Minimal load:
 
 ```java
-FontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
+CustomFontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
     .thenAccept(customFont -> this.interFont = customFont);
 ```
 
 Both regular and bold atlases:
 
 ```java
-FontLoader.load(
+CustomFontLoader.load(
     getClass().getResourceAsStream("/fonts/Inter-Regular/font.msdf"),
     getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf")
 ).thenAccept(customFont -> {
@@ -111,12 +111,12 @@ If you only have a single atlas, `CustomFont` falls back to the regular font for
 
 ## Asynchronous loading
 
-`FontLoader.load(...)` returns immediately. The future completes on the fixed-size executor pool once parsing and upload finish, so you choose how to wait:
+`CustomFontLoader.load(...)` returns immediately. The future completes on the fixed-size executor pool once parsing and upload finish, so you choose how to wait:
 
 ```java
-FontLoader.load(stream).thenAccept(font -> this.font = font);                 // continue when ready
-FontLoader.load(stream).exceptionally(error -> { error.printStackTrace(); return null; });
-this.font = FontLoader.load(stream).join();                                   // block, at startup
+CustomFontLoader.load(stream).thenAccept(font -> this.font = font);                 // continue when ready
+CustomFontLoader.load(stream).exceptionally(error -> { error.printStackTrace(); return null; });
+this.font = CustomFontLoader.load(stream).join();                                   // block, at startup
 CompletableFuture.allOf(regular, bold, italic).join();                        // wait for a whole family
 ```
 

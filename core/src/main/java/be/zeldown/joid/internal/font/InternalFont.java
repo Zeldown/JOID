@@ -3,8 +3,8 @@ package be.zeldown.joid.internal.font;
 import java.io.InputStream;
 
 import be.zeldown.joid.internal.JOID;
-import be.zeldown.joid.lib.font.FontLoader;
 import be.zeldown.joid.lib.font.impl.custom.CustomFont;
+import be.zeldown.joid.lib.font.impl.custom.CustomFontLoader;
 
 public class InternalFont {
 
@@ -19,15 +19,15 @@ public class InternalFont {
 	public static CustomFont MONTSERRAT_BLACK;
 
 	public static void load() {
-		InternalFont.MONTSERRAT_THIN = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Thin/")).join();
-		InternalFont.MONTSERRAT_EXTRA_LIGHT = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-ExtraLight/")).join();
-		InternalFont.MONTSERRAT_LIGHT = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Light/")).join();
-		InternalFont.MONTSERRAT_REGULAR = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Regular/")).join();
-		InternalFont.MONTSERRAT_MEDIUM = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Medium/")).join();
-		InternalFont.MONTSERRAT_SEMI_BOLD = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-SemiBold/")).join();
-		InternalFont.MONTSERRAT_BOLD = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Bold/")).join();
-		InternalFont.MONTSERRAT_EXTRA_BOLD = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-ExtraBold/")).join();
-		InternalFont.MONTSERRAT_BLACK = FontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Black/")).join();
+		InternalFont.MONTSERRAT_THIN = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Thin/")).join();
+		InternalFont.MONTSERRAT_EXTRA_LIGHT = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-ExtraLight/")).join();
+		InternalFont.MONTSERRAT_LIGHT = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Light/")).join();
+		InternalFont.MONTSERRAT_REGULAR = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Regular/")).join();
+		InternalFont.MONTSERRAT_MEDIUM = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Medium/")).join();
+		InternalFont.MONTSERRAT_SEMI_BOLD = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-SemiBold/")).join();
+		InternalFont.MONTSERRAT_BOLD = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Bold/")).join();
+		InternalFont.MONTSERRAT_EXTRA_BOLD = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-ExtraBold/")).join();
+		InternalFont.MONTSERRAT_BLACK = CustomFontLoader.load(InternalFont.get("/assets/dev/fonts/Montserrat-Black/")).join();
 	}
 
 	private static InputStream get(String path) {

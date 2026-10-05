@@ -93,7 +93,7 @@ From there, the handle works everywhere:
 
 ```java
 Resource.of(new ResourceLocation(MOD_ID, "textures/gui/panel.png"));
-FontLoader.load(new ResourceLocation(MOD_ID, "fonts/Inter/font.msdf")).thenAccept(font -> this.font = font);
+CustomFontLoader.load(new ResourceLocation(MOD_ID, "fonts/Inter/font.msdf")).thenAccept(font -> this.font = font);
 ```
 
 `register(...)` prepends, so the registry is walked latest-first and a custom locator beats a built-in for a handle both accept.

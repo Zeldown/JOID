@@ -25,20 +25,23 @@ public final class CustomFontLoader {
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5, ThreadUtils.daemonFactory("CustomFontLoader"));
 
-	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull Asset packed) {
+	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull Object packed) {
 		return CustomFontLoader.load(packed, null);
 	}
 
-	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull FontInputStream fontInputStream) {
-		return CustomFontLoader.load(fontInputStream, null);
+	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull FontInputStream regular) {
+		return CustomFontLoader.load(regular, null);
 	}
 
-	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull Asset regular, final Asset bold) {
+	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull Object regular, final Object bold) {
+		final Asset regularAsset = Asset.of(regular);
+		final Asset boldAsset = bold == null ? null : Asset.of(bold);
+
 		final CompletableFuture<CustomFont> future = new CompletableFuture<>();
 		CustomFontLoader.EXECUTOR.submit(() -> {
 			try {
-				final Font regularFont = CustomFontLoader.read(regular);
-				future.complete(new CustomFont(regularFont, bold == null || bold == regular ? regularFont : CustomFontLoader.read(bold)));
+				final Font regularFont = CustomFontLoader.read(regularAsset);
+				future.complete(new CustomFont(regularFont, boldAsset == null || boldAsset == regularAsset ? regularFont : CustomFontLoader.read(boldAsset)));
 			} catch (final Throwable throwable) {
 				future.completeExceptionally(throwable);
 			}
@@ -46,12 +49,12 @@ public final class CustomFontLoader {
 		return future;
 	}
 
-	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull FontInputStream regularInputStream, final FontInputStream boldInputStream) {
+	public static @NonNull CompletableFuture<CustomFont> load(final @NonNull FontInputStream regular, final FontInputStream bold) {
 		final CompletableFuture<CustomFont> future = new CompletableFuture<>();
 		CustomFontLoader.EXECUTOR.submit(() -> {
 			try {
-				final Font regularFont = CustomFontLoader.read(regularInputStream);
-				future.complete(new CustomFont(regularFont, boldInputStream == null || boldInputStream == regularInputStream ? regularFont : CustomFontLoader.read(boldInputStream)));
+				final Font regularFont = CustomFontLoader.read(regular);
+				future.complete(new CustomFont(regularFont, bold == null || bold == regular ? regularFont : CustomFontLoader.read(bold)));
 			} catch (final Throwable throwable) {
 				future.completeExceptionally(throwable);
 			}

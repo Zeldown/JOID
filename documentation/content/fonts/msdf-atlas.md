@@ -89,7 +89,7 @@ assets/
 Load it with a single stream:
 
 ```java
-FontLoader.load(getClass().getResourceAsStream("/assets/fonts/MyFont/font.msdf")).thenAccept(font -> this.myFont = font);
+CustomFontLoader.load(getClass().getResourceAsStream("/assets/fonts/MyFont/font.msdf")).thenAccept(font -> this.myFont = font);
 ```
 
 ## Legacy atlases
@@ -97,7 +97,7 @@ FontLoader.load(getClass().getResourceAsStream("/assets/fonts/MyFont/font.msdf")
 The `font.json` + `font.png` pair produced by [msdf-atlas-gen](https://github.com/Chlumsky/msdf-atlas-gen) still loads, through the `FontInputStream` overloads:
 
 ```java
-FontLoader.load(new FontInputStream(jsonStream, pngStream)).thenAccept(font -> this.myFont = font);
+CustomFontLoader.load(new FontInputStream(jsonStream, pngStream)).thenAccept(font -> this.myFont = font);
 ```
 
 Those atlases carry no kerning: `msdf-atlas-gen` reads only the `kern` table, which most modern fonts no longer ship.
@@ -114,7 +114,7 @@ Generate one atlas per weight, then load each one separately and bind them to di
 A regular and a bold atlas can also be paired into one `CustomFont`, which is what the `§l` style switch draws from:
 
 ```java
-FontLoader.load(regularStream, boldStream).thenAccept(font -> this.myFont = font);
+CustomFontLoader.load(regularStream, boldStream).thenAccept(font -> this.myFont = font);
 ```
 
 ## Best practices

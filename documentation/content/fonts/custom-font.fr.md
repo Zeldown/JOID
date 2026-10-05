@@ -1,10 +1,10 @@
 # Custom Fonts
 
-JOID rend le texte via des atlas MSDF (Multi-channel Signed Distance Field) — nets à n'importe quelle échelle. Chargez vos polices avec `FontLoader`, construisez un `TextInfo`, et alimentez un `Text` / `TextNode`.
+JOID rend le texte via des atlas MSDF (Multi-channel Signed Distance Field) — nets à n'importe quelle échelle. Chargez vos polices avec `CustomFontLoader`, construisez un `TextInfo`, et alimentez un `Text` / `TextNode`.
 
-## `FontLoader.load`
+## `CustomFontLoader.load`
 
-`FontLoader` est asynchrone — il délègue la lecture et l'upload de texture à un pool d'exécuteurs et renvoie un `CompletableFuture` qui porte le `CustomFont` terminé.
+`CustomFontLoader` est asynchrone — il délègue la lecture et l'upload de texture à un pool d'exécuteurs et renvoie un `CompletableFuture` qui porte le `CustomFont` terminé.
 
 ```java
 static CompletableFuture<CustomFont> load(Object packed)
@@ -16,14 +16,14 @@ Chaque handle désigne un fichier `font.msdf`, produit par le générateur décr
 Chargement minimal :
 
 ```java
-FontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
+CustomFontLoader.load(getClass().getResourceAsStream("/fonts/Inter/font.msdf"))
     .thenAccept(customFont -> this.interFont = customFont);
 ```
 
 Atlas regular et bold :
 
 ```java
-FontLoader.load(
+CustomFontLoader.load(
     getClass().getResourceAsStream("/fonts/Inter-Regular/font.msdf"),
     getClass().getResourceAsStream("/fonts/Inter-Bold/font.msdf")
 ).thenAccept(customFont -> {
@@ -111,12 +111,12 @@ Si vous n'avez qu'un seul atlas, `CustomFont` fallback sur la police regular dan
 
 ## Chargement asynchrone
 
-`FontLoader.load(...)` retourne immédiatement. Le future se complète sur le pool d'exécuteurs une fois la lecture et l'upload terminés : c'est vous qui choisissez comment attendre.
+`CustomFontLoader.load(...)` retourne immédiatement. Le future se complète sur le pool d'exécuteurs une fois la lecture et l'upload terminés : c'est vous qui choisissez comment attendre.
 
 ```java
-FontLoader.load(flux).thenAccept(font -> this.police = font);                 // continuer quand c'est prêt
-FontLoader.load(flux).exceptionally(erreur -> { erreur.printStackTrace(); return null; });
-this.police = FontLoader.load(flux).join();                                   // bloquer, au démarrage
+CustomFontLoader.load(flux).thenAccept(font -> this.police = font);                 // continuer quand c'est prêt
+CustomFontLoader.load(flux).exceptionally(erreur -> { erreur.printStackTrace(); return null; });
+this.police = CustomFontLoader.load(flux).join();                                   // bloquer, au démarrage
 CompletableFuture.allOf(regular, bold, italic).join();                        // attendre toute une famille
 ```
 
