@@ -218,7 +218,7 @@ public final class HighlightTextEffect implements ITextEffect {
 
 ## Dans la démo
 
-`UIDemoTextMarkup` et `UIDemoTextEffect` mettent tout cela en œuvre : `DemoTextMarkup` lit `<b>`, `<i>`, `<u>`, `<h>`, `<w=NNN>` et `<c=RRGGBB>` avec leurs balises fermantes, et le package `demo.ui.font.effect` contient un soulignement, un surlignage, une vague, un arc-en-ciel et un brouillage.
+`UIDemoFont` met tout cela en œuvre, à côté des familles et des graisses : `DemoTextMarkup` lit `<b>`, `<i>`, `<u>`, `<h>`, `<w=NNN>` et `<c=RRGGBB>` avec leurs balises fermantes, et le package `demo.ui.font.effect` contient un soulignement, un surlignage, une vague, un arc-en-ciel et un brouillage.
 
 ## Mesure
 

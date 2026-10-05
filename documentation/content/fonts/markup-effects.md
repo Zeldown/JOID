@@ -218,7 +218,7 @@ public final class HighlightTextEffect implements ITextEffect {
 
 ## In the demo
 
-`UIDemoTextMarkup` and `UIDemoTextEffect` run all of the above: `DemoTextMarkup` reads `<b>`, `<i>`, `<u>`, `<h>`, `<w=NNN>` and `<c=RRGGBB>` with their closing tags, and the `demo.ui.font.effect` package holds an underline, a highlight, a wave, a rainbow and a scramble effect.
+`UIDemoFont` runs all of the above, next to the font families and weights: `DemoTextMarkup` reads `<b>`, `<i>`, `<u>`, `<h>`, `<w=NNN>` and `<c=RRGGBB>` with their closing tags, and the `demo.ui.font.effect` package holds an underline, a highlight, a wave, a rainbow and a scramble effect.
 
 ## Measuring
 
