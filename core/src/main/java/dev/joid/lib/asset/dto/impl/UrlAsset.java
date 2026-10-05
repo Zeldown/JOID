@@ -12,8 +12,6 @@ import lombok.NonNull;
 @Getter
 public final class UrlAsset extends Asset {
 
-	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
-
 	private final String url;
 
 	private UrlAsset(final @NonNull String url) {
@@ -41,7 +39,7 @@ public final class UrlAsset extends Asset {
 
 	private static @NonNull InputStream connect(final @NonNull String url) throws IOException {
 		final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-		connection.setRequestProperty("User-Agent", UrlAsset.USER_AGENT);
+		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36");
 
 		final InputStream stream = connection.getInputStream();
 		if (stream == null) {

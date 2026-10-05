@@ -31,10 +31,6 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 
 	private static final MsdfFontProvider INSTANCE = new MsdfFontProvider();
 
-	private static final double SLANT         = 0.2D;
-	private static final double HALF_TEXEL    = 0.5D;
-	private static final double BASELINE_LIFT = 0.025D;
-
 	private Color        color;
 	private double       runX;
 	private double       runY;
@@ -99,21 +95,21 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 			this.bindPixel(pixelX, pixelY);
 		}
 
-		final double inset = MsdfFontProvider.HALF_TEXEL / atlas.getSize();
-		final double baseline = glyph.getBaseline() + glyph.getOffsetY() - MsdfFontProvider.BASELINE_LIFT * size;
+		final double inset = 0.5D / atlas.getSize();
+		final double baseline = glyph.getBaseline() + glyph.getOffsetY() - 0.025D * size;
 		final double origin = glyph.getX() + glyph.getOffsetX();
 
 		final double left = origin + (plane.getLeft() + inset) * size;
 		final double right = origin + (plane.getRight() - inset) * size;
 		final double top = baseline - (plane.getTop() - inset) * size;
 		final double bottom = baseline - (plane.getBottom() + inset) * size;
-		final double topSlant = glyph.isSlanted() ? (baseline - top) * MsdfFontProvider.SLANT : 0D;
-		final double bottomSlant = glyph.isSlanted() ? (baseline - bottom) * MsdfFontProvider.SLANT : 0D;
+		final double topSlant = glyph.isSlanted() ? (baseline - top) * 0.2D : 0D;
+		final double bottomSlant = glyph.isSlanted() ? (baseline - bottom) * 0.2D : 0D;
 
-		final double textureLeft = (bounds.getLeft() + MsdfFontProvider.HALF_TEXEL) / atlas.getWidth();
-		final double textureRight = (bounds.getRight() - MsdfFontProvider.HALF_TEXEL) / atlas.getWidth();
-		final double textureTop = 1D - (bounds.getTop() - MsdfFontProvider.HALF_TEXEL) / atlas.getHeight();
-		final double textureBottom = 1D - (bounds.getBottom() + MsdfFontProvider.HALF_TEXEL) / atlas.getHeight();
+		final double textureLeft = (bounds.getLeft() + 0.5D) / atlas.getWidth();
+		final double textureRight = (bounds.getRight() - 0.5D) / atlas.getWidth();
+		final double textureTop = 1D - (bounds.getTop() - 0.5D) / atlas.getHeight();
+		final double textureBottom = 1D - (bounds.getBottom() + 0.5D) / atlas.getHeight();
 
 		final Tessellator tessellator = Tessellator.inst();
 		tessellator.start(DrawMode.QUADS);

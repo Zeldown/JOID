@@ -17,9 +17,6 @@ import lombok.NonNull;
 
 public final class FontFamily<F extends IFontFace> {
 
-	private static final int NORMAL = 400;
-	private static final int MEDIUM = 500;
-
 	@Getter private final List<F> faces;
 	private final Set<FontWeight> warned = ConcurrentHashMap.newKeySet();
 
@@ -92,7 +89,7 @@ public final class FontFamily<F extends IFontFace> {
 			return distance < best;
 		}
 
-		return desired == FontFamily.NORMAL || desired > FontFamily.MEDIUM ? candidate > current : candidate < current;
+		return desired == 400 || desired > 500 ? candidate > current : candidate < current;
 	}
 
 	private static <F extends IFontFace> @NonNull F match(final @NonNull List<F> faces, final int desired) {

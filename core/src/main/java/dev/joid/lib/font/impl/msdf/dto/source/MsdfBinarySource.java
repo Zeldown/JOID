@@ -16,6 +16,7 @@ import dev.joid.lib.font.impl.msdf.dto.MsdfBounds;
 import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.dto.MsdfGlyph;
 import dev.joid.lib.font.impl.msdf.dto.MsdfMetrics;
+import dev.joid.msdf.atlas.MsdfWriter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,9 +26,7 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfBinarySource extends MsdfSource {
 
-	private static final int BYTES   = 3;
-	private static final int LEGACY  = 3;
-	private static final int VERSION = 4;
+	private static final int BYTES = 3;
 
 	private static final byte[] MAGIC = {'J', 'O', 'I', 'D', 'M', 'S', 'D', 'F'};
 
@@ -58,13 +57,13 @@ public final class MsdfBinarySource extends MsdfSource {
 
 		final DataInputStream input = new DataInputStream(new InflaterInputStream(stream));
 		final int version = input.readUnsignedByte();
-		if (version < MsdfBinarySource.LEGACY || version > MsdfBinarySource.VERSION) {
+		if (version < 3 || version > MsdfWriter.VERSION) {
 			throw new IOException("Unsupported msdf font version " + version);
 		}
 
 		final FontWeight weight = FontWeight.of(input.readUnsignedShort());
 		final boolean italic = input.readBoolean();
-		final String name = version > MsdfBinarySource.LEGACY ? input.readUTF() : "";
+		final String name = version > 3 ? input.readUTF() : "";
 		final int width = input.readInt();
 		final int height = input.readInt();
 		final MsdfAtlas atlas = new MsdfAtlas(input.readFloat(), input.readFloat(), width, height);

@@ -26,11 +26,8 @@ public final class ReorderableFlexNode extends Node {
 	public static final int CALLBACK_REORDER_END   = NodeCallbackRegistry.next(NodeReorderEndCallback.class);
 	public static final int CALLBACK_REORDER_START = NodeCallbackRegistry.next(NodeReorderStartCallback.class);
 
-	private static final double LERP_SNAP            = 0.5D;
-	private static final double LERP_SPEED           = 0.5D;
-	private static final double SCROLL_HOT_ZONE      = 60D;
-	private static final double SCROLL_SPEED_MAX     = 2D;
-	private static final double SCROLL_ARM_THRESHOLD = 5D;
+	private static final double SCROLL_HOT_ZONE  = 60D;
+	private static final double SCROLL_SPEED_MAX = 2D;
 
 	private final List<Node>        logicalOrder = new ArrayList<>();
 	private final Map<Node, Double> childCurrent = new HashMap<>();
@@ -233,7 +230,7 @@ public final class ReorderableFlexNode extends Node {
 			target = Math.max(0D, Math.min(Math.max(0D, extent - draggedSize), localMouse - this.dragOffset));
 		}
 
-		this.draggedCurrent = super.getUi().lerpByFramerate(this.draggedCurrent, target, ReorderableFlexNode.LERP_SPEED, ReorderableFlexNode.LERP_SNAP, true);
+		this.draggedCurrent = super.getUi().lerpByFramerate(this.draggedCurrent, target, 0.5D, 0.5D, true);
 
 		if (this.releasing) {
 			if (this.draggedCurrent == target) {
@@ -321,7 +318,7 @@ public final class ReorderableFlexNode extends Node {
 
 			if (dragging) {
 				final double cur = this.childCurrent.getOrDefault(child, off);
-				final double newPos = super.getUi().lerpByFramerate(cur, off, ReorderableFlexNode.LERP_SPEED, ReorderableFlexNode.LERP_SNAP, true);
+				final double newPos = super.getUi().lerpByFramerate(cur, off, 0.5D, 0.5D, true);
 				this.childCurrent.put(child, newPos);
 				this.applyMain(child, newPos);
 			} else {
@@ -406,7 +403,7 @@ public final class ReorderableFlexNode extends Node {
 		if (!this.scrollArmed) {
 			final double dx = mouseX - this.dragStartMouseX;
 			final double dy = mouseY - this.dragStartMouseY;
-			if (Math.sqrt(dx * dx + dy * dy) < ReorderableFlexNode.SCROLL_ARM_THRESHOLD) {
+			if (Math.sqrt(dx * dx + dy * dy) < 5D) {
 				return;
 			}
 			this.scrollArmed = true;

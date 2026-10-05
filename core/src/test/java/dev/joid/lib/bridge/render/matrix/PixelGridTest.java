@@ -5,13 +5,11 @@ import org.junit.Test;
 
 public class PixelGridTest {
 
-	private static final double EPSILON = 1E-4D;
-
 	@Test
 	public void doublesOnA4kWindow() {
 		final PixelGrid grid = PixelGridTest.grid(new MatrixStack(), 3840, 2160);
-		Assert.assertEquals(2D, grid.getScaleX(), PixelGridTest.EPSILON);
-		Assert.assertEquals(2D, grid.getScaleY(), PixelGridTest.EPSILON);
+		Assert.assertEquals(2D, grid.getScaleX(), 1E-4D);
+		Assert.assertEquals(2D, grid.getScaleY(), 1E-4D);
 	}
 
 	@Test
@@ -28,10 +26,10 @@ public class PixelGridTest {
 		final MatrixStack modelView = new MatrixStack();
 		modelView.translate(100.5D, 20D, 0D);
 		final PixelGrid grid = PixelGridTest.grid(modelView, 1920, 1080);
-		Assert.assertEquals(110.5D, grid.toScreenX(10D), PixelGridTest.EPSILON);
-		Assert.assertEquals(1080D - 30D, grid.toScreenY(10D), PixelGridTest.EPSILON);
-		Assert.assertEquals(10D, grid.fromScreenX(110.5D), PixelGridTest.EPSILON);
-		Assert.assertEquals(10D, grid.fromScreenY(1050D), PixelGridTest.EPSILON);
+		Assert.assertEquals(110.5D, grid.toScreenX(10D), 1E-4D);
+		Assert.assertEquals(1080D - 30D, grid.toScreenY(10D), 1E-4D);
+		Assert.assertEquals(10D, grid.fromScreenX(110.5D), 1E-4D);
+		Assert.assertEquals(10D, grid.fromScreenY(1050D), 1E-4D);
 	}
 
 	@Test
@@ -39,15 +37,15 @@ public class PixelGridTest {
 		final MatrixStack modelView = new MatrixStack();
 		modelView.scale(2D, 3D, 1D);
 		final PixelGrid grid = PixelGridTest.grid(modelView, 1920, 1080);
-		Assert.assertEquals(2D, grid.getScaleX(), PixelGridTest.EPSILON);
-		Assert.assertEquals(3D, grid.getScaleY(), PixelGridTest.EPSILON);
+		Assert.assertEquals(2D, grid.getScaleX(), 1E-4D);
+		Assert.assertEquals(3D, grid.getScaleY(), 1E-4D);
 	}
 
 	@Test
 	public void mapsTheCanvasOntoTheWindow() {
 		final PixelGrid grid = PixelGridTest.grid(new MatrixStack(), 1920, 1080);
-		Assert.assertEquals(1D, grid.getScaleX(), PixelGridTest.EPSILON);
-		Assert.assertEquals(1D, grid.getScaleY(), PixelGridTest.EPSILON);
+		Assert.assertEquals(1D, grid.getScaleX(), 1E-4D);
+		Assert.assertEquals(1D, grid.getScaleY(), 1E-4D);
 		Assert.assertTrue(grid.isAligned());
 	}
 
@@ -60,9 +58,9 @@ public class PixelGridTest {
 		for (final double value : new double[] {0D, 10D, 10.4D, 133.3D}) {
 			final double screenX = grid.toScreenX(grid.snapX(value));
 			final double screenY = grid.toScreenY(grid.snapY(value));
-			Assert.assertEquals(Math.rint(screenX), screenX, PixelGridTest.EPSILON);
-			Assert.assertEquals(Math.rint(screenY), screenY, PixelGridTest.EPSILON);
-			Assert.assertTrue(Math.abs(grid.snapX(value) - value) <= 0.5D / 0.75D + PixelGridTest.EPSILON);
+			Assert.assertEquals(Math.rint(screenX), screenX, 1E-4D);
+			Assert.assertEquals(Math.rint(screenY), screenY, 1E-4D);
+			Assert.assertTrue(Math.abs(grid.snapX(value) - value) <= 0.5D / 0.75D + 1E-4D);
 		}
 	}
 
@@ -73,8 +71,8 @@ public class PixelGridTest {
 		modelView.rotate(45D, 0D, 0D, 1D);
 		modelView.scale(1.5D, 1.5D, 1D);
 		final PixelGrid grid = PixelGridTest.grid(modelView, 1920, 1080);
-		Assert.assertEquals(1.5D, grid.getScaleX(), PixelGridTest.EPSILON);
-		Assert.assertEquals(1.5D, grid.getScaleY(), PixelGridTest.EPSILON);
+		Assert.assertEquals(1.5D, grid.getScaleX(), 1E-4D);
+		Assert.assertEquals(1.5D, grid.getScaleY(), 1E-4D);
 		Assert.assertFalse(grid.isAligned());
 		Assert.assertEquals(10.25D, grid.snapX(10.25D), 0D);
 	}

@@ -32,8 +32,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
-	private static final int RING_BUFFER_SIZE = 5;
-
 	private final Asset asset;
 	private final Object grabberLock = new Object();
 	private final AtomicBoolean paused = new AtomicBoolean(false);
@@ -142,7 +140,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					this.totalFrames = (int) (this.duration * this.frameRate);
 				}
 
-				this.frameQueue = new ArrayBlockingQueue<>(VideoResourceDecoder.RING_BUFFER_SIZE);
+				this.frameQueue = new ArrayBlockingQueue<>(5);
 
 				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
 					this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
@@ -410,7 +408,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				this.grabber = this.open();
 
 				if (this.frameQueue == null) {
-					this.frameQueue = new ArrayBlockingQueue<>(VideoResourceDecoder.RING_BUFFER_SIZE);
+					this.frameQueue = new ArrayBlockingQueue<>(5);
 				} else {
 					this.frameQueue.clear();
 				}

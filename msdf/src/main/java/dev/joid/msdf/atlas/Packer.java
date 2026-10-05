@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Packer {
 
-	private static final int PADDING = 1;
-
 	public static boolean pack(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {
 		final List<GlyphEntry> drawable = new ArrayList<>();
 		for (final GlyphEntry glyph : glyphs) {
@@ -25,8 +23,8 @@ public final class Packer {
 
 		final int[] skyline = new int[width];
 		for (final GlyphEntry glyph : drawable) {
-			final int glyphWidth = glyph.getWidth() + Packer.PADDING;
-			final int glyphHeight = glyph.getHeight() + Packer.PADDING;
+			final int glyphWidth = glyph.getWidth() + 1;
+			final int glyphHeight = glyph.getHeight() + 1;
 			if (glyphWidth > width) {
 				return false;
 			}

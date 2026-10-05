@@ -20,8 +20,6 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfFontCache {
 
-	private static final String SIGNATURE = JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT;
-
 	@Getter
 	private static File directory = MsdfFontCache.locateDirectory();
 
@@ -30,7 +28,7 @@ public final class MsdfFontCache {
 	}
 
 	public static @NonNull File locate(final @NonNull byte[] font) {
-		return new File(MsdfFontCache.directory, Hashing.sha256().newHasher().putBytes(MsdfFontCache.SIGNATURE.getBytes(StandardCharsets.UTF_8)).putBytes(font).hash() + ".msdf");
+		return new File(MsdfFontCache.directory, Hashing.sha256().newHasher().putString(JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT, StandardCharsets.UTF_8).putBytes(font).hash() + ".msdf");
 	}
 
 	public static @NonNull File resolve(final @NonNull byte[] font) throws IOException {

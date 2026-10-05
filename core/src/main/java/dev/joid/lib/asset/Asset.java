@@ -11,8 +11,6 @@ import lombok.NonNull;
 @Getter
 public abstract class Asset {
 
-	private static final int BUFFER = 8192;
-
 	private final String uniqueId;
 
 	protected Asset(final @NonNull String uniqueId) {
@@ -45,7 +43,7 @@ public abstract class Asset {
 	public final @NonNull byte[] read() throws IOException {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try (InputStream stream = this.open()) {
-			final byte[] buffer = new byte[Asset.BUFFER];
+			final byte[] buffer = new byte[8192];
 			int count;
 			while ((count = stream.read(buffer)) != -1) {
 				output.write(buffer, 0, count);

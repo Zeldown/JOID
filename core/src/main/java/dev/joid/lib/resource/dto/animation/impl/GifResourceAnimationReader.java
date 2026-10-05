@@ -24,9 +24,6 @@ import lombok.NonNull;
 
 public class GifResourceAnimationReader implements IResourceAnimationReader {
 
-	private static final String IMAGE_FORMAT  = "javax_imageio_gif_image_1.0";
-	private static final String STREAM_FORMAT = "javax_imageio_gif_stream_1.0";
-
 	@Override
 	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
 		final Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
@@ -37,7 +34,7 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 		final ImageReader reader = readers.next();
 		try (ImageInputStream input = ImageIO.createImageInputStream(stream)) {
 			reader.setInput(input, false);
-			final IIOMetadataNode screen = GifResourceAnimationReader.child((IIOMetadataNode) reader.getStreamMetadata().getAsTree(GifResourceAnimationReader.STREAM_FORMAT), "LogicalScreenDescriptor");
+			final IIOMetadataNode screen = GifResourceAnimationReader.child((IIOMetadataNode) reader.getStreamMetadata().getAsTree("javax_imageio_gif_stream_1.0"), "LogicalScreenDescriptor");
 			final int count = reader.getNumImages(true);
 			int width = screen == null ? 0 : Integer.parseInt(screen.getAttribute("logicalScreenWidth"));
 			int height = screen == null ? 0 : Integer.parseInt(screen.getAttribute("logicalScreenHeight"));
@@ -51,7 +48,7 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 			final List<ResourceAnimationFrame> frames = new ArrayList<>();
 			for (int i = 0; i < count; i++) {
 				final BufferedImage image = reader.read(i);
-				final IIOMetadataNode root = (IIOMetadataNode) reader.getImageMetadata(i).getAsTree(GifResourceAnimationReader.IMAGE_FORMAT);
+				final IIOMetadataNode root = (IIOMetadataNode) reader.getImageMetadata(i).getAsTree("javax_imageio_gif_image_1.0");
 				final IIOMetadataNode descriptor = GifResourceAnimationReader.child(root, "ImageDescriptor");
 				final IIOMetadataNode control = GifResourceAnimationReader.child(root, "GraphicControlExtension");
 				plays = GifResourceAnimationReader.plays(root, plays);

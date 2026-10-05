@@ -23,17 +23,15 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CoreShaders {
 
-	private static final String DIRECTORY = "/assets/shaders";
-
 	public static @NonNull List<String> getNames() {
 		try {
-			final URI uri = CoreShaders.class.getResource(CoreShaders.DIRECTORY).toURI();
+			final URI uri = CoreShaders.class.getResource("/assets/shaders").toURI();
 			if (!"jar".equals(uri.getScheme())) {
 				return CoreShaders.list(Paths.get(uri));
 			}
 
 			try (FileSystem fileSystem = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
-				return CoreShaders.list(fileSystem.getPath(CoreShaders.DIRECTORY));
+				return CoreShaders.list(fileSystem.getPath("/assets/shaders"));
 			}
 		} catch (final URISyntaxException e) {
 			throw new IllegalStateException(e);
@@ -44,7 +42,7 @@ public final class CoreShaders {
 
 	public static @NonNull ShaderSource read(final @NonNull String name, final @NonNull ShaderStage stage) {
 		final String extension = stage == ShaderStage.VERTEX ? ".vsh" : ".fsh";
-		return ShaderSource.read(stage, CoreShaders.class.getResourceAsStream(CoreShaders.DIRECTORY + "/" + name + "/" + name + extension));
+		return ShaderSource.read(stage, CoreShaders.class.getResourceAsStream("/assets/shaders/" + name + "/" + name + extension));
 	}
 
 	private static List<String> list(final Path directory) throws IOException {

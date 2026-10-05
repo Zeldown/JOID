@@ -9,9 +9,6 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PixelGrid {
 
-	private static final double SKEW    = 1E-6D;
-	private static final double EPSILON = 1E-3D;
-
 	private final double  unitX;
 	private final double  unitY;
 	private final double  scaleX;
@@ -36,7 +33,7 @@ public final class PixelGrid {
 		final double originY = (PixelGrid.product(projection, modelView, 1, 3) / depth + 1D) * halfHeight;
 		final double scaleX = Math.hypot(xx, xy);
 		final double scaleY = Math.hypot(yx, yy);
-		final boolean aligned = Math.abs(xy) <= PixelGrid.SKEW * scaleX && Math.abs(yx) <= PixelGrid.SKEW * scaleY;
+		final boolean aligned = Math.abs(xy) <= 1E-6D * scaleX && Math.abs(yx) <= 1E-6D * scaleY;
 		return new PixelGrid(xx, yy, scaleX, scaleY, originX, originY, aligned);
 	}
 
@@ -65,11 +62,11 @@ public final class PixelGrid {
 	}
 
 	public int toPixelWidth(final double width) {
-		return Math.max(1, (int) Math.ceil(width * this.scaleX - PixelGrid.EPSILON));
+		return Math.max(1, (int) Math.ceil(width * this.scaleX - 1E-3D));
 	}
 
 	public int toPixelHeight(final double height) {
-		return Math.max(1, (int) Math.ceil(height * this.scaleY - PixelGrid.EPSILON));
+		return Math.max(1, (int) Math.ceil(height * this.scaleY - 1E-3D));
 	}
 
 	private static double product(final float[] projection, final float[] modelView, final int row, final int column) {

@@ -11,35 +11,33 @@ import dev.joid.lib.bridge.render.matrix.PixelGrid;
 
 public class UIViewTest {
 
-	private static final double EPSILON = 1E-9D;
-
 	@Test
 	public void boundsTheZoom() {
 		final UIView view = UIView.create(960D, 540D).resize(1920D, 1080D);
-		Assert.assertEquals(1D, view.zoom(5D).getZoom(), UIViewTest.EPSILON);
-		Assert.assertEquals(0.1D, view.zoom(0D).getZoom(), UIViewTest.EPSILON);
-		Assert.assertEquals(4D, view.interfaceScale(0.25D).zoom(10D).getZoom(), UIViewTest.EPSILON);
-		Assert.assertEquals(1D, view.interfaceScale(1D).getZoom(), UIViewTest.EPSILON);
+		Assert.assertEquals(1D, view.zoom(5D).getZoom(), 1E-9D);
+		Assert.assertEquals(0.1D, view.zoom(0D).getZoom(), 1E-9D);
+		Assert.assertEquals(4D, view.interfaceScale(0.25D).zoom(10D).getZoom(), 1E-9D);
+		Assert.assertEquals(1D, view.interfaceScale(1D).getZoom(), 1E-9D);
 	}
 
 	@Test
 	public void fillsA16By9Window() {
 		final UIView view = UIView.create(960D, 540D).resize(1920D, 1080D);
-		Assert.assertEquals(1920D, view.getViewportWidth(), UIViewTest.EPSILON);
-		Assert.assertEquals(1080D, view.getViewportHeight(), UIViewTest.EPSILON);
-		Assert.assertEquals(0D, view.getOffsetX(), UIViewTest.EPSILON);
-		Assert.assertEquals(0D, view.getOffsetY(), UIViewTest.EPSILON);
-		Assert.assertEquals(123D, view.toUiX(123D), UIViewTest.EPSILON);
-		Assert.assertEquals(456D, view.toUiY(456D), UIViewTest.EPSILON);
+		Assert.assertEquals(1920D, view.getViewportWidth(), 1E-9D);
+		Assert.assertEquals(1080D, view.getViewportHeight(), 1E-9D);
+		Assert.assertEquals(0D, view.getOffsetX(), 1E-9D);
+		Assert.assertEquals(0D, view.getOffsetY(), 1E-9D);
+		Assert.assertEquals(123D, view.toUiX(123D), 1E-9D);
+		Assert.assertEquals(456D, view.toUiY(456D), 1E-9D);
 	}
 
 	@Test
 	public void followsTheWindowSize() {
 		final UIView view = UIView.create(960D, 540D).resize(3840D, 2160D);
-		Assert.assertEquals(1920D, view.toUiX(3840D), UIViewTest.EPSILON);
-		Assert.assertEquals(1080D, view.toUiY(2160D), UIViewTest.EPSILON);
-		Assert.assertEquals(2D, view.toScreenWidth(1D), UIViewTest.EPSILON);
-		Assert.assertEquals(2D, view.toScreenHeight(1D), UIViewTest.EPSILON);
+		Assert.assertEquals(1920D, view.toUiX(3840D), 1E-9D);
+		Assert.assertEquals(1080D, view.toUiY(2160D), 1E-9D);
+		Assert.assertEquals(2D, view.toScreenWidth(1D), 1E-9D);
+		Assert.assertEquals(2D, view.toScreenHeight(1D), 1E-9D);
 	}
 
 	@Test
@@ -65,9 +63,9 @@ public class UIViewTest {
 		final double[][] windows = {{1920D, 1200D}, {1920D, 1017D}, {1440D, 900D}, {1904D, 1001D}, {2560D, 1600D}, {1366D, 768D}};
 		for (final double[] window : windows) {
 			final UIView view = UIView.create(960D, 540D).resize(window[0], window[1]);
-			Assert.assertEquals(view.toScreenWidth(1D), view.toScreenHeight(1D), UIViewTest.EPSILON);
-			Assert.assertTrue(view.getViewportWidth() >= 1920D - UIViewTest.EPSILON);
-			Assert.assertTrue(view.getViewportHeight() >= 1080D - UIViewTest.EPSILON);
+			Assert.assertEquals(view.toScreenWidth(1D), view.toScreenHeight(1D), 1E-9D);
+			Assert.assertTrue(view.getViewportWidth() >= 1920D - 1E-9D);
+			Assert.assertTrue(view.getViewportHeight() >= 1080D - 1E-9D);
 		}
 	}
 
@@ -95,37 +93,37 @@ public class UIViewTest {
 	@Test
 	public void pinsTheCanvasToAStartAnchor() {
 		final UIView view = UIView.create(0D, 0D).resize(2560D, 1080D);
-		Assert.assertEquals(0D, view.getOffsetX(), UIViewTest.EPSILON);
-		Assert.assertEquals(0D, view.toUiX(0D), UIViewTest.EPSILON);
-		Assert.assertEquals(0D, view.toScreenX(0D), UIViewTest.EPSILON);
+		Assert.assertEquals(0D, view.getOffsetX(), 1E-9D);
+		Assert.assertEquals(0D, view.toUiX(0D), 1E-9D);
+		Assert.assertEquals(0D, view.toScreenX(0D), 1E-9D);
 	}
 
 	@Test
 	public void widensTheCanvasOfAWideWindow() {
 		final UIView view = UIView.create(960D, 540D).resize(2560D, 1080D);
-		Assert.assertEquals(2560D, view.getViewportWidth(), UIViewTest.EPSILON);
-		Assert.assertEquals(1080D, view.getViewportHeight(), UIViewTest.EPSILON);
-		Assert.assertEquals(320D, view.getOffsetX(), UIViewTest.EPSILON);
-		Assert.assertEquals(0D, view.toUiX(320D), UIViewTest.EPSILON);
-		Assert.assertEquals(1920D, view.toUiX(2240D), UIViewTest.EPSILON);
+		Assert.assertEquals(2560D, view.getViewportWidth(), 1E-9D);
+		Assert.assertEquals(1080D, view.getViewportHeight(), 1E-9D);
+		Assert.assertEquals(320D, view.getOffsetX(), 1E-9D);
+		Assert.assertEquals(0D, view.toUiX(320D), 1E-9D);
+		Assert.assertEquals(1920D, view.toUiX(2240D), 1E-9D);
 	}
 
 	@Test
 	public void extendsTheCanvasOfA16By10Window() {
 		final UIView view = UIView.create(960D, 540D).resize(1920D, 1200D);
-		Assert.assertEquals(1920D, view.getViewportWidth(), UIViewTest.EPSILON);
-		Assert.assertEquals(1200D, view.getViewportHeight(), UIViewTest.EPSILON);
-		Assert.assertEquals(60D, view.getOffsetY(), UIViewTest.EPSILON);
-		Assert.assertEquals(60D, view.toScreenY(0D), UIViewTest.EPSILON);
+		Assert.assertEquals(1920D, view.getViewportWidth(), 1E-9D);
+		Assert.assertEquals(1200D, view.getViewportHeight(), 1E-9D);
+		Assert.assertEquals(60D, view.getOffsetY(), 1E-9D);
+		Assert.assertEquals(60D, view.toScreenY(0D), 1E-9D);
 	}
 
 	@Test
 	public void heightensTheCanvasOfATallWindow() {
 		final UIView view = UIView.create(960D, 540D).resize(1080D, 1080D);
-		Assert.assertEquals(1920D, view.getViewportWidth(), UIViewTest.EPSILON);
-		Assert.assertEquals(1920D, view.getViewportHeight(), UIViewTest.EPSILON);
-		Assert.assertEquals(420D, view.getOffsetY(), UIViewTest.EPSILON);
-		Assert.assertEquals(236.25D, view.toScreenY(0D), UIViewTest.EPSILON);
+		Assert.assertEquals(1920D, view.getViewportWidth(), 1E-9D);
+		Assert.assertEquals(1920D, view.getViewportHeight(), 1E-9D);
+		Assert.assertEquals(420D, view.getOffsetY(), 1E-9D);
+		Assert.assertEquals(236.25D, view.toScreenY(0D), 1E-9D);
 	}
 
 	@Test
@@ -156,21 +154,21 @@ public class UIViewTest {
 	@Test
 	public void scalesTheInterfaceAroundTheAnchor() {
 		final UIView view = UIView.create(960D, 540D).resize(1920D, 1080D).interfaceScale(0.5D);
-		Assert.assertEquals(0.5D, view.getScale(), UIViewTest.EPSILON);
-		Assert.assertEquals(960D, view.toScreenX(960D), UIViewTest.EPSILON);
-		Assert.assertEquals(480D, view.toScreenX(0D), UIViewTest.EPSILON);
-		Assert.assertEquals(270D, view.toScreenY(0D), UIViewTest.EPSILON);
-		Assert.assertEquals(0D, view.toUiX(480D), UIViewTest.EPSILON);
-		Assert.assertEquals(50D, view.toScreenWidth(100D), UIViewTest.EPSILON);
-		Assert.assertEquals(3840D, view.getVisibleWidth(), UIViewTest.EPSILON);
-		Assert.assertEquals(2160D, view.getVisibleHeight(), UIViewTest.EPSILON);
+		Assert.assertEquals(0.5D, view.getScale(), 1E-9D);
+		Assert.assertEquals(960D, view.toScreenX(960D), 1E-9D);
+		Assert.assertEquals(480D, view.toScreenX(0D), 1E-9D);
+		Assert.assertEquals(270D, view.toScreenY(0D), 1E-9D);
+		Assert.assertEquals(0D, view.toUiX(480D), 1E-9D);
+		Assert.assertEquals(50D, view.toScreenWidth(100D), 1E-9D);
+		Assert.assertEquals(3840D, view.getVisibleWidth(), 1E-9D);
+		Assert.assertEquals(2160D, view.getVisibleHeight(), 1E-9D);
 	}
 
 	@Test
 	public void combinesTheInterfaceScaleAndTheZoom() {
 		final UIView view = UIView.create(960D, 540D).resize(1920D, 1080D).interfaceScale(0.5D).zoom(1.5D);
-		Assert.assertEquals(1.5D, view.getZoom(), UIViewTest.EPSILON);
-		Assert.assertEquals(0.75D, view.getScale(), UIViewTest.EPSILON);
+		Assert.assertEquals(1.5D, view.getZoom(), 1E-9D);
+		Assert.assertEquals(0.75D, view.getScale(), 1E-9D);
 	}
 
 	private static IRenderBridge bridge(final MatrixStack projection, final MatrixStack modelView) {

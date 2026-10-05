@@ -19,8 +19,6 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SnapshotReport {
 
-	private static final String TEMPLATE = "/report/report.html";
-
 	public static void write(final @NonNull File file, final @NonNull String title, final @NonNull List<SnapshotEntry> entries) {
 		final File data = new File(file.getParentFile(), "report");
 		data.mkdirs();
@@ -43,7 +41,7 @@ public final class SnapshotReport {
 	}
 
 	private static String readTemplate() {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotReport.class.getResourceAsStream(SnapshotReport.TEMPLATE), StandardCharsets.UTF_8))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotReport.class.getResourceAsStream("/report/report.html"), StandardCharsets.UTF_8))) {
 			return reader.lines().collect(Collectors.joining("\n"));
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);

@@ -52,7 +52,6 @@ import lombok.NonNull;
 @Getter
 public abstract class UI implements IUI, IndexedElement {
 
-	private static final double FRAME_TIME = 1000D / 60D;
 	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
 
@@ -461,7 +460,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 
 		final long frame = BridgeHandler.CLOCK.get().nanoTime();
-		this.frameTime = this.lastFrame == 0L ? UI.FRAME_TIME : (frame - this.lastFrame) / 1_000_000D;
+		this.frameTime = this.lastFrame == 0L ? 1000D / 60D : (frame - this.lastFrame) / 1_000_000D;
 		this.lastFrame = frame;
 
 		this.mouseX = mouseX;
@@ -732,7 +731,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double diff = target - value;
 		final double absDiff = Math.abs(diff);
 
-		final double offset = Math.min(absDiff, speed * this.frameTime / UI.FRAME_TIME * absDiff / 3D);
+		final double offset = Math.min(absDiff, speed * this.frameTime / (1000D / 60D) * absDiff / 3D);
 
 		if (absDiff > snapDiff) {
 			return value + (diff > 0 ? offset : -offset);

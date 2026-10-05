@@ -25,8 +25,6 @@ import lombok.NonNull;
 
 public class WebpResourceAnimationReader implements IResourceAnimationReader {
 
-	private static final int ANIMATION = 0x02;
-
 	@Override
 	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
 		final byte[] bytes = IOUtils.toByteArray(stream);
@@ -86,7 +84,7 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 	}
 
 	public static boolean isAnimated(final @NonNull byte[] bytes) {
-		return WebpResourceAnimationReader.isWebp(bytes) && bytes.length >= 21 && bytes[12] == 'V' && bytes[13] == 'P' && bytes[14] == '8' && bytes[15] == 'X' && (bytes[20] & WebpResourceAnimationReader.ANIMATION) != 0;
+		return WebpResourceAnimationReader.isWebp(bytes) && bytes.length >= 21 && bytes[12] == 'V' && bytes[13] == 'P' && bytes[14] == '8' && bytes[15] == 'X' && (bytes[20] & 0x02) != 0;
 	}
 
 	private static int read(final byte[] bytes, final int offset, final int length) {

@@ -14,10 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Natives {
 
-	private static final String VERSION   = "2.9.1";
-	private static final String PROPERTY  = "org.lwjgl.librarypath";
-	private static final String RESOURCES = "/dev/joid/impl/lwjgl2/natives/";
-
 	private static boolean installed;
 
 	public static synchronized void install() {
@@ -28,18 +24,18 @@ public final class Natives {
 		Natives.installed = true;
 		final String platform = Natives.getPlatform();
 		final String[] libraries = Natives.getLibraries(platform);
-		if (System.getProperty(Natives.PROPERTY) != null || Natives.isProvided(libraries)) {
+		if (System.getProperty("org.lwjgl.librarypath") != null || Natives.isProvided(libraries)) {
 			return;
 		}
 
-		final File directory = new File(new File(System.getProperty("java.io.tmpdir"), "joid-lwjgl-" + Natives.VERSION), platform);
+		final File directory = new File(new File(System.getProperty("java.io.tmpdir"), "joid-lwjgl-2.9.1"), platform);
 		if (!directory.isDirectory() && !directory.mkdirs()) {
 			throw new IllegalStateException("Unable to create the LWJGL 2 natives folder " + directory.getAbsolutePath());
 		}
 
 		for (final String library : libraries) {
 			final File target = new File(directory, library);
-			try (InputStream stream = Natives.class.getResourceAsStream(Natives.RESOURCES + platform + "/" + library)) {
+			try (InputStream stream = Natives.class.getResourceAsStream("/dev/joid/impl/lwjgl2/natives/" + platform + "/" + library)) {
 				if (stream == null) {
 					throw new IllegalStateException("The LWJGL 2 native " + library + " is missing from the backend");
 				}
@@ -52,7 +48,7 @@ public final class Natives {
 				throw new IllegalStateException("Unable to extract the LWJGL 2 native " + library, exception);
 			}
 		}
-		System.setProperty(Natives.PROPERTY, directory.getAbsolutePath());
+		System.setProperty("org.lwjgl.librarypath", directory.getAbsolutePath());
 	}
 
 	private static String getPlatform() {

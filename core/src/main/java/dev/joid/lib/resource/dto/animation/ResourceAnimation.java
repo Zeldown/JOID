@@ -11,9 +11,6 @@ import lombok.NonNull;
 @Getter
 public final class ResourceAnimation {
 
-	private static final long MIN_DURATION = 10L;
-	private static final long DEFAULT_DURATION = 100L;
-
 	private final int                  width;
 	private final int                  height;
 	private final int                  plays;
@@ -28,7 +25,7 @@ public final class ResourceAnimation {
 		this.ends = new long[frames.size()];
 		long end = 0L;
 		for (int i = 0; i < this.ends.length; i++) {
-			end += frames.get(i).getDuration() < ResourceAnimation.MIN_DURATION ? ResourceAnimation.DEFAULT_DURATION : frames.get(i).getDuration();
+			end += frames.get(i).getDuration() < 10L ? 100L : frames.get(i).getDuration();
 			this.ends[i] = end;
 		}
 	}

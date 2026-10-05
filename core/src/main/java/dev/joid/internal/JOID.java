@@ -15,9 +15,6 @@ public final class JOID {
 
 	public static final String VERSION = "7.0.1";
 
-	private static final String DEV  = "/dev/joid/lib/ui/node/impl/dev/DevNode.class";
-	private static final String DEMO = "/dev/joid/demo/DemoFont.class";
-
 	private static JOID instance;
 
 	private File configDir;
@@ -79,7 +76,7 @@ public final class JOID {
 	}
 
 	public JOID setDevMode(final boolean devMode) {
-		if (devMode && JOID.class.getResource(JOID.DEV) == null) {
+		if (devMode && JOID.class.getResource("/dev/joid/lib/ui/node/impl/dev/DevNode.class") == null) {
 			throw new IllegalStateException("The dev mode is not part of the prod jar of JOID, use the dev jar of your backend");
 		}
 
@@ -88,7 +85,7 @@ public final class JOID {
 	}
 
 	public JOID setDemoMode(final boolean demoMode) {
-		if (demoMode && JOID.class.getResource(JOID.DEMO) == null) {
+		if (demoMode && JOID.class.getResource("/dev/joid/demo/DemoFont.class") == null) {
 			throw new IllegalStateException("The demo mode is not part of the prod jar of JOID, use the dev jar of your backend");
 		}
 

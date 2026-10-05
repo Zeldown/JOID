@@ -10,8 +10,6 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderPassContext {
 
-	private static final double EPSILON = 1E-3D;
-
 	private final double    x;
 	private final double    y;
 	private final double    width;
@@ -34,10 +32,10 @@ public final class ShaderPassContext {
 			return new ShaderPassContext(x, y, width, height, expansion, grid, left, top, right - left, bottom - top, grid.toPixelWidth(right - left), grid.toPixelHeight(bottom - top));
 		}
 
-		final double screenLeft = Math.floor(Math.min(grid.toScreenX(left), grid.toScreenX(right)) + ShaderPassContext.EPSILON);
-		final double screenRight = Math.ceil(Math.max(grid.toScreenX(left), grid.toScreenX(right)) - ShaderPassContext.EPSILON);
-		final double screenTop = Math.floor(Math.min(grid.toScreenY(top), grid.toScreenY(bottom)) + ShaderPassContext.EPSILON);
-		final double screenBottom = Math.ceil(Math.max(grid.toScreenY(top), grid.toScreenY(bottom)) - ShaderPassContext.EPSILON);
+		final double screenLeft = Math.floor(Math.min(grid.toScreenX(left), grid.toScreenX(right)) + 1E-3D);
+		final double screenRight = Math.ceil(Math.max(grid.toScreenX(left), grid.toScreenX(right)) - 1E-3D);
+		final double screenTop = Math.floor(Math.min(grid.toScreenY(top), grid.toScreenY(bottom)) + 1E-3D);
+		final double screenBottom = Math.ceil(Math.max(grid.toScreenY(top), grid.toScreenY(bottom)) - 1E-3D);
 		final double regionLeft = Math.min(grid.fromScreenX(screenLeft), grid.fromScreenX(screenRight));
 		final double regionTop = Math.min(grid.fromScreenY(screenTop), grid.fromScreenY(screenBottom));
 		final double regionRight = Math.max(grid.fromScreenX(screenLeft), grid.fromScreenX(screenRight));

@@ -56,10 +56,6 @@ import lombok.NonNull;
 @Getter
 public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge {
 
-	private static final long VERTEX_CAPACITY  = 8L << 20;
-	private static final long UNIFORM_CAPACITY = 8L << 20;
-	private static final long STAGING_CAPACITY = 4L << 20;
-
 	private final Context         context;
 	private final long            frameFence;
 	private final long[]          samplers;
@@ -90,8 +86,8 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		this.pipelineCache   = new PipelineCache(this.context);
 		this.descriptorCache = new DescriptorCache(this.context);
 		this.garbage         = new ArrayList<>();
-		this.vertexStream    = new Stream(this.context, RenderBridge.VERTEX_CAPACITY, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 1L, this::dispose);
-		this.uniformStream   = new Stream(this.context, RenderBridge.UNIFORM_CAPACITY, VK10.VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, this.context.getUniformAlignment(), this::dispose);
+		this.vertexStream    = new Stream(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 1L, this::dispose);
+		this.uniformStream   = new Stream(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, this.context.getUniformAlignment(), this::dispose);
 		this.commandBuffer   = this.context.allocateCommandBuffer();
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -276,7 +272,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 				this.stagingBuffer.destroy();
 			}
 
-			this.stagingBuffer = Buffer.create(this.context, Math.max(size, RenderBridge.STAGING_CAPACITY), VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+			this.stagingBuffer = Buffer.create(this.context, Math.max(size, 4L << 20), VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 		}
 		return this.stagingBuffer;
 	}

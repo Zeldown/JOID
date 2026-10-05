@@ -9,17 +9,12 @@ import lombok.Getter;
 @Getter
 public final class FontFile {
 
-	private static final int TTC        = 0x74746366;
-	private static final int ITALIC     = 1;
-	private static final int OBLIQUE    = 1 << 9;
-	private static final int MAC_ITALIC = 1 << 1;
-
 	private final byte[] data;
 	private final Map<String, Integer> tables = new HashMap<>();
 
 	private FontFile(final byte[] data) {
 		this.data = data;
-		final int offset = this.integer(0) == FontFile.TTC ? this.integer(12) : 0;
+		final int offset = this.integer(0) == 0x74746366 ? this.integer(12) : 0;
 		final int count = this.unsigned(offset + 4);
 		for (int i = 0; i < count; i++) {
 			final int record = offset + 12 + i * 16;
@@ -34,7 +29,7 @@ public final class FontFile {
 	public boolean isItalic() {
 		final Integer os2 = this.tables.get("OS/2");
 		final Integer head = this.tables.get("head");
-		return os2 != null && (this.unsigned(os2 + 62) & (FontFile.ITALIC | FontFile.OBLIQUE)) != 0 || head != null && (this.unsigned(head + 44) & FontFile.MAC_ITALIC) != 0;
+		return os2 != null && (this.unsigned(os2 + 62) & (1 | 1 << 9)) != 0 || head != null && (this.unsigned(head + 44) & 1 << 1) != 0;
 	}
 
 	public int getWeight() {

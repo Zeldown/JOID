@@ -27,9 +27,8 @@ import lombok.NonNull;
 
 public abstract class RenderBridgeContractSuite {
 
-	private static final int SIZE     = 64;
-	private static final int ATLAS    = 256;
-	private static final int MINIFIED = 7;
+	private static final int SIZE  = 64;
+	private static final int ATLAS = 256;
 
 	private static final int RED   = 0xFFFF0000;
 	private static final int BLUE  = 0xFF0000FF;
@@ -250,15 +249,15 @@ public abstract class RenderBridgeContractSuite {
 	private static SnapshotImage minify(final ITexture texture) {
 		return RenderBridgeContractSuite.render(bridge -> {
 			bridge.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0.5F, 0.5F, RenderBridgeContractSuite.MINIFIED, RenderBridgeContractSuite.MINIFIED, true, 0));
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0.5F, 0.5F, 7, 7, true, 0));
 		});
 	}
 
 	private static double deviation(final SnapshotImage image) {
 		double sum = 0D;
 		int count = 0;
-		for (int y = 2; y < RenderBridgeContractSuite.MINIFIED - 1; y++) {
-			for (int x = 2; x < RenderBridgeContractSuite.MINIFIED - 1; x++) {
+		for (int y = 2; y < 7 - 1; y++) {
+			for (int x = 2; x < 7 - 1; x++) {
 				final int pixel = image.getPixels()[x + y * image.getWidth()];
 				final double luma = ((pixel >> 16 & 255) + (pixel >> 8 & 255) + (pixel & 255)) / 3D;
 				sum += Math.abs(luma - 127.5D);

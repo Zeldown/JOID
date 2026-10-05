@@ -10,8 +10,6 @@ import lombok.NonNull;
 
 public class ApngResourceFormat implements IResourceFormat {
 
-	private static final int CHUNKS = 1 << 16;
-
 	@Override
 	public boolean supports(final @NonNull byte[] header) {
 		return header.length >= 8 && header[0] == (byte) 0x89 && header[1] == 'P' && header[2] == 'N' && header[3] == 'G';
@@ -19,7 +17,7 @@ public class ApngResourceFormat implements IResourceFormat {
 
 	@Override
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-		final boolean animated = ApngResourceAnimationReader.isAnimated(header).orElseGet(() -> ApngResourceAnimationReader.isAnimated(asset.peek(ApngResourceFormat.CHUNKS)).orElse(false));
+		final boolean animated = ApngResourceAnimationReader.isAnimated(header).orElseGet(() -> ApngResourceAnimationReader.isAnimated(asset.peek(1 << 16)).orElse(false));
 		return animated ? new AnimatedResourceDecoder(asset, new ApngResourceAnimationReader()) : new RasterResourceDecoder(asset);
 	}
 

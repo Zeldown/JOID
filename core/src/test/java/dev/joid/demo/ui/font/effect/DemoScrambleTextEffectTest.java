@@ -10,8 +10,6 @@ import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
 
 public class DemoScrambleTextEffectTest {
 
-	private static final String POOL = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
 	@Test
 	public void leavesSpacesAlone() {
 		final TextGlyph<DemoFace> glyph = DemoScrambleTextEffectTest.glyph(' ', DemoFace.create(0.5F));
@@ -23,7 +21,7 @@ public class DemoScrambleTextEffectTest {
 	public void swapsForACharacterOfTheSameWidth() {
 		final TextGlyph<DemoFace> glyph = DemoScrambleTextEffectTest.glyph('A', DemoFace.create(0.5F));
 		DemoScrambleTextEffect.inst().apply(glyph);
-		Assert.assertTrue(DemoScrambleTextEffectTest.POOL.indexOf(glyph.getCodepoint()) >= 0);
+		Assert.assertTrue("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".indexOf(glyph.getCodepoint()) >= 0);
 	}
 
 	@Test

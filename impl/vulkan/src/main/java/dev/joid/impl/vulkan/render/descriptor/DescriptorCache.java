@@ -25,8 +25,6 @@ import lombok.NonNull;
 
 public final class DescriptorCache {
 
-	private static final int POOL_SETS = 1024;
-
 	private final Context                 context;
 	private final List<Long>              poolList;
 	private final Map<List<Long>, long[]> setMap;
@@ -93,11 +91,11 @@ public final class DescriptorCache {
 	private long createPool() {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkDescriptorPoolSize.Buffer sizes = VkDescriptorPoolSize.calloc(2, stack);
-			sizes.get(0).type(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(DescriptorCache.POOL_SETS * 4);
-			sizes.get(1).type(VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER).descriptorCount(DescriptorCache.POOL_SETS * 4);
+			sizes.get(0).type(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(4096);
+			sizes.get(1).type(VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER).descriptorCount(4096);
 
 			final LongBuffer pool = stack.mallocLong(1);
-			Context.check(VK10.vkCreateDescriptorPool(this.context.getDevice(), VkDescriptorPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).maxSets(DescriptorCache.POOL_SETS).pPoolSizes(sizes), null, pool), "vkCreateDescriptorPool");
+			Context.check(VK10.vkCreateDescriptorPool(this.context.getDevice(), VkDescriptorPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).maxSets(1024).pPoolSizes(sizes), null, pool), "vkCreateDescriptorPool");
 			return pool.get(0);
 		}
 	}

@@ -33,11 +33,8 @@ import lombok.NonNull;
 @Getter
 public class VectorResourceDecoder implements IResourceDecoder {
 
-	private static final int             CACHE    = 8;
-	private static final int             MAX_SIZE = 4096;
-	private static final long            STABLE   = 200000000L;
-	private static final double          BUCKET   = 1.25D;
-	private static final ExecutorService RASTER   = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("ResourceVector"));
+	private static final double          BUCKET = 1.25D;
+	private static final ExecutorService RASTER = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("ResourceVector"));
 
 	private final Asset                   asset;
 	private final Map<Long, ITexture>     textures;
@@ -54,7 +51,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	public VectorResourceDecoder(final @NonNull Asset asset) {
 		this.asset = asset;
-		this.textures = new LinkedHashMap<>(VectorResourceDecoder.CACHE, 0.75F, true);
+		this.textures = new LinkedHashMap<>(8, 0.75F, true);
 		this.pending = new AtomicReference<>();
 	}
 
@@ -97,7 +94,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 			return;
 		}
 
-		final double fit = Math.min(1D, (double) VectorResourceDecoder.MAX_SIZE / Math.max(width, height));
+		final double fit = Math.min(1D, 4096D / Math.max(width, height));
 		final int exactWidth = Math.max(1, (int) Math.round(width * fit));
 		final int exactHeight = Math.max(1, (int) Math.round(height * fit));
 		final long now = BridgeHandler.CLOCK.get().nanoTime();
@@ -112,7 +109,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 			return;
 		}
 
-		if (!first && async && now - this.changeTime < VectorResourceDecoder.STABLE) {
+		if (!first && async && now - this.changeTime < 200000000L) {
 			if (this.texture.getWidth() >= exactWidth && this.texture.getHeight() >= exactHeight && this.texture.getWidth() <= exactWidth * VectorResourceDecoder.BUCKET * VectorResourceDecoder.BUCKET) {
 				return;
 			}
@@ -176,7 +173,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		this.textures.put(VectorResourceDecoder.key(texture.getWidth(), texture.getHeight()), texture);
 		this.texture = texture;
 		resource.texture(texture);
-		if (this.textures.size() > VectorResourceDecoder.CACHE) {
+		if (this.textures.size() > 8) {
 			final Long eldest = this.textures.keySet().iterator().next();
 			this.textures.remove(eldest).delete();
 		}

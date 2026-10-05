@@ -21,8 +21,6 @@ public final class Glyphs {
 
 	public static final double UNITS = 1000D;
 
-	private static final double DENSITY = 1600D;
-
 	private static final FontRenderContext CONTEXT = new FontRenderContext(null, false, true);
 
 	public static Font load(final byte[] data) throws Exception {
@@ -140,7 +138,7 @@ public final class Glyphs {
 			length += second.subtract(third).length();
 		}
 
-		return Math.max(8, Math.min(256, (int) Math.ceil(Math.sqrt(length * Glyphs.DENSITY))));
+		return Math.max(8, Math.min(256, (int) Math.ceil(Math.sqrt(length * 1600D))));
 	}
 
 	private static Vector2 point(final double[] segment, final int offset) {

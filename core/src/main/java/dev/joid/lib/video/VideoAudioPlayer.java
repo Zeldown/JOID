@@ -13,10 +13,6 @@ import lombok.NonNull;
 
 public final class VideoAudioPlayer {
 
-	private static final int BUFFER_COUNT = 8;
-	private static final float BASE_VOLUME = 0.3F;
-	private static final int SAMPLES_PER_BUFFER = 4096;
-
 	private static AudioListener audioListener;
 
 	private final int channels;
@@ -107,11 +103,11 @@ public final class VideoAudioPlayer {
 				return;
 			}
 
-			if (this.sampleQueue.size() < VideoAudioPlayer.BUFFER_COUNT * 2) {
+			if (this.sampleQueue.size() < 16) {
 				return;
 			}
 
-			for (int i = 0; i < VideoAudioPlayer.BUFFER_COUNT; i++) {
+			for (int i = 0; i < 8; i++) {
 				final short[] merged = this.mergeNextChunk();
 				if (merged != null) {
 					this.source.queue(merged);
@@ -119,7 +115,7 @@ public final class VideoAudioPlayer {
 			}
 
 			this.buffersQueued = true;
-			this.source.gain(this.volume * VideoAudioPlayer.BASE_VOLUME);
+			this.source.gain(this.volume * 0.3F);
 			this.source.play();
 			return;
 		}
@@ -137,7 +133,7 @@ public final class VideoAudioPlayer {
 			this.source.play();
 		}
 
-		this.source.gain(this.volume * VideoAudioPlayer.BASE_VOLUME);
+		this.source.gain(this.volume * 0.3F);
 
 		if (this.positional) {
 			final float distanceVolume = this.computeDistanceVolume();
@@ -149,7 +145,7 @@ public final class VideoAudioPlayer {
 				return;
 			}
 
-			this.source.gain(this.volume * VideoAudioPlayer.BASE_VOLUME * distanceVolume);
+			this.source.gain(this.volume * 0.3F * distanceVolume);
 		}
 	}
 
@@ -261,7 +257,7 @@ public final class VideoAudioPlayer {
 	}
 
 	private short[] mergeNextChunk() {
-		final short[] chunk = new short[VideoAudioPlayer.SAMPLES_PER_BUFFER];
+		final short[] chunk = new short[4096];
 		int offset = 0;
 
 		if (this.pendingSamples != null) {

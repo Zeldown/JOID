@@ -12,8 +12,6 @@ import lombok.Getter;
 
 public final class Kerning {
 
-	private static final int KERN = 0x6B65726E;
-
 	private final int[]    glyphs;
 	private final FontFile file;
 	private final Map<Long, Integer> pairs = new HashMap<>();
@@ -94,7 +92,7 @@ public final class Kerning {
 
 		for (int i = 0; i < features; i++) {
 			final int record = featureList + 2 + i * 6;
-			if (this.file.integer(record) == Kerning.KERN) {
+			if (this.file.integer(record) == 0x6B65726E) {
 				this.parseFeature(lookupList, featureList + this.file.unsigned(record + 4), parsed);
 			}
 		}

@@ -12,8 +12,6 @@ import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 
 public class MsdfFontProviderTest {
 
-	private static final float SIZE = 100F;
-
 	private static MsdfFont font;
 	private static MsdfFontFace regular;
 
@@ -43,12 +41,12 @@ public class MsdfFontProviderTest {
 	public void accumulatesKerningOverAWord() {
 		final TextInfo info = MsdfFontProviderTest.info();
 		final float kerning = MsdfFontProviderTest.regular.getKerning('A', 'V') + MsdfFontProviderTest.regular.getKerning('V', 'A');
-		Assert.assertEquals(info.getWidth("A") * 2D + info.getWidth("V") + kerning * MsdfFontProviderTest.SIZE, info.getWidth("AVA"), 0.001D);
+		Assert.assertEquals(info.getWidth("A") * 2D + info.getWidth("V") + kerning * 100F, info.getWidth("AVA"), 0.001D);
 	}
 
 	@Test
 	public void keepsTheLineHeightOfTheFace() {
-		Assert.assertEquals(MsdfFontProviderTest.regular.getLineHeight() * MsdfFontProviderTest.SIZE, MsdfFontProviderTest.info().getHeight(), 0.001D);
+		Assert.assertEquals(MsdfFontProviderTest.regular.getLineHeight() * 100F, MsdfFontProviderTest.info().getHeight(), 0.001D);
 	}
 
 	@Test
@@ -61,11 +59,11 @@ public class MsdfFontProviderTest {
 	public void measuresTheExactKerningOffset() {
 		final TextInfo info = MsdfFontProviderTest.info();
 		final float kerning = MsdfFontProviderTest.regular.getKerning('A', 'V');
-		Assert.assertEquals(info.getWidth("A") + info.getWidth("V") + kerning * MsdfFontProviderTest.SIZE, info.getWidth("AV"), 0.001D);
+		Assert.assertEquals(info.getWidth("A") + info.getWidth("V") + kerning * 100F, info.getWidth("AV"), 0.001D);
 	}
 
 	private static TextInfo info() {
-		return TextInfo.create(MsdfFontProviderTest.font, MsdfFontProviderTest.SIZE, Color.WHITE);
+		return TextInfo.create(MsdfFontProviderTest.font, 100F, Color.WHITE);
 	}
 
 }

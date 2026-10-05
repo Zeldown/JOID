@@ -31,8 +31,6 @@ public final class MsdfGenerator {
 	public static final double RANGE   = 24D;
 	public static final String CHARSET = "[32, 563]";
 
-	private static final double ANGLE = 3D;
-
 	public static void main(final String[] arguments) throws Exception {
 		final Map<String, String> options = MsdfGenerator.options(arguments);
 		if (!options.containsKey("font")) {
@@ -70,7 +68,7 @@ public final class MsdfGenerator {
 			}
 
 			final Shape shape = Glyphs.outline(font, codepoint);
-			Coloring.apply(shape, MsdfGenerator.ANGLE);
+			Coloring.apply(shape, 3D);
 			glyphs.add(new GlyphEntry(codepoint, Glyphs.advance(font, codepoint), shape));
 		}
 

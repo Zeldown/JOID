@@ -30,16 +30,6 @@ import lombok.NonNull;
 
 public final class SnapshotRunner {
 
-	private static final int WIDTH  = 1920;
-	private static final int HEIGHT = 1080;
-
-	private static final long FRAME_TIME      = 16L;
-	private static final long START_TIME      = 1735689600000L;
-	private static final long SETTLE_DELAY    = 10L;
-	private static final int  LOAD_ATTEMPTS   = 3000;
-	private static final int  SETTLE_ATTEMPTS = 300;
-
-	private static final int   MASK       = 0xFFFF00FF;
 	private static final Color BACKGROUND = new Color(50, 50, 50);
 
 	private static final List<String> SCENARIOS = Arrays.asList("dev", "popup", "static", "window", "resource", "transition", "interaction");
@@ -59,7 +49,7 @@ public final class SnapshotRunner {
 	private ClickType pressed;
 
 	private SnapshotRunner(final ISnapshotBackend backend) {
-		this.clock   = ManualClockBridge.create(SnapshotRunner.START_TIME);
+		this.clock   = ManualClockBridge.create(1735689600000L);
 		this.masks   = new ArrayList<>();
 		this.window  = new SnapshotWindowBridge();
 		this.bridge  = new SnapshotUIBridge();
@@ -68,12 +58,12 @@ public final class SnapshotRunner {
 
 	public static @NonNull SnapshotRunner start(final @NonNull ISnapshotBackend backend) {
 		final SnapshotRunner runner = new SnapshotRunner(backend);
-		backend.create(SnapshotRunner.WIDTH, SnapshotRunner.HEIGHT);
+		backend.create(1920, 1080);
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
 		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
 		AssetLocator.register(new SnapshotUrlLocator(SnapshotSettings.getCache()));
-		runner.resize(SnapshotRunner.WIDTH, SnapshotRunner.HEIGHT);
+		runner.resize(1920, 1080);
 
 		JOID.inst().setDevMode(false).setDemoMode(true).load();
 		BridgeHandler.UI.register(runner.bridge);
@@ -101,9 +91,9 @@ public final class SnapshotRunner {
 		this.bridge.closeAll();
 		this.window.getKeys().clear();
 		this.masks.clear();
-		this.clock.setTime(SnapshotRunner.START_TIME);
+		this.clock.setTime(1735689600000L);
 		JOID.inst().setDevMode(false);
-		this.resize(SnapshotRunner.WIDTH, SnapshotRunner.HEIGHT);
+		this.resize(1920, 1080);
 
 		final Map<String, SnapshotImage> shots = new LinkedHashMap<>();
 		for (final String line : SnapshotRunner.read(scenario)) {
@@ -199,8 +189,8 @@ public final class SnapshotRunner {
 	}
 
 	private void advance(final long duration) {
-		for (long elapsed = 0L; elapsed < duration; elapsed += SnapshotRunner.FRAME_TIME) {
-			this.clock.advance(SnapshotRunner.FRAME_TIME);
+		for (long elapsed = 0L; elapsed < duration; elapsed += 16L) {
+			this.clock.advance(16L);
 			this.render(false);
 			this.awaitPlayback();
 		}
@@ -221,8 +211,8 @@ public final class SnapshotRunner {
 	}
 
 	private void resize(final int width, final int height) {
-		if (width > SnapshotRunner.WIDTH || height > SnapshotRunner.HEIGHT) {
-			throw new IllegalArgumentException("The snapshot window " + width + "x" + height + " does not fit the " + SnapshotRunner.WIDTH + "x" + SnapshotRunner.HEIGHT + " snapshot surface");
+		if (width > 1920 || height > 1080) {
+			throw new IllegalArgumentException("The snapshot window " + width + "x" + height + " does not fit the " + 1920 + "x" + 1080 + " snapshot surface");
 		}
 
 		this.window.setWidth(width);
@@ -256,10 +246,10 @@ public final class SnapshotRunner {
 	private void moveTo(final double x, final double y, final long duration) {
 		final double startX = this.window.getMouseX();
 		final double startY = this.window.getMouseY();
-		final long steps = Math.max(1L, duration / SnapshotRunner.FRAME_TIME);
+		final long steps = Math.max(1L, duration / 16L);
 		for (long step = 1L; step <= steps; step++) {
 			final double progress = (double) step / steps;
-			this.clock.advance(SnapshotRunner.FRAME_TIME);
+			this.clock.advance(16L);
 			this.window.setMouseX(startX + (x - startX) * progress);
 			this.window.setMouseY(startY + (y - startY) * progress);
 			if (this.pressed != null) {
@@ -270,18 +260,18 @@ public final class SnapshotRunner {
 	}
 
 	private void awaitPlayback() {
-		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS && !SnapshotRunner.isSettled(); attempt++) {
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+		for (int attempt = 0; attempt < 3000 && !SnapshotRunner.isSettled(); attempt++) {
+			SnapshotRunner.sleep(10L);
 			this.render(false);
 		}
 	}
 
 	private void awaitResources() {
-		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS; attempt++) {
+		for (int attempt = 0; attempt < 3000; attempt++) {
 			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> !data.isGenerated() || data.isLoaded())) {
 				return;
 			}
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+			SnapshotRunner.sleep(10L);
 		}
 		throw new IllegalStateException("A resource never finished loading");
 	}
@@ -289,9 +279,9 @@ public final class SnapshotRunner {
 	private SnapshotImage settle(final String name) {
 		SnapshotImage previous = null;
 		SnapshotImage current = this.mask(this.render(true));
-		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous) || !SnapshotRunner.isSettled()); attempt++) {
+		for (int attempt = 0; attempt < 300 && (previous == null || !current.isSame(previous) || !SnapshotRunner.isSettled()); attempt++) {
 			this.awaitResources();
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+			SnapshotRunner.sleep(10L);
 			previous = current;
 			current = this.mask(this.render(true));
 		}
@@ -321,7 +311,7 @@ public final class SnapshotRunner {
 
 	private SnapshotImage mask(final SnapshotImage image) {
 		for (final int[] mask : this.masks) {
-			image.fill(mask[0], mask[1], mask[2], mask[3], SnapshotRunner.MASK);
+			image.fill(mask[0], mask[1], mask[2], mask[3], 0xFFFF00FF);
 		}
 		return image;
 	}

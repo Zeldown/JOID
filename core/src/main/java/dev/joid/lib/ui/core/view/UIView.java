@@ -7,11 +7,6 @@ import lombok.NonNull;
 @Getter
 public final class UIView {
 
-	public static final double WIDTH  = 1920D;
-	public static final double HEIGHT = 1080D;
-
-	private static final double MIN_ZOOM = 0.1D;
-
 	private final double anchorX;
 	private final double anchorY;
 
@@ -27,8 +22,8 @@ public final class UIView {
 		this.anchorY = anchorY;
 		this.zoom = 1D;
 		this.interfaceScale = 1D;
-		this.viewportWidth = UIView.WIDTH;
-		this.viewportHeight = UIView.HEIGHT;
+		this.viewportWidth = 1920D;
+		this.viewportHeight = 1080D;
 	}
 
 	public static @NonNull UIView create(final double anchorX, final double anchorY) {
@@ -44,11 +39,11 @@ public final class UIView {
 	}
 
 	public double getOffsetX() {
-		return (this.viewportWidth - UIView.WIDTH) * this.anchorX / UIView.WIDTH;
+		return (this.viewportWidth - 1920D) * this.anchorX / 1920D;
 	}
 
 	public double getOffsetY() {
-		return (this.viewportHeight - UIView.HEIGHT) * this.anchorY / UIView.HEIGHT;
+		return (this.viewportHeight - 1080D) * this.anchorY / 1080D;
 	}
 
 	public double getVisibleWidth() {
@@ -84,7 +79,7 @@ public final class UIView {
 	}
 
 	public @NonNull UIView zoom(final double zoom) {
-		this.zoom = Math.max(UIView.MIN_ZOOM, Math.min(this.getMaxZoom(), zoom));
+		this.zoom = Math.max(0.1D, Math.min(this.getMaxZoom(), zoom));
 		return this;
 	}
 
@@ -94,7 +89,7 @@ public final class UIView {
 	}
 
 	public @NonNull UIView resize(final double width, final double height) {
-		final double fit = Math.min(width / UIView.WIDTH, height / UIView.HEIGHT);
+		final double fit = Math.min(width / 1920D, height / 1080D);
 		this.width = width;
 		this.height = height;
 		this.viewportWidth = width / fit;

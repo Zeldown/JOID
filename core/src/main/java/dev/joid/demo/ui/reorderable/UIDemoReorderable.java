@@ -18,8 +18,6 @@ import lombok.NonNull;
 public class UIDemoReorderable extends UIDemo {
 
 	private static final int   ITEM_COUNT = 12;
-	private static final float ITEM_LIGHTNESS  = 0.55F;
-	private static final float ITEM_SATURATION = 0.65F;
 
 	@Override
 	public void init() {
@@ -264,7 +262,7 @@ public class UIDemoReorderable extends UIDemo {
 	}
 
 	private @NonNull Color colorAt(final int index, final int total) {
-		return this.hsl((float) index / total * 360F, UIDemoReorderable.ITEM_SATURATION, UIDemoReorderable.ITEM_LIGHTNESS);
+		return this.hsl((float) index / total * 360F, 0.65F, 0.55F);
 	}
 
 }
