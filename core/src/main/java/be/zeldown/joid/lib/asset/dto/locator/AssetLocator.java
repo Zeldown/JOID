@@ -22,6 +22,10 @@ public class AssetLocator {
 		AssetLocator.register(new StreamAssetLocator());
 	}
 
+	public static void register(final @NonNull IAssetLocator locator) {
+		AssetLocator.LOCATORS.add(0, locator);
+	}
+
 	public static boolean supports(final @NonNull Object handle) {
 		if (handle instanceof Asset) {
 			return true;
@@ -34,10 +38,6 @@ public class AssetLocator {
 		}
 
 		return false;
-	}
-
-	public static void register(final @NonNull IAssetLocator locator) {
-		AssetLocator.LOCATORS.add(0, locator);
 	}
 
 	public static @NonNull Asset locate(final @NonNull Object handle) {

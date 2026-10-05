@@ -22,6 +22,10 @@ public class ResourceResolver {
 		ResourceResolver.register(new BufferedImageResourceResolver());
 	}
 
+	public static void register(final @NonNull IResourceResolver resolver) {
+		ResourceResolver.RESOLVERS.add(0, resolver);
+	}
+
 	public static boolean supports(final @NonNull Object input) {
 		for (final IResourceResolver resolver : ResourceResolver.RESOLVERS) {
 			if (resolver.supports(input)) {
@@ -29,10 +33,6 @@ public class ResourceResolver {
 			}
 		}
 		return false;
-	}
-
-	public static void register(final @NonNull IResourceResolver resolver) {
-		ResourceResolver.RESOLVERS.add(0, resolver);
 	}
 
 	public static @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {

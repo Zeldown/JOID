@@ -183,24 +183,24 @@ public final class WindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isMouseGrabbed() {
-		return GLFW.glfwGetInputMode(this.window, GLFW.GLFW_CURSOR) == GLFW.GLFW_CURSOR_DISABLED;
-	}
-
-	@Override
 	public @NonNull String getClipboard() {
 		final String clipboard = GLFW.glfwGetClipboardString(this.window);
 		return clipboard == null ? "" : clipboard;
+	}
+
+	public static @NonNull Key getKey(final int code) {
+		return WindowBridge.KEY_MAP.getOrDefault(code, Key.UNKNOWN);
+	}
+
+	@Override
+	public boolean isMouseGrabbed() {
+		return GLFW.glfwGetInputMode(this.window, GLFW.GLFW_CURSOR) == GLFW.GLFW_CURSOR_DISABLED;
 	}
 
 	@Override
 	public boolean isKeyDown(final @NonNull Key key) {
 		final Integer code = WindowBridge.CODE_MAP.get(key);
 		return code != null && GLFW.glfwGetKey(this.window, code) == GLFW.GLFW_PRESS;
-	}
-
-	public static @NonNull Key getKey(final int code) {
-		return WindowBridge.KEY_MAP.getOrDefault(code, Key.UNKNOWN);
 	}
 
 	@Override

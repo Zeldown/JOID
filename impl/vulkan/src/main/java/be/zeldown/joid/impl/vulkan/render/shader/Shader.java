@@ -149,13 +149,13 @@ public final class Shader implements IShader {
 	}
 
 	@Override
-	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
-		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform());
+	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
+		return new BooleanUniform(this.memberMap.get(name));
 	}
 
 	@Override
-	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
-		return new BooleanUniform(this.memberMap.get(name));
+	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
+		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform());
 	}
 
 	@Override
@@ -164,13 +164,13 @@ public final class Shader implements IShader {
 	}
 
 	@Override
-	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name) {
-		return new FloatMatrixUniform(this.memberMap.get(name));
+	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name) {
+		return new Float4ArrayUniform(this.memberMap.get(name));
 	}
 
 	@Override
-	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name) {
-		return new Float4ArrayUniform(this.memberMap.get(name));
+	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name) {
+		return new FloatMatrixUniform(this.memberMap.get(name));
 	}
 
 	private static long createModule(final MemoryStack stack, final Context context, final ByteBuffer code) {

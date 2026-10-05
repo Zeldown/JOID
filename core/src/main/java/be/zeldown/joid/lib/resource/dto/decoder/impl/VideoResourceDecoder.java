@@ -83,6 +83,9 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		this.asset = asset;
 	}
 
+	@Override
+	public void init(final @NonNull ResourceData resource) {}
+
 	public @NonNull VideoResourceDecoder stop() {
 		this.running.set(false);
 		if (this.decodeThread != null) {
@@ -99,131 +102,12 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	@Override
-	public void init(final @NonNull ResourceData resource) {}
-
-	public void release() {
-		this.released = true;
-		this.running.set(false);
-
-		if (this.decodeThread != null) {
-			this.decodeThread.interrupt();
-			try {
-				this.decodeThread.join(1000L);
-			} catch (final InterruptedException ignored) {}
-			this.decodeThread = null;
-		}
-
-		synchronized (this.grabberLock) {
-			if (this.audioPlayer != null) {
-				this.audioPlayer.cleanup();
-				this.audioPlayer = null;
-			}
-
-			if (this.grabber != null) {
-				try {
-					this.grabber.stop();
-					this.grabber.release();
-				} catch (final Exception ignored) {}
-				this.grabber = null;
-			}
-
-			if (this.frameQueue != null) {
-				this.frameQueue.clear();
-			}
-
-			this.ended = false;
-		}
-	}
-
-	public boolean isPaused() {
-		return this.paused.get();
-	}
-
-	public boolean isPlaying() {
-		return this.running.get() && !this.paused.get();
-	}
-
-	public double getProgress() {
-		if (this.totalFrames <= 0) {
-			return 0D;
-		}
-		return Math.min((double) this.displayedFrameIndex / this.totalFrames, 1D);
-	}
-
-	public boolean isSynchronized() {
-		if (!this.running.get() || this.paused.get() || this.frameQueue == null) {
-			return true;
-		}
-
-		final DecodedFrame next = this.frameQueue.peek();
-		if (next == null) {
-			return this.ended;
-		}
-		return this.ended || this.frameQueue.remainingCapacity() == 0 || next.getTime() > this.getPlaybackTime();
-	}
-
-	public double getCurrentVideoTime() {
-		if (this.frameRate <= 0D) {
-			return 0D;
-		}
-		return this.displayedFrameIndex / this.frameRate;
-	}
-
-	public @NonNull VideoResourceDecoder play() {
-		if (this.running.get()) {
-			return this;
-		}
-
-		if (this.grabber == null) {
-			this.reopenGrabber();
-		}
-
-		this.displayedFrameIndex = 0;
-		this.loopOffset = 0D;
-		this.startTime = BridgeHandler.CLOCK.get().nanoTime();
-		this.ended = false;
-		this.running.set(true);
-		this.paused.set(false);
-
-		if (this.audioPlayer != null) {
-			this.audioPlayer.play();
-		}
-
-		this.startDecodeThread();
-		return this;
-	}
-
-	public @NonNull VideoResourceDecoder pause() {
-		if (!this.paused.getAndSet(true)) {
-			this.pauseTime = BridgeHandler.CLOCK.get().nanoTime();
-		}
-
-		if (this.audioPlayer != null) {
-			this.audioPlayer.pause();
-		}
-		return this;
-	}
-
-	public @NonNull VideoResourceDecoder resume() {
-		if (this.paused.getAndSet(false)) {
-			this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
-		}
-
-		if (this.audioPlayer != null) {
-			this.audioPlayer.resume();
-		}
-		return this;
-	}
-
-	@Override
-	public void clear(final @NonNull ResourceData resource) {
-		this.release();
-
-		if (this.textures != null) {
-			this.textures[0].delete();
-			this.textures[1].delete();
-			this.textures = null;
-		}
+	public void prepare(final @NonNull ResourceData resource) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		this.textures = new ITexture[] {render.createTexture(), render.createTexture()};
+		resource.texture(this.textures[0]);
+		this.textures[0].allocate(1, 1).upload(new int[] {0}, 1, 1);
+		this.textures[1].allocate(1, 1).upload(new int[] {0}, 1, 1);
 	}
 
 	@Override
@@ -337,16 +221,93 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	}
 
 	@Override
-	public void prepare(final @NonNull ResourceData resource) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		this.textures = new ITexture[] {render.createTexture(), render.createTexture()};
-		resource.texture(this.textures[0]);
-		this.textures[0].allocate(1, 1).upload(new int[] {0}, 1, 1);
-		this.textures[1].allocate(1, 1).upload(new int[] {0}, 1, 1);
+	public void clear(final @NonNull ResourceData resource) {
+		this.release();
+
+		if (this.textures != null) {
+			this.textures[0].delete();
+			this.textures[1].delete();
+			this.textures = null;
+		}
 	}
 
-	public @NonNull VideoResourceDecoder loop(final boolean loop) {
-		this.loop = loop;
+	public void release() {
+		this.released = true;
+		this.running.set(false);
+
+		if (this.decodeThread != null) {
+			this.decodeThread.interrupt();
+			try {
+				this.decodeThread.join(1000L);
+			} catch (final InterruptedException ignored) {}
+			this.decodeThread = null;
+		}
+
+		synchronized (this.grabberLock) {
+			if (this.audioPlayer != null) {
+				this.audioPlayer.cleanup();
+				this.audioPlayer = null;
+			}
+
+			if (this.grabber != null) {
+				try {
+					this.grabber.stop();
+					this.grabber.release();
+				} catch (final Exception ignored) {}
+				this.grabber = null;
+			}
+
+			if (this.frameQueue != null) {
+				this.frameQueue.clear();
+			}
+
+			this.ended = false;
+		}
+	}
+
+	public @NonNull VideoResourceDecoder play() {
+		if (this.running.get()) {
+			return this;
+		}
+
+		if (this.grabber == null) {
+			this.reopenGrabber();
+		}
+
+		this.displayedFrameIndex = 0;
+		this.loopOffset = 0D;
+		this.startTime = BridgeHandler.CLOCK.get().nanoTime();
+		this.ended = false;
+		this.running.set(true);
+		this.paused.set(false);
+
+		if (this.audioPlayer != null) {
+			this.audioPlayer.play();
+		}
+
+		this.startDecodeThread();
+		return this;
+	}
+
+	public @NonNull VideoResourceDecoder pause() {
+		if (!this.paused.getAndSet(true)) {
+			this.pauseTime = BridgeHandler.CLOCK.get().nanoTime();
+		}
+
+		if (this.audioPlayer != null) {
+			this.audioPlayer.pause();
+		}
+		return this;
+	}
+
+	public @NonNull VideoResourceDecoder resume() {
+		if (this.paused.getAndSet(false)) {
+			this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
+		}
+
+		if (this.audioPlayer != null) {
+			this.audioPlayer.resume();
+		}
 		return this;
 	}
 
@@ -360,8 +321,27 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this;
 	}
 
-	public @NonNull VideoResourceDecoder autoplay(final boolean autoplay) {
-		this.autoplay = autoplay;
+	public @NonNull VideoResourceDecoder loop(final boolean loop) {
+		this.loop = loop;
+		return this;
+	}
+
+	public @NonNull VideoResourceDecoder location(final float x, final float y, final float z) {
+		this.locationX = x;
+		this.locationY = y;
+		this.locationZ = z;
+		this.hasLocation = true;
+		if (this.audioPlayer != null) {
+			this.audioPlayer.setLocation(x, y, z);
+		}
+		return this;
+	}
+
+	public @NonNull VideoResourceDecoder referenceDistance(final float distance) {
+		this.referenceDistance = distance;
+		if (this.audioPlayer != null) {
+			this.audioPlayer.setReferenceDistance(distance);
+		}
 		return this;
 	}
 
@@ -373,12 +353,29 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return this;
 	}
 
-	public @NonNull VideoResourceDecoder referenceDistance(final float distance) {
-		this.referenceDistance = distance;
-		if (this.audioPlayer != null) {
-			this.audioPlayer.setReferenceDistance(distance);
-		}
+	public @NonNull VideoResourceDecoder autoplay(final boolean autoplay) {
+		this.autoplay = autoplay;
 		return this;
+	}
+
+	public boolean isPaused() {
+		return this.paused.get();
+	}
+
+	public boolean isPlaying() {
+		return this.running.get() && !this.paused.get();
+	}
+
+	public boolean isSynchronized() {
+		if (!this.running.get() || this.paused.get() || this.frameQueue == null) {
+			return true;
+		}
+
+		final DecodedFrame next = this.frameQueue.peek();
+		if (next == null) {
+			return this.ended;
+		}
+		return this.ended || this.frameQueue.remainingCapacity() == 0 || next.getTime() > this.getPlaybackTime();
 	}
 
 	public static boolean isVideoHeader(final @NonNull byte[] header, final int read) {
@@ -405,15 +402,18 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		return read >= 6 && header[0] == 'G' && header[1] == 'I' && header[2] == 'F' && header[3] == '8' && (header[4] == '7' || header[4] == '9') && header[5] == 'a';
 	}
 
-	public @NonNull VideoResourceDecoder location(final float x, final float y, final float z) {
-		this.locationX = x;
-		this.locationY = y;
-		this.locationZ = z;
-		this.hasLocation = true;
-		if (this.audioPlayer != null) {
-			this.audioPlayer.setLocation(x, y, z);
+	public double getProgress() {
+		if (this.totalFrames <= 0) {
+			return 0D;
 		}
-		return this;
+		return Math.min((double) this.displayedFrameIndex / this.totalFrames, 1D);
+	}
+
+	public double getCurrentVideoTime() {
+		if (this.frameRate <= 0D) {
+			return 0D;
+		}
+		return this.displayedFrameIndex / this.frameRate;
 	}
 
 	private void reopenGrabber() {
@@ -451,6 +451,37 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 	private double getPlaybackTime() {
 		final long now = this.paused.get() ? this.pauseTime : BridgeHandler.CLOCK.get().nanoTime();
 		return (now - this.startTime) / 1000000000D;
+	}
+
+	private void seekInternal(final long microseconds) {
+		synchronized (this.grabberLock) {
+			if (this.released) {
+				return;
+			}
+
+			if (this.frameQueue != null) {
+				this.frameQueue.clear();
+			}
+
+			try {
+				if (this.grabber != null) {
+					this.grabber.setTimestamp(microseconds);
+				}
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+
+			final long now = BridgeHandler.CLOCK.get().nanoTime();
+			this.displayedFrameIndex = (int) (microseconds / 1000000D * this.frameRate);
+			this.startTime = now - microseconds * 1000L;
+			this.pauseTime = now;
+			this.loopOffset = 0D;
+			this.ended = false;
+
+			if (this.audioPlayer != null) {
+				this.audioPlayer.flush();
+			}
+		}
 	}
 
 	private void startDecodeThread() {
@@ -507,37 +538,6 @@ public final class VideoResourceDecoder implements IResourceDecoder {
 		}, "joid-video-decode");
 		this.decodeThread.setDaemon(true);
 		this.decodeThread.start();
-	}
-
-	private void seekInternal(final long microseconds) {
-		synchronized (this.grabberLock) {
-			if (this.released) {
-				return;
-			}
-
-			if (this.frameQueue != null) {
-				this.frameQueue.clear();
-			}
-
-			try {
-				if (this.grabber != null) {
-					this.grabber.setTimestamp(microseconds);
-				}
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-
-			final long now = BridgeHandler.CLOCK.get().nanoTime();
-			this.displayedFrameIndex = (int) (microseconds / 1000000D * this.frameRate);
-			this.startTime = now - microseconds * 1000L;
-			this.pauseTime = now;
-			this.loopOffset = 0D;
-			this.ended = false;
-
-			if (this.audioPlayer != null) {
-				this.audioPlayer.flush();
-			}
-		}
 	}
 
 	private int[] frameToPixels(final @NonNull Frame frame, final int width, final int height) {

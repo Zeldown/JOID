@@ -24,6 +24,12 @@ public final class SignedDistance {
 		this.edge = null;
 	}
 
+	public void set(final double distance, final double orthogonality, final int side) {
+		this.distance = distance;
+		this.orthogonality = orthogonality;
+		this.side = side;
+	}
+
 	public void copy(final SignedDistance other) {
 		this.distance = other.distance;
 		this.orthogonality = other.orthogonality;
@@ -35,12 +41,6 @@ public final class SignedDistance {
 		final double current = Math.abs(this.distance);
 		final double candidate = Math.abs(other.distance);
 		return current < candidate || current == candidate && this.orthogonality < other.orthogonality;
-	}
-
-	public void set(final double distance, final double orthogonality, final int side) {
-		this.distance = distance;
-		this.orthogonality = orthogonality;
-		this.side = side;
 	}
 
 }

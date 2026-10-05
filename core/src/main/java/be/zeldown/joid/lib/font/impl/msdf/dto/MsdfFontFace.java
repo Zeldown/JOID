@@ -63,11 +63,6 @@ public final class MsdfFontFace implements IFontFace {
 	}
 
 	@Override
-	public boolean hasGlyph(final int codepoint) {
-		return this.glyphs.containsKey(codepoint);
-	}
-
-	@Override
 	public float getAdvance(final int codepoint) {
 		final MsdfGlyph glyph = this.glyphs.get(codepoint);
 		return glyph == null ? 0F : glyph.getAdvance();
@@ -81,6 +76,11 @@ public final class MsdfFontFace implements IFontFace {
 	public float getKerning(final int previous, final int current) {
 		final Float value = this.kerningPairs.get(MsdfFontFace.pair(previous, current));
 		return value == null ? 0F : value;
+	}
+
+	@Override
+	public boolean hasGlyph(final int codepoint) {
+		return this.glyphs.containsKey(codepoint);
 	}
 
 	public static long pair(final int previous, final int current) {

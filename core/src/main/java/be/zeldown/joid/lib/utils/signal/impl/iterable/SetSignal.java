@@ -25,12 +25,10 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return instance;
 	}
 
-	public int size() {
-		return this.getOrDefault().size();
-	}
-
-	public boolean isEmpty() {
-		return this.getOrDefault().isEmpty();
+	public @NonNull SetSignal<E> clear() {
+		this.getOrDefault().clear();
+		this.publish();
+		return this;
 	}
 
 	public boolean add(final E e) {
@@ -49,10 +47,12 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return this.getOrDefault().contains(e);
 	}
 
-	public @NonNull SetSignal<E> clear() {
-		this.getOrDefault().clear();
-		this.publish();
-		return this;
+	public boolean isEmpty() {
+		return this.getOrDefault().isEmpty();
+	}
+
+	public int size() {
+		return this.getOrDefault().size();
 	}
 
 	@Override

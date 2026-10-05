@@ -39,16 +39,16 @@ public final class UIView {
 		return this.interfaceScale * this.zoom;
 	}
 
+	public double getMaxZoom() {
+		return Math.max(1D, 1D / this.interfaceScale);
+	}
+
 	public double getOffsetX() {
 		return (this.viewportWidth - UIView.WIDTH) * this.anchorX / UIView.WIDTH;
 	}
 
 	public double getOffsetY() {
 		return (this.viewportHeight - UIView.HEIGHT) * this.anchorY / UIView.HEIGHT;
-	}
-
-	public double getMaxZoom() {
-		return Math.max(1D, 1D / this.interfaceScale);
 	}
 
 	public double getVisibleWidth() {
@@ -75,17 +75,17 @@ public final class UIView {
 		return (this.getOffsetY() + this.anchorY + (uiY - this.anchorY) * this.getScale()) * this.height / this.viewportHeight;
 	}
 
-	public @NonNull UIView zoom(final double zoom) {
-		this.zoom = Math.max(UIView.MIN_ZOOM, Math.min(this.getMaxZoom(), zoom));
-		return this;
-	}
-
 	public double toScreenWidth(final double uiWidth) {
 		return uiWidth * this.getScale() * this.width / this.viewportWidth;
 	}
 
 	public double toScreenHeight(final double uiHeight) {
 		return uiHeight * this.getScale() * this.height / this.viewportHeight;
+	}
+
+	public @NonNull UIView zoom(final double zoom) {
+		this.zoom = Math.max(UIView.MIN_ZOOM, Math.min(this.getMaxZoom(), zoom));
+		return this;
 	}
 
 	public @NonNull UIView interfaceScale(final double interfaceScale) {

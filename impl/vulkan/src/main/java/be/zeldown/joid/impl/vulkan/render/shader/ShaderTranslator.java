@@ -22,19 +22,6 @@ public final class ShaderTranslator {
 		return ShaderTranslator.translate(fragment, vertex, fragment);
 	}
 
-	private static int getLocation(final ShaderBuiltin builtin) {
-		switch (builtin) {
-		case TEXTURE_COORDINATE:
-			return 1;
-		case COLOR:
-			return 2;
-		case NORMAL:
-			return 3;
-		default:
-			return 0;
-		}
-	}
-
 	private static String translate(final ShaderSource source, final ShaderSource vertex, final ShaderSource fragment) {
 		final boolean vertexStage = source.getStage() == ShaderStage.VERTEX;
 		final StringBuilder builder = new StringBuilder("#version 450\n\n");
@@ -101,6 +88,19 @@ public final class ShaderTranslator {
 		}
 
 		return builder.append("#line 1\n").append(source.getBody()).toString();
+	}
+
+	private static int getLocation(final ShaderBuiltin builtin) {
+		switch (builtin) {
+		case TEXTURE_COORDINATE:
+			return 1;
+		case COLOR:
+			return 2;
+		case NORMAL:
+			return 3;
+		default:
+			return 0;
+		}
 	}
 
 }

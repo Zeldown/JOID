@@ -26,16 +26,42 @@ public final class DrawResource {
 		DrawResource.instance = this;
 	}
 
-	public void drawResource(final double x, final double y, final @NonNull Resource resource) {
-		this.drawResource(x, y, resource.getWidth(), resource.getHeight(), resource);
-	}
-
 	public void drawScaledResourceWidth(final double x, final double y, final double width, final @NonNull Resource resource) {
 		this.drawResource(x, y, width, width * resource.getHeight() / resource.getWidth(), resource);
 	}
 
 	public void drawScaledResourceHeight(final double x, final double y, final double height, final @NonNull Resource resource) {
 		this.drawResource(x, y, height * resource.getWidth() / resource.getHeight(), height, resource);
+	}
+
+	public void drawCenteredResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
+		final double imageWidth = resource.getWidth();
+		final double imageHeight = resource.getHeight();
+
+		final double ratio = imageWidth / imageHeight;
+
+		double scaledX = 0;
+		double scaledY = 0;
+		double scaledWidth = 0;
+		double scaledHeight = 0;
+
+		if (imageWidth <= imageHeight) {
+			scaledWidth = width;
+			scaledHeight = scaledWidth / ratio;
+			scaledX = x + (width - scaledWidth) / 2;
+			scaledY = y + (height - scaledHeight) / 2;
+		} else {
+			scaledHeight = height;
+			scaledWidth = scaledHeight * ratio;
+			scaledX = x + (width - scaledWidth) / 2;
+			scaledY = y + (height - scaledHeight) / 2;
+		}
+
+		this.drawResource(scaledX, scaledY, scaledWidth, scaledHeight, resource);
+	}
+
+	public void drawResource(final double x, final double y, final @NonNull Resource resource) {
+		this.drawResource(x, y, resource.getWidth(), resource.getHeight(), resource);
 	}
 
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
@@ -81,32 +107,6 @@ public final class DrawResource {
 			render.blend(BlendState.DISABLED);
 		});
 		render.popMatrix();
-	}
-
-	public void drawCenteredResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		final double imageWidth = resource.getWidth();
-		final double imageHeight = resource.getHeight();
-
-		final double ratio = imageWidth / imageHeight;
-
-		double scaledX = 0;
-		double scaledY = 0;
-		double scaledWidth = 0;
-		double scaledHeight = 0;
-
-		if (imageWidth <= imageHeight) {
-			scaledWidth = width;
-			scaledHeight = scaledWidth / ratio;
-			scaledX = x + (width - scaledWidth) / 2;
-			scaledY = y + (height - scaledHeight) / 2;
-		} else {
-			scaledHeight = height;
-			scaledWidth = scaledHeight * ratio;
-			scaledX = x + (width - scaledWidth) / 2;
-			scaledY = y + (height - scaledHeight) / 2;
-		}
-
-		this.drawResource(scaledX, scaledY, scaledWidth, scaledHeight, resource);
 	}
 
 }

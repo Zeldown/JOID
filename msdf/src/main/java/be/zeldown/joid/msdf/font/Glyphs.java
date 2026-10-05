@@ -25,20 +25,24 @@ public final class Glyphs {
 
 	private static final FontRenderContext CONTEXT = new FontRenderContext(null, false, true);
 
-	public static double[] metrics(final Font font) {
-		final LineMetrics metrics = font.getLineMetrics("Hxy", Glyphs.CONTEXT);
-		final double ascender = metrics.getAscent() / Glyphs.UNITS;
-		final double descender = metrics.getDescent() / Glyphs.UNITS;
-		final double leading = metrics.getLeading() / Glyphs.UNITS;
-		return new double[] {ascender + descender + leading, ascender, -descender, -metrics.getUnderlineOffset() / Glyphs.UNITS, metrics.getUnderlineThickness() / Glyphs.UNITS};
-	}
-
 	public static Font load(final File file) throws Exception {
 		return Font.createFont(Font.TRUETYPE_FONT, file).deriveFont((float) Glyphs.UNITS);
 	}
 
 	public static int code(final Font font, final int codepoint) {
 		return font.createGlyphVector(Glyphs.CONTEXT, new String(Character.toChars(codepoint))).getGlyphCode(0);
+	}
+
+	public static double advance(final Font font, final int codepoint) {
+		return font.createGlyphVector(Glyphs.CONTEXT, new String(Character.toChars(codepoint))).getGlyphMetrics(0).getAdvanceX() / Glyphs.UNITS;
+	}
+
+	public static double[] metrics(final Font font) {
+		final LineMetrics metrics = font.getLineMetrics("Hxy", Glyphs.CONTEXT);
+		final double ascender = metrics.getAscent() / Glyphs.UNITS;
+		final double descender = metrics.getDescent() / Glyphs.UNITS;
+		final double leading = metrics.getLeading() / Glyphs.UNITS;
+		return new double[] {ascender + descender + leading, ascender, -descender, -metrics.getUnderlineOffset() / Glyphs.UNITS, metrics.getUnderlineThickness() / Glyphs.UNITS};
 	}
 
 	public static Shape outline(final Font font, final int codepoint) {
@@ -84,31 +88,6 @@ public final class Glyphs {
 		return shape;
 	}
 
-	public static double advance(final Font font, final int codepoint) {
-		return font.createGlyphVector(Glyphs.CONTEXT, new String(Character.toChars(codepoint))).getGlyphMetrics(0).getAdvanceX() / Glyphs.UNITS;
-	}
-
-	private static Vector2 point(final double[] segment, final int offset) {
-		return new Vector2(segment[offset] / Glyphs.UNITS, -segment[offset + 1] / Glyphs.UNITS);
-	}
-
-	private static Vector2 line(final List<Edge> contour, final Vector2 from, final Vector2 to) {
-		final List<Vector2> points = new ArrayList<>();
-		points.add(from);
-		points.add(to);
-		contour.add(new Edge(points));
-		return to;
-	}
-
-	private static int steps(final Vector2 from, final Vector2 first, final Vector2 second, final Vector2 third) {
-		double length = from.subtract(first).length() + first.subtract(second).length();
-		if (third != null) {
-			length += second.subtract(third).length();
-		}
-
-		return Math.max(8, Math.min(256, (int) Math.ceil(Math.sqrt(length * Glyphs.DENSITY))));
-	}
-
 	private static void close(final Shape shape, final List<Edge> contour, final Vector2 current, final Vector2 start) {
 		if (contour.isEmpty() || current == null || start == null) {
 			return;
@@ -119,6 +98,14 @@ public final class Glyphs {
 		}
 
 		shape.add(new ArrayList<>(contour));
+	}
+
+	private static Vector2 line(final List<Edge> contour, final Vector2 from, final Vector2 to) {
+		final List<Vector2> points = new ArrayList<>();
+		points.add(from);
+		points.add(to);
+		contour.add(new Edge(points));
+		return to;
 	}
 
 	private static Vector2 quadratic(final List<Edge> contour, final Vector2 from, final Vector2 control, final Vector2 to) {
@@ -145,6 +132,19 @@ public final class Glyphs {
 
 		contour.add(new Edge(points));
 		return to;
+	}
+
+	private static int steps(final Vector2 from, final Vector2 first, final Vector2 second, final Vector2 third) {
+		double length = from.subtract(first).length() + first.subtract(second).length();
+		if (third != null) {
+			length += second.subtract(third).length();
+		}
+
+		return Math.max(8, Math.min(256, (int) Math.ceil(Math.sqrt(length * Glyphs.DENSITY))));
+	}
+
+	private static Vector2 point(final double[] segment, final int offset) {
+		return new Vector2(segment[offset] / Glyphs.UNITS, -segment[offset + 1] / Glyphs.UNITS);
 	}
 
 }

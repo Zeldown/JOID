@@ -56,20 +56,20 @@ public final class PixelGrid {
 		return this.originY + this.unitY * y;
 	}
 
-	public int toPixelWidth(final double width) {
-		return Math.max(1, (int) Math.ceil(width * this.scaleX - PixelGrid.EPSILON));
-	}
-
-	public int toPixelHeight(final double height) {
-		return Math.max(1, (int) Math.ceil(height * this.scaleY - PixelGrid.EPSILON));
-	}
-
 	public double fromScreenX(final double screenX) {
 		return (screenX - this.originX) / this.unitX;
 	}
 
 	public double fromScreenY(final double screenY) {
 		return (screenY - this.originY) / this.unitY;
+	}
+
+	public int toPixelWidth(final double width) {
+		return Math.max(1, (int) Math.ceil(width * this.scaleX - PixelGrid.EPSILON));
+	}
+
+	public int toPixelHeight(final double height) {
+		return Math.max(1, (int) Math.ceil(height * this.scaleY - PixelGrid.EPSILON));
 	}
 
 	private static double product(final float[] projection, final float[] modelView, final int row, final int column) {

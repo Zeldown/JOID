@@ -74,6 +74,62 @@ public final class Shader implements IShader {
 		this.bound = false;
 	}
 
+	@Override
+	public @NonNull IntUniform getIntUniform(final @NonNull String name) {
+		return new IntUniform(this, this.getLocation(name));
+	}
+
+	@Override
+	public @NonNull FloatUniform getFloatUniform(final @NonNull String name) {
+		return new FloatUniform(this, this.getLocation(name));
+	}
+
+	@Override
+	public @NonNull Float2Uniform getFloat2Uniform(final @NonNull String name) {
+		return new Float2Uniform(this, this.getLocation(name));
+	}
+
+	@Override
+	public @NonNull Float3Uniform getFloat3Uniform(final @NonNull String name) {
+		return new Float3Uniform(this, this.getLocation(name));
+	}
+
+	@Override
+	public @NonNull Float4Uniform getFloat4Uniform(final @NonNull String name) {
+		return new Float4Uniform(this, this.getLocation(name));
+	}
+
+	@Override
+	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
+		return new BooleanUniform(this, this.getLocation(name));
+	}
+
+	@Override
+	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
+		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform(this, this.getLocation(key), this.samplerMap.size() + 1));
+	}
+
+	@Override
+	public @NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name) {
+		return new FloatArrayUniform(this, this.getLocation(name));
+	}
+
+	@Override
+	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name) {
+		return new Float4ArrayUniform(this, this.getLocation(name));
+	}
+
+	@Override
+	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name) {
+		return new FloatMatrixUniform(this, this.getLocation(name));
+	}
+
+	public void queueUniform(final int location, final Runnable upload) {
+		if (location != -1) {
+			this.uniformQueue.put(location, upload);
+		}
+	}
+
 	public void use(final RenderState state) {
 		GL20C.glUseProgram(this.program);
 		this.uniformQueue.values().forEach(Runnable::run);
@@ -108,77 +164,8 @@ public final class Shader implements IShader {
 		this.samplerMap.values().forEach(sampler -> sampler.apply(this.bridge));
 	}
 
-	public void queueUniform(final int location, final Runnable upload) {
-		if (location != -1) {
-			this.uniformQueue.put(location, upload);
-		}
-	}
-
-	@Override
-	public @NonNull IntUniform getIntUniform(final @NonNull String name) {
-		return new IntUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull FloatUniform getFloatUniform(final @NonNull String name) {
-		return new FloatUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull Float2Uniform getFloat2Uniform(final @NonNull String name) {
-		return new Float2Uniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull Float3Uniform getFloat3Uniform(final @NonNull String name) {
-		return new Float3Uniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull Float4Uniform getFloat4Uniform(final @NonNull String name) {
-		return new Float4Uniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
-		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform(this, this.getLocation(key), this.samplerMap.size() + 1));
-	}
-
-	@Override
-	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
-		return new BooleanUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name) {
-		return new FloatArrayUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name) {
-		return new FloatMatrixUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name) {
-		return new Float4ArrayUniform(this, this.getLocation(name));
-	}
-
 	private int getLocation(final String name) {
 		return this.locationMap.computeIfAbsent(name, key -> GL20C.glGetUniformLocation(this.program, key));
-	}
-
-	private static int compile(final int type, final String source) {
-		final int shader = GL20C.glCreateShader(type);
-		GL20C.glShaderSource(shader, source);
-		GL20C.glCompileShader(shader);
-		if (GL20C.glGetShaderi(shader, GL20C.GL_COMPILE_STATUS) != GL11C.GL_TRUE) {
-			System.err.println((type == GL20C.GL_VERTEX_SHADER ? "Vertex" : "Fragment") + " shader compilation failed: " + GL20C.glGetShaderInfoLog(shader));
-			GL20C.glDeleteShader(shader);
-			return 0;
-		}
-
-		return shader;
 	}
 
 	private static boolean link(final int program, final String vertexSource, final String fragmentSource) {
@@ -204,6 +191,19 @@ public final class Shader implements IShader {
 		GL20C.glDeleteShader(vertex);
 		GL20C.glDeleteShader(fragment);
 		return linked;
+	}
+
+	private static int compile(final int type, final String source) {
+		final int shader = GL20C.glCreateShader(type);
+		GL20C.glShaderSource(shader, source);
+		GL20C.glCompileShader(shader);
+		if (GL20C.glGetShaderi(shader, GL20C.GL_COMPILE_STATUS) != GL11C.GL_TRUE) {
+			System.err.println((type == GL20C.GL_VERTEX_SHADER ? "Vertex" : "Fragment") + " shader compilation failed: " + GL20C.glGetShaderInfoLog(shader));
+			GL20C.glDeleteShader(shader);
+			return 0;
+		}
+
+		return shader;
 	}
 
 }

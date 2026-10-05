@@ -53,6 +53,42 @@ public class TweenAnimator {
 		this.lastUpdate = 0L;
 	}
 
+	public @NonNull TweenAnimator sequence(final float duration, final float value) {
+		return this.sequence(duration, value, TweenEquations.LINEAR);
+	}
+
+	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation equation) {
+		this.timeline = Timeline.createSequence();
+		this.push(duration, value, equation);
+		return this;
+	}
+
+	public @NonNull TweenAnimator parallel(final float duration, final float value) {
+		return this.parallel(duration, value, TweenEquations.LINEAR);
+	}
+
+	public @NonNull TweenAnimator parallel(final float duration, final float value, final @NonNull TweenEquation equation) {
+		this.timeline = Timeline.createParallel();
+		this.push(duration, value, equation);
+		return this;
+	}
+
+	public @NonNull TweenAnimator push(final float duration, final float value) {
+		this.push(duration, value, TweenEquations.LINEAR);
+		return this;
+	}
+
+	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
+		this.timeline.push(Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
+		return this;
+	}
+
+	public @NonNull TweenAnimator setCallback(final @NonNull Consumer<@NonNull BaseTween<@NonNull ?>> callback) {
+		assert this.timeline != null;
+		this.timeline.addCallback(TweenCallback.END, callback);
+		return this;
+	}
+
 	public @NonNull TweenAnimator update() {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.update(now - this.lastUpdate);
@@ -62,42 +98,6 @@ public class TweenAnimator {
 
 	public @NonNull TweenAnimator update(final float delta) {
 		this.manager.update(delta * this.speed);
-		return this;
-	}
-
-	public @NonNull TweenAnimator push(final float duration, final float value) {
-		this.push(duration, value, TweenEquations.LINEAR);
-		return this;
-	}
-
-	public @NonNull TweenAnimator sequence(final float duration, final float value) {
-		return this.sequence(duration, value, TweenEquations.LINEAR);
-	}
-
-	public @NonNull TweenAnimator parallel(final float duration, final float value) {
-		return this.parallel(duration, value, TweenEquations.LINEAR);
-	}
-
-	public @NonNull TweenAnimator setCallback(final @NonNull Consumer<@NonNull BaseTween<@NonNull ?>> callback) {
-		assert this.timeline != null;
-		this.timeline.addCallback(TweenCallback.END, callback);
-		return this;
-	}
-
-	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
-		this.timeline.push(Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
-		return this;
-	}
-
-	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation equation) {
-		this.timeline = Timeline.createSequence();
-		this.push(duration, value, equation);
-		return this;
-	}
-
-	public @NonNull TweenAnimator parallel(final float duration, final float value, final @NonNull TweenEquation equation) {
-		this.timeline = Timeline.createParallel();
-		this.push(duration, value, equation);
 		return this;
 	}
 

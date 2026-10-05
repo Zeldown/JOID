@@ -38,24 +38,31 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	@Override
-	public T getOrDefault() {
-		return this.value != null ? this.value : this.defaultValue;
-	}
-
-	@Override
-	public boolean isPresent() {
-		return this.value != null;
-	}
-
-	@Override
 	public @NonNull Signal<T> reset() {
 		this.set(this.defaultValue);
 		return this;
 	}
 
 	@Override
-	public @NonNull Signal<T> silent() {
-		this.nextSilent = true;
+	public @NonNull Signal<T> set(final T value) {
+		final T oldValue = this.value;
+		this.value = value;
+		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
+			return this;
+		}
+
+		return this.publish();
+	}
+
+	@Override
+	public @NonNull Signal<T> subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
+		this.eventSet.add(subscriber);
+		return this;
+	}
+
+	@Override
+	public @NonNull Signal<T> unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
+		this.eventSet.remove(subscriber);
 		return this;
 	}
 
@@ -79,14 +86,8 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	@Override
-	public @NonNull Signal<T> set(final T value) {
-		final T oldValue = this.value;
-		this.value = value;
-		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
-			return this;
-		}
-
-		return this.publish();
+	public T getOrDefault() {
+		return this.value != null ? this.value : this.defaultValue;
 	}
 
 	public @NonNull Set<@NonNull SignalSubscriber<@NonNull T>> getEventSet() {
@@ -94,15 +95,14 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	@Override
-	public @NonNull Signal<T> subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
-		this.eventSet.add(subscriber);
+	public @NonNull Signal<T> silent() {
+		this.nextSilent = true;
 		return this;
 	}
 
 	@Override
-	public @NonNull Signal<T> unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
-		this.eventSet.remove(subscriber);
-		return this;
+	public boolean isPresent() {
+		return this.value != null;
 	}
 
 	@Override

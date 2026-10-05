@@ -48,18 +48,8 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public void popState() {
-		this.stateStack.pop().restore();
-	}
-
-	@Override
 	public void popMatrix() {
 		GL11.glPopMatrix();
-	}
-
-	@Override
-	public void pushState() {
-		this.stateStack.push(StateSnapshot.capture());
 	}
 
 	@Override
@@ -73,23 +63,18 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public void clearStencil() {
-		GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
+	public void translate(final double x, final double y, final double z) {
+		GL11.glTranslated(x, y, z);
 	}
 
 	@Override
-	public void resetTexture() {
-		if (this.emptyTexture == null) {
-			this.emptyTexture = Texture.create().allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
-		}
-
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.emptyTexture.getId());
+	public void scale(final double x, final double y, final double z) {
+		GL11.glScaled(x, y, z);
 	}
 
 	@Override
-	public IShader getShader() {
-		return Shader.fromProgram(GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM));
+	public void rotate(final double angle, final double x, final double y, final double z) {
+		GL11.glRotated(angle, x, y, z);
 	}
 
 	@Override
@@ -100,11 +85,6 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public float getLineWidth() {
-		return GL11.glGetFloat(GL11.GL_LINE_WIDTH);
-	}
-
-	@Override
 	public void pushProjection() {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glPushMatrix();
@@ -112,55 +92,49 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public boolean isLineSmooth() {
-		return GL11.glIsEnabled(GL11.GL_LINE_SMOOTH);
+	public void ortho(final double left, final double right, final double bottom, final double top, final double near, final double far) {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(left, right, bottom, top, near, far);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 	}
 
 	@Override
-	public int getViewportWidth() {
-		GL11.glGetInteger(GL11.GL_VIEWPORT, RenderBridge.VIEWPORT_BUFFER);
-		return RenderBridge.VIEWPORT_BUFFER.get(2);
+	public void popState() {
+		this.stateStack.pop().restore();
 	}
 
 	@Override
-	public int getViewportHeight() {
-		GL11.glGetInteger(GL11.GL_VIEWPORT, RenderBridge.VIEWPORT_BUFFER);
-		return RenderBridge.VIEWPORT_BUFFER.get(3);
+	public void pushState() {
+		this.stateStack.push(StateSnapshot.capture());
+	}
+
+	@Override
+	public void color(final float red, final float green, final float blue, final float alpha) {
+		GL11.glColor4f(red, green, blue, alpha);
+	}
+
+	@Override
+	public void blend(final @NonNull BlendState state) {
+		if (!state.isEnabled()) {
+			GL11.glDisable(GL11.GL_BLEND);
+			return;
+		}
+
+		GL11.glEnable(GL11.GL_BLEND);
+		GL14.glBlendEquation(RenderBridge.equation(state.getEquation()));
+		GL14.glBlendFuncSeparate(RenderBridge.factor(state.getSourceColor()), RenderBridge.factor(state.getDestinationColor()), RenderBridge.factor(state.getSourceAlpha()), RenderBridge.factor(state.getDestinationAlpha()));
+	}
+
+	@Override
+	public void depth(final boolean test, final boolean write) {
+		RenderBridge.toggle(GL11.GL_DEPTH_TEST, test);
+		GL11.glDepthMask(write);
 	}
 
 	@Override
 	public void cull(final boolean cull) {
 		RenderBridge.toggle(GL11.GL_CULL_FACE, cull);
-	}
-
-	@Override
-	public void lineWidth(final float width) {
-		GL11.glLineWidth(width);
-	}
-
-	@Override
-	public void shader(final IShader shader) {
-		GL20.glUseProgram(shader == null ? 0 : ((Shader) shader).getProgram());
-	}
-
-	@Override
-	public @NonNull ITexture createTexture() {
-		return Texture.create();
-	}
-
-	@Override
-	public @NonNull PixelGrid getPixelGrid() {
-		return PixelGrid.of(RenderBridge.matrix(GL11.GL_PROJECTION_MATRIX), RenderBridge.matrix(GL11.GL_MODELVIEW_MATRIX), this.getViewportWidth(), this.getViewportHeight());
-	}
-
-	@Override
-	public void colorMask(final boolean write) {
-		GL11.glColorMask(write, write, write, write);
-	}
-
-	@Override
-	public void stencilTest(final boolean test) {
-		RenderBridge.toggle(GL11.GL_STENCIL_TEST, test);
 	}
 
 	@Override
@@ -183,9 +157,19 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public void colorMask(final boolean write) {
+		GL11.glColorMask(write, write, write, write);
+	}
+
+	@Override
 	public void alphaTest(final float threshold) {
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glAlphaFunc(GL11.GL_GREATER, threshold);
+	}
+
+	@Override
+	public void lineWidth(final float width) {
+		GL11.glLineWidth(width);
 	}
 
 	@Override
@@ -194,15 +178,66 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public void blend(final @NonNull BlendState state) {
-		if (!state.isEnabled()) {
-			GL11.glDisable(GL11.GL_BLEND);
-			return;
-		}
+	public IShader getShader() {
+		return Shader.fromProgram(GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM));
+	}
 
-		GL11.glEnable(GL11.GL_BLEND);
-		GL14.glBlendEquation(RenderBridge.equation(state.getEquation()));
-		GL14.glBlendFuncSeparate(RenderBridge.factor(state.getSourceColor()), RenderBridge.factor(state.getDestinationColor()), RenderBridge.factor(state.getSourceAlpha()), RenderBridge.factor(state.getDestinationAlpha()));
+	@Override
+	public float getLineWidth() {
+		return GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+	}
+
+	@Override
+	public int getViewportWidth() {
+		GL11.glGetInteger(GL11.GL_VIEWPORT, RenderBridge.VIEWPORT_BUFFER);
+		return RenderBridge.VIEWPORT_BUFFER.get(2);
+	}
+
+	@Override
+	public int getViewportHeight() {
+		GL11.glGetInteger(GL11.GL_VIEWPORT, RenderBridge.VIEWPORT_BUFFER);
+		return RenderBridge.VIEWPORT_BUFFER.get(3);
+	}
+
+	@Override
+	public @NonNull PixelGrid getPixelGrid() {
+		return PixelGrid.of(RenderBridge.matrix(GL11.GL_PROJECTION_MATRIX), RenderBridge.matrix(GL11.GL_MODELVIEW_MATRIX), this.getViewportWidth(), this.getViewportHeight());
+	}
+
+	@Override
+	public boolean isLineSmooth() {
+		return GL11.glIsEnabled(GL11.GL_LINE_SMOOTH);
+	}
+
+	@Override
+	public void stencilTest(final boolean test) {
+		RenderBridge.toggle(GL11.GL_STENCIL_TEST, test);
+	}
+
+	@Override
+	public void stencilFunction(final @NonNull StencilFunction function, final int reference, final int mask) {
+		GL11.glStencilFunc(RenderBridge.function(function), reference, mask);
+	}
+
+	@Override
+	public void stencilOperation(final @NonNull StencilOperation fail, final @NonNull StencilOperation depthFail, final @NonNull StencilOperation pass) {
+		GL11.glStencilOp(RenderBridge.operation(fail), RenderBridge.operation(depthFail), RenderBridge.operation(pass));
+	}
+
+	@Override
+	public void viewport(final int x, final int y, final int width, final int height) {
+		GL11.glViewport(x, y, width, height);
+	}
+
+	@Override
+	public void clear(final float red, final float green, final float blue, final float alpha) {
+		GL11.glClearColor(red, green, blue, alpha);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+	}
+
+	@Override
+	public void clearStencil() {
+		GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 	}
 
 	@Override
@@ -211,32 +246,25 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public void depth(final boolean test, final boolean write) {
-		RenderBridge.toggle(GL11.GL_DEPTH_TEST, test);
-		GL11.glDepthMask(write);
+	public void texture(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, ((Texture) texture).getId());
+		RenderBridge.applyTextureParameters(filter, wrap, ((Texture) texture).isMipmapped());
 	}
 
 	@Override
-	public void scale(final double x, final double y, final double z) {
-		GL11.glScaled(x, y, z);
-	}
-
-	@Override
-	public void translate(final double x, final double y, final double z) {
-		GL11.glTranslated(x, y, z);
-	}
-
-	public static void toggle(final int capability, final boolean enabled) {
-		if (enabled) {
-			GL11.glEnable(capability);
-		} else {
-			GL11.glDisable(capability);
+	public void resetTexture() {
+		if (this.emptyTexture == null) {
+			this.emptyTexture = Texture.create().allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
 		}
+
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.emptyTexture.getId());
 	}
 
 	@Override
-	public void viewport(final int x, final int y, final int width, final int height) {
-		GL11.glViewport(x, y, width, height);
+	public void shader(final IShader shader) {
+		GL20.glUseProgram(shader == null ? 0 : ((Shader) shader).getProgram());
 	}
 
 	@Override
@@ -280,33 +308,30 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public void rotate(final double angle, final double x, final double y, final double z) {
-		GL11.glRotated(angle, x, y, z);
-	}
-
-	@Override
-	public void color(final float red, final float green, final float blue, final float alpha) {
-		GL11.glColor4f(red, green, blue, alpha);
-	}
-
-	@Override
-	public void clear(final float red, final float green, final float blue, final float alpha) {
-		GL11.glClearColor(red, green, blue, alpha);
-		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-	}
-
-	public static void applyTextureParameters(final TextureFilter filter, final TextureWrap wrap) {
-		RenderBridge.applyTextureParameters(filter, wrap, false);
-	}
-
-	@Override
-	public void stencilFunction(final @NonNull StencilFunction function, final int reference, final int mask) {
-		GL11.glStencilFunc(RenderBridge.function(function), reference, mask);
+	public @NonNull ITexture createTexture() {
+		return Texture.create();
 	}
 
 	@Override
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter) {
 		return FrameBuffer.create(width, height, filter);
+	}
+
+	@Override
+	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
+		return Shader.create(ShaderTranslator.translate(vertex), ShaderTranslator.translate(fragment), blend);
+	}
+
+	public static void toggle(final int capability, final boolean enabled) {
+		if (enabled) {
+			GL11.glEnable(capability);
+		} else {
+			GL11.glDisable(capability);
+		}
+	}
+
+	public static void applyTextureParameters(final TextureFilter filter, final TextureWrap wrap) {
+		RenderBridge.applyTextureParameters(filter, wrap, false);
 	}
 
 	public static void applyTextureParameters(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
@@ -320,29 +345,15 @@ public final class RenderBridge implements IRenderBridge {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, textureWrap);
 	}
 
-	@Override
-	public void texture(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, ((Texture) texture).getId());
-		RenderBridge.applyTextureParameters(filter, wrap, ((Texture) texture).isMipmapped());
-	}
-
-	@Override
-	public void ortho(final double left, final double right, final double bottom, final double top, final double near, final double far) {
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(left, right, bottom, top, near, far);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-	}
-
-	@Override
-	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
-		return Shader.create(ShaderTranslator.translate(vertex), ShaderTranslator.translate(fragment), blend);
-	}
-
-	@Override
-	public void stencilOperation(final @NonNull StencilOperation fail, final @NonNull StencilOperation depthFail, final @NonNull StencilOperation pass) {
-		GL11.glStencilOp(RenderBridge.operation(fail), RenderBridge.operation(depthFail), RenderBridge.operation(pass));
+	private static int wrap(final TextureWrap wrap) {
+		switch (wrap) {
+		case CLAMP_TO_EDGE:
+			return GL12.GL_CLAMP_TO_EDGE;
+		case CLAMP_TO_BORDER:
+			return GL11.GL_CLAMP;
+		default:
+			return GL11.GL_REPEAT;
+		}
 	}
 
 	private static int mode(final DrawMode mode) {
@@ -370,14 +381,18 @@ public final class RenderBridge implements IRenderBridge {
 		return matrix;
 	}
 
-	private static int wrap(final TextureWrap wrap) {
-		switch (wrap) {
-		case CLAMP_TO_EDGE:
-			return GL12.GL_CLAMP_TO_EDGE;
-		case CLAMP_TO_BORDER:
-			return GL11.GL_CLAMP;
+	private static int equation(final BlendState.Equation equation) {
+		switch (equation) {
+		case SUBTRACT:
+			return GL14.GL_FUNC_SUBTRACT;
+		case REVERSE_SUBTRACT:
+			return GL14.GL_FUNC_REVERSE_SUBTRACT;
+		case MIN:
+			return GL14.GL_MIN;
+		case MAX:
+			return GL14.GL_MAX;
 		default:
-			return GL11.GL_REPEAT;
+			return GL14.GL_FUNC_ADD;
 		}
 	}
 
@@ -441,21 +456,6 @@ public final class RenderBridge implements IRenderBridge {
 			return GL11.GL_INVERT;
 		default:
 			return GL11.GL_KEEP;
-		}
-	}
-
-	private static int equation(final BlendState.Equation equation) {
-		switch (equation) {
-		case SUBTRACT:
-			return GL14.GL_FUNC_SUBTRACT;
-		case REVERSE_SUBTRACT:
-			return GL14.GL_FUNC_REVERSE_SUBTRACT;
-		case MIN:
-			return GL14.GL_MIN;
-		case MAX:
-			return GL14.GL_MAX;
-		default:
-			return GL14.GL_FUNC_ADD;
 		}
 	}
 

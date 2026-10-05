@@ -18,14 +18,6 @@ public final class AudioBridge implements IAudioBridge {
 		return new AudioSource(sampleRate, channels);
 	}
 
-	private static void loadLibrary() {
-		final String os = System.getProperty("os.name", "").toLowerCase();
-		final boolean is64 = System.getProperty("os.arch", "").contains("64");
-		try {
-			System.loadLibrary(os.contains("win") ? is64 ? "OpenAL64" : "OpenAL32" : "openal");
-		} catch (final Throwable ignored) {}
-	}
-
 	private static void createContext() {
 		AudioBridge.loadLibrary();
 		try {
@@ -39,6 +31,14 @@ public final class AudioBridge implements IAudioBridge {
 				AL.destroy();
 			}
 		}, "joid-al-shutdown"));
+	}
+
+	private static void loadLibrary() {
+		final String os = System.getProperty("os.name", "").toLowerCase();
+		final boolean is64 = System.getProperty("os.arch", "").contains("64");
+		try {
+			System.loadLibrary(os.contains("win") ? is64 ? "OpenAL64" : "OpenAL32" : "openal");
+		} catch (final Throwable ignored) {}
 	}
 
 }

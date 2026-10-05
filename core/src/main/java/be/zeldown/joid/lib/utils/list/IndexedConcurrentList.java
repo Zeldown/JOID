@@ -25,46 +25,6 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 	}
 
 	@Override
-	public int size() {
-		return Math.min(this.orderedList.size(), this.reversedList.size());
-	}
-
-	@Override
-	public E getLast() {
-		if (this.isEmpty()) {
-			return null;
-		}
-
-		return this.orderedList.get(this.orderedList.size() - 1);
-	}
-
-	@Override
-	public void clear() {
-		this.orderedList.clear();
-		this.reversedList.clear();
-	}
-
-	@Override
-	public E getFirst() {
-		return this.orderedList.get(0);
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return this.orderedList.isEmpty();
-	}
-
-	@Override
-	public E get(final int index) {
-		return this.orderedList.get(index);
-	}
-
-	@Override
-	public Iterator<E> iterator() {
-		return this.orderedList.iterator();
-	}
-
-	@Override
 	public void add(final E element) {
 		for (int i = 0; i < this.orderedList.size(); i++) {
 			if (this.orderedList.get(i).getIndex() > element.getIndex()) {
@@ -79,19 +39,30 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 	}
 
 	@Override
-	public @NonNull List<E> ordered() {
-		return this.orderedList;
-	}
-
-	@Override
-	public @NonNull List<E> reversed() {
-		return this.reversedList;
-	}
-
-	@Override
 	public void remove(final E element) {
 		this.orderedList.remove(element);
 		this.reversedList.remove(element);
+	}
+
+	@Override
+	public void clear() {
+		this.orderedList.clear();
+		this.reversedList.clear();
+	}
+
+	@Override
+	public @NonNull IndexedConcurrentList<E> copy() {
+		return new IndexedConcurrentList<>(this.orderedList);
+	}
+
+	@Override
+	public int size() {
+		return Math.min(this.orderedList.size(), this.reversedList.size());
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return this.orderedList.isEmpty();
 	}
 
 	@Override
@@ -100,8 +71,32 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 	}
 
 	@Override
-	public @NonNull IndexedConcurrentList<E> copy() {
-		return new IndexedConcurrentList<>(this.orderedList);
+	public E getLast() {
+		if (this.isEmpty()) {
+			return null;
+		}
+
+		return this.orderedList.get(this.orderedList.size() - 1);
+	}
+
+	@Override
+	public E getFirst() {
+		return this.orderedList.get(0);
+	}
+
+	@Override
+	public E get(final int index) {
+		return this.orderedList.get(index);
+	}
+
+	@Override
+	public @NonNull List<E> ordered() {
+		return this.orderedList;
+	}
+
+	@Override
+	public @NonNull List<E> reversed() {
+		return this.reversedList;
 	}
 
 	@Override
@@ -121,6 +116,11 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 		}
 
 		return list;
+	}
+
+	@Override
+	public Iterator<E> iterator() {
+		return this.orderedList.iterator();
 	}
 
 	@SuppressWarnings("unchecked")

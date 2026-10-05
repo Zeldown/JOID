@@ -21,8 +21,17 @@ public abstract class ToggleNode<F, S> extends Node {
 		super(x, y, width, height);
 	}
 
-	public final <T> @NonNull T getValue() {
-		return (T) (this.toggle ? this.state.getToggle() : this.state.getBack());
+	@Override
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
+			return;
+		}
+
+		context.cancel(() -> {
+			super.executeCallback(ToggleNode.CALLBACK_CHANGE, context, () -> {
+				this.toggle = !this.toggle;
+			}, !this.toggle);
+		});
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final boolean toggle) {
@@ -35,22 +44,13 @@ public abstract class ToggleNode<F, S> extends Node {
 		return (T) this;
 	}
 
+	public final <T> @NonNull T getValue() {
+		return (T) (this.toggle ? this.state.getToggle() : this.state.getBack());
+	}
+
 	public final <T extends ToggleNode<F, S>> @NonNull T onChange(final @NonNull NodeToggleChangeCallback<T, F, S> callback) {
 		super.registerCallback(ToggleNode.CALLBACK_CHANGE, callback);
 		return (T) this;
-	}
-
-	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
-			return;
-		}
-
-		context.cancel(() -> {
-			super.executeCallback(ToggleNode.CALLBACK_CHANGE, context, () -> {
-				this.toggle = !this.toggle;
-			}, !this.toggle);
-		});
 	}
 
 }

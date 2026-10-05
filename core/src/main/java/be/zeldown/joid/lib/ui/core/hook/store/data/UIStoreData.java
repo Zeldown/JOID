@@ -12,6 +12,7 @@ import be.zeldown.joid.lib.ui.core.hook.store.context.StoreContext;
 public @interface UIStoreData {
 
 	public String id()            default "";
+
 	public StoreContext context() default StoreContext.LOCAL;
 
 }

@@ -18,18 +18,18 @@ public class DoubleSignal extends Signal<Double> {
 		return instance;
 	}
 
-	public void increment() {
-		final double updatedValue = this.getOrDefault() + 1;
-		this.set(updatedValue);
-	}
-
-	public void decrement() {
-		final double updatedValue = this.getOrDefault() - 1;
-		this.set(updatedValue);
-	}
-
 	public void add(final double value) {
 		final double updatedValue = this.getOrDefault() + value;
+		this.set(updatedValue);
+	}
+
+	public void subtract(final double value) {
+		final double updatedValue = this.getOrDefault() - value;
+		this.set(updatedValue);
+	}
+
+	public void multiply(final double value) {
+		final double updatedValue = this.getOrDefault() * value;
 		this.set(updatedValue);
 	}
 
@@ -41,13 +41,13 @@ public class DoubleSignal extends Signal<Double> {
 		this.set(updatedValue);
 	}
 
-	public void subtract(final double value) {
-		final double updatedValue = this.getOrDefault() - value;
+	public void decrement() {
+		final double updatedValue = this.getOrDefault() - 1;
 		this.set(updatedValue);
 	}
 
-	public void multiply(final double value) {
-		final double updatedValue = this.getOrDefault() * value;
+	public void increment() {
+		final double updatedValue = this.getOrDefault() + 1;
 		this.set(updatedValue);
 	}
 

@@ -10,20 +10,22 @@ public class InternalContext {
 
 	private boolean cancelled;
 
-	public static @NonNull InternalContext create() {
-		return new InternalContext(false);
-	}
-
 	protected InternalContext(final boolean cancelled) {
 		this.cancelled = cancelled;
+	}
+
+	public static @NonNull InternalContext create() {
+		return new InternalContext(false);
 	}
 
 	public static @NonNull InternalContext create(final boolean cancelled) {
 		return new InternalContext(cancelled);
 	}
 
-	public @NonNull InternalContext reset() {
-		this.cancelled = false;
+	public @NonNull InternalContext execute(final @NonNull Runnable runnable) {
+		if (!this.cancelled) {
+			runnable.run();
+		}
 		return this;
 	}
 
@@ -42,13 +44,6 @@ public class InternalContext {
 		return this;
 	}
 
-	public @NonNull InternalContext execute(final @NonNull Runnable runnable) {
-		if (!this.cancelled) {
-			runnable.run();
-		}
-		return this;
-	}
-
 	public @NonNull InternalContext cancel(final @NonNull Supplier<@NonNull Boolean> supplier) {
 		if (this.cancelled) {
 			return this;
@@ -58,6 +53,11 @@ public class InternalContext {
 			this.cancel();
 		}
 
+		return this;
+	}
+
+	public @NonNull InternalContext reset() {
+		this.cancelled = false;
 		return this;
 	}
 

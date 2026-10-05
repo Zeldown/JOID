@@ -25,36 +25,6 @@ public final class UIStoreHook {
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final Map<Class<? extends UIStore>, UIStore> GLOBAL_CACHE = new HashMap<>();
 
-	public static void saveAll() {
-		for (final UIStore store : UIStoreHook.GLOBAL_CACHE.values()) {
-			UIStoreHook.saveStore(store);
-		}
-	}
-
-	public static void saveStore(final @NonNull UIStore store) {
-		if (store.getData().context() != StoreContext.PERMANENT) {
-			return;
-		}
-
-		final JsonObject json = new JsonObject();
-		store.save(json);
-		UIStoreHook.saveFile(store.getData().id(), json);
-	}
-
-	public static void destroyStore(final @NonNull UIStore store) {
-		final Class<? extends UIStore> clazz = store.getClass();
-		final UIStoreData data = store.getData();
-		if (data.context().isGlobal()) {
-			UIStoreHook.GLOBAL_CACHE.remove(clazz);
-		}
-
-		if (store.getData().context() == StoreContext.PERMANENT) {
-			UIStoreHook.deleteFile(data.id());
-		}
-
-		store.destroy();
-	}
-
 	public static <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
 		if (UIStoreHook.GLOBAL_CACHE.containsKey(clazz)) {
 			return (T) UIStoreHook.GLOBAL_CACHE.get(clazz);
@@ -81,6 +51,58 @@ public final class UIStoreHook {
 		}
 
 		return store;
+	}
+
+	public static void destroyStore(final @NonNull UIStore store) {
+		final Class<? extends UIStore> clazz = store.getClass();
+		final UIStoreData data = store.getData();
+		if (data.context().isGlobal()) {
+			UIStoreHook.GLOBAL_CACHE.remove(clazz);
+		}
+
+		if (store.getData().context() == StoreContext.PERMANENT) {
+			UIStoreHook.deleteFile(data.id());
+		}
+
+		store.destroy();
+	}
+
+	public static void saveStore(final @NonNull UIStore store) {
+		if (store.getData().context() != StoreContext.PERMANENT) {
+			return;
+		}
+
+		final JsonObject json = new JsonObject();
+		store.save(json);
+		UIStoreHook.saveFile(store.getData().id(), json);
+	}
+
+	public static void saveAll() {
+		for (final UIStore store : UIStoreHook.GLOBAL_CACHE.values()) {
+			UIStoreHook.saveStore(store);
+		}
+	}
+
+	private static <T extends UIStore> T createStoreInstance(final @NonNull Class<T> clazz, final Object... args) {
+		try {
+			T store = null;
+			for (final Constructor<?> constructor : clazz.getConstructors()) {
+				if (constructor.getParameterCount() != args.length) {
+					continue;
+				}
+
+				constructor.setAccessible(true);
+				store = (T) constructor.newInstance(args);
+			}
+
+			if (store == null) {
+				throw new IllegalArgumentException("No constructor found for class " + clazz.getName() + " with the provided arguments.");
+			}
+
+			return store;
+		} catch (final Exception e) {
+			throw new RuntimeException("Failed to create store instance for class " + clazz.getName(), e);
+		}
 	}
 
 	private static void deleteFile(final @NonNull String id) {
@@ -135,28 +157,6 @@ public final class UIStoreHook {
 		} catch (final Exception e) {
 			System.err.println("Failed to save store file: " + id);
 			e.printStackTrace();
-		}
-	}
-
-	private static <T extends UIStore> T createStoreInstance(final @NonNull Class<T> clazz, final Object... args) {
-		try {
-			T store = null;
-			for (final Constructor<?> constructor : clazz.getConstructors()) {
-				if (constructor.getParameterCount() != args.length) {
-					continue;
-				}
-
-				constructor.setAccessible(true);
-				store = (T) constructor.newInstance(args);
-			}
-
-			if (store == null) {
-				throw new IllegalArgumentException("No constructor found for class " + clazz.getName() + " with the provided arguments.");
-			}
-
-			return store;
-		} catch (final Exception e) {
-			throw new RuntimeException("Failed to create store instance for class " + clazz.getName(), e);
 		}
 	}
 

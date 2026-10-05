@@ -7,12 +7,12 @@ import lombok.NonNull;
 
 public class DemoTextFieldNode extends TextFieldNode {
 
-	public static @NonNull DemoTextFieldNode create(final double x, final double y, final double width) {
-		return new DemoTextFieldNode(x, y, width, 0);
-	}
-
 	protected DemoTextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+	}
+
+	public static @NonNull DemoTextFieldNode create(final double x, final double y, final double width) {
+		return new DemoTextFieldNode(x, y, width, 0);
 	}
 
 	public static @NonNull DemoTextFieldNode create(final double x, final double y, final double width, final double height) {

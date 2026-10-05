@@ -18,18 +18,28 @@ public class LongSignal extends Signal<Long> {
 		return instance;
 	}
 
-	public void increment() {
-		final long updatedValue = this.getOrDefault() + 1;
-		this.set(updatedValue);
-	}
-
 	public void decrement() {
 		final long updatedValue = this.getOrDefault() - 1;
 		this.set(updatedValue);
 	}
 
+	public void increment() {
+		final long updatedValue = this.getOrDefault() + 1;
+		this.set(updatedValue);
+	}
+
 	public void add(final long value) {
 		final long updatedValue = this.getOrDefault() + value;
+		this.set(updatedValue);
+	}
+
+	public void subtract(final long value) {
+		final long updatedValue = this.getOrDefault() - value;
+		this.set(updatedValue);
+	}
+
+	public void multiply(final long value) {
+		final long updatedValue = this.getOrDefault() * value;
 		this.set(updatedValue);
 	}
 
@@ -44,16 +54,6 @@ public class LongSignal extends Signal<Long> {
 
 	public void power(final int exponent) {
 		final long updatedValue = (long) Math.pow(this.getOrDefault(), exponent);
-		this.set(updatedValue);
-	}
-
-	public void subtract(final long value) {
-		final long updatedValue = this.getOrDefault() - value;
-		this.set(updatedValue);
-	}
-
-	public void multiply(final long value) {
-		final long updatedValue = this.getOrDefault() * value;
 		this.set(updatedValue);
 	}
 

@@ -34,15 +34,15 @@ public final class FontFile {
 		return new FontFile(Files.readAllBytes(file.toPath()));
 	}
 
-	public int getWeight() {
-		final Integer os2 = this.tables.get("OS/2");
-		return os2 == null ? 400 : this.unsigned(os2 + 4);
-	}
-
 	public boolean isItalic() {
 		final Integer os2 = this.tables.get("OS/2");
 		final Integer head = this.tables.get("head");
 		return os2 != null && (this.unsigned(os2 + 62) & (FontFile.ITALIC | FontFile.OBLIQUE)) != 0 || head != null && (this.unsigned(head + 44) & FontFile.MAC_ITALIC) != 0;
+	}
+
+	public int getWeight() {
+		final Integer os2 = this.tables.get("OS/2");
+		return os2 == null ? 400 : this.unsigned(os2 + 4);
 	}
 
 	public int getUnitsPerEm() {

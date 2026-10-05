@@ -40,6 +40,14 @@ public final class ShaderSource {
 		this.builtins = EnumSet.noneOf(ShaderBuiltin.class);
 	}
 
+	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull InputStream stream) {
+		try {
+			return ShaderSource.parse(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+
 	public static @NonNull ShaderSource parse(final @NonNull ShaderStage stage, final @NonNull String code) {
 		final ShaderSource source = new ShaderSource(stage);
 		final StringBuilder body = new StringBuilder();
@@ -70,14 +78,6 @@ public final class ShaderSource {
 
 		source.body = body.toString();
 		return source;
-	}
-
-	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull InputStream stream) {
-		try {
-			return ShaderSource.parse(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
-		}
 	}
 
 	private void declare(final Matcher declaration) {

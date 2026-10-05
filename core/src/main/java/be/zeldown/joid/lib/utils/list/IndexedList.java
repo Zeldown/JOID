@@ -6,23 +6,23 @@ import lombok.NonNull;
 
 public interface IndexedList<E extends IndexedElement> extends Iterable<E> {
 
-	public int size();
-	public E getLast();
+	public void add(final E element);
+	public void remove(final E element);
 
 	public void clear();
 
-	public E getFirst();
+	public @NonNull IndexedList<E> copy();
 
+	public int size();
 	public boolean isEmpty();
+	public boolean contains(final E element);
+
+	public E getLast();
+	public E getFirst();
 	public E get(final int index);
-	public void add(final E element);
 
 	public @NonNull List<E> ordered();
 	public @NonNull List<E> reversed();
-	public void remove(final E element);
-
-	public @NonNull IndexedList<E> copy();
-	public boolean contains(final E element);
 
 	public @NonNull IndexedList<E> recursive();
 

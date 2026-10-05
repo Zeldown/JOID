@@ -21,13 +21,13 @@ public final class StreamAsset extends Asset {
 	}
 
 	@Override
-	public boolean isReopenable() {
-		return false;
+	public @NonNull InputStream open() {
+		return this.stream;
 	}
 
 	@Override
-	public @NonNull InputStream open() {
-		return this.stream;
+	public boolean isReopenable() {
+		return false;
 	}
 
 	@Override

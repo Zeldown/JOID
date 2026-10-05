@@ -32,22 +32,9 @@ public class Transformation {
 		return new Transformation().add(operation);
 	}
 
-	public void apply() {
-		this.operations.forEach(TransformOperation::transform);
-	}
-
-	public void reset() {
-		this.operations.forEach(TransformOperation::reset);
-	}
-
-	public void clear() {
-		this.operations.clear();
-	}
-
-	public void apply(final @NonNull Drawing drawing) {
-		this.operations.forEach(TransformOperation::transform);
-		drawing.draw();
-		this.operations.forEach(TransformOperation::reset);
+	public @NonNull Transformation add(final @NonNull TransformOperation operation) {
+		this.operations.add(operation);
+		return this;
 	}
 
 	public @NonNull Transformation translate(final @NonNull Vector vector) {
@@ -55,8 +42,8 @@ public class Transformation {
 		return this;
 	}
 
-	public @NonNull Transformation add(final @NonNull TransformOperation operation) {
-		this.operations.add(operation);
+	public @NonNull Transformation rotate(final double angle, final @NonNull Rotation rotation, final @NonNull Vector pivot) {
+		this.operations.add(new RotateOperation(angle, rotation, pivot));
 		return this;
 	}
 
@@ -65,9 +52,22 @@ public class Transformation {
 		return this;
 	}
 
-	public @NonNull Transformation rotate(final double angle, final @NonNull Rotation rotation, final @NonNull Vector pivot) {
-		this.operations.add(new RotateOperation(angle, rotation, pivot));
-		return this;
+	public void apply() {
+		this.operations.forEach(TransformOperation::transform);
+	}
+
+	public void apply(final @NonNull Drawing drawing) {
+		this.operations.forEach(TransformOperation::transform);
+		drawing.draw();
+		this.operations.forEach(TransformOperation::reset);
+	}
+
+	public void reset() {
+		this.operations.forEach(TransformOperation::reset);
+	}
+
+	public void clear() {
+		this.operations.clear();
 	}
 
 }

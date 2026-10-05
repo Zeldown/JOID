@@ -484,6 +484,29 @@ public final class DevNode extends Node {
 	}
 
 	@Override
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final InternalContext context) {
+		if (context.isCancelled() || !super.isEnabled()) {
+			return;
+		}
+
+		if (this.inspectSignal.getOrDefault() && this.inspectedNode.getOrDefault() != null) {
+			if (clickType.isLeft() && !this.inspectedNodeLocked.getOrDefault()) {
+				this.inspectedNodeLocked.set(true);
+				this.inspectedNodeLocked.publish();
+				context.cancel();
+			} else if (clickType.isRight() && this.inspectedNodeLocked.getOrDefault()) {
+				this.inspectedNodeLocked.set(false);
+				this.inspectedNodeLocked.publish();
+				context.cancel();
+			}
+		}
+
+		if (clickType.isRight() && this.gridSignal.getOrDefault()) {
+			this.gridColorIndex = (this.gridColorIndex + 1) % DevNode.GRID_COLORS.length;
+		}
+	}
+
+	@Override
 	public void keyPressed(final char c, final Key key, final InternalContext context) {
 		if (context.isCancelled() || !super.isEnabled()) {
 			return;
@@ -519,29 +542,6 @@ public final class DevNode extends Node {
 		this.inspectedNode.set(this.inspectedNode.getOrDefault().getParent());
 		this.inspectedNodeLocked.set(true);
 		this.inspectedNodeLocked.publish();
-	}
-
-	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final InternalContext context) {
-		if (context.isCancelled() || !super.isEnabled()) {
-			return;
-		}
-
-		if (this.inspectSignal.getOrDefault() && this.inspectedNode.getOrDefault() != null) {
-			if (clickType.isLeft() && !this.inspectedNodeLocked.getOrDefault()) {
-				this.inspectedNodeLocked.set(true);
-				this.inspectedNodeLocked.publish();
-				context.cancel();
-			} else if (clickType.isRight() && this.inspectedNodeLocked.getOrDefault()) {
-				this.inspectedNodeLocked.set(false);
-				this.inspectedNodeLocked.publish();
-				context.cancel();
-			}
-		}
-
-		if (clickType.isRight() && this.gridSignal.getOrDefault()) {
-			this.gridColorIndex = (this.gridColorIndex + 1) % DevNode.GRID_COLORS.length;
-		}
 	}
 
 	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {

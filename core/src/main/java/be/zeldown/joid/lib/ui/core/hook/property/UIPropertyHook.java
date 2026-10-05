@@ -84,31 +84,6 @@ public final class UIPropertyHook {
 		UIPropertyHook.saveFile(ui, json);
 	}
 
-	private static @NonNull JsonObject loadFile(final @NonNull UI ui) {
-		final File parent = new File(JOID.inst().getConfigDir(), "property");
-		final File file = new File(parent, ui.getClass().getName() + ".dat");
-		try {
-			if (!parent.exists()) {
-				parent.mkdirs();
-			}
-
-			if (!file.exists()) {
-				return null;
-			}
-
-			final FileReader reader = new FileReader(file);
-			final JsonObject object = UIPropertyHook.GSON.fromJson(reader, JsonObject.class);
-			reader.close();
-			return object;
-		} catch (final Exception e) {
-			System.err.println("Failed to load property file: " + file.getAbsolutePath());
-			e.printStackTrace();
-			file.delete();
-		}
-
-		return null;
-	}
-
 	private static @NonNull List<Field> getFields(final @NonNull UI ui) {
 		final String className = ui.getClass().getName();
 		if (!JOID.inst().isDevMode() && UIPropertyHook.PROPERTY_MAP.containsKey(className)) {
@@ -136,6 +111,31 @@ public final class UIPropertyHook {
 
 		UIPropertyHook.PROPERTY_MAP.put(className, fields);
 		return fields;
+	}
+
+	private static @NonNull JsonObject loadFile(final @NonNull UI ui) {
+		final File parent = new File(JOID.inst().getConfigDir(), "property");
+		final File file = new File(parent, ui.getClass().getName() + ".dat");
+		try {
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
+
+			if (!file.exists()) {
+				return null;
+			}
+
+			final FileReader reader = new FileReader(file);
+			final JsonObject object = UIPropertyHook.GSON.fromJson(reader, JsonObject.class);
+			reader.close();
+			return object;
+		} catch (final Exception e) {
+			System.err.println("Failed to load property file: " + file.getAbsolutePath());
+			e.printStackTrace();
+			file.delete();
+		}
+
+		return null;
 	}
 
 	private static void saveFile(final @NonNull UI ui, final @NonNull JsonObject json) {

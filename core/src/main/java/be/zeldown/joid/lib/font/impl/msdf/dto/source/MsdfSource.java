@@ -22,8 +22,6 @@ public abstract class MsdfSource implements IMsdfSource {
 		return face.style(this.weight == null ? face.getWeight() : this.weight, this.italic == null ? face.isItalic() : this.italic);
 	}
 
-	protected abstract @NonNull MsdfFontFace parse() throws IOException;
-
 	public final <T extends MsdfSource> @NonNull T italic(final boolean italic) {
 		this.italic = italic;
 		return (T) this;
@@ -33,5 +31,7 @@ public abstract class MsdfSource implements IMsdfSource {
 		this.weight = weight;
 		return (T) this;
 	}
+
+	protected abstract @NonNull MsdfFontFace parse() throws IOException;
 
 }

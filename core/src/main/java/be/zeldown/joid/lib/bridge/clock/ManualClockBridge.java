@@ -15,6 +15,10 @@ public final class ManualClockBridge implements IClockBridge {
 		return new ManualClockBridge(time);
 	}
 
+	public void advance(final long milliseconds) {
+		this.time += milliseconds;
+	}
+
 	@Override
 	public long nanoTime() {
 		return this.time * 1_000_000L;
@@ -23,10 +27,6 @@ public final class ManualClockBridge implements IClockBridge {
 	@Override
 	public long currentTimeMillis() {
 		return this.time;
-	}
-
-	public void advance(final long milliseconds) {
-		this.time += milliseconds;
 	}
 
 }

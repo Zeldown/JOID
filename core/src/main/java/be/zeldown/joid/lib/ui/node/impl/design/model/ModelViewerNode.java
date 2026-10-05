@@ -80,47 +80,6 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	@Override
-	public <T extends ModelNode> @NonNull T size(final double size) {
-		this.targetSize = size;
-		return super.size(size);
-	}
-
-	public <T extends ModelViewerNode> @NonNull T zoom(final double zoom) {
-		this.targetSize = Math.max(this.minSize, Math.min(this.maxSize, zoom));
-		return (T) this;
-	}
-
-	@Override
-	public <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
-		this.targetRotationYaw = rotationYaw;
-		return super.rotationYaw(rotationYaw);
-	}
-
-	@Override
-	public <T extends ModelNode> @NonNull T rotationPitch(final double rotationPitch) {
-		this.targetRotationPitch = rotationPitch;
-		return super.rotationPitch(rotationPitch);
-	}
-
-	public <T extends ModelViewerNode> @NonNull T sizeRange(final double min, final double max) {
-		this.minSize = min;
-		this.maxSize = max;
-		return (T) this;
-	}
-
-	public <T extends ModelViewerNode> @NonNull T rotationYawRange(final double min, final double max) {
-		this.minRotationYaw = min;
-		this.maxRotationYaw = max;
-		return (T) this;
-	}
-
-	public <T extends ModelViewerNode> @NonNull T rotationPitchRange(final double min, final double max) {
-		this.minRotationPitch = min;
-		this.maxRotationPitch = max;
-		return (T) this;
-	}
-
-	@Override
 	public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
 		if (!super.isHovered(mouseX, mouseY)) {
 			return;
@@ -145,6 +104,47 @@ public class ModelViewerNode extends ModelNode {
 	@Override
 	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.dragged = false;
+	}
+
+	@Override
+	public <T extends ModelNode> @NonNull T size(final double size) {
+		this.targetSize = size;
+		return super.size(size);
+	}
+
+	@Override
+	public <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
+		this.targetRotationYaw = rotationYaw;
+		return super.rotationYaw(rotationYaw);
+	}
+
+	public <T extends ModelViewerNode> @NonNull T rotationYawRange(final double min, final double max) {
+		this.minRotationYaw = min;
+		this.maxRotationYaw = max;
+		return (T) this;
+	}
+
+	@Override
+	public <T extends ModelNode> @NonNull T rotationPitch(final double rotationPitch) {
+		this.targetRotationPitch = rotationPitch;
+		return super.rotationPitch(rotationPitch);
+	}
+
+	public <T extends ModelViewerNode> @NonNull T rotationPitchRange(final double min, final double max) {
+		this.minRotationPitch = min;
+		this.maxRotationPitch = max;
+		return (T) this;
+	}
+
+	public <T extends ModelViewerNode> @NonNull T sizeRange(final double min, final double max) {
+		this.minSize = min;
+		this.maxSize = max;
+		return (T) this;
+	}
+
+	public <T extends ModelViewerNode> @NonNull T zoom(final double zoom) {
+		this.targetSize = Math.max(this.minSize, Math.min(this.maxSize, zoom));
+		return (T) this;
 	}
 
 }

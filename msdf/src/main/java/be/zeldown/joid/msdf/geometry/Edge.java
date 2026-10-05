@@ -42,12 +42,12 @@ public final class Edge {
 		return new Vector2(this.x[this.x.length - 1], this.y[this.y.length - 1]);
 	}
 
-	public Vector2 endDirection() {
-		return this.directionAt(this.x.length - 2, this.x.length - 1);
-	}
-
 	public Vector2 startDirection() {
 		return this.directionAt(0, 1);
+	}
+
+	public Vector2 endDirection() {
+		return this.directionAt(this.x.length - 2, this.x.length - 1);
 	}
 
 	public void distance(final double px, final double py, final SignedDistance result) {

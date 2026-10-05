@@ -23,20 +23,20 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 	private Supplier<Boolean> topSupplier;
 	private Supplier<Boolean> bottomSupplier;
 
-	public static <T extends Node> RoundedNodeEffect<T> create(final float radius) {
-		return new RoundedNodeEffect<>(radius, true, true, true, true);
-	}
-
-	public static <T extends Node> RoundedNodeEffect<T> create(final @NonNull Supplier<Float> radiusSupplier) {
-		return RoundedNodeEffect.create(radiusSupplier, () -> true, () -> true, () -> true, () -> true);
-	}
-
 	private RoundedNodeEffect(final float radius, final boolean left, final boolean right, final boolean top, final boolean bottom) {
 		this.radiusSupplier = () -> radius;
 		this.leftSupplier = () -> left;
 		this.rightSupplier = () -> right;
 		this.topSupplier = () -> top;
 		this.bottomSupplier = () -> bottom;
+	}
+
+	public static <T extends Node> RoundedNodeEffect<T> create(final float radius) {
+		return new RoundedNodeEffect<>(radius, true, true, true, true);
+	}
+
+	public static <T extends Node> RoundedNodeEffect<T> create(final @NonNull Supplier<Float> radiusSupplier) {
+		return RoundedNodeEffect.create(radiusSupplier, () -> true, () -> true, () -> true, () -> true);
 	}
 
 	public static <T extends Node> RoundedNodeEffect<T> create(final float radius, final boolean left, final boolean right, final boolean top, final boolean bottom) {
@@ -53,16 +53,16 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 		return effect;
 	}
 
+	public float getRadius() {
+		return this.radiusSupplier.get();
+	}
+
 	public boolean isTop() {
 		return this.topSupplier.get();
 	}
 
 	public boolean isLeft() {
 		return this.leftSupplier.get();
-	}
-
-	public float getRadius() {
-		return this.radiusSupplier.get();
 	}
 
 	public boolean isRight() {
@@ -81,31 +81,6 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 	@Override
 	public ShaderPass toShaderPass(final @NonNull T node) {
 		return new RoundedShaderPass(this, node);
-	}
-
-	public <E extends RoundedNodeEffect<T>> @NonNull E top(final boolean top) {
-		this.topSupplier = () -> top;
-		return (E) this;
-	}
-
-	public <E extends RoundedNodeEffect<T>> @NonNull E left(final boolean left) {
-		this.leftSupplier = () -> left;
-		return (E) this;
-	}
-
-	public <E extends RoundedNodeEffect<T>> @NonNull E radius(final float radius) {
-		this.radiusSupplier = () -> radius;
-		return (E) this;
-	}
-
-	public <E extends RoundedNodeEffect<T>> @NonNull E right(final boolean right) {
-		this.rightSupplier = () -> right;
-		return (E) this;
-	}
-
-	public <E extends RoundedNodeEffect<T>> @NonNull E bottom(final boolean bottom) {
-		this.bottomSupplier = () -> bottom;
-		return (E) this;
 	}
 
 	@Override
@@ -135,13 +110,8 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 		RoundedShader.inst().unbind();
 	}
 
-	public <E extends RoundedNodeEffect<T>> @NonNull E top(final @NonNull Supplier<Boolean> topSupplier) {
-		this.topSupplier = topSupplier;
-		return (E) this;
-	}
-
-	public <E extends RoundedNodeEffect<T>> @NonNull E left(final @NonNull Supplier<Boolean> leftSupplier) {
-		this.leftSupplier = leftSupplier;
+	public <E extends RoundedNodeEffect<T>> @NonNull E radius(final float radius) {
+		this.radiusSupplier = () -> radius;
 		return (E) this;
 	}
 
@@ -150,8 +120,38 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 		return (E) this;
 	}
 
+	public <E extends RoundedNodeEffect<T>> @NonNull E left(final boolean left) {
+		this.leftSupplier = () -> left;
+		return (E) this;
+	}
+
+	public <E extends RoundedNodeEffect<T>> @NonNull E left(final @NonNull Supplier<Boolean> leftSupplier) {
+		this.leftSupplier = leftSupplier;
+		return (E) this;
+	}
+
+	public <E extends RoundedNodeEffect<T>> @NonNull E right(final boolean right) {
+		this.rightSupplier = () -> right;
+		return (E) this;
+	}
+
 	public <E extends RoundedNodeEffect<T>> @NonNull E right(final @NonNull Supplier<Boolean> rightSupplier) {
 		this.rightSupplier = rightSupplier;
+		return (E) this;
+	}
+
+	public <E extends RoundedNodeEffect<T>> @NonNull E top(final boolean top) {
+		this.topSupplier = () -> top;
+		return (E) this;
+	}
+
+	public <E extends RoundedNodeEffect<T>> @NonNull E top(final @NonNull Supplier<Boolean> topSupplier) {
+		this.topSupplier = topSupplier;
+		return (E) this;
+	}
+
+	public <E extends RoundedNodeEffect<T>> @NonNull E bottom(final boolean bottom) {
+		this.bottomSupplier = () -> bottom;
 		return (E) this;
 	}
 

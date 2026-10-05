@@ -20,15 +20,15 @@ public class TextNode extends Node {
 	private double initialWidth;
 	private double initialHeight;
 
-	public static @NonNull TextNode create(final double x, final double y) {
-		return new TextNode(x, y, 0, 0);
-	}
-
 	protected TextNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
 		this.text = null;
 		this.mode = TextMode.NORMAL;
+	}
+
+	public static @NonNull TextNode create(final double x, final double y) {
+		return new TextNode(x, y, 0, 0);
 	}
 
 	public static @NonNull TextNode create(final double x, final double y, final double width, final double height) {
@@ -62,13 +62,6 @@ public class TextNode extends Node {
 		} else if (this.mode == TextMode.SPLIT) {
 			super.height(DrawUtils.TEXT.getLines(super.getWidth(), this.text).stream().mapToDouble(Text::getHeight).sum());
 		}
-	}
-
-	public final <T extends TextNode> @NonNull T reset() {
-		this.initialized = true;
-		this.initialWidth = super.getWidth();
-		this.initialHeight = super.getHeight();
-		return (T) this;
 	}
 
 	@Override
@@ -115,6 +108,13 @@ public class TextNode extends Node {
 
 	public final <T extends TextNode> @NonNull T mode(final @NonNull TextMode mode) {
 		this.mode = mode;
+		return (T) this;
+	}
+
+	public final <T extends TextNode> @NonNull T reset() {
+		this.initialized = true;
+		this.initialWidth = super.getWidth();
+		this.initialHeight = super.getHeight();
 		return (T) this;
 	}
 

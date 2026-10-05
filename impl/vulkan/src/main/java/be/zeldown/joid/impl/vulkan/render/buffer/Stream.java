@@ -24,10 +24,6 @@ public final class Stream {
 		this.buffer    = Buffer.create(context, capacity, usage);
 	}
 
-	public void reset() {
-		this.offset = 0L;
-	}
-
 	public long allocate(final long size) {
 		final long aligned = (this.offset + this.alignment - 1) / this.alignment * this.alignment;
 		if (aligned + size > this.buffer.getSize()) {
@@ -40,6 +36,10 @@ public final class Stream {
 
 		this.offset = aligned + size;
 		return aligned;
+	}
+
+	public void reset() {
+		this.offset = 0L;
 	}
 
 }

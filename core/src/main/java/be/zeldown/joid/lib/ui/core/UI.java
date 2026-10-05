@@ -243,37 +243,142 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	@Override
-	public int getIndex() {
-		return 0;
-	}
-
-	public final void reload() {
-		if (this.devNode != null) {
-			this.devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
-			this.devNode.getReloadAnimator().start();
+	public final boolean onMouseScroll(final int value) {
+		if (!this.initialized) {
+			return false;
 		}
 
-		this.initialized = false;
-		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && value != 0) {
+			this.zoom(this.view.getZoom() + value / (Key.LEFT_SHIFT.isDown() ? 1000D : 10000D));
+			return true;
+		}
+
+		final InternalContext context = InternalContext.create();
+		this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, value, context));
+
+		this.mouseScroll(mx, my, value, context);
+		return context.isCancelled();
+	}
+
+	public final boolean onMousePressed(final @NonNull ClickType clickType) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		final InternalContext context = InternalContext.create();
+
+		this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+		this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+
+		this.mousePressed(mx, my, clickType, context);
+		return context.isCancelled();
+	}
+
+	public final boolean onMouseReleased(final @NonNull ClickType clickType) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		final InternalContext context = InternalContext.create();
+		this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, clickType, context));
+
+		this.mouseReleased(mx, my, clickType, context);
+		return context.isCancelled();
+	}
+
+	public final boolean onMouseDragged(final @NonNull ClickType clickType, final long deltaTime) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		final InternalContext context = InternalContext.create();
+		this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, clickType, deltaTime, context));
+
+		this.mouseDragged(mx, my, clickType, deltaTime, context);
+		return context.isCancelled();
+	}
+
+	public final boolean onKeyPressed(final char c, final @NonNull Key key) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final InternalContext context = InternalContext.create();
+		this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context));
+
+		if (!context.isCancelled()) {
+			for (final Map.Entry<Key[], Runnable> entry : this.keybindMap.entrySet()) {
+				boolean match = true;
+				for (final Key bindKey : entry.getKey()) {
+					if (!bindKey.isDown()) {
+						match = false;
+						break;
+					}
+				}
+
+				if (match) {
+					entry.getValue().run();
+					context.cancel();
+				}
+			}
+		}
+
+		if (this.data.zoomable() && !context.isCancelled()) {
+			if ((key == Key.NUMPAD_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+				final double previous = this.view.getZoom();
+				this.zoom(previous + 0.1D);
+				if (this.view.getZoom() != previous) {
+					context.cancel();
+				}
+			}
+
+			if ((key == Key.NUMPAD_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+				final double previous = this.view.getZoom();
+				this.zoom(previous - 0.1D);
+				if (this.view.getZoom() != previous) {
+					context.cancel();
+				}
+			}
+		}
+
+		if (JOID.inst().isDevMode() && !context.isCancelled()) {
+			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
+				if (Key.LEFT_SHIFT.isDown()) {
+					this.zoom(1D);
+				}
+
+				this.reload();
+				context.cancel();
+			} else if (key == Key.F3 && this.devNode != null) {
+				final boolean enabled = this.nodeList.contains(this.devNode);
+				if (enabled) {
+					this.nodeList.remove(this.devNode);
+				} else {
+					this.devNode.attach(this);
+				}
+				context.cancel();
+			}
+		}
+
+		this.keyPressed(c, key, context);
+		return context.isCancelled();
 	}
 
 	public final void onUpdate() {
 		this.nodeList.forEach(Node::onUpdate);
 		this.update();
-	}
-
-	public final void stopMask() {
-		this.stencilStack.pop();
-		final int stencilValue = this.stencilStack.size();
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (stencilValue == 0) {
-			render.stencilTest(false);
-			render.clearStencil();
-		} else {
-			render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
-			render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
-		}
 	}
 
 	public final boolean onClose() {
@@ -299,8 +404,17 @@ public abstract class UI implements IUI, IndexedElement {
 		return true;
 	}
 
+	@Override
+	public int getIndex() {
+		return 0;
+	}
+
 	public final double getWidth() {
 		return this.view.getWidth();
+	}
+
+	public final double getHeight() {
+		return this.view.getHeight();
 	}
 
 	public final double getMouseX() {
@@ -311,8 +425,8 @@ public abstract class UI implements IUI, IndexedElement {
 		return this.view.toUiY(this.mouseY);
 	}
 
-	public final double getHeight() {
-		return this.view.getHeight();
+	public final IUIBridge getBridge() {
+		return BridgeHandler.UI.get(this);
 	}
 
 	public final void properlyClose() {
@@ -340,62 +454,6 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		UIPropertyHook.save(this);
-	}
-
-	public final IUIBridge getBridge() {
-		return BridgeHandler.UI.get(this);
-	}
-
-	public static boolean isAltKeyDown() {
-		return Key.LEFT_ALT.isDown() || Key.RIGHT_ALT.isDown();
-	}
-
-	public static boolean isCtrlKeyDown() {
-		return Key.LEFT_CONTROL.isDown() || Key.RIGHT_CONTROL.isDown();
-	}
-
-	public static boolean isShiftKeyDown()  {
-		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
-	}
-
-	public final void zoom(final double zoom) {
-		this.view.zoom(zoom);
-		this.refreshView();
-	}
-
-	public final boolean onMouseScroll(final int value) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && value != 0) {
-			this.zoom(this.view.getZoom() + value / (Key.LEFT_SHIFT.isDown() ? 1000D : 10000D));
-			return true;
-		}
-
-		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, value, context));
-
-		this.mouseScroll(mx, my, value, context);
-		return context.isCancelled();
-	}
-
-	public final void schedule(final @NonNull Runnable runnable) {
-		this.schedule(runnable, 0L, -1L);
-	}
-
-	public final void setRenderPipelineLevel(final double level) {
-		this.renderPipelineLevel = level;
-	}
-
-	public final void add(final @NonNull Node @NonNull ... nodes) {
-		for (final Node node : nodes) {
-			node.load(this);
-			this.nodeList.add(node);
-		}
 	}
 
 	public final void draw(final double mouseX, final double mouseY) {
@@ -554,211 +612,12 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	public final @NonNull UI setTransition(final Transition transition) {
-		this.transition = transition;
-		return this;
-	}
-
-	public final boolean onMousePressed(final @NonNull ClickType clickType) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		final InternalContext context = InternalContext.create();
-
-		this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
-		this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
-
-		this.mousePressed(mx, my, clickType, context);
-		return context.isCancelled();
-	}
-
-	public final boolean onKeyPressed(final char c, final @NonNull Key key) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context));
-
-		if (!context.isCancelled()) {
-			for (final Map.Entry<Key[], Runnable> entry : this.keybindMap.entrySet()) {
-				boolean match = true;
-				for (final Key bindKey : entry.getKey()) {
-					if (!bindKey.isDown()) {
-						match = false;
-						break;
-					}
-				}
-
-				if (match) {
-					entry.getValue().run();
-					context.cancel();
-				}
-			}
-		}
-
-		if (this.data.zoomable() && !context.isCancelled()) {
-			if ((key == Key.NUMPAD_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
-				final double previous = this.view.getZoom();
-				this.zoom(previous + 0.1D);
-				if (this.view.getZoom() != previous) {
-					context.cancel();
-				}
-			}
-
-			if ((key == Key.NUMPAD_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
-				final double previous = this.view.getZoom();
-				this.zoom(previous - 0.1D);
-				if (this.view.getZoom() != previous) {
-					context.cancel();
-				}
-			}
-		}
-
-		if (JOID.inst().isDevMode() && !context.isCancelled()) {
-			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
-				if (Key.LEFT_SHIFT.isDown()) {
-					this.zoom(1D);
-				}
-
-				this.reload();
-				context.cancel();
-			} else if (key == Key.F3 && this.devNode != null) {
-				final boolean enabled = this.nodeList.contains(this.devNode);
-				if (enabled) {
-					this.nodeList.remove(this.devNode);
-				} else {
-					this.devNode.attach(this);
-				}
-				context.cancel();
-			}
-		}
-
-		this.keyPressed(c, key, context);
-		return context.isCancelled();
-	}
-
-	public final boolean onMouseReleased(final @NonNull ClickType clickType) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, clickType, context));
-
-		this.mouseReleased(mx, my, clickType, context);
-		return context.isCancelled();
-	}
-
-	public final void schedule(final @NonNull Runnable runnable, final long delay) {
-		this.schedule(runnable, delay, -1L);
-	}
-
-	public final void keybind(final @NonNull Runnable runnable, final @NonNull Key... keys) {
-		this.keybindMap.put(keys, runnable);
-	}
-
-	public final boolean onMouseDragged(final @NonNull ClickType clickType, final long deltaTime) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, clickType, deltaTime, context));
-
-		this.mouseDragged(mx, my, clickType, deltaTime, context);
-		return context.isCancelled();
-	}
-
-	public final void schedule(final @NonNull Runnable runnable, final long delay, final long period) {
-		this.scheduledTaskList.add(new UIScheduledTask(runnable, delay, period));
-	}
-
-	@SuppressWarnings("unchecked")
-	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
-		if (this.storeMap.containsKey(clazz)) {
-			return (T) this.storeMap.get(clazz);
-		}
-
-		final T store = UIStoreHook.useStore(clazz, args);
-		if (store.getData().context().isLocal()) {
-			this.storeMap.put(clazz, store);
-		}
-
-		return store;
-	}
-
 	public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
 		this.getBridge().drawHover(this, lines, mouseX, mouseY);
 	}
 
-	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
-		final int stencilValue = this.stencilStack.size() + 1;
-		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (stencilValue == 1) {
-			render.clearStencil();
-			render.stencilTest(true);
-		}
-
-		render.stencilFunction(StencilFunction.EQUAL, stencilValue - 1, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
-
-		render.colorMask(false);
-		DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED);
-		render.colorMask(true);
-
-		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
-	}
-
-	public final double lerpByFramerate(final double value, final double target, final double speed, final double snapDiff, final boolean snap) {
-		final double diff = target - value;
-		final double absDiff = Math.abs(diff);
-
-		final double offset = Math.min(absDiff, speed * this.frameTime / UI.FRAME_TIME * absDiff / 3D);
-
-		if (absDiff > snapDiff) {
-			return value + (diff > 0 ? offset : -offset);
-		}
-
-		return snap ? target : value;
-	}
-
 	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeiht, final @NonNull Drawing drawing) {
 		this.mask(maskX, maskY, maskWidth, maskHeiht, drawing, true);
-	}
-
-	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
-		final int stencilValue = this.stencilStack.size() + 1;
-		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (stencilValue == 1) {
-			render.clearStencil();
-			render.stencilTest(true);
-		}
-
-		render.stencilFunction(StencilFunction.EQUAL, stencilValue - 1, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
-
-		render.pushState();
-		render.colorMask(false);
-		render.alphaTest(0.5F);
-		DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
-		render.popState();
-
-		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
 	}
 
 	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
@@ -783,6 +642,147 @@ public abstract class UI implements IUI, IndexedElement {
 		} else {
 			drawing.draw();
 		}
+	}
+
+	public final void stopMask() {
+		this.stencilStack.pop();
+		final int stencilValue = this.stencilStack.size();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (stencilValue == 0) {
+			render.stencilTest(false);
+			render.clearStencil();
+		} else {
+			render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
+			render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+		}
+	}
+
+	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
+		final int stencilValue = this.stencilStack.size() + 1;
+		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (stencilValue == 1) {
+			render.clearStencil();
+			render.stencilTest(true);
+		}
+
+		render.stencilFunction(StencilFunction.EQUAL, stencilValue - 1, 0xFF);
+		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
+
+		render.colorMask(false);
+		DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED);
+		render.colorMask(true);
+
+		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
+		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+	}
+
+	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
+		final int stencilValue = this.stencilStack.size() + 1;
+		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (stencilValue == 1) {
+			render.clearStencil();
+			render.stencilTest(true);
+		}
+
+		render.stencilFunction(StencilFunction.EQUAL, stencilValue - 1, 0xFF);
+		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
+
+		render.pushState();
+		render.colorMask(false);
+		render.alphaTest(0.5F);
+		DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
+		render.popState();
+
+		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
+		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+	}
+
+	public final void keybind(final @NonNull Runnable runnable, final @NonNull Key... keys) {
+		this.keybindMap.put(keys, runnable);
+	}
+
+	public final void reload() {
+		if (this.devNode != null) {
+			this.devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
+			this.devNode.getReloadAnimator().start();
+		}
+
+		this.initialized = false;
+		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
+	}
+
+	public final double lerpByFramerate(final double value, final double target, final double speed, final double snapDiff, final boolean snap) {
+		final double diff = target - value;
+		final double absDiff = Math.abs(diff);
+
+		final double offset = Math.min(absDiff, speed * this.frameTime / UI.FRAME_TIME * absDiff / 3D);
+
+		if (absDiff > snapDiff) {
+			return value + (diff > 0 ? offset : -offset);
+		}
+
+		return snap ? target : value;
+	}
+
+	public final void schedule(final @NonNull Runnable runnable) {
+		this.schedule(runnable, 0L, -1L);
+	}
+
+	public final void schedule(final @NonNull Runnable runnable, final long delay) {
+		this.schedule(runnable, delay, -1L);
+	}
+
+	public final void schedule(final @NonNull Runnable runnable, final long delay, final long period) {
+		this.scheduledTaskList.add(new UIScheduledTask(runnable, delay, period));
+	}
+
+	public final void add(final @NonNull Node @NonNull ... nodes) {
+		for (final Node node : nodes) {
+			node.load(this);
+			this.nodeList.add(node);
+		}
+	}
+
+	public final void setRenderPipelineLevel(final double level) {
+		this.renderPipelineLevel = level;
+	}
+
+	public final @NonNull UI setTransition(final Transition transition) {
+		this.transition = transition;
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
+		if (this.storeMap.containsKey(clazz)) {
+			return (T) this.storeMap.get(clazz);
+		}
+
+		final T store = UIStoreHook.useStore(clazz, args);
+		if (store.getData().context().isLocal()) {
+			this.storeMap.put(clazz, store);
+		}
+
+		return store;
+	}
+
+	public static boolean isAltKeyDown() {
+		return Key.LEFT_ALT.isDown() || Key.RIGHT_ALT.isDown();
+	}
+
+	public static boolean isCtrlKeyDown() {
+		return Key.LEFT_CONTROL.isDown() || Key.RIGHT_CONTROL.isDown();
+	}
+
+	public static boolean isShiftKeyDown()  {
+		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
+	}
+
+	public final void zoom(final double zoom) {
+		this.view.zoom(zoom);
+		this.refreshView();
 	}
 
 	private void refreshView() {

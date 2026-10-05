@@ -212,75 +212,6 @@ public class MultilineTextFieldNode extends Node {
 		}
 	}
 
-	public final <T extends MultilineTextFieldNode> @NonNull T margin(final double margin) {
-		this.marginTop    = margin;
-		this.marginBottom = margin;
-		this.marginLeft   = margin;
-		this.marginRight  = margin;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T focused(final boolean focused) {
-		if (this.focused == focused) {
-			return (T) this;
-		}
-
-		super.executeCallback(MultilineTextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
-			this.focused = focused;
-		});
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T text(final @NonNull String text) {
-		this.setText(text);
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T marginTop(final double marginTop) {
-		this.marginTop = marginTop;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T marginLeft(final double marginLeft) {
-		this.marginLeft = marginLeft;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T cursorPosition(final int cursorPos) {
-		this.cursorPos = Math.min(Math.max(0, cursorPos), this.text.length());
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T marginRight(final double marginRight) {
-		this.marginRight = marginRight;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T info(final @NonNull TextInfo textInfo) {
-		this.info = textInfo;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T maxTextLength(final int maxTextLength) {
-		this.maxTextLength = maxTextLength;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T marginBottom(final double marginBottom) {
-		this.marginBottom = marginBottom;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T cursorMargin(final double cursorMargin) {
-		this.cursorMargin = cursorMargin;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T placeholder(final @NonNull String placeholder) {
-		this.placeholder = placeholder;
-		return (T) this;
-	}
-
 	@Override
 	public final void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !this.focused) {
@@ -505,55 +436,6 @@ public class MultilineTextFieldNode extends Node {
 		});
 	}
 
-	public final <T extends MultilineTextFieldNode> @NonNull T margin(final double margin, final double cursorMargin) {
-		this.marginTop    = margin;
-		this.marginBottom = margin;
-		this.marginLeft   = margin;
-		this.marginRight  = margin;
-		this.cursorMargin = cursorMargin;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
-		super.registerCallback(MultilineTextFieldNode.CALLBACK_FOCUS, callback);
-		return (T) this;
-	}
-
-	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
-		if (context.isCancelled() || !this.focused) {
-			return;
-		}
-
-		context.cancel(() -> {
-			final double lineHeight = this.getLineHeight();
-			if (value > 0) {
-				this.yOffset -= lineHeight;
-			} else if (value < 0) {
-				this.yOffset += lineHeight;
-			}
-
-			if (this.yOffset < 0) {
-				this.yOffset = 0;
-			}
-
-			final List<String> lines = this.getLines();
-			if (this.yOffset > lines.size() * lineHeight - super.getHeight() + this.marginTop + this.marginBottom) {
-				this.yOffset = lines.size() * lineHeight - super.getHeight() + this.marginTop + this.marginBottom;
-			}
-		});
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T filter(final @NonNull BiFunction<String, String, String> filter) {
-		this.filter = filter;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
-		super.registerCallback(MultilineTextFieldNode.CALLBACK_CHANGE, callback);
-		return (T) this;
-	}
-
 	@Override
 	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
@@ -608,50 +490,122 @@ public class MultilineTextFieldNode extends Node {
 		});
 	}
 
-	private final int nextWordIndex() {
-		int index = this.cursorPos;
-		while (index < this.text.length() && !this.isSeparator(this.text.charAt(index))) {
-			index++;
+	@Override
+	public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
+		if (context.isCancelled() || !this.focused) {
+			return;
 		}
 
-		while (index < this.text.length() && this.isSeparator(this.text.charAt(index))) {
-			index++;
+		context.cancel(() -> {
+			final double lineHeight = this.getLineHeight();
+			if (value > 0) {
+				this.yOffset -= lineHeight;
+			} else if (value < 0) {
+				this.yOffset += lineHeight;
+			}
+
+			if (this.yOffset < 0) {
+				this.yOffset = 0;
+			}
+
+			final List<String> lines = this.getLines();
+			if (this.yOffset > lines.size() * lineHeight - super.getHeight() + this.marginTop + this.marginBottom) {
+				this.yOffset = lines.size() * lineHeight - super.getHeight() + this.marginTop + this.marginBottom;
+			}
+		});
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T text(final @NonNull String text) {
+		this.setText(text);
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T placeholder(final @NonNull String placeholder) {
+		this.placeholder = placeholder;
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T info(final @NonNull TextInfo textInfo) {
+		this.info = textInfo;
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T focused(final boolean focused) {
+		if (this.focused == focused) {
+			return (T) this;
 		}
 
-		return index;
+		super.executeCallback(MultilineTextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
+			this.focused = focused;
+		});
+		return (T) this;
 	}
 
-	private final double getRawWidth() {
-		return super.getWidth() - this.marginLeft - this.marginRight;
+	public final <T extends MultilineTextFieldNode> @NonNull T filter(final @NonNull BiFunction<String, String, String> filter) {
+		this.filter = filter;
+		return (T) this;
 	}
 
-	private final double getRawHeight() {
-		return super.getHeight() - this.marginTop - this.marginBottom;
+	public final <T extends MultilineTextFieldNode> @NonNull T maxTextLength(final int maxTextLength) {
+		this.maxTextLength = maxTextLength;
+		return (T) this;
 	}
 
-	private final double getLineHeight() {
-		return this.info.getHeight();
+	public final <T extends MultilineTextFieldNode> @NonNull T margin(final double margin) {
+		this.marginTop    = margin;
+		this.marginBottom = margin;
+		this.marginLeft   = margin;
+		this.marginRight  = margin;
+		return (T) this;
 	}
 
-	private final int previousWordIndex() {
-		int index = this.cursorPos;
-		while (index > 0 && this.isSeparator(this.text.charAt(index - 1))) {
-			index--;
-		}
-
-		while (index > 0 && !this.isSeparator(this.text.charAt(index - 1))) {
-			index--;
-		}
-
-		return index;
+	public final <T extends MultilineTextFieldNode> @NonNull T margin(final double margin, final double cursorMargin) {
+		this.marginTop    = margin;
+		this.marginBottom = margin;
+		this.marginLeft   = margin;
+		this.marginRight  = margin;
+		this.cursorMargin = cursorMargin;
+		return (T) this;
 	}
 
-	private final @NonNull List<String> getLines() {
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), this.text, this.info);
+	public final <T extends MultilineTextFieldNode> @NonNull T marginTop(final double marginTop) {
+		this.marginTop = marginTop;
+		return (T) this;
 	}
 
-	private final boolean isSeparator(final char c) {
-		return c == ' ' || c == '\n' || c == '\r';
+	public final <T extends MultilineTextFieldNode> @NonNull T marginLeft(final double marginLeft) {
+		this.marginLeft = marginLeft;
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T marginRight(final double marginRight) {
+		this.marginRight = marginRight;
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T marginBottom(final double marginBottom) {
+		this.marginBottom = marginBottom;
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T cursorMargin(final double cursorMargin) {
+		this.cursorMargin = cursorMargin;
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T cursorPosition(final int cursorPos) {
+		this.cursorPos = Math.min(Math.max(0, cursorPos), this.text.length());
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
+		super.registerCallback(MultilineTextFieldNode.CALLBACK_CHANGE, callback);
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
+		super.registerCallback(MultilineTextFieldNode.CALLBACK_FOCUS, callback);
+		return (T) this;
 	}
 
 	private final void setText(final String newText) {
@@ -665,6 +619,13 @@ public class MultilineTextFieldNode extends Node {
 		} else {
 			this.text = accepted;
 		}
+	}
+
+	private final void holdInput(final @NonNull Key key) {
+		this.firstInput = true;
+		this.inputting  = true;
+		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.inputType  = key;
 	}
 
 	private final void decreaseCursor(final int value) {
@@ -702,6 +663,32 @@ public class MultilineTextFieldNode extends Node {
 		}
 	}
 
+	private final double getRawWidth() {
+		return super.getWidth() - this.marginLeft - this.marginRight;
+	}
+
+	private final double getRawHeight() {
+		return super.getHeight() - this.marginTop - this.marginBottom;
+	}
+
+	private final double getLineHeight() {
+		return this.info.getHeight();
+	}
+
+	private final @NonNull List<String> getLines() {
+		return DrawUtils.TEXT.getLines(this.getRawWidth(), this.text, this.info);
+	}
+
+	private final @NonNull List<String> getLines(final @NonNull String text) {
+		return DrawUtils.TEXT.getLines(this.getRawWidth(), text, this.info);
+	}
+
+	private final @NonNull List<String> getLines(final int start, final int end) {
+		final int from = Math.max(0, start);
+		final int to = Math.min(this.text.replace("\n", "").length(), end);
+		return DrawUtils.TEXT.getLines(this.getRawWidth(), this.text.substring(from, to), this.info);
+	}
+
 	private final int[] getLineAndColumn(final int pos) {
 		final List<String> lines = this.getLines();
 		if (lines.isEmpty()) {
@@ -730,11 +717,65 @@ public class MultilineTextFieldNode extends Node {
 		return new int[] {lines.size() - 1, lastLine.length()};
 	}
 
-	private final void holdInput(final @NonNull Key key) {
-		this.firstInput = true;
-		this.inputting  = true;
-		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.inputType  = key;
+	private final double getTextWidth(final @NonNull String text) {
+		return this.info.getWidth(text.replace("\n", ""));
+	}
+
+	private final int getTextPosition(final int lineIdx, final int col) {
+		final List<String> lines = this.getLines();
+		if (lines.isEmpty()) {
+			return 0;
+		}
+
+		int textIdx = 0;
+		final int clampedLineIdx = Math.min(Math.max(0, lineIdx), lines.size() - 1);
+		for (int i = 0; i <= clampedLineIdx; i++) {
+			if (i > 0 && textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
+				textIdx++;
+			}
+
+			final String line = lines.get(i).replace("\n", "").replace("\r", "");
+			if (i == clampedLineIdx) {
+				return textIdx + Math.min(Math.max(0, col), line.length());
+			}
+
+			textIdx += line.length();
+			if (textIdx < this.text.length() && this.text.charAt(textIdx) == ' ' && i < lines.size() - 1) {
+				textIdx++;
+			}
+		}
+
+		return textIdx;
+	}
+
+	private final int nextWordIndex() {
+		int index = this.cursorPos;
+		while (index < this.text.length() && !this.isSeparator(this.text.charAt(index))) {
+			index++;
+		}
+
+		while (index < this.text.length() && this.isSeparator(this.text.charAt(index))) {
+			index++;
+		}
+
+		return index;
+	}
+
+	private final int previousWordIndex() {
+		int index = this.cursorPos;
+		while (index > 0 && this.isSeparator(this.text.charAt(index - 1))) {
+			index--;
+		}
+
+		while (index > 0 && !this.isSeparator(this.text.charAt(index - 1))) {
+			index--;
+		}
+
+		return index;
+	}
+
+	private final boolean isSeparator(final char c) {
+		return c == ' ' || c == '\n' || c == '\r';
 	}
 
 	private final boolean deleteSelection(final boolean filter) {
@@ -770,47 +811,6 @@ public class MultilineTextFieldNode extends Node {
 
 		this.selectionStart = -1;
 		return true;
-	}
-
-	private final double getTextWidth(final @NonNull String text) {
-		return this.info.getWidth(text.replace("\n", ""));
-	}
-
-	private final int getTextPosition(final int lineIdx, final int col) {
-		final List<String> lines = this.getLines();
-		if (lines.isEmpty()) {
-			return 0;
-		}
-
-		int textIdx = 0;
-		final int clampedLineIdx = Math.min(Math.max(0, lineIdx), lines.size() - 1);
-		for (int i = 0; i <= clampedLineIdx; i++) {
-			if (i > 0 && textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
-				textIdx++;
-			}
-
-			final String line = lines.get(i).replace("\n", "").replace("\r", "");
-			if (i == clampedLineIdx) {
-				return textIdx + Math.min(Math.max(0, col), line.length());
-			}
-
-			textIdx += line.length();
-			if (textIdx < this.text.length() && this.text.charAt(textIdx) == ' ' && i < lines.size() - 1) {
-				textIdx++;
-			}
-		}
-
-		return textIdx;
-	}
-
-	private final @NonNull List<String> getLines(final @NonNull String text) {
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), text, this.info);
-	}
-
-	private final @NonNull List<String> getLines(final int start, final int end) {
-		final int from = Math.max(0, start);
-		final int to = Math.min(this.text.replace("\n", "").length(), end);
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), this.text.substring(from, to), this.info);
 	}
 
 }

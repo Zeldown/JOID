@@ -16,11 +16,17 @@ public abstract class NodeEffect<T extends Node> {
 	private NodeEffectScope scope = NodeEffectScope.SELF;
 
 	public void init(final @NonNull T node, final @NonNull UI ui) {}
-	public boolean isShaderEffect() {
-		return false;
-	}
+
+	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {}
+
+	public void post(final @NonNull T node, final double mouseX, final double mouseY) {}
+
 	public boolean shouldApply(final @NonNull T node) {
 		return true;
+	}
+
+	public boolean isShaderEffect() {
+		return false;
 	}
 
 	public ShaderPass toShaderPass(final @NonNull T node) {
@@ -42,10 +48,6 @@ public abstract class NodeEffect<T extends Node> {
 		this.scope = scope;
 		return this;
 	}
-
-	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {}
-
-	public void post(final @NonNull T node, final double mouseX, final double mouseY) {}
 
 	public static enum NodeEffectScope {
 

@@ -7,18 +7,6 @@ public class TweenAnimatorAccessor implements TweenAccessor<TweenAnimator> {
 	public static final int ANIMATION_VALUE = 0;
 
 	@Override
-	public void setValues(final TweenAnimator target, final int tweenType, final float[] newValues) {
-		switch (tweenType) {
-		case ANIMATION_VALUE:
-			target.setValue(newValues[0]);
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	@Override
 	public int getValues(final TweenAnimator target, final int tweenType, final float[] returnValues) {
 		switch (tweenType) {
 		case ANIMATION_VALUE:
@@ -30,6 +18,18 @@ public class TweenAnimatorAccessor implements TweenAccessor<TweenAnimator> {
 		}
 
 		return 1;
+	}
+
+	@Override
+	public void setValues(final TweenAnimator target, final int tweenType, final float[] newValues) {
+		switch (tweenType) {
+		case ANIMATION_VALUE:
+			target.setValue(newValues[0]);
+			break;
+
+		default:
+			break;
+		}
 	}
 
 }

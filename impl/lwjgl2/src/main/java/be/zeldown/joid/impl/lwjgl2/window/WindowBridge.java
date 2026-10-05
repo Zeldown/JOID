@@ -158,11 +158,6 @@ public final class WindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isMouseGrabbed() {
-		return Mouse.isGrabbed();
-	}
-
-	@Override
 	public @NonNull String getClipboard() {
 		try {
 			final Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
@@ -174,14 +169,19 @@ public final class WindowBridge implements IWindowBridge {
 		return "";
 	}
 
+	public static @NonNull Key getKey(final int code) {
+		return code < 0 || code >= WindowBridge.KEY_ARRAY.length ? Key.UNKNOWN : WindowBridge.KEY_ARRAY[code];
+	}
+
+	@Override
+	public boolean isMouseGrabbed() {
+		return Mouse.isGrabbed();
+	}
+
 	@Override
 	public boolean isKeyDown(final @NonNull Key key) {
 		final Integer code = WindowBridge.CODE_MAP.get(key);
 		return code != null && Keyboard.isKeyDown(code);
-	}
-
-	public static @NonNull Key getKey(final int code) {
-		return code < 0 || code >= WindowBridge.KEY_ARRAY.length ? Key.UNKNOWN : WindowBridge.KEY_ARRAY[code];
 	}
 
 	@Override

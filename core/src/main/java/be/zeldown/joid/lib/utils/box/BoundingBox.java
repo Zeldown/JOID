@@ -23,16 +23,8 @@ public class BoundingBox {
 		return new BoundingBox(x, y, x + width, y + height);
 	}
 
-	public double getWidth() {
-		return this.maxX - this.minX;
-	}
-
 	public BoundingBox copy() {
 		return new BoundingBox(this.minX, this.minY, this.maxX, this.maxY);
-	}
-
-	public double getHeight() {
-		return this.maxY - this.minY;
 	}
 
 	public BoundingBox expand(final double value) {
@@ -53,6 +45,14 @@ public class BoundingBox {
 		this.maxY -= value;
 
 		return this;
+	}
+
+	public double getWidth() {
+		return this.maxX - this.minX;
+	}
+
+	public double getHeight() {
+		return this.maxY - this.minY;
 	}
 
 }

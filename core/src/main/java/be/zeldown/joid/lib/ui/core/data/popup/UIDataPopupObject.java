@@ -24,6 +24,21 @@ public final class UIDataPopupObject implements UIDataPopup {
 		return UIDataPopupObject.get(clazz).orElse(new UIDataPopupObject());
 	}
 
+	public static @NonNull Optional<UIDataPopupObject> get(final @NonNull Class<? extends UI> clazz) {
+		Class<?> currentClass = clazz;
+		UIDataPopup data = currentClass.getAnnotation(UIDataPopup.class);
+		while (data == null && currentClass.getSuperclass() != null) {
+			currentClass = currentClass.getSuperclass();
+			data = currentClass.getAnnotation(UIDataPopup.class);
+		}
+		return data != null ? Optional.of(new UIDataPopupObject(data)) : Optional.empty();
+	}
+
+	@Override
+	public Class<? extends Annotation> annotationType() {
+		return UIDataPopup.class;
+	}
+
 	@Override
 	public boolean active() {
 		return this.active;
@@ -34,11 +49,6 @@ public final class UIDataPopupObject implements UIDataPopup {
 		return this.transition;
 	}
 
-	@Override
-	public Class<? extends Annotation> annotationType() {
-		return UIDataPopup.class;
-	}
-
 	public @NonNull UIDataPopupObject setActive(final boolean active) {
 		this.active = active;
 		return this;
@@ -47,16 +57,6 @@ public final class UIDataPopupObject implements UIDataPopup {
 	public @NonNull UIDataPopupObject setTransition(final @NonNull PopupTransition transition) {
 		this.transition = transition;
 		return this;
-	}
-
-	public static @NonNull Optional<UIDataPopupObject> get(final @NonNull Class<? extends UI> clazz) {
-		Class<?> currentClass = clazz;
-		UIDataPopup data = currentClass.getAnnotation(UIDataPopup.class);
-		while (data == null && currentClass.getSuperclass() != null) {
-			currentClass = currentClass.getSuperclass();
-			data = currentClass.getAnnotation(UIDataPopup.class);
-		}
-		return data != null ? Optional.of(new UIDataPopupObject(data)) : Optional.empty();
 	}
 
 }

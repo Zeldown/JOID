@@ -14,6 +14,8 @@ public abstract class Pool<T> {
 		this.callback = callback;
 	}
 
+	protected abstract T create();
+
 	public T get() {
 		final T obj = this.objects.isEmpty() ? this.create() : this.objects.remove(this.objects.size() - 1);
 		if (this.callback != null) {
@@ -21,16 +23,6 @@ public abstract class Pool<T> {
 		}
 		return obj;
 	}
-
-	public int size() {
-		return this.objects.size();
-	}
-
-	public void clear() {
-		this.objects.clear();
-	}
-
-	protected abstract T create();
 
 	public void free(final T obj) {
 		if (!this.objects.contains(obj)) {
@@ -40,6 +32,14 @@ public abstract class Pool<T> {
 
 			this.objects.add(obj);
 		}
+	}
+
+	public void clear() {
+		this.objects.clear();
+	}
+
+	public int size() {
+		return this.objects.size();
 	}
 
 	public void ensureCapacity(final int minCapacity) {

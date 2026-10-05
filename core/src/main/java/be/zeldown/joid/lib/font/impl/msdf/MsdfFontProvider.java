@@ -51,6 +51,23 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 	}
 
 	@Override
+	protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
+		if (!MsdfShader.SHADER.isActive()) {
+			throw new IllegalStateException("The msdf font shader is not usable");
+		}
+
+		this.face = null;
+		this.color = null;
+		this.runX = runX;
+		this.runY = runY;
+		this.runWidth = runWidth;
+		this.runHeight = runHeight;
+
+		Color.reset();
+		MsdfShader.SHADER.bind();
+	}
+
+	@Override
 	protected void drawGlyph(final @NonNull TextGlyph<MsdfFontFace> glyph) {
 		final MsdfFontFace face = glyph.getFace();
 		final MsdfGlyph msdf = face.getGlyph(glyph.getCodepoint());
@@ -93,23 +110,6 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 		tessellator.addVertexWithUV(right + topSlant, top, 0D, textureRight, textureTop);
 		tessellator.addVertexWithUV(left + topSlant, top, 0D, textureLeft, textureTop);
 		tessellator.draw();
-	}
-
-	@Override
-	protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
-		if (!MsdfShader.SHADER.isActive()) {
-			throw new IllegalStateException("The msdf font shader is not usable");
-		}
-
-		this.face = null;
-		this.color = null;
-		this.runX = runX;
-		this.runY = runY;
-		this.runWidth = runWidth;
-		this.runHeight = runHeight;
-
-		Color.reset();
-		MsdfShader.SHADER.bind();
 	}
 
 	private void bindColor(final @NonNull Color color) {

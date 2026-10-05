@@ -18,13 +18,6 @@ public final class Coloring {
 		}
 	}
 
-	private static int color(final int spline, final int splines) {
-		if (spline == splines - 1 && splines % 3 == 1) {
-			return Coloring.COLORS[1];
-		}
-		return Coloring.COLORS[spline % 3];
-	}
-
 	private static void apply(final List<Edge> contour, final double sine) {
 		final List<Integer> corners = new ArrayList<>();
 		for (int i = 0; i < contour.size(); i++) {
@@ -58,6 +51,13 @@ public final class Coloring {
 			}
 			contour.get(index).setColor(Coloring.color(spline, corners.size()));
 		}
+	}
+
+	private static int color(final int spline, final int splines) {
+		if (spline == splines - 1 && splines % 3 == 1) {
+			return Coloring.COLORS[1];
+		}
+		return Coloring.COLORS[spline % 3];
 	}
 
 	private static boolean isCorner(final Vector2 incoming, final Vector2 outgoing, final double sine) {

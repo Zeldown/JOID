@@ -182,23 +182,6 @@ public final class SnapshotRunner {
 		return shots;
 	}
 
-	private void awaitPlayback() {
-		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS && !SnapshotRunner.isPlaybackSynchronized(); attempt++) {
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
-			this.render(false);
-		}
-	}
-
-	private void awaitResources() {
-		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS; attempt++) {
-			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> !data.isGenerated() || data.isLoaded())) {
-				return;
-			}
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
-		}
-		throw new IllegalStateException("A resource never finished loading");
-	}
-
 	private void type(final String text) {
 		for (final char character : text.toCharArray()) {
 			final boolean shift = SnapshotRunner.isShifted(character) && this.window.getKeys().add(Key.LEFT_SHIFT);
@@ -235,46 +218,6 @@ public final class SnapshotRunner {
 
 		this.bridge.keyTyped((char) 0, key);
 		this.window.getKeys().removeAll(added);
-	}
-
-	private SnapshotImage settle(final String name) {
-		SnapshotImage previous = null;
-		SnapshotImage current = this.mask(this.render(true));
-		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous) || !SnapshotRunner.isPlaybackSynchronized()); attempt++) {
-			this.awaitResources();
-			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
-			previous = current;
-			current = this.mask(this.render(true));
-		}
-
-		if (!current.isSame(previous)) {
-			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing");
-		}
-
-		if (!SnapshotRunner.isPlaybackSynchronized()) {
-			throw new IllegalStateException(name + " never caught up with the clock while playing a video");
-		}
-		return current;
-	}
-
-	private SnapshotImage render(final boolean capture) {
-		this.bridge.update();
-		this.backend.frame(() -> {
-			BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
-			DrawUtils.SHAPE.drawRect(0, 0, this.window.getWidth(), this.window.getHeight(), SnapshotRunner.BACKGROUND);
-			this.bridge.draw();
-		});
-
-		final SnapshotImage image = capture ? this.backend.capture(this.window.getWidth(), this.window.getHeight()) : null;
-		this.backend.present();
-		return image;
-	}
-
-	private SnapshotImage mask(final SnapshotImage image) {
-		for (final int[] mask : this.masks) {
-			image.fill(mask[0], mask[1], mask[2], mask[3], SnapshotRunner.MASK);
-		}
-		return image;
 	}
 
 	private void resize(final int width, final int height) {
@@ -322,6 +265,63 @@ public final class SnapshotRunner {
 		}
 	}
 
+	private void awaitPlayback() {
+		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS && !SnapshotRunner.isPlaybackSynchronized(); attempt++) {
+			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+			this.render(false);
+		}
+	}
+
+	private void awaitResources() {
+		for (int attempt = 0; attempt < SnapshotRunner.LOAD_ATTEMPTS; attempt++) {
+			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> !data.isGenerated() || data.isLoaded())) {
+				return;
+			}
+			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+		}
+		throw new IllegalStateException("A resource never finished loading");
+	}
+
+	private SnapshotImage settle(final String name) {
+		SnapshotImage previous = null;
+		SnapshotImage current = this.mask(this.render(true));
+		for (int attempt = 0; attempt < SnapshotRunner.SETTLE_ATTEMPTS && (previous == null || !current.isSame(previous) || !SnapshotRunner.isPlaybackSynchronized()); attempt++) {
+			this.awaitResources();
+			SnapshotRunner.sleep(SnapshotRunner.SETTLE_DELAY);
+			previous = current;
+			current = this.mask(this.render(true));
+		}
+
+		if (!current.isSame(previous)) {
+			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing");
+		}
+
+		if (!SnapshotRunner.isPlaybackSynchronized()) {
+			throw new IllegalStateException(name + " never caught up with the clock while playing a video");
+		}
+		return current;
+	}
+
+	private SnapshotImage render(final boolean capture) {
+		this.bridge.update();
+		this.backend.frame(() -> {
+			BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
+			DrawUtils.SHAPE.drawRect(0, 0, this.window.getWidth(), this.window.getHeight(), SnapshotRunner.BACKGROUND);
+			this.bridge.draw();
+		});
+
+		final SnapshotImage image = capture ? this.backend.capture(this.window.getWidth(), this.window.getHeight()) : null;
+		this.backend.present();
+		return image;
+	}
+
+	private SnapshotImage mask(final SnapshotImage image) {
+		for (final int[] mask : this.masks) {
+			image.fill(mask[0], mask[1], mask[2], mask[3], SnapshotRunner.MASK);
+		}
+		return image;
+	}
+
 	private static void sleep(final long duration) {
 		try {
 			Thread.sleep(duration);
@@ -332,6 +332,10 @@ public final class SnapshotRunner {
 
 	private static boolean isPlaybackSynchronized() {
 		return ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().map(data -> data.getDecoder(VideoResourceDecoder.class)).allMatch(decoder -> decoder == null || decoder.isSynchronized());
+	}
+
+	private static boolean isShifted(final char character) {
+		return character >= 'A' && character <= 'Z' || SnapshotRunner.SHIFTED_DIGITS.indexOf(character) >= 0 || SnapshotRunner.SHIFTED_SYMBOLS.indexOf(character) > 0;
 	}
 
 	private static Key getKey(final char character) {
@@ -350,10 +354,6 @@ public final class SnapshotRunner {
 
 		final int symbol = Math.max(SnapshotRunner.SYMBOLS.indexOf(character), SnapshotRunner.SHIFTED_SYMBOLS.indexOf(character));
 		return symbol >= 0 ? SnapshotRunner.SYMBOL_KEYS[symbol] : Key.UNKNOWN;
-	}
-
-	private static boolean isShifted(final char character) {
-		return character >= 'A' && character <= 'Z' || SnapshotRunner.SHIFTED_DIGITS.indexOf(character) >= 0 || SnapshotRunner.SHIFTED_SYMBOLS.indexOf(character) > 0;
 	}
 
 	private static List<String> read(final String scenario) {

@@ -78,22 +78,6 @@ public final class ShaderReflection {
 		return new ShaderReflection(module);
 	}
 
-	private void resolve() {
-		for (final Map.Entry<Integer, int[]> variable : this.variableMap.entrySet()) {
-			final Integer binding = this.bindingMap.get(variable.getKey());
-			final Integer type = this.pointerMap.get(variable.getValue()[0]);
-			if (binding == null || type == null) {
-				continue;
-			}
-
-			if (variable.getValue()[1] == ShaderReflection.STORAGE_UNIFORM_CONSTANT && this.sampledImageSet.contains(type)) {
-				this.samplerMap.put(this.nameMap.get(variable.getKey()), binding);
-			} else if (variable.getValue()[1] == ShaderReflection.STORAGE_UNIFORM && this.structMap.containsKey(type)) {
-				this.blockMap.put(binding, this.createBlock(binding, type));
-			}
-		}
-	}
-
 	private void parse(final IntBuffer words) {
 		int index = 5;
 		while (index < words.limit()) {
@@ -157,25 +141,19 @@ public final class ShaderReflection {
 		}
 	}
 
-	private int getSize(final int type, final int matrixStride) {
-		final int[] definition = this.typeMap.get(type);
-		if (definition == null) {
-			return 0;
-		}
+	private void resolve() {
+		for (final Map.Entry<Integer, int[]> variable : this.variableMap.entrySet()) {
+			final Integer binding = this.bindingMap.get(variable.getKey());
+			final Integer type = this.pointerMap.get(variable.getValue()[0]);
+			if (binding == null || type == null) {
+				continue;
+			}
 
-		switch (definition[0]) {
-		case OP_TYPE_BOOL:
-		case OP_TYPE_INT:
-		case OP_TYPE_FLOAT:
-			return definition[1] / 8;
-		case OP_TYPE_VECTOR:
-			return this.getSize(definition[1], 0) * definition[2];
-		case OP_TYPE_MATRIX:
-			return matrixStride * definition[2];
-		case OP_TYPE_ARRAY:
-			return this.arrayStrideMap.getOrDefault(type, 0) * this.constantMap.getOrDefault(definition[2], 0);
-		default:
-			return 0;
+			if (variable.getValue()[1] == ShaderReflection.STORAGE_UNIFORM_CONSTANT && this.sampledImageSet.contains(type)) {
+				this.samplerMap.put(this.nameMap.get(variable.getKey()), binding);
+			} else if (variable.getValue()[1] == ShaderReflection.STORAGE_UNIFORM && this.structMap.containsKey(type)) {
+				this.blockMap.put(binding, this.createBlock(binding, type));
+			}
 		}
 	}
 
@@ -196,6 +174,28 @@ public final class ShaderReflection {
 			block.getMemberMap().put(memberNames.get(i), new UniformMember(block.getData(), decoration[0], this.arrayStrideMap.getOrDefault(memberTypes[i], 0), decoration[1]));
 		}
 		return block;
+	}
+
+	private int getSize(final int type, final int matrixStride) {
+		final int[] definition = this.typeMap.get(type);
+		if (definition == null) {
+			return 0;
+		}
+
+		switch (definition[0]) {
+		case OP_TYPE_BOOL:
+		case OP_TYPE_INT:
+		case OP_TYPE_FLOAT:
+			return definition[1] / 8;
+		case OP_TYPE_VECTOR:
+			return this.getSize(definition[1], 0) * definition[2];
+		case OP_TYPE_MATRIX:
+			return matrixStride * definition[2];
+		case OP_TYPE_ARRAY:
+			return this.arrayStrideMap.getOrDefault(type, 0) * this.constantMap.getOrDefault(definition[2], 0);
+		default:
+			return 0;
+		}
 	}
 
 	private static String readString(final IntBuffer words, final int start, final int end) {

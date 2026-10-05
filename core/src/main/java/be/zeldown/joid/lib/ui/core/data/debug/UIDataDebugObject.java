@@ -25,6 +25,21 @@ public final class UIDataDebugObject implements UIDataDebug {
 		return UIDataDebugObject.get(clazz).orElse(new UIDataDebugObject());
 	}
 
+	public static @NonNull Optional<UIDataDebugObject> get(final @NonNull Class<? extends UI> clazz) {
+		Class<?> currentClass = clazz;
+		UIDataDebug data = currentClass.getAnnotation(UIDataDebug.class);
+		while (data == null && currentClass.getSuperclass() != null) {
+			currentClass = currentClass.getSuperclass();
+			data = currentClass.getAnnotation(UIDataDebug.class);
+		}
+		return data != null ? Optional.of(new UIDataDebugObject(data)) : Optional.empty();
+	}
+
+	@Override
+	public Class<? extends Annotation> annotationType() {
+		return UIDataPopup.class;
+	}
+
 	@Override
 	public boolean profiler() {
 		return this.profiler;
@@ -35,11 +50,6 @@ public final class UIDataDebugObject implements UIDataDebug {
 		return this.hotreload;
 	}
 
-	@Override
-	public Class<? extends Annotation> annotationType() {
-		return UIDataPopup.class;
-	}
-
 	public @NonNull UIDataDebugObject setProfiler(final boolean profiler) {
 		this.profiler = profiler;
 		return this;
@@ -48,16 +58,6 @@ public final class UIDataDebugObject implements UIDataDebug {
 	public @NonNull UIDataDebugObject setHotreload(final boolean hotreload) {
 		this.hotreload = hotreload;
 		return this;
-	}
-
-	public static @NonNull Optional<UIDataDebugObject> get(final @NonNull Class<? extends UI> clazz) {
-		Class<?> currentClass = clazz;
-		UIDataDebug data = currentClass.getAnnotation(UIDataDebug.class);
-		while (data == null && currentClass.getSuperclass() != null) {
-			currentClass = currentClass.getSuperclass();
-			data = currentClass.getAnnotation(UIDataDebug.class);
-		}
-		return data != null ? Optional.of(new UIDataDebugObject(data)) : Optional.empty();
 	}
 
 }

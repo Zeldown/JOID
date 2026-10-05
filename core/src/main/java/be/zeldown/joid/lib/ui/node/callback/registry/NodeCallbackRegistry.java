@@ -18,10 +18,6 @@ public class NodeCallbackRegistry {
 
 	private static int lastId = 0;
 
-	public static Class<? extends NodeCallback> get(final int id) {
-		return NodeCallbackRegistry.REGISTRY.get(id);
-	}
-
 	public static int next(final Class<? extends NodeCallback> clazz) {
 		if (!clazz.isAnnotationPresent(FunctionalInterface.class)) {
 			throw new IllegalArgumentException(clazz + " must be a functional interface");
@@ -44,6 +40,10 @@ public class NodeCallbackRegistry {
 		final int id = NodeCallbackRegistry.lastId++;
 		NodeCallbackRegistry.REGISTRY.put(id, clazz);
 		return id;
+	}
+
+	public static Class<? extends NodeCallback> get(final int id) {
+		return NodeCallbackRegistry.REGISTRY.get(id);
 	}
 
 	public static int getId(final Class<? extends NodeCallback> clazz) {

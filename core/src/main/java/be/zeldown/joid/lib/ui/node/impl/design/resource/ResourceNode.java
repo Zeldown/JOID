@@ -30,12 +30,12 @@ public class ResourceNode extends Node {
 		this(x, y, 0, 0);
 	}
 
-	public static @NonNull ResourceNode create(final double x, final double y) {
-		return new ResourceNode(x, y);
-	}
-
 	protected ResourceNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+	}
+
+	public static @NonNull ResourceNode create(final double x, final double y) {
+		return new ResourceNode(x, y);
 	}
 
 	public static @NonNull ResourceNode create(final double x, final double y, final double width, final double height) {
@@ -99,47 +99,8 @@ public class ResourceNode extends Node {
 		}
 	}
 
-	public final <T extends ResourceNode> @NonNull T hoverResource(final String url) {
-		if (url != null) {
-			this.hoveredResource = Resource.of(url);
-		}
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T hoveredColor(final Color color) {
-		this.hoveredColor = color;
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T color(final @NonNull Color color) {
-		this.color = color;
-		return (T) this;
-	}
-
 	public final <T extends ResourceNode> @NonNull T resource(final @NonNull String url) {
 		this.resource = Resource.of(url);
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T hoverResource(final Resource resource) {
-		this.hoveredResource = resource;
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T stretch(final StretchType stretchType) {
-		this.stretchType = stretchType;
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T linear(final boolean linearInterpolation) {
-		if (this.resource != null) {
-			this.resource.interpolation(linearInterpolation ? TextureFilter.LINEAR : TextureFilter.NEAREST);
-		}
-
-		if (this.hoveredResource != null) {
-			this.hoveredResource.interpolation(linearInterpolation ? TextureFilter.LINEAR : TextureFilter.NEAREST);
-		}
-
 		return (T) this;
 	}
 
@@ -159,6 +120,45 @@ public class ResourceNode extends Node {
 	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource, final Resource hoveredResource) {
 		this.resource = resource;
 		this.hoveredResource = hoveredResource;
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T hoverResource(final String url) {
+		if (url != null) {
+			this.hoveredResource = Resource.of(url);
+		}
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T hoverResource(final Resource resource) {
+		this.hoveredResource = resource;
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T color(final @NonNull Color color) {
+		this.color = color;
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T hoveredColor(final Color color) {
+		this.hoveredColor = color;
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T linear(final boolean linearInterpolation) {
+		if (this.resource != null) {
+			this.resource.interpolation(linearInterpolation ? TextureFilter.LINEAR : TextureFilter.NEAREST);
+		}
+
+		if (this.hoveredResource != null) {
+			this.hoveredResource.interpolation(linearInterpolation ? TextureFilter.LINEAR : TextureFilter.NEAREST);
+		}
+
+		return (T) this;
+	}
+
+	public final <T extends ResourceNode> @NonNull T stretch(final StretchType stretchType) {
+		this.stretchType = stretchType;
 		return (T) this;
 	}
 

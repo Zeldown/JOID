@@ -39,22 +39,23 @@ public final class ResourceBuilder {
 		return new ResourceBuilder();
 	}
 
-	public final void reload() {
-		if (this.cache == null) {
-			return;
-		}
-		this.cache.invalidateAll();
-	}
-
-	public final @NonNull ResourceBuilder copy() {
-		final ResourceBuilder copy = new ResourceBuilder();
-		copy.cache = this.cache;
-		copy.properties = this.properties.copy();
-		return copy;
+	public final @NonNull ResourceBuilder cache(final Cache<String, ResourceData> cache) {
+		this.cache = cache;
+		return this;
 	}
 
 	public final @NonNull ResourceBuilder async() {
 		this.properties.async();
+		return this;
+	}
+
+	public final @NonNull ResourceBuilder blocking() {
+		this.properties.blocking();
+		return this;
+	}
+
+	public final @NonNull ResourceBuilder interpolation(final @NonNull TextureFilter interpolation) {
+		this.properties.interpolation(interpolation);
 		return this;
 	}
 
@@ -68,27 +69,25 @@ public final class ResourceBuilder {
 		return this;
 	}
 
-	public final @NonNull ResourceBuilder blocking() {
-		this.properties.blocking();
-		return this;
-	}
-
-	public @NonNull Resource of(final @NonNull Object input) {
-		return this.of(input, null);
-	}
-
 	public final @NonNull ResourceBuilder mipmap(final boolean mipmap) {
 		this.properties.mipmap(mipmap);
 		return this;
 	}
 
-	public static @NonNull List<@NonNull ResourceBuilder> getBuilders() {
-		return ResourceBuilder.BUILDER_LIST;
+	public final @NonNull ResourceBuilder textureCoords(final double u, final double v, final double u2, final double v2) {
+		this.properties.textureCoords(u, v, u2, v2);
+		return this;
 	}
 
-	public final @NonNull ResourceBuilder cache(final Cache<String, ResourceData> cache) {
-		this.cache = cache;
-		return this;
+	public final @NonNull ResourceBuilder copy() {
+		final ResourceBuilder copy = new ResourceBuilder();
+		copy.cache = this.cache;
+		copy.properties = this.properties.copy();
+		return copy;
+	}
+
+	public @NonNull Resource of(final @NonNull Object input) {
+		return this.of(input, null);
 	}
 
 	public @NonNull Resource of(final @NonNull Object input, final Consumer<Resource> callback) {
@@ -111,16 +110,6 @@ public final class ResourceBuilder {
 			callback.accept(resource);
 		}
 		return resource;
-	}
-
-	public final @NonNull ResourceBuilder interpolation(final @NonNull TextureFilter interpolation) {
-		this.properties.interpolation(interpolation);
-		return this;
-	}
-
-	public final @NonNull ResourceBuilder textureCoords(final double u, final double v, final double u2, final double v2) {
-		this.properties.textureCoords(u, v, u2, v2);
-		return this;
 	}
 
 	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {
@@ -148,6 +137,17 @@ public final class ResourceBuilder {
 			onCreate.accept(resource);
 		}
 		return resource;
+	}
+
+	public final void reload() {
+		if (this.cache == null) {
+			return;
+		}
+		this.cache.invalidateAll();
+	}
+
+	public static @NonNull List<@NonNull ResourceBuilder> getBuilders() {
+		return ResourceBuilder.BUILDER_LIST;
 	}
 
 }

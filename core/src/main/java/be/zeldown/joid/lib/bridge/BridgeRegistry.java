@@ -19,6 +19,10 @@ public class BridgeRegistry<T extends IBridge> {
 		return new BridgeRegistry<>(name);
 	}
 
+	public final void register(final @NonNull T bridge) {
+		this.bridgeList.add(bridge);
+	}
+
 	public final @NonNull T get() {
 		if (this.bridgeList.isEmpty()) {
 			throw new IllegalStateException("No " + this.name.toLowerCase() + " bridge registered, call BridgeHandler." + this.name + ".register before using JOID");
@@ -26,8 +30,8 @@ public class BridgeRegistry<T extends IBridge> {
 		return this.bridgeList.getLast();
 	}
 
-	public final void register(final @NonNull T bridge) {
-		this.bridgeList.add(bridge);
+	public final <B extends T> B getBridge(final @NonNull Class<B> bridgeClass) {
+		return bridgeClass.cast(this.find(bridgeClass::isInstance));
 	}
 
 	public final T find(final @NonNull Predicate<@NonNull T> filter) {
@@ -37,10 +41,6 @@ public class BridgeRegistry<T extends IBridge> {
 			}
 		}
 		return null;
-	}
-
-	public final <B extends T> B getBridge(final @NonNull Class<B> bridgeClass) {
-		return bridgeClass.cast(this.find(bridgeClass::isInstance));
 	}
 
 }

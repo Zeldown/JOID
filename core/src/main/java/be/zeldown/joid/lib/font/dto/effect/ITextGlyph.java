@@ -7,38 +7,24 @@ import lombok.NonNull;
 public interface ITextGlyph {
 
 	public double getX();
-
 	public int getIndex();
-
 	public double getSize();
-
 	public int getCodepoint();
+	public double getAdvance();
+	public double getAdvance(final int codepoint);
+	public double getOffsetX();
+	public double getOffsetY();
+	public double getAscender();
+	public double getBaseline();
+	public double getDescender();
+	public double getUnderlineY();
+	public @NonNull Color getColor();
+	public @NonNull TextStyle getStyle();
+	public double getUnderlineThickness();
 
 	public boolean isShadow();
 
-	public double getAdvance();
-
-	public double getOffsetX();
-
-	public double getOffsetY();
-
-	public double getBaseline();
-
-	public double getAscender();
-
-	public double getDescender();
-
-	public double getUnderlineY();
-
-	public @NonNull Color getColor();
-
-	public @NonNull TextStyle getStyle();
-
-	public double getUnderlineThickness();
-
 	public boolean hasGlyph(final int codepoint);
-
-	public double getAdvance(final int codepoint);
 
 	public @NonNull ITextGlyph codepoint(final int codepoint);
 

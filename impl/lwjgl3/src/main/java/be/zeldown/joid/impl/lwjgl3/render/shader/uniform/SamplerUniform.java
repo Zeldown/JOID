@@ -28,6 +28,13 @@ public final class SamplerUniform extends ShaderUniform implements be.zeldown.jo
 		this.unit = unit;
 	}
 
+	@Override
+	public void setValue(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
+		this.texture = (Texture) texture;
+		this.filter  = filter;
+		this.wrap    = wrap;
+	}
+
 	public void apply(final RenderBridge bridge) {
 		if (this.texture == null || super.getLocation() == -1) {
 			return;
@@ -38,13 +45,6 @@ public final class SamplerUniform extends ShaderUniform implements be.zeldown.jo
 		GL33C.glBindSampler(this.unit, bridge.getSampler(this.filter, this.wrap, this.texture.isMipmapped()));
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
 		GL20C.glUniform1i(super.getLocation(), this.unit);
-	}
-
-	@Override
-	public void setValue(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
-		this.texture = (Texture) texture;
-		this.filter  = filter;
-		this.wrap    = wrap;
 	}
 
 }

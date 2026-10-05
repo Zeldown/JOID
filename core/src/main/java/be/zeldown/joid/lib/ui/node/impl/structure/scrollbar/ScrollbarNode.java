@@ -22,14 +22,6 @@ public abstract class ScrollbarNode extends Node {
 		this.scroll = scroll;
 	}
 
-	public final double getScrollWidth() {
-		return this.scroll.getWidth() - super.getWidth();
-	}
-
-	public final double getScrollHeight() {
-		return this.scroll.getHeight() - super.getHeight();
-	}
-
 	@Override
 	public final void draw(final double mouseX, final double mouseY) {
 		if (this.scrollNode == null) {
@@ -60,13 +52,6 @@ public abstract class ScrollbarNode extends Node {
 		this.draw(mouseX, mouseY);
 	}
 
-	public abstract void drawScrollbar(final double mouseX, final double mouseY);
-
-	public final <T extends ScrollbarNode> @NonNull T scrollNode(final @NonNull Node scrollNode) {
-		this.scrollNode = scrollNode;
-		return (T) this;
-	}
-
 	@Override
 	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (!this.isHovered(mouseX, mouseY)) {
@@ -80,4 +65,19 @@ public abstract class ScrollbarNode extends Node {
 	public final void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.dragging = false;
 	}
+
+	public final <T extends ScrollbarNode> @NonNull T scrollNode(final @NonNull Node scrollNode) {
+		this.scrollNode = scrollNode;
+		return (T) this;
+	}
+
+	public final double getScrollWidth() {
+		return this.scroll.getWidth() - super.getWidth();
+	}
+
+	public final double getScrollHeight() {
+		return this.scroll.getHeight() - super.getHeight();
+	}
+
+	public abstract void drawScrollbar(final double mouseX, final double mouseY);
 }

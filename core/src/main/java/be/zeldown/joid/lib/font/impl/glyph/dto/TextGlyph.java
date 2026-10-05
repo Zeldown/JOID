@@ -40,6 +40,10 @@ public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 		return new TextGlyph<>(face, index, codepoint, style, x, baseline, size, advance, color, false);
 	}
 
+	public @NonNull TextGlyph<F> shadow(final double x, final double y, final @NonNull Color color) {
+		return new TextGlyph<>(this.face, this.index, this.codepoint, this.style, this.x + x, this.baseline + y, this.size, this.advance, color, true).offset(this.offsetX, this.offsetY);
+	}
+
 	public boolean isSlanted() {
 		return this.style.isItalic() && !this.face.isItalic();
 	}
@@ -65,13 +69,13 @@ public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 	}
 
 	@Override
-	public boolean hasGlyph(final int codepoint) {
-		return this.face.hasGlyph(codepoint);
+	public double getAdvance(final int codepoint) {
+		return this.face.getAdvance(codepoint) * this.size;
 	}
 
 	@Override
-	public double getAdvance(final int codepoint) {
-		return this.face.getAdvance(codepoint) * this.size;
+	public boolean hasGlyph(final int codepoint) {
+		return this.face.hasGlyph(codepoint);
 	}
 
 	@Override
@@ -91,10 +95,6 @@ public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 		this.offsetX = x;
 		this.offsetY = y;
 		return this;
-	}
-
-	public @NonNull TextGlyph<F> shadow(final double x, final double y, final @NonNull Color color) {
-		return new TextGlyph<>(this.face, this.index, this.codepoint, this.style, this.x + x, this.baseline + y, this.size, this.advance, color, true).offset(this.offsetX, this.offsetY);
 	}
 
 }

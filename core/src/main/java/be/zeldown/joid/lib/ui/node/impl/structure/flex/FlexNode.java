@@ -12,14 +12,6 @@ public final class FlexNode extends Node {
 
 	private double margin;
 
-	public static final @NonNull FlexNode vertical(final double x, final double y, final double width) {
-		return new FlexNode(x, y, width, 0, FlexDirection.COLUMN);
-	}
-
-	public static final @NonNull FlexNode horizontal(final double x, final double y, final double height) {
-		return new FlexNode(x, y, 0, height, FlexDirection.ROW);
-	}
-
 	private FlexNode(final double x, final double y, final double width, final double height, final @NonNull FlexDirection direction) {
 		super(x, y, width, height);
 
@@ -28,24 +20,17 @@ public final class FlexNode extends Node {
 		this.margin    = 0D;
 	}
 
+	public static final @NonNull FlexNode vertical(final double x, final double y, final double width) {
+		return new FlexNode(x, y, width, 0, FlexDirection.COLUMN);
+	}
+
+	public static final @NonNull FlexNode horizontal(final double x, final double y, final double height) {
+		return new FlexNode(x, y, 0, height, FlexDirection.ROW);
+	}
+
 	@Override
 	public void init(final @NonNull UI ui) {
 		this.updateFlex();
-	}
-
-	@Override
-	public void update() {
-		this.updateFlex();
-	}
-
-	public final @NonNull FlexNode align(final Align align) {
-		this.align = align;
-		return this;
-	}
-
-	public final @NonNull FlexNode margin(final double margin) {
-		this.margin = margin;
-		return this;
 	}
 
 	@Override
@@ -58,8 +43,23 @@ public final class FlexNode extends Node {
 		this.updateFlex();
 	}
 
+	@Override
+	public void update() {
+		this.updateFlex();
+	}
+
 	public final @NonNull FlexNode direction(final @NonNull FlexDirection direction) {
 		this.direction = direction;
+		return this;
+	}
+
+	public final @NonNull FlexNode align(final Align align) {
+		this.align = align;
+		return this;
+	}
+
+	public final @NonNull FlexNode margin(final double margin) {
+		this.margin = margin;
 		return this;
 	}
 

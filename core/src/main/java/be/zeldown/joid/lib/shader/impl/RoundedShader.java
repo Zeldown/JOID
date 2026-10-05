@@ -18,6 +18,16 @@ public class RoundedShader extends ShaderImpl {
 		return RoundedShader.INSTANCE;
 	}
 
+	public static void use(final float radius, final float x1, final float y1, final float x2, final float y2, final @NonNull Runnable runnable) {
+		if (!RoundedShader.INSTANCE.isAvailable()) {
+			return;
+		}
+
+		RoundedShader.INSTANCE.bind(radius, x1, y1, x2, y2);
+		runnable.run();
+		RoundedShader.INSTANCE.unbind();
+	}
+
 	public void bind(final float radius, final float x1, final float y1, final float x2, final float y2) {
 		this.bind(radius, x1, y1, x2, y2, RoundedShaderType.AUTO);
 	}
@@ -32,16 +42,6 @@ public class RoundedShader extends ShaderImpl {
 
 		final IntUniform typeUniform = RoundedShader.INSTANCE.shader.getIntUniform("u_Type");
 		typeUniform.setValue(type.ordinal());
-	}
-
-	public static void use(final float radius, final float x1, final float y1, final float x2, final float y2, final @NonNull Runnable runnable) {
-		if (!RoundedShader.INSTANCE.isAvailable()) {
-			return;
-		}
-
-		RoundedShader.INSTANCE.bind(radius, x1, y1, x2, y2);
-		runnable.run();
-		RoundedShader.INSTANCE.unbind();
 	}
 
 	public enum RoundedShaderType {

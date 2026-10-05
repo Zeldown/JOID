@@ -24,42 +24,6 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 	}
 
 	@Override
-	public int size() {
-		return Math.min(this.orderedList.size(), this.reversedList.size());
-	}
-
-	@Override
-	public E getLast() {
-		return this.orderedList.getLast();
-	}
-
-	@Override
-	public void clear() {
-		this.orderedList.clear();
-		this.reversedList.clear();
-	}
-
-	@Override
-	public E getFirst() {
-		return this.orderedList.getFirst();
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return this.orderedList.isEmpty();
-	}
-
-	@Override
-	public E get(final int index) {
-		return this.orderedList.get(index);
-	}
-
-	@Override
-	public Iterator<E> iterator() {
-		return this.orderedList.iterator();
-	}
-
-	@Override
 	public void add(final E element) {
 		for (int i = 0; i < this.orderedList.size(); i++) {
 			if (this.orderedList.get(i).getIndex() > element.getIndex()) {
@@ -74,19 +38,30 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 	}
 
 	@Override
-	public @NonNull List<E> reversed() {
-		return this.reversedList;
-	}
-
-	@Override
 	public void remove(final E element) {
 		this.orderedList.remove(element);
 		this.reversedList.remove(element);
 	}
 
 	@Override
-	public @NonNull LinkedList<E> ordered() {
-		return this.orderedList;
+	public void clear() {
+		this.orderedList.clear();
+		this.reversedList.clear();
+	}
+
+	@Override
+	public @NonNull IndexedLinkedList<E> copy() {
+		return new IndexedLinkedList<>(this.orderedList);
+	}
+
+	@Override
+	public int size() {
+		return Math.min(this.orderedList.size(), this.reversedList.size());
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return this.orderedList.isEmpty();
 	}
 
 	@Override
@@ -95,8 +70,28 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 	}
 
 	@Override
-	public @NonNull IndexedLinkedList<E> copy() {
-		return new IndexedLinkedList<>(this.orderedList);
+	public E getLast() {
+		return this.orderedList.getLast();
+	}
+
+	@Override
+	public E getFirst() {
+		return this.orderedList.getFirst();
+	}
+
+	@Override
+	public E get(final int index) {
+		return this.orderedList.get(index);
+	}
+
+	@Override
+	public @NonNull LinkedList<E> ordered() {
+		return this.orderedList;
+	}
+
+	@Override
+	public @NonNull List<E> reversed() {
+		return this.reversedList;
 	}
 
 	@Override
@@ -116,6 +111,11 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 		}
 
 		return list;
+	}
+
+	@Override
+	public Iterator<E> iterator() {
+		return this.orderedList.iterator();
 	}
 
 	@SuppressWarnings("unchecked")

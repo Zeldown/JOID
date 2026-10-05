@@ -103,6 +103,21 @@ public final class PipelineCache {
 		}
 	}
 
+	private static int operation(final BlendState.Equation equation) {
+		switch (equation) {
+		case SUBTRACT:
+			return VK10.VK_BLEND_OP_SUBTRACT;
+		case REVERSE_SUBTRACT:
+			return VK10.VK_BLEND_OP_REVERSE_SUBTRACT;
+		case MIN:
+			return VK10.VK_BLEND_OP_MIN;
+		case MAX:
+			return VK10.VK_BLEND_OP_MAX;
+		default:
+			return VK10.VK_BLEND_OP_ADD;
+		}
+	}
+
 	private static int factor(final BlendState.Factor factor) {
 		switch (factor) {
 		case ZERO:
@@ -125,21 +140,6 @@ public final class PipelineCache {
 			return VK10.VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
 		default:
 			return VK10.VK_BLEND_FACTOR_ONE;
-		}
-	}
-
-	private static int operation(final BlendState.Equation equation) {
-		switch (equation) {
-		case SUBTRACT:
-			return VK10.VK_BLEND_OP_SUBTRACT;
-		case REVERSE_SUBTRACT:
-			return VK10.VK_BLEND_OP_REVERSE_SUBTRACT;
-		case MIN:
-			return VK10.VK_BLEND_OP_MIN;
-		case MAX:
-			return VK10.VK_BLEND_OP_MAX;
-		default:
-			return VK10.VK_BLEND_OP_ADD;
 		}
 	}
 

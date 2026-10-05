@@ -29,14 +29,6 @@ public final class ShaderPipeline {
 	private static final Map<Long, FrameBuffer[]> FBO_POOL = new HashMap<>();
 	private static int pipelineDepth = 0;
 
-	public static void cleanup() {
-		for (final FrameBuffer[] fbos : ShaderPipeline.FBO_POOL.values()) {
-			fbos[0].delete();
-			fbos[1].delete();
-		}
-		ShaderPipeline.FBO_POOL.clear();
-	}
-
 	public static void render(final @NonNull Node node, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
 		ShaderPipeline.render(node, new ArrayList<>(Arrays.asList(passes)), baseDraw);
 	}
@@ -80,16 +72,12 @@ public final class ShaderPipeline {
 		}
 	}
 
-	private static FrameBuffer[] getOrCreateFBOs(final int width, final int height) {
-		final long key = (long) ShaderPipeline.pipelineDepth << 32 | (long) width << 16 | height;
-		FrameBuffer[] fbos = ShaderPipeline.FBO_POOL.get(key);
-		if (fbos != null) {
-			return fbos;
+	public static void cleanup() {
+		for (final FrameBuffer[] fbos : ShaderPipeline.FBO_POOL.values()) {
+			fbos[0].delete();
+			fbos[1].delete();
 		}
-
-		fbos = new FrameBuffer[] {FrameBuffer.create(width, height, TextureFilter.LINEAR), FrameBuffer.create(width, height, TextureFilter.LINEAR)};
-		ShaderPipeline.FBO_POOL.put(key, fbos);
-		return fbos;
+		ShaderPipeline.FBO_POOL.clear();
 	}
 
 	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final double x, final double y, final double w, final double h) {
@@ -180,6 +168,18 @@ public final class ShaderPipeline {
 		passes.get(passes.size() - 1).unbind();
 
 		render.popState();
+	}
+
+	private static FrameBuffer[] getOrCreateFBOs(final int width, final int height) {
+		final long key = (long) ShaderPipeline.pipelineDepth << 32 | (long) width << 16 | height;
+		FrameBuffer[] fbos = ShaderPipeline.FBO_POOL.get(key);
+		if (fbos != null) {
+			return fbos;
+		}
+
+		fbos = new FrameBuffer[] {FrameBuffer.create(width, height, TextureFilter.LINEAR), FrameBuffer.create(width, height, TextureFilter.LINEAR)};
+		ShaderPipeline.FBO_POOL.put(key, fbos);
+		return fbos;
 	}
 
 }

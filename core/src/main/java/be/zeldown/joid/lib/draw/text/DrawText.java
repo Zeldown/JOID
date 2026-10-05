@@ -55,60 +55,6 @@ public final class DrawText {
 		return text.getBounds();
 	}
 
-	public @NonNull List<@NonNull Text> getLines(final double width, final @NonNull Text text) {
-		final List<Text> textList = new LinkedList<>();
-
-		Text currentText = text.copyProperties();
-		for (final TextElement element : text.getElementList()) {
-			final String elementText = text.getText(element).replace("<br>", String.valueOf('\n'));
-			int lastSplit = 0;
-			for (int i = 0; i < elementText.length(); i++) {
-				final char c = elementText.charAt(i);
-				if (c == '\n' || c == '\r') {
-					final int foundSplit = i;
-					currentText.add(element.copyWithText(elementText.substring(lastSplit, foundSplit)));
-					textList.add(currentText);
-					currentText = text.copyProperties();
-					lastSplit = foundSplit;
-				}
-
-				final double elementWidth = element.getInfo().getWidth(elementText.substring(lastSplit, i + 1));
-				if (currentText.getWidth() + elementWidth >= width) {
-					int foundSplit = i;
-					for (int j = i - 1; j >= lastSplit; j--) {
-						if (elementText.charAt(j) == ' ') {
-							foundSplit = Math.min(elementText.length(), j + 1);
-							break;
-						}
-					}
-
-					String splitText = elementText.substring(lastSplit, foundSplit);
-					if (splitText.endsWith(" ")) {
-						splitText = splitText.substring(0, splitText.length() - 1);
-					}
-					currentText.add(element.copyWithText(splitText));
-					textList.add(currentText);
-					currentText = text.copyProperties();
-					lastSplit = foundSplit;
-				}
-
-				if (i == elementText.length() - 1) {
-					currentText.add(element.copyWithText(elementText.substring(lastSplit)));
-				}
-			}
-		}
-
-		if (!currentText.isEmpty()) {
-			textList.add(currentText);
-		}
-
-		return textList;
-	}
-
-	public @NonNull List<@NonNull String> getLines(final double width, final @NonNull String text, final @NonNull TextInfo info) {
-		return this.getLines(width, Text.create(text, info)).stream().map(Text::getText).collect(Collectors.toList());
-	}
-
 	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull Text text, final @NonNull TextMode mode) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
@@ -224,6 +170,60 @@ public final class DrawText {
 
 	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow, final @NonNull TextMode mode) {
 		return this.drawText(x, y, width, height, Text.create(text, info).align(horizontalAlign, verticalAlign).overflow(overflow), mode);
+	}
+
+	public @NonNull List<@NonNull Text> getLines(final double width, final @NonNull Text text) {
+		final List<Text> textList = new LinkedList<>();
+
+		Text currentText = text.copyProperties();
+		for (final TextElement element : text.getElementList()) {
+			final String elementText = text.getText(element).replace("<br>", String.valueOf('\n'));
+			int lastSplit = 0;
+			for (int i = 0; i < elementText.length(); i++) {
+				final char c = elementText.charAt(i);
+				if (c == '\n' || c == '\r') {
+					final int foundSplit = i;
+					currentText.add(element.copyWithText(elementText.substring(lastSplit, foundSplit)));
+					textList.add(currentText);
+					currentText = text.copyProperties();
+					lastSplit = foundSplit;
+				}
+
+				final double elementWidth = element.getInfo().getWidth(elementText.substring(lastSplit, i + 1));
+				if (currentText.getWidth() + elementWidth >= width) {
+					int foundSplit = i;
+					for (int j = i - 1; j >= lastSplit; j--) {
+						if (elementText.charAt(j) == ' ') {
+							foundSplit = Math.min(elementText.length(), j + 1);
+							break;
+						}
+					}
+
+					String splitText = elementText.substring(lastSplit, foundSplit);
+					if (splitText.endsWith(" ")) {
+						splitText = splitText.substring(0, splitText.length() - 1);
+					}
+					currentText.add(element.copyWithText(splitText));
+					textList.add(currentText);
+					currentText = text.copyProperties();
+					lastSplit = foundSplit;
+				}
+
+				if (i == elementText.length() - 1) {
+					currentText.add(element.copyWithText(elementText.substring(lastSplit)));
+				}
+			}
+		}
+
+		if (!currentText.isEmpty()) {
+			textList.add(currentText);
+		}
+
+		return textList;
+	}
+
+	public @NonNull List<@NonNull String> getLines(final double width, final @NonNull String text, final @NonNull TextInfo info) {
+		return this.getLines(width, Text.create(text, info)).stream().map(Text::getText).collect(Collectors.toList());
 	}
 
 }

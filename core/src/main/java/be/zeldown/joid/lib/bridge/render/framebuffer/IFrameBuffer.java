@@ -5,11 +5,10 @@ import lombok.NonNull;
 
 public interface IFrameBuffer {
 
-	public void delete();
-
 	public int getWidth();
 	public int getHeight();
-
 	public @NonNull ITexture getTexture();
+
+	public void delete();
 
 }

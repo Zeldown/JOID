@@ -98,98 +98,6 @@ public final class Context {
 		}
 	}
 
-	public @NonNull VkCommandBuffer allocateCommandBuffer() {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final PointerBuffer buffer = stack.mallocPointer(1);
-			Context.check(VK10.vkAllocateCommandBuffers(this.device, VkCommandBufferAllocateInfo.calloc(stack).sType$Default().commandPool(this.commandPool).level(VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY).commandBufferCount(1), buffer), "vkAllocateCommandBuffers");
-			return new VkCommandBuffer(buffer.get(0), this.device);
-		}
-	}
-
-	public void submit(final @NonNull Consumer<VkCommandBuffer> recorder) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkCommandBuffer buffer = this.allocateCommandBuffer();
-			Context.check(VK10.vkBeginCommandBuffer(buffer, VkCommandBufferBeginInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)), "vkBeginCommandBuffer");
-			recorder.accept(buffer);
-			Context.check(VK10.vkEndCommandBuffer(buffer), "vkEndCommandBuffer");
-			Context.check(VK10.vkQueueSubmit(this.queue, VkSubmitInfo.calloc(stack).sType$Default().pCommandBuffers(stack.pointers(buffer)), VK10.VK_NULL_HANDLE), "vkQueueSubmit");
-			VK10.vkQueueWaitIdle(this.queue);
-			VK10.vkFreeCommandBuffers(this.device, this.commandPool, buffer);
-		}
-	}
-
-	public static void check(final int result, final @NonNull String action) {
-		if (result != VK10.VK_SUCCESS) {
-			throw new IllegalStateException(action + " failed with error " + result);
-		}
-	}
-
-	public long createImageView(final long image, final int format, final int aspect) {
-		return this.createImageView(image, format, aspect, 1);
-	}
-
-	public long[] createBuffer(final long size, final int usage, final int properties) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final LongBuffer buffer = stack.mallocLong(1);
-			Context.check(VK10.vkCreateBuffer(this.device, VkBufferCreateInfo.calloc(stack).sType$Default().size(size).usage(usage).sharingMode(VK10.VK_SHARING_MODE_EXCLUSIVE), null, buffer), "vkCreateBuffer");
-
-			final VkMemoryRequirements requirements = VkMemoryRequirements.malloc(stack);
-			VK10.vkGetBufferMemoryRequirements(this.device, buffer.get(0), requirements);
-			final long memory = this.allocateMemory(stack, requirements, properties);
-			Context.check(VK10.vkBindBufferMemory(this.device, buffer.get(0), memory, 0L), "vkBindBufferMemory");
-			return new long[] {buffer.get(0), memory};
-		}
-	}
-
-	public long[] createImage(final int width, final int height, final int format, final int usage) {
-		return this.createImage(width, height, format, usage, 1);
-	}
-
-	public long createImageView(final long image, final int format, final int aspect, final int levels) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkImageViewCreateInfo info = VkImageViewCreateInfo.calloc(stack)
-					.sType$Default()
-					.image(image)
-					.viewType(VK10.VK_IMAGE_VIEW_TYPE_2D)
-					.format(format);
-			info.subresourceRange().aspectMask(aspect).baseMipLevel(0).levelCount(levels).baseArrayLayer(0).layerCount(1);
-
-			final LongBuffer view = stack.mallocLong(1);
-			Context.check(VK10.vkCreateImageView(this.device, info, null, view), "vkCreateImageView");
-			return view.get(0);
-		}
-	}
-
-	public long[] createImage(final int width, final int height, final int format, final int usage, final int levels) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkImageCreateInfo info = VkImageCreateInfo.calloc(stack)
-					.sType$Default()
-					.imageType(VK10.VK_IMAGE_TYPE_2D)
-					.format(format)
-					.mipLevels(levels)
-					.arrayLayers(1)
-					.samples(VK10.VK_SAMPLE_COUNT_1_BIT)
-					.tiling(VK10.VK_IMAGE_TILING_OPTIMAL)
-					.usage(usage)
-					.sharingMode(VK10.VK_SHARING_MODE_EXCLUSIVE)
-					.initialLayout(VK10.VK_IMAGE_LAYOUT_UNDEFINED);
-			info.extent().set(width, height, 1);
-
-			final LongBuffer image = stack.mallocLong(1);
-			Context.check(VK10.vkCreateImage(this.device, info, null, image), "vkCreateImage");
-
-			final VkMemoryRequirements requirements = VkMemoryRequirements.malloc(stack);
-			VK10.vkGetImageMemoryRequirements(this.device, image.get(0), requirements);
-			final long memory = this.allocateMemory(stack, requirements, VK10.VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-			Context.check(VK10.vkBindImageMemory(this.device, image.get(0), memory, 0L), "vkBindImageMemory");
-			return new long[] {image.get(0), memory};
-		}
-	}
-
-	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout) {
-		Context.transition(buffer, image, aspect, oldLayout, newLayout, 0, 1);
-	}
-
 	public long createRenderPass(final int colorFormat, final boolean clear, final int initialLayout, final int finalLayout, final boolean depthStencil) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final int loadOperation = clear ? VK10.VK_ATTACHMENT_LOAD_OP_CLEAR : VK10.VK_ATTACHMENT_LOAD_OP_LOAD;
@@ -228,6 +136,92 @@ public final class Context {
 		}
 	}
 
+	public long createImageView(final long image, final int format, final int aspect) {
+		return this.createImageView(image, format, aspect, 1);
+	}
+
+	public long createImageView(final long image, final int format, final int aspect, final int levels) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkImageViewCreateInfo info = VkImageViewCreateInfo.calloc(stack)
+					.sType$Default()
+					.image(image)
+					.viewType(VK10.VK_IMAGE_VIEW_TYPE_2D)
+					.format(format);
+			info.subresourceRange().aspectMask(aspect).baseMipLevel(0).levelCount(levels).baseArrayLayer(0).layerCount(1);
+
+			final LongBuffer view = stack.mallocLong(1);
+			Context.check(VK10.vkCreateImageView(this.device, info, null, view), "vkCreateImageView");
+			return view.get(0);
+		}
+	}
+
+	public long[] createImage(final int width, final int height, final int format, final int usage) {
+		return this.createImage(width, height, format, usage, 1);
+	}
+
+	public long[] createImage(final int width, final int height, final int format, final int usage, final int levels) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkImageCreateInfo info = VkImageCreateInfo.calloc(stack)
+					.sType$Default()
+					.imageType(VK10.VK_IMAGE_TYPE_2D)
+					.format(format)
+					.mipLevels(levels)
+					.arrayLayers(1)
+					.samples(VK10.VK_SAMPLE_COUNT_1_BIT)
+					.tiling(VK10.VK_IMAGE_TILING_OPTIMAL)
+					.usage(usage)
+					.sharingMode(VK10.VK_SHARING_MODE_EXCLUSIVE)
+					.initialLayout(VK10.VK_IMAGE_LAYOUT_UNDEFINED);
+			info.extent().set(width, height, 1);
+
+			final LongBuffer image = stack.mallocLong(1);
+			Context.check(VK10.vkCreateImage(this.device, info, null, image), "vkCreateImage");
+
+			final VkMemoryRequirements requirements = VkMemoryRequirements.malloc(stack);
+			VK10.vkGetImageMemoryRequirements(this.device, image.get(0), requirements);
+			final long memory = this.allocateMemory(stack, requirements, VK10.VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+			Context.check(VK10.vkBindImageMemory(this.device, image.get(0), memory, 0L), "vkBindImageMemory");
+			return new long[] {image.get(0), memory};
+		}
+	}
+
+	public long[] createBuffer(final long size, final int usage, final int properties) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final LongBuffer buffer = stack.mallocLong(1);
+			Context.check(VK10.vkCreateBuffer(this.device, VkBufferCreateInfo.calloc(stack).sType$Default().size(size).usage(usage).sharingMode(VK10.VK_SHARING_MODE_EXCLUSIVE), null, buffer), "vkCreateBuffer");
+
+			final VkMemoryRequirements requirements = VkMemoryRequirements.malloc(stack);
+			VK10.vkGetBufferMemoryRequirements(this.device, buffer.get(0), requirements);
+			final long memory = this.allocateMemory(stack, requirements, properties);
+			Context.check(VK10.vkBindBufferMemory(this.device, buffer.get(0), memory, 0L), "vkBindBufferMemory");
+			return new long[] {buffer.get(0), memory};
+		}
+	}
+
+	public @NonNull VkCommandBuffer allocateCommandBuffer() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final PointerBuffer buffer = stack.mallocPointer(1);
+			Context.check(VK10.vkAllocateCommandBuffers(this.device, VkCommandBufferAllocateInfo.calloc(stack).sType$Default().commandPool(this.commandPool).level(VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY).commandBufferCount(1), buffer), "vkAllocateCommandBuffers");
+			return new VkCommandBuffer(buffer.get(0), this.device);
+		}
+	}
+
+	public void submit(final @NonNull Consumer<VkCommandBuffer> recorder) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkCommandBuffer buffer = this.allocateCommandBuffer();
+			Context.check(VK10.vkBeginCommandBuffer(buffer, VkCommandBufferBeginInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)), "vkBeginCommandBuffer");
+			recorder.accept(buffer);
+			Context.check(VK10.vkEndCommandBuffer(buffer), "vkEndCommandBuffer");
+			Context.check(VK10.vkQueueSubmit(this.queue, VkSubmitInfo.calloc(stack).sType$Default().pCommandBuffers(stack.pointers(buffer)), VK10.VK_NULL_HANDLE), "vkQueueSubmit");
+			VK10.vkQueueWaitIdle(this.queue);
+			VK10.vkFreeCommandBuffers(this.device, this.commandPool, buffer);
+		}
+	}
+
+	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout) {
+		Context.transition(buffer, image, aspect, oldLayout, newLayout, 0, 1);
+	}
+
 	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout, final int baseLevel, final int levels) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageMemoryBarrier.Buffer barrier = VkImageMemoryBarrier.calloc(1, stack)
@@ -244,6 +238,18 @@ public final class Context {
 		}
 	}
 
+	public static void check(final int result, final @NonNull String action) {
+		if (result != VK10.VK_SUCCESS) {
+			throw new IllegalStateException(action + " failed with error " + result);
+		}
+	}
+
+	private long allocateMemory(final MemoryStack stack, final VkMemoryRequirements requirements, final int properties) {
+		final LongBuffer memory = stack.mallocLong(1);
+		Context.check(VK10.vkAllocateMemory(this.device, VkMemoryAllocateInfo.calloc(stack).sType$Default().allocationSize(requirements.size()).memoryTypeIndex(this.findMemoryType(requirements.memoryTypeBits(), properties)), null, memory), "vkAllocateMemory");
+		return memory.get(0);
+	}
+
 	private int findMemoryType(final int filter, final int properties) {
 		for (int i = 0; i < this.memoryProperties.memoryTypeCount(); i++) {
 			if ((filter & 1 << i) != 0 && (this.memoryProperties.memoryTypes(i).propertyFlags() & properties) == properties) {
@@ -251,12 +257,6 @@ public final class Context {
 			}
 		}
 		throw new IllegalStateException("No Vulkan memory type matches the requested properties");
-	}
-
-	private long allocateMemory(final MemoryStack stack, final VkMemoryRequirements requirements, final int properties) {
-		final LongBuffer memory = stack.mallocLong(1);
-		Context.check(VK10.vkAllocateMemory(this.device, VkMemoryAllocateInfo.calloc(stack).sType$Default().allocationSize(requirements.size()).memoryTypeIndex(this.findMemoryType(requirements.memoryTypeBits(), properties)), null, memory), "vkAllocateMemory");
-		return memory.get(0);
 	}
 
 	private static int getAccess(final int layout) {
@@ -295,6 +295,56 @@ public final class Context {
 		final PointerBuffer instance = stack.mallocPointer(1);
 		Context.check(VK10.vkCreateInstance(info, null, instance), "vkCreateInstance");
 		return new VkInstance(instance.get(0), info);
+	}
+
+	private static long createSurface(final MemoryStack stack, final VkInstance instance, final long window) {
+		final LongBuffer surface = stack.mallocLong(1);
+		Context.check(GLFWVulkan.glfwCreateWindowSurface(instance, window, null, surface), "glfwCreateWindowSurface");
+		return surface.get(0);
+	}
+
+	private static VkPhysicalDevice selectPhysicalDevice(final MemoryStack stack, final VkInstance instance, final long surface) {
+		final IntBuffer count = stack.mallocInt(1);
+		Context.check(VK10.vkEnumeratePhysicalDevices(instance, count, null), "vkEnumeratePhysicalDevices");
+		final PointerBuffer devices = stack.mallocPointer(count.get(0));
+		Context.check(VK10.vkEnumeratePhysicalDevices(instance, count, devices), "vkEnumeratePhysicalDevices");
+
+		VkPhysicalDevice selected = null;
+		boolean discrete = false;
+		final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
+		for (int i = 0; i < devices.capacity(); i++) {
+			final VkPhysicalDevice device = new VkPhysicalDevice(devices.get(i), instance);
+			VK10.vkGetPhysicalDeviceProperties(device, properties);
+			if (properties.apiVersion() < VK13.VK_API_VERSION_1_3 || Context.findQueueFamily(stack, device, surface) == -1 || !Context.hasExtension(device, KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
+				continue;
+			}
+
+			if (selected == null || !discrete && properties.deviceType() == VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+				selected = device;
+				discrete = properties.deviceType() == VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+			}
+		}
+
+		if (selected == null) {
+			throw new IllegalStateException("No Vulkan 1.3 device able to present to the window was found");
+		}
+		return selected;
+	}
+
+	private static int findQueueFamily(final MemoryStack stack, final VkPhysicalDevice device, final long surface) {
+		final IntBuffer count = stack.mallocInt(1);
+		VK10.vkGetPhysicalDeviceQueueFamilyProperties(device, count, null);
+		final VkQueueFamilyProperties.Buffer families = VkQueueFamilyProperties.malloc(count.get(0), stack);
+		VK10.vkGetPhysicalDeviceQueueFamilyProperties(device, count, families);
+
+		final IntBuffer supported = stack.mallocInt(1);
+		for (int i = 0; i < families.capacity(); i++) {
+			KHRSurface.vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, supported);
+			if ((families.get(i).queueFlags() & VK10.VK_QUEUE_GRAPHICS_BIT) != 0 && supported.get(0) == VK10.VK_TRUE) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	private static boolean hasExtension(final VkPhysicalDevice device, final String name) {
@@ -338,56 +388,6 @@ public final class Context {
 			}
 		}
 		throw new IllegalStateException("No depth stencil format is supported by the Vulkan device");
-	}
-
-	private static long createSurface(final MemoryStack stack, final VkInstance instance, final long window) {
-		final LongBuffer surface = stack.mallocLong(1);
-		Context.check(GLFWVulkan.glfwCreateWindowSurface(instance, window, null, surface), "glfwCreateWindowSurface");
-		return surface.get(0);
-	}
-
-	private static int findQueueFamily(final MemoryStack stack, final VkPhysicalDevice device, final long surface) {
-		final IntBuffer count = stack.mallocInt(1);
-		VK10.vkGetPhysicalDeviceQueueFamilyProperties(device, count, null);
-		final VkQueueFamilyProperties.Buffer families = VkQueueFamilyProperties.malloc(count.get(0), stack);
-		VK10.vkGetPhysicalDeviceQueueFamilyProperties(device, count, families);
-
-		final IntBuffer supported = stack.mallocInt(1);
-		for (int i = 0; i < families.capacity(); i++) {
-			KHRSurface.vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, supported);
-			if ((families.get(i).queueFlags() & VK10.VK_QUEUE_GRAPHICS_BIT) != 0 && supported.get(0) == VK10.VK_TRUE) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
-	private static VkPhysicalDevice selectPhysicalDevice(final MemoryStack stack, final VkInstance instance, final long surface) {
-		final IntBuffer count = stack.mallocInt(1);
-		Context.check(VK10.vkEnumeratePhysicalDevices(instance, count, null), "vkEnumeratePhysicalDevices");
-		final PointerBuffer devices = stack.mallocPointer(count.get(0));
-		Context.check(VK10.vkEnumeratePhysicalDevices(instance, count, devices), "vkEnumeratePhysicalDevices");
-
-		VkPhysicalDevice selected = null;
-		boolean discrete = false;
-		final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
-		for (int i = 0; i < devices.capacity(); i++) {
-			final VkPhysicalDevice device = new VkPhysicalDevice(devices.get(i), instance);
-			VK10.vkGetPhysicalDeviceProperties(device, properties);
-			if (properties.apiVersion() < VK13.VK_API_VERSION_1_3 || Context.findQueueFamily(stack, device, surface) == -1 || !Context.hasExtension(device, KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
-				continue;
-			}
-
-			if (selected == null || !discrete && properties.deviceType() == VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-				selected = device;
-				discrete = properties.deviceType() == VK10.VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
-			}
-		}
-
-		if (selected == null) {
-			throw new IllegalStateException("No Vulkan 1.3 device able to present to the window was found");
-		}
-		return selected;
 	}
 
 	private static VkDevice createDevice(final MemoryStack stack, final VkPhysicalDevice physicalDevice, final int queueFamily, final boolean wideLines, final boolean smoothLines) {

@@ -137,14 +137,6 @@ public final class Tessellator {
 		this.start(DrawMode.QUADS);
 	}
 
-	public Tessellator copy() {
-		return new Tessellator();
-	}
-
-	public void disableColor() {
-		this.isColorDisabled = true;
-	}
-
 	public void setColor(final int rgb) {
 		final int j = rgb >> 16 & 255;
 		final int k = rgb >> 8 & 255;
@@ -159,12 +151,6 @@ public final class Tessellator {
 		this.setColor(k, l, i1, a);
 	}
 
-	public void setTextureUV(final double u, final double v) {
-		this.hasTexture = true;
-		this.textureU = u;
-		this.textureV = v;
-	}
-
 	public void setColor(final int r, final int g, final int b) {
 		this.setColor(r, g, b, 255);
 	}
@@ -177,18 +163,39 @@ public final class Tessellator {
 		this.setColor((int) (r * 255F), (int) (g * 255F), (int) (b * 255F));
 	}
 
+	public void setColor(final int r, final int g, final int b, final int a) {
+		if (!this.isColorDisabled) {
+			final int red = Math.max(0, Math.min(255, r));
+			final int green = Math.max(0, Math.min(255, g));
+			final int blue = Math.max(0, Math.min(255, b));
+			final int alpha = Math.max(0, Math.min(255, a));
+
+			this.hasColor = true;
+
+			if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
+				this.color = alpha << 24 | blue << 16 | green << 8 | red;
+			} else {
+				this.color = red << 24 | green << 16 | blue << 8 | alpha;
+			}
+		}
+	}
+
+	public void setColor(final float r, final float g, final float b, final float a) {
+		this.setColor((int) (r * 255F), (int) (g * 255F), (int) (b * 255F), (int) (a * 255F));
+	}
+
+	public void setTextureUV(final double u, final double v) {
+		this.hasTexture = true;
+		this.textureU = u;
+		this.textureV = v;
+	}
+
 	public void setNormal(final float x, final float y, final float z) {
 		this.hasNormals = true;
 		final byte normalX = (byte) (int) (x * 127F);
 		final byte normalY = (byte) (int) (y * 127F);
 		final byte normalZ = (byte) (int) (z * 127F);
 		this.normal = normalX & 255 | (normalY & 255) << 8 | (normalZ & 255) << 16;
-	}
-
-	public void translate(final float x, final float y, final float z) {
-		this.xOffset += x;
-		this.yOffset += y;
-		this.zOffset += z;
 	}
 
 	public void addVertex(final double x, final double y, final double v) {
@@ -222,30 +229,23 @@ public final class Tessellator {
 		this.vertexCount++;
 	}
 
-	public void setColor(final int r, final int g, final int b, final int a) {
-		if (!this.isColorDisabled) {
-			final int red = Math.max(0, Math.min(255, r));
-			final int green = Math.max(0, Math.min(255, g));
-			final int blue = Math.max(0, Math.min(255, b));
-			final int alpha = Math.max(0, Math.min(255, a));
-
-			this.hasColor = true;
-
-			if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
-				this.color = alpha << 24 | blue << 16 | green << 8 | red;
-			} else {
-				this.color = red << 24 | green << 16 | blue << 8 | alpha;
-			}
-		}
-	}
-
-	public void setColor(final float r, final float g, final float b, final float a) {
-		this.setColor((int) (r * 255F), (int) (g * 255F), (int) (b * 255F), (int) (a * 255F));
-	}
-
 	public void addVertexWithUV(final double x, final double y, final double z, final double u, final double v) {
 		this.setTextureUV(u, v);
 		this.addVertex(x, y, z);
+	}
+
+	public void disableColor() {
+		this.isColorDisabled = true;
+	}
+
+	public void translate(final float x, final float y, final float z) {
+		this.xOffset += x;
+		this.yOffset += y;
+		this.zOffset += z;
+	}
+
+	public Tessellator copy() {
+		return new Tessellator();
 	}
 
 	private void reset() {
@@ -306,21 +306,6 @@ public final class Tessellator {
 		Tessellator.intBuffer.put(this.rawBuffer[offset + 7]);
 	}
 
-	private static void ensureCapacity(final int count) {
-		final int bytes = count * VertexBuffer.STRIDE;
-		if (Tessellator.byteBuffer.capacity() >= bytes) {
-			return;
-		}
-
-		int capacity = Tessellator.byteBuffer.capacity();
-		while (capacity < bytes) {
-			capacity *= 2;
-		}
-
-		Tessellator.byteBuffer = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder());
-		Tessellator.intBuffer = Tessellator.byteBuffer.asIntBuffer();
-	}
-
 	private static int getOutputCount(final @NonNull DrawMode drawMode, final int vertexCount) {
 		switch (drawMode) {
 		case QUADS:
@@ -334,6 +319,21 @@ public final class Tessellator {
 		default:
 			return vertexCount;
 		}
+	}
+
+	private static void ensureCapacity(final int count) {
+		final int bytes = count * VertexBuffer.STRIDE;
+		if (Tessellator.byteBuffer.capacity() >= bytes) {
+			return;
+		}
+
+		int capacity = Tessellator.byteBuffer.capacity();
+		while (capacity < bytes) {
+			capacity *= 2;
+		}
+
+		Tessellator.byteBuffer = ByteBuffer.allocateDirect(capacity).order(ByteOrder.nativeOrder());
+		Tessellator.intBuffer = Tessellator.byteBuffer.asIntBuffer();
 	}
 
 	private static final class LineShader {

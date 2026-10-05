@@ -12,26 +12,6 @@ public final class Packer {
 
 	private static final int PADDING = 1;
 
-	public static double fit(final List<GlyphEntry> glyphs, final double range, final int width, final int height) {
-		double low = 1D;
-		double high = height;
-		while (high - low > 0.0625D) {
-			final double middle = Math.floor((low + high) / 2D * 16D) / 16D;
-			if (middle <= low) {
-				break;
-			}
-
-			if (Packer.pack(glyphs, middle, range, width, height)) {
-				low = middle;
-			} else {
-				high = middle;
-			}
-		}
-
-		Packer.pack(glyphs, low, range, width, height);
-		return low;
-	}
-
 	public static boolean pack(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {
 		final List<GlyphEntry> drawable = new ArrayList<>();
 		for (final GlyphEntry glyph : glyphs) {
@@ -65,6 +45,26 @@ public final class Packer {
 		}
 
 		return true;
+	}
+
+	public static double fit(final List<GlyphEntry> glyphs, final double range, final int width, final int height) {
+		double low = 1D;
+		double high = height;
+		while (high - low > 0.0625D) {
+			final double middle = Math.floor((low + high) / 2D * 16D) / 16D;
+			if (middle <= low) {
+				break;
+			}
+
+			if (Packer.pack(glyphs, middle, range, width, height)) {
+				low = middle;
+			} else {
+				high = middle;
+			}
+		}
+
+		Packer.pack(glyphs, low, range, width, height);
+		return low;
 	}
 
 	private static int lowest(final int[] skyline, final int window) {

@@ -18,7 +18,10 @@ public final class SnapshotAudioSource implements IAudioSource {
 	public void clear() {}
 
 	@Override
-	public void delete() {}
+	public void gain(final float gain) {}
+
+	@Override
+	public void queue(final @NonNull short[] samples) {}
 
 	@Override
 	public boolean isPlaying() {
@@ -36,9 +39,6 @@ public final class SnapshotAudioSource implements IAudioSource {
 	}
 
 	@Override
-	public void gain(final float gain) {}
-
-	@Override
-	public void queue(final @NonNull short[] samples) {}
+	public void delete() {}
 
 }

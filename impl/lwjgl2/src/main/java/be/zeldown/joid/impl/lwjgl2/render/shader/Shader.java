@@ -37,15 +37,6 @@ public final class Shader implements IShader {
 	private boolean       bound;
 	private BlendSnapshot previousBlend;
 
-	public static Shader fromProgram(final int program) {
-		if (program == 0) {
-			return null;
-		}
-
-		final Shader shader = Shader.SHADER_MAP.get(program);
-		return shader != null ? shader : new Shader(program, null, true);
-	}
-
 	private Shader(final int program, final BlendState blend, final boolean active) {
 		this.samplerMap  = new HashMap<>();
 		this.locationMap = new HashMap<>();
@@ -59,6 +50,15 @@ public final class Shader implements IShader {
 		final Shader shader = new Shader(program, blend, Shader.link(program, vertex, fragment));
 		Shader.SHADER_MAP.put(program, shader);
 		return shader;
+	}
+
+	public static Shader fromProgram(final int program) {
+		if (program == 0) {
+			return null;
+		}
+
+		final Shader shader = Shader.SHADER_MAP.get(program);
+		return shader != null ? shader : new Shader(program, null, true);
 	}
 
 	@Override
@@ -121,13 +121,13 @@ public final class Shader implements IShader {
 	}
 
 	@Override
-	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
-		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform(this.getLocation(key), this.samplerMap.size() + 1, this));
+	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
+		return new BooleanUniform(this.getLocation(name));
 	}
 
 	@Override
-	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
-		return new BooleanUniform(this.getLocation(name));
+	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
+		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform(this.getLocation(key), this.samplerMap.size() + 1, this));
 	}
 
 	@Override
@@ -136,26 +136,13 @@ public final class Shader implements IShader {
 	}
 
 	@Override
-	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name) {
-		return new FloatMatrixUniform(this.getLocation(name));
-	}
-
-	@Override
 	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name) {
 		return new Float4ArrayUniform(this.getLocation(name));
 	}
 
-	private static int compile(final int type, final String source) {
-		final int shader = GL20.glCreateShader(type);
-		GL20.glShaderSource(shader, source);
-		GL20.glCompileShader(shader);
-		if (GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) != GL11.GL_TRUE) {
-			System.err.println((type == GL20.GL_VERTEX_SHADER ? "Vertex" : "Fragment") + " shader compilation failed: " + GL20.glGetShaderInfoLog(shader, 1024));
-			GL20.glDeleteShader(shader);
-			return 0;
-		}
-
-		return shader;
+	@Override
+	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name) {
+		return new FloatMatrixUniform(this.getLocation(name));
 	}
 
 	private static boolean link(final int program, final String vertexSource, final String fragmentSource) {
@@ -182,6 +169,19 @@ public final class Shader implements IShader {
 		GL20.glDeleteShader(vertex);
 		GL20.glDeleteShader(fragment);
 		return linked;
+	}
+
+	private static int compile(final int type, final String source) {
+		final int shader = GL20.glCreateShader(type);
+		GL20.glShaderSource(shader, source);
+		GL20.glCompileShader(shader);
+		if (GL20.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) != GL11.GL_TRUE) {
+			System.err.println((type == GL20.GL_VERTEX_SHADER ? "Vertex" : "Fragment") + " shader compilation failed: " + GL20.glGetShaderInfoLog(shader, 1024));
+			GL20.glDeleteShader(shader);
+			return 0;
+		}
+
+		return shader;
 	}
 
 }

@@ -131,19 +131,19 @@ public final class StateSnapshot {
 		GL11.glStencilOp(this.stencilFail, this.stencilDepthFail, this.stencilPass);
 	}
 
-	private static int[] getIntegers(final int name, final int count) {
-		StateSnapshot.INT_BUFFER.clear();
-		GL11.glGetInteger(name, StateSnapshot.INT_BUFFER);
-		final int[] values = new int[count];
-		StateSnapshot.INT_BUFFER.get(values);
-		return values;
-	}
-
 	private static float[] getFloats(final int name, final int count) {
 		StateSnapshot.FLOAT_BUFFER.clear();
 		GL11.glGetFloat(name, StateSnapshot.FLOAT_BUFFER);
 		final float[] values = new float[count];
 		StateSnapshot.FLOAT_BUFFER.get(values);
+		return values;
+	}
+
+	private static int[] getIntegers(final int name, final int count) {
+		StateSnapshot.INT_BUFFER.clear();
+		GL11.glGetInteger(name, StateSnapshot.INT_BUFFER);
+		final int[] values = new int[count];
+		StateSnapshot.INT_BUFFER.get(values);
 		return values;
 	}
 

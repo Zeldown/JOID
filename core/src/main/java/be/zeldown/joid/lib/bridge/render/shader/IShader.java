@@ -25,10 +25,10 @@ public interface IShader {
 	public @NonNull Float2Uniform getFloat2Uniform(final @NonNull String name);
 	public @NonNull Float3Uniform getFloat3Uniform(final @NonNull String name);
 	public @NonNull Float4Uniform getFloat4Uniform(final @NonNull String name);
-	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name);
 	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name);
+	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name);
 	public @NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name);
-	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name);
 	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name);
+	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name);
 
 }

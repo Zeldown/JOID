@@ -18,27 +18,18 @@ public class IntegerSignal extends Signal<Integer> {
 		return instance;
 	}
 
-	public void increment() {
-		final int updatedValue = this.getOrDefault() + 1;
-		this.set(updatedValue);
-	}
-
 	public void decrement() {
 		final int updatedValue = this.getOrDefault() - 1;
 		this.set(updatedValue);
 	}
 
-	public void add(final int value) {
-		final int updatedValue = this.getOrDefault() + value;
+	public void increment() {
+		final int updatedValue = this.getOrDefault() + 1;
 		this.set(updatedValue);
 	}
 
-	public void divide(final int value) {
-		if (value == 0) {
-			throw new ArithmeticException("Division by zero");
-		}
-
-		final int updatedValue = this.getOrDefault() / value;
+	public void add(final int value) {
+		final int updatedValue = this.getOrDefault() + value;
 		this.set(updatedValue);
 	}
 
@@ -49,6 +40,15 @@ public class IntegerSignal extends Signal<Integer> {
 
 	public void multiply(final int value) {
 		final int updatedValue = this.getOrDefault() * value;
+		this.set(updatedValue);
+	}
+
+	public void divide(final int value) {
+		if (value == 0) {
+			throw new ArithmeticException("Division by zero");
+		}
+
+		final int updatedValue = this.getOrDefault() / value;
 		this.set(updatedValue);
 	}
 

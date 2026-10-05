@@ -225,10 +225,6 @@ public class UIDemoReorderable extends UIDemo {
 		.attach(this);
 	}
 
-	private @NonNull Color colorAt(final int index, final int total) {
-		return this.hsl((float) index / total * 360F, UIDemoReorderable.ITEM_SATURATION, UIDemoReorderable.ITEM_LIGHTNESS);
-	}
-
 	private @NonNull Color hsl(final float hue, final float saturation, final float lightness) {
 		final float h = (hue % 360F + 360F) % 360F;
 		final float c = (1F - Math.abs(2F * lightness - 1F)) * saturation;
@@ -265,6 +261,10 @@ public class UIDemoReorderable extends UIDemo {
 		}
 
 		return new Color(r + m, g + m, b + m);
+	}
+
+	private @NonNull Color colorAt(final int index, final int total) {
+		return this.hsl((float) index / total * 360F, UIDemoReorderable.ITEM_SATURATION, UIDemoReorderable.ITEM_LIGHTNESS);
 	}
 
 }

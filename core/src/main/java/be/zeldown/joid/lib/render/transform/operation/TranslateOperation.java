@@ -12,13 +12,13 @@ public class TranslateOperation implements TransformOperation {
 	private final Vector vector;
 
 	@Override
-	public void reset() {
-		BridgeHandler.RENDER.get().translate(-this.vector.getX(), -this.vector.getY(), -this.vector.getZ());
+	public void transform() {
+		BridgeHandler.RENDER.get().translate(this.vector.getX(), this.vector.getY(), this.vector.getZ());
 	}
 
 	@Override
-	public void transform() {
-		BridgeHandler.RENDER.get().translate(this.vector.getX(), this.vector.getY(), this.vector.getZ());
+	public void reset() {
+		BridgeHandler.RENDER.get().translate(-this.vector.getX(), -this.vector.getY(), -this.vector.getZ());
 	}
 
 }

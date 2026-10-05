@@ -16,12 +16,12 @@ public enum Align {
 		return this == Align.START;
 	}
 
-	public boolean isStart() {
-		return this == Align.START;
-	}
-
 	public boolean isRight() {
 		return this == Align.END;
+	}
+
+	public boolean isStart() {
+		return this == Align.START;
 	}
 
 	public boolean isCenter() {

@@ -18,10 +18,6 @@ public class CircleShader extends ShaderImpl {
 		return CircleShader.INSTANCE;
 	}
 
-	public void bind(final float radius, final float centerX, final float centerY) {
-		this.bind(radius, centerX, centerY, RoundedShaderType.AUTO);
-	}
-
 	public static void use(final float radius, final float centerX, final float centerY, final Runnable runnable) {
 		if (!CircleShader.INSTANCE.isAvailable()) {
 			return;
@@ -32,6 +28,10 @@ public class CircleShader extends ShaderImpl {
 			runnable.run();
 		}
 		CircleShader.INSTANCE.unbind();
+	}
+
+	public void bind(final float radius, final float centerX, final float centerY) {
+		this.bind(radius, centerX, centerY, RoundedShaderType.AUTO);
 	}
 
 	public void bind(final float radius, final float centerX, final float centerY, final @NonNull RoundedShaderType type) {

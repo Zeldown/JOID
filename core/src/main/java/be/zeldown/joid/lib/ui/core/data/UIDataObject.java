@@ -48,61 +48,6 @@ public final class UIDataObject implements UIData {
 		return UIDataObject.get(clazz).orElse(new UIDataObject());
 	}
 
-	@Override
-	public boolean pause() {
-		return this.pause;
-	}
-
-	@Override
-	public double zlevel() {
-		return this.zlevel;
-	}
-
-	@Override
-	public Align anchorX() {
-		return this.anchorX;
-	}
-
-	@Override
-	public Align anchorY() {
-		return this.anchorY;
-	}
-
-	@Override
-	public boolean active() {
-		return this.active;
-	}
-
-	@Override
-	public boolean visible() {
-		return this.visible;
-	}
-
-	@Override
-	public boolean zoomable() {
-		return this.zoomable;
-	}
-
-	@Override
-	public boolean closeable() {
-		return this.closeable;
-	}
-
-	@Override
-	public boolean projection() {
-		return this.projection;
-	}
-
-	@Override
-	public boolean background() {
-		return this.background;
-	}
-
-	@Override
-	public String backgroundColor() {
-		return this.backgroundColor;
-	}
-
 	public double getAnchorPositionX() {
 		switch (this.anchorX) {
 		case START:
@@ -133,9 +78,74 @@ public final class UIDataObject implements UIData {
 		return this.backgroundColorCache;
 	}
 
+	public static @NonNull Optional<UIDataObject> get(final @NonNull Class<? extends UI> clazz) {
+		Class<?> currentClass = clazz;
+		UIData data = currentClass.getAnnotation(UIData.class);
+		while (data == null && currentClass.getSuperclass() != null) {
+			currentClass = currentClass.getSuperclass();
+			data = currentClass.getAnnotation(UIData.class);
+		}
+		return data != null ? Optional.of(new UIDataObject(data)) : Optional.empty();
+	}
+
 	@Override
 	public Class<? extends Annotation> annotationType() {
 		return UIData.class;
+	}
+
+	@Override
+	public boolean active() {
+		return this.active;
+	}
+
+	@Override
+	public boolean visible() {
+		return this.visible;
+	}
+
+	@Override
+	public boolean pause() {
+		return this.pause;
+	}
+
+	@Override
+	public boolean closeable() {
+		return this.closeable;
+	}
+
+	@Override
+	public boolean projection() {
+		return this.projection;
+	}
+
+	@Override
+	public boolean background() {
+		return this.background;
+	}
+
+	@Override
+	public String backgroundColor() {
+		return this.backgroundColor;
+	}
+
+	@Override
+	public boolean zoomable() {
+		return this.zoomable;
+	}
+
+	@Override
+	public double zlevel() {
+		return this.zlevel;
+	}
+
+	@Override
+	public Align anchorX() {
+		return this.anchorX;
+	}
+
+	@Override
+	public Align anchorY() {
+		return this.anchorY;
 	}
 
 	public final @NonNull UIDataObject setPause(final boolean pause) {
@@ -168,13 +178,13 @@ public final class UIDataObject implements UIData {
 		return this;
 	}
 
-	public final @NonNull UIDataObject setProjection(final boolean projection) {
-		this.projection = projection;
+	public final @NonNull UIDataObject setBackground(final boolean background) {
+		this.background = background;
 		return this;
 	}
 
-	public final @NonNull UIDataObject setBackground(final boolean background) {
-		this.background = background;
+	public final @NonNull UIDataObject setProjection(final boolean projection) {
+		this.projection = projection;
 		return this;
 	}
 
@@ -192,16 +202,6 @@ public final class UIDataObject implements UIData {
 		this.backgroundColor = color;
 		this.backgroundColorCache = Color.decode(color);
 		return this;
-	}
-
-	public static @NonNull Optional<UIDataObject> get(final @NonNull Class<? extends UI> clazz) {
-		Class<?> currentClass = clazz;
-		UIData data = currentClass.getAnnotation(UIData.class);
-		while (data == null && currentClass.getSuperclass() != null) {
-			currentClass = currentClass.getSuperclass();
-			data = currentClass.getAnnotation(UIData.class);
-		}
-		return data != null ? Optional.of(new UIDataObject(data)) : Optional.empty();
 	}
 
 }

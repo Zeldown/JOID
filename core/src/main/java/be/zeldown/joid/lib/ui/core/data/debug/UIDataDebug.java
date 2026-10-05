@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 public @interface UIDataDebug {
 
 	public boolean profiler()  default true;
+
 	public boolean hotreload() default true;
 
 }

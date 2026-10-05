@@ -59,33 +59,6 @@ public final class AudioSource implements IAudioSource {
 	}
 
 	@Override
-	public void delete() {
-		AL10.alSourceStop(this.source);
-		AL10.alDeleteSources(this.source);
-		for (final int buffer : this.bufferList) {
-			AL10.alDeleteBuffers(buffer);
-		}
-
-		this.bufferList.clear();
-		this.freeBufferQueue.clear();
-	}
-
-	@Override
-	public boolean isPlaying() {
-		return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
-	}
-
-	@Override
-	public int getQueuedBuffers() {
-		return AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_QUEUED);
-	}
-
-	@Override
-	public int getProcessedBuffers() {
-		return AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
-	}
-
-	@Override
 	public void gain(final float gain) {
 		AL10.alSourcef(this.source, AL10.AL_GAIN, gain);
 	}
@@ -104,6 +77,33 @@ public final class AudioSource implements IAudioSource {
 
 		AL10.alBufferData(buffer, this.format, this.uploadBuffer, this.sampleRate);
 		AL10.alSourceQueueBuffers(this.source, buffer);
+	}
+
+	@Override
+	public boolean isPlaying() {
+		return AL10.alGetSourcei(this.source, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
+	}
+
+	@Override
+	public int getQueuedBuffers() {
+		return AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_QUEUED);
+	}
+
+	@Override
+	public int getProcessedBuffers() {
+		return AL10.alGetSourcei(this.source, AL10.AL_BUFFERS_PROCESSED);
+	}
+
+	@Override
+	public void delete() {
+		AL10.alSourceStop(this.source);
+		AL10.alDeleteSources(this.source);
+		for (final int buffer : this.bufferList) {
+			AL10.alDeleteBuffers(buffer);
+		}
+
+		this.bufferList.clear();
+		this.freeBufferQueue.clear();
 	}
 
 	private int nextBuffer() {

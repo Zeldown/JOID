@@ -55,15 +55,15 @@ public final class AudioSource implements IAudioSource {
 	}
 
 	@Override
-	public void delete() {
-		AL10.alSourceStop(this.source);
-		AL10.alDeleteSources(this.source);
-		for (final int buffer : this.bufferList) {
-			AL10.alDeleteBuffers(buffer);
-		}
+	public void gain(final float gain) {
+		AL10.alSourcef(this.source, AL10.AL_GAIN, gain);
+	}
 
-		this.bufferList.clear();
-		this.freeBufferQueue.clear();
+	@Override
+	public void queue(final @NonNull short[] samples) {
+		final int buffer = this.nextBuffer();
+		AL10.alBufferData(buffer, this.format, samples, this.sampleRate);
+		AL10.alSourceQueueBuffers(this.source, buffer);
 	}
 
 	@Override
@@ -82,15 +82,15 @@ public final class AudioSource implements IAudioSource {
 	}
 
 	@Override
-	public void gain(final float gain) {
-		AL10.alSourcef(this.source, AL10.AL_GAIN, gain);
-	}
+	public void delete() {
+		AL10.alSourceStop(this.source);
+		AL10.alDeleteSources(this.source);
+		for (final int buffer : this.bufferList) {
+			AL10.alDeleteBuffers(buffer);
+		}
 
-	@Override
-	public void queue(final @NonNull short[] samples) {
-		final int buffer = this.nextBuffer();
-		AL10.alBufferData(buffer, this.format, samples, this.sampleRate);
-		AL10.alSourceQueueBuffers(this.source, buffer);
+		this.bufferList.clear();
+		this.freeBufferQueue.clear();
 	}
 
 	private int nextBuffer() {

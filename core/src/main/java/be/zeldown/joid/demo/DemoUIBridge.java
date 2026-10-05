@@ -16,22 +16,6 @@ import lombok.NonNull;
 public class DemoUIBridge extends UIBridge {
 
 	@Override
-	public void close(final @NonNull UI ui) {
-		this.remove(ui);
-	}
-
-	@Override
-	public int getIndex() {
-		return 0;
-	}
-
-	@Override
-	public void add(final @NonNull UI ui) {
-		super.getUiList().add(ui);
-		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
-	}
-
-	@Override
 	public void open(final @NonNull UI ui) {
 		if (!ui.getPopup().active()) {
 			for (final UI currentUi : super.getUiList()) {
@@ -55,31 +39,8 @@ public class DemoUIBridge extends UIBridge {
 	}
 
 	@Override
-	public @NonNull IUIBridge getInstance() {
-		return this;
-	}
-
-	@Override
-	public void remove(final @NonNull UI ui) {
-		super.getUiList().remove(ui);
-	}
-
-	@Override
-	public boolean isOnTop(final @NonNull UI ui) {
-		if (this.getUiList().isEmpty()) {
-			return false;
-		}
-		return this.getUiList().ordered().getLast() == ui && ui.getData().active() && ui.getData().visible();
-	}
-
-	@Override
-	public boolean canHandle(final @NonNull UI ui) {
-		return true;
-	}
-
-	@Override
-	public boolean canHandle(final @NonNull Class<? extends UI> ui) {
-		return true;
+	public void close(final @NonNull UI ui) {
+		this.remove(ui);
 	}
 
 	@Override
@@ -128,6 +89,45 @@ public class DemoUIBridge extends UIBridge {
 			DrawUtils.TEXT.drawText(x + paddingX, textY, line, info, Align.START, Align.START);
 			textY += lineHeight + lineGap;
 		}
+	}
+
+	@Override
+	public void add(final @NonNull UI ui) {
+		super.getUiList().add(ui);
+		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
+	}
+
+	@Override
+	public void remove(final @NonNull UI ui) {
+		super.getUiList().remove(ui);
+	}
+
+	@Override
+	public boolean isOnTop(final @NonNull UI ui) {
+		if (this.getUiList().isEmpty()) {
+			return false;
+		}
+		return this.getUiList().ordered().getLast() == ui && ui.getData().active() && ui.getData().visible();
+	}
+
+	@Override
+	public boolean canHandle(final @NonNull UI ui) {
+		return true;
+	}
+
+	@Override
+	public boolean canHandle(final @NonNull Class<? extends UI> ui) {
+		return true;
+	}
+
+	@Override
+	public int getIndex() {
+		return 0;
+	}
+
+	@Override
+	public @NonNull IUIBridge getInstance() {
+		return this;
 	}
 
 }

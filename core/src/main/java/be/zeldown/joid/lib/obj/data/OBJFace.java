@@ -16,14 +16,6 @@ public final class OBJFace {
 	private OBJVertex[]            vertexNormals;
 	private OBJTextureCoordinate[] textureCoordinates;
 
-	public @NonNull OBJVertex normal() {
-		final Vector3d v1 = new Vector3d(this.vertices[1].getX() - this.vertices[0].getX(), this.vertices[1].getY() - this.vertices[0].getY(), this.vertices[1].getZ() - this.vertices[0].getZ());
-		final Vector3d v2 = new Vector3d(this.vertices[2].getX() - this.vertices[0].getX(), this.vertices[2].getY() - this.vertices[0].getY(), this.vertices[2].getZ() - this.vertices[0].getZ());
-		final Vector3d normalVector = this.crossProduct(v1, v2);
-		normalVector.normalize();
-		return new OBJVertex((float) normalVector.x, (float) normalVector.y, (float) normalVector.z);
-	}
-
 	public void render(final @NonNull Tessellator tessellator) {
 		final float textureOffset = 0.0005F;
 		if (this.faceNormal == null) {
@@ -64,6 +56,14 @@ public final class OBJFace {
 				tessellator.addVertex(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ());
 			}
 		}
+	}
+
+	public @NonNull OBJVertex normal() {
+		final Vector3d v1 = new Vector3d(this.vertices[1].getX() - this.vertices[0].getX(), this.vertices[1].getY() - this.vertices[0].getY(), this.vertices[1].getZ() - this.vertices[0].getZ());
+		final Vector3d v2 = new Vector3d(this.vertices[2].getX() - this.vertices[0].getX(), this.vertices[2].getY() - this.vertices[0].getY(), this.vertices[2].getZ() - this.vertices[0].getZ());
+		final Vector3d normalVector = this.crossProduct(v1, v2);
+		normalVector.normalize();
+		return new OBJVertex((float) normalVector.x, (float) normalVector.y, (float) normalVector.z);
 	}
 
 	private Vector3d crossProduct(final @NonNull Vector3d vector1, final @NonNull Vector3d vector2) {

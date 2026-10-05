@@ -44,23 +44,18 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fill, this.mode);
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E width(final float width) {
-		this.widthSupplier = () -> width;
-		return (E) this;
-	}
-
-	public <E extends BorderNodeEffect<T>> @NonNull E fill(final boolean fill) {
-		this.fill = fill;
-		return (E) this;
-	}
-
 	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Color color) {
 		this.colorSupplier = () -> color;
 		return (E) this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E mode(final @NonNull BorderMode mode) {
-		this.mode = mode;
+	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
+		this.colorSupplier = colorSupplier;
+		return (E) this;
+	}
+
+	public <E extends BorderNodeEffect<T>> @NonNull E width(final float width) {
+		this.widthSupplier = () -> width;
 		return (E) this;
 	}
 
@@ -69,8 +64,13 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 		return (E) this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
-		this.colorSupplier = colorSupplier;
+	public <E extends BorderNodeEffect<T>> @NonNull E mode(final @NonNull BorderMode mode) {
+		this.mode = mode;
+		return (E) this;
+	}
+
+	public <E extends BorderNodeEffect<T>> @NonNull E fill(final boolean fill) {
+		this.fill = fill;
 		return (E) this;
 	}
 

@@ -36,6 +36,13 @@ public class RectNode extends Node {
 		return new RectNode(x, y, width, height);
 	}
 
+	@Override
+	public void draw(final double mouseX, final double mouseY) {
+		final Color hoveredColor = this.hoveredColor != null ? this.hoveredColor.get() : null;
+		final Color color = hoveredColor != null ? this.color.get().to(hoveredColor, super.hoverValue(1F)) : this.color.get();
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
+	}
+
 	public final @NonNull Color getColor() {
 		return this.color.get();
 	}
@@ -52,30 +59,8 @@ public class RectNode extends Node {
 		return this.hoveredBorderColor.get();
 	}
 
-	@Override
-	public void draw(final double mouseX, final double mouseY) {
-		final Color hoveredColor = this.hoveredColor != null ? this.hoveredColor.get() : null;
-		final Color color = hoveredColor != null ? this.color.get().to(hoveredColor, super.hoverValue(1F)) : this.color.get();
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
-	}
-
-	public final <T extends RectNode> @NonNull T hoveredColor(final Color color) {
-		this.hoveredColor(() -> color);
-		return (T) this;
-	}
-
 	public final <T extends RectNode> @NonNull T color(final @NonNull Color color) {
 		this.color(() -> color);
-		return (T) this;
-	}
-
-	public final <T extends RectNode> @NonNull T hoveredColor(final Supplier<Color> color) {
-		this.hoveredColor = color;
-		return (T) this;
-	}
-
-	public final <T extends RectNode> @NonNull T hoveredBorderColor(final Color hoveredColor) {
-		this.hoveredBorderColor(() -> hoveredColor);
 		return (T) this;
 	}
 
@@ -84,18 +69,29 @@ public class RectNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends RectNode> @NonNull T hoveredBorderColor(final Supplier<Color> hoveredColor) {
-		this.hoveredBorderColor = hoveredColor;
+	public final <T extends RectNode> @NonNull T color(final @NonNull Color color, final Color hoveredColor) {
+		this.color(() -> color, () -> hoveredColor);
+		return (T) this;
+	}
+
+	public final <T extends RectNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color, final Supplier<Color> hoveredColor) {
+		this.color        = color;
+		this.hoveredColor = hoveredColor;
+		return (T) this;
+	}
+
+	public final <T extends RectNode> @NonNull T hoveredColor(final Color color) {
+		this.hoveredColor(() -> color);
+		return (T) this;
+	}
+
+	public final <T extends RectNode> @NonNull T hoveredColor(final Supplier<Color> color) {
+		this.hoveredColor = color;
 		return (T) this;
 	}
 
 	public final <T extends RectNode> @NonNull T border(final @NonNull Color border, final double stroke) {
 		return this.border(() -> border, stroke);
-	}
-
-	public final <T extends RectNode> @NonNull T color(final @NonNull Color color, final Color hoveredColor) {
-		this.color(() -> color, () -> hoveredColor);
-		return (T) this;
 	}
 
 	public final <T extends RectNode> @NonNull T border(final @NonNull Color color, final double stroke, final boolean fill) {
@@ -104,12 +100,6 @@ public class RectNode extends Node {
 
 	public final <T extends RectNode> @NonNull T border(final @NonNull Supplier<@NonNull Color> border, final double stroke) {
 		return this.border(border, stroke, true);
-	}
-
-	public final <T extends RectNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color, final Supplier<Color> hoveredColor) {
-		this.color        = color;
-		this.hoveredColor = hoveredColor;
-		return (T) this;
 	}
 
 	public final <T extends RectNode> @NonNull T border(final @NonNull Supplier<@NonNull Color> color, final double stroke, final boolean fill) {
@@ -130,6 +120,16 @@ public class RectNode extends Node {
 		this.borderStroke       = stroke;
 		this.borderFill         = fill;
 		this.applyBorderEffect();
+		return (T) this;
+	}
+
+	public final <T extends RectNode> @NonNull T hoveredBorderColor(final Color hoveredColor) {
+		this.hoveredBorderColor(() -> hoveredColor);
+		return (T) this;
+	}
+
+	public final <T extends RectNode> @NonNull T hoveredBorderColor(final Supplier<Color> hoveredColor) {
+		this.hoveredBorderColor = hoveredColor;
 		return (T) this;
 	}
 

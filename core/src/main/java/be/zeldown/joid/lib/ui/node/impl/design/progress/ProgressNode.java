@@ -48,23 +48,8 @@ public class ProgressNode extends Node {
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T background(final @NonNull Color color) {
-		this.colors[0] = color;
-		return (T) this;
-	}
-
-	public <T extends ProgressNode> @NonNull T foreground(final @NonNull Color color) {
-		this.colors[1] = color;
-		return (T) this;
-	}
-
-	public <T extends ProgressNode> @NonNull T background(final @NonNull Resource resource) {
-		this.resources[0] = resource;
-		return (T) this;
-	}
-
-	public <T extends ProgressNode> @NonNull T foreground(final @NonNull Resource resource) {
-		this.resources[1] = resource;
+	public <T extends ProgressNode> @NonNull T progress(final float min, final float max, final float value) {
+		this.progress = (value - min) / (max - min);
 		return (T) this;
 	}
 
@@ -73,13 +58,28 @@ public class ProgressNode extends Node {
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T progress(final float min, final float max, final float value) {
-		this.progress = (value - min) / (max - min);
+	public <T extends ProgressNode> @NonNull T color(final @NonNull Color background, final @NonNull Color foreground) {
+		this.colors = new Color[] {background, foreground};
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T color(final @NonNull Color background, final @NonNull Color foreground) {
-		this.colors = new Color[] {background, foreground};
+	public <T extends ProgressNode> @NonNull T background(final @NonNull Color color) {
+		this.colors[0] = color;
+		return (T) this;
+	}
+
+	public <T extends ProgressNode> @NonNull T background(final @NonNull Resource resource) {
+		this.resources[0] = resource;
+		return (T) this;
+	}
+
+	public <T extends ProgressNode> @NonNull T foreground(final @NonNull Color color) {
+		this.colors[1] = color;
+		return (T) this;
+	}
+
+	public <T extends ProgressNode> @NonNull T foreground(final @NonNull Resource resource) {
+		this.resources[1] = resource;
 		return (T) this;
 	}
 

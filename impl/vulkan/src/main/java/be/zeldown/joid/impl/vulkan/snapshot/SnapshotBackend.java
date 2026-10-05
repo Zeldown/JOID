@@ -29,28 +29,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void present() {
-		((RenderBridge) BridgeHandler.RENDER.get()).present();
-	}
-
-	@Override
-	public @NonNull String getRenderer() {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
-			VK10.vkGetPhysicalDeviceProperties(((RenderBridge) BridgeHandler.RENDER.get()).getContext().getPhysicalDevice(), properties);
-			return properties.deviceNameString();
-		}
-	}
-
-	@Override
-	public void frame(final @NonNull Runnable draw) {
-		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
-		render.beginFrame();
-		draw.run();
-		render.endFrame();
-	}
-
-	@Override
 	public void create(final int width, final int height) {
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
@@ -66,6 +44,19 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		}
 
 		Backend.register(this.window);
+	}
+
+	@Override
+	public void present() {
+		((RenderBridge) BridgeHandler.RENDER.get()).present();
+	}
+
+	@Override
+	public void frame(final @NonNull Runnable draw) {
+		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
+		render.beginFrame();
+		draw.run();
+		render.endFrame();
 	}
 
 	@Override
@@ -95,6 +86,15 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		final SnapshotImage snapshot = SnapshotImage.fromBytes(MemoryUtil.memByteBuffer(buffer.getAddress(), width * height * 4), width, height, false, bgra);
 		buffer.destroy();
 		return snapshot;
+	}
+
+	@Override
+	public @NonNull String getRenderer() {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
+			VK10.vkGetPhysicalDeviceProperties(((RenderBridge) BridgeHandler.RENDER.get()).getContext().getPhysicalDevice(), properties);
+			return properties.deviceNameString();
+		}
 	}
 
 }

@@ -42,10 +42,6 @@ public final class MsdfFontLoader {
 		});
 	}
 
-	private static @NonNull IMsdfSource source(final @NonNull Object handle) {
-		return handle instanceof IMsdfSource ? (IMsdfSource) handle : MsdfBinarySource.of(handle);
-	}
-
 	private static @NonNull CompletableFuture<MsdfFontFace> read(final @NonNull Object handle) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
@@ -54,6 +50,10 @@ public final class MsdfFontLoader {
 				throw new CompletionException(exception);
 			}
 		}, MsdfFontLoader.EXECUTOR);
+	}
+
+	private static @NonNull IMsdfSource source(final @NonNull Object handle) {
+		return handle instanceof IMsdfSource ? (IMsdfSource) handle : MsdfBinarySource.of(handle);
 	}
 
 }

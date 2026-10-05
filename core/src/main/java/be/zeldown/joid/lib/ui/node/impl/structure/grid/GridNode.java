@@ -30,23 +30,17 @@ public final class GridNode extends Node {
 	}
 
 	@Override
-	public void update() {
-		this.updateGrid();
-	}
-
-	public final @NonNull GridNode margin(final double margin) {
-		this.verticalMargin   = margin;
-		this.horizontalMargin = margin;
-		return this;
-	}
-
-	@Override
 	public final void draw(final double mouseX, final double mouseY) {
 		this.updateGrid();
 	}
 
 	@Override
 	public final void drawSkeleton(final double mouseX, final double mouseY) {
+		this.updateGrid();
+	}
+
+	@Override
+	public void update() {
 		this.updateGrid();
 	}
 
@@ -57,6 +51,12 @@ public final class GridNode extends Node {
 
 	public final @NonNull GridNode horizontalMargin(final double horizontalMargin) {
 		this.horizontalMargin = horizontalMargin;
+		return this;
+	}
+
+	public final @NonNull GridNode margin(final double margin) {
+		this.verticalMargin   = margin;
+		this.horizontalMargin = margin;
 		return this;
 	}
 

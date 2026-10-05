@@ -75,22 +75,14 @@ public abstract class DemoWindow extends DemoUIBridge {
 		System.exit(0);
 	}
 
-	protected abstract void endFrame();
-
-	protected abstract void beginFrame();
-
 	protected abstract String getEngineName();
 
 	protected abstract void configureWindow();
 
 	protected abstract void registerBackend(final long window);
 
-	private void render() {
-		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
-		BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
-		DrawUtils.SHAPE.drawRect(0, 0, windowBridge.getWidth(), windowBridge.getHeight(), new Color(50, 50, 50));
-		super.draw();
-	}
+	protected abstract void endFrame();
+	protected abstract void beginFrame();
 
 	private void identity() {
 		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
@@ -99,29 +91,11 @@ public abstract class DemoWindow extends DemoUIBridge {
 		render.viewport(0, 0, windowBridge.getWidth(), windowBridge.getHeight());
 	}
 
-	private void onResize() {
-		if (BridgeHandler.WINDOW.get().getWidth() == 0 || BridgeHandler.WINDOW.get().getHeight() == 0) {
-			return;
-		}
-
-		this.identity();
-		super.load();
-	}
-
-	private void onCursorMove() {
-		if (this.clickType != null && this.lastMouseEvent > 0L) {
-			super.mouseDragged(this.clickType, System.currentTimeMillis() - this.lastMouseEvent);
-		}
-	}
-
-	private void flushPendingKey() {
-		if (this.pendingKey == null) {
-			return;
-		}
-
-		final Key key = this.pendingKey;
-		this.pendingKey = null;
-		super.keyTyped((char) 0, key);
+	private void render() {
+		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
+		BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
+		DrawUtils.SHAPE.drawRect(0, 0, windowBridge.getWidth(), windowBridge.getHeight(), new Color(50, 50, 50));
+		super.draw();
 	}
 
 	private void registerCallbacks() {
@@ -131,23 +105,6 @@ public abstract class DemoWindow extends DemoUIBridge {
 		GLFW.glfwSetKeyCallback(this.window, (handle, key, scancode, action, mods) -> this.onKey(key, action, mods));
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.onResize());
 		GLFW.glfwSetMouseButtonCallback(this.window, (handle, button, action, mods) -> this.onMouseButton(button, action));
-	}
-
-	private void onCharacter(final int codepoint) {
-		final Key key = this.pendingKey == null ? Key.UNKNOWN : this.pendingKey;
-		this.pendingKey = null;
-		super.keyTyped((char) codepoint, key);
-	}
-
-	private void onMouseButton(final int button, final int action) {
-		if (action == GLFW.GLFW_PRESS) {
-			this.clickType = ClickType.from(button);
-			this.lastMouseEvent = System.currentTimeMillis();
-			super.mousePressed(this.clickType);
-		} else if (this.clickType != null) {
-			super.mouseReleased(this.clickType);
-			this.clickType = null;
-		}
 	}
 
 	private void onKey(final int code, final int action, final int mods) {
@@ -163,6 +120,48 @@ public abstract class DemoWindow extends DemoUIBridge {
 		}
 
 		super.keyTyped((char) 0, key);
+	}
+
+	private void onCharacter(final int codepoint) {
+		final Key key = this.pendingKey == null ? Key.UNKNOWN : this.pendingKey;
+		this.pendingKey = null;
+		super.keyTyped((char) codepoint, key);
+	}
+
+	private void flushPendingKey() {
+		if (this.pendingKey == null) {
+			return;
+		}
+
+		final Key key = this.pendingKey;
+		this.pendingKey = null;
+		super.keyTyped((char) 0, key);
+	}
+
+	private void onMouseButton(final int button, final int action) {
+		if (action == GLFW.GLFW_PRESS) {
+			this.clickType = ClickType.from(button);
+			this.lastMouseEvent = System.currentTimeMillis();
+			super.mousePressed(this.clickType);
+		} else if (this.clickType != null) {
+			super.mouseReleased(this.clickType);
+			this.clickType = null;
+		}
+	}
+
+	private void onCursorMove() {
+		if (this.clickType != null && this.lastMouseEvent > 0L) {
+			super.mouseDragged(this.clickType, System.currentTimeMillis() - this.lastMouseEvent);
+		}
+	}
+
+	private void onResize() {
+		if (BridgeHandler.WINDOW.get().getWidth() == 0 || BridgeHandler.WINDOW.get().getHeight() == 0) {
+			return;
+		}
+
+		this.identity();
+		super.load();
 	}
 
 	private static boolean isTextKey(final int code) {

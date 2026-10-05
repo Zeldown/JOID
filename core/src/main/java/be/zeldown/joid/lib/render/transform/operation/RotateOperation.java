@@ -25,20 +25,6 @@ public class RotateOperation implements TransformOperation {
 	}
 
 	@Override
-	public void reset() {
-		final double x = this.rotation.getRawX();
-		final double y = this.rotation.getRawY();
-		final double z = this.rotation.getRawZ();
-		final double pivotX = this.pivot.getX();
-		final double pivotY = this.pivot.getY();
-		final double pivotZ = this.pivot.getZ();
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.translate(pivotX, pivotY, pivotZ);
-		render.rotate(-this.angleSupplier.get(), x, y, z);
-		render.translate(-pivotX, -pivotY, -pivotZ);
-	}
-
-	@Override
 	public void transform() {
 		final double x = this.rotation.getRawX();
 		final double y = this.rotation.getRawY();
@@ -49,6 +35,20 @@ public class RotateOperation implements TransformOperation {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.translate(pivotX, pivotY, pivotZ);
 		render.rotate(this.angleSupplier.get(), x, y, z);
+		render.translate(-pivotX, -pivotY, -pivotZ);
+	}
+
+	@Override
+	public void reset() {
+		final double x = this.rotation.getRawX();
+		final double y = this.rotation.getRawY();
+		final double z = this.rotation.getRawZ();
+		final double pivotX = this.pivot.getX();
+		final double pivotY = this.pivot.getY();
+		final double pivotZ = this.pivot.getZ();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.translate(pivotX, pivotY, pivotZ);
+		render.rotate(-this.angleSupplier.get(), x, y, z);
 		render.translate(-pivotX, -pivotY, -pivotZ);
 	}
 

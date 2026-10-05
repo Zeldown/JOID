@@ -42,14 +42,14 @@ public class CircleNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends CircleNode> @NonNull T hoveredColor(final @NonNull Color color) {
-		this.hoveredColor = color;
-		return (T) this;
-	}
-
 	public final <T extends CircleNode> @NonNull T color(final @NonNull Color color, final @NonNull Color hoveredColor) {
 		this.color = color;
 		this.hoveredColor = hoveredColor;
+		return (T) this;
+	}
+
+	public final <T extends CircleNode> @NonNull T hoveredColor(final @NonNull Color color) {
+		this.hoveredColor = color;
 		return (T) this;
 	}
 
