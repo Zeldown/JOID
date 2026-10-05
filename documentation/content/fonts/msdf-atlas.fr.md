@@ -4,25 +4,50 @@ Comment transformer un `.ttf` ou un `.otf` en fichier `font.msdf`, celui que le 
 
 ## Le générateur
 
-JOID embarque son propre générateur dans le module `:msdf`. Il est écrit en Java pur, tourne sur n'importe quel OS, ne demande aucun binaire natif, et lit le crénage directement dans la police — aussi bien la table `kern` historique que le positionnement par paires `GPOS` qu'utilisent les polices modernes.
+JOID embarque son propre générateur. Il est écrit en Java pur, tourne sur n'importe quel OS, ne demande aucun binaire natif, et lit le crénage directement dans la police — aussi bien la table `kern` historique que le positionnement par paires `GPOS` qu'utilisent les polices modernes. La même police source donne le même atlas sur toutes les machines.
+
+### Depuis une release
+
+Téléchargez `joid-msdf-generator-X.Y.Z.zip` depuis la [page des releases](https://github.com/Zeldown/JOID/releases), décompressez-le où vous voulez et lancez le script de votre système. Java 8 ou plus récent est la seule exigence.
+
+```bash
+./msdf.sh --font Inter-Regular.ttf --output assets/fonts/Inter-Regular
+```
+
+```bat
+.\msdf.bat --font Inter-Regular.ttf --output assets\fonts\Inter-Regular
+```
+
+Les deux scripts enveloppent `java -jar joid-msdf-X.Y.Z.jar`, que vous pouvez appeler directement. La commande écrit un unique `font.msdf` dans le dossier de sortie.
+
+| Option | Défaut | Rôle |
+|---|---|---|
+| `--font` | — | Fichier source `.ttf` ou `.otf` |
+| `--output` | `output` | Dossier qui reçoit `font.msdf` |
+| `--charset` | `[32, 563]` | Points de code à inclure, fichier ou plages en ligne |
+| `--range` | `24` | Portée du champ de distance en pixels — plus haut adoucit en petit, floute en grand |
+| `--width` / `--height` | `2048` | Taille de l'atlas en pixels |
+| `--size` | — | Impose la taille d'em en pixels au lieu de l'ajuster à l'atlas |
+
+La résolution des glyphes n'est pas un paramètre : le générateur cherche par dichotomie la plus grande taille d'em dont les glyphes tiennent encore dans l'atlas, et l'inscrit dans le fichier. `--size` court-circuite cette recherche et échoue si les glyphes ne tiennent pas.
+
+### Depuis les sources
+
+Dans un clone du dépôt, le module `:msdf` expose le même générateur sous forme de tâche Gradle :
 
 ```bash
 ./gradlew :msdf:generateFont -Pfont=/chemin/vers/Inter-Regular.ttf -Poutput=assets/fonts/Inter-Regular
 ```
-
-Il écrit un unique `font.msdf` dans le dossier `-Poutput`.
-
-### Paramètres
 
 | Propriété | Défaut | Rôle |
 |---|---|---|
 | `-Pfont` | — | Fichier source `.ttf` ou `.otf` |
 | `-Poutput` | `build/font` | Dossier qui reçoit `font.msdf` |
 | `-Pcharset` | `msdf/charset.txt` | Points de code à inclure |
-| `-Prange` | `24` | Portée du champ de distance en pixels — plus haut adoucit en petit, floute en grand |
+| `-Prange` | `24` | Portée du champ de distance en pixels |
 | `-Pwidth` / `-Pheight` | `2048` | Taille de l'atlas en pixels |
 
-La résolution des glyphes n'est pas un paramètre : le générateur cherche par dichotomie la plus grande taille d'em dont les glyphes tiennent encore dans l'atlas, et l'inscrit dans le fichier.
+`./gradlew msdfGenerator` empaquette ce module dans le zip de release, dans `build/distributions`.
 
 ### Régénérer les polices livrées avec JOID
 
@@ -34,13 +59,19 @@ La résolution des glyphes n'est pas un paramètre : le générateur cherche par
 
 ## Jeu de caractères
 
-`charset.txt` accepte des plages et des points de code isolés :
+`charset.txt`, livré à côté du jar dans le zip de release, accepte des plages et des points de code isolés :
 
 ```
 [32, 563]
 ```
 
-Cette plage couvre le latin, le latin-1, le latin étendu A et une partie de l'étendu B — le jeu qu'utilisent les polices de JOID. Les points de code absents de la police sont ignorés, le même jeu convient donc à toutes les sources.
+Cette plage couvre le latin, le latin-1, le latin étendu A et une partie de l'étendu B — le jeu qu'utilisent les polices de JOID. Plusieurs entrées se séparent par des virgules, et le tout peut se passer en ligne plutôt que dans un fichier :
+
+```bash
+./msdf.sh --font Inter-Regular.ttf --output fonts/Inter --charset "[32, 126], [160, 255], 8364"
+```
+
+Les points de code absents de la police sont ignorés, le même jeu convient donc à toutes les sources.
 
 Pour le CJK, prenez un sous-ensemble : un jeu complet dépasse les 30 000 glyphes et ne tiendra pas dans un atlas 2048×2048.
 
@@ -76,8 +107,8 @@ Ces atlas ne portent aucun crénage : `msdf-atlas-gen` ne lit que la table `kern
 Générez un atlas par graisse, puis chargez chacun séparément et associez-les à des `TextInfo` différents :
 
 ```bash
-./gradlew :msdf:generateFont -Pfont=Inter-Regular.ttf -Poutput=assets/fonts/Inter-Regular
-./gradlew :msdf:generateFont -Pfont=Inter-Bold.ttf    -Poutput=assets/fonts/Inter-Bold
+./msdf.sh --font Inter-Regular.ttf --output assets/fonts/Inter-Regular
+./msdf.sh --font Inter-Bold.ttf    --output assets/fonts/Inter-Bold
 ```
 
 Une graisse normale et une grasse peuvent aussi être réunies dans un seul `CustomFont`, celui dans lequel puise le style `§l` :

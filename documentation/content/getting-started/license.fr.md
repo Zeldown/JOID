@@ -30,7 +30,7 @@ Le nom **JOID** n'est pas concédé : donnez un autre nom à votre fork. Le cite
 | Composant | Licence | Où |
 |---|---|---|
 | Universal Tween Engine | Apache-2.0 | embarqué dans `lib/animation/tweenengine` |
-| msdf-atlas-gen | MIT | générateur dans `msdf/`, jamais livré dans les JARs |
+| msdfgen, l'algorithme | MIT | réimplémenté en Java dans `msdf/`, livré dans son propre zip |
 | LWJGL | BSD-3-Clause | déclaré par votre application |
 | JavaCV | Apache-2.0 | déclaré par votre application, pour la vidéo |
 | Builds FFmpeg | leurs propres termes | déclarés par votre application, pour la vidéo |

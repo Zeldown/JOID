@@ -4,25 +4,50 @@ How to turn a `.ttf` or `.otf` into the `font.msdf` file JOID's font system cons
 
 ## The generator
 
-JOID ships its own generator in the `:msdf` module. It is pure Java, runs on any OS, needs no native binary, and reads the kerning straight out of the font — both the legacy `kern` table and the `GPOS` pair positioning that modern fonts use.
+JOID ships its own generator. It is pure Java, runs on any OS, needs no native binary, and reads the kerning straight out of the font — both the legacy `kern` table and the `GPOS` pair positioning that modern fonts use. The same source font gives the same atlas on every machine.
+
+### From a release
+
+Download `joid-msdf-generator-X.Y.Z.zip` from the [Releases page](https://github.com/Zeldown/JOID/releases), unzip it anywhere and run the script of your system. Java 8 or later is the only requirement.
+
+```bash
+./msdf.sh --font Inter-Regular.ttf --output assets/fonts/Inter-Regular
+```
+
+```bat
+.\msdf.bat --font Inter-Regular.ttf --output assets\fonts\Inter-Regular
+```
+
+Both scripts wrap `java -jar joid-msdf-X.Y.Z.jar`, which you can call directly. The command writes a single `font.msdf` in the output directory.
+
+| Option | Default | Purpose |
+|---|---|---|
+| `--font` | — | Source `.ttf` or `.otf` file |
+| `--output` | `output` | Directory that receives `font.msdf` |
+| `--charset` | `[32, 563]` | Codepoints to include, as a file or inline ranges |
+| `--range` | `24` | Distance field range in pixels — higher is smoother at small sizes, blurrier at large ones |
+| `--width` / `--height` | `2048` | Atlas size in pixels |
+| `--size` | — | Forces the em size in pixels instead of fitting the atlas |
+
+The glyph resolution is not a parameter: the generator binary-searches the largest em size whose glyphs still fit the atlas, and writes it into the file. `--size` overrides that search and fails when the glyphs do not fit.
+
+### From the sources
+
+In a clone of the repository, the `:msdf` module exposes the same generator as a Gradle task:
 
 ```bash
 ./gradlew :msdf:generateFont -Pfont=/path/to/Inter-Regular.ttf -Poutput=assets/fonts/Inter-Regular
 ```
-
-It writes a single `font.msdf` next to the `-Poutput` path.
-
-### Parameters
 
 | Property | Default | Purpose |
 |---|---|---|
 | `-Pfont` | — | Source `.ttf` or `.otf` file |
 | `-Poutput` | `build/font` | Directory that receives `font.msdf` |
 | `-Pcharset` | `msdf/charset.txt` | Codepoints to include |
-| `-Prange` | `24` | Distance field range in pixels — higher is smoother at small sizes, blurrier at large ones |
+| `-Prange` | `24` | Distance field range in pixels |
 | `-Pwidth` / `-Pheight` | `2048` | Atlas size in pixels |
 
-The glyph resolution is not a parameter: the generator binary-searches the largest em size whose glyphs still fit the atlas, and writes it into the file.
+`./gradlew msdfGenerator` packages that module into the release zip, in `build/distributions`.
 
 ### Regenerating the fonts JOID ships
 
@@ -34,13 +59,19 @@ The glyph resolution is not a parameter: the generator binary-searches the large
 
 ## Charset
 
-`charset.txt` accepts ranges and single codepoints:
+`charset.txt`, shipped next to the jar in the release zip, accepts ranges and single codepoints:
 
 ```
 [32, 563]
 ```
 
-That range covers Latin, Latin-1, Latin Extended-A and part of Extended-B — the set JOID's own fonts use. Codepoints the font does not provide are skipped, so the same charset works for every source.
+That range covers Latin, Latin-1, Latin Extended-A and part of Extended-B — the set JOID's own fonts use. Several entries are separated by commas, and the whole thing can be passed inline instead of in a file:
+
+```bash
+./msdf.sh --font Inter-Regular.ttf --output fonts/Inter --charset "[32, 126], [160, 255], 8364"
+```
+
+Codepoints the font does not provide are skipped, so the same charset works for every source.
 
 For CJK, use a subset: a full CJK set runs past 30k glyphs and will not fit a 2048×2048 atlas.
 
@@ -76,8 +107,8 @@ Those atlases carry no kerning: `msdf-atlas-gen` reads only the `kern` table, wh
 Generate one atlas per weight, then load each one separately and bind them to different `TextInfo`s:
 
 ```bash
-./gradlew :msdf:generateFont -Pfont=Inter-Regular.ttf -Poutput=assets/fonts/Inter-Regular
-./gradlew :msdf:generateFont -Pfont=Inter-Bold.ttf    -Poutput=assets/fonts/Inter-Bold
+./msdf.sh --font Inter-Regular.ttf --output assets/fonts/Inter-Regular
+./msdf.sh --font Inter-Bold.ttf    --output assets/fonts/Inter-Bold
 ```
 
 A regular and a bold atlas can also be paired into one `CustomFont`, which is what the `§l` style switch draws from:

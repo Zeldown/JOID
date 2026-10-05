@@ -82,14 +82,39 @@ task backendTemplate(type: Zip) {
     }
 }
 
+task msdfGenerator(type: Zip) {
+    group = 'JOID'
+    description = 'Packages the MSDF generator with its charset and its launch scripts.'
+    baseName = 'joid-msdf-generator'
+    destinationDir = file('build/distributions')
+    dependsOn ':msdf:jar'
+
+    from { project(':msdf').jar.archivePath }
+    from(project(':msdf').file('charset.txt'))
+    from(project(':msdf').file('dist')) {
+        include 'README.md', 'msdf.bat'
+        filter { line -> line.replace('@JOID_VERSION@', project.version.toString()) }
+    }
+    from(project(':msdf').file('dist')) {
+        include 'msdf.sh'
+        fileMode = 0755
+        filter { line -> line.replace('@JOID_VERSION@', project.version.toString()) }
+        filter(org.apache.tools.ant.filters.FixCrLfFilter, eol: org.apache.tools.ant.filters.FixCrLfFilter.CrLf.newInstance('lf'))
+    }
+    from(rootDir) {
+        include 'LICENSE', 'NOTICE'
+    }
+}
+
 task collectArtifacts(type: Copy) {
     group = 'JOID'
     description = 'Copies every release artifact into build/libs.'
-    dependsOn ':core:releaseJar', ':testkit:jar', ':glfw:jar', ':openal:jar', ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar'
+    dependsOn ':core:releaseJar', ':testkit:jar', ':glfw:jar', ':openal:jar', ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar', ':msdf:jar'
     from { project(':core').releaseJar.archivePath }
     from { [':lwjgl2', ':lwjgl3', ':vulkan'].collect { project(it).shadowJar.archivePath } }
     from { [':testkit', ':glfw', ':openal'].collect { project(it).jar.archivePath } }
     from backendTemplate
+    from msdfGenerator
     into file('build/libs')
 }
 

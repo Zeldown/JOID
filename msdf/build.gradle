@@ -1,5 +1,11 @@
 archivesBaseName = "joid-msdf"
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'be.zeldown.joid.msdf.MsdfGenerator'
+    }
+}
+
 task generateFont(type: JavaExec) {
     group = 'JOID'
     description = 'Packs one font file into a font.msdf atlas, from -Pfont and -Poutput.'

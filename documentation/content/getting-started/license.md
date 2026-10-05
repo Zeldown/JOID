@@ -30,7 +30,7 @@ The **JOID** name itself is not licensed: give your fork another name. Naming JO
 | Component | License | Where |
 |---|---|---|
 | Universal Tween Engine | Apache-2.0 | bundled in `lib/animation/tweenengine` |
-| msdf-atlas-gen | MIT | generator in `msdf/`, never shipped in the JARs |
+| msdfgen, the algorithm | MIT | reimplemented in Java in `msdf/`, released as its own zip |
 | LWJGL | BSD-3-Clause | declared by your application |
 | JavaCV | Apache-2.0 | declared by your application, for video |
 | FFmpeg builds | their own terms | declared by your application, for video |

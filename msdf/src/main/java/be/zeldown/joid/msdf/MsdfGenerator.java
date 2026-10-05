@@ -25,6 +25,11 @@ public final class MsdfGenerator {
 
 	public static void main(final String[] arguments) throws Exception {
 		final Map<String, String> options = MsdfGenerator.options(arguments);
+		if (!options.containsKey("font")) {
+			System.out.println("Usage: msdf --font <file.ttf|file.otf> [--output <directory>] [--charset <file|ranges>] [--range <pixels>] [--width <pixels>] [--height <pixels>] [--size <pixels>]");
+			return;
+		}
+
 		final File font = new File(options.get("font"));
 		final File output = new File(options.getOrDefault("output", "output"));
 		final int width = Integer.parseInt(options.getOrDefault("width", "2048"));
