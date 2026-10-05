@@ -221,6 +221,10 @@ public final class SnapshotRunner {
 	}
 
 	private void resize(final int width, final int height) {
+		if (width > SnapshotRunner.WIDTH || height > SnapshotRunner.HEIGHT) {
+			throw new IllegalArgumentException("The snapshot window " + width + "x" + height + " does not fit the " + SnapshotRunner.WIDTH + "x" + SnapshotRunner.HEIGHT + " snapshot surface");
+		}
+
 		this.window.setWidth(width);
 		this.window.setHeight(height);
 
