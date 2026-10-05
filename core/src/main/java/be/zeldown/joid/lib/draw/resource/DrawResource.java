@@ -4,10 +4,12 @@ import be.zeldown.joid.lib.bridge.BridgeHandler;
 import be.zeldown.joid.lib.bridge.render.IRenderBridge;
 import be.zeldown.joid.lib.bridge.render.matrix.PixelGrid;
 import be.zeldown.joid.lib.bridge.render.state.BlendState;
+import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import be.zeldown.joid.lib.bridge.render.texture.TextureWrap;
 import be.zeldown.joid.lib.bridge.render.vertex.DrawMode;
 import be.zeldown.joid.lib.render.tessellator.Tessellator;
 import be.zeldown.joid.lib.resource.Resource;
+import be.zeldown.joid.lib.resource.dto.ResourceProperties;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -43,6 +45,11 @@ public final class DrawResource {
 		final double top = grid.snapY(y);
 		final double right = grid.snapX(x + width);
 		final double bottom = grid.snapY(y + height);
+		final ResourceProperties properties = resource.getProperties();
+		if (!properties.getMipmap().isPresent() && properties.getTextureCoords() == null && properties.getInterpolation() == TextureFilter.LINEAR && (Math.round((right - left) * grid.getScaleX()) < resource.getWidth() || Math.round((bottom - top) * grid.getScaleY()) < resource.getHeight())) {
+			properties.mipmap(true);
+		}
+
 		render.pushMatrix();
 		render.blend(BlendState.NORMAL);
 		resource.bind(grid.isAligned() ? TextureWrap.CLAMP_TO_EDGE : TextureWrap.CLAMP_TO_BORDER, () -> {

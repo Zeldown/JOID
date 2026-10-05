@@ -27,6 +27,7 @@ For more control, create your own builder:
 final ResourceBuilder builder = ResourceBuilder.create()
     .async()                       // or .blocking()
     .linear()                      // or .nearest() — texture filtering
+    .mipmap(true)                  // or false — mipmaps from the upload, or never
     .textureCoords(0, 0, 1, 1)     // custom UV mapping
     .cache(myCache);
 
@@ -34,6 +35,8 @@ Resource res = builder.of(myStream);
 ```
 
 Setters are chainable and return the builder.
+
+Without `.mipmap(...)`, a linear resource generates its mipmaps the first time it is drawn smaller than its size, so a downscaled image stays smooth instead of aliasing, and an image never downscaled costs no extra memory. `.mipmap(true)` generates them at the upload, `.mipmap(false)` never — font atlases use it, since mipmaps blur distance fields. Resources with `textureCoords` keep the explicit choice, as the levels of an atlas mix neighbouring sprites.
 
 ## Cache
 

@@ -1,5 +1,7 @@
 package be.zeldown.joid.lib.resource.dto;
 
+import java.util.Optional;
+
 import be.zeldown.joid.lib.bridge.render.texture.TextureFilter;
 import lombok.Getter;
 import lombok.NonNull;
@@ -8,7 +10,7 @@ import lombok.NonNull;
 public class ResourceProperties {
 
 	private boolean       async;
-	private boolean       mipmap;
+	private Boolean       mipmap;
 	private double[]      textureCoords;
 	private TextureFilter interpolation = TextureFilter.NEAREST;
 
@@ -43,6 +45,10 @@ public class ResourceProperties {
 	public final @NonNull ResourceProperties blocking() {
 		this.async = false;
 		return this;
+	}
+
+	public final @NonNull Optional<Boolean> getMipmap() {
+		return Optional.ofNullable(this.mipmap);
 	}
 
 	public final @NonNull ResourceProperties mipmap(final boolean mipmap) {

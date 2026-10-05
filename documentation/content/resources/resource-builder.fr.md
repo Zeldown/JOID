@@ -27,6 +27,7 @@ Pour plus de contrôle, créez votre propre builder :
 final ResourceBuilder builder = ResourceBuilder.create()
     .async()                       // ou .blocking()
     .linear()                      // ou .nearest() — filtrage de texture
+    .mipmap(true)                  // ou false — mipmaps dès l'upload, ou jamais
     .textureCoords(0, 0, 1, 1)     // mapping UV custom
     .cache(myCache);
 
@@ -34,6 +35,8 @@ Resource res = builder.of(myStream);
 ```
 
 Les setters sont chaînables et retournent le builder.
+
+Sans `.mipmap(...)`, une ressource linéaire génère ses mipmaps la première fois qu'elle est dessinée plus petite que sa taille : une image réduite reste lisse au lieu de crénelée, et une image jamais réduite ne coûte aucune mémoire en plus. `.mipmap(true)` les génère dès l'upload, `.mipmap(false)` jamais — les atlas de fonts l'utilisent, car les mipmaps floutent les champs de distance. Les ressources avec `textureCoords` gardent le choix explicite, les niveaux d'un atlas mélangeant les sprites voisins.
 
 ## Cache
 

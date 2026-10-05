@@ -13,7 +13,7 @@ import lombok.NonNull;
 @Getter
 public final class MsdfFontFace implements IFontFace {
 
-	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).blocking().linear();
+	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).blocking().linear().mipmap(false);
 
 	private final boolean                 italic;
 	private final MsdfAtlas               atlas;

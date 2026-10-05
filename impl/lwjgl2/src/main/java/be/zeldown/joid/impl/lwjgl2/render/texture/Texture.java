@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL30;
 
 import be.zeldown.joid.lib.bridge.render.texture.ITexture;
 import lombok.Getter;
@@ -64,6 +65,9 @@ public final class Texture implements ITexture {
 		final int previous = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.id);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL14.GL_GENERATE_MIPMAP, mipmap ? GL11.GL_TRUE : GL11.GL_FALSE);
+		if (mipmap && this.width > 0 && this.height > 0) {
+			GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+		}
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, previous);
 		return this;
 	}

@@ -85,7 +85,7 @@ public final class Resource {
 			this.generate();
 		}
 
-		if (this.properties.isMipmap() && this.data.getTextures() != null) {
+		if (this.properties.getMipmap().orElse(false) && this.data.getTextures() != null) {
 			for (final ITexture texture : this.data.getTextures()) {
 				texture.mipmap(true);
 			}

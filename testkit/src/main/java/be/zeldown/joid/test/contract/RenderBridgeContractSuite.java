@@ -152,17 +152,21 @@ public abstract class RenderBridgeContractSuite {
 
 		final ITexture plain = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
 		final ITexture mipmapped = render.createTexture().mipmap(true).allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
+		final ITexture late = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).mipmap(true);
 
 		final double plainDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(plain));
 		final double mipmapDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(mipmapped));
+		final double lateDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(late));
 
 		plain.delete();
 		mipmapped.delete();
+		late.delete();
 
 		Assert.assertFalse("A texture must not be mipmapped by default", plain.isMipmapped());
 		Assert.assertTrue("A texture asked to mipmap must report it", mipmapped.isMipmapped());
 		Assert.assertTrue("A mipmapped checkerboard must minify to its average (deviation " + mipmapDeviation + ")", mipmapDeviation < 16D);
 		Assert.assertTrue("Mipmaps must reduce the minification error (plain " + plainDeviation + ", mipmapped " + mipmapDeviation + ")", mipmapDeviation <= plainDeviation);
+		Assert.assertTrue("Mipmaps asked after the upload must keep the content and minify to its average (deviation " + lateDeviation + ")", lateDeviation < 16D);
 	}
 
 	@Test
