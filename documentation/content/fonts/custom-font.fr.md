@@ -101,8 +101,8 @@ Setters (chaînables, retournent le même `TextInfo`) :
 T font(IFont font)
 T fontSize(float fontSize)
 T weight(FontWeight weight)         // REGULAR par défaut
-T letterSpacing(float letterSpacing)
-T lineHeight(float lineHeight)
+T letterSpacing(float letterSpacing) // fraction de la taille de police, -0.02F = -2 % sur Figma
+T lineHeight(float lineHeight)      // fraction de la taille de police, 1.5F = 150 %, 0 garde celle de la police (Auto)
 T color(Color color)
 T colored(boolean colored)          // false ignore les couleurs posées par le balisage
 T italic(boolean italic)

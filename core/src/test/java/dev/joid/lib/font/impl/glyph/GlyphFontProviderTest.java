@@ -91,7 +91,7 @@ public class GlyphFontProviderTest {
 
 	@Test
 	public void returnsTheDrawnBounds() {
-		final FontBounds bounds = GlyphFontProviderTest.PROVIDER.drawText(0D, 0D, "AV", GlyphFontProviderTest.info().letterSpacing(2F).lineHeight(3F));
+		final FontBounds bounds = GlyphFontProviderTest.PROVIDER.drawText(0D, 0D, "AV", GlyphFontProviderTest.info().letterSpacing(0.2F).lineHeight(1.5F));
 		Assert.assertEquals(11D, bounds.getWidth(), 1E-6D);
 		Assert.assertEquals(15D, bounds.getHeight(), 1E-6D);
 	}
@@ -138,8 +138,8 @@ public class GlyphFontProviderTest {
 
 	@Test
 	public void measuresNothingWithoutGlyph() {
-		Assert.assertEquals(0D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth(""), 0D);
-		Assert.assertEquals(0D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth("##"), 0D);
+		Assert.assertEquals(0D, GlyphFontProviderTest.info().letterSpacing(0.2F).getWidth(""), 0D);
+		Assert.assertEquals(0D, GlyphFontProviderTest.info().letterSpacing(0.2F).getWidth("##"), 0D);
 	}
 
 	@Test
@@ -168,7 +168,7 @@ public class GlyphFontProviderTest {
 
 	@Test
 	public void spansEachGlyphUpToTheNextOne() {
-		GlyphFontProviderTest.draw("AV", GlyphFontProviderTest.info().letterSpacing(2F));
+		GlyphFontProviderTest.draw("AV", GlyphFontProviderTest.info().letterSpacing(0.2F));
 		Assert.assertEquals(6D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getAdvance(), 1E-6D);
 		Assert.assertEquals(5D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getAdvance(), 1E-6D);
 	}
@@ -204,8 +204,19 @@ public class GlyphFontProviderTest {
 
 	@Test
 	public void measuresTheLineHeightForAnyText() {
-		Assert.assertEquals(15D, GlyphFontProviderTest.PROVIDER.getHeight("AV", GlyphFontProviderTest.info().lineHeight(3F)), 1E-6D);
-		Assert.assertEquals(15D, GlyphFontProviderTest.PROVIDER.getHeight("", GlyphFontProviderTest.info().lineHeight(3F)), 1E-6D);
+		Assert.assertEquals(15D, GlyphFontProviderTest.PROVIDER.getHeight("AV", GlyphFontProviderTest.info().lineHeight(1.5F)), 1E-6D);
+		Assert.assertEquals(15D, GlyphFontProviderTest.PROVIDER.getHeight("", GlyphFontProviderTest.info().lineHeight(1.5F)), 1E-6D);
+	}
+
+	@Test
+	public void scalesTheLineHeightWithTheFontSize() {
+		Assert.assertEquals(30D, GlyphFontProviderTest.info().fontSize(20F).lineHeight(1.5F).getHeight(), 1E-6D);
+	}
+
+	@Test
+	public void centersTheGlyphsInTheLineHeight() {
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.info().lineHeight(1.6F));
+		Assert.assertEquals(12D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getBaseline(), 1E-6D);
 	}
 
 	@Test
@@ -216,13 +227,18 @@ public class GlyphFontProviderTest {
 
 	@Test
 	public void measuresAdvancesKerningAndSpacing() {
-		Assert.assertEquals(11D, GlyphFontProviderTest.info().letterSpacing(2F).getWidth("AV"), 1E-6D);
+		Assert.assertEquals(11D, GlyphFontProviderTest.info().letterSpacing(0.2F).getWidth("AV"), 1E-6D);
 		Assert.assertEquals(10D, GlyphFontProviderTest.info().getWidth("AB"), 1E-6D);
 	}
 
 	@Test
+	public void scalesTheLetterSpacingWithTheFontSize() {
+		Assert.assertEquals(22D, GlyphFontProviderTest.info().fontSize(20F).letterSpacing(0.2F).getWidth("AV"), 1E-6D);
+	}
+
+	@Test
 	public void skipsMissingGlyphsWithoutBreakingKerning() {
-		final TextInfo info = GlyphFontProviderTest.info().letterSpacing(2F);
+		final TextInfo info = GlyphFontProviderTest.info().letterSpacing(0.2F);
 		Assert.assertEquals(info.getWidth("AV"), info.getWidth("A#V"), 1E-6D);
 	}
 

@@ -101,8 +101,8 @@ Setters (all chainable, return the same `TextInfo` instance):
 T font(IFont font)
 T fontSize(float fontSize)
 T weight(FontWeight weight)         // REGULAR by default
-T letterSpacing(float letterSpacing)
-T lineHeight(float lineHeight)
+T letterSpacing(float letterSpacing) // fraction of the font size, -0.02F = -2 % in Figma
+T lineHeight(float lineHeight)      // fraction of the font size, 1.5F = 150 %, 0 keeps the font's own (Auto)
 T color(Color color)
 T colored(boolean colored)          // false ignores the colors set by markup
 T italic(boolean italic)

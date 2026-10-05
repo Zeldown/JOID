@@ -92,11 +92,11 @@ public class TextInfoTest {
 	@Test
 	public void changesEveryProperty() {
 		final IFont other = () -> TextInfoTest.PROVIDER;
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).font(other).fontSize(32F).letterSpacing(2F).lineHeight(-3F).color(Color.RED).colored(false).italic(true);
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).font(other).fontSize(32F).letterSpacing(0.02F).lineHeight(1.2F).color(Color.RED).colored(false).italic(true);
 		Assert.assertSame(other, info.getFont());
 		Assert.assertEquals(32F, info.getFontSize(), 0F);
-		Assert.assertEquals(2F, info.getLetterSpacing(), 0F);
-		Assert.assertEquals(-3F, info.getLineHeight(), 0F);
+		Assert.assertEquals(0.02F, info.getLetterSpacing(), 0F);
+		Assert.assertEquals(1.2F, info.getLineHeight(), 0F);
 		Assert.assertSame(Color.RED, info.getColor());
 		Assert.assertFalse(info.isColored());
 		Assert.assertTrue(info.isItalic());

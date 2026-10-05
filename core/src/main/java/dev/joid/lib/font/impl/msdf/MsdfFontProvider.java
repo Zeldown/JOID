@@ -2,6 +2,7 @@ package dev.joid.lib.font.impl.msdf;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
@@ -34,11 +35,14 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 	private static final double HALF_TEXEL    = 0.5D;
 	private static final double BASELINE_LIFT = 0.025D;
 
-	private Color    color;
-	private double   runX;
-	private double   runY;
-	private double   runWidth;
-	private double   runHeight;
+	private Color        color;
+	private double       runX;
+	private double       runY;
+	private float        pixelX;
+	private float        pixelY;
+	private PixelGrid    grid;
+	private double       runWidth;
+	private double       runHeight;
 	private MsdfFontFace face;
 
 	public static @NonNull MsdfFontProvider inst() {
@@ -58,10 +62,12 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 
 		this.face = null;
 		this.color = null;
+		this.pixelX = 0F;
 		this.runX = runX;
 		this.runY = runY;
 		this.runWidth = runWidth;
 		this.runHeight = runHeight;
+		this.grid = BridgeHandler.RENDER.get().getPixelGrid();
 
 		Color.reset();
 		MsdfShader.SHADER.bind();
@@ -87,14 +93,21 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 		final MsdfBounds plane = msdf.getPlaneBounds();
 		final MsdfBounds bounds = msdf.getAtlasBounds();
 		final double size = glyph.getSize();
+		final double height = this.getVerticalSize(face, size);
+		final float pixelX = (float) (atlas.getSize() / (atlas.getWidth() * size * this.grid.getScaleX()));
+		final float pixelY = (float) (atlas.getSize() / (atlas.getHeight() * height * this.grid.getScaleY()));
+		if (pixelX != this.pixelX || pixelY != this.pixelY) {
+			this.bindPixel(pixelX, pixelY);
+		}
+
 		final double inset = MsdfFontProvider.HALF_TEXEL / atlas.getSize();
-		final double baseline = glyph.getBaseline() + glyph.getOffsetY();
+		final double baseline = this.grid.snapY(glyph.getBaseline() - MsdfFontProvider.BASELINE_LIFT * size) + glyph.getOffsetY();
 		final double origin = glyph.getX() + glyph.getOffsetX();
 
 		final double left = origin + (plane.getLeft() + inset) * size;
 		final double right = origin + (plane.getRight() - inset) * size;
-		final double top = baseline - (plane.getTop() - inset + MsdfFontProvider.BASELINE_LIFT) * size;
-		final double bottom = baseline - (plane.getBottom() + inset + MsdfFontProvider.BASELINE_LIFT) * size;
+		final double top = baseline - (plane.getTop() - inset) * height;
+		final double bottom = baseline - (plane.getBottom() + inset) * height;
 		final double topSlant = glyph.isSlanted() ? (baseline - top) * MsdfFontProvider.SLANT : 0D;
 		final double bottomSlant = glyph.isSlanted() ? (baseline - bottom) * MsdfFontProvider.SLANT : 0D;
 
@@ -136,11 +149,23 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 		MsdfShader.PX_RANGE.setValue(face.getAtlas().getDistanceRange());
 	}
 
+	private void bindPixel(final float pixelX, final float pixelY) {
+		this.pixelX = pixelX;
+		this.pixelY = pixelY;
+		MsdfShader.PIXEL.setValue(pixelX, pixelY);
+	}
+
+	private double getVerticalSize(final @NonNull MsdfFontFace face, final double size) {
+		final double xHeight = face.getXHeight() * size * this.grid.getScaleY();
+		return this.grid.isAligned() && xHeight > 0D ? size * Math.max(1D, Math.round(xHeight)) / xHeight : size;
+	}
+
 	private static final class MsdfShader {
 
 		private static final IShader SHADER = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, JOID.class.getResourceAsStream("/assets/shaders/font/font.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, JOID.class.getResourceAsStream("/assets/shaders/font/font.fsh")), BlendState.NORMAL);
 
 		private static final Float2Uniform TEXEL              = MsdfShader.SHADER.getFloat2Uniform("texel");
+		private static final Float2Uniform PIXEL              = MsdfShader.SHADER.getFloat2Uniform("pixel");
 		private static final Float4Uniform COLOR              = MsdfShader.SHADER.getFloat4Uniform("color");
 		private static final FloatUniform  PX_RANGE           = MsdfShader.SHADER.getFloatUniform("pxRange");
 		private static final IntUniform    HAS_GRADIENT       = MsdfShader.SHADER.getIntUniform("u_HasGradient");

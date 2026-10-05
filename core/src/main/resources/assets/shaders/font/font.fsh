@@ -5,6 +5,7 @@ in vec2 vPosition;
 uniform sampler2D msdf;
 uniform vec4 color;
 uniform vec2 texel;
+uniform vec2 pixel;
 uniform float pxRange;
 
 uniform int u_HasGradient;
@@ -29,7 +30,7 @@ float sdfDistance(vec2 pos) {
 
 float screenPxRange() {
     vec2 unitRange = vec2(pxRange) * texel;
-    vec2 screenTexSize = vec2(1.0) / fwidth(vTexCoord);
+    vec2 screenTexSize = vec2(1.0) / pixel;
     return max(0.5 * dot(unitRange, screenTexSize), 1.0);
 }
 
@@ -39,16 +40,14 @@ float msdfAlpha(vec2 uv, float pxR) {
 }
 
 float supersampledAlpha() {
-    float pxR = screenPxRange();
-    vec2 maxOffset = texel * 0.5;
-    vec2 dx = clamp(dFdx(vTexCoord) * 0.354, -maxOffset, maxOffset);
-    vec2 dy = clamp(dFdy(vTexCoord) * 0.354, -maxOffset, maxOffset);
-    float a = msdfAlpha(vTexCoord, pxR);
-    a += msdfAlpha(vTexCoord + dx + dy, pxR);
+    float pxR = 2.0 * screenPxRange();
+    vec2 dx = vec2(pixel.x * 0.25, 0.0);
+    vec2 dy = vec2(0.0, pixel.y * 0.25);
+    float a = msdfAlpha(vTexCoord + dx + dy, pxR);
     a += msdfAlpha(vTexCoord - dx + dy, pxR);
     a += msdfAlpha(vTexCoord + dx - dy, pxR);
     a += msdfAlpha(vTexCoord - dx - dy, pxR);
-    return a / 5.0;
+    return a / 4.0;
 }
 
 vec4 resolveColor() {

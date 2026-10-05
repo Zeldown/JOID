@@ -309,7 +309,7 @@ public abstract class Node implements INode {
 				}
 
 				if (!this.hovered && this.isHovered(mouseX, mouseY)) {
-					this.hoverAnimator.sequence(this.hoverDuration, 100F, this.hoverEquation).start();
+					this.hoverAnimator.sequence(this.hoverDuration, 1F, this.hoverEquation).start();
 					this.executeCallback(Node.CALLBACK_HOVER_START, InternalContext.create(), mouseX, mouseY);
 				}
 
@@ -1170,7 +1170,7 @@ public abstract class Node implements INode {
 	}
 
 	public final float hoverValue(final float value) {
-		return value / 100F * this.hoverAnimator.getValue();
+		return value * this.hoverAnimator.getValue();
 	}
 
 	public final double w() {

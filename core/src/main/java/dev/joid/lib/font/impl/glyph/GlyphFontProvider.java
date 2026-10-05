@@ -33,7 +33,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 
 	@Override
 	public final double getLineHeight(final @NonNull TextInfo info) {
-		return this.getFace(info).getLineHeight() * info.getFontSize() + info.getLineHeight();
+		return info.getLineHeight() > 0F ? info.getLineHeight() * info.getFontSize() : this.getFace(info).getLineHeight() * info.getFontSize();
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		final List<GlyphPlacement<F>> placements = new ArrayList<>();
 		final TextStyle style = info.getStyle().derive();
 		final float size = info.getFontSize();
-		final float spacing = info.getLetterSpacing();
+		final float spacing = info.getLetterSpacing() * size;
 
 		TextStyle snapshot = style.copy();
 		F face = font.getFace(style.getWeight(), style.isItalic());
@@ -129,7 +129,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		final List<TextGlyph<F>> glyphs = new ArrayList<>(placements.size());
 		final F base = this.getFace(info);
 		final float size = info.getFontSize();
-		final double baseline = y + (base.getLineHeight() + base.getDescender()) * size;
+		final double baseline = y + (base.getLineHeight() + base.getDescender()) * size + (this.getLineHeight(info) - base.getLineHeight() * size) / 2D;
 		for (int i = 0; i < placements.size(); i++) {
 			final GlyphPlacement<F> placement = placements.get(i);
 			final double advance = (i + 1 < placements.size() ? placements.get(i + 1).getX() : layout.getWidth()) - placement.getX();
