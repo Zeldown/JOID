@@ -31,6 +31,8 @@ public class UIDemoOverflow extends UIDemo {
 			.overflow(OverflowProperty.SCROLL)
 			.scrollbar(DemoScrollbarNode.create(0, -20D, 30D, 10D, BoundingBox.create(0, -20D, 1920D / 2D, 10D)))
 			.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+			.onScrollUpdate((node, value) -> System.out.println("horizontal scroll update " + value))
+			.onScrollEnd((node, scrollX, scrollY) -> System.out.println("horizontal scroll end " + scrollX + ", " + scrollY))
 			.onScrollEnding((node, scrollX, scrollY) -> {
 				RectNode.create(
 						0D,
@@ -96,6 +98,8 @@ public class UIDemoOverflow extends UIDemo {
 			.overflow(OverflowProperty.SCROLL)
 			.scrollbar(DemoScrollbarNode.create(130D, 0, 10D, 30D, BoundingBox.create(130D, 0, 10D, 1080 / 2D)))
 			.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+			.onScrollUpdate((node, value) -> System.out.println("vertical scroll update " + value))
+			.onScrollEnd((node, scrollX, scrollY) -> System.out.println("vertical scroll end " + scrollX + ", " + scrollY))
 			.body(n -> {
 				FlexNode
 				.vertical(0D, 10D, 120D)
