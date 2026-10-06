@@ -170,8 +170,8 @@ One `InternalContext` (`dev.joid.lib.utils.context`) travels through the whole d
 | --- | --- |
 | `isCancelled()` | `true` when a node already consumed the event. |
 | `cancel()` | Marks the event as consumed. |
-| `cancel(Runnable runnable)` | When not cancelled yet, runs `runnable` then cancels. Otherwise does nothing. |
-| `cancel(Supplier<Boolean> supplier)` | When not cancelled yet, cancels if `supplier` returns `true`. |
+| `cancel(Runnable runnable)` | When not cancelled yet, runs `runnable` then cancels, even when `runnable` is an assignment such as `() -> this.active = false`. Otherwise does nothing. |
+| `cancelIf(Supplier<Boolean> supplier)` | When not cancelled yet, cancels if `supplier` returns `true`. |
 | `execute(Runnable runnable)` | Runs `runnable` when not cancelled, without cancelling. |
 | `reset()` | Clears the cancellation. |
 | `InternalContext.create()`, `InternalContext.create(boolean cancelled)` | New contexts, for firing your own callbacks. |

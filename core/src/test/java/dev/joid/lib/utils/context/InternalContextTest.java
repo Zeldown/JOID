@@ -36,11 +36,20 @@ public class InternalContextTest {
 	}
 
 	@Test
+	public void cancelsAfterAnAssignmentOfFalse() {
+		final boolean[] active = {true};
+		final InternalContext context = InternalContext.create();
+		Assert.assertSame(context, context.cancel(() -> active[0] = false));
+		Assert.assertTrue(context.isCancelled());
+		Assert.assertFalse(active[0]);
+	}
+
+	@Test
 	public void cancelsWhenTheConditionHolds() {
 		final InternalContext context = InternalContext.create();
-		Assert.assertSame(context, context.cancel(() -> false));
+		Assert.assertSame(context, context.cancelIf(() -> false));
 		Assert.assertFalse(context.isCancelled());
-		Assert.assertSame(context, context.cancel(() -> true));
+		Assert.assertSame(context, context.cancelIf(() -> true));
 		Assert.assertTrue(context.isCancelled());
 	}
 
@@ -48,7 +57,7 @@ public class InternalContextTest {
 	public void skipsTheConditionOnceCancelled() {
 		final AtomicInteger checks = new AtomicInteger();
 		final InternalContext context = InternalContext.create(true);
-		Assert.assertSame(context, context.cancel(() -> checks.incrementAndGet() > 0));
+		Assert.assertSame(context, context.cancelIf(() -> checks.incrementAndGet() > 0));
 		Assert.assertEquals(0, checks.get());
 	}
 

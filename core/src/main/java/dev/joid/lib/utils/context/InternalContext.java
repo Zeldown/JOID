@@ -44,7 +44,7 @@ public class InternalContext {
 		return this;
 	}
 
-	public @NonNull InternalContext cancel(final @NonNull Supplier<@NonNull Boolean> supplier) {
+	public @NonNull InternalContext cancelIf(final @NonNull Supplier<@NonNull Boolean> supplier) {
 		if (this.cancelled) {
 			return this;
 		}

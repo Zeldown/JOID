@@ -123,8 +123,8 @@ FlexNode.vertical(100, 100, 400).onAppend(limit).attach(this);
 | `static create(boolean cancelled)` | New context in the given state. |
 | `isCancelled()` | `true` once the context is cancelled. |
 | `cancel()` | Cancels the context. |
-| `cancel(Runnable runnable)` | When not cancelled: runs `runnable`, then cancels. When already cancelled: does nothing. |
-| `cancel(Supplier<Boolean> supplier)` | When not cancelled: cancels if `supplier` returns `true`. The supplier is not called on a cancelled context. |
+| `cancel(Runnable runnable)` | When not cancelled: runs `runnable`, then cancels, even when the lambda is a boolean assignment such as `() -> this.active = false`. When already cancelled: does nothing. |
+| `cancelIf(Supplier<Boolean> supplier)` | When not cancelled: cancels if `supplier` returns `true`. The supplier is not called on a cancelled context. |
 | `execute(Runnable runnable)` | Runs `runnable` only when not cancelled. |
 | `reset()` | Clears the cancelled state. |
 
