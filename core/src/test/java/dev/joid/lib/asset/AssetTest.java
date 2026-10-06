@@ -89,6 +89,58 @@ public class AssetTest {
 		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
 	}
 
+	@Test
+	public void describesItself() {
+		Assert.assertEquals("FileAsset[" + AssetTest.file.getAbsolutePath() + "]", Asset.of(AssetTest.file).toString());
+		Assert.assertEquals("HandleAsset[handle]", new HandleAsset().toString());
+	}
+
+	@Test
+	public void isLocalAndReopenableByDefault() {
+		final Asset asset = new HandleAsset();
+		Assert.assertFalse(asset.isRemote());
+		Assert.assertTrue(asset.isReopenable());
+	}
+
+	@Test
+	public void peeksTheStartOfAnAsset() {
+		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), new HandleAsset().peek(4));
+	}
+
+	@Test
+	public void peeksAcrossShortReads() {
+		Assert.assertArrayEquals("joid asset".getBytes(StandardCharsets.UTF_8), new TricklingAsset().peek(10));
+	}
+
+	@Test
+	public void peeksNothingFromAnAssetThatCannotOpen() {
+		Assert.assertEquals(0, new FailingAsset().peek(4).length);
+	}
+
+	@Test(expected = IOException.class)
+	public void failsToReadAnAssetThatCannotOpen() throws IOException {
+		new FailingAsset().read();
+	}
+
+	@Test
+	public void readsPastItsBuffer() throws IOException {
+		final byte[] content = new byte[20000];
+		for (int i = 0; i < content.length; i++) {
+			content[i] = (byte) i;
+		}
+		Assert.assertArrayEquals(content, Asset.of(new ByteArrayInputStream(content)).read());
+	}
+
+	@Test
+	public void readsAnEmptyAsset() throws IOException {
+		Assert.assertEquals(0, Asset.of(new ByteArrayInputStream(new byte[0])).read().length);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesANullHandle() {
+		Asset.of(null);
+	}
+
 	private static final class Handle {}
 
 	private static final class HandleAsset extends Asset {
@@ -114,6 +166,39 @@ public class AssetTest {
 		@Override
 		public @NonNull Asset locate(final @NonNull Object handle) {
 			return new HandleAsset();
+		}
+
+	}
+
+	private static final class FailingAsset extends Asset {
+
+		private FailingAsset() {
+			super("failing");
+		}
+
+		@Override
+		public @NonNull InputStream open() throws IOException {
+			throw new IOException("unreadable");
+		}
+
+	}
+
+	private static final class TricklingAsset extends Asset {
+
+		private TricklingAsset() {
+			super("trickling");
+		}
+
+		@Override
+		public @NonNull InputStream open() {
+			return new ByteArrayInputStream(AssetTest.CONTENT) {
+
+				@Override
+				public synchronized int read(final byte[] buffer, final int offset, final int length) {
+					return super.read(buffer, offset, Math.min(1, length));
+				}
+
+			};
 		}
 
 	}

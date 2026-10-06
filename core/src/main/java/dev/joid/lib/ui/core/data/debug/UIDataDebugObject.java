@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
@@ -37,7 +36,7 @@ public final class UIDataDebugObject implements UIDataDebug {
 
 	@Override
 	public Class<? extends Annotation> annotationType() {
-		return UIDataPopup.class;
+		return UIDataDebug.class;
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public final class UrlAsset extends Asset {
 		try {
 			return UrlAsset.connect(this.url);
 		} catch (final IOException silent) {
-			return UrlAsset.connect(this.url.replace("https", "http"));
+			return UrlAsset.connect(this.url.replaceFirst("^https:", "http:"));
 		}
 	}
 

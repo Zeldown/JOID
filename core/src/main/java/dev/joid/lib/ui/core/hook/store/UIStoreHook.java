@@ -125,10 +125,9 @@ public final class UIStoreHook {
 				return null;
 			}
 
-			final FileReader reader = new FileReader(file);
-			final JsonObject json = UIStoreHook.GSON.fromJson(reader, JsonObject.class);
-			reader.close();
-			return json;
+			try (final FileReader reader = new FileReader(file)) {
+				return UIStoreHook.GSON.fromJson(reader, JsonObject.class);
+			}
 		} catch (final Exception e) {
 			System.err.println("Failed to load store file: " + id);
 			e.printStackTrace();

@@ -37,7 +37,7 @@ public final class OBJModel implements IDrawableModel {
 	private static final Pattern FACE_TEXTURE_PATTERN = Pattern.compile("(f( \\d+/\\d+){3,4} *\\n)|(f( \\d+/\\d+){3,4} *$)");
 	private static final Pattern FACE_NORMAL_PATTERN  = Pattern.compile("(f( \\d+//\\d+){3,4} *\\n)|(f( \\d+//\\d+){3,4} *$)");
 	private static final Pattern FACE_VERTEX_PATTERN  = Pattern.compile("(f( \\d+){3,4} *\\n)|(f( \\d+){3,4} *$)");
-	private static final Pattern GROUP_PATTERN        = Pattern.compile("([go]( [\\w\\d\\.]+) *\\n)|([go]( [\\w\\d\\.]+) *$)");
+	private static final Pattern GROUP_PATTERN        = Pattern.compile("([go]( [\\w\\d\\.]+)+ *\\n)|([go]( [\\w\\d\\.]+)+ *$)");
 
 	private static Matcher vertexMatcher;
 	private static Matcher vertexNormalMatcher;
@@ -118,7 +118,9 @@ public final class OBJModel implements IDrawableModel {
 				}
 			}
 
-			this.groups.add(this.currentGroup);
+			if (this.currentGroup != null) {
+				this.groups.add(this.currentGroup);
+			}
 		} catch (final IOException e) {
 			throw new RuntimeException("IO Exception reading model format", e);
 		} finally {
@@ -149,35 +151,35 @@ public final class OBJModel implements IDrawableModel {
 
 	@Override
 	public double getDepth() {
-		double minZ = Double.MIN_VALUE;
-		double maxZ = Double.MIN_VALUE;
+		double minZ = Double.POSITIVE_INFINITY;
+		double maxZ = Double.NEGATIVE_INFINITY;
 		for (final OBJVertex vertex : this.vertices) {
 			minZ = Math.min(minZ, vertex.getZ());
 			maxZ = Math.max(maxZ, vertex.getZ());
 		}
-		return maxZ - minZ;
+		return this.vertices.isEmpty() ? 0D : maxZ - minZ;
 	}
 
 	@Override
 	public double getWidth() {
-		double minX = Double.MIN_VALUE;
-		double maxX = Double.MIN_VALUE;
+		double minX = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
 		for (final OBJVertex vertex : this.vertices) {
 			minX = Math.min(minX, vertex.getX());
 			maxX = Math.max(maxX, vertex.getX());
 		}
-		return maxX - minX;
+		return this.vertices.isEmpty() ? 0D : maxX - minX;
 	}
 
 	@Override
 	public double getHeight() {
-		double minY = Double.MIN_VALUE;
-		double maxY = Double.MIN_VALUE;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
 		for (final OBJVertex vertex : this.vertices) {
 			minY = Math.min(minY, vertex.getY());
 			maxY = Math.max(maxY, vertex.getY());
 		}
-		return maxY - minY;
+		return this.vertices.isEmpty() ? 0D : maxY - minY;
 	}
 
 	private OBJVertex parseVertex(final @NonNull String line, final int lineCount) throws RuntimeException {
@@ -188,10 +190,7 @@ public final class OBJModel implements IDrawableModel {
 		final String values = line.substring(line.indexOf(" ") + 1);
 		final String[] tokens = values.split(" ");
 		try {
-			if (tokens.length == 2) {
-				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]));
-			}
-			if (tokens.length == 3) {
+			if (tokens.length >= 3) {
 				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 			}
 		} catch (final NumberFormatException e) {
@@ -209,7 +208,7 @@ public final class OBJModel implements IDrawableModel {
 		final String values = line.substring(line.indexOf(" ") + 1);
 		final String[] tokens = values.split(" ");
 		try {
-			if (tokens.length == 3) {
+			if (tokens.length >= 3) {
 				return new OBJVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 			}
 		} catch (final NumberFormatException e) {

@@ -1,0 +1,328 @@
+package dev.joid.lib.ui.core.hook.store;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import com.google.gson.JsonObject;
+
+import dev.joid.internal.JOID;
+import dev.joid.lib.ui.core.hook.store.context.StoreContext;
+import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+
+public class UIStoreHookTest {
+
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
+
+	private File    previous;
+	private boolean created;
+
+	@Before
+	public void useATemporaryConfig() {
+		final boolean existed = new File("config").exists();
+		this.previous = JOID.inst().getConfigDir();
+		this.created = !existed && new File("config").exists();
+		JOID.inst().setConfigDir(this.folder.getRoot());
+	}
+
+	@After
+	public void restoreTheConfig() {
+		UIStoreHook.destroyStore(new GlobalStore());
+		UIStoreHook.destroyStore(new PermanentStore());
+		JOID.inst().setConfigDir(this.previous);
+		if (this.created) {
+			new File("config").delete();
+		}
+	}
+
+	@Test
+	public void createsALocalStoreOnEveryUse() {
+		final LocalStore first = UIStoreHook.useStore(LocalStore.class);
+		final LocalStore second = UIStoreHook.useStore(LocalStore.class);
+		Assert.assertNotSame(first, second);
+		Assert.assertEquals(1, first.inits);
+		Assert.assertEquals(1, second.inits);
+	}
+
+	@Test
+	public void sharesAGlobalStore() {
+		final GlobalStore store = UIStoreHook.useStore(GlobalStore.class);
+		Assert.assertSame(store, UIStoreHook.useStore(GlobalStore.class));
+		Assert.assertEquals(1, store.inits);
+	}
+
+	@Test
+	public void passesTheArgumentsToTheConstructor() {
+		final ArgumentStore store = UIStoreHook.useStore(ArgumentStore.class, "shop", 3);
+		Assert.assertEquals("shop", store.name);
+		Assert.assertEquals(Integer.valueOf(3), store.count);
+	}
+
+	@Test
+	public void refusesArgumentsWithoutMatchingConstructor() {
+		try {
+			UIStoreHook.useStore(LocalStore.class, "extra");
+			Assert.fail("A store without matching constructor must be refused");
+		} catch (final RuntimeException expected) {
+			Assert.assertEquals("Failed to create store instance for class " + LocalStore.class.getName(), expected.getMessage());
+			Assert.assertTrue(expected.getCause() instanceof IllegalArgumentException);
+		}
+	}
+
+	@Test
+	public void wrapsAFailingConstructor() {
+		try {
+			UIStoreHook.useStore(FailingStore.class);
+			Assert.fail("The failure of the constructor must reach the caller");
+		} catch (final RuntimeException expected) {
+			Assert.assertTrue(expected.getCause() instanceof InvocationTargetException);
+			Assert.assertEquals("broken store", expected.getCause().getCause().getMessage());
+		}
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesAStoreWithoutAnnotation() {
+		UIStoreHook.useStore(BareStore.class);
+	}
+
+	@Test
+	public void initializesAPermanentStoreWithoutFile() {
+		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
+		Assert.assertTrue(store.initialized);
+		Assert.assertFalse(store.loaded);
+		Assert.assertEquals("default", store.value);
+	}
+
+	@Test
+	public void restoresAPermanentStoreFromItsFile() throws IOException {
+		this.write("{\"value\":\"saved\"}");
+		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
+		Assert.assertTrue(store.loaded);
+		Assert.assertFalse(store.initialized);
+		Assert.assertEquals("saved", store.value);
+	}
+
+	@Test
+	public void writesAPermanentStoreToItsFile() throws IOException {
+		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
+		store.value = "written";
+		UIStoreHook.saveStore(store);
+		Assert.assertEquals("{\"value\":\"written\"}", this.read());
+	}
+
+	@Test
+	public void writesIntoAnExistingStoreFolder() throws IOException {
+		Assert.assertTrue(new File(this.folder.getRoot(), "store").mkdirs());
+		UIStoreHook.saveStore(new PermanentStore());
+		Assert.assertEquals("{\"value\":\"default\"}", this.read());
+	}
+
+	@Test
+	public void writesNothingForAStoreThatIsNotPermanent() {
+		UIStoreHook.saveStore(new LocalStore());
+		UIStoreHook.saveStore(UIStoreHook.useStore(GlobalStore.class));
+		Assert.assertFalse(new File(this.folder.getRoot(), "store").exists());
+	}
+
+	@Test
+	public void savesEveryGlobalStore() throws IOException {
+		UIStoreHook.useStore(GlobalStore.class);
+		UIStoreHook.useStore(PermanentStore.class).value = "all";
+		UIStoreHook.saveAll();
+		Assert.assertEquals("{\"value\":\"all\"}", this.read());
+	}
+
+	@Test
+	public void forgetsADestroyedGlobalStore() {
+		final GlobalStore store = UIStoreHook.useStore(GlobalStore.class);
+		UIStoreHook.destroyStore(store);
+		Assert.assertEquals(1, store.destroys);
+		Assert.assertNotSame(store, UIStoreHook.useStore(GlobalStore.class));
+	}
+
+	@Test
+	public void destroysALocalStore() {
+		final LocalStore store = UIStoreHook.useStore(LocalStore.class);
+		UIStoreHook.destroyStore(store);
+		Assert.assertEquals(1, store.destroys);
+	}
+
+	@Test
+	public void deletesTheFileOfADestroyedPermanentStore() {
+		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
+		UIStoreHook.saveStore(store);
+		Assert.assertTrue(this.file().exists());
+		UIStoreHook.destroyStore(store);
+		Assert.assertTrue(store.destroyed);
+		Assert.assertFalse(this.file().exists());
+	}
+
+	@Test
+	public void startsOverFromAnEmptyFile() throws IOException {
+		this.write("");
+		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
+		Assert.assertTrue(store.initialized);
+		Assert.assertFalse(store.loaded);
+		Assert.assertFalse(this.file().exists());
+	}
+
+	@Test
+	public void startsOverFromACorruptedFile() throws IOException {
+		this.write("{ broken");
+		final List<PermanentStore> stores = new ArrayList<>();
+		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class)));
+		Assert.assertTrue(error, error.contains("Failed to load store file: permanent"));
+		Assert.assertTrue(stores.get(0).initialized);
+		Assert.assertEquals("default", stores.get(0).value);
+	}
+
+	@Test
+	public void reportsAStoreFileThatCannotBeWritten() {
+		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
+		Assert.assertTrue(this.file().mkdirs());
+		final String error = UIStoreHookTest.capture(() -> UIStoreHook.saveStore(store));
+		Assert.assertTrue(error, error.contains("Failed to save store file: permanent"));
+	}
+
+	@Test
+	public void deletesACorruptedFile() throws IOException {
+		final File file = new File(new File(this.folder.getRoot(), "store"), "permanent.store");
+		Assert.assertTrue(file.getParentFile().mkdirs());
+		Files.write(file.toPath(), "{ broken".getBytes(StandardCharsets.UTF_8));
+
+		final String error = UIStoreHookTest.capture(() -> UIStoreHook.useStore(PermanentStore.class));
+		Assert.assertFalse(error, error.contains("Failed to delete corrupted store file"));
+		Assert.assertFalse(file.exists());
+	}
+
+	private File file() {
+		return new File(new File(this.folder.getRoot(), "store"), "permanent.store");
+	}
+
+	private String read() throws IOException {
+		return new String(Files.readAllBytes(this.file().toPath()), StandardCharsets.UTF_8);
+	}
+
+	private void write(final String content) throws IOException {
+		Assert.assertTrue(this.file().getParentFile().mkdirs());
+		Files.write(this.file().toPath(), content.getBytes(StandardCharsets.UTF_8));
+	}
+
+	private static String capture(final Runnable runnable) {
+		final PrintStream error = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setErr(new PrintStream(output, true));
+			runnable.run();
+		} finally {
+			System.setErr(error);
+		}
+		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	@UIStoreData(id = "local")
+	public static class LocalStore extends UIStore {
+
+		private int inits;
+		private int destroys;
+
+		@Override
+		public void init() {
+			this.inits++;
+		}
+
+		@Override
+		public void destroy() {
+			this.destroys++;
+		}
+
+	}
+
+	@UIStoreData(id = "global", context = StoreContext.GLOBAL)
+	public static class GlobalStore extends UIStore {
+
+		private int inits;
+		private int destroys;
+
+		@Override
+		public void init() {
+			this.inits++;
+		}
+
+		@Override
+		public void destroy() {
+			this.destroys++;
+		}
+
+	}
+
+	@UIStoreData(id = "permanent", context = StoreContext.PERMANENT)
+	public static class PermanentStore extends UIStore {
+
+		private String value = "default";
+
+		private boolean initialized;
+		private boolean loaded;
+		private boolean destroyed;
+
+		@Override
+		public void init() {
+			this.initialized = true;
+		}
+
+		@Override
+		public void destroy() {
+			this.destroyed = true;
+		}
+
+		@Override
+		public void load(final @NonNull JsonObject json) {
+			this.loaded = true;
+			this.value = json.get("value").getAsString();
+		}
+
+		@Override
+		public void save(final @NonNull JsonObject json) {
+			json.addProperty("value", this.value);
+		}
+
+	}
+
+	@AllArgsConstructor
+	@UIStoreData(id = "argument")
+	public static class ArgumentStore extends UIStore {
+
+		private final String  name;
+		private final Integer count;
+
+	}
+
+	@UIStoreData(id = "failing")
+	public static class FailingStore extends UIStore {
+
+		public FailingStore() {
+			throw new IllegalStateException("broken store");
+		}
+
+	}
+
+	public static class BareStore extends UIStore {}
+
+}
