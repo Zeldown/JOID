@@ -10,7 +10,7 @@ public abstract class Circ extends TweenEquation {
 
 		@Override
 		public final float compute(final float t) {
-			return (float) -Math.sqrt(1F - t * t) - 1F;
+			return (float) -(Math.sqrt(1F - t * t) - 1F);
 		}
 
 		@Override

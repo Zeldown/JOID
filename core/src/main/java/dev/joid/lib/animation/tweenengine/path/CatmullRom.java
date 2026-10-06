@@ -15,7 +15,7 @@ public class CatmullRom implements TweenPath {
 		final float progress = t * (pointsCnt - 1F) - segment;
 
 		if (segment == 0F) {
-			return this.catmullRomSpline(points[0], points[0], points[1], points[2], progress);
+			return this.catmullRomSpline(points[0], points[0], points[1], points[Math.min(2, pointsCnt - 1)], progress);
 		}
 
 		if (segment == pointsCnt - 2F) {

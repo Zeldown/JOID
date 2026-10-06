@@ -129,7 +129,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 		final Timeline tl = Timeline.pool.get();
 		tl.parent = this.current;
-		tl.mode = Modes.SEQUENCE;
+		tl.setup(Modes.SEQUENCE);
 		this.current.children.add(tl);
 		this.current = tl;
 		return this;
@@ -142,7 +142,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 		final Timeline tl = Timeline.pool.get();
 		tl.parent = this.current;
-		tl.mode = Modes.PARALLEL;
+		tl.setup(Modes.PARALLEL);
 		this.current.children.add(tl);
 		this.current = tl;
 		return this;
@@ -217,7 +217,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 		if (!isIterationStep && step < lastStep) {
 			assert delta <= 0;
-			final float dt = this.isReverse(lastStep) ? -delta - 1 : delta + 1;
+			final float dt = this.isReverse(lastStep) ? -delta + 1 : delta - 1;
 			for (int i = this.children.size() - 1; i >= 0; i--) {
 				this.children.get(i).update(dt);
 			}
@@ -230,24 +230,24 @@ public final class Timeline extends BaseTween<Timeline> {
 			if (this.isReverse(step)) {
 				this.forceEndValues();
 				for (final BaseTween<?> element : this.children) {
-					element.update(delta);
+					element.update(0F);
 				}
 			} else {
 				this.forceStartValues();
 				for (final BaseTween<?> element : this.children) {
-					element.update(delta);
+					element.update(0F);
 				}
 			}
 		} else if (step < lastStep) {
 			if (this.isReverse(step)) {
 				this.forceStartValues();
 				for (int i = this.children.size() - 1; i >= 0; i--) {
-					this.children.get(i).update(delta);
+					this.children.get(i).update(0F);
 				}
 			} else {
 				this.forceEndValues();
 				for (int i = this.children.size() - 1; i >= 0; i--) {
-					this.children.get(i).update(delta);
+					this.children.get(i).update(0F);
 				}
 			}
 		} else {

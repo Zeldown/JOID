@@ -45,9 +45,9 @@ public final class Tween extends BaseTween<Tween> {
 		Tween.registerAccessor(TweenAnimator.class, new TweenAnimatorAccessor());
 	}
 
-	private final float[] waypoints = new float[Tween.waypointsLimit * Tween.combinedAttrsLimit];
-	private final float[] startValues = new float[Tween.combinedAttrsLimit];
-	private final float[] targetValues = new float[Tween.combinedAttrsLimit];
+	private float[] waypoints = new float[Tween.waypointsLimit * Tween.combinedAttrsLimit];
+	private float[] startValues = new float[Tween.combinedAttrsLimit];
+	private float[] targetValues = new float[Tween.combinedAttrsLimit];
 
 	private int type;
 	private Object target;
@@ -177,7 +177,13 @@ public final class Tween extends BaseTween<Tween> {
 		this.combinedAttrsCnt = this.waypointsCnt = 0;
 
 		if (this.accessorBuffer.length != Tween.combinedAttrsLimit) {
+			this.startValues = new float[Tween.combinedAttrsLimit];
+			this.targetValues = new float[Tween.combinedAttrsLimit];
 			this.accessorBuffer = new float[Tween.combinedAttrsLimit];
+		}
+
+		if (this.waypoints.length != Tween.waypointsLimit * Tween.combinedAttrsLimit) {
+			this.waypoints = new float[Tween.waypointsLimit * Tween.combinedAttrsLimit];
 		}
 
 		if (this.pathBuffer.length != (2 + Tween.waypointsLimit) * Tween.combinedAttrsLimit) {
