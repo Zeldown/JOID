@@ -9,6 +9,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.utils.TextOverflow;
 import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCallback;
@@ -79,10 +80,6 @@ public class MultilineTextFieldNode extends Node {
 			this.cursorMargin = lineHeight * 2;
 		}
 
-		if (this.yOffset > lines.size() * lineHeight) {
-			this.decreaseCursor(0);
-		}
-
 		if (this.cursorPos < 0) {
 			this.cursorPos = 0;
 		}
@@ -93,6 +90,10 @@ public class MultilineTextFieldNode extends Node {
 
 		if (this.selectionStart > this.text.length()) {
 			this.selectionStart = this.text.length();
+		}
+
+		if (this.yOffset > lines.size() * lineHeight) {
+			this.decreaseCursor(0);
 		}
 
 		if (this.yOffset < 0) {
@@ -122,7 +123,7 @@ public class MultilineTextFieldNode extends Node {
 				DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
 			}
 
-			if (this.selectionStart != -1) {
+			if (this.selectionStart != -1 && !lines.isEmpty()) {
 				final Color selectionColor = new Color(50, 152, 253, 100);
 				final int start = Math.min(this.cursorPos, this.selectionStart);
 				final int end = Math.max(this.cursorPos, this.selectionStart);
@@ -192,20 +193,20 @@ public class MultilineTextFieldNode extends Node {
 					return;
 				}
 
-				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() : this.cursorPos + 1));
+				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(UI.isCtrlKeyDown() ? this.nextWordIndex() : this.cursorPos + 1));
 			} else if (this.inputType == Key.BACKSPACE) {
 				if (this.cursorPos <= 0) {
 					this.inputting = false;
 					return;
 				}
 
-				final int backStart = Key.LEFT_CONTROL.isDown() ? this.previousWordIndex() : this.cursorPos - 1;
+				final int backStart = UI.isCtrlKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
 				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
 				this.decreaseCursor(this.cursorPos - backStart);
 			} else if (this.inputType == Key.LEFT) {
-				this.decreaseCursor(Key.LEFT_CONTROL.isDown() ? this.cursorPos - this.previousWordIndex() : 1);
+				this.decreaseCursor(UI.isCtrlKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
 			} else if (this.inputType == Key.RIGHT) {
-				this.increaseCursor(Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() - this.cursorPos : 1);
+				this.increaseCursor(UI.isCtrlKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
 			}
 
 			this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
@@ -234,7 +235,7 @@ public class MultilineTextFieldNode extends Node {
 				final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
 				int newCol = targetLine.length();
 				for (int i = 0; i < targetLine.length(); i++) {
-					final double colX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(targetLine.substring(0, i));
+					final double colX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(targetLine.substring(0, i)) + this.getTextWidth(targetLine.substring(i, i + 1)) / 2D;
 					if (cursorX < colX) {
 						newCol = i;
 						break;
@@ -274,7 +275,7 @@ public class MultilineTextFieldNode extends Node {
 				final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
 				int newCol = targetLine.length();
 				for (int i = 0; i < targetLine.length(); i++) {
-					final double colX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(targetLine.substring(0, i));
+					final double colX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(targetLine.substring(0, i)) + this.getTextWidth(targetLine.substring(i, i + 1)) / 2D;
 					if (cursorX < colX) {
 						newCol = i;
 						break;
@@ -309,7 +310,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				this.decreaseCursor(Key.LEFT_CONTROL.isDown() ? this.cursorPos - this.previousWordIndex() : 1);
+				this.decreaseCursor(UI.isCtrlKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
 				return;
 			}
 
@@ -323,7 +324,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				this.increaseCursor(Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() - this.cursorPos : 1);
+				this.increaseCursor(UI.isCtrlKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
 				return;
 			}
 
@@ -333,24 +334,24 @@ public class MultilineTextFieldNode extends Node {
 			}
 
 			if (key == Key.BACKSPACE) {
-				if (this.deleteSelection(true) || this.cursorPos <= 0) {
+				if (this.deleteSelection() || this.cursorPos <= 0) {
 					return;
 				}
 
 				this.holdInput(key);
-				final int backStart = Key.LEFT_CONTROL.isDown() ? this.previousWordIndex() : this.cursorPos - 1;
+				final int backStart = UI.isCtrlKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
 				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
 				this.decreaseCursor(this.cursorPos - backStart);
 				return;
 			}
 
 			if (key == Key.DELETE) {
-				if (this.deleteSelection(true) || this.cursorPos >= this.text.length()) {
+				if (this.deleteSelection() || this.cursorPos >= this.text.length()) {
 					return;
 				}
 
 				this.holdInput(key);
-				final int deleteEnd = Key.LEFT_CONTROL.isDown() ? this.nextWordIndex() : this.cursorPos + 1;
+				final int deleteEnd = UI.isCtrlKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
 				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
 				return;
 			}
@@ -367,13 +368,13 @@ public class MultilineTextFieldNode extends Node {
 				return;
 			}
 
-			if (key == Key.A && Key.LEFT_CONTROL.isDown()) {
+			if (key == Key.A && UI.isCtrlKeyDown()) {
 				this.selectionStart = 0;
 				this.cursorPos = this.text.length();
 				return;
 			}
 
-			if (key == Key.C && Key.LEFT_CONTROL.isDown()) {
+			if (key == Key.C && UI.isCtrlKeyDown()) {
 				if (this.selectionStart == -1) {
 					return;
 				}
@@ -387,7 +388,7 @@ public class MultilineTextFieldNode extends Node {
 				return;
 			}
 
-			if (key == Key.X && Key.LEFT_CONTROL.isDown()) {
+			if (key == Key.X && UI.isCtrlKeyDown()) {
 				if (this.selectionStart == -1) {
 					return;
 				}
@@ -406,12 +407,11 @@ public class MultilineTextFieldNode extends Node {
 			}
 
 			String textToAdd = key == Key.ENTER || key == Key.NUMPAD_ENTER ? "\n" : Character.toString(c);
-			if (key == Key.V && Key.LEFT_CONTROL.isDown()) {
+			if (key == Key.V && UI.isCtrlKeyDown()) {
 				textToAdd = BridgeHandler.WINDOW.get().getClipboard();
 			}
 
 			textToAdd = textToAdd.replace("\r\n", "\n").replace("\r", "\n");
-			textToAdd = textToAdd.replace("\n", "${newline}");
 
 			final char[] achar = textToAdd.toCharArray();
 			final int i = achar.length;
@@ -419,19 +419,27 @@ public class MultilineTextFieldNode extends Node {
 			final StringBuilder stringbuilder = new StringBuilder();
 			for (int j = 0; j < i; ++j) {
 				final char c0 = achar[j];
-				if (c0 != 167 && c0 >= 32 && c0 != 127 && c0 <= 563) {
+				if (c0 == '\n' || c0 != 167 && c0 >= 32 && c0 != 127 && c0 <= 563) {
 					stringbuilder.append(c0);
 				}
 			}
 			textToAdd = stringbuilder.toString();
-
-			textToAdd = textToAdd.replace("${newline}", "\n");
 			if (textToAdd.isEmpty()) {
 				return;
 			}
 
-			this.deleteSelection(false);
-			this.setText(this.text.substring(0, this.cursorPos) + textToAdd + this.text.substring(this.cursorPos));
+			final int start = this.selectionStart == -1 ? this.cursorPos : Math.min(this.selectionStart, this.cursorPos);
+			final int end = this.selectionStart == -1 ? this.cursorPos : Math.max(this.selectionStart, this.cursorPos);
+			if (this.maxTextLength >= 0) {
+				textToAdd = textToAdd.substring(0, Math.min(textToAdd.length(), Math.max(0, this.maxTextLength - this.text.length() + end - start)));
+				if (textToAdd.isEmpty()) {
+					return;
+				}
+			}
+
+			this.selectionStart = -1;
+			this.setText(this.text.substring(0, start) + textToAdd + this.text.substring(end));
+			this.cursorPos = start;
 			this.increaseCursor(textToAdd.length());
 		});
 	}
@@ -683,12 +691,6 @@ public class MultilineTextFieldNode extends Node {
 		return DrawUtils.TEXT.getLines(this.getRawWidth(), text, this.info);
 	}
 
-	private final @NonNull List<String> getLines(final int start, final int end) {
-		final int from = Math.max(0, start);
-		final int to = Math.min(this.text.replace("\n", "").length(), end);
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), this.text.substring(from, to), this.info);
-	}
-
 	private final int[] getLineAndColumn(final int pos) {
 		final List<String> lines = this.getLines();
 		if (lines.isEmpty()) {
@@ -778,39 +780,19 @@ public class MultilineTextFieldNode extends Node {
 		return c == ' ' || c == '\n' || c == '\r';
 	}
 
-	private final boolean deleteSelection(final boolean filter) {
-		if (this.selectionStart == -1) {
+	private final boolean deleteSelection() {
+		if (this.selectionStart == -1 || this.selectionStart == this.cursorPos) {
+			this.selectionStart = -1;
 			return false;
 		}
 
-		final String oldText = this.text;
-		if (this.selectionStart < this.cursorPos) {
-			if (filter) {
-				final String newText = this.filter.apply(this.text, this.text.substring(0, this.selectionStart) + this.text.substring(this.cursorPos));
-				this.executeCallback(MultilineTextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-					this.text = newText;
-				}, oldText, newText);
-			} else {
-				final String newText = this.text.substring(0, this.selectionStart) + this.text.substring(this.cursorPos);
-				this.executeCallback(MultilineTextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-					this.text = newText;
-				}, oldText, newText);
-			}
-			this.cursorPos -= oldText.length() - this.text.length();
-		} else if (filter) {
-			final String newText = this.filter.apply(this.text, this.text.substring(0, this.cursorPos) + this.text.substring(this.selectionStart));
-			this.executeCallback(MultilineTextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-				this.text = newText;
-			}, oldText, newText);
-		} else {
-			final String newText = this.text.substring(0, this.cursorPos) + this.text.substring(this.selectionStart);
-			this.executeCallback(MultilineTextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-				this.text = newText;
-			}, oldText, newText);
-		}
-
+		final int start = Math.min(this.selectionStart, this.cursorPos);
+		final int end = Math.max(this.selectionStart, this.cursorPos);
 		this.selectionStart = -1;
+		this.setText(this.text.substring(0, start) + this.text.substring(end));
+		this.cursorPos = start;
 		return true;
 	}
+
 
 }

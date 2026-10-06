@@ -27,7 +27,7 @@ Il n'y a **pas** de `text(Supplier<Text>)`, `text(Text, TextOverflow)` ou setter
 |---|---|
 | `NORMAL` | Dessine tel quel, pas de wrap. Auto-size width/height du nœud s'ils étaient `0`. |
 | `OVERFLOW` | Tronque si le texte dépasse `width` ; auto-size la height du nœud. |
-| `SPLIT` | Wrap en plusieurs lignes dans `width` ; le nœud grandit verticalement pour contenir toutes les lignes. |
+| `SPLIT` | Wrap en plusieurs lignes dans `width` ; le nœud prend la hauteur de ses lignes, en grandissant ou en rétrécissant. |
 | `BOX` | Comme `SPLIT`, mais les lignes hors de la box fixe `(y, y + height)` sont droppées. |
 
 ## Construire le `Text`

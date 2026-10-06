@@ -8,7 +8,7 @@ Champ de saisie multi-ligne. Wrap le texte long à la largeur du nœud, supporte
 MultilineTextFieldNode.create(x, y, width, height)
 ```
 
-Une seule factory — `height` est toujours explicite car le wrap dépend de lui.
+Une seule factory — `height` est toujours explicite : il fixe la zone visible, le texte passe à la ligne selon la largeur et défile dedans.
 
 ## API
 
@@ -46,7 +46,7 @@ Il n'y a **pas** de `onEnter` sur `MultilineTextFieldNode` — presser Enter ins
 
 ## Clavier & souris
 
-- `←` / `→` — déplace le curseur sur la ligne courante.
+- `←` / `→` — déplace le curseur, y compris d'une ligne à l'autre.
 - `↑` / `↓` — déplace le curseur à la ligne visuelle précédente / suivante, en gardant l'offset horizontal.
 - `Home` / `End` — curseur à 0 / fin du texte.
 - `Backspace` / `Delete` — supprime caractère ou sélection.
@@ -55,7 +55,9 @@ Il n'y a **pas** de `onEnter` sur `MultilineTextFieldNode` — presser Enter ins
 - `Ctrl + C` / `Ctrl + V` / `Ctrl + X` — presse-papier.
 - `Enter` / `Numpad Enter` — insère un retour à la ligne.
 - `Esc` — unfocus.
-- Molette — scroll vertical d'une ligne par tick.
+- Molette — quand le champ a le focus, scroll vertical d'une ligne par tick, où que soit la souris, et consomme l'événement.
+
+`cursorMargin` garde cette distance entre le curseur et le haut du champ quand le curseur remonte ; en descendant, la ligne du curseur reste collée au bord bas. Les deux touches `Ctrl` fonctionnent, et la frappe ou le collage gardent les mêmes caractères que `TextFieldNode`.
 
 ## Exemple — éditeur de notes
 

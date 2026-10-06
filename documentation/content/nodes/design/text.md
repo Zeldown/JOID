@@ -27,7 +27,7 @@ There is **no** `text(Supplier<Text>)`, `text(Text, TextOverflow)`, or alignment
 |---|---|
 | `NORMAL` | Draw as-is, no wrapping. Auto-sizes the node's width/height if they were `0`. |
 | `OVERFLOW` | Truncate the text if it exceeds `width`; the node auto-sizes its height. |
-| `SPLIT` | Wrap to multiple lines inside `width`; the node grows vertically to fit all lines. |
+| `SPLIT` | Wrap to multiple lines inside `width`; the node takes the height of its lines, growing or shrinking. |
 | `BOX` | Like `SPLIT`, but lines outside the fixed `(y, y + height)` box are dropped. |
 
 ## Building the `Text`

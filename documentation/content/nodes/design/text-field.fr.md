@@ -9,7 +9,7 @@ TextFieldNode.create(x, y, width)                 // height auto-calculé depuis
 TextFieldNode.create(x, y, width, height)         // height explicite
 ```
 
-Les deux factories retournent un `TextFieldNode`. Quand `height` vaut `0`, le nœud se redimensionne à `info.getHeight() + marginVertical * 2` au premier draw.
+Les deux factories retournent un `TextFieldNode`. Quand `height` vaut `0`, le nœud se redimensionne à `info.getHeight() + marginTop + marginBottom` au premier draw.
 
 ## API
 
@@ -40,6 +40,8 @@ T cursorPosition(int cursorPos)
 
 Défauts : `marginHorizontal = 2`, `marginVertical = 10`, `cursorMargin = 15`, `horizontalAlignment = START`, `verticalAlignment = CENTER`.
 
+Un texte centré ou aligné à droite garde son alignement tant qu'il tient dans le champ, curseur compris ; un texte plus long défile comme un texte aligné à gauche. Une fois `maxTextLength` atteint, ce qui est tapé ou collé est refusé, ou coupé à la place restante.
+
 Il n'y a **pas** de setter `cursorColor`, `cursorWidth`, `selectionColor` ou `password` — le curseur est dessiné avec la couleur courante de `info` et une alpha pulsée en sinus, la couleur de sélection est codée en dur à `(50, 152, 253, 100)`.
 
 ## Callbacks
@@ -62,7 +64,9 @@ Gérés dans `keyPressed` :
 - `Shift + ←/→` — étendre la sélection.
 - `Ctrl + A` — tout sélectionner.
 - `Ctrl + C` / `Ctrl + V` / `Ctrl + X` — presse-papier.
-- `Enter` / `Numpad Enter` / `Esc` — unfocus et déclenchent `onEnter`.
+- `Enter` / `Numpad Enter` / `Esc` — unfocus et déclenchent `onEnter`. Dans une UI fermable, `Esc` ferme d'abord l'UI.
+
+Les deux touches `Ctrl` fonctionnent. La frappe et le collage gardent les caractères couverts par les atlas MSDF, de l'espace à U+0233 sauf `§` : les caractères de contrôle et le reste sont ignorés.
 
 ## Exemple — champ email
 
@@ -106,7 +110,7 @@ T value(int value)
 int getValue()
 ```
 
-La sous-classe installe un `filter` qui strip les caractères non-numériques et clamp la valeur parsée à `[min, max]`. `getValue()` retourne le parse entier du texte courant.
+La sous-classe installe un `filter` qui retire tout sauf les chiffres et un signe moins en tête, et clamp la valeur parsée à `[min, max]`. `getValue()` retourne le parse entier du texte courant.
 
 ## Voir aussi
 

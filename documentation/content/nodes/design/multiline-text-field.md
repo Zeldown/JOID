@@ -8,7 +8,7 @@ Multi-line editable text input. Wraps long text to the node's width, supports sc
 MultilineTextFieldNode.create(x, y, width, height)
 ```
 
-Only one factory — `height` is always explicit because line wrapping depends on it.
+Only one factory — `height` is always explicit: it sets the visible area, the text wraps to the width and scrolls inside it.
 
 ## API
 
@@ -46,7 +46,7 @@ There is **no** `onEnter` on `MultilineTextFieldNode` — pressing Enter inserts
 
 ## Keyboard & mouse
 
-- `←` / `→` — move cursor on the current line.
+- `←` / `→` — move the cursor, across line breaks.
 - `↑` / `↓` — move cursor to the previous / next visual line, keeping the horizontal offset.
 - `Home` / `End` — cursor to 0 / end of text.
 - `Backspace` / `Delete` — delete character or selection.
@@ -55,7 +55,9 @@ There is **no** `onEnter` on `MultilineTextFieldNode` — pressing Enter inserts
 - `Ctrl + C` / `Ctrl + V` / `Ctrl + X` — clipboard.
 - `Enter` / `Numpad Enter` — insert newline.
 - `Esc` — unfocus.
-- Mouse wheel — scrolls the text vertically by one line per tick.
+- Mouse wheel — while the field is focused, scrolls the text vertically by one line per tick, wherever the mouse is, and consumes the event.
+
+`cursorMargin` keeps that distance between the cursor and the top of the field when the cursor moves up; moving down keeps the cursor line at the bottom edge. Either `Ctrl` key works, and typing or pasting keeps the same characters as `TextFieldNode`.
 
 ## Example — note editor
 
