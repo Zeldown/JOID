@@ -20,6 +20,8 @@ import dev.joid.lib.font.dto.markup.ITextMarkup;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
+import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
@@ -648,6 +650,70 @@ public class MultilineTextFieldNodeTest {
 		final MultilineTextFieldNode field = this.field("ab");
 		this.bridges.scroll(-1).frame();
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
+	}
+
+	@Test
+	public void consumesTheWheelWhileItScrolls() {
+		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
+		final InternalContext down = InternalContext.create();
+		field.mouseScroll(10D, 10D, -1, down);
+		Assert.assertTrue(down.isCancelled());
+		Assert.assertEquals(20D, field.getYOffset(), 0D);
+		final InternalContext up = InternalContext.create();
+		field.mouseScroll(10D, 10D, 1, up);
+		Assert.assertTrue(up.isCancelled());
+		Assert.assertEquals(0D, field.getYOffset(), 0D);
+	}
+
+	@Test
+	public void leavesTheWheelToItsParentAtItsTop() {
+		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
+		final InternalContext context = InternalContext.create();
+		field.mouseScroll(10D, 10D, 1, context);
+		Assert.assertFalse(context.isCancelled());
+		Assert.assertEquals(0D, field.getYOffset(), 0D);
+	}
+
+	@Test
+	public void leavesTheWheelToItsParentAtItsBottom() {
+		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
+		for (int i = 0; i < 6; i++) {
+			field.mouseScroll(10D, 10D, -1, InternalContext.create());
+		}
+		Assert.assertEquals(104D, field.getYOffset(), 0D);
+		final InternalContext down = InternalContext.create();
+		field.mouseScroll(10D, 10D, -1, down);
+		Assert.assertFalse(down.isCancelled());
+		Assert.assertEquals(104D, field.getYOffset(), 0D);
+		final InternalContext up = InternalContext.create();
+		field.mouseScroll(10D, 10D, 1, up);
+		Assert.assertTrue(up.isCancelled());
+		Assert.assertEquals(84D, field.getYOffset(), 0D);
+	}
+
+	@Test
+	public void leavesTheWheelToItsParentWithNothingToScroll() {
+		final MultilineTextFieldNode field = this.field("ab");
+		final InternalContext down = InternalContext.create();
+		final InternalContext up = InternalContext.create();
+		field.mouseScroll(10D, 10D, -1, down);
+		field.mouseScroll(10D, 10D, 1, up);
+		Assert.assertFalse(down.isCancelled());
+		Assert.assertFalse(up.isCancelled());
+	}
+
+	@Test
+	public void letsItsScrollingParentTakeTheWheelOnceAtItsLimit() {
+		final ContainerNode box = ContainerNode.create(0D, 0D, 400D, 300D).overflow(OverflowProperty.SCROLL);
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldNodeTest.INK)).text("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb").attach(box);
+		RectNode.create(0D, 200D, 100D, 1000D).attach(box);
+		this.bridges.open(new NodeUI(box)).frames(30);
+		this.bridges.move(10D, 10D).frames(2).scroll(-1).scroll(-1).scroll(-1);
+		Assert.assertEquals(44D, field.getYOffset(), 0D);
+		Assert.assertEquals(0D, box.getTargetScrollY(), 0D);
+		this.bridges.scroll(-1);
+		Assert.assertEquals(44D, field.getYOffset(), 0D);
+		Assert.assertTrue(box.getTargetScrollY() < 0D);
 	}
 
 	@Test

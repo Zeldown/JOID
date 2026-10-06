@@ -39,7 +39,7 @@ RectNode
 | Enter / Numpad Enter | Unfocuses and calls `onEnter` | Inserts a line break |
 | Escape | Unfocuses and calls `onEnter` | Unfocuses |
 | Up / Down | Nothing | Move between lines |
-| Mouse wheel | Nothing | Scrolls while the pointer is over it |
+| Mouse wheel | Nothing | Scrolls while the pointer is over it, then leaves the wheel to its parent at the top or bottom |
 | Alignment | `align`, `horizontalAlign`, `verticalAlign` | Always top-left |
 | Callbacks | `onChange`, `onFocus`, `onEnter` | `onChange`, `onFocus` |
 | Default margins | 2 left / right, 10 top / bottom | 2 on every side |
@@ -82,7 +82,7 @@ RectNode
 ## Mouse and scrolling
 
 - A press on the field (any button) focuses it and puts the cursor on the line under the pointer, at the nearest character boundary. A press above the first line or below the last one picks that line. Shift+press extends the selection; a press without Shift drops it. A press elsewhere unfocuses the field; losing the focus, whatever the cause, drops the selection.
-- Each mouse wheel notch over the field scrolls the text by one line height, within the content, focused or not. The field consumes the wheel only while the pointer is over it: elsewhere, a scrollable parent scrolls.
+- Each mouse wheel notch over the field scrolls the text by one line height, within the content, focused or not, and consumes the wheel. The field leaves the wheel to the nodes behind it when the pointer is elsewhere, and when its text cannot move in the direction of the wheel: already at the top for a wheel up, at the bottom for a wheel down, or a text that fits in the field. A [scrollable parent](../layout/overflow-and-scroll.md#wheel-scrolling) then scrolls, as around a web text area.
 - When the cursor moves, the field scrolls to keep it visible: moving down keeps the cursor line above the bottom margin, moving up keeps at least `cursorMargin` between the top margin and the cursor line. `cursorMargin` defaults to `-1`, which the first draw replaces with two line heights. The cursor at position 0 scrolls back to the top.
 - `getYOffset()` returns the vertical scroll offset in UI units.
 

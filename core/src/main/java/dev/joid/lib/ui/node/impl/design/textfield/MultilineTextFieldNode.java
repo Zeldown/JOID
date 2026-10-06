@@ -276,27 +276,18 @@ public class MultilineTextFieldNode extends FieldNode<String, MultilineTextField
 
 	@Override
 	public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
-		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
+		if (context.isCancelled() || value == 0 || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
-		context.cancel(() -> {
-			final double lineHeight = this.getLineHeight();
-			if (value > 0) {
-				this.yOffset -= lineHeight;
-			} else if (value < 0) {
-				this.yOffset += lineHeight;
-			}
-
-			if (this.yOffset < 0) {
-				this.yOffset = 0;
-			}
-
-			final List<String> lines = this.getLines();
-			if (this.yOffset > lines.size() * lineHeight - super.getHeight() + super.getMarginTop() + super.getMarginBottom()) {
-				this.yOffset = lines.size() * lineHeight - super.getHeight() + super.getMarginTop() + super.getMarginBottom();
-			}
-		});
+		final double lineHeight = this.getLineHeight();
+		final double maxOffset = Math.max(0D, this.getLines().size() * lineHeight - this.getRawHeight());
+		final double offset = value > 0 ? Math.max(0D, this.yOffset - lineHeight) : Math.min(maxOffset, this.yOffset + lineHeight);
+		if (value > 0 ? offset < this.yOffset : offset > this.yOffset) {
+			context.cancel(() -> {
+				this.yOffset = offset;
+			});
+		}
 	}
 
 	@Override
