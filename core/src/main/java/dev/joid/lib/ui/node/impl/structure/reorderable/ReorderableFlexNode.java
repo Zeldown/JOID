@@ -245,7 +245,6 @@ public final class ReorderableFlexNode extends Node {
 			return;
 		}
 
-		final double draggedCenter = this.draggedCurrent + draggedSize / 2D;
 		int newIndex = 0;
 		double off = 0D;
 		for (final Node c : this.logicalOrder) {
@@ -254,8 +253,8 @@ public final class ReorderableFlexNode extends Node {
 			}
 
 			final double cSize = this.mainSize(c);
-			final double cCenter = c.isVisibleProperty() ? off + cSize / 2D : off;
-			if (cCenter < draggedCenter) {
+			final double cMiddle = c.isVisibleProperty() ? off + (cSize + this.margin) / 2D : off;
+			if (cMiddle <= this.draggedCurrent) {
 				newIndex++;
 			}
 			if (c.isVisibleProperty()) {

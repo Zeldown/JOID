@@ -305,6 +305,31 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
+	public void takesTheFirstSlotOnceAChildPassesHalfOfIt() {
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final RectNode second = ReorderableFlexNodeTest.item();
+		final RectNode third = ReorderableFlexNodeTest.item();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third);
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 180D);
+		this.bridges.move(150D, 145D).frames(60);
+		Assert.assertEquals(0, flex.getCurrentIndex());
+		Assert.assertEquals(Arrays.asList(second, first, third), flex.getLogicalOrder());
+	}
+
+	@Test
+	public void keepsItsSlotUntilAChildPassesHalfOfTheNextOne() {
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final RectNode second = ReorderableFlexNodeTest.item();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second);
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 120D);
+		this.bridges.move(150D, 145D).frames(60);
+		Assert.assertEquals(0, flex.getCurrentIndex());
+		Assert.assertEquals(Arrays.asList(first, second), flex.getLogicalOrder());
+	}
+
+	@Test
 	public void dropsTheChildOnItsNewSlot() {
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();
