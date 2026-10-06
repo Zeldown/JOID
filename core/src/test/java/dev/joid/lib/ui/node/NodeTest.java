@@ -51,6 +51,7 @@ import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -277,6 +278,17 @@ public class NodeTest {
 		Assert.assertTrue(node.isVisible());
 		second.set(4);
 		Assert.assertTrue(node.isVisible());
+	}
+
+	@Test
+	public void hidesItselfWhileABooleanSignalIsFalse() {
+		final BooleanSignal shown = new BooleanSignal(false);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(shown);
+		Assert.assertFalse(node.isVisible());
+		shown.set(true);
+		Assert.assertTrue(node.isVisible());
+		shown.set(false);
+		Assert.assertFalse(node.isVisible());
 	}
 
 	@Test

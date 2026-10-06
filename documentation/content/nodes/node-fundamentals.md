@@ -225,7 +225,7 @@ RectNode.create(0, 0, 320, 0).color(Color.BLACK).aspectRatio(16D / 9D).attach(th
 | Method | Description |
 | --- | --- |
 | `visible(Predicate<T> visibility)` | Replaces the visibility predicate. Default: always visible. |
-| `visible(Signal<?>... signals)` | Visible while every signal has a value (`getOrDefault()` is not `null`, so a default value counts). Replaces the predicate. |
+| `visible(Signal<?>... signals)` | Visible while every signal holds a value that is not `false`: `getOrDefault()` is neither `null` nor `Boolean.FALSE` (a default value counts), so a `BooleanSignal` shows and hides the node. Replaces the predicate. |
 | `enabled(Predicate<T> enabled)` | Replaces the enabled predicate. Default: always enabled. |
 | `isVisible()` | `true` when the parent is visible, the node is not entirely outside its [overflow area](layout/overflow-and-scroll.md), and its own predicate passes. |
 | `isVisibleProperty()` | The node's own predicate only. Layout nodes use it to give no room to hidden children. |

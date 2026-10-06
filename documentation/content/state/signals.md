@@ -214,11 +214,9 @@ quantity.subscribe(recompute);
 |---|---|---|
 | `Node.watch(Signal<?> signal, ...)` | Reloads or rebuilds the node when the signal publishes. | [Watching Signals](watch.md) |
 | `Node.wait(ISignal<?> signal)` | Keeps the node unmounted (skeleton) until the signal has a value. | [Watching Signals](watch.md#waiting-for-a-signal-with-wait-and-onmount) |
-| `Node.visible(Signal<?>... signals)` | Shows the node only while every signal's `getOrDefault()` is not `null`. | [Node Fundamentals](../nodes/node-fundamentals.md) |
+| `Node.visible(Signal<?>... signals)` | Shows the node only while every signal's `getOrDefault()` is neither `null` nor `false`: a `BooleanSignal` toggles it. | [Node Fundamentals](../nodes/node-fundamentals.md) |
 | `SliderNode.signal(Signal<O> signal)` | Writes the selected value into the signal. | [SliderNode](../nodes/input/slider.md) |
 | `UI.getZoomLevel()`, `UI.getScaledWidth()`, `UI.getScaledHeight()` | `DoubleSignal`s updated when the view changes. | [View and Scaling](../ui/view-and-scaling.md) |
-
-> NOTE: `visible(Signal<?>...)` tests presence, not truth: a `BooleanSignal` holding `false` is present, so the node stays visible. For a boolean, use `visible(node -> flag.getOrDefault())`.
 
 ## ISignal
 
