@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -1545,6 +1546,25 @@ public class NodeTest {
 		Assert.assertSame(parent, parent.clearChildren());
 		Assert.assertEquals(Arrays.asList("grandchild detach", "child detach", "callback"), events);
 		Assert.assertTrue(parent.getChildren().isEmpty());
+	}
+
+	@Test
+	public void clearsTheParentOfItsChildrenWhenCleared() {
+		final RectNode grandchild = RectNode.create(0D, 0D, 5D, 5D);
+		final RectNode child = RectNode.create(10D, 20D, 10D, 10D).append(grandchild);
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).append(child).visible(node -> false).enabled(node -> false);
+		final List<Node> parents = new ArrayList<>();
+		child.onDetach(node -> parents.add(node.getParent()));
+		Assert.assertFalse(child.isVisible());
+		Assert.assertFalse(child.isEnabled());
+		Assert.assertEquals(110D, child.getAbsoluteX(), 0D);
+		parent.clearChildren();
+		Assert.assertEquals(Collections.singletonList(parent), parents);
+		Assert.assertNull(child.getParent());
+		Assert.assertSame(child, grandchild.getParent());
+		Assert.assertTrue(child.isVisible());
+		Assert.assertTrue(child.isEnabled());
+		Assert.assertEquals(10D, child.getAbsoluteX(), 0D);
 	}
 
 	@Test

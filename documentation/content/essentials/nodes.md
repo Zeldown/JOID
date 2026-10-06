@@ -117,7 +117,7 @@ The red square is drawn above the blue one although it was attached first. A z-i
 
 | Code | Effect |
 | --- | --- |
-| `node.clearChildren()` | Detaches and removes every child of `node`. |
+| `node.clearChildren()` | Detaches and removes every child of `node`, which loses its parent. |
 | `ui.getNodeList().remove(node)` | Removes a top-level node from its UI. |
 
 Rather than removing nodes by hand, the usual way to change a part of the screen is to rebuild it from a signal with `watch`, shown in [State and Reactivity](state.md).

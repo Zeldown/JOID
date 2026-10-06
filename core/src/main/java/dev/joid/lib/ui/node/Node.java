@@ -1268,7 +1268,10 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T clearChildren() {
-		this.children.forEach(Node::onDetach);
+		this.children.forEach(child -> {
+			child.onDetach();
+			child.parent(null);
+		});
 		this.children.clear();
 		return (T) this;
 	}

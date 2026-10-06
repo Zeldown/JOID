@@ -38,7 +38,7 @@ public class ProfileUI extends UI {
 |---|---|
 | `RELOAD` | Calls `reload()`: the children and the node are loaded again, and their `onInit` callbacks fire inside `onReload`. The children stay. Default of `watch(signal)`. |
 | `BODY` | Runs again the consumer given to `body(...)`, with the node. Does nothing for a node without a body. |
-| `CLEAR_CHILDREN` | Calls `clearChildren()`: every child is detached (`onDetach`) and removed. |
+| `CLEAR_CHILDREN` | Calls `clearChildren()`: every child is detached (`onDetach`), removed and loses its parent. |
 | `NONE` | Does nothing; react in `onWatch`. |
 
 `apply(Node node)` applies one value to a node directly.

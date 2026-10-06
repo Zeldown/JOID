@@ -186,6 +186,17 @@ public class SelectorNodeTest {
 		Assert.assertTrue(this.changes.isEmpty());
 	}
 
+	@Test
+	public void dropsItsOldOptionsWhenItsOptionsAreRebuilt() {
+		this.bridges.open(new NodeUI(this.selector)).frame();
+		this.selector.values("first", "first", "second");
+		this.bridges.frame();
+		Assert.assertNull(this.first.getParent());
+		Assert.assertNull(this.third.getParent());
+		Assert.assertSame(this.selector, this.selector.getSelected().getParent());
+		Assert.assertNotSame(this.first, this.selector.getSelected());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAValueThatIsNoOption() {
 		this.selector.value("fourth");

@@ -67,6 +67,21 @@ public class WatchPropertyTest {
 		Assert.assertEquals(3, ui.node.getChildren().size());
 	}
 
+	@Test
+	public void leavesTheOldChildrenWithoutParentOnARebuild() {
+		final Signal<Integer> count = new Signal<>(1);
+		final WatchUI ui = new WatchUI(count);
+		this.bridges.open(ui).frame();
+		final Node old = ui.node.getChildren().ordered().get(0);
+		count.set(2);
+		this.bridges.frame();
+		Assert.assertNull(old.getParent());
+		Assert.assertFalse(ui.node.getChildren().contains(old));
+		for (final Node child : ui.node.getChildren()) {
+			Assert.assertSame(ui.node, child.getParent());
+		}
+	}
+
 	@AllArgsConstructor
 	public static final class NodeUI extends UI {
 

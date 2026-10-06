@@ -98,7 +98,7 @@ Most setters are declared as `<T extends Node> T method(...)`: the compiler infe
 
 | Code | Effect |
 | --- | --- |
-| `node.clearChildren()` | Detaches every child (runs `onDetach()` on each subtree) and empties the children list. Returns the node. |
+| `node.clearChildren()` | Detaches every child (runs `onDetach()` on each subtree), empties the children list and clears the parent of each child, as `remove(...)` does. Returns the node. |
 | `node.remove(child...)` | Detaches the children (runs `onDetach()` on each subtree), removes them from the list and clears their parent. Returns the node. |
 | `node.getChildren().remove(child)` | Removes one child from the list only. Its detach hooks do not run: prefer `remove(...)`. |
 | `ui.getNodeList().remove(node)` | Removes a top-level node from its UI (see [The UI Class](../ui/ui-class.md)). |
@@ -423,7 +423,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | `remove(Node... nodes)` | Detaches and removes children. |
 | `attach(Node parent)`, `attach(UI ui)` | Attaches this node to a parent or to a UI. |
 | `body(Consumer<T>)`, `body(Runnable)` | Runs and stores a builder. |
-| `clearChildren()` | Detaches and removes every child. |
+| `clearChildren()` | Detaches and removes every child, which loses its parent. |
 | `getChildren()`, `getChildren(Class<T>)`, `getChild(int, Class<T>)` | Children access. |
 | `getParent()`, `getUi()`, `hasUi()` | Tree context. |
 | `parent(Node parent)` | Sets the parent reference only; the node is not added to the parent's children. Used by `append`, skeletons and scrollbars. |
