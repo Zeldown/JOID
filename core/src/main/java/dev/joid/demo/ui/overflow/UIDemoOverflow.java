@@ -53,7 +53,7 @@ public class UIDemoOverflow extends UIDemo {
 					.attach(rect);
 				})
 				.onClick((child, mouseX, mouseY, clickType) -> System.out.println(child))
-				.attach(node.getChild(0, FlexNode.class));
+				.attach(node.getChild(0, FlexNode.class).get());
 			})
 			.body(n -> {
 				FlexNode

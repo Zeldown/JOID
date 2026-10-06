@@ -25,7 +25,7 @@ public void init() {
 | `radius(Supplier<Float> radius)` | Reads the radius every frame. |
 | `getRadiusSupplier()` | The radius supplier. |
 
-The function form of `effect(...)` lets you configure the radius inline (see [Effects](effects.md#applying-effects-with-effect)):
+The function form of `effect(...)` hands you the node, to read its hover progress (see [Effects](effects.md#applying-effects-with-effect)):
 
 ```java
 RectNode
@@ -50,10 +50,8 @@ Because the minimum standard deviation is one pixel, a radius of `0F` still soft
 
 ```java
 final RectNode card = RectNode.create(100, 100, 200, 120).color(Color.BLUE).effect(BlurNodeEffect.create(8F));
-card.removeEffect((Class<? extends NodeEffect<?>>) (Class<?>) BlurNodeEffect.class);
+card.removeEffect(BlurNodeEffect.class);
 ```
-
-The cast is needed because `BlurNodeEffect.class` is a raw type (see [Reading and removing effects](effects.md#reading-and-removing-effects)).
 
 ## Blurring a whole subtree
 

@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
+@SuppressWarnings("unchecked")
 public abstract class NodeEffect<T extends Node> {
 
 	private int priority;
@@ -38,15 +39,14 @@ public abstract class NodeEffect<T extends Node> {
 		return pass != null ? Collections.singletonList(pass) : Collections.emptyList();
 	}
 
-	@SuppressWarnings("unchecked")
-	public @NonNull <E extends NodeEffect<T>> E priority(final int priority) {
+	public <E extends NodeEffect<T>> @NonNull E priority(final int priority) {
 		this.priority = priority;
 		return (E) this;
 	}
 
-	public @NonNull NodeEffect<T> scope(final @NonNull NodeEffectScope scope) {
+	public <E extends NodeEffect<T>> @NonNull E scope(final @NonNull NodeEffectScope scope) {
 		this.scope = scope;
-		return this;
+		return (E) this;
 	}
 
 	public static enum NodeEffectScope {

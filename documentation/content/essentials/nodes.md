@@ -128,7 +128,7 @@ Rather than removing nodes by hand, the usual way to change a part of the screen
 | --- | --- |
 | `getChildren()` | The children, sorted by z-index. |
 | `getChildren(RectNode.class)` | The children that are `RectNode`s. |
-| `getChild(1, RectNode.class)` | The second `RectNode` child, or `null`. |
+| `getChild(1, RectNode.class)` | The second `RectNode` child, as an `Optional`. |
 | `getParent()`, `getUi()` | The parent node (`null` at the top level) and the UI. |
 
 ## Going further

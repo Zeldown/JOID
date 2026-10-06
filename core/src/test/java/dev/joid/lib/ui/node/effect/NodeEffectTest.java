@@ -17,6 +17,7 @@ import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -59,6 +60,13 @@ public class NodeEffectTest {
 		Assert.assertSame(effect, effect.scope(NodeEffectScope.CHILDREN));
 		Assert.assertEquals(3, effect.getPriority());
 		Assert.assertEquals(NodeEffectScope.CHILDREN, effect.getScope());
+	}
+
+	@Test
+	public void keepsItsOwnTypeThroughItsScope() {
+		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(4F).scope(NodeEffectScope.CHILDREN);
+		Assert.assertEquals(NodeEffectScope.CHILDREN, effect.getScope());
+		Assert.assertEquals(4F, effect.getRadius(), 0F);
 	}
 
 	@Test

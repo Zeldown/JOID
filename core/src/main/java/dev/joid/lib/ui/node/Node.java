@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -133,9 +134,9 @@ public abstract class Node implements INode {
 	private final transient TweenAnimator             hoverAnimator;
 	private final transient Map<TweenAnimator, Float> animatorMap;
 
-	private final LinkedList<NodeLayer>                                    layerList;
-	private final IndexedConcurrentList<Node>                              children;
-	private final Map<Class<? extends NodeEffect<Node>>, NodeEffect<Node>> effectMap;
+	private final LinkedList<NodeLayer>           layerList;
+	private final IndexedConcurrentList<Node>     children;
+	private final Map<Class<?>, NodeEffect<Node>> effectMap;
 
 	private final List<HoverElement>           hoverElementList;
 	private final List<Supplier<List<String>>> hoverSupplierList;
@@ -1138,7 +1139,7 @@ public abstract class Node implements INode {
 		return this.callbackMap.containsKey(type);
 	}
 
-	public final boolean hasEffect(final @NonNull Class<? extends NodeEffect<?>> clazz) {
+	public final boolean hasEffect(final @NonNull Class<?> clazz) {
 		return this.effectMap.containsKey(clazz);
 	}
 
@@ -1206,23 +1207,23 @@ public abstract class Node implements INode {
 		return String.valueOf(this.ui.getNodeList().ordered().indexOf(this));
 	}
 
-	public final <T extends NodeEffect<Node>> T getEffect(final @NonNull Class<T> clazz) {
-		return (T) this.effectMap.get(clazz);
+	public final <T extends NodeEffect<?>> @NonNull Optional<T> getEffect(final @NonNull Class<? super T> clazz) {
+		return Optional.ofNullable((T) this.effectMap.get(clazz));
 	}
 
-	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
+	public final <T extends Node> @NonNull Optional<T> getChild(final int index, final @NonNull Class<T> clazz) {
 		int i = 0;
 		for (final Node child : this.children) {
 			if (clazz.isAssignableFrom(child.getClass())) {
 				if (i == index) {
-					return (T) child;
+					return Optional.of((T) child);
 				}
 
 				i++;
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public final <T extends Node> IndexedLinkedList<T> getChildren(final @NonNull Class<T> clazz) {
@@ -1457,21 +1458,24 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T effect(final @NonNull NodeEffect<Node> effect) {
-		return this.effect(node -> effect);
-	}
-
-	public final <T extends Node> @NonNull T effect(final @NonNull Function<@NonNull Node, @NonNull NodeEffect<Node>> supplier) {
-		final NodeEffect<Node> effect = supplier.apply(this);
-		final Map<Class<? extends NodeEffect<Node>>, NodeEffect<Node>> copiedMap = new LinkedHashMap<>(this.effectMap);
-		copiedMap.put((Class<? extends NodeEffect<Node>>) effect.getClass(), effect);
+	public final <T extends Node> @NonNull T effect(final @NonNull NodeEffect<? super T> effect) {
+		final Map<Class<?>, NodeEffect<Node>> copiedMap = new LinkedHashMap<>(this.effectMap);
+		copiedMap.put(effect.getClass(), (NodeEffect<Node>) effect);
 
 		this.effectMap.clear();
-		this.effectMap.putAll(copiedMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.comparingInt(NodeEffect::getPriority))).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, (Supplier<Map<Class<? extends NodeEffect<Node>>, NodeEffect<Node>>>) LinkedHashMap::new)));
+		this.effectMap.putAll(copiedMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.comparingInt(NodeEffect::getPriority))).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, (Supplier<Map<Class<?>, NodeEffect<Node>>>) LinkedHashMap::new)));
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T removeEffect(final @NonNull Class<? extends NodeEffect<?>> effect) {
+	@SafeVarargs
+	public final <T extends Node> @NonNull T effect(final @NonNull Function<@NonNull T, @NonNull NodeEffect<? super T>> @NonNull... factories) {
+		for (final Function<T, NodeEffect<? super T>> factory : factories) {
+			this.effect(factory.apply((T) this));
+		}
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T removeEffect(final @NonNull Class<?> effect) {
 		this.effectMap.remove(effect);
 		return (T) this;
 	}

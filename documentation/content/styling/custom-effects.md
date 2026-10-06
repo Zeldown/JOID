@@ -256,7 +256,7 @@ Override `expansion()` (default `0F`) when the pass draws outside the node's rec
 
 ## Rules for effect classes
 
-- `Node.effect(...)` takes a `NodeEffect<Node>`. Declare your effect generic (`MyNodeEffect<T extends Node> extends NodeEffect<T>`) with a generic factory, as the built-in effects do, or extend `NodeEffect<Node>` directly. An effect declared for a specific node type (`NodeEffect<RectNode>`) cannot be added to a node; check the type of the node inside the hooks instead.
+- `Node.effect(...)` takes a `NodeEffect` typed by the node or by one of its parent classes. Declare your effect generic (`MyNodeEffect<T extends Node> extends NodeEffect<T>`) with a generic factory, as the built-in effects do, or extend `NodeEffect<Node>` directly, to add it to any node. An effect declared for a specific node type (`NodeEffect<RectNode>`) receives that type in its hooks and reads its getters; add it only to nodes of that type.
 - A node holds one effect per class: a second instance of your class replaces the first.
 - The same effect instance can be added to several nodes, and `Node.copy()` shares it with the copy. Keep per-node state out of the effect, or create one effect per node.
 - To make values dynamic, store `Supplier`s and read them in the hooks, as the built-in effects do.

@@ -46,13 +46,13 @@ A radius of half the node's smaller side gives a pill (`create(60F)` on a 200 ×
 | `top(boolean top)`, `top(Supplier<Boolean> top)` | Enables the top corners. |
 | `bottom(boolean bottom)`, `bottom(Supplier<Boolean> bottom)` | Enables the bottom corners. |
 
-The setters return the effect. When you call them inline in `node.effect(...)`, use the function form (see [Effects](effects.md#applying-effects-with-effect)):
+The setters return the effect, so you can configure it inline (see [Effects](effects.md#applying-effects-with-effect)):
 
 ```java
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(node -> RoundedNodeEffect.create(16F).bottom(false))
+.effect(RoundedNodeEffect.create(16F).bottom(false))
 .attach(this);
 ```
 

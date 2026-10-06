@@ -130,8 +130,6 @@ RectNode
 
 ![The cursor hovers a white rectangle: its corners round and its border thickens](../images/ess-styling-effect-hover.gif "The radius goes from 8 to 24 and the border from 1 to 3 with the hover progress.")
 
-> TIP: When you configure an effect inline with its setters (`width`, `fill`, `color`...), always use the function form `effect(node -> ...)`: `effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false))` does not compile.
-
 ## Effects on a whole card
 
 By default an effect applies to the node's own drawing only; its children are drawn untouched on top. To round a card together with its content, give the effect the `CHILDREN` scope (`NodeEffectScope` is nested in `NodeEffect`):

@@ -33,8 +33,8 @@ The built-in effects are in `dev.joid.lib.ui.node.effect.impl`:
 
 | Method | Description |
 | --- | --- |
-| `effect(NodeEffect<Node> effect)` | Adds `effect`. |
-| `effect(Function<Node, NodeEffect<Node>> factory)` | Calls `factory` immediately with the node and adds the effect it returns. Use it when the effect needs the node, or when you configure the effect inline. |
+| `effect(NodeEffect<? super T> effect)` | Adds `effect`. The effect is typed by the node (`NodeEffect<RectNode>` on a `RectNode`) or by one of its parent classes (`NodeEffect<Node>`, as the built-in effects). |
+| `effect(Function<T, NodeEffect<? super T>>... factories)` | Calls each factory immediately with the node and adds the effect it returns. Use it when the effect needs the node. |
 
 ```java
 RectNode
@@ -45,7 +45,7 @@ RectNode
 .attach(this);
 ```
 
-> WARNING: The setters of the built-in effects (`radius`, `fill`, `color`, `priority`...) return a generic type, which matches both `effect(...)` overloads: `node.effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false))` does not compile ("reference to effect is ambiguous"). Configure the effect in the function form as above, or in a local variable first. A chain that ends with `scope(...)` or with `create(...)` itself compiles as is.
+The setters of the effects (`radius`, `fill`, `color`, `priority`, `scope`...) return the effect, so a configured effect goes straight into `effect(...)`, without the function form: `.effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false))`.
 
 A node holds at most one effect per class: adding an effect whose class is already present replaces the previous one. Different classes stack freely.
 
@@ -53,24 +53,24 @@ A node holds at most one effect per class: adding an effect whose class is alrea
 
 | Method | Description |
 | --- | --- |
-| `getEffect(Class<T> type)` | The effect of that exact class, or `null`. |
-| `hasEffect(Class<? extends NodeEffect<?>> type)` | Whether the node has an effect of that exact class. |
-| `removeEffect(Class<? extends NodeEffect<?>> type)` | Removes the effect of that class. Returns the node. |
+| `getEffect(Class<T> type)` | The effect of that exact class, as an `Optional`, empty when the node has none. |
+| `hasEffect(Class<?> type)` | Whether the node has an effect of that exact class. |
+| `removeEffect(Class<?> type)` | Removes the effect of that class. Returns the node. |
 | `clearEffects()` | Removes every effect. Returns the node. |
 
-The built-in effects are generic classes, so their class literal (`RoundedNodeEffect.class`) is a raw type. `getEffect` accepts it with an unchecked warning; `hasEffect` and `removeEffect` need a cast:
+Pass the class literal of the effect, built-in effects included, without cast:
 
 ```java
 final RectNode card = RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(RoundedNodeEffect.create(16F)).effect(BorderNodeEffect.create(Color.BLACK, 2F));
 
-final RoundedNodeEffect<Node> rounded = card.getEffect(RoundedNodeEffect.class);
-rounded.radius(8F);
+card.getEffect(RoundedNodeEffect.class).ifPresent(rounded -> rounded.radius(8F));
 
-final Class<? extends NodeEffect<?>> type = (Class<? extends NodeEffect<?>>) (Class<?>) BorderNodeEffect.class;
-if (card.hasEffect(type)) {
-    card.removeEffect(type);
+if (card.hasEffect(BorderNodeEffect.class)) {
+    card.removeEffect(BorderNodeEffect.class);
 }
 ```
+
+To keep the effect, type the `Optional`: `final Optional<RoundedNodeEffect<Node>> rounded = card.getEffect(RoundedNodeEffect.class);`.
 
 `Node.copy()` gives the copy the same effect instances as the original.
 
@@ -145,7 +145,7 @@ final RectNode childrenScoped = RectNode.create(0, 0, 200, 120).color(Color.RED)
 
 With `SELF`, a child that overflows the circle stays visible; with `CHILDREN`, the circle cuts the child too. Use `CHILDREN` to round a card together with its content.
 
-`scope(...)` returns `NodeEffect<T>`, not the effect's own type: call it last in the chain. Render-state effects ignore the scope, they always wrap the whole render.
+`scope(...)` and `priority(...)` return the effect typed like the variable or the parameter that receives it. Inside a chain they return a `NodeEffect`, so call the setters of the effect before them: `RoundedNodeEffect.create(16F).top(false).scope(NodeEffectScope.CHILDREN)`. Render-state effects ignore the scope, they always wrap the whole render.
 
 ## Applying effects conditionally
 
@@ -173,11 +173,11 @@ Effects only change the pixels. Layout, hovering and clicks keep using the node'
 
 | Method | Description |
 | --- | --- |
-| `effect(NodeEffect<Node> effect)` | Adds or replaces the effect of the same class. |
-| `effect(Function<Node, NodeEffect<Node>> factory)` | Same, with an effect built from the node. |
-| `getEffect(Class<T> type)` | The effect of that class, or `null`. |
-| `hasEffect(Class<? extends NodeEffect<?>> type)` | Whether an effect of that class is present. |
-| `removeEffect(Class<? extends NodeEffect<?>> type)` | Removes the effect of that class. |
+| `effect(NodeEffect<? super T> effect)` | Adds or replaces the effect of the same class. |
+| `effect(Function<T, NodeEffect<? super T>>... factories)` | Same, with effects built from the node. |
+| `getEffect(Class<T> type)` | The effect of that class, as an `Optional`. |
+| `hasEffect(Class<?> type)` | Whether an effect of that class is present. |
+| `removeEffect(Class<?> type)` | Removes the effect of that class. |
 | `clearEffects()` | Removes every effect. |
 | `shouldApplyEffect(NodeEffect<Node> effect)` | Overridable filter, defaults to `effect.shouldApply(this)`. |
 
@@ -187,7 +187,7 @@ Effects only change the pixels. Layout, hovering and clicks keep using the node'
 | --- | --- |
 | `priority(int priority)` | Sets the priority (default `0`). Lower runs first. Returns the effect. |
 | `getPriority()` | The priority. |
-| `scope(NodeEffectScope scope)` | Sets the scope (default `SELF`). Returns the effect as `NodeEffect<T>`. |
+| `scope(NodeEffectScope scope)` | Sets the scope (default `SELF`). Returns the effect. |
 | `getScope()` | The scope. |
 | `isShaderEffect()` | `true` for shader effects. |
 | `shouldApply(T node)` | Whether the effect applies this frame. Default `true`. |

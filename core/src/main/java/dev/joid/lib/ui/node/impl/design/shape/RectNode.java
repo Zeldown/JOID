@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import lombok.Getter;
 import lombok.NonNull;
@@ -134,7 +133,7 @@ public class RectNode extends Node {
 	}
 
 	private void applyBorderEffect() {
-		super.removeEffect((Class<? extends NodeEffect<?>>) (Class<?>) BorderNodeEffect.class);
+		super.removeEffect(BorderNodeEffect.class);
 		if (this.borderStroke > 0D) {
 			final BorderNodeEffect<Node> effect = BorderNodeEffect.create(Color.TRANSPARENT, (float) this.borderStroke);
 			effect.color(this::computeBorderColor);

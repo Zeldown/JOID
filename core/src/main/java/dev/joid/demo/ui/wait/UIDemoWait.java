@@ -28,7 +28,7 @@ public class UIDemoWait extends UIDemo {
 				TextNode.create(10, 230).text(Text.create("petite description", TextInfo.create(DemoFont.MONTSERRAT, 25, Color.WHITE))).attach(container);
 			}).wait(cardInformations).onMount(container -> {
 				for (int i = 0; i < cardInformations.getOrDefault().size(); i++) {
-					container.getChild(i, TextNode.class).getText().text(cardInformations.getOrDefault().get(i));
+					container.getChild(i, TextNode.class).get().getText().text(cardInformations.getOrDefault().get(i));
 				}
 			}).skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.LOADING));
 		}).attach(this);
