@@ -17,7 +17,7 @@ import lombok.NonNull;
 
 public class UIDemoReorderable extends UIDemo {
 
-	private static final int   ITEM_COUNT = 12;
+	private static final int ITEM_COUNT = 12;
 
 	@Override
 	public void init() {

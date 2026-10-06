@@ -17,11 +17,11 @@ import lombok.NonNull;
 @Getter
 public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
-	private final Asset            asset;
+	private final Asset                    asset;
 	private final IResourceAnimationReader reader;
 
 	private ResourceAnimation animation;
-	private ITexture  texture;
+	private ITexture          texture;
 
 	private Integer plays;
 	private boolean autoplay = true;

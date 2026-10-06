@@ -10,7 +10,7 @@ public final class Edge {
 
 	private final double[] x;
 	private final double[] y;
-	private final double    total;
+	private final double   total;
 	private final double[] lengths;
 
 	@Setter

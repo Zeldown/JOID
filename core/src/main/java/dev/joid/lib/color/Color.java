@@ -283,7 +283,7 @@ public final class Color {
 	}
 
 	public int getRGB() {
-		return ((int)(this.a * 255) & 0xFF) << 24 | ((int)(this.r * 255) & 0xFF) << 16 | ((int)(this.g * 255) & 0xFF) << 8  | ((int)(this.b * 255) & 0xFF) << 0;
+		return ((int)(this.a * 255) & 0xFF) << 24 | ((int)(this.r * 255) & 0xFF) << 16 | ((int)(this.g * 255) & 0xFF) << 8 | ((int)(this.b * 255) & 0xFF) << 0;
 	}
 
 	public int getRed() {

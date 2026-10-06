@@ -793,7 +793,7 @@ public abstract class UI implements IUI, IndexedElement {
 		return Key.LEFT_CONTROL.isDown() || Key.RIGHT_CONTROL.isDown();
 	}
 
-	public static boolean isShiftKeyDown()  {
+	public static boolean isShiftKeyDown() {
 		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
 	}
 

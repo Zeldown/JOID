@@ -204,7 +204,7 @@ public final class DevNode extends Node {
 
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(inspectedNode.getUpdateCount() + " update"  + (inspectedNode.getUpdateCount() > 1 ? "s" : ""), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
+				.text(Text.create(inspectedNode.getUpdateCount() + " update" + (inspectedNode.getUpdateCount() > 1 ? "s" : ""), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 
