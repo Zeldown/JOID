@@ -24,7 +24,7 @@ void drawRoundedRect(double x, double y, double width, double height, Color colo
 void drawRoundedRect(double x, double y, double width, double height, Color color, float radius, boolean roundedLeft, boolean roundedTop, boolean roundedRight, boolean roundedBottom)
 ```
 
-Rectangle with rounded corners, rendered through `RoundedShader` — the same shader backing `RoundedNodeEffect`. The four-corner overload disables rounding on specific sides for tabs or notched layouts. The rectangle snaps to the window pixels like `drawRect`, and the corners are antialiased inside it.
+Rectangle with rounded corners, rendered through `RoundedShader` — the same shader backing `RoundedNodeEffect`. The four-corner overload disables rounding on specific sides for tabs or notched layouts. The rectangle snaps to the window pixels like `drawRect`, and the corners are antialiased inside it. A gradient color keeps its rounded corners, like with `drawCircle`.
 
 ```java
 DrawUtils.SHAPE.drawRoundedRect(40, 40, 120, 60, Color.decode("#1f2937"), 8F);
@@ -118,7 +118,7 @@ DrawUtils.SHAPE.drawLine(Color.WHITE, 2F,
 void drawDashedLine(Color color, int pattern, float stroke, Vector2d... points)
 ```
 
-Each segment is split into dashes of `pattern` pixels separated by gaps of the same length, drawn as smoothed lines of width `stroke`. Higher values produce longer dashes.
+Each segment is split into dashes of `pattern` UI units separated by gaps of the same length, drawn as smoothed lines of width `stroke`. Higher values produce longer dashes.
 
 ```java
 DrawUtils.SHAPE.drawDashedLine(Color.decode("#4ade80"), 2, 1F,
@@ -172,7 +172,7 @@ DrawUtils.SHAPE.drawPolygon(Color.decode("#a78bfa"),
 void drawShape(DrawMode mode, Color color, Vector2d... points)
 ```
 
-Lower-level: any `DrawMode` (`TRIANGLES`, `QUADS`, `POLYGON`, `LINE_LOOP`, …) with arbitrary vertices. Every other shape method in this class eventually calls `drawShape`.
+Lower-level: any `DrawMode` (`TRIANGLES`, `QUADS`, `POLYGON`, `LINE_LOOP`, …) with arbitrary vertices. Every other shape method in this class eventually calls `drawShape`, except `drawRawRect`, which draws through the `Tessellator` directly.
 
 ```java
 DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.RED,

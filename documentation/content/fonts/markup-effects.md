@@ -141,12 +141,12 @@ The shadow reuses the glyphs `apply` already changed, so a random or animated ef
 |---|---|
 | `getIndex()` | Position of the glyph in the source string, markup included |
 | `getCodepoint()` | The character drawn |
-| `getX()`, `getBaseline()` | Pen position and baseline, in pixels |
+| `getX()`, `getBaseline()` | Pen position and baseline, in UI units |
 | `getSize()` | Font size |
 | `getAdvance()` | Distance to the next glyph, kerning and letter spacing included — consecutive glyphs touch |
 | `getOffsetX()`, `getOffsetY()` | Offset applied when the glyph is drawn |
-| `getAscender()`, `getDescender()` | Face metrics, in pixels |
-| `getUnderlineY()`, `getUnderlineThickness()` | Underline position and thickness from the font, in pixels |
+| `getAscender()`, `getDescender()` | Face metrics, in UI units |
+| `getUnderlineY()`, `getUnderlineThickness()` | Underline position and thickness from the font, in UI units |
 | `getColor()`, `getStyle()` | Color drawn and the style of the glyph |
 | `isShadow()` | `true` while the shadow is drawn |
 | `hasGlyph(int)`, `getAdvance(int)` | Whether the face has another character, and its advance |

@@ -49,24 +49,28 @@ public final class ShaderPipeline {
 
 		ShaderPipeline.pipelineDepth++;
 		try {
-			passes.sort(Comparator.comparingInt(ShaderPass::priority));
+			final List<ShaderPass> sorted = new ArrayList<>(passes);
+			sorted.sort(Comparator.comparingInt(ShaderPass::priority));
 
 			final IRenderBridge render = BridgeHandler.RENDER.get();
 			final PixelGrid grid = render.getPixelGrid();
-			if (passes.size() == 1 && ShaderPipeline.pipelineDepth == 1 && passes.get(0).expansion() == 0F && passes.get(0).supportsDirectBind()) {
+			if (sorted.size() == 1 && ShaderPipeline.pipelineDepth == 1 && sorted.get(0).expansion() == 0F && sorted.get(0).supportsDirectBind()) {
 				final IShader previousShader = render.getShader();
-				passes.get(0).bindDirect(ShaderPassContext.create(x, y, width, height, 0D, grid));
-				baseDraw.run();
-				passes.get(0).unbind();
-				render.shader(previousShader);
+				sorted.get(0).bindDirect(ShaderPassContext.create(x, y, width, height, 0D, grid));
+				try {
+					baseDraw.run();
+				} finally {
+					sorted.get(0).unbind();
+					render.shader(previousShader);
+				}
 				return;
 			}
 
 			float expansion = 0F;
-			for (final ShaderPass pass : passes) {
+			for (final ShaderPass pass : sorted) {
 				expansion = Math.max(expansion, pass.expansion());
 			}
-			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, grid), passes, baseDraw);
+			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, grid), sorted, baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}

@@ -51,13 +51,21 @@ public final class DrawShape {
 		final double right = grid.snapRight(x, x + width);
 		final double bottom = grid.snapBottom(y, y + height);
 		RoundedShader.use(radius, (float) (left + (roundedLeft ? radius : 0)), (float) (top + (roundedTop ? radius : 0)), (float) (right - (roundedRight ? radius : 0)), (float) (bottom - (roundedBottom ? radius : 0)), () -> {
-			this.drawRect(left, top, right - left, bottom - top, color);
+			if (color.isGradient()) {
+				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) left, (float) top, (float) right, (float) bottom));
+			}
+
+			this.drawRect(left, top, right - left, bottom - top, color.isGradient() ? Color.WHITE : color);
 		});
 	}
 
 	public void drawCircle(final double x, final double y, final @NonNull Color color, final double radius) {
 		CircleShader.use((float) radius, (float) x, (float) y, () -> {
-			this.drawPolygon(color, new Vector2d(x - radius, y + radius), new Vector2d(x + radius, y + radius), new Vector2d(x + radius, y - radius), new Vector2d(x - radius, y - radius));
+			if (color.isGradient()) {
+				CircleShader.inst().gradient(color.gradient, new Vector4f((float) (x - radius), (float) (y - radius), (float) (x + radius), (float) (y + radius)));
+			}
+
+			this.drawPolygon(color.isGradient() ? Color.WHITE : color, new Vector2d(x - radius, y + radius), new Vector2d(x + radius, y + radius), new Vector2d(x + radius, y - radius), new Vector2d(x - radius, y - radius));
 		});
 	}
 
@@ -145,9 +153,9 @@ public final class DrawShape {
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
 		Vector2d last = start;
-		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
-		for (float t = 0F; t < 1F; t += 1F / distance) {
-			final Vector2d point = Bezier.quadratic(t, start, end, control);
+		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(control.x - start.x, control.y - start.y) + Math.hypot(end.x - control.x, end.y - control.y)));
+		for (int step = 1; step <= steps; step++) {
+			final Vector2d point = Bezier.quadratic((float) step / steps, start, end, control);
 			DrawUtils.SHAPE.drawLine(color, last, point);
 			last = point;
 		}
@@ -162,9 +170,9 @@ public final class DrawShape {
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
 		Vector2d last = start;
-		final double distance = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
-		for (float t = 0F; t < 1F; t += 1F / distance) {
-			final Vector2d point = Bezier.cubic(t, start, startControl, end, endControl);
+		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(startControl.x - start.x, startControl.y - start.y) + Math.hypot(endControl.x - startControl.x, endControl.y - startControl.y) + Math.hypot(end.x - endControl.x, end.y - endControl.y)));
+		for (int step = 1; step <= steps; step++) {
+			final Vector2d point = Bezier.cubic((float) step / steps, start, startControl, end, endControl);
 			DrawUtils.SHAPE.drawLine(color, last, point);
 			last = point;
 		}
@@ -178,10 +186,10 @@ public final class DrawShape {
 	}
 
 	public void drawShape(final @NonNull DrawMode mode, final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
-		double minX = Double.MAX_VALUE;
-		double minY = Double.MAX_VALUE;
-		double maxX = Double.MIN_VALUE;
-		double maxY = Double.MIN_VALUE;
+		double minX = Double.POSITIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
 
 		for (final Vector2d point : points) {
 			minX = Math.min(minX, point.x);

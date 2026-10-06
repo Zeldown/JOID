@@ -68,7 +68,7 @@ DrawUtils.RESOURCE.drawCenteredResource(0, 0, 400, 400, thumbnail);
 
 ## Texture-coord override
 
-If the `Resource`'s `ResourceProperties` has custom `textureCoords` (set via `ResourceBuilder.textureCoords(u, v, w, h)`), every `drawResource` call honours it — only the sub-rectangle is sampled. Useful for sprite sheets.
+If the `Resource`'s `ResourceProperties` has custom `textureCoords` (set via `ResourceBuilder.textureCoords(u, v, width, height)`, in pixels of the image), every `drawResource` call honours it — only the sub-rectangle is sampled. `drawResource(x, y, resource)` draws it at its own size, and an explicit size stretches it. Useful for sprite sheets.
 
 ```java
 Resource sprite = ResourceBuilder.create()
@@ -78,7 +78,7 @@ Resource sprite = ResourceBuilder.create()
 
 ## Render state
 
-Every draw call pushes the matrix, enables `BlendState.NORMAL` (`SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`), binds the resource texture with `TextureWrap.CLAMP_TO_BORDER`, draws a textured quad through the `Tessellator`, then disables blending and pops the matrix. You don't need to preconfigure blending.
+Every draw call pushes the matrix, enables `BlendState.NORMAL` (`SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`), binds the resource texture with `TextureWrap.CLAMP_TO_EDGE` — `CLAMP_TO_BORDER` when the transform is rotated or skewed — draws a textured quad through the `Tessellator`, then disables blending and pops the matrix. You don't need to preconfigure blending.
 
 When the transform is neither rotated nor skewed, the corners of the quad land on whole window pixels, like every rectangle (see [Pixel alignment](draw-utils.md#pixel-alignment)): an image drawn at `100.5` or under a fractional scale stays sharp instead of being resampled between two pixels, and keeps at least one pixel. The decoder gives every transparent pixel the color of its nearest visible pixel, so linear filtering never darkens the edges of a transparent image.
 

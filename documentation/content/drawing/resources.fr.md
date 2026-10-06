@@ -68,7 +68,7 @@ DrawUtils.RESOURCE.drawCenteredResource(0, 0, 400, 400, thumbnail);
 
 ## Override de texture-coord
 
-Si les `ResourceProperties` de la `Resource` ont des `textureCoords` custom (définis via `ResourceBuilder.textureCoords(u, v, w, h)`), chaque appel `drawResource` les respecte — seul le sous-rectangle est échantillonné. Utile pour les sprite sheets.
+Si les `ResourceProperties` de la `Resource` ont des `textureCoords` custom (définis via `ResourceBuilder.textureCoords(u, v, width, height)`, en pixels de l'image), chaque appel `drawResource` les respecte — seul le sous-rectangle est échantillonné. `drawResource(x, y, resource)` le dessine à sa taille, et une taille explicite l'étire. Utile pour les sprite sheets.
 
 ```java
 Resource sprite = ResourceBuilder.create()
@@ -78,7 +78,7 @@ Resource sprite = ResourceBuilder.create()
 
 ## État de rendu
 
-Chaque appel push la matrice, active `BlendState.NORMAL` (`SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`), bind la texture de la ressource avec `TextureWrap.CLAMP_TO_BORDER`, dessine un quad texturé via le `Tessellator`, puis désactive le blending et pop la matrice. Vous n'avez pas à préconfigurer le blending.
+Chaque appel push la matrice, active `BlendState.NORMAL` (`SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`), bind la texture de la ressource avec `TextureWrap.CLAMP_TO_EDGE` — `CLAMP_TO_BORDER` quand la transformation est tournée ou cisaillée — dessine un quad texturé via le `Tessellator`, puis désactive le blending et pop la matrice. Vous n'avez pas à préconfigurer le blending.
 
 Quand la transformation n'est ni tournée ni cisaillée, les coins du quad tombent sur des pixels entiers de la fenêtre, comme pour tout rectangle (voir [Alignement sur les pixels](draw-utils.md#alignement-sur-les-pixels)) : une image dessinée en `100.5` ou sous une échelle fractionnaire reste nette au lieu d'être rééchantillonnée entre deux pixels, et garde au moins un pixel. Le décodeur donne à chaque pixel transparent la couleur du pixel visible le plus proche, pour que le filtrage linéaire n'assombrisse jamais les bords d'une image transparente.
 

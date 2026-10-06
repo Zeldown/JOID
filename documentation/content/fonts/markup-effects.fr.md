@@ -141,12 +141,12 @@ L'ombre réutilise les glyphes déjà modifiés par `apply` : un effet aléatoir
 |---|---|
 | `getIndex()` | Position du glyphe dans la chaîne source, balisage compris |
 | `getCodepoint()` | Le caractère dessiné |
-| `getX()`, `getBaseline()` | Position de la plume et ligne de base, en pixels |
+| `getX()`, `getBaseline()` | Position de la plume et ligne de base, en unités d'UI |
 | `getSize()` | Taille de police |
 | `getAdvance()` | Distance jusqu'au glyphe suivant, crénage et espacement compris — deux glyphes consécutifs se touchent |
 | `getOffsetX()`, `getOffsetY()` | Décalage appliqué au dessin du glyphe |
-| `getAscender()`, `getDescender()` | Métriques de la face, en pixels |
-| `getUnderlineY()`, `getUnderlineThickness()` | Position et épaisseur du soulignement fournies par la police, en pixels |
+| `getAscender()`, `getDescender()` | Métriques de la face, en unités d'UI |
+| `getUnderlineY()`, `getUnderlineThickness()` | Position et épaisseur du soulignement fournies par la police, en unités d'UI |
 | `getColor()`, `getStyle()` | Couleur dessinée et style du glyphe |
 | `isShadow()` | `true` pendant le dessin de l'ombre |
 | `hasGlyph(int)`, `getAdvance(int)` | Si la face possède un autre caractère, et son avance |

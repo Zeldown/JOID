@@ -52,8 +52,8 @@ public class ResourceProperties {
 		return this;
 	}
 
-	public final @NonNull ResourceProperties textureCoords(final double u, final double v, final double u2, final double v2) {
-		this.textureCoords = new double[] {u, v, u2, v2};
+	public final @NonNull ResourceProperties textureCoords(final double u, final double v, final double width, final double height) {
+		this.textureCoords = new double[] {u, v, width, height};
 		return this;
 	}
 

@@ -19,7 +19,7 @@ public abstract class ShaderImpl {
 		try {
 			this.shader = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, vertexShader), ShaderSource.read(ShaderStage.FRAGMENT, fragmentShader), BlendState.NORMAL);
 		} catch (final Exception e) {
-			System.err.println("Erreur lors du chargement du shader " + vertexShader + "/" + fragmentShader + ": " + e.getMessage());
+			System.err.println("[JOID] Unable to load the shader " + this.getClass().getSimpleName() + ": " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

@@ -1,9 +1,16 @@
 package dev.joid.lib.shader.impl;
 
+import javax.vecmath.Vector4f;
+
 import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
 import dev.joid.lib.bridge.render.shader.uniform.Float4Uniform;
 import dev.joid.lib.bridge.render.shader.uniform.FloatUniform;
 import dev.joid.lib.bridge.render.shader.uniform.IntUniform;
+import dev.joid.lib.color.ColorGradient;
 import lombok.NonNull;
 
 public class RoundedShader extends ShaderImpl {
@@ -23,11 +30,14 @@ public class RoundedShader extends ShaderImpl {
 			return;
 		}
 
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final IShader previousShader = render.getShader();
 		RoundedShader.INSTANCE.bind(radius, x1, y1, x2, y2);
 		try {
 			runnable.run();
 		} finally {
 			RoundedShader.INSTANCE.unbind();
+			render.shader(previousShader);
 		}
 	}
 
@@ -45,6 +55,29 @@ public class RoundedShader extends ShaderImpl {
 
 		final IntUniform typeUniform = RoundedShader.INSTANCE.shader.getIntUniform("u_Type");
 		typeUniform.setValue(type.ordinal());
+
+		final IntUniform gradientUniform = RoundedShader.INSTANCE.shader.getIntUniform("u_Gradient");
+		gradientUniform.setValue(0);
+	}
+
+	public void gradient(final @NonNull ColorGradient gradient, final @NonNull Vector4f canvas) {
+		final IntUniform gradientUniform = RoundedShader.INSTANCE.shader.getIntUniform("u_Gradient");
+		gradientUniform.setValue(1);
+
+		final Float2Uniform startPosUniform = RoundedShader.INSTANCE.shader.getFloat2Uniform("u_StartPos");
+		startPosUniform.setValue(gradient.getDirection().x, gradient.getDirection().y);
+
+		final Float2Uniform endPosUniform = RoundedShader.INSTANCE.shader.getFloat2Uniform("u_EndPos");
+		endPosUniform.setValue(gradient.getDirection().z, gradient.getDirection().w);
+
+		final Float4Uniform startColorUniform = RoundedShader.INSTANCE.shader.getFloat4Uniform("u_StartColor");
+		startColorUniform.setValue(gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a);
+
+		final Float4Uniform endColorUniform = RoundedShader.INSTANCE.shader.getFloat4Uniform("u_EndColor");
+		endColorUniform.setValue(gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a);
+
+		final Float4Uniform canvasUniform = RoundedShader.INSTANCE.shader.getFloat4Uniform("u_Canvas");
+		canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
 	}
 
 	public enum RoundedShaderType {

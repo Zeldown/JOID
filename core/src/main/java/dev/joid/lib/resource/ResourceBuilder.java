@@ -74,8 +74,8 @@ public final class ResourceBuilder {
 		return this;
 	}
 
-	public final @NonNull ResourceBuilder textureCoords(final double u, final double v, final double u2, final double v2) {
-		this.properties.textureCoords(u, v, u2, v2);
+	public final @NonNull ResourceBuilder textureCoords(final double u, final double v, final double width, final double height) {
+		this.properties.textureCoords(u, v, width, height);
 		return this;
 	}
 

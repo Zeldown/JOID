@@ -36,32 +36,19 @@ public final class DrawResource {
 	}
 
 	public void drawCenteredResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		final double imageWidth = resource.getWidth();
-		final double imageHeight = resource.getHeight();
-
-		final double ratio = imageWidth / imageHeight;
-
-		double scaledX = 0;
-		double scaledY = 0;
-		double scaledWidth = 0;
-		double scaledHeight = 0;
-
-		if (imageWidth <= imageHeight) {
-			scaledWidth = width;
-			scaledHeight = scaledWidth / ratio;
-			scaledX = x + (width - scaledWidth) / 2;
-			scaledY = y + (height - scaledHeight) / 2;
-		} else {
-			scaledHeight = height;
-			scaledWidth = scaledHeight * ratio;
-			scaledX = x + (width - scaledWidth) / 2;
-			scaledY = y + (height - scaledHeight) / 2;
-		}
-
-		this.drawResource(scaledX, scaledY, scaledWidth, scaledHeight, resource);
+		final double scale = Math.min(width / resource.getWidth(), height / resource.getHeight());
+		final double scaledWidth = resource.getWidth() * scale;
+		final double scaledHeight = resource.getHeight() * scale;
+		this.drawResource(x + (width - scaledWidth) / 2D, y + (height - scaledHeight) / 2D, scaledWidth, scaledHeight, resource);
 	}
 
 	public void drawResource(final double x, final double y, final @NonNull Resource resource) {
+		final double[] textureCoords = resource.getProperties().getTextureCoords();
+		if (textureCoords != null && textureCoords.length == 4) {
+			this.drawResource(x, y, textureCoords[2], textureCoords[3], resource);
+			return;
+		}
+
 		this.drawResource(x, y, resource.getWidth(), resource.getHeight(), resource);
 	}
 
@@ -98,18 +85,15 @@ public final class DrawResource {
 					tess.addVertexWithUV(right, top, 0D, 1D, 0D);
 					tess.addVertexWithUV(left, top, 0D, 0D, 0D);
 				} else {
-					final double u = textureCoords[0];
-					final double v = textureCoords[1];
-					final double drawWidth = textureCoords[2];
-					final double drawHeight = textureCoords[3];
+					final double u = textureCoords[0] / resource.getWidth();
+					final double v = textureCoords[1] / resource.getHeight();
+					final double u2 = (textureCoords[0] + textureCoords[2]) / resource.getWidth();
+					final double v2 = (textureCoords[1] + textureCoords[3]) / resource.getHeight();
 
-					final double widthFactor = 1F / width;
-					final double heightFactor = 1F / height;
-
-					tess.addVertexWithUV(left, top + drawHeight, 0D, u * widthFactor, (v + drawHeight) * heightFactor);
-					tess.addVertexWithUV(left + drawWidth, top + drawHeight, 0D, (u + drawWidth) * widthFactor, (v + drawHeight) * heightFactor);
-					tess.addVertexWithUV(left + drawWidth, top, 0D, (u + drawWidth) * widthFactor, v * heightFactor);
-					tess.addVertexWithUV(left, top, 0D, u * widthFactor, v * heightFactor);
+					tess.addVertexWithUV(left, bottom, 0D, u, v2);
+					tess.addVertexWithUV(right, bottom, 0D, u2, v2);
+					tess.addVertexWithUV(right, top, 0D, u2, v);
+					tess.addVertexWithUV(left, top, 0D, u, v);
 				}
 				tess.draw();
 

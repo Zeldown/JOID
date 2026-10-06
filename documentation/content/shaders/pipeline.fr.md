@@ -22,7 +22,7 @@ ShaderPipeline.render(x, y, width, height, baseDraw, pass1, pass2, ...);
 ## Fonctionnement
 
 1. **Tri des passes par `priority()`** — plus bas en premier.
-2. **Voie rapide** — s'il y a exactement 1 pass, pas d'expansion, et `supportsDirectBind()` est `true`, bind le shader directement et draw. Pas de FBO.
+2. **Voie rapide** — s'il y a exactement 1 pass, pas d'expansion, que `supportsDirectBind()` est `true` et que le pipeline n'est pas imbriqué dans un autre, bind le shader directement et draw. Pas de FBO.
 3. **Voie multi-passe** :
    - Rend `baseDraw` dans FBO A, dimensionné pour le nœud + expansion max au pixel scale de la transformation courante — un texel par pixel écran, zoom et échelle d'interface compris.
    - Pour chaque passe sauf la dernière : bind le shader de la passe → blit FBO A sur FBO B avec ce shader → swap A et B.

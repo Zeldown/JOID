@@ -131,7 +131,7 @@ Pour des draws custom :
 ```java
 color.bind();                                             // glColor4f(r, g, b, a)
 DrawUtils.SHAPE.drawRawRect(x, y, w, h);                 // applique la couleur courante
-Color.reset();                                            // restaure la couleur précédente
+Color.reset();                                            // revient au blanc opaque
 
 // Ou wrappé :
 color.bind(() -> {

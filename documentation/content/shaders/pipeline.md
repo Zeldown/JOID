@@ -22,7 +22,7 @@ ShaderPipeline.render(x, y, width, height, baseDraw, pass1, pass2, ...);
 ## How it works
 
 1. **Sort passes by `priority()`** — low first.
-2. **Fast path** — if exactly 1 pass, no expansion, and `supportsDirectBind()` is true, bind the shader directly and draw. No FBO.
+2. **Fast path** — if exactly 1 pass, no expansion, `supportsDirectBind()` is true and the pipeline is not nested in another one, bind the shader directly and draw. No FBO.
 3. **Multi-pass path**:
    - Render `baseDraw` into FBO A, sized for the node + max expansion at the pixel scale of the current transform — one texel per screen pixel, zoom and interface scale included.
    - For each pass except the last: bind pass shader → blit FBO A onto FBO B using that shader → swap A and B.
