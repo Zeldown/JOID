@@ -1,6 +1,8 @@
 package dev.joid.lib.resource.dto;
 
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,7 +16,8 @@ import lombok.NonNull;
 @Getter
 public final class ResourceData {
 
-	private static final ExecutorService ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
+	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
+	private static final Queue<ResourceData> COLLECTED      = new ConcurrentLinkedQueue<>();
 
 	private final List<Thread> tasks = new CopyOnWriteArrayList<>();
 
@@ -173,6 +176,12 @@ public final class ResourceData {
 		}
 	}
 
+	public static void releaseCollected() {
+		for (ResourceData data = ResourceData.COLLECTED.poll(); data != null; data = ResourceData.COLLECTED.poll()) {
+			data.clear();
+		}
+	}
+
 	public final <T extends IResourceDecoder> T getDecoder(final @NonNull Class<T> clazz) {
 		if (this.decoder == null || !clazz.isAssignableFrom(this.decoder.getClass())) {
 			return null;
@@ -182,7 +191,7 @@ public final class ResourceData {
 
 	@Override
 	protected void finalize() throws Throwable {
-		this.clear();
+		ResourceData.COLLECTED.add(this);
 		super.finalize();
 	}
 

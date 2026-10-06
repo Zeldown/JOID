@@ -222,6 +222,8 @@ The options of a resource live in a `ResourceProperties` (`dev.joid.lib.resource
 banner.clear();
 ```
 
+Call `clear()` on the render thread. Without it, data that no `Resource` and no cache holds any more is released automatically: once the garbage collector finds it, the next `UIBridge.draw()` deletes its textures and releases its decoder on the render thread. `ResourceData.releaseCollected()` does the same for a host that draws without a UI bridge.
+
 Without `clear()`, the data and its textures stay alive while a `Resource` references them.
 
 ## Binding a resource in custom drawing

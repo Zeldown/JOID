@@ -202,9 +202,11 @@ public class ResourceDataTest {
 	}
 
 	@Test
-	public void clearsItselfWhenCollected() throws Throwable {
+	public void releasesItsTexturesOnTheRenderThreadOnceCollected() throws Throwable {
 		final Texture texture = new Texture(1, 1);
 		new ResourceData("image", null).texture(texture).finalize();
+		Assert.assertFalse(texture.isDeleted());
+		ResourceData.releaseCollected();
 		Assert.assertTrue(texture.isDeleted());
 	}
 
