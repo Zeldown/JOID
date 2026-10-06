@@ -38,6 +38,14 @@ public final class DrawResource {
 	}
 
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
+		this.drawRegion(x, y, width, height, resource.getProperties().getTextureCoords(), resource);
+	}
+
+	public void drawResource(final double x, final double y, final double width, final double height, final double u, final double v, final double regionWidth, final double regionHeight, final @NonNull Resource resource) {
+		this.drawRegion(x, y, width, height, new double[] {u, v, regionWidth, regionHeight}, resource);
+	}
+
+	private void drawRegion(final double x, final double y, final double width, final double height, final double[] region, final Resource resource) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final PixelGrid grid = render.getPixelGrid();
 		final double left = grid.snapX(x);
@@ -46,8 +54,9 @@ public final class DrawResource {
 		final double bottom = grid.snapBottom(y, y + height);
 		final ResourceProperties properties = resource.getProperties();
 		if (properties.getTextureCoords() == null) {
-			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX());
-			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY());
+			final boolean cropped = region != null && region.length == 4;
+			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX() * (cropped ? resource.getWidth() / region[2] : 1D));
+			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY() * (cropped ? resource.getHeight() / region[3] : 1D));
 			resource.request(pixelWidth, pixelHeight);
 
 			final ITexture texture = resource.getTexture();
@@ -60,20 +69,18 @@ public final class DrawResource {
 		try {
 			render.blend(BlendState.NORMAL);
 			resource.bind(grid.isAligned() ? TextureWrap.CLAMP_TO_EDGE : TextureWrap.CLAMP_TO_BORDER, () -> {
-				final double[] textureCoords = resource.getProperties().getTextureCoords();
-
 				final Tessellator tess = Tessellator.inst();
 				tess.start(DrawMode.QUADS);
-				if (textureCoords == null || textureCoords.length != 4) {
+				if (region == null || region.length != 4) {
 					tess.addVertexWithUV(left, bottom, 0D, 0D, 1D);
 					tess.addVertexWithUV(right, bottom, 0D, 1D, 1D);
 					tess.addVertexWithUV(right, top, 0D, 1D, 0D);
 					tess.addVertexWithUV(left, top, 0D, 0D, 0D);
 				} else {
-					final double u = textureCoords[0] / resource.getWidth();
-					final double v = textureCoords[1] / resource.getHeight();
-					final double u2 = (textureCoords[0] + textureCoords[2]) / resource.getWidth();
-					final double v2 = (textureCoords[1] + textureCoords[3]) / resource.getHeight();
+					final double u = region[0] / resource.getWidth();
+					final double v = region[1] / resource.getHeight();
+					final double u2 = (region[0] + region[2]) / resource.getWidth();
+					final double v2 = (region[1] + region[3]) / resource.getHeight();
 
 					tess.addVertexWithUV(left, bottom, 0D, u, v2);
 					tess.addVertexWithUV(right, bottom, 0D, u2, v2);

@@ -28,6 +28,18 @@ Stretches the resource to fill the given rectangle. Aspect ratio is **not** pres
 DrawUtils.RESOURCE.drawResource(0, 0, 1920, 1080, background);
 ```
 
+### `drawResource` (region)
+
+```java
+void drawResource(double x, double y, double width, double height, double u, double v, double regionWidth, double regionHeight, Resource resource)
+```
+
+Draws only the region `(u, v, regionWidth, regionHeight)` of the image, in pixels of the image, stretched to the rectangle. `StretchType.COVER` uses it to crop the centered part of a resource to its node.
+
+```java
+DrawUtils.RESOURCE.drawResource(0, 0, 200, 200, 100, 0, 200, 200, banner);
+```
+
 ## Texture-coord override
 
 If the `Resource`'s `ResourceProperties` has custom `textureCoords` (set via `ResourceBuilder.textureCoords(u, v, width, height)`, in pixels of the image), every `drawResource` call honours it — only the sub-rectangle is sampled. `drawResource(x, y, resource)` draws it at its own size, and an explicit size stretches it. Useful for sprite sheets.

@@ -89,10 +89,10 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
-	public void coversItsBoundsWithItsResource() {
+	public void cropsItsResourceToItsBounds() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 40D, 80D).resource(ResourcePlayerNodeTest.blink()).stretch(StretchType.COVER);
 		this.bridges.open(new NodeUI(player));
-		this.assertBounds(this.white(), 80D, 100D, 160D, 180D);
+		this.assertBounds(this.white(), 100D, 100D, 140D, 180D);
 	}
 
 	@Test

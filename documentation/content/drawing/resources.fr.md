@@ -28,6 +28,18 @@ void drawResource(double x, double y, double width, double height, Resource reso
 DrawUtils.RESOURCE.drawResource(0, 0, 1920, 1080, background);
 ```
 
+### `drawResource` (région)
+
+```java
+void drawResource(double x, double y, double width, double height, double u, double v, double regionWidth, double regionHeight, Resource resource)
+```
+
+Dessine seulement la région `(u, v, regionWidth, regionHeight)` de l'image, en pixels de l'image, étirée au rectangle. `StretchType.COVER` s'en sert pour rogner la partie centrée d'une ressource à son nœud.
+
+```java
+DrawUtils.RESOURCE.drawResource(0, 0, 200, 200, 100, 0, 200, 200, banner);
+```
+
 ## Override de texture-coord
 
 Si les `ResourceProperties` de la `Resource` ont des `textureCoords` custom (définis via `ResourceBuilder.textureCoords(u, v, width, height)`, en pixels de l'image), chaque appel `drawResource` les respecte — seul le sous-rectangle est échantillonné. `drawResource(x, y, resource)` le dessine à sa taille, et une taille explicite l'étire. Utile pour les sprite sheets.

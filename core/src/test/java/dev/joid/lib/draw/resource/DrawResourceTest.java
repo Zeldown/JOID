@@ -122,6 +122,20 @@ public class DrawResourceTest {
 	}
 
 	@Test
+	public void samplesARegionOfTheResource() {
+		DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 50D, 16D, 8D, 32D, 16D, DrawResourceTest.image(64, 32));
+		final Capture capture = this.single();
+		Assert.assertEquals(10D, capture.getLeft(), 1E-3D);
+		Assert.assertEquals(110D, capture.getRight(), 1E-3D);
+		Assert.assertEquals(20D, capture.getTop(), 1E-3D);
+		Assert.assertEquals(70D, capture.getBottom(), 1E-3D);
+		Assert.assertEquals(0.25F, capture.getU(0), 0F);
+		Assert.assertEquals(0.75F, capture.getV(0), 0F);
+		Assert.assertEquals(0.75F, capture.getU(2), 0F);
+		Assert.assertEquals(0.25F, capture.getV(2), 0F);
+	}
+
+	@Test
 	public void samplesTheSpriteOfTheResource() {
 		final Resource resource = DrawResourceTest.image(64, 32).textureCoords(16D, 8D, 32D, 16D);
 		DrawUtils.RESOURCE.drawResource(10D, 20D, resource);

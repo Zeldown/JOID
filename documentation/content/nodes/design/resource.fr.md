@@ -48,7 +48,7 @@ La ressource hover fait un fade-in automatique via `hoverValue(1F)`.
 ```java
 node.stretch(StretchType.STRETCH);  // remplit les bounds (défaut)
 node.stretch(StretchType.CONTAIN);  // tient en préservant le ratio, centré
-node.stretch(StretchType.COVER);    // remplit en préservant le ratio, centré — rognez le dépassement avec overflow(OverflowProperty.HIDDEN)
+node.stretch(StretchType.COVER);    // remplit en préservant le ratio, centré, rogné au nœud
 ```
 
 ## Filtrage

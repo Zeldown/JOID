@@ -170,10 +170,18 @@ public class ResourceNode extends Node {
 
 			final double scaleX = width / resource.getWidth();
 			final double scaleY = height / resource.getHeight();
-			final double scale = this == StretchType.CONTAIN ? Math.min(scaleX, scaleY) : Math.max(scaleX, scaleY);
-			final double scaledWidth = resource.getWidth() * scale;
-			final double scaledHeight = resource.getHeight() * scale;
-			DrawUtils.RESOURCE.drawResource(x + (width - scaledWidth) / 2D, y + (height - scaledHeight) / 2D, scaledWidth, scaledHeight, resource);
+			if (this == StretchType.CONTAIN) {
+				final double scale = Math.min(scaleX, scaleY);
+				final double scaledWidth = resource.getWidth() * scale;
+				final double scaledHeight = resource.getHeight() * scale;
+				DrawUtils.RESOURCE.drawResource(x + (width - scaledWidth) / 2D, y + (height - scaledHeight) / 2D, scaledWidth, scaledHeight, resource);
+				return;
+			}
+
+			final double scale = Math.max(scaleX, scaleY);
+			final double regionWidth = width / scale;
+			final double regionHeight = height / scale;
+			DrawUtils.RESOURCE.drawResource(x, y, width, height, (resource.getWidth() - regionWidth) / 2D, (resource.getHeight() - regionHeight) / 2D, regionWidth, regionHeight, resource);
 		}
 
 	}

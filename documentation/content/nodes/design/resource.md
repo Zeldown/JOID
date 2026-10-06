@@ -48,7 +48,7 @@ The hovered resource auto-fades in via `hoverValue(1F)`.
 ```java
 node.stretch(StretchType.STRETCH);  // fill bounds (default)
 node.stretch(StretchType.CONTAIN);  // fit preserving aspect ratio, centered
-node.stretch(StretchType.COVER);    // fill preserving aspect ratio, centered — clip the overflow with overflow(OverflowProperty.HIDDEN)
+node.stretch(StretchType.COVER);    // fill preserving aspect ratio, centered, cropped to the node
 ```
 
 ## Filtering

@@ -238,21 +238,21 @@ public class ResourceNodeTest {
 	}
 
 	@Test
-	public void coversItsBoundsWithATallResource() {
+	public void cropsATallResourceToItsBounds() {
 		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 100D, 100D).resource(ResourceNodeTest.resource(10, 20)).color(ResourceNodeTest.TINT).stretch(StretchType.COVER)));
-		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 50D, 200D, 250D);
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 100D, 200D, 200D);
 	}
 
 	@Test
-	public void coversItsBoundsWithAWideResource() {
+	public void cropsAWideResourceToItsBounds() {
 		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 100D, 100D).resource(ResourceNodeTest.resource(20, 10)).color(ResourceNodeTest.TINT).stretch(StretchType.COVER)));
-		this.assertBounds(this.single(ResourceNodeTest.TINT), 50D, 100D, 250D, 200D);
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 100D, 200D, 200D);
 	}
 
 	@Test
-	public void coversAWideNodeWithAWideResource() {
+	public void cropsAWideResourceToAWideNode() {
 		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 400D, 100D).resource(ResourceNodeTest.resource(20, 10)).color(ResourceNodeTest.TINT).stretch(StretchType.COVER)));
-		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 50D, 500D, 250D);
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 100D, 500D, 200D);
 	}
 
 	private Draw skeleton() {
