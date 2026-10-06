@@ -119,8 +119,8 @@ public class MsdfFontProviderTest {
 		final Capture capture = this.render.getCaptures().get(0);
 		Assert.assertEquals(103.125D, capture.getLeft(), 1E-3D);
 		Assert.assertEquals(121.875D, capture.getRight(), 1E-3D);
-		Assert.assertEquals(109.625D, capture.getTop(), 1E-3D);
-		Assert.assertEquals(143.375D, capture.getBottom(), 1E-3D);
+		Assert.assertEquals(110.625D, capture.getTop(), 1E-3D);
+		Assert.assertEquals(144.375D, capture.getBottom(), 1E-3D);
 	}
 
 	@Test
@@ -129,15 +129,15 @@ public class MsdfFontProviderTest {
 		final Capture capture = this.render.getCaptures().get(1);
 		Assert.assertEquals(123.125D, capture.getLeft(), 1E-3D);
 		Assert.assertEquals(141.875D, capture.getRight(), 1E-3D);
-		Assert.assertEquals(116.5D, capture.getTop(), 1E-3D);
-		Assert.assertEquals(138.375D, capture.getBottom(), 1E-3D);
+		Assert.assertEquals(117.5D, capture.getTop(), 1E-3D);
+		Assert.assertEquals(139.375D, capture.getBottom(), 1E-3D);
 	}
 
 	@Test
 	public void readsTheGlyphInsideTheAtlas() {
 		MsdfFontProvider.inst().drawText(100D, 100D, "A", MsdfFontProviderTest.sampleInfo());
 		final Capture capture = this.render.getCaptures().get(0);
-		Assert.assertEquals(143.375F, capture.getY(0), 1E-3F);
+		Assert.assertEquals(144.375F, capture.getY(0), 1E-3F);
 		Assert.assertEquals(8.5F / 64F, capture.getU(0), 1E-6F);
 		Assert.assertEquals(1F - 8.5F / 64F, capture.getV(0), 1E-6F);
 		Assert.assertEquals(23.5F / 64F, capture.getU(2), 1E-6F);
@@ -211,7 +211,7 @@ public class MsdfFontProviderTest {
 		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		MsdfFontProvider.inst().drawText(100D, 100D, "x", MsdfFontProviderTest.sampleInfo());
 		final Capture capture = this.render.getLast();
-		Assert.assertEquals(99D, (capture.getBottom() + 0.015625D * 39.375D) * 768D / 1080D, 1E-3D);
+		Assert.assertEquals(100D, (capture.getBottom() + 0.015625D * 39.375D) * 768D / 1080D, 1E-3D);
 		Assert.assertEquals(0.546875D * 39.375D, capture.getBottom() - capture.getTop(), 1E-3D);
 		Assert.assertEquals(18.75D, capture.getRight() - capture.getLeft(), 1E-3D);
 	}
@@ -227,8 +227,8 @@ public class MsdfFontProviderTest {
 		}
 
 		final Capture capture = this.render.getLast();
-		Assert.assertEquals(116.5D, capture.getTop(), 1E-4D);
-		Assert.assertEquals(138.375D, capture.getBottom(), 1E-4D);
+		Assert.assertEquals(117.5D, capture.getTop(), 1E-4D);
+		Assert.assertEquals(139.375D, capture.getBottom(), 1E-4D);
 	}
 
 	@Test
@@ -317,10 +317,10 @@ public class MsdfFontProviderTest {
 		final List<Capture> captures = this.render.getCaptures();
 		Assert.assertEquals(2, captures.size());
 		Assert.assertEquals(107.125D, captures.get(0).getLeft(), 1E-3D);
-		Assert.assertEquals(115.625D, captures.get(0).getTop(), 1E-3D);
+		Assert.assertEquals(116.625D, captures.get(0).getTop(), 1E-3D);
 		Assert.assertArrayEquals(new float[] {0.1F, 0.1F, 0.1F, 1F}, (float[]) captures.get(0).getUniforms().get("color"), 0F);
 		Assert.assertEquals(103.125D, captures.get(1).getLeft(), 1E-3D);
-		Assert.assertEquals(109.625D, captures.get(1).getTop(), 1E-3D);
+		Assert.assertEquals(110.625D, captures.get(1).getTop(), 1E-3D);
 		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) captures.get(1).getUniforms().get("color"), 0F);
 	}
 
@@ -351,7 +351,7 @@ public class MsdfFontProviderTest {
 
 		}));
 		Assert.assertEquals(106.125D, this.render.getLast().getLeft(), 1E-3D);
-		Assert.assertEquals(115.125D, this.render.getLast().getTop(), 1E-3D);
+		Assert.assertEquals(116.125D, this.render.getLast().getTop(), 1E-3D);
 	}
 
 	@Test
@@ -365,7 +365,7 @@ public class MsdfFontProviderTest {
 
 		}));
 		Assert.assertEquals(1, this.render.getCaptures().size());
-		Assert.assertEquals(116.5D, this.render.getLast().getTop(), 1E-3D);
+		Assert.assertEquals(117.5D, this.render.getLast().getTop(), 1E-3D);
 	}
 
 	@Test

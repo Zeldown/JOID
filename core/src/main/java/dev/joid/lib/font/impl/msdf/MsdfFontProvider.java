@@ -97,7 +97,7 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 		}
 
 		final double inset = 0.5D / atlas.getSize();
-		final double baseline = this.grid.snapY(glyph.getBaseline() - 0.025D * size) + glyph.getOffsetY();
+		final double baseline = this.grid.snapY(glyph.getBaseline()) + glyph.getOffsetY();
 		final double origin = glyph.getX() + glyph.getOffsetX();
 
 		final double left = origin + (plane.getLeft() + inset) * size;
