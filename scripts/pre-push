@@ -5,10 +5,16 @@ echo "🚀 Running pre-push hook on the pushed commits"
 echo ""
 
 zero=0000000000000000000000000000000000000000
+tested="$(git rev-parse --git-dir)/joid-tested"
 files=""
+untested=0
 while read -r local_ref local_sha remote_ref remote_sha; do
     if [ "$local_sha" = "$zero" ]; then
         continue
+    fi
+
+    if ! grep -qx "$(git rev-parse "$local_sha^{tree}")" "$tested" 2>/dev/null; then
+        untested=1
     fi
 
     if [ "$remote_sha" = "$zero" ]; then
@@ -20,5 +26,11 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     files="$files
 $changed"
 done
+
+if [ $untested -eq 0 ]; then
+    echo "🔍 Every pushed commit was tested by the pre-commit hook, tests skipped"
+    echo ""
+    exit 0
+fi
 
 printf '%s\n' "$files" | sh scripts/run-tests head

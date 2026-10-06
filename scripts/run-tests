@@ -9,6 +9,13 @@ if ! printf '%s\n' "$files" | grep -qE '^(core/|msdf/|impl/|testkit/|gradle/|bui
     exit 0
 fi
 
+if [ "$mode" = "index" ]; then
+    tree=$(git write-tree)
+else
+    tree=$(git rev-parse HEAD^{tree})
+fi
+tested="$(git rev-parse --git-dir)/joid-tested"
+
 stashed=0
 restore() {
     if [ $stashed -eq 1 ]; then
@@ -75,6 +82,7 @@ if [ $status -ne 0 ]; then
     echo "   Run ./gradlew updateSnapshots if the visual change is intended"
 else
     echo "✅ Done with tests"
+    { tail -n 99 "$tested" 2>/dev/null; echo "$tree"; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
 fi
 echo ""
 
