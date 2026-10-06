@@ -22,4 +22,8 @@ public interface IResourcePlayback {
 	public double getProgress();
 	public double getCurrentTime();
 
+	public default @NonNull IResourcePlayback restart() {
+		return this.stop().seek(0D).play();
+	}
+
 }

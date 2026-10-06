@@ -55,7 +55,8 @@ Every control method returns the playback, so calls chain: `playback.stop().seek
 
 | Method | Animated image | Video |
 |---|---|---|
-| `play()` | Plays from the beginning, even when it was already playing. | Plays from the beginning when stopped or ended; does nothing while it plays or is paused. Reopens the file after `release()`. |
+| `play()` | Plays from the beginning when stopped or ended, resumes a paused playback where it was, and does nothing while it plays. | Same. Reopens the file after `release()`. |
+| `restart()` | Stops, seeks to `0` and plays: the only call that brings a running or paused playback back to the beginning. | Same. |
 | `stop()` | Stops on the current frame. | Stops decoding and the audio; the last frame stays displayed. |
 | `pause()` | Freezes the current frame, when playing. | Freezes the current frame and pauses the audio. |
 | `resume()` | Continues a paused playback where it was. | Same, and resumes the audio. |

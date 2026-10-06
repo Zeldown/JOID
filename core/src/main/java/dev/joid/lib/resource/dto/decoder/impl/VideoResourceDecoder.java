@@ -267,7 +267,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	@Override
 	public @NonNull VideoResourceDecoder play() {
 		if (this.running.get()) {
-			return this;
+			return this.paused.get() ? this.resume() : this;
 		}
 
 		if (this.grabber == null) {

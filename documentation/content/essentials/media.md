@@ -127,7 +127,7 @@ this.keybind(() -> {
 | `volume(float)` | Audio volume, `1F` = 100 %. Default `1F`. |
 | `isPlaying()`, `getProgress()`, `getDuration()` | Playback state; the progress is a fraction from `0` to `1`. |
 
-Callbacks tell you what happens: `onPlay`, `onPause`, `onEnd` and `onProgress((node, progress, currentTime) -> ...)`. A progress bar under the video:
+Callbacks tell you what happens: `onPlay`, `onPause`, `onStop`, `onEnd` and `onProgress((node, progress, currentTime) -> ...)`. A progress bar under the video:
 
 ```java
 RectNode.create(430, 375, 640, 6).color(Color.DARKGRAY).attach(this);

@@ -74,6 +74,24 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void derivesItsHeightFromTheRatioOfItsResource() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 32D, 0D).resource(ResourcePlayerNodeTest.video());
+		this.bridges.open(new NodeUI(player)).frame();
+		Assert.assertEquals(32D, player.getWidth(), 0D);
+		Assert.assertEquals(16D, player.getHeight(), 0D);
+		this.assertBounds(this.white(), 100D, 100D, 132D, 116D);
+	}
+
+	@Test
+	public void derivesItsWidthFromTheRatioOfItsResource() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 0D, 16D).resource(ResourcePlayerNodeTest.video());
+		this.bridges.open(new NodeUI(player)).frame();
+		Assert.assertEquals(32D, player.getWidth(), 0D);
+		Assert.assertEquals(16D, player.getHeight(), 0D);
+		this.assertBounds(this.white(), 100D, 100D, 132D, 116D);
+	}
+
+	@Test
 	public void stretchesItsResourceOverItsBounds() {
 		this.bridges.open(new NodeUI(ResourcePlayerNode.create(100D, 100D, 80D, 40D).resource(ResourcePlayerNodeTest.blink())));
 		this.assertBounds(this.white(), 100D, 100D, 180D, 140D);
@@ -187,6 +205,30 @@ public class ResourcePlayerNodeTest {
 		Assert.assertEquals(0D, player.getProgress(), 0D);
 		this.bridges.frame();
 		Assert.assertEquals(2, received.size());
+	}
+
+	@Test
+	public void firesOnPlayOnARestartWhilePlaying() {
+		final List<Object> received = new ArrayList<>();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onPlay(received::add);
+		this.bridges.open(new NodeUI(player)).frames(3);
+		Assert.assertEquals(1, received.size());
+		player.restart();
+		Assert.assertEquals(2, received.size());
+		this.bridges.frame();
+		Assert.assertEquals(2, received.size());
+	}
+
+	@Test
+	public void resumesAPausedPlaybackOnPlay() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
+		this.bridges.open(new NodeUI(player)).frames(3);
+		player.pause();
+		this.bridges.frames(20);
+		player.play();
+		this.bridges.frames(3);
+		Assert.assertTrue(player.isPlaying());
+		Assert.assertEquals(0.4D, player.getProgress(), 1E-9D);
 	}
 
 	@Test

@@ -16,6 +16,7 @@ import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerEndC
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPauseCallback;
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPlayCallback;
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerProgressCallback;
+import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerStopCallback;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.Getter;
 import lombok.NonNull;
@@ -26,6 +27,7 @@ public class ResourcePlayerNode extends Node {
 
 	public static final int CALLBACK_END      = NodeCallbackRegistry.next(NodeResourcePlayerEndCallback.class);
 	public static final int CALLBACK_PLAY     = NodeCallbackRegistry.next(NodeResourcePlayerPlayCallback.class);
+	public static final int CALLBACK_STOP     = NodeCallbackRegistry.next(NodeResourcePlayerStopCallback.class);
 	public static final int CALLBACK_PAUSE    = NodeCallbackRegistry.next(NodeResourcePlayerPauseCallback.class);
 	public static final int CALLBACK_PROGRESS = NodeCallbackRegistry.next(NodeResourcePlayerProgressCallback.class);
 
@@ -57,7 +59,11 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final @NonNull ResourcePlayerNode stop() {
-		this.getPlayback().ifPresent(IResourcePlayback::stop);
+		this.getPlayback().ifPresent(playback -> {
+			playback.stop();
+			this.wasPlaying = false;
+			super.executeCallback(ResourcePlayerNode.CALLBACK_STOP, InternalContext.create());
+		});
 		return this;
 	}
 
@@ -82,6 +88,16 @@ public class ResourcePlayerNode extends Node {
 		if (super.getWidth() == 0 && super.getHeight() == 0) {
 			super.width(videoWidth);
 			super.height(videoHeight);
+			return;
+		}
+
+		if (super.getWidth() == 0) {
+			super.width(videoWidth * super.getHeight() / videoHeight);
+			return;
+		}
+
+		if (super.getHeight() == 0) {
+			super.height(videoHeight * super.getWidth() / videoWidth);
 			return;
 		}
 
@@ -116,6 +132,7 @@ public class ResourcePlayerNode extends Node {
 				super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, InternalContext.create());
 			} else if (!playing && this.wasPlaying && !playback.get().isPaused() && !this.loop) {
 				super.executeCallback(ResourcePlayerNode.CALLBACK_END, InternalContext.create());
+				super.executeCallback(ResourcePlayerNode.CALLBACK_STOP, InternalContext.create());
 			}
 
 			this.wasPlaying = playing;
@@ -160,7 +177,12 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final @NonNull ResourcePlayerNode restart() {
-		this.getPlayback().ifPresent(playback -> playback.stop().seek(0D).play());
+		this.getPlayback().ifPresent(playback -> {
+			if (playback.restart().isPlaying()) {
+				this.wasPlaying = true;
+				super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, InternalContext.create());
+			}
+		});
 		return this;
 	}
 
@@ -171,6 +193,11 @@ public class ResourcePlayerNode extends Node {
 
 	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull NodeResourcePlayerPauseCallback<T> callback) {
 		super.registerCallback(ResourcePlayerNode.CALLBACK_PAUSE, callback);
+		return (T) this;
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onStop(final @NonNull NodeResourcePlayerStopCallback<T> callback) {
+		super.registerCallback(ResourcePlayerNode.CALLBACK_STOP, callback);
 		return (T) this;
 	}
 

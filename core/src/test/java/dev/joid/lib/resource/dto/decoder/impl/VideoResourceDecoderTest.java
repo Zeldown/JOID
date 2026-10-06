@@ -507,6 +507,20 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void resumesAPausedVideoOnPlay() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 7);
+		decoder.pause();
+		Assert.assertSame(decoder, decoder.play());
+		Assert.assertFalse(decoder.isPaused());
+		this.play(decoder, data, 6);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(2, decoder.getDisplayedFrameIndex());
+		Assert.assertEquals(60, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	@Test
 	public void skipsTheFramesBetweenItsKeyFrameAndASeek() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/dto/decoder/impl/predicted.mkv"));
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);

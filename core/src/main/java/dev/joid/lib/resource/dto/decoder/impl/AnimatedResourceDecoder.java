@@ -99,6 +99,10 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	@Override
 	public @NonNull AnimatedResourceDecoder play() {
+		if (this.running) {
+			return this.paused ? this.resume() : this;
+		}
+
 		this.position = 0L;
 		this.startTime = BridgeHandler.CLOCK.get().nanoTime();
 		this.running = true;

@@ -172,6 +172,42 @@ public class AnimatedResourceDecoderTest {
 	}
 
 	@Test
+	public void keepsPlayingOnPlay() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		this.advance(decoder, data, 100L);
+		Assert.assertSame(decoder, decoder.play());
+		this.advance(decoder, data, 10L);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(0.11D, decoder.getCurrentTime(), 1E-9D);
+	}
+
+	@Test
+	public void resumesAPausedPlaybackOnPlay() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		this.advance(decoder, data, 50L);
+		decoder.pause();
+		this.advance(decoder, data, 100L);
+		Assert.assertSame(decoder, decoder.play());
+		this.advance(decoder, data, 10L);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(0.06D, decoder.getCurrentTime(), 1E-9D);
+	}
+
+	@Test
+	public void restartsFromTheBeginning() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		this.advance(decoder, data, 100L);
+		Assert.assertSame(decoder, decoder.restart());
+		this.advance(decoder, data, 10L);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(0, decoder.getDisplayed());
+		Assert.assertEquals(0.01D, decoder.getCurrentTime(), 1E-9D);
+	}
+
+	@Test
 	public void freezesWhilePaused() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
 		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);

@@ -1,6 +1,6 @@
 # ResourcePlayerNode
 
-`ResourcePlayerNode` (`dev.joid.lib.ui.node.impl.design.resource`) plays a video or an animated image (GIF, APNG, animated WebP) with playback controls, looping, volume, positional audio and play, pause, end and progress callbacks. Use [`ResourceNode`](resource.md) for still images.
+`ResourcePlayerNode` (`dev.joid.lib.ui.node.impl.design.resource`) plays a video or an animated image (GIF, APNG, animated WebP) with playback controls, looping, volume, positional audio and play, pause, stop, end and progress callbacks. Use [`ResourceNode`](resource.md) for still images.
 
 ## Creating a ResourcePlayerNode
 
@@ -38,7 +38,8 @@ The playback starts the first time the node draws its loaded resource with a non
 
 ### Size and placeholder
 
-- A node created with `create(x, y)` (0×0) takes the size of the resource's frame in pixels, used as UI units, on the first frame where the resource is loaded; it is drawn from the next frame on. Unlike `ResourceNode`, a single `0` dimension is not derived from the aspect ratio.
+- A node created with `create(x, y)` (0×0) takes the size of the resource's frame in pixels, used as UI units, on the first frame where the resource is loaded; it is drawn from the next frame on.
+- Like `ResourceNode`, a node with a single `0` dimension derives it from the aspect ratio of the frame: `create(x, y, 640, 0)` gets a height of 360 for a 16:9 video.
 - `stretch(StretchType)` fits the frame into the node with `ResourceNode.StretchType` (`STRETCH` by default, `CONTAIN`, `COVER`; see [ResourceNode](resource.md#fitting-with-stretchtype)). The frame is drawn without tint.
 - While there is no resource, while it loads, or when it has no size, the node draws a pulsing grey rectangle (`Color.LOADING()`).
 
@@ -46,12 +47,12 @@ The playback starts the first time the node draws its loaded resource with a non
 
 | Method | Description |
 | --- | --- |
-| `play()` | Starts the playback from the beginning when it is stopped. Use `resume()` after `pause()`. |
+| `play()` | Starts the playback from the beginning when it is stopped or ended, and resumes it where it was when it is paused. |
 | `pause()` | Pauses the playback and fires `onPause` right away. |
 | `resume()` | Resumes a paused playback. |
-| `stop()` | Stops the playback; the current frame stays displayed. |
+| `stop()` | Stops the playback and fires `onStop` right away; the current frame stays displayed. |
 | `seek(double seconds)` / `seekTo(double seconds)` | Moves the playback to a time in seconds. `seekTo` is an alias of `seek`. |
-| `restart()` | Stops, seeks to `0` and plays. |
+| `restart()` | Stops, seeks to `0` and plays, then fires `onPlay` right away, even when the playback was already playing. It is the only control that brings a running or paused playback back to the beginning. |
 
 These methods return the node (`ResourcePlayerNode`) and do nothing when the node has no resource with a playback.
 
@@ -114,6 +115,7 @@ ResourcePlayerNode
     .resource(Resource.of(MyUI.class.getResourceAsStream("/videos/intro.mp4")))
     .onPlay(player -> System.out.println("playing"))
     .onProgress((player, progress, currentTime) -> bar.progress((float) progress))
+    .onStop(player -> System.out.println("stopped"))
     .onEnd(player -> System.out.println("finished"))
     .attach(this);
 ```
@@ -122,15 +124,16 @@ ResourcePlayerNode
 
 | Method | Lambda | Fired when |
 | --- | --- | --- |
-| `onPlay(NodeResourcePlayerPlayCallback<T>)` | `(node) -> ...` | The playback was not playing on the previous drawn frame and plays on the current one: when it starts, and after `play()`, `resume()` or `restart()` from a stopped or paused state. |
+| `onPlay(NodeResourcePlayerPlayCallback<T>)` | `(node) -> ...` | The playback was not playing on the previous drawn frame and plays on the current one: when it starts, and after `play()` or `resume()` from a stopped or paused state. `restart()` fires it immediately, inside the call. |
 | `onPause(NodeResourcePlayerPauseCallback<T>)` | `(node) -> ...` | `pause()` is called on the node and the resource has a playback. It fires immediately, inside the `pause()` call. |
-| `onEnd(NodeResourcePlayerEndCallback<T>)` | `(node) -> ...` | The playback stops while not paused and `loop` is `false`: at the end of the media, or after `stop()`. Never fires while looping. |
+| `onStop(NodeResourcePlayerStopCallback<T>)` | `(node) -> ...` | The playback stops: `stop()` is called on the node and the resource has a playback (it fires immediately, inside the `stop()` call), or the resource reaches its end, right after `onEnd`. `restart()` does not fire it. |
+| `onEnd(NodeResourcePlayerEndCallback<T>)` | `(node) -> ...` | The resource reaches its end while `loop` is `false`. `stop()` does not fire it, and it never fires while looping. |
 | `onProgress(NodeResourcePlayerProgressCallback<T>)` | `(node, progress, currentTime) -> ...` | On each frame while playing, when the progress changed. `progress` goes from `0` to `1`, `currentTime` is in seconds. |
 
-- `onPlay`, `onEnd` and `onProgress` are detected while the node draws: a node that is not drawn (hidden, or outside a closed UI) does not fire them.
+- `onPlay`, `onEnd`, `onProgress` and the `onStop` of the end of the resource are detected while the node draws: a node that is not drawn (hidden, or outside a closed UI) does not fire them. A playback stopped through `getPlayback()` instead of the node's `stop()` is seen the same way, as an end.
 - The callback interfaces live in `dev.joid.lib.ui.node.impl.design.resource.callback`. Each has an `apply(...)` method for the lambda and `pre(...)`/`post(...)` phases taking an `InternalContext`; the lambda runs in the POST phase. See [Callbacks](../../interactions/callbacks.md).
 - You can register several callbacks of the same kind; they run in registration order.
-- The callback ids are the constants `ResourcePlayerNode.CALLBACK_PLAY`, `CALLBACK_PAUSE`, `CALLBACK_END` and `CALLBACK_PROGRESS`, usable with `hasCallback(int)`.
+- The callback ids are the constants `ResourcePlayerNode.CALLBACK_PLAY`, `CALLBACK_PAUSE`, `CALLBACK_STOP`, `CALLBACK_END` and `CALLBACK_PROGRESS`, usable with `hasCallback(int)`.
 
 ## Releasing the video
 
@@ -143,7 +146,7 @@ The node releases its video decoder (decoding thread, audio source) when it is d
 | Method | Description |
 | --- | --- |
 | `ResourcePlayerNode.create(double x, double y)` | Creates a player sized by its resource. |
-| `ResourcePlayerNode.create(double x, double y, double width, double height)` | Creates a player with a given box. |
+| `ResourcePlayerNode.create(double x, double y, double width, double height)` | Creates a player with a given box; a `0` dimension follows the resource's aspect ratio. |
 
 ### Properties
 
