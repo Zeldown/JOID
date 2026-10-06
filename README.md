@@ -77,8 +77,6 @@ Start with the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-star
 ## Credits
 
 - [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine (Apache-2.0, bundled in `lib/animation/tweenengine`)
-- [msdfgen](https://github.com/Chlumsky/msdfgen) by **Viktor Chlumský** — the multi-channel signed distance field algorithm, which JOID reimplements in Java in the `msdf/` module
-- [LWJGL](https://www.lwjgl.org/) — OpenGL / Vulkan / OpenAL Java bindings used by the backends (BSD-3-Clause)
 - [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco** — Video decoding (Apache-2.0; the FFmpeg builds carry their own terms)
 
 JOID is released under the [Apache License 2.0](LICENSE).
