@@ -68,9 +68,9 @@ With `HIDDEN` or `SCROLL`, the node becomes the overflow area of its descendants
 
 ## Wheel scrolling
 
-When the pointer is over a `SCROLL` node whose content overflows (the node must be visible and enabled), each wheel event moves the target by 30 units × `scrollSpeed`, twice as much while Left Control is held. Wheel up (a positive value) scrolls toward the start, wheel down toward the end. The node consumes the wheel event.
+When the pointer is over a `SCROLL` node whose content overflows (the node must be visible and enabled), each wheel event moves the target by 30 units × `scrollSpeed`, twice as much while Left Control is held. Wheel up (a positive value) scrolls toward the start, wheel down toward the end. The node consumes the wheel event only when its target can move: already at the start for a wheel up, at the end for a wheel down, or with content that fits, it leaves the event to the nodes behind it.
 
-Children receive the wheel event before their parent, so in nested scroll containers the innermost hovered one scrolls first. A [`MultilineTextFieldNode`](../input/multiline-text-field.md#mouse-and-scrolling) that cannot scroll further in the direction of the wheel leaves the event to its parent.
+Children receive the wheel event before their parent, so in nested scroll containers the innermost hovered one scrolls first, and its parent takes over once it reaches its limit, as nested scroll areas chain on the web. A [`MultilineTextFieldNode`](../input/multiline-text-field.md#mouse-and-scrolling) that cannot scroll further in the direction of the wheel leaves the event to its parent the same way.
 
 | Method | Description |
 | --- | --- |

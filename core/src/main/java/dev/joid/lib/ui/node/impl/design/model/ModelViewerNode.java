@@ -95,7 +95,7 @@ public class ModelViewerNode extends ModelNode {
 
 	@Override
 	public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
-		if (!super.isHovered(mouseX, mouseY)) {
+		if (value == 0 || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
 

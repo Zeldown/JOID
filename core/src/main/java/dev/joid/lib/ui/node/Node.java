@@ -697,12 +697,12 @@ public abstract class Node implements INode {
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, value, context));
 		if (!context.isCancelled() && this.isHovered(mouseX, mouseY) && value != 0) {
 			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
-			if (this.hasOverflowX()) {
+			if (this.hasOverflowX() && (value > 0 ? this.targetScrollX < 0 : this.targetScrollX > -this.maxScrollX)) {
 				this.scrollX(value > 0 ? 30 : -30, mappedScrollSpeed);
 				context.cancel();
 			}
 
-			if (this.hasOverflowY()) {
+			if (this.hasOverflowY() && (value > 0 ? this.targetScrollY < 0 : this.targetScrollY > -this.maxScrollY)) {
 				this.scrollY(value > 0 ? 30 : -30, mappedScrollSpeed);
 				context.cancel();
 			}

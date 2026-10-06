@@ -136,7 +136,7 @@ A mouse or key event travels through every node of the UI with a single context.
 
 - `onClick`: a click on a node consumes the press;
 - built-in nodes that handle the event, such as a focused text field or a clicked checkbox;
-- a node that scrolls its content with the wheel;
+- a node that scrolls its content with the wheel, while its content can move in the direction of the wheel;
 - UI keybinds and the zoom shortcuts (see [Mouse and Keyboard](mouse-and-keyboard.md)).
 
 Once the event is consumed, the input lambdas of the nodes reached afterwards do not run, `onClick` does not fire, built-in nodes ignore it, no drag starts, the UI keybinds do not run, and the UI bridge does not pass it to the UIs below.

@@ -909,6 +909,76 @@ public class NodeTest {
 	}
 
 	@Test
+	public void consumesTheWheelWhileItScrolls() {
+		final ContainerNode column = NodeTest.column();
+		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
+		final InternalContext down = InternalContext.create();
+		column.onMouseScroll(300D, 150D, -120, down);
+		Assert.assertTrue(down.isCancelled());
+		Assert.assertEquals(-30D, column.getTargetScrollY(), 0D);
+		final InternalContext up = InternalContext.create();
+		column.onMouseScroll(300D, 150D, 120, up);
+		Assert.assertTrue(up.isCancelled());
+		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void leavesTheWheelToItsParentAtItsLimits() {
+		final ContainerNode column = NodeTest.column();
+		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
+		final InternalContext up = InternalContext.create();
+		column.onMouseScroll(300D, 150D, 120, up);
+		Assert.assertFalse(up.isCancelled());
+		column.setScrollY(1F);
+		final InternalContext down = InternalContext.create();
+		column.onMouseScroll(300D, 150D, -120, down);
+		Assert.assertFalse(down.isCancelled());
+		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void leavesTheWheelToItsParentWithNothingToScroll() {
+		final ContainerNode box = ContainerNode.create(100D, 100D, 400D, 100D).overflow(OverflowProperty.SCROLL);
+		RectNode.create(0D, 0D, 400D, 100D).attach(box);
+		this.bridges.open(new NodeUI(box)).move(300D, 150D).frames(2);
+		final InternalContext down = InternalContext.create();
+		final InternalContext up = InternalContext.create();
+		box.onMouseScroll(300D, 150D, -120, down);
+		box.onMouseScroll(300D, 150D, 120, up);
+		Assert.assertFalse(down.isCancelled());
+		Assert.assertFalse(up.isCancelled());
+	}
+
+	@Test
+	public void leavesAStillWheelToItsParent() {
+		final ContainerNode column = NodeTest.column();
+		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
+		final InternalContext context = InternalContext.create();
+		column.onMouseScroll(300D, 150D, 0, context);
+		Assert.assertFalse(context.isCancelled());
+		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void chainsTheWheelBetweenNestedScrollContainers() {
+		final ContainerNode outer = ContainerNode.create(100D, 100D, 400D, 300D).overflow(OverflowProperty.SCROLL);
+		final ContainerNode inner = ContainerNode.create(0D, 0D, 400D, 100D).overflow(OverflowProperty.SCROLL).attach(outer);
+		RectNode.create(0D, 0D, 400D, 300D).attach(inner);
+		RectNode.create(0D, 100D, 400D, 500D).attach(outer);
+		this.bridges.open(new NodeUI(outer)).move(300D, 150D).frames(2);
+		this.bridges.scroll(-120);
+		Assert.assertEquals(-30D, inner.getTargetScrollY(), 0D);
+		Assert.assertEquals(0D, outer.getTargetScrollY(), 0D);
+		inner.setScrollY(1F);
+		this.bridges.scroll(-120);
+		Assert.assertEquals(-200D, inner.getTargetScrollY(), 0D);
+		Assert.assertEquals(-30D, outer.getTargetScrollY(), 0D);
+		this.bridges.scroll(120);
+		Assert.assertEquals(-170D, inner.getTargetScrollY(), 0D);
+		Assert.assertEquals(-30D, outer.getTargetScrollY(), 0D);
+	}
+
+	@Test
 	public void easesTowardsItsScrollTarget() {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
