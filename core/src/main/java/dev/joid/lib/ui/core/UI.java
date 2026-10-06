@@ -45,6 +45,7 @@ import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedElement;
 import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
+import dev.joid.lib.utils.signal.replay.SignalReplay;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
@@ -152,7 +153,13 @@ public abstract class UI implements IUI, IndexedElement {
 			this.scheduledTaskList.clear();
 
 			UI.current = this;
-			this.init();
+			SignalReplay.reset();
+			SignalReplay.enter(this);
+			try {
+				this.init();
+			} finally {
+				SignalReplay.exit();
+			}
 			this.initialized = true;
 			UI.current = null;
 
@@ -206,6 +213,7 @@ public abstract class UI implements IUI, IndexedElement {
 					System.out.println("Starting reload...");
 
 					final long start = System.nanoTime();
+					SignalReplay.clear();
 					UI.this.initialized = false;
 					UI.this.load(UI.this.view.getWidth(), UI.this.view.getHeight(), UI.this.view.getZoom());
 					final long end = System.nanoTime();
@@ -732,6 +740,7 @@ public abstract class UI implements IUI, IndexedElement {
 			devNode.getReloadAnimator().start();
 		}
 
+		SignalReplay.clear();
 		this.initialized = false;
 		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
 	}

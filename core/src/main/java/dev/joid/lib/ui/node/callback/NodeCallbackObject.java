@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.utils.signal.replay.SignalReplay;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -57,12 +58,15 @@ public class NodeCallbackObject<T extends NodeCallback> {
 		arguments[0] = node;
 		arguments[1] = context;
 		System.arraycopy(args, 0, arguments, 2, args.length);
+		SignalReplay.enter(node, node != null ? node.getUi() : null);
 		try {
 			method.invoke(this.callback, arguments);
 		} catch (final Exception e) {
 			final Throwable cause = e instanceof InvocationTargetException ? e.getCause() : e;
 			System.err.println("[JOID] The " + phase + " phase of " + NodeCallbackObject.nameOf(this.callback) + " failed: " + cause);
 			cause.printStackTrace();
+		} finally {
+			SignalReplay.exit();
 		}
 	}
 

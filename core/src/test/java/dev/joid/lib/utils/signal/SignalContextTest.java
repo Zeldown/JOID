@@ -88,6 +88,23 @@ public class SignalContextTest {
 	}
 
 	@Test
+	public void clearsTheReadsWithoutTakingThem() {
+		Signal.of("a").get();
+		Assert.assertTrue(SignalContext.current().hasReads());
+		SignalContext.current().clearReads();
+		Assert.assertFalse(SignalContext.current().hasReads());
+		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());
+	}
+
+	@Test
+	public void countsEveryReadEvenInsideAComputation() {
+		final IntegerSignal count = IntegerSignal.of(1);
+		final long total = SignalContext.current().getReadTotal();
+		count.map(value -> value * 2).get();
+		Assert.assertEquals(total + 2, SignalContext.current().getReadTotal());
+	}
+
+	@Test
 	public void movesTheEpochOnEveryChange() {
 		final long epoch = SignalContext.getEpoch();
 		Signal.of("a").set("b").publish();

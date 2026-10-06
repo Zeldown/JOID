@@ -86,7 +86,9 @@ import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedLinkedList;
 import dev.joid.lib.utils.signal.ISignal;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalContext;
 import dev.joid.lib.utils.signal.SignalSubscriber;
+import dev.joid.lib.utils.signal.replay.SignalReplay;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -287,7 +289,13 @@ public abstract class Node implements INode {
 			}
 
 			this.getAppliedEffects().forEach(effect -> effect.init(this, this.ui));
-			this.init(this.ui);
+			SignalContext.current().clearReads();
+			SignalReplay.enter(this, this.ui);
+			try {
+				this.init(this.ui);
+			} finally {
+				SignalReplay.exit();
+			}
 			this.subscribe();
 		});
 
@@ -962,12 +970,22 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T body(final @NonNull Consumer<@NonNull T> consumer) {
 		this.bodyConsumer = (Consumer<Node>) consumer;
-		this.bodyConsumer.accept(this);
+		SignalReplay.enter(this, this.ui);
+		try {
+			this.bodyConsumer.accept(this);
+		} finally {
+			SignalReplay.exit();
+		}
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T self(final @NonNull Consumer<@NonNull T> consumer) {
-		consumer.accept((T) this);
+		SignalReplay.enter(this, this.ui);
+		try {
+			consumer.accept((T) this);
+		} finally {
+			SignalReplay.exit();
+		}
 		return (T) this;
 	}
 
@@ -1724,12 +1742,17 @@ public abstract class Node implements INode {
 			}
 
 			this.executeCallback(Node.CALLBACK_WATCH, InternalContext.create(), () -> {
-				for (final WatchProperty property : properties) {
-					try {
-						property.apply(this);
-					} catch (final Exception e) {
-						e.printStackTrace();
+				SignalReplay.enter(this, this.ui);
+				try {
+					for (final WatchProperty property : properties) {
+						try {
+							property.apply(this);
+						} catch (final Exception e) {
+							e.printStackTrace();
+						}
 					}
+				} finally {
+					SignalReplay.exit();
 				}
 			}, signal, properties);
 		});

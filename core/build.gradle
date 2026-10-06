@@ -22,6 +22,10 @@ dependencies {
     shade "com.github.weisj:jsvg:2.0.0"
     shade "com.twelvemonkeys.imageio:imageio-webp:3.12.0"
 
+    shade "org.ow2.asm:asm:9.2"
+    shade "org.ow2.asm:asm-tree:9.2"
+    shade "org.ow2.asm:asm-analysis:9.2"
+
     shade("org.bytedeco:javacv:1.5.9") { transitive = false }
     shade "org.bytedeco:javacpp:1.5.9"
     shade("org.bytedeco:ffmpeg:6.0-1.5.9") { transitive = false }

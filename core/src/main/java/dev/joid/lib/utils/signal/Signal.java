@@ -9,6 +9,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import dev.joid.lib.utils.signal.replay.SignalReplay;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -46,6 +47,11 @@ public class Signal<T> implements ISignal<T> {
 		final Signal<T> instance = new Signal<>();
 		future.thenAccept(instance::set);
 		return instance;
+	}
+
+	public static <T> @NonNull ComputedSignal<T> from(final T value) {
+		final Supplier<T> replay = SignalReplay.replay(value);
+		return new ComputedSignal<>(replay != null ? replay : () -> value);
 	}
 
 	public static <T> @NonNull ComputedSignal<T> from(final @NonNull Supplier<T> supplier) {

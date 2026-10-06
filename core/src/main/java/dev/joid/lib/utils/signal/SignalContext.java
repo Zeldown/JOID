@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
@@ -28,6 +29,9 @@ public final class SignalContext {
 	private int               readCount;
 	private boolean           flushing;
 	private ComputedSignal<?> observer;
+
+	@Getter
+	private long readTotal;
 
 	public static @NonNull SignalContext current() {
 		return SignalContext.CURRENT.get();
@@ -51,6 +55,7 @@ public final class SignalContext {
 	}
 
 	public void read(final Signal<?> signal) {
+		this.readTotal++;
 		if (this.observer != null) {
 			this.observer.depend(signal);
 		} else {
@@ -85,6 +90,17 @@ public final class SignalContext {
 		final List<Signal<?>> recentList = this.takeReads();
 		readList.forEach(this::record);
 		recentList.forEach(this::record);
+	}
+
+	public void clearReads() {
+		while (this.readCount > 0) {
+			this.reads[this.readIndex - this.readCount & this.reads.length - 1] = null;
+			this.readCount--;
+		}
+	}
+
+	public boolean hasReads() {
+		return this.readCount > 0;
 	}
 
 	private void record(final Signal<?> signal) {

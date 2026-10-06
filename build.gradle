@@ -30,6 +30,7 @@ ext {
     shadeLibraries = { task ->
         task.relocate 'com.github.weisj.jsvg', 'dev.joid.shaded.jsvg'
         task.relocate 'com.twelvemonkeys', 'dev.joid.shaded.twelvemonkeys'
+        task.relocate 'org.objectweb.asm', 'dev.joid.shaded.asm'
         task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
     }
 
