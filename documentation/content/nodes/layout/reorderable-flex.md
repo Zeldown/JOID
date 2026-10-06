@@ -37,6 +37,8 @@ Pressing the left button over an item starts dragging it right away. When the po
 | `vertical(double x, double y, double width)` | `COLUMN` | `width` | Height, from the children |
 | `horizontal(double x, double y, double height)` | `ROW` | `height` | Width, from the children |
 
+`ReorderableFlexNode` is `final` and its constructor is private: create it with these factories.
+
 The layout follows the same rules as [FlexNode](flex.md#how-children-are-placed): children in the order of `getChildren()`, each child's own default offset added to its slot, `margin` between visible children, hidden children (own visibility predicate false) taking no room, main size computed from the children.
 
 | Method | Description |
@@ -56,7 +58,7 @@ With `auto(true)`, a left press over a child starts dragging that child, unless:
 - the `ReorderableFlexNode` is disabled;
 - another child is already being dragged.
 
-The press that starts a drag is consumed, so the parents' `onClick` callbacks do not run.
+The press that starts a drag is consumed, so the parents' `onClick` callbacks do not run. A press whose drag is refused by `onReorderStart` is not consumed: it goes on to the parents and the nodes behind.
 
 While dragging:
 
@@ -107,8 +109,8 @@ Place the list in a fixed-size scroll container, as in the first example (see [O
 
 | Method | Lambda | Fires |
 | --- | --- | --- |
-| `onReorderStart(NodeReorderStartCallback callback)` | `(flex, child)` | When a drag starts, from a press or from `startDrag`. Cancelling the PRE phase prevents the drag; the press is still consumed. |
-| `onReorder(NodeReorderCallback callback)` | `(flex, child)` | On every frame of the drag, until the drop. Read the targeted slot with `flex.getCurrentIndex()`. Cancelling the PRE phase keeps the child on its current slot for that frame. |
+| `onReorderStart(NodeReorderStartCallback callback)` | `(flex, child)` | When a drag starts, from a press or from `startDrag`. Cancelling the PRE phase prevents the drag and leaves the press to the other nodes. |
+| `onReorder(NodeReorderCallback callback)` | `(flex, child)` | Each time the dragged child moves to another slot, until the drop. Read the new slot with `flex.getCurrentIndex()` in the POST phase; in the PRE phase it is still the previous one. Cancelling the PRE phase keeps the child on its current slot; the callback fires again on the next frames while the child targets another slot. |
 | `onReorderEnd(NodeReorderEndCallback callback)` | `(flex, child, oldIndex, newIndex)` | Once the dropped child has settled and `getChildren()` holds the new order. `oldIndex` equals `newIndex` for a drop in place. Cancelling the PRE phase only skips the POST phase: the order is already applied. |
 
 The callback interfaces are in `dev.joid.lib.ui.node.impl.structure.reorderable.callback`. They are typed with `ReorderableFlexNode` for `flex`, and `child` is the dragged `Node`. Their callback ids are public: `ReorderableFlexNode.CALLBACK_REORDER_START`, `CALLBACK_REORDER` and `CALLBACK_REORDER_END`. PRE/POST phases are described in [Callbacks](../../interactions/callbacks.md).
@@ -163,10 +165,10 @@ During a drag, the order shown on screen is the logical order; `getChildren()` k
 | `getCurrentIndex()` | Slot currently targeted by the dragged child. |
 | `getInitialIndex()` | Slot the dragged child started from. |
 | `isDragging(Node child)` | `true` while `child` is the dragged child, drop animation included. |
-| `getDraggedNode()` | The dragged child, or `null`. |
+| `getReorderedNode()` | The dragged child, or `null`. `getDraggedNode()`, inherited from `Node`, is the copy of a [`COPY` drag](../../interactions/drag-drop.md) and stays `null` here. |
 | `isReleasing()` | `true` while the dropped child glides to its slot. |
 
-> WARNING: Do not append or remove children while a drag is in progress: the order applied at the drop only contains the children present when the drag started.
+Children appended during a drag join the end of the logical order and keep that place after the drop. Children removed during a drag leave it. Do not remove the dragged child itself before the drop.
 
 ## Reference
 
@@ -177,7 +179,7 @@ During a drag, the order shown on screen is the logical order; `getChildren()` k
 | `getMargin()`, `getAlign()`, `getDirection()`, `isAutoDrag()` | Current settings. |
 | `startDrag(Node)`, `endDrag()` | Drags from code. |
 | `onReorderStart`, `onReorder`, `onReorderEnd` | Callbacks. |
-| `getChildIndex(Node)`, `getLogicalOrder()`, `getCurrentIndex()`, `getInitialIndex()`, `isDragging(Node)`, `getDraggedNode()`, `isReleasing()` | Drag state. |
+| `getChildIndex(Node)`, `getLogicalOrder()`, `getCurrentIndex()`, `getInitialIndex()`, `isDragging(Node)`, `getReorderedNode()`, `isReleasing()` | Drag state. |
 | `getDragOffset()`, `getDraggedCurrent()`, `getDraggedZindex()`, `getDragStartMouseX()`, `getDragStartMouseY()`, `isScrollArmed()`, `getChildCurrent()` | Drag bookkeeping: grab offset, animated position of the dragged child, its z-index before the drag, press position, auto-scroll armed flag, animated positions of the other children. |
 
 Everything else is inherited from [Node](../node-fundamentals.md).

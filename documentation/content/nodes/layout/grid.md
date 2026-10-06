@@ -29,9 +29,9 @@ Nine 50-unit tiles fit in each 500-unit row (9 × 50 + 8 × 5 = 490), so the 50 
 - Children are placed in the order of `getChildren()`: attachment order, sorted by [z-index](../node-fundamentals.md#zindex).
 - Each child is placed after the previous one on the current row, plus the horizontal margin. When the child's right edge (its own default `x` + its width + the row offset) would pass the grid's width, it starts a new row instead. The first cell of a row never wraps, even when it is wider than the grid.
 - The trailing margin is not counted: a row of three 100-unit cells fits exactly in a 300-unit grid.
-- A new row starts below the previous one by the height of its first cell plus the vertical margin. Give the cells the same height: rows do not adapt to the tallest cell.
+- A row is as high as its tallest cell. The next row starts below it, plus the vertical margin, so cells of different heights never overlap.
 - Each child's own default position is added to its cell: a child created at (5, 5) sits 5 units right and below its cell.
-- Every child takes a cell, including children whose visibility predicate is false.
+- A hidden child (its own visibility predicate is false) takes no cell, like in a [FlexNode](flex.md); the cells after it close the gap.
 - The layout runs when the node loads, on every update tick and on every frame, including while the node waits for data. Children appended or removed are picked up on the next frame.
 
 ## Margins
@@ -51,7 +51,7 @@ The width never changes. The height depends on the grid's [overflow](overflow-an
 
 | Overflow | Height |
 | --- | --- |
-| `NONE` (default) | The height of the rows (the last row's offset plus the last cell's height), and never less than the height given to `create`. It shrinks back when cells are removed. |
+| `NONE` (default) | The height of all the rows (each one as high as its tallest cell, plus the vertical margins between them), and never less than the height given to `create`. It shrinks back when cells are removed or hidden. |
 | `HIDDEN` or `SCROLL` | The height you set. The rows below it are clipped. |
 
 The cells are positioned by the layout on every frame, so `SCROLL` on the grid itself does not scroll it. To scroll a grid, keep its overflow at `NONE` so that it grows with its rows, and put it in a fixed-size node that scrolls:

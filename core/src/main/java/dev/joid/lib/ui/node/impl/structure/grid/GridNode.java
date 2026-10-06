@@ -59,21 +59,26 @@ public final class GridNode extends Node {
 	private final void updateGrid() {
 		double ox = 0;
 		double oy = 0;
+		double rowHeight = 0D;
 		for (final Node child : super.getChildren()) {
+			if (!child.isVisibleProperty()) {
+				continue;
+			}
+
 			if (ox > 0 && child.getDefaultX() + child.getWidth() + ox > super.getWidth()) {
 				ox = 0;
-				oy += child.getHeight() + this.verticalMargin;
+				oy += rowHeight + this.verticalMargin;
+				rowHeight = 0D;
 			}
 
 			child.y(child.getDefaultY() + oy);
 			child.x(child.getDefaultX() + ox);
 
 			ox += child.getWidth() + this.horizontalMargin;
+			rowHeight = Math.max(rowHeight, child.getHeight());
 		}
 
-		if (!super.getChildren().isEmpty()) {
-			oy += super.getChildren().ordered().get(super.getChildren().size() - 1).getHeight();
-		}
+		oy += rowHeight;
 
 		if (super.getOverflow() == OverflowProperty.NONE) {
 			super.height(Math.max(oy, super.getDefaultHeight()));

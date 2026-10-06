@@ -239,6 +239,18 @@ public class FlexNodeTest {
 	}
 
 	@Test
+	public void readsItsSettings() {
+		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D);
+		Assert.assertEquals(0D, flex.getMargin(), 0D);
+		Assert.assertNull(flex.getAlign());
+		Assert.assertSame(FlexDirection.COLUMN, flex.getDirection());
+		flex.margin(10D).align(Align.END).direction(FlexDirection.ROW);
+		Assert.assertEquals(10D, flex.getMargin(), 0D);
+		Assert.assertSame(Align.END, flex.getAlign());
+		Assert.assertSame(FlexDirection.ROW, flex.getDirection());
+	}
+
+	@Test
 	public void returnsItselfFromEachSetter() {
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D);
 		Assert.assertSame(flex, flex.margin(10D));

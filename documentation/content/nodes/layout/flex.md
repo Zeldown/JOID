@@ -132,6 +132,7 @@ items.add("Bow");
 | `margin(double margin)` | Gap between visible children. Default `0`. Returns the `FlexNode`. |
 | `align(Align align)` | Cross-axis alignment, or `null` to leave the children's cross position alone. Default `null`. Returns the `FlexNode`. |
 | `direction(FlexDirection direction)` | `COLUMN` or `ROW`. Resets the children to their default position when it changes. Returns the `FlexNode`. |
+| `getMargin()`, `getAlign()`, `getDirection()` | Current settings. |
 
 | `FlexDirection` | Description |
 | --- | --- |

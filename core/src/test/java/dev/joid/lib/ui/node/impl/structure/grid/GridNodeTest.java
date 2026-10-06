@@ -183,6 +183,31 @@ public class GridNodeTest {
 		Assert.assertEquals(60D, grid.getHeight(), 0D);
 	}
 
+	@Test
+	public void startsANewRowBelowTheTallestCellOfThePreviousOne() {
+		final RectNode tall = RectNode.create(0D, 0D, 100D, 80D);
+		final RectNode wrapped = RectNode.create(0D, 0D, 100D, 50D);
+		this.bridges.open(new NodeUI(GridNode.create(0D, 0D, 250D, 60D).verticalMargin(5D).append(RectNode.create(0D, 0D, 100D, 50D), tall, wrapped)));
+		GridNodeTest.assertPlaced(wrapped, 0D, 85D);
+	}
+
+	@Test
+	public void givesNoCellToAHiddenChild() {
+		final RectNode hidden = RectNode.create(0D, 0D, 100D, 50D).visible(node -> false);
+		final RectNode third = RectNode.create(0D, 0D, 100D, 50D);
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 50D).append(RectNode.create(0D, 0D, 100D, 50D), hidden, third);
+		this.bridges.open(new NodeUI(grid));
+		GridNodeTest.assertPlaced(third, 100D, 0D);
+		Assert.assertEquals(50D, grid.getHeight(), 0D);
+	}
+
+	@Test
+	public void growsByTheHeightOfEveryRow() {
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).verticalMargin(5D).append(RectNode.create(0D, 0D, 100D, 50D), RectNode.create(0D, 0D, 100D, 80D), RectNode.create(0D, 0D, 100D, 20D));
+		this.bridges.open(new NodeUI(grid));
+		Assert.assertEquals(105D, grid.getHeight(), 0D);
+	}
+
 	private Draw single(final float red, final float green, final float blue) {
 		final List<Draw> draws = this.bridges.getRender().getDraws(red, green, blue);
 		Assert.assertEquals(1, draws.size());

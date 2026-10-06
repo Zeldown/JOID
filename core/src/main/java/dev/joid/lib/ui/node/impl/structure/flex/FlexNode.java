@@ -3,8 +3,10 @@ package dev.joid.lib.ui.node.impl.structure.flex;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.align.Align;
+import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
 public final class FlexNode extends Node {
 
 	private Align align;

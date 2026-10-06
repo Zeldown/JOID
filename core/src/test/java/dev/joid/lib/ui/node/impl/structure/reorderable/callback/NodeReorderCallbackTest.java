@@ -48,16 +48,17 @@ public class NodeReorderCallbackTest {
 	}
 
 	@Test
-	public void firesOnEveryFrameOfTheDrag() {
+	public void firesOnlyWhenTheOrderChanges() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode first = RectNode.create(0D, 0D, 200D, 50D);
 		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorder((node, child) -> received.addAll(Arrays.asList(node, child)));
 		flex.append(first, RectNode.create(0D, 0D, 200D, 50D));
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		Assert.assertTrue(received.isEmpty());
 		this.bridges.frames(2);
-		Assert.assertEquals(Arrays.asList(flex, first, flex, first), received);
+		Assert.assertTrue(received.isEmpty());
+		this.bridges.move(150D, 300D).frames(60);
+		Assert.assertEquals(Arrays.asList(flex, first), received);
 	}
 
 	@Test
@@ -68,8 +69,7 @@ public class NodeReorderCallbackTest {
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.frame().move(150D, 300D).frames(60);
-		Assert.assertEquals(0, indexes.get(0));
-		Assert.assertEquals(1, indexes.get(indexes.size() - 1));
+		Assert.assertEquals(Arrays.asList(1), indexes);
 	}
 
 	@Test
@@ -103,11 +103,14 @@ public class NodeReorderCallbackTest {
 			}
 
 		});
-		flex.append(RectNode.create(0D, 0D, 200D, 50D));
+		final RectNode first = RectNode.create(0D, 0D, 200D, 50D);
+		final RectNode second = RectNode.create(0D, 0D, 200D, 50D);
+		flex.append(first, second);
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		this.bridges.frames(3);
+		this.bridges.move(150D, 300D).frames(60);
 		Assert.assertTrue(received.isEmpty());
+		Assert.assertEquals(Arrays.asList(first, second), flex.getLogicalOrder());
 	}
 
 	public static final class NodeUI extends UI {
