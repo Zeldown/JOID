@@ -10,6 +10,7 @@ import dev.joid.lib.ui.node.impl.structure.slider.callback.NodeSliderChangeCallb
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -22,8 +23,9 @@ public abstract class SliderNode<O> extends Node {
 	private O      value;
 	private Set<O> valueSet;
 
-	private Signal<O>        signal;
-	private SliderCursorNode cursor;
+	private Signal<O>           signal;
+	private SliderCursorNode    cursor;
+	private SignalSubscriber<O> subscription;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -111,7 +113,7 @@ public abstract class SliderNode<O> extends Node {
 
 	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
 		this.signal = signal;
-		super.bind(signal, value -> {
+		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (this.valueSet.contains(value)) {
 				this.value(value);
 			}

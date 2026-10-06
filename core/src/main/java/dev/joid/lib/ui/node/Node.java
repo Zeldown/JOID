@@ -1684,7 +1684,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
-		this.listen(signal, condition, false, value -> {
+		this.listen(signal, condition, value -> {
 			if (this.ui == null) {
 				return;
 			}
@@ -1702,24 +1702,28 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	protected final <V> void bind(final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
-		for (final SignalSubscriber<?> subscriber : new ArrayList<>(this.subscriptionList)) {
-			final NodeSubscription<?> subscription = (NodeSubscription<?>) subscriber;
-			if (subscription.bound) {
-				subscription.cancel();
-			}
-		}
-
+	protected final <V> @NonNull SignalSubscriber<V> bind(final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
 		final V current = signal.getOrDefault();
 		if (current != null) {
 			consumer.accept(current);
 		}
 
-		this.listen(signal, () -> JOID.isOpen(this.ui), true, value -> {
+		return this.listen(signal, () -> JOID.isOpen(this.ui), value -> {
 			if (value != null) {
 				consumer.accept(value);
 			}
 		});
+	}
+
+	protected final void unbind(final SignalSubscriber<?> subscriber) {
+		if (subscriber != null && this.subscriptionList.contains(subscriber)) {
+			((NodeSubscription<?>) subscriber).cancel();
+		}
+	}
+
+	protected final <V> @NonNull SignalSubscriber<V> rebind(final SignalSubscriber<?> previous, final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
+		this.unbind(previous);
+		return this.bind(signal, consumer);
 	}
 
 	protected final <V> void sync(final Signal<V> signal, final @NonNull V value) {
@@ -1728,10 +1732,15 @@ public abstract class Node implements INode {
 		}
 	}
 
-	private <V> void listen(final Signal<V> signal, final Supplier<Boolean> condition, final boolean bound, final Consumer<V> consumer) {
-		final NodeSubscription<V> subscription = new NodeSubscription<>(signal, condition, bound, consumer);
+	private <V> NodeSubscription<V> listen(final Signal<V> signal, final Supplier<Boolean> condition, final Consumer<V> consumer) {
+		final NodeSubscription<V> subscription = new NodeSubscription<>(signal, condition, consumer);
 		this.subscriptionList.add(subscription);
-		signal.subscribe(subscription);
+		if (this.subscribed) {
+			signal.subscribe(subscription);
+		} else {
+			subscription.value = signal.getOrDefault();
+		}
+		return subscription;
 	}
 
 	private void subscribe() {
@@ -2042,7 +2051,6 @@ public abstract class Node implements INode {
 
 		private final Signal<V>         signal;
 		private final Supplier<Boolean> condition;
-		private final boolean           bound;
 		private final Consumer<V>       consumer;
 
 		private V value;

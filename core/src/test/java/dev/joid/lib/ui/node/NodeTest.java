@@ -1934,6 +1934,66 @@ public class NodeTest {
 	}
 
 	@Test
+	public void keepsSeveralBindingsActiveAtOnce() {
+		final Signal<String> title = new Signal<>("first");
+		final Signal<Integer> count = new Signal<>(1);
+		final List<Object> values = new ArrayList<>();
+		final BindingNode node = new BindingNode();
+		final SignalSubscriber<String> titleSubscription = node.follow(title, values::add);
+		final SignalSubscriber<Integer> countSubscription = node.follow(count, values::add);
+		this.bridges.open(new NodeUI(node));
+		title.set("second");
+		count.set(2);
+		Assert.assertEquals(Arrays.asList("first", 1, "second", 2), values);
+		Assert.assertNotSame(titleSubscription, countSubscription);
+		Assert.assertEquals(2, node.getSubscriptionList().size());
+		node.forget(titleSubscription);
+		title.set("third");
+		count.set(3);
+		Assert.assertEquals(Arrays.asList("first", 1, "second", 2, 3), values);
+		Assert.assertTrue(title.getEventSet().isEmpty());
+		Assert.assertEquals(1, count.getEventSet().size());
+	}
+
+	@Test
+	public void ignoresAMissingBindingInUnbind() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final List<Integer> values = new ArrayList<>();
+		final BindingNode node = new BindingNode();
+		node.follow(signal, values::add);
+		this.bridges.open(new NodeUI(node));
+		node.forget(null);
+		node.forget(new BindingNode().follow(signal, value -> {}));
+		signal.set(1);
+		Assert.assertEquals(Arrays.asList(0, 1), values);
+		Assert.assertEquals(1, node.getSubscriptionList().size());
+	}
+
+	@Test
+	public void rebindsOnceAcrossADetach() {
+		final Signal<Integer> first = new Signal<>(0);
+		final Signal<Integer> second = new Signal<>(10);
+		final List<Integer> values = new ArrayList<>();
+		final BindingNode node = new BindingNode();
+		final SignalSubscriber<Integer> previous = node.follow(first, values::add);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
+		this.bridges.open(new NodeUI(parent));
+		parent.remove(node);
+		node.refollow(previous, second, values::add);
+		Assert.assertTrue(first.getEventSet().isEmpty());
+		Assert.assertTrue(second.getEventSet().isEmpty());
+		parent.append(node);
+		parent.remove(node);
+		parent.append(node);
+		Assert.assertTrue(first.getEventSet().isEmpty());
+		Assert.assertEquals(1, second.getEventSet().size());
+		Assert.assertEquals(1, node.getSubscriptionList().size());
+		first.set(1);
+		second.set(11);
+		Assert.assertEquals(Arrays.asList(0, 10, 11), values);
+	}
+
+	@Test
 	public void watchesWhileItsConditionHolds() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final boolean[] kept = {true};
@@ -2278,6 +2338,26 @@ public class NodeTest {
 
 		public PointNode(final double x, final double y) {
 			super(x, y);
+		}
+
+	}
+
+	public static final class BindingNode extends Node {
+
+		public BindingNode() {
+			super(0D, 0D, 10D, 10D);
+		}
+
+		public <V> SignalSubscriber<V> follow(final Signal<V> signal, final Consumer<V> consumer) {
+			return super.bind(signal, consumer);
+		}
+
+		public void forget(final SignalSubscriber<?> subscriber) {
+			super.unbind(subscriber);
+		}
+
+		public <V> SignalSubscriber<V> refollow(final SignalSubscriber<?> previous, final Signal<V> signal, final Consumer<V> consumer) {
+			return super.rebind(previous, signal, consumer);
 		}
 
 	}

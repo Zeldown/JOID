@@ -10,6 +10,7 @@ import dev.joid.lib.ui.node.impl.structure.sw.callback.NodeSwitchChangeCallback;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalSubscriber;
 import dev.joid.lib.utils.signal.impl.iterable.ListSignal;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 import lombok.Getter;
@@ -24,7 +25,8 @@ public abstract class SwitchNode extends Node {
 	private final IntegerSignal      stateIndex;
 	private final ListSignal<String> stateList;
 
-	private Signal<String> signal;
+	private Signal<String>           signal;
+	private SignalSubscriber<String> subscription;
 
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -86,7 +88,7 @@ public abstract class SwitchNode extends Node {
 
 	public final <T extends SwitchNode> @NonNull T signal(final @NonNull Signal<String> signal) {
 		this.signal = signal;
-		super.bind(signal, value -> {
+		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (this.stateList.contains(value)) {
 				this.index(value);
 			}

@@ -6,6 +6,7 @@ import dev.joid.lib.ui.node.impl.structure.toggle.callback.NodeToggleChangeCallb
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -15,9 +16,10 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	public static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeToggleChangeCallback.class);
 
-	private boolean           toggle;
-	private ToggleState<F, S> state;
-	private Signal<Boolean>   signal;
+	private boolean                   toggle;
+	private ToggleState<F, S>         state;
+	private Signal<Boolean>           signal;
+	private SignalSubscriber<Boolean> subscription;
 
 	protected ToggleNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -48,7 +50,7 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	public final <T extends ToggleNode<F, S>> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
 		this.signal = signal;
-		super.bind(signal, value -> this.change(value, InternalContext.create()));
+		this.subscription = super.rebind(this.subscription, signal, value -> this.change(value, InternalContext.create()));
 		return (T) this;
 	}
 

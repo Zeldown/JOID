@@ -6,6 +6,7 @@ import dev.joid.lib.ui.node.impl.structure.checkbox.callback.NodeCheckboxChangeC
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -15,8 +16,9 @@ public abstract class CheckboxNode extends Node {
 
 	public static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeCheckboxChangeCallback.class);
 
-	private boolean         checked;
-	private Signal<Boolean> signal;
+	private boolean                   checked;
+	private Signal<Boolean>           signal;
+	private SignalSubscriber<Boolean> subscription;
 
 	protected CheckboxNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -38,7 +40,7 @@ public abstract class CheckboxNode extends Node {
 
 	public final <T extends CheckboxNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
 		this.signal = signal;
-		super.bind(signal, value -> this.change(value, InternalContext.create()));
+		this.subscription = super.rebind(this.subscription, signal, value -> this.change(value, InternalContext.create()));
 		return (T) this;
 	}
 

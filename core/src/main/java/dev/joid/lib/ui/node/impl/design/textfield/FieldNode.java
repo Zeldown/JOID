@@ -14,6 +14,7 @@ import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -32,8 +33,9 @@ public abstract class FieldNode<V> extends Node {
 	private int maxTextLength;
 	private BiFunction<String, String, String> filter;
 
-	private boolean   markup;
-	private Signal<V> signal;
+	private boolean             markup;
+	private Signal<V>           signal;
+	private SignalSubscriber<V> subscription;
 
 	private int cursorPos;
 	private int selectionStart;
@@ -349,7 +351,7 @@ public abstract class FieldNode<V> extends Node {
 
 	public final <T extends FieldNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = signal;
-		super.bind(signal, value -> {
+		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (!value.equals(this.getValue())) {
 				this.setText(String.valueOf(value));
 			}

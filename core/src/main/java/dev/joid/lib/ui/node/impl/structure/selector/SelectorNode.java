@@ -12,6 +12,7 @@ import dev.joid.lib.ui.node.impl.structure.selector.callback.NodeSelectorChangeC
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -23,8 +24,9 @@ public abstract class SelectorNode<V> extends Node {
 
 	private final Map<Node, V> optionMap;
 
-	private SelectorDirection direction;
-	private Signal<V>         signal;
+	private SelectorDirection   direction;
+	private Signal<V>           signal;
+	private SignalSubscriber<V> subscription;
 
 	private Node    selected;
 	private boolean active;
@@ -157,7 +159,7 @@ public abstract class SelectorNode<V> extends Node {
 
 	public final <T extends SelectorNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = signal;
-		super.bind(signal, value -> {
+		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (this.optionMap.containsValue(value)) {
 				this.value(value);
 			}
