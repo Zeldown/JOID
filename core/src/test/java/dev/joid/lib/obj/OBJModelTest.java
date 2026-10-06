@@ -357,6 +357,16 @@ public class OBJModelTest {
 		Assert.assertEquals(1, model.getGroups().size());
 	}
 
+	@Test
+	public void namesTheLineOfAMalformedGroup() {
+		try {
+			OBJModelTest.load("v 0 0 0", "o left-wing");
+			Assert.fail("A group name with a dash must be refused");
+		} catch (final RuntimeException expected) {
+			Assert.assertEquals("Error parsing entry ('o left-wing', line 2) in file 'test' - Incorrect format", expected.getMessage());
+		}
+	}
+
 	private static OBJModel cube() {
 		return OBJModel.load("cube", OBJModelTest.class.getResourceAsStream("/dev/joid/lib/obj/cube.obj"), OBJModelTest.TEXTURE);
 	}

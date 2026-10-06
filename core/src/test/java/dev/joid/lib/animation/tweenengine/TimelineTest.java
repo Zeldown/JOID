@@ -314,6 +314,22 @@ public class TimelineTest {
 		Assert.assertEquals(0F, second.floatValue(), 0F);
 	}
 
+	@Test
+	public void keepsItsChildrenInStepWhenRewindingAYoyoFromItsEnd() {
+		final MutableFloat first = new MutableFloat(0F);
+		final MutableFloat second = new MutableFloat(0F);
+		final Timeline timeline = Timeline.createSequence().push(TimelineTest.tween(first, 10F)).push(TimelineTest.tween(second, 20F)).repeatYoyo(1, 0F).start();
+		timeline.update(4.5F);
+		Assert.assertEquals(0F, first.floatValue(), 0F);
+		Assert.assertEquals(0F, second.floatValue(), 0F);
+		timeline.update(-1F);
+		Assert.assertEquals(5F, first.floatValue(), 0F);
+		Assert.assertEquals(0F, second.floatValue(), 0F);
+		timeline.update(-1F);
+		Assert.assertEquals(10F, first.floatValue(), 0F);
+		Assert.assertEquals(10F, second.floatValue(), 0F);
+	}
+
 	private static Tween tween(final MutableFloat value, final float target) {
 		return Tween.to(value, 0, 1F).target(target).ease(TweenEquations.LINEAR);
 	}

@@ -422,10 +422,38 @@ public class TweenTest {
 		Assert.assertArrayEquals(new float[] {1F, 2F, 3F, 4F}, tween.getTargetValues(), 0F);
 	}
 
+	@Test
+	public void explainsTheCombinedAttributesLimitItReached() {
+		final String message = "You cannot combine more than 3 attributes in a tween. You can raise this limit with Tween.setCombinedAttributesLimit(), which should be called once in application initialization code.";
+		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).target(1F, 2F, 3F, 4F)));
+		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).targetRelative(1F, 2F, 3F, 4F)));
+		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 4, 1F).start()));
+	}
+
+	@Test
+	public void explainsTheWaypointsLimitItReached() {
+		Tween.setWaypointsLimit(1);
+		TweenTest.emptyThePool();
+		final String message = "You cannot add more than 1 waypoints to a tween. You can raise this limit with Tween.setWaypointsLimit(), which should be called once in application initialization code.";
+		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new MutableFloat(0F), 0, 1F).waypoint(5F).waypoint(6F)));
+		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 2, 1F).waypoint(5F, 5F).waypoint(6F, 6F)));
+		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).waypoint(5F, 5F, 5F).waypoint(6F, 6F, 6F)));
+		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).waypoint(new float[] {5F, 5F, 5F}).waypoint(new float[] {6F, 6F, 6F})));
+	}
+
 	private static void emptyThePool() {
 		while (Tween.getPoolSize() > 0) {
 			Tween.mark();
 		}
+	}
+
+	private static String refusal(final Runnable action) {
+		try {
+			action.run();
+		} catch (final RuntimeException expected) {
+			return expected.getMessage();
+		}
+		throw new AssertionError("The tween must be refused");
 	}
 
 	@AllArgsConstructor

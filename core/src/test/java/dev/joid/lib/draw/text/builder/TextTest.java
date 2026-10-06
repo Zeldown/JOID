@@ -447,6 +447,13 @@ public class TextTest {
 		Assert.assertEquals(130D, text.getWidth(), 0D);
 	}
 
+	@Test
+	public void modifiesAnElementOfAnotherTextOnItsOwn() {
+		final Text text = Text.create(TextElement.create("hello ", TextTest.info()), TextElement.create("world", TextTest.info())).modifier(TextModifier.CAPITALIZE);
+		Assert.assertEquals("world", text.getText(text.get(1)));
+		Assert.assertEquals("World", text.getText(TextElement.create("world", TextTest.info())));
+	}
+
 	private static TextInfo info() {
 		return TextInfo.create(TextTest.FONT, 10F);
 	}

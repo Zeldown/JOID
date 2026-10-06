@@ -108,4 +108,14 @@ public class LongSignalTest {
 		Assert.assertEquals(4052555153018976267L, signal.getOrDefault().longValue());
 	}
 
+	@Test
+	public void truncatesANegativePowerTowardZero() {
+		final LongSignal half = LongSignal.of(2L);
+		half.power(-1);
+		Assert.assertEquals(0L, half.getOrDefault().longValue());
+		final LongSignal unit = LongSignal.of(-1L);
+		unit.power(-3);
+		Assert.assertEquals(-1L, unit.getOrDefault().longValue());
+	}
+
 }

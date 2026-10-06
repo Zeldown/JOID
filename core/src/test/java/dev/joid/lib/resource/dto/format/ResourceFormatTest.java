@@ -1,7 +1,11 @@
 package dev.joid.lib.resource.dto.format;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,6 +62,22 @@ public class ResourceFormatTest {
 		final Asset asset = Asset.of(new ByteArrayInputStream(ResourceFormatTest.PNG));
 		ResourceFormat.decoder(asset);
 		Assert.assertArrayEquals(ResourceFormatTest.PNG, asset.read());
+	}
+
+	@Test
+	public void fallsBackToTheRasterDecoderForAnUnknownHeader() throws IOException {
+		final BufferedImage image = new BufferedImage(2, 1, BufferedImage.TYPE_INT_RGB);
+		image.setRGB(0, 0, 0xFF0000);
+		image.setRGB(1, 0, 0x0000FF);
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		ImageIO.write(image, "bmp", output);
+		final IResourceDecoder decoder = ResourceFormat.decoder(Asset.of(new ByteArrayInputStream(output.toByteArray())));
+		Assert.assertTrue(decoder instanceof RasterResourceDecoder);
+		final ResourceData data = new ResourceData("image.bmp", null);
+		decoder.decode(data);
+		Assert.assertEquals(2, data.getWidth());
+		Assert.assertEquals(1, data.getHeight());
+		Assert.assertArrayEquals(new int[] {0xFFFF0000, 0xFF0000FF}, data.getData()[0]);
 	}
 
 }

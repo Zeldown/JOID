@@ -494,6 +494,32 @@ public class VideoResourceDecoderTest {
 		}
 	}
 
+	@Test
+	public void keepsItsPositionWhenPlayedAgain() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 7);
+		Assert.assertSame(decoder, decoder.play());
+		this.play(decoder, data, 6);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(2, decoder.getDisplayedFrameIndex());
+		Assert.assertEquals(60, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	@Test
+	public void skipsTheFramesBetweenItsKeyFrameAndASeek() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/dto/decoder/impl/predicted.mkv"));
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		VideoResourceDecoderTest.buffer(decoder, 6);
+		decoder.seek(0.6D);
+		this.play(decoder, data, 1);
+		Assert.assertEquals(6, decoder.getDisplayedFrameIndex());
+		Assert.assertEquals(140, VideoResourceDecoderTest.shade(data), 3);
+		this.play(decoder, data, 6);
+		Assert.assertEquals(7, decoder.getDisplayedFrameIndex());
+		Assert.assertEquals(160, VideoResourceDecoderTest.shade(data), 3);
+	}
+
 	private VideoResourceDecoder frames() {
 		return this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/dto/decoder/impl/frames.mkv"));
 	}
@@ -548,6 +574,13 @@ public class VideoResourceDecoderTest {
 			System.setErr(previous);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	private static void buffer(final VideoResourceDecoder decoder, final int frames) throws InterruptedException {
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (decoder.getDecodedFrameIndex().get() < frames && System.currentTimeMillis() < deadline) {
+			Thread.sleep(1L);
+		}
 	}
 
 	private static final class RecordingAudioBridge implements IAudioBridge {

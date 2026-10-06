@@ -1663,6 +1663,19 @@ public class NodeTest {
 		Assert.assertNotNull(RectNode.create(0D, 0D, 10D, 10D).getCallbackList(NodeCallbackRegistry.getId(NodeInitCallback.class)));
 	}
 
+	@Test
+	public void drawsANodeRaisedAfterItsAttachmentOverTheOtherNodesOfItsUi() {
+		final RectNode raised = RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.2F, 0.4F, 0.6F, 1F));
+		final RectNode other = RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.6F, 0.4F, 0.2F, 1F));
+		final NodeUI ui = new NodeUI(raised);
+		this.bridges.open(ui);
+		other.attach(ui);
+		raised.zindex(1);
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList(other, raised), ui.getNodeList().ordered());
+		Assert.assertTrue(this.order(0.6F, 0.4F, 0.2F) < this.order(0.2F, 0.4F, 0.6F));
+	}
+
 	private Draw draw(final float red, final float green, final float blue) {
 		return this.bridges.getRender().getDraws(red, green, blue).get(0);
 	}

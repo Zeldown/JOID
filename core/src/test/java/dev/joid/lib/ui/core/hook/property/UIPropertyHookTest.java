@@ -15,6 +15,7 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.ui.core.UI;
+
 import lombok.AllArgsConstructor;
 
 public class UIPropertyHookTest {
@@ -95,6 +96,34 @@ public class UIPropertyHookTest {
 		Assert.assertFalse(file.exists());
 	}
 
+	@Test
+	public void keepsTheDefaultOfAPropertySavedWithAnotherType() throws Exception {
+		final File file = new File(new File(this.folder.getRoot(), "property"), PropertyUI.class.getName() + ".property");
+		Assert.assertTrue(file.getParentFile().mkdirs());
+		Files.write(file.toPath(), "{\"zoomLevel\":\"wide\",\"title\":\"Shop\"}".getBytes(StandardCharsets.UTF_8));
+
+		final PropertyUI loaded = new PropertyUI();
+		UIPropertyHook.load(loaded);
+		Assert.assertEquals(1D, loaded.zoom, 0D);
+		Assert.assertEquals("Shop", loaded.title);
+	}
+
+	@Test
+	public void leavesAFinalPropertyAlone() throws Exception {
+		UIPropertyHook.save(new FinalPropertyUI());
+		final File file = new File(new File(this.folder.getRoot(), "property"), FinalPropertyUI.class.getName() + ".property");
+		final String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		Assert.assertTrue(json, json.contains("\"title\":\"Home\""));
+		Assert.assertFalse(json, json.contains("origin"));
+
+		Files.write(file.toPath(), "{\"origin\":{\"x\":5,\"y\":6},\"title\":\"Shop\"}".getBytes(StandardCharsets.UTF_8));
+		final FinalPropertyUI loaded = new FinalPropertyUI();
+		UIPropertyHook.load(loaded);
+		Assert.assertEquals("Shop", loaded.title);
+		Assert.assertEquals(1, loaded.origin.x);
+		Assert.assertEquals(2, loaded.origin.y);
+	}
+
 	public static class PropertyUI extends UI {
 
 		@UIProperty("zoomLevel")
@@ -116,6 +145,16 @@ public class UIPropertyHookTest {
 
 		private final int x;
 		private final int y;
+
+	}
+
+	public static class FinalPropertyUI extends UI {
+
+		@UIProperty
+		private final Position origin = new Position(1, 2);
+
+		@UIProperty
+		private String title = "Home";
 
 	}
 
