@@ -927,6 +927,24 @@ public class NodeTest {
 	}
 
 	@Test
+	public void waitsForTheEndOfAListThatGrowsWhileScrolling() {
+		final List<Double> ends = new ArrayList<>();
+		final ContainerNode row = NodeTest.row().onScrollEnding((container, scrollX, scrollY) -> {
+			if (container.getChildren().size() == 2) {
+				RectNode.create(700D, 0D, 300D, 100D).attach(container);
+			}
+		}).onScrollEnd((container, scrollX, scrollY) -> ends.add(scrollX));
+		this.bridges.open(new NodeUI(row));
+		row.setScrollX(-1000D);
+		this.bridges.frames(200);
+		Assert.assertEquals(-300D, row.getScrollX(), 0D);
+		Assert.assertTrue(ends.isEmpty());
+		row.setScrollX(-1000D);
+		this.bridges.frames(200);
+		Assert.assertEquals(Arrays.asList(-600D), ends);
+	}
+
+	@Test
 	public void scrollsToAShareOfItsOverflow() {
 		final ContainerNode row = NodeTest.row();
 		final ContainerNode column = NodeTest.column();

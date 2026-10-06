@@ -395,6 +395,8 @@ public abstract class Node implements INode {
 
 				this.targetScrollX = Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0);
 				this.targetScrollY = Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0);
+				this.scrollEndX = this.scrollEndX && this.targetScrollX == -this.maxScrollX;
+				this.scrollEndY = this.scrollEndY && this.targetScrollY == -this.maxScrollY;
 
 				if (this.targetScrollX != this.scrollX) {
 					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
