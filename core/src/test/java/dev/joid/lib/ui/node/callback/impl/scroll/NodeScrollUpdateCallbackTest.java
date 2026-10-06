@@ -52,7 +52,7 @@ public class NodeScrollUpdateCallbackTest {
 		final ContainerNode box = NodeScrollUpdateCallbackTest.box(1000D).onScrollUpdate((node, value) -> received.addAll(Arrays.asList(node, value, node.getTargetScrollY())));
 		this.bridges.open(new NodeUI(box)).frames(30);
 		box.setScrollY(-200D);
-		box.setScrollY(0.5F);
+		box.scrollRatioY(0.5F);
 		Assert.assertEquals(Arrays.asList(box, -200D, -200D, box, -350D, -350D), received);
 	}
 

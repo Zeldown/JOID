@@ -14,8 +14,9 @@ public abstract class ScrollbarNode extends Node {
 	@NonNull
 	private final BoundingBox scroll;
 
-	private Node scrollNode;
-	private boolean dragging;
+	private Node      scrollNode;
+	private boolean   dragging;
+	private ClickType dragButton;
 
 	protected ScrollbarNode(final double x, final double y, final double width, final double height, final @NonNull BoundingBox scroll) {
 		super(x, y, width, height);
@@ -29,18 +30,18 @@ public abstract class ScrollbarNode extends Node {
 		}
 
 		if (this.dragging) {
-			if (this.scrollNode.hasOverflowX()) {
+			if (this.isHorizontal() && this.scrollNode.hasOverflowX()) {
 				final double newX = Math.min(Math.max(super.getDefaultX(), mouseX - super.getAbsoluteDefaultX() + super.getDefaultX() - super.dw(2D)), super.getDefaultX() + this.getScrollWidth());
 				super.x(newX);
 
 				final float percent = (float) ((newX - super.getDefaultX()) / this.getScrollWidth());
-				this.scrollNode.setScrollX(percent);
-			} else if (this.scrollNode.hasOverflowY()) {
+				this.scrollNode.scrollRatioX(percent);
+			} else if (!this.isHorizontal() && this.scrollNode.hasOverflowY()) {
 				final double newY = Math.min(Math.max(super.getDefaultY(), mouseY - super.getAbsoluteDefaultY() + super.getDefaultY() - super.dh(2D)), super.getDefaultY() + this.getScrollHeight());
 				super.y(newY);
 
 				final float percent = (float) ((newY - super.getDefaultY()) / this.getScrollHeight());
-				this.scrollNode.setScrollY(percent);
+				this.scrollNode.scrollRatioY(percent);
 			}
 		}
 
@@ -54,21 +55,31 @@ public abstract class ScrollbarNode extends Node {
 
 	@Override
 	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (!this.isHovered(mouseX, mouseY)) {
+		if (this.dragging || !this.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
-		context.cancel(() -> this.dragging = true);
+		context.cancel(() -> {
+			this.dragging   = true;
+			this.dragButton = clickType;
+		});
 	}
 
 	@Override
 	public final void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		this.dragging = false;
+		if (clickType == this.dragButton) {
+			this.dragging   = false;
+			this.dragButton = null;
+		}
 	}
 
 	public final <T extends ScrollbarNode> @NonNull T scrollNode(final @NonNull Node scrollNode) {
 		this.scrollNode = scrollNode;
 		return (T) this;
+	}
+
+	public final boolean isHorizontal() {
+		return this.scroll.getWidth() > this.scroll.getHeight();
 	}
 
 	public final double getScrollWidth() {

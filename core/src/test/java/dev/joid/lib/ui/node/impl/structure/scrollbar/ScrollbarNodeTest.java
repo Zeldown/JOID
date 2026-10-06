@@ -85,6 +85,34 @@ public class ScrollbarNodeTest {
 	}
 
 	@Test
+	public void keepsDraggingUntilTheButtonThatStartedIt() {
+		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
+		final RectNode content = ScrollbarNodeTest.column(bar);
+		this.press(content, 515D, 110D);
+		this.bridges.getUi().mouseReleased(ClickType.RIGHT);
+		Assert.assertTrue(bar.isDragging());
+		Assert.assertSame(ClickType.LEFT, bar.getDragButton());
+		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		Assert.assertFalse(bar.isDragging());
+		Assert.assertNull(bar.getDragButton());
+	}
+
+	@Test
+	public void drivesTheAxisOfItsTrack() {
+		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
+		final RectNode content = ScrollbarNodeTest.column(bar);
+		RectNode.create(0D, 0D, 600D, 10D).attach(content);
+		Assert.assertFalse(bar.isHorizontal());
+		this.press(content, 515D, 110D);
+		Assert.assertTrue(content.hasOverflowX());
+		this.bridges.move(515D, 150D).frame();
+		Assert.assertEquals(40D, bar.getY(), 1E-9D);
+		Assert.assertEquals(410D, bar.getX(), 0D);
+		Assert.assertEquals(-100D, content.getTargetScrollY(), 1E-6D);
+		Assert.assertEquals(0D, content.getTargetScrollX(), 0D);
+	}
+
+	@Test
 	public void ignoresAPressBesideIt() {
 		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
 		this.press(ScrollbarNodeTest.column(bar), 515D, 180D);

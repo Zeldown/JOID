@@ -55,7 +55,7 @@ toolbar.append(back, close).attach(this);
 
 ![A black bar across the top of the canvas with a white square on the left and a red square on the right](../images/ess-nodes-toolbar.png "The toolbar with its two children, across the whole 1920-unit width (0.4× scale).")
 
-> WARNING: A node has a single parent. Never attach the same node to two parents: create a second node instead.
+> NOTE: A node has a single parent. Attaching a node to another parent moves it there: it leaves its previous parent (or the top level of its UI) first.
 
 ## Chaining settings
 
@@ -94,7 +94,7 @@ RectNode
 
 `BooleanSignal` is a value that you can change from anywhere (`open.toggle()`); signals are the subject of [State and Reactivity](state.md).
 
-A hidden node is not drawn, nor are its children, and it receives no clicks or hover. `enabled(...)` is the softer version: a disabled node is still drawn but does not react to the mouse.
+A hidden node is not drawn, nor are its children, and it receives no clicks or hover. `enabled(...)` is the softer version: a disabled node is still drawn but neither it nor its children react to the mouse.
 
 ```java
 RectNode.create(100, 100, 300, 80).color(Color.GRAY).enabled(node -> !open.getOrDefault()).attach(this);

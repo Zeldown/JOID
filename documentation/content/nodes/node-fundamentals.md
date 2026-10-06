@@ -46,6 +46,7 @@ Every concrete node exposes static factories: `RectNode.create(x, y, width, heig
 | `attach(Node parent)` | Appends this node to `parent` (same as `parent.append(this)`). Returns this node. |
 | `attach(UI ui)` | Adds this node at the top level of `ui` (`ui.add(this)`) and loads it immediately. Returns this node. |
 | `append(Node... nodes)` | Appends the nodes, in order, as children of this node. Each child gets this node as parent and is loaded immediately when this node already belongs to a UI. Returns this node. |
+| `remove(Node... nodes)` | Removes the nodes from the children of this node: each one is detached (`onDetach()`, see [Lifecycle](#lifecycle)) and loses its parent. Nodes that are not children are ignored. Returns this node. |
 
 Children appended before their tree is attached are loaded together with it, so you can build a whole tree first and attach its root last:
 
@@ -58,7 +59,7 @@ toolbar.append(back, close).attach(this);
 
 Each appended child fires the parent's `onAppend` callbacks; cancelling their PRE phase skips that child (see [Callbacks](../interactions/callbacks.md)).
 
-> WARNING: A node has a single parent. `append` does not remove the node from a previous parent, so never append the same node to two parents. Appending a node again to the same parent loads it again and moves it to the end of its z-index group.
+> NOTE: A node has a single parent. Appending a node that already has another parent moves it: it is first removed from that parent with `remove(...)`, which detaches it, then appended and loaded again. A top-level node of a UI leaves the UI's node list the same way. Appending a node again to the same parent loads it again and moves it to the end of its z-index group.
 
 ### body
 
@@ -98,7 +99,8 @@ Most setters are declared as `<T extends Node> T method(...)`: the compiler infe
 | Code | Effect |
 | --- | --- |
 | `node.clearChildren()` | Detaches every child (runs `onDetach()` on each subtree) and empties the children list. Returns the node. |
-| `node.getChildren().remove(child)` | Removes one child from the list. Its detach hooks do not run: call `child.onDetach()` yourself when the child holds resources. |
+| `node.remove(child...)` | Detaches the children (runs `onDetach()` on each subtree), removes them from the list and clears their parent. Returns the node. |
+| `node.getChildren().remove(child)` | Removes one child from the list only. Its detach hooks do not run: prefer `remove(...)`. |
 | `ui.getNodeList().remove(node)` | Removes a top-level node from its UI (see [The UI Class](../ui/ui-class.md)). |
 
 Layout nodes close the gap left by a removed child on the next frame.
@@ -229,7 +231,7 @@ RectNode.create(0, 0, 320, 0).color(Color.BLACK).aspectRatio(16D / 9D).attach(th
 | `enabled(Predicate<T> enabled)` | Replaces the enabled predicate. Default: always enabled. |
 | `isVisible()` | `true` when the parent is visible, the node is not entirely outside its [overflow area](layout/overflow-and-scroll.md), and its own predicate passes. |
 | `isVisibleProperty()` | The node's own predicate only. Layout nodes use it to give no room to hidden children. |
-| `isEnabled()` | The node's own enabled predicate. |
+| `isEnabled()` | `true` when the parent is enabled and the node's own predicate passes. |
 | `getVisible()`, `getEnabled()` | The predicates themselves. |
 
 The predicates are evaluated each time the state is checked (several times per frame), so they can read any state directly:
@@ -251,7 +253,7 @@ RectNode
 | Tooltips | No | Yes |
 | Update ticks (`update`, `onUpdate`) | Yes | Yes |
 | Per-frame work: anchors, animators, scroll easing, drag movement, `onMount` | Paused | Yes |
-| Children | Hidden too | Not affected: `enabled` is not inherited |
+| Children | Hidden too | Disabled too: `enabled` is inherited like `visible` |
 
 ## Drawing order and depth
 
@@ -306,7 +308,7 @@ Layers are drawn inside the node's clip when its overflow is `HIDDEN` or `SCROLL
 | `getChildren(Class<T> clazz)` | A new `IndexedLinkedList<T>` with the children that are instances of `clazz` (subclasses included), in drawing order. |
 | `getChild(int index, Class<T> clazz)` | The `index`-th child that is an instance of `clazz`, as an `Optional`, empty when there is none. |
 | `getParent()` | The parent node, or `null` for a top-level node. |
-| `getUi()` | The UI the node belongs to, typed by the expected type (`final ShopUI ui = node.getUi();`). While a UI's `init()` runs, a node without UI returns that UI and keeps it. Otherwise `null` until the node is loaded. |
+| `getUi()` | The UI the node belongs to, typed by the expected type (`final ShopUI ui = node.getUi();`). While a UI's `init()` runs, a node without UI returns that UI without keeping it: `hasUi()` stays `false` until the node is loaded. Otherwise `null` until the node is loaded. |
 | `hasUi()` | `true` once the node has a UI. |
 
 The children list (`dev.joid.lib.utils.list`, see [Utilities](../reference/utilities.md)) offers:
@@ -343,7 +345,7 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
 | Update | Each update tick of the UI bridge (once per frame, before drawing, in the bundled demo windows) | `onUpdate()`: the children first, then the node's `update()` hook, wrapped by the `onUpdate` callbacks. Runs for hidden nodes too. |
 | Mount | The first rendered frame in which `isMounted()` is `true` | The `onMount` callbacks. Without [wait conditions](#waiting-and-skeletons), this is the node's first rendered frame. |
 | Reload | `reload()`, `WatchProperty.RELOAD` | The children reload first, then the node is loaded again (`init` and `onInit` run again), all wrapped by `onReload`. `body` consumers are not run again. |
-| Detach | `clearChildren()` on the parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the node's `detach()` hook, wrapped by the `onDetach` callbacks. |
+| Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the node's `detach()` hook, wrapped by the `onDetach` callbacks. |
 
 - Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, clickType, context)`...) are the entry points that run the stage. You call `reload()` and `onDetach()` yourself when needed; the others are called by the framework.
 - `init` runs on every load, including reloads: keep it repeatable. Override the hooks in your own nodes (see [Custom Nodes](custom-nodes.md)).
@@ -387,13 +389,13 @@ The card shows an animated placeholder until `title.set(...)` is called, then dr
 
 ## Copying nodes with copy
 
-`copy()` returns a new node of the same class, built by reflection through a constructor `(double, double, double, double)`, `(double, double)` or `()`, whatever its visibility. A node without one of these constructors throws a `RuntimeException` (`Failed to copy node: <class>`).
+`copy()` returns a new node of the same class, built by reflection through a constructor `(double, double, double, double)`, `(double, double)` or `()`, whatever its visibility; a `ScrollbarNode` is first tried with `(double, double, double, double, BoundingBox)`. A node without one of these constructors throws a `RuntimeException` (`Failed to copy node: <class>`).
 
 | State | Members |
 | --- | --- |
-| Copied | Current position and size, visibility and enabled predicates, position property, overflow, anchors, draggable property, z-index, z-level, aspect ratio, effects, layers, tooltips, callbacks, mounted state, the children (copied recursively), and every non-static, non-final, non-transient field declared by subclasses (by reference, so a `RectNode` copy shares the original's color supplier). |
-| Shared | The UI, parent and skeleton references. The copy is not appended to the parent. |
-| Not copied | Wait conditions, animators, scrollbar, body consumer, hover duration and equation, scroll speed and scroll state. |
+| Copied | Current position and size, visibility and enabled predicates, position property, overflow, anchors, draggable property, z-index, z-level, aspect ratio, hover duration and equation, scroll speed, wait conditions, effects, layers, tooltips, callbacks, mounted state, the children (copied recursively), the scrollbar (copied and linked to the copy), and every non-static, non-final, non-transient field declared by subclasses (by reference, so a `RectNode` copy shares the original's color supplier). |
+| Shared | The UI, parent and skeleton references, and the animators (the same `TweenAnimator` instances, reported by `onAnimate` on both nodes). The copy is not appended to the parent. |
+| Not copied | Body consumer and scroll state. |
 
 Callbacks added to the copy afterwards do not reach the original, and the other way around. `DraggableProperty` copy drags rely on `copy()` (see [Drag and Drop](../interactions/drag-drop.md)).
 
@@ -408,7 +410,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | Signals | `watch(Signal)`, `watch(Signal, WatchProperty...)`, `watch(Signal, Supplier<Boolean>, WatchProperty...)` | [Watching Signals](../state/watch.md) |
 | Stores | `useStore(Class<T>)`, the store of the node's UI | [Stores](../state/stores.md) |
 | Animation | `animate(TweenAnimator)`: the node updates the animator on every rendered frame and fires `onAnimate` when its value changes | [TweenAnimator](../animation/tween-animator.md) |
-| Overflow and scrolling | `overflow(OverflowProperty)`, `scrollX`, `scrollY`, `setScrollX`, `setScrollY`, `updateScroll`, `scrollSpeed`, `scrollbar`, `hasOverflowX`, `hasOverflowY` | [Overflow and Scrolling](layout/overflow-and-scroll.md) |
+| Overflow and scrolling | `overflow(OverflowProperty)`, `scrollX`, `scrollY`, `setScrollX`, `setScrollY`, `scrollRatioX`, `scrollRatioY`, `updateScroll`, `scrollSpeed`, `scrollbar`, `hasOverflowX`, `hasOverflowY` | [Overflow and Scrolling](layout/overflow-and-scroll.md) |
 | Writing nodes | Hooks, input dispatch entry points, `registerCallback`, `executeCallback`, `executePreCallback`, `executePostCallback`, `fireDrag`, `fireDragStart`, `fireDragEnd`, `hasCallback`, `getCallbackList`, `getCallbackMap` | [Custom Nodes](custom-nodes.md) |
 
 ## Node API reference
@@ -417,7 +419,8 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 
 | Method | Description |
 | --- | --- |
-| `append(Node... nodes)` | Appends children. |
+| `append(Node... nodes)` | Appends children, moving them from their previous parent. |
+| `remove(Node... nodes)` | Detaches and removes children. |
 | `attach(Node parent)`, `attach(UI ui)` | Attaches this node to a parent or to a UI. |
 | `body(Consumer<T>)`, `body(Runnable)` | Runs and stores a builder. |
 | `clearChildren()` | Detaches and removes every child. |

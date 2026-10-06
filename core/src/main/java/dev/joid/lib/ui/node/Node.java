@@ -78,6 +78,7 @@ import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
@@ -357,40 +358,36 @@ public abstract class Node implements INode {
 				boolean scrollsX = false;
 				boolean scrollsY = false;
 				if (this.overflow == OverflowProperty.SCROLL) {
-					if (!this.hasOverflowY()) {
-						this.maxScrollX = 0;
-						double scrollOffset = Double.MIN_VALUE;
-						for (final Node child : this.children) {
-							this.maxScrollX = Math.max(this.maxScrollX, child.defaultX + child.width - this.width);
-							if (scrollOffset == Double.MIN_VALUE) {
-								scrollOffset = child.defaultX;
-							} else {
-								scrollOffset = Math.min(scrollOffset, child.defaultX);
-							}
-						}
-
-						if (this.hasOverflowX()) {
-							this.maxScrollX += scrollOffset;
-							scrollsX = true;
+					this.maxScrollX = 0;
+					double scrollOffsetX = Double.MIN_VALUE;
+					for (final Node child : this.children) {
+						this.maxScrollX = Math.max(this.maxScrollX, child.defaultX + child.width - this.width);
+						if (scrollOffsetX == Double.MIN_VALUE) {
+							scrollOffsetX = child.defaultX;
+						} else {
+							scrollOffsetX = Math.min(scrollOffsetX, child.defaultX);
 						}
 					}
 
-					if (!this.hasOverflowX()) {
-						this.maxScrollY = 0;
-						double scrollOffset = Double.MIN_VALUE;
-						for (final Node child : this.children) {
-							this.maxScrollY = Math.max(this.maxScrollY, child.defaultY + child.height - this.height);
-							if (scrollOffset == Double.MIN_VALUE) {
-								scrollOffset = child.defaultY;
-							} else {
-								scrollOffset = Math.min(scrollOffset, child.defaultY);
-							}
-						}
+					if (this.hasOverflowX()) {
+						this.maxScrollX += scrollOffsetX;
+						scrollsX = true;
+					}
 
-						if (this.hasOverflowY()) {
-							this.maxScrollY += scrollOffset;
-							scrollsY = true;
+					this.maxScrollY = 0;
+					double scrollOffsetY = Double.MIN_VALUE;
+					for (final Node child : this.children) {
+						this.maxScrollY = Math.max(this.maxScrollY, child.defaultY + child.height - this.height);
+						if (scrollOffsetY == Double.MIN_VALUE) {
+							scrollOffsetY = child.defaultY;
+						} else {
+							scrollOffsetY = Math.min(scrollOffsetY, child.defaultY);
 						}
+					}
+
+					if (this.hasOverflowY()) {
+						this.maxScrollY += scrollOffsetY;
+						scrollsY = true;
 					}
 				}
 
@@ -435,12 +432,12 @@ public abstract class Node implements INode {
 				}
 
 				if (this.scrollbar != null) {
-					if (this.hasOverflowX()) {
+					if (this.scrollbar.isHorizontal() && this.hasOverflowX()) {
 						final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollX / this.maxScrollX)));
 						this.scrollbar.x(this.scrollbar.getDefaultX() + this.scrollbar.getScrollWidth() * percent);
 					}
 
-					if (this.hasOverflowY()) {
+					if (!this.scrollbar.isHorizontal() && this.hasOverflowY()) {
 						final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollY / this.maxScrollY)));
 						this.scrollbar.y(this.scrollbar.getDefaultY() + this.scrollbar.getScrollHeight() * percent);
 					}
@@ -599,7 +596,7 @@ public abstract class Node implements INode {
 					}
 				}
 
-				if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.hasOverflowX() || this.hasOverflowY())) {
+				if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
 					this.scrollbar.render(mouseX, mouseY);
 				}
 			}
@@ -697,12 +694,12 @@ public abstract class Node implements INode {
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, value, context));
 		if (!context.isCancelled() && this.isHovered(mouseX, mouseY) && value != 0) {
 			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
-			if (this.hasOverflowX() && (value > 0 ? this.targetScrollX < 0 : this.targetScrollX > -this.maxScrollX)) {
-				this.scrollX(value > 0 ? 30 : -30, mappedScrollSpeed);
-				context.cancel();
-			}
-
-			if (this.hasOverflowY() && (value > 0 ? this.targetScrollY < 0 : this.targetScrollY > -this.maxScrollY)) {
+			if (UI.isShiftKeyDown() || !this.hasOverflowY()) {
+				if (this.hasOverflowX() && (value > 0 ? this.targetScrollX < 0 : this.targetScrollX > -this.maxScrollX)) {
+					this.scrollX(value > 0 ? 30 : -30, mappedScrollSpeed);
+					context.cancel();
+				}
+			} else if (value > 0 ? this.targetScrollY < 0 : this.targetScrollY > -this.maxScrollY) {
 				this.scrollY(value > 0 ? 30 : -30, mappedScrollSpeed);
 				context.cancel();
 			}
@@ -899,12 +896,30 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
 			this.executeCallback(Node.CALLBACK_APPEND, InternalContext.create(), () -> {
+				if (node.parent != null && node.parent != this) {
+					node.parent.remove(node);
+				} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
+					node.onDetach();
+					node.ui.getNodeList().remove(node);
+				}
+
 				node.parent(this);
 				if (this.ui != null) {
 					node.load(this.ui);
 				}
 				this.children.add(node);
 			}, node);
+		}
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T remove(final @NonNull Node @NonNull ... nodes) {
+		for (final Node node : nodes) {
+			if (this.children.contains(node)) {
+				node.onDetach();
+				this.children.remove(node);
+				node.parent(null);
+			}
 		}
 		return (T) this;
 	}
@@ -956,8 +971,8 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T setScrollX(final float percent) {
-		this.setScrollX(-this.maxScrollX * percent);
+	public final <T extends Node> @NonNull T scrollRatioX(final float ratio) {
+		this.setScrollX(-this.maxScrollX * ratio);
 		return (T) this;
 	}
 
@@ -978,8 +993,8 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T setScrollY(final float percent) {
-		this.setScrollY(-this.maxScrollY * percent);
+	public final <T extends Node> @NonNull T scrollRatioY(final float ratio) {
+		this.setScrollY(-this.maxScrollY * ratio);
 		return (T) this;
 	}
 
@@ -1168,10 +1183,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends UI> T getUi() {
-		if (this.ui != null) {
-			return (T) this.ui;
-		}
-		return (T) (this.ui = UI.getCurrent());
+		return (T) (this.ui != null ? this.ui : UI.getCurrent());
 	}
 
 	public final double getAbsoluteDefaultX() {
@@ -1261,6 +1273,10 @@ public abstract class Node implements INode {
 	}
 
 	public boolean isEnabled() {
+		if (this.parent != null && !this.parent.isEnabled()) {
+			return false;
+		}
+
 		return this.enabled.test(this);
 	}
 
@@ -1366,27 +1382,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T copy() {
-		Node copy = null;
-		try {
-			final Constructor<? extends Node> constructor = this.getClass().getDeclaredConstructor(double.class, double.class, double.class, double.class);
-			constructor.setAccessible(true);
-			copy = constructor.newInstance(this.x, this.y, this.width, this.height);
-		} catch (final Exception e) {
-			try {
-				final Constructor<? extends Node> constructor = this.getClass().getDeclaredConstructor(double.class, double.class);
-				constructor.setAccessible(true);
-				copy = constructor.newInstance(this.x, this.y);
-			} catch (final Exception e1) {
-				try {
-					final Constructor<? extends Node> constructor = this.getClass().getDeclaredConstructor();
-					constructor.setAccessible(true);
-					copy = constructor.newInstance();
-				} catch (final Exception e2) {
-					throw new RuntimeException("Failed to copy node: " + this.getClass().getSimpleName(), e2);
-				}
-			}
-		}
-
+		final Node copy = this.instantiate();
 		copy.ui = this.ui;
 		copy.parent = this.parent;
 		copy.skeleton = this.skeleton;
@@ -1419,6 +1415,13 @@ public abstract class Node implements INode {
 
 		copy.aspectRatio = this.aspectRatio;
 
+		copy.hoverDuration = this.hoverDuration;
+		copy.hoverEquation = this.hoverEquation;
+		copy.scrollSpeed = this.scrollSpeed;
+
+		copy.waitingList.addAll(this.waitingList);
+		copy.animatorMap.putAll(this.animatorMap);
+
 		copy.mounted = this.mounted;
 
 		copy.lastWidth = this.lastWidth;
@@ -1428,6 +1431,10 @@ public abstract class Node implements INode {
 			final Node childCopy = child.copy();
 			childCopy.parent(copy);
 			copy.children.add(childCopy);
+		}
+
+		if (this.scrollbar != null) {
+			copy.scrollbar(this.scrollbar.copy());
 		}
 
 		for (final Field field : this.getFields(this.getClass())) {
@@ -1525,6 +1532,23 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T overflow(final @NonNull OverflowProperty overflow) {
+		if (this.overflow == OverflowProperty.SCROLL && overflow != OverflowProperty.SCROLL) {
+			for (final Node child : this.children) {
+				if (this.hasOverflowX()) {
+					child.x = child.defaultX;
+				}
+
+				if (this.hasOverflowY()) {
+					child.y = child.defaultY;
+				}
+			}
+
+			this.maxScrollX = this.maxScrollY = 0D;
+			this.scrollX = this.targetScrollX = 0D;
+			this.scrollY = this.targetScrollY = 0D;
+			this.scrollEndX = this.scrollEndY = false;
+		}
+
 		this.overflow = overflow;
 		return (T) this;
 	}
@@ -1921,6 +1945,29 @@ public abstract class Node implements INode {
 		}
 
 		return json;
+	}
+
+	private @NonNull Node instantiate() {
+		final Map<Class<?>[], Object[]> constructors = new LinkedHashMap<>();
+		if (this instanceof ScrollbarNode) {
+			constructors.put(new Class<?>[] {double.class, double.class, double.class, double.class, BoundingBox.class}, new Object[] {this.x, this.y, this.width, this.height, ((ScrollbarNode) this).getScroll()});
+		}
+		constructors.put(new Class<?>[] {double.class, double.class, double.class, double.class}, new Object[] {this.x, this.y, this.width, this.height});
+		constructors.put(new Class<?>[] {double.class, double.class}, new Object[] {this.x, this.y});
+		constructors.put(new Class<?>[0], new Object[0]);
+
+		Exception failure = null;
+		for (final Entry<Class<?>[], Object[]> entry : constructors.entrySet()) {
+			try {
+				final Constructor<? extends Node> constructor = this.getClass().getDeclaredConstructor(entry.getKey());
+				constructor.setAccessible(true);
+				return constructor.newInstance(entry.getValue());
+			} catch (final Exception e) {
+				failure = e;
+			}
+		}
+
+		throw new RuntimeException("Failed to copy node: " + this.getClass().getSimpleName(), failure);
 	}
 
 	private @NonNull List<@NonNull Field> getFields(final @NonNull Class<?> clazz) {

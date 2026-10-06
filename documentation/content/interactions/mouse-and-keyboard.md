@@ -58,7 +58,7 @@ public class EditorUI extends UI {
 - `value` of a wheel event is the delta forwarded by the UI bridge: positive when the wheel rolls up, never `0` (the bridge drops still events). The demo window of the GLFW module sends 120 per notch.
 - `deltaTime` of a drag event is the time value forwarded by the UI bridge; the demo windows of the GLFW and LWJGL 2 modules send the milliseconds elapsed since the button was pressed.
 - `onClick` consumes the press: the nodes behind and the UIs below do not receive it. `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` are listeners: they run for every event not consumed yet and leave it to the others; see [Consumed input events](callbacks.md#consumed-input-events).
-- Hidden and disabled nodes receive no mouse event: none of these callbacks, nor hover and drags, fire for a node whose `visible(...)` or `enabled(...)` returns `false`, or for the children of a hidden node.
+- Hidden and disabled nodes receive no mouse event: none of these callbacks, nor hover and drags, fire for a node whose `visible(...)` or `enabled(...)` returns `false`, or for the children of a hidden or disabled node.
 
 ## Mouse coordinates
 
