@@ -80,8 +80,8 @@ public final class DrawText {
 			}
 
 			if (mode == TextMode.OVERFLOW) {
-				final Text overflowText = text.copyProperties();
-				final String overflowStr = text.getOverflow() == null ? "" : text.getOverflow().getOverflow();
+				final Text overflowText = text.copyProperties().modifier(null);
+				final String overflowStr = text.getOverflow() == null || text.getWidth() <= width ? "" : text.getOverflow().getOverflow();
 
 				boolean overflow = false;
 				double overflowWidth = 0;
@@ -92,7 +92,7 @@ public final class DrawText {
 						final String subText = elementText.substring(0, i);
 						final double subTextWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(subText));
 						if (overflowWidth + subTextWidth + overflowStrWidth > width && !subText.isEmpty()) {
-							overflowText.add(element.copyWithText(subText.substring(0, subText.length() - 1)));
+							overflowText.add(element.copyWithText(subText.substring(0, subText.length() - 1)).modifier(null));
 							overflow = true;
 							break;
 						}
@@ -103,7 +103,7 @@ public final class DrawText {
 					}
 
 					overflowWidth += FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(elementText));
-					overflowText.add(element);
+					overflowText.add(element.copyWithText(elementText).modifier(null));
 				}
 
 				if (overflowText.isEmpty() || overflowText.getText().isEmpty()) {
@@ -178,44 +178,45 @@ public final class DrawText {
 	public @NonNull List<@NonNull Text> getLines(final double width, final @NonNull Text text) {
 		final List<Text> textList = new LinkedList<>();
 
-		Text currentText = text.copyProperties();
+		Text currentText = text.copyProperties().modifier(null);
 		for (final TextElement element : text.getElementList()) {
 			final String elementText = text.getText(element).replace("<br>", String.valueOf('\n'));
 			int lastSplit = 0;
 			for (int i = 0; i < elementText.length(); i++) {
 				final char c = elementText.charAt(i);
 				if (c == '\n' || c == '\r') {
-					final int foundSplit = i;
-					currentText.add(element.copyWithText(elementText.substring(lastSplit, foundSplit)));
+					currentText.add(element.copyWithText(elementText.substring(lastSplit, i)).modifier(null));
 					textList.add(currentText);
-					currentText = text.copyProperties();
-					lastSplit = foundSplit;
+					currentText = text.copyProperties().modifier(null).add(element.copyWithText("").modifier(null));
+					if (elementText.startsWith("\r\n", i)) {
+						i++;
+					}
+					lastSplit = i + 1;
+					continue;
 				}
 
 				final String part = elementText.substring(lastSplit, i + 1);
 				final double elementWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(part));
-				if (currentText.getWidth() + elementWidth >= width) {
+				if (currentText.getWidth() + elementWidth > width) {
 					int foundSplit = i;
-					for (int j = i - 1; j >= lastSplit; j--) {
+					for (int j = i; j >= lastSplit; j--) {
 						if (elementText.charAt(j) == ' ') {
-							foundSplit = Math.min(elementText.length(), j + 1);
+							foundSplit = j;
 							break;
 						}
 					}
 
-					String splitText = elementText.substring(lastSplit, foundSplit);
-					if (splitText.endsWith(" ")) {
-						splitText = splitText.substring(0, splitText.length() - 1);
+					if (foundSplit > lastSplit || !currentText.getText().isEmpty()) {
+						currentText.add(element.copyWithText(elementText.substring(lastSplit, foundSplit)).modifier(null));
+						textList.add(currentText);
+						currentText = text.copyProperties().modifier(null);
+						lastSplit = elementText.charAt(foundSplit) == ' ' ? foundSplit + 1 : foundSplit;
 					}
-					currentText.add(element.copyWithText(splitText));
-					textList.add(currentText);
-					currentText = text.copyProperties();
-					lastSplit = foundSplit;
 				}
+			}
 
-				if (i == elementText.length() - 1) {
-					currentText.add(element.copyWithText(elementText.substring(lastSplit)));
-				}
+			if (lastSplit < elementText.length()) {
+				currentText.add(element.copyWithText(elementText.substring(lastSplit)).modifier(null));
 			}
 		}
 

@@ -15,19 +15,19 @@ public class TextElement {
 
 	private final StackTraceElement[] origin;
 
-	private TextInfo         info;
-	private Supplier<Object> text;
-	private ITextModifier    modifier;
+	private TextInfo      info;
+	private Supplier<?>   text;
+	private ITextModifier modifier;
 
 	protected TextElement(final @NonNull Object text, final @NonNull TextInfo info, final ITextModifier modifier) {
 		this(() -> text.toString(), info, modifier);
 	}
 
-	protected TextElement(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info, final ITextModifier modifier) {
+	protected TextElement(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final ITextModifier modifier) {
 		this(text, info, modifier, JOID.inst().isDevMode() ? TextElement.locate() : null);
 	}
 
-	private TextElement(final Supplier<Object> text, final TextInfo info, final ITextModifier modifier, final StackTraceElement[] origin) {
+	private TextElement(final Supplier<?> text, final TextInfo info, final ITextModifier modifier, final StackTraceElement[] origin) {
 		this.text = text;
 		this.info = info;
 		this.modifier = modifier;
@@ -62,7 +62,7 @@ public class TextElement {
 		return new TextElement(text, info, null);
 	}
 
-	public static final @NonNull TextElement create(final @NonNull Supplier<@NonNull Object> text, final @NonNull TextInfo info) {
+	public static final @NonNull TextElement create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
 		return new TextElement(() -> text.get(), info, null);
 	}
 
@@ -107,7 +107,7 @@ public class TextElement {
 		return (T) this;
 	}
 
-	public final <T extends TextElement> @NonNull T text(final @NonNull Supplier<@NonNull Object> text) {
+	public final <T extends TextElement> @NonNull T text(final @NonNull Supplier<?> text) {
 		this.text = text;
 		return (T) this;
 	}
@@ -130,7 +130,7 @@ public class TextElement {
 		return (T) new TextElement(() -> text.toString(), this.info, this.modifier, this.origin);
 	}
 
-	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Supplier<@NonNull Object> text) {
+	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Supplier<?> text) {
 		return (T) new TextElement(text, this.info, this.modifier, this.origin);
 	}
 

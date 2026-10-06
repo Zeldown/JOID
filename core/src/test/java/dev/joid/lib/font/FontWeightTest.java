@@ -26,4 +26,24 @@ public class FontWeightTest {
 		Assert.assertSame(FontWeight.SEMI_BOLD, FontWeight.of(560));
 	}
 
+	@Test
+	public void risesByAHundredFromOneWeightToTheNext() {
+		for (final FontWeight weight : FontWeight.values()) {
+			Assert.assertEquals((weight.ordinal() + 1) * 100, weight.getValue());
+		}
+	}
+
+	@Test
+	public void clampsTheExtremeIntegers() {
+		Assert.assertSame(FontWeight.BLACK, FontWeight.of(Integer.MAX_VALUE));
+		Assert.assertSame(FontWeight.THIN, FontWeight.of(Integer.MIN_VALUE));
+	}
+
+	@Test
+	public void roundsAHalfStepUp() {
+		Assert.assertSame(FontWeight.THIN, FontWeight.of(149));
+		Assert.assertSame(FontWeight.EXTRA_LIGHT, FontWeight.of(150));
+		Assert.assertSame(FontWeight.BLACK, FontWeight.of(850));
+	}
+
 }

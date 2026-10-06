@@ -115,7 +115,7 @@ TextNode.create(0, 0)
     .attach(parent);
 ```
 
-`Text.create(Supplier<Object>, TextInfo)` re-evaluates on each draw, and `.watch(count)` triggers a reload whenever `count` changes.
+`Text.create(Supplier<?>, TextInfo)` re-evaluates on each draw, and `.watch(count)` triggers a reload whenever `count` changes.
 
 ## Effects
 

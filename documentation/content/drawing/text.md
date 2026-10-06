@@ -63,7 +63,7 @@ List<String> getLines(double width, String text, TextInfo info)
 List<Text>   getLines(double width, Text text)
 ```
 
-Splits a text into lines that fit the given pixel width. Respects `\n`, `\r`, and `<br>` break markers. The first overload returns plain strings; the second preserves element/info structure for multi-style text.
+Splits a text into lines that fit the given pixel width. `\n`, `\r`, `\r\n` and `<br>` each end a line and never appear in it, and a final line break leaves an empty last line. A line as wide as `width` stays whole; a longer one wraps at its last space, which is dropped, or cuts a word wider than the line. The first overload returns plain strings; the second preserves element/info structure for multi-style text, with the modified text and no modifier on each line.
 
 ```java
 double y = 40;
@@ -78,7 +78,7 @@ for (final String line : DrawUtils.TEXT.getLines(300, longText, info)) {
 | Mode | Behaviour |
 |---|---|
 | `NORMAL` | Draw the text as-is, aligned inside the box. No wrapping, no overflow handling. |
-| `OVERFLOW` | If the text exceeds `width`, truncate and append the current `TextOverflow` suffix. |
+| `OVERFLOW` | If the text exceeds `width`, truncate and append the current `TextOverflow` suffix. A text that fits is drawn whole, without suffix. |
 | `SPLIT` | Wrap to multiple lines to fit `width`. No vertical clipping — the text may overflow `height`. |
 | `BOX` | Wrap like `SPLIT`, but skip any line that would sit outside `(y, y+height)`. |
 
@@ -105,7 +105,7 @@ DrawUtils.TEXT.drawText(x, y, 200, 40, t, TextMode.OVERFLOW);
 ```java
 Text create()
 Text create(Object text, TextInfo info)
-Text create(Supplier<Object> text, TextInfo info)
+Text create(Supplier<?> text, TextInfo info)
 Text create(Object text, TextInfo info, Align horizontalAlign)
 Text create(Object text, TextInfo info, Align horizontalAlign, Align verticalAlign)
 Text create(Object text, TextInfo info, TextOverflow overflow)
@@ -115,15 +115,15 @@ Text create(List<TextElement> elements)
 Text create(TextElement... elements)
 ```
 
-The `Supplier<Object>` variants bind a dynamic source — the text re-evaluates at draw time without rebuilding the `Text`.
+The `Supplier<?>` variants bind a dynamic source of any type — the text and its width and height re-evaluate at draw time without rebuilding the `Text`.
 
 ### `text` / `info` (mutation)
 
 ```java
 Text text(String text)
-Text text(Supplier<String> text)
+Text text(Supplier<?> text)
 Text text(int index, String text)
-Text text(int index, Supplier<String> text)
+Text text(int index, Supplier<?> text)
 Text info(TextInfo info)
 Text info(int index, TextInfo info)
 ```
@@ -187,7 +187,7 @@ boolean      isEmpty()
 
 ```java
 TextElement create(Object text, TextInfo info)
-TextElement create(Supplier<Object> text, TextInfo info)
+TextElement create(Supplier<?> text, TextInfo info)
 TextElement create(int text, TextInfo info)
 TextElement create(double text, TextInfo info)
 TextElement create(float text, TextInfo info)
@@ -202,7 +202,7 @@ Factories for a single run. Primitives are converted via `String.valueOf`.
 
 ```java
 TextElement text(Object text)
-TextElement text(Supplier<Object> text)
+TextElement text(Supplier<?> text)
 TextElement text(int text)
 TextElement text(double text)
 TextElement text(float text)
@@ -218,14 +218,14 @@ TextElement modifier(ITextModifier modifier)
 ```java
 TextElement copy()
 TextElement copyWithText(Object text)
-TextElement copyWithText(Supplier<Object> text)
+TextElement copyWithText(Supplier<?> text)
 TextElement copyWithInfo(TextInfo info)
 TextElement copyWithModifier(ITextModifier modifier)
 ```
 
 ## Modifiers (`ITextModifier`)
 
-A modifier transforms the final string at draw time. Attach it with `text.modifier(...)` or `element.modifier(...)`. Built-ins:
+A modifier transforms the final string at draw time. Attach it with `text.modifier(...)` or `element.modifier(...)`. On a `Text`, it applies to the joined text of every element: `CAMEL_CASE` on `"hello "` + `"big world"` draws `helloBigWorld`. Built-ins:
 
 | Modifier | Example |
 |---|---|

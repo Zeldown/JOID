@@ -63,7 +63,7 @@ List<String> getLines(double width, String text, TextInfo info)
 List<Text>   getLines(double width, Text text)
 ```
 
-Découpe un texte en lignes qui tiennent dans la largeur en pixels donnée. Respecte `\n`, `\r` et les marqueurs `<br>`. La première variante retourne des `String` ; la seconde préserve la structure element/info pour le texte multi-style.
+Découpe un texte en lignes qui tiennent dans la largeur en pixels donnée. `\n`, `\r`, `\r\n` et `<br>` terminent chacun une ligne sans jamais y figurer, et un saut de ligne final laisse une dernière ligne vide. Une ligne aussi large que `width` reste entière ; une ligne plus longue passe à la ligne à son dernier espace, qui disparaît, ou coupe un mot plus large que la ligne. La première variante retourne des `String` ; la seconde préserve la structure element/info pour le texte multi-style, avec le texte modifié et sans modifier sur chaque ligne.
 
 ```java
 double y = 40;
@@ -78,7 +78,7 @@ for (final String line : DrawUtils.TEXT.getLines(300, longText, info)) {
 | Mode | Comportement |
 |---|---|
 | `NORMAL` | Dessine le texte tel quel, aligné dans la box. Pas de wrap, pas d'overflow. |
-| `OVERFLOW` | Si le texte dépasse `width`, tronque et ajoute le suffixe `TextOverflow` courant. |
+| `OVERFLOW` | Si le texte dépasse `width`, tronque et ajoute le suffixe `TextOverflow` courant. Un texte qui tient est dessiné entier, sans suffixe. |
 | `SPLIT` | Wrap en plusieurs lignes pour tenir dans `width`. Pas de clipping vertical — le texte peut dépasser `height`. |
 | `BOX` | Wrap comme `SPLIT`, mais saute toute ligne qui sortirait de `(y, y+height)`. |
 
@@ -105,7 +105,7 @@ DrawUtils.TEXT.drawText(x, y, 200, 40, t, TextMode.OVERFLOW);
 ```java
 Text create()
 Text create(Object text, TextInfo info)
-Text create(Supplier<Object> text, TextInfo info)
+Text create(Supplier<?> text, TextInfo info)
 Text create(Object text, TextInfo info, Align horizontalAlign)
 Text create(Object text, TextInfo info, Align horizontalAlign, Align verticalAlign)
 Text create(Object text, TextInfo info, TextOverflow overflow)
@@ -115,15 +115,15 @@ Text create(List<TextElement> elements)
 Text create(TextElement... elements)
 ```
 
-Les variantes `Supplier<Object>` lient une source dynamique — le texte ré-évalue à chaque draw sans reconstruire le `Text`.
+Les variantes `Supplier<?>` lient une source dynamique de n'importe quel type — le texte, sa largeur et sa hauteur se réévaluent à chaque draw sans reconstruire le `Text`.
 
 ### `text` / `info` (mutation)
 
 ```java
 Text text(String text)
-Text text(Supplier<String> text)
+Text text(Supplier<?> text)
 Text text(int index, String text)
-Text text(int index, Supplier<String> text)
+Text text(int index, Supplier<?> text)
 Text info(TextInfo info)
 Text info(int index, TextInfo info)
 ```
@@ -187,7 +187,7 @@ boolean      isEmpty()
 
 ```java
 TextElement create(Object text, TextInfo info)
-TextElement create(Supplier<Object> text, TextInfo info)
+TextElement create(Supplier<?> text, TextInfo info)
 TextElement create(int text, TextInfo info)
 TextElement create(double text, TextInfo info)
 TextElement create(float text, TextInfo info)
@@ -202,7 +202,7 @@ Factories pour un run unique. Les primitifs sont convertis via `String.valueOf`.
 
 ```java
 TextElement text(Object text)
-TextElement text(Supplier<Object> text)
+TextElement text(Supplier<?> text)
 TextElement text(int text)
 TextElement text(double text)
 TextElement text(float text)
@@ -218,14 +218,14 @@ TextElement modifier(ITextModifier modifier)
 ```java
 TextElement copy()
 TextElement copyWithText(Object text)
-TextElement copyWithText(Supplier<Object> text)
+TextElement copyWithText(Supplier<?> text)
 TextElement copyWithInfo(TextInfo info)
 TextElement copyWithModifier(ITextModifier modifier)
 ```
 
 ## Modifiers (`ITextModifier`)
 
-Un modifier transforme la chaîne finale au moment du draw. Attachez-le avec `text.modifier(...)` ou `element.modifier(...)`. Intégrés :
+Un modifier transforme la chaîne finale au moment du draw. Attachez-le avec `text.modifier(...)` ou `element.modifier(...)`. Sur un `Text`, il s'applique au texte joint de tous les éléments : `CAMEL_CASE` sur `"hello "` + `"big world"` dessine `helloBigWorld`. Intégrés :
 
 | Modifier | Exemple |
 |---|---|

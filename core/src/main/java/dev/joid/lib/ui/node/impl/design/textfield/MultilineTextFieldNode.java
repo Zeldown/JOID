@@ -410,7 +410,7 @@ public class MultilineTextFieldNode extends Node {
 				textToAdd = BridgeHandler.WINDOW.get().getClipboard();
 			}
 
-			textToAdd = textToAdd.replace("\r", "\n").replace(System.lineSeparator(), "\n");
+			textToAdd = textToAdd.replace("\r\n", "\n").replace("\r", "\n");
 			textToAdd = textToAdd.replace("\n", "${newline}");
 
 			final char[] achar = textToAdd.toCharArray();
@@ -698,7 +698,7 @@ public class MultilineTextFieldNode extends Node {
 		int textIdx = 0;
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
 			if (lineIdx > 0 && textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
-				textIdx++;
+				textIdx += this.text.startsWith("\r\n", textIdx) ? 2 : 1;
 			}
 
 			final String line = lines.get(lineIdx).replace("\n", "").replace("\r", "");
@@ -731,7 +731,7 @@ public class MultilineTextFieldNode extends Node {
 		final int clampedLineIdx = Math.min(Math.max(0, lineIdx), lines.size() - 1);
 		for (int i = 0; i <= clampedLineIdx; i++) {
 			if (i > 0 && textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
-				textIdx++;
+				textIdx += this.text.startsWith("\r\n", textIdx) ? 2 : 1;
 			}
 
 			final String line = lines.get(i).replace("\n", "").replace("\r", "");

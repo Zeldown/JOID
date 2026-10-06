@@ -65,4 +65,48 @@ public class TextStyleTest {
 		TextStyle.create(FontWeight.REGULAR, false, Color.WHITE).getEffects().add(TextStyleTest.FIRST);
 	}
 
+	@Test
+	public void removesAnEffect() {
+		final TextStyle style = TextStyle.create(FontWeight.REGULAR, false, Color.WHITE, TextStyleTest.FIRST, TextStyleTest.SECOND);
+		Assert.assertEquals(Collections.singletonList(TextStyleTest.SECOND), style.removeEffect(TextStyleTest.FIRST).getEffects());
+		Assert.assertEquals(Collections.singletonList(TextStyleTest.SECOND), style.removeEffect(TextStyleTest.FIRST).getEffects());
+	}
+
+	@Test
+	public void keepsItsOwnEffects() {
+		final ITextEffect[] effects = {TextStyleTest.FIRST};
+		final TextStyle style = TextStyle.create(FontWeight.REGULAR, false, Color.WHITE, effects);
+		effects[0] = TextStyleTest.SECOND;
+		Assert.assertEquals(Collections.singletonList(TextStyleTest.FIRST), style.getEffects());
+	}
+
+	@Test
+	public void leavesItsBaseUntouched() {
+		final TextStyle base = TextStyle.create(FontWeight.REGULAR, false, Color.WHITE, TextStyleTest.FIRST);
+		base.derive().weight(FontWeight.BOLD).italic(true).color(Color.RED).effect(TextStyleTest.SECOND).removeEffect(TextStyleTest.FIRST);
+		Assert.assertSame(FontWeight.REGULAR, base.getWeight());
+		Assert.assertFalse(base.isItalic());
+		Assert.assertSame(Color.WHITE, base.getColor());
+		Assert.assertEquals(Collections.singletonList(TextStyleTest.FIRST), base.getEffects());
+	}
+
+	@Test
+	public void resetsToItsClosestBase() {
+		final TextStyle parent = TextStyle.create(FontWeight.REGULAR, false, Color.WHITE).derive().weight(FontWeight.BOLD).italic(true);
+		final TextStyle child = parent.derive().weight(FontWeight.BLACK).italic(false).reset();
+		Assert.assertSame(parent, child.getBase());
+		Assert.assertSame(FontWeight.BOLD, child.getWeight());
+		Assert.assertTrue(child.isItalic());
+	}
+
+	@Test
+	public void copiesItsStyle() {
+		final TextStyle copy = TextStyle.create(FontWeight.LIGHT, true, Color.RED, TextStyleTest.FIRST).copy();
+		Assert.assertSame(FontWeight.LIGHT, copy.getWeight());
+		Assert.assertTrue(copy.isItalic());
+		Assert.assertSame(Color.RED, copy.getColor());
+		Assert.assertEquals(Collections.singletonList(TextStyleTest.FIRST), copy.getEffects());
+		Assert.assertSame(copy, copy.getBase());
+	}
+
 }

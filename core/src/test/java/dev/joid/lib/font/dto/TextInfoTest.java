@@ -164,4 +164,67 @@ public class TextInfoTest {
 		}
 	}
 
+	@Test
+	public void startsBlackColoredAndUprightWithoutSpacing() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F);
+		Assert.assertSame(TextInfoTest.FONT, info.getFont());
+		Assert.assertSame(Color.BLACK, info.getColor());
+		Assert.assertTrue(info.isColored());
+		Assert.assertFalse(info.isItalic());
+		Assert.assertEquals(0F, info.getLetterSpacing(), 0F);
+		Assert.assertEquals(0F, info.getLineHeight(), 0F);
+		Assert.assertTrue(info.getEffects().isEmpty());
+	}
+
+	@Test
+	public void takesTheColorAtCreation() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F, Color.RED);
+		Assert.assertSame(Color.RED, info.getColor());
+		Assert.assertSame(FontWeight.REGULAR, info.getWeight());
+		Assert.assertEquals(20F, info.getFontSize(), 0F);
+	}
+
+	@Test
+	public void copiesEveryProperty() {
+		final TextInfo copy = TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F, Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).shadow(Color.BLUE).shadow(3F, 4F).copy();
+		Assert.assertSame(TextInfoTest.FONT, copy.getFont());
+		Assert.assertEquals(20F, copy.getFontSize(), 0F);
+		Assert.assertSame(FontWeight.BOLD, copy.getWeight());
+		Assert.assertEquals(0.1F, copy.getLetterSpacing(), 0F);
+		Assert.assertEquals(1.5F, copy.getLineHeight(), 0F);
+		Assert.assertSame(Color.RED, copy.getColor());
+		Assert.assertFalse(copy.isColored());
+		Assert.assertTrue(copy.isItalic());
+		Assert.assertSame(Color.BLUE, copy.getShadowColor());
+		Assert.assertEquals(3F, copy.getShadowX(), 0F);
+		Assert.assertEquals(4F, copy.getShadowY(), 0F);
+	}
+
+	@Test
+	public void leavesTheOriginalUntouchedByItsCopy() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F, Color.RED);
+		info.copy().fontSize(40F).weight(FontWeight.BOLD).color(Color.WHITE).italic(true).shadow(Color.BLUE);
+		Assert.assertEquals(20F, info.getFontSize(), 0F);
+		Assert.assertSame(FontWeight.REGULAR, info.getWeight());
+		Assert.assertSame(Color.RED, info.getColor());
+		Assert.assertFalse(info.isItalic());
+		Assert.assertNull(info.getShadowColor());
+	}
+
+	@Test
+	public void keepsFollowingTheRegisteredMarkupsInACopy() {
+		final TextInfo copy = TextInfo.create(TextInfoTest.FONT, 20F).copy();
+		TextMarkup.register(TextInfoTest.MARKUP);
+		try {
+			Assert.assertTrue(copy.getMarkups().contains(TextInfoTest.MARKUP));
+		} finally {
+			TextMarkup.unregister(TextInfoTest.MARKUP);
+		}
+	}
+
+	@Test
+	public void removesItsShadow() {
+		Assert.assertNull(TextInfo.create(TextInfoTest.FONT, 20F).shadow().shadow(null).getShadowColor());
+	}
+
 }

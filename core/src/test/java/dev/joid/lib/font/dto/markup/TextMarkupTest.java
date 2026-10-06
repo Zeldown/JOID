@@ -1,7 +1,9 @@
 package dev.joid.lib.font.dto.markup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -72,6 +74,22 @@ public class TextMarkupTest {
 
 	private static TextStyle style() {
 		return TextStyle.create(FontWeight.REGULAR, false, Color.WHITE).derive();
+	}
+
+	@Test
+	public void parsesFromTheGivenIndex() {
+		final TextStyle style = TextMarkupTest.style();
+		Assert.assertEquals(0, TextMarkup.parse(Collections.singletonList(TextMarkupTest.BOLD), "ab*c", 1, style));
+		Assert.assertSame(FontWeight.REGULAR, style.getWeight());
+		Assert.assertEquals(1, TextMarkup.parse(Collections.singletonList(TextMarkupTest.BOLD), "ab*c", 2, style));
+		Assert.assertSame(FontWeight.BOLD, style.getWeight());
+	}
+
+	@Test
+	public void ignoresAnUnknownMarkupOnUnregistration() {
+		final List<ITextMarkup> registered = new ArrayList<>(TextMarkup.getRegistered());
+		TextMarkup.unregister(TextMarkupTest.BOLD);
+		Assert.assertEquals(registered, TextMarkup.getRegistered());
 	}
 
 }
