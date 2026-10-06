@@ -147,23 +147,34 @@ public class ResourceNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends ResourceNode> @NonNull T stretch(final StretchType stretchType) {
+	public final <T extends ResourceNode> @NonNull T stretch(final @NonNull StretchType stretchType) {
 		this.stretchType = stretchType;
 		return (T) this;
 	}
 
 	private void drawResource(final @NonNull Resource resource) {
-		if (this.stretchType == StretchType.CONTAIN) {
-			DrawUtils.RESOURCE.drawCenteredResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
-		} else {
-			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
-		}
+		this.stretchType.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
 	}
 
 	public static enum StretchType {
 
 		STRETCH,
-		CONTAIN;
+		CONTAIN,
+		COVER;
+
+		public void draw(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
+			if (this == StretchType.STRETCH) {
+				DrawUtils.RESOURCE.drawResource(x, y, width, height, resource);
+				return;
+			}
+
+			final double scaleX = width / resource.getWidth();
+			final double scaleY = height / resource.getHeight();
+			final double scale = this == StretchType.CONTAIN ? Math.min(scaleX, scaleY) : Math.max(scaleX, scaleY);
+			final double scaledWidth = resource.getWidth() * scale;
+			final double scaledHeight = resource.getHeight() * scale;
+			DrawUtils.RESOURCE.drawResource(x + (width - scaledWidth) / 2D, y + (height - scaledHeight) / 2D, scaledWidth, scaledHeight, resource);
+		}
 
 	}
 

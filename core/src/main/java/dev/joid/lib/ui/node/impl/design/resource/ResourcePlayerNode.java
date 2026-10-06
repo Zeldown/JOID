@@ -129,11 +129,7 @@ public class ResourcePlayerNode extends Node {
 		}
 
 		Color.WHITE.bind();
-		if (this.stretchType == StretchType.STRETCH) {
-			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
-		} else if (this.stretchType == StretchType.CONTAIN) {
-			DrawUtils.RESOURCE.drawCenteredResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
-		}
+		this.stretchType.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
 	}
 
 	public final @NonNull ResourcePlayerNode play() {

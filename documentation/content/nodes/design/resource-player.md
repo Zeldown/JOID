@@ -47,7 +47,7 @@ node.getVideo().map(VideoResourceDecoder::getFrameRate).orElse(0D);
 node.loop(boolean);
 node.volume(float);              // 0.0 → 1.0
 node.autoplay(boolean);          // start immediately on resource load
-node.stretch(StretchType);       // STRETCH (default) or CONTAIN
+node.stretch(StretchType);       // STRETCH (default), CONTAIN or COVER
 node.resource(Resource);         // change video — releases previous decoder
 ```
 

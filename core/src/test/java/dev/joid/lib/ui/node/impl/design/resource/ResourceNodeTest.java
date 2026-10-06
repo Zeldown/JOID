@@ -215,7 +215,7 @@ public class ResourceNodeTest {
 
 	@Test
 	public void namesItsStretchTypes() {
-		Assert.assertArrayEquals(new StretchType[] {StretchType.STRETCH, StretchType.CONTAIN}, StretchType.values());
+		Assert.assertArrayEquals(new StretchType[] {StretchType.STRETCH, StretchType.CONTAIN, StretchType.COVER}, StretchType.values());
 		Assert.assertSame(StretchType.CONTAIN, StretchType.valueOf("CONTAIN"));
 	}
 
@@ -229,6 +229,30 @@ public class ResourceNodeTest {
 	public void containsAWideResourceInsideItsBounds() {
 		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 100D, 100D).resource(ResourceNodeTest.resource(20, 10)).color(ResourceNodeTest.TINT).stretch(StretchType.CONTAIN)));
 		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 125D, 200D, 175D);
+	}
+
+	@Test
+	public void containsATallResourceInATallerNode() {
+		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 100D, 400D).resource(ResourceNodeTest.resource(10, 20)).color(ResourceNodeTest.TINT).stretch(StretchType.CONTAIN)));
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 200D, 200D, 400D);
+	}
+
+	@Test
+	public void coversItsBoundsWithATallResource() {
+		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 100D, 100D).resource(ResourceNodeTest.resource(10, 20)).color(ResourceNodeTest.TINT).stretch(StretchType.COVER)));
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 50D, 200D, 250D);
+	}
+
+	@Test
+	public void coversItsBoundsWithAWideResource() {
+		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 100D, 100D).resource(ResourceNodeTest.resource(20, 10)).color(ResourceNodeTest.TINT).stretch(StretchType.COVER)));
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 50D, 100D, 250D, 200D);
+	}
+
+	@Test
+	public void coversAWideNodeWithAWideResource() {
+		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 400D, 100D).resource(ResourceNodeTest.resource(20, 10)).color(ResourceNodeTest.TINT).stretch(StretchType.COVER)));
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 50D, 500D, 250D);
 	}
 
 	private Draw skeleton() {

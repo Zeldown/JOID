@@ -22,48 +22,10 @@ DrawUtils.RESOURCE.drawResource(40, 40, logo);
 void drawResource(double x, double y, double width, double height, Resource resource)
 ```
 
-Stretches the resource to fill the given rectangle. Aspect ratio is **not** preserved.
+Stretches the resource to fill the given rectangle. Aspect ratio is **not** preserved: to keep it, draw through a `ResourceNode` or a `ResourcePlayerNode` with `StretchType.CONTAIN` or `StretchType.COVER`.
 
 ```java
 DrawUtils.RESOURCE.drawResource(0, 0, 1920, 1080, background);
-```
-
-## Aspect-preserving
-
-### `drawScaledResourceWidth`
-
-```java
-void drawScaledResourceWidth(double x, double y, double width, Resource resource)
-```
-
-Computes `height = width × (resource.height / resource.width)` — aspect ratio preserved, only the width is specified.
-
-```java
-DrawUtils.RESOURCE.drawScaledResourceWidth(20, 20, 400, photo);
-```
-
-### `drawScaledResourceHeight`
-
-```java
-void drawScaledResourceHeight(double x, double y, double height, Resource resource)
-```
-
-Symmetric to the above: `width = height × (resource.width / resource.height)`.
-
-```java
-DrawUtils.RESOURCE.drawScaledResourceHeight(20, 20, 200, photo);
-```
-
-### `drawCenteredResource`
-
-```java
-void drawCenteredResource(double x, double y, double width, double height, Resource resource)
-```
-
-Scales the resource to fit inside `(x, y, width, height)` while preserving aspect ratio, and centers the result. Equivalent to CSS `object-fit: contain`.
-
-```java
-DrawUtils.RESOURCE.drawCenteredResource(0, 0, 400, 400, thumbnail);
 ```
 
 ## Texture-coord override

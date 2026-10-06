@@ -27,21 +27,6 @@ public final class DrawResource {
 		DrawResource.instance = this;
 	}
 
-	public void drawScaledResourceWidth(final double x, final double y, final double width, final @NonNull Resource resource) {
-		this.drawResource(x, y, width, width * resource.getHeight() / resource.getWidth(), resource);
-	}
-
-	public void drawScaledResourceHeight(final double x, final double y, final double height, final @NonNull Resource resource) {
-		this.drawResource(x, y, height * resource.getWidth() / resource.getHeight(), height, resource);
-	}
-
-	public void drawCenteredResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		final double scale = Math.min(width / resource.getWidth(), height / resource.getHeight());
-		final double scaledWidth = resource.getWidth() * scale;
-		final double scaledHeight = resource.getHeight() * scale;
-		this.drawResource(x + (width - scaledWidth) / 2D, y + (height - scaledHeight) / 2D, scaledWidth, scaledHeight, resource);
-	}
-
 	public void drawResource(final double x, final double y, final @NonNull Resource resource) {
 		final double[] textureCoords = resource.getProperties().getTextureCoords();
 		if (textureCoords != null && textureCoords.length == 4) {

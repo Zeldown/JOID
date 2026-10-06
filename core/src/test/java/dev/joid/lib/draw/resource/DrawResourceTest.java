@@ -122,42 +122,6 @@ public class DrawResourceTest {
 	}
 
 	@Test
-	public void keepsTheRatioFromTheWidth() {
-		DrawUtils.RESOURCE.drawScaledResourceWidth(10D, 20D, 128D, DrawResourceTest.image(64, 32));
-		final Capture capture = this.single();
-		Assert.assertEquals(138D, capture.getRight(), 1E-3D);
-		Assert.assertEquals(84D, capture.getBottom(), 1E-3D);
-	}
-
-	@Test
-	public void keepsTheRatioFromTheHeight() {
-		DrawUtils.RESOURCE.drawScaledResourceHeight(10D, 20D, 16D, DrawResourceTest.image(64, 32));
-		final Capture capture = this.single();
-		Assert.assertEquals(42D, capture.getRight(), 1E-3D);
-		Assert.assertEquals(36D, capture.getBottom(), 1E-3D);
-	}
-
-	@Test
-	public void centersAWideImageInAWiderBox() {
-		DrawUtils.RESOURCE.drawCenteredResource(0D, 0D, 400D, 100D, DrawResourceTest.image(64, 32));
-		final Capture capture = this.single();
-		Assert.assertEquals(100D, capture.getLeft(), 1E-3D);
-		Assert.assertEquals(300D, capture.getRight(), 1E-3D);
-		Assert.assertEquals(0D, capture.getTop(), 1E-3D);
-		Assert.assertEquals(100D, capture.getBottom(), 1E-3D);
-	}
-
-	@Test
-	public void centersATallImageInATallerBox() {
-		DrawUtils.RESOURCE.drawCenteredResource(0D, 0D, 100D, 400D, DrawResourceTest.image(32, 64));
-		final Capture capture = this.single();
-		Assert.assertEquals(0D, capture.getLeft(), 1E-3D);
-		Assert.assertEquals(100D, capture.getRight(), 1E-3D);
-		Assert.assertEquals(100D, capture.getTop(), 1E-3D);
-		Assert.assertEquals(300D, capture.getBottom(), 1E-3D);
-	}
-
-	@Test
 	public void samplesTheSpriteOfTheResource() {
 		final Resource resource = DrawResourceTest.image(64, 32).textureCoords(16D, 8D, 32D, 16D);
 		DrawUtils.RESOURCE.drawResource(10D, 20D, resource);
@@ -215,26 +179,6 @@ public class DrawResourceTest {
 			DrawUtils.RESOURCE.drawResource(0D, 0D, 16D, 8D, resource);
 			Assert.assertFalse(resource.getProperties().getMipmap().orElse(false));
 		}
-	}
-
-	@Test
-	public void fitsATallImageInsideASquareBox() {
-		DrawUtils.RESOURCE.drawCenteredResource(0D, 0D, 400D, 400D, DrawResourceTest.image(32, 64));
-		final Capture capture = this.render.getLast();
-		Assert.assertEquals(100D, capture.getLeft(), 1E-3D);
-		Assert.assertEquals(300D, capture.getRight(), 1E-3D);
-		Assert.assertEquals(0D, capture.getTop(), 1E-3D);
-		Assert.assertEquals(400D, capture.getBottom(), 1E-3D);
-	}
-
-	@Test
-	public void fitsAWideImageInsideASquareBox() {
-		DrawUtils.RESOURCE.drawCenteredResource(0D, 0D, 400D, 400D, DrawResourceTest.image(64, 32));
-		final Capture capture = this.render.getLast();
-		Assert.assertEquals(0D, capture.getLeft(), 1E-3D);
-		Assert.assertEquals(400D, capture.getRight(), 1E-3D);
-		Assert.assertEquals(100D, capture.getTop(), 1E-3D);
-		Assert.assertEquals(300D, capture.getBottom(), 1E-3D);
 	}
 
 	@Test
