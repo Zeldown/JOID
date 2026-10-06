@@ -21,4 +21,11 @@ public class Vector2Test {
 		Assert.assertEquals(0.8D, a.normalize().getY(), 1E-12D);
 	}
 
+	@Test
+	public void keepsTheZeroVectorWhenNormalized() {
+		final Vector2 zero = new Vector2(0D, 0D).normalize();
+		Assert.assertEquals(0D, zero.getX(), 0D);
+		Assert.assertEquals(0D, zero.getY(), 0D);
+	}
+
 }

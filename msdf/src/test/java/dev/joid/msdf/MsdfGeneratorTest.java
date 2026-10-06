@@ -69,6 +69,20 @@ public class MsdfGeneratorTest {
 		Assert.assertArrayEquals(new int[] {48, 49}, MsdfGenerator.codepoints(charset.getAbsolutePath()));
 	}
 
+	@Test
+	public void skipsTheEmptyEntriesOfACharset() throws Exception {
+		Assert.assertArrayEquals(new int[] {65, 66}, MsdfGenerator.codepoints("65,, 66,"));
+	}
+
+	@Test
+	public void forcesTheEmSizeOfTheCommandLine() throws Exception {
+		final File output = Files.createTempDirectory("joid-msdf-").toFile();
+		final String printed = MsdfGeneratorTest.capture(() -> MsdfGenerator.main(new String[] {"--font", MsdfFonts.copy(MsdfFonts.REGULAR).getAbsolutePath(), "--output", output.getAbsolutePath(), "--width", "128", "--height", "128", "--range", "4", "--size", "24", "--charset", "[65, 65]"}));
+		Assert.assertTrue(printed, printed.contains(" -> JOID Test Regular, weight 400, 1 glyphs, 0 kerning pairs, size 24.0px, "));
+		Files.delete(new File(output, "font.msdf").toPath());
+		Files.delete(output.toPath());
+	}
+
 	private static File target() throws Exception {
 		final File target = File.createTempFile("joid-msdf-", ".msdf");
 		target.deleteOnExit();

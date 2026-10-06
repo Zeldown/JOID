@@ -25,6 +25,10 @@ public final class SnapshotImage {
 	public static @NonNull SnapshotImage read(final @NonNull File file) {
 		try {
 			final BufferedImage image = ImageIO.read(file);
+			if (image == null) {
+				throw new IOException("Unreadable image " + file);
+			}
+
 			return new SnapshotImage(image.getWidth(), image.getHeight(), image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth()));
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
