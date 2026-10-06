@@ -29,7 +29,7 @@ The libraries of the JOID core are declared in the `libraries` configuration, an
 | `demo/DemoWindow` | Opens the JOID demo UIs on your engine. |
 | `SnapshotBackend` (tests) | Creates an offscreen surface, runs a frame, captures its pixels and names the renderer. |
 
-The render bridge contract — vertex layout, projection conventions, textures, framebuffers, state stack, shaders — is described in [Backends](https://github.com/Zeldown/JOID/blob/main/documentation/content/ui/backends.md#writing-a-backend).
+The render bridge contract — vertex layout, projection conventions, textures, framebuffers, state stack, shaders — is described in [Writing a Backend](https://joid.dev-zeldown.workers.dev/#/integration/writing-a-backend).
 
 ## Tasks
 

@@ -1,107 +1,166 @@
-# Watch
+# Watching Signals
 
-`watch(signal, properties)` binds a node to a `Signal<T>` so the node responds to changes automatically.
+`Node.watch(...)` subscribes a node to a [signal](signals.md): each time the signal publishes, the node reloads, rebuilds its children or runs your code. Use it to keep a part of the tree in sync with your state without rebuilding the whole UI.
 
-## Basic usage
+## Watching a signal
 
 ```java
-final StringSignal name = new StringSignal("world");
+public class ProfileUI extends UI {
 
-TextNode.create(0, 0)
-    .text(() -> Text.create("Hello, " + name.getOrDefault(), info))
-    .watch(name)
-    .attach(parent);
+    private final StringSignal name = new StringSignal("Guest");
+
+    @Override
+    public void init() {
+        TextNode
+        .create(100, 100)
+        .text(Text.create("", info))
+        .<TextNode>onInit(node -> node.getText().text("Hello " + this.name.getOrDefault()))
+        .watch(this.name)
+        .attach(this);
+
+        RectNode
+        .create(100, 160, 200, 60)
+        .color(Color.WHITE)
+        .onClick((node, mouseX, mouseY, clickType) -> this.name.set("Alex"))
+        .attach(this);
+    }
+
+}
 ```
 
-On `name.set(...)`, the node reloads.
+`watch(signal)` reloads the node on every publish: `reload()` loads the node and its children again, so their `onInit` callbacks and `init(ui)` hooks run with the new value. `info` is a `TextInfo` (see [Text Model](../text/text-and-textinfo.md)).
 
-## `WatchProperty`
+## Choosing the reaction with WatchProperty
 
-The second argument controls what happens on a signal change:
+`WatchProperty` (`dev.joid.lib.ui.node.property.watch`) says what the node does when the signal publishes. `watch(signal, properties...)` applies the given values in order; an exception thrown by one is printed and the next ones still run.
 
-| Property | Behavior |
+| Value | Effect |
 |---|---|
-| `RELOAD` (default) | Run the node's `reload()` — re-executes its body/builder |
-| `BODY` | Re-run only the `body(consumer)` — cheaper than full reload |
-| `CLEAR_CHILDREN` | Removes children; useful when the body rebuilds them |
-| `NONE` | Marker only — no automatic action |
+| `RELOAD` | Calls `reload()`: the children and the node are loaded again, and their `onInit` callbacks fire inside `onReload`. The children stay. Default of `watch(signal)`. |
+| `BODY` | Runs again the consumer given to `body(...)`, with the node. Does nothing for a node without a body. |
+| `CLEAR_CHILDREN` | Calls `clearChildren()`: every child is detached (`onDetach`) and removed. |
+| `NONE` | Does nothing; react in `onWatch`. |
+
+`apply(Node node)` applies one value to a node directly.
+
+### Rebuilding children with CLEAR_CHILDREN and BODY
+
+`BODY` alone appends a new set of children next to the old ones; clear them first:
 
 ```java
-node.watch(signal);                                    // RELOAD
-node.watch(signal, WatchProperty.BODY);
-node.watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.RELOAD);  // multiple props
+final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
+
+FlexNode
+.vertical(100, 100, 400)
+.watch(items, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+.body(flex -> {
+    for (final String item : items.getOrDefault()) {
+        TextNode.create(0, 0).text(Text.create(item, info)).attach(flex);
+    }
+})
+.attach(this);
+
+items.add("Sword");
 ```
 
-When multiple properties are passed, they execute in order.
+`body(...)` runs its consumer immediately and keeps it, so the order of `watch` and `body` in the chain does not matter. Children appended to a node already in a UI are loaded at once.
 
-## Conditional watches
+### Updating in place with onWatch
 
-Gate the watch with a predicate:
+`onWatch((node, signal, properties) -> ...)` fires on every publish, after the properties are applied. With `NONE`, it updates the existing nodes without rebuilding them:
 
 ```java
-node.watch(signal, () -> ZUI.isOpen(this.ui), WatchProperty.RELOAD);
+final StringSignal title = new StringSignal("Loading");
+
+TextNode
+.create(100, 100)
+.text(Text.create(title.getOrDefault(), info))
+.watch(title, WatchProperty.NONE)
+.<TextNode>onWatch((node, signal, properties) -> node.getText().text(title.getOrDefault()))
+.attach(this);
 ```
 
-The signal fires only when the condition returns `true`. Useful for UIs that shouldn't reload when closed or in the background.
+`signal` is the signal that published and `properties` the values given to `watch`. Overriding the `pre` method of `NodeWatchCallback` and cancelling its context skips the properties and the POST phase for that publish (see [Callbacks](../interactions/callbacks.md#pre-and-post-phases)).
 
-## Multiple signals
+## watch overloads
 
-Bind one node to multiple signals:
+| Method | Description |
+|---|---|
+| `watch(Signal<?> signal)` | Same as `watch(signal, WatchProperty.RELOAD)`. |
+| `watch(Signal<?> signal, WatchProperty... properties)` | Same as `watch(signal, condition, properties)` with a condition that is `true` while the node's UI is open (`JOID.isOpen(ui)`). |
+| `watch(Signal<?> signal, Supplier<Boolean> condition, WatchProperty... properties)` | Watches with your own condition. |
+
+Each call adds one subscription: a node can watch several signals, and watching the same signal twice applies its properties twice.
+
+## Conditions and lifetime of a watch
+
+On every publish of the signal, the subscription of the node:
+
+1. Does nothing when the node is not in a UI yet. It stays subscribed only when a UI is running its `init()` at that moment (`UI.getCurrent()` is not `null`); otherwise it unsubscribes.
+2. Fires `onWatch` with the properties as its default action.
+3. Evaluates the condition. When it returns `false`, the node stops watching the signal.
+
+The condition is evaluated after the properties are applied: the publish that ends a watch still updates the node. With the default condition, a node stops watching at the first publish after its UI closed.
+
+> NOTE: A subscription keeps its node in memory as long as the signal is reachable and the subscription is active. A condition that never returns `false` (such as `() -> true`) keeps the node subscribed forever. `UI.reload()` builds new nodes without removing the subscriptions of the previous ones: they stay active while the UI is open and keep applying their properties to the detached nodes.
+
+### Custom conditions
+
+A custom condition decides when the watch ends; once it returns `false`, the node does not subscribe again by itself. A condition that is always `false` reacts to the next publish only:
 
 ```java
-node.watch(signalA);
-node.watch(signalB, WatchProperty.BODY);
-node.watch(signalC, () -> isReady(), WatchProperty.RELOAD);
+final StringSignal motd = new StringSignal("Loading");
+
+TextNode
+.create(100, 100)
+.text(Text.create("", info))
+.<TextNode>onInit(node -> node.getText().text(motd.getOrDefault()))
+.watch(motd, () -> false, WatchProperty.RELOAD)
+.attach(this);
 ```
 
-Each call is independent.
+### JOID.isOpen
 
-## Using `onWatch` callback
+The default condition relies on `JOID.isOpen` (`dev.joid.internal.JOID`), which you can also use in your own conditions.
 
-Attach a callback that fires whenever any watch triggers:
+| Method | Description |
+|---|---|
+| `JOID.isOpen(UI ui)` | `true` while `ui` is in the list of its UI bridge. |
+| `JOID.isOpen(Class<? extends UI> uiClass)` | `true` while an instance of `uiClass` (or of a subclass) is open in the UI bridge that handles that class. |
+
+See [Opening and Closing UIs](../ui/managing-uis.md) for the other `JOID` methods.
+
+## Waiting for a signal with wait and onMount
+
+`wait(ISignal<?> signal)` keeps a node unmounted until the signal has a value (`isPresent()`). An unmounted node draws its skeleton instead of itself (see [Node Fundamentals](../nodes/node-fundamentals.md) for `wait` and `skeleton`). `onMount` fires on the first frame the node is drawn mounted:
 
 ```java
-node.onWatch((n, signal, properties) -> {
-    System.out.println("Signal fired: " + signal);
-});
+final ListSignal<String> lines = new ListSignal<>();
+
+ContainerNode
+.create(100, 100, 400, 200)
+.body(container -> {
+    TextNode.create(10, 10).text(Text.create("", info)).attach(container);
+    TextNode.create(10, 60).text(Text.create("", info)).attach(container);
+})
+.wait(lines)
+.onMount(container -> {
+    for (int i = 0; i < lines.size(); i++) {
+        container.getChild(i, TextNode.class).getText().text(lines.get(i));
+    }
+})
+.attach(this);
+
+this.schedule(() -> lines.set(Arrays.asList("First line", "Second line")), 2000L);
 ```
 
-## Example — list rebuild on filter change
-
-```java
-final StringSignal filter = new StringSignal("");
-final ListSignal<Item> items = new ListSignal<>();
-
-FlexNode.vertical(0, 0, 400).margin(8)
-    .watch(filter, WatchProperty.BODY)
-    .watch(items, WatchProperty.BODY)
-    .body(list -> {
-        final String f = filter.getOrDefault().toLowerCase();
-        for (Item item : items) {
-            if (!item.name.toLowerCase().contains(f)) continue;
-            renderRow(item, list);
-        }
-    })
-    .attach(parent);
-
-TextFieldNode.create(0, 0, 400, 30)
-    .onChange((tf, value) -> filter.set(value))
-    .attach(parent);
-```
-
-Both signals trigger a body re-run, so the list updates on filter input and on item changes.
-
-## Lifecycle
-
-Watches are automatically unregistered when the node is detached (via `clearChildren` or UI close). You don't need to manually unsubscribe.
-
-## Best practices
-
-- **Prefer `BODY` over `RELOAD` for list-rebuild scenarios** — no need to re-run the full `init()`.
-- **Use conditional watches for UIs in multi-UI setups** — prevents wasted reloads when the UI isn't on top.
-- **Watch the smallest node possible.** Watching a parent reloads everything; watching a leaf node only reloads that node.
+- A node is mounted when all its `wait(...)` conditions (`wait(ISignal<?>)`, `wait(long, TimeUnit)`, `wait(Predicate<T>)`) are met and its parent is mounted.
+- Mounting is checked on every frame the node is visible, so `onMount` fires only for a visible node.
+- `onMount` fires again each time the node becomes mounted after being unmounted, for example when the signal is reset to an empty value and set again.
 
 ## See also
 
-- [Signals](signals.md).
-- [Stores](stores.md) — persistent signals with auto-watch.
+- [Signals](signals.md)
+- [Callbacks](../interactions/callbacks.md)
+- [Node Fundamentals](../nodes/node-fundamentals.md)
+- [Opening and Closing UIs](../ui/managing-uis.md)

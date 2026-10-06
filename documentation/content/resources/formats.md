@@ -1,107 +1,105 @@
-# Formats
+# Supported Formats
 
-`Resource.of(...)` reads images, animations, videos and vectors through the same call: JOID looks at the first bytes of the [asset](assets.md), never at its extension, and picks the decoder of its format. A node draws every format the same way.
+JOID decodes still images, SVG, animated GIF, APNG and WebP, and videos with their audio. It recognizes a format from the first bytes of the content, so file names and extensions never matter. This page lists what each format supports and how the detection works.
 
-```java
-ResourceNode.create(0, 0, 64, 64).resource(Resource.of("/icons/check.svg")).attach(flex);
-ResourceNode.create(0, 0, 160, 160).resource(Resource.of("/textures/spinner.webp")).attach(flex);
-ResourceNode.create(0, 0, 256, 256).resource(Resource.of("/videos/overlay.webm")).attach(flex);
-```
+## Formats at a glance
 
-## Supported formats
+| Format | Recognized by | Decoder | Playback |
+|---|---|---|---|
+| JPEG, BMP, WBMP and any format of an installed ImageIO plugin | fallback when no other format matches | `RasterResourceDecoder` | no |
+| PNG | the PNG signature, without an `acTL` chunk | `RasterResourceDecoder` | no |
+| APNG | the PNG signature with an `acTL` chunk before the image data | `AnimatedResourceDecoder` | yes |
+| GIF (87a and 89a) | `GIF87a` or `GIF89a` | `AnimatedResourceDecoder`, even with a single frame | yes |
+| WebP, still (lossy, lossless, with alpha) | `RIFF....WEBP` | `RasterResourceDecoder` with the embedded TwelveMonkeys WebP reader | no |
+| WebP, animated | `RIFF....WEBP` with a `VP8X` chunk whose animation flag is set | `AnimatedResourceDecoder` | yes |
+| SVG | text starting with `<svg`, after an optional BOM, XML declaration, comments and `<!DOCTYPE>` | `VectorResourceDecoder` | no |
+| MP4, M4V, MOV, 3GP and other ISO media files | an `ftyp` box at byte 4 | `VideoResourceDecoder` | yes, with audio |
+| Matroska, WebM | the EBML signature `1A 45 DF A3` | `VideoResourceDecoder` | yes, with audio |
+| AVI | `RIFF....AVI ` | `VideoResourceDecoder` | yes, with audio |
 
-| Format | Recognized by | Decoder |
-|---|---|---|
-| SVG | an `<svg>` root, after an optional BOM, XML declaration, comments and doctype | `VectorResourceDecoder` |
-| WebP, still | `RIFF` … `WEBP` | `RasterResourceDecoder` |
-| WebP, animated | `RIFF` … `WEBP` with the animation flag of its `VP8X` chunk | `AnimatedResourceDecoder` |
-| GIF | `GIF87a` / `GIF89a` | `AnimatedResourceDecoder` |
-| APNG | a PNG with an `acTL` chunk before its first `IDAT` | `AnimatedResourceDecoder` |
-| MP4, MOV | `ftyp` at offset 4 | `VideoResourceDecoder` |
-| WebM, MKV | the EBML header `1A 45 DF A3` | `VideoResourceDecoder` |
-| AVI | `RIFF` … `AVI ` | `VideoResourceDecoder` |
-| PNG, JPG, BMP and every other ImageIO format | anything else | `RasterResourceDecoder` |
+Decoders are in `dev.joid.lib.resource.dto.decoder.impl`. Formats with playback expose an [`IResourcePlayback`](playback.md).
 
-`ResourceFormat.decoder(asset)` peeks the first 512 bytes of the asset, so the asset stays untouched, and asks every registered format whether it recognizes them, the last registered first.
+## How a format is detected
+
+`ResourceFormat.decoder(asset)` (`dev.joid.lib.resource.dto.format`) reads the first 512 bytes of the asset without consuming it and asks each registered `IResourceFormat` in turn:
+
+1. formats you registered, the latest first;
+2. SVG;
+3. WebP;
+4. video (ISO media, Matroska and WebM, AVI);
+5. PNG and APNG: when the first 512 bytes do not reach the `acTL` chunk or the image data, the first 64 KiB are read to decide;
+6. GIF;
+7. otherwise `RasterResourceDecoder`, which reads the content with `javax.imageio.ImageIO`.
+
+Inputs that are already decoded (`BufferedImage`, `ITexture`) skip the detection: [resolvers](custom-formats.md#resolvers-for-in-memory-inputs) handle them first.
+
+To support a format JOID does not recognize, or to route a container to an existing decoder, [register an `IResourceFormat`](custom-formats.md#adding-a-format-with-iresourceformat).
+
+> NOTE: Every file with an `ftyp` box goes to the video decoder, including HEIF and AVIF still images.
+
+## Still images
+
+`RasterResourceDecoder` decodes the whole image into ARGB pixels and uploads it as one texture.
+
+- Still PNG files are read with ImageIO.
+- With the fallback, any format that an ImageIO reader registered in the JVM can read is supported. On Java 8 that is JPEG, BMP and WBMP (PNG and GIF have their own formats); adding an ImageIO plugin to your classpath (for example a TIFF reader) adds its formats.
+- A content that no reader understands fails with `Failed to decode image, ImageIO returned null for <id>`.
+- Still WebP uses the TwelveMonkeys WebP reader embedded and relocated in the JOID jars, independently of the ImageIO plugins of your classpath.
+
+## Animated images: GIF, APNG and WebP
+
+`AnimatedResourceDecoder` reads every frame at decoding time and composes them on a canvas of the animation size, following the frame offsets, blend and disposal operations of the file. Each composed frame is kept in memory as a full-size ARGB array (`width × height × 4` bytes per frame) for as long as the resource lives; the GPU only holds one texture, updated when the displayed frame changes.
+
+| Aspect | Behavior |
+|---|---|
+| Frame duration | As stored in the file; a frame shorter than 10 ms lasts 100 ms, as in web browsers. |
+| Loop count | GIF: the `NETSCAPE2.0` extension (0 loops forever, `n` plays `n + 1` times), one play without it. APNG: `num_plays` of `acTL` (0 loops forever). WebP: the loop count of `ANIM` (0 loops forever). `loop(boolean)` overrides it. |
+| Start | Plays as soon as it is uploaded, unless `autoplay(false)`. |
+| Timing | Follows the [clock bridge](../integration/bridges.md#iclockbridge): a paused `ManualClockBridge` freezes the animation. |
+
+See [Playback, Video and Audio](playback.md) for the controls.
 
 ## SVG
 
-A vector is rendered at the **real pixel size of each draw**: the size of the node, multiplied by the interface scale, the zoom, the resolution of the window and every transform of the node — a `TransformNodeEffect` scale included. One texel of the texture lands on one pixel of the screen, so the image stays sharp at 24 px as at ×8.
+`VectorResourceDecoder` parses the document with JSVG (embedded and relocated in the JOID jars) and renders it with antialiasing.
 
-- **Intrinsic size** — the `width` / `height` of the document, or its `viewBox`. A `ResourceNode` without a size takes it, like the size of an image.
-- **Stretch** — drawn in a rectangle of another ratio, the document is stretched like an image.
-- **Changing size** — while the size keeps changing, during a zoom animation for instance, the document is rendered at the next ×1.25 step instead of every frame, then at the exact size once the size has not moved for 200 ms. The last 8 sizes stay cached as textures.
-- **Threading** — an async resource renders on a background thread and keeps showing the previous texture meanwhile. A blocking resource renders synchronously, so every draw shows the exact size.
-- **Content** — JSVG renders gradients, strokes, clips, masks, patterns, text and the common filters. External resources are not loaded.
+- The intrinsic size, returned by `getWidth()` and `getHeight()`, is the size of the document rounded up, at least 1×1 pixel.
+- The first raster is rendered at the intrinsic size. Each draw then tells the decoder the size the SVG covers in window pixels, and the decoder renders a raster at that size, so the SVG stays sharp at any zoom or interface scale.
+- A raster is at most 4096 pixels on its longest side.
+- The decoder keeps the 8 most recently used rasters and shows one again at once when its size comes back.
+- An asynchronous resource renders its rasters on a background thread named `ResourceVector/<n>`, one at a time, and keeps drawing the previous raster meanwhile. While the size keeps changing (less than 200 ms since the last change), it keeps the current raster as long as it is at least as large as needed and less than about 1.56 times wider, and otherwise renders a raster 25 % larger than needed, so that an animated size needs fewer renders. Once the size rests, it renders the exact size.
+- A blocking resource renders the requested size at once.
+- SVG textures are never mipmapped.
 
-## Animations
+An SVG drawn with [texture coordinates](resources.md#sprites-with-texturecoords) keeps its intrinsic raster.
 
-GIF, APNG and animated WebP share `AnimatedResourceDecoder`. The file is decoded once into composed frames — the disposal and blending of each frame are applied — then played from memory on the clock of the bridge, so snapshots stay deterministic.
+## Video
 
-- **Loops** — the animation plays as many times as its file says, forever for most GIFs. `loop(true)` or `loop(false)` overrides it.
-- **Durations** — a frame shorter than 10 ms lasts 100 ms, like in browsers.
-- **Memory** — frames stay in memory: width × height × 4 bytes per frame. For a long or large animation, prefer a WebM, which streams its frames.
+`VideoResourceDecoder` decodes videos with FFmpeg 6.0 through JavaCV 1.5.9. Both, with the FFmpeg natives for Windows x86-64, Linux x86-64, macOS x86-64 and macOS arm64, are part of the JOID jars (see [Installation](../getting-started/installation.md)). Video playback works on those four platforms.
 
-## Playback
-
-Animations and videos implement `IResourcePlayback`, reached through `Resource.getPlayback()`:
-
-```java
-resource.getPlayback().ifPresent(playback -> playback.loop(false).seek(0D).play());
-double progress = resource.getPlayback().map(IResourcePlayback::getProgress).orElse(0D);
-```
-
-| Method | Effect |
+| Aspect | Behavior |
 |---|---|
-| `play()` | Starts from the beginning |
-| `stop()` | Stops on the current frame |
-| `pause()` / `resume()` | Freezes and resumes the playback |
-| `seek(seconds)` | Jumps to a time |
-| `loop(boolean)` / `autoplay(boolean)` | Repeats the playback, starts it on load |
-| `isPlaying()`, `isPaused()`, `isLoop()`, `isAutoplay()` | Playback state |
-| `getDuration()`, `getCurrentTime()`, `getProgress()` | Length and position, in seconds and from 0 to 1 |
+| Containers | MP4 and other ISO media files, Matroska and WebM, AVI. Other containers (MPEG-TS, FLV, Ogg...) are not recognized; route them to `VideoResourceDecoder` with [a format of your own](custom-formats.md#adding-a-format-with-iresourceformat). |
+| Codecs | The video codecs of the embedded FFmpeg build, such as H.264, HEVC, VP8 and VP9. |
+| Source | The asset is first copied into a temporary file (`joid-video-*.mp4`, deleted when the JVM exits), then read from it. |
+| Size | `getWidth()` and `getHeight()` are the size of the video. |
+| Frame rate | Read from the file, 30 frames per second when the file does not tell. |
+| Streaming | A decoding thread named `joid-video-decode` keeps up to 5 frames ahead; two textures alternate on the GPU. |
+| Timing | Frames are shown when the [clock bridge](../integration/bridges.md#iclockbridge) reaches their time. |
+| Audio | The audio track plays through the [audio bridge](../integration/bridges.md#iaudiobridge-and-iaudiosource). See [Playback, Video and Audio](playback.md#audio). |
+| Errors | A file FFmpeg cannot open prints `Failed to decode video: ...` to `System.err`; the resource then has no picture. |
 
-A [ResourcePlayerNode](../nodes/design/resource-player.md) drives any of them with the same controls and callbacks: an animated WebP plays, pauses and loops like a video.
+### Transparent videos
 
-## Transparent WebM
+A WebM file whose VP8 or VP9 track is flagged with an alpha channel (`alpha_mode` set to 1) is decoded with libvpx, which keeps the alpha channel: the transparent parts of the video are transparent on screen.
 
-A VP8 or VP9 WebM with an alpha channel keeps its transparency: when the stream announces its alpha, JOID decodes it with libvpx, as FFmpeg's own decoders drop it. Encode one with:
+## Transparency of every format
 
-```
-ffmpeg -i input.mov -c:v libvpx-vp9 -pix_fmt yuva420p overlay.webm
-```
-
-## Adding a format
-
-Implement `IResourceFormat` and register it once, at startup:
-
-```java
-public class QoiResourceFormat implements IResourceFormat {
-
-    @Override
-    public boolean supports(final @NonNull byte[] header) {
-        return header.length >= 4 && header[0] == 'q' && header[1] == 'o' && header[2] == 'i' && header[3] == 'f';
-    }
-
-    @Override
-    public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-        return new QoiResourceDecoder(asset);
-    }
-
-}
-
-ResourceFormat.register(new QoiResourceFormat());
-```
-
-A format registered later is asked first, so it can also take over a built-in one. See [Decoders](decoders.md) to write the decoder itself.
-
-## Embedded libraries
-
-Every JOID JAR embeds what these formats need: FFmpeg with its natives, JSVG and TwelveMonkeys ImageIO. JOID registers nothing in ImageIO. See [Installation](../getting-started/installation.md).
+Decoders give the fully transparent pixels of an image, an animation frame or an SVG raster the color of the nearest pixel that is not fully transparent, keeping them fully transparent. Linear interpolation then never blends a dark halo into the edges of a transparent image.
 
 ## See also
 
-- [ResourceBuilder](resource-builder.md).
-- [Decoders](decoders.md).
-- [ResourceNode](../nodes/design/resource.md).
-- [ResourcePlayerNode](../nodes/design/resource-player.md).
+- [Resources](resources.md) — loading, options and lifecycle.
+- [Playback, Video and Audio](playback.md) — controlling animations and videos.
+- [Custom Formats and Decoders](custom-formats.md) — adding a format or a decoder.
+- [ResourcePlayerNode](../nodes/visual/resource-player.md) — the node that plays videos.

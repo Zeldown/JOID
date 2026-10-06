@@ -1,0 +1,177 @@
+# SliderNode
+
+`SliderNode<O>` (`dev.joid.lib.ui.node.impl.structure.slider`) picks one value from an ordered set of values by dragging a cursor along a track. It is abstract: you draw the track in a subclass and give it a `SliderCursorNode` that draws the cursor. `IntegerSliderNode`, `DoubleSliderNode` and `StringSliderNode` (`dev.joid.lib.ui.node.impl.structure.slider.impl`) add helpers to build the values.
+
+## Creating a slider
+
+A slider class draws the track and installs its cursor:
+
+```java
+public class VolumeSliderNode extends IntegerSliderNode {
+
+    protected VolumeSliderNode(final double x, final double y, final double width, final double height) {
+        super(x, y, width, height);
+        super.cursor(new Thumb(height, height));
+    }
+
+    public static VolumeSliderNode create(final double x, final double y, final double width, final double height) {
+        return new VolumeSliderNode(x, y, width, height);
+    }
+
+    @Override
+    public void drawSlider(final double mouseX, final double mouseY) {
+        DrawUtils.SHAPE.drawRect(super.getX(), super.getY() + super.getHeight() / 2D - 2D, super.getWidth(), 4D, Color.DARKGRAY);
+    }
+
+    private static final class Thumb extends SliderCursorNode {
+
+        private Thumb(final double width, final double height) {
+            super(width, height);
+        }
+
+        @Override
+        public void drawCursor(final double mouseX, final double mouseY) {
+            DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
+        }
+
+    }
+
+}
+```
+
+Then, in `UI.init()`:
+
+```java
+final IntegerSignal volume = new IntegerSignal(50);
+
+VolumeSliderNode
+.create(760, 520, 400, 24)
+.values(0, 100, volume.getOrDefault())
+.signal(volume)
+.onChange((slider, value) -> System.out.println("Volume: " + value))
+.attach(this);
+```
+
+![The cursor drags a white square thumb right along a gray track, then left](../../images/slider-drag.gif "The thumb follows the pointer while the button is held and stays where it is released.")
+
+- `values(0, 100, 50)` creates the values 0 to 100 and selects 50.
+- Dragging the cursor changes the value; `onChange` receives each new value and `volume` is updated.
+- `getValue()` returns the current value.
+
+See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
+
+## Values and steps
+
+The slider holds a `Set<O>` of values. Their iteration order is their order on the track, and they are evenly spaced by index: with `n` values, value `i` sits at `i / (n - 1)` of the cursor travel (the slider width minus the cursor width), whatever the numbers are.
+
+| Class | Method | Values |
+| --- | --- | --- |
+| `IntegerSliderNode` | `values(int min, int max, int value)` | Every integer from `min` to `max`, both included. |
+| `IntegerSliderNode` | `values(int value, Integer... values)` | The given integers, in this order. |
+| `DoubleSliderNode` | `values(double min, double max, double step, double value)` | `min`, `min + step`, ... up to `max` included when a step lands on it. Steps are added in decimal (`BigDecimal`), so `values(0D, 1D, 0.1D, 0.5D)` holds exactly `0.0, 0.1, ..., 1.0`. |
+| `DoubleSliderNode` | `values(double value, Double... values)` | The given doubles, in this order. |
+| `StringSliderNode` | `values(String value, String... values)` | The given strings, in this order. |
+| `StringSliderNode` | `values(Enum<?> value, Enum<?>... values)` | The `name()` of each constant; the slider value is the name (a `String`). |
+| `SliderNode<O>` | `valueSet(Set<O> valueSet, O value)` | The given set, in its iteration order: use a `LinkedHashSet` (or a sorted set) to control the order. |
+
+- In every method, `value` is the selected value. It must belong to the values, otherwise the method throws an `IllegalArgumentException`.
+- Duplicates are kept once, at their first position.
+
+```java
+QualitySliderNode
+.create(760, 600, 400, 24)
+.values(Quality.HIGH, Quality.values())
+.onChange((slider, value) -> System.out.println("Quality: " + Quality.valueOf(value)))
+.attach(this);
+```
+
+Here `QualitySliderNode` extends `StringSliderNode` and `Quality` is an enum.
+
+> WARNING: Java picks the range overload when the argument count matches it. `IntegerSliderNode.values(2, 1, 2)` is the range from 2 to 1 (empty, so it throws), not "2 among 1 and 2"; `DoubleSliderNode.values(0.5D, 0D, 0.5D, 1D)` is the range from 0.5 to 0 with step 0.5. For a list of exactly two integers or three doubles, pass an array: `values(2, new Integer[] { 1, 2 })`, `values(0.5D, new Double[] { 0D, 0.5D, 1D })`.
+
+Set the values before the slider is shown. If you replace them later, call `value(...)` right after so that the cursor moves to the selected value; otherwise the next frame selects the value under the current cursor position.
+
+## The cursor with SliderCursorNode
+
+`SliderCursorNode` (same package) is the draggable part. Subclass it, implement `drawCursor(double mouseX, double mouseY)` and pass an instance to `cursor(SliderCursorNode)`.
+
+- The constructor `SliderCursorNode(double width, double height)` places the cursor at `(0, 0)` in the slider. The slider drives its `x` only: to center a cursor smaller than the track height, set its `y` yourself, for example `super.cursor(new Thumb(16, 16).y(4))` in a 24-unit-high slider.
+- `cursor(...)` attaches the cursor as a child of the slider and links it to the slider; a second call replaces the previous cursor.
+- `draw`, `mousePressed` and `mouseReleased` of the cursor are final: it only lets you draw.
+
+## Dragging
+
+| Event | Effect |
+| --- | --- |
+| Press on the slider (any mouse button) | The cursor jumps so that its center is under the pointer and starts dragging. The press is consumed. |
+| Press on the cursor | The cursor starts dragging. |
+| Each frame while dragging | The cursor center follows the pointer horizontally, kept on the track (from `0` to the slider width minus the cursor width). |
+| Release of any mouse button, anywhere | The cursor stops dragging and stays where it is. |
+
+- The cursor does not snap to the position of its value when released: the value is the one nearest to the cursor, but the cursor keeps the released position. `value(...)` puts it back on the exact position.
+- There is no keyboard or mouse wheel control.
+- The slider does not check whether another node of the same UI already consumed the press: a press on a node drawn over the slider (a popup panel, for example) also moves the slider. Hide the slider while something covers it: a hidden slider and its cursor ignore presses. Disabling only the slider is not enough, as the cursor keeps its own enabled state.
+- `getCursor().isDragging()` tells whether a drag is running; `getCursor().dragging(boolean)` starts or stops one from code.
+
+## Reading and setting the value
+
+- `getValue()` returns the selected value.
+- `value(O value)` selects a value from code. Once the slider is attached to a UI, it also moves the cursor to the value position; before that, the cursor is placed when the slider loads. It does not call `onChange` and does not write the signal. It throws an `IllegalArgumentException` when the value is not one of the values.
+- `signal(Signal<O>)` gives a signal that the slider sets each time the user changes the value. The link is one way: setting the signal does not move the slider; call `value(...)` for that.
+
+## onChange
+
+`onChange(NodeSliderChangeCallback<T, O>)` takes `(node, value)`. The slider compares, on each of its draws, the value under the cursor with `getValue()`; when they differ it stores the new value, sets the signal, then calls the callbacks. As a result:
+
+- The callback runs during the frame, at most once per frame. A fast drag can jump over values: you receive the value under the cursor at each frame, not every value in between.
+- `value(...)` never calls it.
+- Cancelling the context in the `pre(...)` phase keeps the previous value. The cursor does not move, so the change is proposed again on the next frame until the cursor reaches a position that maps to the current value (see [Callbacks](../../interactions/callbacks.md)).
+
+## Reference
+
+### SliderNode
+
+| Method | Description |
+| --- | --- |
+| `valueSet(Set<O> valueSet, O value)` | Sets the values (in iteration order) and the selected value. |
+| `value(O value)` | Selects a value and moves the cursor to it when the slider is shown. |
+| `signal(Signal<O> signal)` | Signal set on each user change. Default: none. |
+| `cursor(SliderCursorNode cursor)` | Attaches the cursor, replacing the previous one. Required. |
+| `onChange(NodeSliderChangeCallback<T, O> callback)` | Adds a callback `(node, value)` run after each user change. |
+| `drawSlider(double mouseX, double mouseY)` | Abstract. Draws the track. Called from the slider's `draw` (final), only once the slider has a value and a cursor. |
+| `init(UI ui)` | Places the cursor on the selected value. If you override it, call `super.init(ui)`. |
+| `getValue()` | Selected value, `null` until values are set. |
+| `getValueSet()` | Values. |
+| `getSignal()` | Signal, or `null`. |
+| `getCursor()` | Cursor, or `null`. |
+| `SliderNode.CALLBACK_CHANGE` | Callback id of `onChange`. |
+
+Every setter returns the node itself, typed by the generic return of the fluent API.
+
+### Typed sliders
+
+| Class | Value type | Methods |
+| --- | --- | --- |
+| `IntegerSliderNode` | `Integer` | `values(int min, int max, int value)`, `values(int value, Integer... values)` |
+| `DoubleSliderNode` | `Double` | `values(double min, double max, double step, double value)`, `values(double value, Double... values)` |
+| `StringSliderNode` | `String` | `values(String value, String... values)`, `values(Enum<?> value, Enum<?>... values)` |
+
+All three are abstract, with a protected constructor `(double x, double y, double width, double height)`, and leave `drawSlider` to you.
+
+### SliderCursorNode
+
+| Method | Description |
+| --- | --- |
+| `SliderCursorNode(double width, double height)` | Protected constructor; the cursor starts at `(0, 0)` in the slider. |
+| `drawCursor(double mouseX, double mouseY)` | Abstract. Draws the cursor. |
+| `dragging(boolean)` | Starts or stops following the pointer. |
+| `isDragging()` | Whether the cursor follows the pointer. |
+| `slider(SliderNode<?>)` | Links the cursor to its slider; `SliderNode.cursor(...)` calls it for you. |
+| `getSlider()` | The slider, or `null` before `cursor(...)`. |
+
+## See also
+
+- [Signals](../../state/signals.md)
+- [Callbacks](../../interactions/callbacks.md)
+- [Custom Nodes](../custom-nodes.md)
+- [ProgressNode](../visual/progress.md)

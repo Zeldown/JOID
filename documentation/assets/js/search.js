@@ -20,21 +20,13 @@
 
 	async function buildIndex() {
 		await waitForNav();
-		const lang = window.JOID_DOCS.state.lang || 'en';
 		const pages = window.JOID_DOCS.state.flatPages;
 		const rawDocs = [];
 		for (const p of pages) {
 			try {
-				let text = null;
-				if (lang !== 'en') {
-					const resLang = await fetch('content/' + p.path + '.' + lang + '.md');
-					if (resLang.ok) text = await resLang.text();
-				}
-				if (text === null) {
-					const res = await fetch('content/' + p.path + '.md');
-					if (!res.ok) continue;
-					text = await res.text();
-				}
+				const res = await fetch('content/' + p.path + '.md');
+				if (!res.ok) continue;
+				const text = await res.text();
 				const sections = splitIntoSections(text, p);
 				for (const s of sections) rawDocs.push(s);
 			} catch (e) {}
@@ -44,6 +36,7 @@
 			this.field('title', { boost: 10 });
 			this.field('heading', { boost: 6 });
 			this.field('body');
+			this.field('code', { boost: 4 });
 			rawDocs.forEach(d => this.add(d));
 		});
 		rawDocs.forEach(d => { docs[d.id] = d; });
@@ -58,6 +51,7 @@
 		let currentBody = [];
 		let inCode = false;
 		const flush = () => {
+			const raw = currentBody.join('\n');
 			const bodyText = currentBody.join(' ')
 				.replace(/```[\s\S]*?```/g, '')
 				.replace(/`[^`]+`/g, '')
@@ -72,7 +66,8 @@
 					title: currentTitle,
 					heading: currentHeading,
 					section: page.section,
-					body: bodyText
+					body: bodyText,
+					code: identifiers(raw + ' ' + currentHeading)
 				});
 			}
 			currentBody = [];
@@ -99,6 +94,19 @@
 		}
 		flush();
 		return sections;
+	}
+
+	function identifiers(md) {
+		const code = [];
+		md.replace(/```[\s\S]*?```|`[^`]+`/g, m => { code.push(m); return m; });
+		const words = new Set();
+		(code.join(' ').match(/[A-Za-z_][A-Za-z0-9_]{2,}/g) || []).forEach(id => {
+			words.add(id);
+			id.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').split(/[\s_]+/).forEach(w => {
+				if (w.length > 2) words.add(w);
+			});
+		});
+		return Array.from(words).join(' ');
 	}
 
 	function ensureIndex() {

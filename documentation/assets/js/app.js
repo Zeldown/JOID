@@ -1,78 +1,34 @@
 (function () {
 	'use strict';
 
-	const DEFAULT_LANG = 'en';
-	const SUPPORTED_LANGS = ['en', 'fr'];
-
-	const i18n = {
-		en: {
-			minRead: 'min read',
-			previous: 'Previous',
-			next: 'Next',
-			copy: 'Copy',
-			copied: 'Copied',
-			searchPlaceholder: 'Search the documentation…',
-			searchNoResults: 'No results',
-			searchHintOpen: 'to open',
-			searchHintNavigate: 'to navigate',
-			searchHintClose: 'to close',
-			searchEmpty: 'Type to search the documentation…',
-			missingTranslation: 'This page is not yet translated to French — showing the English version.',
-			missingTranslationKicker: 'EN',
-			sourceLabel: 'Source',
-			sourceTitle: 'View on GitHub',
-			pdfLabel: 'PDF',
-			pdfTitle: 'Download as PDF',
-			tipLabel: 'Tip',
-			noteLabel: 'Note',
-			warningLabel: 'Warning',
-			dangerLabel: 'Danger',
-			docsTitle: 'JOID Documentation',
-			docsSuffix: 'JOID Docs'
-		},
-		fr: {
-			minRead: 'min de lecture',
-			previous: 'Précédent',
-			next: 'Suivant',
-			copy: 'Copier',
-			copied: 'Copié',
-			searchPlaceholder: 'Rechercher dans la documentation…',
-			searchNoResults: 'Aucun résultat',
-			searchHintOpen: 'pour ouvrir',
-			searchHintNavigate: 'pour naviguer',
-			searchHintClose: 'pour fermer',
-			searchEmpty: 'Tapez pour rechercher dans la documentation…',
-			missingTranslation: 'Cette page n\'est pas encore traduite en français — version anglaise affichée.',
-			missingTranslationKicker: 'EN',
-			sourceLabel: 'Source',
-			sourceTitle: 'Voir sur GitHub',
-			pdfLabel: 'PDF',
-			pdfTitle: 'Télécharger en PDF',
-			tipLabel: 'Astuce',
-			noteLabel: 'Note',
-			warningLabel: 'Attention',
-			dangerLabel: 'Danger',
-			docsTitle: 'JOID Documentation',
-			docsSuffix: 'JOID Docs'
-		}
+	const TEXT = {
+		minRead: 'min read',
+		previous: 'Previous',
+		next: 'Next',
+		copy: 'Copy',
+		copied: 'Copied',
+		searchNoResults: 'No results',
+		sourceLabel: 'Source',
+		sourceTitle: 'View on GitHub',
+		pdfLabel: 'PDF',
+		pdfTitle: 'Download as PDF',
+		tipLabel: 'Tip',
+		noteLabel: 'Note',
+		warningLabel: 'Warning',
+		dangerLabel: 'Danger',
+		docsTitle: 'JOID Documentation',
+		docsSuffix: 'JOID Docs'
 	};
 
-	function currentLang() {
-		const stored = localStorage.getItem('joid-docs-lang');
-		return SUPPORTED_LANGS.indexOf(stored) >= 0 ? stored : DEFAULT_LANG;
-	}
-
 	function t(key) {
-		return (i18n[state.lang] || i18n[DEFAULT_LANG])[key] || i18n[DEFAULT_LANG][key] || key;
+		return TEXT[key] || key;
 	}
 
 	const state = {
 		nav: null,
 		flatPages: [],
-		currentPath: null,
-		lang: DEFAULT_LANG
+		currentPath: null
 	};
-	state.lang = currentLang();
 
 	async function loadNav() {
 		const res = await fetch('nav.json');
@@ -89,7 +45,9 @@
 				acc.push({
 					title: s.title,
 					path: s.path,
-					section: section || s.title
+					section: section || s.title,
+					source: s.source,
+					refs: s.refs || []
 				});
 			}
 			if (s.items) {
@@ -178,22 +136,16 @@
 	}
 
 	async function fetchMarkdown(path) {
-		let missingTranslation = false;
-		if (state.lang !== DEFAULT_LANG) {
-			const res = await fetch('content/' + path + '.' + state.lang + '.md');
-			if (res.ok) return { md: await res.text(), missingTranslation };
-			missingTranslation = true;
-		}
 		const res = await fetch('content/' + path + '.md');
 		if (!res.ok) throw new Error('Page not found: ' + path);
-		return { md: await res.text(), missingTranslation };
+		return res.text();
 	}
 
 	async function loadPage(path) {
 		const article = document.getElementById('article');
 		article.innerHTML = '<div class="loading">Loading…</div>';
 		try {
-			const { md, missingTranslation } = await fetchMarkdown(path);
+			const md = await fetchMarkdown(path);
 			marked.setOptions({
 				gfm: true,
 				breaks: false,
@@ -201,8 +153,11 @@
 				mangle: false
 			});
 			const renderer = new marked.Renderer();
+			const slugs = {};
 			renderer.heading = function (text, level, raw) {
-				const slug = raw.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+				const base = raw.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-|-$/g, '');
+				const slug = slugs[base] === undefined ? base : base + '-' + slugs[base];
+				slugs[base] = (slugs[base] || 0) + 1;
 				return '<h' + level + ' id="' + slug + '">' + text + '</h' + level + '>';
 			};
 			renderer.link = function (href, title, text) {
@@ -227,11 +182,26 @@
 				}
 				return '<a href="' + href + '"' + target + (title ? ' title="' + title + '"' : '') + '>' + text + '</a>';
 			};
+			renderer.image = function (href, title, text) {
+				let src = href;
+				if (src && !/^(https?:|data:|\/)/.test(src)) {
+					const parts = ('content/' + path).split('/');
+					parts.pop();
+					for (const part of src.split('/')) {
+						if (part === '..') parts.pop();
+						else if (part !== '.') parts.push(part);
+					}
+					src = parts.join('/');
+				}
+				const img = /\.(mp4|webm)$/i.test(src)
+					? '<video src="' + src + '" aria-label="' + (text || '') + '" autoplay loop muted playsinline></video>'
+					: '<img src="' + src + '" alt="' + (text || '') + '" loading="lazy">';
+				return '<figure class="render">' + img + (title ? '<figcaption>' + title + '</figcaption>' : '') + '</figure>';
+			};
 			const html = marked.parse(md, { renderer });
 			article.innerHTML = html;
 			state.currentPath = path;
 			highlightNav(path);
-			if (missingTranslation) injectTranslationBanner(article);
 			injectPageMeta(article, path);
 			autolinkReferences(article, path);
 			enhanceArticle(article);
@@ -258,67 +228,7 @@
 		const map = {};
 		state.flatPages.forEach(p => {
 			map[p.title] = p.path;
-		});
-		Object.assign(map, {
-			'Signal': 'state/signals',
-			'ListSignal': 'state/signals',
-			'MapSignal': 'state/signals',
-			'Watch': 'state/watch',
-			'Store': 'state/stores',
-			'UIStoreData': 'state/stores',
-			'UI': 'ui/ui-class',
-			'UIData': 'ui/ui-class',
-			'Bridge': 'ui/bridge',
-			'Node': 'nodes/node-fundamentals',
-			'ShaderPipeline': 'shaders/pipeline',
-			'ShaderPass': 'shaders/custom',
-			'NodeEffect': 'effects/overview',
-			'RoundedNodeEffect': 'effects/rounded',
-			'CircleNodeEffect': 'effects/circle',
-			'BlurNodeEffect': 'effects/blur',
-			'BorderNodeEffect': 'effects/border',
-			'GradientNodeEffect': 'effects/gradient',
-			'TweenAnimator': 'animations/tween-animator',
-			'TweenManager': 'animations/tween-animator',
-			'Easing': 'animations/easing',
-			'ResourceBuilder': 'resources/resource-builder',
-			'Resource': 'resources/resource-builder',
-			'ResourceDecoder': 'resources/decoders',
-			'VideoResourceDecoder': 'resources/decoders',
-			'ImageResourceDecoder': 'resources/decoders',
-			'DrawUtils': 'drawing/draw-utils',
-			'DrawShape': 'drawing/shapes',
-			'DrawText': 'drawing/text',
-			'DrawResource': 'drawing/resources',
-			'DrawModel': 'drawing/models',
-			'Text': 'drawing/text',
-			'TextElement': 'drawing/text',
-			'TextMode': 'drawing/text',
-			'TextOverflow': 'drawing/text',
-			'ITextModifier': 'drawing/text',
-			'IDrawableModel': 'drawing/models',
-			'Color': 'drawing/color',
-			'MSDF': 'fonts/msdf-atlas',
-			'CustomFontProvider': 'fonts/custom-font',
-			'RectNode': 'nodes/design/rect',
-			'CircleNode': 'nodes/design/circle',
-			'TextNode': 'nodes/design/text',
-			'ResourceNode': 'nodes/design/resource',
-			'TextFieldNode': 'nodes/design/text-field',
-			'MultilineTextFieldNode': 'nodes/design/multiline-text-field',
-			'ProgressNode': 'nodes/design/progress',
-			'ModelNode': 'nodes/design/model',
-			'ResourcePlayerNode': 'nodes/design/resource-player',
-			'ContainerNode': 'nodes/structure/container',
-			'FlexNode': 'nodes/structure/flex',
-			'GridNode': 'nodes/structure/grid',
-			'ScrollbarNode': 'nodes/structure/scrollbar',
-			'SliderNode': 'nodes/structure/slider',
-			'CheckboxNode': 'nodes/structure/checkbox',
-			'ToggleNode': 'nodes/structure/toggle',
-			'SwitchNode': 'nodes/structure/switch',
-			'SelectorNode': 'nodes/structure/selector',
-			'ChartNode': 'nodes/structure/chart'
+			p.refs.forEach(ref => { map[ref] = p.path; });
 		});
 		return map;
 	}
@@ -349,10 +259,9 @@
 			.replace(/^-|-$/g, '') || 'page';
 		const version = (state.nav && state.nav.version) ? state.nav.version : '';
 		const versionPart = version ? '-v' + version : '';
-		const langSuffix = state.lang && state.lang !== DEFAULT_LANG ? '.' + state.lang : '';
-		const filename = 'joid-docs-' + slug + versionPart + langSuffix + '.pdf';
+		const filename = 'joid-docs-' + slug + versionPart + '.pdf';
 		const clone = article.cloneNode(true);
-		clone.querySelectorAll('.copy-btn, .source-link, .pdf-link, .translation-missing').forEach(el => el.remove());
+		clone.querySelectorAll('.copy-btn, .source-link, .pdf-link').forEach(el => el.remove());
 		const wrapper = document.createElement('div');
 		wrapper.className = 'markdown pdf-render';
 		wrapper.appendChild(clone);
@@ -375,72 +284,13 @@
 			.save();
 	}
 
-	function injectTranslationBanner(article) {
-		const el = document.createElement('div');
-		el.className = 'translation-missing';
-		el.innerHTML = '<strong>' + t('missingTranslationKicker') + '</strong>' + t('missingTranslation');
-		article.insertBefore(el, article.firstChild);
-	}
-
 	const GITHUB_REPO = 'https://github.com/Zeldown/JOID';
 	const GITHUB_BRANCH = 'main';
-	const GITHUB_SOURCE_ROOT = 'src/main/java/dev/joid';
-
-	const pathToSource = {
-		'ui/ui-class': 'lib/ui/core/UI.java',
-		'ui/bridge': 'lib/ui/bridge/UIBridge.java',
-		'ui/transitions': 'lib/ui/core/transition/Transition.java',
-		'nodes/node-fundamentals': 'lib/ui/node/Node.java',
-		'nodes/design/rect': 'lib/ui/node/impl/design/shape/RectNode.java',
-		'nodes/design/circle': 'lib/ui/node/impl/design/shape/CircleNode.java',
-		'nodes/design/text': 'lib/ui/node/impl/design/text/TextNode.java',
-		'nodes/design/resource': 'lib/ui/node/impl/design/resource/ResourceNode.java',
-		'nodes/design/text-field': 'lib/ui/node/impl/design/textfield/TextFieldNode.java',
-		'nodes/design/multiline-text-field': 'lib/ui/node/impl/design/textfield/MultilineTextFieldNode.java',
-		'nodes/design/progress': 'lib/ui/node/impl/design/progress/ProgressNode.java',
-		'nodes/design/model': 'lib/ui/node/impl/design/model/ModelNode.java',
-		'nodes/design/resource-player': 'lib/ui/node/impl/design/video/ResourcePlayerNode.java',
-		'nodes/structure/container': 'lib/ui/node/impl/structure/container/ContainerNode.java',
-		'nodes/structure/flex': 'lib/ui/node/impl/structure/flex/FlexNode.java',
-		'nodes/structure/grid': 'lib/ui/node/impl/structure/grid/GridNode.java',
-		'nodes/structure/scrollbar': 'lib/ui/node/impl/structure/scrollbar/ScrollbarNode.java',
-		'nodes/structure/slider': 'lib/ui/node/impl/structure/slider/SliderNode.java',
-		'nodes/structure/checkbox': 'lib/ui/node/impl/structure/checkbox/CheckboxNode.java',
-		'nodes/structure/toggle': 'lib/ui/node/impl/structure/toggle/ToggleNode.java',
-		'nodes/structure/switch': 'lib/ui/node/impl/structure/sw/SwitchNode.java',
-		'nodes/structure/selector': 'lib/ui/node/impl/structure/selector/SelectorNode.java',
-		'nodes/structure/chart': 'lib/ui/node/impl/structure/chart/ChartNode.java',
-		'effects/overview': 'lib/ui/node/effect/NodeEffect.java',
-		'effects/rounded': 'lib/ui/node/effect/impl/RoundedNodeEffect.java',
-		'effects/circle': 'lib/ui/node/effect/impl/CircleNodeEffect.java',
-		'effects/blur': 'lib/ui/node/effect/impl/BlurNodeEffect.java',
-		'effects/border': 'lib/ui/node/effect/impl/BorderNodeEffect.java',
-		'effects/gradient': 'lib/ui/node/effect/impl/GradientNodeEffect.java',
-		'shaders/pipeline': 'lib/shader/pipeline/ShaderPipeline.java',
-		'shaders/custom': 'lib/shader/pipeline/ShaderPass.java',
-		'animations/tween-animator': 'lib/animation/animator/TweenAnimator.java',
-		'animations/easing': 'lib/animation/tweenengine/TweenEquations.java',
-		'resources/resource-builder': 'lib/resource/ResourceBuilder.java',
-		'resources/decoders': 'lib/resource/dto/decoder/ResourceDecoder.java',
-		'state/signals': 'lib/utils/signal/Signal.java',
-		'state/watch': 'lib/ui/node/property/watch/WatchProperty.java',
-		'state/stores': 'lib/ui/core/hook/store/UIStore.java',
-		'fonts/custom-font': 'lib/font/FontLoader.java',
-		'drawing/draw-utils': 'lib/draw/DrawUtils.java',
-		'drawing/shapes': 'lib/draw/shape/DrawShape.java',
-		'drawing/text': 'lib/draw/text/DrawText.java',
-		'drawing/resources': 'lib/draw/resource/DrawResource.java',
-		'drawing/models': 'lib/draw/model/DrawModel.java',
-		'drawing/color': 'lib/color/Color.java',
-		'interactions/callbacks': 'lib/ui/node/callback/registry/NodeCallbackRegistry.java',
-		'interactions/hover': 'lib/ui/node/hover/HoverElement.java',
-		'interactions/drag-drop': 'lib/ui/node/property/draggable/DraggableProperty.java'
-	};
 
 	function sourceUrlFor(path) {
-		const src = pathToSource[path];
-		if (!src) return null;
-		return GITHUB_REPO + '/blob/' + GITHUB_BRANCH + '/' + GITHUB_SOURCE_ROOT + '/' + src;
+		const page = state.flatPages.find(p => p.path === path);
+		if (!page || !page.source) return null;
+		return GITHUB_REPO + '/blob/' + GITHUB_BRANCH + '/' + page.source;
 	}
 
 	function injectPageMeta(article, path) {
@@ -574,38 +424,6 @@
 		}
 	}
 
-	function setupLangToggle() {
-		const toggle = document.getElementById('lang-toggle');
-		if (!toggle) return;
-		const buttons = toggle.querySelectorAll('button[data-lang]');
-		const refresh = () => {
-			buttons.forEach(b => b.classList.toggle('active', b.dataset.lang === state.lang));
-		};
-		refresh();
-		buttons.forEach(b => {
-			b.addEventListener('click', () => {
-				const next = b.dataset.lang;
-				if (next === state.lang) return;
-				state.lang = next;
-				localStorage.setItem('joid-docs-lang', next);
-				refresh();
-				applyStaticTranslations();
-				if (state.currentPath) loadPage(state.currentPath);
-			});
-		});
-	}
-
-	function applyStaticTranslations() {
-		const input = document.getElementById('search-input');
-		if (input) input.placeholder = t('searchPlaceholder');
-		document.documentElement.style.setProperty('--search-empty', '"' + t('searchEmpty') + '"');
-		document.documentElement.lang = state.lang;
-		document.querySelectorAll('[data-i18n]').forEach(el => {
-			const key = el.dataset.i18n;
-			if (key) el.textContent = t(key);
-		});
-	}
-
 	function setupSidebarToggle() {
 		const btn = document.getElementById('sidebar-toggle');
 		const sidebar = document.querySelector('.sidebar');
@@ -627,9 +445,7 @@
 	window.JOID_DOCS = { state, loadPage, t };
 
 	(async function init() {
-		setupLangToggle();
 		setupSidebarToggle();
-		applyStaticTranslations();
 		await loadNav();
 		const { path } = parseHash();
 		await loadPage(path);

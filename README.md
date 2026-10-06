@@ -13,88 +13,54 @@
 
 <br>
 
-**Build GPU-composed UIs in pure Java — no CSS, no XML, no runtime parser.**
-<br><br>
-Welcome to JOID, a flexible component-based UI toolkit for any Java application that owns its rendering path — OpenGL, Vulkan, or any engine you bridge it to — made for developers who want to ship interfaces that stand out. No default theme, no stylesheet dialect to fight — the code you write is the layout the GPU draws.
-<br><br>
-Under the hood: a retained-mode node tree, reactive signals that only notify the nodes watching them, a composable shader pipeline for custom GPU effects, and a set of bridges that drop the library into any host and any rendering engine — games, tools, editors, overlays.
-<br><br>
-No DSL to learn, no scene-graph format to serialize, no runtime engine to boot. Just chainable Java classes and a compiler that catches UI bugs the way it catches everything else — rename a node and every reference follows, wire the wrong signal type and you get a build error instead of a silent runtime failure.
-<br><br>
+**Write your interface once. Render it anywhere, with your design.**
 
-[Installation](#installation)
-[Backends](#backends)
-[Features](#features)
-[Documentation](#documentation)
-[License](#license)
-[Credits](#credits)
+[**Documentation**](https://joid.dev-zeldown.workers.dev/) · [**Quick Start**](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) · [**Tutorial**](https://joid.dev-zeldown.workers.dev/#/tutorial/setup) · [**Releases**](https://github.com/Zeldown/JOID/releases)
 
 </div>
 
-## Installation
+<br>
 
-JOID is distributed via GitHub Releases for every backend (`lwjgl2`, `lwjgl3`, `vulkan`), each as two artifacts:
+<p align="center">
+  <img src="documentation/content/images/pixel-perfect.webp" alt="A design rebuilt in JOID by copying each layer's values, then overlaid on the design export" width="100%">
+</p>
 
-- **joid-<backend>-X.Y.Z-prod.jar** — production build (excludes dev/demo assets)
-- **joid-<backend>-X.Y.Z-dev.jar** — dev build (includes demo assets, fonts, demo textures)
+## Why JOID
 
-Every release also ships two tools: **joid-msdf-generator-X.Y.Z.zip**, the font atlas generator with its launch scripts for Windows, macOS and Linux — see [MSDF Atlas](documentation/content/fonts/msdf-atlas.md) — and **joid-backend-template-X.Y.Z.zip**, a starting point to write a backend in your own repository.
+- 🔌 **Renderer-agnostic** — your UIs talk only to JOID, and a backend adapts it to the engine underneath. The same code runs on LWJGL 2, LWJGL 3, Vulkan or your own engine, and on every version of them, every backend being checked pixel by pixel against the others.
+- 📐 **Pixel-perfect from your design** — every UI is laid out on a 1920×1080 canvas, the frame you design on: copy the positions, sizes, colors and font settings from your design tool and the render lands on the mockup pixel for pixel, scaled to any window.
+- 🎨 **Design-neutral** — every component an interface needs comes with its behavior, state and input handled, and the look you give it. Draw them once in your own UI kit: the same usage code gets an entirely different design with another kit.
+- 🧰 **Developer experience, end to end** — a fluent, typed API completed by your IDE and checked by the compiler, sensible defaults, and a dev mode with an inspector, a profiler, hot reload and warnings that point at your own line of code.
+- 🧱 **Everything in one library** — from a simple rectangle to a video: MSDF text sharp at any size, images, SVG, animated GIF/APNG/WebP, video with positional audio, 3D models, gradients, rounded corners, borders, blur, masks, custom shaders, tweens and transitions.
+- ⚡ **Direct GPU rendering** — nodes turn straight into GPU draw calls and shader passes of your engine, with no intermediate rendering layer.
+- 🔄 **Reactive state** — signals update exactly the parts of the interface that depend on them, and stores share and persist your state across UIs.
 
-Download the desired artifact from the [Releases page](https://github.com/Zeldown/JOID/releases) and add it to your project's classpath. To build them from source, `./gradlew build` (with `-Pdev` for the dev flavour) copies every release artifact into `build/libs`. The jars only contain JOID code: add Guava 15.0, Gson 2.2.4, commons-lang3 3.1, commons-compress 1.8.1, commons-io 2.4 and vecmath 1.3.1 to your project, along with the libraries of your backend listed in [Installation](documentation/content/getting-started/installation.md).
+## Showcase
 
-### Gradle
-
-```groovy
-dependencies {
-    compile files('libs/joid-lwjgl2-8.0.0-prod.jar')
-}
-```
-
-### Maven
-
-```xml
-<dependency>
-    <groupId>dev.joid</groupId>
-    <artifactId>joid</artifactId>
-    <version>8.0.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/libs/joid-lwjgl2-8.0.0-prod.jar</systemPath>
-</dependency>
-```
-
-### Native libraries
-
-The LWJGL 2 backend embeds the LWJGL 2 and OpenAL natives of Windows, Linux and macOS and extracts the ones of the running platform on first use, unless the launcher already provides them, as Minecraft does. The LWJGL 3 and Vulkan backends resolve their natives from Maven, and LWJGL 3 extracts them at runtime.
-
-## Backends
-
-JOID is a multi-module Gradle build. The `core` module contains the engine-agnostic library, and each rendering engine is a module under `impl/`, with its own `build.gradle`, shaders and ready-to-run demo (`./gradlew :vulkan:runDemo`). LWJGL 3 and Vulkan share the `glfw` window module and the `openal` audio module:
-
-| Module | Engine | Entry point |
-|---|---|---|
-| `core` | Engine-agnostic core | — |
-| `lwjgl2` | LWJGL 2.9.1 — OpenGL fixed pipeline, OpenAL | `Backend.register()` |
-| `lwjgl3` | LWJGL 3.3.4 — GLFW, OpenGL 3.3 core, OpenAL | `Backend.register(window)` |
-| `vulkan` | LWJGL 3.3.4 — GLFW, Vulkan 1.3, shaderc, OpenAL | `Backend.register(window)` |
-| `testkit` | Snapshot test framework shared by the backends | — |
-| `msdf` | Font atlas generator, `.ttf` or `.otf` to `font.msdf` | `MsdfGenerator` |
-
-Entry points live in the `dev.joid.impl.<module>` package of each backend. Backends only implement the bridges — they never modify the `core` module. See [Backends](documentation/content/ui/backends.md) to write a new one, in this repository or in your own from the `joid-backend-template` of each release.
-
-## Tests
-
-`./gradlew test` runs the shader unit tests, then renders the demo UIs offscreen on each backend with a controlled clock and compares them pixel by pixel to references recorded per machine in `.snapshots`. `./gradlew crossBackendTest` also compares the backends to each other within one level per channel, and `./gradlew updateSnapshots` accepts an intended visual change. Each run writes an interactive `report.html` to `build/snapshots` to inspect every difference down to the pixel. These tests need a GPU and run on the staged changes before each commit and on the pushed commits before each push, through the hooks installed by `./gradlew installLocalGitHook`. See [Backends](documentation/content/ui/backends.md#tests).
-
-## Features
-
-- 🧱 **Node-based UI** — Hierarchical component system with layout nodes (flex, grid, scrollbar, container) and design nodes (shapes, text, images, text fields, sliders, charts, video…)
-- 🎨 **MSDF font rendering** — Crisp text at any scale using Multi-channel Signed Distance Fields, with kerning, from atlases JOID generates itself
-- 🌈 **Shader pipeline** — Composable multi-pass GPU effects: blur, border, gradient, circle, rounded corners
-- ✨ **Tween animations** — Full Universal Tween Engine integration (easing, paths, timelines, callbacks)
-- 🎯 **Reactive signals** — Observable values with conditional watches that auto-reload nodes
-- 💾 **Persistent stores** — `@UIStoreData`-annotated fields auto-serialized to JSON
-- 🎬 **Video playback** — `ResourcePlayerNode` with FFmpeg-backed decoding (MP4/MOV/WEBM/MKV/AVI/GIF/APNG)
-- 🔌 **Bridge pattern** — Host- and engine-agnostic integration via `IUIBridge`, `IWindowBridge`, `IRenderBridge`, `IAudioBridge` and `IClockBridge`
+<table>
+  <tr>
+    <td width="50%"><img src="documentation/content/images/tutorial-overview.png" alt="A settings screen built with JOID"></td>
+    <td width="50%"><img src="documentation/content/images/tutorial-polish-hover.gif" alt="Hover animations and a tooltip"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>A settings screen, built step by step in the tutorial</sub></td>
+    <td align="center"><sub>Hover animations, tooltips and an animated switch</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="documentation/content/images/uikit-side-by-side.png" alt="The same code drawn by two UI kits"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><sub>The same screen code, drawn by two UI kits: only the import changes</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="documentation/content/images/text-effects-animated.gif" alt="Animated text effects"></td>
+    <td width="50%"><img src="documentation/content/images/msdf-sizes.png" alt="MSDF text at 16, 64 and 256 px"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Markup and per-glyph text effects</sub></td>
+    <td align="center"><sub>MSDF text, sharp from 16 to 256 px</sub></td>
+  </tr>
+</table>
 
 ## Documentation
 
@@ -102,29 +68,17 @@ Entry points live in the `dev.joid.impl.<module>` package of each backend. Backe
 
 ### 📖 [**joid.dev-zeldown.workers.dev**](https://joid.dev-zeldown.workers.dev/)
 
-Full reference · Searchable (`Ctrl+K`) · English & French · Per-page PDF export
+Getting started · Tutorial · Essentials · Components · Guides · Search (`Ctrl+K`)
 
 </div>
 
-<sub>Offline: the site is self-contained in the `documentation/` folder. Serve it with any static HTTP server (`cd documentation && npx serve .` or `python -m http.server 3000`) — opening `index.html` via `file://` won't work because pages load through `fetch`.</sub>
-
-## License
-
-JOID is released under the **Apache License 2.0** — see [LICENSE](LICENSE).
-
-Use it in anything: commercial or not, open or closed, forked or embedded. Nothing to request, no revenue share, no non-commercial boundary.
-
-When you redistribute JOID, modified or not, the license asks you to:
-
-- ship a copy of the license and keep the copyright, patent, trademark and attribution notices;
-- state the files you changed;
-- pass the [NOTICE](NOTICE) content on with your distribution.
-
-It also grants you the patents of every contributor, and reserves the **JOID** name as a trademark: give your fork another name. Section 4 of the [LICENSE](LICENSE) has the exact wording.
+Start with the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) for a first window in a few minutes, or the [Tutorial](https://joid.dev-zeldown.workers.dev/#/tutorial/setup) to build a complete screen. The site also lives in the [`documentation/`](documentation) folder: serve it with any static HTTP server (`cd documentation && npx serve .`).
 
 ## Credits
 
-- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine (Apache-2.0, bundled in `lib/animation/tweenengine`)
-- [msdfgen](https://github.com/Chlumsky/msdfgen) by **Viktor Chlumský** — the multi-channel signed distance field algorithm, which JOID reimplements in Java in the `msdf/` module
-- [LWJGL](https://www.lwjgl.org/) — OpenGL / Vulkan / OpenAL Java bindings used by the backends (BSD-3-Clause)
+- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine (Apache-2.0, bundled in `lib/animation/tweenengine`)
+- [msdfgen](https://github.com/Chlumsky/msdfgen) by **Viktor Chlumský** — the multi-channel signed distance field algorithm, which JOID reimplements in Java in the `msdf/` module
+- [LWJGL](https://www.lwjgl.org/) — OpenGL / Vulkan / OpenAL Java bindings used by the backends (BSD-3-Clause)
 - [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco** — Video decoding (Apache-2.0; the FFmpeg builds carry their own terms)
+
+JOID is released under the [Apache License 2.0](LICENSE).

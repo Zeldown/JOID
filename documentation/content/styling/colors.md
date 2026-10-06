@@ -1,0 +1,268 @@
+# Colors and Gradients
+
+`Color` (`dev.joid.lib.color`) is the single color type of JOID: an RGBA value with float components from `0F` to `1F`, which can also carry a linear gradient (`ColorGradient`) or an update function that animates it. The same type is used everywhere: node colors, text, borders, resource tints and drawing calls.
+
+```java
+@Override
+public void init() {
+    RectNode.create(100, 100, 200, 120).color(Color.RED).attach(this);
+    RectNode.create(320, 100, 200, 120).color(new Color(0.2F, 0.4F, 0.6F, 0.8F)).attach(this);
+    RectNode.create(540, 100, 200, 120).color(Color.decode("#3366CC")).attach(this);
+    RectNode.create(760, 100, 200, 120).color(Color.BLUE.toGradient(Color.GREEN)).attach(this);
+}
+```
+
+![A red, a translucent steel blue, a medium blue and a blue-to-green gradient rectangle](../images/colors-basic.png "A preset, float components with alpha 0.8, a decoded hex string and a gradient.")
+
+## Creating a Color
+
+| Constructor | Description |
+| --- | --- |
+| `Color(float r, float g, float b)` | Components from `0F` to `1F`, opaque (`a = 1F`). |
+| `Color(float r, float g, float b, float a)` | Components from `0F` to `1F`. Values above `1F` are capped at `1F`. |
+| `Color(float r, float g, float b, float a, Consumer<Color> update)` | Same, with an update function (see [Animated colors](#animated-colors-with-update)). |
+| `Color(int r, int g, int b)` | Components from `0` to `255`, opaque. |
+| `Color(int r, int g, int b, int a)` | Components from `0` to `255`. |
+| `Color(int value)` | Packed `0xAARRGGBB` integer. An alpha byte of `0` is read as `255`, so `0x336699` is opaque. |
+| `Color(Color color)` | Copies the four components only (no gradient, no update function). Use `copy()` for a full copy. |
+| `Color(java.awt.Color color)` | Converts an AWT color, alpha included. |
+| `Color(FloatBuffer buffer)` | Reads four floats (r, g, b, a) and advances the buffer by 4. |
+| `Color(ColorGradient gradient)` | A gradient color. Its own components are those of the gradient's start color. |
+
+| Factory | Description |
+| --- | --- |
+| `Color.fill(int value)` | Opaque gray with all three components set to `value / 255`. |
+| `Color.fill(float value)` | Opaque gray with all three components set to `value`. |
+| `Color.decode(String text)` | Parses a string, see [Decoding strings](#decoding-strings-with-decode). |
+| `Color.gradient(Color start, Color end, Vector4f direction)` | A gradient color, see [Gradients](#gradients). |
+
+> NOTE: Integer arguments select the `0`–`255` constructors: `new Color(1, 0, 0)` is almost black. Write `new Color(1F, 0F, 0F)` for red.
+
+Components are public `float` fields: `r`, `g`, `b`, `a`. Two more public fields hold the optional extras: `gradient` (`ColorGradient`, `null` for a plain color) and `update` (`Consumer<Color>`, `null` when the color is not animated).
+
+## Preset colors
+
+| Constant | r, g, b, a |
+| --- | --- |
+| `Color.WHITE` | 1, 1, 1, 1 |
+| `Color.LIGHTGRAY` | 0.7, 0.7, 0.7, 1 |
+| `Color.GRAY` | 0.5, 0.5, 0.5, 1 |
+| `Color.DARKGRAY` | 0.3, 0.3, 0.3, 1 |
+| `Color.BLACK` | 0, 0, 0, 1 |
+| `Color.RED` | 1, 0, 0, 1 |
+| `Color.GREEN` | 0, 1, 0, 1 |
+| `Color.BLUE` | 0, 0, 1, 1 |
+| `Color.YELLOW` | 1, 1, 0, 1 |
+| `Color.ORANGE` | 1, 0.8, 0, 1 |
+| `Color.PINK` | 1, 0.7, 0.7, 1 |
+| `Color.CYAN` | 0, 1, 1, 1 |
+| `Color.MAGENTA` | 1, 0, 1, 1 |
+| `Color.TRANSPARENT` | 0, 0, 0, 0 |
+| `Color.RAINBOW` | Animated hue cycle, see [Animated colors](#animated-colors-with-update). |
+| `Color.LOADING` | Animated dark gray pulse, see [Animated colors](#animated-colors-with-update). |
+
+![Swatches of the fourteen fixed preset colors with their names](../images/colors-presets.png "The fixed presets; TRANSPARENT draws nothing.")
+
+> WARNING: Presets are shared, mutable instances. `add(...)` and `scale(...)` modify the color they are called on, and the public fields can be written directly. Never mutate a preset: derive a new color with `copy()`, `copyAlpha(...)`, `addToCopy(...)` or `scaleCopy(...)` instead.
+
+## Decoding strings with decode
+
+`Color.decode(String)` accepts the following formats:
+
+| Format | Example | Result |
+| --- | --- | --- |
+| `#RRGGBB` or `RRGGBB` | `#3366CC` | Opaque color. |
+| `#RRGGBBAA` or `RRGGBBAA` | `#3366CC80` | Color with alpha (`80` = 128). |
+| `rgb(r, g, b)` | `rgb(255, 128, 0)` | Integers from `0` to `255`, opaque. |
+| `rgba(r, g, b, a)` | `rgba(255, 128, 0, 64)` | Integers from `0` to `255`, alpha included (not a `0`–`1` fraction). |
+| `rainbow` | `#Rainbow` | The current frame of the rainbow cycle (a fixed color, not animated). Case-insensitive, `#` ignored. |
+| `loading` | `LOADING` | The current frame of the loading pulse (a fixed color, not animated). Case-insensitive, `#` ignored. |
+| `gradient(start, end)` | `gradient(#FF0000, #0000FF)` | Left-to-right gradient. |
+| `gradient(start, end, startX, startY, endX, endY)` | `gradient(#FF0000, #0000FF, 0, 0, 0, 1)` | Gradient with an explicit [direction](#gradients). |
+
+Any other input throws a `NumberFormatException`, including the short `#RGB` form. The `rgb(`, `rgba(` and `gradient(` prefixes must be lowercase, and whitespace around the whole string is not trimmed. The arguments of `gradient(...)` are split on commas, so its two colors must be written without commas (hex codes, `rainbow` or `loading`), not as `rgb(...)`.
+
+`encode()` does the reverse and always returns `#RRGGBBAA` in uppercase, which `decode` reads back:
+
+```java
+final String hex = new Color(1F, 0.5F, 0F, 1F).encode();
+final Color same = Color.decode(hex);
+```
+
+Here `hex` is `"#FF7F00FF"`: conversions to `0`–`255` truncate (`0.5F * 255` gives `127`).
+
+## Reading components
+
+| Method | Description |
+| --- | --- |
+| `getRed()`, `getGreen()`, `getBlue()`, `getAlpha()` | Component as an integer from `0` to `255` (truncated). |
+| `getRedByte()`, `getGreenByte()`, `getBlueByte()`, `getAlphaByte()` | Same values as the methods above. |
+| `getRGB()` | Packed `0xAARRGGBB` integer. |
+| `encode()` | `#RRGGBBAA` string, uppercase. |
+| `RGBtoHSB(float[] hsb)` | `{hue, saturation, brightness}`, each from `0F` to `1F`. Fills and returns `hsb`, or a new array when `hsb` is `null`. |
+| `Color.RGBtoHSB(int r, int g, int b, float[] hsb)` | Same conversion from `0`–`255` components. |
+| `isGradient()` | `true` when the color carries a `ColorGradient`. |
+| `toString()` | Components and hex code, for example `Color(255, 127, 0, 255) [#FF7F00FF]`. |
+
+To build a color from HSB values, go through AWT: `new Color(java.awt.Color.HSBtoRGB(hue, saturation, brightness))`.
+
+`equals` compares the four components exactly and ignores the gradient and the update function.
+
+## Deriving colors
+
+These methods return a new color and leave the original untouched:
+
+| Method | Description |
+| --- | --- |
+| `copy()` | Full copy: components, update function and gradient (whose ends and direction are copied too). |
+| `copyAlpha(float alpha)` | Copy with another alpha, update function kept. On a gradient, both ends are scaled by the same ratio (`alpha / a`), so a fade stays a fade. When the color's own alpha is `0F`, both ends get `alpha`. |
+| `copyRed(float red)`, `copyGreen(float green)`, `copyBlue(float blue)` | Copy with one component replaced, update function kept, gradient dropped. |
+| `darker()` | `darker(0.5F)`. |
+| `darker(float scale)` | Multiplies r, g, b by `1 - scale`. Alpha kept. |
+| `brighter()` | `brighter(0.2F)`. |
+| `brighter(float scale)` | Multiplies r, g, b by `1 + scale`, capped at `1F`. Alpha kept. |
+| `multiply(Color other)` | Component-wise product, alpha included. |
+| `addToCopy(Color other)` | Copy (update function kept) with the four components of `other` added. Not capped. |
+| `scaleCopy(float value)` | Copy (update function kept) with the four components multiplied by `value`. Not capped. |
+| `to(Color target, float progress)` | `Color.transition(this, target, progress)`. |
+| `toGradient(Color end)` | Left-to-right gradient from this color to `end`. |
+| `toGradient(Color end, Vector4f direction)` | Gradient from this color to `end` along `direction`. |
+
+`darker`, `brighter` and `multiply` return plain colors: they drop the update function and the gradient.
+
+![A blue base color next to its darker, brighter and half-transparent variants](../images/colors-derive.png "The color #3366CC and the colors derived from it.")
+
+Two methods modify the color in place and return nothing: `add(Color other)` adds the four components of `other`, `scale(float value)` multiplies them. Their results are not capped.
+
+## Transitions with to
+
+`Color.transition(Color from, Color to, float progress)` (or `from.to(to, progress)`) interpolates between two colors. `progress` is a fraction: `0F` returns `from` itself and `1F` returns `to` itself (the same instances, not copies).
+
+| From | To | Result |
+| --- | --- | --- |
+| Plain | Plain | Linear RGBA interpolation. The result keeps the update function of the closest color (`to` above `0.5F`). |
+| Gradient | Gradient | Start colors, end colors and directions are interpolated separately. |
+| Gradient | Plain | Both ends of the gradient move toward the plain color, the direction is kept. |
+| Plain | Gradient | The plain color moves toward both ends of the gradient, the direction is kept. |
+
+```java
+final Color quarter = Color.RED.to(Color.BLUE, 0.25F);
+final Color paler = Color.RED.toGradient(Color.YELLOW).to(Color.WHITE, 0.5F);
+```
+
+![Five swatches going from red to blue](../images/colors-transition.png "Color.RED.to(Color.BLUE, progress) for 0F, 0.25F, 0.5F, 0.75F and 1F.")
+
+Nodes with a hovered color run this transition with their hover progress, as in `RectNode.color(normal, hovered)`. To drive it from your own value, pass a supplier:
+
+```java
+final RectNode rect = RectNode.create(100, 100, 200, 120);
+rect.color(() -> Color.RED.to(Color.BLUE, rect.hoverValue(1F))).attach(this);
+```
+
+![The cursor hovers a red rectangle that turns blue](../images/colors-hover.gif "The supplier blends red to blue with the hover progress.")
+
+## Gradients
+
+A gradient color is a `Color` whose `gradient` field holds a `ColorGradient`. Create one with `toGradient`, `Color.gradient` or the `ColorGradient` constructor:
+
+```java
+final Color horizontal = Color.BLUE.toGradient(Color.GREEN);
+final Color vertical = Color.CYAN.toGradient(Color.MAGENTA, new Vector4f(0F, 0F, 0F, 1F));
+final Color diagonal = Color.gradient(Color.RED, Color.YELLOW, new Vector4f(0F, 0F, 1F, 1F));
+final Color fromObject = new Color(new ColorGradient(Color.ORANGE, Color.PINK, new Vector4f(1F, 0F, 0F, 0F)));
+```
+
+![Four gradient rectangles: blue to green, cyan to magenta from the top, red to yellow diagonally, orange to pink from the right](../images/colors-gradients.png "The four gradients of the snippet, each drawn on a 200 × 120 RectNode.")
+
+The direction is a `javax.vecmath.Vector4f` of `(startX, startY, endX, endY)`, in fractions of the box being drawn: `(0, 0)` is its top-left corner and `(1, 1)` its bottom-right corner. The default direction of `toGradient(end)` and `gradient(start, end)` strings is `(0, 0, 1, 0)`, left to right.
+
+| Direction | Gradient |
+| --- | --- |
+| `new Vector4f(0F, 0F, 1F, 0F)` | Left to right. |
+| `new Vector4f(1F, 0F, 0F, 0F)` | Right to left. |
+| `new Vector4f(0F, 0F, 0F, 1F)` | Top to bottom. |
+| `new Vector4f(0F, 0F, 1F, 1F)` | Top-left to bottom-right. |
+| `new Vector4f(0.25F, 0F, 0.75F, 0F)` | Start color up to 25 % of the width, end color from 75 %. |
+
+![A red-to-blue gradient drawn with the five directions of the table](../images/colors-directions.png "Color.RED.toGradient(Color.BLUE, direction) with each direction of the table, in order.")
+
+Each pixel is projected on the line from the start point to the end point: before the start it gets the start color, after the end the end color, linearly mixed in between. Alpha is interpolated like the other components, so a gradient can fade out (`Color.WHITE.toGradient(Color.TRANSPARENT)`).
+
+The box the direction refers to depends on what is drawn:
+
+| Used in | Box |
+| --- | --- |
+| `RectNode.color(...)`, `DrawUtils.SHAPE` rectangles and polygons | The bounds of the shape. |
+| Rounded rectangles (`drawRoundedRect`) | The rectangle. |
+| `CircleNode`, `drawCircle` | The square around the circle. |
+| Text color (`TextInfo`) | The box of each drawn line. |
+| `ResourceNode.color(...)` | The node's rectangle. The gradient multiplies the image (a tint). |
+| `BorderNodeEffect` color | The node's rectangle. |
+
+### ColorGradient
+
+`ColorGradient` (`dev.joid.lib.color`) holds the two ends and the direction in final fields:
+
+| Member | Description |
+| --- | --- |
+| `new ColorGradient(Color startColor, Color endColor, Vector4f direction)` | Creates the gradient. The colors and the vector are kept by reference. |
+| `getStartColor()`, `getEndColor()`, `getDirection()` | The values given at creation. |
+| `use(Runnable draw, Vector4f canvas)` | Runs `draw` with the gradient shader bound. `canvas` is the box `(minX, minY, maxX, maxY)` in drawing coordinates. |
+| `use(boolean hasTexture, Runnable draw, Vector4f canvas)` | Same; with `hasTexture`, the gradient multiplies the bound texture. |
+
+You only need `use` when you draw geometry yourself; `Color.bind(...)` calls it for gradient colors (see below).
+
+## Animated colors with update
+
+A color can carry an update function (`Consumer<Color>`) that rewrites its components. `update()` runs it on the color and returns the color itself. The renderer calls `update()` every time it binds a plain color and every time it draws text, so the color animates on its own.
+
+```java
+final Color pulse = new Color(1F, 1F, 1F, 1F, color -> {
+    final float t = (float) ((Math.sin(BridgeHandler.CLOCK.get().currentTimeMillis() / 500D) + 1D) / 2D);
+    color.r = t;
+    color.g = 1F - t;
+    color.b = 0F;
+});
+RectNode.create(100, 100, 200, 120).color(pulse).attach(this);
+```
+
+![A rectangle cycling between red and green](../images/colors-pulse.gif "The update function rewrites the components on every bind.")
+
+`BridgeHandler` is in `dev.joid.lib.bridge`; its clock is the time source of JOID (see [Bridges](../integration/bridges.md)).
+
+Two animated colors are built in. Both read the clock bridge:
+
+| Member | Description |
+| --- | --- |
+| `Color.RAINBOW` | Animated preset: hue cycle with saturation and brightness `0.8F`, one full cycle every 3 seconds, opaque. |
+| `Color.RAINBOW()` | The rainbow color at the current time (a fixed color, not animated). |
+| `Color.RAINBOW(long time)` | The rainbow color at `time` milliseconds. |
+| `Color.LOADING` | Animated preset: opaque gray pulsing between `0.15F` and `0.19F` with a 2 second period. |
+| `Color.LOADING()` | The loading color at the current time (a fixed color, not animated). |
+
+![A rectangle cycling through the hues next to a dark gray rectangle slowly pulsing](../images/colors-animated.gif "Color.RAINBOW and Color.LOADING drawn on two RectNodes over three seconds.")
+
+`ResourceNode` draws `Color.LOADING()` in place of an image that is still loading.
+
+The update function survives `copy()`, `copyAlpha`, `copyRed`/`copyGreen`/`copyBlue`, `addToCopy` and `scaleCopy`. Since the function rewrites the components at each bind, a copy of `Color.RAINBOW` with another alpha is still drawn opaque: the rainbow function sets the alpha too.
+
+> NOTE: Shapes drawn with a gradient color use the two ends of the gradient and do not call the update function.
+
+## Binding a color in custom drawing
+
+Inside a `draw` hook you can bind a color yourself (see [Drawing Overview](../drawing/draw-utils.md)):
+
+| Method | Description |
+| --- | --- |
+| `bind()` | Calls `update()`, then sets the renderer's current color to r, g, b, a. |
+| `bind(Runnable draw, Vector4f canvas)` | Runs `draw` with this color: a plain color is bound then reset to white afterwards, a gradient binds the gradient shader over `canvas` (`minX, minY, maxX, maxY`) and restores the previous shader. |
+| `bind(Runnable draw, Vector4f canvas, boolean hasTexture)` | Same; with `hasTexture`, a gradient multiplies the bound texture. |
+| `Color.reset()` | Sets the renderer's current color back to opaque white. |
+
+## See also
+
+- [Effects](effects.md)
+- [BorderNodeEffect](border.md)
+- [RectNode](../nodes/visual/rect.md)
+- [Text Model](../text/text-and-textinfo.md)
+- [Shapes](../drawing/shapes.md)

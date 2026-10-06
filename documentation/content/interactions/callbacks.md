@@ -1,174 +1,275 @@
 # Callbacks
 
-Every interactive behaviour on a `Node` is a callback. Attach via fluent setters; handle via a lambda matching the callback's `apply(...)` signature.
+Callbacks run your code when something happens to a node: a click, a key, a hover change, a lifecycle step, a signal change, a scroll or a drag. You register them with the `on...` methods of `Node` and of specific nodes, usually as lambdas, and each callback can act before (PRE) or after (POST) the node's own behavior.
 
-## State lifecycle
-
-```java
-node.onInit((n) -> { });                                                          // NodeInitCallback
-node.onRender((n, mouseX, mouseY) -> { });                                        // NodeRenderCallback
-node.onDraw((n, mouseX, mouseY) -> { });                                          // NodeDrawCallback
-node.onUpdate((n) -> { });                                                        // NodeUpdateCallback
-node.onReload((n) -> { });                                                        // NodeReloadCallback
-node.onAppend((n, child) -> { });                                                 // NodeAppendCallback
-node.onDetach((n) -> { });                                                        // NodeDetachCallback
-node.onMount((n) -> { });                                                         // NodeMountCallback
-```
-
-`onInit` fires each time the node is loaded into a UI: when it is attached, and again on `reload()` and `WatchProperty.RELOAD`. `onMount` fires on the first frame the node renders. `onDetach` fires when the node is removed from its parent (via `clearChildren()` or UI close).
-
-## Mouse
+## Registering a callback
 
 ```java
-node.onMousePressed((n, mouseX, mouseY, clickType) -> { });                       // NodeMousePressedCallback
-node.onMouseReleased((n, mouseX, mouseY, clickType) -> { });                      // NodeMouseReleasedCallback
-node.onMouseDragged((n, mouseX, mouseY, clickType, deltaTime) -> { });            // NodeMouseDraggedCallback
-node.onMouseScroll((n, mouseX, mouseY, value) -> { });                            // NodeMouseScrollCallback
-node.onClick((n, mouseX, mouseY, clickType) -> { });                              // NodeMousePressedCallback, only for a press on the node
-```
-
-## Keyboard
-
-```java
-node.onKeyPressed((n, character, key) -> { });                                    // NodeKeyPressedCallback
-```
-
-## Scroll (overflow = SCROLL)
-
-```java
-node.onScrollUpdate((n, value) -> { });                                           // NodeScrollUpdateCallback
-node.onScrollEnd((n, scrollX, scrollY) -> { });                                   // NodeScrollEndCallback
-node.onScrollEnding((n, scrollX, scrollY) -> { });                                // NodeScrollEndingCallback
-```
-
-`onScrollUpdate` fires on each scroll tick with the scroll offset it aims at; `onScrollEnd` fires once the scroll comes to rest at the end of the content, with the final `(scrollX, scrollY)` offsets. Leaving the end before the scroll rests cancels it, and so does content growing past it. `onScrollEnding` fires as soon as the scroll aims at the end, before it rests, with the offsets it heads to: append the next items of an infinite list there, so they are in place before the scroll stops.
-
-## Drag
-
-```java
-node.onDrag((n) -> { });                                                          // NodeDragCallback
-node.onSnap((n, snapNode) -> { });                                                // NodeSnapCallback
-```
-
-`onDrag` fires on each mouse drag event while the node is being dragged. `onSnap` fires when the dragged node is released, onto the nearest registered snap target (`NEAREST`, whatever the distance) or the one it overlaps (`OVERLAP`).
-
-## Hover
-
-```java
-node.onHoverStart((n, mouseX, mouseY) -> { });                                    // NodeHoverStartCallback
-node.onHoverEnd((n, mouseX, mouseY) -> { });                                      // NodeHoverEndCallback
-node.onHover((n, mouseX, mouseY) -> { });                                         // NodeHoverCallback
-```
-
-`onHoverStart` fires the frame the mouse enters the node; `onHoverEnd` fires the frame it leaves; `onHover` fires every frame while the mouse is over the node. All three are wired into the same hover state machine that drives `hoverValue`, so they stay in sync with the hover fade.
-
-## Animation
-
-```java
-node.onAnimate((n, animator, value) -> { });                                      // NodeAnimationCallback
-```
-
-Fires when a tween animator attached to the node publishes a new value. You get the current `TweenAnimator` and its `float` value.
-
-## Signals
-
-```java
-node.onWatch((n, signal, properties) -> { });                                     // NodeWatchCallback
-```
-
-Fires whenever a watched signal triggers. `properties` is the `WatchProperty[]` vararg that was passed to `.watch(...)`.
-
-## The `context` parameter (PRE/POST phases)
-
-The lambdas shown above hit the **POST** phase of each callback. If you need to run logic before the default behaviour, implement the callback interface directly — the `pre` / `post` methods both receive an `InternalContext`:
-
-```java
-final NodeMousePressedCallback<RectNode> myHandler = new NodeMousePressedCallback<RectNode>() {
+public class ShopUI extends UI {
 
     @Override
-    public void pre(RectNode node, InternalContext context, double mouseX, double mouseY, ClickType clickType) {
-        if (!shouldReact()) context.cancel();
+    public void init() {
+        RectNode
+        .create(100, 100, 300, 80)
+        .color(Color.WHITE)
+        .onHoverStart((node, mouseX, mouseY) -> System.out.println("Enter"))
+        .onClick((node, mouseX, mouseY, clickType) -> System.out.println("Clicked with " + clickType))
+        .attach(this);
     }
 
-    @Override
-    public void apply(RectNode node, double mouseX, double mouseY, ClickType clickType) {
-        // POST phase — skipped when context was cancelled in pre()
-    }
-};
-```
-
-`InternalContext` has `cancel()`, `cancel(Runnable)`, and `isCancelled()`. Default behaviour (node-level effects like flipping `CheckboxNode.checked`) runs between `pre` and `post`.
-
-Every callback added to a node runs, in the order it was added. A callback that handles the event — the default `post`, or `context.cancel()` — stops it for the other nodes, never for the other callbacks of the same node: `onClick` and `onMousePressed` on one node both fire.
-
-## `ClickType`
-
-```java
-ClickType.LEFT
-ClickType.RIGHT
-ClickType.MIDDLE
-ClickType.BACK
-ClickType.FORWARD
-ClickType.OTHER
-```
-
-`ClickType.from(int button)` maps a mouse button index to one of the above (`0 → LEFT`, `1 → RIGHT`, `2 → MIDDLE`, `3 → BACK`, `4 → FORWARD`, anything else → `OTHER`).
-
-## Examples
-
-### Double-click
-
-```java
-final long[] lastClick = { 0L };
-
-node.onClick((n, mx, my, ct) -> {
-    final long now = System.currentTimeMillis();
-    if (now - lastClick[0] < 300L) { /* double click */ }
-    lastClick[0] = now;
-});
-```
-
-### Right-click menu
-
-```java
-node.onClick((n, mx, my, ct) -> {
-    if (ct == ClickType.RIGHT) openContextMenu(mx, my);
-});
-```
-
-### Release resources on detach
-
-```java
-class MyAssetNode extends Node {
-    private final Thread worker;
-
-    public MyAssetNode() {
-        this.worker = new Thread(this::doWork);
-        this.worker.start();
-        onDetach(n -> this.worker.interrupt());
-    }
 }
 ```
 
-### Scroll position logging
+- Every `on...` method adds one callback and returns the node, so you can chain them. Calling the same method twice registers two callbacks: both run, in registration order.
+- A callback stays registered for the life of the node; there is no method to remove one. Guard its body with a condition (a field or a [signal](../state/signals.md)) when it must stop reacting.
+- An exception thrown inside a callback is caught and printed (`Failed to invoke post method for callback ...` followed by the stack trace). The other callbacks and the event dispatch continue.
+
+### Typing the node parameter
+
+Every registration method is generic, for example `public final <T extends Node> T onClick(NodeMousePressedCallback<T> callback)`. In the middle of a chain, Java infers `T` as `Node` for a lambda: the lambda receives a `Node` and the rest of the chain is typed `Node`. Give a type witness to receive the concrete type:
 
 ```java
-FlexNode.vertical(0, 0, 400)
-    .overflow(OverflowProperty.SCROLL)
-    .body(list -> { /* content */ })
-    .onScrollEnd((n, sx, sy) -> System.out.println("Scrolled to " + sx + ", " + sy))
-    .attach(parent);
+TextNode
+.create(100, 100)
+.text(Text.create("", info))
+.<TextNode>onInit(node -> node.getText().text("Ready"))
+.attach(this);
 ```
 
-## Best practices
+`info` is a `TextInfo` (see [Text Model](../text/text-and-textinfo.md)). An assignment gives the target type to the last call of the chain: `final RectNode button = RectNode.create(0, 0, 100, 40).onClick((node, mouseX, mouseY, clickType) -> node.color(Color.RED));` passes a `RectNode` to the lambda. Without a witness, call the setters of the concrete class (`color`, `text`...) before the callbacks.
 
-- **Keep callbacks fast.** They run on the render thread; heavy work blocks the frame.
-- **Use `onDetach` for cleanup.** Threads, sockets, native resources — release them here or leak.
-- **Don't mutate the tree from `onUpdate`.** Use signals instead — adding/removing nodes during iteration is unsafe.
-- **Prefer `onClick` over `onMousePressed`** unless you need press + release semantics.
+## Node callback reference
+
+The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mouse`, `key`, `hover`, `state`, `signal`, `animation`, `scroll` and `draggable`. Coordinates are UI units (see [View and Scaling](../ui/view-and-scaling.md)). The last column is what runs between the PRE and the POST phase; for `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` it always runs, for the others a PRE cancel skips it (see [PRE and POST phases](#pre-and-post-phases)).
+
+| Method | Interface | Lambda arguments | Fires | Between PRE and POST |
+|---|---|---|---|---|
+| `onClick` | `NodeMousePressedCallback<T>` | `(node, mouseX, mouseY, clickType)` | A mouse button is pressed while the node is hovered (visible, enabled, UI on top) and no node handled the press before it. | Nothing. |
+| `onMousePressed` | `NodeMousePressedCallback<T>` | `(node, mouseX, mouseY, clickType)` | Every mouse button press the UI receives, wherever the mouse is. | Dispatch to the children, `onClick`, the node's `mousePressed` hook. |
+| `onMouseReleased` | `NodeMouseReleasedCallback<T>` | `(node, mouseX, mouseY, clickType)` | Every mouse button release, wherever the mouse is. | Dispatch to the children and the node's `mouseReleased` hook. |
+| `onMouseDragged` | `NodeMouseDraggedCallback<T>` | `(node, mouseX, mouseY, clickType, deltaTime)` | Every mouse move while a button is held. | Dispatch to the children, the node's `mouseDragged` hook, the drag of the node. |
+| `onMouseScroll` | `NodeMouseScrollCallback<T>` | `(node, mouseX, mouseY, value)` | Every mouse wheel event. | Dispatch to the children, scrolling of the hovered node, the node's `mouseScroll` hook. |
+| `onKeyPressed` | `NodeKeyPressedCallback<T>` | `(node, c, key)` | Every key event the UI receives, wherever the mouse is. | Dispatch to the children and the node's `keyPressed` hook. |
+| `onHoverStart` | `NodeHoverStartCallback<T>` | `(node, mouseX, mouseY)` | The frame the node becomes hovered. | Nothing. |
+| `onHover` | `NodeHoverCallback<T>` | `(node, mouseX, mouseY)` | Every frame while the node is hovered. | Nothing. |
+| `onHoverEnd` | `NodeHoverEndCallback<T>` | `(node, mouseX, mouseY)` | The frame the node stops being hovered (the mouse left, or the node got disabled). | Nothing. |
+| `onInit` | `NodeInitCallback<T>` | `(node)` | The node is loaded into a UI: `UI.add` or `attach(ui)`, `append` to a node already in a UI, and again on `reload()`. | Sets the UI, loads the children, scrollbar and skeleton, initializes the effects, calls `init(ui)`. |
+| `onReload` | `NodeReloadCallback<T>` | `(node)` | `reload()` is called on the node, including through `WatchProperty.RELOAD`. | Reloads the children, then loads the node again (its `onInit` fires). |
+| `onAppend` | `NodeAppendCallback<T>` | `(node, child)` | On the parent, once per child given to `append(...)` or `attach(parent)`. | Sets the parent of the child, loads it when the parent is in a UI, adds it to the children. |
+| `onDetach` | `NodeDetachCallback<T>` | `(node)` | The parent calls `clearChildren()`, the UI closes, or the UI rebuilds its nodes (`UI.reload()`). | Detaches the children, then calls the node's `detach()` hook. |
+| `onMount` | `NodeMountCallback<T>` | `(node)` | The first frame the node is drawn mounted (every `wait(...)` condition of the node and of its ancestors met), and again each time it becomes mounted after being unmounted. | Nothing. |
+| `onUpdate` | `NodeUpdateCallback<T>` | `(node)` | Every update tick of the UI. | Updates the children, then calls the node's `update()` hook. |
+| `onRender` | `NodeRenderCallback<T>` | `(node, mouseX, mouseY)` | Every frame the node is visible. | Draws the children with a negative z-index, the node itself (`onDraw`), the other children, the layers and the dragged copy (or the skeleton node while not mounted). |
+| `onDraw` | `NodeDrawCallback<T>` | `(node, mouseX, mouseY)` | Every frame the node is visible. | Draws the node itself: `draw`, or `drawSkeleton` while not mounted, with its own shader effects. |
+| `onWatch` | `NodeWatchCallback<T>` | `(node, signal, properties)` | A signal watched with `watch(...)` publishes. | Applies the `WatchProperty` values in order. |
+| `onAnimate` | `NodeAnimationCallback<T>` | `(node, animator, value)` | A frame where an animator registered with `animate(TweenAnimator)` holds a new value. | Nothing. |
+| `onScrollUpdate` | `NodeScrollUpdateCallback<T>` | `(node, value)` | `setScrollX`/`setScrollY` (also `scrollX`/`scrollY` and the mouse wheel) moves the scroll target; `value` is the requested offset. | Moves the scroll target, clamped to the content. |
+| `onScrollEnding` | `NodeScrollEndingCallback<T>` | `(node, scrollX, scrollY)` | The scroll target reaches the end of the content. | Nothing. |
+| `onScrollEnd` | `NodeScrollEndCallback<T>` | `(node, scrollX, scrollY)` | The animated scroll comes to rest at the end of the content. | Nothing. |
+| `onDragStart` | `NodeDragCallback<T>` | `(node)` | A left press on a draggable node starts a drag. | Starts the drag; creates the copy for `DraggableType.COPY`. |
+| `onDrag` | `NodeDragCallback<T>` | `(node)` | Every mouse drag event while the node is dragged. | Moves the drag target under the mouse. |
+| `onDragEnd` | `NodeDragCallback<T>` | `(node)` | A mouse button release (or a mouse grab by the window) ends the drag. | Snaps the node or sends it back, then stops the drag. |
+| `onSnap` | `NodeSnapCallback<T>` | `(node, snapNode)` | During the drag end, when a snap target is found. | Sets the drag target to the position of `snapNode`. |
+
+Details per family: [Mouse and Keyboard](mouse-and-keyboard.md), [Hover and Tooltips](hover.md), [Drag and Drop](drag-drop.md), [Watching Signals](../state/watch.md), [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md), [Node Fundamentals](../nodes/node-fundamentals.md) for the lifecycle and `wait`, [TweenAnimator](../animation/tween-animator.md) for `animate`.
+
+## PRE and POST phases
+
+Every callback interface declares three methods:
+
+| Method | Default | Role |
+|---|---|---|
+| `apply(node, args...)` | Abstract: the body of your lambda. | Your code. |
+| `pre(node, context, args...)`, annotated `@NodeCallbackMethod(Type.PRE)` | Does nothing. | Runs before the default action. |
+| `post(node, context, args...)`, annotated `@NodeCallbackMethod(Type.POST)` | `context.cancel(() -> this.apply(node, args...))` | Runs after the default action: calls `apply` only when the context is not cancelled, then cancels it. |
+
+A dispatch on one node runs:
+
+1. The `pre` method of every callback of that type, in registration order.
+2. The default action (last column of the reference table). For every callback except `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed`, a cancelled context at this point skips the default action and step 3.
+3. The `post` method of every callback, in registration order. When the context was not cancelled before this step, it is reset before each `post`, so every callback of the node runs; it ends cancelled when any `post` cancelled it.
+
+A lambda implements `apply`, so it runs in the POST phase. To act in the PRE phase, implement the interface and override `pre`. This flex node refuses a sixth child:
+
+```java
+final NodeAppendCallback<FlexNode> limit = new NodeAppendCallback<FlexNode>() {
+
+    @Override
+    public void apply(final FlexNode node, final Node child) {
+        System.out.println("Appended " + child.getClass().getSimpleName());
+    }
+
+    @Override
+    public void pre(final FlexNode node, final InternalContext context, final Node child) {
+        if (node.getChildren().size() >= 5) {
+            context.cancel();
+        }
+    }
+
+};
+
+FlexNode.vertical(100, 100, 400).onAppend(limit).attach(this);
+```
+
+`@NodeCallbackMethod` (`dev.joid.lib.ui.node.callback`) marks the phases on the interface methods; JOID finds it there, so an override does not need to repeat it.
+
+## InternalContext
+
+`InternalContext` (`dev.joid.lib.utils.context`) carries the cancelled state of one dispatch. A mouse or key event uses one context for the whole UI, shared by the mouse and key callbacks (`onClick` included) of every node; every other callback of `Node` gets a new context for each dispatch.
+
+| Method | Description |
+|---|---|
+| `static create()` | New context, not cancelled. |
+| `static create(boolean cancelled)` | New context in the given state. |
+| `isCancelled()` | `true` once the context is cancelled. |
+| `cancel()` | Cancels the context. |
+| `cancel(Runnable runnable)` | When not cancelled: runs `runnable`, then cancels. When already cancelled: does nothing. |
+| `cancel(Supplier<Boolean> supplier)` | When not cancelled: cancels if `supplier` returns `true`. The supplier is not called on a cancelled context. |
+| `execute(Runnable runnable)` | Runs `runnable` only when not cancelled. |
+| `reset()` | Clears the cancelled state. |
+
+Every method except `isCancelled` returns the context.
+
+## Consumed input events
+
+A mouse or key event travels through every node of the UI with a single context. A node consumes the event by cancelling that context. The following consume an event:
+
+- the default `post` of the input callbacks: any lambda given to `onClick`, `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` or `onKeyPressed` consumes the event it runs for;
+- built-in nodes that handle the event, such as a focused text field or a clicked checkbox;
+- a node that scrolls its content with the wheel;
+- UI keybinds and the zoom shortcuts (see [Mouse and Keyboard](mouse-and-keyboard.md)).
+
+Once the event is consumed, the input lambdas of the nodes reached afterwards do not run, `onClick` does not fire, built-in nodes ignore it, no drag starts, the UI keybinds do not run, and the UI bridge does not pass it to the UIs below.
+
+> WARNING: `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` receive every event of their kind, wherever the mouse is, and their lambda consumes it. A node with such a lambda takes the event away from every node reached after it (the nodes behind it and its own ancestors) and from the UI keybinds. Use `onClick` for clicks on the node, and override `post` as shown below when the other nodes must still receive the event.
+
+### Observing an event without consuming it
+
+Override `post` so it does not cancel the context. This callback logs every key, handled or not, and leaves it to the other nodes:
+
+```java
+RectNode
+.create(100, 100, 300, 80)
+.onKeyPressed(new NodeKeyPressedCallback<RectNode>() {
+
+    @Override
+    public void apply(final RectNode node, final char c, final Key key) {}
+
+    @Override
+    public void post(final RectNode node, final InternalContext context, final char c, final Key key) {
+        System.out.println(key + (context.isCancelled() ? " (handled by another node)" : ""));
+    }
+
+})
+.attach(this);
+```
+
+### Capturing an event in the PRE phase
+
+The PRE phase of a node runs before its children see the event. Cancelling there consumes it before them. This panel swallows the presses made over it while `loading` is `true`, and stays transparent otherwise because its `post` does nothing:
+
+```java
+final BooleanSignal loading = new BooleanSignal(true);
+
+ContainerNode
+.create(100, 100, 600, 400)
+.onMousePressed(new NodeMousePressedCallback<ContainerNode>() {
+
+    @Override
+    public void apply(final ContainerNode node, final double mouseX, final double mouseY, final ClickType clickType) {}
+
+    @Override
+    public void pre(final ContainerNode node, final InternalContext context, final double mouseX, final double mouseY, final ClickType clickType) {
+        if (loading.getOrDefault() && node.isHovered(mouseX, mouseY)) {
+            context.cancel();
+        }
+    }
+
+    @Override
+    public void post(final ContainerNode node, final InternalContext context, final double mouseX, final double mouseY, final ClickType clickType) {}
+
+})
+.attach(this);
+```
+
+## Callback order
+
+### Callbacks of one node
+
+All callbacks of one type run in registration order: every `pre`, the default action, every `post`. `onClick` and `onMousePressed` of the same node both fire for a press on it, `onClick` first: when the node's own `onClick` consumed the press, its `onMousePressed` POST phase receives a fresh context.
+
+### Input events across nodes
+
+Inside a UI, an input event reaches the top-level nodes from front to back: highest z-index first, and among equal z-indexes the last added first. Inside each node, the order is:
+
+1. The node's scrollbar, and its skeleton node while the node is not mounted.
+2. The node's PRE callbacks.
+3. The children with a z-index of 0 or more, front to back, each one recursively.
+4. For a press: `onClick` when the node is hovered. For a wheel event: the scrolling of the node when it is hovered and the event is not consumed.
+5. The node's own hook (`mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`).
+6. The children with a negative z-index, front to back.
+7. For a mouse drag: the move of the node's drag target when it is being dragged.
+8. The node's POST callbacks.
+9. For a press: the start of a drag when the press is a left click over the node and is not consumed.
+
+A release ends the drag of the node between steps 1 and 2. PRE callbacks therefore run from parent to child and POST callbacks from child to parent: the deepest, front-most node gets the first chance to consume the event in its POST phase. After the nodes, the UI's own hooks run; the full path from the window to the nodes is described in [Mouse and Keyboard](mouse-and-keyboard.md#event-dispatch-order).
+
+### Nested lifecycle callbacks
+
+`onInit`, `onReload`, `onDetach`, `onUpdate` and `onRender` wrap the same callbacks of the children: the PRE phase of a node runs before its children, the POST phase after them. For example, the `onInit` lambda of a child runs before the one of its parent, and both run after the `init(ui)` hook of their own node.
+
+### Callbacks within a frame
+
+While drawing a visible node, the callbacks run in this order:
+
+1. `onHoverStart` or `onHoverEnd`, then `onHover`.
+2. `onAnimate`, once per animator whose value changed.
+3. `onScrollEnd`.
+4. `onMount`.
+5. `onRender` PRE, the children with a negative z-index, `onDraw` (PRE, `draw`, POST), the other children, `onRender` POST.
+
+A node that is not visible (hidden, inside a hidden parent, or outside the area of a parent with an overflow) gets none of these callbacks.
+
+## Callbacks of specific nodes
+
+Some nodes add their own callbacks. They follow the same PRE/POST rules.
+
+| Node | Method | Interface | Lambda arguments | Fires |
+|---|---|---|---|---|
+| [TextFieldNode](../nodes/input/text-field.md) | `onChange` | `NodeTextFieldChangeCallback<T>` | `(node, oldText, newText)` | The text changes. |
+| [TextFieldNode](../nodes/input/text-field.md) | `onFocus` | `NodeTextFieldFocusCallback<T>` | `(node)` | The focus changes. |
+| [TextFieldNode](../nodes/input/text-field.md) | `onEnter` | `NodeTextFieldEnterCallback<T>` | `(node, text)` | Enter, numpad Enter or Escape is pressed while focused. |
+| [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `onChange` | `NodeTextFieldChangeCallback<T>` | `(node, oldText, newText)` | The text changes. |
+| [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `onFocus` | `NodeTextFieldFocusCallback<T>` | `(node)` | The focus changes. |
+| [SliderNode](../nodes/input/slider.md) | `onChange` | `NodeSliderChangeCallback<T, O>` | `(node, value)` | The selected value changes. |
+| [CheckboxNode](../nodes/input/checkbox.md) | `onChange` | `NodeCheckboxChangeCallback<T>` | `(node, checked)` | A click toggles the box. |
+| [ToggleNode](../nodes/input/toggle.md) | `onChange` | `NodeToggleChangeCallback<T, F, S>` | `(node, toggle)` | A click toggles the node. |
+| [SwitchNode](../nodes/input/switch.md) | `onChange` | `NodeSwitchChangeCallback<T>` | `(node, value)` | The state changes through `index(...)`. |
+| [SelectorNode](../nodes/input/selector.md) | `onChange` | `NodeSelectorChangeCallback<T>` | `(node, selected)` | Another option is selected. |
+| [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onPlay`, `onPause`, `onEnd` | `NodeResourcePlayerPlayCallback<T>`, `NodeResourcePlayerPauseCallback<T>`, `NodeResourcePlayerEndCallback<T>` | `(node)` | Playback starts, is paused, reaches its end. |
+| [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onProgress` | `NodeResourcePlayerProgressCallback<T>` | `(node, progress, currentTime)` | The progress changes while playing. |
+| [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | `onReorderStart`, `onReorder` | `NodeReorderStartCallback`, `NodeReorderCallback` | `(node, child)` | A child starts moving, moves. |
+| [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | `onReorderEnd` | `NodeReorderEndCallback` | `(node, child, oldIndex, newIndex)` | The moved child is dropped. |
+
+## Dispatching callbacks from a custom node
+
+A custom node declares its own callback types and fires them with the public methods of `Node`. The full contract is in [Custom Nodes](../nodes/custom-nodes.md).
+
+| Method | Description |
+|---|---|
+| `executeCallback(int type, InternalContext context, Object... args)` | Runs the PRE then the POST phase of every callback registered under `type`. |
+| `executeCallback(int type, InternalContext context, Runnable runnable, Object... args)` | Runs the PRE phase, `runnable` (the default action) unless the context is cancelled, then the POST phase. With no callback registered, runs `runnable` only. |
+| `executePreCallback(int type, InternalContext context, Object... args)` | Runs the PRE phase only. |
+| `executePostCallback(int type, InternalContext context, Object... args)` | Runs the POST phase only. |
+| `hasCallback(int type)` | `true` when at least one callback is registered under `type`. |
+| `getCallbackList(int type)` | The registered callbacks, as `NodeCallbackObject` wrappers. |
+
+The `type` ids come from `NodeCallbackRegistry.next(Class)` and callbacks are stored with the protected `registerCallback(int type, NodeCallback callback)`. `next` rejects, with an `IllegalArgumentException`, an interface that is not annotated `@FunctionalInterface`, or that lacks a `@NodeCallbackMethod(Type.PRE)` or `@NodeCallbackMethod(Type.POST)` method returning `void` whose first parameter is a `Node` and second an `InternalContext`. `NodeEmptyCallback<T>` (`dev.joid.lib.ui.node.callback.impl`) is a ready-made callback whose lambda takes only `(node)`.
 
 ## See also
 
-- [Node Fundamentals](../nodes/node-fundamentals.md) — full callback list.
-- [Hover](hover.md) — hover state queries.
-- [Drag & Drop](drag-drop.md) — drag callbacks and snap targets.
+- [Mouse and Keyboard](mouse-and-keyboard.md)
+- [Hover and Tooltips](hover.md)
+- [Drag and Drop](drag-drop.md)
+- [Watching Signals](../state/watch.md)
+- [Custom Nodes](../nodes/custom-nodes.md)

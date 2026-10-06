@@ -1,113 +1,174 @@
 # Assets
 
-An `Asset` is a **lazy, named source of bytes**. It answers one question — *where do these bytes come from?* — and nothing else. Decoding, texture upload and caching happen above it, in [Resource](resource-builder.md).
+An `Asset` (`dev.joid.lib.asset`) is a named source of bytes: it knows how to open a stream on its content and nothing else. JOID turns every handle you pass to `Resource.of` into an asset, and you teach JOID new kinds of handles (a path type, an archive entry, the resource system of a game) by registering an `IAssetLocator`.
 
-This is the single extension point to teach JOID about your project's own way of addressing files: a Minecraft `ResourceLocation`, a mod container entry, a CDN key, an encrypted archive. Register one locator at startup and **every** subsystem that reads bytes accepts your handle — textures, videos and fonts alike.
+## Asset.of and the built-in handles
 
-## `Asset`
+`Asset.of(handle)` returns the asset for a handle. `Resource.of` and `ResourceBuilder.of` call it for every input that no [resolver](custom-formats.md#resolvers-for-in-memory-inputs) takes, and `MsdfFontLoader.load` calls it for every font face (see [Fonts](../fonts/adding-fonts.md)).
+
+| Handle | Asset | Unique id | Remote | Reopenable |
+|---|---|---|---|---|
+| `File` | `FileAsset` | the absolute path | no | yes |
+| `String` | `UrlAsset` | the URL | yes | yes |
+| `InputStream` | `StreamAsset` | the stream's `toString()` | no | no |
+| `Asset` | the asset itself | unchanged | as defined | as defined |
+
+A handle that no locator supports throws an `IllegalArgumentException` (`No asset locator found for input of type ...`), and `null` throws a `NullPointerException`.
 
 ```java
-public abstract class Asset {
+final Asset file = Asset.of(new File("images/logo.png"));
+final Asset url = Asset.of("https://placehold.co/100x100.png");
+final Asset stream = Asset.of(MyUI.class.getResourceAsStream("/assets/logo.png"));
+```
 
-    public static @NonNull Asset of(final @NonNull Object handle);
+The unique id is the key of the [resource cache](resources.md#caching-and-unique-ids): two handles with the same id share their decoded data.
 
-    public abstract @NonNull InputStream open() throws IOException;
+## FileAsset
 
-    public boolean isReopenable();
-    public boolean isRemote();
+`FileAsset.create(File file)` reads a file of the disk. `getFile()` returns it. Each `open()` opens a new `FileInputStream`.
 
-    public @NonNull byte[] peek(final int length);
-    public final @NonNull byte[] read() throws IOException;
+## StreamAsset
 
-    public final @NonNull String getUniqueId();
+`StreamAsset.create(InputStream stream)` wraps a stream that is already open, in a `BufferedInputStream` when it is not one. `open()` returns that same stream every time, so its content can be read only once:
+
+- `peek(length)` marks and resets the stream, so format detection does not consume it;
+- `isReopenable()` returns `false`;
+- its id is the stream's `toString()`, so two `Resource.of(stream)` calls never share data, even on the same file.
+
+A video read from a stream is copied into a temporary file before it is opened, so it can still seek and loop.
+
+## UrlAsset
+
+`UrlAsset.create(String url)` downloads over HTTP or HTTPS. `getUrl()` returns the URL.
+
+- Each `open()` makes a new request with a desktop browser `User-Agent`. Nothing is cached on the disk.
+- When an `https:` request fails, the same URL is tried with `http:`.
+- `isRemote()` returns `true`: the resource pipeline detects the format of a URL off the calling thread when the resource is asynchronous. See [Remote assets](#remote-assets-and-isremote).
+- Only `http:` and `https:` URLs are supported. Load local files with a `File`, and files of your jar with a stream or an [asset of your own](#loading-files-of-your-jar).
+
+## Loading files of your jar
+
+`getResourceAsStream` gives a new stream, and so a new id, at every call. To load a file of your jar once and share it, write an asset with a stable id:
+
+```java
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
+import dev.joid.lib.asset.Asset;
+
+public final class ClasspathAsset extends Asset {
+
+    private final String path;
+
+    private ClasspathAsset(final String path) {
+        super("classpath:" + path);
+        this.path = path;
+    }
+
+    public static ClasspathAsset create(final String path) {
+        return new ClasspathAsset(path);
+    }
+
+    @Override
+    public InputStream open() throws IOException {
+        final InputStream stream = ClasspathAsset.class.getResourceAsStream(this.path);
+        if (stream == null) {
+            throw new FileNotFoundException(this.path);
+        }
+        return stream;
+    }
 
 }
 ```
 
-- **`open()`** is lazy and is called on the thread that needs the bytes, never at creation time.
-- **`getUniqueId()`** keys the resource cache. Two handles pointing at the same file must produce the same id; two distinct sources must not collide.
-- **`isReopenable()`** is `false` only for an already-open `InputStream`, which can be consumed once.
-- **`isRemote()`** tells JOID whether opening may block on the network. A remote asset gets its decoder picked on a worker thread; a local one is resolved inline.
-- **`peek(length)`** reads the first bytes **without consuming** the asset, and returns an empty array when the source cannot be opened.
+```java
+ResourceNode.create(0, 0, 32, 32).resource(Resource.of(ClasspathAsset.create("/assets/icons/close.png"))).attach(this);
+```
 
-## Built-in assets
+An `Asset` passed to `Asset.of` is returned as is, so it works everywhere a handle is accepted.
 
-| Handle | Asset | Unique id |
-|---|---|---|
-| `InputStream` | `StreamAsset` | the stream's identity — not reopenable, not cacheable across calls |
-| `File` | `FileAsset` | the absolute path |
-| `String` | `UrlAsset` | the URL itself — remote, with an HTTPS → HTTP fallback |
-| `Asset` | itself | unchanged |
+## Writing an IAssetLocator
 
-Locators are registered in `AssetLocator`'s static initializer and sit at the bottom of the registry, so your own always take precedence.
-
-## Writing a locator
-
-Two small classes: the asset says how to open, the locator says which handles it recognises.
+A locator turns a kind of handle into an asset. This one lets `Resource.of` accept a `java.nio.file.Path`:
 
 ```java
-public final class ModAsset extends Asset {
+import java.nio.file.Path;
 
-    private final ResourceLocation location;
+import dev.joid.lib.asset.Asset;
+import dev.joid.lib.asset.dto.impl.FileAsset;
+import dev.joid.lib.asset.dto.locator.IAssetLocator;
 
-    private ModAsset(final @NonNull ResourceLocation location) {
-        super(location.toString());
-        this.location = location;
-    }
+public final class PathAssetLocator implements IAssetLocator {
 
-    public static @NonNull ModAsset create(final @NonNull ResourceLocation location) {
-        return new ModAsset(location);
+    @Override
+    public boolean supports(final Object handle) {
+        return handle instanceof Path;
     }
 
     @Override
-    public @NonNull InputStream open() throws IOException {
-        return Minecraft.getMinecraft().getResourceManager().getResource(this.location).getInputStream();
+    public Asset locate(final Object handle) {
+        return FileAsset.create(((Path) handle).toFile());
     }
 
 }
 ```
 
+Register it once at startup, before loading anything with it:
+
 ```java
-public class ModAssetLocator implements IAssetLocator {
+AssetLocator.register(new PathAssetLocator());
 
-    @Override
-    public boolean supports(final @NonNull Object handle) {
-        return handle instanceof ResourceLocation;
-    }
+final Resource logo = Resource.of(Paths.get("images", "logo.png"));
+```
 
-    @Override
-    public @NonNull Asset locate(final @NonNull Object handle) {
-        return ModAsset.create((ResourceLocation) handle);
-    }
+| Method of `IAssetLocator` | Description |
+|---|---|
+| `supports(Object handle)` | `true` when this locator handles `handle`. |
+| `locate(Object handle)` | The asset for a supported handle. |
 
+### AssetLocator registry
+
+`AssetLocator` (`dev.joid.lib.asset.dto.locator`) holds the locators. The built-in ones are registered first, in this order: `UrlAssetLocator` (`String`), `FileAssetLocator` (`File`), `StreamAssetLocator` (`InputStream`).
+
+| Method | Description |
+|---|---|
+| `static register(IAssetLocator locator)` | Adds a locator in front of the others: the latest registered locator is asked first, so yours wins over a built-in one for a handle both support. |
+| `static supports(Object handle)` | `true` when `handle` is an `Asset` or a registered locator supports it. |
+| `static locate(Object handle)` | The asset of the first locator that supports `handle`; `handle` itself when it is an `Asset`. Throws an `IllegalArgumentException` when no locator supports it. |
+
+## Remote assets and isRemote
+
+`isRemote()` tells the resource pipeline that opening the asset may block on the network. For a remote asset that is not cached yet, `ResourceBuilder.of` creates the resource without a decoder and detects the format in a task: on a daemon thread named `ResourceTask/<id>` when the resource is asynchronous, at once when it is blocking. A local asset gets its decoder before `of` returns.
+
+Override `isRemote()` to return `true` in an asset that downloads its content:
+
+```java
+@Override
+public boolean isRemote() {
+    return true;
 }
 ```
 
-Register it once, before the first load:
+`isReopenable()` describes whether `open()` can be called more than once; the library does not change its behavior on it.
 
-```java
-AssetLocator.register(new ModAssetLocator());
-```
+## Asset reference
 
-From there, the handle works everywhere:
-
-```java
-Resource.of(new ResourceLocation(MOD_ID, "textures/gui/panel.png"));
-MsdfFontLoader.load(new ResourceLocation(MOD_ID, "fonts/Inter/font.msdf")).thenAccept(font -> this.font = font);
-```
-
-`register(...)` prepends, so the registry is walked latest-first and a custom locator beats a built-in for a handle both accept.
-
-## Why laziness matters
-
-An `Asset` holds no bytes. Nothing is read until a decoder asks, which means the work lands on the thread that was meant to do it:
-
-- A 200 MB video is copied to its temp file inside `decode()`, on the resource worker, not when you call `Resource.of(...)`.
-- A font atlas is read on the font loader's pool, and a failure completes its `CompletableFuture` exceptionally instead of being thrown at the caller.
-- A remote asset only opens a connection once its decoder is being chosen, on a worker thread.
+| Method | Description |
+|---|---|
+| `static of(Object handle)` | The asset of a handle, through the registered locators. |
+| `protected Asset(String uniqueId)` | Constructor of a subclass. |
+| `getUniqueId()` | The id of the content, used as the cache key. |
+| `open()` | Opens a stream on the content. Abstract; throws `IOException`. |
+| `peek(int length)` | The first `length` bytes, fewer when the content is shorter, an empty array when the asset cannot be opened. |
+| `read()` | The whole content. Throws `IOException`. |
+| `isRemote()` | `false` by default. See [Remote assets](#remote-assets-and-isremote). |
+| `isReopenable()` | `true` by default. |
+| `toString()` | `ClassName[uniqueId]`, for example `FileAsset[/home/me/logo.png]`. |
 
 ## See also
 
-- [ResourceBuilder](resource-builder.md) — caching and the texture pipeline above assets.
-- [Resolvers](resolvers.md) — handling inputs that are already decoded.
-- [Decoders](decoders.md) — what turns asset bytes into a texture.
+- [Resources](resources.md) — loading, caching and releasing what an asset contains.
+- [Supported Formats](formats.md) — how the first bytes of an asset choose its decoder.
+- [Custom Formats and Decoders](custom-formats.md) — resolvers, formats and decoders.
+- [Fonts](../fonts/adding-fonts.md) — font faces load from the same handles.

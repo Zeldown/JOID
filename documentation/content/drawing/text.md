@@ -1,246 +1,131 @@
-# Text
+# Drawing Text
 
-`DrawText` is the facade for rendering text outside the node tree. It accepts either a raw `String` + `TextInfo`, or a pre-built `Text` object that can carry multiple runs, alignment, overflow rules, and modifiers. Reach it through `DrawUtils.TEXT` or directly via `DrawText.getInstance()` — both return the same singleton. Every draw method returns a `FontBounds` describing the pixel rectangle the text occupied.
+`DrawText` (`dev.joid.lib.draw.text`) draws a string or a `Text` immediately, through `DrawUtils.TEXT`: at a point with an alignment, or inside a box where it can be cut or wrapped. It is what `TextNode` draws with; use it in your own draw hooks (see [Drawing Overview](draw-utils.md)).
 
-## Drawing plain strings
-
-### `drawText` (plain, aligned)
+## Quick example
 
 ```java
-FontBounds drawText(double x, double y,
-                    String text, TextInfo info,
-                    Align horizontalAlign, Align verticalAlign)
+private final TextInfo label = TextInfo.create(Fonts.INTER, 18, Color.WHITE);
+
+@Override
+public void postDraw(final double mouseX, final double mouseY) {
+    DrawUtils.TEXT.drawText(960D, 40D, "Paused", this.label, Align.CENTER, Align.START);
+    DrawUtils.TEXT.drawText(40D, 100D, 400D, 200D, this.description, this.label, Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
+}
 ```
 
-Shortest form. Internally wraps the string in a one-element `Text` before drawing.
+The first call centers "Paused" horizontally on x = 960 with its top at y = 40. The second wraps the description into lines of at most 400 units, from the top-left corner of the box. The building blocks (`Text`, `TextInfo`, `TextMode`, `TextOverflow`) are described on [Text Model](../text/text-and-textinfo.md).
+
+## DrawText reference
+
+| Method | Description |
+|---|---|
+| `drawText(double x, double y, String text, TextInfo info, Align horizontalAlign, Align verticalAlign)` | Draws one line at a point. |
+| `drawText(double x, double y, Text text)` | Draws a `Text` at a point, with its own alignment. |
+| `drawText(double x, double y, double width, double height, String text, TextInfo info, Align horizontalAlign, Align verticalAlign, TextOverflow overflow, TextMode mode)` | Draws a string inside a box. |
+| `drawText(double x, double y, double width, double height, Text text, TextMode mode)` | Draws a `Text` inside a box, with its own alignment and overflow mark. |
+| `getLines(double width, String text, TextInfo info)` | Splits a string into the lines `SPLIT` would draw. |
+| `getLines(double width, Text text)` | Splits a `Text` into one `Text` per line. |
+| `DrawText.getInstance()` | The instance behind `DrawUtils.TEXT`. |
+
+Every `drawText` returns the `FontBounds` of what it drew, and draws nothing (returning empty bounds) for a `Text` without element. The string overloads wrap the string in a one-element `Text` with the given alignment (and overflow mark).
+
+## Drawing at a point
+
+`drawText(x, y, text)` uses the alignment of the text to place it around the point:
+
+| Alignment | Horizontal | Vertical |
+|---|---|---|
+| `START` | Left edge on `x` | Top on `y` |
+| `CENTER` | Center on `x` | Middle on `y` |
+| `END` | Right edge on `x` | Bottom on `y` |
+
+The runs of the text are drawn one after the other on the same line. A run shorter than the tallest one is placed inside the line height by the vertical alignment: on top for `START`, centered for `CENTER`, at the bottom for `END`. The returned bounds are `text.getBounds()`: the sum of the run widths and the tallest line height.
 
 ```java
-DrawUtils.TEXT.drawText(100, 100, "Hello", info, Align.START, Align.START);
+final Text hp = Text.create(
+    TextElement.create("HP ", info),
+    TextElement.create(() -> String.valueOf(this.health), info.copy().weight(FontWeight.BOLD))
+).align(Align.END, Align.CENTER);
+
+DrawUtils.TEXT.drawText(super.getX() + super.getWidth() - 12D, super.getY() + super.dh(2), hp);
 ```
 
-### `drawText` (plain, inside a box)
+A gradient text color spans the whole line, every run included.
+
+## Text modes with TextMode
+
+The box overloads lay the text out in the box `(x, y, width, height)` according to the mode. Nothing is clipped: a mode that does not cut can draw outside the box.
+
+### NORMAL
+
+The text is drawn on one line, aligned in the box: at `x`, `x + width / 2` or `x + width` horizontally and `y`, `y + height / 2` or `y + height` vertically, following its alignment. It is never cut. The bounds are those of the text.
+
+### OVERFLOW
+
+- A text that fits the width is drawn whole, without overflow mark.
+- A wider text keeps the longest beginning that fits the width together with its overflow mark, and the mark is appended to the last run kept. The runs after the cut are dropped.
+- With `TextOverflow.NONE`, the text is cut without mark.
+- The text modifier is applied before the cut.
+- When not even one character fits, nothing is drawn and the bounds are empty.
+
+The cut text is aligned in the box like `NORMAL`. The bounds are `width` by the height of the cut text.
 
 ```java
-FontBounds drawText(double x, double y, double width, double height,
-                    String text, TextInfo info,
-                    Align horizontalAlign, Align verticalAlign,
-                    TextOverflow overflow, TextMode mode)
+DrawUtils.TEXT.drawText(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.title, TextMode.OVERFLOW);
 ```
 
-Draws inside the rectangle `(x, y, width, height)` using the chosen `TextMode` and `TextOverflow`. See the [modes](#modes-textmode) and [overflow](#overflow-textoverflow) tables below.
+### SPLIT
+
+The text is split into lines with `getLines(width, text)`, and every line is drawn below the previous one:
+
+- Horizontally, each line is aligned on its own: from `x`, centered on `x + width / 2` or ending on `x + width`.
+- Vertically, the block of lines starts at `y` (`START`), is centered on `y + height / 2` (`CENTER`) or ends on `y + height` (`END`).
+
+The bounds are `width` by the sum of the line heights.
+
+### BOX
+
+The lines are placed like `SPLIT`, and a line that does not fit entirely between `y` and `y + height` is skipped, above as well as below the box. The bounds are `width` by the sum of the heights of the lines drawn.
+
+## Splitting text with getLines
 
 ```java
-DrawUtils.TEXT.drawText(40, 40, 200, 60, "A very long subtitle", info,
-    Align.CENTER, Align.CENTER, TextOverflow.ELLIPSIS, TextMode.OVERFLOW);
-```
-
-## Drawing prebuilt `Text`
-
-### `drawText` (builder)
-
-```java
-FontBounds drawText(double x, double y, Text text)
-FontBounds drawText(double x, double y, double width, double height, Text text, TextMode mode)
-```
-
-Use when you already built a `Text` with multiple elements, alignment, or modifiers.
-
-```java
-Text line = Text.create()
-    .add(TextElement.create("HP: ", info))
-    .add(TextElement.create(() -> String.valueOf(hp.get()), info.copy().weight(FontWeight.BOLD)))
-    .align(Align.CENTER, Align.CENTER);
-
-DrawUtils.TEXT.drawText(cx, cy, line);
-```
-
-## Splitting text
-
-### `getLines`
-
-```java
-List<String> getLines(double width, String text, TextInfo info)
-List<Text>   getLines(double width, Text text)
-```
-
-Splits a text into lines that fit the given pixel width. `\n`, `\r`, `\r\n` and `<br>` each end a line and never appear in it, and a final line break leaves an empty last line. A line as wide as `width` stays whole; a longer one wraps at its last space, which is dropped, or cuts a word wider than the line. The first overload returns plain strings; the second preserves element/info structure for multi-style text, with the modified text and no modifier on each line.
-
-```java
-double y = 40;
-for (final String line : DrawUtils.TEXT.getLines(300, longText, info)) {
-    DrawUtils.TEXT.drawText(20, y, line, info, Align.START, Align.START);
+double y = 40D;
+for (final String line : DrawUtils.TEXT.getLines(300D, this.message, info)) {
+    DrawUtils.TEXT.drawText(20D, y, line, info, Align.START, Align.START);
     y += info.getHeight();
 }
 ```
 
-## Modes (`TextMode`)
+The rules `SPLIT` and `BOX` follow:
 
-| Mode | Behaviour |
+- `\n`, `\r`, `\r\n` and `<br>` end a line and are not part of it. A line break at the end leaves an empty last line.
+- A line is filled while it stays at most `width` wide: a line exactly as wide as the box stays whole.
+- When the next character does not fit, the line breaks at its last space, which is dropped. Without a space, the word is cut at that character. A single character wider than the box gets a line of its own.
+- Each line of `getLines(double, Text)` is a `Text` with the alignment and overflow mark of the source text. Its runs keep their `TextInfo` and their dev mode origin, and hold the modified text with no modifier, so the modifier is applied exactly once.
+- `getLines(double, String, TextInfo)` returns the text of each line.
+
+> NOTE: Lines are cut from the raw string. A style opened by markup does not continue on the next line, and a cut can fall inside a markup code (see [Markup and Text Effects](../text/markup-and-effects.md#limits-of-markup)).
+
+## Measuring before drawing
+
+Measure with the same objects you draw:
+
+| Need | Call |
 |---|---|
-| `NORMAL` | Draw the text as-is, aligned inside the box. No wrapping, no overflow handling. |
-| `OVERFLOW` | If the text exceeds `width`, truncate and append the current `TextOverflow` suffix. A text that fits is drawn whole, without suffix. |
-| `SPLIT` | Wrap to multiple lines to fit `width`. No vertical clipping — the text may overflow `height`. |
-| `BOX` | Wrap like `SPLIT`, but skip any line that would sit outside `(y, y+height)`. |
-
-## Overflow (`TextOverflow`)
-
-| Value | Suffix |
-|---|---|
-| `NONE` | *empty string* |
-| `ELLIPSIS` | `...` |
-| `DOT` | `.` |
-| `HYPHEN` | `-` |
-
-Pass it to the drawing call for `OVERFLOW` mode, or bake it into the `Text`.
+| Width of a string | `info.getWidth(text)` |
+| Line height | `info.getHeight()` |
+| Size of a `Text` | `text.getWidth()`, `text.getHeight()`, `text.getBounds()` |
+| Height of wrapped text | Sum of `getHeight()` over `DrawUtils.TEXT.getLines(width, text)` |
 
 ```java
-Text t = Text.create("A very long subtitle", info).overflow(TextOverflow.ELLIPSIS);
-DrawUtils.TEXT.drawText(x, y, 200, 40, t, TextMode.OVERFLOW);
+final double height = DrawUtils.TEXT.getLines(400D, this.text).stream().mapToDouble(Text::getHeight).sum();
 ```
-
-## The `Text` builder
-
-### `Text.create`
-
-```java
-Text create()
-Text create(Object text, TextInfo info)
-Text create(Supplier<?> text, TextInfo info)
-Text create(Object text, TextInfo info, Align horizontalAlign)
-Text create(Object text, TextInfo info, Align horizontalAlign, Align verticalAlign)
-Text create(Object text, TextInfo info, TextOverflow overflow)
-Text create(Object text, TextInfo info, Align align, TextOverflow overflow)
-Text create(Object text, TextInfo info, Align horizontal, Align vertical, TextOverflow overflow)
-Text create(List<TextElement> elements)
-Text create(TextElement... elements)
-```
-
-The `Supplier<?>` variants bind a dynamic source of any type — the text and its width and height re-evaluate at draw time without rebuilding the `Text`.
-
-### `text` / `info` (mutation)
-
-```java
-Text text(String text)
-Text text(Supplier<?> text)
-Text text(int index, String text)
-Text text(int index, Supplier<?> text)
-Text info(TextInfo info)
-Text info(int index, TextInfo info)
-```
-
-Replaces the text or `TextInfo` on element `0` by default, or on the indexed element. Invalidates the cached width/height.
-
-### `add` / `addAll` / `remove` / `clear`
-
-```java
-Text add(TextElement element)
-Text add(Text otherText)
-Text addAll(List<TextElement> elements)
-Text remove(TextElement element)
-Text clear()
-```
-
-Build the element list incrementally. Each operation invalidates the cached width/height.
-
-### Configuration
-
-```java
-Text align(Align horizontal, Align vertical)
-Text horizontalAlign(Align align)
-Text verticalAlign(Align align)
-Text overflow(TextOverflow overflow)
-Text modifier(ITextModifier modifier)
-```
-
-### Copying
-
-```java
-Text copy()
-Text copyProperties()
-Text copyWithOverflow(TextOverflow overflow)
-Text copyWithHorizontalAlign(Align align)
-Text copyWithVerticalAlign(Align align)
-Text copyWithModifier(ITextModifier modifier)
-```
-
-### Reading
-
-```java
-String       getRawText()
-String       getText()
-String       getText(TextElement element)
-double       getWidth()
-double       getHeight()
-double       dw(double value)       // width / value
-double       dh(double value)       // height / value
-double       aw(double value)       // width + value
-double       ah(double value)       // height + value
-FontBounds   getBounds()
-boolean      isEmpty()
-```
-
-`getRawText` returns the unmodified concatenation; `getText` applies the attached modifier (if any).
-
-## `TextElement`
-
-### `TextElement.create`
-
-```java
-TextElement create(Object text, TextInfo info)
-TextElement create(Supplier<?> text, TextInfo info)
-TextElement create(int text, TextInfo info)
-TextElement create(double text, TextInfo info)
-TextElement create(float text, TextInfo info)
-TextElement create(long text, TextInfo info)
-TextElement create(char text, TextInfo info)
-TextElement create(boolean text, TextInfo info)
-```
-
-Factories for a single run. Primitives are converted via `String.valueOf`.
-
-### Fluent setters
-
-```java
-TextElement text(Object text)
-TextElement text(Supplier<?> text)
-TextElement text(int text)
-TextElement text(double text)
-TextElement text(float text)
-TextElement text(long text)
-TextElement text(char text)
-TextElement text(boolean text)
-TextElement info(TextInfo info)
-TextElement modifier(ITextModifier modifier)
-```
-
-### Copies
-
-```java
-TextElement copy()
-TextElement copyWithText(Object text)
-TextElement copyWithText(Supplier<?> text)
-TextElement copyWithInfo(TextInfo info)
-TextElement copyWithModifier(ITextModifier modifier)
-```
-
-## Modifiers (`ITextModifier`)
-
-A modifier transforms the final string at draw time. Attach it with `text.modifier(...)` or `element.modifier(...)`. On a `Text`, it applies to the joined text of every element: `CAMEL_CASE` on `"hello "` + `"big world"` draws `helloBigWorld`. Built-ins:
-
-| Modifier | Example |
-|---|---|
-| `TextUpperCaseModifier` | `HELLO` |
-| `TextLowerCaseModifier` | `hello` |
-| `TextCapitalizeModifier` | `Hello` |
-| `TextWordCapitalizeModifier` | `Hello World` |
-| `TextCamelCaseModifier` | `helloWorld` |
-| `TextUpperCamelCaseModifier` | `HelloWorld` |
-| `TextSnakeCaseModifier` | `hello_world` |
-
-Custom modifiers implement `ITextModifier.modify(String)` and return the transformed string.
 
 ## See also
 
-- `DrawUtils` — entry point for the four drawing facades.
-- `Custom Fonts` — how `TextInfo` is produced from a font provider.
-- `TextNode` — node-level wrapper around the same text pipeline.
+- [Text Model](../text/text-and-textinfo.md)
+- [Fonts](../fonts/adding-fonts.md)
+- [TextNode](../nodes/visual/text.md)
+- [Drawing Overview](draw-utils.md)

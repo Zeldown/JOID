@@ -1,38 +1,42 @@
 # License
 
-JOID is released under the **Apache License 2.0**. The full text sits at the root of the repository, in [LICENSE](https://github.com/Zeldown/JOID/blob/main/LICENSE), and ships inside every JAR under `META-INF/LICENSE`.
+JOID is released under the Apache License, Version 2.0. The full text is in the [`LICENSE`](https://github.com/Zeldown/JOID/blob/main/LICENSE) file at the root of the repository and in `META-INF/LICENSE` inside every JOID jar; the attribution notices are in [`NOTICE`](https://github.com/Zeldown/JOID/blob/main/NOTICE) and `META-INF/NOTICE`.
 
-## What you can do
+## What the license allows
 
-Use JOID in commercial products, closed-source applications, paid games, internal tools or open-source projects. Fork it, modify it, embed it, resell what you build with it. Nothing to request, no revenue share, no restriction on the kind of interface you draw with it.
+You can use, copy, modify and distribute JOID, in source or compiled form, in commercial or non-commercial, open or closed software, and sublicense it as part of your own work (section 2). Each contributor also grants a patent license for their contributions (section 3); that license ends for anyone who starts patent litigation claiming that JOID infringes a patent.
 
-## What you owe
+## What it asks when you redistribute JOID
 
-Only when you redistribute JOID itself — alone, modified, or embedded in your own artifact. Section 4 of the license asks four things:
+When you distribute JOID or a work that contains it, for example an application that ships a JOID jar, section 4 asks you to:
 
 | Obligation | In practice |
-|---|---|
-| Include the license | Keep `META-INF/LICENSE` in the JAR you ship, or put a copy next to your binary. |
-| Keep the notices | Do not strip the copyright, patent, trademark and attribution notices from what you redistribute. |
-| State your changes | Modified a JOID file? Say so — a changelog line or a header is enough. |
-| Pass the NOTICE on | Reproduce the content of `META-INF/NOTICE` in your own notice file, documentation or credits screen. |
+| --- | --- |
+| Give recipients a copy of the license | Keep `META-INF/LICENSE` in the jar you ship, or ship the `LICENSE` file with your product. |
+| Mark modified files | State in each JOID file you changed that you changed it. |
+| Keep the notices | Keep the copyright, patent, trademark and attribution notices of the source form. |
+| Pass the `NOTICE` on | Include the attribution notices of `NOTICE` in a `NOTICE` file, in your documentation, or in a display your product shows where third-party notices normally appear. |
 
-Using JOID as a library, without redistributing JOID itself, asks nothing of you.
+The license does not grant the use of the JOID name or trademarks beyond describing the origin of the work (section 6). JOID comes without warranty (section 7) and without liability of its contributors (section 8).
 
-## Patents and trademark
+## Third-party software
 
-Every contributor grants you a patent license covering their contribution. Starting patent litigation over JOID terminates your own grant.
+`NOTICE` lists the software that JOID includes:
 
-The **JOID** name itself is not licensed: give your fork another name. Naming JOID in an attribution notice is expected and permitted.
+| Software | License | Where |
+| --- | --- | --- |
+| Universal Tween Engine, by Aurelien Ribon | Apache License 2.0 | The classes under `dev.joid.lib.animation.tweenengine` are derived from it. |
+| JSVG | MIT License | Embedded in the core and backend jars, relocated under `dev.joid.shaded.jsvg`. |
+| TwelveMonkeys ImageIO | BSD 3-Clause License | Embedded in the core and backend jars, relocated under `dev.joid.shaded.twelvemonkeys`. |
+| JavaCV and JavaCPP | Apache License 2.0 | Embedded in the core and backend jars. |
+| FFmpeg, built by the JavaCPP Presets | GNU LGPL 2.1 or later | Embedded in the core and backend jars. |
+| Montserrat, Pacifico, Playfair Display | SIL Open Font License 1.1 | Embedded in the `-dev` jars only, with the license text next to each font. |
+| LWJGL 2 natives | BSD 3-Clause License | Embedded in the LWJGL 2 backend jar. |
+| OpenAL Soft, as built for LWJGL 2 | GNU LGPL 2 or later | Embedded in the LWJGL 2 backend jar. |
 
-## Third-party components
+The libraries you declare yourself (Guava, Gson, Apache Commons, vecmath, LWJGL) come with their own licenses. The `msdf` module reimplements in Java the multi-channel signed distance field algorithm of msdfgen by Viktor Chlumský.
 
-| Component | License | Where |
-|---|---|---|
-| Universal Tween Engine | Apache-2.0 | bundled in `lib/animation/tweenengine` |
-| msdfgen, the algorithm | MIT | reimplemented in Java in `msdf/`, released as its own zip |
-| LWJGL | BSD-3-Clause | declared by your application |
-| JavaCV | Apache-2.0 | declared by your application, for video |
-| FFmpeg builds | their own terms | declared by your application, for video |
+## See also
 
-JOID JARs embed no third-party library: the versions you declare are the ones that run. See [Installation](installation.md).
+- [Introduction](introduction.md)
+- [Installation](installation.md)

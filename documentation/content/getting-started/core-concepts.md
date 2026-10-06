@@ -1,164 +1,148 @@
 # Core Concepts
 
-A short mental model for building with JOID. Each concept has a dedicated page — this one is the map.
+This page is the mental model behind what you used in the [Tutorial](../tutorial/setup.md): the singleton you configure once, the bridges that connect JOID to a host, the UIs and their node trees, the virtual canvas, what happens in a frame, and the conventions of the fluent API. Read it after the tutorial, or whenever something in JOID surprises you; each section links to the page that covers the topic in full.
 
-## Bootstrap
+## The JOID singleton
 
-Before opening any UI, initialize the library once with `JOID.inst().load()`. It's a builder — chain the flags you care about and finish with `load()`:
+`JOID` (`dev.joid.internal.JOID`) is the entry point. `JOID.inst()` returns the single instance, creating it on first use. Configure it with chained setters, then call `load()` once at startup, after registering the bridges and before opening UIs:
 
 ```java
-JOID.inst()
-    .setConfigDir(new File("config"))
-    .setDevMode(false)
-    .setDemoMode(false)
-    .load();
+JOID
+.inst()
+.setConfigDir(new File("config"))
+.setDevMode(false)
+.setDemoMode(false)
+.load();
 ```
 
-### `setConfigDir(File)`
+| Member | Description |
+| --- | --- |
+| `static JOID inst()` | The singleton. Its constructor creates the `config` folder in the working directory if it does not exist. |
+| `JOID setConfigDir(File configDir)` | Folder for persistent data: stores are written to `<configDir>/store`, UI properties to `<configDir>/property`. Default: `new File("config")`. |
+| `JOID setDevMode(boolean devMode)` | Turns the developer tools on or off. Default `false`. Throws `IllegalStateException` when turned on with a `-prod` jar. See [Developer Tools](dev-tools.md). |
+| `JOID setDemoMode(boolean demoMode)` | Loads the demo fonts used by the demo UIs. Default `false`. Throws `IllegalStateException` when turned on with a `-prod` jar. |
+| `JOID load()` | Creates the configuration folder if missing, prints a banner with the settings and the version, and loads the bundled fonts when the dev or demo mode is on. |
+| `File getConfigDir()`, `boolean isDevMode()`, `boolean isDemoMode()` | The current settings. |
+| `static final String VERSION` | The library version, `"8.0.0"`. |
+| `static boolean checkVersion(String version)` | For backend authors: `true` when `version` has the same major version as the loaded JOID, otherwise prints a warning and returns `false`. See [Writing a Backend](../integration/writing-a-backend.md). |
 
-Root folder for persistent state. `UIStore` JSON files (`@UIStoreData`) and any internal persistence land under this directory. If it doesn't exist, JOID creates it on `load()`. Defaults to `./config`.
+`JOID` also holds the static methods that open and close UIs (`open`, `close`, `isOpen`, `getUI`), described in [Opening and Closing UIs](../ui/managing-uis.md).
 
-### `setDevMode(boolean)`
+## Bridges
 
-Enables development-only behavior. When `true`:
+The core never calls a windowing, graphics or audio API itself. It goes through bridges registered in `BridgeHandler` (`dev.joid.lib.bridge`):
 
-- **Alt-drag** on a node prints its coordinates and lets you move it live — useful while laying out by eye.
-- **Alt+arrow keys** nudge the hovered node by one pixel.
-- **Profiler overlay** is available on every UI; declare `@UIDataDebug(profiler = false)` to turn it off.
-- **Hot-reload** watches the compiled classes of the UI — its classes folder or jar — and re-runs `init()` when they change; `@UIDataDebug(hotreload = false)` turns it off.
-- **Layout introspection** logs are emitted for structural issues.
+| Registry | Interface | Provided by |
+| --- | --- | --- |
+| `BridgeHandler.UI` | `IUIBridge` | You or your host: holds the open UIs, feeds them input, updates and draws them. Usually a subclass of `UIBridge`. |
+| `BridgeHandler.WINDOW` | `IWindowBridge` | The backend: window size, mouse position, key states, clipboard. |
+| `BridgeHandler.RENDER` | `IRenderBridge` | The backend: matrices, render state, textures, shaders, framebuffers, draw calls. |
+| `BridgeHandler.AUDIO` | `IAudioBridge` | The backend: audio sources for video playback. |
+| `BridgeHandler.CLOCK` | `IClockBridge` | Registered by default (`SystemClockBridge`); tests register a `ManualClockBridge`. |
 
-Leave it `false` in production — the debug gestures and file-watcher are unnecessary overhead, and the Alt-key bindings may collide with your own shortcuts. Only the `-dev` artifact contains the dev mode: on a `-prod` artifact, `setDevMode(true)` throws an `IllegalStateException`.
+This is what makes JOID renderer-agnostic: your UIs depend only on these interfaces, never on the engine behind them. Moving to another backend, or to a new version of an engine, changes the backend you register and nothing in your UI code, and the rendering stays the same.
 
-### `setDemoMode(boolean)`
+A backend's `Backend.register(...)` registers the window, render and audio bridges; you register the UI bridge. Using JOID before the window or render bridge is registered fails with an `IllegalStateException` that names the missing bridge. See [Bridges](../integration/bridges.md).
 
-Loads the bundled `DemoFont` (shipped with the `-dev` artifact) so the quick-start snippets, demo UIs, and documentation examples have a usable font without you providing your own MSDF atlas. Once you load your own fonts with `MsdfFontLoader`, turn it off. Like the dev mode, it only exists in the `-dev` artifact: on a `-prod` artifact, `setDemoMode(true)` throws an `IllegalStateException`.
+## UIs and the node tree
 
-`load()` must be called **exactly once**, after registering the bridges — the backend and your `UIBridge` — and before opening UIs: the dev and demo modes load their fonts through the render bridge.
-
-## The UI root
-
-Every screen is a class extending `UI` (which implements `IUI`). The hooks you override are defined on `IUI` and have sensible defaults — implement only what you need:
-
-1. `new YourUI()` — constructor.
-2. `JOID.open(ui)` — hands the UI to its bridge.
-3. `init()` — you attach nodes here, once.
-4. Each frame: `preDraw(mouseX, mouseY)` → internal node rendering → `postDraw(mouseX, mouseY)`, plus `update()` for per-frame logic.
-5. `close()` — return `true` if the UI can close (the default is `true`).
-
-When the UI is granted closure, JOID calls the internal `properlyClose()`: stores are saved, nodes are detached, and the bridge removes the UI. Rendering into the overall draw loop goes through `UI.draw(mouseX, mouseY)`, which is `final` — use `drawBackground`, `preDraw`, and `postDraw` for your own drawing.
-
-UIs are configured via the `@UIData` annotation (zoomable, pausable, backgroundColor, closeable…). See `UI Class`.
-
-## The node tree
-
-Everything visible is a `Node`. Nodes form a tree:
+A screen is a subclass of `UI` (`dev.joid.lib.ui.core`). It is opened with `JOID.open(ui)`, which hands it to the UI bridge that accepts it. When the bridge loads it the first time, the UI runs `init()`, where you build its tree of nodes:
 
 ```
-UI
-├── FlexNode
-│   ├── RectNode
-│   ├── RectNode
+CounterUI
+├── RectNode  (button)
 │   └── TextNode
-└── ContainerNode
-    └── ImageNode
+└── TextNode  (counter)
 ```
 
-Each node knows its position (`x`, `y`), size (`width`, `height`), z-index, parent, and children. You build the tree via **fluent chains** ending in `.attach(parent)`.
+Nodes (`dev.joid.lib.ui.node.Node` and its subclasses) are retained: they stay in memory between frames, keep their state, and are drawn every frame until removed. Layout nodes (`ContainerNode`, `FlexNode`, `GridNode`, `ReorderableFlexNode`) place their children; visual nodes (`RectNode`, `TextNode`, `ResourceNode`...) draw; input nodes (`TextFieldNode`, `SliderNode`...) handle the user. A child's position is relative to its parent.
+
+Several UIs can be open at once, ordered by their `zlevel`; the last one is on top and receives input first. See [The UI Class](../ui/ui-class.md), [Opening and Closing UIs](../ui/managing-uis.md) and [Node Fundamentals](../nodes/node-fundamentals.md).
+
+## The virtual canvas
+
+You design every UI on a virtual canvas of 1920×1080 units. Positions, sizes and mouse coordinates in nodes and UI hooks are in those units. Each UI owns a `UIView` that fits the canvas into the window without stretching it: a 1280×720 window shows the canvas at two thirds of its size, and a window wider or taller than 16:9 shows more canvas on the sides. On top of that fit, the bridge's interface scale and the user's zoom scale the canvas around the UI's anchor. See [View and Scaling](../ui/view-and-scaling.md).
+
+## The frame lifecycle
+
+The host drives JOID. A frame of the loop you wrote in the [Quick Start](quick-start.md) or the [Tutorial](../tutorial/setup.md) runs three phases through the UI bridge:
+
+1. **Input.** The host forwards each event to the bridge: `keyTyped(char, Key)`, `mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseDragged(ClickType, long)`, `mouseScroll(int)`. The bridge offers the event to its active, visible UIs from the top down. Inside a UI, the nodes see the event first, the top-most in drawing order first, then the UI's own hook. A UI that consumes the event, or that is a popup, stops it from reaching the UIs below.
+2. **Update.** `bridge.update()` calls, for each UI in order, `update()` on its nodes and then the UI's `update()` hook.
+3. **Draw.** `bridge.draw()` draws each visible UI in order. A UI first runs its due scheduled tasks and draws its background, then draws its nodes and its `preDraw`/`postDraw` hooks inside its view, and finally the tooltip of the hovered node when it is on top.
+
+Event dispatch uses an `InternalContext` (`dev.joid.lib.utils.context`): a node or hook calls `context.cancel()` to consume the event. See [Callbacks](../interactions/callbacks.md) and [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
+
+> NOTE: JOID is not thread-safe. Forward input, call `update()` and `draw()`, open and close UIs and change nodes from the thread that owns the graphics context. To run code on that thread from another one, use `ui.schedule(runnable)`: the task list is thread-safe and the task runs at the start of the UI's next draw. Font and resource loading run on background threads and hand their result back through futures and callbacks.
+
+Time in JOID (frame time, scheduled tasks, animations) comes from the clock bridge, in milliseconds.
+
+## Fluent API conventions
+
+JOID builds trees with chained calls. In the snippets below, `this` is the UI being built in `init()` and `info` is a `TextInfo` created as in the [Quick Start](quick-start.md):
 
 ```java
-RectNode.create(0, 0, 100, 50)
-    .color(Color.RED)
-    .onClick(handler)
-    .attach(parent);
+RectNode
+.create(100, 100, 300, 80)
+.color(Color.DARKGRAY)
+.onClick((node, mouseX, mouseY, clickType) -> System.out.println("clicked"))
+.body(rect -> {
+    TextNode.create(rect.dw(2), rect.dh(2)).text(Text.create("Save", info)).anchor(Align.CENTER).attach(rect);
+})
+.attach(this);
 ```
 
-**Builder pattern rules** (respect them and chain ergonomically):
+| Convention | Meaning |
+| --- | --- |
+| `create(...)` | Static factory of nodes and effects; some classes add named factories such as `FlexNode.vertical(...)`. Constructors are not public. |
+| Setters named after the property | `color(...)`, `anchor(...)`, `zindex(...)`: they return the node, so calls chain. |
+| `attach(UI)` / `attach(Node)` | Adds the node to a UI or to a parent node; usually the last call of a chain. |
+| `append(Node...)` | Adds children to a node, the reverse of `attach`. |
+| `body(Consumer)` / `body(Runnable)` | Runs the given code right away with the node, to create its children inline. The node keeps it so it can run it again (see `WatchProperty.BODY`). |
+| `onXxx(callback)` | Registers a callback: `onClick`, `onHover`, `onUpdate`, `onWatch`... See [Callbacks](../interactions/callbacks.md). |
 
-- `create(...)` constructs.
-- Setters return `this` typed as `<T extends Node>` for subclass-safe chaining.
-- `body(consumer)` configures children inline.
-- `attach(parent)` is always last, attaches the node.
+Setters are generic: `public final <T extends Node> T anchor(Align anchor)`. The returned type is inferred by the compiler:
 
-See [Node Fundamentals](../nodes/node-fundamentals.md).
+- In a chain, a setter declared in `Node` returns `Node`, and a setter declared in `RectNode` returns `RectNode`. Call the setters of the subclass first, then the ones of `Node`. The `color(...)` of `RectNode` cannot follow `onClick(...)` in a chain.
+- The parameter of a callback or `body` lambda has the type the chain has reached: in the example above, `rect` is a `Node`.
+- An explicit type argument or an assignment fixes the type: `.<RectNode>body(rect -> ...)` gives a `RectNode` parameter, and `final RectNode button = RectNode.create(...).onClick(...);` compiles.
 
-## Layout vs design nodes
+## Signals and effects at a glance
 
-Two families of nodes:
-
-- **Structure nodes** compute layout for their children — `FlexNode`, `GridNode`, `ContainerNode`, `ScrollbarNode`. You rarely override their rendering.
-- **Design nodes** draw content — `RectNode`, `CircleNode`, `TextNode`, `ResourceNode`, `TextFieldNode`, `ResourcePlayerNode`. You style them with effects and colors.
-
-A well-built UI is mostly *design nodes inside structure nodes*.
-
-## Effects
-
-Effects are post-processing applied to a node's rendered output. They come in two flavors:
-
-- **Shape effects**: `RoundedNodeEffect`, `CircleNodeEffect` — modify the silhouette.
-- **Shader effects**: `BlurNodeEffect`, `BorderNodeEffect`, `RoundedNodeEffect`, `CircleNodeEffect` — full shader passes composed through the [Shader Pipeline](../shaders/pipeline.md). Gradients are first-class on `Color` itself (see [`Color.toGradient`](../drawing/color.md)).
-
-Chain multiple effects; they compose in order of priority.
-
-```java
-RectNode.create(0, 0, 200, 100)
-    .color(Color.BLUE)
-    .effect(RoundedNodeEffect.create(16F))
-    .effect(BorderNodeEffect.create(Color.WHITE, 2F))
-    .effect(BlurNodeEffect.create(4F))
-    .attach(parent);
-```
-
-## Reactive state
-
-State lives in `Signal<T>` observables. Nodes subscribe via `.watch(signal, property)`:
+State lives in signals (`dev.joid.lib.utils.signal`): `Signal<T>` and typed variants such as `IntegerSignal`, `StringSignal` or `ListSignal`. `set(value)` notifies the subscribers when the value changes. Nodes read signals in suppliers, or watch them to reload or rebuild themselves:
 
 ```java
 final StringSignal name = new StringSignal("world");
 
-TextNode.create(0, 0)
-    .text(() -> Text.create("Hello, " + name.getOrDefault(), info))
-    .watch(name)  // auto-reloads on name.set(...)
-    .attach(parent);
+TextNode.create(100, 100).text(Text.create(() -> "Hello " + name.getOrDefault(), info)).attach(this);
+
+ContainerNode
+.create(100, 200, 400, 300)
+.watch(name, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+.body(container -> {
+    TextNode.create(0, 0).text(Text.create("Rebuilt for " + name.getOrDefault(), info)).attach(container);
+})
+.attach(this);
 ```
 
-The `WatchProperty` enum controls what happens on change — `RELOAD` (default, re-runs `init()`), `BODY` (re-runs the body consumer only), `CLEAR_CHILDREN`, or `NONE`. See [Signals](../state/signals.md) and [Watch](../state/watch.md).
-
-For cross-UI / persistent state, use `UIStore` with `@UIStoreData` annotations — serialized to JSON in `config/store/`. See [Stores](../state/stores.md).
-
-## Resources
-
-Anything visual that isn't a shape or text is a `Resource`: image, video, GIF. Load via the `ResourceBuilder`:
+Effects change how a node is drawn. They are applied with `effect(...)` and run through the shader pipeline:
 
 ```java
-Resource image = Resource.of(MyClass.class.getResourceAsStream("/icon.png"));
-Resource remote = Resource.of("https://example.com/image.png");
-Resource video = Resource.of(MyClass.class.getResourceAsStream("/movie.mp4"));  // auto-detected
+RectNode.create(100, 100, 300, 80).color(Color.BLUE).effect(RoundedNodeEffect.create(16F)).attach(this);
 ```
 
-Put them into `ResourceNode`, `ResourcePlayerNode`, or draw directly via `DrawUtils.RESOURCE`. See [ResourceBuilder](../resources/resource-builder.md).
+See [Signals](../state/signals.md), [Watching Signals](../state/watch.md), [Effects](../styling/effects.md) and [Shader Pipeline](../shaders/pipeline.md).
 
-## Best practices
+## Where to go next
 
-- **Build in `init()`, mutate in signals.** Don't call `this.append(...)` from `draw()` — rebuild triggers a full reload, which is expensive.
-- **Use structure nodes for layout.** A hand-placed `RectNode` grid is a code smell; `GridNode` exists.
-- **Cache your `TextInfo`**. It holds font, size, color references — creating one per frame is wasteful.
-- **Release heavy resources.** `ResourcePlayerNode` already does this via `detach()`; for your own heavy decoders, override `detach()` similarly.
-- **Favor `toGradient(other)` over manual gradient shaders.** `Color` supports gradients natively and the renderer picks the right shader automatically.
+The [Essentials](../essentials/uis.md) pages take each of these topics one at a time, with short examples, in this order: UIs, nodes, layout, styling, input, state, text, media and animation.
 
-## Rendering model
+## See also
 
-Each frame:
-
-1. `UI.onUpdate()` — recursive `update()` on every node, tween advance.
-2. `UI.draw()` — projection setup, then recursive `Node.render()` starting from the root.
-3. Each `Node.render()`:
-   - runs `CALLBACK_MOUNT` once,
-   - splits effects into shader / non-shader,
-   - non-shader effects wrap `pre/post`,
-   - shader effects build a `ShaderPass` list and delegate to `ShaderPipeline.render(node, passes, baseDraw)`,
-   - `baseDraw` masks to the node's bounds when its overflow is not `NONE`, renders children, and calls your `draw()`.
-
-You almost never need to care about this internally — but knowing it helps when debugging render states.
-
-Now jump into [UI Class](../ui/ui-class.md) or [Node Fundamentals](../nodes/node-fundamentals.md) depending on what you want to build first.
+- [Quick Start](quick-start.md)
+- [Tutorial 4: Polish](../tutorial/polish.md)
+- [Essentials: UIs](../essentials/uis.md)
+- [The UI Class](../ui/ui-class.md)
+- [Node Fundamentals](../nodes/node-fundamentals.md)
+- [Bridges](../integration/bridges.md)
+- [Developer Tools](dev-tools.md)

@@ -5,146 +5,806 @@
 			"title": "Getting Started",
 			"group": "getting-started",
 			"items": [
-				{ "title": "Introduction", "path": "getting-started/introduction" },
-				{ "title": "Installation", "path": "getting-started/installation" },
-				{ "title": "Quick Start", "path": "getting-started/quick-start" },
-				{ "title": "Core Concepts", "path": "getting-started/core-concepts" },
-				{ "title": "License", "path": "getting-started/license" }
-			]
-		},
-		{
-			"title": "UI",
-			"group": "ui",
-			"items": [
-				{ "title": "UI Class", "path": "ui/ui-class" },
-				{ "title": "Bridge", "path": "ui/bridge" },
-				{ "title": "Backends", "path": "ui/backends" },
-				{ "title": "Transitions", "path": "ui/transitions" }
-			]
-		},
-		{
-			"title": "Nodes",
-			"group": "nodes",
-			"items": [
-				{ "title": "Node Fundamentals", "path": "nodes/node-fundamentals" },
 				{
-					"title": "Design",
-					"group": "nodes/design",
-					"items": [
-						{ "title": "RectNode", "path": "nodes/design/rect" },
-						{ "title": "CircleNode", "path": "nodes/design/circle" },
-						{ "title": "TextNode", "path": "nodes/design/text" },
-						{ "title": "ResourceNode", "path": "nodes/design/resource" },
-						{ "title": "TextFieldNode", "path": "nodes/design/text-field" },
-						{ "title": "MultilineTextFieldNode", "path": "nodes/design/multiline-text-field" },
-						{ "title": "ProgressNode", "path": "nodes/design/progress" },
-						{ "title": "ModelNode", "path": "nodes/design/model" },
-						{ "title": "ResourcePlayerNode", "path": "nodes/design/resource-player" }
+					"title": "Introduction",
+					"path": "getting-started/introduction"
+				},
+				{
+					"title": "Installation",
+					"path": "getting-started/installation"
+				},
+				{
+					"title": "Quick Start",
+					"path": "getting-started/quick-start"
+				},
+				{
+					"title": "Core Concepts",
+					"path": "getting-started/core-concepts",
+					"source": "core/src/main/java/dev/joid/internal/JOID.java",
+					"refs": [
+						"JOID"
 					]
 				},
 				{
-					"title": "Structure",
-					"group": "nodes/structure",
+					"title": "Developer Tools",
+					"path": "getting-started/dev-tools",
+					"source": "core/src/main/java/dev/joid/lib/ui/node/impl/dev/DevNode.java",
+					"refs": [
+						"DevNode",
+						"UIDataDebug"
+					]
+				},
+				{
+					"title": "License",
+					"path": "getting-started/license"
+				}
+			]
+		},
+		{
+			"title": "Tutorial",
+			"group": "tutorial",
+			"items": [
+				{
+					"title": "Tutorial 1: Project Setup",
+					"path": "tutorial/setup"
+				},
+				{
+					"title": "Tutorial 2: Building the Layout",
+					"path": "tutorial/layout"
+				},
+				{
+					"title": "Tutorial 3: Interactivity and State",
+					"path": "tutorial/interactivity"
+				},
+				{
+					"title": "Tutorial 4: Polish",
+					"path": "tutorial/polish"
+				}
+			]
+		},
+		{
+			"title": "Essentials",
+			"group": "essentials",
+			"items": [
+				{
+					"title": "UIs",
+					"path": "essentials/uis"
+				},
+				{
+					"title": "Nodes",
+					"path": "essentials/nodes"
+				},
+				{
+					"title": "Layout",
+					"path": "essentials/layout"
+				},
+				{
+					"title": "Styling",
+					"path": "essentials/styling"
+				},
+				{
+					"title": "Handling Input",
+					"path": "essentials/input"
+				},
+				{
+					"title": "State and Reactivity",
+					"path": "essentials/state"
+				},
+				{
+					"title": "Text",
+					"path": "essentials/text"
+				},
+				{
+					"title": "Images and Media",
+					"path": "essentials/media"
+				},
+				{
+					"title": "Animation",
+					"path": "essentials/animation"
+				}
+			]
+		},
+		{
+			"title": "Components",
+			"group": "components",
+			"items": [
+				{
+					"title": "Component Catalog",
+					"path": "components/overview"
+				},
+				{
+					"title": "Building a UI Kit",
+					"path": "components/ui-kit"
+				},
+				{
+					"title": "Layout",
 					"items": [
-						{ "title": "ContainerNode", "path": "nodes/structure/container" },
-						{ "title": "FlexNode", "path": "nodes/structure/flex" },
-						{ "title": "GridNode", "path": "nodes/structure/grid" },
-						{ "title": "ScrollbarNode", "path": "nodes/structure/scrollbar" },
-						{ "title": "SliderNode", "path": "nodes/structure/slider" },
-						{ "title": "CheckboxNode", "path": "nodes/structure/checkbox" },
-						{ "title": "ToggleNode", "path": "nodes/structure/toggle" },
-						{ "title": "SwitchNode", "path": "nodes/structure/switch" },
-						{ "title": "SelectorNode", "path": "nodes/structure/selector" },
-						{ "title": "ChartNode", "path": "nodes/structure/chart" }
+						{
+							"title": "ContainerNode",
+							"path": "nodes/layout/container",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/container/ContainerNode.java"
+						},
+						{
+							"title": "FlexNode",
+							"path": "nodes/layout/flex",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/flex/FlexNode.java",
+							"refs": [
+								"FlexDirection"
+							]
+						},
+						{
+							"title": "GridNode",
+							"path": "nodes/layout/grid",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/grid/GridNode.java"
+						},
+						{
+							"title": "ReorderableFlexNode",
+							"path": "nodes/layout/reorderable-flex",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/reorderable/ReorderableFlexNode.java"
+						},
+						{
+							"title": "Overflow and Scrolling",
+							"path": "nodes/layout/overflow-and-scroll",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/scrollbar/ScrollbarNode.java",
+							"refs": [
+								"OverflowProperty",
+								"ScrollbarNode",
+								"onScrollEnding",
+								"onScrollEnd",
+								"onScrollUpdate"
+							]
+						}
+					]
+				},
+				{
+					"title": "Display",
+					"items": [
+						{
+							"title": "RectNode",
+							"path": "nodes/visual/rect",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/shape/RectNode.java"
+						},
+						{
+							"title": "CircleNode",
+							"path": "nodes/visual/circle",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/shape/CircleNode.java"
+						},
+						{
+							"title": "TextNode",
+							"path": "nodes/visual/text",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/text/TextNode.java"
+						},
+						{
+							"title": "ResourceNode",
+							"path": "nodes/visual/resource",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/resource/ResourceNode.java",
+							"refs": [
+								"StretchType"
+							]
+						},
+						{
+							"title": "ResourcePlayerNode",
+							"path": "nodes/visual/resource-player",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/resource/ResourcePlayerNode.java"
+						},
+						{
+							"title": "ModelNode and ModelViewerNode",
+							"path": "nodes/visual/model",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/model/ModelNode.java",
+							"refs": [
+								"ModelNode",
+								"ModelViewerNode"
+							]
+						},
+						{
+							"title": "ProgressNode",
+							"path": "nodes/visual/progress",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/progress/ProgressNode.java"
+						}
+					]
+				},
+				{
+					"title": "Inputs",
+					"items": [
+						{
+							"title": "TextFieldNode",
+							"path": "nodes/input/text-field",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/textfield/TextFieldNode.java",
+							"refs": [
+								"IntegerFieldNode"
+							]
+						},
+						{
+							"title": "MultilineTextFieldNode",
+							"path": "nodes/input/multiline-text-field",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/design/textfield/MultilineTextFieldNode.java"
+						},
+						{
+							"title": "SliderNode",
+							"path": "nodes/input/slider",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/slider/SliderNode.java",
+							"refs": [
+								"DoubleSliderNode",
+								"IntegerSliderNode",
+								"StringSliderNode"
+							]
+						},
+						{
+							"title": "CheckboxNode",
+							"path": "nodes/input/checkbox",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/checkbox/CheckboxNode.java"
+						},
+						{
+							"title": "ToggleNode",
+							"path": "nodes/input/toggle",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/toggle/ToggleNode.java",
+							"refs": [
+								"ToggleState"
+							]
+						},
+						{
+							"title": "SwitchNode",
+							"path": "nodes/input/switch",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/sw/SwitchNode.java"
+						},
+						{
+							"title": "SelectorNode",
+							"path": "nodes/input/selector",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/selector/SelectorNode.java"
+						}
+					]
+				},
+				{
+					"title": "Data",
+					"items": [
+						{
+							"title": "ChartNode",
+							"path": "nodes/data/chart",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/chart/ChartNode.java"
+						},
+						{
+							"title": "RadarChartNode",
+							"path": "nodes/data/radar-chart",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/impl/structure/chart/RadarChartNode.java"
+						}
 					]
 				}
 			]
 		},
 		{
-			"title": "Effects",
-			"group": "effects",
+			"title": "Text",
+			"group": "text",
 			"items": [
-				{ "title": "Overview", "path": "effects/overview" },
-				{ "title": "Rounded", "path": "effects/rounded" },
-				{ "title": "Circle", "path": "effects/circle" },
-				{ "title": "Blur", "path": "effects/blur" },
-				{ "title": "Border", "path": "effects/border" },
-				{ "title": "Gradient", "path": "effects/gradient" }
-			]
-		},
-		{
-			"title": "Shaders",
-			"group": "shaders",
-			"items": [
-				{ "title": "Shader Pipeline", "path": "shaders/pipeline" },
-				{ "title": "Custom Shaders", "path": "shaders/custom" }
-			]
-		},
-		{
-			"title": "Animations",
-			"group": "animations",
-			"items": [
-				{ "title": "TweenAnimator", "path": "animations/tween-animator" },
-				{ "title": "Easing", "path": "animations/easing" }
-			]
-		},
-		{
-			"title": "Resources",
-			"group": "resources",
-			"items": [
-				{ "title": "Assets", "path": "resources/assets" },
-				{ "title": "ResourceBuilder", "path": "resources/resource-builder" },
-				{ "title": "Formats", "path": "resources/formats" },
-				{ "title": "Resolvers", "path": "resources/resolvers" },
-				{ "title": "Decoders", "path": "resources/decoders" }
-			]
-		},
-		{
-			"title": "State",
-			"group": "state",
-			"items": [
-				{ "title": "Signals", "path": "state/signals" },
-				{ "title": "Watch", "path": "state/watch" },
-				{ "title": "Stores", "path": "state/stores" }
+				{
+					"title": "Text and TextInfo",
+					"path": "text/text-and-textinfo",
+					"source": "core/src/main/java/dev/joid/lib/font/dto/TextInfo.java",
+					"refs": [
+						"Text",
+						"TextElement",
+						"TextInfo",
+						"FontBounds"
+					]
+				},
+				{
+					"title": "Styling Text",
+					"path": "text/styling-text",
+					"source": "core/src/main/java/dev/joid/lib/font/dto/TextStyle.java",
+					"refs": [
+						"TextStyle",
+						"FontWeight",
+						"TextMode",
+						"TextOverflow",
+						"TextModifier"
+					]
+				},
+				{
+					"title": "Markup and Text Effects",
+					"path": "text/markup-and-effects",
+					"source": "core/src/main/java/dev/joid/lib/font/dto/markup/TextMarkup.java",
+					"refs": [
+						"TextMarkup",
+						"ITextMarkup",
+						"ITextEffect",
+						"ITextGlyph"
+					]
+				}
 			]
 		},
 		{
 			"title": "Fonts",
 			"group": "fonts",
 			"items": [
-				{ "title": "Custom Fonts", "path": "fonts/custom-font" },
-				{ "title": "Markup & Effects", "path": "fonts/markup-effects" },
-				{ "title": "MSDF Atlas", "path": "fonts/msdf-atlas" }
+				{
+					"title": "How Fonts Work",
+					"path": "fonts/how-fonts-work",
+					"source": "core/src/main/java/dev/joid/lib/font/IFont.java",
+					"refs": [
+						"IFont",
+						"IFontProvider",
+						"FontFamily",
+						"MsdfFont"
+					]
+				},
+				{
+					"title": "Adding Your Own Fonts",
+					"path": "fonts/adding-fonts",
+					"source": "core/src/main/java/dev/joid/lib/font/impl/msdf/MsdfFontLoader.java",
+					"refs": [
+						"MsdfFontLoader",
+						"MsdfFontCache"
+					]
+				},
+				{
+					"title": "MSDF Generator",
+					"path": "fonts/msdf-generator",
+					"source": "msdf/src/main/java/dev/joid/msdf/MsdfGenerator.java",
+					"refs": [
+						"MsdfGenerator"
+					]
+				},
+				{
+					"title": "Custom Font Implementations",
+					"path": "fonts/custom-fonts",
+					"source": "core/src/main/java/dev/joid/lib/font/impl/glyph/GlyphFont.java",
+					"refs": [
+						"GlyphFont",
+						"GlyphFontProvider"
+					]
+				}
 			]
 		},
 		{
-			"title": "Drawing",
-			"group": "drawing",
+			"title": "Guides",
+			"group": "guides",
 			"items": [
-				{ "title": "DrawUtils", "path": "drawing/draw-utils" },
-				{ "title": "Shapes", "path": "drawing/shapes" },
-				{ "title": "Text", "path": "drawing/text" },
-				{ "title": "Resources", "path": "drawing/resources" },
-				{ "title": "Models", "path": "drawing/models" },
-				{ "title": "Color", "path": "drawing/color" }
+				{
+					"title": "UIs",
+					"items": [
+						{
+							"title": "The UI Class",
+							"path": "ui/ui-class",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/UI.java",
+							"refs": [
+								"UI",
+								"IUI",
+								"UIData"
+							]
+						},
+						{
+							"title": "Opening and Closing UIs",
+							"path": "ui/managing-uis",
+							"source": "core/src/main/java/dev/joid/internal/JOID.java",
+							"refs": [
+								"UIDataPopup"
+							]
+						},
+						{
+							"title": "View and Scaling",
+							"path": "ui/view-and-scaling",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/view/UIView.java",
+							"refs": [
+								"UIView"
+							]
+						},
+						{
+							"title": "Transitions",
+							"path": "ui/transitions",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/transition/Transition.java",
+							"refs": [
+								"Transition",
+								"PopTransition",
+								"TransitionState"
+							]
+						}
+					]
+				},
+				{
+					"title": "Nodes",
+					"items": [
+						{
+							"title": "Node Fundamentals",
+							"path": "nodes/node-fundamentals",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/Node.java",
+							"refs": [
+								"Node",
+								"INode",
+								"PositionProperty",
+								"NodeLayer"
+							]
+						}
+					]
+				},
+				{
+					"title": "Interactions",
+					"items": [
+						{
+							"title": "Callbacks",
+							"path": "interactions/callbacks",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/callback/NodeCallback.java",
+							"refs": [
+								"NodeCallback",
+								"InternalContext",
+								"NodeCallbackMethod"
+							]
+						},
+						{
+							"title": "Mouse and Keyboard",
+							"path": "interactions/mouse-and-keyboard",
+							"source": "core/src/main/java/dev/joid/lib/utils/key/Key.java",
+							"refs": [
+								"Key",
+								"ClickType"
+							]
+						},
+						{
+							"title": "Hover and Tooltips",
+							"path": "interactions/hover",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/hover/HoverElement.java",
+							"refs": [
+								"HoverElement",
+								"DefaultHoverElement",
+								"CustomHoverElement",
+								"NodeHoverElement"
+							]
+						},
+						{
+							"title": "Drag and Drop",
+							"path": "interactions/drag-drop",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/property/draggable/DraggableProperty.java",
+							"refs": [
+								"DraggableProperty"
+							]
+						}
+					]
+				},
+				{
+					"title": "State",
+					"items": [
+						{
+							"title": "Signals",
+							"path": "state/signals",
+							"source": "core/src/main/java/dev/joid/lib/utils/signal/Signal.java",
+							"refs": [
+								"Signal",
+								"ISignal",
+								"BooleanSignal",
+								"DoubleSignal",
+								"FloatSignal",
+								"IntegerSignal",
+								"LongSignal",
+								"StringSignal",
+								"ListSignal",
+								"MapSignal",
+								"SetSignal"
+							]
+						},
+						{
+							"title": "Watching Signals",
+							"path": "state/watch",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/property/watch/WatchProperty.java",
+							"refs": [
+								"WatchProperty"
+							]
+						},
+						{
+							"title": "Stores",
+							"path": "state/stores",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/store/UIStore.java",
+							"refs": [
+								"UIStore",
+								"UIStoreData",
+								"StoreContext"
+							]
+						},
+						{
+							"title": "Persistent UI Properties",
+							"path": "state/properties",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/property/UIProperty.java",
+							"refs": [
+								"UIProperty"
+							]
+						}
+					]
+				},
+				{
+					"title": "Styling",
+					"items": [
+						{
+							"title": "Colors and Gradients",
+							"path": "styling/colors",
+							"source": "core/src/main/java/dev/joid/lib/color/Color.java",
+							"refs": [
+								"Color",
+								"ColorGradient"
+							]
+						},
+						{
+							"title": "Effects",
+							"path": "styling/effects",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/NodeEffect.java",
+							"refs": [
+								"NodeEffect"
+							]
+						},
+						{
+							"title": "RoundedNodeEffect",
+							"path": "styling/rounded",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/RoundedNodeEffect.java"
+						},
+						{
+							"title": "CircleNodeEffect",
+							"path": "styling/circle",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/CircleNodeEffect.java"
+						},
+						{
+							"title": "BorderNodeEffect",
+							"path": "styling/border",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/BorderNodeEffect.java"
+						},
+						{
+							"title": "BlurNodeEffect",
+							"path": "styling/blur",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/BlurNodeEffect.java"
+						},
+						{
+							"title": "MaskNodeEffect",
+							"path": "styling/mask",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/MaskNodeEffect.java"
+						},
+						{
+							"title": "TransformNodeEffect",
+							"path": "styling/transform",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/TransformNodeEffect.java"
+						},
+						{
+							"title": "Custom Effects",
+							"path": "styling/custom-effects",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/NodeEffect.java"
+						}
+					]
+				},
+				{
+					"title": "Resources and Media",
+					"items": [
+						{
+							"title": "Resources",
+							"path": "resources/resources",
+							"source": "core/src/main/java/dev/joid/lib/resource/ResourceBuilder.java",
+							"refs": [
+								"Resource",
+								"ResourceBuilder",
+								"ResourceProperties"
+							]
+						},
+						{
+							"title": "Assets",
+							"path": "resources/assets",
+							"source": "core/src/main/java/dev/joid/lib/asset/Asset.java",
+							"refs": [
+								"Asset",
+								"AssetLocator",
+								"IAssetLocator"
+							]
+						},
+						{
+							"title": "Supported Formats",
+							"path": "resources/formats",
+							"source": "core/src/main/java/dev/joid/lib/resource/dto/format/ResourceFormat.java"
+						},
+						{
+							"title": "Playback, Video and Audio",
+							"path": "resources/playback",
+							"source": "core/src/main/java/dev/joid/lib/resource/dto/playback/IResourcePlayback.java",
+							"refs": [
+								"IResourcePlayback",
+								"VideoAudioPlayer",
+								"AudioListener"
+							]
+						},
+						{
+							"title": "Custom Formats and Decoders",
+							"path": "resources/custom-formats",
+							"source": "core/src/main/java/dev/joid/lib/resource/dto/decoder/IResourceDecoder.java",
+							"refs": [
+								"IResourceFormat",
+								"ResourceFormat",
+								"IResourceDecoder",
+								"IResourceResolver",
+								"ResourceResolver",
+								"ResourceData"
+							]
+						}
+					]
+				},
+				{
+					"title": "Animation",
+					"items": [
+						{
+							"title": "TweenAnimator",
+							"path": "animation/tween-animator",
+							"source": "core/src/main/java/dev/joid/lib/animation/animator/TweenAnimator.java"
+						},
+						{
+							"title": "Easing",
+							"path": "animation/easing",
+							"source": "core/src/main/java/dev/joid/lib/animation/tweenengine/TweenEquations.java",
+							"refs": [
+								"TweenEquations",
+								"TweenEquation"
+							]
+						},
+						{
+							"title": "Tween Engine",
+							"path": "animation/tween-engine",
+							"source": "core/src/main/java/dev/joid/lib/animation/tweenengine/Timeline.java",
+							"refs": [
+								"Tween",
+								"Timeline",
+								"TweenManager",
+								"TweenAccessor"
+							]
+						}
+					]
+				}
 			]
 		},
 		{
-			"title": "Interactions",
-			"group": "interactions",
+			"title": "Advanced",
+			"group": "advanced",
 			"items": [
-				{ "title": "Callbacks", "path": "interactions/callbacks" },
-				{ "title": "Hover", "path": "interactions/hover" },
-				{ "title": "Drag & Drop", "path": "interactions/drag-drop" }
+				{
+					"title": "Custom Nodes",
+					"path": "nodes/custom-nodes",
+					"source": "core/src/main/java/dev/joid/lib/ui/node/Node.java"
+				},
+				{
+					"title": "Drawing Overview",
+					"path": "drawing/draw-utils",
+					"source": "core/src/main/java/dev/joid/lib/draw/DrawUtils.java",
+					"refs": [
+						"DrawUtils",
+						"PixelGrid"
+					]
+				},
+				{
+					"title": "Shapes",
+					"path": "drawing/shapes",
+					"source": "core/src/main/java/dev/joid/lib/draw/shape/DrawShape.java",
+					"refs": [
+						"DrawShape"
+					]
+				},
+				{
+					"title": "Drawing Text",
+					"path": "drawing/text",
+					"source": "core/src/main/java/dev/joid/lib/draw/text/DrawText.java",
+					"refs": [
+						"DrawText"
+					]
+				},
+				{
+					"title": "Drawing Resources",
+					"path": "drawing/resources",
+					"source": "core/src/main/java/dev/joid/lib/draw/resource/DrawResource.java",
+					"refs": [
+						"DrawResource"
+					]
+				},
+				{
+					"title": "3D Models",
+					"path": "drawing/models",
+					"source": "core/src/main/java/dev/joid/lib/draw/model/DrawModel.java",
+					"refs": [
+						"DrawModel",
+						"OBJModel",
+						"IDrawableModel"
+					]
+				},
+				{
+					"title": "Transformations and Framebuffers",
+					"path": "drawing/transformations",
+					"source": "core/src/main/java/dev/joid/lib/render/transform/Transformation.java",
+					"refs": [
+						"Transformation",
+						"Rotation",
+						"FrameBuffer",
+						"Tessellator"
+					]
+				},
+				{
+					"title": "Shader Pipeline",
+					"path": "shaders/pipeline",
+					"source": "core/src/main/java/dev/joid/lib/shader/pipeline/ShaderPipeline.java",
+					"refs": [
+						"ShaderPipeline",
+						"ShaderPass",
+						"ShaderPassContext"
+					]
+				},
+				{
+					"title": "Custom Shaders",
+					"path": "shaders/custom-shaders",
+					"source": "core/src/main/java/dev/joid/lib/bridge/render/shader/source/ShaderSource.java",
+					"refs": [
+						"ShaderSource",
+						"IShader",
+						"ShaderImpl"
+					]
+				}
 			]
 		},
 		{
-			"title": "Changelog",
-			"group": "changelog",
+			"title": "Integration",
+			"group": "integration",
 			"items": [
-				{ "title": "Overview", "path": "changelog/index" },
-				{ "title": "7.0.0", "path": "changelog/7.0.0" },
-				{ "title": "6.0.0", "path": "changelog/6.0.0" }
+				{
+					"title": "Bridges",
+					"path": "integration/bridges",
+					"source": "core/src/main/java/dev/joid/lib/bridge/BridgeHandler.java",
+					"refs": [
+						"BridgeHandler",
+						"IRenderBridge",
+						"IWindowBridge",
+						"IAudioBridge",
+						"IClockBridge",
+						"SystemClockBridge",
+						"ManualClockBridge"
+					]
+				},
+				{
+					"title": "UI Bridge",
+					"path": "integration/ui-bridge",
+					"source": "core/src/main/java/dev/joid/lib/bridge/ui/UIBridge.java",
+					"refs": [
+						"UIBridge",
+						"IUIBridge"
+					]
+				},
+				{
+					"title": "Backends",
+					"path": "integration/backends"
+				},
+				{
+					"title": "Writing a Backend",
+					"path": "integration/writing-a-backend",
+					"source": "core/src/main/java/dev/joid/lib/bridge/render/RenderBridge.java",
+					"refs": [
+						"RenderBridge"
+					]
+				},
+				{
+					"title": "Testkit",
+					"path": "integration/testkit",
+					"source": "testkit/src/main/java/dev/joid/test/snapshot/SnapshotSuite.java",
+					"refs": [
+						"SnapshotSuite",
+						"RenderBridgeContractSuite"
+					]
+				}
+			]
+		},
+		{
+			"title": "Reference",
+			"group": "reference",
+			"items": [
+				{
+					"title": "Utilities",
+					"path": "reference/utilities",
+					"refs": [
+						"Align",
+						"BoundingBox",
+						"Bezier",
+						"FormatUtils",
+						"ImageUtils",
+						"IndexedLinkedList",
+						"IndexedConcurrentList"
+					]
+				},
+				{
+					"title": "Changelog 8.0.0",
+					"path": "changelog/8.0.0"
+				}
 			]
 		}
 	]
