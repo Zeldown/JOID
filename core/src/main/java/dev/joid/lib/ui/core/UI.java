@@ -76,6 +76,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private transient List<UIScheduledTask>                  scheduledTaskList;
 	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
 
+	private boolean closed;
 	private boolean initialized;
 
 	private double fps;
@@ -179,7 +180,11 @@ public abstract class UI implements IUI, IndexedElement {
 				System.out.println("Load completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
 				System.out.println("##########################");
 			}
+		} else if (this.closed) {
+			this.nodeList.forEach(node -> node.load(this));
 		}
+
+		this.closed = false;
 
 		if (JOID.inst().isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
 			final File currentFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -435,6 +440,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void properlyClose() {
 		this.nodeList.forEach(Node::onDetach);
+		this.closed = true;
 
 		if (this.fileMonitor != null) {
 			ThreadUtils.daemonThread(() -> {

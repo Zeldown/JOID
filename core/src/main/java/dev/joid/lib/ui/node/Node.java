@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -85,8 +86,11 @@ import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedLinkedList;
 import dev.joid.lib.utils.signal.ISignal;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalSubscriber;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @SuppressWarnings("unchecked")
@@ -129,6 +133,7 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_HOVER_START    = NodeCallbackRegistry.next(NodeHoverStartCallback.class);
 
 	private final transient List<Predicate<Node>>                     waitingList;
+	private final transient List<SignalSubscriber<?>>                 subscriptionList;
 	private final transient Map<Integer, List<NodeCallbackObject<?>>> callbackMap;
 
 	private final transient TweenAnimator             hoverAnimator;
@@ -184,6 +189,7 @@ public abstract class Node implements INode {
 	private double aspectRatio;
 
 	private boolean mounted;
+	private boolean subscribed;
 
 	private boolean       hovered;
 	private long          hoverDuration;
@@ -226,6 +232,7 @@ public abstract class Node implements INode {
 
 	public Node(final double x, final double y, final double width, final double height) {
 		this.waitingList = new ArrayList<>();
+		this.subscriptionList = new ArrayList<>();
 		this.callbackMap = new HashMap<>();
 
 		this.animatorMap   = new HashMap<>();
@@ -256,6 +263,7 @@ public abstract class Node implements INode {
 		this.hoverDuration = 200L;
 		this.hoverEquation = TweenEquations.LINEAR;
 		this.scrollSpeed = 1D;
+		this.subscribed = true;
 	}
 
 	public final void load(final @NonNull UI ui) {
@@ -280,6 +288,7 @@ public abstract class Node implements INode {
 
 			this.getAppliedEffects().forEach(effect -> effect.init(this, this.ui));
 			this.init(this.ui);
+			this.subscribe();
 		});
 
 		this.updateCount++;
@@ -884,6 +893,7 @@ public abstract class Node implements INode {
 	public final void onDetach() {
 		this.executeCallback(Node.CALLBACK_DETACH, InternalContext.create(), () -> {
 			this.children.forEach(Node::onDetach);
+			this.unsubscribe();
 			this.detach();
 		});
 	}
@@ -1711,10 +1721,31 @@ public abstract class Node implements INode {
 	}
 
 	private <V> void listen(final Signal<V> signal, final Supplier<Boolean> condition, final Consumer<V> consumer) {
-		signal.subscribe(value -> {
-			consumer.accept(value);
-			return this.ui == null ? UI.getCurrent() != null : condition.get();
-		});
+		final NodeSubscription<V> subscription = new NodeSubscription<>(signal, condition, consumer);
+		this.subscriptionList.add(subscription);
+		signal.subscribe(subscription);
+	}
+
+	private void subscribe() {
+		if (this.subscribed) {
+			return;
+		}
+
+		this.subscribed = true;
+		for (final SignalSubscriber<?> subscriber : new ArrayList<>(this.subscriptionList)) {
+			((NodeSubscription<?>) subscriber).subscribe();
+		}
+	}
+
+	private void unsubscribe() {
+		if (!this.subscribed) {
+			return;
+		}
+
+		this.subscribed = false;
+		for (final SignalSubscriber<?> subscriber : this.subscriptionList) {
+			((NodeSubscription<?>) subscriber).unsubscribe();
+		}
 	}
 
 	public final <T extends Node> @NonNull T hovered(final boolean hovered) {
@@ -1996,6 +2027,45 @@ public abstract class Node implements INode {
 		}
 
 		return Node.GSON.toJson(json);
+	}
+
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	private final class NodeSubscription<V> implements SignalSubscriber<V> {
+
+		private final Signal<V>         signal;
+		private final Supplier<Boolean> condition;
+		private final Consumer<V>       consumer;
+
+		private V value;
+
+		@Override
+		public boolean update(final V value) {
+			if (!Node.this.subscribed) {
+				return true;
+			}
+
+			this.consumer.accept(value);
+			if (Node.this.ui == null ? UI.getCurrent() != null : this.condition.get()) {
+				return true;
+			}
+
+			Node.this.subscriptionList.remove(this);
+			return false;
+		}
+
+		private void subscribe() {
+			this.signal.subscribe(this);
+			final V current = this.signal.getOrDefault();
+			if (!Objects.equals(this.value, current) && !this.update(current)) {
+				this.signal.unsubscribe(this);
+			}
+		}
+
+		private void unsubscribe() {
+			this.value = this.signal.getOrDefault();
+			this.signal.unsubscribe(this);
+		}
+
 	}
 
 }

@@ -223,6 +223,8 @@ quantity.subscribe(recompute);
 | `IntegerFieldNode.signal(Signal<Integer> signal)` | Binds the value to the signal, both ways. | [TextFieldNode](../nodes/input/text-field.md#integerfieldnode) |
 | `UI.getZoomLevel()`, `UI.getScaledWidth()`, `UI.getScaledHeight()` | `DoubleSignal`s updated when the view changes. | [View and Scaling](../ui/view-and-scaling.md) |
 
+A node follows its `watch(...)` and `signal(...)` signals only while it is attached: once detached (`remove(...)`, `clearChildren()`, its UI closing), it is unsubscribed, and attaching it again subscribes it again and applies the value published in the meantime. See [Watching Signals](watch.md#conditions-and-lifetime-of-a-watch).
+
 ## ISignal
 
 `ISignal<T>` is the interface of `Signal`: `set`, `reset`, `subscribe`, `unsubscribe`, `silent`, `publish`, `getOrDefault` and `isPresent`. `Node.wait(ISignal<?>)` accepts any implementation; `watch` and `visible` take a `Signal`.

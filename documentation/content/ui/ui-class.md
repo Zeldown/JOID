@@ -37,10 +37,11 @@ Open it with `JOID.open(new MenuUI())`; see [Opening and Closing UIs](managing-u
 | Resize | The bridge calls `load(width, height)` again | Resizes the view only; `init()` does not run again. |
 | Reload | `reload()`, dev shortcuts, hot reload | Detaches every node, clears the keybinds and scheduled tasks, restores the `@UIProperty` fields, runs `init()` again and replays the In transition. The zoom is kept. |
 | Close | `JOID.close(ui)`, `Escape`, the bridge | `onClose()` asks your `close()` hook; if it agrees, plays the Out transition, then `properlyClose()` releases the UI and the bridge removes it. |
+| Reopen | `JOID.open(ui)` on a closed instance, the bridge calls `load(width, height)` | `init()` does not run again: every top-level node is loaded again (`init` and `onInit` run again) and follows its signals again. |
 
 Everything you add in the constructor (nodes, keybinds, tasks) is discarded by the first load: add them in `init()`. During `init()`, `UI.getCurrent()` returns the UI being initialized; it returns `null` the rest of the time.
 
-`properlyClose()` detaches every node, stops the hot reload watcher, saves every store, destroys the local stores of the UI and saves its `@UIProperty` fields. `JOID.close` and the out transition call it; call it yourself only from a bridge that removes a UI without going through `JOID.close`.
+`properlyClose()` detaches every node, which unsubscribes them from their signals, stops the hot reload watcher, saves every store, destroys the local stores of the UI and saves its `@UIProperty` fields. `JOID.close` and the out transition call it; call it yourself only from a bridge that removes a UI without going through `JOID.close`.
 
 ## Overridable hooks (IUI)
 
@@ -193,6 +194,7 @@ public void update() {
 | `long getLastFrame()` | Clock time of the last frame, in nanoseconds. |
 | `boolean isOnTop()` | Whether the bridge reported the UI as the top one at the last draw. |
 | `boolean isInitialized()` | Whether `init()` has run. |
+| `boolean isClosed()` | Whether `properlyClose()` ran since the last `load(width, height)`. |
 
 `UI.isCtrlKeyDown()`, `UI.isShiftKeyDown()` and `UI.isAltKeyDown()` are static helpers that return `true` when the left or right modifier is down; see [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
 

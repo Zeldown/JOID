@@ -340,15 +340,16 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
 | Stage | Trigger | What runs |
 | --- | --- | --- |
 | Creation | The factory | The constructor. `body` consumers run as soon as you call `body`. |
-| Load | `attach` to a UI, `append` to a node that has a UI, the UI opening, a reload | `load(UI)`, wrapped by the `onInit` callbacks: the children are loaded first, then the scrollbar and skeleton, then the effects' `init`, then the node's `init(UI)` hook. |
+| Load | `attach` to a UI, `append` to a node that has a UI, the UI opening, a reload | `load(UI)`, wrapped by the `onInit` callbacks: the children are loaded first, then the scrollbar and skeleton, then the effects' `init`, then the node's `init(UI)` hook. A node loaded again after a detach then subscribes again to its signals (see below). |
 | Frame | Every frame, while visible | `render(mouseX, mouseY)`: anchors and aspect ratio, hover, animators, scroll, drag, mount check, then drawing (wrapped by `onRender`, with `draw` wrapped by `onDraw`). |
 | Update | Each update tick of the UI bridge (once per frame, before drawing, in the bundled demo windows) | `onUpdate()`: the children first, then the node's `update()` hook, wrapped by the `onUpdate` callbacks. Runs for hidden nodes too. |
 | Mount | The first rendered frame in which `isMounted()` is `true` | The `onMount` callbacks. Without [wait conditions](#waiting-and-skeletons), this is the node's first rendered frame. |
 | Reload | `reload()`, `WatchProperty.RELOAD` | The children reload first, then the node is loaded again (`init` and `onInit` run again), all wrapped by `onReload`. `body` consumers are not run again. |
-| Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the node's `detach()` hook, wrapped by the `onDetach` callbacks. When the node leaves its parent, it also forgets the overflow area of its former container (see `getOverflowArea()`). |
+| Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the node unsubscribes from its signals and runs its `detach()` hook, wrapped by the `onDetach` callbacks. When the node leaves its parent, it also forgets the overflow area of its former container (see `getOverflowArea()`). |
 
 - Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, clickType, context)`...) are the entry points that run the stage. You call `reload()` and `onDetach()` yourself when needed; the others are called by the framework.
 - `init` runs on every load, including reloads: keep it repeatable. Override the hooks in your own nodes (see [Custom Nodes](custom-nodes.md)).
+- A node follows the signals of its [`watch(...)`](../state/watch.md) calls and of the controls' `signal(...)` only while it is attached: `onDetach()` unsubscribes the whole subtree, so a detached node is no longer reloaded, rebuilt or updated by a signal. Loading it again (`append`, `attach`, reopening its UI) subscribes each of them again, once, and applies right away a value published while it was detached. `isSubscribed()` tells whether the node follows its signals.
 - `UI.reload()` and the dev reload shortcut rebuild the whole tree: the old nodes are detached and the UI's `init()` runs again.
 - `getUpdateCount()` counts the loads of the node, `getLastUpdate()` is the clock time (ms) of the last load, and `getRenderTime()` is the time (ns) of the last `render`, subtree included.
 

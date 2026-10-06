@@ -54,6 +54,7 @@ import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalSubscriber;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 import lombok.AllArgsConstructor;
@@ -1819,6 +1820,96 @@ public class NodeTest {
 		final WatchingUI ui = new WatchingUI();
 		this.bridges.open(ui);
 		Assert.assertEquals(1, ui.signal.getEventSet().size());
+	}
+
+	@Test
+	public void stopsWatchingOnceRemoved() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final int[] reloads = {0};
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		parent.remove(child);
+		Assert.assertTrue(signal.getEventSet().isEmpty());
+		signal.set(1);
+		Assert.assertEquals(0, reloads[0]);
+	}
+
+	@Test
+	public void stopsWatchingInTheWholeClearedTree() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final int[] reloads = {0};
+		final RectNode grandchild = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++);
+		final ContainerNode child = ContainerNode.create(0D, 0D, 50D, 50D).watch(signal).onReload(container -> reloads[0]++).append(grandchild);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		parent.clearChildren();
+		Assert.assertTrue(signal.getEventSet().isEmpty());
+		signal.set(1);
+		Assert.assertEquals(0, reloads[0]);
+	}
+
+	@Test
+	public void ignoresAPublishThatReachesItAfterItsDetach() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final int[] reloads = {0};
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		final List<SignalSubscriber<Integer>> pending = new ArrayList<>(signal.getEventSet());
+		parent.remove(child);
+		for (final SignalSubscriber<Integer> subscriber : pending) {
+			Assert.assertTrue(subscriber.update(1));
+		}
+		Assert.assertEquals(0, reloads[0]);
+	}
+
+	@Test
+	public void watchesAgainOnceAttachedAgain() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final int[] reloads = {0};
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		parent.remove(child);
+		parent.append(child);
+		parent.remove(child);
+		parent.append(child);
+		Assert.assertEquals(1, signal.getEventSet().size());
+		signal.set(1);
+		Assert.assertEquals(1, reloads[0]);
+	}
+
+	@Test
+	public void catchesUpWithAChangeMissedWhileDetached() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final int[] watches = {0};
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal, WatchProperty.NONE).onWatch((rect, source, properties) -> watches[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		parent.remove(child);
+		signal.set(1);
+		Assert.assertEquals(0, watches[0]);
+		parent.append(child);
+		Assert.assertEquals(1, watches[0]);
+		parent.remove(child);
+		parent.append(child);
+		Assert.assertEquals(1, watches[0]);
+	}
+
+	@Test
+	public void watchesAgainOnceItsUiIsOpenedAgain() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final int[] reloads = {0};
+		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++));
+		this.bridges.open(ui);
+		JOID.close(ui);
+		Assert.assertTrue(signal.getEventSet().isEmpty());
+		this.bridges.open(ui);
+		Assert.assertEquals(1, signal.getEventSet().size());
+		signal.set(1);
+		Assert.assertEquals(1, reloads[0]);
+		Assert.assertEquals(1, signal.getEventSet().size());
 	}
 
 	@Test

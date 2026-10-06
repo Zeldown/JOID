@@ -94,15 +94,17 @@ Each call adds one subscription: a node can watch several signals, and watching 
 
 ## Conditions and lifetime of a watch
 
+A watch follows the attachment of its node. `onDetach()` (`remove(...)`, `clearChildren()`, an `append` that moves the node, `WatchProperty.CLEAR_CHILDREN`, `UI.reload()`, the UI closing) unsubscribes the node and its whole subtree at once, so a detached node is never reloaded or rebuilt by its signals. Loading it again (`append`, `attach`, reopening its UI) subscribes it again, exactly once; when the signal changed while the node was detached, the watch is applied once right away.
+
 On every publish of the signal, the subscription of the node:
 
 1. Does nothing when the node is not in a UI yet. It stays subscribed only when a UI is running its `init()` at that moment (`UI.getCurrent()` is not `null`); otherwise it unsubscribes.
 2. Fires `onWatch` with the properties as its default action.
 3. Evaluates the condition. When it returns `false`, the node stops watching the signal.
 
-The condition is evaluated after the properties are applied: the publish that ends a watch still updates the node. With the default condition, a node stops watching at the first publish after its UI closed.
+The condition is evaluated after the properties are applied: the publish that ends a watch still updates the node. Closing the UI detaches its nodes, which stops their watches before the default condition is even evaluated.
 
-> NOTE: A subscription keeps its node in memory as long as the signal is reachable and the subscription is active. A condition that never returns `false` (such as `() -> true`) keeps the node subscribed forever. `UI.reload()` builds new nodes without removing the subscriptions of the previous ones: they stay active while the UI is open and keep applying their properties to the detached nodes.
+> NOTE: A subscription keeps its node in memory as long as the signal is reachable and the subscription is active. Detaching the node removes it; a node built but never attached stays subscribed until the next publish outside a UI's `init()`. A condition that never returns `false` (such as `() -> true`) keeps an attached node subscribed until it is detached.
 
 ### Custom conditions
 

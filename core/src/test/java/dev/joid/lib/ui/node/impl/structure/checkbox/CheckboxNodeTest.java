@@ -11,6 +11,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
@@ -56,6 +57,21 @@ public class CheckboxNodeTest {
 		subtitles.set(true);
 		Assert.assertTrue(checkbox.isChecked());
 		Assert.assertEquals(Arrays.asList(false, true), changes);
+	}
+
+	@Test
+	public void catchesUpWithItsSignalOnceAttachedAgain() {
+		final BooleanSignal subtitles = new BooleanSignal(true);
+		final Checkbox checkbox = new Checkbox().signal(subtitles);
+		final ContainerNode container = ContainerNode.create(0D, 0D, 200D, 200D).append(checkbox);
+		this.bridges.open(new NodeUI(container)).frame();
+		container.remove(checkbox);
+		subtitles.set(false);
+		Assert.assertTrue(checkbox.isChecked());
+		container.append(checkbox);
+		Assert.assertFalse(checkbox.isChecked());
+		subtitles.set(true);
+		Assert.assertTrue(checkbox.isChecked());
 	}
 
 	@Test
