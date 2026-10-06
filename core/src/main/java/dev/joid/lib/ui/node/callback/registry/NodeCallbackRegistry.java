@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class NodeCallbackRegistry {
 
 	private static final Map<Integer, Class<? extends NodeCallback>> REGISTRY = new HashMap<>();
+	private static final Map<Class<? extends NodeCallback>, Integer> IDS      = new HashMap<>();
 
 	private static int lastId = 0;
 
@@ -39,6 +40,7 @@ public class NodeCallbackRegistry {
 
 		final int id = NodeCallbackRegistry.lastId++;
 		NodeCallbackRegistry.REGISTRY.put(id, clazz);
+		NodeCallbackRegistry.IDS.putIfAbsent(clazz, id);
 		return id;
 	}
 
@@ -47,13 +49,7 @@ public class NodeCallbackRegistry {
 	}
 
 	public static int getId(final Class<? extends NodeCallback> clazz) {
-		for (final Map.Entry<Integer, Class<? extends NodeCallback>> entry : NodeCallbackRegistry.REGISTRY.entrySet()) {
-			if (entry.getValue() == clazz) {
-				return entry.getKey();
-			}
-		}
-
-		return -1;
+		return NodeCallbackRegistry.IDS.getOrDefault(clazz, -1);
 	}
 
 	private static boolean validate(final Method method, final NodeCallbackMethod.Type type) {

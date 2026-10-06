@@ -27,6 +27,14 @@ public class NodeCallbackRegistryTest {
 	}
 
 	@Test
+	public void keepsTheFirstIdOfACallbackRegisteredSeveralTimes() {
+		final int first = NodeCallbackRegistry.next(RepeatedCallback.class);
+		NodeCallbackRegistry.next(RepeatedCallback.class);
+		NodeCallbackRegistry.next(RepeatedCallback.class);
+		Assert.assertEquals(first, NodeCallbackRegistry.getId(RepeatedCallback.class));
+	}
+
+	@Test
 	public void knowsNothingOfAnUnregisteredCallback() {
 		Assert.assertEquals(-1, NodeCallbackRegistry.getId(LooseCallback.class));
 		Assert.assertNull(NodeCallbackRegistry.get(-1));
@@ -100,6 +108,19 @@ public class NodeCallbackRegistryTest {
 
 		@NodeCallbackMethod(Type.POST)
 		public default void post(final Node node, final InternalContext context, final int value) {}
+
+	}
+
+	@FunctionalInterface
+	private interface RepeatedCallback extends NodeCallback {
+
+		public void apply();
+
+		@NodeCallbackMethod(Type.PRE)
+		public default void pre(final Node node, final InternalContext context) {}
+
+		@NodeCallbackMethod(Type.POST)
+		public default void post(final Node node, final InternalContext context) {}
 
 	}
 

@@ -22,7 +22,7 @@ public class ShopUI extends UI {
 
 - Every `on...` method adds one callback and returns the node, so you can chain them. Calling the same method twice registers two callbacks: both run, in registration order.
 - A callback stays registered for the life of the node; there is no method to remove one. Guard its body with a condition (a field or a [signal](../state/signals.md)) when it must stop reacting.
-- An exception thrown inside a callback is caught and printed (`Failed to invoke post method for callback ...` followed by the stack trace). The other callbacks and the event dispatch continue.
+- An exception thrown inside a callback is caught and reported on `System.err` with the callback interface and the cause (`[JOID] The post phase of NodeMousePressedCallback failed: java.lang.IllegalStateException: ...`), followed by its stack trace. The other callbacks and the event dispatch continue.
 
 ### Typing the node parameter
 

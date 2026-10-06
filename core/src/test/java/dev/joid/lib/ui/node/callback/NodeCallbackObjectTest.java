@@ -78,16 +78,14 @@ public class NodeCallbackObjectTest {
 	public void reportsAFailingPrePhaseWithoutThrowing() {
 		final NodeCallbackObject<FailingCallback> object = new NodeCallbackObject<>(new FailingCallback());
 		final String output = NodeCallbackObjectTest.capture(() -> object.pre(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create()));
-		Assert.assertTrue(output, output.contains("Failed to invoke pre method for callback " + FailingCallback.class.getName()));
-		Assert.assertTrue(output, output.contains("Values: RectNode, InternalContext"));
+		Assert.assertTrue(output, output.startsWith("[JOID] The pre phase of " + FailingCallback.class.getName() + " failed: java.lang.IllegalStateException: pre"));
 	}
 
 	@Test
 	public void reportsAFailingPostPhaseWithoutThrowing() {
 		final NodeCallbackObject<FailingCallback> object = new NodeCallbackObject<>(new FailingCallback());
 		final String output = NodeCallbackObjectTest.capture(() -> object.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create()));
-		Assert.assertTrue(output, output.contains("Failed to invoke post method for callback " + FailingCallback.class.getName()));
-		Assert.assertTrue(output, output.contains("Values: RectNode, InternalContext"));
+		Assert.assertTrue(output, output.startsWith("[JOID] The post phase of " + FailingCallback.class.getName() + " failed: java.lang.IllegalStateException: post"));
 	}
 
 	@Test
@@ -95,7 +93,7 @@ public class NodeCallbackObjectTest {
 		final RecordingPostCallback callback = new RecordingPostCallback();
 		final NodeCallbackObject<RecordingPostCallback> object = new NodeCallbackObject<>(callback);
 		final String output = NodeCallbackObjectTest.capture(() -> object.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(), "extra"));
-		Assert.assertTrue(output, output.contains("Values: RectNode, InternalContext, String"));
+		Assert.assertTrue(output, output.startsWith("[JOID] The post phase of " + RecordingPostCallback.class.getName() + " failed: java.lang.IllegalArgumentException"));
 		Assert.assertEquals(0, callback.calls);
 	}
 
@@ -122,19 +120,36 @@ public class NodeCallbackObjectTest {
 		final NodeInitCallback<Node> callback = node -> {};
 		final NodeCallbackObject<NodeInitCallback<Node>> object = new NodeCallbackObject<>(callback);
 		final String output = NodeCallbackObjectTest.capture(() -> object.post(null, InternalContext.create()));
-		Assert.assertTrue(output, output.contains("Failed to invoke post method for callback " + callback.getClass().getName()));
+		Assert.assertTrue(output, output.startsWith("[JOID] The post phase of NodeInitCallback failed: java.lang.NullPointerException"));
+	}
+
+	@Test
+	public void namesAFailingCallbackByItsInterface() {
+		final NodeMousePressedCallback<RectNode> callback = (node, mouseX, mouseY, clickType) -> {
+			throw new IllegalStateException("click");
+		};
+		final String output = NodeCallbackObjectTest.capture(() -> new NodeCallbackObject<>(callback).post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(), 3D, 4D, ClickType.LEFT));
+		Assert.assertTrue(output, output.startsWith("[JOID] The post phase of NodeMousePressedCallback failed: java.lang.IllegalStateException: click"));
+	}
+
+	@Test
+	public void keepsRunningTheNextCallbacksAfterAFailure() {
+		final List<String> runs = new ArrayList<>();
+		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).onUpdate(node -> {
+			throw new IllegalStateException("update");
+		}).onUpdate(node -> runs.add("second"));
+		final String output = NodeCallbackObjectTest.capture(rect::onUpdate);
+		Assert.assertTrue(output, output.contains("[JOID] The post phase of NodeUpdateCallback failed: java.lang.IllegalStateException: update"));
+		Assert.assertEquals(Arrays.asList("second"), runs);
 	}
 
 	private static String capture(final Runnable runnable) {
-		final PrintStream out = System.out;
 		final PrintStream error = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
-			System.setOut(new PrintStream(output, true));
-			System.setErr(new PrintStream(new ByteArrayOutputStream(), true));
+			System.setErr(new PrintStream(output, true));
 			runnable.run();
 		} finally {
-			System.setOut(out);
 			System.setErr(error);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
