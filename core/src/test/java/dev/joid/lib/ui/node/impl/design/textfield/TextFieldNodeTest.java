@@ -203,6 +203,18 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void losesItsFocusWhenDetached() {
+		final List<Boolean> focuses = new ArrayList<>();
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).onFocus(node -> focuses.add(node.isFocused()));
+		this.bridges.open(new NodeUI(field));
+		field.focused(true);
+		field.onDetach();
+		Assert.assertFalse(field.isFocused());
+		Assert.assertFalse(field.isInputting());
+		Assert.assertEquals(Arrays.asList(true, false), focuses);
+	}
+
+	@Test
 	public void focusesOnAClickAndPutsTheCursorUnderTheMouse() {
 		final List<Boolean> focuses = new ArrayList<>();
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").onFocus(node -> focuses.add(node.isFocused()));

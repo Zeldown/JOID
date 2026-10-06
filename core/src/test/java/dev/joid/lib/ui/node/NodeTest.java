@@ -1994,6 +1994,129 @@ public class NodeTest {
 	}
 
 	@Test
+	public void detachesItsScrollbarAndItsSkeleton() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final Bar bar = new Bar(90D, 0D, 10D, 20D, BoundingBox.create(0D, 0D, 10D, 100D)).watch(signal);
+		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).overflow(OverflowProperty.SCROLL).scrollbar(bar).skeleton(rect -> RectNode.create(0D, 0D, 10D, 10D).watch(signal));
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 200D, 200D).append(node);
+		this.bridges.open(new NodeUI(parent));
+		Assert.assertEquals(2, signal.getEventSet().size());
+		parent.remove(node);
+		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertFalse(bar.isSubscribed());
+		Assert.assertFalse(node.getSkeleton().isSubscribed());
+		parent.append(node);
+		parent.remove(node);
+		parent.append(node);
+		Assert.assertEquals(2, signal.getEventSet().size());
+	}
+
+	@Test
+	public void detachesItsEffects() {
+		final List<String> events = new ArrayList<>();
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("effect", events));
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
+		this.bridges.open(new NodeUI(parent));
+		events.clear();
+		parent.remove(node);
+		Assert.assertEquals(Arrays.asList("effect detach"), events);
+		parent.append(node);
+		Assert.assertEquals(Arrays.asList("effect detach", "effect init"), events);
+	}
+
+	@Test
+	public void endsItsDragWhenDetached() {
+		final List<String> events = new ArrayList<>();
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free()).onDragStart(rect -> events.add("start")).onDragEnd(rect -> events.add("end"));
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
+		this.bridges.open(new NodeUI(parent));
+		node.startDragging(110D, 110D);
+		node.onMouseDragged(160D, 110D, ClickType.LEFT, 0L, InternalContext.create());
+		parent.remove(node);
+		Assert.assertEquals(Arrays.asList("start", "end"), events);
+		Assert.assertFalse(node.isDragging());
+		Assert.assertFalse(node.isDragged());
+		Assert.assertEquals(150D, node.getX(), 0D);
+		parent.append(node);
+		this.bridges.frame();
+		Assert.assertEquals(150D, node.getX(), 0D);
+		Assert.assertFalse(node.isDragging());
+	}
+
+	@Test
+	public void dropsTheCopyOfItsDragWhenDetached() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
+		this.bridges.open(new NodeUI(parent));
+		node.startDragging(110D, 110D);
+		Assert.assertNotNull(node.getDraggedNode());
+		parent.remove(node);
+		Assert.assertNull(node.getDraggedNode());
+		Assert.assertEquals(100D, node.getX(), 0D);
+	}
+
+	@Test
+	public void endsItsHoverWhenDetached() {
+		final int[] ends = {0};
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).onHoverEnd((rect, mouseX, mouseY) -> ends[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
+		this.bridges.open(new NodeUI(parent));
+		node.hovered(true).getHoverAnimator().sequence(0F, 1F).start().update(1F);
+		parent.remove(node);
+		Assert.assertFalse(node.isHovered());
+		Assert.assertEquals(1, ends[0]);
+		Assert.assertEquals(0F, node.hoverValue(1F), 0F);
+		node.onDetach();
+		Assert.assertEquals(1, ends[0]);
+	}
+
+	@Test
+	public void mountsAgainOnceAttachedAgain() {
+		final int[] mounts = {0};
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).onMount(rect -> mounts[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
+		this.bridges.open(new NodeUI(parent)).frame();
+		Assert.assertEquals(1, mounts[0]);
+		parent.remove(node);
+		parent.append(node);
+		this.bridges.frame();
+		Assert.assertEquals(2, mounts[0]);
+	}
+
+	@Test
+	public void waitsForItsConditionsAcrossADetach() {
+		final Signal<String> title = new Signal<>();
+		final int[] mounts = {0};
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).wait(title).onMount(rect -> mounts[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
+		this.bridges.open(new NodeUI(parent)).frame();
+		parent.remove(node);
+		title.set("ready");
+		this.bridges.frame();
+		Assert.assertEquals(0, mounts[0]);
+		parent.append(node);
+		this.bridges.frame();
+		Assert.assertEquals(1, mounts[0]);
+	}
+
+	@Test
+	public void stopsUpdatingItsAnimatorsWhileDetached() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create();
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate((rect, source, value) -> values.add(value));
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
+		this.bridges.open(new NodeUI(parent));
+		parent.remove(node);
+		animator.sequence(0F, 1F).start();
+		this.bridges.frame();
+		Assert.assertTrue(values.isEmpty());
+		Assert.assertEquals(0F, animator.getValue(), 0F);
+		parent.append(node);
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList(1F), values);
+	}
+
+	@Test
 	public void watchesWhileItsConditionHolds() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final boolean[] kept = {true};
@@ -2440,6 +2563,11 @@ public class NodeTest {
 		@Override
 		public void init(final @NonNull Node node, final @NonNull UI ui) {
 			this.events.add(this.name + " init");
+		}
+
+		@Override
+		public void detach(final @NonNull Node node) {
+			this.events.add(this.name + " detach");
 		}
 
 		@Override

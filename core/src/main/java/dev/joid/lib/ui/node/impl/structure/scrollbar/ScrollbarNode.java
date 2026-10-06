@@ -73,6 +73,12 @@ public abstract class ScrollbarNode extends Node {
 		}
 	}
 
+	@Override
+	public void detach() {
+		this.dragging   = false;
+		this.dragButton = null;
+	}
+
 	public final <T extends ScrollbarNode> @NonNull T scrollNode(final @NonNull Node scrollNode) {
 		this.scrollNode = scrollNode;
 		return (T) this;

@@ -85,6 +85,17 @@ public class ScrollbarNodeTest {
 	}
 
 	@Test
+	public void letsGoWhenDetached() {
+		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
+		final RectNode content = ScrollbarNodeTest.column(bar);
+		this.press(content, 515D, 110D);
+		Assert.assertTrue(bar.isDragging());
+		content.onDetach();
+		Assert.assertFalse(bar.isDragging());
+		Assert.assertNull(bar.getDragButton());
+	}
+
+	@Test
 	public void keepsDraggingUntilTheButtonThatStartedIt() {
 		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
 		final RectNode content = ScrollbarNodeTest.column(bar);

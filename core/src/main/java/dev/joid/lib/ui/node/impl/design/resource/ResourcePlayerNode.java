@@ -225,6 +225,9 @@ public class ResourcePlayerNode extends Node {
 	@Override
 	public void detach() {
 		this.release();
+		this.wasPlaying = false;
+		this.lastProgress = 0D;
+		this.resourceStarted = false;
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Resource resource) {

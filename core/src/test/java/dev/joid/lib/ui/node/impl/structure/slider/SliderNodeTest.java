@@ -82,6 +82,15 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void releasesItsCursorWhenDetached() {
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor());
+		this.bridges.open(new NodeUI(slider)).frame();
+		slider.getCursor().dragging(true);
+		slider.onDetach();
+		Assert.assertFalse(slider.getCursor().isDragging());
+	}
+
+	@Test
 	public void jumpsToTheClickedPosition() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(5);

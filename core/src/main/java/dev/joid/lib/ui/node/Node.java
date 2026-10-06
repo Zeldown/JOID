@@ -893,7 +893,18 @@ public abstract class Node implements INode {
 	public final void onDetach() {
 		this.executeCallback(Node.CALLBACK_DETACH, InternalContext.create(), () -> {
 			this.children.forEach(Node::onDetach);
+
+			if (this.scrollbar != null) {
+				this.scrollbar.onDetach();
+			}
+
+			if (this.skeleton != null) {
+				this.skeleton.onDetach();
+			}
+
 			this.unsubscribe();
+			this.endInteraction();
+			this.effectMap.values().forEach(effect -> effect.detach(this));
 			this.detach();
 		});
 	}
@@ -1648,6 +1659,29 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T overflowArea(final Node overflowArea) {
 		this.overflowArea = overflowArea;
 		return (T) this;
+	}
+
+	private void endInteraction() {
+		if (this.dragging) {
+			this.stopDragging();
+		}
+
+		if (this.dragged && this.draggable != null && this.draggable.getType() == DraggableType.MOVE) {
+			this.x += this.targetDragX - this.getAbsoluteX();
+			this.y += this.targetDragY - this.getAbsoluteY();
+		}
+
+		this.dragged = false;
+		this.draggedNode = null;
+
+		final boolean wasHovered = this.hovered;
+		this.hovered = false;
+		if (wasHovered && this.ui != null) {
+			this.executeCallback(Node.CALLBACK_HOVER_END, InternalContext.create(), this.ui.getMouseX(), this.ui.getMouseY());
+		}
+
+		this.hoverAnimator.clear();
+		this.mounted = false;
 	}
 
 	private void clearOverflowArea(final Node area) {

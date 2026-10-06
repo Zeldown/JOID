@@ -93,6 +93,14 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void stopsTurningWhenDetached() {
+		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
+		Assert.assertTrue(viewer.isDragged());
+		viewer.onDetach();
+		Assert.assertFalse(viewer.isDragged());
+	}
+
+	@Test
 	public void turnsWithTheDraggedMouse() {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
 		this.bridges.move(250D, 180D).frame();

@@ -122,6 +122,11 @@ public class ModelViewerNode extends ModelNode {
 		}
 	}
 
+	@Override
+	public void detach() {
+		this.dragged = false;
+	}
+
 	public final double getTargetSize() {
 		return super.getSize() != this.lastSize ? super.getSize() : this.targetSize;
 	}

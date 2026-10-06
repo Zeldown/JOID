@@ -118,6 +118,11 @@ public abstract class SelectorNode<V> extends Node {
 		}
 	}
 
+	@Override
+	public void detach() {
+		this.active = false;
+	}
+
 	public final boolean isSelected(final @NonNull Node node) {
 		return this.selected == node;
 	}

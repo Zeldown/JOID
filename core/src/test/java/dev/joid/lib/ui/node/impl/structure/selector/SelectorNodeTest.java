@@ -79,6 +79,13 @@ public class SelectorNodeTest {
 	}
 
 	@Test
+	public void closesWhenDetached() {
+		this.bridges.open(new NodeUI(this.selector.active(true)));
+		this.selector.onDetach();
+		Assert.assertFalse(this.selector.isActive());
+	}
+
+	@Test
 	public void picksTheClickedOption() {
 		this.bridges.open(new NodeUI(this.selector.active(true))).frames(2);
 		this.click(150D, 200D);

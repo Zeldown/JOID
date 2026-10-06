@@ -18,6 +18,8 @@ public abstract class NodeEffect<T extends Node> {
 
 	public void init(final @NonNull T node, final @NonNull UI ui) {}
 
+	public void detach(final @NonNull T node) {}
+
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {}
 
 	public void post(final @NonNull T node, final double mouseX, final double mouseY) {}

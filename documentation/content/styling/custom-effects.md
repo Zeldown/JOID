@@ -321,6 +321,7 @@ RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(border).attach(thi
 | Hook | Called | Default |
 | --- | --- | --- |
 | `init(T node, UI ui)` | When the node is loaded into a UI and on `Node.reload()`, if `shouldApply` returns `true`. An effect added to a node that is already loaded is not initialized until the next reload. | Nothing. |
+| `detach(T node)` | When the node is detached (`remove`, `clearChildren`, an `append` that moves it, its UI closing or reloading), for every effect of the node. Release there what `init` acquired: `init` runs again if the node is attached again. | Nothing. |
 | `shouldApply(T node)` | Every frame before the other hooks, and before `init`. Returning `false` skips the effect. | `true` |
 | `pre(T node, double mouseX, double mouseY)` | Every frame the node is visible, before its render, in priority order. Render-state effects only. | Nothing. |
 | `post(T node, double mouseX, double mouseY)` | After the render of the node and its children, in the reverse order of `pre`, in a `finally` block. Render-state effects only. | Nothing. |

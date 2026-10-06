@@ -352,6 +352,42 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
+	public void dropsTheDraggedChildWhenDetached() {
+		final List<Integer> ends = new ArrayList<>();
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final RectNode second = ReorderableFlexNodeTest.item();
+		final RectNode third = ReorderableFlexNodeTest.item();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third).onReorderEnd((node, child, oldIndex, newIndex) -> ends.addAll(Arrays.asList(oldIndex, newIndex)));
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 120D);
+		this.bridges.move(150D, 150D).frames(60);
+		flex.onDetach();
+		Assert.assertNull(flex.getReorderedNode());
+		Assert.assertFalse(flex.isReleasing());
+		Assert.assertEquals(Arrays.asList(second, first, third), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(0, 1), ends);
+	}
+
+	@Test
+	public void endsTheReorderOfARemovedChild() {
+		final List<Integer> ends = new ArrayList<>();
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final RectNode second = ReorderableFlexNodeTest.item();
+		final int zindex = first.getZindex();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second).onReorderEnd((node, child, oldIndex, newIndex) -> ends.addAll(Arrays.asList(oldIndex, newIndex)));
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 120D);
+		Assert.assertTrue(flex.isDragging(first));
+		flex.remove(first);
+		this.bridges.frame();
+		Assert.assertNull(flex.getReorderedNode());
+		Assert.assertTrue(flex.getLogicalOrder().isEmpty());
+		Assert.assertEquals(Arrays.asList(second), flex.getChildren().ordered());
+		Assert.assertEquals(zindex, first.getZindex());
+		Assert.assertEquals(Arrays.asList(0, -1), ends);
+	}
+
+	@Test
 	public void putsTheChildBackWhenReleasedInPlace() {
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();

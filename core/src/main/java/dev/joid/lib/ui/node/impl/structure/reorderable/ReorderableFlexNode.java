@@ -73,7 +73,7 @@ public final class ReorderableFlexNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.reorderedNode != null) {
+		if (this.reorderedNode != null && super.getChildren().contains(this.reorderedNode)) {
 			this.tickDrag(mouseX, mouseY);
 		}
 		this.layout();
@@ -105,6 +105,19 @@ public final class ReorderableFlexNode extends Node {
 	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (this.reorderedNode != null && !this.releasing) {
 			this.endDrag();
+		}
+	}
+
+	@Override
+	public void detach() {
+		if (this.reorderedNode == null) {
+			return;
+		}
+
+		if (super.getChildren().contains(this.reorderedNode)) {
+			this.finishRelease();
+		} else {
+			this.abandonReorder();
 		}
 	}
 
@@ -305,7 +318,26 @@ public final class ReorderableFlexNode extends Node {
 		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_END, InternalContext.create(), node, oldIndex, newIndex);
 	}
 
+	private void abandonReorder() {
+		final Node node = this.reorderedNode;
+		final int oldIndex = this.initialIndex;
+
+		node.zindex(this.draggedZindex);
+		node.fireDragEnd(null);
+
+		this.reorderedNode = null;
+		this.releasing = false;
+		this.logicalOrder.clear();
+		this.childCurrent.clear();
+
+		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_END, InternalContext.create(), node, oldIndex, -1);
+	}
+
 	private void layout() {
+		if (this.reorderedNode != null && !super.getChildren().contains(this.reorderedNode)) {
+			this.abandonReorder();
+		}
+
 		final boolean vertical = this.direction == FlexDirection.COLUMN;
 		final boolean dragging = this.reorderedNode != null;
 		if (dragging) {

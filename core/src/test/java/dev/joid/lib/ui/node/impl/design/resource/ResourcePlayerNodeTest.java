@@ -291,6 +291,22 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void startsItsPlaybackAgainOnceAttachedAgain() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
+		final NodeUI ui = new NodeUI(player);
+		this.bridges.open(ui).frames(3);
+		final double progress = player.getProgress();
+		player.onDetach();
+		Assert.assertFalse(player.isResourceStarted());
+		Assert.assertFalse(player.isWasPlaying());
+		player.load(ui);
+		this.bridges.frame();
+		Assert.assertTrue(player.isResourceStarted());
+		Assert.assertTrue(player.isPlaying());
+		Assert.assertTrue(player.getProgress() < progress);
+	}
+
+	@Test
 	public void releasesItsPreviousVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		final VideoResourceDecoder previous = player.getVideo();

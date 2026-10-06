@@ -44,6 +44,11 @@ public abstract class SliderCursorNode extends Node {
 	}
 
 	@Override
+	public void detach() {
+		this.dragging = false;
+	}
+
+	@Override
 	public boolean isHovered(final double mouseX, final double mouseY, final boolean checkEnabled) {
 		return this.dragging || super.isHovered(mouseX, mouseY, checkEnabled);
 	}

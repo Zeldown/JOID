@@ -137,7 +137,7 @@ ResourcePlayerNode
 
 ## Releasing the video
 
-The node releases its video decoder (decoding thread, audio source) when it is detached: when its UI closes or is rebuilt, or when its parent's children are cleared with `clearChildren()`. `resource(...)` also releases the previous video before switching. See the node lifecycle in [Node Fundamentals](../node-fundamentals.md).
+The node releases its video decoder (decoding thread, audio source) when it is detached: when its UI closes or is rebuilt, or when its parent's children are cleared with `clearChildren()`. Attached again, the node starts its resource from the beginning on its next draw, as a new node does (playing it when `autoplay` is on). `resource(...)` also releases the previous video before switching. See the node lifecycle in [Node Fundamentals](../node-fundamentals.md).
 
 ## Reference
 

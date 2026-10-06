@@ -244,6 +244,12 @@ public abstract class FieldNode<V> extends Node {
 		});
 	}
 
+	@Override
+	public void detach() {
+		this.focused(false);
+		this.inputting = false;
+	}
+
 	public abstract @NonNull V getValue();
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull String text) {

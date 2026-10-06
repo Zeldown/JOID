@@ -195,6 +195,7 @@ Effects only change the pixels. Layout, hovering and clicks keep using the node'
 | `isShaderEffect()` | `true` for shader effects. |
 | `shouldApply(T node)` | Whether the effect applies this frame. Default `true`. |
 | `init(T node, UI ui)` | Called when the node is loaded into its UI. |
+| `detach(T node)` | Called when the node is detached. |
 | `pre(T node, double mouseX, double mouseY)`, `post(...)` | Render-state hooks. |
 | `toShaderPass(T node)`, `toShaderPasses(T node)` | Shader passes of a shader effect. |
 
