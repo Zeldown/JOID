@@ -1,20 +1,30 @@
 package dev.joid.lib.utils.signal;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 
 public class Signal<T> implements ISignal<T> {
 
+	private final transient List<@NonNull ComputedSignal<?>>           observerList;
 	private final transient Set<@NonNull SignalSubscriber<@NonNull T>> eventSet;
 
 	private volatile T value;
 	private volatile T defaultValue;
 
 	private transient boolean nextSilent = false;
+
+	@Getter(AccessLevel.PROTECTED)
+	private transient int version;
 
 	public Signal() {
 		this(null);
@@ -23,6 +33,7 @@ public class Signal<T> implements ISignal<T> {
 	public Signal(final T defaultValue) {
 		this.defaultValue = defaultValue;
 		this.eventSet = new HashSet<>();
+		this.observerList = new CopyOnWriteArrayList<>();
 	}
 
 	public static <T> @NonNull Signal<T> of(final T defaultValue) {
@@ -35,6 +46,20 @@ public class Signal<T> implements ISignal<T> {
 		final Signal<T> instance = new Signal<>();
 		future.thenAccept(instance::set);
 		return instance;
+	}
+
+	public static <T> @NonNull ComputedSignal<T> from(final @NonNull Supplier<T> supplier) {
+		return new ComputedSignal<>(supplier);
+	}
+
+	public static void batch(final @NonNull Runnable runnable) {
+		final SignalContext context = SignalContext.current();
+		context.open();
+		try {
+			runnable.run();
+		} finally {
+			context.close();
+		}
 	}
 
 	@Override
@@ -68,26 +93,43 @@ public class Signal<T> implements ISignal<T> {
 
 	@Override
 	public @NonNull Signal<T> publish() {
-		if (this.nextSilent) {
-			this.nextSilent = false;
-			return this;
-		}
-
-		final Set<SignalSubscriber<T>> outdatedSet = new HashSet<>();
-		final Set<SignalSubscriber<T>> copiedSet = new HashSet<>(this.eventSet);
-		for (final SignalSubscriber<T> subscriber : copiedSet) {
-			if (!subscriber.update(this.value)) {
-				outdatedSet.add(subscriber);
+		final SignalContext context = SignalContext.current();
+		this.version++;
+		SignalContext.nextEpoch();
+		context.open();
+		try {
+			if (this.nextSilent) {
+				this.nextSilent = false;
+			} else if (!this.eventSet.isEmpty()) {
+				context.schedule(this);
 			}
+			this.invalidate(context);
+		} finally {
+			context.close();
 		}
-
-		this.eventSet.removeAll(outdatedSet);
 		return this;
 	}
 
 	@Override
-	public T getOrDefault() {
+	public <R> @NonNull ComputedSignal<R> map(final @NonNull Function<T, R> function) {
+		return Signal.from(() -> function.apply(this.get()));
+	}
+
+	@Override
+	public T get() {
+		final T current = this.peek();
+		SignalContext.current().read(this);
+		return current;
+	}
+
+	@Override
+	public T peek() {
 		return this.value != null ? this.value : this.defaultValue;
+	}
+
+	@Override
+	public T getOrDefault() {
+		return this.get();
 	}
 
 	public @NonNull Set<@NonNull SignalSubscriber<@NonNull T>> getEventSet() {
@@ -102,12 +144,70 @@ public class Signal<T> implements ISignal<T> {
 
 	@Override
 	public boolean isPresent() {
+		SignalContext.current().read(this);
 		return this.value != null;
+	}
+
+	protected void refresh() {}
+
+	protected void dispatch() {
+		this.emit(this.value);
+	}
+
+	protected boolean isObserved() {
+		return !this.observerList.isEmpty() || !this.eventSet.isEmpty();
+	}
+
+	protected synchronized void addObserver(final ComputedSignal<?> observer) {
+		for (final ComputedSignal<?> current : this.observerList) {
+			if (current == observer) {
+				return;
+			}
+		}
+
+		this.observerList.add(observer);
+	}
+
+	protected synchronized void removeObserver(final ComputedSignal<?> observer) {
+		for (int index = 0; index < this.observerList.size(); index++) {
+			if (this.observerList.get(index) == observer) {
+				this.observerList.remove(index);
+				return;
+			}
+		}
+	}
+
+	protected final void invalidate(final SignalContext context) {
+		for (final ComputedSignal<?> observer : this.observerList) {
+			observer.markStale(context);
+		}
+	}
+
+	protected final void nextVersion() {
+		this.version++;
+	}
+
+	protected final void emit(final T value) {
+		if (this.eventSet.isEmpty()) {
+			return;
+		}
+
+		final Set<SignalSubscriber<T>> outdatedSet = new HashSet<>();
+		final Set<SignalSubscriber<T>> copiedSet = new HashSet<>(this.eventSet);
+		for (final SignalSubscriber<T> subscriber : copiedSet) {
+			if (!subscriber.update(value)) {
+				outdatedSet.add(subscriber);
+			}
+		}
+
+		for (final SignalSubscriber<T> subscriber : outdatedSet) {
+			this.unsubscribe(subscriber);
+		}
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getOrDefault());
+		return Objects.hash(this.peek());
 	}
 
 	@Override
@@ -121,7 +221,7 @@ public class Signal<T> implements ISignal<T> {
 		}
 
 		final Signal<?> other = (Signal<?>) obj;
-		return Objects.equals(this.getOrDefault(), other.getOrDefault());
+		return Objects.equals(this.peek(), other.peek());
 	}
 
 }

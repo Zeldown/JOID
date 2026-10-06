@@ -1737,7 +1737,7 @@ public abstract class Node implements INode {
 	}
 
 	protected final <V> @NonNull SignalSubscriber<V> bind(final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
-		final V current = signal.getOrDefault();
+		final V current = signal.peek();
 		if (current != null) {
 			consumer.accept(current);
 		}
@@ -1761,7 +1761,7 @@ public abstract class Node implements INode {
 	}
 
 	protected final <V> void sync(final Signal<V> signal, final @NonNull V value) {
-		if (signal != null && !value.equals(signal.getOrDefault())) {
+		if (signal != null && !value.equals(signal.peek())) {
 			signal.set(value);
 		}
 	}
@@ -1772,7 +1772,7 @@ public abstract class Node implements INode {
 		if (this.subscribed) {
 			signal.subscribe(subscription);
 		} else {
-			subscription.value = signal.getOrDefault();
+			subscription.value = signal.peek();
 		}
 		return subscription;
 	}
@@ -2106,14 +2106,14 @@ public abstract class Node implements INode {
 
 		private void subscribe() {
 			this.signal.subscribe(this);
-			final V current = this.signal.getOrDefault();
+			final V current = this.signal.peek();
 			if (!Objects.equals(this.value, current) && !this.update(current)) {
 				this.signal.unsubscribe(this);
 			}
 		}
 
 		private void unsubscribe() {
-			this.value = this.signal.getOrDefault();
+			this.value = this.signal.peek();
 			this.signal.unsubscribe(this);
 		}
 

@@ -21,6 +21,8 @@ import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class RectNodeTest {
 
@@ -83,6 +85,21 @@ public class RectNodeTest {
 		this.bridges.frame();
 		this.single(0.6F, 0.4F, 0.2F);
 		Assert.assertSame(color[0], rect.getColor());
+	}
+
+	@Test
+	public void followsAColorSignal() {
+		final IntegerSignal clicks = IntegerSignal.of(0);
+		final Signal<Color> color = Signal.of(new Color(0.2F, 0.4F, 0.6F, 1F));
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(color);
+		final RectNode mapped = RectNode.create(100D, 300D, 200D, 50D).color(clicks.map(value -> value >= 3 ? Color.GREEN : Color.GRAY));
+		color.set(new Color(0.6F, 0.4F, 0.2F, 1F));
+		Assert.assertSame(color.peek(), rect.getColor());
+		Assert.assertSame(Color.GRAY, mapped.getColor());
+		clicks.set(3);
+		Assert.assertSame(Color.GREEN, mapped.getColor());
+		this.bridges.open(new NodeUI(rect)).frame();
+		this.single(0.6F, 0.4F, 0.2F);
 	}
 
 	@Test

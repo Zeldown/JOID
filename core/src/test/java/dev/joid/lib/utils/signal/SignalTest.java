@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -141,6 +142,68 @@ public class SignalTest {
 			return false;
 		}).set("a").set("b");
 		Assert.assertEquals(Collections.singletonList("b"), received);
+	}
+
+	@Test
+	public void readsItsValueOrItsDefault() {
+		final Signal<String> signal = new Signal<>("joid");
+		Assert.assertEquals("joid", signal.get());
+		Assert.assertEquals("joid", signal.peek());
+		signal.set("ui");
+		Assert.assertEquals("ui", signal.get());
+		Assert.assertEquals("ui", signal.peek());
+	}
+
+	@Test
+	public void isASupplier() {
+		final Signal<String> signal = Signal.of("joid");
+		final Supplier<String> supplier = signal;
+		signal.set("ui");
+		Assert.assertEquals("ui", supplier.get());
+	}
+
+	@Test
+	public void notifiesOnceTheBatchEnds() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<String>().subscribe(received::add);
+		Signal.batch(() -> {
+			signal.set("a");
+			signal.set("b");
+			Signal.batch(() -> signal.set("c"));
+			Assert.assertTrue(received.isEmpty());
+		});
+		Assert.assertEquals(Collections.singletonList("c"), received);
+	}
+
+	@Test
+	public void notifiesTheChangesMadeByASubscriber() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> first = new Signal<>();
+		final Signal<String> second = new Signal<String>().subscribe(received::add);
+		first.subscribe(value -> {
+			second.set(value + "!");
+			return true;
+		}).set("a");
+		Assert.assertEquals(Collections.singletonList("a!"), received);
+	}
+
+	@Test
+	public void notifiesTheRestOfABatchAfterAFailingSubscriber() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> first = new Signal<String>().subscribe(value -> {
+			throw new IllegalStateException();
+		});
+		final Signal<String> second = new Signal<String>().subscribe(received::add);
+		try {
+			Signal.batch(() -> {
+				first.set("a");
+				second.set("b");
+			});
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			second.set("c");
+		}
+		Assert.assertEquals(Arrays.asList("b", "c"), received);
 	}
 
 	@Test(expected = NullPointerException.class)
