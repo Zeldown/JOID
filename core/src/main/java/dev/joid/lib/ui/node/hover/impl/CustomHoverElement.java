@@ -35,8 +35,8 @@ public class CustomHoverElement implements HoverElement {
 			return;
 		}
 
-		Double x = null;
-		Double y = null;
+		double x;
+		double y;
 
 		switch (this.position) {
 		case FOLLOW:
@@ -48,15 +48,10 @@ public class CustomHoverElement implements HoverElement {
 			y = node.getAbsoluteY();
 			break;
 		case FIXED:
+		default:
 			x = 0D;
 			y = 0D;
 			break;
-		default:
-			break;
-		}
-
-		if (x == null || y == null) {
-			return;
 		}
 
 		x += this.element.getX();

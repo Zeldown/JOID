@@ -86,10 +86,6 @@ public class TextFieldNode extends Node {
 			super.height(this.info.ah(this.marginTop + this.marginBottom));
 		}
 
-		if (this.cursorPos < 0) {
-			this.cursorPos = 0;
-		}
-
 		if (this.cursorPos > this.text.length()) {
 			this.cursorPos = this.text.length();
 		}

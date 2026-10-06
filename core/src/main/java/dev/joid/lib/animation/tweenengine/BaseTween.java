@@ -210,11 +210,7 @@ public abstract class BaseTween<T> {
 		this.currentTime = -this.delay;
 		this.step = -1;
 		this.isIterationStep = false;
-		if (this.isReverse(0)) {
-			this.forceEndValues();
-		} else {
-			this.forceStartValues();
-		}
+		this.forceStartValues();
 	}
 
 	public void forceToEnd(final float time) {

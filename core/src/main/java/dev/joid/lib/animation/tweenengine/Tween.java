@@ -212,7 +212,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween target(final float... targetValues) {
 		if (targetValues.length > Tween.combinedAttrsLimit) {
-			this.throwCombinedAttrsLimitReached();
+			throw this.combinedAttrsLimitReached();
 		}
 
 		System.arraycopy(targetValues, 0, this.targetValues, 0, targetValues.length);
@@ -240,7 +240,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween targetRelative(final float... targetValues) {
 		if (targetValues.length > Tween.combinedAttrsLimit) {
-			this.throwCombinedAttrsLimitReached();
+			throw this.combinedAttrsLimitReached();
 		}
 
 		for (int i = 0; i < targetValues.length; i++) {
@@ -268,7 +268,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween waypoint(final float targetValue) {
 		if (this.waypointsCnt == Tween.waypointsLimit) {
-			this.throwWaypointsLimitReached();
+			throw this.waypointsLimitReached();
 		}
 
 		this.waypoints[this.waypointsCnt] = targetValue;
@@ -278,7 +278,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween waypoint(final float... targetValues) {
 		if (this.waypointsCnt == Tween.waypointsLimit) {
-			this.throwWaypointsLimitReached();
+			throw this.waypointsLimitReached();
 		}
 
 		System.arraycopy(targetValues, 0, this.waypoints, this.waypointsCnt * targetValues.length, targetValues.length);
@@ -288,7 +288,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween waypoint(final float targetValue1, final float targetValue2) {
 		if (this.waypointsCnt == Tween.waypointsLimit) {
-			this.throwWaypointsLimitReached();
+			throw this.waypointsLimitReached();
 		}
 
 		this.waypoints[this.waypointsCnt * 2] = targetValue1;
@@ -299,7 +299,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween waypoint(final float targetValue1, final float targetValue2, final float targetValue3) {
 		if (this.waypointsCnt == Tween.waypointsLimit) {
-			this.throwWaypointsLimitReached();
+			throw this.waypointsLimitReached();
 		}
 
 		this.waypoints[this.waypointsCnt * 3] = targetValue1;
@@ -333,7 +333,7 @@ public final class Tween extends BaseTween<Tween> {
 		}
 
 		if (this.combinedAttrsCnt > Tween.combinedAttrsLimit) {
-			this.throwCombinedAttrsLimitReached();
+			throw this.combinedAttrsLimitReached();
 		}
 
 		return this;
@@ -471,20 +471,20 @@ public final class Tween extends BaseTween<Tween> {
 		return parentClass;
 	}
 
-	private void throwCombinedAttrsLimitReached() {
+	private RuntimeException combinedAttrsLimitReached() {
 		final String msg = "You cannot combine more than " + Tween.combinedAttrsLimit + " "
 				+ "attributes in a tween. You can raise this limit with "
 				+ "Tween.setCombinedAttributesLimit(), which should be called once "
 				+ "in application initialization code.";
-		throw new RuntimeException(msg);
+		return new RuntimeException(msg);
 	}
 
-	private void throwWaypointsLimitReached() {
+	private RuntimeException waypointsLimitReached() {
 		final String msg = "You cannot add more than " + Tween.waypointsLimit + " "
 				+ "waypoints to a tween. You can raise this limit with "
 				+ "Tween.setWaypointsLimit(), which should be called once in "
 				+ "application initialization code.";
-		throw new RuntimeException(msg);
+		return new RuntimeException(msg);
 	}
 
 }

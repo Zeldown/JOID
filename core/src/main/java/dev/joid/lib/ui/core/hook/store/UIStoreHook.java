@@ -121,10 +121,6 @@ public final class UIStoreHook {
 	private static @NonNull JsonObject loadFile(final @NonNull String id) {
 		try {
 			final File file = UIStoreHook.getFile(id);
-			if (!file.exists()) {
-				return null;
-			}
-
 			try (final FileReader reader = new FileReader(file)) {
 				return UIStoreHook.GSON.fromJson(reader, JsonObject.class);
 			}

@@ -159,16 +159,10 @@ public final class Resource {
 	}
 
 	public final void generate() {
-		if (this.data == null) {
-			return;
-		}
 		this.data.generate(this.properties.isAsync());
 	}
 
 	public final void upload() {
-		if (this.data == null) {
-			return;
-		}
 		this.data.upload();
 	}
 
@@ -197,9 +191,6 @@ public final class Resource {
 
 		final IResourceDecoder decoder = this.data.getDecoder();
 		if (decoder != null) {
-			if (!this.isGenerated()) {
-				this.generate();
-			}
 			decoder.update(this.data);
 		}
 

@@ -120,10 +120,6 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 		final List<E> list = new LinkedList<>();
 		list.add((E) element);
 
-		if (!(element instanceof RecursiveIndexedElement)) {
-			return list;
-		}
-
 		for (final RecursiveIndexedElement child : element.getChildren()) {
 			list.addAll(this.recursive(child));
 		}

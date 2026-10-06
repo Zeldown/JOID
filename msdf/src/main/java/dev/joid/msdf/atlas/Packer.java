@@ -50,10 +50,6 @@ public final class Packer {
 		double high = height;
 		while (high - low > 0.0625D) {
 			final double middle = Math.floor((low + high) / 2D * 16D) / 16D;
-			if (middle <= low) {
-				break;
-			}
-
 			if (Packer.pack(glyphs, middle, range, width, height)) {
 				low = middle;
 			} else {

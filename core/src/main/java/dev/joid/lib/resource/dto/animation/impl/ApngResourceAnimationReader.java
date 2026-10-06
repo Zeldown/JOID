@@ -98,10 +98,6 @@ public class ApngResourceAnimationReader implements IResourceAnimationReader {
 		for (int i = 0; i < controls.size(); i++) {
 			final Control control = controls.get(i);
 			final BufferedImage image = ImageIO.read(new ByteArrayInputStream(ApngResourceAnimationReader.png(ihdr, header.toByteArray(), control, datas.get(i).toByteArray())));
-			if (image == null) {
-				throw new IOException("Unable to decode the frame " + i);
-			}
-
 			final int[] pixels = image.getRGB(0, 0, control.width, control.height, null, 0, control.width);
 			final Disposal disposal = i == 0 && control.disposal == Disposal.PREVIOUS ? Disposal.BACKGROUND : control.disposal;
 			frames.add(ResourceAnimationFrame.create(canvas.compose(pixels, control.x, control.y, control.width, control.height, control.blend, disposal), control.duration));

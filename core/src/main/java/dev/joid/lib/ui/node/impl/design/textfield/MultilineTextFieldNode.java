@@ -80,10 +80,6 @@ public class MultilineTextFieldNode extends Node {
 			this.cursorMargin = lineHeight * 2;
 		}
 
-		if (this.cursorPos < 0) {
-			this.cursorPos = 0;
-		}
-
 		if (this.cursorPos > this.text.length()) {
 			this.cursorPos = this.text.length();
 		}
@@ -251,11 +247,7 @@ public class MultilineTextFieldNode extends Node {
 					this.selectionStart = -1;
 				}
 
-				if (newCursorPos < this.cursorPos) {
-					this.decreaseCursor(this.cursorPos - newCursorPos);
-				} else {
-					this.increaseCursor(newCursorPos - this.cursorPos);
-				}
+				this.decreaseCursor(this.cursorPos - newCursorPos);
 
 				return;
 			}
@@ -291,11 +283,7 @@ public class MultilineTextFieldNode extends Node {
 					this.selectionStart = -1;
 				}
 
-				if (newCursorPos < this.cursorPos) {
-					this.decreaseCursor(this.cursorPos - newCursorPos);
-				} else {
-					this.increaseCursor(newCursorPos - this.cursorPos);
-				}
+				this.increaseCursor(newCursorPos - this.cursorPos);
 
 				return;
 			}
@@ -725,29 +713,19 @@ public class MultilineTextFieldNode extends Node {
 
 	private final int getTextPosition(final int lineIdx, final int col) {
 		final List<String> lines = this.getLines();
-		if (lines.isEmpty()) {
-			return 0;
-		}
-
 		int textIdx = 0;
-		final int clampedLineIdx = Math.min(Math.max(0, lineIdx), lines.size() - 1);
-		for (int i = 0; i <= clampedLineIdx; i++) {
-			if (i > 0 && textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
-				textIdx += this.text.startsWith("\r\n", textIdx) ? 2 : 1;
-			}
-
-			final String line = lines.get(i).replace("\n", "").replace("\r", "");
-			if (i == clampedLineIdx) {
-				return textIdx + Math.min(Math.max(0, col), line.length());
-			}
-
-			textIdx += line.length();
-			if (textIdx < this.text.length() && this.text.charAt(textIdx) == ' ' && i < lines.size() - 1) {
+		for (int i = 0; i < lineIdx; i++) {
+			textIdx += lines.get(i).replace("\n", "").replace("\r", "").length();
+			if (textIdx < this.text.length() && this.text.charAt(textIdx) == ' ') {
 				textIdx++;
 			}
+
+			if (textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
+				textIdx += this.text.startsWith("\r\n", textIdx) ? 2 : 1;
+			}
 		}
 
-		return textIdx;
+		return textIdx + Math.min(Math.max(0, col), lines.get(lineIdx).replace("\n", "").replace("\r", "").length());
 	}
 
 	private final int nextWordIndex() {

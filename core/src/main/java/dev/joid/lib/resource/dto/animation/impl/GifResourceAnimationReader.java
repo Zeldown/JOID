@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -26,12 +25,7 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 
 	@Override
 	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
-		final Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("gif");
-		if (!readers.hasNext()) {
-			throw new IOException("No GIF reader available");
-		}
-
-		final ImageReader reader = readers.next();
+		final ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
 		try (ImageInputStream input = ImageIO.createImageInputStream(stream)) {
 			reader.setInput(input, false);
 			final IIOMetadataNode screen = GifResourceAnimationReader.child((IIOMetadataNode) reader.getStreamMetadata().getAsTree("javax_imageio_gif_stream_1.0"), "LogicalScreenDescriptor");
@@ -56,7 +50,7 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 				final int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
 				final int x = descriptor == null ? 0 : Integer.parseInt(descriptor.getAttribute("imageLeftPosition"));
 				final int y = descriptor == null ? 0 : Integer.parseInt(descriptor.getAttribute("imageTopPosition"));
-				final long delay = control == null ? 0L : Long.parseLong(control.getAttribute("delayTime")) * 10L;
+				final long delay = Long.parseLong(control.getAttribute("delayTime")) * 10L;
 				frames.add(ResourceAnimationFrame.create(canvas.compose(pixels, x, y, image.getWidth(), image.getHeight(), Blend.OVER, GifResourceAnimationReader.disposal(control)), delay));
 			}
 			return ResourceAnimation.create(width, height, plays, frames);
@@ -66,10 +60,6 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 	}
 
 	private static Disposal disposal(final IIOMetadataNode control) {
-		if (control == null) {
-			return Disposal.NONE;
-		}
-
 		switch (control.getAttribute("disposalMethod")) {
 		case "restoreToBackgroundColor":
 			return Disposal.BACKGROUND;

@@ -122,49 +122,45 @@ public final class DrawText {
 			return this.drawText(ox, oy, text);
 		}
 
-		if (mode == TextMode.SPLIT || mode == TextMode.BOX) {
-			final List<Text> textList = this.getLines(width, text);
-			if (textList.isEmpty()) {
-				return FontBounds.empty();
-			}
-
-			double ox = x;
-			double oy = y;
-
-			if (text.getHorizontalAlignment().isCenter()) {
-				ox = x + width / 2;
-			} else if (text.getHorizontalAlignment().isEnd()) {
-				ox = x + width;
-			}
-
-			if (text.getVerticalAlignment().isCenter()) {
-				oy = y + height / 2;
-				for (final Text line : textList) {
-					oy -= line.dh(2);
-				}
-			} else if (text.getVerticalAlignment().isEnd()) {
-				oy = y + height;
-				for (final Text line : textList) {
-					oy -= line.getHeight();
-				}
-			}
-
-			double heightSum = 0;
-			for (final Text line : textList) {
-				if (mode == TextMode.BOX && (oy + line.getHeight() > y + height || oy < y)) {
-					oy += line.getHeight();
-					continue;
-				}
-
-				this.drawText(ox, oy, line.copyWithVerticalAlign(Align.START));
-				oy += line.getHeight();
-				heightSum += line.getHeight();
-			}
-
-			return new FontBounds(width, heightSum);
+		final List<Text> textList = this.getLines(width, text);
+		if (textList.isEmpty()) {
+			return FontBounds.empty();
 		}
 
-		return null;
+		double ox = x;
+		double oy = y;
+
+		if (text.getHorizontalAlignment().isCenter()) {
+			ox = x + width / 2;
+		} else if (text.getHorizontalAlignment().isEnd()) {
+			ox = x + width;
+		}
+
+		if (text.getVerticalAlignment().isCenter()) {
+			oy = y + height / 2;
+			for (final Text line : textList) {
+				oy -= line.dh(2);
+			}
+		} else if (text.getVerticalAlignment().isEnd()) {
+			oy = y + height;
+			for (final Text line : textList) {
+				oy -= line.getHeight();
+			}
+		}
+
+		double heightSum = 0;
+		for (final Text line : textList) {
+			if (mode == TextMode.BOX && (oy + line.getHeight() > y + height || oy < y)) {
+				oy += line.getHeight();
+				continue;
+			}
+
+			this.drawText(ox, oy, line.copyWithVerticalAlign(Align.START));
+			oy += line.getHeight();
+			heightSum += line.getHeight();
+		}
+
+		return new FontBounds(width, heightSum);
 	}
 
 	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {

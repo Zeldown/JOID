@@ -50,12 +50,11 @@ public final class UIDataObject implements UIData {
 
 	public double getAnchorPositionX() {
 		switch (this.anchorX) {
-		case START:
-			return 0D;
 		case CENTER:
 			return 1920D / 2D;
 		case END:
 			return 1920D;
+		case START:
 		default:
 			return 0D;
 		}
@@ -63,12 +62,11 @@ public final class UIDataObject implements UIData {
 
 	public double getAnchorPositionY() {
 		switch (this.anchorY) {
-		case START:
-			return 0D;
 		case CENTER:
 			return 1080D / 2D;
 		case END:
 			return 1080D;
+		case START:
 		default:
 			return 0D;
 		}

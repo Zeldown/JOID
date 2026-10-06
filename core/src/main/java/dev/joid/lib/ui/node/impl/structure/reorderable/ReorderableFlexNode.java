@@ -184,10 +184,6 @@ public final class ReorderableFlexNode extends Node {
 
 	private void startDragInternal(final @NonNull Node child, final double mouseX, final double mouseY) {
 		final int index = super.getChildren().ordered().indexOf(child);
-		if (index == -1) {
-			return;
-		}
-
 		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_START, InternalContext.create(), () -> {
 			this.draggedNode = child;
 			this.initialIndex = index;
@@ -282,10 +278,7 @@ public final class ReorderableFlexNode extends Node {
 
 	private double computeDraggedTarget() {
 		double off = 0D;
-		for (final Node c : this.logicalOrder) {
-			if (c == this.draggedNode) {
-				return off;
-			}
+		for (final Node c : this.logicalOrder.subList(0, this.logicalOrder.indexOf(this.draggedNode))) {
 			if (c.isVisibleProperty()) {
 				off += this.mainSize(c) + this.margin;
 			}

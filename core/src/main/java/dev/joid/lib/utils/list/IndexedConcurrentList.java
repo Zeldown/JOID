@@ -129,10 +129,6 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 		final List<E> list = new LinkedList<>();
 		list.add((E) element);
 
-		if (!(element instanceof RecursiveIndexedElement)) {
-			return list;
-		}
-
 		for (final RecursiveIndexedElement child : element.getChildren()) {
 			list.addAll(this.recursive(child));
 		}

@@ -354,10 +354,6 @@ public final class DevNode extends Node {
 						.attach(scroll);
 
 						for (final Field field : fields) {
-							if (field.getDeclaringClass().equals(Node.class)) {
-								continue;
-							}
-
 							try {
 								field.setAccessible(true);
 								final Object value = field.get(inspectedNode);
