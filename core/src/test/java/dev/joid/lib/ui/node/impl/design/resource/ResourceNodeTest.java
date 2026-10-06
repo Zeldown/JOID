@@ -176,26 +176,10 @@ public class ResourceNodeTest {
 		Assert.assertSame(node, node.hoverResource(hovered));
 		Assert.assertSame(main, node.getResource());
 		Assert.assertSame(hovered, node.getHoveredResource());
-		node.hoverResource((String) null);
-		Assert.assertSame(hovered, node.getHoveredResource());
-		node.hoverResource((Resource) null);
+		node.hoverResource(null);
 		Assert.assertNull(node.getHoveredResource());
 		node.resource(hovered, null);
 		Assert.assertSame(hovered, node.getResource());
-	}
-
-	@Test
-	public void loadsItsResourcesFromUrls() {
-		final ResourceNode node = ResourceNode.create(100D, 100D).resource("https://joid.invalid/main.png");
-		Assert.assertEquals("https://joid.invalid/main.png", node.getResource().getUniqueId());
-		node.resource("https://joid.invalid/other.png", null);
-		Assert.assertEquals("https://joid.invalid/other.png", node.getResource().getUniqueId());
-		Assert.assertNull(node.getHoveredResource());
-		node.resource("https://joid.invalid/main.png", "https://joid.invalid/hovered.png");
-		Assert.assertEquals("https://joid.invalid/main.png", node.getResource().getUniqueId());
-		Assert.assertEquals("https://joid.invalid/hovered.png", node.getHoveredResource().getUniqueId());
-		node.hoverResource("https://joid.invalid/other.png");
-		Assert.assertEquals("https://joid.invalid/other.png", node.getHoveredResource().getUniqueId());
 	}
 
 	@Test

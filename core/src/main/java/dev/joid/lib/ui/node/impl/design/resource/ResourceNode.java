@@ -89,34 +89,14 @@ public class ResourceNode extends Node {
 		}
 	}
 
-	public final <T extends ResourceNode> @NonNull T resource(final @NonNull String url) {
-		this.resource = Resource.of(url);
-		return (T) this;
-	}
-
 	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource) {
 		this.resource = resource;
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T resource(final @NonNull String url, final String hoveredUrl) {
-		this.resource = Resource.of(url);
-		if (hoveredUrl != null) {
-			this.hoveredResource = Resource.of(hoveredUrl);
-		}
 		return (T) this;
 	}
 
 	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource, final Resource hoveredResource) {
 		this.resource = resource;
 		this.hoveredResource = hoveredResource;
-		return (T) this;
-	}
-
-	public final <T extends ResourceNode> @NonNull T hoverResource(final String url) {
-		if (url != null) {
-			this.hoveredResource = Resource.of(url);
-		}
 		return (T) this;
 	}
 
