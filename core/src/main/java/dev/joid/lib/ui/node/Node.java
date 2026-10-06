@@ -900,6 +900,7 @@ public abstract class Node implements INode {
 				} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
 					node.onDetach();
 					node.ui.getNodeList().remove(node);
+					node.clearOverflowArea(node.overflowArea);
 				}
 
 				node.parent(this);
@@ -918,6 +919,7 @@ public abstract class Node implements INode {
 				node.onDetach();
 				this.children.remove(node);
 				node.parent(null);
+				node.clearOverflowArea(node.overflowArea);
 			}
 		}
 		return (T) this;
@@ -1269,6 +1271,7 @@ public abstract class Node implements INode {
 		this.children.forEach(child -> {
 			child.onDetach();
 			child.parent(null);
+			child.clearOverflowArea(child.overflowArea);
 		});
 		this.children.clear();
 		return (T) this;
@@ -1634,6 +1637,15 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T overflowArea(final Node overflowArea) {
 		this.overflowArea = overflowArea;
 		return (T) this;
+	}
+
+	private void clearOverflowArea(final Node area) {
+		if (area == null || this.overflowArea != area) {
+			return;
+		}
+
+		this.overflowArea = null;
+		this.children.forEach(child -> child.clearOverflowArea(area));
 	}
 
 	public final <T extends Node> @NonNull T wait(final @NonNull ISignal<?> watchable) {

@@ -349,6 +349,51 @@ public class NodeTest {
 	}
 
 	@Test
+	public void forgetsTheOverflowAreaOfItsFormerParentOnceRemoved() {
+		final RectNode grandchild = RectNode.create(0D, 0D, 10D, 10D);
+		final ContainerNode child = ContainerNode.create(150D, 10D, 20D, 20D).append(grandchild);
+		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child);
+		this.bridges.open(new NodeUI(area)).frame();
+		Assert.assertFalse(child.isVisible());
+		area.remove(child);
+		Assert.assertNull(child.getOverflowArea());
+		Assert.assertNull(grandchild.getOverflowArea());
+		Assert.assertTrue(child.isVisible());
+	}
+
+	@Test
+	public void forgetsTheOverflowAreaOfItsFormerParentOnceCleared() {
+		final RectNode child = RectNode.create(150D, 10D, 20D, 20D);
+		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child);
+		this.bridges.open(new NodeUI(area)).frame();
+		area.clearChildren();
+		Assert.assertNull(child.getOverflowArea());
+		Assert.assertTrue(child.isVisible());
+	}
+
+	@Test
+	public void forgetsTheOverflowAreaOfItsFormerParentOnceMoved() {
+		final RectNode child = RectNode.create(150D, 10D, 20D, 20D);
+		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child);
+		final ContainerNode other = ContainerNode.create(0D, 0D, 10D, 10D);
+		this.bridges.open(new NodeUI(area)).frame();
+		other.append(child);
+		Assert.assertNull(child.getOverflowArea());
+		Assert.assertTrue(child.isVisible());
+	}
+
+	@Test
+	public void keepsTheOverflowAreaItGivesToItsChildrenOnceRemoved() {
+		final RectNode grandchild = RectNode.create(0D, 0D, 10D, 10D);
+		final ContainerNode child = ContainerNode.create(10D, 10D, 20D, 20D).overflow(OverflowProperty.HIDDEN).append(grandchild);
+		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child);
+		this.bridges.open(new NodeUI(area)).frame();
+		area.remove(child);
+		Assert.assertNull(child.getOverflowArea());
+		Assert.assertSame(child, grandchild.getOverflowArea());
+	}
+
+	@Test
 	public void isNeverHoveredOutsideAUi() {
 		Assert.assertFalse(RectNode.create(0D, 0D, 100D, 100D).isHovered(50D, 50D));
 	}

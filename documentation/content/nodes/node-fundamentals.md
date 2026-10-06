@@ -345,7 +345,7 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
 | Update | Each update tick of the UI bridge (once per frame, before drawing, in the bundled demo windows) | `onUpdate()`: the children first, then the node's `update()` hook, wrapped by the `onUpdate` callbacks. Runs for hidden nodes too. |
 | Mount | The first rendered frame in which `isMounted()` is `true` | The `onMount` callbacks. Without [wait conditions](#waiting-and-skeletons), this is the node's first rendered frame. |
 | Reload | `reload()`, `WatchProperty.RELOAD` | The children reload first, then the node is loaded again (`init` and `onInit` run again), all wrapped by `onReload`. `body` consumers are not run again. |
-| Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the node's `detach()` hook, wrapped by the `onDetach` callbacks. |
+| Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the node's `detach()` hook, wrapped by the `onDetach` callbacks. When the node leaves its parent, it also forgets the overflow area of its former container (see `getOverflowArea()`). |
 
 - Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, clickType, context)`...) are the entry points that run the stage. You call `reload()` and `onDetach()` yourself when needed; the others are called by the framework.
 - `init` runs on every load, including reloads: keep it repeatable. Override the hooks in your own nodes (see [Custom Nodes](custom-nodes.md)).
@@ -484,7 +484,7 @@ These getters expose the node's internal bookkeeping. They are read-only views f
 | `getLastKey()`, `getLastCharacter()`, `getLastKeyTime()` | Last key event dispatched to the node and its clock time (ms). |
 | `getLastWidth()`, `getLastHeight()` | Size seen on the previous frame (anchor bookkeeping). |
 | `isMoving()`, `getRestX()`, `getRestY()`, `getDrawnX()`, `getDrawnY()` | Pixel-alignment bookkeeping of a moving node. |
-| `getOverflowArea()`, `overflowArea(Node)` | The ancestor whose overflow clips this node, set while drawing. |
+| `getOverflowArea()`, `overflowArea(Node)` | The ancestor whose overflow clips this node, set while drawing. `remove(...)`, `clearChildren()` and an `append` that moves the node set it back to `null`, on the node and on the descendants that inherited the same area, so the former container no longer clips or hides them. |
 | `getAnimatorMap()`, `getHoverAnimator()`, `getHoverElementList()`, `getHoverSupplierList()` | Registered animators and hover state. |
 | `getDragX()`, `getDragY()`, `getStartDragX()`, `getStartDragY()`, `getTargetDragX()`, `getTargetDragY()` | Drag bookkeeping. |
 
