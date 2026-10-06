@@ -245,11 +245,11 @@ public class JOIDTest {
 	}
 
 	@Test
-	public void opensNothingWithoutBridge() {
+	public void refusesToOpenAUiWithoutBridge() {
 		BridgeHandler.UI.unregister(this.bridges.getUi());
 		try {
-			Assert.assertNull(JOID.open(new MenuUI()));
-			Assert.assertNull(JOID.open(new MenuUI(), true));
+			JOIDTest.assertNoBridge(() -> JOID.open(new MenuUI()));
+			JOIDTest.assertNoBridge(() -> JOID.open(new MenuUI(), true));
 		} finally {
 			BridgeHandler.UI.register(this.bridges.getUi());
 		}
@@ -398,6 +398,15 @@ public class JOIDTest {
 			joid.load();
 		} finally {
 			System.setOut(previous);
+		}
+	}
+
+	private static void assertNoBridge(final Runnable open) {
+		try {
+			open.run();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("No IUIBridge can open MenuUI: register one whose canHandle accepts it", exception.getMessage());
 		}
 	}
 

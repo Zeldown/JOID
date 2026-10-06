@@ -148,32 +148,32 @@ public final class JOID {
 		bridge.close(ui);
 	}
 
-	public static IUIBridge open(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge == null) {
-			return null;
-		}
-
+	public static @NonNull IUIBridge open(final @NonNull UI ui) {
+		final IUIBridge bridge = JOID.getOpeningBridge(ui);
 		bridge.open(ui);
 		return bridge;
 	}
 
-	public static IUIBridge open(final @NonNull UI ui, final boolean force) {
+	public static @NonNull IUIBridge open(final @NonNull UI ui, final boolean force) {
 		if (!force) {
 			return JOID.open(ui);
 		}
 
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge == null) {
-			return null;
-		}
-
+		final IUIBridge bridge = JOID.getOpeningBridge(ui);
 		for (final UI currentUi : new ArrayList<>(bridge.getUiList().ordered())) {
 			currentUi.properlyClose();
 			bridge.close(currentUi);
 		}
 
 		bridge.open(ui);
+		return bridge;
+	}
+
+	private static @NonNull IUIBridge getOpeningBridge(final @NonNull UI ui) {
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
+		if (bridge == null) {
+			throw new IllegalStateException("No IUIBridge can open " + ui.getClass().getSimpleName() + ": register one whose canHandle accepts it");
+		}
 		return bridge;
 	}
 
