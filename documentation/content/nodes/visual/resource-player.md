@@ -64,10 +64,10 @@ These methods return the node (`ResourcePlayerNode`) and do nothing when the nod
 | `isPaused()` | `true` while paused. `false` without playback. |
 | `getDuration()` | Duration in seconds, `0` without playback. |
 | `getProgress()` | Position as a fraction of the duration, from `0` to `1`; `0` without playback. |
-| `getPlayback()` | `Optional<IResourcePlayback>` (`dev.joid.lib.resource.dto.playback`) of the current resource, empty without one. |
-| `getVideo()` | `Optional<VideoResourceDecoder>` (`dev.joid.lib.resource.dto.decoder.impl`), present only for videos. |
+| `getPlayback()` | `IResourcePlayback` (`dev.joid.lib.resource.dto.playback`) of the current resource, `null` without one. |
+| `getVideo()` | `VideoResourceDecoder` (`dev.joid.lib.resource.dto.decoder.impl`) of the current resource, `null` unless it is a video. |
 
-The current time in seconds is given by `onProgress`, or read with `getPlayback().map(IResourcePlayback::getCurrentTime).orElse(0D)`. The full playback contract (`IResourcePlayback`, video decoding, looping and seeking semantics) is described in [Playback, Video and Audio](../../resources/playback.md).
+The current time in seconds is given by `onProgress`, or read with `getPlayback().getCurrentTime()` once `getPlayback()` is not `null`. The full playback contract (`IResourcePlayback`, video decoding, looping and seeking semantics) is described in [Playback, Video and Audio](../../resources/playback.md).
 
 > NOTE: The playback belongs to the resource's decoder. Resources created from the same source (for example the same URL through `Resource.of`) can share one decoder; two players on such resources play, pause and seek together.
 

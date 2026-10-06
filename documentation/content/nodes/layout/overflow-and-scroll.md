@@ -161,7 +161,7 @@ RectNode
 .color(Color.BLACK)
 .overflow(OverflowProperty.SCROLL)
 .onScrollEnding((area, scrollX, scrollY) -> {
-    final FlexNode list = area.getChild(0, FlexNode.class).get();
+    final FlexNode list = area.getChild(0, FlexNode.class);
     for (int i = 0; i < 10; i++) {
         RectNode.create(0, 0, 600, 60).color(Color.GRAY).attach(list);
     }

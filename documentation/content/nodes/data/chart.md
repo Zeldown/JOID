@@ -30,9 +30,9 @@ public class LineChartNode extends ChartNode {
             Vector2d last = null;
             double x = super.getX();
             for (final String label : super.getLabels()) {
-                final Optional<Number> value = data.get(label);
-                if (value.isPresent()) {
-                    final Vector2d point = new Vector2d(x, super.getY() + super.getHeight() * (1D - (value.get().doubleValue() - min) / (max - min)));
+                final Number value = data.get(label);
+                if (value != null) {
+                    final Vector2d point = new Vector2d(x, super.getY() + super.getHeight() * (1D - (value.doubleValue() - min) / (max - min)));
                     if (last != null) {
                         DrawUtils.SHAPE.drawLine(Color.RED, 2F, last, point);
                     }
@@ -79,7 +79,7 @@ The X axis holds the labels and the series.
 | `labelSet(Set<String> labelSet)` | Replaces the labels with a copy of any set, in its iteration order. |
 | `data(String dataName, ChartData data)` | Adds or replaces a series. |
 | `remove(String data)` | Removes a series. |
-| `get(String data)` | The series of that name, as an `Optional`. |
+| `get(String data)` | The series of that name, or `null`. |
 | `getName()`, `getLabelSet()`, `getDataMap()` | The name, the ordered labels, and the series by name. |
 
 Because the series live in the X axis, replacing the X axis also replaces the series.
@@ -105,13 +105,13 @@ A series maps each X label to a `Number`.
 | `add(String label, Number data)` | Sets the value of a label. |
 | `remove(String label)` | Removes the value of a label. |
 | `dataMap(Map<String, Number> dataMap)` | Replaces the backing map. |
-| `get(String label)` | The value of a label, as an `Optional`. |
+| `get(String label)` | The value of a label, or `null`. |
 | `has(String label)` | `true` when the label has a value. |
 | `isEmpty()` | `true` when the series has no value. |
 | `getMax()`, `getMin()`, `getAverage()` | Statistics of the values, `0` for an empty series. |
 | `getDataMap()` | The backing map. |
 
-A series does not need a value for every label: `get(label)` returns an empty `Optional` for a missing one, so check it in `draw`.
+A series does not need a value for every label: `get(label)` returns `null` for a missing one, so check it in `draw`.
 
 ### Adding and removing series on the node
 
@@ -119,7 +119,7 @@ A series does not need a value for every label: `get(label)` returns an empty `O
 | --- | --- |
 | `data(String dataName, ChartData data)` | Adds or replaces a series. Throws `IllegalStateException` when no X axis is set. |
 | `remove(String data)` | Removes a series. Throws `IllegalStateException` when no X axis is set. |
-| `getData(String data)` | The series of that name, as an `Optional`. |
+| `getData(String data)` | The series of that name, or `null`. |
 | `getDataMap()` | The series by name, in the order they were first added. |
 | `getLabels()` | The X labels, in order. |
 
@@ -141,7 +141,7 @@ When all the values are equal, `getMin()` returns `0` and `getMax()` returns twi
 `isLoaded()` returns `true` when the node is mounted (no pending `wait(...)` condition), both axes are set, there is at least one series, and no series is empty. Test it at the start of `draw` to show a placeholder or nothing.
 
 - While the node waits for a `wait(...)` condition, it draws the default pulsing grey placeholder over its bounds (see [Node Fundamentals](../node-fundamentals.md)). Override `drawSkeleton` to draw your own.
-- Without an X axis, `getLabels()` and `getDataMap()` are empty, `getData(...)` returns an empty `Optional` and the scale is `0` to `1`.
+- Without an X axis, `getLabels()` and `getDataMap()` are empty, `getData(...)` returns `null` and the scale is `0` to `1`.
 
 ## Reference
 

@@ -8,18 +8,20 @@ UIs are opened, closed and looked up through static methods of `JOID` (`dev.joid
 final SettingsUI settings = new SettingsUI();
 JOID.open(settings);
 
-JOID.getUI(SettingsUI.class).ifPresent(JOID::close);
+if (JOID.isOpen(SettingsUI.class)) {
+    JOID.close(JOID.getUI(SettingsUI.class));
+}
 ```
 
 | Method | Description |
 | --- | --- |
-| `static Optional<IUIBridge> open(UI ui)` | Finds the bridge that accepts `ui` (the last registered bridge whose `canHandle(ui)` returns `true`) and calls its `open(ui)`. Returns that bridge, empty when no bridge accepts the UI. |
-| `static Optional<IUIBridge> open(UI ui, boolean force)` | With `force` `false`, same as `open(ui)`. With `force` `true`, first closes every UI of that bridge without asking them (no `close()` hook, no Out transition: each one is released with `properlyClose()` and removed with the bridge's `close`), then opens `ui`. |
+| `static IUIBridge open(UI ui)` | Finds the bridge that accepts `ui` (the last registered bridge whose `canHandle(ui)` returns `true`) and calls its `open(ui)`. Returns that bridge, or `null` when no bridge accepts the UI. |
+| `static IUIBridge open(UI ui, boolean force)` | With `force` `false`, same as `open(ui)`. With `force` `true`, first closes every UI of that bridge without asking them (no `close()` hook, no Out transition: each one is released with `properlyClose()` and removed with the bridge's `close`), then opens `ui`. |
 | `static void close(UI ui)` | Asks the UI to close through `ui.onClose()`: its `close()` hook can refuse, and an Out transition delays the removal until it ends. Then calls the bridge's `close(ui)`. Does nothing when no bridge accepts the UI. |
 | `static void close(UI ui, boolean force)` | With `force` `false`, same as `close(ui)`. With `force` `true`, releases the UI with `properlyClose()` and calls the bridge's `close(ui)` without asking it and without transition. |
 | `static boolean isOpen(UI ui)` | Whether the bridge of `ui` lists it as opened. |
 | `static boolean isOpen(Class<? extends UI> uiClass)` | Whether an open UI is an instance of `uiClass` (subclasses count). |
-| `static <T extends UI> Optional<T> getUI(Class<T> uiClass)` | The first open UI, in the bridge's order, that is an instance of `uiClass`; empty if none. |
+| `static <T extends UI> T getUI(Class<T> uiClass)` | The first open UI, in the bridge's order, that is an instance of `uiClass`; `null` if none. |
 
 All of them throw `NullPointerException` for a `null` argument. `JOID.close` works whatever the `closeable` option of the UI.
 

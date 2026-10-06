@@ -17,26 +17,26 @@ public class UIDataPopupObjectTest {
 
 	@Test
 	public void readsTheDefaultsOfTheAnnotation() {
-		final UIDataPopupObject data = UIDataPopupObject.get(DefaultUI.class).get();
+		final UIDataPopupObject data = UIDataPopupObject.get(DefaultUI.class);
 		Assert.assertFalse(data.active());
 		Assert.assertSame(PopupTransition.IN_OUT, data.transition());
 	}
 
 	@Test
 	public void copiesEveryValueOfTheAnnotation() {
-		final UIDataPopupObject data = UIDataPopupObject.get(PopupUI.class).get();
+		final UIDataPopupObject data = UIDataPopupObject.get(PopupUI.class);
 		Assert.assertTrue(data.active());
 		Assert.assertSame(PopupTransition.IN, data.transition());
 	}
 
 	@Test
 	public void inheritsTheAnnotationOfAParent() {
-		Assert.assertTrue(UIDataPopupObject.get(ChildUI.class).get().active());
+		Assert.assertTrue(UIDataPopupObject.get(ChildUI.class).active());
 	}
 
 	@Test
 	public void findsNothingWithoutAnnotation() {
-		Assert.assertFalse(UIDataPopupObject.get(PlainUI.class).isPresent());
+		Assert.assertNull(UIDataPopupObject.get(PlainUI.class));
 	}
 
 	@Test

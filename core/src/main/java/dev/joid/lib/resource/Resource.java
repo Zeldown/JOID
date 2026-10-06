@@ -1,6 +1,5 @@
 package dev.joid.lib.resource;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import dev.joid.lib.bridge.BridgeHandler;
@@ -130,8 +129,8 @@ public final class Resource {
 		return this.data.getDecoder() == null || this.data.getDecoder().isMipmappable();
 	}
 
-	public final @NonNull Optional<IResourcePlayback> getPlayback() {
-		return this.data.getDecoder() instanceof IResourcePlayback ? Optional.of((IResourcePlayback) this.data.getDecoder()) : Optional.empty();
+	public final IResourcePlayback getPlayback() {
+		return this.data.getDecoder() instanceof IResourcePlayback ? (IResourcePlayback) this.data.getDecoder() : null;
 	}
 
 	public final @NonNull String getUniqueId() {

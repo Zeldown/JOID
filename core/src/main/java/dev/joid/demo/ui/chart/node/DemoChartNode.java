@@ -43,7 +43,7 @@ public class DemoChartNode extends ChartNode {
 		for (final String label : super.getLabels()) {
 			for (final Entry<String, ChartData> entry : super.getDataMap().entrySet()) {
 				final ChartData data = entry.getValue();
-				final Number value = data.get(label).get();
+				final Number value = data.get(label);
 
 				final double oy = super.getY() + super.getHeight() - super.getHeight() * (value.doubleValue() - min.doubleValue()) / (max.doubleValue() - min.doubleValue());
 

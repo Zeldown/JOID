@@ -16,26 +16,26 @@ public class UIDataDebugObjectTest {
 
 	@Test
 	public void readsTheDefaultsOfTheAnnotation() {
-		final UIDataDebugObject data = UIDataDebugObject.get(DefaultUI.class).get();
+		final UIDataDebugObject data = UIDataDebugObject.get(DefaultUI.class);
 		Assert.assertTrue(data.profiler());
 		Assert.assertTrue(data.hotreload());
 	}
 
 	@Test
 	public void copiesEveryValueOfTheAnnotation() {
-		final UIDataDebugObject data = UIDataDebugObject.get(QuietUI.class).get();
+		final UIDataDebugObject data = UIDataDebugObject.get(QuietUI.class);
 		Assert.assertFalse(data.profiler());
 		Assert.assertFalse(data.hotreload());
 	}
 
 	@Test
 	public void inheritsTheAnnotationOfAParent() {
-		Assert.assertFalse(UIDataDebugObject.get(ChildUI.class).get().profiler());
+		Assert.assertFalse(UIDataDebugObject.get(ChildUI.class).profiler());
 	}
 
 	@Test
 	public void findsNothingWithoutAnnotation() {
-		Assert.assertFalse(UIDataDebugObject.get(PlainUI.class).isPresent());
+		Assert.assertNull(UIDataDebugObject.get(PlainUI.class));
 	}
 
 	@Test

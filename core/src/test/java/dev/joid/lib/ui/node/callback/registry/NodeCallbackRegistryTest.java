@@ -16,8 +16,8 @@ public class NodeCallbackRegistryTest {
 		final int first = NodeCallbackRegistry.next(ValidCallback.class);
 		final int second = NodeCallbackRegistry.next(ValidCallback.class);
 		Assert.assertEquals(first + 1, second);
-		Assert.assertSame(ValidCallback.class, NodeCallbackRegistry.get(first).get());
-		Assert.assertSame(ValidCallback.class, NodeCallbackRegistry.get(second).get());
+		Assert.assertSame(ValidCallback.class, NodeCallbackRegistry.get(first));
+		Assert.assertSame(ValidCallback.class, NodeCallbackRegistry.get(second));
 	}
 
 	@Test
@@ -37,7 +37,7 @@ public class NodeCallbackRegistryTest {
 	@Test
 	public void knowsNothingOfAnUnregisteredCallback() {
 		Assert.assertEquals(-1, NodeCallbackRegistry.getId(LooseCallback.class));
-		Assert.assertFalse(NodeCallbackRegistry.get(-1).isPresent());
+		Assert.assertNull(NodeCallbackRegistry.get(-1));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

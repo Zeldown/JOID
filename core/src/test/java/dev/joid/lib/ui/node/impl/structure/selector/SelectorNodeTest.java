@@ -5,7 +5,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,7 +50,7 @@ public class SelectorNodeTest {
 		this.bridges.open(new NodeUI(this.selector)).frame();
 		Assert.assertSame(this.first, this.selector.getSelected());
 		Assert.assertTrue(this.selector.isSelected(this.first));
-		Assert.assertEquals(Optional.of("first"), this.selector.getValue());
+		Assert.assertEquals("first", this.selector.getValue());
 		Assert.assertFalse(this.selector.isActive());
 		Assert.assertSame(SelectorDirection.DOWN, this.selector.getDirection());
 		Assert.assertEquals(40D, this.selector.getHeight(), 0D);
@@ -86,7 +85,7 @@ public class SelectorNodeTest {
 		Assert.assertSame(this.third, this.selector.getSelected());
 		Assert.assertFalse(this.selector.isActive());
 		Assert.assertEquals(Arrays.asList("third"), this.changes);
-		Assert.assertEquals(Optional.of("third"), this.selector.getValue());
+		Assert.assertEquals("third", this.selector.getValue());
 		this.assertDrawn(0.5F, 0.7F, 0.9F, 100D, 140D);
 	}
 
@@ -167,7 +166,7 @@ public class SelectorNodeTest {
 		this.bridges.open(new NodeUI(empty)).frame();
 		this.click(150D, 120D);
 		Assert.assertNull(empty.getSelected());
-		Assert.assertFalse(empty.getValue().isPresent());
+		Assert.assertNull(empty.getValue());
 		Assert.assertFalse(empty.isActive());
 		Assert.assertTrue(this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).isEmpty());
 	}
@@ -182,7 +181,7 @@ public class SelectorNodeTest {
 	@Test
 	public void keepsItsValueWhenItsOptionsAreRebuilt() {
 		this.selector.values("first", "first", "second");
-		Assert.assertEquals(Optional.of("first"), this.selector.getValue());
+		Assert.assertEquals("first", this.selector.getValue());
 		Assert.assertTrue(this.changes.isEmpty());
 	}
 
@@ -214,7 +213,7 @@ public class SelectorNodeTest {
 	public void followsItsSignal() {
 		final Signal<String> language = new Signal<>("second");
 		this.bridges.open(new NodeUI(this.selector.signal(language))).frame();
-		Assert.assertEquals(Optional.of("second"), this.selector.getValue());
+		Assert.assertEquals("second", this.selector.getValue());
 		language.set("third");
 		this.bridges.frame();
 		Assert.assertSame(this.third, this.selector.getSelected());

@@ -262,7 +262,7 @@ These methods let a custom `draw` hook, shader or effect sample a resource. `Dra
 | `getData()` / `getData(int index)` | Decoded ARGB pixels between decoding and upload, `null` otherwise. |
 | `getTexture()` / `getTexture(int index)` | Current texture, `null` before generation. |
 | `getDecoder()` | The decoder, `null` for a wrapped texture or while a URL is being detected. |
-| `getPlayback()` | `Optional<IResourcePlayback>`, present for animations and videos. See [Playback](playback.md). |
+| `getPlayback()` | `IResourcePlayback` of an animation or a video, `null` for other resources. See [Playback](playback.md). |
 | `isMipmappable()` | `false` when the decoder refuses mipmaps. |
 | `getUniqueId()` | The id of the shared data. |
 | `getResourceData()` | The shared `ResourceData`. See [Custom Formats](custom-formats.md#resourcedata-reference). |

@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -1018,9 +1017,8 @@ public abstract class Node implements INode {
 		this.fireDragEnd(() -> {
 			if (this.draggable != null && this.draggable.isEnabled(this)) {
 				if (this.draggable.hasSnapping()) {
-					final Optional<Node> snapping = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
-					if (snapping.isPresent()) {
-						final Node snapNode = snapping.get();
+					final Node snapNode = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
+					if (snapNode != null) {
 						this.executeCallback(Node.CALLBACK_SNAP, InternalContext.create(), () -> {
 							this.targetDragX = snapNode.getAbsoluteX();
 							this.targetDragY = snapNode.getAbsoluteY();
@@ -1223,23 +1221,23 @@ public abstract class Node implements INode {
 		return String.valueOf(this.ui.getNodeList().ordered().indexOf(this));
 	}
 
-	public final <T extends NodeEffect<?, ?>> @NonNull Optional<T> getEffect(final @NonNull Class<? super T> clazz) {
-		return Optional.ofNullable((T) this.effectMap.get(clazz));
+	public final <T extends NodeEffect<?, ?>> T getEffect(final @NonNull Class<? super T> clazz) {
+		return (T) this.effectMap.get(clazz);
 	}
 
-	public final <T extends Node> @NonNull Optional<T> getChild(final int index, final @NonNull Class<T> clazz) {
+	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
 		int i = 0;
 		for (final Node child : this.children) {
 			if (clazz.isAssignableFrom(child.getClass())) {
 				if (i == index) {
-					return Optional.of((T) child);
+					return (T) child;
 				}
 
 				i++;
 			}
 		}
 
-		return Optional.empty();
+		return null;
 	}
 
 	public final <T extends Node> IndexedLinkedList<T> getChildren(final @NonNull Class<T> clazz) {

@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.zip.CRC32;
 
 import javax.imageio.ImageIO;
@@ -105,14 +104,14 @@ public class ApngResourceAnimationReader implements IResourceAnimationReader {
 		return ResourceAnimation.create(width, height, plays, frames);
 	}
 
-	public static @NonNull Optional<Boolean> isAnimated(final @NonNull byte[] bytes) {
+	public static Boolean isAnimated(final @NonNull byte[] bytes) {
 		if (bytes.length < ApngResourceAnimationReader.SIGNATURE.length) {
-			return Optional.of(false);
+			return false;
 		}
 
 		for (int i = 0; i < ApngResourceAnimationReader.SIGNATURE.length; i++) {
 			if (bytes[i] != ApngResourceAnimationReader.SIGNATURE[i]) {
-				return Optional.of(false);
+				return false;
 			}
 		}
 
@@ -121,15 +120,15 @@ public class ApngResourceAnimationReader implements IResourceAnimationReader {
 			final int length = ByteBuffer.wrap(bytes, offset, 4).getInt();
 			final String name = new String(bytes, offset + 4, 4, StandardCharsets.US_ASCII);
 			if (name.equals("acTL")) {
-				return Optional.of(true);
+				return true;
 			}
 
 			if (name.equals("IDAT") || length < 0) {
-				return Optional.of(false);
+				return false;
 			}
 			offset += 12 + length;
 		}
-		return Optional.empty();
+		return null;
 	}
 
 	private static byte[] png(final byte[] ihdr, final byte[] header, final Control control, final byte[] data) throws IOException {

@@ -103,7 +103,7 @@ The next examples on this page reuse this `card` and the UI's `manager`.
 
 ### How the accessor is found
 
-- `Tween.registerAccessor(Class<?>, TweenAccessor<?>)` registers one accessor per class; registering again replaces it. `Tween.getRegisteredAccessor(Class<?>)` returns it as an `Optional`, empty when the class has none.
+- `Tween.registerAccessor(Class<?>, TweenAccessor<?>)` registers one accessor per class; registering again replaces it. `Tween.getRegisteredAccessor(Class<?>)` returns it, or `null`.
 - A tween looks for an accessor registered for the target's class, then for its superclasses (a `RectNode` uses the `Node` accessor above). Interfaces are not searched.
 - A target that implements `TweenAccessor` and has no accessor registered for its own class is its own accessor (`MutableFloat`, `MutableInteger`).
 - `cast(Class<?>)` forces the class used for the lookup. It must be called before the tween starts, otherwise it throws a `RuntimeException`.

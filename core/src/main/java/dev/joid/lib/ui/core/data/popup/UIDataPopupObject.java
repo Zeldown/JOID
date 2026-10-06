@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.core.data.popup;
 
 import java.lang.annotation.Annotation;
-import java.util.Optional;
 
 import dev.joid.lib.ui.core.UI;
 import lombok.NoArgsConstructor;
@@ -21,17 +20,18 @@ public final class UIDataPopupObject implements UIDataPopup {
 	}
 
 	public static @NonNull UIDataPopupObject getOrDefault(final @NonNull Class<? extends UI> clazz) {
-		return UIDataPopupObject.get(clazz).orElse(new UIDataPopupObject());
+		final UIDataPopupObject data = UIDataPopupObject.get(clazz);
+		return data != null ? data : new UIDataPopupObject();
 	}
 
-	public static @NonNull Optional<UIDataPopupObject> get(final @NonNull Class<? extends UI> clazz) {
+	public static UIDataPopupObject get(final @NonNull Class<? extends UI> clazz) {
 		Class<?> currentClass = clazz;
 		UIDataPopup data = currentClass.getAnnotation(UIDataPopup.class);
 		while (data == null && currentClass.getSuperclass() != null) {
 			currentClass = currentClass.getSuperclass();
 			data = currentClass.getAnnotation(UIDataPopup.class);
 		}
-		return data != null ? Optional.of(new UIDataPopupObject(data)) : Optional.empty();
+		return data != null ? new UIDataPopupObject(data) : null;
 	}
 
 	@Override

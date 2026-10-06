@@ -131,10 +131,10 @@ During the backward plays of a yoyo ([`repeatYoyo`](tween-engine.md#delays-repea
 
 ## Parsing an equation by name with TweenUtils
 
-`TweenUtils.parseEasing(String name)` returns the built-in equation whose `toString()` equals `name`, as an `Optional`, empty when none matches. Names are case-sensitive and use the `Family.VARIANT` form shown above: `"Quad.OUT"`, `"Linear.INOUT"`, `"Elastic.INOUT"`. Use it to read equations from configuration files. Custom equations are not known to it.
+`TweenUtils.parseEasing(String name)` returns the built-in equation whose `toString()` equals `name`, or `null` when none matches. Names are case-sensitive and use the `Family.VARIANT` form shown above: `"Quad.OUT"`, `"Linear.INOUT"`, `"Elastic.INOUT"`. Use it to read equations from configuration files. Custom equations are not known to it.
 
 ```java
-final TweenEquation equation = TweenUtils.parseEasing("Cubic.OUT").orElse(TweenEquations.LINEAR);
+final TweenEquation equation = TweenUtils.parseEasing("Cubic.OUT");
 ```
 
 ## Reference
@@ -150,7 +150,7 @@ final TweenEquation equation = TweenUtils.parseEasing("Cubic.OUT").orElse(TweenE
 
 | Method | Description |
 | --- | --- |
-| `static Optional<TweenEquation> parseEasing(String easingName)` | Built-in equation named `easingName` (`"Quad.IN"`...), empty when none matches. |
+| `static TweenEquation parseEasing(String easingName)` | Built-in equation named `easingName` (`"Quad.IN"`...), or `null`. |
 
 ## See also
 

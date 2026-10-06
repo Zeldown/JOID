@@ -32,8 +32,8 @@ public class ResourcePlayerNodeTest {
 		Assert.assertTrue(player.isAutoplay());
 		Assert.assertEquals(1F, player.getVolume(), 0F);
 		Assert.assertSame(StretchType.STRETCH, player.getStretchType());
-		Assert.assertFalse(player.getPlayback().isPresent());
-		Assert.assertFalse(player.getVideo().isPresent());
+		Assert.assertNull(player.getPlayback());
+		Assert.assertNull(player.getVideo());
 		Assert.assertEquals(0D, player.getWidth(), 0D);
 		Assert.assertEquals(0D, player.getDuration(), 0D);
 		Assert.assertEquals(0D, player.getProgress(), 0D);
@@ -118,8 +118,8 @@ public class ResourcePlayerNodeTest {
 		final Resource resource = ResourcePlayerNodeTest.blink();
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(resource);
 		Assert.assertSame(resource, player.getResource());
-		Assert.assertSame(resource.getDecoder(), player.getPlayback().get());
-		Assert.assertFalse(player.getVideo().isPresent());
+		Assert.assertSame(resource.getDecoder(), player.getPlayback());
+		Assert.assertNull(player.getVideo());
 		this.bridges.open(new NodeUI(player));
 		Assert.assertTrue(player.isPlaying());
 		Assert.assertTrue(player.isResourceStarted());
@@ -154,7 +154,7 @@ public class ResourcePlayerNodeTest {
 	public void loopsWhenAsked() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
 		Assert.assertSame(player, player.loop(true));
-		Assert.assertTrue(player.getPlayback().get().isLoop());
+		Assert.assertTrue(player.getPlayback().isLoop());
 		this.bridges.open(new NodeUI(player)).frames(40);
 		Assert.assertTrue(player.isLoop());
 		Assert.assertTrue(player.isPlaying());
@@ -248,7 +248,7 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void appliesItsVolumeToItsVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).volume(0.25F).resource(ResourcePlayerNodeTest.video());
-		final VideoResourceDecoder video = player.getVideo().get();
+		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertEquals(1F, video.getVolume(), 0F);
 		this.bridges.open(new NodeUI(player));
 		Assert.assertEquals(0.25F, player.getVolume(), 0F);
@@ -260,7 +260,7 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void placesTheAudioOfItsVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
-		final VideoResourceDecoder video = player.getVideo().get();
+		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertSame(player, player.location(1F, 2F, 3F).referenceDistance(2F).maxDistance(9F));
 		Assert.assertEquals(1F, video.getLocationX(), 0F);
 		Assert.assertEquals(2F, video.getLocationY(), 0F);
@@ -286,18 +286,18 @@ public class ResourcePlayerNodeTest {
 		final NodeUI ui = new NodeUI(player);
 		this.bridges.open(ui).frames(2);
 		ui.properlyClose();
-		Assert.assertTrue(player.getVideo().get().isReleased());
+		Assert.assertTrue(player.getVideo().isReleased());
 		Assert.assertFalse(player.isPlaying());
 	}
 
 	@Test
 	public void releasesItsPreviousVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
-		final VideoResourceDecoder previous = player.getVideo().get();
+		final VideoResourceDecoder previous = player.getVideo();
 		this.bridges.open(new NodeUI(player)).frames(2);
 		player.resource(ResourcePlayerNodeTest.blink());
 		Assert.assertTrue(previous.isReleased());
-		Assert.assertFalse(player.getVideo().isPresent());
+		Assert.assertNull(player.getVideo());
 	}
 
 	@Test
@@ -315,7 +315,7 @@ public class ResourcePlayerNodeTest {
 	public void placesTheAudioOfAVideoGivenAfterwards() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(1F, 2F, 3F).referenceDistance(2F).maxDistance(9F).resource(ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/dto/decoder/impl/frames.mkv")));
 		this.bridges.open(new NodeUI(player));
-		final VideoResourceDecoder video = player.getVideo().get();
+		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertTrue(video.isHasLocation());
 		Assert.assertEquals(1F, video.getLocationX(), 0F);
 		Assert.assertEquals(2F, video.getReferenceDistance(), 0F);

@@ -3,7 +3,6 @@ package dev.joid.lib.ui.node.callback.registry;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallback;
@@ -45,8 +44,8 @@ public class NodeCallbackRegistry {
 		return id;
 	}
 
-	public static Optional<Class<? extends NodeCallback>> get(final int id) {
-		return Optional.ofNullable(NodeCallbackRegistry.REGISTRY.get(id));
+	public static Class<? extends NodeCallback> get(final int id) {
+		return NodeCallbackRegistry.REGISTRY.get(id);
 	}
 
 	public static int getId(final Class<? extends NodeCallback> clazz) {

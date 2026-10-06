@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
@@ -125,8 +124,8 @@ public abstract class SelectorNode<V> extends Node {
 		return Collections.unmodifiableMap(this.optionMap);
 	}
 
-	public final @NonNull Optional<V> getValue() {
-		return Optional.ofNullable(this.selected).map(this.optionMap::get);
+	public final V getValue() {
+		return this.selected == null ? null : this.optionMap.get(this.selected);
 	}
 
 	@SafeVarargs
@@ -135,7 +134,7 @@ public abstract class SelectorNode<V> extends Node {
 			throw new IllegalArgumentException("The value " + value + " is not an option of the selector");
 		}
 
-		final Optional<V> previous = this.getValue();
+		final V previous = this.getValue();
 		super.clearChildren();
 		this.optionMap.clear();
 		for (final V option : values) {
@@ -144,7 +143,7 @@ public abstract class SelectorNode<V> extends Node {
 			super.append(node);
 		}
 
-		if (previous.isPresent() && previous.get().equals(value)) {
+		if (value.equals(previous)) {
 			this.selected = this.find(value);
 			return (T) this;
 		}

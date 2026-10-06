@@ -168,9 +168,9 @@ public class ResourceTest {
 	@Test
 	public void exposesThePlaybackOfAnAnimation() {
 		final AnimatedResourceDecoder decoder = new AnimatedResourceDecoder(Asset.of(ResourceTest.class.getResourceAsStream("/animation/blink.gif")), new GifResourceAnimationReader());
-		Assert.assertSame(decoder, ResourceTest.resource(decoder).getPlayback().get());
-		Assert.assertFalse(ResourceTest.resource(new Decoder(true)).getPlayback().isPresent());
-		Assert.assertFalse(ResourceTest.resource(null).getPlayback().isPresent());
+		Assert.assertSame(decoder, ResourceTest.resource(decoder).getPlayback());
+		Assert.assertNull(ResourceTest.resource(new Decoder(true)).getPlayback());
+		Assert.assertNull(ResourceTest.resource(null).getPlayback());
 	}
 
 	@Test

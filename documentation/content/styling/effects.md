@@ -54,7 +54,7 @@ A node holds at most one effect per class: adding an effect whose class is alrea
 
 | Method | Description |
 | --- | --- |
-| `getEffect(Class<T> type)` | The effect of that exact class, as an `Optional`, empty when the node has none. |
+| `getEffect(Class<T> type)` | The effect of that exact class, `null` when the node has none. |
 | `hasEffect(Class<?> type)` | Whether the node has an effect of that exact class. |
 | `removeEffect(Class<?> type)` | Removes the effect of that class. Returns the node. |
 | `clearEffects()` | Removes every effect. Returns the node. |
@@ -64,14 +64,12 @@ Pass the class literal of the effect, built-in effects included, without cast:
 ```java
 final RectNode card = RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(RoundedNodeEffect.create(16F)).effect(BorderNodeEffect.create(Color.BLACK, 2F));
 
-card.getEffect(RoundedNodeEffect.class).ifPresent(rounded -> rounded.radius(8F));
+card.getEffect(RoundedNodeEffect.class).radius(8F);
 
 if (card.hasEffect(BorderNodeEffect.class)) {
     card.removeEffect(BorderNodeEffect.class);
 }
 ```
-
-To keep the effect, type the `Optional`: `final Optional<RoundedNodeEffect<Node>> rounded = card.getEffect(RoundedNodeEffect.class);`.
 
 `Node.copy()` gives the copy the same effect instances as the original.
 
@@ -176,7 +174,7 @@ Effects only change the pixels. Layout, hovering and clicks keep using the node'
 | --- | --- |
 | `effect(NodeEffect<? super T, ?> effect)` | Adds or replaces the effect of the same class. |
 | `effect(Function<T, NodeEffect<? super T, ?>> factory)` | Same, with an effect built from the node. |
-| `getEffect(Class<T> type)` | The effect of that class, as an `Optional`. |
+| `getEffect(Class<T> type)` | The effect of that class, or `null`. |
 | `hasEffect(Class<?> type)` | Whether an effect of that class is present. |
 | `removeEffect(Class<?> type)` | Removes the effect of that class. |
 | `clearEffects()` | Removes every effect. |

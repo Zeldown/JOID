@@ -214,10 +214,10 @@ public class ResourceDataTest {
 	public void findsItsDecoderByType() {
 		final Decoder decoder = new Decoder();
 		final ResourceData data = new ResourceData("image", decoder);
-		Assert.assertSame(decoder, data.getDecoder(Decoder.class).get());
-		Assert.assertSame(decoder, data.getDecoder(IResourceDecoder.class).get());
-		Assert.assertFalse(data.getDecoder(RasterResourceDecoder.class).isPresent());
-		Assert.assertFalse(new ResourceData("image", null).getDecoder(Decoder.class).isPresent());
+		Assert.assertSame(decoder, data.getDecoder(Decoder.class));
+		Assert.assertSame(decoder, data.getDecoder(IResourceDecoder.class));
+		Assert.assertNull(data.getDecoder(RasterResourceDecoder.class));
+		Assert.assertNull(new ResourceData("image", null).getDecoder(Decoder.class));
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -146,7 +146,7 @@ ContainerNode
 .wait(lines)
 .onMount(container -> {
     for (int i = 0; i < lines.size(); i++) {
-        container.getChild(i, TextNode.class).get().getText().text(lines.get(i));
+        container.getChild(i, TextNode.class).getText().text(lines.get(i));
     }
 })
 .attach(this);

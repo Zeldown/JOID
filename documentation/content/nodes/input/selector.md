@@ -64,7 +64,7 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 | --- | --- |
 | `values(V value, V... values)` | Creates one option per value and selects `value`. Calling it again replaces all the options. |
 | `value(V value)` | Selects the option of this value. Throws an `IllegalArgumentException` when no option has this value. |
-| `getValue()` | `Optional<V>` of the selected value, empty while the selector has no option. |
+| `getValue()` | The selected value, `null` while the selector has no option. |
 
 - Values are compared with `equals`. Give each option a distinct value: `value(...)` selects the first option equal to the value.
 - `values(...)` and `value(...)` write the selected value into the signal and call `onChange` when the selected value changes. `values(...)` that keeps the current value selected calls nothing.
@@ -145,7 +145,7 @@ The selector's own height follows: with `DOWN` it grows to cover the open list (
 | `direction(SelectorDirection)` | `DOWN` | Side the list opens to. |
 | `active(boolean)` | `false` | Opens or closes the list. |
 | `onChange(NodeSelectorChangeCallback<T, V>)` | | Adds a callback `(node, value)` run after each change of the selected value. |
-| `getValue()` | | `Optional<V>` of the selected value. |
+| `getValue()` | | The selected value, `null` while there is no option. |
 | `getSelected()` | | Node of the selected option, `null` while there is no option. |
 | `isSelected(Node)` | | Whether the node is the selected option. |
 | `isActive()` | | Whether the list is open. |

@@ -325,7 +325,7 @@ Enum of the [built-in variables](#built-in-variables): `POSITION`, `TEXTURE_COOR
 | `getIdentifier()` | GLSL name (`"aPosition"`...). |
 | `getType()` | GLSL type (`"vec3"`...). |
 | `getKind()` | `ShaderBuiltin.Kind.ATTRIBUTE`, `UNIFORM` or `OUTPUT`. |
-| `static find(String identifier)` | The built-in with this identifier, as an `Optional`. |
+| `static find(String identifier)` | The built-in with this identifier, or `null`. |
 
 ## See also
 

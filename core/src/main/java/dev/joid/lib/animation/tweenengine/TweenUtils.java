@@ -2,8 +2,6 @@ package dev.joid.lib.animation.tweenengine;
 
 
 
-import java.util.Optional;
-
 import dev.joid.lib.animation.tweenengine.equation.Back;
 import dev.joid.lib.animation.tweenengine.equation.Bounce;
 import dev.joid.lib.animation.tweenengine.equation.Circ;
@@ -24,7 +22,7 @@ public class TweenUtils {
 
 	private static TweenEquation[] easings;
 
-	public static Optional<TweenEquation> parseEasing(final String easingName) {
+	public static TweenEquation parseEasing(final String easingName) {
 		if (TweenUtils.easings == null) {
 			TweenUtils.easings = new TweenEquation[] {
 				Linear.INOUT, Quad.IN, Quad.OUT, Quad.INOUT, Cubic.IN,
@@ -37,11 +35,11 @@ public class TweenUtils {
 
 		for (final TweenEquation easing : TweenUtils.easings) {
 			if (easingName.equals(easing.toString())) {
-				return Optional.of(easing);
+				return easing;
 			}
 		}
 
-		return Optional.empty();
+		return null;
 	}
 
 }

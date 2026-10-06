@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.core.data;
 
 import java.lang.annotation.Annotation;
-import java.util.Optional;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
@@ -45,7 +44,8 @@ public final class UIDataObject implements UIData {
 	}
 
 	public static @NonNull UIDataObject getOrDefault(final @NonNull Class<? extends UI> clazz) {
-		return UIDataObject.get(clazz).orElse(new UIDataObject());
+		final UIDataObject data = UIDataObject.get(clazz);
+		return data != null ? data : new UIDataObject();
 	}
 
 	public double getAnchorPositionX() {
@@ -76,14 +76,14 @@ public final class UIDataObject implements UIData {
 		return this.backgroundColorCache;
 	}
 
-	public static @NonNull Optional<UIDataObject> get(final @NonNull Class<? extends UI> clazz) {
+	public static UIDataObject get(final @NonNull Class<? extends UI> clazz) {
 		Class<?> currentClass = clazz;
 		UIData data = currentClass.getAnnotation(UIData.class);
 		while (data == null && currentClass.getSuperclass() != null) {
 			currentClass = currentClass.getSuperclass();
 			data = currentClass.getAnnotation(UIData.class);
 		}
-		return data != null ? Optional.of(new UIDataObject(data)) : Optional.empty();
+		return data != null ? new UIDataObject(data) : null;
 	}
 
 	@Override

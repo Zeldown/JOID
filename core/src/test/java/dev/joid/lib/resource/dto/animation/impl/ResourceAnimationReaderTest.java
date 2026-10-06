@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.zip.CRC32;
 import java.util.zip.DeflaterOutputStream;
 
@@ -58,9 +57,9 @@ public class ResourceAnimationReaderTest {
 
 	@Test
 	public void tellsAnApngFromAStillPng() throws IOException {
-		Assert.assertTrue(ApngResourceAnimationReader.isAnimated(ResourceAnimationReaderTest.bytes("blink.png")).get());
-		Assert.assertFalse(ApngResourceAnimationReader.isAnimated(ResourceAnimationReaderTest.bytes("still.png")).get());
-		Assert.assertFalse(ApngResourceAnimationReader.isAnimated(new byte[] {(byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10, 0, 0, 0, 13}).isPresent());
+		Assert.assertTrue(ApngResourceAnimationReader.isAnimated(ResourceAnimationReaderTest.bytes("blink.png")));
+		Assert.assertFalse(ApngResourceAnimationReader.isAnimated(ResourceAnimationReaderTest.bytes("still.png")));
+		Assert.assertNull(ApngResourceAnimationReader.isAnimated(new byte[] {(byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10, 0, 0, 0, 13}));
 	}
 
 	@Test
@@ -136,8 +135,8 @@ public class ResourceAnimationReaderTest {
 
 	@Test
 	public void tellsAShortOrForeignHeaderIsNoApng() throws IOException {
-		Assert.assertEquals(Optional.of(false), ApngResourceAnimationReader.isAnimated(new byte[] {(byte) 0x89, 'P', 'N', 'G'}));
-		Assert.assertEquals(Optional.of(false), ApngResourceAnimationReader.isAnimated(ResourceAnimationReaderTest.bytes("blink.gif")));
+		Assert.assertEquals(Boolean.FALSE, ApngResourceAnimationReader.isAnimated(new byte[] {(byte) 0x89, 'P', 'N', 'G'}));
+		Assert.assertEquals(Boolean.FALSE, ApngResourceAnimationReader.isAnimated(ResourceAnimationReaderTest.bytes("blink.gif")));
 	}
 
 	private static ResourceAnimation read(final IResourceAnimationReader reader, final String name) throws IOException {

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import dev.joid.lib.ui.node.Node;
@@ -36,8 +35,9 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getMax(final String data) {
-		final double min = this.getData(data).map(series -> series.getMin().doubleValue()).orElse(0D);
-		final double max = this.getData(data).map(series -> series.getMax().doubleValue()).orElse(0D);
+		final ChartData series = this.getData(data);
+		final double min = series == null ? 0D : series.getMin().doubleValue();
+		final double max = series == null ? 0D : series.getMax().doubleValue();
 		return min == max ? max == 0 ? 1 : max * 2 : max;
 	}
 
@@ -48,8 +48,9 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getMin(final String data) {
-		final double min = this.getData(data).map(series -> series.getMin().doubleValue()).orElse(0D);
-		final double max = this.getData(data).map(series -> series.getMax().doubleValue()).orElse(0D);
+		final ChartData series = this.getData(data);
+		final double min = series == null ? 0D : series.getMin().doubleValue();
+		final double max = series == null ? 0D : series.getMax().doubleValue();
 		return min == max ? 0 : min;
 	}
 
@@ -58,15 +59,16 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getAverage(final String data) {
-		return this.getData(data).map(ChartData::getAverage).orElse(0D);
+		final ChartData series = this.getData(data);
+		return series == null ? 0D : series.getAverage();
 	}
 
 	public final @NonNull Set<String> getLabels() {
 		return this.xAxis == null ? Collections.emptySet() : this.xAxis.getLabelSet();
 	}
 
-	public final @NonNull Optional<ChartData> getData(final String data) {
-		return this.xAxis == null ? Optional.empty() : this.xAxis.get(data);
+	public final ChartData getData(final String data) {
+		return this.xAxis == null ? null : this.xAxis.getDataMap().get(data);
 	}
 
 	public final @NonNull Map<String, ChartData> getDataMap() {
@@ -141,8 +143,8 @@ public abstract class ChartNode extends Node {
 				this.dataMap = new LinkedHashMap<>();
 			}
 
-			public final @NonNull Optional<ChartData> get(final @NonNull String data) {
-				return Optional.ofNullable(this.dataMap.get(data));
+			public final ChartData get(final @NonNull String data) {
+				return this.dataMap.get(data);
 			}
 
 			public final @NonNull XChartAxis labelSet(final @NonNull String... labels) {
@@ -234,8 +236,8 @@ public abstract class ChartNode extends Node {
 			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).average().orElse(0);
 		}
 
-		public @NonNull Optional<Number> get(final String label) {
-			return Optional.ofNullable(this.dataMap.get(label));
+		public Number get(final String label) {
+			return this.dataMap.get(label);
 		}
 
 		public boolean has(final String label) {

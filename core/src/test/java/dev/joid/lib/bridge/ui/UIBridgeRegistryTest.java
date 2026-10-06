@@ -15,8 +15,8 @@ public class UIBridgeRegistryTest {
 	public void createsAnEmptyRegistryEachTime() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
 		Assert.assertNotSame(registry, UIBridgeRegistry.create());
-		Assert.assertFalse(registry.get(new MenuUI()).isPresent());
-		Assert.assertFalse(registry.get(MenuUI.class).isPresent());
+		Assert.assertNull(registry.get(new MenuUI()));
+		Assert.assertNull(registry.get(MenuUI.class));
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -31,18 +31,18 @@ public class UIBridgeRegistryTest {
 		final RoutingBridge huds = new RoutingBridge(HudUI.class, 0);
 		registry.register(menus);
 		registry.register(huds);
-		Assert.assertSame(menus, registry.get(new MenuUI()).get());
-		Assert.assertSame(huds, registry.get(new HudUI()).get());
-		Assert.assertSame(menus, registry.get(MenuUI.class).get());
-		Assert.assertSame(huds, registry.get(HudUI.class).get());
+		Assert.assertSame(menus, registry.get(new MenuUI()));
+		Assert.assertSame(huds, registry.get(new HudUI()));
+		Assert.assertSame(menus, registry.get(MenuUI.class));
+		Assert.assertSame(huds, registry.get(HudUI.class));
 	}
 
 	@Test
 	public void routesAUiToNoBridgeWhenNoneHandlesIt() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
 		registry.register(new RoutingBridge(MenuUI.class, 0));
-		Assert.assertFalse(registry.get(new HudUI()).isPresent());
-		Assert.assertFalse(registry.get(HudUI.class).isPresent());
+		Assert.assertNull(registry.get(new HudUI()));
+		Assert.assertNull(registry.get(HudUI.class));
 	}
 
 	@Test
@@ -51,8 +51,8 @@ public class UIBridgeRegistryTest {
 		final RoutingBridge latest = new RoutingBridge(UI.class, 0);
 		registry.register(new RoutingBridge(UI.class, 0));
 		registry.register(latest);
-		Assert.assertSame(latest, registry.get(new MenuUI()).get());
-		Assert.assertSame(latest, registry.get(MenuUI.class).get());
+		Assert.assertSame(latest, registry.get(new MenuUI()));
+		Assert.assertSame(latest, registry.get(MenuUI.class));
 	}
 
 	@Test
@@ -61,8 +61,8 @@ public class UIBridgeRegistryTest {
 		final RoutingBridge highest = new RoutingBridge(UI.class, 5);
 		registry.register(highest);
 		registry.register(new RoutingBridge(UI.class, 0));
-		Assert.assertSame(highest, registry.get(new MenuUI()).get());
-		Assert.assertSame(highest, registry.get(MenuUI.class).get());
+		Assert.assertSame(highest, registry.get(new MenuUI()));
+		Assert.assertSame(highest, registry.get(MenuUI.class));
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class UIBridgeRegistryTest {
 		final RoutingBridge bridge = new RoutingBridge(UI.class, 0);
 		registry.register(bridge);
 		registry.unregister(bridge);
-		Assert.assertFalse(registry.get(new MenuUI()).isPresent());
+		Assert.assertNull(registry.get(new MenuUI()));
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -1,6 +1,5 @@
 package dev.joid.lib.bridge;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import dev.joid.lib.utils.list.IndexedLinkedList;
@@ -35,17 +34,17 @@ public class BridgeRegistry<T extends IBridge> {
 		return this.bridgeList.getLast();
 	}
 
-	public final <B extends T> @NonNull Optional<B> getBridge(final @NonNull Class<B> bridgeClass) {
-		return this.find(bridgeClass::isInstance).map(bridgeClass::cast);
+	public final <B extends T> B getBridge(final @NonNull Class<B> bridgeClass) {
+		return bridgeClass.cast(this.find(bridgeClass::isInstance));
 	}
 
-	public final @NonNull Optional<T> find(final @NonNull Predicate<@NonNull T> filter) {
+	public final T find(final @NonNull Predicate<@NonNull T> filter) {
 		for (final T bridge : this.bridgeList.reversed()) {
 			if (filter.test(bridge)) {
-				return Optional.of(bridge);
+				return bridge;
 			}
 		}
-		return Optional.empty();
+		return null;
 	}
 
 }

@@ -1,7 +1,6 @@
 package dev.joid.lib.resource.dto;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -183,8 +182,11 @@ public final class ResourceData {
 		}
 	}
 
-	public final <T extends IResourceDecoder> @NonNull Optional<T> getDecoder(final @NonNull Class<T> clazz) {
-		return Optional.ofNullable(this.decoder).filter(clazz::isInstance).map(clazz::cast);
+	public final <T extends IResourceDecoder> T getDecoder(final @NonNull Class<T> clazz) {
+		if (this.decoder == null || !clazz.isAssignableFrom(this.decoder.getClass())) {
+			return null;
+		}
+		return clazz.cast(this.decoder);
 	}
 
 	@Override

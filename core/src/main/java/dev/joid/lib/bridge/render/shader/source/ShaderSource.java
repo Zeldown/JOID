@@ -82,7 +82,7 @@ public final class ShaderSource {
 
 	private void declare(final Matcher declaration) {
 		final String name = declaration.group(4);
-		if (ShaderBuiltin.find(name).isPresent()) {
+		if (ShaderBuiltin.find(name) != null) {
 			return;
 		}
 

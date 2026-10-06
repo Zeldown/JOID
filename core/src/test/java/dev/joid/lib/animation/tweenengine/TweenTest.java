@@ -330,7 +330,7 @@ public class TweenTest {
 	public void findsTheAccessorOfAParentClass() {
 		final Tween tween = Tween.to(new Pixel(), 1, 1F);
 		Assert.assertSame(Point.class, tween.getTargetClass());
-		Assert.assertSame(Tween.getRegisteredAccessor(Point.class).get(), tween.build().getAccessor());
+		Assert.assertSame(Tween.getRegisteredAccessor(Point.class), tween.build().getAccessor());
 	}
 
 	@Test
@@ -353,9 +353,9 @@ public class TweenTest {
 	public void registersOneAccessorPerClass() {
 		final PointAccessor accessor = new PointAccessor();
 		Tween.registerAccessor(Point.class, accessor);
-		Assert.assertSame(accessor, Tween.getRegisteredAccessor(Point.class).get());
-		Assert.assertFalse(Tween.getRegisteredAccessor(Pixel.class).isPresent());
-		Assert.assertTrue(Tween.getRegisteredAccessor(TweenAnimator.class).get() instanceof TweenAnimatorAccessor);
+		Assert.assertSame(accessor, Tween.getRegisteredAccessor(Point.class));
+		Assert.assertNull(Tween.getRegisteredAccessor(Pixel.class));
+		Assert.assertTrue(Tween.getRegisteredAccessor(TweenAnimator.class) instanceof TweenAnimatorAccessor);
 	}
 
 	@Test

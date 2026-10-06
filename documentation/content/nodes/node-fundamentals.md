@@ -306,7 +306,7 @@ Layers are drawn inside the node's clip when its overflow is `HIDDEN` or `SCROLL
 | --- | --- |
 | `getChildren()` | The live children list, an `IndexedConcurrentList<Node>` sorted by z-index. |
 | `getChildren(Class<T> clazz)` | A new `IndexedLinkedList<T>` with the children that are instances of `clazz` (subclasses included), in drawing order. |
-| `getChild(int index, Class<T> clazz)` | The `index`-th child that is an instance of `clazz`, as an `Optional`, empty when there is none. |
+| `getChild(int index, Class<T> clazz)` | The `index`-th child that is an instance of `clazz`, or `null`. |
 | `getParent()` | The parent node, or `null` for a top-level node. |
 | `getUi()` | The UI the node belongs to, typed by the expected type (`final ShopUI ui = node.getUi();`). While a UI's `init()` runs, a node without UI returns that UI without keeping it: `hasUi()` stays `false` until the node is loaded. Otherwise `null` until the node is loaded. |
 | `hasUi()` | `true` once the node has a UI. |
@@ -329,7 +329,7 @@ The list is copy-on-write, so callbacks can append or remove children while the 
 Reading the rectangles of a `panel` node:
 
 ```java
-panel.getChild(1, RectNode.class).ifPresent(second -> second.color(Color.BLACK));
+final RectNode second = panel.getChild(1, RectNode.class);
 for (final RectNode tile : panel.getChildren(RectNode.class)) {
     tile.color(Color.GRAY);
 }

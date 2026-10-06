@@ -40,14 +40,17 @@ A video or an animation drawn by a plain `ResourceNode` or by `DrawUtils.RESOURC
 
 ## Controlling playback with IResourcePlayback
 
-`Resource.getPlayback()` returns the playback of a resource, empty for formats that do not play:
+`Resource.getPlayback()` returns the playback of a resource, `null` for formats that do not play:
 
 ```java
 final Resource spinner = Resource.of(new File("images/spinner.gif"));
-spinner.getPlayback().ifPresent(playback -> playback.loop(true));
+final IResourcePlayback playback = spinner.getPlayback();
+if (playback != null) {
+    playback.loop(true);
+}
 ```
 
-The decoder of a local file exists as soon as `Resource.of` returns; for a URL, `getPlayback()` stays empty until the format is detected (use the [load callback](resources.md#load-callbacks)). Settings made before the resource is loaded apply when it starts.
+The decoder of a local file exists as soon as `Resource.of` returns; for a URL, `getPlayback()` stays `null` until the format is detected (use the [load callback](resources.md#load-callbacks)). Settings made before the resource is loaded apply when it starts.
 
 Every control method returns the playback, so calls chain: `playback.stop().seek(0D).play()`.
 
@@ -91,9 +94,15 @@ The displayed frame is updated each time the resource is drawn. An animated imag
 The playback of a video is a `VideoResourceDecoder` (`dev.joid.lib.resource.dto.decoder.impl`), which adds the audio settings. Get it from the resource data or from a player node:
 
 ```java
-resource.getResourceData().getDecoder(VideoResourceDecoder.class).ifPresent(decoder -> decoder.volume(0.5F));
+final VideoResourceDecoder decoder = resource.getResourceData().getDecoder(VideoResourceDecoder.class);
+if (decoder != null) {
+    decoder.volume(0.5F);
+}
 
-player.getVideo().ifPresent(video -> video.volume(0.5F));
+final VideoResourceDecoder video = player.getVideo();
+if (video != null) {
+    video.volume(0.5F);
+}
 ```
 
 | Method | Description |

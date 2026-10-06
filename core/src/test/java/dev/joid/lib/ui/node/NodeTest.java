@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -495,7 +494,7 @@ public class NodeTest {
 		final RecordingEffect second = new RecordingEffect("second", events);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", events)).effect(second);
 		Assert.assertEquals(1, node.getEffectMap().size());
-		Assert.assertSame(second, node.getEffect(RecordingEffect.class).get());
+		Assert.assertSame(second, node.getEffect(RecordingEffect.class));
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(Arrays.asList("second init", "second pre", "second post"), events);
 	}
@@ -507,7 +506,7 @@ public class NodeTest {
 		Assert.assertTrue(node.hasEffect(RecordingEffect.class));
 		Assert.assertSame(node, node.removeEffect(RecordingEffect.class));
 		Assert.assertFalse(node.hasEffect(RecordingEffect.class));
-		Assert.assertFalse(node.getEffect(RecordingEffect.class).isPresent());
+		Assert.assertNull(node.getEffect(RecordingEffect.class));
 		Assert.assertTrue(node.hasEffect(OtherEffect.class));
 		Assert.assertSame(node, node.clearEffects());
 		Assert.assertFalse(node.hasEffect(OtherEffect.class));
@@ -526,28 +525,28 @@ public class NodeTest {
 	@Test
 	public void chainsAConfiguredCustomEffectWithoutCast() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", new ArrayList<>()).priority(2)).effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false));
-		final Optional<BorderNodeEffect<Node>> border = node.getEffect(BorderNodeEffect.class);
-		Assert.assertEquals(2, node.getEffect(RecordingEffect.class).get().getPriority());
-		Assert.assertFalse(border.get().isFill());
+		final BorderNodeEffect<Node> border = node.getEffect(BorderNodeEffect.class);
+		Assert.assertEquals(2, node.getEffect(RecordingEffect.class).getPriority());
+		Assert.assertFalse(border.isFill());
 	}
 
 	@Test
 	public void chainsAConfiguredEffectWithoutCast() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(BlurNodeEffect.create(2F).radius(4F)).effect(RoundedNodeEffect.create(6F).scope(NodeEffectScope.CHILDREN));
-		final Optional<BlurNodeEffect<Node>> blur = node.getEffect(BlurNodeEffect.class);
-		final Optional<RoundedNodeEffect<Node>> rounded = node.getEffect(RoundedNodeEffect.class);
-		Assert.assertEquals(4F, blur.get().getRadiusSupplier().get(), 0F);
-		Assert.assertSame(NodeEffectScope.CHILDREN, rounded.get().getScope());
+		final BlurNodeEffect<Node> blur = node.getEffect(BlurNodeEffect.class);
+		final RoundedNodeEffect<Node> rounded = node.getEffect(RoundedNodeEffect.class);
+		Assert.assertEquals(4F, blur.getRadiusSupplier().get(), 0F);
+		Assert.assertSame(NodeEffectScope.CHILDREN, rounded.getScope());
 	}
 
 	@Test
 	public void findsItsEffectsByTheirBuiltInClass() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(RoundedNodeEffect.create(6F));
-		final Optional<RoundedNodeEffect<Node>> rounded = node.getEffect(RoundedNodeEffect.class);
-		Assert.assertEquals(6F, rounded.get().getRadius(), 0F);
+		final RoundedNodeEffect<Node> rounded = node.getEffect(RoundedNodeEffect.class);
+		Assert.assertEquals(6F, rounded.getRadius(), 0F);
 		Assert.assertTrue(node.hasEffect(RoundedNodeEffect.class));
 		Assert.assertFalse(node.removeEffect(RoundedNodeEffect.class).hasEffect(RoundedNodeEffect.class));
-		Assert.assertFalse(node.getEffect(RoundedNodeEffect.class).isPresent());
+		Assert.assertNull(node.getEffect(RoundedNodeEffect.class));
 	}
 
 	@Test
@@ -560,8 +559,8 @@ public class NodeTest {
 	@Test
 	public void buildsAnEffectFromItsTypedNode() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect((final RectNode rect) -> RoundedNodeEffect.create((float) rect.getWidth()));
-		final Optional<RoundedNodeEffect<Node>> rounded = node.getEffect(RoundedNodeEffect.class);
-		Assert.assertEquals(10F, rounded.get().getRadius(), 0F);
+		final RoundedNodeEffect<Node> rounded = node.getEffect(RoundedNodeEffect.class);
+		Assert.assertEquals(10F, rounded.getRadius(), 0F);
 	}
 
 	@Test
@@ -1529,10 +1528,10 @@ public class NodeTest {
 		final ContainerNode box = ContainerNode.create(0D, 0D, 10D, 10D);
 		final RectNode second = RectNode.create(0D, 0D, 10D, 10D);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(first, box, second);
-		Assert.assertSame(first, parent.getChild(0, RectNode.class).get());
-		Assert.assertSame(second, parent.getChild(1, RectNode.class).get());
-		Assert.assertSame(box, parent.getChild(0, ContainerNode.class).get());
-		Assert.assertFalse(parent.getChild(2, RectNode.class).isPresent());
+		Assert.assertSame(first, parent.getChild(0, RectNode.class));
+		Assert.assertSame(second, parent.getChild(1, RectNode.class));
+		Assert.assertSame(box, parent.getChild(0, ContainerNode.class));
+		Assert.assertNull(parent.getChild(2, RectNode.class));
 		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren(RectNode.class).ordered());
 		Assert.assertEquals(3, parent.getChildren(Node.class).size());
 	}
@@ -1659,7 +1658,7 @@ public class NodeTest {
 		Assert.assertEquals(4D, copy.getZlevel(), 0D);
 		Assert.assertEquals(0.5D, copy.getAspectRatio(), 0D);
 		Assert.assertSame(color, copy.getColor());
-		final RectNode childCopy = copy.getChild(0, RectNode.class).get();
+		final RectNode childCopy = copy.getChild(0, RectNode.class);
 		Assert.assertNotSame(child, childCopy);
 		Assert.assertSame(copy, childCopy.getParent());
 		Assert.assertEquals(3D, childCopy.getWidth(), 0D);
@@ -1944,7 +1943,7 @@ public class NodeTest {
 		final ShadedRect child = new ShadedRect();
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		Assert.assertEquals(Arrays.asList(child), parent.getChildren(RectNode.class).ordered());
-		Assert.assertSame(child, parent.getChild(0, RectNode.class).get());
+		Assert.assertSame(child, parent.getChild(0, RectNode.class));
 	}
 
 	@Test

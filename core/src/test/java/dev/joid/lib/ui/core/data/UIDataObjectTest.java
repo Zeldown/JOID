@@ -27,7 +27,7 @@ public class UIDataObjectTest {
 
 	@Test
 	public void readsTheDefaultsOfTheAnnotation() {
-		final UIDataObject data = UIDataObject.get(DefaultUI.class).get();
+		final UIDataObject data = UIDataObject.get(DefaultUI.class);
 		Assert.assertTrue(data.pause());
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.visible());
@@ -43,7 +43,7 @@ public class UIDataObjectTest {
 
 	@Test
 	public void copiesEveryValueOfTheAnnotation() {
-		final UIDataObject data = UIDataObject.get(CustomUI.class).get();
+		final UIDataObject data = UIDataObject.get(CustomUI.class);
 		Assert.assertFalse(data.pause());
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.visible());
@@ -60,14 +60,14 @@ public class UIDataObjectTest {
 
 	@Test
 	public void inheritsTheAnnotationOfAParent() {
-		final UIDataObject data = UIDataObject.get(ChildUI.class).get();
+		final UIDataObject data = UIDataObject.get(ChildUI.class);
 		Assert.assertFalse(data.pause());
 		Assert.assertEquals(2.5D, data.zlevel(), 0D);
 	}
 
 	@Test
 	public void findsNothingWithoutAnnotation() {
-		Assert.assertFalse(UIDataObject.get(PlainUI.class).isPresent());
+		Assert.assertNull(UIDataObject.get(PlainUI.class));
 	}
 
 	@Test

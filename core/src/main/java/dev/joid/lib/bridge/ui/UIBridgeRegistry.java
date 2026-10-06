@@ -1,7 +1,5 @@
 package dev.joid.lib.bridge.ui;
 
-import java.util.Optional;
-
 import dev.joid.lib.bridge.BridgeRegistry;
 import dev.joid.lib.ui.core.UI;
 import lombok.NonNull;
@@ -16,11 +14,11 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 		return new UIBridgeRegistry();
 	}
 
-	public @NonNull Optional<IUIBridge> get(final @NonNull UI ui) {
+	public IUIBridge get(final @NonNull UI ui) {
 		return super.find(bridge -> bridge.canHandle(ui));
 	}
 
-	public @NonNull Optional<IUIBridge> get(final @NonNull Class<? extends UI> clazz) {
+	public IUIBridge get(final @NonNull Class<? extends UI> clazz) {
 		return super.find(bridge -> bridge.canHandle(clazz));
 	}
 

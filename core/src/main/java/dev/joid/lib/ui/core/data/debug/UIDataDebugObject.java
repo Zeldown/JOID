@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.core.data.debug;
 
 import java.lang.annotation.Annotation;
-import java.util.Optional;
 
 import dev.joid.lib.ui.core.UI;
 import lombok.NoArgsConstructor;
@@ -21,17 +20,18 @@ public final class UIDataDebugObject implements UIDataDebug {
 	}
 
 	public static @NonNull UIDataDebugObject getOrDefault(final @NonNull Class<? extends UI> clazz) {
-		return UIDataDebugObject.get(clazz).orElse(new UIDataDebugObject());
+		final UIDataDebugObject data = UIDataDebugObject.get(clazz);
+		return data != null ? data : new UIDataDebugObject();
 	}
 
-	public static @NonNull Optional<UIDataDebugObject> get(final @NonNull Class<? extends UI> clazz) {
+	public static UIDataDebugObject get(final @NonNull Class<? extends UI> clazz) {
 		Class<?> currentClass = clazz;
 		UIDataDebug data = currentClass.getAnnotation(UIDataDebug.class);
 		while (data == null && currentClass.getSuperclass() != null) {
 			currentClass = currentClass.getSuperclass();
 			data = currentClass.getAnnotation(UIDataDebug.class);
 		}
-		return data != null ? Optional.of(new UIDataDebugObject(data)) : Optional.empty();
+		return data != null ? new UIDataDebugObject(data) : null;
 	}
 
 	@Override

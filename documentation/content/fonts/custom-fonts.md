@@ -33,8 +33,8 @@ public final class BitmapFontFace implements IFontFace {
         this.advances = advances;
     }
 
-    public Optional<Resource> getSprite(final int codepoint) {
-        return Optional.ofNullable(this.sprites.get(codepoint));
+    public Resource getSprite(final int codepoint) {
+        return this.sprites.get(codepoint);
     }
 
     @Override
@@ -119,8 +119,8 @@ public final class BitmapFontProvider extends GlyphFontProvider<BitmapFontFace> 
 
     @Override
     protected void drawGlyph(final TextGlyph<BitmapFontFace> glyph) {
-        final Optional<Resource> sprite = glyph.getFace().getSprite(glyph.getCodepoint());
-        if (!sprite.isPresent()) {
+        final Resource sprite = glyph.getFace().getSprite(glyph.getCodepoint());
+        if (sprite == null) {
             return;
         }
 
@@ -129,7 +129,7 @@ public final class BitmapFontProvider extends GlyphFontProvider<BitmapFontFace> 
         final double width = glyph.getAdvance(glyph.getCodepoint());
         final double height = glyph.getAscender() - glyph.getDescender();
         final Vector4f canvas = new Vector4f((float) x, (float) top, (float) (x + width), (float) (top + height));
-        glyph.getColor().bind(() -> DrawUtils.RESOURCE.drawResource(x, top, width, height, sprite.get()), canvas, true);
+        glyph.getColor().bind(() -> DrawUtils.RESOURCE.drawResource(x, top, width, height, sprite), canvas, true);
     }
 
     @Override

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,19 +38,19 @@ public final class UIPropertyHook {
 			return;
 		}
 
-		final Optional<JsonObject> json = UIPropertyHook.loadFile(ui);
-		if (!json.isPresent()) {
+		final JsonObject json = UIPropertyHook.loadFile(ui);
+		if (json == null) {
 			return;
 		}
 
 		for (final Field field : fields) {
 			final String key = UIPropertyHook.getKey(field);
-			if (!json.get().has(key)) {
+			if (!json.has(key)) {
 				continue;
 			}
 
 			try {
-				field.set(ui, UIPropertyHook.GSON.fromJson(json.get().get(key), field.getGenericType()));
+				field.set(ui, UIPropertyHook.GSON.fromJson(json.get(key), field.getGenericType()));
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
@@ -64,7 +63,8 @@ public final class UIPropertyHook {
 			return;
 		}
 
-		final JsonObject json = UIPropertyHook.loadFile(ui).orElseGet(JsonObject::new);
+		final JsonObject loaded = UIPropertyHook.loadFile(ui);
+		final JsonObject json = loaded != null ? loaded : new JsonObject();
 		for (final Field field : fields) {
 			final String key = UIPropertyHook.getKey(field);
 			try {
@@ -121,14 +121,14 @@ public final class UIPropertyHook {
 		return fields;
 	}
 
-	private static @NonNull Optional<JsonObject> loadFile(final @NonNull UI ui) {
+	private static JsonObject loadFile(final @NonNull UI ui) {
 		final File file = UIPropertyHook.getFile(ui);
 		if (!file.exists()) {
-			return Optional.empty();
+			return null;
 		}
 
 		try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
-			return Optional.ofNullable(UIPropertyHook.GSON.fromJson(reader, JsonObject.class));
+			return UIPropertyHook.GSON.fromJson(reader, JsonObject.class);
 		} catch (final Exception e) {
 			System.err.println("Failed to load property file: " + file.getAbsolutePath());
 			e.printStackTrace();
@@ -137,7 +137,7 @@ public final class UIPropertyHook {
 		if (!file.delete()) {
 			System.err.println("Failed to delete corrupted property file: " + file.getAbsolutePath());
 		}
-		return Optional.empty();
+		return null;
 	}
 
 	private static void saveFile(final @NonNull UI ui, final @NonNull JsonObject json) {

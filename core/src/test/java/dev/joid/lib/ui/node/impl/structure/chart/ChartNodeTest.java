@@ -66,8 +66,8 @@ public class ChartNodeTest {
 		final ChartData api = ChartData.create().add("Mon", 120);
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(x);
 		Assert.assertSame(chart, chart.data("api", api));
-		Assert.assertSame(api, chart.getData("api").get());
-		Assert.assertSame(api, x.get("api").get());
+		Assert.assertSame(api, chart.getData("api"));
+		Assert.assertSame(api, x.get("api"));
 		Assert.assertSame(x.getDataMap(), chart.getDataMap());
 		Assert.assertEquals(Arrays.asList("Mon", "Tue"), new ArrayList<>(chart.getLabels()));
 	}
@@ -76,7 +76,7 @@ public class ChartNodeTest {
 	public void removesASeries() {
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 120)).data("web", ChartData.create().add("Mon", 80));
 		Assert.assertSame(chart, chart.remove("api"));
-		Assert.assertFalse(chart.getData("api").isPresent());
+		Assert.assertNull(chart.getData("api"));
 		Assert.assertEquals(1, chart.getDataMap().size());
 	}
 
@@ -94,7 +94,7 @@ public class ChartNodeTest {
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D);
 		Assert.assertTrue(chart.getLabels().isEmpty());
 		Assert.assertTrue(chart.getDataMap().isEmpty());
-		Assert.assertFalse(chart.getData("api").isPresent());
+		Assert.assertNull(chart.getData("api"));
 		Assert.assertEquals(1D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getMin().doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getAverage().doubleValue(), 0D);
@@ -126,7 +126,7 @@ public class ChartNodeTest {
 		Assert.assertTrue(chart.isLoaded());
 		chart.data("web", ChartData.create());
 		Assert.assertFalse(chart.isLoaded());
-		chart.getData("web").get().add("Mon", 80);
+		chart.getData("web").add("Mon", 80);
 		Assert.assertTrue(chart.isLoaded());
 	}
 
@@ -256,9 +256,9 @@ public class ChartNodeTest {
 		final ChartData api = ChartData.create();
 		final XChartAxis x = ChartAxis.x("weekday", "Mon");
 		Assert.assertSame(x, x.data("api", api));
-		Assert.assertSame(api, x.get("api").get());
+		Assert.assertSame(api, x.get("api"));
 		Assert.assertSame(x, x.remove("api"));
-		Assert.assertFalse(x.get("api").isPresent());
+		Assert.assertNull(x.get("api"));
 	}
 
 	@Test
@@ -299,10 +299,10 @@ public class ChartNodeTest {
 		Assert.assertSame(data, data.add("Mon", 120));
 		Assert.assertFalse(data.isEmpty());
 		Assert.assertTrue(data.has("Mon"));
-		Assert.assertEquals(120, data.get("Mon").get());
+		Assert.assertEquals(120, data.get("Mon"));
 		Assert.assertSame(data, data.remove("Mon"));
 		Assert.assertFalse(data.has("Mon"));
-		Assert.assertFalse(data.get("Mon").isPresent());
+		Assert.assertNull(data.get("Mon"));
 		Assert.assertTrue(data.isEmpty());
 	}
 
@@ -320,7 +320,7 @@ public class ChartNodeTest {
 		values.put("Mon", 3);
 		final ChartData data = ChartData.create(values);
 		Assert.assertSame(values, data.getDataMap());
-		Assert.assertEquals(3, data.get("Mon").get());
+		Assert.assertEquals(3, data.get("Mon"));
 	}
 
 	@Test
@@ -375,10 +375,10 @@ public class ChartNodeTest {
 			}
 
 			final double width = super.getWidth() / super.getLabels().size();
-			final ChartData data = super.getData("api").get();
+			final ChartData data = super.getData("api");
 			int index = 0;
 			for (final String label : super.getLabels()) {
-				final double height = data.get(label).get().doubleValue() / super.getMax().doubleValue() * super.getHeight();
+				final double height = data.get(label).doubleValue() / super.getMax().doubleValue() * super.getHeight();
 				DrawUtils.SHAPE.drawRect(super.getX() + index * width, super.getY() + super.getHeight() - height, width, height, new Color(0.2F, 0.4F, 0.6F, 1F));
 				index++;
 			}
