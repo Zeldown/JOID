@@ -70,7 +70,7 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 - `values(...)` and `value(...)` write the selected value into the signal and call `onChange` when the selected value changes. `values(...)` that keeps the current value selected calls nothing.
 - `values(...)` checks the selected value last: with a value that is not in the list, it creates the options, then throws an `IllegalArgumentException`.
 
-> WARNING: Let `values(...)` create the options. A child that you attach yourself is laid out as an option but has no value: selecting it gives `onChange` a `null` value and leaves `getValue()` empty.
+> WARNING: Let `values(...)` create the options. A child that you attach yourself has no value: on its next draw, the selector removes it and throws an `IllegalStateException` ("The node ... is not an option of the selector, add the options with values(...)"), which the UI bridge prints. Draw decorations in `drawBackground` or in the option nodes.
 
 ## Binding a signal with signal
 
@@ -116,7 +116,8 @@ The selector's own height follows: with `DOWN` it grows to cover the open list (
 | Closed, press on the selected option | Opens the list. The press is consumed. |
 | Closed, press elsewhere | Nothing. |
 | Open, press on another option | Selects it, writes the signal, calls `onChange`, closes the list. The press is consumed. |
-| Open, press on the selected option or outside the options | Closes the list without consuming the press. |
+| Open, press on the selected option or elsewhere on the open list | Closes the list. The press is consumed, so the nodes under the list do not receive it. |
+| Open, press beside the selector, or a press another node already consumed | Closes the list without consuming the press: the node under the pointer receives it. |
 
 - Any mouse button works. There is no keyboard control.
 - The selector ignores presses while it has no option.

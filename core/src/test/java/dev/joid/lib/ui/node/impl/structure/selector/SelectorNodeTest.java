@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.structure.selector;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -106,6 +108,44 @@ public class SelectorNodeTest {
 	}
 
 	@Test
+	public void consumesAClickOnItsOpenList() {
+		final List<String> clicks = new ArrayList<>();
+		this.bridges.open(new BackgroundUI(this.selector.active(true), clicks)).frames(2);
+		this.click(150D, 120D);
+		Assert.assertFalse(this.selector.isActive());
+		this.selector.active(true);
+		this.click(150D, 160D);
+		Assert.assertEquals(Arrays.asList("second"), this.changes);
+		Assert.assertTrue(clicks.isEmpty());
+	}
+
+	@Test
+	public void letsAClickBesideItThroughWhileClosing() {
+		final List<String> clicks = new ArrayList<>();
+		this.bridges.open(new BackgroundUI(this.selector.active(true), clicks)).frames(2);
+		this.click(1000D, 1000D);
+		Assert.assertFalse(this.selector.isActive());
+		Assert.assertEquals(Arrays.asList("background"), clicks);
+	}
+
+	@Test
+	public void refusesANodeAddedBesideItsValues() {
+		final RectNode stranger = RectNode.create(0D, 0D, 10D, 10D).attach(this.selector);
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			this.bridges.open(new NodeUI(this.selector)).frame();
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertTrue(output.toString(), output.toString().contains("IllegalStateException: The node RectNode is not an option of the selector, add the options with values(...)"));
+		Assert.assertFalse(this.selector.getChildren().contains(stranger));
+		this.bridges.frame();
+		this.assertDrawn(0.1F, 0.3F, 0.5F, 100D, 140D);
+	}
+
+	@Test
 	public void staysClosedOnAClickBesideIt() {
 		this.bridges.open(new NodeUI(this.selector)).frame();
 		this.click(1000D, 1000D);
@@ -207,6 +247,20 @@ public class SelectorNodeTest {
 
 		@Override
 		public void init() {
+			super.add(this.node);
+		}
+
+	}
+
+	@AllArgsConstructor
+	public static final class BackgroundUI extends UI {
+
+		private final Node         node;
+		private final List<String> clicks;
+
+		@Override
+		public void init() {
+			RectNode.create(0D, 0D, 1920D, 1080D).onClick((node, mouseX, mouseY, clickType) -> this.clicks.add("background")).attach(this);
 			super.add(this.node);
 		}
 

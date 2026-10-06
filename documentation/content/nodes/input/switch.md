@@ -1,6 +1,6 @@
 # SwitchNode
 
-`SwitchNode` (`dev.joid.lib.ui.node.impl.structure.sw`) holds an ordered list of named states and the index of the current one, and rebuilds its children each time either changes. It is abstract and has no input handling of its own: you build its children (segments, arrows, labels) in `init(UI)` and change the state from them with `index(...)`. Use it for segmented controls and "previous / next" pickers.
+`SwitchNode` (`dev.joid.lib.ui.node.impl.structure.sw`) holds an ordered list of named states and the index of the current one. It is abstract and has no input handling of its own: you build its children (segments, arrows, labels) in `init(UI)`, once, have them draw the current state, and change the state from them with `index(...)`. The children are rebuilt only when the list of states changes. Use it for segmented controls and "previous / next" pickers.
 
 ## Creating a segmented switch
 
@@ -25,7 +25,7 @@ public class SegmentedSwitchNode extends SwitchNode {
         for (final String state : super.getStateList().getOrDefault()) {
             RectNode
             .create(index * stateWidth, 0, stateWidth, super.getHeight())
-            .color(super.getState().equals(state) ? Color.BLUE : Color.DARKGRAY)
+            .color(() -> super.getState().equals(state) ? Color.BLUE : Color.DARKGRAY)
             .body(rect -> {
                 TextNode
                 .create(0, 0, stateWidth, super.getHeight())
@@ -51,9 +51,9 @@ SegmentedSwitchNode
 .attach(this);
 ```
 
-![The cursor clicks Medium, then High, in a three-segment switch: the blue highlight follows](../../images/switch-click.gif "Each click calls index(state) and the switch rebuilds its segments with the new one highlighted.")
+![The cursor clicks Medium, then High, in a three-segment switch: the blue highlight follows](../../images/switch-click.gif "Each click calls index(state) and the segment of the new state turns blue.")
 
-A click on a segment calls `index(state)`: `onChange` runs, the index changes, and the switch rebuilds its segments with the new one highlighted.
+A click on a segment calls `index(state)`: `onChange` runs and the index changes. The segments stay the same nodes: each one picks its color through a `Supplier`, read on every frame, so the new current segment turns blue.
 
 See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 
@@ -62,12 +62,13 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 | Method | States | Current state |
 | --- | --- | --- |
 | `state(String... stateList)` | The given names, copied | The first one |
-| `state(List<String> stateList, int index)` | The given list itself | `stateList.get(index)` |
+| `state(List<String> stateList, int index)` | A copy of the list | `stateList.get(index)` |
 | `state(List<String> stateList, String state)` | A copy of the list | `state` |
 
 - `state(...)` calls `onChange` when the selected state name changes.
 - Call `state(...)` before the switch is shown: `getState()` and your `init(UI)` need the list.
-- The arguments are checked with `assert` statements only, active when the JVM runs with `-ea`. Without them, an empty list, an index out of range or an unknown state is stored as is and fails later in `getState()`.
+- An empty list, an index out of the list or a state that is not in the list throws an `IllegalArgumentException`.
+- The switch keeps its own copy: changing your list afterwards does not change the states.
 
 ## Changing the state with index
 
@@ -76,7 +77,7 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 | `index(int index)` | Selects the state at `index`. |
 | `index(String state)` | Selects the state with this name. |
 
-Both run the `onChange` callbacks around the change: `pre(...)` before (cancelling the context there keeps the current state), then the change, then `(node, state)`. They call `onChange` even when the state is already the current one; the switch is then not rebuilt. With a bound signal, the change also writes the name of the new state into it.
+Both run the `onChange` callbacks around the change: `pre(...)` before (cancelling the context there keeps the current state), then the change, then `(node, state)`. Selecting the current state again calls nothing. With a bound signal, the change also writes the name of the new state into it. An index out of the list or an unknown state throws an `IllegalArgumentException`, as does `index(...)` before `state(...)`.
 
 ## Binding a signal with signal
 
@@ -96,21 +97,22 @@ SegmentedSwitchNode
 
 - The switch starts on the signal's value: here "High".
 - Each `index(...)` writes the name of the new state into the signal, before `(node, state)` runs.
-- Each value the signal publishes later selects that state through `index(...)`, while the switch's UI is open, and the switch rebuilds. A name that is not one of the states is ignored.
+- Each value the signal publishes later selects that state through `index(...)`, while the switch's UI is open. A name that is not one of the states is ignored.
 - Call `signal(...)` after `state(...)`: the signal's value is applied once, when you bind it, and only an existing state can be selected. `state(...)` and `index(...)` write the signal and call `onChange` when the state changes; selecting the current state again does nothing.
 
-## Rebuilding on change
+## Building the children
 
-The switch [watches](../../state/watch.md) its two signals, `getStateList()` (`ListSignal<String>`) and `getStateIndex()` (`IntegerSignal`), with `WatchProperty.CLEAR_CHILDREN` and `WatchProperty.RELOAD`. Each time one of them changes once the switch belongs to a UI:
+`init(UI)` runs when the switch loads. The switch then [watches](../../state/watch.md) its list of states, `getStateList()` (`ListSignal<String>`), with `WatchProperty.CLEAR_CHILDREN` and `WatchProperty.RELOAD`. Each time the list changes once the switch belongs to a UI:
 
 1. every child of the switch is removed;
-2. `init(UI)` runs again, so your code adds the children for the new state.
+2. `init(UI)` runs again, so your code adds the children for the new states.
 
-Consequences:
+A change of the current state does not rebuild anything: the children stay the same nodes, so they keep their hover and their animations, and can animate from one state to the next. Consequences:
 
-- Build the children in `init(UI)`. Children added with `body(...)` on the switch are removed at the first change and never come back.
-- `state(...)` changes both signals, so the switch may rebuild twice.
-- Writing the signals directly (for example `getStateIndex().set(2)` or `getStateList().add("Ultra")`) rebuilds the switch without calling `onChange`.
+- Build the children in `init(UI)`, and have them read `getState()` when they draw: a `Supplier` (`color(() -> ...)`, `Text.create(() -> ..., info)`) or a node whose `draw` reads the switch. A value read once in `init(UI)` does not follow the state.
+- Children added with `body(...)` on the switch are removed at the first change of the list and never come back.
+- `state(...)` with the same states as before does not rebuild.
+- Writing the signals directly (for example `getStateIndex().set(2)` or `getStateList().add("Ultra")`) does not call `onChange`; adding a state rebuilds the switch.
 - Create the switch in `UI.init()`, as for any node.
 
 ## Reading the state
@@ -130,7 +132,7 @@ public void init(final UI ui) {
     .body(rect -> {
         TextNode
         .create(0, 0, super.getWidth(), super.getHeight())
-        .text(Text.create(super.getState(), this.info, Align.CENTER, Align.CENTER))
+        .text(Text.create(() -> super.getState(), this.info, Align.CENTER, Align.CENTER))
         .attach(rect);
     })
     .onClick((node, mouseX, mouseY, clickType) -> super.index((super.getStateIndex().getOrDefault() + 1) % super.getStateList().size()))
@@ -153,7 +155,7 @@ public void init(final UI ui) {
 | `getSignal()` | Bound signal, or `null`. |
 | `getStateList()` | `ListSignal<String>` of the state names. |
 | `getStateIndex()` | `IntegerSignal` of the current index. |
-| `onChange(NodeSwitchChangeCallback<T>)` | Adds a callback `(node, state)` run after `index(...)`. |
+| `onChange(NodeSwitchChangeCallback<T>)` | Adds a callback `(node, state)` run after each change of the current state. |
 | `SwitchNode.CALLBACK_CHANGE` | Callback id of `onChange`. |
 
 Every setter returns the node itself, typed by the generic return of the fluent API. The callback interface is in `dev.joid.lib.ui.node.impl.structure.sw.callback`.

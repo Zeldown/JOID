@@ -16,11 +16,15 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.structure.slider.callback.NodeSliderChangeCallback;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
 import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.signal.Signal;
 
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
 public class SliderNodeTest {
 
@@ -159,6 +163,70 @@ public class SliderNodeTest {
 		Assert.assertEquals(2, slider.getValue().intValue());
 	}
 
+	@Test
+	public void placesASingleValueAtTheStartOfItsTrack() {
+		final Slider slider = new Slider().valueSet(new LinkedHashSet<>(Arrays.asList(4)), 4).cursor(new Cursor());
+		this.bridges.open(new NodeUI(slider)).frames(2);
+		Assert.assertEquals(0D, slider.getCursor().getX(), 0D);
+		Assert.assertEquals(0F, slider.getProgress(), 0F);
+		Assert.assertEquals(4, slider.getValue().intValue());
+	}
+
+	@Test
+	public void putsItsCursorBackOnceWhenAChangeIsRefused() {
+		final List<Integer> proposals = new ArrayList<>();
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor()).onChange(new NodeSliderChangeCallback<Slider, Integer>() {
+
+			@Override
+			public void apply(final @NonNull Slider node, final @NonNull Integer value) {}
+
+			@Override
+			public void pre(final @NonNull Slider node, final @NonNull InternalContext context, final @NonNull Integer value) {
+				proposals.add(value);
+				context.cancel();
+			}
+
+		});
+		this.bridges.open(new NodeUI(slider)).frame();
+		this.bridges.move(400D, 125D).frames(2);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.frames(3);
+		Assert.assertFalse(slider.getCursor().isDragging());
+		Assert.assertEquals(175D, slider.getCursor().getX(), 1E-9D);
+		Assert.assertEquals(5, slider.getValue().intValue());
+		Assert.assertEquals(Arrays.asList(7), proposals);
+	}
+
+	@Test
+	public void ignoresAPressAlreadyConsumed() {
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor());
+		final NodeUI ui = new NodeUI(slider);
+		this.bridges.open(ui).frame();
+		RectNode.create(100D, 100D, 400D, 50D).onClick((node, mouseX, mouseY, clickType) -> {}).attach(ui);
+		this.bridges.move(400D, 125D).frames(2);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.frame();
+		Assert.assertFalse(slider.getCursor().isDragging());
+		Assert.assertEquals(5, slider.getValue().intValue());
+	}
+
+	@Test
+	public void readsItsProgressOnOne() {
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 3).cursor(new Cursor());
+		Assert.assertEquals(0F, new Slider().getProgress(), 0F);
+		this.bridges.open(new NodeUI(slider)).frame();
+		Assert.assertEquals(0.25F, slider.getProgress(), 1E-6F);
+		slider.value(9);
+		Assert.assertEquals(1F, slider.getProgress(), 1E-6F);
+	}
+
+	@Test
+	public void centersItsCursorVertically() {
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new SmallCursor());
+		this.bridges.open(new NodeUI(slider)).frame();
+		Assert.assertEquals(17D, slider.getCursor().getY(), 1E-9D);
+	}
+
 	private Draw cursor() {
 		final List<Draw> draws = this.bridges.getRender().getDraws(0.6F, 0.4F, 0.2F);
 		Assert.assertEquals(1, draws.size());
@@ -203,6 +271,17 @@ public class SliderNodeTest {
 
 		@Override
 		public void drawSlider(final double mouseX, final double mouseY) {}
+
+	}
+
+	public static final class SmallCursor extends SliderCursorNode {
+
+		public SmallCursor() {
+			super(16D, 16D);
+		}
+
+		@Override
+		public void drawCursor(final double mouseX, final double mouseY) {}
 
 	}
 

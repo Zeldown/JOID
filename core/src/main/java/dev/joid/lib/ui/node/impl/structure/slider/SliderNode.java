@@ -33,20 +33,7 @@ public abstract class SliderNode<O> extends Node {
 
 	@Override
 	public void init(final @NonNull UI ui) {
-		if (this.value == null || this.valueSet.isEmpty() || this.cursor == null) {
-			return;
-		}
-
-		int index = 0;
-		for (final O value : this.valueSet) {
-			if (value.equals(this.value)) {
-				break;
-			}
-
-			index++;
-		}
-
-		this.cursor.x((super.getWidth() - this.cursor.getWidth()) * ((double)index / (double)(this.valueSet.size() - 1)));
+		this.place();
 	}
 
 	@Override
@@ -55,13 +42,18 @@ public abstract class SliderNode<O> extends Node {
 			return;
 		}
 
-		final float percent = Math.min(1, Math.max(0, (float) this.cursor.getX() / (float) (super.getWidth() - this.cursor.getWidth())));
-		final O newValue = (O) this.valueSet.toArray()[Math.round((this.valueSet.size() - 1) * percent)];
+		this.cursor.y((super.getHeight() - this.cursor.getHeight()) / 2D);
+		final O newValue = (O) this.valueSet.toArray()[Math.round((this.valueSet.size() - 1) * this.getProgress())];
 		if (!this.value.equals(newValue)) {
 			super.executeCallback(SliderNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
 				this.value = newValue;
 				super.sync(this.signal, newValue);
 			}, newValue);
+
+			if (!this.value.equals(newValue)) {
+				this.cursor.dragging(false);
+				this.place();
+			}
 		}
 
 		this.drawSlider(mouseX, mouseY);
@@ -69,7 +61,7 @@ public abstract class SliderNode<O> extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (!super.isHovered()) {
+		if (context.isCancelled() || !super.isHovered()) {
 			return;
 		}
 
@@ -80,6 +72,14 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	public abstract void drawSlider(final double mouseX, final double mouseY);
+
+	public final float getProgress() {
+		if (this.cursor == null || super.getWidth() <= this.cursor.getWidth()) {
+			return 0F;
+		}
+
+		return Math.min(1F, Math.max(0F, (float) this.cursor.getX() / (float) (super.getWidth() - this.cursor.getWidth())));
+	}
 
 	public final <T extends SliderNode<O>> @NonNull T cursor(final @NonNull SliderCursorNode cursor) {
 		if (this.cursor != null) {
@@ -133,9 +133,31 @@ public abstract class SliderNode<O> extends Node {
 			this.value = value;
 			super.sync(this.signal, value);
 			if (super.getUi() != null) {
-				this.init(super.getUi());
+				this.place();
 			}
 		}, value);
+	}
+
+	private void place() {
+		if (this.value == null || this.valueSet.isEmpty() || this.cursor == null) {
+			return;
+		}
+
+		if (this.valueSet.size() == 1) {
+			this.cursor.x(0);
+			return;
+		}
+
+		int index = 0;
+		for (final O value : this.valueSet) {
+			if (value.equals(this.value)) {
+				break;
+			}
+
+			index++;
+		}
+
+		this.cursor.x((super.getWidth() - this.cursor.getWidth()) * ((double) index / (double) (this.valueSet.size() - 1)));
 	}
 
 }

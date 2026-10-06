@@ -72,6 +72,17 @@ public class SliderCursorNodeTest {
 	}
 
 	@Test
+	public void staysHoveredWhileDragged() {
+		this.bridges.move(110D, 125D).frames(2);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.move(400D, 600D).frames(2);
+		Assert.assertTrue(this.cursor.isHovered());
+		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.frames(2);
+		Assert.assertFalse(this.cursor.isHovered());
+	}
+
+	@Test
 	public void ignoresAPressBesideIt() {
 		this.bridges.move(1000D, 1000D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);

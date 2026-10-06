@@ -84,15 +84,65 @@ public class SwitchNodeTest {
 	}
 
 	@Test
-	public void rebuildsItsChildrenOnEveryChange() {
+	public void keepsItsChildrenWhenItsIndexChanges() {
 		final Switch node = this.open();
 		final int loads = node.loads;
-		node.index(2);
+		node.index(2).index("medium");
+		node.state("low", "medium", "high");
+		Assert.assertEquals(loads, node.loads);
+		Assert.assertEquals(1, node.getChildren().size());
+	}
+
+	@Test
+	public void rebuildsItsChildrenWhenItsStatesChange() {
+		final Switch node = this.open();
+		final int loads = node.loads;
+		node.state("off", "on");
 		Assert.assertEquals(loads + 1, node.loads);
 		Assert.assertEquals(1, node.getChildren().size());
-		node.state("off", "on");
-		Assert.assertTrue(node.loads > loads + 1);
+		node.getStateList().add("eco");
+		Assert.assertEquals(loads + 2, node.loads);
 		Assert.assertEquals(1, node.getChildren().size());
+	}
+
+	@Test
+	public void copiesTheStatesItIsGiven() {
+		final Switch node = this.open();
+		final List<String> states = new ArrayList<>(Arrays.asList("off", "on"));
+		node.state(states, 1);
+		states.add("eco");
+		Assert.assertEquals(Arrays.asList("off", "on"), node.getStateList().getOrDefault());
+		Assert.assertNotSame(states, node.getStateList().getOrDefault());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesNoState() {
+		new Switch().state();
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAnIndexOutOfItsStates() {
+		new Switch().state(Arrays.asList("off", "on"), 2);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAStateOutOfItsStates() {
+		new Switch().state(Arrays.asList("off", "on"), "eco");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesToJumpOutOfItsStates() {
+		this.open().index(3);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesToJumpToAnUnknownState() {
+		this.open().index("eco");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesToJumpWithoutStates() {
+		new Switch().index(0);
 	}
 
 	@Test

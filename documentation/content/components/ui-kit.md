@@ -20,7 +20,7 @@ Every component follows the [custom node](../nodes/custom-nodes.md) contract: a 
 | [SliderNode](../nodes/input/slider.md) (`IntegerSliderNode`, `DoubleSliderNode`, `StringSliderNode`) | Values, dragging, the selected value, `signal`, `onChange` | `drawSlider(mouseX, mouseY)` for the track, and `drawCursor(mouseX, mouseY)` in a `SliderCursorNode` subclass for the cursor, installed with `cursor(...)` |
 | [CheckboxNode](../nodes/input/checkbox.md) | The checked state, clicks, `signal`, `onChange` | `draw(mouseX, mouseY)`, reading `isChecked()` |
 | [ToggleNode](../nodes/input/toggle.md) | The side, the value of each side, clicks, `signal`, `onChange` | `draw(mouseX, mouseY)`, reading `isToggle()` |
-| [SwitchNode](../nodes/input/switch.md) | The list of states, the current one, `signal`, `onChange`, rebuilding on change | `init(UI)`: build one child per state and call `index(state)` on click; optionally `draw(mouseX, mouseY)` for a background |
+| [SwitchNode](../nodes/input/switch.md) | The list of states, the current one, `signal`, `onChange`, rebuilding when the states change | `init(UI)`: build one child per state that draws itself from `getState()` and calls `index(state)` on click; optionally `draw(mouseX, mouseY)` for a background |
 | [SelectorNode](../nodes/input/selector.md) | The values, opening, closing, the option layout, selection, `signal`, `onChange` | `option(value)`, which returns the node of one option, and `drawBackground(mouseX, mouseY)` |
 | [ChartNode](../nodes/data/chart.md) | Labels, series, the scale (`getMin`, `getMax`), loading | `draw(mouseX, mouseY)` |
 | [RadarChartNode](../nodes/data/radar-chart.md) | Axes, values, the scale, loading | `draw(mouseX, mouseY)` |
@@ -29,7 +29,7 @@ What every kit class can use while drawing:
 
 - `super.getX()`, `super.getY()`, `super.getWidth()`, `super.getHeight()`, `super.dw(2D)` (half the width) and `super.dh(2D)`: draw relative to the node, never at fixed canvas positions.
 - `super.hoverValue(1F)`: the hover progress of the node, from `0F` to `1F`, animated over `hoverDuration` (200 ms by default). Blend colors with it: `Theme.BORDER.to(Theme.INK, super.hoverValue(1F))`.
-- The component state: `isChecked()`, `getCursor()`, `isActive()`, `isSelected(node)`, `getState()`.
+- The component state: `isChecked()`, `getProgress()`, `isActive()`, `isSelected(node)`, `getState()`.
 - [DrawUtils](../drawing/draw-utils.md): `DrawUtils.SHAPE` (rectangles, rounded rectangles, circles, lines, gradients through `Color.toGradient`) and `DrawUtils.TEXT`.
 
 ## A complete kit: kit.flat
@@ -140,7 +140,7 @@ public class Label extends TextNode {
 
 ### Slider
 
-`drawSlider` draws the track and fills it up to the center of the cursor, read from `getCursor()`. The cursor is a `SliderCursorNode`: the slider moves its `x` only, so the constructor centers it vertically with `y(...)`. The cursor keeps its halo while it is dragged, even when the pointer leaves it.
+`drawSlider` draws the track and fills it up to `getProgress()`, the position of the cursor on its travel from `0F` to `1F`. The cursor is a `SliderCursorNode`: the slider centers it vertically and moves it along the track. The cursor counts as hovered during the whole drag, so its halo stays even when the pointer leaves it.
 
 ```java
 package kit.flat;
@@ -153,7 +153,7 @@ public class Slider extends IntegerSliderNode {
 
     protected Slider(final double x, final double y, final double width, final double height) {
         super(x, y, width, height);
-        super.cursor(new Knob(16D).y((height - 16D) / 2D));
+        super.cursor(new Knob(16D));
     }
 
     public static Slider create(final double x, final double y, final double width, final double height) {
@@ -163,7 +163,7 @@ public class Slider extends IntegerSliderNode {
     @Override
     public void drawSlider(final double mouseX, final double mouseY) {
         final double centerY = super.getY() + super.dh(2D);
-        final double filled = super.getCursor().getX() + super.getCursor().dw(2D);
+        final double filled = super.getWidth() * super.getProgress();
         DrawUtils.SHAPE.drawRect(super.getX(), centerY - 1D, super.getWidth(), 2D, Theme.LINE);
         DrawUtils.SHAPE.drawRect(super.getX(), centerY - 1D, filled, 2D, Theme.INK);
     }
@@ -176,7 +176,7 @@ public class Slider extends IntegerSliderNode {
 
         @Override
         public void drawCursor(final double mouseX, final double mouseY) {
-            final double halo = super.isDragging() ? 6D : super.hoverValue(6F);
+            final double halo = super.hoverValue(6F);
             DrawUtils.SHAPE.drawRect(super.getX() - halo, super.getY() - halo, super.getWidth() + halo * 2D, super.getHeight() + halo * 2D, Theme.LINE);
             DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Theme.INK);
         }
@@ -228,17 +228,16 @@ public class Checkbox extends CheckboxNode {
 
 ### Switch
 
-`SwitchNode` rebuilds its children in `init(UI)` each time the state changes. Each segment is a `RectNode` whose click calls `index(state)`.
+`SwitchNode` builds its children in `init(UI)` once, and again only when its list of states changes. Each segment is a small node that reads `getState()` when it draws, so it follows the current state without being rebuilt, and its click calls `index(state)`.
 
 ```java
 package kit.flat;
 
 import java.util.List;
 
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
 import dev.joid.lib.utils.align.Align;
 
@@ -258,17 +257,29 @@ public class Switch extends SwitchNode {
         final double width = super.getWidth() / states.size();
         for (int i = 0; i < states.size(); i++) {
             final String state = states.get(i);
-            final boolean current = state.equals(super.getState());
-            RectNode
-            .create(i * width, 0, width, super.getHeight())
-            .color(current ? Theme.INK : Theme.SURFACE, current ? null : Theme.HOVER)
-            .border(current ? Theme.INK : Theme.LINE, 1D)
-            .onClick((node, mouseX, mouseY, clickType) -> super.index(state))
-            .body(segment -> {
-                TextNode.create(0, 0, width, super.getHeight()).text(Text.create(state, current ? Theme.INVERSE : Theme.TEXT, Align.CENTER, Align.CENTER)).attach(segment);
-            })
-            .attach(this);
+            new Segment(state, i * width, width, super.getHeight()).onClick((node, mouseX, mouseY, clickType) -> super.index(state)).attach(this);
         }
+    }
+
+    private final class Segment extends Node {
+
+        private final String state;
+
+        private Segment(final String state, final double x, final double width, final double height) {
+            super(x, 0, width, height);
+            this.state = state;
+        }
+
+        @Override
+        public void draw(final double mouseX, final double mouseY) {
+            final boolean current = this.state.equals(Switch.this.getState());
+            final double x = super.getX();
+            final double y = super.getY();
+            DrawUtils.SHAPE.drawRect(x, y, super.getWidth(), super.getHeight(), current ? Theme.INK : Theme.SURFACE.to(Theme.HOVER, super.hoverValue(1F)));
+            DrawUtils.SHAPE.drawBorder(x, y, x + super.getWidth(), y + super.getHeight(), current ? Theme.INK : Theme.LINE);
+            DrawUtils.TEXT.drawText(x + super.dw(2D), y + super.dh(2D), this.state, current ? Theme.INVERSE : Theme.TEXT, Align.CENTER, Align.CENTER);
+        }
+
     }
 
 }
@@ -470,7 +481,7 @@ public class Slider extends IntegerSliderNode {
 
     protected Slider(final double x, final double y, final double width, final double height) {
         super(x, y, width, height);
-        super.cursor(new Knob(24D).y((height - 24D) / 2D));
+        super.cursor(new Knob(24D));
     }
 
     public static Slider create(final double x, final double y, final double width, final double height) {
@@ -480,7 +491,7 @@ public class Slider extends IntegerSliderNode {
     @Override
     public void drawSlider(final double mouseX, final double mouseY) {
         final double trackY = super.getY() + super.dh(2D) - 4D;
-        final double filled = super.getCursor().getX() + super.getCursor().dw(2D);
+        final double filled = super.getWidth() * super.getProgress();
         DrawUtils.SHAPE.drawRoundedRect(super.getX(), trackY, super.getWidth(), 8D, Theme.TRACK, 4F);
         DrawUtils.SHAPE.drawRoundedRect(super.getX(), trackY, filled, 8D, Theme.ACCENT, 4F);
     }
@@ -493,7 +504,7 @@ public class Slider extends IntegerSliderNode {
 
         @Override
         public void drawCursor(final double mouseX, final double mouseY) {
-            final float focus = super.isDragging() ? 1F : super.hoverValue(1F);
+            final float focus = super.hoverValue(1F);
             final double centerX = super.getX() + super.dw(2D);
             final double centerY = super.getY() + super.dh(2D);
             DrawUtils.SHAPE.drawCircle(centerX, centerY, Theme.CYAN.copyAlpha(0.12F + 0.12F * focus), 16D + 4D * focus);

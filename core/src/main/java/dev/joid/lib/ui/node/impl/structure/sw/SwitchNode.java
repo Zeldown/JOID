@@ -33,36 +33,50 @@ public abstract class SwitchNode extends Node {
 		this.stateIndex = new IntegerSignal(0);
 
 		super.watch(this.stateList, WatchProperty.CLEAR_CHILDREN, WatchProperty.RELOAD);
-		super.watch(this.stateIndex, WatchProperty.CLEAR_CHILDREN, WatchProperty.RELOAD);
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull String... stateList) {
-		assert stateList.length > 0;
+		if (stateList.length == 0) {
+			throw new IllegalArgumentException("The state list is empty");
+		}
+
 		this.configure(new LinkedList<>(Arrays.asList(stateList)), 0);
 		return (T) this;
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull List<String> stateList, final int index) {
-		assert !stateList.isEmpty() && index >= 0 && index < stateList.size();
-		this.configure(stateList, index);
+		if (index < 0 || index >= stateList.size()) {
+			throw new IllegalArgumentException("The index " + index + " is out of the state list " + stateList);
+		}
+
+		this.configure(new LinkedList<>(stateList), index);
 		return (T) this;
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull List<String> stateList, final @NonNull String state) {
-		assert !stateList.isEmpty() && stateList.contains(state);
+		if (!stateList.contains(state)) {
+			throw new IllegalArgumentException("The state " + state + " is not in the state list " + stateList);
+		}
+
 		this.configure(new LinkedList<>(stateList), stateList.indexOf(state));
 		return (T) this;
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final int index) {
-		assert this.stateList.getOrDefault() != null && !this.stateList.isEmpty() && index >= 0 && index < this.stateList.size();
-		this.change(index, this.getState());
+		if (this.stateList.getOrDefault() == null || index < 0 || index >= this.stateList.size()) {
+			throw new IllegalArgumentException("The index " + index + " is out of the state list " + this.stateList.getOrDefault());
+		}
+
+		this.change(this.stateList.getOrDefault(), index, this.getState());
 		return (T) this;
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final @NonNull String state) {
-		assert this.stateList.getOrDefault() != null && !this.stateList.isEmpty() && this.stateList.contains(state);
-		this.change(this.stateList.indexOf(state), this.getState());
+		if (this.stateList.getOrDefault() == null || !this.stateList.contains(state)) {
+			throw new IllegalArgumentException("The state " + state + " is not in the state list " + this.stateList.getOrDefault());
+		}
+
+		this.change(this.stateList.getOrDefault(), this.stateList.indexOf(state), this.getState());
 		return (T) this;
 	}
 
@@ -87,19 +101,20 @@ public abstract class SwitchNode extends Node {
 
 	private void configure(final List<String> stateList, final int index) {
 		final String previous = this.stateList.getOrDefault() == null || this.stateList.isEmpty() ? null : this.getState();
-		this.stateList.set(stateList);
-		this.change(index, previous);
+		this.change(stateList, index, previous);
 	}
 
-	private void change(final int index, final String previous) {
-		final String state = this.stateList.get(index);
+	private void change(final List<String> stateList, final int index, final String previous) {
+		final String state = stateList.get(index);
 		if (state.equals(previous)) {
 			this.stateIndex.set(index);
+			this.stateList.set(stateList);
 			return;
 		}
 
 		super.executeCallback(SwitchNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
 			this.stateIndex.set(index);
+			this.stateList.set(stateList);
 			super.sync(this.signal, state);
 		}, state);
 	}

@@ -36,7 +36,7 @@ public class DemoSwitchNode extends SwitchNode {
 			for (final String state : super.getStateList().getOrDefault()) {
 				RectNode
 				.create(0, 0, stateWidth, super.getHeight())
-				.color(super.getState().equals(state) ? Color.BLUE : Color.RED)
+				.color(() -> super.getState().equals(state) ? Color.BLUE : Color.RED)
 				.body(rect -> {
 					TextNode
 					.create(0, 0, rect.getWidth(), rect.getHeight())

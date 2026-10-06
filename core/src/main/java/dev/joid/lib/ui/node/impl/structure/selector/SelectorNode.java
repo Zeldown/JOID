@@ -49,6 +49,13 @@ public abstract class SelectorNode<V> extends Node {
 			return;
 		}
 
+		for (final Node child : super.getChildren().ordered()) {
+			if (!this.optionMap.containsKey(child)) {
+				super.getChildren().remove(child);
+				throw new IllegalStateException("The node " + child.getClass().getSimpleName() + " is not an option of the selector, add the options with values(...)");
+			}
+		}
+
 		if (this.selected == null) {
 			this.selected = super.getChildren().ordered().get(0);
 		}
@@ -89,8 +96,14 @@ public abstract class SelectorNode<V> extends Node {
 				}
 			}
 
+			if (context.isCancelled() || clicked == null && !super.isHovered(mouseX, mouseY)) {
+				this.active = false;
+				return;
+			}
+
 			if (clicked == null || clicked == this.selected) {
 				this.active = false;
+				context.cancel();
 				return;
 			}
 
