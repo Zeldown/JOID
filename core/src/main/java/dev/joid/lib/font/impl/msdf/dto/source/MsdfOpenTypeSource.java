@@ -51,7 +51,18 @@ public final class MsdfOpenTypeSource extends MsdfSource {
 		if (this.generated) {
 			MsdfFontCache.generate(font, this.file);
 		}
-		return MsdfBinarySource.of(this.file).read();
+
+		try {
+			return MsdfBinarySource.of(this.file).read();
+		} catch (final IOException exception) {
+			if (this.generated) {
+				throw exception;
+			}
+
+			this.generated = true;
+			MsdfFontCache.generate(font, this.file);
+			return MsdfBinarySource.of(this.file).read();
+		}
 	}
 
 }

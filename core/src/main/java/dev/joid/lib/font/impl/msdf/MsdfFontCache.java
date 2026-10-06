@@ -48,7 +48,13 @@ public final class MsdfFontCache {
 		final File temporary = File.createTempFile("msdf-", ".tmp", directory);
 		try {
 			MsdfGenerator.generate(font, temporary, MsdfGenerator.codepoints(MsdfGenerator.CHARSET), MsdfGenerator.WIDTH, MsdfGenerator.HEIGHT, MsdfGenerator.RANGE, 0D);
-			Files.move(temporary.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+			try {
+				Files.move(temporary.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+			} catch (final IOException exception) {
+				if (!file.isFile()) {
+					throw exception;
+				}
+			}
 		} catch (final Exception exception) {
 			throw new IOException("Unable to generate the msdf atlas of the font in " + directory.getAbsolutePath(), exception);
 		} finally {

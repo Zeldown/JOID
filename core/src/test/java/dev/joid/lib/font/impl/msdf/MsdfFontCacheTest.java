@@ -3,16 +3,24 @@ package dev.joid.lib.font.impl.msdf;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.concurrent.CompletionException;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
@@ -20,8 +28,13 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.dto.source.MsdfBinarySource;
 import dev.joid.lib.font.impl.msdf.dto.source.MsdfOpenTypeSource;
+import dev.joid.msdf.MsdfGenerator;
+import dev.joid.msdf.atlas.MsdfWriter;
 
 public class MsdfFontCacheTest {
+
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
 
 	private File previous;
 	private File directory;
@@ -99,6 +112,165 @@ public class MsdfFontCacheTest {
 			System.setOut(previous);
 		}
 		Assert.assertEquals(0, output.size());
+	}
+
+	@Test
+	public void movesItsDirectory() {
+		Assert.assertEquals(this.directory, MsdfFontCache.getDirectory());
+		MsdfFontCache.directory(this.folder.getRoot());
+		Assert.assertEquals(this.folder.getRoot(), MsdfFontCache.getDirectory());
+		Assert.assertEquals(this.folder.getRoot(), MsdfFontCache.locate(new byte[] {1, 2, 3}).getParentFile());
+	}
+
+	@Test
+	public void defaultsToADirectoryOfTheSystemCache() {
+		Assert.assertTrue(this.previous.getPath(), this.previous.getPath().endsWith(new File("joid", "msdf").getPath()));
+	}
+
+	@Test
+	public void locatesAFontWithoutWritingAnything() throws IOException {
+		final File file = MsdfFontCache.locate(MsdfFontCacheTest.font());
+		Assert.assertEquals(this.directory, file.getParentFile());
+		Assert.assertTrue(file.getName(), file.getName().matches("[0-9a-f]{64}\\.msdf"));
+		Assert.assertFalse(file.exists());
+		Assert.assertEquals(0, this.directory.list().length);
+	}
+
+	@Test
+	public void keysTheCacheByTheVersionsOfJoidAndOfItsGenerator() throws IOException {
+		final byte[] font = MsdfFontCacheTest.font();
+		final String versions = JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT;
+		Assert.assertEquals(Hashing.sha256().newHasher().putString(versions, StandardCharsets.UTF_8).putBytes(font).hash() + ".msdf", MsdfFontCache.locate(font).getName());
+	}
+
+	@Test(timeout = 60000L)
+	public void readsACachedAtlasInsteadOfGeneratingIt() throws IOException {
+		final byte[] font = MsdfFontCacheTest.font();
+		final MsdfOpenTypeSource miss = MsdfOpenTypeSource.of(new ByteArrayInputStream(font));
+		final MsdfOpenTypeSource hit = MsdfOpenTypeSource.of(new ByteArrayInputStream(font));
+		miss.read();
+		final long modified = MsdfFontCache.locate(font).lastModified();
+		Assert.assertEquals("JOID Test Regular", hit.read().getName());
+		Assert.assertTrue(miss.isGenerated());
+		Assert.assertFalse(hit.isGenerated());
+		Assert.assertEquals(MsdfFontCache.locate(font), hit.getFile());
+		Assert.assertEquals(modified, hit.getFile().lastModified());
+	}
+
+	@Test(timeout = 60000L)
+	public void generatesIntoAMissingDirectory() throws IOException {
+		final File file = new File(new File(this.folder.getRoot(), "fonts/regular"), "font.msdf");
+		MsdfFontCache.generate(MsdfFontCacheTest.font(), file);
+		Assert.assertEquals("JOID Test Regular", MsdfBinarySource.of(file).read().getName());
+		Assert.assertArrayEquals(new String[] {"font.msdf"}, file.getParentFile().list());
+	}
+
+	@Test(timeout = 60000L)
+	public void replacesAnExistingAtlas() throws IOException {
+		final File file = this.folder.newFile("font.msdf");
+		Files.write(file.toPath(), "stale".getBytes(StandardCharsets.UTF_8));
+		MsdfFontCache.generate(MsdfFontCacheTest.font(), file);
+		Assert.assertEquals("JOID Test Regular", MsdfBinarySource.of(file).read().getName());
+	}
+
+	@Test(timeout = 60000L)
+	public void keepsTheAtlasAnotherProcessIsReading() throws IOException {
+		final File file = this.folder.newFile("font.msdf");
+		MsdfFontCache.generate(MsdfFontCacheTest.font(), file);
+		try (final FileInputStream reader = new FileInputStream(file)) {
+			MsdfFontCache.generate(MsdfFontCacheTest.font(), file);
+			Assert.assertTrue(reader.available() > 0);
+		}
+
+		Assert.assertEquals("JOID Test Regular", MsdfBinarySource.of(file).read().getName());
+	}
+
+	@Test
+	public void refusesADirectoryItCannotCreate() throws IOException {
+		final File blocker = this.folder.newFile("blocker");
+		final File cache = new File(blocker, "msdf");
+		try {
+			MsdfFontCache.generate(MsdfFontCacheTest.font(), new File(cache, "font.msdf"));
+			Assert.fail("The cache must not be created");
+		} catch (final IOException expected) {
+			Assert.assertEquals("Unable to create the msdf cache " + cache.getAbsolutePath(), expected.getMessage());
+		}
+	}
+
+	@Test
+	public void reportsAFontItCannotGenerate() {
+		try {
+			MsdfFontCache.generate("not a font".getBytes(StandardCharsets.UTF_8), new File(this.directory, "font.msdf"));
+			Assert.fail("The font must not generate");
+		} catch (final IOException expected) {
+			Assert.assertEquals("Unable to generate the msdf atlas of the font in " + this.directory.getAbsolutePath(), expected.getMessage());
+			Assert.assertNotNull(expected.getCause());
+		}
+		Assert.assertEquals(0, this.directory.list().length);
+	}
+
+	@Test(timeout = 60000L)
+	public void loadsAnOpenTypeCffFont() {
+		final MsdfFontFace face = MsdfFontLoader.load(MsdfFontCacheTest.class.getResourceAsStream("/dev/joid/lib/font/impl/msdf/JoidTest-BoldItalic.otf")).join().getFace(FontWeight.BOLD, true);
+		Assert.assertEquals("JOID Test Bold Italic", face.getName());
+		Assert.assertSame(FontWeight.BOLD, face.getWeight());
+		Assert.assertTrue(face.isItalic());
+		Assert.assertTrue(face.hasGlyph('A'));
+		Assert.assertTrue(face.getKerning('A', 'V') < 0F);
+		Assert.assertEquals(1, this.directory.list().length);
+	}
+
+	@Test(timeout = 60000L)
+	public void loadsTheFirstFontOfACollection() {
+		final MsdfFontFace face = MsdfFontLoader.load(MsdfFontCacheTest.class.getResourceAsStream("/dev/joid/lib/font/impl/msdf/JoidTest.ttc")).join().getFace(FontWeight.REGULAR, false);
+		Assert.assertEquals("JOID Test Regular", face.getName());
+		Assert.assertTrue(face.hasGlyph('V'));
+		Assert.assertEquals(1, this.directory.list().length);
+	}
+
+	@Test(timeout = 60000L)
+	public void loadsAnAppleTrueTypeFont() throws IOException {
+		final byte[] font = MsdfFontCacheTest.font();
+		System.arraycopy("true".getBytes(StandardCharsets.US_ASCII), 0, font, 0, 4);
+		final MsdfFontFace face = MsdfFontLoader.load(new ByteArrayInputStream(font)).join().getFace(FontWeight.REGULAR, false);
+		Assert.assertEquals("JOID Test Regular", face.getName());
+		Assert.assertTrue(MsdfFontCache.locate(font).isFile());
+	}
+
+	@Test
+	public void refusesAnOpenTypeFontItCannotRead() {
+		final byte[] font = "OTTO and nothing else".getBytes(StandardCharsets.US_ASCII);
+		try {
+			MsdfFontLoader.load(new ByteArrayInputStream(font)).join();
+			Assert.fail("The font must not load");
+		} catch (final CompletionException expected) {
+			Assert.assertTrue(String.valueOf(expected.getCause()), expected.getCause() instanceof IOException);
+			Assert.assertEquals("Unable to generate the msdf atlas of the font in " + this.directory.getAbsolutePath(), expected.getCause().getMessage());
+		}
+		Assert.assertEquals(0, this.directory.list().length);
+	}
+
+	@Test(timeout = 60000L)
+	public void regeneratesACorruptedAtlas() throws IOException {
+		final byte[] font = MsdfFontCacheTest.font();
+		Files.write(MsdfFontCache.locate(font).toPath(), "corrupted".getBytes(StandardCharsets.UTF_8));
+		Assert.assertEquals("JOID Test Regular", MsdfFontLoader.load(new ByteArrayInputStream(font)).join().getFace(FontWeight.REGULAR, false).getName());
+	}
+
+	@Test(timeout = 60000L)
+	public void regeneratesAnAtlasOfAnOlderVersion() throws IOException {
+		final byte[] font = MsdfFontCacheTest.font();
+		final File file = MsdfFontCache.resolve(font);
+		final byte[] bytes = Files.readAllBytes(file.toPath());
+		final byte[] body = Asset.of(new InflaterInputStream(new ByteArrayInputStream(bytes, 8, bytes.length - 8))).read();
+		body[0] = (byte) (MsdfWriter.VERSION - 1);
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		output.write(bytes, 0, 8);
+		try (DeflaterOutputStream deflater = new DeflaterOutputStream(output)) {
+			deflater.write(body);
+		}
+		Files.write(file.toPath(), output.toByteArray());
+		Assert.assertEquals("JOID Test Regular", MsdfFontLoader.load(new ByteArrayInputStream(font)).join().getFace(FontWeight.REGULAR, false).getName());
 	}
 
 	private static String capture(final Runnable runnable) {

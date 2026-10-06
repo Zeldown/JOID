@@ -22,7 +22,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfFontLoader {
 
-	private static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(5, ThreadUtils.daemonFactory("MsdfFontLoader"));
+	private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(ThreadUtils.daemonFactory("MsdfFontLoader"));
 
 	public static @NonNull CompletableFuture<MsdfFont> load(final @NonNull Object @NonNull... faces) {
 		if (faces.length == 0) {
