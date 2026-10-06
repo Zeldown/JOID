@@ -22,6 +22,24 @@ public class RotationTest {
 	}
 
 	@Test
+	public void turnsThePitchAroundTheHorizontalAxis() {
+		Assert.assertEquals(1D, Rotation.PITCH.getRawX(), 0D);
+		Assert.assertEquals(0D, Rotation.PITCH.getRawY(), 0D);
+		Assert.assertEquals(0D, Rotation.PITCH.getRawZ(), 0D);
+		Assert.assertEquals(1D, Rotation.create(0D, 1D, 0D).getRawX(), 0D);
+		Assert.assertEquals(1D, Rotation.create(() -> 0D, () -> 1D, () -> 0D).getRawX(), 0D);
+	}
+
+	@Test
+	public void turnsTheRollInTheScreenPlane() {
+		Assert.assertEquals(0D, Rotation.ROLL.getRawX(), 0D);
+		Assert.assertEquals(0D, Rotation.ROLL.getRawY(), 0D);
+		Assert.assertEquals(1D, Rotation.ROLL.getRawZ(), 0D);
+		Assert.assertEquals(1D, Rotation.create(0D, 0D, 1D).getRawZ(), 0D);
+		Assert.assertEquals(1D, Rotation.create(() -> 0D, () -> 0D, () -> 1D).getRawZ(), 0D);
+	}
+
+	@Test
 	public void givesEachConstantItsOwnAxis() {
 		final Rotation[] rotations = {Rotation.YAW, Rotation.PITCH, Rotation.ROLL};
 		final double[] sum = new double[3];
