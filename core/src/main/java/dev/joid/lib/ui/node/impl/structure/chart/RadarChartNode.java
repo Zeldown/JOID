@@ -19,11 +19,6 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		this.dataList = new LinkedList<>();
 	}
 
-	@Override
-	public final void drawSkeleton(final double mouseX, final double mouseY) {
-		super.draw(mouseX, mouseY);
-	}
-
 	public final boolean isLoaded() {
 		return this.isMounted() && this.dataList.size() >= 3 && !this.dataList.stream().anyMatch(DATA::isEmpty);
 	}
@@ -31,7 +26,7 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 	public final Number getMax() {
 		final double min = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
 		final double max = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
-		return min == max ? max == 0 ? 1 : max * 2 : max;
+		return max == 0 ? 1 : min == max ? max * 2 : max;
 	}
 
 	public final Number getMin() {
@@ -46,6 +41,16 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 
 	public final <T extends RadarChartNode<DATA>> @NonNull T data(final @NonNull DATA data) {
 		this.dataList.add(data);
+		return (T) this;
+	}
+
+	public final <T extends RadarChartNode<DATA>> @NonNull T remove(final @NonNull DATA data) {
+		this.dataList.remove(data);
+		return (T) this;
+	}
+
+	public final <T extends RadarChartNode<DATA>> @NonNull T clear() {
+		this.dataList.clear();
 		return (T) this;
 	}
 

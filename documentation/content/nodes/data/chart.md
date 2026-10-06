@@ -76,7 +76,7 @@ The X axis holds the labels and the series.
 | Method | Description |
 | --- | --- |
 | `labelSet(String... labels)` | Replaces the labels. |
-| `labelSet(Set<String> labelSet)` | Replaces the labels with a copy of an ordered set. Throws `IllegalArgumentException` when the set is not a `LinkedHashSet`. |
+| `labelSet(Set<String> labelSet)` | Replaces the labels with a copy of any set, in its iteration order. |
 | `data(String dataName, ChartData data)` | Adds or replaces a series. |
 | `remove(String data)` | Removes a series. |
 | `get(String data)` | The series of that name, or `null`. |
@@ -89,9 +89,10 @@ Because the series live in the X axis, replacing the X axis also replaces the se
 | Method | Description |
 | --- | --- |
 | `prefix(String prefix)` / `suffix(String suffix)` | Text to put before or after the values, for example a currency. |
+| `format(Number value)` | The value between the prefix and the suffix: `ChartAxis.y("price").prefix("$").format(12.5D)` gives `$12.5`. A missing prefix or suffix counts as empty. |
 | `getName()`, `getPrefix()`, `getSuffix()` | The name and the texts; prefix and suffix are `null` until set. |
 
-The node does not draw anything from the Y axis: the name, prefix and suffix are there for your `draw` code (axis title, value labels).
+The node does not draw anything from the Y axis: your `draw` code writes the name as an axis title and `format(...)` as the value labels.
 
 ## Series with ChartData
 
@@ -119,7 +120,7 @@ A series does not need a value for every label: `get(label)` returns `null` for 
 | `data(String dataName, ChartData data)` | Adds or replaces a series. Throws `IllegalStateException` when no X axis is set. |
 | `remove(String data)` | Removes a series. Throws `IllegalStateException` when no X axis is set. |
 | `getData(String data)` | The series of that name, or `null`. |
-| `getDataMap()` | The series by name. It is a `HashMap`: its iteration order is not the insertion order. |
+| `getDataMap()` | The series by name, in the order they were first added. |
 | `getLabels()` | The X labels, in order. |
 
 The chart reads its data on every frame: change a `ChartData` with `add(...)` or `remove(...)`, or call `data(...)` again, and the next frame shows it.
@@ -131,7 +132,7 @@ The chart reads its data on every frame: change a `ChartData` with `add(...)` or
 | `getMax()` | Largest value of all series. |
 | `getMin()` | Smallest value of all series. |
 | `getAverage()` | Average of the averages of the series. |
-| `getMax(String data)`, `getMin(String data)`, `getAverage(String data)` | The same for one series, which must exist. |
+| `getMax(String data)`, `getMin(String data)`, `getAverage(String data)` | The same for one series. A missing series has the scale `0` to `1` and an average of `0`. |
 
 When all the values are equal, `getMin()` returns `0` and `getMax()` returns twice the value (`1` when the value is `0`). Without series, the scale is `0` to `1`. `getMax() - getMin()` is therefore never `0`, so you can divide by it safely.
 
@@ -139,8 +140,8 @@ When all the values are equal, `getMin()` returns `0` and `getMax()` returns twi
 
 `isLoaded()` returns `true` when the node is mounted (no pending `wait(...)` condition), both axes are set, there is at least one series, and no series is empty. Test it at the start of `draw` to show a placeholder or nothing.
 
-- While the node waits for a `wait(...)` condition, it draws nothing: `ChartNode` replaces the default loading placeholder and does not let subclasses override it.
-- `getLabels()`, `getData(...)`, `getDataMap()` and the scale methods need an X axis; they throw `NullPointerException` before one is set. `isLoaded()` is always safe.
+- While the node waits for a `wait(...)` condition, it draws the default pulsing grey placeholder over its bounds (see [Node Fundamentals](../node-fundamentals.md)). Override `drawSkeleton` to draw your own.
+- Without an X axis, `getLabels()` and `getDataMap()` are empty, `getData(...)` returns `null` and the scale is `0` to `1`.
 
 ## Reference
 

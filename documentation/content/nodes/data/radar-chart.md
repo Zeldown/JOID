@@ -100,7 +100,9 @@ A `RadarChartNode<ColoredRadarData>` then accepts only `ColoredRadarData` in `da
 | Method | Description |
 | --- | --- |
 | `data(DATA data)` | Appends a value; spokes keep the order of the calls. |
-| `getDataList()` | The node's own list of values, in order. Remove, reorder or clear values through it. |
+| `remove(DATA data)` | Removes a value. |
+| `clear()` | Removes every value. |
+| `getDataList()` | The node's own list of values, in order. Reorder values through it. |
 
 ## Scale with getMin and getMax
 
@@ -110,19 +112,19 @@ A `RadarChartNode<ColoredRadarData>` then accepts only `ColoredRadarData` in `da
 | `getMin()` | Smallest number among the non-empty values. |
 | `getAverage()` | Average of the non-empty values, `0` without any. |
 
-When all the numbers are equal, `getMin()` returns `0` and `getMax()` returns twice the number (`1` when the number is `0`). Without values, the scale is `0` to `1`. `getMax() - getMin()` is therefore never `0`.
+When all the numbers are equal, `getMin()` returns `0` and `getMax()` returns twice the number. When the largest number is `0`, and without values, `getMax()` returns `1`. `getMax()` and `getMax() - getMin()` are therefore never `0`, so you can divide by them safely.
 
 ## Loading state with isLoaded
 
 `isLoaded()` returns `true` when the node is mounted (no pending `wait(...)` condition), it has at least 3 values, and no value is empty. Test it at the start of `draw`: `getValue()` is `null` on an empty value.
 
-While the node waits for a `wait(...)` condition, it draws nothing: `RadarChartNode` replaces the default loading placeholder and does not let subclasses override it.
+While the node waits for a `wait(...)` condition, it draws the default pulsing grey placeholder over its bounds (see [Node Fundamentals](../node-fundamentals.md)). Override `drawSkeleton` to draw your own.
 
 ## Reference
 
 | Method | Description |
 | --- | --- |
-| `data(DATA data)` | Appends a value. Returns the node, typed by the generic return of the fluent API. |
+| `data(DATA data)`, `remove(DATA data)`, `clear()` | Appends, removes or clears the values. They return the node, typed by the generic return of the fluent API. |
 | `getDataList()` | The values, in order. |
 | `getMin()`, `getMax()`, `getAverage()` | Scale of the non-empty values. |
 | `isLoaded()` | `true` when the chart has everything to draw. |

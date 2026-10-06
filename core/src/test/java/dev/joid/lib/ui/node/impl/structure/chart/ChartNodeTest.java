@@ -3,11 +3,11 @@ package dev.joid.lib.ui.node.impl.structure.chart;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -78,6 +78,34 @@ public class ChartNodeTest {
 		Assert.assertSame(chart, chart.remove("api"));
 		Assert.assertNull(chart.getData("api"));
 		Assert.assertEquals(1, chart.getDataMap().size());
+	}
+
+	@Test
+	public void keepsItsSeriesInTheirOrder() {
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon"));
+		for (final String name : new String[] {"web", "api", "mobile", "desktop", "batch", "cron"}) {
+			chart.data(name, ChartData.create().add("Mon", 1));
+		}
+		Assert.assertEquals(Arrays.asList("web", "api", "mobile", "desktop", "batch", "cron"), new ArrayList<>(chart.getDataMap().keySet()));
+	}
+
+	@Test
+	public void readsNothingWithoutAnXAxis() {
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D);
+		Assert.assertTrue(chart.getLabels().isEmpty());
+		Assert.assertTrue(chart.getDataMap().isEmpty());
+		Assert.assertNull(chart.getData("api"));
+		Assert.assertEquals(1D, chart.getMax().doubleValue(), 0D);
+		Assert.assertEquals(0D, chart.getMin().doubleValue(), 0D);
+		Assert.assertEquals(0D, chart.getAverage().doubleValue(), 0D);
+	}
+
+	@Test
+	public void givesAUnitScaleToAMissingSeries() {
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon"));
+		Assert.assertEquals(1D, chart.getMax("api").doubleValue(), 0D);
+		Assert.assertEquals(0D, chart.getMin("api").doubleValue(), 0D);
+		Assert.assertEquals(0D, chart.getAverage("api").doubleValue(), 0D);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -175,11 +203,14 @@ public class ChartNodeTest {
 	}
 
 	@Test
-	public void drawsNothingWhileLoading() {
+	public void drawsTheLoadingSkeletonWhileLoading() {
 		final BarChartNode chart = new BarChartNode(100D, 100D, 300D, 200D).wait(node -> false);
 		chart.axis(ChartAxis.x("weekday", "Mon"), ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 50));
 		this.bridges.open(new NodeUI(chart)).frame();
-		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
+		final Color loading = Color.LOADING();
+		final List<Draw> draws = this.bridges.getRender().getDraws(loading.r, loading.g, loading.b);
+		Assert.assertEquals(1, draws.size());
+		ChartNodeTest.assertBox(draws.get(0), 100D, 100D, 400D, 300D);
 	}
 
 	@Test
@@ -211,9 +242,13 @@ public class ChartNodeTest {
 		Assert.assertEquals(Arrays.asList("Sun", "Sat"), new ArrayList<>(x.getLabelSet()));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesAnUnorderedLabelSet() {
-		ChartAxis.x("weekday", "Mon").labelSet(new HashSet<>(Arrays.asList("Sat", "Sun")));
+	@Test
+	public void copiesAnyLabelSet() {
+		final Set<String> labels = new TreeSet<>(Arrays.asList("Sun", "Sat"));
+		final XChartAxis x = ChartAxis.x("weekday", "Mon");
+		Assert.assertSame(x, x.labelSet(labels));
+		labels.add("Fri");
+		Assert.assertEquals(Arrays.asList("Sat", "Sun"), new ArrayList<>(x.getLabelSet()));
 	}
 
 	@Test
@@ -240,6 +275,12 @@ public class ChartNodeTest {
 		Assert.assertSame(y, y.suffix(" req"));
 		Assert.assertEquals("$", y.getPrefix());
 		Assert.assertEquals(" req", y.getSuffix());
+	}
+
+	@Test
+	public void formatsAValueWithItsPrefixAndSuffix() {
+		Assert.assertEquals("$12.5 req", ChartAxis.y("price").prefix("$").suffix(" req").format(12.5D));
+		Assert.assertEquals("7", ChartAxis.y("requests").format(7));
 	}
 
 	@Test

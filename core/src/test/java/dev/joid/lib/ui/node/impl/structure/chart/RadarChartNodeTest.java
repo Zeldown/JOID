@@ -41,6 +41,22 @@ public class RadarChartNodeTest {
 	}
 
 	@Test
+	public void removesAValue() {
+		final RadarChartData speed = RadarChartData.create("speed", 3);
+		final RadarChartData power = RadarChartData.create("power", 5);
+		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(speed).data(power);
+		Assert.assertSame(chart, chart.remove(speed));
+		Assert.assertEquals(Arrays.asList(power), chart.getDataList());
+	}
+
+	@Test
+	public void clearsItsValues() {
+		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(RadarChartData.create("speed", 3)).data(RadarChartData.create("power", 5));
+		Assert.assertSame(chart, chart.clear());
+		Assert.assertTrue(chart.getDataList().isEmpty());
+	}
+
+	@Test
 	public void loadsWithThreeValues() {
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(RadarChartData.create("speed", 3)).data(RadarChartData.create("power", 5));
 		Assert.assertFalse(chart.isLoaded());
@@ -90,6 +106,13 @@ public class RadarChartNodeTest {
 	}
 
 	@Test
+	public void givesAUnitScaleToValuesUpToZero() {
+		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(RadarChartData.create("speed", -4)).data(RadarChartData.create("power", 0));
+		Assert.assertEquals(1D, chart.getMax().doubleValue(), 0D);
+		Assert.assertEquals(-4D, chart.getMin().doubleValue(), 0D);
+	}
+
+	@Test
 	public void givesAUnitScaleWithoutData() {
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D);
 		Assert.assertEquals(1D, chart.getMax().doubleValue(), 0D);
@@ -110,11 +133,17 @@ public class RadarChartNodeTest {
 	}
 
 	@Test
-	public void drawsNothingWhileLoading() {
+	public void drawsTheLoadingSkeletonWhileLoading() {
 		final StarChartNode chart = new StarChartNode(100D, 100D, 200D, 200D).wait(node -> false);
 		chart.data(RadarChartData.create("speed", 3)).data(RadarChartData.create("power", 5)).data(RadarChartData.create("range", 4));
 		this.bridges.open(new NodeUI(chart)).frame();
-		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
+		final Color loading = Color.LOADING();
+		final List<Draw> draws = this.bridges.getRender().getDraws(loading.r, loading.g, loading.b);
+		Assert.assertEquals(1, draws.size());
+		Assert.assertEquals(100D, draws.get(0).getLeft(), 1E-3D);
+		Assert.assertEquals(100D, draws.get(0).getTop(), 1E-3D);
+		Assert.assertEquals(300D, draws.get(0).getRight(), 1E-3D);
+		Assert.assertEquals(300D, draws.get(0).getBottom(), 1E-3D);
 	}
 
 	@Test

@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.impl.structure.chart;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -23,11 +24,6 @@ public abstract class ChartNode extends Node {
 		super(x, y, width, height);
 	}
 
-	@Override
-	public final void drawSkeleton(final double mouseX, final double mouseY) {
-		super.draw(mouseX, mouseY);
-	}
-
 	public final boolean isLoaded() {
 		return this.isMounted() && this.xAxis != null && this.yAxis != null && !this.getDataMap().isEmpty() && !this.getDataMap().values().stream().anyMatch(ChartData::isEmpty);
 	}
@@ -39,8 +35,9 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getMax(final String data) {
-		final double min = this.getData(data).getMin().doubleValue();
-		final double max = this.getData(data).getMax().doubleValue();
+		final ChartData series = this.getData(data);
+		final double min = series == null ? 0D : series.getMin().doubleValue();
+		final double max = series == null ? 0D : series.getMax().doubleValue();
 		return min == max ? max == 0 ? 1 : max * 2 : max;
 	}
 
@@ -51,8 +48,9 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getMin(final String data) {
-		final double min = this.getData(data).getMin().doubleValue();
-		final double max = this.getData(data).getMax().doubleValue();
+		final ChartData series = this.getData(data);
+		final double min = series == null ? 0D : series.getMin().doubleValue();
+		final double max = series == null ? 0D : series.getMax().doubleValue();
 		return min == max ? 0 : min;
 	}
 
@@ -61,19 +59,20 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getAverage(final String data) {
-		return this.getData(data).getAverage();
+		final ChartData series = this.getData(data);
+		return series == null ? 0D : series.getAverage();
 	}
 
 	public final @NonNull Set<String> getLabels() {
-		return this.xAxis.getLabelSet();
+		return this.xAxis == null ? Collections.emptySet() : this.xAxis.getLabelSet();
 	}
 
 	public final ChartData getData(final String data) {
-		return this.xAxis.getDataMap().get(data);
+		return this.xAxis == null ? null : this.xAxis.getDataMap().get(data);
 	}
 
 	public final @NonNull Map<String, ChartData> getDataMap() {
-		return this.xAxis.getDataMap();
+		return this.xAxis == null ? Collections.emptyMap() : this.xAxis.getDataMap();
 	}
 
 	public final <T extends ChartNode> @NonNull T axis(final @NonNull XChartAxis x) {
@@ -141,7 +140,7 @@ public abstract class ChartNode extends Node {
 
 				this.labelSet = new LinkedHashSet<>();
 				Collections.addAll(this.labelSet, labels);
-				this.dataMap = new HashMap<>();
+				this.dataMap = new LinkedHashMap<>();
 			}
 
 			public final ChartData get(final @NonNull String data) {
@@ -155,10 +154,6 @@ public abstract class ChartNode extends Node {
 			}
 
 			public final @NonNull XChartAxis labelSet(final @NonNull Set<@NonNull String> labelSet) {
-				if (!(labelSet instanceof LinkedHashSet)) {
-					throw new IllegalArgumentException("labelSet must be an instance of LinkedHashSet");
-				}
-
 				this.labelSet.clear();
 				this.labelSet.addAll(labelSet);
 				return this;
@@ -194,6 +189,10 @@ public abstract class ChartNode extends Node {
 			public final @NonNull YChartAxis suffix(final @NonNull String suffix) {
 				this.suffix = suffix;
 				return this;
+			}
+
+			public final @NonNull String format(final @NonNull Number value) {
+				return (this.prefix == null ? "" : this.prefix) + value + (this.suffix == null ? "" : this.suffix);
 			}
 
 		}
