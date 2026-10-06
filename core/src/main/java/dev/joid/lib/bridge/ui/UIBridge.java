@@ -101,9 +101,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	public final void update() {
 		for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
-			if (ui.getData().active()) {
-				ui.onUpdate();
-			}
+			ui.onUpdate();
 		}
 	}
 
@@ -121,7 +119,7 @@ public abstract class UIBridge implements IUIBridge {
 			try {
 				render.translate(0D, 0D, -2000D);
 				for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
-					if (!ui.getData().active() || !ui.getData().visible()) {
+					if (!ui.getData().visible()) {
 						continue;
 					}
 

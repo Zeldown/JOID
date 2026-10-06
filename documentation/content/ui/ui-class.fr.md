@@ -37,7 +37,7 @@ public class MyUI extends UI { ... }
 
 | Attribut | Défaut | Description |
 |---|---|---|
-| `active` | `true` | Si `false`, l'UI est entièrement ignorée (pas d'update, pas de draw). |
+| `active` | `true` | Si `false`, l'UI ne reçoit plus les événements souris ni clavier ; elle reste mise à jour et dessinée, par exemple pendant sa transition de sortie. |
 | `visible` | `true` | Si `false`, l'UI est mise à jour mais pas dessinée. |
 | `pause` | `true` | Si l'hôte l'honore, met l'app/le jeu en pause quand l'UI est ouverte. |
 | `closeable` | `true` | Si `false`, ESC ne ferme pas cette UI. Le code peut toujours appeler `JOID.close(this)`. |

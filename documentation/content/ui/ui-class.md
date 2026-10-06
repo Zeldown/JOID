@@ -37,7 +37,7 @@ public class MyUI extends UI { ... }
 
 | Attribute | Default | Description |
 |---|---|---|
-| `active` | `true` | If false, UI is skipped entirely (no update, no draw). |
+| `active` | `true` | If false, the UI no longer receives mouse or keyboard events; it is still updated and drawn, for example while its exit transition plays. |
 | `visible` | `true` | If false, UI is updated but not drawn. |
 | `pause` | `true` | If the host honors it, pauses the underlying app/game while open. |
 | `closeable` | `true` | If false, ESC doesn't close this UI. Code can still call `JOID.close(this)`. |

@@ -316,13 +316,14 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void skipsAnInactiveUiEntirely() {
+	public void keepsUpdatingAndDrawingAnInactiveUi() {
 		final DepthUI menu = new DepthUI("menu", this.trace);
 		this.bridges.open(menu);
 		menu.getData().setActive(false);
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Collections.emptyList(), this.trace);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		Assert.assertEquals(Arrays.asList("update menu", "draw menu"), this.trace);
 	}
 
 	@Test
