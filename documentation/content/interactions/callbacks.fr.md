@@ -38,9 +38,10 @@ node.onKeyPressed((n, character, key) -> { });                                  
 ```java
 node.onScrollUpdate((n, value) -> { });                                           // NodeScrollUpdateCallback
 node.onScrollEnd((n, scrollX, scrollY) -> { });                                   // NodeScrollEndCallback
+node.onScrollEnding((n, scrollX, scrollY) -> { });                                // NodeScrollEndingCallback
 ```
 
-`onScrollUpdate` se déclenche à chaque tick de scroll avec le décalage de scroll visé ; `onScrollEnd` une fois le scroll arrêté au bout du contenu, avec les décalages finaux `(scrollX, scrollY)`. Quitter le bout avant l'arrêt du scroll l'annule.
+`onScrollUpdate` se déclenche à chaque tick de scroll avec le décalage de scroll visé ; `onScrollEnd` une fois le scroll arrêté au bout du contenu, avec les décalages finaux `(scrollX, scrollY)`. Quitter le bout avant l'arrêt du scroll l'annule. `onScrollEnding` se déclenche dès que le scroll vise le bout, avant qu'il s'arrête, avec les décalages vers lesquels il va : c'est là qu'une liste infinie ajoute ses éléments suivants, pour qu'ils soient en place avant l'arrêt du scroll.
 
 ## Drag
 

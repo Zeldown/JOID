@@ -894,6 +894,39 @@ public class NodeTest {
 	}
 
 	@Test
+	public void announcesTheEndOfAScrollAsSoonAsItAimsAtIt() {
+		final List<String> events = new ArrayList<>();
+		final ContainerNode row = NodeTest.row().onScrollEnding((container, scrollX, scrollY) -> events.add("ending " + scrollX)).onScrollEnd((container, scrollX, scrollY) -> events.add("end " + scrollX));
+		this.bridges.open(new NodeUI(row));
+		row.setScrollX(-1000D);
+		Assert.assertEquals(Arrays.asList("ending -300.0"), events);
+		row.setScrollX(-2000D);
+		this.bridges.frames(200);
+		Assert.assertEquals(Arrays.asList("ending -300.0", "end -300.0"), events);
+	}
+
+	@Test
+	public void announcesTheEndOfAVerticalScrollWithTheOffsetsItHeadsTo() {
+		final List<Double> endings = new ArrayList<>();
+		final ContainerNode column = NodeTest.column().onScrollEnding((container, scrollX, scrollY) -> endings.add(scrollY));
+		this.bridges.open(new NodeUI(column));
+		column.setScrollY(-1000D);
+		Assert.assertEquals(Arrays.asList(-200D), endings);
+		Assert.assertEquals(0D, column.getScrollY(), 0D);
+	}
+
+	@Test
+	public void announcesTheEndAgainOnceTheScrollComesBackToIt() {
+		final List<Double> endings = new ArrayList<>();
+		final ContainerNode row = NodeTest.row().onScrollEnding((container, scrollX, scrollY) -> endings.add(scrollX));
+		this.bridges.open(new NodeUI(row));
+		row.setScrollX(-1000D);
+		row.setScrollX(-100D);
+		row.setScrollX(-1000D);
+		Assert.assertEquals(Arrays.asList(-300D, -300D), endings);
+	}
+
+	@Test
 	public void scrollsToAShareOfItsOverflow() {
 		final ContainerNode row = NodeTest.row();
 		final ContainerNode column = NodeTest.column();

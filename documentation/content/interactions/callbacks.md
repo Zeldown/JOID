@@ -38,9 +38,10 @@ node.onKeyPressed((n, character, key) -> { });                                  
 ```java
 node.onScrollUpdate((n, value) -> { });                                           // NodeScrollUpdateCallback
 node.onScrollEnd((n, scrollX, scrollY) -> { });                                   // NodeScrollEndCallback
+node.onScrollEnding((n, scrollX, scrollY) -> { });                                // NodeScrollEndingCallback
 ```
 
-`onScrollUpdate` fires on each scroll tick with the scroll offset it aims at; `onScrollEnd` fires once the scroll comes to rest at the end of the content, with the final `(scrollX, scrollY)` offsets. Leaving the end before the scroll rests cancels it.
+`onScrollUpdate` fires on each scroll tick with the scroll offset it aims at; `onScrollEnd` fires once the scroll comes to rest at the end of the content, with the final `(scrollX, scrollY)` offsets. Leaving the end before the scroll rests cancels it. `onScrollEnding` fires as soon as the scroll aims at the end, before it rests, with the offsets it heads to: append the next items of an infinite list there, so they are in place before the scroll stops.
 
 ## Drag
 

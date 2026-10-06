@@ -51,6 +51,7 @@ import dev.joid.lib.ui.node.callback.impl.mouse.NodeMousePressedCallback;
 import dev.joid.lib.ui.node.callback.impl.mouse.NodeMouseReleasedCallback;
 import dev.joid.lib.ui.node.callback.impl.mouse.NodeMouseScrollCallback;
 import dev.joid.lib.ui.node.callback.impl.scroll.NodeScrollEndCallback;
+import dev.joid.lib.ui.node.callback.impl.scroll.NodeScrollEndingCallback;
 import dev.joid.lib.ui.node.callback.impl.scroll.NodeScrollUpdateCallback;
 import dev.joid.lib.ui.node.callback.impl.signal.NodeMountCallback;
 import dev.joid.lib.ui.node.callback.impl.signal.NodeWatchCallback;
@@ -114,6 +115,7 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_ANIMATION      = NodeCallbackRegistry.next(NodeAnimationCallback.class);
 
 	private static final int CALLBACK_SCROLL_END     = NodeCallbackRegistry.next(NodeScrollEndCallback.class);
+	private static final int CALLBACK_SCROLL_ENDING  = NodeCallbackRegistry.next(NodeScrollEndingCallback.class);
 	private static final int CALLBACK_SCROLL_UPDATE  = NodeCallbackRegistry.next(NodeScrollUpdateCallback.class);
 
 	private static final int CALLBACK_DRAG           = NodeCallbackRegistry.next(NodeDragCallback.class);
@@ -902,7 +904,10 @@ public abstract class Node implements INode {
 			this.targetScrollX = Math.min(value, 0);
 			if (this.targetScrollX <= -this.maxScrollX) {
 				this.targetScrollX = -this.maxScrollX;
-				this.scrollEndX = this.scrollEndX || oldValue != this.targetScrollX;
+				if (oldValue != this.targetScrollX) {
+					this.scrollEndX = true;
+					this.executeCallback(Node.CALLBACK_SCROLL_ENDING, InternalContext.create(), this.targetScrollX, this.targetScrollY);
+				}
 			} else {
 				this.scrollEndX = false;
 			}
@@ -921,7 +926,10 @@ public abstract class Node implements INode {
 			this.targetScrollY = Math.min(value, 0);
 			if (this.targetScrollY <= -this.maxScrollY) {
 				this.targetScrollY = -this.maxScrollY;
-				this.scrollEndY = this.scrollEndY || oldValue != this.targetScrollY;
+				if (oldValue != this.targetScrollY) {
+					this.scrollEndY = true;
+					this.executeCallback(Node.CALLBACK_SCROLL_ENDING, InternalContext.create(), this.targetScrollX, this.targetScrollY);
+				}
 			} else {
 				this.scrollEndY = false;
 			}
@@ -1775,6 +1783,10 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T onScrollEnd(final @NonNull NodeScrollEndCallback<T> callback) {
 		return this.registerCallback(Node.CALLBACK_SCROLL_END, callback);
+	}
+
+	public final <T extends Node> @NonNull T onScrollEnding(final @NonNull NodeScrollEndingCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_SCROLL_ENDING, callback);
 	}
 
 	public final <T extends Node> @NonNull T onScrollUpdate(final @NonNull NodeScrollUpdateCallback<T> callback) {

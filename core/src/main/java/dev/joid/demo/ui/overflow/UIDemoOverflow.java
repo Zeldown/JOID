@@ -31,7 +31,7 @@ public class UIDemoOverflow extends UIDemo {
 			.overflow(OverflowProperty.SCROLL)
 			.scrollbar(DemoScrollbarNode.create(0, -20D, 30D, 10D, BoundingBox.create(0, -20D, 1920D / 2D, 10D)))
 			.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
-			.onScrollEnd((node, scrollX, scrollY) -> {
+			.onScrollEnding((node, scrollX, scrollY) -> {
 				RectNode.create(
 						0D,
 						10D,
