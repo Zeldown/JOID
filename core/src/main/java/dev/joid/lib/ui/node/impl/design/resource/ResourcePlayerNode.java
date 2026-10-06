@@ -2,6 +2,8 @@ package dev.joid.lib.ui.node.impl.design.resource;
 
 import java.util.Optional;
 
+import javax.vecmath.Vector3f;
+
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
@@ -35,6 +37,10 @@ public class ResourcePlayerNode extends Node {
 	private boolean loop;
 	private float volume = 1F;
 	private boolean autoplay = true;
+
+	private Vector3f location;
+	private Float    maxDistance;
+	private Float    referenceDistance;
 
 	private StretchType stretchType = StretchType.STRETCH;
 
@@ -81,7 +87,20 @@ public class ResourcePlayerNode extends Node {
 
 		if (!this.resourceStarted) {
 			this.resourceStarted = true;
-			this.getVideo().ifPresent(video -> video.volume(this.volume));
+			this.getVideo().ifPresent(video -> {
+				video.volume(this.volume);
+				if (this.location != null) {
+					video.location(this.location.x, this.location.y, this.location.z);
+				}
+
+				if (this.maxDistance != null) {
+					video.maxDistance(this.maxDistance);
+				}
+
+				if (this.referenceDistance != null) {
+					video.referenceDistance(this.referenceDistance);
+				}
+			});
 			this.getPlayback().ifPresent(playback -> {
 				playback.stop().seek(0D).loop(this.loop).autoplay(this.autoplay);
 				if (this.autoplay) {
@@ -95,7 +114,7 @@ public class ResourcePlayerNode extends Node {
 			final boolean playing = playback.get().isPlaying();
 			if (playing && !this.wasPlaying) {
 				super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, InternalContext.create());
-			} else if (!playing && this.wasPlaying && !playback.get().isPaused()) {
+			} else if (!playing && this.wasPlaying && !playback.get().isPaused() && !this.loop) {
 				super.executeCallback(ResourcePlayerNode.CALLBACK_END, InternalContext.create());
 			}
 
@@ -204,16 +223,19 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T location(final float x, final float y, final float z) {
+		this.location = new Vector3f(x, y, z);
 		this.getVideo().ifPresent(video -> video.location(x, y, z));
 		return (T) this;
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T referenceDistance(final float distance) {
+		this.referenceDistance = distance;
 		this.getVideo().ifPresent(video -> video.referenceDistance(distance));
 		return (T) this;
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T maxDistance(final float distance) {
+		this.maxDistance = distance;
 		this.getVideo().ifPresent(video -> video.maxDistance(distance));
 		return (T) this;
 	}

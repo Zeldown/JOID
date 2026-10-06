@@ -35,7 +35,7 @@ Query state:
 node.isPlaying();
 node.isPaused();
 node.getDuration();             // seconds
-node.getProgress();             // 0.0 → 1.0
+node.getProgress();             // 0.0 → 1.0, the start of the frame shown: just under 1.0 at the end
 node.getPlayback();             // Optional<IResourcePlayback>, for videos and animations
 node.getVideo();                // Optional<VideoResourceDecoder>, for videos only
 node.getVideo().map(VideoResourceDecoder::getFrameRate).orElse(0D);
@@ -75,7 +75,7 @@ node.maxDistance(float);                            // muted beyond this
 VideoAudioPlayer.setAudioListener(() -> new Vector3f(listenerX, listenerY, listenerZ));
 ```
 
-The `AudioListener` is a `Supplier<Vector3f>` — you provide your own listener position logic (player location, camera position, etc.). If not set, the fade is skipped and volume is flat.
+The `AudioListener` is a functional interface whose `getListenerPosition()` returns a `Vector3f` — you provide your own listener position logic (player location, camera position, etc.). If not set, the fade is skipped and volume is flat.
 
 ## Example — fullscreen toggle
 
@@ -124,7 +124,7 @@ Videos — MP4, MOV, WebM, MKV, AVI — play through FFmpeg, with their audio. G
 
 ## Best practices
 
-- **Use `release()` before swapping many times.** The decoder holds a thread, temp file, and audio source — cleaning up matters for long-running apps.
+- **Swap through `.resource(newResource)`.** The decoder holds a thread, temp file, and audio source: `.resource(...)` releases the previous one, and so does removing the node.
 - **Set `autoplay(false)` for user-triggered playback.** Otherwise the video starts as soon as the resource decodes.
 - **Prefer `.location(x, y, z) + setAudioListener` for world audio.** Setting volume manually each frame is less efficient.
 - **Don't keep a reference to a disposed decoder.** Call `getPlayback()` or `getVideo()` each time — they are empty once the resource is gone.

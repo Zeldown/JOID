@@ -35,7 +35,7 @@ Requêter l'état :
 node.isPlaying();
 node.isPaused();
 node.getDuration();             // secondes
-node.getProgress();             // 0.0 → 1.0
+node.getProgress();             // 0.0 → 1.0, le début de l'image affichée : un peu moins de 1.0 à la fin
 node.getPlayback();             // Optional<IResourcePlayback>, pour vidéos et animations
 node.getVideo();                // Optional<VideoResourceDecoder>, pour les vidéos seulement
 node.getVideo().map(VideoResourceDecoder::getFrameRate).orElse(0D);
@@ -75,7 +75,7 @@ node.maxDistance(float);                            // muet au-delà
 VideoAudioPlayer.setAudioListener(() -> new Vector3f(listenerX, listenerY, listenerZ));
 ```
 
-L'`AudioListener` est un `Supplier<Vector3f>` — vous fournissez votre propre logique de position de listener (position du joueur, de la caméra, etc.). S'il n'est pas défini, le fade est skipé et le volume est constant.
+L'`AudioListener` est une interface fonctionnelle dont `getListenerPosition()` renvoie un `Vector3f` — vous fournissez votre propre logique de position de listener (position du joueur, de la caméra, etc.). S'il n'est pas défini, le fade est skipé et le volume est constant.
 
 ## Exemple — toggle plein écran
 
@@ -124,7 +124,7 @@ Les vidéos — MP4, MOV, WebM, MKV, AVI — se lisent via FFmpeg, avec leur son
 
 ## Bonnes pratiques
 
-- **Utilisez `release()` avant de swap plusieurs fois.** Le décodeur détient un thread, un fichier temp et une source audio — le cleanup compte pour les apps longues.
+- **Changez de ressource via `.resource(newResource)`.** Le décodeur détient un thread, un fichier temp et une source audio : `.resource(...)` libère le précédent, tout comme le retrait du nœud.
 - **Mettez `autoplay(false)` pour une lecture déclenchée par l'utilisateur.** Sinon la vidéo démarre dès le décodage.
 - **Préférez `.location(x, y, z) + setAudioListener` pour l'audio monde.** Régler le volume manuellement à chaque frame est moins efficient.
 - **Ne gardez pas de référence à un décodeur disposé.** Appelez `getPlayback()` ou `getVideo()` à chaque fois — ils sont vides une fois la ressource partie.

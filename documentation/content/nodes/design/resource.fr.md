@@ -57,11 +57,13 @@ node.linear(true);   // smooth (défaut)
 node.linear(false);  // nearest-neighbor (pixel art)
 ```
 
+`linear` s'applique aux ressources déjà posées : appelez-le après `resource(...)`.
+
 ## Teinte de couleur
 
 ```java
-node.color(Color.decode("#4a90e2"));              // tint
-node.color(Color.WHITE, Color.decode("#ef4444")); // tint + tint de hover
+node.color(Color.decode("#4a90e2"));                           // tint
+node.color(Color.WHITE).hoveredColor(Color.decode("#ef4444")); // tint + tint de hover
 ```
 
 ## Dimensionnement partiel

@@ -3,6 +3,7 @@ package dev.joid.lib.resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -97,12 +98,20 @@ public final class ResourceBuilder {
 
 		final Asset asset = Asset.of(input);
 		if (asset.isRemote()) {
-			return this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), null), resource -> resource.dispatch(() -> {
-				resource.decoder(ResourceFormat.decoder(asset));
-				if (callback != null) {
-					callback.accept(resource);
-				}
-			}));
+			final AtomicBoolean created = new AtomicBoolean();
+			final Resource resource = this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), null), computed -> {
+				created.set(true);
+				computed.dispatch(() -> {
+					computed.decoder(ResourceFormat.decoder(asset));
+					if (callback != null) {
+						callback.accept(computed);
+					}
+				});
+			});
+			if (!created.get() && callback != null) {
+				callback.accept(resource);
+			}
+			return resource;
 		}
 
 		final Resource resource = this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), ResourceFormat.decoder(asset)));

@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -37,6 +36,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private final AtomicBoolean paused = new AtomicBoolean(false);
 	private final AtomicBoolean running = new AtomicBoolean(false);
 	private final AtomicInteger decodedFrameIndex = new AtomicInteger(0);
+	private final AtomicInteger seeks = new AtomicInteger(0);
 
 	private File   file;
 	private String codec;
@@ -49,6 +49,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	private volatile boolean ended;
 	private volatile double loopOffset;
+	private volatile double seekTime;
 	private volatile int displayedFrameIndex;
 
 	private long startTime;
@@ -60,6 +61,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private ITexture[] textures;
 	private boolean texturesAllocated;
 
+	private int videoWidth;
 	private int totalFrames;
 	private double duration;
 	private double frameRate;
@@ -126,7 +128,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 				this.grabber = this.open();
 
-				resource.width(this.grabber.getImageWidth());
+				resource.width(this.videoWidth);
 				resource.height(this.grabber.getImageHeight());
 
 				this.frameRate = this.grabber.getVideoFrameRate();
@@ -153,7 +155,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 				final Frame firstFrame = this.grabber.grabImage();
 				if (firstFrame != null) {
-					final int[] pixels = this.frameToPixels(firstFrame, resource.getWidth(), resource.getHeight());
+					final int[] pixels = this.frameToPixels(firstFrame, this.grabber.getImageWidth(), resource.getHeight());
 					resource.data(new int[][] { pixels });
 				}
 			} catch (final Exception e) {
@@ -270,6 +272,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 		if (this.grabber == null) {
 			this.reopenGrabber();
+		} else if (this.decodedFrameIndex.get() > 0) {
+			this.seekInternal(0L);
 		}
 
 		this.displayedFrameIndex = 0;
@@ -438,6 +442,15 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		}
 		grabber.start();
 
+		this.videoWidth = grabber.getImageWidth();
+		if (this.videoWidth % 8 != 0) {
+			final int height = grabber.getImageHeight();
+			grabber.stop();
+			grabber.setImageWidth((this.videoWidth + 7) / 8 * 8);
+			grabber.setImageHeight(height);
+			grabber.start();
+		}
+
 		if (this.codec != null || !"1".equals(grabber.getVideoMetadata("alpha_mode"))) {
 			return grabber;
 		}
@@ -466,6 +479,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				return;
 			}
 
+			this.seeks.incrementAndGet();
 			if (this.frameQueue != null) {
 				this.frameQueue.clear();
 			}
@@ -483,6 +497,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.startTime = now - microseconds * 1000L;
 			this.pauseTime = now;
 			this.loopOffset = 0D;
+			this.seekTime = microseconds / 1000000D;
 			this.ended = false;
 
 			if (this.audioPlayer != null) {
@@ -501,16 +516,19 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				double lastTime = 0D;
 				while (this.running.get() && !Thread.currentThread().isInterrupted()) {
 					final DecodedFrame decoded;
+					final int seek;
 					synchronized (this.grabberLock) {
 						if (this.released || this.grabber == null) {
 							return;
 						}
 
+						seek = this.seeks.get();
 						final Frame frame = this.grabber.grab();
 						if (frame == null) {
 							if (this.loop) {
 								this.loopOffset = lastTime + 1D / this.frameRate;
 								this.grabber.setTimestamp(0);
+								this.seekTime = 0D;
 								this.decodedFrameIndex.set(0);
 								continue;
 							}
@@ -527,6 +545,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 						}
 
 						final double mediaTime = frame.timestamp / 1000000D;
+						if (mediaTime + 0.5D / this.frameRate < this.seekTime) {
+							continue;
+						}
+
 						lastTime = this.loopOffset + mediaTime;
 						decoded = new DecodedFrame(lastTime, this.frameToPixels(frame, this.grabber.getImageWidth(), this.grabber.getImageHeight()), mediaTime);
 						this.decodedFrameIndex.incrementAndGet();
@@ -534,7 +556,17 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 					boolean queued = false;
 					while (!queued && this.running.get()) {
-						queued = this.frameQueue.offer(decoded, 50L, TimeUnit.MILLISECONDS);
+						synchronized (this.grabberLock) {
+							if (seek != this.seeks.get()) {
+								break;
+							}
+
+							queued = this.frameQueue.offer(decoded);
+						}
+
+						if (!queued) {
+							Thread.sleep(5L);
+						}
 					}
 				}
 			} catch (final InterruptedException ignored) {
@@ -549,22 +581,25 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	private int[] frameToPixels(final @NonNull Frame frame, final int width, final int height) {
 		if (frame.image == null || frame.image[0] == null) {
-			return new int[width * height];
+			return new int[this.videoWidth * height];
 		}
 
 		final ByteBuffer buffer = (ByteBuffer) frame.image[0];
 		buffer.rewind();
-		final int[] pixels = new int[width * height];
-		final int stride = frame.imageStride;
+		final int[] pixels = new int[this.videoWidth * height];
+		final IntBuffer intBuffer = buffer.asIntBuffer();
+		final int strideInts = frame.imageStride / 4;
+		if (width == this.videoWidth && strideInts == width) {
+			intBuffer.get(pixels);
+			return pixels;
+		}
 
-		if (stride == width * 4) {
-			buffer.asIntBuffer().get(pixels);
-		} else {
-			final IntBuffer intBuffer = buffer.asIntBuffer();
-			final int strideInts = stride / 4;
-			for (int y = 0; y < height; y++) {
-				intBuffer.position(y * strideInts);
-				intBuffer.get(pixels, y * width, width);
+		final int[] row = new int[width];
+		for (int y = 0; y < height; y++) {
+			intBuffer.position(y * strideInts);
+			intBuffer.get(row, 0, width);
+			for (int x = 0; x < this.videoWidth; x++) {
+				pixels[y * this.videoWidth + x] = row[x * width / this.videoWidth];
 			}
 		}
 

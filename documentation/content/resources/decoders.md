@@ -10,19 +10,19 @@ The contract:
 
 ```java
 public interface IResourceDecoder {
-    default public void init(final @NonNull ResourceData resource) {}
-    default public void prepare(final @NonNull ResourceData resource) {}
-    default public void decode(final @NonNull ResourceData resource) {}
-    default public void upload(final @NonNull ResourceData resource) {}
+    public void init(final @NonNull ResourceData resource);
+    public void prepare(final @NonNull ResourceData resource);
+    public void decode(final @NonNull ResourceData resource);
+    public void upload(final @NonNull ResourceData resource);
     default public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async) {}
-    default public void update(final @NonNull ResourceData resource) {}
-    default public void clear(final @NonNull ResourceData resource) {}
+    public void update(final @NonNull ResourceData resource);
+    public void clear(final @NonNull ResourceData resource);
     default public boolean isSettled() { return true; }
     default public boolean isMipmappable() { return true; }
 }
 ```
 
-Lifecycle:
+`request`, `isSettled` and `isMipmappable` have a default; every other method is yours to write. Lifecycle:
 
 1. **`init`** — right after construction, with the `ResourceData` parent attached.
 2. **`prepare`** — called on the render thread before decode. Create placeholder textures here with `BridgeHandler.RENDER.get().createTexture()`.
@@ -87,7 +87,7 @@ For playback control, wrap in a [ResourcePlayerNode](../nodes/design/resource-pl
 Control the playback of any animated resource through `Resource.getPlayback()`:
 
 ```java
-resource.getPlayback().ifPresent(playback -> playback.seek(10D).play());
+resource.getPlayback().ifPresent(playback -> playback.play().seek(10D));  // play() starts from the beginning: seek after it
 double progress = resource.getPlayback().map(IResourcePlayback::getProgress).orElse(0D);
 ```
 
@@ -105,6 +105,9 @@ public class QoiResourceDecoder implements IResourceDecoder {
     public QoiResourceDecoder(final Asset asset) {
         this.asset = asset;
     }
+
+    @Override
+    public void init(final ResourceData resource) {}
 
     @Override
     public void prepare(final ResourceData resource) {
@@ -128,6 +131,9 @@ public class QoiResourceDecoder implements IResourceDecoder {
     public void upload(final ResourceData resource) {
         resource.getTextures()[0].allocate(this.width, this.height).upload(this.pixels, this.width, this.height);
     }
+
+    @Override
+    public void update(final ResourceData resource) {}
 
     @Override
     public void clear(final ResourceData resource) {

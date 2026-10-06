@@ -12,8 +12,10 @@ Resource res = Resource.of(myImage);               // BufferedImage
 Resource res = Resource.of("https://...");         // String URL — télécharge en async
 Resource res = Resource.of(texture);               // ITexture — enrobe une texture créée par le bridge de rendu
 
-Resource res = Resource.of(input, callback);       // n'importe lequel + notification quand prêt
+Resource res = Resource.of(input, callback);       // n'importe lequel + callback avec la Resource
 ```
+
+Le callback reçoit la `Resource` tout de suite pour une entrée locale, avant tout décodage, et une fois téléchargée pour une entrée distante, même déjà en cache.
 
 Les entrées déjà décodées partent vers un [résolveur](resolvers.md) ; tout le reste devient un [asset](assets.md) et se décode depuis ses octets. Pour apprendre à JOID un handle à vous — une `ResourceLocation` MC, une clé de CDN, une entrée d'archive — enregistrez un localisateur d'asset : il servira d'un coup les textures, les vidéos et les polices.
 
@@ -61,7 +63,7 @@ Resource res = ResourceBuilder.create().async().of(stream);
 
 Avec `async()`, le decode tourne sur un pool de threads en arrière-plan. Le nœud rend un placeholder skeleton en attendant.
 
-`blocking()` force un decode synchrone — l'appel bloque jusqu'à ce que l'image soit sur le GPU. À réserver aux assets de démarrage.
+`blocking()` force un decode synchrone — le décodage a lieu au premier dessin, qui attend que l'image soit sur le GPU. À réserver aux assets de démarrage.
 
 ## Chargement depuis une URL
 
