@@ -84,6 +84,7 @@ ThemeToggleNode
 - Each click writes the new side into the signal, before `onChange` runs.
 - Each value the signal publishes later sets the side, and calls `onChange` when it changes, while the toggle's UI is open.
 - `toggle(boolean)` writes the signal too.
+- The toggle follows one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer sets the side nor receives it.
 
 ## onChange
 

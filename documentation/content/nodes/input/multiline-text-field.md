@@ -115,7 +115,7 @@ This field refuses an eleventh line.
 
 ## Binding a signal with signal
 
-`signal(Signal<String>)` keeps the text and a signal in sync, both ways, like [`TextFieldNode.signal(...)`](text-field.md#binding-a-signal-with-signal): the field starts on the signal's text, each change of the text writes into the signal before `onChange` runs, and each value the signal publishes replaces the text while the field's UI is open.
+`signal(Signal<String>)` keeps the text and a signal in sync, both ways, like [`TextFieldNode.signal(...)`](text-field.md#binding-a-signal-with-signal): the field starts on the signal's text, each change of the text writes into the signal before `onChange` runs, and each value the signal publishes replaces the text while the field's UI is open. Calling `signal(...)` again unbinds the previous signal: the field follows one signal at a time.
 
 ## Reference
 

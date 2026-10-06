@@ -99,6 +99,7 @@ SegmentedSwitchNode
 - Each `index(...)` writes the name of the new state into the signal, before `(node, state)` runs.
 - Each value the signal publishes later selects that state through `index(...)`, while the switch's UI is open. A name that is not one of the states is ignored.
 - Call `signal(...)` after `state(...)`: the signal's value is applied once, when you bind it, and only an existing state can be selected. `state(...)` and `index(...)` write the signal and call `onChange` when the state changes; selecting the current state again does nothing.
+- The switch follows one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer selects a state nor receives the new ones.
 
 ## Building the children
 

@@ -1089,6 +1089,22 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void followsOnlyItsLastSignal() {
+		final Signal<String> name = new Signal<>("Alex");
+		final Signal<String> nickname = new Signal<>("Al");
+		final TextFieldNode field = this.field("").signal(name).signal(nickname);
+		Assert.assertEquals("Al", field.getText());
+		field.text("Sam");
+		Assert.assertEquals("Sam", nickname.getOrDefault());
+		Assert.assertEquals("Alex", name.getOrDefault());
+		name.set("Max");
+		Assert.assertEquals("Sam", field.getText());
+		Assert.assertSame(nickname, field.getSignal());
+		Assert.assertTrue(name.getEventSet().isEmpty());
+		Assert.assertEquals(1, nickname.getEventSet().size());
+	}
+
+	@Test
 	public void readsItsTextAsItsValue() {
 		final TextFieldNode field = this.field("abc");
 		Assert.assertEquals("abc", field.getValue());

@@ -93,7 +93,7 @@ DifficultySelectorNode
 ```
 
 - Call `signal(...)` after `values(...)`: the signal's value is applied once, when you bind it, and it can only select an existing option.
-- The selector follows the signal while its UI is open.
+- The selector follows the signal while its UI is open, and one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer selects an option nor receives the picked values.
 - Any other node can [watch](../../state/watch.md) the same signal to follow the selection.
 
 ## Options and layout

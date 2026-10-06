@@ -275,7 +275,7 @@ Declare setters as `public final <T extends YourNode> T name(...)` and end them 
 
 ## Binding a signal with bind
 
-`bind(Signal<V> signal, Consumer<V> consumer)` is `protected final`: it runs `consumer` at once with the signal's current value (when it is not `null`), then with each value the signal publishes, while the node's UI is open. The input controls build their `signal(...)` method on it, and write the signal with `sync(Signal<V> signal, V value)`, also `protected final`, which sets the signal only when it is bound and holds another value. A two-way binding for `SwatchNode` stores the signal, follows it with `bind`, and writes it in the click action:
+`bind(Signal<V> signal, Consumer<V> consumer)` is `protected final`: it runs `consumer` at once with the signal's current value (when it is not `null`), then with each value the signal publishes, while the node's UI is open. A node has one binding: each call first unsubscribes the node from the signal of the previous `bind`, so a second `signal(...)` replaces the first one. Use [`watch`](../state/watch.md) to follow several signals. The input controls build their `signal(...)` method on it, and write the signal with `sync(Signal<V> signal, V value)`, also `protected final`, which sets the signal only when it is bound and holds another value. A two-way binding for `SwatchNode` stores the signal, follows it with `bind`, and writes it in the click action:
 
 ```java
 private Signal<Boolean> signal;
@@ -315,7 +315,7 @@ context.cancel(() -> this.executeCallback(SwatchNode.CALLBACK_SELECT, InternalCo
 | `INode` hooks | `init`, `draw`, `drawSkeleton`, `update`, `detach`, `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`. |
 | `onMousePressed(double, double, ClickType, InternalContext)`, `onMouseReleased(...)`, `onMouseDragged(double, double, ClickType, long, InternalContext)`, `onMouseScroll(double, double, int, InternalContext)`, `onKeyPressed(char, Key, InternalContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
 | `registerCallback(int, NodeCallback)` | Protected. Stores a callback. |
-| `bind(Signal<V>, Consumer<V>)` | Protected. Runs the consumer with the signal's current value, then with each published value while the UI is open. |
+| `bind(Signal<V>, Consumer<V>)` | Protected. Runs the consumer with the signal's current value, then with each published value while the UI is open. Replaces the previous binding of the node. |
 | `sync(Signal<V>, V)` | Protected. Sets the signal to the value when the signal is not `null` and holds another value. |
 | `executeCallback`, `executePreCallback`, `executePostCallback` | Fire callbacks. |
 | `fireDrag(Runnable)`, `fireDragStart(Runnable)`, `fireDragEnd(Runnable)` | Run an action inside the drag callbacks. |

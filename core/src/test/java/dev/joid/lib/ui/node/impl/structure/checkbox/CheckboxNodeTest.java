@@ -75,6 +75,30 @@ public class CheckboxNodeTest {
 	}
 
 	@Test
+	public void followsOnlyItsLastSignal() {
+		final BooleanSignal subtitles = new BooleanSignal(false);
+		final BooleanSignal captions = new BooleanSignal(false);
+		final Checkbox checkbox = new Checkbox().signal(subtitles).signal(captions);
+		final ContainerNode container = ContainerNode.create(0D, 0D, 200D, 200D).append(checkbox);
+		this.bridges.open(new NodeUI(container)).frame();
+		checkbox.checked(true);
+		Assert.assertTrue(captions.getOrDefault());
+		Assert.assertFalse(subtitles.getOrDefault());
+		subtitles.set(true);
+		subtitles.set(false);
+		Assert.assertTrue(checkbox.isChecked());
+		Assert.assertSame(captions, checkbox.getSignal());
+		Assert.assertTrue(subtitles.getEventSet().isEmpty());
+		Assert.assertEquals(1, captions.getEventSet().size());
+		container.remove(checkbox);
+		container.append(checkbox);
+		Assert.assertTrue(subtitles.getEventSet().isEmpty());
+		Assert.assertEquals(1, captions.getEventSet().size());
+		captions.set(false);
+		Assert.assertFalse(checkbox.isChecked());
+	}
+
+	@Test
 	public void writesAChosenStateIntoItsSignal() {
 		final List<Boolean> changes = new ArrayList<>();
 		final BooleanSignal subtitles = new BooleanSignal(false);

@@ -111,6 +111,24 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void followsOnlyItsLastSignal() {
+		final Signal<Integer> volume = new Signal<>(5);
+		final Signal<Integer> balance = new Signal<>(3);
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 1).cursor(new Cursor()).signal(volume).signal(balance);
+		this.bridges.open(new NodeUI(slider)).frame();
+		slider.value(7);
+		this.bridges.frame();
+		Assert.assertEquals(7, balance.getOrDefault().intValue());
+		Assert.assertEquals(5, volume.getOrDefault().intValue());
+		volume.set(2);
+		this.bridges.frame();
+		Assert.assertEquals(7, slider.getValue().intValue());
+		Assert.assertSame(balance, slider.getSignal());
+		Assert.assertTrue(volume.getEventSet().isEmpty());
+		Assert.assertEquals(1, balance.getEventSet().size());
+	}
+
+	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(5);

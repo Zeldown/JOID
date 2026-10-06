@@ -135,7 +135,7 @@ The link goes both ways:
 | [TextFieldNode](../nodes/input/text-field.md), [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `signal(Signal<String>)` | The text. |
 | [IntegerFieldNode](../nodes/input/text-field.md#integerfieldnode) | `signal(Signal<Integer>)` | The value, clamped to the range. |
 
-Give the control its values (`values(...)`, `state(...)`) before `signal(...)`: the signal's value can only select one of them.
+Give the control its values (`values(...)`, `state(...)`) before `signal(...)`: the signal's value can only select one of them. A control follows one signal at a time: calling `signal(...)` again replaces the previous one.
 
 ## Sharing state with stores
 

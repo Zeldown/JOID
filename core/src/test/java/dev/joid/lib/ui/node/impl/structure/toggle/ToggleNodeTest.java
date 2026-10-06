@@ -65,6 +65,23 @@ public class ToggleNodeTest {
 	}
 
 	@Test
+	public void followsOnlyItsLastSignal() {
+		final BooleanSignal music = new BooleanSignal(false);
+		final BooleanSignal sounds = new BooleanSignal(false);
+		final Toggle toggle = new Toggle().state("on", 0).signal(music).signal(sounds);
+		this.bridges.open(new NodeUI(toggle)).frame();
+		toggle.toggle(true);
+		Assert.assertTrue(sounds.getOrDefault());
+		Assert.assertFalse(music.getOrDefault());
+		music.set(true);
+		music.set(false);
+		Assert.assertTrue(toggle.isToggle());
+		Assert.assertSame(sounds, toggle.getSignal());
+		Assert.assertTrue(music.getEventSet().isEmpty());
+		Assert.assertEquals(1, sounds.getEventSet().size());
+	}
+
+	@Test
 	public void writesAChosenSideIntoItsSignal() {
 		final List<Object> changes = new ArrayList<>();
 		final BooleanSignal music = new BooleanSignal(false);

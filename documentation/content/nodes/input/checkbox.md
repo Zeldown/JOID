@@ -68,6 +68,7 @@ SettingCheckboxNode
 - Each click writes the new state into the signal, before `onChange` runs.
 - Each value the signal publishes later sets the state, and calls `onChange` when it changes, while the checkbox's UI is open.
 - `checked(boolean)` writes the signal too.
+- The checkbox follows one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer sets the state nor receives it.
 
 `BooleanSignal` is in `dev.joid.lib.utils.signal.impl.primitive`.
 

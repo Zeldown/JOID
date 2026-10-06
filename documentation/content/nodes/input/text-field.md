@@ -293,6 +293,7 @@ TextFieldNode
 - Each change of the text, from the keyboard, the clipboard or `text(String)`, writes the new text into the signal before `onChange` runs.
 - Each value the signal publishes later replaces the text, and calls `onChange` when it changes, while the field's UI is open. A `null` value is ignored.
 - When the filter, the length cut or a `pre(...)` veto keeps a text other than the signal's value, the field writes its own text back into the signal.
+- The field follows one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer replaces the text nor receives it.
 
 `Signal` is in `dev.joid.lib.utils.signal`.
 

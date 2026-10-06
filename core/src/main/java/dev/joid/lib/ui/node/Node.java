@@ -1683,7 +1683,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
-		this.listen(signal, condition, value -> {
+		this.listen(signal, condition, false, value -> {
 			if (this.ui == null) {
 				return;
 			}
@@ -1702,12 +1702,19 @@ public abstract class Node implements INode {
 	}
 
 	protected final <V> void bind(final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
+		for (final SignalSubscriber<?> subscriber : new ArrayList<>(this.subscriptionList)) {
+			final NodeSubscription<?> subscription = (NodeSubscription<?>) subscriber;
+			if (subscription.bound) {
+				subscription.cancel();
+			}
+		}
+
 		final V current = signal.getOrDefault();
 		if (current != null) {
 			consumer.accept(current);
 		}
 
-		this.listen(signal, () -> JOID.isOpen(this.ui), value -> {
+		this.listen(signal, () -> JOID.isOpen(this.ui), true, value -> {
 			if (value != null) {
 				consumer.accept(value);
 			}
@@ -1720,8 +1727,8 @@ public abstract class Node implements INode {
 		}
 	}
 
-	private <V> void listen(final Signal<V> signal, final Supplier<Boolean> condition, final Consumer<V> consumer) {
-		final NodeSubscription<V> subscription = new NodeSubscription<>(signal, condition, consumer);
+	private <V> void listen(final Signal<V> signal, final Supplier<Boolean> condition, final boolean bound, final Consumer<V> consumer) {
+		final NodeSubscription<V> subscription = new NodeSubscription<>(signal, condition, bound, consumer);
 		this.subscriptionList.add(subscription);
 		signal.subscribe(subscription);
 	}
@@ -2034,6 +2041,7 @@ public abstract class Node implements INode {
 
 		private final Signal<V>         signal;
 		private final Supplier<Boolean> condition;
+		private final boolean           bound;
 		private final Consumer<V>       consumer;
 
 		private V value;
@@ -2064,6 +2072,11 @@ public abstract class Node implements INode {
 		private void unsubscribe() {
 			this.value = this.signal.getOrDefault();
 			this.signal.unsubscribe(this);
+		}
+
+		private void cancel() {
+			this.signal.unsubscribe(this);
+			Node.this.subscriptionList.remove(this);
 		}
 
 	}

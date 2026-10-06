@@ -129,6 +129,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 - Each value the user selects is written into the signal, before `onChange` runs.
 - Each value the signal publishes later goes through `value(...)`: the cursor moves to it and `onChange` runs when it changes, while the slider's UI is open. A value outside the values is ignored.
 - Call `signal(...)` after `values(...)` or `valueSet(...)`: the signal's value is applied once, when you bind it, and only an existing value can be selected.
+- The slider follows one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer moves the cursor nor receives the selected values.
 
 ## onChange
 

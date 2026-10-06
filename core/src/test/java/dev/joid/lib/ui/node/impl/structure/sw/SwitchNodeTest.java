@@ -62,6 +62,22 @@ public class SwitchNodeTest {
 	}
 
 	@Test
+	public void followsOnlyItsLastSignal() {
+		final Switch node = this.open();
+		final Signal<String> quality = new Signal<>("high");
+		final Signal<String> shadows = new Signal<>("medium");
+		node.signal(quality).signal(shadows);
+		node.index("low");
+		Assert.assertEquals("low", shadows.getOrDefault());
+		Assert.assertEquals("high", quality.getOrDefault());
+		quality.set("medium");
+		Assert.assertEquals("low", node.getState());
+		Assert.assertSame(shadows, node.getSignal());
+		Assert.assertTrue(quality.getEventSet().isEmpty());
+		Assert.assertEquals(1, shadows.getEventSet().size());
+	}
+
+	@Test
 	public void startsOnAChosenIndex() {
 		final Switch node = this.open();
 		Assert.assertSame(node, node.state(Arrays.asList("off", "on"), 1));

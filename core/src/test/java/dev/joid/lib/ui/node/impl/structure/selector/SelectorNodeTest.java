@@ -222,6 +222,22 @@ public class SelectorNodeTest {
 	}
 
 	@Test
+	public void followsOnlyItsLastSignal() {
+		final Signal<String> language = new Signal<>("second");
+		final Signal<String> subtitles = new Signal<>("first");
+		this.bridges.open(new NodeUI(this.selector.signal(language).signal(subtitles))).frame();
+		this.selector.value("third");
+		Assert.assertEquals("third", subtitles.getOrDefault());
+		Assert.assertEquals("second", language.getOrDefault());
+		language.set("first");
+		this.bridges.frame();
+		Assert.assertEquals("third", this.selector.getValue());
+		Assert.assertSame(subtitles, this.selector.getSignal());
+		Assert.assertTrue(language.getEventSet().isEmpty());
+		Assert.assertEquals(1, subtitles.getEventSet().size());
+	}
+
+	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final Signal<String> language = new Signal<>("first");
 		this.selector.signal(language).value("third").value("third");
