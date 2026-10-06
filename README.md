@@ -4,7 +4,7 @@
 ## Java Open Interface Development
 
 <div align="center">
-  <img align="center" src="https://img.shields.io/badge/version-7.0.1 (e3dd96b)-blue">
+  <img align="center" src="https://img.shields.io/badge/version-8.0.0 (00d946d)-blue">
   <img align="center" src="https://img.shields.io/badge/maintainer-Zeldown-orange">
   <img align="center" src="https://img.shields.io/maintenance/yes/9999">
   <img align="center" src="https://img.shields.io/badge/license-Apache--2.0-blue">
@@ -46,7 +46,7 @@ Download the desired artifact from the [Releases page](https://github.com/Zeldow
 
 ```groovy
 dependencies {
-    compile files('libs/joid-lwjgl2-7.0.1-prod.jar')
+    compile files('libs/joid-lwjgl2-8.0.0-prod.jar')
 }
 ```
 
@@ -56,9 +56,9 @@ dependencies {
 <dependency>
     <groupId>dev.joid</groupId>
     <artifactId>joid</artifactId>
-    <version>7.0.1</version>
+    <version>8.0.0</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/libs/joid-lwjgl2-7.0.1-prod.jar</systemPath>
+    <systemPath>${project.basedir}/libs/joid-lwjgl2-8.0.0-prod.jar</systemPath>
 </dependency>
 ```
 
