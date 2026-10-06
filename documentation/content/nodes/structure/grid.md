@@ -14,13 +14,14 @@ GridNode.create(x, y, width, height)
     .attach(parent);
 ```
 
-Child width determines column count: `floor(width / (childWidth + horizontalMargin))`. New rows start when the current one overflows.
+Child width determines column count: `floor((width + horizontalMargin) / (childWidth + horizontalMargin))`. A new row starts when the next child would overflow the width; a child exactly as wide as the remaining space stays on its row. Without overflow, the grid grows to fit its rows and shrinks back to its original height when they fit again.
 
 ## API
 
 ```java
 grid.horizontalMargin(double);    // gap between columns
 grid.verticalMargin(double);      // gap between rows
+grid.margin(double);              // same gap between columns and rows
 ```
 
 ## Example — icon grid
@@ -54,7 +55,7 @@ If `GridNode`'s own `overflow` is `NONE` and the children exceed the fixed heigh
 
 ## Best practices
 
-- **Use `GridNode` for evenly-sized elements.** For mixed sizes, `FlexNode` with `wrap` is more flexible.
+- **Use `GridNode` for evenly-sized elements.** For mixed sizes, nest `FlexNode` rows in a vertical `FlexNode`.
 - **Combine with `OverflowProperty.SCROLL`** for long lists that need scrolling:
 
 ```java

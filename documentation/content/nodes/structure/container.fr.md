@@ -12,6 +12,8 @@ ContainerNode.create(x, y, width, height)
     .attach(parent);
 ```
 
+`ContainerNode.create(parent)` crée un conteneur de la taille de `parent`, à son origine, déjà attaché à lui.
+
 ## Quand l'utiliser
 
 - Grouper des nœuds pour l'application d'un effet (un `RoundedNodeEffect` partagé).

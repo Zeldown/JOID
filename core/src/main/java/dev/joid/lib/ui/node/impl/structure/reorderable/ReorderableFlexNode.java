@@ -38,6 +38,7 @@ public final class ReorderableFlexNode extends Node {
 	private FlexDirection direction;
 
 	private Node    draggedNode;
+	private int     draggedZindex;
 	private int     initialIndex;
 	private int     currentIndex;
 	private boolean releasing;
@@ -143,6 +144,13 @@ public final class ReorderableFlexNode extends Node {
 	}
 
 	public final @NonNull ReorderableFlexNode direction(final @NonNull FlexDirection direction) {
+		if (this.direction != direction) {
+			for (final Node child : super.getChildren()) {
+				child.x(child.getDefaultX());
+				child.y(child.getDefaultY());
+			}
+		}
+
 		this.direction = direction;
 		return this;
 	}
@@ -180,40 +188,42 @@ public final class ReorderableFlexNode extends Node {
 			return;
 		}
 
-		this.draggedNode = child;
-		this.initialIndex = index;
-		this.currentIndex = index;
-		this.scrollArmed = false;
-		this.dragStartMouseX = mouseX;
-		this.dragStartMouseY = mouseY;
+		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_START, InternalContext.create(), () -> {
+			this.draggedNode = child;
+			this.initialIndex = index;
+			this.currentIndex = index;
+			this.scrollArmed = false;
+			this.dragStartMouseX = mouseX;
+			this.dragStartMouseY = mouseY;
 
-		this.logicalOrder.clear();
-		for (final Node c : super.getChildren()) {
-			this.logicalOrder.add(c);
-		}
-
-		this.childCurrent.clear();
-		double offset = 0D;
-		for (final Node c : super.getChildren()) {
-			this.childCurrent.put(c, offset);
-			if (c.isVisibleProperty()) {
-				offset += this.mainSize(c) + this.margin;
+			this.logicalOrder.clear();
+			for (final Node c : super.getChildren()) {
+				this.logicalOrder.add(c);
 			}
-		}
 
-		this.draggedCurrent = this.childCurrent.get(child);
-		if (this.direction == FlexDirection.COLUMN) {
-			this.dragOffset = mouseY - super.getAbsoluteY() - this.draggedCurrent;
-		} else {
-			this.dragOffset = mouseX - super.getAbsoluteX() - this.draggedCurrent;
-		}
+			this.childCurrent.clear();
+			double offset = 0D;
+			for (final Node c : super.getChildren()) {
+				this.childCurrent.put(c, offset);
+				if (c.isVisibleProperty()) {
+					offset += this.mainSize(c) + this.margin;
+				}
+			}
 
-		child.zindex(Integer.MAX_VALUE);
-		super.getChildren().remove(child);
-		super.getChildren().add(child);
+			this.draggedCurrent = this.childCurrent.get(child);
+			if (this.direction == FlexDirection.COLUMN) {
+				this.dragOffset = mouseY - super.getAbsoluteY() - this.draggedCurrent;
+			} else {
+				this.dragOffset = mouseX - super.getAbsoluteX() - this.draggedCurrent;
+			}
 
-		child.fireDragStart(null);
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_START, InternalContext.create(), child);
+			this.draggedZindex = child.getZindex();
+			child.zindex(Integer.MAX_VALUE);
+			super.getChildren().remove(child);
+			super.getChildren().add(child);
+
+			child.fireDragStart(null);
+		}, child);
 	}
 
 	private void tickDrag(final double mouseX, final double mouseY) {
@@ -248,7 +258,7 @@ public final class ReorderableFlexNode extends Node {
 			}
 
 			final double cSize = this.mainSize(c);
-			final double cCenter = off + cSize / 2D;
+			final double cCenter = c.isVisibleProperty() ? off + cSize / 2D : off;
 			if (cCenter < draggedCenter) {
 				newIndex++;
 			}
@@ -257,16 +267,17 @@ public final class ReorderableFlexNode extends Node {
 			}
 		}
 
-		if (newIndex != this.currentIndex) {
-			this.logicalOrder.remove(dragged);
-			this.logicalOrder.add(newIndex, dragged);
-			this.currentIndex = newIndex;
-		}
-
 		this.autoScrollParent(mouseX, mouseY);
 
 		dragged.fireDrag(null);
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER, InternalContext.create(), dragged);
+		final int index = newIndex;
+		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER, InternalContext.create(), () -> {
+			if (index != this.currentIndex) {
+				this.logicalOrder.remove(dragged);
+				this.logicalOrder.add(index, dragged);
+				this.currentIndex = index;
+			}
+		}, dragged);
 	}
 
 	private double computeDraggedTarget() {
@@ -388,9 +399,7 @@ public final class ReorderableFlexNode extends Node {
 	}
 
 	private void applyReorder() {
-		for (int i = 0; i < this.logicalOrder.size(); i++) {
-			this.logicalOrder.get(i).zindex(i);
-		}
+		this.draggedNode.zindex(this.draggedZindex);
 
 		final List<Node> snapshot = new ArrayList<>(this.logicalOrder);
 		super.getChildren().clear();

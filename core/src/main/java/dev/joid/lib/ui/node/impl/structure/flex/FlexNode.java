@@ -49,6 +49,13 @@ public final class FlexNode extends Node {
 	}
 
 	public final @NonNull FlexNode direction(final @NonNull FlexDirection direction) {
+		if (this.direction != direction) {
+			for (final Node child : super.getChildren()) {
+				child.x(child.getDefaultX());
+				child.y(child.getDefaultY());
+			}
+		}
+
 		this.direction = direction;
 		return this;
 	}

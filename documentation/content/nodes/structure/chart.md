@@ -39,7 +39,7 @@ T axis(YChartAxis y)
 T data(String dataName, ChartData data)
 T remove(String dataName)
 
-boolean isLoaded()                          // axes set + at least one non-empty series
+boolean isLoaded()                          // mounted, axes set, every series non-empty
 Set<String> getLabels()                      // X axis label set
 Map<String, ChartData> getDataMap()
 ChartData getData(String name)

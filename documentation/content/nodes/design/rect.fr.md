@@ -18,9 +18,10 @@ node.color(Color normal, Color hovered);
 node.color(Supplier<Color> colorFn);
 node.color(Supplier<Color> colorFn, Supplier<Color> hoveredColorFn);
 node.hoveredColor(Color color);
+node.hoveredColor(Supplier<Color> colorFn);
 ```
 
-Quand `color` et `hovered` sont tous deux fournis, le renderer interpole via `node.hoverValue(1F)` automatiquement.
+Quand `color` et `hovered` sont tous deux fournis, le renderer interpole via `node.hoverValue(1F)` automatiquement. `getHoveredColor()` et `getHoveredBorderColor()` renvoient un `Optional`, vide sans couleur de survol.
 
 Les couleurs peuvent être flat ou **gradients** — le renderer le détecte et utilise le pipeline de shaders :
 
@@ -35,6 +36,11 @@ node.color(Color.CYAN.toGradient(Color.MAGENTA, new Vector4f(0F, 0F, 0F, 1F))); 
 node.border(Color color, double stroke);
 node.border(Color color, double stroke, boolean fill);
 node.border(Color color, Color hoveredColor, double stroke, boolean fill);
+node.border(Supplier<Color> colorFn, double stroke);
+node.border(Supplier<Color> colorFn, double stroke, boolean fill);
+node.border(Supplier<Color> colorFn, Supplier<Color> hoveredColorFn, double stroke, boolean fill);
+node.hoveredBorderColor(Color color);
+node.hoveredBorderColor(Supplier<Color> colorFn);
 ```
 
 - `stroke` — largeur de bordure en unités logiques.

@@ -29,19 +29,19 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 	}
 
 	public final Number getMax() {
-		final double min = this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
-		final double max = this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
+		final double min = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
+		final double max = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
 		return min == max ? max == 0 ? 1 : max * 2 : max;
 	}
 
 	public final Number getMin() {
-		final double min = this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
-		final double max = this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
+		final double min = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
+		final double max = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
 		return min == max ? 0 : min;
 	}
 
 	public final Number getAverage() {
-		return this.dataList.stream().mapToDouble(data -> data.getValue().doubleValue()).average().orElse(0);
+		return this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).average().orElse(0);
 	}
 
 	public final <T extends RadarChartNode<DATA>> @NonNull T data(final @NonNull DATA data) {

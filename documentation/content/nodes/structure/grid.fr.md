@@ -14,13 +14,14 @@ GridNode.create(x, y, width, height)
     .attach(parent);
 ```
 
-La largeur des enfants détermine le nombre de colonnes : `floor(width / (childWidth + horizontalMargin))`. Une nouvelle rangée commence quand la courante déborde.
+La largeur des enfants détermine le nombre de colonnes : `floor((width + horizontalMargin) / (childWidth + horizontalMargin))`. Une nouvelle rangée commence quand l'enfant suivant dépasserait la largeur ; un enfant exactement aussi large que la place restante reste sur sa rangée. Sans overflow, la grille grandit pour contenir ses rangées et revient à sa hauteur d'origine quand elles tiennent de nouveau.
 
 ## API
 
 ```java
 grid.horizontalMargin(double);    // gap entre colonnes
 grid.verticalMargin(double);      // gap entre rangées
+grid.margin(double);              // même gap entre colonnes et rangées
 ```
 
 ## Exemple — grille d'icônes
@@ -54,7 +55,7 @@ Si l'`overflow` du `GridNode` est `NONE` et que les enfants dépassent la hauteu
 
 ## Bonnes pratiques
 
-- **Utilisez `GridNode` pour des éléments de taille uniforme.** Pour des tailles mixtes, `FlexNode` avec `wrap` est plus flexible.
+- **Utilisez `GridNode` pour des éléments de taille uniforme.** Pour des tailles mixtes, imbriquez des `FlexNode` horizontaux dans un `FlexNode` vertical.
 - **Combinez avec `OverflowProperty.SCROLL`** pour les longues listes à scroller :
 
 ```java

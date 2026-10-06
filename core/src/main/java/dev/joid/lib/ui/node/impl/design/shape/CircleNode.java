@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.design.shape;
 
+import java.util.Optional;
+
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
@@ -18,8 +20,8 @@ public class CircleNode extends Node {
 		this.color = Color.WHITE;
 	}
 
-	public static @NonNull CircleNode create(final double x, final double y, final double radius) {
-		return new CircleNode(x, y, radius);
+	public static @NonNull CircleNode create(final double x, final double y, final double diameter) {
+		return new CircleNode(x, y, diameter);
 	}
 
 	@Override
@@ -35,6 +37,10 @@ public class CircleNode extends Node {
 				Color.LOADING(),
 				super.dw(2D)
 				);
+	}
+
+	public final @NonNull Optional<Color> getHoveredColor() {
+		return Optional.ofNullable(this.hoveredColor);
 	}
 
 	public final <T extends CircleNode> @NonNull T color(final @NonNull Color color) {

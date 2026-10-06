@@ -64,7 +64,7 @@ Pour des listes data-driven réactives :
 
 ```java
 FlexNode.vertical(0, 0, 400).margin(8)
-    .watch(itemSignal, WatchProperty.BODY)
+    .watch(itemSignal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
     .body(list -> {
         for (Item item : itemSignal.getOrDefault()) {
             // rendre chaque
@@ -73,7 +73,7 @@ FlexNode.vertical(0, 0, 400).margin(8)
     .attach(parent);
 ```
 
-`WatchProperty.BODY` relance le consumer `body` au changement de signal sans reconstruire toute l'UI.
+`WatchProperty.CLEAR_CHILDREN` puis `WatchProperty.BODY` retirent les enfants et relancent le consumer `body` au changement de signal sans reconstruire toute l'UI. `BODY` seul ajoute les nouveaux enfants après les anciens.
 
 ## Bonnes pratiques
 

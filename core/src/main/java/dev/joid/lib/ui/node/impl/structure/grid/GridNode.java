@@ -12,10 +12,6 @@ public final class GridNode extends Node {
 	private double verticalMargin;
 	private double horizontalMargin;
 
-	private GridNode(final double x, final double y, final int rows, final int columns) {
-		super(x, y);
-	}
-
 	private GridNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 	}
@@ -61,14 +57,10 @@ public final class GridNode extends Node {
 	}
 
 	private final void updateGrid() {
-		if (super.getChildren().isEmpty()) {
-			return;
-		}
-
 		double ox = 0;
 		double oy = 0;
 		for (final Node child : super.getChildren()) {
-			if (child.getDefaultX() + child.getWidth() + ox >= super.getWidth()) {
+			if (ox > 0 && child.getDefaultX() + child.getWidth() + ox > super.getWidth()) {
 				ox = 0;
 				oy += child.getHeight() + this.verticalMargin;
 			}
@@ -79,9 +71,12 @@ public final class GridNode extends Node {
 			ox += child.getWidth() + this.horizontalMargin;
 		}
 
-		oy += super.getChildren().ordered().get(super.getChildren().size() - 1).getHeight();
-		if (this.getOverflow() == OverflowProperty.NONE && oy > super.getDefaultHeight()) {
-			super.height(oy);
+		if (!super.getChildren().isEmpty()) {
+			oy += super.getChildren().ordered().get(super.getChildren().size() - 1).getHeight();
+		}
+
+		if (super.getOverflow() == OverflowProperty.NONE) {
+			super.height(Math.max(oy, super.getDefaultHeight()));
 		}
 	}
 

@@ -27,7 +27,7 @@ La couleur de hover est interpolée via `hoverValue(1F)` à chaque draw.
 ## Quand utiliser `RectNode + CircleNodeEffect` à la place
 
 - **Gradients** sur le cercle — `RectNode.color(gradient).effect(CircleNodeEffect.create())` passe par le pipeline de shaders et gère le gradient correctement.
-- **Formes d'ellipse** — l'effet utilise `min(width, height)` comme diamètre, donc un `RectNode` non-carré donne un masque en forme d'ellipse.
+- **Nœuds non carrés** — l'effet utilise `min(width, height)` comme diamètre, donc un `RectNode` non carré est masqué au cercle centré dedans.
 - **Bordures ou autres effets** — seul le pipeline de `RectNode` compose les effets.
 
 Le `CircleNode` brut est basé sur `DrawUtils.SHAPE.drawCircle` et ne compose pas de shader passes.
