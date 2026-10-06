@@ -1,9 +1,14 @@
 package dev.joid.lib.ui.core.hook.store;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,7 +126,7 @@ public final class UIStoreHook {
 	private static @NonNull JsonObject loadFile(final @NonNull String id) {
 		try {
 			final File file = UIStoreHook.getFile(id);
-			try (final FileReader reader = new FileReader(file)) {
+			try (final Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
 				return UIStoreHook.GSON.fromJson(reader, JsonObject.class);
 			}
 		} catch (final Exception e) {
@@ -146,9 +151,9 @@ public final class UIStoreHook {
 				}
 			}
 
-			final FileWriter writer = new FileWriter(file);
-			UIStoreHook.GSON.toJson(json, writer);
-			writer.close();
+			try (final Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
+				UIStoreHook.GSON.toJson(json, writer);
+			}
 		} catch (final Exception e) {
 			System.err.println("Failed to save store file: " + id);
 			e.printStackTrace();

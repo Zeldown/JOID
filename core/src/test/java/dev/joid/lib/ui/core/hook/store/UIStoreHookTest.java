@@ -135,6 +135,20 @@ public class UIStoreHookTest {
 	}
 
 	@Test
+	public void writesAPermanentStoreInUtf8() throws IOException {
+		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
+		store.value = "Français";
+		UIStoreHook.saveStore(store);
+		Assert.assertEquals("{\"value\":\"Français\"}", this.read());
+	}
+
+	@Test
+	public void restoresAPermanentStoreFromUtf8() throws IOException {
+		this.write("{\"value\":\"Français\"}");
+		Assert.assertEquals("Français", UIStoreHook.useStore(PermanentStore.class).value);
+	}
+
+	@Test
 	public void writesNothingForAStoreThatIsNotPermanent() {
 		UIStoreHook.saveStore(new LocalStore());
 		UIStoreHook.saveStore(UIStoreHook.useStore(GlobalStore.class));

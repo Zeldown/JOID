@@ -153,7 +153,7 @@ public class SettingsStore extends UIStore {
 }
 ```
 
-- The file is `<config dir>/store/<id>.store`, where the config dir is `JOID.inst().getConfigDir()` (`config` in the working directory unless you call `setConfigDir(File)`). The folder is created on the first save.
+- The file is `<config dir>/store/<id>.store`, where the config dir is `JOID.inst().getConfigDir()` (`config` in the working directory unless you call `setConfigDir(File)`). The folder is created on the first save. The file is JSON, read and written in UTF-8 on every platform.
 - The file holds the `JsonObject` (`com.google.gson.JsonObject`) filled by `save(JsonObject)`, written by Gson.
 - The file is read once, when the store is created. Field initializers have run by then, so `load` only overrides what the file contains.
 - An empty file, or a file that cannot be read or parsed, is deleted and the store starts from `init()`; read and parse errors also print `Failed to load store file: <id>`.
