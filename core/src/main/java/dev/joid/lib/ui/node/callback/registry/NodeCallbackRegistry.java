@@ -61,7 +61,7 @@ public class NodeCallbackRegistry {
 			final NodeCallbackMethod annotation = method.getAnnotation(NodeCallbackMethod.class);
 			if (annotation.value() == type) {
 				if (method.getReturnType() != Void.TYPE) {
-					throw new IllegalArgumentException(method.getDeclaringClass() + " " + type + " method must return a boolean");
+					throw new IllegalArgumentException(method.getDeclaringClass() + " " + type + " method must return void");
 				}
 
 				if (method.getParameterCount() < 2) {

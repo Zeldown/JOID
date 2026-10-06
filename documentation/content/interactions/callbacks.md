@@ -24,7 +24,7 @@ node.onMousePressed((n, mouseX, mouseY, clickType) -> { });                     
 node.onMouseReleased((n, mouseX, mouseY, clickType) -> { });                      // NodeMouseReleasedCallback
 node.onMouseDragged((n, mouseX, mouseY, clickType, deltaTime) -> { });            // NodeMouseDraggedCallback
 node.onMouseScroll((n, mouseX, mouseY, value) -> { });                            // NodeMouseScrollCallback
-node.onClick((n, mouseX, mouseY, clickType) -> { });                              // alias for onMousePressed
+node.onClick((n, mouseX, mouseY, clickType) -> { });                              // NodeMousePressedCallback, only for a press on the node
 ```
 
 ## Keyboard
@@ -40,7 +40,7 @@ node.onScrollUpdate((n, value) -> { });                                         
 node.onScrollEnd((n, scrollX, scrollY) -> { });                                   // NodeScrollEndCallback
 ```
 
-`onScrollUpdate` fires on each scroll tick with the raw wheel value; `onScrollEnd` fires once the scroll animation reaches rest, with the final `(scrollX, scrollY)` percentages.
+`onScrollUpdate` fires on each scroll tick with the scroll offset it aims at; `onScrollEnd` fires once the scroll comes to rest at the end of the content, with the final `(scrollX, scrollY)` offsets. Leaving the end before the scroll rests cancels it.
 
 ## Drag
 
@@ -64,7 +64,7 @@ node.onHover((n, mouseX, mouseY) -> { });                                       
 ## Animation
 
 ```java
-node.onAnimation((n, animator, value) -> { });                                    // NodeAnimationCallback
+node.onAnimate((n, animator, value) -> { });                                      // NodeAnimationCallback
 ```
 
 Fires when a tween animator attached to the node publishes a new value. You get the current `TweenAnimator` and its `float` value.
@@ -97,6 +97,8 @@ final NodeMousePressedCallback<RectNode> myHandler = new NodeMousePressedCallbac
 ```
 
 `InternalContext` has `cancel()`, `cancel(Runnable)`, and `isCancelled()`. Default behaviour (node-level effects like flipping `CheckboxNode.checked`) runs between `pre` and `post`.
+
+Every callback added to a node runs, in the order it was added. A callback that handles the event — the default `post`, or `context.cancel()` — stops it for the other nodes, never for the other callbacks of the same node: `onClick` and `onMousePressed` on one node both fire.
 
 ## `ClickType`
 

@@ -164,7 +164,7 @@ node.onMouseScroll((n, mouseX, mouseY, value) -> { });
 node.onKeyPressed((n, character, keyCode) -> { });
 node.onScrollUpdate((n, value) -> { });
 node.onScrollEnd((n, scrollX, scrollY) -> { });
-node.onAnimation((n, animator, value) -> { });
+node.onAnimate((n, animator, value) -> { });
 node.onDrag((n) -> { });
 node.onSnap((n, snapTarget) -> { });
 node.onWatch((n, signal, properties) -> { });                                   // signaux réactifs

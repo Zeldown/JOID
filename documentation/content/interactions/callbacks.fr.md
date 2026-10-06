@@ -24,7 +24,7 @@ node.onMousePressed((n, mouseX, mouseY, clickType) -> { });                     
 node.onMouseReleased((n, mouseX, mouseY, clickType) -> { });                      // NodeMouseReleasedCallback
 node.onMouseDragged((n, mouseX, mouseY, clickType, deltaTime) -> { });            // NodeMouseDraggedCallback
 node.onMouseScroll((n, mouseX, mouseY, value) -> { });                            // NodeMouseScrollCallback
-node.onClick((n, mouseX, mouseY, clickType) -> { });                              // alias de onMousePressed
+node.onClick((n, mouseX, mouseY, clickType) -> { });                              // NodeMousePressedCallback, seulement pour un clic sur le nœud
 ```
 
 ## Clavier
@@ -40,7 +40,7 @@ node.onScrollUpdate((n, value) -> { });                                         
 node.onScrollEnd((n, scrollX, scrollY) -> { });                                   // NodeScrollEndCallback
 ```
 
-`onScrollUpdate` se déclenche à chaque tick de scroll avec la valeur brute de la molette ; `onScrollEnd` une fois l'animation de scroll stabilisée, avec les pourcentages finaux `(scrollX, scrollY)`.
+`onScrollUpdate` se déclenche à chaque tick de scroll avec le décalage de scroll visé ; `onScrollEnd` une fois le scroll arrêté au bout du contenu, avec les décalages finaux `(scrollX, scrollY)`. Quitter le bout avant l'arrêt du scroll l'annule.
 
 ## Drag
 
@@ -64,7 +64,7 @@ node.onHover((n, mouseX, mouseY) -> { });                                       
 ## Animation
 
 ```java
-node.onAnimation((n, animator, value) -> { });                                    // NodeAnimationCallback
+node.onAnimate((n, animator, value) -> { });                                      // NodeAnimationCallback
 ```
 
 Se déclenche quand un tween animator attaché au nœud publie une nouvelle valeur. Vous recevez le `TweenAnimator` courant et son `float`.
@@ -97,6 +97,8 @@ final NodeMousePressedCallback<RectNode> myHandler = new NodeMousePressedCallbac
 ```
 
 `InternalContext` expose `cancel()`, `cancel(Runnable)`, et `isCancelled()`. Le comportement par défaut (par ex. `CheckboxNode.checked` qui flip) tourne entre `pre` et `post`.
+
+Chaque callback ajouté à un nœud s'exécute, dans l'ordre d'ajout. Un callback qui traite l'événement — le `post` par défaut, ou `context.cancel()` — l'arrête pour les autres nœuds, jamais pour les autres callbacks du même nœud : `onClick` et `onMousePressed` sur un même nœud se déclenchent tous les deux.
 
 ## `ClickType`
 

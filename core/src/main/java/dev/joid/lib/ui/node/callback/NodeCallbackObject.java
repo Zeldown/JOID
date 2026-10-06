@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.callback;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.context.InternalContext;
@@ -17,8 +18,8 @@ public class NodeCallbackObject<T extends NodeCallback> {
 	public NodeCallbackObject(final @NonNull T callback) {
 		this.callback = callback;
 		for (final Method method : callback.getClass().getMethods()) {
-			if (method.isAnnotationPresent(NodeCallbackMethod.class)) {
-				final NodeCallbackMethod annotation = method.getAnnotation(NodeCallbackMethod.class);
+			final NodeCallbackMethod annotation = NodeCallbackObject.findAnnotation(method);
+			if (annotation != null) {
 				if (annotation.value() == NodeCallbackMethod.Type.PRE) {
 					this.pre = method;
 					this.pre.setAccessible(true);
@@ -54,7 +55,7 @@ public class NodeCallbackObject<T extends NodeCallback> {
 			System.out.println("Method: " + String.join(", ", paramTypes));
 			final String[] paramValues = new String[arguments.length];
 			for (int i = 0; i < arguments.length; i++) {
-				paramValues[i] = arguments[i].getClass().getSimpleName();
+				paramValues[i] = arguments[i] == null ? "null" : arguments[i].getClass().getSimpleName();
 			}
 			System.out.println("Values: " + String.join(", ", paramValues));
 			e.printStackTrace();
@@ -81,11 +82,29 @@ public class NodeCallbackObject<T extends NodeCallback> {
 			System.out.println("Method: " + String.join(", ", paramTypes));
 			final String[] paramValues = new String[arguments.length];
 			for (int i = 0; i < arguments.length; i++) {
-				paramValues[i] = arguments[i].getClass().getSimpleName();
+				paramValues[i] = arguments[i] == null ? "null" : arguments[i].getClass().getSimpleName();
 			}
 			System.out.println("Values: " + String.join(", ", paramValues));
 			e.printStackTrace();
 		}
+	}
+
+	private static NodeCallbackMethod findAnnotation(final Method method) {
+		if (method.isAnnotationPresent(NodeCallbackMethod.class)) {
+			return method.getAnnotation(NodeCallbackMethod.class);
+		}
+
+		for (Class<?> type = method.getDeclaringClass(); type != null; type = type.getSuperclass()) {
+			for (final Class<?> parent : type.getInterfaces()) {
+				for (final Method declared : parent.getMethods()) {
+					if (declared.isAnnotationPresent(NodeCallbackMethod.class) && declared.getName().equals(method.getName()) && Arrays.equals(declared.getParameterTypes(), method.getParameterTypes())) {
+						return declared.getAnnotation(NodeCallbackMethod.class);
+					}
+				}
+			}
+		}
+
+		return null;
 	}
 
 }

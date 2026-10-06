@@ -101,7 +101,7 @@ Le nœud tooltip est rendu dans l'overlay de hover, pas comme enfant — il n'af
 
 ## Clamp aux bords d'écran
 
-Si un tooltip dépasserait le bord droit de l'écran, JOID le décale vers la gauche. S'il dépasse le haut, il le décale vers le bas. Activé automatiquement pour les positions `FOLLOW` et `RELATIVE`.
+Si un tooltip dépasserait le bord droit de l'écran, JOID le décale vers la gauche. S'il dépasse le haut, il le décale vers le bas. S'applique à toutes les positions.
 
 ## Callbacks enter / leave / par frame
 

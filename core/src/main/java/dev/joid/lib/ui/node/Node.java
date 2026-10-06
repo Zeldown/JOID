@@ -194,6 +194,9 @@ public abstract class Node implements INode {
 	private double targetScrollX;
 	private double targetScrollY;
 
+	private boolean scrollEndX;
+	private boolean scrollEndY;
+
 	private double lastWidth;
 	private double lastHeight;
 
@@ -392,6 +395,16 @@ public abstract class Node implements INode {
 				if (this.targetScrollY != this.scrollY) {
 					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
 					this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
+				}
+
+				if (this.scrollEndX && this.scrollX == this.targetScrollX) {
+					this.scrollEndX = false;
+					this.executeCallback(Node.CALLBACK_SCROLL_END, InternalContext.create(), this.scrollX, this.scrollY);
+				}
+
+				if (this.scrollEndY && this.scrollY == this.targetScrollY) {
+					this.scrollEndY = false;
+					this.executeCallback(Node.CALLBACK_SCROLL_END, InternalContext.create(), this.scrollX, this.scrollY);
 				}
 
 				if (scrollsX || scrollsY) {
@@ -594,7 +607,10 @@ public abstract class Node implements INode {
 				for (final Supplier<List<String>> hoverSupplier : this.hoverSupplierList) {
 					lines.addAll(hoverSupplier.get());
 				}
-				hoverList.add(new DefaultHoverElement(lines));
+
+				if (!lines.isEmpty()) {
+					hoverList.add(new DefaultHoverElement(lines));
+				}
 			}
 
 			if (!hoverList.isEmpty()) {
@@ -722,15 +738,17 @@ public abstract class Node implements INode {
 		}
 
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMousePressed(mouseX, mouseY, clickType, context));
+		final boolean pressed = context.isCancelled();
 		if (this.isHovered(mouseX, mouseY) && this.hasCallback(Node.CALLBACK_CLICK)) {
 			this.executeCallback(Node.CALLBACK_CLICK, context, mouseX, mouseY, clickType);
 		}
+		final boolean clicked = !pressed && context.isCancelled();
 
 		this.mousePressed(mouseX, mouseY, clickType, context);
 		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMousePressed(mouseX, mouseY, clickType, context));
 
 		if (this.hasCallback(Node.CALLBACK_MOUSE_PRESSED)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, context, mouseX, mouseY, clickType);
+			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, clicked ? InternalContext.create() : context, mouseX, mouseY, clickType);
 		}
 
 		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && clickType.isLeft() && this.isHovered(mouseX, mouseY)) {
@@ -865,9 +883,9 @@ public abstract class Node implements INode {
 			this.targetScrollX = Math.min(value, 0);
 			if (this.targetScrollX <= -this.maxScrollX) {
 				this.targetScrollX = -this.maxScrollX;
-				if (oldValue != this.targetScrollX) {
-					this.executeCallback(Node.CALLBACK_SCROLL_END, InternalContext.create(), this.scrollX, this.scrollY);
-				}
+				this.scrollEndX = this.scrollEndX || oldValue != this.targetScrollX;
+			} else {
+				this.scrollEndX = false;
 			}
 		}, value);
 		return (T) this;
@@ -884,9 +902,9 @@ public abstract class Node implements INode {
 			this.targetScrollY = Math.min(value, 0);
 			if (this.targetScrollY <= -this.maxScrollY) {
 				this.targetScrollY = -this.maxScrollY;
-				if (oldValue != this.targetScrollY) {
-					this.executeCallback(Node.CALLBACK_SCROLL_END, InternalContext.create(), this.scrollX, this.scrollY);
-				}
+				this.scrollEndY = this.scrollEndY || oldValue != this.targetScrollY;
+			} else {
+				this.scrollEndY = false;
 			}
 		}, value);
 		return (T) this;
@@ -993,9 +1011,7 @@ public abstract class Node implements INode {
 			runnable.run();
 		}
 
-		for (final NodeCallbackObject<T> callback : callbackList) {
-			callback.post(this, context, args);
-		}
+		this.post(callbackList, context, args);
 	}
 
 	public final <T extends NodeCallback> void executePreCallback(final int type, final @NonNull InternalContext context, final Object... args) {
@@ -1015,8 +1031,23 @@ public abstract class Node implements INode {
 			return;
 		}
 
+		this.post(callbackList, context, args);
+	}
+
+	private <T extends NodeCallback> void post(final List<NodeCallbackObject<T>> callbackList, final InternalContext context, final Object... args) {
+		final boolean cancelled = context.isCancelled();
+		boolean handled = cancelled;
 		for (final NodeCallbackObject<T> callback : callbackList) {
+			if (!cancelled) {
+				context.reset();
+			}
+
 			callback.post(this, context, args);
+			handled |= context.isCancelled();
+		}
+
+		if (handled) {
+			context.cancel();
 		}
 	}
 
@@ -1647,7 +1678,10 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T hover(final @NonNull HoverSupplier supplier) {
-		this.hoverSupplierList.add(() -> Collections.singletonList(supplier.get()));
+		this.hoverSupplierList.add(() -> {
+			final String line = supplier.get();
+			return line == null ? Collections.emptyList() : Collections.singletonList(line);
+		});
 		return (T) this;
 	}
 

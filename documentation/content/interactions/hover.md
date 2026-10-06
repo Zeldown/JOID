@@ -101,7 +101,7 @@ The tooltip node is rendered in the hover overlay, not as a child — it won't a
 
 ## Screen-bounds clamping
 
-When a tooltip would overflow the right edge of the screen, JOID shifts it left. When it would overflow the top, it shifts down. Enabled automatically for `FOLLOW` and `RELATIVE` positions.
+When a tooltip would overflow the right edge of the screen, JOID shifts it left. When it would overflow the top, it shifts down. Applies to every position.
 
 ## Enter / leave / per-frame callbacks
 
