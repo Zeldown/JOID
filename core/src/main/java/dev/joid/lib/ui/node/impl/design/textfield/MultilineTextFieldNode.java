@@ -2,8 +2,6 @@ package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.function.BiFunction;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
@@ -11,66 +9,22 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.utils.TextOverflow;
 import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
-import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCallback;
-import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldFocusCallback;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
-public class MultilineTextFieldNode extends Node {
-
-	private static final int CALLBACK_FOCUS  = NodeCallbackRegistry.next(NodeTextFieldFocusCallback.class);
-	private static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeTextFieldChangeCallback.class);
-
-	private String   text;
-	private TextInfo info;
-	private String   placeholder;
-
-	private boolean focused;
-	private int maxTextLength;
-	private BiFunction<String, String, String> filter;
-
-	private boolean        markup;
-	private Signal<String> signal;
-
-	private int cursorPos;
-	private int selectionStart;
-
-	private double marginTop;
-	private double marginLeft;
-	private double marginRight;
-	private double marginBottom;
-	private double cursorMargin;
+public class MultilineTextFieldNode extends FieldNode<String, MultilineTextFieldNode> {
 
 	private double yOffset;
-
-	private Key     inputType;
-	private long    lastInput;
-	private boolean inputting;
-	private boolean firstInput;
 
 	protected MultilineTextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.text          = "";
-		this.placeholder   = "";
-		this.focused       = false;
-		this.filter        = (oldText, newText) -> newText;
-		this.maxTextLength = -1;
-
-		this.selectionStart = -1;
-
-		this.margin(2D);
-		this.cursorMargin(-1D);
+		super.margin(2D);
+		super.cursorMargin(-1D);
 	}
 
 	public static @NonNull MultilineTextFieldNode create(final double x, final double y, final double width, final double height) {
@@ -78,24 +32,18 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
+	protected final void drawField() {
+		final String text = super.getText();
+		final TextInfo info = super.getInfo();
 		final double maxWidth = this.getRawWidth();
 		final List<String> lines = this.getLines();
 		final double lineHeight = this.getLineHeight();
-		if (this.cursorMargin == -1D) {
-			this.cursorMargin = lineHeight * 2;
-		}
-
-		if (this.cursorPos > this.text.length()) {
-			this.cursorPos = this.text.length();
-		}
-
-		if (this.selectionStart > this.text.length()) {
-			this.selectionStart = this.text.length();
+		if (super.getCursorMargin() == -1D) {
+			super.cursorMargin(lineHeight * 2);
 		}
 
 		if (this.yOffset > lines.size() * lineHeight) {
-			this.decreaseCursor(0);
+			super.decreaseCursor(0);
 		}
 
 		if (this.yOffset < 0) {
@@ -104,36 +52,36 @@ public class MultilineTextFieldNode extends Node {
 
 		this.yOffset = super.getUi().lerpByFramerate(this.yOffset, this.yOffset, 0.5D, 0.2D, true);
 
-		final double textX = super.getX() + this.marginLeft;
-		final double textY = super.getY() + this.marginTop - this.yOffset;
+		final double textX = super.getX() + super.getMarginLeft();
+		final double textY = super.getY() + super.getMarginTop() - this.yOffset;
 
-		super.getUi().mask(super.getX() + this.marginLeft, super.getY() + this.marginTop, maxWidth, this.getRawHeight(), () -> {
-			if (this.text.isEmpty() && !this.focused) {
-				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), this.placeholder, this.getShownInfo().copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
+		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY() + super.getMarginTop(), maxWidth, this.getRawHeight(), () -> {
+			if (text.isEmpty() && !super.isFocused()) {
+				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), super.getPlaceholder(), super.getShownInfo().copy().color(new Color(info.getColor().r, info.getColor().g, info.getColor().b, 0.5F)), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
 			}
 
 			for (int i = 0; i < lines.size(); i++) {
-				DrawUtils.TEXT.drawText(textX, textY + lineHeight * i, lines.get(i), this.getShownInfo(), Align.START, Align.START);
+				DrawUtils.TEXT.drawText(textX, textY + lineHeight * i, lines.get(i), super.getShownInfo(), Align.START, Align.START);
 			}
 
-			if (this.focused) {
-				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
+			if (super.isFocused()) {
+				final int[] cursorLineCol = this.getLineAndColumn(super.getCursorPos());
 				final int cursorLineIdx = cursorLineCol[0];
 				final int cursorCol = cursorLineCol[1];
 				final String cursorLine = lines.isEmpty() ? "" : lines.get(cursorLineIdx).replace("\n", "").replace("\r", "");
 				final int safeCol = Math.min(cursorCol, cursorLine.length());
 				final double cursorX = textX + this.getTextWidth(cursorLine.substring(0, safeCol));
 				final double cursorY = textY + lineHeight * cursorLineIdx;
-				final Color cursorColor = new Color(this.info.getColor());
+				final Color cursorColor = new Color(info.getColor());
 				final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1) / 2F);
 				cursorColor.a = cursorOpacity;
 				DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
 			}
 
-			if (this.selectionStart != -1 && !lines.isEmpty()) {
+			if (super.getSelectionStart() != -1 && !lines.isEmpty()) {
 				final Color selectionColor = new Color(50, 152, 253, 100);
-				final int start = Math.min(this.cursorPos, this.selectionStart);
-				final int end = Math.max(this.cursorPos, this.selectionStart);
+				final int start = Math.min(super.getCursorPos(), super.getSelectionStart());
+				final int end = Math.max(super.getCursorPos(), super.getSelectionStart());
 
 				final int[] startLineCol = this.getLineAndColumn(start);
 				final int[] endLineCol = this.getLineAndColumn(end);
@@ -185,325 +133,150 @@ public class MultilineTextFieldNode extends Node {
 				}
 			}
 		});
-
-		if (this.inputting && BridgeHandler.CLOCK.get().currentTimeMillis() - this.lastInput >= (this.firstInput ? 500 : 100)) {
-			this.firstInput = false;
-
-			if (!this.inputType.isDown()) {
-				this.inputting = false;
-				return;
-			}
-
-			if (this.inputType == Key.DELETE) {
-				if (this.cursorPos >= this.text.length()) {
-					this.inputting = false;
-					return;
-				}
-
-				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1));
-			} else if (this.inputType == Key.BACKSPACE) {
-				if (this.cursorPos <= 0) {
-					this.inputting = false;
-					return;
-				}
-
-				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
-				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
-				this.decreaseCursor(this.cursorPos - backStart);
-			} else if (this.inputType == Key.LEFT) {
-				this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
-			} else if (this.inputType == Key.RIGHT) {
-				this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
-			}
-
-			this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
-		}
 	}
 
 	@Override
-	public final void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
-		if (context.isCancelled() || !this.focused) {
-			return;
-		}
-
-		context.cancel(() -> {
-			if (key == Key.UP) {
-				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
-				if (cursorLineCol[0] <= 0) {
-					return;
-				}
-
-				final List<String> lines = this.getLines();
-				final String currentLine = lines.get(cursorLineCol[0]).replace("\n", "").replace("\r", "");
-				final int currentCol = Math.min(cursorLineCol[1], currentLine.length());
-				final double cursorX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(currentLine.substring(0, currentCol));
-
-				final int newLineIdx = cursorLineCol[0] - 1;
-				final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
-				int newCol = targetLine.length();
-				for (int i = 0; i < targetLine.length(); i++) {
-					final double colX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(targetLine.substring(0, i)) + this.getTextWidth(targetLine.substring(i, i + 1)) / 2D;
-					if (cursorX < colX) {
-						newCol = i;
-						break;
-					}
-				}
-
-				final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
-				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
-					if (this.selectionStart == -1) {
-						this.selectionStart = this.cursorPos;
-					}
-				} else {
-					this.selectionStart = -1;
-				}
-
-				this.decreaseCursor(this.cursorPos - newCursorPos);
-
-				return;
-			}
-
-			if (key == Key.DOWN) {
-				final List<String> lines = this.getLines();
-				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
-				if (cursorLineCol[0] >= lines.size() - 1) {
-					return;
-				}
-
-				final String currentLine = lines.get(cursorLineCol[0]).replace("\n", "").replace("\r", "");
-				final int currentCol = Math.min(cursorLineCol[1], currentLine.length());
-				final double cursorX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(currentLine.substring(0, currentCol));
-
-				final int newLineIdx = cursorLineCol[0] + 1;
-				final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
-				int newCol = targetLine.length();
-				for (int i = 0; i < targetLine.length(); i++) {
-					final double colX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(targetLine.substring(0, i)) + this.getTextWidth(targetLine.substring(i, i + 1)) / 2D;
-					if (cursorX < colX) {
-						newCol = i;
-						break;
-					}
-				}
-
-				final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
-				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
-					if (this.selectionStart == -1) {
-						this.selectionStart = this.cursorPos;
-					}
-				} else {
-					this.selectionStart = -1;
-				}
-
-				this.increaseCursor(newCursorPos - this.cursorPos);
-
-				return;
-			}
-
-			if (key == Key.LEFT) {
-				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
-					if (this.selectionStart == -1) {
-						this.selectionStart = this.cursorPos;
-					}
-				} else {
-					this.selectionStart = -1;
-				}
-
-				this.holdInput(key);
-				this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
-				return;
-			}
-
-			if (key == Key.RIGHT) {
-				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
-					if (this.selectionStart == -1) {
-						this.selectionStart = this.cursorPos;
-					}
-				} else {
-					this.selectionStart = -1;
-				}
-
-				this.holdInput(key);
-				this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
-				return;
-			}
-
-			if (key == Key.ESCAPE) {
-				this.focused(false);
-				return;
-			}
-
-			if (key == Key.BACKSPACE) {
-				if (this.deleteSelection() || this.cursorPos <= 0) {
-					return;
-				}
-
-				this.holdInput(key);
-				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
-				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
-				this.decreaseCursor(this.cursorPos - backStart);
-				return;
-			}
-
-			if (key == Key.DELETE) {
-				if (this.deleteSelection() || this.cursorPos >= this.text.length()) {
-					return;
-				}
-
-				this.holdInput(key);
-				final int deleteEnd = this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
-				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
-				return;
-			}
-
-			if (key == Key.HOME) {
-				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
-					if (this.selectionStart == -1) {
-						this.selectionStart = this.cursorPos;
-					}
-				} else {
-					this.selectionStart = -1;
-				}
-
-				this.cursorPos = 0;
-				this.decreaseCursor(0);
-				return;
-			}
-
-			if (key == Key.END) {
-				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
-					if (this.selectionStart == -1) {
-						this.selectionStart = this.cursorPos;
-					}
-				} else {
-					this.selectionStart = -1;
-				}
-
-				this.cursorPos = this.text.length();
-				this.increaseCursor(0);
-				return;
-			}
-
-			if (key == Key.A && this.isShortcutKeyDown()) {
-				this.selectionStart = 0;
-				this.cursorPos = this.text.length();
-				return;
-			}
-
-			if (key == Key.C && this.isShortcutKeyDown()) {
-				if (this.selectionStart == -1) {
-					return;
-				}
-
-				if (this.selectionStart < this.cursorPos) {
-					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
-				} else {
-					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
-				}
-
-				return;
-			}
-
-			if (key == Key.X && this.isShortcutKeyDown()) {
-				if (this.selectionStart == -1) {
-					return;
-				}
-
-				if (this.selectionStart < this.cursorPos) {
-					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
-					this.setText(this.text.substring(0, this.selectionStart) + this.text.substring(this.cursorPos));
-					this.cursorPos -= this.cursorPos - this.selectionStart;
-				} else {
-					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
-					this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.selectionStart));
-				}
-
-				this.selectionStart = -1;
-				return;
-			}
-
-			String textToAdd = key == Key.ENTER || key == Key.NUMPAD_ENTER ? "\n" : Character.toString(c);
-			if (key == Key.V && this.isShortcutKeyDown()) {
-				textToAdd = BridgeHandler.WINDOW.get().getClipboard();
-			}
-
-			textToAdd = this.clean(textToAdd);
-			if (textToAdd.isEmpty()) {
-				return;
-			}
-
-			final int start = this.selectionStart == -1 ? this.cursorPos : Math.min(this.selectionStart, this.cursorPos);
-			final int end = this.selectionStart == -1 ? this.cursorPos : Math.max(this.selectionStart, this.cursorPos);
-			if (this.maxTextLength >= 0) {
-				textToAdd = textToAdd.substring(0, Math.min(textToAdd.length(), Math.max(0, this.maxTextLength - this.text.length() + end - start)));
-				if (textToAdd.isEmpty()) {
-					return;
-				}
-			}
-
-			this.selectionStart = -1;
-			this.setText(this.text.substring(0, start) + textToAdd + this.text.substring(end));
-			this.cursorPos = start;
-			this.increaseCursor(textToAdd.length());
-		});
+	protected final boolean isMultiline() {
+		return true;
 	}
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
-			this.focused(false);
-			this.selectionStart = -1;
-			return;
-		}
-
-		context.cancel(() -> {
-			if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
-				if (this.selectionStart == -1) {
-					this.selectionStart = this.cursorPos;
-				}
-			} else {
-				this.selectionStart = -1;
+	protected final boolean handleKey(final @NonNull Key key) {
+		if (key == Key.UP) {
+			final int[] cursorLineCol = this.getLineAndColumn(super.getCursorPos());
+			if (cursorLineCol[0] <= 0) {
+				return true;
 			}
 
 			final List<String> lines = this.getLines();
-			final double lineHeight = this.getLineHeight();
+			final String currentLine = lines.get(cursorLineCol[0]).replace("\n", "").replace("\r", "");
+			final int currentCol = Math.min(cursorLineCol[1], currentLine.length());
+			final double cursorX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(currentLine.substring(0, currentCol));
 
-			int lineIndex = -1;
-			for (int i = 0; i < lines.size(); i++) {
-				final double startLineY = super.getAbsoluteY() + this.marginTop - this.yOffset + lineHeight * i;
-				final double endLineY = startLineY + lineHeight;
-				if (mouseY >= startLineY && mouseY <= endLineY) {
-					lineIndex = i;
+			final int newLineIdx = cursorLineCol[0] - 1;
+			final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
+			int newCol = targetLine.length();
+			for (int i = 0; i < targetLine.length(); i++) {
+				final double colX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(targetLine.substring(0, i)) + this.getTextWidth(targetLine.substring(i, i + 1)) / 2D;
+				if (cursorX < colX) {
+					newCol = i;
 					break;
 				}
 			}
 
-			if (lineIndex < 0 && !lines.isEmpty()) {
-				final double firstLineY = super.getAbsoluteY() + this.marginTop - this.yOffset;
-				lineIndex = mouseY < firstLineY ? 0 : lines.size() - 1;
+			final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
+			super.updateSelection();
+			super.decreaseCursor(super.getCursorPos() - newCursorPos);
+			return true;
+		}
+
+		if (key == Key.DOWN) {
+			final List<String> lines = this.getLines();
+			final int[] cursorLineCol = this.getLineAndColumn(super.getCursorPos());
+			if (cursorLineCol[0] >= lines.size() - 1) {
+				return true;
 			}
 
-			if (lineIndex >= 0) {
-				final String line = lines.get(lineIndex).replace("\n", "").replace("\r", "");
-				int col = line.length();
-				for (int i = 0; i < line.length(); i++) {
-					final String beforeCursor = line.substring(0, i);
-					final String cursorChar = line.substring(i, i + 1);
-					final double cursorX = super.getAbsoluteX() + this.marginLeft + this.getTextWidth(beforeCursor) + this.getTextWidth(cursorChar) / 2;
-					if (mouseX < cursorX) {
-						col = i;
-						break;
-					}
+			final String currentLine = lines.get(cursorLineCol[0]).replace("\n", "").replace("\r", "");
+			final int currentCol = Math.min(cursorLineCol[1], currentLine.length());
+			final double cursorX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(currentLine.substring(0, currentCol));
+
+			final int newLineIdx = cursorLineCol[0] + 1;
+			final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
+			int newCol = targetLine.length();
+			for (int i = 0; i < targetLine.length(); i++) {
+				final double colX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(targetLine.substring(0, i)) + this.getTextWidth(targetLine.substring(i, i + 1)) / 2D;
+				if (cursorX < colX) {
+					newCol = i;
+					break;
 				}
-				this.cursorPos = this.getTextPosition(lineIndex, col);
 			}
 
-			this.focused(true);
-		});
+			final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
+			super.updateSelection();
+			super.increaseCursor(newCursorPos - super.getCursorPos());
+			return true;
+		}
+
+		if (key == Key.ESCAPE) {
+			super.focused(false);
+			return true;
+		}
+
+		if (key == Key.ENTER || key == Key.NUMPAD_ENTER) {
+			super.insert("\n");
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	protected final void placeCursor(final double mouseX, final double mouseY) {
+		final List<String> lines = this.getLines();
+		final double lineHeight = this.getLineHeight();
+
+		int lineIndex = -1;
+		for (int i = 0; i < lines.size(); i++) {
+			final double startLineY = super.getAbsoluteY() + super.getMarginTop() - this.yOffset + lineHeight * i;
+			final double endLineY = startLineY + lineHeight;
+			if (mouseY >= startLineY && mouseY <= endLineY) {
+				lineIndex = i;
+				break;
+			}
+		}
+
+		if (lineIndex < 0 && !lines.isEmpty()) {
+			final double firstLineY = super.getAbsoluteY() + super.getMarginTop() - this.yOffset;
+			lineIndex = mouseY < firstLineY ? 0 : lines.size() - 1;
+		}
+
+		if (lineIndex >= 0) {
+			final String line = lines.get(lineIndex).replace("\n", "").replace("\r", "");
+			int col = line.length();
+			for (int i = 0; i < line.length(); i++) {
+				final String beforeCursor = line.substring(0, i);
+				final String cursorChar = line.substring(i, i + 1);
+				final double cursorX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(beforeCursor) + this.getTextWidth(cursorChar) / 2;
+				if (mouseX < cursorX) {
+					col = i;
+					break;
+				}
+			}
+			super.cursorPosition(this.getTextPosition(lineIndex, col));
+		}
+	}
+
+	@Override
+	protected final void followCursorForward() {
+		final double lineHeight = this.getLineHeight();
+		final String beforeCursor = super.getText().substring(0, super.getCursorPos());
+		final List<String> beforeCursorLines = this.getLines(beforeCursor);
+		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (beforeCursorLines.size() - 1);
+		if (cursorY + lineHeight - this.yOffset > super.getY() + super.getHeight() - super.getMarginBottom()) {
+			this.yOffset = cursorY + lineHeight - super.getY() - super.getHeight() + super.getMarginBottom();
+		}
+	}
+
+	@Override
+	protected final void followCursorBackward() {
+		if (super.getCursorPos() == 0) {
+			this.yOffset = 0;
+			return;
+		}
+
+		final double lineHeight = this.getLineHeight();
+		final String beforeCursor = super.getText().substring(0, super.getCursorPos());
+		final List<String> beforeCursorLines = this.getLines(beforeCursor);
+		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (beforeCursorLines.size() - 1);
+		if (cursorY - this.yOffset < super.getY() + super.getMarginTop() + super.getCursorMargin()) {
+			this.yOffset = cursorY - super.getY() - super.getMarginTop() - super.getCursorMargin();
+		}
 	}
 
 	@Override
 	public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
-		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
+		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
@@ -520,202 +293,31 @@ public class MultilineTextFieldNode extends Node {
 			}
 
 			final List<String> lines = this.getLines();
-			if (this.yOffset > lines.size() * lineHeight - super.getHeight() + this.marginTop + this.marginBottom) {
-				this.yOffset = lines.size() * lineHeight - super.getHeight() + this.marginTop + this.marginBottom;
+			if (this.yOffset > lines.size() * lineHeight - super.getHeight() + super.getMarginTop() + super.getMarginBottom()) {
+				this.yOffset = lines.size() * lineHeight - super.getHeight() + super.getMarginTop() + super.getMarginBottom();
 			}
 		});
 	}
 
-	public final <T extends MultilineTextFieldNode> @NonNull T text(final @NonNull String text) {
-		this.setText(text);
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T placeholder(final @NonNull String placeholder) {
-		this.placeholder = placeholder;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T info(final @NonNull TextInfo textInfo) {
-		this.info = textInfo;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T focused(final boolean focused) {
-		if (this.focused == focused) {
-			return (T) this;
-		}
-
-		super.executeCallback(MultilineTextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
-			this.focused = focused;
-			if (!focused) {
-				this.selectionStart = -1;
-			}
-		});
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T filter(final @NonNull BiFunction<String, String, String> filter) {
-		this.filter = filter;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T maxTextLength(final int maxTextLength) {
-		this.maxTextLength = maxTextLength;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T markup(final boolean markup) {
-		this.markup = markup;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T margin(final double margin) {
-		this.marginTop    = margin;
-		this.marginBottom = margin;
-		this.marginLeft   = margin;
-		this.marginRight  = margin;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T margin(final double margin, final double cursorMargin) {
-		this.marginTop    = margin;
-		this.marginBottom = margin;
-		this.marginLeft   = margin;
-		this.marginRight  = margin;
-		this.cursorMargin = cursorMargin;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T marginTop(final double marginTop) {
-		this.marginTop = marginTop;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T marginLeft(final double marginLeft) {
-		this.marginLeft = marginLeft;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T marginRight(final double marginRight) {
-		this.marginRight = marginRight;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T marginBottom(final double marginBottom) {
-		this.marginBottom = marginBottom;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T cursorMargin(final double cursorMargin) {
-		this.cursorMargin = cursorMargin;
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T cursorPosition(final int cursorPos) {
-		this.cursorPos = Math.min(Math.max(0, cursorPos), this.text.length());
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T signal(final @NonNull Signal<String> signal) {
-		this.signal = signal;
-		super.bind(signal, this::setText);
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
-		super.registerCallback(MultilineTextFieldNode.CALLBACK_CHANGE, callback);
-		return (T) this;
-	}
-
-	public final <T extends MultilineTextFieldNode> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
-		super.registerCallback(MultilineTextFieldNode.CALLBACK_FOCUS, callback);
-		return (T) this;
-	}
-
-	private final void setText(final String newText) {
-		final String oldText = this.text == null ? "" : this.text;
-		final String filtered = this.clean(this.filter.apply(oldText, this.clean(newText == null ? "" : newText)));
-		final String accepted = this.maxTextLength >= 0 && filtered.length() > this.maxTextLength ? filtered.substring(0, this.maxTextLength) : filtered;
-		if (!accepted.equals(oldText)) {
-			this.executeCallback(MultilineTextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-				this.text = accepted;
-				super.sync(this.signal, accepted);
-			}, oldText, accepted);
-		} else {
-			this.text = accepted;
-		}
-
-		super.sync(this.signal, this.text);
-	}
-
-	private final @NonNull String clean(final @NonNull String text) {
-		final StringBuilder builder = new StringBuilder();
-		for (final char c : text.replace("\r\n", "\n").replace("\r", "\n").toCharArray()) {
-			if (c == '\n' || c != 167 && c >= 32 && c != 127 && c <= 563) {
-				builder.append(c);
-			}
-		}
-
-		return builder.toString();
-	}
-
-	private final void holdInput(final @NonNull Key key) {
-		this.firstInput = true;
-		this.inputting  = true;
-		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.inputType  = key;
-	}
-
-	private final void decreaseCursor(final int value) {
-		this.cursorPos -= value;
-		if (this.cursorPos < 0) {
-			this.cursorPos = 0;
-		}
-
-		if (this.cursorPos == 0) {
-			this.yOffset = 0;
-			return;
-		}
-
-		final double lineHeight = this.getLineHeight();
-		final String beforeCursor = this.text.substring(0, this.cursorPos);
-		final List<String> beforeCursorLines = this.getLines(beforeCursor);
-		final double cursorY = super.getY() + this.marginTop + lineHeight * (beforeCursorLines.size() - 1);
-		if (cursorY - this.yOffset < super.getY() + this.marginTop + this.cursorMargin) {
-			this.yOffset = cursorY - super.getY() - this.marginTop - this.cursorMargin;
-		}
-	}
-
-	private final void increaseCursor(final int value) {
-		this.cursorPos += value;
-		if (this.cursorPos > this.text.length()) {
-			this.cursorPos = this.text.length();
-		}
-
-		final double lineHeight = this.getLineHeight();
-		final String beforeCursor = this.text.substring(0, this.cursorPos);
-		final List<String> beforeCursorLines = this.getLines(beforeCursor);
-		final double cursorY = super.getY() + this.marginTop + lineHeight * (beforeCursorLines.size() - 1);
-		if (cursorY + lineHeight - this.yOffset > super.getY() + super.getHeight() - this.marginBottom) {
-			this.yOffset = cursorY + lineHeight - super.getY() - super.getHeight() + this.marginBottom;
-		}
+	@Override
+	public final @NonNull String getValue() {
+		return super.getText();
 	}
 
 	private final double getRawWidth() {
-		return super.getWidth() - this.marginLeft - this.marginRight;
+		return super.getWidth() - super.getMarginLeft() - super.getMarginRight();
 	}
 
 	private final double getRawHeight() {
-		return super.getHeight() - this.marginTop - this.marginBottom;
+		return super.getHeight() - super.getMarginTop() - super.getMarginBottom();
 	}
 
 	private final double getLineHeight() {
-		return this.info.getHeight();
+		return super.getInfo().getHeight();
 	}
 
 	private final @NonNull List<String> getLines() {
-		return this.getLines(this.text);
+		return this.getLines(super.getText());
 	}
 
 	private final @NonNull List<String> getLines(final @NonNull String text) {
@@ -724,7 +326,7 @@ public class MultilineTextFieldNode extends Node {
 			return lines;
 		}
 
-		final TextInfo info = this.getShownInfo();
+		final TextInfo info = super.getShownInfo();
 		final String[] paragraphs = text.split("\n", -1);
 		for (int index = 0; index < paragraphs.length; index++) {
 			final String paragraph = paragraphs[index];
@@ -759,6 +361,7 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	private final int[] getLineAndColumn(final int pos) {
+		final String text = super.getText();
 		final List<String> lines = this.getLines();
 		if (lines.isEmpty()) {
 			return new int[] {0, 0};
@@ -766,8 +369,8 @@ public class MultilineTextFieldNode extends Node {
 
 		int textIdx = 0;
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-			if (lineIdx > 0 && textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
-				textIdx += this.text.startsWith("\r\n", textIdx) ? 2 : 1;
+			if (lineIdx > 0 && textIdx < text.length() && (text.charAt(textIdx) == '\n' || text.charAt(textIdx) == '\r')) {
+				textIdx += text.startsWith("\r\n", textIdx) ? 2 : 1;
 			}
 
 			final String line = lines.get(lineIdx).replace("\n", "").replace("\r", "");
@@ -777,7 +380,7 @@ public class MultilineTextFieldNode extends Node {
 			}
 
 			textIdx = lineEnd;
-			if (textIdx < this.text.length() && this.text.charAt(textIdx) == ' ' && lineIdx < lines.size() - 1) {
+			if (textIdx < text.length() && text.charAt(textIdx) == ' ' && lineIdx < lines.size() - 1) {
 				textIdx++;
 			}
 		}
@@ -786,86 +389,26 @@ public class MultilineTextFieldNode extends Node {
 		return new int[] {lines.size() - 1, lastLine.length()};
 	}
 
-	private final @NonNull TextInfo getShownInfo() {
-		return this.markup ? this.info : this.info.copy().markups();
-	}
-
 	private final double getTextWidth(final @NonNull String text) {
-		return this.getShownInfo().getWidth(text.replace("\n", ""));
+		return super.getShownInfo().getWidth(text.replace("\n", ""));
 	}
 
 	private final int getTextPosition(final int lineIdx, final int col) {
+		final String text = super.getText();
 		final List<String> lines = this.getLines();
 		int textIdx = 0;
 		for (int i = 0; i < lineIdx; i++) {
 			textIdx += lines.get(i).replace("\n", "").replace("\r", "").length();
-			if (textIdx < this.text.length() && this.text.charAt(textIdx) == ' ') {
+			if (textIdx < text.length() && text.charAt(textIdx) == ' ') {
 				textIdx++;
 			}
 
-			if (textIdx < this.text.length() && (this.text.charAt(textIdx) == '\n' || this.text.charAt(textIdx) == '\r')) {
-				textIdx += this.text.startsWith("\r\n", textIdx) ? 2 : 1;
+			if (textIdx < text.length() && (text.charAt(textIdx) == '\n' || text.charAt(textIdx) == '\r')) {
+				textIdx += text.startsWith("\r\n", textIdx) ? 2 : 1;
 			}
 		}
 
 		return textIdx + Math.min(Math.max(0, col), lines.get(lineIdx).replace("\n", "").replace("\r", "").length());
 	}
-
-	private final int nextWordIndex() {
-		int index = this.cursorPos;
-		while (index < this.text.length() && !this.isSeparator(this.text.charAt(index))) {
-			index++;
-		}
-
-		while (index < this.text.length() && this.isSeparator(this.text.charAt(index))) {
-			index++;
-		}
-
-		return index;
-	}
-
-	private final int previousWordIndex() {
-		int index = this.cursorPos;
-		while (index > 0 && this.isSeparator(this.text.charAt(index - 1))) {
-			index--;
-		}
-
-		while (index > 0 && !this.isSeparator(this.text.charAt(index - 1))) {
-			index--;
-		}
-
-		return index;
-	}
-
-	private final boolean isSeparator(final char c) {
-		return c == ' ' || c == '\n' || c == '\r';
-	}
-
-	private final boolean isMac() {
-		return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("mac");
-	}
-
-	private final boolean isWordKeyDown() {
-		return this.isMac() ? UI.isAltKeyDown() : UI.isCtrlKeyDown();
-	}
-
-	private final boolean isShortcutKeyDown() {
-		return this.isMac() ? Key.LEFT_SUPER.isDown() || Key.RIGHT_SUPER.isDown() : UI.isCtrlKeyDown();
-	}
-
-	private final boolean deleteSelection() {
-		if (this.selectionStart == -1 || this.selectionStart == this.cursorPos) {
-			this.selectionStart = -1;
-			return false;
-		}
-
-		final int start = Math.min(this.selectionStart, this.cursorPos);
-		final int end = Math.max(this.selectionStart, this.cursorPos);
-		this.selectionStart = -1;
-		this.setText(this.text.substring(0, start) + this.text.substring(end));
-		this.cursorPos = start;
-		return true;
-	}
-
 
 }

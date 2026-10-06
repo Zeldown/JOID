@@ -1,20 +1,17 @@
 package dev.joid.lib.ui.node.impl.design.textfield.impl;
 
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.ui.node.impl.design.textfield.LineFieldNode;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
-public class IntegerFieldNode extends TextFieldNode {
+public class IntegerFieldNode extends LineFieldNode<Integer> {
 
 	private int maxValue = Integer.MAX_VALUE;
 	private int minValue = Integer.MIN_VALUE;
 
-	private IntegerSignal signal;
-
 	protected IntegerFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		this.filter((oldValue, nextValue) -> {
+		super.filter((oldValue, nextValue) -> {
 			final boolean negative = nextValue.startsWith("-");
 			final String digits = nextValue.replaceAll("[^0-9]", "");
 			if (digits.isEmpty()) {
@@ -36,7 +33,6 @@ public class IntegerFieldNode extends TextFieldNode {
 
 			return Integer.toString(negative ? this.minValue : this.maxValue);
 		});
-		super.<IntegerFieldNode>onChange((field, oldText, newText) -> field.sync(field.signal, field.getValue()));
 		super.<IntegerFieldNode>onFocus(field -> {
 			if (!field.isFocused() && field.getText().replace("-", "").isEmpty()) {
 				field.value(field.getValue());
@@ -72,23 +68,12 @@ public class IntegerFieldNode extends TextFieldNode {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final int value) {
-		this.text(Integer.toString(value));
+		super.text(Integer.toString(value));
 		return (T) this;
 	}
 
-	public final <T extends IntegerFieldNode> @NonNull T signal(final @NonNull IntegerSignal signal) {
-		this.signal = signal;
-		super.bind(signal, value -> {
-			if (value != this.getValue()) {
-				this.value(value);
-			}
-
-			super.sync(this.signal, this.getValue());
-		});
-		return (T) this;
-	}
-
-	public final int getValue() {
+	@Override
+	public final @NonNull Integer getValue() {
 		try {
 			return Integer.parseInt(super.getText());
 		} catch (final NumberFormatException silent) {

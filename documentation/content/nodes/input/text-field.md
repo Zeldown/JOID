@@ -294,7 +294,7 @@ TextFieldNode
 
 ## IntegerFieldNode
 
-`IntegerFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield.impl`) is a `TextFieldNode` whose filter keeps an integer inside a range.
+`IntegerFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield.impl`) is a single-line field like `TextFieldNode`, with `Integer` values: its filter keeps an integer inside a range.
 
 ```java
 final IntegerFieldNode amount = IntegerFieldNode
@@ -317,8 +317,8 @@ final int value = amount.getValue();
 | `max(int)` | Highest value. Default `Integer.MAX_VALUE`. Clamps the current value. |
 | `range(int min, int max)` | Sets both bounds and clamps the current value. |
 | `value(int)` | Writes the value as text, through the filter (so clamped to the range). |
-| `signal(IntegerSignal)` | Binds the value to the signal, both ways. |
-| `getValue()` | The value of the text, or the middle of the range, `(min + max) / 2` rounded toward zero, while the text is empty or a lone `-`. |
+| `signal(Signal<Integer>)` | Binds the value to the signal, both ways. |
+| `getValue()` | The `Integer` value of the text, or the middle of the range, `(min + max) / 2` rounded toward zero, while the text is empty or a lone `-`. |
 
 Each new text goes through this filter:
 
@@ -336,7 +336,7 @@ Each new text goes through this filter:
 - `min`, `max` and `range` pass the current text through the filter again, so a value outside the new range is clamped and `onChange` runs.
 - `filter(...)` replaces the integer filter.
 
-`signal(IntegerSignal)` binds the value both ways, like `signal(Signal<String>)` binds the text: the field starts on the signal's value, each change of the text writes `getValue()` into the signal, and each value the signal publishes is written with `value(int)`, clamped to the range (the clamped value is written back into the signal). A published value equal to `getValue()` leaves the text as it is, so an empty field bound to a signal stays empty while the user types. The method takes an `IntegerSignal` (`dev.joid.lib.utils.signal.impl.primitive`): a `signal(Signal<Integer>)` overload cannot exist next to the inherited `signal(Signal<String>)`, which binds the raw text.
+`signal(Signal<Integer>)` binds the value both ways, like `signal(Signal<String>)` binds the text of a `TextFieldNode`: the field starts on the signal's value, each change of the text writes `getValue()` into the signal, and each value the signal publishes is written with `value(int)`, clamped to the range (the clamped value is written back into the signal). A published value equal to `getValue()` leaves the text as it is, so an empty field bound to a signal stays empty while the user types. The signal can be an `IntegerSignal` (`dev.joid.lib.utils.signal.impl.primitive`) or any `Signal<Integer>`.
 
 ```java
 final IntegerSignal amount = new IntegerSignal(16);
@@ -349,7 +349,7 @@ IntegerFieldNode
 .attach(this);
 ```
 
-The `TextFieldNode` setters return `TextFieldNode` when chained, so call the `IntegerFieldNode` methods first, assign the result to an `IntegerFieldNode` variable (as above), or give the type explicitly:
+The setters shared by every text field return `LineFieldNode<Integer>` when chained, so call the `IntegerFieldNode` methods first, assign the result to an `IntegerFieldNode` variable (as above), or give the type explicitly:
 
 ```java
 IntegerFieldNode
@@ -360,6 +360,10 @@ IntegerFieldNode
 .<IntegerFieldNode>onChange((field, oldText, newText) -> System.out.println("Value: " + field.getValue()))
 .attach(this);
 ```
+
+### Fields of other types
+
+`TextFieldNode` and `IntegerFieldNode` extend `LineFieldNode<V>` (`dev.joid.lib.ui.node.impl.design.textfield`), the single-line field whose value has the type `V`: `LineFieldNode<String>` and `LineFieldNode<Integer>`. With [`MultilineTextFieldNode`](multiline-text-field.md), they share `FieldNode<V, N>`, which holds the text, the editing, the shared setters and `signal(Signal<V>)`. A field of another type extends `LineFieldNode<V>`, sets its `filter(...)` in the constructor and returns the value of its text from `getValue()`; `signal(Signal<V>)` then writes `getValue()` into the signal and writes the published values as text with `String.valueOf(...)`.
 
 ## Reference
 
@@ -409,6 +413,7 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 | Method | Description |
 | --- | --- |
 | `getText()` | Current text. |
+| `getValue()` | The text, like `getText()` (the value of a typed field such as `IntegerFieldNode`). |
 | `getPlaceholder()` | Placeholder. |
 | `getInfo()` | `TextInfo`, or `null` before `info(...)`. |
 | `isFocused()` | Whether the field has the keyboard. |

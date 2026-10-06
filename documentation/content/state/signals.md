@@ -220,7 +220,7 @@ quantity.subscribe(recompute);
 | `SwitchNode.signal(Signal<String> signal)` | Binds the name of the current state to the signal, both ways. | [SwitchNode](../nodes/input/switch.md) |
 | `SelectorNode.signal(Signal<V> signal)` | Binds the selected value to the signal, both ways. | [SelectorNode](../nodes/input/selector.md) |
 | `TextFieldNode.signal(Signal<String> signal)`, `MultilineTextFieldNode.signal(Signal<String> signal)` | Binds the text to the signal, both ways. | [TextFieldNode](../nodes/input/text-field.md#binding-a-signal-with-signal), [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) |
-| `IntegerFieldNode.signal(IntegerSignal signal)` | Binds the value to the signal, both ways. | [TextFieldNode](../nodes/input/text-field.md#integerfieldnode) |
+| `IntegerFieldNode.signal(Signal<Integer> signal)` | Binds the value to the signal, both ways. | [TextFieldNode](../nodes/input/text-field.md#integerfieldnode) |
 | `UI.getZoomLevel()`, `UI.getScaledWidth()`, `UI.getScaledHeight()` | `DoubleSignal`s updated when the view changes. | [View and Scaling](../ui/view-and-scaling.md) |
 
 ## ISignal

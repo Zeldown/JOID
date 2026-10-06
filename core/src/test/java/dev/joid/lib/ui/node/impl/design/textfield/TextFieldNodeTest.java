@@ -1078,6 +1078,13 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(Arrays.asList("hi", "hi!", "yo", "ab", "cd"), changes);
 	}
 
+	@Test
+	public void readsItsTextAsItsValue() {
+		final TextFieldNode field = this.field("abc");
+		Assert.assertEquals("abc", field.getValue());
+		Assert.assertEquals("", field.text("").getValue());
+	}
+
 	private TextInfo info() {
 		return TextInfo.create(this.font, 10F, TextFieldNodeTest.INK);
 	}

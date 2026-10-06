@@ -133,7 +133,7 @@ The link goes both ways:
 | [SwitchNode](../nodes/input/switch.md) | `signal(Signal<String>)` | The name of the current state. |
 | [SelectorNode](../nodes/input/selector.md) | `signal(Signal<V>)` | The selected value. |
 | [TextFieldNode](../nodes/input/text-field.md), [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `signal(Signal<String>)` | The text. |
-| [IntegerFieldNode](../nodes/input/text-field.md#integerfieldnode) | `signal(IntegerSignal)` | The value, clamped to the range. |
+| [IntegerFieldNode](../nodes/input/text-field.md#integerfieldnode) | `signal(Signal<Integer>)` | The value, clamped to the range. |
 
 Give the control its values (`values(...)`, `state(...)`) before `signal(...)`: the signal's value can only select one of them.
 

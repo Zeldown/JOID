@@ -108,6 +108,15 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void setsItsMarginsByAxis() {
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).marginHorizontal(3D).marginVertical(5D);
+		Assert.assertEquals(3D, field.getMarginLeft(), 0D);
+		Assert.assertEquals(3D, field.getMarginRight(), 0D);
+		Assert.assertEquals(5D, field.getMarginTop(), 0D);
+		Assert.assertEquals(5D, field.getMarginBottom(), 0D);
+	}
+
+	@Test
 	public void turnsItsDefaultCursorMarginIntoTwoLinesOnTheFirstDraw() {
 		final MultilineTextFieldNode given = MultilineTextFieldNode.create(0D, 300D, 400D, 200D).info(TextInfo.create(this.font, 10F)).cursorMargin(5D);
 		this.bridges.open(new NodeUI(given));
@@ -1118,6 +1127,13 @@ public class MultilineTextFieldNodeTest {
 		signal.set("c");
 		Assert.assertEquals("c", field.getText());
 		Assert.assertEquals(Arrays.asList("a\nb", "\na\nb", "c"), changes);
+	}
+
+	@Test
+	public void readsItsTextAsItsValue() {
+		final MultilineTextFieldNode field = this.field("a\r\nb");
+		Assert.assertEquals("a\nb", field.getValue());
+		Assert.assertEquals("", field.text("").getValue());
 	}
 
 	private MultilineTextFieldNode field(final String text) {

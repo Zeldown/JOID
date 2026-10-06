@@ -1,6 +1,6 @@
 # MultilineTextFieldNode
 
-`MultilineTextFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield`) is an editable text area: the text wraps to the width of the field, Enter inserts line breaks, and the content scrolls vertically. It shares the editing model of [`TextFieldNode`](text-field.md) (focus, selection, clipboard, filter, maximum length); this page details what differs.
+`MultilineTextFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield`) is an editable text area: the text wraps to the width of the field, Enter inserts line breaks, and the content scrolls vertically. It shares the editing model of [`TextFieldNode`](text-field.md) (focus, selection, clipboard, filter, maximum length) through their common base, `FieldNode`; this page details what differs.
 
 In the examples, the code runs in `UI.init()` and `font` is an `IFont` you loaded (see [Fonts](../../fonts/adding-fonts.md)).
 
@@ -139,6 +139,7 @@ This field refuses an eleventh line.
 | `signal(Signal<String>)` | none | Binds a signal to the text, both ways. |
 | `margin(double)` | `2` | Sets the four margins. |
 | `margin(double margin, double cursorMargin)` | | Sets the four margins and `cursorMargin`. |
+| `marginHorizontal(double)`, `marginVertical(double)` | `2` | Left and right margins, or top and bottom margins. |
 | `marginTop(double)`, `marginLeft(double)`, `marginRight(double)`, `marginBottom(double)` | `2` | One margin. |
 | `cursorMargin(double)` | `-1` (two line heights) | Distance kept between the top margin and the cursor line when scrolling up. |
 | `cursorPosition(int)` | `0` | Cursor index, clamped to `[0, text length]`. |
@@ -151,7 +152,7 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 
 | Method | Description |
 | --- | --- |
-| `getText()` | Current text. |
+| `getText()`, `getValue()` | Current text. |
 | `getPlaceholder()`, `getInfo()` | Placeholder and `TextInfo`. |
 | `isFocused()` | Whether the field has the keyboard. |
 | `getCursorPos()` | Cursor index in the text. |
