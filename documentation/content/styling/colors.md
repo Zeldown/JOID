@@ -84,7 +84,7 @@ Presets are shared instances, which is safe because no color can be modified.
 
 The `rgb(`, `rgba(` and `gradient(` prefixes are case-insensitive (`RGB(255, 128, 0)` works). The two colors of `gradient(...)` accept every format of this table, `rgb(...)`, `rgba(...)` and nested gradients included: `gradient(rgb(255, 0, 0), rgba(0, 0, 255, 0.5), 0, 0, 0, 1)`.
 
-Any other input throws a `NumberFormatException`: the short `#RGB` form, a function with a missing argument or without its closing parenthesis, and a `gradient(...)` with other than two or six arguments. Whitespace around the whole string is not trimmed.
+Any other input throws a `NumberFormatException`: the short `#RGB` form, a function with a missing argument or without its closing parenthesis, and a `gradient(...)` with other than two or six arguments. Whitespace around the whole string is ignored: `Color.decode(" #3366CC ")` reads `#3366CC`.
 
 `encode()` does the reverse and always returns `#RRGGBBAA` in uppercase, which `decode` reads back:
 

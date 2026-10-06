@@ -94,7 +94,8 @@ public final class Color {
 	}
 
 	public static @NonNull Color decode(final @NonNull String nm) {
-		final String lower = nm.toLowerCase(Locale.ROOT);
+		final String text = nm.trim();
+		final String lower = text.toLowerCase(Locale.ROOT);
 
 		if ("rainbow".equals(lower.replace("#", ""))) {
 			return Color.RAINBOW;
@@ -105,22 +106,22 @@ public final class Color {
 		}
 
 		if (lower.startsWith("rgb(")) {
-			final List<String> parts = Color.arguments(nm, 4, 3);
+			final List<String> parts = Color.arguments(text, 4, 3);
 			return new Color(Integer.parseInt(parts.get(0)), Integer.parseInt(parts.get(1)), Integer.parseInt(parts.get(2)));
 		}
 
 		if (lower.startsWith("rgba(")) {
-			final List<String> parts = Color.arguments(nm, 5, 4);
+			final List<String> parts = Color.arguments(text, 5, 4);
 			return new Color(Integer.parseInt(parts.get(0)) / 255F, Integer.parseInt(parts.get(1)) / 255F, Integer.parseInt(parts.get(2)) / 255F, Float.parseFloat(parts.get(3)));
 		}
 
 		if (lower.startsWith("gradient(")) {
-			final List<String> parts = Color.arguments(nm, 9, 2, 6);
+			final List<String> parts = Color.arguments(text, 9, 2, 6);
 			final Vector4f direction = parts.size() == 2 ? new Vector4f(0F, 0F, 1F, 0F) : new Vector4f(Float.parseFloat(parts.get(2)), Float.parseFloat(parts.get(3)), Float.parseFloat(parts.get(4)), Float.parseFloat(parts.get(5)));
 			return new Color(new ColorGradient(Color.decode(parts.get(0)), Color.decode(parts.get(1)), direction));
 		}
 
-		final String hex = nm.startsWith("#") ? nm : "#" + nm;
+		final String hex = text.startsWith("#") ? text : "#" + text;
 		if (hex.length() == 7) {
 			return new Color(0xFF000000 | Integer.parseUnsignedInt(hex.substring(1), 16));
 		}

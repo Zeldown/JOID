@@ -168,6 +168,14 @@ public class ColorTest {
 	}
 
 	@Test
+	public void decodesAStringSurroundedByWhitespace() {
+		Assert.assertEquals(new Color(0xFF336699), Color.decode("  #336699\t"));
+		Assert.assertEquals(new Color(255, 128, 0), Color.decode(" rgb(255, 128, 0) "));
+		Assert.assertEquals(Color.BLUE, Color.decode("\ngradient(#FF0000, #0000FF) ").gradient.getEndColor());
+		Assert.assertSame(Color.RAINBOW, Color.decode(" rainbow "));
+	}
+
+	@Test
 	public void decodesAHexCodeWithAlpha() {
 		Assert.assertEquals(new Color(51, 102, 153, 128), Color.decode("#33669980"));
 	}
