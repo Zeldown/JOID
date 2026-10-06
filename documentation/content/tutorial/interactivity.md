@@ -165,8 +165,7 @@ Then replace the placeholder texts of the three rows with the controls:
 final RectNode music = this.row(flex, "Music", label);
 ToggleSwitchNode
 .create(music.aw(-100), 18, 76, 36)
-.checked(this.music.getOrDefault())
-.onChange((toggle, checked) -> this.music.set(checked))
+.signal(this.music)
 .attach(music);
 
 final RectNode volume = this.row(flex, "Volume", label);
@@ -189,19 +188,17 @@ TextNode
 final RectNode notifications = this.row(flex, "Notifications", label);
 ToggleSwitchNode
 .create(notifications.aw(-100), 18, 76, 36)
-.checked(this.notifications.getOrDefault())
-.onChange((toggle, checked) -> this.notifications.set(checked))
+.signal(this.notifications)
 .attach(notifications);
 ```
 
-Each control takes a different route to its signal:
+Each control is bound to its signal:
 
 | Code | What it does |
 | --- | --- |
-| `checked(...)` | Sets the initial state of the switch from the signal. |
-| `onChange((toggle, checked) -> ...)` | Runs after each click with the new state; here it writes the signal. |
+| `signal(this.music)` | Binds the switch to the signal, both ways: the switch starts on the signal's value, each click writes the new state into the signal, and a value set elsewhere moves the switch. |
 | `values(0, 100, value)` | Gives the slider the integers from 0 to 100 and selects `value`. |
-| `signal(this.volume)` | Makes the slider write each new value into the signal. |
+| `signal(this.volume)` | Binds the slider to the signal the same way: each new value is written into the signal. |
 | `watch(this.volume)` and `onInit(...)` | The text node watches the signal: each value the slider writes reloads the node, and `onInit` writes the new text, so "80 %" follows the slider. The text starts empty and the first `onInit` fills it. |
 | `visible(node -> ...)` | A predicate evaluated every frame: the Volume row shows only while the music is on. |
 
@@ -387,8 +384,7 @@ public final class SettingsUI extends UI {
                 final RectNode music = this.row(flex, "Music", label);
                 ToggleSwitchNode
                 .create(music.aw(-100), 18, 76, 36)
-                .checked(settings.getMusic().getOrDefault())
-                .onChange((toggle, checked) -> settings.getMusic().set(checked))
+                .signal(settings.getMusic())
                 .attach(music);
 
                 final RectNode volume = this.row(flex, "Volume", label);
@@ -410,8 +406,7 @@ public final class SettingsUI extends UI {
                 final RectNode notifications = this.row(flex, "Notifications", label);
                 ToggleSwitchNode
                 .create(notifications.aw(-100), 18, 76, 36)
-                .checked(settings.getNotifications().getOrDefault())
-                .onChange((toggle, checked) -> settings.getNotifications().set(checked))
+                .signal(settings.getNotifications())
                 .attach(notifications);
 
                 TextNode.create(0, 0, 0, 36).text(Text.create("LANGUAGE", section, Align.START, Align.END)).attach(flex);
@@ -459,9 +454,9 @@ The rows now hold working controls: two switches, a slider with its value on the
 
 ## Recap
 
-- Callbacks such as `onClick` and `onChange` are lambdas registered on a node; an input callback consumes the event it handles.
+- Callbacks such as `onClick` are lambdas registered on a node; an input callback consumes the event it handles.
 - Input controls are abstract: you subclass `CheckboxNode`, `IntegerSliderNode` and the others, and only draw them.
-- A `Signal<T>` holds state. Nodes `watch` it: by default the node reloads and its `onInit` writes the new value, and `CLEAR_CHILDREN` with `BODY` rebuilds part of the tree. Controls write it (`signal(...)`, `onChange`), and a `visible(...)` predicate, evaluated every frame, can read it.
+- A `Signal<T>` holds state. Nodes `watch` it: by default the node reloads and its `onInit` writes the new value, and `CLEAR_CHILDREN` with `BODY` rebuilds part of the tree. Controls are bound to it with `signal(...)`, and a `visible(...)` predicate, evaluated every frame, can read it.
 - A `PERMANENT` store keeps signals between runs; `UIStoreHook.saveAll()` saves it when the application exits.
 
 Next, [Tutorial 4: Polish](polish.md) gives the screen its final look.

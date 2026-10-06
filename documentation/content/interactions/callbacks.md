@@ -248,7 +248,7 @@ Some nodes add their own callbacks. They follow the same PRE/POST rules.
 | [CheckboxNode](../nodes/input/checkbox.md) | `onChange` | `NodeCheckboxChangeCallback<T>` | `(node, checked)` | A click toggles the box. |
 | [ToggleNode](../nodes/input/toggle.md) | `onChange` | `NodeToggleChangeCallback<T, F, S>` | `(node, toggle)` | A click toggles the node. |
 | [SwitchNode](../nodes/input/switch.md) | `onChange` | `NodeSwitchChangeCallback<T>` | `(node, value)` | The state changes through `index(...)`. |
-| [SelectorNode](../nodes/input/selector.md) | `onChange` | `NodeSelectorChangeCallback<T>` | `(node, selected)` | Another option is selected. |
+| [SelectorNode](../nodes/input/selector.md) | `onChange` | `NodeSelectorChangeCallback<T, V>` | `(node, value)` | Another option is selected with the mouse. |
 | [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onPlay`, `onPause`, `onEnd` | `NodeResourcePlayerPlayCallback<T>`, `NodeResourcePlayerPauseCallback<T>`, `NodeResourcePlayerEndCallback<T>` | `(node)` | Playback starts, is paused, reaches its end. |
 | [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onProgress` | `NodeResourcePlayerProgressCallback<T>` | `(node, progress, currentTime)` | The progress changes while playing. |
 | [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | `onReorderStart`, `onReorder` | `NodeReorderStartCallback`, `NodeReorderCallback` | `(node, child)` | A child starts moving, moves. |

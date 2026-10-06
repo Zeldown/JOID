@@ -109,9 +109,9 @@ name.set("Alex");
 
 Subscribers run on the thread that calls `set`. When a value comes from another thread (a network call, a `CompletableFuture`), set it on the UI's thread with `ui.schedule(() -> name.set(value))`.
 
-## Inputs that write into signals
+## Binding inputs to signals
 
-Some input controls write their value into a signal for you. With a slider class like the one in [SliderNode](../nodes/input/slider.md):
+The input controls bind to a signal with `signal(...)`. With a slider class like the one in [SliderNode](../nodes/input/slider.md):
 
 ```java
 final IntegerSignal volume = new IntegerSignal(50);
@@ -119,7 +119,21 @@ final IntegerSignal volume = new IntegerSignal(50);
 VolumeSliderNode.create(760, 500, 400, 40).values(0, 100, 50).signal(volume).attach(this);
 ```
 
-Each time the user moves the cursor to another value, the slider sets `volume`, so anything that reads or watches it follows. The link is one way: to move the slider from code, call `value(...)`.
+The link goes both ways:
+
+- the control starts on the signal's value;
+- each time the user changes the value, the control sets `volume`, so anything that reads or watches it follows;
+- each time other code sets `volume`, the control shows the new value, without calling its `onChange`.
+
+| Control | Method | Signal holds |
+| --- | --- | --- |
+| [CheckboxNode](../nodes/input/checkbox.md) | `signal(Signal<Boolean>)` | The checked state. |
+| [ToggleNode](../nodes/input/toggle.md) | `signal(Signal<Boolean>)` | `true` on the toggled side. |
+| [SliderNode](../nodes/input/slider.md) | `signal(Signal<O>)` | The selected value. |
+| [SwitchNode](../nodes/input/switch.md) | `signal(Signal<String>)` | The name of the current state. |
+| [SelectorNode](../nodes/input/selector.md) | `signal(Signal<V>)` | The selected value. |
+
+Give the control its values (`values(...)`, `state(...)`) before `signal(...)`: the signal's value can only select one of them.
 
 ## Sharing state with stores
 

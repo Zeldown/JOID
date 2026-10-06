@@ -94,6 +94,19 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void followsItsSignal() {
+		final List<Integer> changes = new ArrayList<>();
+		final Signal<Integer> signal = new Signal<>(5);
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 1).cursor(new Cursor()).signal(signal).onChange((node, value) -> changes.add(value));
+		Assert.assertEquals(5, slider.getValue().intValue());
+		this.bridges.open(new NodeUI(slider)).frame();
+		signal.set(2);
+		this.bridges.frame();
+		Assert.assertEquals(2, slider.getValue().intValue());
+		Assert.assertTrue(changes.isEmpty());
+	}
+
+	@Test
 	public void followsItsDraggedCursor() {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor());
 		this.bridges.open(new NodeUI(slider)).frame();

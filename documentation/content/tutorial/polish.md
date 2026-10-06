@@ -78,8 +78,7 @@ RectNode
 ```java
 ToggleSwitchNode
 .create(music.aw(-100), 18, 76, 36)
-.checked(settings.getMusic().getOrDefault())
-.onChange((toggle, checked) -> settings.getMusic().set(checked))
+.signal(settings.getMusic())
 .onInit(toggle -> {
     final String line = settings.getMusic().getOrDefault() ? "Music is playing" : "Music is muted";
     toggle.hoverLines(() -> line);
@@ -91,8 +90,7 @@ ToggleSwitchNode
 ```java
 ToggleSwitchNode
 .create(notifications.aw(-100), 18, 76, 36)
-.checked(settings.getNotifications().getOrDefault())
-.onChange((toggle, checked) -> settings.getNotifications().set(checked))
+.signal(settings.getNotifications())
 .hover(() -> "Show a notification when a download completes")
 .attach(notifications);
 ```
@@ -253,8 +251,7 @@ public final class SettingsUI extends UI {
                 final RectNode music = this.row(flex, "Music", label);
                 ToggleSwitchNode
                 .create(music.aw(-100), 18, 76, 36)
-                .checked(settings.getMusic().getOrDefault())
-                .onChange((toggle, checked) -> settings.getMusic().set(checked))
+                .signal(settings.getMusic())
                 .onInit(toggle -> {
                     final String line = settings.getMusic().getOrDefault() ? "Music is playing" : "Music is muted";
                     toggle.hoverLines(() -> line);
@@ -281,8 +278,7 @@ public final class SettingsUI extends UI {
                 final RectNode notifications = this.row(flex, "Notifications", label);
                 ToggleSwitchNode
                 .create(notifications.aw(-100), 18, 76, 36)
-                .checked(settings.getNotifications().getOrDefault())
-                .onChange((toggle, checked) -> settings.getNotifications().set(checked))
+                .signal(settings.getNotifications())
                 .hover(() -> "Show a notification when a download completes")
                 .attach(notifications);
 

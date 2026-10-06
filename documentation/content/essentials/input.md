@@ -137,7 +137,7 @@ SettingCheckboxNode
 | [SwitchNode](../nodes/input/switch.md) | Segmented controls, previous/next pickers. | Extend it |
 | [SelectorNode](../nodes/input/selector.md) | A dropdown list. | Extend it |
 
-Each control fires its own `onChange` callback. A slider can also write its value straight into a signal with `signal(...)`, which you meet in [State and Reactivity](state.md).
+Each control fires its own `onChange` callback. The checkbox, toggle, slider, switch and selector can also be bound to a signal with `signal(...)`, which you meet in [State and Reactivity](state.md).
 
 Any node can also be dragged with the mouse: `draggable(DraggableProperty.parent())` keeps it inside its parent. See [Drag and Drop](../interactions/drag-drop.md).
 

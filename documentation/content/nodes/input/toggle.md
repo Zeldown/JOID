@@ -66,6 +66,25 @@ Here `fpsToggle` is a `ToggleNode<Integer, Integer>` created with `.state(60, 30
 - The toggle reacts on press, not on release, and has no keyboard control.
 - `toggle(boolean)` sets the side from code without calling `onChange`.
 
+## Binding a signal with signal
+
+`signal(Signal<Boolean>)` keeps the side and a [signal](../../state/signals.md) in sync, both ways: `true` is the toggled side, `false` the back side.
+
+```java
+final BooleanSignal dark = new BooleanSignal(true);
+
+ThemeToggleNode
+.create(860, 500, 200, 50)
+.state("dark", "light")
+.signal(dark)
+.attach(this);
+```
+
+- The toggle starts on the signal's value: here on its toggled side, `"dark"`.
+- Each click writes the new side into the signal, before `onChange` runs.
+- Each value the signal publishes later sets the side without calling `onChange`, while the toggle's UI is open.
+- `toggle(boolean)` does not write the signal.
+
 ## onChange
 
 `onChange(NodeToggleChangeCallback<T, F, S>)` takes `(node, toggle)`, where `toggle` is the new `isToggle()` value; `node.getValue()` already returns the new value. Cancelling the context in the `pre(...)` phase keeps the previous side (see [Callbacks](../../interactions/callbacks.md)). The callback interface is in `dev.joid.lib.ui.node.impl.structure.toggle.callback`.
@@ -77,7 +96,9 @@ Here `fpsToggle` is a `ToggleNode<Integer, Integer>` created with `.state(60, 30
 | `ToggleNode(double x, double y, double width, double height)` | | Protected constructor for your subclass. |
 | `state(F toggle, S back)` | none | Values of the toggled and back sides. |
 | `toggle(boolean)` | `false` | Sets the side without calling `onChange`. |
+| `signal(Signal<Boolean>)` | none | Binds a signal to the side (`true` for toggled), both ways. |
 | `isToggle()` | | `true` on the toggled side. |
+| `getSignal()` | | Bound signal, or `null`. |
 | `getValue()` | | Value of the current side. |
 | `getState()` | | The `ToggleState`, `null` before `state(...)`. |
 | `onChange(NodeToggleChangeCallback<T, F, S>)` | | Adds a callback `(node, toggle)` run after each click. |
@@ -90,5 +111,6 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 
 - [CheckboxNode](checkbox.md)
 - [SwitchNode](switch.md)
+- [Signals](../../state/signals.md)
 - [Callbacks](../../interactions/callbacks.md)
 - [Custom Nodes](../custom-nodes.md)

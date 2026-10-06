@@ -1632,9 +1632,9 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
-		signal.subscribe(value -> {
+		this.listen(signal, condition, value -> {
 			if (this.ui == null) {
-				return UI.getCurrent() != null;
+				return;
 			}
 
 			this.executeCallback(Node.CALLBACK_WATCH, InternalContext.create(), () -> {
@@ -1646,10 +1646,28 @@ public abstract class Node implements INode {
 					}
 				}
 			}, signal, properties);
-
-			return condition.get();
 		});
 		return (T) this;
+	}
+
+	protected final <V> void bind(final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
+		final V current = signal.getOrDefault();
+		if (current != null) {
+			consumer.accept(current);
+		}
+
+		this.listen(signal, () -> JOID.isOpen(this.ui), value -> {
+			if (value != null) {
+				consumer.accept(value);
+			}
+		});
+	}
+
+	private <V> void listen(final Signal<V> signal, final Supplier<Boolean> condition, final Consumer<V> consumer) {
+		signal.subscribe(value -> {
+			consumer.accept(value);
+			return this.ui == null ? UI.getCurrent() != null : condition.get();
+		});
 	}
 
 	public final <T extends Node> @NonNull T hovered(final boolean hovered) {

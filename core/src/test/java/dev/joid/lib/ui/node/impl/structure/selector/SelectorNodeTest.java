@@ -3,6 +3,7 @@ package dev.joid.lib.ui.node.impl.structure.selector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,14 +19,16 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode.SelectorDirection;
 import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
 public class SelectorNodeTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
-	private final List<Node> changes = new ArrayList<>();
+	private final List<String> changes = new ArrayList<>();
 
 	private Selector selector;
 	private RectNode first;
@@ -34,10 +37,10 @@ public class SelectorNodeTest {
 
 	@Before
 	public void createAnOptionList() {
-		this.first = RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.1F, 0.3F, 0.5F, 1F));
-		this.second = RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.3F, 0.5F, 0.7F, 1F));
-		this.third = RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.5F, 0.7F, 0.9F, 1F));
-		this.selector = new Selector().onChange((node, selected) -> this.changes.add(selected)).append(this.first, this.second, this.third);
+		this.selector = new Selector().onChange((node, value) -> this.changes.add(value)).values("first", "first", "second", "third");
+		this.first = (RectNode) this.selector.getChildren().ordered().get(0);
+		this.second = (RectNode) this.selector.getChildren().ordered().get(1);
+		this.third = (RectNode) this.selector.getChildren().ordered().get(2);
 	}
 
 	@Test
@@ -45,6 +48,7 @@ public class SelectorNodeTest {
 		this.bridges.open(new NodeUI(this.selector)).frame();
 		Assert.assertSame(this.first, this.selector.getSelected());
 		Assert.assertTrue(this.selector.isSelected(this.first));
+		Assert.assertEquals(Optional.of("first"), this.selector.getValue());
 		Assert.assertFalse(this.selector.isActive());
 		Assert.assertSame(SelectorDirection.DOWN, this.selector.getDirection());
 		Assert.assertEquals(40D, this.selector.getHeight(), 0D);
@@ -78,7 +82,8 @@ public class SelectorNodeTest {
 		this.click(150D, 200D);
 		Assert.assertSame(this.third, this.selector.getSelected());
 		Assert.assertFalse(this.selector.isActive());
-		Assert.assertEquals(Arrays.asList(this.third), this.changes);
+		Assert.assertEquals(Arrays.asList("third"), this.changes);
+		Assert.assertEquals(Optional.of("third"), this.selector.getValue());
 		this.assertDrawn(0.5F, 0.7F, 0.9F, 100D, 140D);
 	}
 
@@ -108,7 +113,8 @@ public class SelectorNodeTest {
 
 	@Test
 	public void showsAChosenOption() {
-		Assert.assertSame(this.selector, this.selector.selected(this.second));
+		Assert.assertSame(this.selector, this.selector.value("second"));
+		Assert.assertSame(this.second, this.selector.getSelected());
 		this.bridges.open(new NodeUI(this.selector)).frame();
 		this.assertDrawn(0.3F, 0.5F, 0.7F, 100D, 140D);
 		Assert.assertTrue(this.bridges.getRender().getDraws(0.1F, 0.3F, 0.5F).isEmpty());
@@ -120,8 +126,34 @@ public class SelectorNodeTest {
 		this.bridges.open(new NodeUI(empty)).frame();
 		this.click(150D, 120D);
 		Assert.assertNull(empty.getSelected());
+		Assert.assertFalse(empty.getValue().isPresent());
 		Assert.assertFalse(empty.isActive());
 		Assert.assertTrue(this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).isEmpty());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAValueThatIsNoOption() {
+		this.selector.value("fourth");
+	}
+
+	@Test
+	public void writesThePickedValueIntoItsSignal() {
+		final Signal<String> language = new Signal<>();
+		this.bridges.open(new NodeUI(this.selector.signal(language).active(true))).frames(2);
+		this.click(150D, 200D);
+		Assert.assertEquals("third", language.getOrDefault());
+	}
+
+	@Test
+	public void followsItsSignal() {
+		final Signal<String> language = new Signal<>("second");
+		this.bridges.open(new NodeUI(this.selector.signal(language))).frame();
+		Assert.assertEquals(Optional.of("second"), this.selector.getValue());
+		language.set("third");
+		this.bridges.frame();
+		Assert.assertSame(this.third, this.selector.getSelected());
+		this.assertDrawn(0.5F, 0.7F, 0.9F, 100D, 140D);
+		Assert.assertTrue(this.changes.isEmpty());
 	}
 
 	@Test
@@ -157,10 +189,21 @@ public class SelectorNodeTest {
 
 	}
 
-	public static final class Selector extends SelectorNode {
+	public static final class Selector extends SelectorNode<String> {
 
 		public Selector() {
 			super(100D, 100D, 200D, 40D);
+		}
+
+		@Override
+		protected @NonNull Node option(final @NonNull String value) {
+			if ("first".equals(value)) {
+				return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.1F, 0.3F, 0.5F, 1F));
+			}
+			if ("second".equals(value)) {
+				return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.3F, 0.5F, 0.7F, 1F));
+			}
+			return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.5F, 0.7F, 0.9F, 1F));
 		}
 
 		@Override

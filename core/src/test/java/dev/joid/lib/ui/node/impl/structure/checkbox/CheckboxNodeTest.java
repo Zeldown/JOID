@@ -12,6 +12,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 public class CheckboxNodeTest {
 
@@ -40,6 +41,21 @@ public class CheckboxNodeTest {
 		this.click(110D, 110D);
 		Assert.assertFalse(checkbox.isChecked());
 		Assert.assertEquals(Arrays.asList(true, false), changes);
+	}
+
+	@Test
+	public void staysInSyncWithItsSignal() {
+		final List<Boolean> changes = new ArrayList<>();
+		final BooleanSignal subtitles = new BooleanSignal(true);
+		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange((node, value) -> changes.add(value));
+		Assert.assertTrue(checkbox.isChecked());
+		Assert.assertSame(subtitles, checkbox.getSignal());
+		this.bridges.open(new NodeUI(checkbox)).frame();
+		this.click(110D, 110D);
+		Assert.assertFalse(subtitles.getOrDefault());
+		subtitles.set(true);
+		Assert.assertTrue(checkbox.isChecked());
+		Assert.assertEquals(Arrays.asList(false), changes);
 	}
 
 	@Test

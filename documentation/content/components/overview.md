@@ -32,7 +32,7 @@ Nodes that draw something.
 
 ## Inputs
 
-Nodes the user edits. Each one keeps its value and calls you back when it changes.
+Nodes the user edits. Each one keeps its value and calls you back when it changes. The checkbox, toggle, slider, switch and selector also bind their value to a [signal](../state/signals.md) with `signal(...)`.
 
 | Component | Abstract | Use it for |
 | --- | --- | --- |

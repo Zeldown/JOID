@@ -273,6 +273,33 @@ Declare setters as `public final <T extends YourNode> T name(...)` and end them 
 - In a chain, a `Node` setter returns `Node`: users call your setters before the `Node` ones (see [Chaining and generic return types](node-fundamentals.md#chaining-and-generic-return-types)).
 - A `final` class can return its own type directly, as `FlexNode.margin(...)` does.
 
+## Binding a signal with bind
+
+`bind(Signal<V> signal, Consumer<V> consumer)` is `protected final`: it runs `consumer` at once with the signal's current value (when it is not `null`), then with each value the signal publishes, while the node's UI is open. The input controls build their `signal(...)` method on it. A two-way binding for `SwatchNode` stores the signal, follows it with `bind`, and writes it in the click action:
+
+```java
+private Signal<Boolean> signal;
+
+public final <T extends SwatchNode> T signal(final Signal<Boolean> signal) {
+    this.signal = signal;
+    this.bind(signal, value -> this.selected = Boolean.TRUE.equals(value));
+    return (T) this;
+}
+```
+
+```java
+context.cancel(() -> this.executeCallback(SwatchNode.CALLBACK_SELECT, InternalContext.create(), () -> {
+    this.selected = !this.selected;
+    if (this.signal != null) {
+        this.signal.set(this.selected);
+    }
+}, !this.selected));
+```
+
+- A value published by the node itself comes back to the consumer: make the consumer harmless when the value is already the current one.
+- The consumer also receives `null` when the signal is set to `null`.
+- `Signal` is in `dev.joid.lib.utils.signal`, `Consumer` in `java.util.function`.
+
 ## Building on existing nodes
 
 - Extend a concrete node to add behavior: `RectNode` subclasses keep the fill, border and hover colors; `ContainerNode` subclasses draw nothing themselves (its `draw` is final).
@@ -288,6 +315,7 @@ Declare setters as `public final <T extends YourNode> T name(...)` and end them 
 | `INode` hooks | `init`, `draw`, `drawSkeleton`, `update`, `detach`, `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`. |
 | `onMousePressed(double, double, ClickType, InternalContext)`, `onMouseReleased(...)`, `onMouseDragged(double, double, ClickType, long, InternalContext)`, `onMouseScroll(double, double, int, InternalContext)`, `onKeyPressed(char, Key, InternalContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
 | `registerCallback(int, NodeCallback)` | Protected. Stores a callback. |
+| `bind(Signal<V>, Consumer<V>)` | Protected. Runs the consumer with the signal's current value, then with each published value while the UI is open. |
 | `executeCallback`, `executePreCallback`, `executePostCallback` | Fire callbacks. |
 | `fireDrag(Runnable)`, `fireDragStart(Runnable)`, `fireDragEnd(Runnable)` | Run an action inside the drag callbacks. |
 | `hasCallback(int)`, `getCallbackList(int)`, `getCallbackMap()` | Registered callbacks. |

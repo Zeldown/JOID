@@ -12,6 +12,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 public class ToggleNodeTest {
 
@@ -46,6 +47,21 @@ public class ToggleNodeTest {
 		this.click(150D, 120D);
 		Assert.assertFalse(toggle.isToggle());
 		Assert.assertEquals(Arrays.asList(true, false), changes);
+	}
+
+	@Test
+	public void staysInSyncWithItsSignal() {
+		final List<Object> changes = new ArrayList<>();
+		final BooleanSignal music = new BooleanSignal(true);
+		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange((node, value) -> changes.add(value));
+		Assert.assertTrue(toggle.isToggle());
+		Assert.assertSame(music, toggle.getSignal());
+		this.bridges.open(new NodeUI(toggle)).frame();
+		this.click(110D, 110D);
+		Assert.assertFalse(music.getOrDefault());
+		music.set(true);
+		Assert.assertTrue(toggle.isToggle());
+		Assert.assertEquals(1, changes.size());
 	}
 
 	@Test

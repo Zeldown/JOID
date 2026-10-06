@@ -51,17 +51,25 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 
 `checked(boolean)` sets the state from code without calling `onChange`. A new checkbox is unchecked.
 
-To keep a [signal](../../state/signals.md) in sync with a checkbox:
+## Binding a signal with signal
+
+`signal(Signal<Boolean>)` keeps the checkbox and a [signal](../../state/signals.md) in sync, both ways:
 
 ```java
 final BooleanSignal music = new BooleanSignal(true);
 
 SettingCheckboxNode
 .create(940, 520, 40)
-.checked(music.getOrDefault())
-.onChange((checkbox, checked) -> music.set(checked))
+.signal(music)
 .attach(this);
 ```
+
+- The checkbox starts on the signal's value: here it is checked.
+- Each click writes the new state into the signal, before `onChange` runs.
+- Each value the signal publishes later sets the state without calling `onChange`, while the checkbox's UI is open.
+- `checked(boolean)` does not write the signal.
+
+`BooleanSignal` is in `dev.joid.lib.utils.signal.impl.primitive`.
 
 ## onChange
 
@@ -75,9 +83,12 @@ Cancelling the context in the `pre(...)` phase of the callback keeps the previou
 | --- | --- | --- |
 | `CheckboxNode(double x, double y, double width, double height)` | | Protected constructor for your subclass. |
 | `checked(boolean)` | `false` | Sets the state without calling `onChange`. |
+| `signal(Signal<Boolean>)` | none | Binds a signal to the state, both ways. |
 | `isChecked()` | | Current state. |
+| `getSignal()` | | Bound signal, or `null`. |
 | `onChange(NodeCheckboxChangeCallback<T>)` | | Adds a callback `(node, checked)` run after each click. |
 | `mousePressed(double, double, ClickType, InternalContext)` | | Flips the state. Overridable; call `super.mousePressed(...)` to keep the behavior. |
+| `CheckboxNode.CALLBACK_CHANGE` | | Callback id of `onChange`. |
 
 Every setter returns the node itself, typed by the generic return of the fluent API.
 
@@ -85,5 +96,6 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 
 - [ToggleNode](toggle.md)
 - [SwitchNode](switch.md)
+- [Signals](../../state/signals.md)
 - [Callbacks](../../interactions/callbacks.md)
 - [Custom Nodes](../custom-nodes.md)

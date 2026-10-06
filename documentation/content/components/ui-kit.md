@@ -18,10 +18,10 @@ Every component follows the [custom node](../nodes/custom-nodes.md) contract: a 
 | Component | It handles | You draw in |
 | --- | --- | --- |
 | [SliderNode](../nodes/input/slider.md) (`IntegerSliderNode`, `DoubleSliderNode`, `StringSliderNode`) | Values, dragging, the selected value, `signal`, `onChange` | `drawSlider(mouseX, mouseY)` for the track, and `drawCursor(mouseX, mouseY)` in a `SliderCursorNode` subclass for the cursor, installed with `cursor(...)` |
-| [CheckboxNode](../nodes/input/checkbox.md) | The checked state, clicks, `onChange` | `draw(mouseX, mouseY)`, reading `isChecked()` |
-| [ToggleNode](../nodes/input/toggle.md) | The side, the value of each side, clicks, `onChange` | `draw(mouseX, mouseY)`, reading `isToggle()` |
-| [SwitchNode](../nodes/input/switch.md) | The list of states, the current one, `onChange`, rebuilding on change | `init(UI)`: build one child per state and call `index(state)` on click; optionally `draw(mouseX, mouseY)` for a background |
-| [SelectorNode](../nodes/input/selector.md) | Opening, closing, the option layout, selection, `onChange` | `drawBackground(mouseX, mouseY)`, plus the option nodes you attach |
+| [CheckboxNode](../nodes/input/checkbox.md) | The checked state, clicks, `signal`, `onChange` | `draw(mouseX, mouseY)`, reading `isChecked()` |
+| [ToggleNode](../nodes/input/toggle.md) | The side, the value of each side, clicks, `signal`, `onChange` | `draw(mouseX, mouseY)`, reading `isToggle()` |
+| [SwitchNode](../nodes/input/switch.md) | The list of states, the current one, `signal`, `onChange`, rebuilding on change | `init(UI)`: build one child per state and call `index(state)` on click; optionally `draw(mouseX, mouseY)` for a background |
+| [SelectorNode](../nodes/input/selector.md) | The values, opening, closing, the option layout, selection, `signal`, `onChange` | `option(value)`, which returns the node of one option, and `drawBackground(mouseX, mouseY)` |
 | [ChartNode](../nodes/data/chart.md) | Labels, series, the scale (`getMin`, `getMax`), loading | `draw(mouseX, mouseY)` |
 | [RadarChartNode](../nodes/data/radar-chart.md) | Axes, values, the scale, loading | `draw(mouseX, mouseY)` |
 
@@ -276,7 +276,7 @@ public class Switch extends SwitchNode {
 
 ### Selector
 
-`SelectorNode` works with nodes: every child is an option. The kit hides this behind `options(selected, options...)`, which creates one `Option` node per string, and `signal(...)`, set from the selector's `onChange`. `Option` draws its text, its hover background while the list is open and the arrow of the selected option.
+`Selector` extends `SelectorNode<String>`: its values are strings. `values(...)` calls `option(value)` once per value, and `option` returns an `Option` node, which the selector sizes and places. `Option` draws its text, its hover background while the list is open and the arrow of the selected option.
 
 ```java
 package kit.flat;
@@ -287,35 +287,20 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.Signal;
 
-public class Selector extends SelectorNode {
-
-    private Signal<String> signal;
+public class Selector extends SelectorNode<String> {
 
     protected Selector(final double x, final double y, final double width, final double height) {
         super(x, y, width, height);
-        this.signal = new Signal<>();
-        super.onChange((selector, option) -> this.signal.set(((Option) option).value));
     }
 
     public static Selector create(final double x, final double y, final double width, final double height) {
         return new Selector(x, y, width, height);
     }
 
-    public final Selector options(final String selected, final String... options) {
-        for (final String value : options) {
-            final Option option = new Option(value).attach(this);
-            if (value.equals(selected)) {
-                super.selected(option);
-            }
-        }
-        return this;
-    }
-
-    public final Selector signal(final Signal<String> signal) {
-        this.signal = signal;
-        return this;
+    @Override
+    protected Node option(final String value) {
+        return new Option(value);
     }
 
     @Override
@@ -364,8 +349,6 @@ A settings panel built only from the kit. The signals hold the values; the scree
 ```java
 package app.flat;
 
-import java.util.Arrays;
-
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
@@ -395,21 +378,20 @@ public class SettingsUI extends UI {
             Label.create(40, 180, 160, 44, "Subtitles").attach(panel);
             Checkbox
             .create(200, 188, 28)
-            .checked(this.subtitles.getOrDefault())
-            .onChange((checkbox, checked) -> this.subtitles.set(checked))
+            .signal(this.subtitles)
             .attach(panel);
 
             Label.create(40, 250, 160, 44, "Quality").attach(panel);
             Switch
             .create(200, 250, 360, 44)
-            .state(Arrays.asList("Low", "Medium", "High"), this.quality.getOrDefault())
-            .onChange((node, state) -> this.quality.set(state))
+            .state("Low", "Medium", "High")
+            .signal(this.quality)
             .attach(panel);
 
             Label.create(40, 320, 160, 44, "Language").attach(panel);
             Selector
             .create(200, 320, 360, 44)
-            .options(this.language.getOrDefault(), "English", "Français", "Deutsch", "Español")
+            .values(this.language.getOrDefault(), "English", "Français", "Deutsch", "Español")
             .signal(this.language)
             .attach(panel);
         })
@@ -419,7 +401,7 @@ public class SettingsUI extends UI {
 }
 ```
 
-The values flow through [signals](../state/signals.md): the slider sets `volume` through `signal(...)`, the selector sets `language` through the kit's own `signal(...)`, and the checkbox and the switch set theirs in `onChange`. The value label watches `volume`, so it changes only when the slider writes a new value.
+The values flow through [signals](../state/signals.md): `signal(...)` binds each control to its signal both ways. The control starts on the signal's value, writes each user change into it, and follows the values that other code sets. The value label watches `volume`, so it changes only when the slider writes a new value.
 
 ![The cursor drags the volume slider, unchecks Subtitles, picks Medium and selects Deutsch in both kits at once](../images/uikit-use.gif "The same clicks on both kits: the components behave the same, only the drawing differs.")
 
@@ -592,7 +574,6 @@ import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
-import dev.joid.lib.utils.signal.Signal;
 
 public interface Kit {
 
@@ -602,7 +583,7 @@ public interface Kit {
 
     public SwitchNode switcher(double x, double y, double width, double height);
 
-    public SelectorNode selector(double x, double y, double width, double height, Signal<String> signal, String... options);
+    public SelectorNode<String> selector(double x, double y, double width, double height);
 
 }
 ```
@@ -616,7 +597,6 @@ import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
-import dev.joid.lib.utils.signal.Signal;
 import kit.Kit;
 
 public final class FlatKit implements Kit {
@@ -637,8 +617,8 @@ public final class FlatKit implements Kit {
     }
 
     @Override
-    public SelectorNode selector(final double x, final double y, final double width, final double height, final Signal<String> signal, final String... options) {
-        return Selector.create(x, y, width, height).options(signal.getOrDefault(), options).signal(signal);
+    public SelectorNode<String> selector(final double x, final double y, final double width, final double height) {
+        return Selector.create(x, y, width, height);
     }
 
 }
@@ -648,8 +628,6 @@ public final class FlatKit implements Kit {
 
 ```java
 package app.factory;
-
-import java.util.Arrays;
 
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
@@ -679,23 +657,24 @@ public class SettingsUI extends UI {
         .attach(this);
         this.kit
         .checkbox(860, 458, 28)
-        .checked(this.subtitles.getOrDefault())
-        .onChange((checkbox, checked) -> this.subtitles.set(checked))
+        .signal(this.subtitles)
         .attach(this);
         this.kit
         .switcher(860, 520, 360, 44)
-        .state(Arrays.asList("Low", "Medium", "High"), this.quality.getOrDefault())
-        .onChange((node, state) -> this.quality.set(state))
+        .state("Low", "Medium", "High")
+        .signal(this.quality)
         .attach(this);
         this.kit
-        .selector(860, 590, 360, 44, this.language, "English", "Français", "Deutsch", "Español")
+        .selector(860, 590, 360, 44)
+        .values(this.language.getOrDefault(), "English", "Français", "Deutsch", "Español")
+        .signal(this.language)
         .attach(this);
     }
 
 }
 ```
 
-Open it with `new SettingsUI(new FlatKit())` or `new SettingsUI(new NeonKit())`. Methods a kit adds on top of JOID (here `options` and `signal` of `Selector`) must go through the interface, as `selector(...)` does.
+Open it with `new SettingsUI(new FlatKit())` or `new SettingsUI(new NeonKit())`. A method that a kit class adds on top of JOID is not reachable through the base type: keep the kit classes to the JOID API, or add the method to the interface.
 
 ## Tips for a kit
 
@@ -703,9 +682,8 @@ Open it with `new SettingsUI(new FlatKit())` or `new SettingsUI(new NeonKit())`.
 - **Draw from the node size.** Use `getWidth()`, `getHeight()`, `dw(2D)` and `dh(2D)` instead of fixed values, so that every size works.
 - **Sizes as parameters.** Take the sizes in `create(...)`; when a kit needs a specific shape, derive the other dimension from the parameter, as the neon `Checkbox` does with `size * 1.8D`.
 - **Hover with `hoverValue`.** `super.hoverValue(1F)` animates from `0F` to `1F` when the pointer enters the node and back when it leaves. Blend colors with `Color.to(target, progress)` or grow shapes with it. Set the speed with `hoverDuration(long)` and the curve with `hoverEquation(...)`.
-- **Hide the plumbing.** When a component works with nodes, as `SelectorNode` does, give your kit a value-based API (`options`, `signal`) so screens never build option nodes.
 - **Keep the behavior in JOID.** Override the drawing hooks and leave the input methods alone: dragging, clicking, selecting and the callbacks then work the same in every kit.
-- **Same names in every kit.** Same class names, same `create(...)` signatures, same extra methods: switching kits stays a one-line change.
+- **Same names in every kit.** Same class names and same `create(...)` signatures: switching kits stays a one-line change.
 
 ## See also
 

@@ -46,7 +46,7 @@ final IntegerSignal volume = new IntegerSignal(50);
 
 VolumeSliderNode
 .create(760, 520, 400, 24)
-.values(0, 100, volume.getOrDefault())
+.values(0, 100, 50)
 .signal(volume)
 .onChange((slider, value) -> System.out.println("Volume: " + value))
 .attach(this);
@@ -55,7 +55,8 @@ VolumeSliderNode
 ![The cursor drags a white square thumb right along a gray track, then left](../../images/slider-drag.gif "The thumb follows the pointer while the button is held and stays where it is released.")
 
 - `values(0, 100, 50)` creates the values 0 to 100 and selects 50.
-- Dragging the cursor changes the value; `onChange` receives each new value and `volume` is updated.
+- Dragging the cursor changes the value; `volume` is updated and `onChange` receives each new value.
+- `signal(volume)` binds the slider both ways: setting `volume` moves the cursor.
 - `getValue()` returns the current value.
 
 See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
@@ -117,7 +118,15 @@ Set the values before the slider is shown. If you replace them later, call `valu
 
 - `getValue()` returns the selected value.
 - `value(O value)` selects a value from code. Once the slider is attached to a UI, it also moves the cursor to the value position; before that, the cursor is placed when the slider loads. It does not call `onChange` and does not write the signal. It throws an `IllegalArgumentException` when the value is not one of the values.
-- `signal(Signal<O>)` gives a signal that the slider sets each time the user changes the value. The link is one way: setting the signal does not move the slider; call `value(...)` for that.
+
+## Binding a signal with signal
+
+`signal(Signal<O>)` keeps the slider and a [signal](../../state/signals.md) in sync, both ways:
+
+- The slider starts on the signal's value, when it is one of the values.
+- Each value the user selects is written into the signal, before `onChange` runs.
+- Each value the signal publishes later goes through `value(...)`: the cursor moves to it and `onChange` is not called, while the slider's UI is open. A value outside the values is ignored.
+- Call `signal(...)` after `values(...)` or `valueSet(...)`: the signal's value is applied once, when you bind it, and only an existing value can be selected.
 
 ## onChange
 
@@ -135,7 +144,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 | --- | --- |
 | `valueSet(Set<O> valueSet, O value)` | Sets the values (in iteration order) and the selected value. |
 | `value(O value)` | Selects a value and moves the cursor to it when the slider is shown. |
-| `signal(Signal<O> signal)` | Signal set on each user change. Default: none. |
+| `signal(Signal<O> signal)` | Binds a signal to the value, both ways. Default: none. |
 | `cursor(SliderCursorNode cursor)` | Attaches the cursor, replacing the previous one. Required. |
 | `onChange(NodeSliderChangeCallback<T, O> callback)` | Adds a callback `(node, value)` run after each user change. |
 | `drawSlider(double mouseX, double mouseY)` | Abstract. Draws the track. Called from the slider's `draw` (final), only once the slider has a value and a cursor. |

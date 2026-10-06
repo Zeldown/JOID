@@ -215,7 +215,10 @@ quantity.subscribe(recompute);
 | `Node.watch(Signal<?> signal, ...)` | Reloads or rebuilds the node when the signal publishes. | [Watching Signals](watch.md) |
 | `Node.wait(ISignal<?> signal)` | Keeps the node unmounted (skeleton) until the signal has a value. | [Watching Signals](watch.md#waiting-for-a-signal-with-wait-and-onmount) |
 | `Node.visible(Signal<?>... signals)` | Shows the node only while every signal's `getOrDefault()` is neither `null` nor `false`: a `BooleanSignal` toggles it. | [Node Fundamentals](../nodes/node-fundamentals.md) |
-| `SliderNode.signal(Signal<O> signal)` | Writes the selected value into the signal. | [SliderNode](../nodes/input/slider.md) |
+| `CheckboxNode.signal(Signal<Boolean> signal)`, `ToggleNode.signal(Signal<Boolean> signal)` | Binds the checked state or the side to the signal, both ways. | [CheckboxNode](../nodes/input/checkbox.md), [ToggleNode](../nodes/input/toggle.md) |
+| `SliderNode.signal(Signal<O> signal)` | Binds the selected value to the signal, both ways. | [SliderNode](../nodes/input/slider.md) |
+| `SwitchNode.signal(Signal<String> signal)` | Binds the name of the current state to the signal, both ways. | [SwitchNode](../nodes/input/switch.md) |
+| `SelectorNode.signal(Signal<V> signal)` | Binds the selected value to the signal, both ways. | [SelectorNode](../nodes/input/selector.md) |
 | `UI.getZoomLevel()`, `UI.getScaledWidth()`, `UI.getScaledHeight()` | `DoubleSignal`s updated when the view changes. | [View and Scaling](../ui/view-and-scaling.md) |
 
 ## ISignal

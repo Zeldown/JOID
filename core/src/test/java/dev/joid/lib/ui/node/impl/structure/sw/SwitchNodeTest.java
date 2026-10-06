@@ -11,6 +11,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.utils.signal.Signal;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,19 @@ public class SwitchNodeTest {
 		Assert.assertSame(node, node.index(1));
 		Assert.assertEquals("medium", node.getState());
 		Assert.assertEquals(Arrays.asList("medium"), this.changes);
+	}
+
+	@Test
+	public void staysInSyncWithItsSignal() {
+		final Switch node = this.open();
+		final Signal<String> quality = new Signal<>("high");
+		Assert.assertSame(node, node.signal(quality));
+		Assert.assertEquals("high", node.getState());
+		node.index("low");
+		Assert.assertEquals("low", quality.getOrDefault());
+		quality.set("medium");
+		Assert.assertEquals("medium", node.getState());
+		Assert.assertEquals(Arrays.asList("low"), this.changes);
 	}
 
 	@Test

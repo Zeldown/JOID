@@ -116,6 +116,11 @@ public abstract class SliderNode<O> extends Node {
 
 	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
 		this.signal = signal;
+		super.bind(signal, value -> {
+			if (this.valueSet.contains(value) && !value.equals(this.value)) {
+				this.value(value);
+			}
+		});
 		return (T) this;
 	}
 

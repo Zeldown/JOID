@@ -76,7 +76,28 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 | `index(int index)` | Selects the state at `index`. |
 | `index(String state)` | Selects the state with this name. |
 
-Both run the `onChange` callbacks around the change: `pre(...)` before (cancelling the context there keeps the current state), then the change, then `(node, state)`. They call `onChange` even when the state is already the current one; the switch is then not rebuilt.
+Both run the `onChange` callbacks around the change: `pre(...)` before (cancelling the context there keeps the current state), then the change, then `(node, state)`. They call `onChange` even when the state is already the current one; the switch is then not rebuilt. With a bound signal, the change also writes the name of the new state into it.
+
+## Binding a signal with signal
+
+`signal(Signal<String>)` keeps the current state and a [signal](../../state/signals.md) of state names in sync, both ways:
+
+```java
+private final StringSignal preset = new StringSignal("High");
+```
+
+```java
+SegmentedSwitchNode
+.create(760, 500, 400, 50, TextInfo.create(font, 20F, Color.WHITE))
+.state("Low", "Medium", "High")
+.signal(this.preset)
+.attach(this);
+```
+
+- The switch starts on the signal's value: here "High".
+- Each `index(...)` writes the name of the new state into the signal, before `(node, state)` runs.
+- Each value the signal publishes later selects that state without calling `onChange`, while the switch's UI is open, and the switch rebuilds. A name that is not one of the states is ignored.
+- Call `signal(...)` after `state(...)`: the signal's value is applied once, when you bind it, and only an existing state can be selected. `state(...)` does not write the signal.
 
 ## Rebuilding on change
 
@@ -127,7 +148,9 @@ public void init(final UI ui) {
 | `state(List<String> stateList, String state)` | Sets the states and the current state. |
 | `index(int index)` | Selects a state by index and calls `onChange`. |
 | `index(String state)` | Selects a state by name and calls `onChange`. |
+| `signal(Signal<String> signal)` | Binds a signal to the name of the current state, both ways. |
 | `getState()` | Name of the current state. |
+| `getSignal()` | Bound signal, or `null`. |
 | `getStateList()` | `ListSignal<String>` of the state names. |
 | `getStateIndex()` | `IntegerSignal` of the current index. |
 | `onChange(NodeSwitchChangeCallback<T>)` | Adds a callback `(node, state)` run after `index(...)`. |

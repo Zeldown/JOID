@@ -5,6 +5,7 @@ import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.checkbox.callback.NodeCheckboxChangeCallback;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -12,9 +13,10 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public abstract class CheckboxNode extends Node {
 
-	private static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeCheckboxChangeCallback.class);
+	public static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeCheckboxChangeCallback.class);
 
-	private boolean checked;
+	private boolean         checked;
+	private Signal<Boolean> signal;
 
 	protected CheckboxNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -29,12 +31,21 @@ public abstract class CheckboxNode extends Node {
 		context.cancel(() -> {
 			super.executeCallback(CheckboxNode.CALLBACK_CHANGE, context, () -> {
 				this.checked = !this.checked;
+				if (this.signal != null) {
+					this.signal.set(this.checked);
+				}
 			}, !this.checked);
 		});
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
 		this.checked = checked;
+		return (T) this;
+	}
+
+	public final <T extends CheckboxNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
+		this.signal = signal;
+		super.bind(signal, value -> this.checked = value);
 		return (T) this;
 	}
 
