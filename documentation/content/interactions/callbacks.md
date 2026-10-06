@@ -63,7 +63,7 @@ The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mo
 | `onDraw` | `NodeDrawCallback<T>` | `(node, mouseX, mouseY)` | Every frame the node is visible. | Draws the node itself: `draw`, or `drawSkeleton` while not mounted, with its own shader effects. |
 | `onWatch` | `NodeWatchCallback<T>` | `(node, signal, properties)` | A signal watched with `watch(...)` publishes. | Applies the `WatchProperty` values in order. |
 | `onAnimate` | `NodeAnimationCallback<T>` | `(node, animator, value)` | A frame where an animator registered with `animate(TweenAnimator)` holds a new value. | Nothing. |
-| `onScrollUpdate` | `NodeScrollUpdateCallback<T>` | `(node, value)` | `setScrollX`/`setScrollY` (also `scrollX`/`scrollY` and the mouse wheel) moves the scroll target; `value` is the requested offset. | Moves the scroll target, clamped to the content. |
+| `onScrollUpdate` | `NodeScrollUpdateCallback<T>` | `(node, value)` | `scrollOffsetX`/`scrollOffsetY` (also `scrollX`/`scrollY` and the mouse wheel) moves the scroll target; `value` is the requested offset. | Moves the scroll target, clamped to the content. |
 | `onScrollEnding` | `NodeScrollEndingCallback<T>` | `(node, scrollX, scrollY)` | The scroll target reaches the end of the content. | Nothing. |
 | `onScrollEnd` | `NodeScrollEndCallback<T>` | `(node, scrollX, scrollY)` | The animated scroll comes to rest at the end of the content. | Nothing. |
 | `onDragStart` | `NodeDragCallback<T>` | `(node)` | A left press on a draggable node starts a drag. | Starts the drag; creates the copy for `DraggableType.COPY`. |

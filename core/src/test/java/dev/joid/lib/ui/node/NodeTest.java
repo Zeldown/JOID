@@ -917,7 +917,7 @@ public class NodeTest {
 		Assert.assertEquals(-60D, area.getTargetScrollY(), 0D);
 		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
 		this.bridges.getWindow().getKeys().clear();
-		area.setScrollX(-30D).updateScroll();
+		area.scrollOffsetX(-30D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(-30D, area.getChildren().get(0).getX(), 1E-3D);
 		Assert.assertEquals(-60D, area.getChildren().get(0).getY(), 1E-3D);
@@ -940,7 +940,7 @@ public class NodeTest {
 	public void forgetsItsScrollOnceItStopsScrolling() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		column.setScrollY(-100D).updateScroll();
+		column.scrollOffsetY(-100D).updateScroll();
 		this.bridges.frame();
 		Assert.assertSame(column, column.overflow(OverflowProperty.HIDDEN));
 		Assert.assertFalse(column.hasOverflowY());
@@ -1035,7 +1035,7 @@ public class NodeTest {
 	public void easesTowardsItsScrollTarget() {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
-		row.setScrollX(-300D);
+		row.scrollOffsetX(-300D);
 		this.bridges.frame();
 		Assert.assertEquals(-19.2D, row.getScrollX(), 1E-9D);
 		Assert.assertEquals(381D, row.getChildren().get(1).getX(), 1E-4D);
@@ -1046,7 +1046,7 @@ public class NodeTest {
 		final List<Double> ends = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollEnd((container, scrollX, scrollY) -> ends.add(scrollX));
 		this.bridges.open(new NodeUI(row));
-		row.setScrollX(-1000D);
+		row.scrollOffsetX(-1000D);
 		Assert.assertEquals(-300D, row.getTargetScrollX(), 0D);
 		Assert.assertTrue(row.isScrollEndX());
 		this.bridges.frame();
@@ -1061,7 +1061,7 @@ public class NodeTest {
 		final List<Double> ends = new ArrayList<>();
 		final ContainerNode column = NodeTest.column().onScrollEnd((container, scrollX, scrollY) -> ends.add(scrollY));
 		this.bridges.open(new NodeUI(column));
-		column.setScrollY(-1000D);
+		column.scrollOffsetY(-1000D);
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
 		Assert.assertTrue(column.isScrollEndY());
 		this.bridges.frames(200);
@@ -1074,9 +1074,9 @@ public class NodeTest {
 		final List<Double> ends = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollEnd((container, scrollX, scrollY) -> ends.add(scrollX));
 		this.bridges.open(new NodeUI(row));
-		row.setScrollX(-1000D);
+		row.scrollOffsetX(-1000D);
 		this.bridges.frame();
-		row.setScrollX(-100D);
+		row.scrollOffsetX(-100D);
 		this.bridges.frames(200);
 		Assert.assertFalse(row.isScrollEndX());
 		Assert.assertTrue(ends.isEmpty());
@@ -1087,9 +1087,9 @@ public class NodeTest {
 		final List<String> events = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollEnding((container, scrollX, scrollY) -> events.add("ending " + scrollX)).onScrollEnd((container, scrollX, scrollY) -> events.add("end " + scrollX));
 		this.bridges.open(new NodeUI(row));
-		row.setScrollX(-1000D);
+		row.scrollOffsetX(-1000D);
 		Assert.assertEquals(Arrays.asList("ending -300.0"), events);
-		row.setScrollX(-2000D);
+		row.scrollOffsetX(-2000D);
 		this.bridges.frames(200);
 		Assert.assertEquals(Arrays.asList("ending -300.0", "end -300.0"), events);
 	}
@@ -1099,7 +1099,7 @@ public class NodeTest {
 		final List<Double> endings = new ArrayList<>();
 		final ContainerNode column = NodeTest.column().onScrollEnding((container, scrollX, scrollY) -> endings.add(scrollY));
 		this.bridges.open(new NodeUI(column));
-		column.setScrollY(-1000D);
+		column.scrollOffsetY(-1000D);
 		Assert.assertEquals(Arrays.asList(-200D), endings);
 		Assert.assertEquals(0D, column.getScrollY(), 0D);
 	}
@@ -1109,9 +1109,9 @@ public class NodeTest {
 		final List<Double> endings = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollEnding((container, scrollX, scrollY) -> endings.add(scrollX));
 		this.bridges.open(new NodeUI(row));
-		row.setScrollX(-1000D);
-		row.setScrollX(-100D);
-		row.setScrollX(-1000D);
+		row.scrollOffsetX(-1000D);
+		row.scrollOffsetX(-100D);
+		row.scrollOffsetX(-1000D);
 		Assert.assertEquals(Arrays.asList(-300D, -300D), endings);
 	}
 
@@ -1124,11 +1124,11 @@ public class NodeTest {
 			}
 		}).onScrollEnd((container, scrollX, scrollY) -> ends.add(scrollX));
 		this.bridges.open(new NodeUI(row));
-		row.setScrollX(-1000D);
+		row.scrollOffsetX(-1000D);
 		this.bridges.frames(200);
 		Assert.assertEquals(-300D, row.getScrollX(), 0D);
 		Assert.assertTrue(ends.isEmpty());
-		row.setScrollX(-1000D);
+		row.scrollOffsetX(-1000D);
 		this.bridges.frames(200);
 		Assert.assertEquals(Arrays.asList(-600D), ends);
 	}
@@ -1162,7 +1162,7 @@ public class NodeTest {
 		final List<Double> values = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollUpdate((container, value) -> values.add(value));
 		this.bridges.open(new NodeUI(row));
-		row.setScrollX(-50D);
+		row.scrollOffsetX(-50D);
 		this.bridges.move(300D, 150D).frames(2).scroll(-120);
 		Assert.assertEquals(Arrays.asList(-50D, -80D), values);
 	}
@@ -1172,11 +1172,11 @@ public class NodeTest {
 		final ContainerNode row = NodeTest.row();
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 1920D, 1080D).append(row, column)));
-		row.setScrollX(-100D).updateScrollX();
+		row.scrollOffsetX(-100D).updateScrollX();
 		Assert.assertEquals(-100D, row.getScrollX(), 0D);
-		column.setScrollY(-50D).updateScrollY();
+		column.scrollOffsetY(-50D).updateScrollY();
 		Assert.assertEquals(-50D, column.getScrollY(), 0D);
-		row.setScrollX(-200D).updateScroll();
+		row.scrollOffsetX(-200D).updateScroll();
 		Assert.assertEquals(-200D, row.getScrollX(), 0D);
 	}
 
@@ -1188,7 +1188,7 @@ public class NodeTest {
 		Assert.assertSame(bar, row.getScrollbar());
 		Assert.assertSame(row, bar.getScrollNode());
 		Assert.assertSame(row, bar.getParent());
-		row.setScrollX(-150D).updateScroll();
+		row.scrollOffsetX(-150D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(180D, bar.getX(), 1E-9D);
 		Assert.assertEquals(280D, this.draw(0.6F, 0.4F, 0.2F).getLeft(), 1E-3D);
@@ -1199,7 +1199,7 @@ public class NodeTest {
 		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
 		final ContainerNode column = NodeTest.column().scrollbar(bar);
 		this.bridges.open(new NodeUI(column));
-		column.setScrollY(-100D).updateScroll();
+		column.scrollOffsetY(-100D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(40D, bar.getY(), 1E-9D);
 		Assert.assertEquals(140D, this.draw(0.6F, 0.4F, 0.2F).getTop(), 1E-3D);

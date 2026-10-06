@@ -36,7 +36,7 @@ public class ScrollbarNodeTest {
 		final RectNode content = ScrollbarNodeTest.column(bar);
 		this.bridges.open(new NodeUI(content)).frame();
 		Assert.assertSame(content, bar.getScrollNode());
-		content.setScrollY(-100D).updateScroll();
+		content.scrollOffsetY(-100D).updateScroll();
 		this.bridges.frame();
 		final Draw thumb = this.thumb();
 		Assert.assertEquals(140D, thumb.getTop(), 1E-3D);

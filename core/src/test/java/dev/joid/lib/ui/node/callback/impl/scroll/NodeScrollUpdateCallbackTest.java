@@ -51,7 +51,7 @@ public class NodeScrollUpdateCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollUpdateCallbackTest.box(1000D).onScrollUpdate((node, value) -> received.addAll(Arrays.asList(node, value, node.getTargetScrollY())));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.setScrollY(-200D);
+		box.scrollOffsetY(-200D);
 		box.scrollRatioY(0.5F);
 		Assert.assertEquals(Arrays.asList(box, -200D, -200D, box, -350D, -350D), received);
 	}
@@ -84,7 +84,7 @@ public class NodeScrollUpdateCallbackTest {
 
 		});
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.setScrollY(-200D);
+		box.scrollOffsetY(-200D);
 		Assert.assertEquals(0D, box.getTargetScrollY(), 0D);
 		Assert.assertTrue(received.isEmpty());
 	}

@@ -49,11 +49,11 @@ public class NodeScrollEndCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEndCallbackTest.box(1000D).onScrollEnd((node, scrollX, scrollY) -> received.add(node));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.setScrollY(-200D);
+		box.scrollOffsetY(-200D);
 		this.bridges.frames(200);
 		Assert.assertTrue(received.isEmpty());
-		box.setScrollY(-700D);
-		box.setScrollY(-900D);
+		box.scrollOffsetY(-700D);
+		box.scrollOffsetY(-900D);
 		Assert.assertTrue(received.isEmpty());
 		this.bridges.frames(200);
 		Assert.assertEquals(Collections.singletonList(box), received);
@@ -76,8 +76,8 @@ public class NodeScrollEndCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEndCallbackTest.box(1000D).onScrollEnd((node, scrollX, scrollY) -> received.add(node));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.setScrollY(-200D);
-		box.setScrollY(0D);
+		box.scrollOffsetY(-200D);
+		box.scrollOffsetY(0D);
 		this.bridges.frames(200);
 		Assert.assertTrue(received.isEmpty());
 	}
@@ -87,9 +87,9 @@ public class NodeScrollEndCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEndCallbackTest.box(1000D).onScrollEnd((node, scrollX, scrollY) -> received.add(node));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.setScrollY(-900D);
+		box.scrollOffsetY(-900D);
 		this.bridges.frames(5);
-		box.setScrollY(-100D);
+		box.scrollOffsetY(-100D);
 		this.bridges.frames(200);
 		Assert.assertTrue(received.isEmpty());
 	}
@@ -100,7 +100,7 @@ public class NodeScrollEndCallbackTest {
 		final ContainerNode box = ContainerNode.create(500D, 100D, 300D, 300D).overflow(OverflowProperty.SCROLL).onScrollEnd((node, scrollX, scrollY) -> received.add(scrollY));
 		RectNode.create(0D, 0D, 100D, 1000D).attach(box);
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.setScrollY(-700D);
+		box.scrollOffsetY(-700D);
 		this.bridges.frames(200);
 		Assert.assertEquals(1, received.size());
 		Assert.assertEquals(box.getScrollY(), received.get(0), 0D);

@@ -84,7 +84,7 @@ Children receive the wheel event before their parent, so in nested scroll contai
 
 | Method | Description |
 | --- | --- |
-| `setScrollX(double offset)`, `setScrollY(double offset)` | Sets the target offset, clamped between the end (`-getMaxScrollX()`/`-getMaxScrollY()`) and `0`. |
+| `scrollOffsetX(double offset)`, `scrollOffsetY(double offset)` | Sets the target offset, clamped between the end (`-getMaxScrollX()`/`-getMaxScrollY()`) and `0`. |
 | `scrollRatioX(float ratio)`, `scrollRatioY(float ratio)` | Sets the target to a ratio of the maximum: `0F` is the start, `1F` the end. |
 | `scrollX(double value, double speed)`, `scrollY(double value, double speed)` | Moves the target by `value × speed`: positive toward the start, negative toward the end. |
 | `updateScroll()` | Sets the current offset to the target on both axes, without easing. |
@@ -136,7 +136,7 @@ RectNode
 
 | Method | Lambda | Fires |
 | --- | --- | --- |
-| `onScrollUpdate(NodeScrollUpdateCallback<T>)` | `(node, value)` | On every call that sets a target: wheel, `scrollX`/`scrollY`, `setScrollX`/`setScrollY`, `scrollRatioX`/`scrollRatioY`, scrollbar drag, auto-scroll of a [ReorderableFlexNode](reorderable-flex.md). `value` is the requested offset on that axis, before clamping. Cancelling the PRE phase leaves the target unchanged. |
+| `onScrollUpdate(NodeScrollUpdateCallback<T>)` | `(node, value)` | On every call that sets a target: wheel, `scrollX`/`scrollY`, `scrollOffsetX`/`scrollOffsetY`, `scrollRatioX`/`scrollRatioY`, scrollbar drag, auto-scroll of a [ReorderableFlexNode](reorderable-flex.md). `value` is the requested offset on that axis, before clamping. Cancelling the PRE phase leaves the target unchanged. |
 | `onScrollEnding(NodeScrollEndingCallback<T>)` | `(node, scrollX, scrollY)` | As soon as a call moves the target onto the end. Receives the target offsets. It fires once per arrival: again only after the target has left the end. |
 | `onScrollEnd(NodeScrollEndCallback<T>)` | `(node, scrollX, scrollY)` | When the eased offset reaches the end announced by `onScrollEnding`. It does not fire when the target leaves the end first, or when the content grows before the offset gets there. |
 
@@ -265,7 +265,7 @@ RectNode
 | `overflow(OverflowProperty)`, `getOverflow()` | Overflow mode. Default `NONE`. |
 | `scrollbar(ScrollbarNode)`, `getScrollbar()` | Scrollbar. |
 | `scrollSpeed(double)`, `getScrollSpeed()` | Wheel multiplier. Default `1`. |
-| `setScrollX(double)`, `setScrollY(double)`, `scrollRatioX(float)`, `scrollRatioY(float)` | Absolute targets: offset or ratio. |
+| `scrollOffsetX(double)`, `scrollOffsetY(double)`, `scrollRatioX(float)`, `scrollRatioY(float)` | Absolute targets: offset or ratio. |
 | `scrollX(double, double)`, `scrollY(double, double)` | Relative targets. |
 | `updateScroll()`, `updateScrollX()`, `updateScrollY()` | Jump to the target. |
 | `getScrollX()`, `getScrollY()`, `getTargetScrollX()`, `getTargetScrollY()`, `getMaxScrollX()`, `getMaxScrollY()` | Offsets. |

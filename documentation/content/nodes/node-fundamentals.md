@@ -410,7 +410,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | Signals | `watch(Signal)`, `watch(Signal, WatchProperty...)`, `watch(Signal, Supplier<Boolean>, WatchProperty...)` | [Watching Signals](../state/watch.md) |
 | Stores | `useStore(Class<T>)`, the store of the node's UI | [Stores](../state/stores.md) |
 | Animation | `animate(TweenAnimator)`: the node updates the animator on every rendered frame and fires `onAnimate` when its value changes | [TweenAnimator](../animation/tween-animator.md) |
-| Overflow and scrolling | `overflow(OverflowProperty)`, `scrollX`, `scrollY`, `setScrollX`, `setScrollY`, `scrollRatioX`, `scrollRatioY`, `updateScroll`, `scrollSpeed`, `scrollbar`, `hasOverflowX`, `hasOverflowY` | [Overflow and Scrolling](layout/overflow-and-scroll.md) |
+| Overflow and scrolling | `overflow(OverflowProperty)`, `scrollX`, `scrollY`, `scrollOffsetX`, `scrollOffsetY`, `scrollRatioX`, `scrollRatioY`, `updateScroll`, `scrollSpeed`, `scrollbar`, `hasOverflowX`, `hasOverflowY` | [Overflow and Scrolling](layout/overflow-and-scroll.md) |
 | Writing nodes | Hooks, input dispatch entry points, `registerCallback`, `executeCallback`, `executePreCallback`, `executePostCallback`, `fireDrag`, `fireDragStart`, `fireDragEnd`, `hasCallback`, `getCallbackList`, `getCallbackMap` | [Custom Nodes](custom-nodes.md) |
 
 ## Node API reference

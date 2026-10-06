@@ -945,16 +945,21 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T scrollX(final double value, final double speed) {
-		this.setScrollX(this.targetScrollX + value * speed);
+		this.scrollOffsetX(this.targetScrollX + value * speed);
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T scrollY(final double value, final double speed) {
-		this.setScrollY(this.targetScrollY + value * speed);
+		this.scrollOffsetY(this.targetScrollY + value * speed);
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T setScrollX(final double value) {
+	public final <T extends Node> @NonNull T scrollRatioX(final float ratio) {
+		this.scrollOffsetX(-this.maxScrollX * ratio);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T scrollOffsetX(final double value) {
 		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, InternalContext.create(), () -> {
 			final double oldValue = this.targetScrollX;
 			this.targetScrollX = Math.min(value, 0);
@@ -971,12 +976,12 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T scrollRatioX(final float ratio) {
-		this.setScrollX(-this.maxScrollX * ratio);
+	public final <T extends Node> @NonNull T scrollRatioY(final float ratio) {
+		this.scrollOffsetY(-this.maxScrollY * ratio);
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T setScrollY(final double value) {
+	public final <T extends Node> @NonNull T scrollOffsetY(final double value) {
 		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, InternalContext.create(), () -> {
 			final double oldValue = this.targetScrollY;
 			this.targetScrollY = Math.min(value, 0);
@@ -990,11 +995,6 @@ public abstract class Node implements INode {
 				this.scrollEndY = false;
 			}
 		}, value);
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T scrollRatioY(final float ratio) {
-		this.setScrollY(-this.maxScrollY * ratio);
 		return (T) this;
 	}
 
