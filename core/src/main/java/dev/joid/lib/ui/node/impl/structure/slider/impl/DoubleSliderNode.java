@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.structure.slider.impl;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -19,8 +20,8 @@ public abstract class DoubleSliderNode extends SliderNode<Double> {
 
 	public final <T extends DoubleSliderNode> @NonNull T values(final double min, final double max, final double step, final double value) {
 		final Set<Double> values = new LinkedHashSet<>();
-		for (double i = min; i <= max; i += step) {
-			values.add(i);
+		for (BigDecimal i = BigDecimal.valueOf(min); i.doubleValue() <= max; i = i.add(BigDecimal.valueOf(step))) {
+			values.add(i.doubleValue());
 		}
 		return this.valueSet(values, value);
 	}

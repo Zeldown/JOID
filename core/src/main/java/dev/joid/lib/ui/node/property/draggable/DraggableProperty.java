@@ -204,7 +204,7 @@ public class DraggableProperty {
 	}
 
 	public final @NonNull DraggableProperty copy() {
-		return new DraggableProperty().enabled(this.enabled).area(this.areaType, this.areaObject).snap(this.snapType, this.snapNodes == null ? null : this.snapNodes.toArray(new Node[0]));
+		return new DraggableProperty().type(this.type).enabled(this.enabled).area(this.areaType, this.areaObject).snap(this.snapType, this.snapNodes == null ? null : this.snapNodes.toArray(new Node[0]));
 	}
 
 	public enum DraggableType {

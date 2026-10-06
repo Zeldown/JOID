@@ -56,7 +56,7 @@ public abstract class SliderNode<O> extends Node {
 		}
 
 		final float percent = Math.min(1, Math.max(0, (float) this.cursor.getX() / (float) (super.getWidth() - this.cursor.getWidth())));
-		final O newValue = (O) this.valueSet.toArray()[(int) ((this.valueSet.size() - 1) * percent)];
+		final O newValue = (O) this.valueSet.toArray()[Math.round((this.valueSet.size() - 1) * percent)];
 		if (!this.value.equals(newValue)) {
 			super.executeCallback(SliderNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
 				this.value = newValue;

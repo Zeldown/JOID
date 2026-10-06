@@ -16,10 +16,13 @@ public class IntegerFieldNode extends TextFieldNode {
 				return Integer.toString(this.minValue);
 			}
 
-			final String newValue = nextValue.replaceAll("[^0-9]", "");
-			if (newValue.isEmpty()) {
+			final boolean negative = nextValue.startsWith("-");
+			final String digits = nextValue.replaceAll("[^0-9]", "");
+			if (digits.isEmpty()) {
 				return Integer.toString(this.minValue);
 			}
+
+			final String newValue = negative ? "-" + digits : digits;
 
 			try {
 				final int value = Integer.parseInt(newValue);
@@ -32,7 +35,7 @@ public class IntegerFieldNode extends TextFieldNode {
 				return newValue;
 			} catch (final Exception silent) {}
 
-			return Integer.toString(this.maxValue);
+			return Integer.toString(negative ? this.minValue : this.maxValue);
 		});
 	}
 

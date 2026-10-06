@@ -559,7 +559,10 @@ public abstract class Node implements INode {
 								try {
 									render.stencilTest(false);
 
-									render.translate(-this.parent.x, -this.parent.y, 0D);
+									if (this.parent != null) {
+										render.translate(-this.parent.x, -this.parent.y, 0D);
+									}
+
 									this.draggedNode.render(mouseX, mouseY);
 								} finally {
 									render.popMatrix();
@@ -1553,7 +1556,7 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
 		signal.subscribe(value -> {
 			if (this.ui == null) {
-				return this.getUi() != null;
+				return UI.getCurrent() != null;
 			}
 
 			this.executeCallback(Node.CALLBACK_WATCH, InternalContext.create(), () -> {

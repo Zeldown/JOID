@@ -45,17 +45,11 @@ public class ModelNode extends Node {
 
 		final double modelDiagonal = Math.sqrt(modelWidth * modelWidth + modelHeight * modelHeight + modelDepth * modelDepth);
 
-		double sizeX = super.dw(modelWidth);
-		double sizeY = sizeX * (modelHeight / modelWidth);
-		double sizeZ = sizeX * (modelDepth / modelWidth);
-
-		sizeX *= this.size;
-		sizeY *= this.size;
-		sizeZ *= this.size;
+		final double scale = super.dw(modelWidth) * this.size;
 
 		final double drawX = super.getX() + super.getWidth() / 2D;
 		final double drawY = super.getY() + super.getHeight() / 2D;
-		final double drawZ = modelDepth / 2D * sizeZ;
+		final double drawZ = modelDepth / 2D * scale;
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushMatrix();
@@ -65,12 +59,12 @@ public class ModelNode extends Node {
 			render.rotate(this.rotationPitch, 1D, 0D, 0D);
 			render.translate(-drawX, -drawY, -drawZ);
 			render.translate(0D, 0D, drawZ);
-			DrawUtils.MODEL.drawModel(drawX, drawY, sizeX, sizeY, sizeZ, this.model);
+			DrawUtils.MODEL.drawModel(drawX, drawY, scale, this.model);
 		} finally {
 			render.popMatrix();
 		}
 
-		super.getUi().setRenderPipelineLevel(super.getUi().getRenderPipelineLevel() + (this.pipeLineLevel == -1D ? modelDiagonal * sizeZ : this.pipeLineLevel));
+		super.getUi().setRenderPipelineLevel(super.getUi().getRenderPipelineLevel() + (this.pipeLineLevel == -1D ? modelDiagonal * scale : this.pipeLineLevel));
 	}
 
 	public <T extends ModelNode> @NonNull T model(final @NonNull IDrawableModel model) {
