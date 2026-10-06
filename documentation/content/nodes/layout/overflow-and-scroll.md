@@ -71,7 +71,7 @@ With `HIDDEN` or `SCROLL`, the node becomes the overflow area of its descendants
 
 When the pointer is over a `SCROLL` node whose content overflows (the node must be visible and enabled), each wheel event moves the target by 30 units × `scrollSpeed`, twice as much while Left Control is held. Wheel up (a positive value) scrolls toward the start, wheel down toward the end. The node consumes the wheel event only when its target can move: already at the start for a wheel up, at the end for a wheel down, or with content that fits, it leaves the event to the nodes behind it.
 
-The wheel scrolls vertically, and horizontally while Shift (left or right) is held. A node whose content only overflows horizontally also scrolls horizontally with the wheel alone, so a horizontal list needs no Shift. With Shift held, a node without horizontal overflow leaves the wheel to its parents.
+The wheel scrolls the first axis that overflows: vertically when the content overflows vertically, horizontally otherwise, so a horizontal list scrolls with the wheel. A node whose content overflows both ways scrolls vertically with the wheel, and at its vertical limits leaves the wheel to its parents; its horizontal offset moves from code or with a horizontal [scrollbar](#scrollbarnode).
 
 Children receive the wheel event before their parent, so in nested scroll containers the innermost hovered one scrolls first, and its parent takes over once it reaches its limit, as nested scroll areas chain on the web. A [`MultilineTextFieldNode`](../input/multiline-text-field.md#mouse-and-scrolling) that cannot scroll further in the direction of the wheel leaves the event to its parent the same way.
 

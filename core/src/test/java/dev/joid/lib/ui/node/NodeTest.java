@@ -901,7 +901,7 @@ public class NodeTest {
 	}
 
 	@Test
-	public void scrollsVerticallyWithTheWheelAndHorizontallyWithShift() {
+	public void scrollsVerticallyWithTheWheelWhenItOverflowsBothWays() {
 		final ContainerNode area = NodeTest.column();
 		RectNode.create(0D, 0D, 700D, 10D).attach(area);
 		this.bridges.open(new NodeUI(area));
@@ -913,24 +913,26 @@ public class NodeTest {
 		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
 		this.bridges.scroll(-120);
-		Assert.assertEquals(-30D, area.getTargetScrollY(), 0D);
-		Assert.assertEquals(-30D, area.getTargetScrollX(), 0D);
+		Assert.assertEquals(-60D, area.getTargetScrollY(), 0D);
+		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
 		this.bridges.getWindow().getKeys().clear();
-		area.updateScroll();
+		area.setScrollX(-30D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(-30D, area.getChildren().get(0).getX(), 1E-3D);
-		Assert.assertEquals(-30D, area.getChildren().get(0).getY(), 1E-3D);
+		Assert.assertEquals(-60D, area.getChildren().get(0).getY(), 1E-3D);
 	}
 
 	@Test
-	public void leavesTheShiftedWheelWithoutHorizontalOverflow() {
-		final ContainerNode column = NodeTest.column();
-		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		this.bridges.getWindow().getKeys().add(Key.RIGHT_SHIFT);
+	public void leavesTheWheelToItsParentAtItsVerticalEndWhenItOverflowsBothWays() {
+		final ContainerNode area = NodeTest.column();
+		RectNode.create(0D, 0D, 700D, 10D).attach(area);
+		this.bridges.open(new NodeUI(area)).move(300D, 150D).frames(2);
+		area.scrollRatioY(1F);
 		final InternalContext context = InternalContext.create();
-		column.onMouseScroll(300D, 150D, -120, context);
+		area.onMouseScroll(300D, 150D, -120, context);
 		Assert.assertFalse(context.isCancelled());
-		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
+		Assert.assertEquals(-200D, area.getTargetScrollY(), 0D);
+		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
 	}
 
 	@Test

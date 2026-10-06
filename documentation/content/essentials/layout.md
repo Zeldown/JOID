@@ -171,7 +171,7 @@ RectNode
 
 > NOTE: Set `SCROLL` on the fixed-size parent, not on the `FlexNode` or `GridNode` itself: they grow with their children, so they never overflow.
 
-You can also scroll from code: `area.scrollRatioY(1F)` goes to the end and `area.scrollRatioY(0F)` back to the start. The wheel scrolls vertically, and horizontally with Shift held.
+You can also scroll from code: `area.scrollRatioY(1F)` goes to the end and `area.scrollRatioY(0F)` back to the start. The wheel scrolls vertically, or horizontally when the content only overflows horizontally.
 
 ## Going further
 
