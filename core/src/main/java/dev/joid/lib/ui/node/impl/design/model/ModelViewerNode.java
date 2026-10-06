@@ -17,6 +17,10 @@ public class ModelViewerNode extends ModelNode {
 	private double targetRotationYaw;
 	private double targetRotationPitch;
 
+	private double lastSize;
+	private double lastRotationYaw;
+	private double lastRotationPitch;
+
 	private double minSize;
 	private double maxSize;
 
@@ -32,6 +36,10 @@ public class ModelViewerNode extends ModelNode {
 		this.targetSize = super.getSize();
 		this.targetRotationYaw = super.getRotationYaw();
 		this.targetRotationPitch = super.getRotationPitch();
+
+		this.lastSize = super.getSize();
+		this.lastRotationYaw = super.getRotationYaw();
+		this.lastRotationPitch = super.getRotationPitch();
 
 		this.minSize = 0.1D;
 		this.maxSize = 2D;
@@ -52,6 +60,8 @@ public class ModelViewerNode extends ModelNode {
 		if (super.getModel() == null) {
 			return;
 		}
+
+		this.sync();
 
 		if(this.dragged) {
 			this.targetRotationYaw += (mouseX - this.draggedMouseX) / 5F;
@@ -76,6 +86,10 @@ public class ModelViewerNode extends ModelNode {
 			super.size(super.getUi().lerpByFramerate(this.getSize(), this.targetSize, 0.1D, 0D, true));
 		}
 
+		this.lastSize = super.getSize();
+		this.lastRotationYaw = super.getRotationYaw();
+		this.lastRotationPitch = super.getRotationPitch();
+
 		super.draw(mouseX, mouseY);
 	}
 
@@ -85,12 +99,12 @@ public class ModelViewerNode extends ModelNode {
 			return;
 		}
 
-		context.cancel(() -> this.zoom(this.targetSize + value / 3000D));
+		context.cancel(() -> this.zoom(this.getTargetSize() + value / 3000D));
 	}
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (!super.isHovered(mouseX, mouseY)) {
+		if (!clickType.isLeft() || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
@@ -103,48 +117,62 @@ public class ModelViewerNode extends ModelNode {
 
 	@Override
 	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		this.dragged = false;
+		if (clickType.isLeft()) {
+			this.dragged = false;
+		}
 	}
 
-	@Override
-	public <T extends ModelNode> @NonNull T size(final double size) {
-		this.targetSize = size;
-		return super.size(size);
+	public final double getTargetSize() {
+		return super.getSize() != this.lastSize ? super.getSize() : this.targetSize;
 	}
 
-	@Override
-	public <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
-		this.targetRotationYaw = rotationYaw;
-		return super.rotationYaw(rotationYaw);
+	public final double getTargetRotationYaw() {
+		return super.getRotationYaw() != this.lastRotationYaw ? super.getRotationYaw() : this.targetRotationYaw;
 	}
 
-	public <T extends ModelViewerNode> @NonNull T rotationYawRange(final double min, final double max) {
+	public final double getTargetRotationPitch() {
+		return super.getRotationPitch() != this.lastRotationPitch ? super.getRotationPitch() : this.targetRotationPitch;
+	}
+
+	public final <T extends ModelViewerNode> @NonNull T rotationYawRange(final double min, final double max) {
 		this.minRotationYaw = min;
 		this.maxRotationYaw = max;
 		return (T) this;
 	}
 
-	@Override
-	public <T extends ModelNode> @NonNull T rotationPitch(final double rotationPitch) {
-		this.targetRotationPitch = rotationPitch;
-		return super.rotationPitch(rotationPitch);
-	}
-
-	public <T extends ModelViewerNode> @NonNull T rotationPitchRange(final double min, final double max) {
+	public final <T extends ModelViewerNode> @NonNull T rotationPitchRange(final double min, final double max) {
 		this.minRotationPitch = min;
 		this.maxRotationPitch = max;
 		return (T) this;
 	}
 
-	public <T extends ModelViewerNode> @NonNull T sizeRange(final double min, final double max) {
+	public final <T extends ModelViewerNode> @NonNull T sizeRange(final double min, final double max) {
 		this.minSize = min;
 		this.maxSize = max;
 		return (T) this;
 	}
 
-	public <T extends ModelViewerNode> @NonNull T zoom(final double zoom) {
+	public final <T extends ModelViewerNode> @NonNull T zoom(final double zoom) {
+		this.sync();
 		this.targetSize = Math.max(this.minSize, Math.min(this.maxSize, zoom));
 		return (T) this;
+	}
+
+	private void sync() {
+		if (super.getSize() != this.lastSize) {
+			this.targetSize = super.getSize();
+			this.lastSize = super.getSize();
+		}
+
+		if (super.getRotationYaw() != this.lastRotationYaw) {
+			this.targetRotationYaw = super.getRotationYaw();
+			this.lastRotationYaw = super.getRotationYaw();
+		}
+
+		if (super.getRotationPitch() != this.lastRotationPitch) {
+			this.targetRotationPitch = super.getRotationPitch();
+			this.lastRotationPitch = super.getRotationPitch();
+		}
 	}
 
 }

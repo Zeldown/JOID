@@ -55,9 +55,9 @@ ModelViewerNode
 
 | Input | Effect |
 | --- | --- |
-| Press any mouse button over the node | Starts rotating. The press is consumed, so the nodes below do not receive it. |
+| Press the left mouse button over the node | Starts rotating. The press is consumed, so the nodes below do not receive it. The other buttons are left to the nodes below. |
 | Move the mouse while pressed | Each UI unit moves the target yaw by 1/5 degree (right increases it) and the target pitch by 1/5 degree (up increases it). Both are clamped to their ranges. |
-| Release the button, anywhere | Stops rotating. |
+| Release the left button, anywhere | Stops rotating. |
 | Mouse wheel over the node | Changes the target size by `value / 3000` (a notch of `120` adds `0.04`), clamped to the size range. The wheel event is consumed. |
 
 The displayed size and rotation ease toward their targets on every frame with `UI.lerpByFramerate`, so the speed does not depend on the frame rate. Without a model, the viewer draws nothing and ignores the drag.
@@ -103,14 +103,15 @@ Getters: `getModel()`, `getSize()`, `getRotationYaw()`, `getRotationPitch()`, `g
 
 | Getter | Description |
 | --- | --- |
-| `getTargetSize()`, `getTargetRotationYaw()`, `getTargetRotationPitch()` | Values the view eases toward. |
+| `getTargetSize()`, `getTargetRotationYaw()`, `getTargetRotationPitch()` | Values the view eases toward. A value set with `size(...)`, `rotationYaw(...)` or `rotationPitch(...)` is its own target. |
 | `getMinSize()`, `getMaxSize()` | Size range. |
 | `getMinRotationYaw()`, `getMaxRotationYaw()` | Yaw range. |
 | `getMinRotationPitch()`, `getMaxRotationPitch()` | Pitch range. |
 | `isDragged()` | `true` while the mouse rotates the model. |
+| `getLastSize()`, `getLastRotationYaw()`, `getLastRotationPitch()` | Values the viewer drew on the previous frame, used to tell a value set from code from the eased one. |
 | `getDraggedMouseX()`, `getDraggedMouseY()` | Mouse position of the last drag step. |
 
-All setters return the node itself, typed by the generic return of the fluent API.
+All setters are `final` and return the node itself, typed by the generic return of the fluent API: the `ModelNode` setters return a `ModelNode`, the `ModelViewerNode` setters a `ModelViewerNode`.
 
 ## See also
 

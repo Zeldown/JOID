@@ -28,9 +28,9 @@ By default the bar is empty (`0F`), black with a white fill, and fills from left
 | Method | Description |
 | --- | --- |
 | `progress(float progress)` | Sets the filled fraction: `0F` = empty, `0.5F` = half, `1F` = full. |
-| `progress(float min, float max, float value)` | Sets the fraction of `value` in the range: `(value - min) / (max - min)`. |
+| `progress(float min, float max, float value)` | Sets the fraction of `value` in the range: `(value - min) / (max - min)`. With `min == max`, the bar is empty while `value` is below `max`, and full from `max` on. |
 
-- The value is not clamped: a fraction below `0F` or above `1F` draws the fill outside the node. With `min == max`, the fraction is not finite; avoid an empty range.
+- The value is not clamped: a fraction below `0F` or above `1F` draws the fill outside the node.
 - The value is not animated and has no supplier overload: call `progress(...)` again when your value changes, for example from another node's callback, an [`onUpdate` callback](../../interactions/callbacks.md) or a [watched signal](../../state/watch.md).
 
 ```java
@@ -101,7 +101,7 @@ ProgressNode
 | `resource(Resource, Resource)` | none | Background and fill resources. |
 | `background(Resource)` / `foreground(Resource)` | | One of the resources. |
 
-Every setter returns the node itself, typed by the generic return of the fluent API.
+Every setter is `final` and returns the node itself, typed by the generic return of the fluent API.
 
 ### Getters
 

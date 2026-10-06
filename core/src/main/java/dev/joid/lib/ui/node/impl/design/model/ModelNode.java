@@ -67,27 +67,27 @@ public class ModelNode extends Node {
 		super.getUi().setRenderPipelineLevel(super.getUi().getRenderPipelineLevel() + (this.pipeLineLevel == -1D ? modelDiagonal * scale : this.pipeLineLevel));
 	}
 
-	public <T extends ModelNode> @NonNull T model(final @NonNull IDrawableModel model) {
+	public final <T extends ModelNode> @NonNull T model(final @NonNull IDrawableModel model) {
 		this.model = model;
 		return (T) this;
 	}
 
-	public <T extends ModelNode> @NonNull T size(final double size) {
+	public final <T extends ModelNode> @NonNull T size(final double size) {
 		this.size = size;
 		return (T) this;
 	}
 
-	public <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
+	public final <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
 		this.rotationYaw = rotationYaw;
 		return (T) this;
 	}
 
-	public <T extends ModelNode> @NonNull T rotationPitch(final double rotationPitch) {
+	public final <T extends ModelNode> @NonNull T rotationPitch(final double rotationPitch) {
 		this.rotationPitch = rotationPitch;
 		return (T) this;
 	}
 
-	public <T extends ModelNode> @NonNull T pipeLineLevel(final double pipeLineLevel) {
+	public final <T extends ModelNode> @NonNull T pipeLineLevel(final double pipeLineLevel) {
 		this.pipeLineLevel = pipeLineLevel;
 		return (T) this;
 	}

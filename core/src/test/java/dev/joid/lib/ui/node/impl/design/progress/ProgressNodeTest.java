@@ -40,6 +40,13 @@ public class ProgressNodeTest {
 	}
 
 	@Test
+	public void fillsAnEmptyRangeOnceReached() {
+		Assert.assertEquals(0F, ProgressNode.create(0D, 0D, 10D, 10D).progress(5F, 5F, 4F).getProgress(), 0F);
+		Assert.assertEquals(1F, ProgressNode.create(0D, 0D, 10D, 10D).progress(5F, 5F, 5F).getProgress(), 0F);
+		Assert.assertEquals(1F, ProgressNode.create(0D, 0D, 10D, 10D).progress(5F, 5F, 9F).getProgress(), 0F);
+	}
+
+	@Test
 	public void fillsFromTheLeft() {
 		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.25F));
 		this.assertFill(100D, 100D, 150D, 150D);

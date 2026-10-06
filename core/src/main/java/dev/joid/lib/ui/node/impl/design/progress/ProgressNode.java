@@ -43,47 +43,47 @@ public class ProgressNode extends Node {
 		}
 	}
 
-	public <T extends ProgressNode> @NonNull T progress(final float progress) {
+	public final <T extends ProgressNode> @NonNull T progress(final float progress) {
 		this.progress = progress;
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T progress(final float min, final float max, final float value) {
-		this.progress = (value - min) / (max - min);
+	public final <T extends ProgressNode> @NonNull T progress(final float min, final float max, final float value) {
+		this.progress = min == max ? value < max ? 0F : 1F : (value - min) / (max - min);
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T direction(final @NonNull ProgressDirection direction) {
+	public final <T extends ProgressNode> @NonNull T direction(final @NonNull ProgressDirection direction) {
 		this.direction = direction;
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T color(final @NonNull Color background, final @NonNull Color foreground) {
+	public final <T extends ProgressNode> @NonNull T color(final @NonNull Color background, final @NonNull Color foreground) {
 		this.colors = new Color[] {background, foreground};
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T background(final @NonNull Color color) {
+	public final <T extends ProgressNode> @NonNull T background(final @NonNull Color color) {
 		this.colors[0] = color;
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T background(final @NonNull Resource resource) {
+	public final <T extends ProgressNode> @NonNull T background(final @NonNull Resource resource) {
 		this.resources[0] = resource;
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T foreground(final @NonNull Color color) {
+	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Color color) {
 		this.colors[1] = color;
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T foreground(final @NonNull Resource resource) {
+	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Resource resource) {
 		this.resources[1] = resource;
 		return (T) this;
 	}
 
-	public <T extends ProgressNode> @NonNull T resource(final @NonNull Resource background, final @NonNull Resource foreground) {
+	public final <T extends ProgressNode> @NonNull T resource(final @NonNull Resource background, final @NonNull Resource foreground) {
 		this.resources = new Resource[] { background, foreground };
 		return (T) this;
 	}

@@ -40,6 +40,27 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void keepsAValueSetFromCodeOnceOpen() {
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());
+		this.bridges.open(new NodeUI(viewer)).frame();
+		viewer.size(1.5D).rotationYaw(30D);
+		this.bridges.frames(5);
+		Assert.assertEquals(1.5D, viewer.getSize(), 0D);
+		Assert.assertEquals(1.5D, viewer.getTargetSize(), 0D);
+		Assert.assertEquals(30D, viewer.getRotationYaw(), 0D);
+		Assert.assertEquals(30D, viewer.getTargetRotationYaw(), 0D);
+	}
+
+	@Test
+	public void followsTheLastOfASizeAndAZoom() {
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D);
+		viewer.size(1.5D);
+		Assert.assertEquals(1.2D, viewer.zoom(1.2D).getTargetSize(), 0D);
+		viewer.size(0.8D);
+		Assert.assertEquals(0.8D, viewer.getTargetSize(), 0D);
+	}
+
+	@Test
 	public void zoomsInsideItsSizeRange() {
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D);
 		Assert.assertEquals(2D, viewer.zoom(5D).getTargetSize(), 0D);
@@ -112,6 +133,18 @@ public class ModelViewerNodeTest {
 		this.bridges.move(1000D, 200D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		Assert.assertFalse(viewer.isDragged());
+	}
+
+	@Test
+	public void turnsOnlyWithTheLeftButton() {
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());
+		this.bridges.open(new NodeUI(viewer)).frame();
+		this.bridges.move(200D, 200D).frames(2);
+		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		Assert.assertFalse(viewer.isDragged());
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(ClickType.RIGHT);
+		Assert.assertTrue(viewer.isDragged());
 	}
 
 	@Test
