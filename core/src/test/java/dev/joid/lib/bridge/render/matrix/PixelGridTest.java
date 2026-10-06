@@ -197,6 +197,73 @@ public class PixelGridTest {
 		Assert.assertEquals(0.3D, grid.quantizeY(0.3D), 0D);
 	}
 
+	@Test
+	public void leavesAFlatSpanOnItsEdge() {
+		final PixelGrid grid = PixelGridTest.grid(new MatrixStack(), 1366, 768);
+		Assert.assertEquals(10.3D, grid.snapHeight(10.3D, 0D), 0D);
+		final PixelGrid.Span span = grid.spanY(10.3D, 0D);
+		Assert.assertEquals(10.3D, span.getStart(), 0D);
+		Assert.assertEquals(10.3D, span.getEnd(), 0D);
+		Assert.assertEquals(1F, span.getCoverage(), 0F);
+		Assert.assertEquals(10.3D, grid.spanX(10.3D, 0D).getEnd(), 0D);
+		Assert.assertEquals(1F, grid.spanX(10.3D, 0D).getCoverage(), 0F);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesAMissingMatrix() {
+		PixelGrid.of(null, new MatrixStack().getMatrix(), 1920, 1080);
+	}
+
+	@Test
+	public void leavesTheStrokesOfARotatedTransformExact() {
+		final MatrixStack modelView = new MatrixStack();
+		modelView.rotate(30D, 0D, 0D, 1D);
+		final PixelGrid grid = PixelGridTest.grid(modelView, 1366, 768);
+		Assert.assertEquals(10.2D, grid.snapWidth(10D, 0.2D), 0D);
+		Assert.assertEquals(10.2D, grid.snapHeight(10D, 0.2D), 0D);
+		Assert.assertEquals(10.2D, grid.spanY(10D, 0.2D).getEnd(), 0D);
+		Assert.assertEquals(0.3D, grid.snapY(0.3D), 0D);
+	}
+
+	@Test
+	public void neverAlignsASkewedTransform() {
+		final MatrixStack modelView = new MatrixStack();
+		modelView.multiply(new float[] {1F, 0F, 0F, 0F, 0.5F, 1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F});
+		final PixelGrid grid = PixelGridTest.grid(modelView, 1920, 1080);
+		Assert.assertFalse(grid.isAligned());
+		Assert.assertEquals(1D, grid.getScaleX(), 1E-4D);
+		Assert.assertEquals(Math.hypot(0.5D, 1D), grid.getScaleY(), 1E-4D);
+	}
+
+	@Test
+	public void neverAlignsAFlattenedVerticalAxis() {
+		final MatrixStack modelView = new MatrixStack();
+		modelView.scale(1D, 0D, 1D);
+		Assert.assertFalse(PixelGridTest.grid(modelView, 1920, 1080).isAligned());
+	}
+
+	@Test
+	public void alignsAHalfTurn() {
+		final MatrixStack modelView = new MatrixStack();
+		modelView.translate(100D, 100D, 0D);
+		modelView.rotate(180D, 0D, 0D, 1D);
+		final PixelGrid grid = PixelGridTest.grid(modelView, 1366, 768);
+		Assert.assertTrue(grid.isAligned());
+		Assert.assertTrue(grid.toScreenX(10D) < grid.toScreenX(0D));
+		final double screenX = grid.toScreenX(grid.snapX(10.4D));
+		Assert.assertEquals(Math.rint(screenX), screenX, 1E-4D);
+	}
+
+	@Test
+	public void leavesAPanelTurnedAwayFromThePerspectiveCameraExact() {
+		final MatrixStack modelView = new MatrixStack();
+		modelView.translate(0D, 0D, -10D);
+		modelView.rotate(60D, 0D, 1D, 0D);
+		final PixelGrid grid = PixelGrid.of(PixelGridTest.perspective(), modelView.getMatrix(), 1920, 1080);
+		Assert.assertFalse(grid.isAligned());
+		Assert.assertEquals(0.3D, grid.snapX(0.3D), 0D);
+	}
+
 	private static float[] perspective() {
 		final float near = 0.1F;
 		final float far = 100F;

@@ -58,7 +58,7 @@ DraggableProperty.free()
 Quand un snap se déclenche, le callback `onSnap` reçoit la cible :
 
 ```java
-node.onSnap((dragged, context, snapTarget) -> {
+node.onSnap((dragged, snapTarget) -> {
     System.out.println("Snapped onto " + snapTarget);
 });
 ```
@@ -66,16 +66,9 @@ node.onSnap((dragged, context, snapTarget) -> {
 ## Callbacks de drag
 
 ```java
-node.onDrag((n, context) -> {
-    // se déclenche à chaque frame pendant le drag
-});
-```
-
-Pour les hooks start/stop, utilisez les callbacks souris existants :
-
-```java
-node.onMousePressed((n, mx, my, ct, ctx) -> { if (ct == ClickType.LEFT) startDrag(); });
-node.onMouseReleased((n, mx, my, ct, ctx) -> { if (ct == ClickType.LEFT) stopDrag(); });
+node.onDragStart(n -> { });   // le drag commence
+node.onDrag(n -> { });        // à chaque événement de drag souris pendant le drag
+node.onDragEnd(n -> { });     // le nœud est relâché
 ```
 
 Le drag lui-même est câblé automatiquement par `Node` quand `draggable(...)` est défini — vous n'appelez `startDragging()` à la main que pour un contrôle programmatique.
@@ -107,10 +100,10 @@ Un clone de chaque icône de palette est draggé ; les originaux restent en plac
 
 ## État global du drag
 
-Accéder au nœud actuellement draggé depuis n'importe où :
+Lisez si un nœud est en cours de drag, et écoutez `onDragStart` / `onDragEnd` sur les nœuds draggables pour le suivre d'ailleurs :
 
 ```java
-Node dragged = ui.getDraggedNode();    // null si rien n'est draggé
+boolean dragged = node.isDragging();
 ```
 
 Utile pour des drop zones qui surlignent quand un drag compatible est en cours.

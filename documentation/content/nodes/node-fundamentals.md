@@ -45,8 +45,10 @@ Compute positions relative to the parent:
 |---|---|
 | `dw(n)` | Width divided by `n` (e.g., `dw(2)` = half width) |
 | `dh(n)` | Height divided by `n` |
-| `ax(value)` | Absolute X, considering anchor |
-| `ay(value)` | Absolute Y, considering anchor |
+| `ax(value)` | X plus `value`, relative to the parent |
+| `ay(value)` | Y plus `value`, relative to the parent |
+| `mw(n)` | Width multiplied by `n` (e.g., `mw(0.5D)` = half width) |
+| `mh(n)` | Height multiplied by `n` |
 | `aw(delta)` | X offset from the right edge (`aw(-100)` = 100 left of right) |
 | `ah(delta)` | Y offset from the bottom edge |
 
@@ -83,7 +85,7 @@ JOID tracks hover state automatically using `isHovered(mouseX, mouseY)`. Two thi
 ```java
 node.hoverDuration(long);              // ms for the hover fade, default 200
 node.hoverEquation(TweenEquation);     // easing for the fade, default LINEAR
-node.hovered();                        // boolean: currently hovered
+node.isHovered();                      // boolean: currently hovered
 node.hoverValue(float max);            // 0F → max, interpolated during fade
 ```
 
@@ -179,7 +181,7 @@ Show a tooltip on hover:
 ```java
 node.hover(() -> "Simple text");
 node.hover(() -> Arrays.asList("Line 1", "Line 2"));
-node.hover(MyTooltipNode.create(...));   // fully custom node
+node.hover(NodeHoverElement.follow(MyTooltipNode.create(...)));   // fully custom node
 ```
 
 See [Hover](../interactions/hover.md).
@@ -213,15 +215,12 @@ node.getUi();                      // root UI
 ## Visibility & enabled
 
 ```java
-node.visible(boolean);   // not drawn, not interactive
-node.enabled(boolean);   // drawn, but no click/drag/scroll
+node.visible(n -> !someBoolean.getOrDefault());   // not drawn, not interactive
+node.visible(signal, otherSignal);                 // visible while every signal has a value
+node.enabled(n -> isUnlocked());                   // drawn, but no click/drag/scroll
 ```
 
-Both accept `Supplier<Boolean>` for reactive versions:
-
-```java
-node.visible(() -> !someBoolean.getOrDefault());
-```
+The predicates are evaluated on every frame, so the node follows the state it reads.
 
 ## Best practices
 

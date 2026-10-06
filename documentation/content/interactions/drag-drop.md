@@ -58,7 +58,7 @@ DraggableProperty.free()
 When a snap fires, the `onSnap` callback receives the target:
 
 ```java
-node.onSnap((dragged, context, snapTarget) -> {
+node.onSnap((dragged, snapTarget) -> {
     System.out.println("Snapped onto " + snapTarget);
 });
 ```
@@ -66,16 +66,9 @@ node.onSnap((dragged, context, snapTarget) -> {
 ## Drag callbacks
 
 ```java
-node.onDrag((n, context) -> {
-    // fires each frame while the node is being dragged
-});
-```
-
-For start/stop hooks, use the existing mouse callbacks:
-
-```java
-node.onMousePressed((n, mx, my, ct, ctx) -> { if (ct == ClickType.LEFT) startDrag(); });
-node.onMouseReleased((n, mx, my, ct, ctx) -> { if (ct == ClickType.LEFT) stopDrag(); });
+node.onDragStart(n -> { });   // the drag begins
+node.onDrag(n -> { });        // on each mouse drag event while the node is dragged
+node.onDragEnd(n -> { });     // the node is released
 ```
 
 The drag itself is wired automatically by `Node` when `draggable(...)` is set — you don't call `startDragging()` manually unless you want programmatic control.
@@ -107,10 +100,10 @@ A clone of each palette icon is dragged; the originals stay put.
 
 ## Global drag state
 
-Access the currently dragged node from anywhere:
+Read whether a node is being dragged, and listen to `onDragStart` / `onDragEnd` on the draggable nodes to track it from elsewhere:
 
 ```java
-Node dragged = ui.getDraggedNode();    // null if nothing is being dragged
+boolean dragged = node.isDragging();
 ```
 
 Useful for drop zones that highlight when a compatible drag is in progress.

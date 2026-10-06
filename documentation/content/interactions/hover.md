@@ -5,7 +5,7 @@ Tooltips and hover state. JOID tracks hover automatically and exposes it to call
 ## Hover state
 
 ```java
-node.hovered();                   // boolean: is mouse currently over?
+node.isHovered();                 // boolean: is mouse currently over?
 node.hoverValue(float max);       // 0 → max, interpolated over hoverDuration
 node.hoverDuration(long ms);      // fade duration (default 200ms)
 node.hoverEquation(TweenEquation); // easing for the fade (default LINEAR)

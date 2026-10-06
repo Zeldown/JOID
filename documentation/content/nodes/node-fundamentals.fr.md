@@ -45,8 +45,10 @@ Calculer des positions relatives au parent :
 |---|---|
 | `dw(n)` | Width divisé par `n` (par ex. `dw(2)` = moitié de la largeur) |
 | `dh(n)` | Height divisé par `n` |
-| `ax(value)` | X absolu, compte tenu de l'ancre |
-| `ay(value)` | Y absolu, compte tenu de l'ancre |
+| `ax(value)` | X plus `value`, relatif au parent |
+| `ay(value)` | Y plus `value`, relatif au parent |
+| `mw(n)` | Largeur multipliée par `n` (ex. `mw(0.5D)` = demi-largeur) |
+| `mh(n)` | Hauteur multipliée par `n` |
 | `aw(delta)` | Offset X depuis le bord droit (`aw(-100)` = 100 à gauche du bord droit) |
 | `ah(delta)` | Offset Y depuis le bord bas |
 
@@ -83,7 +85,7 @@ JOID tracke l'état de survol automatiquement via `isHovered(mouseX, mouseY)`. D
 ```java
 node.hoverDuration(long);              // ms du fade hover, défaut 200
 node.hoverEquation(TweenEquation);     // easing du fade, défaut LINEAR
-node.hovered();                        // boolean : actuellement survolé ?
+node.isHovered();                      // boolean : actuellement survolé ?
 node.hoverValue(float max);            // 0F → max, interpolé pendant le fade
 ```
 
@@ -179,7 +181,7 @@ Afficher un tooltip au survol :
 ```java
 node.hover(() -> "Simple text");
 node.hover(() -> Arrays.asList("Line 1", "Line 2"));
-node.hover(MyTooltipNode.create(...));   // nœud custom complet
+node.hover(NodeHoverElement.follow(MyTooltipNode.create(...)));   // nœud custom complet
 ```
 
 Voir [Hover](../interactions/hover.md).
@@ -213,15 +215,12 @@ node.getUi();                      // UI racine
 ## Visibility & enabled
 
 ```java
-node.visible(boolean);   // non dessiné, non interactif
-node.enabled(boolean);   // dessiné, mais pas de click/drag/scroll
+node.visible(n -> !someBoolean.getOrDefault());   // non dessiné, non interactif
+node.visible(signal, otherSignal);                 // visible tant que chaque signal a une valeur
+node.enabled(n -> isUnlocked());                   // dessiné, mais pas de click/drag/scroll
 ```
 
-Les deux acceptent un `Supplier<Boolean>` pour des versions réactives :
-
-```java
-node.visible(() -> !someBoolean.getOrDefault());
-```
+Les prédicats sont évalués à chaque frame : le nœud suit l'état qu'il lit.
 
 ## Bonnes pratiques
 

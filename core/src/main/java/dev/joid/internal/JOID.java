@@ -102,6 +102,11 @@ public final class JOID {
 		return JOID.getUI(uiClass) != null;
 	}
 
+	public static boolean isOpen(final @NonNull UI ui) {
+		final IUIBridge bridge = BridgeHandler.UI.get(ui);
+		return bridge != null && bridge.isOpened(ui);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T extends UI> T getUI(final @NonNull Class<T> uiClass) {
 		final IUIBridge bridge = BridgeHandler.UI.get(uiClass);

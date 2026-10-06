@@ -256,10 +256,17 @@ public abstract class Node implements INode {
 	}
 
 	public final void load(final @NonNull UI ui) {
+		this.load(ui, true);
+	}
+
+	private void load(final UI ui, final boolean children) {
 		this.executeCallback(Node.CALLBACK_INIT, InternalContext.create(), () -> {
 			this.ui = ui;
 
-			this.children.forEach(child -> child.load(this.ui));
+			if (children) {
+				this.children.forEach(child -> child.load(this.ui));
+			}
+
 			if (this.scrollbar != null) {
 				this.scrollbar.load(this.ui);
 			}
@@ -292,9 +299,9 @@ public abstract class Node implements INode {
 			render.translate(0D, 0D, this.zlevel);
 
 			if (this.isVisible()) {
-				if (this.aspectRatio >= 0D) {
+				if (this.aspectRatio > 0D) {
 					if (this.width != 0) {
-						this.height = this.width * this.aspectRatio;
+						this.height = this.width / this.aspectRatio;
 					} else if (this.height != 0) {
 						this.width = this.height * this.aspectRatio;
 					}
@@ -596,14 +603,22 @@ public abstract class Node implements INode {
 	}
 
 	public boolean renderHover(final double mouseX, final double mouseY) {
+		return this.renderHover(mouseX, mouseY, new AtomicBoolean(false));
+	}
+
+	private boolean renderHover(final double mouseX, final double mouseY, final AtomicBoolean shown) {
 		final AtomicBoolean cancelled = new AtomicBoolean(false);
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> {
-			if (child.renderHover(mouseX, mouseY)) {
+			if (child.renderHover(mouseX, mouseY, shown)) {
 				cancelled.set(true);
 			}
 		});
 
 		if (this.isHovered(mouseX, mouseY, false)) {
+			if (shown.get()) {
+				return true;
+			}
+
 			final List<HoverElement> hoverList = new LinkedList<>(this.hoverElementList);
 			if (!this.hoverSupplierList.isEmpty()) {
 				final List<String> lines = new LinkedList<>();
@@ -618,13 +633,14 @@ public abstract class Node implements INode {
 
 			if (!hoverList.isEmpty()) {
 				hoverList.forEach(element -> element.render(this, mouseX, mouseY));
+				shown.set(true);
 			}
 
 			return true;
 		}
 
 		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> {
-			if (child.renderHover(mouseX, mouseY)) {
+			if (child.renderHover(mouseX, mouseY, shown)) {
 				cancelled.set(true);
 			}
 		});
@@ -822,7 +838,7 @@ public abstract class Node implements INode {
 	public final void reload() {
 		this.executeCallback(Node.CALLBACK_RELOAD, InternalContext.create(), () -> {
 			this.children.forEach(Node::reload);
-			this.load(this.ui);
+			this.load(this.ui, false);
 		});
 	}
 
@@ -995,7 +1011,7 @@ public abstract class Node implements INode {
 
 	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull InternalContext context, final Runnable runnable, final Object... args) {
 		final List<NodeCallbackObject<T>> callbackList = this.getCallbackList(type);
-		if (callbackList == null) {
+		if (callbackList.isEmpty()) {
 			if (runnable != null) {
 				runnable.run();
 			}
@@ -1019,7 +1035,7 @@ public abstract class Node implements INode {
 
 	public final <T extends NodeCallback> void executePreCallback(final int type, final @NonNull InternalContext context, final Object... args) {
 		final List<NodeCallbackObject<T>> callbackList = this.getCallbackList(type);
-		if (callbackList == null) {
+		if (callbackList.isEmpty()) {
 			return;
 		}
 
@@ -1030,7 +1046,7 @@ public abstract class Node implements INode {
 
 	public final <T extends NodeCallback> void executePostCallback(final int type, final @NonNull InternalContext context, final Object... args) {
 		final List<NodeCallbackObject<T>> callbackList = this.getCallbackList(type);
-		if (callbackList == null) {
+		if (callbackList.isEmpty()) {
 			return;
 		}
 
@@ -1110,10 +1126,18 @@ public abstract class Node implements INode {
 	}
 
 	public final double getAbsoluteDefaultX() {
+		if (this.position == PositionProperty.ABSOLUTE) {
+			return this.defaultX;
+		}
+
 		return this.parent != null ? this.parent.getAbsoluteX() + this.defaultX : this.defaultX;
 	}
 
 	public final double getAbsoluteDefaultY() {
+		if (this.position == PositionProperty.ABSOLUTE) {
+			return this.defaultY;
+		}
+
 		return this.parent != null ? this.parent.getAbsoluteY() + this.defaultY : this.defaultY;
 	}
 
@@ -1144,7 +1168,7 @@ public abstract class Node implements INode {
 	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
 		int i = 0;
 		for (final Node child : this.children) {
-			if (child.getClass().equals(clazz)) {
+			if (clazz.isAssignableFrom(child.getClass())) {
 				if (i == index) {
 					return (T) child;
 				}
@@ -1162,12 +1186,12 @@ public abstract class Node implements INode {
 
 	public final <T extends NodeCallback> @NonNull List<@NonNull NodeCallbackObject<T>> getCallbackList(final int type) {
 		if (this.callbackMap.isEmpty() || !this.callbackMap.containsKey(type)) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		final List<NodeCallbackObject<?>> callbackList = this.callbackMap.get(type);
 		if (callbackList.isEmpty()) {
-			return null;
+			return Collections.emptyList();
 		}
 
 		final List<NodeCallbackObject<T>> mappedCallbackList = new ArrayList<>();
@@ -1315,13 +1339,22 @@ public abstract class Node implements INode {
 		copy.skeleton = this.skeleton;
 
 		copy.getCallbackMap().clear();
-		copy.getCallbackMap().putAll(new HashMap<>(this.callbackMap));
+		for (final Entry<Integer, List<NodeCallbackObject<?>>> entry : this.callbackMap.entrySet()) {
+			copy.getCallbackMap().put(entry.getKey(), new ArrayList<>(entry.getValue()));
+		}
+
+		copy.effectMap.putAll(this.effectMap);
+		copy.layerList.addAll(this.layerList);
+		copy.hoverElementList.addAll(this.hoverElementList);
+		copy.hoverSupplierList.addAll(this.hoverSupplierList);
 
 		copy.x = this.x;
 		copy.y = this.y;
 		copy.width = this.width;
 		copy.height = this.height;
 
+		copy.visible = this.visible;
+		copy.enabled = this.enabled;
 		copy.position = this.position;
 		copy.overflow = this.overflow;
 		copy.anchorX = this.anchorX;
@@ -1550,7 +1583,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
-		return this.watch(signal, () -> JOID.isOpen(this.ui.getClass()), properties);
+		return this.watch(signal, () -> JOID.isOpen(this.ui), properties);
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
@@ -1617,6 +1650,11 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T zindex(final int zindex) {
 		this.zindex = zindex;
+		if (this.parent != null && this.parent.children.contains(this)) {
+			this.parent.children.add(this);
+		} else if (this.parent == null && this.ui != null && this.ui.getNodeList().contains(this)) {
+			this.ui.getNodeList().add(this);
+		}
 		return (T) this;
 	}
 

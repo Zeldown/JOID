@@ -157,7 +157,7 @@ Each frame:
    - splits effects into shader / non-shader,
    - non-shader effects wrap `pre/post`,
    - shader effects build a `ShaderPass` list and delegate to `ShaderPipeline.render(node, passes, baseDraw)`,
-   - `baseDraw` masks to the node's bounds, renders children, and calls your `draw()`.
+   - `baseDraw` masks to the node's bounds when its overflow is not `NONE`, renders children, and calls your `draw()`.
 
 You almost never need to care about this internally — but knowing it helps when debugging render states.
 

@@ -15,7 +15,7 @@ node.onDetach((n) -> { });                                                      
 node.onMount((n) -> { });                                                         // NodeMountCallback
 ```
 
-`onInit` se déclenche la première fois que le nœud est chargé dans une UI. `onMount` à la première frame rendue. `onDetach` quand le nœud est retiré de son parent (via `clearChildren()` ou fermeture d'UI).
+`onInit` se déclenche à chaque chargement du nœud dans une UI : à son attache, puis à chaque `reload()` et `WatchProperty.RELOAD`. `onMount` à la première frame rendue. `onDetach` quand le nœud est retiré de son parent (via `clearChildren()` ou fermeture d'UI).
 
 ## Souris
 
@@ -49,7 +49,7 @@ node.onDrag((n) -> { });                                                        
 node.onSnap((n, snapNode) -> { });                                                // NodeSnapCallback
 ```
 
-`onDrag` à chaque frame pendant le drag. `onSnap` quand le nœud draggé est relâché assez près d'une cible de snap enregistrée.
+`onDrag` à chaque événement de drag souris pendant le drag. `onSnap` quand le nœud draggé est relâché, sur la cible de snap enregistrée la plus proche (`NEAREST`, quelle que soit la distance) ou sur celle qu'il chevauche (`OVERLAP`).
 
 ## Hover
 

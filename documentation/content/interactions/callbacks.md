@@ -15,7 +15,7 @@ node.onDetach((n) -> { });                                                      
 node.onMount((n) -> { });                                                         // NodeMountCallback
 ```
 
-`onInit` fires the first time the node is loaded into a UI. `onMount` fires on the first frame the node renders. `onDetach` fires when the node is removed from its parent (via `clearChildren()` or UI close).
+`onInit` fires each time the node is loaded into a UI: when it is attached, and again on `reload()` and `WatchProperty.RELOAD`. `onMount` fires on the first frame the node renders. `onDetach` fires when the node is removed from its parent (via `clearChildren()` or UI close).
 
 ## Mouse
 
@@ -49,7 +49,7 @@ node.onDrag((n) -> { });                                                        
 node.onSnap((n, snapNode) -> { });                                                // NodeSnapCallback
 ```
 
-`onDrag` fires each frame while the node is being dragged. `onSnap` fires when the dragged node is released close enough to a registered snap target.
+`onDrag` fires on each mouse drag event while the node is being dragged. `onSnap` fires when the dragged node is released, onto the nearest registered snap target (`NEAREST`, whatever the distance) or the one it overlaps (`OVERLAP`).
 
 ## Hover
 

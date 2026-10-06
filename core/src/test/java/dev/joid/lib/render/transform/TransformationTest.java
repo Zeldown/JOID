@@ -6,8 +6,11 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.render.modifier.Rotation;
 import dev.joid.lib.render.modifier.Scale;
 import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.transform.operation.ScaleOperation;
+import dev.joid.lib.render.transform.operation.TranslateOperation;
 
 public class TransformationTest {
 
@@ -56,6 +59,60 @@ public class TransformationTest {
 		} catch (final IllegalStateException exception) {
 			Assert.assertEquals(before, this.bridges.getRender().getPixelGrid().toScreenX(0D), 0D);
 		}
+	}
+
+	@Test
+	public void appliesItsOperationsInOrder() {
+		final Transformation transformation = Transformation.create(new TranslateOperation(Vector.create(10D, 0D))).add(new ScaleOperation(Scale.create(2D, 2D, 1D), Vector.create()));
+		Assert.assertEquals(2, transformation.getOperations().size());
+		transformation.apply();
+		try {
+			final float[] matrix = this.bridges.getRender().getModelView().getMatrix();
+			Assert.assertEquals(2D, matrix[0], 1E-6D);
+			Assert.assertEquals(10D, matrix[12], 0.5D);
+		} finally {
+			transformation.reset();
+		}
+	}
+
+	@Test
+	public void rotatesAroundItsPivot() {
+		final Transformation transformation = Transformation.create().rotate(180D, Rotation.YAW, Vector.create(100D, 100D));
+		transformation.apply();
+		try {
+			final float[] matrix = this.bridges.getRender().getModelView().getMatrix();
+			Assert.assertEquals(100D, matrix[0] * 100D + matrix[4] * 100D + matrix[12], 1E-3D);
+			Assert.assertEquals(0D, matrix[0] * 200D + matrix[4] * 100D + matrix[12], 1E-3D);
+			Assert.assertEquals(100D, matrix[1] * 200D + matrix[5] * 100D + matrix[13], 1E-3D);
+		} finally {
+			transformation.reset();
+		}
+	}
+
+	@Test
+	public void drawsInsideItsTransformationOnly() {
+		final double[] inside = new double[1];
+		Transformation.create().translate(Vector.create(50D, 0D)).apply(() -> inside[0] = this.bridges.getRender().getModelView().getMatrix()[12]);
+		Assert.assertEquals(50D, inside[0], 1D);
+		Assert.assertEquals(0F, this.bridges.getRender().getModelView().getMatrix()[12], 0F);
+	}
+
+	@Test
+	public void forgetsItsOperationsOnceCleared() {
+		final Transformation transformation = Transformation.create().translate(Vector.create(50D, 0D));
+		transformation.clear();
+		Assert.assertTrue(transformation.getOperations().isEmpty());
+		transformation.apply();
+		try {
+			Assert.assertEquals(0F, this.bridges.getRender().getModelView().getMatrix()[12], 0F);
+		} finally {
+			transformation.reset();
+		}
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesAMissingOperation() {
+		Transformation.create().add(null);
 	}
 
 }

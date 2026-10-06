@@ -5,7 +5,7 @@ Tooltips et état de survol. JOID tracke le hover automatiquement et l'expose au
 ## État de hover
 
 ```java
-node.hovered();                   // boolean : la souris est-elle dessus ?
+node.isHovered();                 // boolean : la souris est-elle dessus ?
 node.hoverValue(float max);       // 0 → max, interpolé sur hoverDuration
 node.hoverDuration(long ms);      // durée du fade (défaut 200ms)
 node.hoverEquation(TweenEquation); // easing du fade (défaut LINEAR)
