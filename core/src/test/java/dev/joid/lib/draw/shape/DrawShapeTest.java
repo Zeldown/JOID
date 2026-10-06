@@ -21,6 +21,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.shader.impl.RoundedShader;
+import dev.joid.lib.shader.impl.ShadowShader;
 
 public class DrawShapeTest {
 
@@ -148,6 +149,65 @@ public class DrawShapeTest {
 		Assert.assertArrayEquals(new float[] {18F, 20F, 110F, 62F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-3F);
 		DrawUtils.SHAPE.drawRoundedRect(10D, 20D, 100D, 50D, new Color(0F, 0F, 1F, 1F), 8F, false, true, true, false);
 		Assert.assertArrayEquals(new float[] {10F, 28F, 102F, 70F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-3F);
+	}
+
+	@Test
+	public void strokesTheRoundedBorderInsideItsBox() {
+		this.bridges.resize(1920, 1080);
+		final RecordingShader shader = (RecordingShader) RoundedShader.inst().getShader();
+		DrawUtils.SHAPE.drawRoundedBorder(10D, 20D, 100D, 50D, new Color(0F, 0F, 1F, 1F), 8F, 3D);
+		final Draw draw = this.single(0F, 0F, 1F);
+		Assert.assertSame(shader, draw.getShader());
+		Assert.assertEquals(10D, draw.getLeft(), 1E-3D);
+		Assert.assertEquals(20D, draw.getTop(), 1E-3D);
+		Assert.assertEquals(110D, draw.getRight(), 1E-3D);
+		Assert.assertEquals(70D, draw.getBottom(), 1E-3D);
+		Assert.assertEquals(3F, (Float) shader.getValues().get("u_Stroke"), 0F);
+		Assert.assertArrayEquals(new float[] {18F, 28F, 102F, 62F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-3F);
+		Assert.assertNull(this.bridges.getRender().getShader());
+	}
+
+	@Test
+	public void strokesTheRoundedBorderOneUnitWideByDefault() {
+		final RecordingShader shader = (RecordingShader) RoundedShader.inst().getShader();
+		DrawUtils.SHAPE.drawRoundedBorder(10D, 20D, 100D, 50D, new Color(0F, 0F, 1F, 1F), 8F);
+		Assert.assertEquals(1F, (Float) shader.getValues().get("u_Stroke"), 0F);
+		DrawUtils.SHAPE.drawRoundedRect(10D, 20D, 100D, 50D, new Color(0F, 0F, 1F, 1F), 8F);
+		Assert.assertEquals(0F, (Float) shader.getValues().get("u_Stroke"), 0F);
+	}
+
+	@Test
+	public void spreadsTheShadowAroundItsBox() {
+		this.bridges.resize(1920, 1080);
+		final RecordingShader shader = (RecordingShader) ShadowShader.inst().getShader();
+		DrawUtils.SHAPE.drawShadow(100D, 100D, 200D, 50D, new Color(0F, 0F, 1F, 0.5F), 10F, 8F);
+		final Draw draw = this.single(0F, 0F, 1F);
+		final Map<String, Object> values = shader.getValues();
+		Assert.assertSame(shader, draw.getShader());
+		Assert.assertEquals(88D, draw.getLeft(), 1E-3D);
+		Assert.assertEquals(88D, draw.getTop(), 1E-3D);
+		Assert.assertEquals(312D, draw.getRight(), 1E-3D);
+		Assert.assertEquals(162D, draw.getBottom(), 1E-3D);
+		Assert.assertEquals(10F, (Float) values.get("u_Radius"), 0F);
+		Assert.assertEquals(8F, (Float) values.get("u_Blur"), 0F);
+		Assert.assertArrayEquals(new float[] {100F, 100F, 300F, 150F}, (float[]) values.get("u_Box"), 1E-3F);
+		Assert.assertNull(this.bridges.getRender().getShader());
+	}
+
+	@Test
+	public void drawsASharpShadowWithoutBlur() {
+		this.bridges.resize(1920, 1080);
+		DrawUtils.SHAPE.drawShadow(100D, 100D, 200D, 50D, new Color(0F, 0F, 1F, 0.5F), 10F, 0F);
+		final Draw draw = this.single(0F, 0F, 1F);
+		Assert.assertSame(RoundedShader.inst().getShader(), draw.getShader());
+		Assert.assertEquals(100D, draw.getLeft(), 1E-3D);
+		Assert.assertEquals(300D, draw.getRight(), 1E-3D);
+	}
+
+	@Test
+	public void shadesAGradientWithItsFirstColor() {
+		DrawUtils.SHAPE.drawShadow(100D, 100D, 200D, 50D, new Color(0F, 0F, 1F, 1F).toGradient(new Color(1F, 0F, 0F, 1F)), 10F, 8F);
+		Assert.assertSame(ShadowShader.inst().getShader(), this.single(0F, 0F, 1F).getShader());
 	}
 
 	@Test

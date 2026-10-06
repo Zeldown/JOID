@@ -1,6 +1,6 @@
 # Shapes
 
-`DrawShape` (`dev.joid.lib.draw.shape`) draws rectangles, rounded rectangles, circles, borders, polygons, lines and curves immediately, through `DrawUtils.SHAPE`. Use it inside a draw hook (see [Drawing Overview](draw-utils.md)); for a shape that needs hover, effects or layout, use `RectNode` or `CircleNode` instead.
+`DrawShape` (`dev.joid.lib.draw.shape`) draws rectangles, rounded rectangles, circles, borders, shadows, polygons, lines and curves immediately, through `DrawUtils.SHAPE`. Use it inside a draw hook (see [Drawing Overview](draw-utils.md)); for a shape that needs hover, effects or layout, use `RectNode` or `CircleNode` instead.
 
 ## Quick example
 
@@ -13,7 +13,7 @@ public void draw(final double mouseX, final double mouseY) {
 }
 ```
 
-Positions and sizes are UI units. Points are `javax.vecmath.Vector2d`. Every method accepts a gradient `Color` (see [Colors and Gradients](../styling/colors.md)): the gradient spans the bounding box of each primitive drawn, that is the whole rectangle, disk, polygon, line or dashed line, but each side of a border and each segment of a curve on its own.
+Positions and sizes are UI units. Points are `javax.vecmath.Vector2d`. Every method accepts a gradient `Color` (see [Colors and Gradients](../styling/colors.md)): the gradient spans the bounding box of each primitive drawn, that is the whole rectangle, disk, polygon, line or dashed line, but each side of a border and each segment of a curve on its own. A shadow uses the first color of the gradient.
 
 ## DrawShape reference
 
@@ -22,6 +22,9 @@ Positions and sizes are UI units. Points are `javax.vecmath.Vector2d`. Every met
 | `drawRect(double x, double y, double width, double height, Color color)` | Filled rectangle, snapped to the window pixels. |
 | `drawRoundedRect(double x, double y, double width, double height, Color color, float radius)` | Rectangle with four rounded corners. |
 | `drawRoundedRect(..., float radius, boolean roundedLeft, boolean roundedTop, boolean roundedRight, boolean roundedBottom)` | Rectangle rounded on the chosen sides only. |
+| `drawRoundedBorder(double x, double y, double width, double height, Color color, float radius)` | Outline inside the box, 1 unit thick, with four rounded corners. |
+| `drawRoundedBorder(..., float radius, double stroke)` | Same, `stroke` units thick. |
+| `drawShadow(double x, double y, double width, double height, Color color, float radius, float blur)` | Soft shadow of a rounded box, blurred over `blur` units. |
 | `drawCircle(double x, double y, Color color, double radius)` | Filled disk centered on `(x, y)`. |
 | `drawBorder(double x, double y, double x2, double y2, Color color)` | Outline outside the box, 1 unit thick, corners left empty. |
 | `drawBorder(double x, double y, double x2, double y2, Color color, double stroke)` | Same, `stroke` units thick. |
@@ -58,6 +61,27 @@ DrawUtils.SHAPE.drawRoundedRect(40D, 100D, 160D, 48D, Color.decode("#1F2937"), 1
 - `radius` is in UI units. The edges snap like `drawRect` and the corners are antialiased inside them.
 - A corner is rounded when both of its sides are flagged: `roundedLeft` and `roundedTop` round the top-left corner. The second line above rounds the two top corners only, like a tab.
 - The corners are carved by the rounded shader, the same as `RoundedNodeEffect` (see [RoundedNodeEffect](../styling/rounded.md)).
+
+## Rounded outlines with drawRoundedBorder
+
+```java
+DrawUtils.SHAPE.drawRoundedBorder(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.decode("#374151"), 12F, 2D);
+```
+
+- The box and the corners are the same as `drawRoundedRect` with the four corners rounded: draw both with the same values to outline a rounded rectangle.
+- The stroke is drawn inside the box: its outer edge is the edge of the rounded rectangle, and the inner edge follows the corners with a radius reduced by `stroke`.
+- `stroke` is in UI units (1 by default). Its inner edge is antialiased over one unit.
+
+## Shadows and glows with drawShadow
+
+```java
+DrawUtils.SHAPE.drawShadow(super.getX(), super.getY() + 8D, super.getWidth(), super.getHeight(), Color.BLACK.copyAlpha(0.3F), 12F, 16F);
+DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE, 12F);
+```
+
+- The box `(x, y, width, height)` with its corner `radius` casts the shadow; move the box to offset the shadow, as the first line does. A `radius` of half the smaller side gives the shadow of a circle.
+- `blur` is in UI units: the shadow fades out over about `blur` units on each side of the edge, like the `blur` of a CSS `box-shadow`. A `blur` of `0F` or less draws a sharp `drawRoundedRect`.
+- The shadow is computed by the shadow shader in one pass, without framebuffer, over the box enlarged by `1.5 × blur` on each side. Draw it before the shape it lies under. [ShadowNodeEffect](../styling/shadow.md) does it for a node.
 
 ## Circles with drawCircle
 
@@ -146,7 +170,7 @@ try {
 
 ## Render state after a shape
 
-Each call pushes and pops the matrix, enables normal blending for its draw and leaves blending disabled and no texture bound. The shaders of `drawRoundedRect` and `drawCircle` are unbound afterward and the shader bound before the call is restored. When the rounded or circle shader is not available on the backend, these two methods draw nothing.
+Each call pushes and pops the matrix, enables normal blending for its draw and leaves blending disabled and no texture bound. The shaders of `drawRoundedRect`, `drawRoundedBorder`, `drawShadow` and `drawCircle` are unbound afterward and the shader bound before the call is restored. When the rounded, shadow or circle shader is not available on the backend, these methods draw nothing.
 
 ## See also
 

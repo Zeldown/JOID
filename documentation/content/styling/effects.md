@@ -1,6 +1,6 @@
 # Effects
 
-A node effect (`NodeEffect`, package `dev.joid.lib.ui.node.effect`) changes how a node is rendered without changing the node itself: rounded corners, circular cut, border, blur, mask, transform. Use effects to style any node, built-in or custom, with the same few lines.
+A node effect (`NodeEffect`, package `dev.joid.lib.ui.node.effect`) changes how a node is rendered without changing the node itself: rounded corners, circular cut, border, blur, shadow, mask, transform. Use effects to style any node, built-in or custom, with the same few lines.
 
 ```java
 @Override
@@ -24,6 +24,7 @@ The built-in effects are in `dev.joid.lib.ui.node.effect.impl`:
 | [CircleNodeEffect](circle.md) | Shader | Cuts the largest centered circle. |
 | [BorderNodeEffect](border.md) | Shader | Draws an outline along the edge of the drawn pixels. |
 | [BlurNodeEffect](blur.md) | Shader | Gaussian blur of the node's own rendering. |
+| [ShadowNodeEffect](shadow.md) | Render state | Draws a soft shadow or a glow under the node. |
 | [MaskNodeEffect](mask.md) | Render state | Clips the rendering to a rectangle or to the shape of an image. |
 | [TransformNodeEffect](transform.md) | Render state | Translates, scales or rotates the rendering. |
 
@@ -96,7 +97,7 @@ Effects come in two kinds, rendered differently:
 
 | Kind | Effects | How it renders |
 | --- | --- | --- |
-| Render state | `MaskNodeEffect`, `TransformNodeEffect` | `pre(...)` runs before the node renders, in priority order, and `post(...)` after, in the reverse order, so the effects nest. They wrap the whole render of the node: its own drawing, its children and the shader effects. |
+| Render state | `ShadowNodeEffect`, `MaskNodeEffect`, `TransformNodeEffect` | `pre(...)` runs before the node renders, in priority order, and `post(...)` after, in the reverse order, so the effects nest. They wrap the whole render of the node: its own drawing, its children and the shader effects. |
 | Shader | `RoundedNodeEffect`, `CircleNodeEffect`, `BorderNodeEffect`, `BlurNodeEffect` | Each effect produces shader passes. The node is drawn into an offscreen framebuffer, then the passes run one after the other on the result. |
 
 Between render-state effects, the order matters. A `TransformNodeEffect` that runs before a `MaskNodeEffect` transforms the mask with the node; a mask that runs first stays in place while the content moves under it:
@@ -208,6 +209,7 @@ The hooks are described in [Custom Effects](custom-effects.md).
 
 - [RoundedNodeEffect](rounded.md)
 - [BorderNodeEffect](border.md)
+- [ShadowNodeEffect](shadow.md)
 - [Custom Effects](custom-effects.md)
 - [Shader Pipeline](../shaders/pipeline.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md)

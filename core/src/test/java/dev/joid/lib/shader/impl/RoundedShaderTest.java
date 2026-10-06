@@ -42,6 +42,14 @@ public class RoundedShaderTest {
 	}
 
 	@Test
+	public void fillsWithoutStrokeUntilAsked() {
+		RoundedShader.inst().bind(6F, 1F, 2F, 3F, 4F);
+		Assert.assertEquals(0F, (Float) this.shader.getValues().get("u_Stroke"), 0F);
+		RoundedShader.inst().stroke(2F);
+		Assert.assertEquals(2F, (Float) this.shader.getValues().get("u_Stroke"), 0F);
+	}
+
+	@Test
 	public void bindsTheRequestedType() {
 		RoundedShader.inst().bind(6F, 1F, 2F, 3F, 4F, RoundedShaderType.TEXTURE);
 		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), this.shader.getValues().get("u_Type"));

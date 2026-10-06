@@ -548,6 +548,11 @@
 							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/BlurNodeEffect.java"
 						},
 						{
+							"title": "ShadowNodeEffect",
+							"path": "styling/shadow",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/ShadowNodeEffect.java"
+						},
+						{
 							"title": "MaskNodeEffect",
 							"path": "styling/mask",
 							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/MaskNodeEffect.java"

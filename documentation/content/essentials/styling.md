@@ -153,7 +153,7 @@ Effects only change pixels: clicks and hover still use the node's rectangle, so 
 
 - [Colors and Gradients](../styling/colors.md): every constructor, `decode` format, gradient direction and animated colors.
 - [Effects](../styling/effects.md): order, priority, scope and how effects render.
-- [RoundedNodeEffect](../styling/rounded.md), [BorderNodeEffect](../styling/border.md), [CircleNodeEffect](../styling/circle.md), [BlurNodeEffect](../styling/blur.md), [MaskNodeEffect](../styling/mask.md), [TransformNodeEffect](../styling/transform.md): each effect in detail.
+- [RoundedNodeEffect](../styling/rounded.md), [BorderNodeEffect](../styling/border.md), [CircleNodeEffect](../styling/circle.md), [BlurNodeEffect](../styling/blur.md), [ShadowNodeEffect](../styling/shadow.md), [MaskNodeEffect](../styling/mask.md), [TransformNodeEffect](../styling/transform.md): each effect in detail.
 - [Custom Effects](../styling/custom-effects.md): writing your own effect.
 - [RectNode](../nodes/visual/rect.md): fill, border and hover colors.
 

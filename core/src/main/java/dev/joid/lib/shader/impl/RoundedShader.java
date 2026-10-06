@@ -58,6 +58,14 @@ public class RoundedShader extends ShaderImpl {
 
 		final IntUniform gradientUniform = RoundedShader.INSTANCE.shader.getIntUniform("u_Gradient");
 		gradientUniform.setValue(0);
+
+		final FloatUniform strokeUniform = RoundedShader.INSTANCE.shader.getFloatUniform("u_Stroke");
+		strokeUniform.setValue(0F);
+	}
+
+	public void stroke(final float stroke) {
+		final FloatUniform strokeUniform = RoundedShader.INSTANCE.shader.getFloatUniform("u_Stroke");
+		strokeUniform.setValue(stroke);
 	}
 
 	public void gradient(final @NonNull ColorGradient gradient, final @NonNull Vector4f canvas) {

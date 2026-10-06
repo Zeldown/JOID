@@ -5,6 +5,7 @@ import javax.vecmath.Vector4f;
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.resource.Resource;
@@ -13,6 +14,7 @@ import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
@@ -31,6 +33,11 @@ public class UIDemoShader extends UIDemo {
 				RectNode.create(0, 0, 200, 120).color(Color.BLUE.toGradient(Color.GREEN)).attach(node);
 				RectNode.create(0, 0, 200, 120).color(Color.WHITE).effect(RoundedNodeEffect.create(20F)).attach(node);
 				RectNode.create(0, 0, 120, 120).color(Color.MAGENTA).effect(CircleNodeEffect.create()).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.GRAY).effect(ShadowNodeEffect.create(Color.WHITE.copyAlpha(0.5F), 16F, 0D, 8D)).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.WHITE).effect(RoundedNodeEffect.create(20F)).effect(ShadowNodeEffect.create(Color.CYAN, 24F)).attach(node);
+				RectNode.create(0, 0, 120, 120).color(Color.MAGENTA).effect(CircleNodeEffect.create()).effect(ShadowNodeEffect.create(Color.MAGENTA, 24F)).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.TRANSPARENT).body(rect -> rect.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), Color.WHITE, 20F, 3D))).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.BLUE).body(rect -> rect.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), Color.ORANGE, 30F, 1D))).attach(node);
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 120).margin(20).body(node -> {
 				RectNode.create(0, 0, 200, 120).color(Color.RED.toGradient(Color.BLUE)).effect(RoundedNodeEffect.create(20F)).attach(node);

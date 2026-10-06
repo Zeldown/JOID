@@ -5,6 +5,7 @@ in vec4 vColor;
 uniform float u_Radius;
 uniform vec4 u_InnerRect;
 uniform int u_Type;
+uniform float u_Stroke;
 
 uniform int u_Gradient;
 uniform vec2 u_StartPos;
@@ -39,7 +40,7 @@ void main() {
     vec2 br = snappedPosition() - u_InnerRect.zw;
     vec2 distances = max(br, tl);
 
-    float distanceToCorner = length(max(vec2(0.0), distances)) - u_Radius;
+    float distanceToCorner = length(max(vec2(0.0), distances)) + min(max(distances.x, distances.y), 0.0) - u_Radius;
 
     vec4 baseColor = texture(tex, vTexCoord) * vColor;
     if (u_Type == 1) {
@@ -53,6 +54,9 @@ void main() {
     }
 
     float mask = 1.0 - smoothstep(0.0, 1.0, distanceToCorner);
+    if (u_Stroke > 0.0) {
+        mask *= smoothstep(-0.5, 0.5, distanceToCorner + u_Stroke);
+    }
 
     if (u_Type == 1) {
         fragColor = vec4(baseColor.rgb * mask, baseColor.a * mask);

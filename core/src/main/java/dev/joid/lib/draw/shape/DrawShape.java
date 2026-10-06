@@ -17,6 +17,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.RoundedShader;
+import dev.joid.lib.shader.impl.ShadowShader;
 import dev.joid.lib.utils.bezier.Bezier;
 import lombok.Getter;
 import lombok.NonNull;
@@ -45,17 +46,27 @@ public final class DrawShape {
 	}
 
 	public void drawRoundedRect(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom) {
-		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
-		final double left = grid.snapX(x);
-		final double top = grid.snapY(y);
-		final double right = grid.snapRight(x, x + width);
-		final double bottom = grid.snapBottom(y, y + height);
-		RoundedShader.use(radius, (float) (left + (roundedLeft ? radius : 0)), (float) (top + (roundedTop ? radius : 0)), (float) (right - (roundedRight ? radius : 0)), (float) (bottom - (roundedBottom ? radius : 0)), () -> {
-			if (color.isGradient()) {
-				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) left, (float) top, (float) right, (float) bottom));
-			}
+		this.drawRounded(x, y, width, height, color, radius, roundedLeft, roundedTop, roundedRight, roundedBottom, 0D);
+	}
 
-			this.drawRect(left, top, right - left, bottom - top, color.isGradient() ? Color.WHITE : color);
+	public void drawRoundedBorder(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius) {
+		this.drawRoundedBorder(x, y, width, height, color, radius, 1D);
+	}
+
+	public void drawRoundedBorder(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final double stroke) {
+		this.drawRounded(x, y, width, height, color, radius, true, true, true, true, stroke);
+	}
+
+	public void drawShadow(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final float blur) {
+		if (blur <= 0F) {
+			this.drawRoundedRect(x, y, width, height, color, radius);
+			return;
+		}
+
+		final double spread = blur * 1.5D;
+		final Color shadow = color.isGradient() ? color.gradient.getStartColor() : color;
+		ShadowShader.use(radius, blur, (float) x, (float) y, (float) (x + width), (float) (y + height), () -> {
+			this.drawPolygon(shadow, new Vector2d(x - spread, y + height + spread), new Vector2d(x + width + spread, y + height + spread), new Vector2d(x + width + spread, y - spread), new Vector2d(x - spread, y - spread));
 		});
 	}
 
@@ -237,6 +248,22 @@ public final class DrawShape {
 			render.blend(BlendState.DISABLED);
 			render.popMatrix();
 		}
+	}
+
+	private void drawRounded(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom, final double stroke) {
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
+		final double left = grid.snapX(x);
+		final double top = grid.snapY(y);
+		final double right = grid.snapRight(x, x + width);
+		final double bottom = grid.snapBottom(y, y + height);
+		RoundedShader.use(radius, (float) (left + (roundedLeft ? radius : 0)), (float) (top + (roundedTop ? radius : 0)), (float) (right - (roundedRight ? radius : 0)), (float) (bottom - (roundedBottom ? radius : 0)), () -> {
+			RoundedShader.inst().stroke((float) stroke);
+			if (color.isGradient()) {
+				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) left, (float) top, (float) right, (float) bottom));
+			}
+
+			this.drawRect(left, top, right - left, bottom - top, color.isGradient() ? Color.WHITE : color);
+		});
 	}
 
 	private void drawEdges(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {

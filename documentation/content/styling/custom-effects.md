@@ -1,6 +1,6 @@
 # Custom Effects
 
-A custom effect is a subclass of `NodeEffect<T extends Node>` (`dev.joid.lib.ui.node.effect`). Write one when the [built-in effects](effects.md) do not cover a visual treatment you want to reuse on any node: a shadow, a hover lift, a color filter.
+A custom effect is a subclass of `NodeEffect<T extends Node>` (`dev.joid.lib.ui.node.effect`). Write one when the [built-in effects](effects.md) do not cover a visual treatment you want to reuse on any node: a hard shadow, a hover lift, a color filter.
 
 There are two kinds of effects, and you pick one by overriding different hooks:
 
@@ -11,7 +11,7 @@ There are two kinds of effects, and you pick one by overriding different hooks:
 
 ## A render-state effect
 
-This effect draws a hard shadow under the node while it is hovered:
+This effect draws a hard shadow under the node while it is hovered (for a soft shadow, use the built-in [ShadowNodeEffect](shadow.md)):
 
 ```java
 import dev.joid.lib.color.Color;
@@ -19,18 +19,18 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 
-public class ShadowNodeEffect<T extends Node> extends NodeEffect<T> {
+public class HardShadowNodeEffect<T extends Node> extends NodeEffect<T> {
 
     private final Color color;
     private final double offset;
 
-    private ShadowNodeEffect(final Color color, final double offset) {
+    private HardShadowNodeEffect(final Color color, final double offset) {
         this.color = color;
         this.offset = offset;
     }
 
-    public static <T extends Node> ShadowNodeEffect<T> create(final Color color, final double offset) {
-        return new ShadowNodeEffect<>(color, offset);
+    public static <T extends Node> HardShadowNodeEffect<T> create(final Color color, final double offset) {
+        return new HardShadowNodeEffect<>(color, offset);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ShadowNodeEffect<T extends Node> extends NodeEffect<T> {
 ```
 
 ```java
-RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 6D)).attach(this);
+RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(HardShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 6D)).attach(this);
 ```
 
 ![On a light background, the cursor hovers a white card and a gray shadow appears under it](../images/custom-effect-shadow.gif "The shadow fades in with the hover progress (shown on a light background so the 30 % black stands out).")
