@@ -27,7 +27,7 @@ public class MaskNodeEffectTest {
 	@Test
 	public void followsTheSizeOfANode() {
 		final RectNode node = RectNode.create(10D, 20D, 100D, 60D);
-		final MaskNodeEffect<Node> effect = MaskNodeEffect.create(node);
+		final MaskNodeEffect effect = MaskNodeEffect.create(node);
 		node.size(40D, 30D);
 		Assert.assertEquals(0D, effect.getX(), 0D);
 		Assert.assertEquals(0D, effect.getY(), 0D);
@@ -38,7 +38,7 @@ public class MaskNodeEffectTest {
 
 	@Test
 	public void startsAtTheCornerOfItsNode() {
-		final MaskNodeEffect<Node> effect = MaskNodeEffect.create(40D, 30D);
+		final MaskNodeEffect effect = MaskNodeEffect.create(40D, 30D);
 		Assert.assertEquals(0D, effect.getX(), 0D);
 		Assert.assertEquals(0D, effect.getY(), 0D);
 		Assert.assertEquals(40D, effect.getWidth(), 0D);
@@ -47,7 +47,7 @@ public class MaskNodeEffectTest {
 
 	@Test
 	public void keepsItsBounds() {
-		final MaskNodeEffect<Node> effect = MaskNodeEffect.create(5D, 6D, 40D, 30D);
+		final MaskNodeEffect effect = MaskNodeEffect.create(5D, 6D, 40D, 30D);
 		Assert.assertEquals(5D, effect.getX(), 0D);
 		Assert.assertEquals(6D, effect.getY(), 0D);
 		Assert.assertEquals(40D, effect.getWidth(), 0D);
@@ -57,8 +57,8 @@ public class MaskNodeEffectTest {
 	@Test
 	public void readsItsSuppliedBounds() {
 		final double[] size = {10D};
-		final MaskNodeEffect<Node> sized = MaskNodeEffect.create(() -> size[0], () -> size[0] * 2D);
-		final MaskNodeEffect<Node> placed = MaskNodeEffect.create(() -> size[0] / 2D, () -> size[0] / 5D, () -> size[0], () -> size[0]);
+		final MaskNodeEffect sized = MaskNodeEffect.create(() -> size[0], () -> size[0] * 2D);
+		final MaskNodeEffect placed = MaskNodeEffect.create(() -> size[0] / 2D, () -> size[0] / 5D, () -> size[0], () -> size[0]);
 		size[0] = 20D;
 		Assert.assertEquals(0D, sized.getX(), 0D);
 		Assert.assertEquals(40D, sized.getHeight(), 0D);
@@ -71,9 +71,9 @@ public class MaskNodeEffectTest {
 	public void keepsTheResourceOfItsShape() {
 		final Resource resource = MaskNodeEffectTest.resource();
 		final RectNode node = RectNode.create(10D, 20D, 100D, 60D);
-		final MaskNodeEffect<Node> fitted = MaskNodeEffect.create(resource, node);
-		final MaskNodeEffect<Node> sized = MaskNodeEffect.create(resource, 40D, 30D);
-		final MaskNodeEffect<Node> placed = MaskNodeEffect.create(resource, 5D, 6D, 40D, 30D);
+		final MaskNodeEffect fitted = MaskNodeEffect.create(resource, node);
+		final MaskNodeEffect sized = MaskNodeEffect.create(resource, 40D, 30D);
+		final MaskNodeEffect placed = MaskNodeEffect.create(resource, 5D, 6D, 40D, 30D);
 		Assert.assertSame(resource, fitted.getResource());
 		Assert.assertEquals(100D, fitted.getWidth(), 0D);
 		Assert.assertSame(resource, sized.getResource());
@@ -85,7 +85,7 @@ public class MaskNodeEffectTest {
 
 	@Test
 	public void replacesEachBound() {
-		final MaskNodeEffect<Node> effect = MaskNodeEffect.create(0D, 0D);
+		final MaskNodeEffect effect = MaskNodeEffect.create(0D, 0D);
 		Assert.assertSame(effect, effect.x(1D).y(2D).width(3D).height(4D));
 		Assert.assertArrayEquals(new double[] {1D, 2D, 3D, 4D}, MaskNodeEffectTest.bounds(effect), 0D);
 		Assert.assertSame(effect, effect.position(5D, 6D).size(7D, 8D));
@@ -97,7 +97,7 @@ public class MaskNodeEffectTest {
 	@Test
 	public void replacesEachBoundWithASupplier() {
 		final double[] value = {1D};
-		final MaskNodeEffect<Node> effect = MaskNodeEffect.create(0D, 0D);
+		final MaskNodeEffect effect = MaskNodeEffect.create(0D, 0D);
 		Assert.assertSame(effect, effect.x(() -> value[0]).y(() -> value[0] + 1D).width(() -> value[0] + 2D).height(() -> value[0] + 3D));
 		value[0] = 10D;
 		Assert.assertArrayEquals(new double[] {10D, 11D, 12D, 13D}, MaskNodeEffectTest.bounds(effect), 0D);
@@ -111,7 +111,7 @@ public class MaskNodeEffectTest {
 	@Test
 	public void replacesItsResource() {
 		final Resource resource = MaskNodeEffectTest.resource();
-		final MaskNodeEffect<Node> effect = MaskNodeEffect.create(0D, 0D);
+		final MaskNodeEffect effect = MaskNodeEffect.create(0D, 0D);
 		Assert.assertSame(effect, effect.resource(resource));
 		Assert.assertSame(resource, effect.getResource());
 		effect.resource(null);
@@ -146,7 +146,7 @@ public class MaskNodeEffectTest {
 		Assert.assertFalse(this.bridges.getRender().getState().isStencilTest());
 	}
 
-	private static double[] bounds(final MaskNodeEffect<Node> effect) {
+	private static double[] bounds(final MaskNodeEffect effect) {
 		return new double[] {effect.getX(), effect.getY(), effect.getWidth(), effect.getHeight()};
 	}
 

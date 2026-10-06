@@ -62,7 +62,7 @@ With the default `SELF` scope, only what the node draws itself is blurred; its c
 RectNode
 .create(100, 100, 400, 300)
 .color(Color.WHITE)
-.effect(BlurNodeEffect.create(6F).scope(NodeEffectScope.CHILDREN))
+.effect(BlurNodeEffect.create(6F).<BlurNodeEffect>scope(NodeEffectScope.CHILDREN))
 .body(panel -> {
     RectNode.create(20, 20, 200, 60).color(Color.RED).attach(panel);
 })

@@ -1,6 +1,6 @@
 # Custom Effects
 
-A custom effect is a subclass of `NodeEffect<T extends Node, E extends NodeEffect<T, E>>` (`dev.joid.lib.ui.node.effect`): `T` is the node it applies to and `E` the effect class itself, which `priority(...)` and `scope(...)` return. Write one when the [built-in effects](effects.md) do not cover a visual treatment you want to reuse on any node: a hard shadow, a hover lift, a color filter.
+A custom effect is a subclass of `NodeEffect<T extends Node>` (`dev.joid.lib.ui.node.effect`), where `T` is the node it applies to: `NodeEffect<Node>` for an effect that goes on any node, as the built-in effects, or a node class such as `NodeEffect<RectNode>` to read the getters of that node in the hooks. Write one when the [built-in effects](effects.md) do not cover a visual treatment you want to reuse on any node: a hard shadow, a hover lift, a color filter.
 
 There are two kinds of effects, and you pick one by overriding different hooks:
 
@@ -19,7 +19,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 
-public class HardShadowNodeEffect<T extends Node> extends NodeEffect<T, HardShadowNodeEffect<T>> {
+public class HardShadowNodeEffect extends NodeEffect<Node> {
 
     private final Color color;
     private final double offset;
@@ -29,17 +29,17 @@ public class HardShadowNodeEffect<T extends Node> extends NodeEffect<T, HardShad
         this.offset = offset;
     }
 
-    public static <T extends Node> HardShadowNodeEffect<T> create(final Color color, final double offset) {
-        return new HardShadowNodeEffect<>(color, offset);
+    public static HardShadowNodeEffect create(final Color color, final double offset) {
+        return new HardShadowNodeEffect(color, offset);
     }
 
     @Override
-    public boolean shouldApply(final T node) {
+    public boolean shouldApply(final Node node) {
         return node.hoverValue(1F) > 0F;
     }
 
     @Override
-    public void pre(final T node, final double mouseX, final double mouseY) {
+    public void pre(final Node node, final double mouseX, final double mouseY) {
         final Color shadow = this.color.copyAlpha(this.color.a * node.hoverValue(1F));
         DrawUtils.SHAPE.drawRect(node.getX() + this.offset, node.getY() + this.offset, node.getWidth(), node.getHeight(), shadow);
     }
@@ -65,7 +65,7 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 
-public class LiftNodeEffect<T extends Node> extends NodeEffect<T, LiftNodeEffect<T>> {
+public class LiftNodeEffect extends NodeEffect<Node> {
 
     private final float height;
 
@@ -73,19 +73,19 @@ public class LiftNodeEffect<T extends Node> extends NodeEffect<T, LiftNodeEffect
         this.height = height;
     }
 
-    public static <T extends Node> LiftNodeEffect<T> create(final float height) {
-        return new LiftNodeEffect<>(height);
+    public static LiftNodeEffect create(final float height) {
+        return new LiftNodeEffect(height);
     }
 
     @Override
-    public void pre(final T node, final double mouseX, final double mouseY) {
+    public void pre(final Node node, final double mouseX, final double mouseY) {
         final IRenderBridge render = BridgeHandler.RENDER.get();
         render.pushMatrix();
         render.translate(0D, -node.hoverValue(this.height), 0D);
     }
 
     @Override
-    public void post(final T node, final double mouseX, final double mouseY) {
+    public void post(final Node node, final double mouseX, final double mouseY) {
         BridgeHandler.RENDER.get().popMatrix();
     }
 
@@ -199,7 +199,7 @@ import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 
-public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T, GrayscaleNodeEffect<T>> {
+public class GrayscaleNodeEffect extends NodeEffect<Node> {
 
     private final float amount;
 
@@ -207,8 +207,8 @@ public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T, Grayscale
         this.amount = amount;
     }
 
-    public static <T extends Node> GrayscaleNodeEffect<T> create(final float amount) {
-        return new GrayscaleNodeEffect<>(amount);
+    public static GrayscaleNodeEffect create(final float amount) {
+        return new GrayscaleNodeEffect(amount);
     }
 
     @Override
@@ -217,7 +217,7 @@ public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T, Grayscale
     }
 
     @Override
-    public ShaderPass toShaderPass(final T node) {
+    public ShaderPass toShaderPass(final Node node) {
         return new GrayscaleShaderPass(this.amount);
     }
 
@@ -238,6 +238,84 @@ Override `expansion()` (default `0F`) when the pass draws outside the node's rec
 
 `supportsDirectBind()` (default `false`) and `bindDirect(...)` let a single pass skip the framebuffers and bind its shader while the node draws; the details are in [Shader Pipeline](../shaders/pipeline.md).
 
+## An effect for one node type
+
+An effect typed by a node class receives that class in its hooks. This effect underlines a `RectNode` with its own color:
+
+```java
+import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.ui.node.effect.NodeEffect;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+
+public class UnderlineNodeEffect extends NodeEffect<RectNode> {
+
+    private final double thickness;
+
+    private UnderlineNodeEffect(final double thickness) {
+        this.thickness = thickness;
+    }
+
+    public static UnderlineNodeEffect create(final double thickness) {
+        return new UnderlineNodeEffect(thickness);
+    }
+
+    @Override
+    public void post(final RectNode node, final double mouseX, final double mouseY) {
+        DrawUtils.SHAPE.drawRect(node.getX(), node.getY() + node.getHeight() + 4D, node.getWidth(), this.thickness, node.getColor());
+    }
+
+}
+```
+
+```java
+RectNode.create(100, 100, 300, 60).color(Color.BLUE).effect(UnderlineNodeEffect.create(4D)).attach(this);
+```
+
+`effect(...)` takes it on a `RectNode` and its subclasses. The node calls the hooks with itself, so add such an effect only to nodes of its type.
+
+## Extending a built-in effect
+
+The built-in effects are classes you can extend. Their setters return the type the context asks for (`public final <E extends BorderNodeEffect> E fill(boolean fill)`), so they also return your subclass, with a type witness in the middle of a chain. This border is drawn only while the node is hovered:
+
+```java
+import dev.joid.lib.color.Color;
+import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+
+public class HoverBorderNodeEffect extends BorderNodeEffect {
+
+    private boolean hoverOnly = true;
+
+    private HoverBorderNodeEffect(final Color color, final float width) {
+        super(color, width, BorderMode.OUT);
+    }
+
+    public static HoverBorderNodeEffect create(final Color color, final float width) {
+        return new HoverBorderNodeEffect(color, width);
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <E extends HoverBorderNodeEffect> E hoverOnly(final boolean hoverOnly) {
+        this.hoverOnly = hoverOnly;
+        return (E) this;
+    }
+
+    @Override
+    public boolean shouldApply(final Node node) {
+        return !this.hoverOnly || node.hoverValue(1F) > 0F;
+    }
+
+}
+```
+
+```java
+final HoverBorderNodeEffect border = HoverBorderNodeEffect.create(Color.BLUE, 2F).<HoverBorderNodeEffect>fill(false).hoverOnly(true);
+RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(border).attach(this);
+```
+
+`fill` is declared by `BorderNodeEffect`: without the witness `<HoverBorderNodeEffect>`, it returns a `BorderNodeEffect` in the middle of the chain and `hoverOnly` is not found. The last setter takes its type from the variable. Passed straight to `effect(...)`, the last setter needs a witness too: `.effect(HoverBorderNodeEffect.create(Color.BLUE, 2F).<HoverBorderNodeEffect>fill(false).<HoverBorderNodeEffect>hoverOnly(true))`. The class of the effect is your subclass, so `getEffect(HoverBorderNodeEffect.class)` finds it and `getEffect(BorderNodeEffect.class)` does not.
+
 ## The NodeEffect contract
 
 | Hook | Called | Default |
@@ -256,11 +334,12 @@ Override `expansion()` (default `0F`) when the pass draws outside the node's rec
 
 ## Rules for effect classes
 
-- `Node.effect(...)` takes a `NodeEffect` typed by the node or by one of its parent classes. Declare your effect generic, with itself as second type argument (`MyNodeEffect<T extends Node> extends NodeEffect<T, MyNodeEffect<T>>`) and a generic factory, as the built-in effects do, or extend `NodeEffect<Node, MyNodeEffect>` directly, to add it to any node. An effect declared for a specific node type (`MyNodeEffect extends NodeEffect<RectNode, MyNodeEffect>`) receives that type in its hooks and reads its getters; add it only to nodes of that type.
+- `Node.effect(...)` takes a `NodeEffect` typed by the node or by one of its parent classes. Extend `NodeEffect<Node>` to add your effect to any node, as the built-in effects do. An effect declared for a specific node type (`MyNodeEffect extends NodeEffect<RectNode>`) receives that type in its hooks and reads its getters; add it only to nodes of that type.
 - A node holds one effect per class: a second instance of your class replaces the first.
 - The same effect instance can be added to several nodes, and `Node.copy()` shares it with the copy. Keep per-node state out of the effect, or create one effect per node.
 - To make values dynamic, store `Supplier`s and read them in the hooks, as the built-in effects do.
-- Fluent setters return the effect class with `return this;` (`public MyNodeEffect<T> amount(final float amount)`), as the built-in effects do, so a configured effect chains inline inside `node.effect(...)`. A setter that returns a generic type inferred from the context (`<E extends MyNodeEffect<T>> E`) also matches the function form of `effect(...)`, and the call no longer compiles ("reference to effect is ambiguous").
+- Fluent setters return the type the context asks for, as those of the built-in effects and of the nodes: `public final <E extends MyNodeEffect> E amount(final float amount)` with `return (E) this;` (and `@SuppressWarnings("unchecked")` on the class). Assigned to a variable or at the end of a chain, the setter returns the type you expect; in the middle of a chain it returns the class that declares it, so the setter of a subclass after it needs a type witness.
+- A configured effect passed straight to `node.effect(...)` matches both `effect(NodeEffect)` and `effect(Function)` and does not compile ("reference to effect is ambiguous"): give its last setter a type witness (`.<MyNodeEffect>amount(1F)`), store the effect in a variable, or use the function form `effect(node -> MyNodeEffect.create().amount(1F))`.
 
 ## See also
 

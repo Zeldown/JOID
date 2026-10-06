@@ -34,14 +34,14 @@ public class CircleNodeEffectTest {
 
 	@Test
 	public void cutsTheNodeThroughTheShaderPipeline() {
-		final CircleNodeEffect<Node> effect = CircleNodeEffect.create();
+		final CircleNodeEffect effect = CircleNodeEffect.create();
 		Assert.assertTrue(effect.isShaderEffect());
 		Assert.assertTrue(effect.toShaderPass(RectNode.create(0D, 0D, 10D, 10D)) instanceof CircleShaderPass);
 	}
 
 	@Test
 	public void leavesTheShaderToItsPass() {
-		final CircleNodeEffect<Node> effect = CircleNodeEffect.create();
+		final CircleNodeEffect effect = CircleNodeEffect.create();
 		final RectNode node = RectNode.create(10D, 20D, 100D, 60D);
 		effect.pre(node, 0D, 0D);
 		effect.post(node, 0D, 0D);

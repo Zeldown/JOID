@@ -13,7 +13,7 @@ import lombok.NonNull;
 public class RoundedShaderPass implements ShaderPass {
 
 	private final Node node;
-	private final RoundedNodeEffect<?> effect;
+	private final RoundedNodeEffect effect;
 
 	private final float fixedX1;
 	private final float fixedY1;
@@ -21,7 +21,7 @@ public class RoundedShaderPass implements ShaderPass {
 	private final float fixedY2;
 	private final float fixedRadius;
 
-	public RoundedShaderPass(final @NonNull RoundedNodeEffect<?> effect, final @NonNull Node node) {
+	public RoundedShaderPass(final @NonNull RoundedNodeEffect effect, final @NonNull Node node) {
 		this.effect = effect;
 		this.node = node;
 		this.fixedRadius = -1F;

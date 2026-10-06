@@ -12,25 +12,26 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class BorderNodeEffect<T extends Node> extends NodeEffect<T, BorderNodeEffect<T>> {
+@SuppressWarnings("unchecked")
+public class BorderNodeEffect extends NodeEffect<Node> {
 
 	private boolean fill = true;
 	private BorderMode mode;
 	private Supplier<Color> colorSupplier;
 	private Supplier<Float> widthSupplier;
 
-	private BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
+	protected BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
 		this.colorSupplier = () -> color;
 		this.widthSupplier = () -> width;
 		this.mode = mode;
 	}
 
-	public static <T extends Node> @NonNull BorderNodeEffect<T> create(final @NonNull Color color, final float width) {
-		return new BorderNodeEffect<>(color, width, BorderMode.OUT);
+	public static @NonNull BorderNodeEffect create(final @NonNull Color color, final float width) {
+		return new BorderNodeEffect(color, width, BorderMode.OUT);
 	}
 
-	public static <T extends Node> @NonNull BorderNodeEffect<T> create(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
-		return new BorderNodeEffect<>(color, width, mode);
+	public static @NonNull BorderNodeEffect create(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
+		return new BorderNodeEffect(color, width, mode);
 	}
 
 	@Override
@@ -39,38 +40,38 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T, BorderNodeEf
 	}
 
 	@Override
-	public ShaderPass toShaderPass(final @NonNull T node) {
+	public ShaderPass toShaderPass(final @NonNull Node node) {
 		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fill, this.mode);
 	}
 
-	public @NonNull BorderNodeEffect<T> color(final @NonNull Color color) {
+	public final <E extends BorderNodeEffect> @NonNull E color(final @NonNull Color color) {
 		this.colorSupplier = () -> color;
-		return this;
+		return (E) this;
 	}
 
-	public @NonNull BorderNodeEffect<T> color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
+	public final <E extends BorderNodeEffect> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
 		this.colorSupplier = colorSupplier;
-		return this;
+		return (E) this;
 	}
 
-	public @NonNull BorderNodeEffect<T> width(final float width) {
+	public final <E extends BorderNodeEffect> @NonNull E width(final float width) {
 		this.widthSupplier = () -> width;
-		return this;
+		return (E) this;
 	}
 
-	public @NonNull BorderNodeEffect<T> width(final @NonNull Supplier<Float> widthSupplier) {
+	public final <E extends BorderNodeEffect> @NonNull E width(final @NonNull Supplier<Float> widthSupplier) {
 		this.widthSupplier = widthSupplier;
-		return this;
+		return (E) this;
 	}
 
-	public @NonNull BorderNodeEffect<T> mode(final @NonNull BorderMode mode) {
+	public final <E extends BorderNodeEffect> @NonNull E mode(final @NonNull BorderMode mode) {
 		this.mode = mode;
-		return this;
+		return (E) this;
 	}
 
-	public @NonNull BorderNodeEffect<T> fill(final boolean fill) {
+	public final <E extends BorderNodeEffect> @NonNull E fill(final boolean fill) {
 		this.fill = fill;
-		return this;
+		return (E) this;
 	}
 
 }

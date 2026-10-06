@@ -10,11 +10,11 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class CircleNodeEffect<T extends Node> extends NodeEffect<T, CircleNodeEffect<T>> {
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public class CircleNodeEffect extends NodeEffect<Node> {
 
-	public static <T extends Node> CircleNodeEffect<T> create() {
-		return new CircleNodeEffect<>();
+	public static CircleNodeEffect create() {
+		return new CircleNodeEffect();
 	}
 
 	@Override
@@ -23,7 +23,7 @@ public class CircleNodeEffect<T extends Node> extends NodeEffect<T, CircleNodeEf
 	}
 
 	@Override
-	public ShaderPass toShaderPass(final @NonNull T node) {
+	public ShaderPass toShaderPass(final @NonNull Node node) {
 		return new CircleShaderPass(node);
 	}
 

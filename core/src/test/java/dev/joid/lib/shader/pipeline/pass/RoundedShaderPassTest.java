@@ -12,7 +12,6 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.RoundedShader.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
-import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
@@ -67,7 +66,7 @@ public class RoundedShaderPassTest {
 	@Test
 	public void readsTheEffectWhenItBinds() {
 		final float[] radius = {5F};
-		final RoundedShaderPass pass = new RoundedShaderPass(RoundedNodeEffect.<Node>create(() -> radius[0]), RectNode.create(10D, 20D, 100D, 60D));
+		final RoundedShaderPass pass = new RoundedShaderPass(RoundedNodeEffect.create(() -> radius[0]), RectNode.create(10D, 20D, 100D, 60D));
 		radius[0] = 8F;
 		pass.bindDirect(this.context());
 		Assert.assertArrayEquals(new float[] {18F, 28F, 102F, 72F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);

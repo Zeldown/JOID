@@ -115,11 +115,11 @@ public class UIDemoShader extends UIDemo {
 				RectNode.create(0, 0, 200, 120).color(Color.RED).effect(BorderNodeEffect.create(Color.BLUE, 3F)).attach(node);
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 130).margin(40).body(node -> {
-				final RectNode selfScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().scope(NodeEffectScope.SELF));
+				final RectNode selfScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().<CircleNodeEffect>scope(NodeEffectScope.SELF));
 				TextNode.create(100, 60).text(Text.create("children node", TextInfo.create(DemoFont.MONTSERRAT, 28, Color.WHITE))).anchor(Align.CENTER).attach(selfScoped);
 				selfScoped.attach(node);
 
-				final RectNode childrenScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().scope(NodeEffectScope.CHILDREN));
+				final RectNode childrenScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().<CircleNodeEffect>scope(NodeEffectScope.CHILDREN));
 				TextNode.create(100, 60).text(Text.create("children node", TextInfo.create(DemoFont.MONTSERRAT, 28, Color.WHITE))).anchor(Align.CENTER).attach(childrenScoped);
 				childrenScoped.attach(node);
 			}).attach(flex);

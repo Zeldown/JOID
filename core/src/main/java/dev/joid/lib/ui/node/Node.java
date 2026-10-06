@@ -134,9 +134,9 @@ public abstract class Node implements INode {
 	private final transient TweenAnimator             hoverAnimator;
 	private final transient Map<TweenAnimator, Float> animatorMap;
 
-	private final LinkedList<NodeLayer>              layerList;
-	private final IndexedConcurrentList<Node>        children;
-	private final Map<Class<?>, NodeEffect<Node, ?>> effectMap;
+	private final LinkedList<NodeLayer>           layerList;
+	private final IndexedConcurrentList<Node>     children;
+	private final Map<Class<?>, NodeEffect<Node>> effectMap;
 
 	private final List<HoverElement>           hoverElementList;
 	private final List<Supplier<List<String>>> hoverSupplierList;
@@ -517,12 +517,12 @@ public abstract class Node implements INode {
 					this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
 				}
 
-				final List<NodeEffect<Node, ?>> effects = this.getAppliedEffects();
-				final List<NodeEffect<Node, ?>> shaderEffects = effects.stream().filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
-				final List<NodeEffect<Node, ?>> otherEffects = effects.stream().filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
+				final List<NodeEffect<Node>> effects = this.getAppliedEffects();
+				final List<NodeEffect<Node>> shaderEffects = effects.stream().filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
+				final List<NodeEffect<Node>> otherEffects = effects.stream().filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
 
-				final List<NodeEffect<Node, ?>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
-				final List<NodeEffect<Node, ?>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
+				final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
+				final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
 
 				otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
 
@@ -1221,8 +1221,8 @@ public abstract class Node implements INode {
 		return String.valueOf(this.ui.getNodeList().ordered().indexOf(this));
 	}
 
-	public final <T extends NodeEffect<?, ?>> T getEffect(final @NonNull Class<? super T> clazz) {
-		return (T) this.effectMap.get(clazz);
+	public final <T extends NodeEffect<?>> T getEffect(final @NonNull Class<T> clazz) {
+		return clazz.cast(this.effectMap.get(clazz));
 	}
 
 	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
@@ -1375,11 +1375,11 @@ public abstract class Node implements INode {
 		return this.y + value;
 	}
 
-	public boolean shouldApplyEffect(final @NonNull NodeEffect<Node, ?> effect) {
+	public boolean shouldApplyEffect(final @NonNull NodeEffect<Node> effect) {
 		return effect.shouldApply(this);
 	}
 
-	private @NonNull List<NodeEffect<Node, ?>> getAppliedEffects() {
+	private @NonNull List<NodeEffect<Node>> getAppliedEffects() {
 		return this.effectMap.values().stream().filter(this::shouldApplyEffect).sorted(Comparator.comparingInt(NodeEffect::getPriority)).collect(Collectors.toList());
 	}
 
@@ -1474,12 +1474,12 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T effect(final @NonNull NodeEffect<? super T, ?> effect) {
-		this.effectMap.put(effect.getClass(), (NodeEffect<Node, ?>) effect);
+	public final <T extends Node> @NonNull T effect(final @NonNull NodeEffect<? super T> effect) {
+		this.effectMap.put(effect.getClass(), (NodeEffect<Node>) effect);
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T effect(final @NonNull Function<@NonNull T, @NonNull NodeEffect<? super T, ?>> factory) {
+	public final <T extends Node> @NonNull T effect(final @NonNull Function<@NonNull T, @NonNull NodeEffect<? super T>> factory) {
 		return this.effect(factory.apply((T) this));
 	}
 

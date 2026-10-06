@@ -36,7 +36,7 @@ public class BorderNodeEffectTest {
 
 	@Test
 	public void drawsAFilledOuterBorderByDefault() {
-		final BorderNodeEffect<Node> effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
+		final BorderNodeEffect effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
 		Assert.assertTrue(effect.isShaderEffect());
 		Assert.assertTrue(effect.isFill());
 		Assert.assertSame(BorderMode.OUT, effect.getMode());
@@ -64,7 +64,7 @@ public class BorderNodeEffectTest {
 	@Test
 	public void replacesEachValue() {
 		final Color color = new Color(0.6F, 0.4F, 0.2F, 1F);
-		final BorderNodeEffect<Node> effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
+		final BorderNodeEffect effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
 		Assert.assertSame(effect, effect.color(color).width(6F).mode(BorderMode.IN).fill(false));
 		Assert.assertSame(color, effect.getColorSupplier().get());
 		Assert.assertEquals(6F, effect.getWidthSupplier().get(), 0F);
@@ -76,7 +76,7 @@ public class BorderNodeEffectTest {
 	public void readsItsSuppliedValuesForEachPass() {
 		final Color[] color = {new Color(0.2F, 0.4F, 0.6F, 1F)};
 		final float[] width = {3F};
-		final BorderNodeEffect<Node> effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 1F);
+		final BorderNodeEffect effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 1F);
 		Assert.assertSame(effect, effect.color(() -> color[0]).width(() -> width[0]));
 		color[0] = new Color(0.6F, 0.4F, 0.2F, 0.5F);
 		width[0] = 8F;

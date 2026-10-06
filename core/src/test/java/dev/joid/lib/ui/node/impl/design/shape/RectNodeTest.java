@@ -294,7 +294,7 @@ public class RectNodeTest {
 	public void keepsASingleBorder() {
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).border(new Color(0.6F, 0.4F, 0.2F, 1F), 3D).border(new Color(0.4F, 0.6F, 0.2F, 1F), 5D);
 		Assert.assertEquals(1, rect.getEffectMap().size());
-		final NodeEffect<Node, ?> effect = rect.getEffectMap().values().iterator().next();
+		final NodeEffect<Node> effect = rect.getEffectMap().values().iterator().next();
 		Assert.assertTrue(effect instanceof BorderNodeEffect);
 		this.bridges.open(new NodeUI(rect)).frame();
 		Assert.assertEquals(5F, (Float) this.border.getValues().get("u_BorderWidth"), 1E-4F);

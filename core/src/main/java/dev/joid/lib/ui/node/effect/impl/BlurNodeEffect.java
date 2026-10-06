@@ -13,16 +13,17 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class BlurNodeEffect<T extends Node> extends NodeEffect<T, BlurNodeEffect<T>> {
+@SuppressWarnings("unchecked")
+public class BlurNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Float> radiusSupplier;
 
-	private BlurNodeEffect(final float radius) {
+	protected BlurNodeEffect(final float radius) {
 		this.radiusSupplier = () -> radius;
 	}
 
-	public static <T extends Node> @NonNull BlurNodeEffect<T> create(final float radius) {
-		return new BlurNodeEffect<>(radius);
+	public static @NonNull BlurNodeEffect create(final float radius) {
+		return new BlurNodeEffect(radius);
 	}
 
 	@Override
@@ -31,7 +32,7 @@ public class BlurNodeEffect<T extends Node> extends NodeEffect<T, BlurNodeEffect
 	}
 
 	@Override
-	public List<ShaderPass> toShaderPasses(final @NonNull T node) {
+	public List<ShaderPass> toShaderPasses(final @NonNull Node node) {
 		final float radius = this.radiusSupplier.get();
 		if (radius <= 0F) {
 			return Collections.emptyList();
@@ -40,14 +41,14 @@ public class BlurNodeEffect<T extends Node> extends NodeEffect<T, BlurNodeEffect
 		return Arrays.asList(new BlurShaderPass(radius, true, 0), new BlurShaderPass(radius, false, 0));
 	}
 
-	public @NonNull BlurNodeEffect<T> radius(final float radius) {
+	public final <E extends BlurNodeEffect> @NonNull E radius(final float radius) {
 		this.radiusSupplier = () -> radius;
-		return this;
+		return (E) this;
 	}
 
-	public @NonNull BlurNodeEffect<T> radius(final @NonNull Supplier<Float> radiusSupplier) {
+	public final <E extends BlurNodeEffect> @NonNull E radius(final @NonNull Supplier<Float> radiusSupplier) {
 		this.radiusSupplier = radiusSupplier;
-		return this;
+		return (E) this;
 	}
 
 }

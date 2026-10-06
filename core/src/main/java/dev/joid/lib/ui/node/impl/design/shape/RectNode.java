@@ -135,7 +135,7 @@ public class RectNode extends Node {
 	private void applyBorderEffect() {
 		super.removeEffect(BorderNodeEffect.class);
 		if (this.borderStroke > 0D) {
-			final BorderNodeEffect<Node> effect = BorderNodeEffect.create(Color.TRANSPARENT, (float) this.borderStroke);
+			final BorderNodeEffect effect = BorderNodeEffect.create(Color.TRANSPARENT, (float) this.borderStroke);
 			effect.color(this::computeBorderColor);
 			effect.fill(this.borderFill);
 			super.effect(effect);

@@ -57,7 +57,7 @@ public class TransformNodeEffectTest {
 	@Test
 	public void chainsEveryOperationOfATransformation() {
 		final Transformation transformation = Transformation.create().translate(Vector.create(10D, 0D)).scale(Scale.create(2D, 2D, 1D), Vector.create(100D, 100D));
-		final TransformNodeEffect<Node> effect = TransformNodeEffect.create(transformation);
+		final TransformNodeEffect effect = TransformNodeEffect.create(transformation);
 		this.open(effect);
 		final Draw draw = this.single();
 		Assert.assertSame(transformation, effect.getTransformationSupplier().get());
@@ -69,7 +69,7 @@ public class TransformNodeEffectTest {
 	@Test
 	public void replacesItsTransformation() {
 		final Transformation transformation = Transformation.create().translate(Vector.create(0D, 25D));
-		final TransformNodeEffect<Node> effect = TransformNodeEffect.create(Transformation.create());
+		final TransformNodeEffect effect = TransformNodeEffect.create(Transformation.create());
 		Assert.assertSame(effect, effect.transformation(transformation));
 		this.open(effect);
 		Assert.assertEquals(125D, this.single().getTop(), 1E-3D);
@@ -78,7 +78,7 @@ public class TransformNodeEffectTest {
 	@Test
 	public void readsItsSuppliedTransformationOnEveryFrame() {
 		final Transformation[] current = {Transformation.create().translate(Vector.create(10D, 0D))};
-		final TransformNodeEffect<Node> effect = TransformNodeEffect.create(Transformation.create());
+		final TransformNodeEffect effect = TransformNodeEffect.create(Transformation.create());
 		Assert.assertSame(effect, effect.transformation(() -> current[0]));
 		this.open(effect);
 		Assert.assertEquals(110D, this.single().getLeft(), 1E-3D);
@@ -98,7 +98,7 @@ public class TransformNodeEffectTest {
 		Assert.assertEquals(100D, draws.get(0).getTop(), 1E-3D);
 	}
 
-	private void open(final TransformNodeEffect<Node> effect) {
+	private void open(final TransformNodeEffect effect) {
 		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(effect))).frame();
 	}
 

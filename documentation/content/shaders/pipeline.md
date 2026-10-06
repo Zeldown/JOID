@@ -189,7 +189,7 @@ public class GrayscaleShaderPass implements ShaderPass {
 To use the pass on nodes, wrap it in a shader effect:
 
 ```java
-public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T, GrayscaleNodeEffect<T>> {
+public class GrayscaleNodeEffect extends NodeEffect<Node> {
 
     private final float amount;
 
@@ -197,8 +197,8 @@ public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T, Grayscale
         this.amount = amount;
     }
 
-    public static <T extends Node> GrayscaleNodeEffect<T> create(final float amount) {
-        return new GrayscaleNodeEffect<>(amount);
+    public static GrayscaleNodeEffect create(final float amount) {
+        return new GrayscaleNodeEffect(amount);
     }
 
     @Override
@@ -207,7 +207,7 @@ public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T, Grayscale
     }
 
     @Override
-    public ShaderPass toShaderPass(final T node) {
+    public ShaderPass toShaderPass(final Node node) {
         return new GrayscaleShaderPass(this.amount);
     }
 
@@ -237,7 +237,7 @@ The built-in passes are in `dev.joid.lib.shader.pipeline.pass`. Each binds the m
 
 | Constructor | Description |
 | --- | --- |
-| `RoundedShaderPass(RoundedNodeEffect<?> effect, Node node)` | Rounds the corners of the node: reads the radius and the rounded sides from the effect, and the node's rectangle snapped to pixels, when bound. |
+| `RoundedShaderPass(RoundedNodeEffect effect, Node node)` | Rounds the corners of the node: reads the radius and the rounded sides from the effect, and the node's rectangle snapped to pixels, when bound. |
 | `RoundedShaderPass(float radius, float x1, float y1, float x2, float y2)` | Rounds the box whose inner rectangle (the box minus the radius on each rounded side) is `x1, y1, x2, y2`. |
 | `CircleShaderPass(Node node)` | Cuts the largest circle that fits in the node: radius `min(width, height) / 2`, centered in the node. |
 | `CircleShaderPass(float radius, float centerX, float centerY)` | Cuts a circle of `radius` centered on `centerX, centerY`. |

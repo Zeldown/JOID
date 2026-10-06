@@ -34,7 +34,7 @@ public class RoundedNodeEffectTest {
 
 	@Test
 	public void roundsEveryCornerByDefault() {
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(6F);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(6F);
 		Assert.assertEquals(6F, effect.getRadius(), 0F);
 		Assert.assertTrue(effect.isLeft());
 		Assert.assertTrue(effect.isRight());
@@ -45,7 +45,7 @@ public class RoundedNodeEffectTest {
 
 	@Test
 	public void roundsOnlyTheChosenSides() {
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(6F, true, false, false, true);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(6F, true, false, false, true);
 		Assert.assertTrue(effect.isLeft());
 		Assert.assertFalse(effect.isRight());
 		Assert.assertFalse(effect.isTop());
@@ -54,9 +54,9 @@ public class RoundedNodeEffectTest {
 
 	@Test
 	public void takesItsSidesInTheOrderOfDrawRoundedRect() {
-		final RoundedNodeEffect<Node> left = RoundedNodeEffect.create(6F, true, false, false, false);
-		final RoundedNodeEffect<Node> top = RoundedNodeEffect.create(6F, false, true, false, false);
-		final RoundedNodeEffect<Node> right = RoundedNodeEffect.create(() -> 6F, () -> false, () -> false, () -> true, () -> false);
+		final RoundedNodeEffect left = RoundedNodeEffect.create(6F, true, false, false, false);
+		final RoundedNodeEffect top = RoundedNodeEffect.create(6F, false, true, false, false);
+		final RoundedNodeEffect right = RoundedNodeEffect.create(() -> 6F, () -> false, () -> false, () -> true, () -> false);
 		Assert.assertTrue(left.isLeft() && !left.isTop() && !left.isRight() && !left.isBottom());
 		Assert.assertTrue(top.isTop() && !top.isLeft() && !top.isRight() && !top.isBottom());
 		Assert.assertTrue(right.isRight() && !right.isLeft() && !right.isTop() && !right.isBottom());
@@ -65,7 +65,7 @@ public class RoundedNodeEffectTest {
 	@Test
 	public void readsItsSuppliedRadius() {
 		final float[] radius = {2F};
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(() -> radius[0]);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(() -> radius[0]);
 		radius[0] = 9F;
 		Assert.assertEquals(9F, effect.getRadius(), 0F);
 		Assert.assertTrue(effect.isLeft() && effect.isRight() && effect.isTop() && effect.isBottom());
@@ -74,7 +74,7 @@ public class RoundedNodeEffectTest {
 	@Test
 	public void readsItsSuppliedSides() {
 		final boolean[] sides = {true};
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(() -> 4F, () -> sides[0], () -> sides[0], () -> !sides[0], () -> !sides[0]);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(() -> 4F, () -> sides[0], () -> sides[0], () -> !sides[0], () -> !sides[0]);
 		Assert.assertTrue(effect.isLeft());
 		Assert.assertFalse(effect.isRight());
 		sides[0] = false;
@@ -85,7 +85,7 @@ public class RoundedNodeEffectTest {
 
 	@Test
 	public void replacesEachValue() {
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(6F);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(6F);
 		Assert.assertSame(effect, effect.radius(3F).left(false).right(false).top(false).bottom(false));
 		Assert.assertEquals(3F, effect.getRadius(), 0F);
 		Assert.assertFalse(effect.isLeft() || effect.isRight() || effect.isTop() || effect.isBottom());
@@ -94,7 +94,7 @@ public class RoundedNodeEffectTest {
 	@Test
 	public void replacesEachValueWithASupplier() {
 		final boolean[] side = {false};
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(6F);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(6F);
 		Assert.assertSame(effect, effect.radius(() -> 5F).left(() -> side[0]).right(() -> side[0]).top(() -> side[0]).bottom(() -> side[0]));
 		side[0] = true;
 		Assert.assertEquals(5F, effect.getRadius(), 0F);
@@ -103,7 +103,7 @@ public class RoundedNodeEffectTest {
 
 	@Test
 	public void leavesTheShaderToItsPass() {
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(5F);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(5F);
 		final RectNode node = RectNode.create(10D, 20D, 100D, 60D);
 		effect.pre(node, 0D, 0D);
 		effect.post(node, 0D, 0D);
@@ -112,7 +112,7 @@ public class RoundedNodeEffectTest {
 
 	@Test
 	public void roundsTheNodeThroughTheShaderPipeline() {
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(10F);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(10F);
 		final RectNode node = RectNode.create(100D, 100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(effect);
 		Assert.assertTrue(effect.toShaderPass(node) instanceof RoundedShaderPass);
 		this.bridges.open(new NodeUI(node)).frame();

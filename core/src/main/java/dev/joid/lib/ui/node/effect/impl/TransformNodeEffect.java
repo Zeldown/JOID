@@ -16,33 +16,34 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class TransformNodeEffect<T extends Node> extends NodeEffect<T, TransformNodeEffect<T>> {
+@SuppressWarnings("unchecked")
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+public class TransformNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Transformation> transformationSupplier;
 
-	private TransformNodeEffect(final Transformation transformation) {
+	protected TransformNodeEffect(final Transformation transformation) {
 		this.transformationSupplier = () -> transformation;
 	}
 
-	public static <T extends Node> TransformNodeEffect<T> create(final @NonNull ScaleOperation scale) {
-		return new TransformNodeEffect<>(Transformation.create(scale));
+	public static TransformNodeEffect create(final @NonNull ScaleOperation scale) {
+		return new TransformNodeEffect(Transformation.create(scale));
 	}
 
-	public static <T extends Node> TransformNodeEffect<T> create(final @NonNull RotateOperation rotation) {
-		return new TransformNodeEffect<>(Transformation.create(rotation));
+	public static TransformNodeEffect create(final @NonNull RotateOperation rotation) {
+		return new TransformNodeEffect(Transformation.create(rotation));
 	}
 
-	public static <T extends Node> TransformNodeEffect<T> create(final @NonNull TranslateOperation translate) {
-		return new TransformNodeEffect<>(Transformation.create(translate));
+	public static TransformNodeEffect create(final @NonNull TranslateOperation translate) {
+		return new TransformNodeEffect(Transformation.create(translate));
 	}
 
-	public static <T extends Node> TransformNodeEffect<T> create(final @NonNull Transformation transformation) {
-		return new TransformNodeEffect<>(transformation);
+	public static TransformNodeEffect create(final @NonNull Transformation transformation) {
+		return new TransformNodeEffect(transformation);
 	}
 
 	@Override
-	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
+	public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
 		BridgeHandler.RENDER.get().pushMatrix();
 		for (final TransformOperation operation : this.transformationSupplier.get().getOperations()) {
 			operation.transform();
@@ -50,18 +51,18 @@ public class TransformNodeEffect<T extends Node> extends NodeEffect<T, Transform
 	}
 
 	@Override
-	public void post(final @NonNull T node, final double mouseX, final double mouseY) {
+	public void post(final @NonNull Node node, final double mouseX, final double mouseY) {
 		BridgeHandler.RENDER.get().popMatrix();
 	}
 
-	public @NonNull TransformNodeEffect<T> transformation(final @NonNull Transformation transformation) {
+	public final <E extends TransformNodeEffect> @NonNull E transformation(final @NonNull Transformation transformation) {
 		this.transformationSupplier = () -> transformation;
-		return this;
+		return (E) this;
 	}
 
-	public @NonNull TransformNodeEffect<T> transformation(final @NonNull Supplier<Transformation> transformationSupplier) {
+	public final <E extends TransformNodeEffect> @NonNull E transformation(final @NonNull Supplier<Transformation> transformationSupplier) {
 		this.transformationSupplier = transformationSupplier;
-		return this;
+		return (E) this;
 	}
 
 }

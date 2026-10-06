@@ -26,6 +26,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
@@ -56,6 +57,7 @@ import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -523,26 +525,36 @@ public class NodeTest {
 	}
 
 	@Test
-	public void chainsAConfiguredCustomEffectWithoutCast() {
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", new ArrayList<>()).priority(2)).effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false));
-		final BorderNodeEffect<Node> border = node.getEffect(BorderNodeEffect.class);
+	public void chainsAConfiguredCustomEffectWithATypeWitness() {
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", new ArrayList<>()).<RecordingEffect>priority(2)).effect(BorderNodeEffect.create(Color.BLACK, 2F).<BorderNodeEffect>fill(false));
+		final BorderNodeEffect border = node.getEffect(BorderNodeEffect.class);
 		Assert.assertEquals(2, node.getEffect(RecordingEffect.class).getPriority());
 		Assert.assertFalse(border.isFill());
 	}
 
 	@Test
-	public void chainsAConfiguredEffectWithoutCast() {
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(BlurNodeEffect.create(2F).radius(4F)).effect(RoundedNodeEffect.create(6F).scope(NodeEffectScope.CHILDREN));
-		final BlurNodeEffect<Node> blur = node.getEffect(BlurNodeEffect.class);
-		final RoundedNodeEffect<Node> rounded = node.getEffect(RoundedNodeEffect.class);
+	public void chainsAConfiguredEffectWithATypeWitness() {
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(BlurNodeEffect.create(2F).<BlurNodeEffect>radius(4F)).effect(RoundedNodeEffect.create(6F).<RoundedNodeEffect>scope(NodeEffectScope.CHILDREN));
+		final BlurNodeEffect blur = node.getEffect(BlurNodeEffect.class);
+		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
 		Assert.assertEquals(4F, blur.getRadiusSupplier().get(), 0F);
 		Assert.assertSame(NodeEffectScope.CHILDREN, rounded.getScope());
 	}
 
 	@Test
+	public void chainsAnExtendedBuiltInEffectWithATypeWitness() {
+		final GlowBorderEffect glow = GlowBorderEffect.create().<GlowBorderEffect>fill(false).glow(4F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(glow);
+		Assert.assertSame(glow, node.getEffect(GlowBorderEffect.class));
+		Assert.assertNull(node.getEffect(BorderNodeEffect.class));
+		Assert.assertFalse(glow.isFill());
+		Assert.assertEquals(4F, glow.getGlow(), 0F);
+	}
+
+	@Test
 	public void findsItsEffectsByTheirBuiltInClass() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(RoundedNodeEffect.create(6F));
-		final RoundedNodeEffect<Node> rounded = node.getEffect(RoundedNodeEffect.class);
+		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
 		Assert.assertEquals(6F, rounded.getRadius(), 0F);
 		Assert.assertTrue(node.hasEffect(RoundedNodeEffect.class));
 		Assert.assertFalse(node.removeEffect(RoundedNodeEffect.class).hasEffect(RoundedNodeEffect.class));
@@ -559,7 +571,7 @@ public class NodeTest {
 	@Test
 	public void buildsAnEffectFromItsTypedNode() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect((final RectNode rect) -> RoundedNodeEffect.create((float) rect.getWidth()));
-		final RoundedNodeEffect<Node> rounded = node.getEffect(RoundedNodeEffect.class);
+		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
 		Assert.assertEquals(10F, rounded.getRadius(), 0F);
 	}
 
@@ -577,7 +589,7 @@ public class NodeTest {
 	public void drawsItsChildrenIntoAChildrenScopedShader() {
 		final List<Boolean> buffered = new ArrayList<>();
 		final RectNode child = RectNode.create(10D, 10D, 20D, 20D).color(new Color(0.6F, 0.4F, 0.2F, 1F)).onDraw((rect, mouseX, mouseY) -> buffered.add(this.bridges.getRender().getState().getFrameBuffer() != null));
-		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).append(child).effect(BlurNodeEffect.create(4F).scope(NodeEffectScope.CHILDREN));
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).append(child).effect(BlurNodeEffect.create(4F).<BlurNodeEffect>scope(NodeEffectScope.CHILDREN));
 		this.bridges.open(new NodeUI(parent));
 		Assert.assertEquals(Arrays.asList(true), buffered);
 		parent.effect(BlurNodeEffect.create(4F));
@@ -1856,7 +1868,7 @@ public class NodeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingEffect() {
-		RectNode.create(0D, 0D, 10D, 10D).effect((NodeEffect<Node, ?>) null);
+		RectNode.create(0D, 0D, 10D, 10D).effect((NodeEffect<Node>) null);
 	}
 
 	@Test
@@ -2183,7 +2195,7 @@ public class NodeTest {
 	}
 
 	@AllArgsConstructor
-	public static class RecordingEffect extends NodeEffect<Node, RecordingEffect> {
+	public static class RecordingEffect extends NodeEffect<Node> {
 
 		private final String       name;
 		private final List<String> events;
@@ -2227,13 +2239,34 @@ public class NodeTest {
 	}
 
 	@AllArgsConstructor
-	public static final class ColorEffect extends NodeEffect<RectNode, ColorEffect> {
+	public static final class ColorEffect extends NodeEffect<RectNode> {
 
 		private final List<String> events;
 
 		@Override
 		public void pre(final @NonNull RectNode node, final double mouseX, final double mouseY) {
 			this.events.add(node.getColor().toString());
+		}
+
+	}
+
+	@Getter
+	@SuppressWarnings("unchecked")
+	public static class GlowBorderEffect extends BorderNodeEffect {
+
+		private float glow;
+
+		private GlowBorderEffect() {
+			super(Color.BLACK, 2F, BorderMode.OUT);
+		}
+
+		public static GlowBorderEffect create() {
+			return new GlowBorderEffect();
+		}
+
+		public final <E extends GlowBorderEffect> @NonNull E glow(final float glow) {
+			this.glow = glow;
+			return (E) this;
 		}
 
 	}

@@ -28,7 +28,7 @@ The edge is anti-aliased over one unit inside the radius.
 With the default `SELF` scope, only what the node draws itself is cut; its children are drawn on top, whole. With the `CHILDREN` scope, the node and its children are cut together:
 
 ```java
-final RectNode avatar = RectNode.create(100, 100, 120, 120).color(Color.LIGHTGRAY).effect(CircleNodeEffect.create().scope(NodeEffectScope.CHILDREN));
+final RectNode avatar = RectNode.create(100, 100, 120, 120).color(Color.LIGHTGRAY).effect(CircleNodeEffect.create().<CircleNodeEffect>scope(NodeEffectScope.CHILDREN));
 ResourceNode.create(0, 60, 120, 60).resource(Resource.of("https://placehold.co/120x60.png")).attach(avatar);
 avatar.attach(this);
 ```

@@ -138,7 +138,7 @@ By default an effect applies to the node's own drawing only; its children are dr
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))
+.effect(RoundedNodeEffect.create(16F).<RoundedNodeEffect>scope(NodeEffectScope.CHILDREN))
 .body(card -> {
     ResourceNode.create(0, 0, 300, 120).resource(Resource.of("https://placehold.co/300x120.png")).attach(card);
 })
@@ -146,6 +146,8 @@ RectNode
 ```
 
 ![Two cards with an image header: with SELF the header keeps square top corners, with CHILDREN it is rounded](../images/rounded-children.png "Left, the default SELF scope; right, CHILDREN as in the snippet: the image is rounded with the card.")
+
+> TIP: A configured effect passed straight to `effect(...)` needs a type witness on its last setter, as `<RoundedNodeEffect>scope(...)` above: without it, `effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))` matches both `effect(NodeEffect)` and `effect(Function)` and does not compile. Store the effect in a variable or use the function form `effect(node -> ...)` instead if you prefer.
 
 Effects only change pixels: clicks and hover still use the node's rectangle, so the corners of a rounded button still react to the mouse.
 
