@@ -155,6 +155,16 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void typesItsCallbacksByTheTypeInferredFromTheContext() {
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).onChange((node, oldText, newText) -> node.horizontalAlign(Align.END));
+		final MultilineTextFieldNode notes = MultilineTextFieldNode.create(100D, 100D, 200D, 100D).placeholder("Notes").onFocus(node -> node.text("focused"));
+		field.text("ab");
+		notes.focused(true);
+		Assert.assertSame(Align.END, field.getHorizontalAlignment());
+		Assert.assertEquals("focused", notes.getText());
+	}
+
+	@Test
 	public void passesEveryNewTextThroughItsFilter() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).filter((oldText, newText) -> oldText + newText.toUpperCase());
 		Assert.assertEquals("AB", field.text("ab").getText());
@@ -222,8 +232,8 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void putsTheCursorUnderAClickOnAnAlignedText() {
-		final TextFieldNode centered = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("abcd").horizontalAlign(Align.CENTER);
-		final TextFieldNode end = TextFieldNode.create(100D, 200D, 200D).info(this.info()).text("abcd").horizontalAlign(Align.END);
+		final TextFieldNode centered = TextFieldNode.create(100D, 100D, 200D).info(this.info()).<TextFieldNode>text("abcd").horizontalAlign(Align.CENTER);
+		final TextFieldNode end = TextFieldNode.create(100D, 200D, 200D).info(this.info()).<TextFieldNode>text("abcd").horizontalAlign(Align.END);
 		this.bridges.open(new NodeUI(centered, end));
 		this.click(196D, 120D);
 		Assert.assertEquals(2, centered.getCursorPos());
@@ -356,8 +366,8 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void movesTheCursorOfAnAlignedText() {
-		final TextFieldNode centered = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("abcd").horizontalAlign(Align.CENTER).focused(true).cursorPosition(2);
-		final TextFieldNode end = TextFieldNode.create(100D, 200D, 200D).info(this.info()).text("abcd").horizontalAlign(Align.END).focused(true).cursorPosition(2);
+		final TextFieldNode centered = TextFieldNode.create(100D, 100D, 200D).info(this.info()).<TextFieldNode>text("abcd").horizontalAlign(Align.CENTER).focused(true).cursorPosition(2);
+		final TextFieldNode end = TextFieldNode.create(100D, 200D, 200D).info(this.info()).<TextFieldNode>text("abcd").horizontalAlign(Align.END).focused(true).cursorPosition(2);
 		this.bridges.open(new NodeUI(centered, end));
 		this.press(centered, Key.LEFT);
 		this.press(centered, Key.RIGHT);
@@ -736,28 +746,28 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void centersItsTextHorizontally() {
-		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).text("abcd").horizontalAlign(Align.CENTER)));
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).<TextFieldNode>text("abcd").horizontalAlign(Align.CENTER)));
 		Assert.assertEquals(180D, this.font.last().getX(), 0D);
 		Assert.assertEquals(120D, this.font.last().getY(), 0D);
 	}
 
 	@Test
 	public void alignsItsTextToTheEnd() {
-		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).text("abcd").align(Align.END, Align.END)));
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).<TextFieldNode>text("abcd").align(Align.END, Align.END)));
 		Assert.assertEquals(256D, this.font.last().getX(), 0D);
 		Assert.assertEquals(130D, this.font.last().getY(), 0D);
 	}
 
 	@Test
 	public void alignsItsTextToTheTop() {
-		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).text("abcd").verticalAlign(Align.START)));
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).<TextFieldNode>text("abcd").verticalAlign(Align.START)));
 		Assert.assertEquals(102D, this.font.last().getX(), 0D);
 		Assert.assertEquals(110D, this.font.last().getY(), 0D);
 	}
 
 	@Test
 	public void alignsItsPlaceholderOnItsOwnWidth() {
-		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D).info(this.info()).placeholder("Search").horizontalAlign(Align.END)));
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D).info(this.info()).<TextFieldNode>placeholder("Search").horizontalAlign(Align.END)));
 		Assert.assertEquals(236D, this.font.last().getX(), 0D);
 	}
 
@@ -877,7 +887,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void keepsDrawingOnceAScrolledTextIsCleared() {
-		final TextFieldNode field = this.field("abcdefghijklmnopqrst").placeholder("Message").onEnter((node, text) -> node.text(""));
+		final TextFieldNode field = this.field("abcdefghijklmnopqrst").<TextFieldNode>placeholder("Message").onEnter((node, text) -> node.text(""));
 		this.press(field, Key.END);
 		this.bridges.frame();
 		this.press(field, Key.ENTER);
@@ -940,7 +950,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void showsTheCursorAtTheEndOfAnEndAlignedText() {
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("abcd").horizontalAlign(Align.END).focused(true).cursorPosition(4);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).<TextFieldNode>text("abcd").horizontalAlign(Align.END).focused(true).cursorPosition(4);
 		this.bridges.open(new NodeUI(field));
 		final Draw mask = this.bridges.getRender().getDraws(1F, 0F, 0F).get(0);
 		final Draw cursor = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).get(0);
@@ -949,7 +959,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void keepsTheCursorOfACenteredTextInView() {
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("abcdefghijklmnopqrstuvwxyzabcd").horizontalAlign(Align.CENTER).focused(true);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).<TextFieldNode>text("abcdefghijklmnopqrstuvwxyzabcd").horizontalAlign(Align.CENTER).focused(true);
 		this.bridges.open(new NodeUI(field));
 		this.press(field, Key.END);
 		this.bridges.frame();

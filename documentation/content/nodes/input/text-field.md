@@ -17,7 +17,7 @@ RectNode
     .create(10, 0, 380, 50)
     .info(TextInfo.create(font, 24F, Color.WHITE))
     .placeholder("Search")
-    .onChange((field, oldText, newText) -> System.out.println("Search: " + newText))
+    .<TextFieldNode>onChange((field, oldText, newText) -> System.out.println("Search: " + newText))
     .onEnter((field, text) -> System.out.println("Submitted: " + text))
     .attach(background);
 })
@@ -29,6 +29,10 @@ RectNode
 - `info(TextInfo)` is required: it gives the font, size and color of the text, the placeholder and the cursor. A field without `TextInfo` throws a `NullPointerException` on its first draw.
 - A click on the field focuses it; typing then edits the text. Enter, Numpad Enter or Escape unfocuses it and calls `onEnter`.
 - `getText()` returns the current text at any time.
+
+### Type witnesses in a chain
+
+The setters shared by every text field (`text`, `placeholder`, `info`, `focused`, `filter`, `maxTextLength`, `markup`, the margins, `cursorPosition`, `signal`, `onChange` and `onFocus`) are declared on `FieldNode<V>` and return the type Java infers from the context, like every JOID setter. In the middle of a chain there is no context: they return `FieldNode<String>`, which has no `align`, `horizontalAlign`, `verticalAlign` or `onEnter`. A single-line method called right after a shared setter therefore needs a type witness on that setter, as `.<TextFieldNode>onChange(...)` above. No witness is needed when the single-line methods come first, when the shared setter is the last call of a chain assigned to a variable, or before a `Node` method such as `attach`. A callback receives the type inferred for its own call: `field` is a `TextFieldNode` in `.<TextFieldNode>onChange(...)`, a `FieldNode<String>` otherwise.
 
 ## Size, margins and alignment
 
@@ -145,7 +149,7 @@ final TextFieldNode lastName = TextFieldNode
 TextFieldNode
 .create(760, 500, 400)
 .info(info)
-.placeholder("First name")
+.<TextFieldNode>placeholder("First name")
 .onEnter((field, text) -> lastName.focused(true))
 .attach(this);
 ```
@@ -261,7 +265,7 @@ TextFieldNode
 .create(760, 500, 400)
 .info(TextInfo.create(font, 24F, Color.WHITE))
 .placeholder("Message")
-.onFocus(field -> System.out.println(field.isFocused() ? "Typing..." : "Idle"))
+.<TextFieldNode>onFocus(field -> System.out.println(field.isFocused() ? "Typing..." : "Idle"))
 .onEnter((field, text) -> {
     if (!text.isEmpty()) {
         System.out.println("Send: " + text);
@@ -349,7 +353,7 @@ IntegerFieldNode
 .attach(this);
 ```
 
-The setters shared by every text field return `LineFieldNode<Integer>` when chained, so call the `IntegerFieldNode` methods first, assign the result to an `IntegerFieldNode` variable (as above), or give the type explicitly:
+The setters shared by every text field return `FieldNode<Integer>` when chained, so call the `IntegerFieldNode` methods first, assign the result to an `IntegerFieldNode` variable (as above), or give the type explicitly:
 
 ```java
 IntegerFieldNode
@@ -363,7 +367,7 @@ IntegerFieldNode
 
 ### Fields of other types
 
-`TextFieldNode` and `IntegerFieldNode` extend `LineFieldNode<V>` (`dev.joid.lib.ui.node.impl.design.textfield`), the single-line field whose value has the type `V`: `LineFieldNode<String>` and `LineFieldNode<Integer>`. With [`MultilineTextFieldNode`](multiline-text-field.md), they share `FieldNode<V, N>`, which holds the text, the editing, the shared setters and `signal(Signal<V>)`. A field of another type extends `LineFieldNode<V>`, sets its `filter(...)` in the constructor and returns the value of its text from `getValue()`; `signal(Signal<V>)` then writes `getValue()` into the signal and writes the published values as text with `String.valueOf(...)`.
+`TextFieldNode` and `IntegerFieldNode` extend `LineFieldNode<V>` (`dev.joid.lib.ui.node.impl.design.textfield`), the single-line field whose value has the type `V`: `LineFieldNode<String>` and `LineFieldNode<Integer>`. With [`MultilineTextFieldNode`](multiline-text-field.md), they share `FieldNode<V>`, which holds the text, the editing, the shared setters and `signal(Signal<V>)`. A field of another type extends `LineFieldNode<V>`, sets its `filter(...)` in the constructor and returns the value of its text from `getValue()`; `signal(Signal<V>)` then writes `getValue()` into the signal and writes the published values as text with `String.valueOf(...)`.
 
 ## Reference
 
@@ -398,7 +402,7 @@ IntegerFieldNode
 | `cursorMargin(double)` | `15` | Distance kept between the cursor and the inner edges while scrolling. |
 | `cursorPosition(int)` | `0` | Cursor index, clamped to `[0, text length]`. |
 
-Every setter returns the node itself, typed by the generic return of the fluent API.
+Every setter returns the node itself, typed by the generic return of the fluent API; see [Type witnesses in a chain](#type-witnesses-in-a-chain).
 
 ### Callbacks
 

@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class MultilineTextFieldNode extends FieldNode<String, MultilineTextFieldNode> {
+public class MultilineTextFieldNode extends FieldNode<String> {
 
 	private double yOffset;
 

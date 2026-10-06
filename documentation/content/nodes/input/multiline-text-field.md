@@ -146,7 +146,7 @@ This field refuses an eleventh line.
 | `onChange(NodeTextFieldChangeCallback<T>)` | | Adds a change callback. |
 | `onFocus(NodeTextFieldFocusCallback<T>)` | | Adds a focus callback. |
 
-Every setter returns the node itself, typed by the generic return of the fluent API.
+Every setter returns the node itself, typed by the generic return of the fluent API. The setters are declared on `FieldNode<V>`: in the middle of a chain they return `FieldNode<String>`, and a callback registered there receives a `FieldNode<String>`. `MultilineTextFieldNode` adds no setter of its own, so its chains need no type witness. A subclass that adds setters needs one on the shared setter that precedes them, such as `.<NoteFieldNode>placeholder(...)`, as described for [`TextFieldNode`](text-field.md#type-witnesses-in-a-chain).
 
 ### Getters
 

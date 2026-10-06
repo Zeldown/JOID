@@ -82,7 +82,7 @@ RectNode
     .create(10, 0, 380, 50)
     .info(TextInfo.create(font, 24F, Color.WHITE))
     .placeholder("Search")
-    .onChange((field, oldText, newText) -> System.out.println("Search: " + newText))
+    .<TextFieldNode>onChange((field, oldText, newText) -> System.out.println("Search: " + newText))
     .onEnter((field, text) -> System.out.println("Submitted: " + text))
     .attach(background);
 })
@@ -91,7 +91,7 @@ RectNode
 
 ![The cursor clicks a gray search field and types vulkan backend, then Enter removes the text cursor](../images/textfield-type.gif "A click focuses the field, typing edits it, Enter unfocuses it and calls onEnter.")
 
-`info(...)` gives the font, size and color of the text; `font` is a font you loaded, as shown in [Text](text.md). A click focuses the field, typing edits it, and Enter or Escape unfocuses it and calls `onEnter`.
+`info(...)` gives the font, size and color of the text; `font` is a font you loaded, as shown in [Text](text.md). A click focuses the field, typing edits it, and Enter or Escape unfocuses it and calls `onEnter`. `<TextFieldNode>` before `onChange` gives the chain its type back, so that `onEnter`, a method of single-line fields only, follows (see [Type witnesses in a chain](../nodes/input/text-field.md#type-witnesses-in-a-chain)).
 
 The other controls handle the input and leave the look to you: you extend them and draw both states in `draw`. A checkbox:
 

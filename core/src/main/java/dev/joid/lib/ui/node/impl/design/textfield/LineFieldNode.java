@@ -14,7 +14,7 @@ import lombok.NonNull;
 
 @Getter
 @SuppressWarnings("unchecked")
-public abstract class LineFieldNode<V> extends FieldNode<V, LineFieldNode<V>> {
+public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	private static final int CALLBACK_ENTER = NodeCallbackRegistry.next(NodeTextFieldEnterCallback.class);
 

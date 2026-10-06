@@ -19,7 +19,7 @@ import lombok.NonNull;
 
 @Getter
 @SuppressWarnings("unchecked")
-public abstract class FieldNode<V, N extends FieldNode<V, N>> extends Node {
+public abstract class FieldNode<V> extends Node {
 
 	private static final int CALLBACK_FOCUS  = NodeCallbackRegistry.next(NodeTextFieldFocusCallback.class);
 	private static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeTextFieldChangeCallback.class);
@@ -244,22 +244,22 @@ public abstract class FieldNode<V, N extends FieldNode<V, N>> extends Node {
 
 	public abstract @NonNull V getValue();
 
-	public final <T extends N> @NonNull T text(final @NonNull String text) {
+	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull String text) {
 		this.setText(text);
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T placeholder(final @NonNull String placeholder) {
+	public final <T extends FieldNode<V>> @NonNull T placeholder(final @NonNull String placeholder) {
 		this.placeholder = placeholder;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T info(final @NonNull TextInfo textInfo) {
+	public final <T extends FieldNode<V>> @NonNull T info(final @NonNull TextInfo textInfo) {
 		this.info = textInfo;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T focused(final boolean focused) {
+	public final <T extends FieldNode<V>> @NonNull T focused(final boolean focused) {
 		if (this.focused == focused) {
 			return (T) this;
 		}
@@ -273,22 +273,22 @@ public abstract class FieldNode<V, N extends FieldNode<V, N>> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T filter(final @NonNull BiFunction<String, String, String> filter) {
+	public final <T extends FieldNode<V>> @NonNull T filter(final @NonNull BiFunction<String, String, String> filter) {
 		this.filter = filter;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T maxTextLength(final int maxTextLength) {
+	public final <T extends FieldNode<V>> @NonNull T maxTextLength(final int maxTextLength) {
 		this.maxTextLength = maxTextLength;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T markup(final boolean markup) {
+	public final <T extends FieldNode<V>> @NonNull T markup(final boolean markup) {
 		this.markup = markup;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T margin(final double margin) {
+	public final <T extends FieldNode<V>> @NonNull T margin(final double margin) {
 		this.marginLeft   = margin;
 		this.marginRight  = margin;
 		this.marginTop    = margin;
@@ -296,7 +296,7 @@ public abstract class FieldNode<V, N extends FieldNode<V, N>> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T margin(final double margin, final double cursorMargin) {
+	public final <T extends FieldNode<V>> @NonNull T margin(final double margin, final double cursorMargin) {
 		this.marginLeft   = margin;
 		this.marginRight  = margin;
 		this.marginTop    = margin;
@@ -305,49 +305,49 @@ public abstract class FieldNode<V, N extends FieldNode<V, N>> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T marginTop(final double marginTop) {
+	public final <T extends FieldNode<V>> @NonNull T marginTop(final double marginTop) {
 		this.marginTop = marginTop;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T marginLeft(final double marginLeft) {
+	public final <T extends FieldNode<V>> @NonNull T marginLeft(final double marginLeft) {
 		this.marginLeft = marginLeft;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T marginVertical(final double margin) {
+	public final <T extends FieldNode<V>> @NonNull T marginVertical(final double margin) {
 		this.marginTop = margin;
 		this.marginBottom = margin;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T marginHorizontal(final double margin) {
+	public final <T extends FieldNode<V>> @NonNull T marginHorizontal(final double margin) {
 		this.marginLeft = margin;
 		this.marginRight = margin;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T marginRight(final double marginRight) {
+	public final <T extends FieldNode<V>> @NonNull T marginRight(final double marginRight) {
 		this.marginRight = marginRight;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T marginBottom(final double marginBottom) {
+	public final <T extends FieldNode<V>> @NonNull T marginBottom(final double marginBottom) {
 		this.marginBottom = marginBottom;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T cursorMargin(final double cursorMargin) {
+	public final <T extends FieldNode<V>> @NonNull T cursorMargin(final double cursorMargin) {
 		this.cursorMargin = cursorMargin;
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T cursorPosition(final int cursorPos) {
+	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final int cursorPos) {
 		this.cursorPos = Math.min(Math.max(0, cursorPos), this.text.length());
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T signal(final @NonNull Signal<V> signal) {
+	public final <T extends FieldNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = signal;
 		super.bind(signal, value -> {
 			if (!value.equals(this.getValue())) {
@@ -359,12 +359,12 @@ public abstract class FieldNode<V, N extends FieldNode<V, N>> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
+	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
 		super.registerCallback(FieldNode.CALLBACK_CHANGE, callback);
 		return (T) this;
 	}
 
-	public final <T extends N> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
+	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
 		super.registerCallback(FieldNode.CALLBACK_FOCUS, callback);
 		return (T) this;
 	}
