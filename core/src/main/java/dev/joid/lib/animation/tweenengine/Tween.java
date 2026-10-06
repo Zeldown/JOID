@@ -4,6 +4,7 @@ package dev.joid.lib.animation.tweenengine;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.animator.TweenAnimatorAccessor;
@@ -150,8 +151,8 @@ public final class Tween extends BaseTween<Tween> {
 		return this.combinedAttrsCnt;
 	}
 
-	public static TweenAccessor<?> getRegisteredAccessor(final Class<?> someClass) {
-		return Tween.registeredAccessors.get(someClass);
+	public static Optional<TweenAccessor<?>> getRegisteredAccessor(final Class<?> someClass) {
+		return Optional.ofNullable(Tween.registeredAccessors.get(someClass));
 	}
 
 	public static void ensurePoolCapacity(final int minCapacity) {

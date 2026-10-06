@@ -51,9 +51,7 @@ UIs are opened and closed through static methods of `JOID` (`dev.joid.internal.J
 ```java
 JOID.open(new SettingsUI());
 
-if (JOID.isOpen(SettingsUI.class)) {
-    JOID.close(JOID.getUI(SettingsUI.class));
-}
+JOID.getUI(SettingsUI.class).ifPresent(JOID::close);
 ```
 
 | Method | What it does |
@@ -61,7 +59,7 @@ if (JOID.isOpen(SettingsUI.class)) {
 | `JOID.open(ui)` | Hands the UI to the UI bridge, which loads it (this runs `init()`) and shows it. |
 | `JOID.close(ui)` | Asks the UI to close, plays its closing transition if it has one, then removes it. |
 | `JOID.isOpen(SettingsUI.class)` | Whether a UI of that class is open. |
-| `JOID.getUI(SettingsUI.class)` | The open UI of that class, or `null`. |
+| `JOID.getUI(SettingsUI.class)` | The open UI of that class, as an `Optional`. |
 
 The user can close a UI too: `Escape` closes the top UI, unless it is not `closeable`. What "open" means exactly (on top of the others, or replacing them) is decided by your UI bridge, set up in the [Quick Start](../getting-started/quick-start.md).
 

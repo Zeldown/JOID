@@ -63,7 +63,7 @@ The area applies when the node is not being dragged: during the drag, the node f
 | `copy()` | A new property with the same settings and its own list of snap targets. |
 | `isEnabled(Node node)` | Result of the enabled predicate. |
 | `hasSnapping()` | `true` when at least one snap target is set. |
-| `getSnapping(Node node)` | The snap target chosen for the node at its current position, or `null`. |
+| `getSnapping(Node node)` | The snap target chosen for the node at its current position, as an `Optional`, empty when none is chosen. |
 | `getBounds(Node node)` | The area as `{x, y, width, height}` in absolute UI units; throws an `IllegalArgumentException` for `FREE`. |
 | `lerp(double frameTime, double value, double target)` | The easing step used to follow the target. |
 | `getType()`, `getEnabled()`, `getAreaType()`, `getAreaObject()`, `getSnapType()`, `getSnapNodes()` | Current settings. |

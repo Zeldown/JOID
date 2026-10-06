@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -399,7 +400,7 @@ public abstract class UI implements IUI, IndexedElement {
 			this.transition.getOut().start();
 			this.transition.getOut().getAnimator().setCallback(tween -> {
 				this.properlyClose();
-				this.getBridge().close(this);
+				this.getBridge().ifPresent(bridge -> bridge.close(this));
 			});
 			return false;
 		}
@@ -429,7 +430,7 @@ public abstract class UI implements IUI, IndexedElement {
 		return this.view.toUiY(this.mouseY);
 	}
 
-	public final IUIBridge getBridge() {
+	public final @NonNull Optional<IUIBridge> getBridge() {
 		return BridgeHandler.UI.get(this);
 	}
 
@@ -470,7 +471,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
-		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
+		this.onTop = this.getBridge().map(bridge -> bridge.isOnTop(this)).orElse(false);
 
 		final List<UIScheduledTask> toRemove = new ArrayList<>();
 		for (final UIScheduledTask task : this.scheduledTaskList) {
@@ -484,8 +485,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 		this.scheduledTaskList.removeAll(toRemove);
 
-		final IUIBridge bridge = this.getBridge();
-		final double interfaceScale = bridge == null ? 1D : bridge.getInterfaceScale(this);
+		final double interfaceScale = this.getBridge().map(bridge -> bridge.getInterfaceScale(this)).orElse(1D);
 		if (interfaceScale != this.view.getInterfaceScale()) {
 			this.view.interfaceScale(interfaceScale);
 			this.refreshView();
@@ -620,7 +620,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
-		this.getBridge().drawHover(this, lines, mouseX, mouseY);
+		this.getBridge().ifPresent(bridge -> bridge.drawHover(this, lines, mouseX, mouseY));
 	}
 
 	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeiht, final @NonNull Drawing drawing) {

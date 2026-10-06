@@ -344,7 +344,7 @@ JOID.open(new ShopPanel());
 JOID.open(new UISettings());
 ```
 
-`ShopPanel`, a `WorldPanel`, goes to the `WorldUIBridge`; `UISettings` goes to the `AppUIBridge`. When several bridges handle a UI, the one with the highest `getIndex()` wins, then the latest registered. `canHandle(Class)` answers the lookups by class: `JOID.getUI(Class)` and `JOID.isOpen(Class)`. When no bridge handles a UI, `JOID.open` returns `null` and does nothing. Each bridge runs its own loop: forward events and call `update()` and `draw()` on each of them where they belong.
+`ShopPanel`, a `WorldPanel`, goes to the `WorldUIBridge`; `UISettings` goes to the `AppUIBridge`. When several bridges handle a UI, the one with the highest `getIndex()` wins, then the latest registered. `canHandle(Class)` answers the lookups by class: `JOID.getUI(Class)` and `JOID.isOpen(Class)`. When no bridge handles a UI, `JOID.open` returns an empty `Optional` and does nothing. Each bridge runs its own loop: forward events and call `update()` and `draw()` on each of them where they belong.
 
 ## See also
 

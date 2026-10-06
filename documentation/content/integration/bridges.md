@@ -48,13 +48,13 @@ A registry keeps several bridges of the same kind and answers with the one of hi
 | `register(T bridge)` | Adds the bridge. Registering a bridge that is already in the registry moves it to the end of its priority group. |
 | `unregister(T bridge)` | Removes the bridge; the next one takes over. |
 | `get()` | The bridge of highest priority. Throws an `IllegalStateException` when the registry is empty, for example `No render bridge registered, call BridgeHandler.RENDER.register before using JOID`. |
-| `getBridge(Class<B> bridgeClass)` | The bridge of highest priority that is an instance of `bridgeClass`, or `null`. |
-| `find(Predicate<T> filter)` | The bridge of highest priority that matches `filter`, or `null`. |
+| `getBridge(Class<B> bridgeClass)` | The bridge of highest priority that is an instance of `bridgeClass`, as an `Optional`, empty when none is. |
+| `find(Predicate<T> filter)` | The bridge of highest priority that matches `filter`, as an `Optional`, empty when none matches. |
 | `static create(String name)` | A new, empty registry. `name` appears in the message of `get()`. |
 
 ```java
 final IRenderBridge render = BridgeHandler.RENDER.get();
-final ManualClockBridge clock = BridgeHandler.CLOCK.getBridge(ManualClockBridge.class);
+BridgeHandler.CLOCK.getBridge(ManualClockBridge.class).ifPresent(clock -> clock.advance(1000L));
 ```
 
 ### Priority with getIndex
@@ -72,8 +72,8 @@ public int getIndex() {
 
 | Method | Description |
 |---|---|
-| `get(UI ui)` | The bridge of highest priority whose `canHandle(ui)` returns `true`, or `null`. |
-| `get(Class<? extends UI> clazz)` | The bridge of highest priority whose `canHandle(clazz)` returns `true`, or `null`. |
+| `get(UI ui)` | The bridge of highest priority whose `canHandle(ui)` returns `true`, as an `Optional`. |
+| `get(Class<? extends UI> clazz)` | The bridge of highest priority whose `canHandle(clazz)` returns `true`, as an `Optional`. |
 
 `JOID.open`, `JOID.close`, `JOID.isOpen` and `JOID.getUI` use them to find the bridge of a UI. See [Several UI bridges](ui-bridge.md#several-ui-bridges).
 

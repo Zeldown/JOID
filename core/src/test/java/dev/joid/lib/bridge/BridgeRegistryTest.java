@@ -20,7 +20,7 @@ public class BridgeRegistryTest {
 		registry.register(first);
 		registry.register(second);
 		Assert.assertSame(second, registry.get());
-		Assert.assertSame(second, registry.getBridge(ManualClockBridge.class));
+		Assert.assertSame(second, registry.getBridge(ManualClockBridge.class).get());
 	}
 
 	@Test
@@ -40,8 +40,8 @@ public class BridgeRegistryTest {
 		final ManualClockBridge early = ManualClockBridge.create(1L);
 		registry.register(early);
 		registry.register(ManualClockBridge.create(2L));
-		Assert.assertSame(early, registry.find(bridge -> bridge.currentTimeMillis() == 1L));
-		Assert.assertNull(registry.find(bridge -> bridge.currentTimeMillis() == 3L));
+		Assert.assertSame(early, registry.find(bridge -> bridge.currentTimeMillis() == 1L).get());
+		Assert.assertFalse(registry.find(bridge -> bridge.currentTimeMillis() == 3L).isPresent());
 	}
 
 }

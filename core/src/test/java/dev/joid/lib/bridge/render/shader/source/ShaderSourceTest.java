@@ -58,4 +58,11 @@ public class ShaderSourceTest {
 		Assert.assertFalse(source.getBody().contains("#version"));
 	}
 
+
+	@Test
+	public void findsABuiltinByItsIdentifier() {
+		Assert.assertSame(ShaderBuiltin.POSITION, ShaderBuiltin.find("aPosition").get());
+		Assert.assertFalse(ShaderBuiltin.find("aMissing").isPresent());
+	}
+
 }

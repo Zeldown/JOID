@@ -1,5 +1,7 @@
 package dev.joid.lib.bridge.render.shader.source;
 
+import java.util.Optional;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,13 +25,13 @@ public enum ShaderBuiltin {
 	private final String type;
 	private final Kind   kind;
 
-	public static ShaderBuiltin find(final @NonNull String identifier) {
+	public static @NonNull Optional<ShaderBuiltin> find(final @NonNull String identifier) {
 		for (final ShaderBuiltin builtin : ShaderBuiltin.values()) {
 			if (builtin.getIdentifier().equals(identifier)) {
-				return builtin;
+				return Optional.of(builtin);
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	public enum Kind {

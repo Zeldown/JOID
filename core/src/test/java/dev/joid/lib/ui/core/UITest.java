@@ -148,7 +148,7 @@ public class UITest {
 
 	@Test
 	public void findsItsBridge() {
-		Assert.assertSame(this.bridges.getUi(), new TraceUI(this.trace).getBridge());
+		Assert.assertSame(this.bridges.getUi(), new TraceUI(this.trace).getBridge().get());
 	}
 
 	@Test
@@ -831,7 +831,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace, RectNode.create(100D, 100D, 200D, 200D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).hover(() -> "Save"));
 		BridgeHandler.UI.unregister(this.bridges.getUi());
 		try {
-			Assert.assertNull(ui.getBridge());
+			Assert.assertFalse(ui.getBridge().isPresent());
 			ui.load(1920D, 1080D);
 			ui.draw(150D, 150D);
 			ui.draw(150D, 150D);

@@ -109,8 +109,8 @@ public class DraggablePropertyTest {
 		final DraggableProperty draggable = DraggableProperty.free().snap(left).snap(right);
 		Assert.assertTrue(draggable.hasSnapping());
 		Assert.assertEquals(Arrays.asList(left, right), draggable.getSnapNodes());
-		Assert.assertSame(right, draggable.getSnapping(RectNode.create(80D, 0D, 10D, 10D)));
-		Assert.assertSame(left, draggable.getSnapping(RectNode.create(20D, 30D, 10D, 10D)));
+		Assert.assertSame(right, draggable.getSnapping(RectNode.create(80D, 0D, 10D, 10D)).get());
+		Assert.assertSame(left, draggable.getSnapping(RectNode.create(20D, 30D, 10D, 10D)).get());
 	}
 
 	@Test
@@ -119,16 +119,16 @@ public class DraggablePropertyTest {
 		final RectNode right = RectNode.create(100D, 0D, 10D, 10D);
 		final DraggableProperty draggable = DraggableProperty.free().snap(DraggableSnapType.OVERLAP, left, right);
 		Assert.assertSame(DraggableSnapType.OVERLAP, draggable.getSnapType());
-		Assert.assertSame(right, draggable.getSnapping(RectNode.create(95D, 5D, 10D, 10D)));
-		Assert.assertNull(draggable.getSnapping(RectNode.create(50D, 5D, 10D, 10D)));
-		Assert.assertNull(draggable.getSnapping(RectNode.create(95D, 10D, 10D, 10D)));
+		Assert.assertSame(right, draggable.getSnapping(RectNode.create(95D, 5D, 10D, 10D)).get());
+		Assert.assertFalse(draggable.getSnapping(RectNode.create(50D, 5D, 10D, 10D)).isPresent());
+		Assert.assertFalse(draggable.getSnapping(RectNode.create(95D, 10D, 10D, 10D)).isPresent());
 	}
 
 	@Test
 	public void forgetsItsSnapsWithoutNodes() {
 		final DraggableProperty draggable = DraggableProperty.free().snap(RectNode.create(0D, 0D, 10D, 10D)).snap(DraggableSnapType.NEAREST);
 		Assert.assertFalse(draggable.hasSnapping());
-		Assert.assertNull(draggable.getSnapping(RectNode.create(0D, 0D, 10D, 10D)));
+		Assert.assertFalse(draggable.getSnapping(RectNode.create(0D, 0D, 10D, 10D)).isPresent());
 		Assert.assertFalse(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, (Node[]) null).hasSnapping());
 		Assert.assertFalse(DraggableProperty.free().snap().hasSnapping());
 	}

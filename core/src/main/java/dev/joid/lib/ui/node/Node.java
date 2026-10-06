@@ -1018,8 +1018,9 @@ public abstract class Node implements INode {
 		this.fireDragEnd(() -> {
 			if (this.draggable != null && this.draggable.isEnabled(this)) {
 				if (this.draggable.hasSnapping()) {
-					final Node snapNode = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
-					if (snapNode != null) {
+					final Optional<Node> snapping = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
+					if (snapping.isPresent()) {
+						final Node snapNode = snapping.get();
 						this.executeCallback(Node.CALLBACK_SNAP, InternalContext.create(), () -> {
 							this.targetDragX = snapNode.getAbsoluteX();
 							this.targetDragY = snapNode.getAbsoluteY();

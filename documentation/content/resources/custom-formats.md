@@ -372,7 +372,7 @@ A resolver creates its resource through `builder.compute`, so the cache and the 
 | `new ResourceData(String uniqueId, IResourceDecoder decoder)` | Creates the data and calls `decoder.init(this)` when `decoder` is not `null`. |
 | `uniqueId(String)` / `getUniqueId()` | The id. |
 | `decoder(IResourceDecoder)` / `getDecoder()` | The decoder, `null` for a wrapped texture. |
-| `getDecoder(Class<T> clazz)` | The decoder when it is an instance of `clazz`, `null` otherwise. |
+| `getDecoder(Class<T> clazz)` | The decoder when it is an instance of `clazz`, as an `Optional`, empty otherwise. |
 | `texture(ITexture)` / `textures(ITexture[])` / `getTextures()` | The textures drawn; `Resource.getTexture()` returns the first. |
 | `data(int[][])` / `getData()` | ARGB pixels waiting for upload, one array per texture. |
 | `width(int)` / `height(int)` / `getWidth()` / `getHeight()` | Size of the content in pixels. |

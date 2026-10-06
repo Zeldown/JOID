@@ -204,7 +204,7 @@ The POST phase usually runs `apply` through `context.cancel(() -> this.apply(...
 | Method | Description |
 | --- | --- |
 | `NodeCallbackRegistry.next(Class)` | Validates and registers a callback type. Returns its new id. |
-| `NodeCallbackRegistry.get(int id)` | The interface registered under `id`, or `null`. |
+| `NodeCallbackRegistry.get(int id)` | The interface registered under `id`, as an `Optional`. |
 | `NodeCallbackRegistry.getId(Class)` | The first id registered for the interface, or `-1`. |
 
 ### 3. The registration method

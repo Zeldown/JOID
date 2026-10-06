@@ -3,6 +3,7 @@ package dev.joid.lib.ui.node.property.draggable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import dev.joid.lib.ui.core.UI;
@@ -45,9 +46,9 @@ public class DraggableProperty {
 
 	public static final DraggableProperty disabled() { return new DraggableProperty().enabled(node -> false); }
 
-	public Node getSnapping(final @NonNull Node node) {
+	public @NonNull Optional<Node> getSnapping(final @NonNull Node node) {
 		if (!this.hasSnapping()) {
-			return null;
+			return Optional.empty();
 		}
 
 		final double x = node.getAbsoluteX();
@@ -70,7 +71,7 @@ public class DraggableProperty {
 				}
 			}
 
-			return nearest;
+			return Optional.ofNullable(nearest);
 		}
 
 		if (this.snapType == DraggableSnapType.OVERLAP) {
@@ -81,12 +82,12 @@ public class DraggableProperty {
 				final double snapHeight = snapNode.getHeight();
 
 				if (x < snapX + snapWidth && x + width > snapX && y < snapY + snapHeight && y + height > snapY) {
-					return snapNode;
+					return Optional.of(snapNode);
 				}
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public final double[] getBounds(final @NonNull Node node) {

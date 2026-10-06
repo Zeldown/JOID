@@ -2,6 +2,7 @@ package dev.joid.internal;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.InternalFont;
@@ -104,32 +105,31 @@ public final class JOID {
 	}
 
 	public static boolean isOpen(final @NonNull Class<? extends UI> uiClass) {
-		return JOID.getUI(uiClass) != null;
+		return JOID.getUI(uiClass).isPresent();
 	}
 
 	public static boolean isOpen(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		return bridge != null && bridge.isOpened(ui);
+		return BridgeHandler.UI.get(ui).map(bridge -> bridge.isOpened(ui)).orElse(false);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends UI> T getUI(final @NonNull Class<T> uiClass) {
-		final IUIBridge bridge = BridgeHandler.UI.get(uiClass);
-		if (bridge != null) {
-			for (final UI ui : bridge.getUiList()) {
+	public static <T extends UI> @NonNull Optional<T> getUI(final @NonNull Class<T> uiClass) {
+		final Optional<IUIBridge> bridge = BridgeHandler.UI.get(uiClass);
+		if (bridge.isPresent()) {
+			for (final UI ui : bridge.get().getUiList()) {
 				if (uiClass.isInstance(ui)) {
-					return (T) ui;
+					return Optional.of((T) ui);
 				}
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public static void close(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge != null && ui.onClose()) {
-			bridge.close(ui);
+		final Optional<IUIBridge> bridge = BridgeHandler.UI.get(ui);
+		if (bridge.isPresent() && ui.onClose()) {
+			bridge.get().close(ui);
 		}
 	}
 
@@ -139,41 +139,41 @@ public final class JOID {
 			return;
 		}
 
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge == null) {
+		final Optional<IUIBridge> bridge = BridgeHandler.UI.get(ui);
+		if (!bridge.isPresent()) {
 			return;
 		}
 
 		ui.properlyClose();
-		bridge.close(ui);
+		bridge.get().close(ui);
 	}
 
-	public static IUIBridge open(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge == null) {
-			return null;
+	public static @NonNull Optional<IUIBridge> open(final @NonNull UI ui) {
+		final Optional<IUIBridge> bridge = BridgeHandler.UI.get(ui);
+		if (!bridge.isPresent()) {
+			return bridge;
 		}
 
-		bridge.open(ui);
+		bridge.get().open(ui);
 		return bridge;
 	}
 
-	public static IUIBridge open(final @NonNull UI ui, final boolean force) {
+	public static @NonNull Optional<IUIBridge> open(final @NonNull UI ui, final boolean force) {
 		if (!force) {
 			return JOID.open(ui);
 		}
 
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge == null) {
-			return null;
+		final Optional<IUIBridge> bridge = BridgeHandler.UI.get(ui);
+		if (!bridge.isPresent()) {
+			return bridge;
 		}
 
-		for (final UI currentUi : new ArrayList<>(bridge.getUiList().ordered())) {
+		for (final UI currentUi : new ArrayList<>(bridge.get().getUiList().ordered())) {
 			currentUi.properlyClose();
-			bridge.close(currentUi);
+			bridge.get().close(currentUi);
 		}
 
-		bridge.open(ui);
+		bridge.get().open(ui);
 		return bridge;
 	}
 

@@ -279,7 +279,7 @@ public final class DevNode extends Node {
 
 							TextNode
 							.create(10, 0)
-							.text(Text.create(NodeCallbackRegistry.get(id).getSimpleName() + ": ", labelInfo).add(Text.create(callbackList.size(), valueInfo)))
+							.text(Text.create(NodeCallbackRegistry.get(id).get().getSimpleName() + ": ", labelInfo).add(Text.create(callbackList.size(), valueInfo)))
 							.attach(scroll);
 						}
 					}

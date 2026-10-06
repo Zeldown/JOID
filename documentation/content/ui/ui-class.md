@@ -219,7 +219,7 @@ public void update() {
 | `double getWidth()`, `double getHeight()` | The window size the UI was loaded with, in window pixels. |
 | `void zoom(double zoom)` | Sets the zoom, clamped to its limits. |
 | `Transition getTransition()`, `UI setTransition(Transition transition)` | The open and close animation; `null` for none. See [Transitions](transitions.md). |
-| `IUIBridge getBridge()` | The bridge that handles this UI, or `null`. |
+| `Optional<IUIBridge> getBridge()` | The bridge that handles this UI, empty when no bridge handles it. |
 | `int getIndex()` | `zlevel` rounded down, used to order the UIs of a bridge. |
 | `void drawHover(List<String> lines, double mouseX, double mouseY)` | Draws a text tooltip; delegates to the bridge's `drawHover`. Override it to draw the tooltips of this UI yourself. See [Hover and Tooltips](../interactions/hover.md). |
 | `Node getDevNode()` | The inspector in dev mode, otherwise `null`. |

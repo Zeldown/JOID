@@ -184,11 +184,11 @@ public class JOIDTest {
 	public void findsAnOpenedUiByItsClass() {
 		final MenuUI menu = new MenuUI();
 		Assert.assertFalse(JOID.isOpen(MenuUI.class));
-		Assert.assertNull(JOID.getUI(MenuUI.class));
+		Assert.assertFalse(JOID.getUI(MenuUI.class).isPresent());
 		this.bridges.open(menu);
 		Assert.assertTrue(JOID.isOpen(MenuUI.class));
-		Assert.assertSame(menu, JOID.getUI(MenuUI.class));
-		Assert.assertSame(menu, JOID.getUI(UI.class));
+		Assert.assertSame(menu, JOID.getUI(MenuUI.class).get());
+		Assert.assertSame(menu, JOID.getUI(UI.class).get());
 		Assert.assertFalse(JOID.isOpen(PopupUI.class));
 	}
 
@@ -198,7 +198,7 @@ public class JOIDTest {
 		BridgeHandler.UI.unregister(this.bridges.getUi());
 		try {
 			Assert.assertFalse(JOID.isOpen(MenuUI.class));
-			Assert.assertNull(JOID.getUI(MenuUI.class));
+			Assert.assertFalse(JOID.getUI(MenuUI.class).isPresent());
 		} finally {
 			BridgeHandler.UI.register(this.bridges.getUi());
 		}
@@ -207,7 +207,7 @@ public class JOIDTest {
 	@Test
 	public void opensAUiThroughItsBridge() {
 		final MenuUI menu = new MenuUI();
-		Assert.assertSame(this.bridges.getUi(), JOID.open(menu));
+		Assert.assertSame(this.bridges.getUi(), JOID.open(menu).get());
 		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList().ordered());
 		Assert.assertEquals(1, menu.inits);
 	}
@@ -239,7 +239,7 @@ public class JOIDTest {
 		JOID.open(menu);
 		JOID.open(next);
 		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList().ordered());
-		Assert.assertSame(this.bridges.getUi(), JOID.open(next, true));
+		Assert.assertSame(this.bridges.getUi(), JOID.open(next, true).get());
 		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList().ordered());
 		Assert.assertEquals(1, menu.detaches);
 	}
@@ -248,8 +248,8 @@ public class JOIDTest {
 	public void opensNothingWithoutBridge() {
 		BridgeHandler.UI.unregister(this.bridges.getUi());
 		try {
-			Assert.assertNull(JOID.open(new MenuUI()));
-			Assert.assertNull(JOID.open(new MenuUI(), true));
+			Assert.assertFalse(JOID.open(new MenuUI()).isPresent());
+			Assert.assertFalse(JOID.open(new MenuUI(), true).isPresent());
 		} finally {
 			BridgeHandler.UI.register(this.bridges.getUi());
 		}

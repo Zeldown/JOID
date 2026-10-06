@@ -91,10 +91,7 @@ The displayed frame is updated each time the resource is drawn. An animated imag
 The playback of a video is a `VideoResourceDecoder` (`dev.joid.lib.resource.dto.decoder.impl`), which adds the audio settings. Get it from the resource data or from a player node:
 
 ```java
-final VideoResourceDecoder decoder = resource.getResourceData().getDecoder(VideoResourceDecoder.class);
-if (decoder != null) {
-    decoder.volume(0.5F);
-}
+resource.getResourceData().getDecoder(VideoResourceDecoder.class).ifPresent(decoder -> decoder.volume(0.5F));
 
 player.getVideo().ifPresent(video -> video.volume(0.5F));
 ```
