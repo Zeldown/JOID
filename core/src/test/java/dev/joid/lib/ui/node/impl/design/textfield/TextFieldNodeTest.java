@@ -16,6 +16,7 @@ import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.markup.ITextMarkup;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
@@ -24,6 +25,7 @@ import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.signal.Signal;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -954,6 +956,126 @@ public class TextFieldNodeTest {
 		final Draw mask = this.bridges.getRender().getDraws(1F, 0F, 0F).get(0);
 		final Draw cursor = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).get(0);
 		Assert.assertTrue(cursor.getRight() + " > " + mask.getRight(), cursor.getRight() <= mask.getRight() + 0.001D);
+	}
+
+	@Test
+	public void extendsItsSelectionToBothEndsWithShiftHomeAndEnd() {
+		final TextFieldNode field = this.field("abcdef").cursorPosition(2);
+		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
+		this.press(field, Key.END);
+		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(6, field.getCursorPos());
+		this.press(field, Key.HOME);
+		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(0, field.getCursorPos());
+	}
+
+	@Test
+	public void dropsItsSelectionOnHomeAndEndWithoutShift() {
+		final TextFieldNode field = this.selected(1, 3);
+		this.press(field, Key.END);
+		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(6, field.getCursorPos());
+		this.control(field, Key.A);
+		this.press(field, Key.HOME);
+		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(0, field.getCursorPos());
+	}
+
+	@Test
+	public void dropsItsSelectionOnceUnfocused() {
+		final TextFieldNode field = this.selected(1, 3);
+		field.focused(false);
+		Assert.assertEquals(-1, field.getSelectionStart());
+		field.focused(true);
+		this.control(field, Key.A);
+		this.press(field, Key.ENTER);
+		Assert.assertEquals(-1, field.getSelectionStart());
+	}
+
+	@Test
+	public void dropsTheCharactersItCannotShowFromEveryText() {
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).text("a\u00a7b\tc\u20ac\nd");
+		Assert.assertEquals("abcd", field.getText());
+		Assert.assertEquals("xy", field.filter((oldText, newText) -> "x\ty\u20ac").text("z").getText());
+	}
+
+	@Test
+	public void drawsItsTextWithoutMarkupUnlessAllowed() {
+		final List<TextInfo> infos = new ArrayList<>();
+		final IFontProvider provider = new IFontProvider() {
+
+			@Override
+			public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
+				infos.add(info);
+				return new FontBounds(this.getWidth(text, info), this.getHeight(text, info));
+			}
+
+			@Override
+			public double getWidth(final String text, final TextInfo info) {
+				return text.length() * 10D;
+			}
+
+			@Override
+			public double getHeight(final String text, final TextInfo info) {
+				return 20D;
+			}
+
+			@Override
+			public double getLineHeight(final TextInfo info) {
+				return 20D;
+			}
+
+		};
+		final IFont font = () -> provider;
+		final ITextMarkup markup = (text, index, style) -> 0;
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(font, 10F).markups(markup)).text("ab");
+		this.bridges.open(new NodeUI(field));
+		Assert.assertFalse(field.isMarkup());
+		Assert.assertTrue(infos.get(infos.size() - 1).getMarkups().isEmpty());
+		field.markup(true);
+		this.bridges.frame();
+		Assert.assertEquals(Collections.singletonList(markup), infos.get(infos.size() - 1).getMarkups());
+	}
+
+	@Test
+	public void usesCommandForShortcutsAndAltForWordsOnMac() {
+		final String system = System.getProperty("os.name");
+		System.setProperty("os.name", "Mac OS X");
+		try {
+			final TextFieldNode field = this.field("one two");
+			this.control(field, Key.A);
+			Assert.assertEquals(-1, field.getSelectionStart());
+			this.bridges.getWindow().getKeys().add(Key.LEFT_SUPER);
+			this.press(field, Key.A);
+			this.bridges.getWindow().getKeys().remove(Key.LEFT_SUPER);
+			Assert.assertEquals(0, field.getSelectionStart());
+			this.press(field, Key.END);
+			this.bridges.getWindow().getKeys().add(Key.LEFT_ALT);
+			this.press(field, Key.LEFT);
+			this.bridges.getWindow().getKeys().remove(Key.LEFT_ALT);
+			Assert.assertEquals(5, field.getCursorPos());
+		} finally {
+			System.setProperty("os.name", system);
+		}
+	}
+
+	@Test
+	public void bindsItsTextToASignalBothWays() {
+		final List<String> changes = new ArrayList<>();
+		final Signal<String> signal = new Signal<>("hi");
+		final TextFieldNode field = this.field("").onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
+		Assert.assertEquals("hi", field.getText());
+		this.type(field.cursorPosition(2), "!");
+		Assert.assertEquals("hi!", signal.getOrDefault());
+		signal.set("yo");
+		Assert.assertEquals("yo", field.getText());
+		signal.set("a	b");
+		Assert.assertEquals("ab", field.getText());
+		Assert.assertEquals("ab", signal.getOrDefault());
+		field.text("cd");
+		Assert.assertEquals("cd", signal.getOrDefault());
+		Assert.assertEquals(Arrays.asList("hi", "hi!", "yo", "ab", "cd"), changes);
 	}
 
 	private TextInfo info() {

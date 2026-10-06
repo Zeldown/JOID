@@ -1,6 +1,8 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.BiFunction;
 
 import dev.joid.lib.bridge.BridgeHandler;
@@ -18,6 +20,7 @@ import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -35,6 +38,9 @@ public class MultilineTextFieldNode extends Node {
 	private boolean focused;
 	private int maxTextLength;
 	private BiFunction<String, String, String> filter;
+
+	private boolean        markup;
+	private Signal<String> signal;
 
 	private int cursorPos;
 	private int selectionStart;
@@ -102,8 +108,13 @@ public class MultilineTextFieldNode extends Node {
 		final double textY = super.getY() + this.marginTop - this.yOffset;
 
 		super.getUi().mask(super.getX() + this.marginLeft, super.getY() + this.marginTop, maxWidth, this.getRawHeight(), () -> {
-			final boolean isPlaceholder = this.text.isEmpty() && !this.focused;
-			DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), isPlaceholder ? this.placeholder : this.text, isPlaceholder ? this.info.copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)) : this.info, Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
+			if (this.text.isEmpty() && !this.focused) {
+				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), this.placeholder, this.getShownInfo().copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
+			}
+
+			for (int i = 0; i < lines.size(); i++) {
+				DrawUtils.TEXT.drawText(textX, textY + lineHeight * i, lines.get(i), this.getShownInfo(), Align.START, Align.START);
+			}
 
 			if (this.focused) {
 				final int[] cursorLineCol = this.getLineAndColumn(this.cursorPos);
@@ -189,20 +200,20 @@ public class MultilineTextFieldNode extends Node {
 					return;
 				}
 
-				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(UI.isCtrlKeyDown() ? this.nextWordIndex() : this.cursorPos + 1));
+				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1));
 			} else if (this.inputType == Key.BACKSPACE) {
 				if (this.cursorPos <= 0) {
 					this.inputting = false;
 					return;
 				}
 
-				final int backStart = UI.isCtrlKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
+				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
 				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
 				this.decreaseCursor(this.cursorPos - backStart);
 			} else if (this.inputType == Key.LEFT) {
-				this.decreaseCursor(UI.isCtrlKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
+				this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
 			} else if (this.inputType == Key.RIGHT) {
-				this.increaseCursor(UI.isCtrlKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
+				this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
 			}
 
 			this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
@@ -298,7 +309,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				this.decreaseCursor(UI.isCtrlKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
+				this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
 				return;
 			}
 
@@ -312,7 +323,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				this.increaseCursor(UI.isCtrlKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
+				this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
 				return;
 			}
 
@@ -327,7 +338,7 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				final int backStart = UI.isCtrlKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
+				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
 				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
 				this.decreaseCursor(this.cursorPos - backStart);
 				return;
@@ -339,30 +350,46 @@ public class MultilineTextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				final int deleteEnd = UI.isCtrlKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
+				final int deleteEnd = this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
 				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
 				return;
 			}
 
 			if (key == Key.HOME) {
+				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
+					if (this.selectionStart == -1) {
+						this.selectionStart = this.cursorPos;
+					}
+				} else {
+					this.selectionStart = -1;
+				}
+
 				this.cursorPos = 0;
 				this.decreaseCursor(0);
 				return;
 			}
 
 			if (key == Key.END) {
+				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
+					if (this.selectionStart == -1) {
+						this.selectionStart = this.cursorPos;
+					}
+				} else {
+					this.selectionStart = -1;
+				}
+
 				this.cursorPos = this.text.length();
 				this.increaseCursor(0);
 				return;
 			}
 
-			if (key == Key.A && UI.isCtrlKeyDown()) {
+			if (key == Key.A && this.isShortcutKeyDown()) {
 				this.selectionStart = 0;
 				this.cursorPos = this.text.length();
 				return;
 			}
 
-			if (key == Key.C && UI.isCtrlKeyDown()) {
+			if (key == Key.C && this.isShortcutKeyDown()) {
 				if (this.selectionStart == -1) {
 					return;
 				}
@@ -376,7 +403,7 @@ public class MultilineTextFieldNode extends Node {
 				return;
 			}
 
-			if (key == Key.X && UI.isCtrlKeyDown()) {
+			if (key == Key.X && this.isShortcutKeyDown()) {
 				if (this.selectionStart == -1) {
 					return;
 				}
@@ -395,23 +422,11 @@ public class MultilineTextFieldNode extends Node {
 			}
 
 			String textToAdd = key == Key.ENTER || key == Key.NUMPAD_ENTER ? "\n" : Character.toString(c);
-			if (key == Key.V && UI.isCtrlKeyDown()) {
+			if (key == Key.V && this.isShortcutKeyDown()) {
 				textToAdd = BridgeHandler.WINDOW.get().getClipboard();
 			}
 
-			textToAdd = textToAdd.replace("\r\n", "\n").replace("\r", "\n");
-
-			final char[] achar = textToAdd.toCharArray();
-			final int i = achar.length;
-
-			final StringBuilder stringbuilder = new StringBuilder();
-			for (int j = 0; j < i; ++j) {
-				final char c0 = achar[j];
-				if (c0 == '\n' || c0 != 167 && c0 >= 32 && c0 != 127 && c0 <= 563) {
-					stringbuilder.append(c0);
-				}
-			}
-			textToAdd = stringbuilder.toString();
+			textToAdd = this.clean(textToAdd);
 			if (textToAdd.isEmpty()) {
 				return;
 			}
@@ -488,7 +503,7 @@ public class MultilineTextFieldNode extends Node {
 
 	@Override
 	public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
-		if (context.isCancelled() || !this.focused) {
+		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
@@ -533,6 +548,9 @@ public class MultilineTextFieldNode extends Node {
 
 		super.executeCallback(MultilineTextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
 			this.focused = focused;
+			if (!focused) {
+				this.selectionStart = -1;
+			}
 		});
 		return (T) this;
 	}
@@ -544,6 +562,11 @@ public class MultilineTextFieldNode extends Node {
 
 	public final <T extends MultilineTextFieldNode> @NonNull T maxTextLength(final int maxTextLength) {
 		this.maxTextLength = maxTextLength;
+		return (T) this;
+	}
+
+	public final <T extends MultilineTextFieldNode> @NonNull T markup(final boolean markup) {
+		this.markup = markup;
 		return (T) this;
 	}
 
@@ -594,6 +617,12 @@ public class MultilineTextFieldNode extends Node {
 		return (T) this;
 	}
 
+	public final <T extends MultilineTextFieldNode> @NonNull T signal(final @NonNull Signal<String> signal) {
+		this.signal = signal;
+		super.bind(signal, this::setText);
+		return (T) this;
+	}
+
 	public final <T extends MultilineTextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
 		super.registerCallback(MultilineTextFieldNode.CALLBACK_CHANGE, callback);
 		return (T) this;
@@ -606,15 +635,29 @@ public class MultilineTextFieldNode extends Node {
 
 	private final void setText(final String newText) {
 		final String oldText = this.text == null ? "" : this.text;
-		final String filtered = this.filter.apply(oldText, newText == null ? "" : newText);
+		final String filtered = this.clean(this.filter.apply(oldText, this.clean(newText == null ? "" : newText)));
 		final String accepted = this.maxTextLength >= 0 && filtered.length() > this.maxTextLength ? filtered.substring(0, this.maxTextLength) : filtered;
 		if (!accepted.equals(oldText)) {
 			this.executeCallback(MultilineTextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
 				this.text = accepted;
+				super.sync(this.signal, accepted);
 			}, oldText, accepted);
 		} else {
 			this.text = accepted;
 		}
+
+		super.sync(this.signal, this.text);
+	}
+
+	private final @NonNull String clean(final @NonNull String text) {
+		final StringBuilder builder = new StringBuilder();
+		for (final char c : text.replace("\r\n", "\n").replace("\r", "\n").toCharArray()) {
+			if (c == '\n' || c != 167 && c >= 32 && c != 127 && c <= 563) {
+				builder.append(c);
+			}
+		}
+
+		return builder.toString();
 	}
 
 	private final void holdInput(final @NonNull Key key) {
@@ -672,11 +715,47 @@ public class MultilineTextFieldNode extends Node {
 	}
 
 	private final @NonNull List<String> getLines() {
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), this.text, this.info);
+		return this.getLines(this.text);
 	}
 
 	private final @NonNull List<String> getLines(final @NonNull String text) {
-		return DrawUtils.TEXT.getLines(this.getRawWidth(), text, this.info);
+		final List<String> lines = new ArrayList<>();
+		if (text.isEmpty()) {
+			return lines;
+		}
+
+		final TextInfo info = this.getShownInfo();
+		final String[] paragraphs = text.split("\n", -1);
+		for (int index = 0; index < paragraphs.length; index++) {
+			final String paragraph = paragraphs[index];
+			boolean wrapped = false;
+			int start = 0;
+			for (int i = 0; i < paragraph.length(); i++) {
+				if (info.getWidth(paragraph.substring(start, i + 1)) <= this.getRawWidth()) {
+					continue;
+				}
+
+				int split = i;
+				for (int j = i; j >= start; j--) {
+					if (paragraph.charAt(j) == ' ') {
+						split = j;
+						break;
+					}
+				}
+
+				if (split > start) {
+					lines.add(paragraph.substring(start, split));
+					start = paragraph.charAt(split) == ' ' ? split + 1 : split;
+					wrapped = true;
+				}
+			}
+
+			if (index < paragraphs.length - 1 || start < paragraph.length() || index > 0 && !wrapped) {
+				lines.add(paragraph.substring(start));
+			}
+		}
+
+		return lines;
 	}
 
 	private final int[] getLineAndColumn(final int pos) {
@@ -707,8 +786,12 @@ public class MultilineTextFieldNode extends Node {
 		return new int[] {lines.size() - 1, lastLine.length()};
 	}
 
+	private final @NonNull TextInfo getShownInfo() {
+		return this.markup ? this.info : this.info.copy().markups();
+	}
+
 	private final double getTextWidth(final @NonNull String text) {
-		return this.info.getWidth(text.replace("\n", ""));
+		return this.getShownInfo().getWidth(text.replace("\n", ""));
 	}
 
 	private final int getTextPosition(final int lineIdx, final int col) {
@@ -756,6 +839,18 @@ public class MultilineTextFieldNode extends Node {
 
 	private final boolean isSeparator(final char c) {
 		return c == ' ' || c == '\n' || c == '\r';
+	}
+
+	private final boolean isMac() {
+		return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("mac");
+	}
+
+	private final boolean isWordKeyDown() {
+		return this.isMac() ? UI.isAltKeyDown() : UI.isCtrlKeyDown();
+	}
+
+	private final boolean isShortcutKeyDown() {
+		return this.isMac() ? Key.LEFT_SUPER.isDown() || Key.RIGHT_SUPER.isDown() : UI.isCtrlKeyDown();
 	}
 
 	private final boolean deleteSelection() {

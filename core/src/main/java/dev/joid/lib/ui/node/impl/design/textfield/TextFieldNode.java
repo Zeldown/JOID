@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
+import java.util.Locale;
 import java.util.function.BiFunction;
 
 import dev.joid.lib.bridge.BridgeHandler;
@@ -16,6 +17,7 @@ import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -36,6 +38,9 @@ public class TextFieldNode extends Node {
 	private boolean focused;
 	private int maxTextLength;
 	private BiFunction<String, String, String> filter;
+
+	private boolean        markup;
+	private Signal<String> signal;
 
 	private int cursorPos;
 	private int selectionStart;
@@ -94,7 +99,7 @@ public class TextFieldNode extends Node {
 			this.selectionStart = this.text.length();
 		}
 
-		if (this.xOffset > this.info.getWidth(this.text)) {
+		if (this.xOffset > this.getShownInfo().getWidth(this.text)) {
 			this.decreaseCursor(0);
 		}
 
@@ -116,11 +121,11 @@ public class TextFieldNode extends Node {
 		final double textX = this.getTextX(super.getX(), isPlaceholder ? this.placeholder : this.text);
 		final double textY = tmpTextY;
 		super.getUi().mask(super.getX() + this.marginLeft, super.getY(), super.getWidth() - this.marginLeft - this.marginRight, super.getHeight(), () -> {
-			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? this.placeholder : this.text, isPlaceholder ? this.info.copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)) : this.info, Align.START, Align.START);
+			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? this.placeholder : this.text, isPlaceholder ? this.getShownInfo().copy().color(new Color(this.info.getColor().r, this.info.getColor().g, this.info.getColor().b, 0.5F)) : this.getShownInfo(), Align.START, Align.START);
 
 			if (this.focused) {
 				final String beforeCursor = this.text.substring(0, this.cursorPos);
-				final double cursorX = textX + this.info.getWidth(beforeCursor);
+				final double cursorX = textX + this.getShownInfo().getWidth(beforeCursor);
 				final Color cursorColor = new Color(this.info.getColor());
 				final float cursorOpacity = (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F);
 				cursorColor.a = cursorOpacity;
@@ -129,10 +134,10 @@ public class TextFieldNode extends Node {
 
 			if (this.selectionStart != -1) {
 				final String beforeCursor = this.text.substring(0, this.cursorPos);
-				final double cursorX = textX + this.info.getWidth(beforeCursor);
+				final double cursorX = textX + this.getShownInfo().getWidth(beforeCursor);
 
 				final String beforeSelection = this.text.substring(0, this.selectionStart);
-				final double selectionX = textX + this.info.getWidth(beforeSelection);
+				final double selectionX = textX + this.getShownInfo().getWidth(beforeSelection);
 
 				if (selectionX > cursorX) {
 					DrawUtils.SHAPE.drawRect(cursorX, textY, selectionX - cursorX, this.info.getHeight(), new Color(50, 152, 253, 100));
@@ -156,20 +161,20 @@ public class TextFieldNode extends Node {
 					return;
 				}
 
-				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(UI.isCtrlKeyDown() ? this.nextWordIndex() : this.cursorPos + 1));
+				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1));
 			} else if (this.inputType == Key.BACKSPACE) {
 				if (this.cursorPos <= 0) {
 					this.inputting = false;
 					return;
 				}
 
-				final int backStart = UI.isCtrlKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
+				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
 				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
 				this.decreaseCursor(this.cursorPos - backStart);
 			} else if (this.inputType == Key.LEFT) {
-				this.decreaseCursor(UI.isCtrlKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
+				this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
 			} else if (this.inputType == Key.RIGHT) {
-				this.increaseCursor(UI.isCtrlKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
+				this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
 			}
 
 			this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
@@ -193,7 +198,7 @@ public class TextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				this.decreaseCursor(UI.isCtrlKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
+				this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
 				return;
 			}
 
@@ -207,7 +212,7 @@ public class TextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				this.increaseCursor(UI.isCtrlKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
+				this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
 				return;
 			}
 
@@ -223,7 +228,7 @@ public class TextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				final int backStart = UI.isCtrlKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
+				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
 				this.setText(this.text.substring(0, backStart) + this.text.substring(this.cursorPos));
 				this.decreaseCursor(this.cursorPos - backStart);
 				return;
@@ -235,30 +240,46 @@ public class TextFieldNode extends Node {
 				}
 
 				this.holdInput(key);
-				final int deleteEnd = UI.isCtrlKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
+				final int deleteEnd = this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
 				this.setText(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
 				return;
 			}
 
 			if (key == Key.HOME) {
+				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
+					if (this.selectionStart == -1) {
+						this.selectionStart = this.cursorPos;
+					}
+				} else {
+					this.selectionStart = -1;
+				}
+
 				this.cursorPos = 0;
 				this.decreaseCursor(0);
 				return;
 			}
 
 			if (key == Key.END) {
+				if (Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown()) {
+					if (this.selectionStart == -1) {
+						this.selectionStart = this.cursorPos;
+					}
+				} else {
+					this.selectionStart = -1;
+				}
+
 				this.cursorPos = this.text.length();
 				this.increaseCursor(0);
 				return;
 			}
 
-			if (key == Key.A && UI.isCtrlKeyDown()) {
+			if (key == Key.A && this.isShortcutKeyDown()) {
 				this.selectionStart = 0;
 				this.cursorPos = this.text.length();
 				return;
 			}
 
-			if (key == Key.C && UI.isCtrlKeyDown()) {
+			if (key == Key.C && this.isShortcutKeyDown()) {
 				if (this.selectionStart == -1) {
 					return;
 				}
@@ -272,7 +293,7 @@ public class TextFieldNode extends Node {
 				return;
 			}
 
-			if (key == Key.X && UI.isCtrlKeyDown()) {
+			if (key == Key.X && this.isShortcutKeyDown()) {
 				if (this.selectionStart == -1) {
 					return;
 				}
@@ -291,21 +312,11 @@ public class TextFieldNode extends Node {
 			}
 
 			String textToAdd = Character.toString(c);
-			if (key == Key.V && UI.isCtrlKeyDown()) {
+			if (key == Key.V && this.isShortcutKeyDown()) {
 				textToAdd = BridgeHandler.WINDOW.get().getClipboard();
 			}
 
-			final char[] achar = textToAdd.toCharArray();
-			final int i = achar.length;
-
-			final StringBuilder stringbuilder = new StringBuilder();
-			for (int j = 0; j < i; ++j) {
-				final char c0 = achar[j];
-				if (c0 != 167 && c0 >= 32 && c0 != 127 && c0 <= 563) {
-					stringbuilder.append(c0);
-				}
-			}
-			textToAdd = stringbuilder.toString();
+			textToAdd = this.clean(textToAdd);
 
 			if (textToAdd.isEmpty()) {
 				return;
@@ -348,7 +359,7 @@ public class TextFieldNode extends Node {
 			for (int i = 0; i < this.text.length(); i++) {
 				final String beforeCursor = this.text.substring(0, i);
 				final String cursorChar = this.text.substring(i, i + 1);
-				final double cursorX = textX + this.info.getWidth(beforeCursor) + this.info.dw(cursorChar, 2);
+				final double cursorX = textX + this.getShownInfo().getWidth(beforeCursor) + this.getShownInfo().dw(cursorChar, 2);
 				if (mouseX < cursorX) {
 					this.cursorPos = i;
 					break;
@@ -400,6 +411,9 @@ public class TextFieldNode extends Node {
 
 		super.executeCallback(TextFieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
 			this.focused = focused;
+			if (!focused) {
+				this.selectionStart = -1;
+			}
 		});
 		return (T) this;
 	}
@@ -411,6 +425,11 @@ public class TextFieldNode extends Node {
 
 	public final <T extends TextFieldNode> @NonNull T maxTextLength(final int maxTextLength) {
 		this.maxTextLength = maxTextLength;
+		return (T) this;
+	}
+
+	public final <T extends TextFieldNode> @NonNull T markup(final boolean markup) {
+		this.markup = markup;
 		return (T) this;
 	}
 
@@ -473,6 +492,12 @@ public class TextFieldNode extends Node {
 		return (T) this;
 	}
 
+	public final <T extends TextFieldNode> @NonNull T signal(final @NonNull Signal<String> signal) {
+		this.signal = signal;
+		super.bind(signal, this::setText);
+		return (T) this;
+	}
+
 	public final <T extends TextFieldNode> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T> callback) {
 		super.registerCallback(TextFieldNode.CALLBACK_CHANGE, callback);
 		return (T) this;
@@ -490,15 +515,29 @@ public class TextFieldNode extends Node {
 
 	private final void setText(final String newText) {
 		final String oldText = this.text == null ? "" : this.text;
-		final String filtered = this.filter.apply(oldText, newText == null ? "" : newText);
+		final String filtered = this.clean(this.filter.apply(oldText, this.clean(newText == null ? "" : newText)));
 		final String accepted = this.maxTextLength >= 0 && filtered.length() > this.maxTextLength ? filtered.substring(0, this.maxTextLength) : filtered;
 		if (!accepted.equals(oldText)) {
 			this.executeCallback(TextFieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
 				this.text = accepted;
+				super.sync(this.signal, accepted);
 			}, oldText, accepted);
 		} else {
 			this.text = accepted;
 		}
+
+		super.sync(this.signal, this.text);
+	}
+
+	private final @NonNull String clean(final @NonNull String text) {
+		final StringBuilder builder = new StringBuilder();
+		for (final char c : text.toCharArray()) {
+			if (c != 167 && c >= 32 && c != 127 && c <= 563) {
+				builder.append(c);
+			}
+		}
+
+		return builder.toString();
 	}
 
 	private final void holdInput(final @NonNull Key key) {
@@ -527,7 +566,7 @@ public class TextFieldNode extends Node {
 		final double textX = this.getTextX(super.getX(), this.text);
 
 		final String beforeCursor = this.text.substring(0, this.cursorPos);
-		final double cursorX = textX + this.info.getWidth(beforeCursor);
+		final double cursorX = textX + this.getShownInfo().getWidth(beforeCursor);
 		if (cursorX < super.getX() + this.marginLeft + this.cursorMargin) {
 			this.xOffset -= super.getX() + this.marginLeft + this.cursorMargin - cursorX;
 		}
@@ -547,7 +586,7 @@ public class TextFieldNode extends Node {
 		final double textX = this.getTextX(super.getX(), this.text);
 
 		final String beforeCursor = this.text.substring(0, this.cursorPos);
-		final double cursorX = textX + this.info.getWidth(beforeCursor);
+		final double cursorX = textX + this.getShownInfo().getWidth(beforeCursor);
 		if (cursorX > super.getX() + super.getWidth() - this.marginRight - this.cursorMargin) {
 			this.xOffset += cursorX - (super.getX() + super.getWidth() - this.marginRight - this.cursorMargin);
 		}
@@ -579,8 +618,20 @@ public class TextFieldNode extends Node {
 		return index;
 	}
 
+	private final boolean isMac() {
+		return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("mac");
+	}
+
+	private final boolean isWordKeyDown() {
+		return this.isMac() ? UI.isAltKeyDown() : UI.isCtrlKeyDown();
+	}
+
+	private final boolean isShortcutKeyDown() {
+		return this.isMac() ? Key.LEFT_SUPER.isDown() || Key.RIGHT_SUPER.isDown() : UI.isCtrlKeyDown();
+	}
+
 	private final boolean isScrolling(final @NonNull String shown) {
-		return this.horizontalAlignment.isStart() || this.info.getWidth(shown) > super.getWidth() - this.marginLeft - this.marginRight - 2D;
+		return this.horizontalAlignment.isStart() || this.getShownInfo().getWidth(shown) > super.getWidth() - this.marginLeft - this.marginRight - 2D;
 	}
 
 	private final double getTextX(final double x, final @NonNull String shown) {
@@ -589,10 +640,14 @@ public class TextFieldNode extends Node {
 		}
 
 		if (this.horizontalAlignment.isCenter()) {
-			return x + (super.getWidth() - this.info.getWidth(shown)) / 2D;
+			return x + (super.getWidth() - this.getShownInfo().getWidth(shown)) / 2D;
 		}
 
-		return x + super.getWidth() - this.info.getWidth(shown) - this.marginRight - 2D;
+		return x + super.getWidth() - this.getShownInfo().getWidth(shown) - this.marginRight - 2D;
+	}
+
+	private final @NonNull TextInfo getShownInfo() {
+		return this.markup ? this.info : this.info.copy().markups();
 	}
 
 	private final boolean deleteSelection() {

@@ -39,24 +39,24 @@ RectNode
 | Enter / Numpad Enter | Unfocuses and calls `onEnter` | Inserts a line break |
 | Escape | Unfocuses and calls `onEnter` | Unfocuses |
 | Up / Down | Nothing | Move between lines |
-| Mouse wheel | Nothing | Scrolls while focused |
+| Mouse wheel | Nothing | Scrolls while the pointer is over it |
 | Alignment | `align`, `horizontalAlign`, `verticalAlign` | Always top-left |
 | Callbacks | `onChange`, `onFocus`, `onEnter` | `onChange`, `onFocus` |
 | Default margins | 2 left / right, 10 top / bottom | 2 on every side |
 | `cursorMargin` | 15, kept from both edges | Two line heights, kept from the top edge |
 | Word separators (Ctrl) | Spaces | Spaces and line breaks |
-| Line breaks in typed or pasted text | Dropped | Kept |
+| Line breaks in the text | Dropped | Kept, as `\n` |
 
 ## Wrapping and line breaks
 
 - The text is laid out in the space between the four margins and clipped to it.
 - A line wraps at the last space that fits; that space is not drawn at the start of the next line. A word longer than the line is cut between two characters.
-- `\n` starts a new line. Typed and pasted `\r\n` and `\r` are stored as `\n`. `text(String)` stores the text as given; `\r` and `\r\n` are also drawn as line breaks.
+- Only `\n` starts a new line. Every new text (typed, pasted, given to `text(String)`, set through the bound signal or returned by the filter) has its `\r\n` and `\r` stored as `\n`. `<br>` and markup tags are plain text in the field: the text is drawn [without markup](text-field.md#markup) unless `markup(true)`.
 - Lines are drawn one line height apart (the `TextInfo` line height).
 
 ## Keyboard shortcuts
 
-"Ctrl" is either Control key on every platform; "Shift" is either Shift key. Lines are the drawn lines, wrapping included.
+"Ctrl" is Control, or on macOS Command for Ctrl+A/C/X/V and Option for the word keys, as in [`TextFieldNode`](text-field.md#keyboard-shortcuts); "Shift" is either Shift key. Lines are the drawn lines, wrapping included.
 
 | Keys | Action |
 | --- | --- |
@@ -66,7 +66,8 @@ RectNode
 | Up / Down | Moves the cursor to the previous / next line, on the character boundary nearest to its current horizontal position (the end of the line if the line is shorter). Does nothing on the first / last line. Drops the selection. |
 | Ctrl+Left / Ctrl+Right | Moves the cursor to the start of the current or previous word / of the next word. |
 | Shift + any of the arrows above | Extends the selection (the selection starts at the cursor if there is none). |
-| Home / End | Moves the cursor to the start / end of the whole text, not of the line. Home and End do not read Shift and keep the selection anchor. |
+| Home / End | Moves the cursor to the start / end of the whole text, not of the line, and drops the selection. |
+| Shift+Home / Shift+End | Extends the selection to the start / end of the whole text. |
 | Backspace / Delete | Deletes the selection, or else the character before / after the cursor (a line break included). |
 | Ctrl+Backspace / Ctrl+Delete | Deletes back to the start of the current or previous word / forward to the start of the next word. |
 | Ctrl+A | Selects the whole text. |
@@ -75,13 +76,13 @@ RectNode
 | Escape | Unfocuses the field. In a closeable UI, Escape closes the UI before the field receives it (see the [Escape warning](text-field.md#what-a-focused-field-takes-from-the-ui)). |
 
 - Left, Right, Backspace and Delete repeat while held (first repeat after 500 ms, then every 100 ms); Up and Down do not.
-- Typed and pasted text keeps line breaks and the characters from U+0020 to U+0233 except U+007F and U+00A7 (`§`); tabs, other control characters and characters above U+0233 are dropped.
+- Every new text keeps line breaks and the characters from U+0020 to U+0233 except U+007F and U+00A7 (`§`); tabs, other control characters and characters above U+0233 are dropped, from the keyboard, the clipboard, `text(String)`, the bound signal and the filter result alike.
 - While focused, the field consumes every key, like `TextFieldNode`. Tab, Page Up and Page Down do nothing. There is no undo / redo.
 
 ## Mouse and scrolling
 
-- A press on the field (any button) focuses it and puts the cursor on the line under the pointer, at the nearest character boundary. A press above the first line or below the last one picks that line. Shift+press extends the selection; a press without Shift drops it. A press elsewhere unfocuses the field and drops the selection.
-- While focused, each mouse wheel notch scrolls the text by one line height, within the content. The field takes the wheel wherever the pointer is and consumes it, so a scrollable parent does not scroll while the field is focused.
+- A press on the field (any button) focuses it and puts the cursor on the line under the pointer, at the nearest character boundary. A press above the first line or below the last one picks that line. Shift+press extends the selection; a press without Shift drops it. A press elsewhere unfocuses the field; losing the focus, whatever the cause, drops the selection.
+- Each mouse wheel notch over the field scrolls the text by one line height, within the content, focused or not. The field consumes the wheel only while the pointer is over it: elsewhere, a scrollable parent scrolls.
 - When the cursor moves, the field scrolls to keep it visible: moving down keeps the cursor line above the bottom margin, moving up keeps at least `cursorMargin` between the top margin and the cursor line. `cursorMargin` defaults to `-1`, which the first draw replaces with two line heights. The cursor at position 0 scrolls back to the top.
 - `getYOffset()` returns the vertical scroll offset in UI units.
 
@@ -93,7 +94,7 @@ The placeholder, cursor and selection follow the same rules as [`TextFieldNode`]
 
 | Method | Lambda | Called |
 | --- | --- | --- |
-| `onChange(NodeTextFieldChangeCallback<T>)` | `(node, oldText, newText)` | After the text changed, by the keyboard, the clipboard or `text(String)`; only when the stored text differs. `newText` has passed the filter and the length cut. |
+| `onChange(NodeTextFieldChangeCallback<T>)` | `(node, oldText, newText)` | After the text changed, by the keyboard, the clipboard, `text(String)` or the bound signal; only when the stored text differs. `newText` has passed the filter and the length cut. |
 | `onFocus(NodeTextFieldFocusCallback<T>)` | `(node)` | After the focus changed, in both directions: read `node.isFocused()`. |
 
 They use the same interfaces as `TextFieldNode` and can veto the change in their PRE phase the same way (see [Vetoing a change](text-field.md#vetoing-a-change-in-the-pre-phase)). There is no submit key: submit from a button, or read `getText()` in `onFocus` when the field loses the focus.
@@ -111,6 +112,10 @@ MultilineTextFieldNode
 ```
 
 This field refuses an eleventh line.
+
+## Binding a signal with signal
+
+`signal(Signal<String>)` keeps the text and a signal in sync, both ways, like [`TextFieldNode.signal(...)`](text-field.md#binding-a-signal-with-signal): the field starts on the signal's text, each change of the text writes into the signal before `onChange` runs, and each value the signal publishes replaces the text while the field's UI is open.
 
 ## Reference
 
@@ -130,6 +135,8 @@ This field refuses an eleventh line.
 | `focused(boolean)` | `false` | Focuses or unfocuses the field; calls `onFocus` when the state changes. |
 | `filter(BiFunction<String, String, String>)` | `(oldText, newText) -> newText` | Text filter. |
 | `maxTextLength(int)` | `-1` | Maximum length, `-1` for none. |
+| `markup(boolean)` | `false` | Draws the text with the markups of the `TextInfo`. |
+| `signal(Signal<String>)` | none | Binds a signal to the text, both ways. |
 | `margin(double)` | `2` | Sets the four margins. |
 | `margin(double margin, double cursorMargin)` | | Sets the four margins and `cursorMargin`. |
 | `marginTop(double)`, `marginLeft(double)`, `marginRight(double)`, `marginBottom(double)` | `2` | One margin. |
@@ -150,6 +157,7 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 | `getCursorPos()` | Cursor index in the text. |
 | `getSelectionStart()` | Selection anchor index, `-1` without selection. |
 | `getMaxTextLength()`, `getFilter()` | Maximum length and filter. |
+| `isMarkup()`, `getSignal()` | Whether the text is drawn with markup, and the bound signal or `null`. |
 | `getMarginTop()`, `getMarginLeft()`, `getMarginRight()`, `getMarginBottom()`, `getCursorMargin()` | Margins. |
 | `getYOffset()` | Vertical scroll offset. |
 | `getInputType()`, `getLastInput()`, `isInputting()`, `isFirstInput()` | State of the held-key repeat. |

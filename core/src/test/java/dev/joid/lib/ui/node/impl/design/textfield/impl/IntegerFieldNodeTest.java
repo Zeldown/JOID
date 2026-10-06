@@ -1,5 +1,9 @@
 package dev.joid.lib.ui.node.impl.design.textfield.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,8 +13,11 @@ import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class IntegerFieldNodeTest {
 
@@ -76,14 +83,65 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
-	public void fallsBackToTheMinimumOnceEmptied() {
+	public void readsTheMiddleOfItsRangeOnceEmptied() {
 		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(3, 9).value(5).text("");
-		Assert.assertEquals("3", field.getText());
+		Assert.assertEquals("", field.getText());
+		Assert.assertEquals(6, field.getValue());
 	}
 
 	@Test
-	public void fallsBackToTheMinimumWithoutDigits() {
-		Assert.assertEquals("3", IntegerFieldNode.create(0D, 0D, 100D).range(3, 9).text("abc").getText());
+	public void readsTheMiddleOfItsRangeWithoutDigits() {
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(3, 9).text("abc");
+		Assert.assertEquals("", field.getText());
+		Assert.assertEquals(6, field.getValue());
+		Assert.assertEquals(0, IntegerFieldNode.create(0D, 0D, 100D).getValue());
+		Assert.assertEquals(-3, IntegerFieldNode.create(0D, 0D, 100D).range(Integer.MIN_VALUE + 2, Integer.MAX_VALUE - 7).getValue());
+	}
+
+	@Test
+	public void keepsALoneMinusOnlyWhileNegativeValuesAreAllowed() {
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(-4, 9).text("-");
+		Assert.assertEquals("-", field.getText());
+		Assert.assertEquals(2, field.getValue());
+		Assert.assertEquals("", IntegerFieldNode.create(0D, 0D, 100D).range(0, 9).text("-").getText());
+	}
+
+	@Test
+	public void putsAnEmptiedFieldBackToTheMiddleOnceUnfocused() {
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(0, 10).value(4).focused(true).text("");
+		Assert.assertEquals("", field.getText());
+		field.focused(false);
+		Assert.assertEquals("5", field.getText());
+		Assert.assertEquals("7", field.value(7).focused(true).focused(false).getText());
+	}
+
+	@Test
+	public void clampsItsValueOnceItsBoundsChange() {
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).value(50);
+		Assert.assertEquals(20, field.max(20).getValue());
+		Assert.assertEquals(25, field.min(25).getValue());
+		Assert.assertEquals(3, field.range(0, 3).getValue());
+		Assert.assertEquals("", field.<IntegerFieldNode>text("").min(1).getText());
+	}
+
+	@Test
+	public void bindsItsValueToASignalBothWays() {
+		final List<String> changes = new ArrayList<>();
+		final IntegerSignal signal = new IntegerSignal(7);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(0, 10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
+		this.bridges.open(new NodeUI(field));
+		Assert.assertEquals(7, field.getValue());
+		signal.set(42);
+		Assert.assertEquals("10", field.getText());
+		Assert.assertEquals(10, (int) signal.getOrDefault());
+		field.value(3);
+		Assert.assertEquals(3, (int) signal.getOrDefault());
+		field.focused(true).text("");
+		Assert.assertEquals(5, (int) signal.getOrDefault());
+		Assert.assertEquals("", field.getText());
+		field.keyPressed('8', Key.DIGIT_8, InternalContext.create());
+		Assert.assertEquals(8, (int) signal.getOrDefault());
+		Assert.assertEquals(Arrays.asList("7", "10", "3", "", "8"), changes);
 	}
 
 	@Test
@@ -114,6 +172,21 @@ public class IntegerFieldNodeTest {
 	@Test
 	public void keepsANegativeValueInsideItsRange() {
 		Assert.assertEquals(-5, IntegerFieldNode.create(0D, 0D, 100D).range(-10, 10).value(-5).getValue());
+	}
+
+	public static final class NodeUI extends UI {
+
+		private final Node[] nodes;
+
+		private NodeUI(final Node... nodes) {
+			this.nodes = nodes;
+		}
+
+		@Override
+		public void init() {
+			super.add(this.nodes);
+		}
+
 	}
 
 }

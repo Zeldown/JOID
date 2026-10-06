@@ -112,6 +112,10 @@ public class SearchFieldNode extends TextFieldNode {
 
 See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 
+### Markup
+
+The field draws and measures its text without [markup](../../text/markup-and-effects.md): the markups registered with `TextMarkup.register(...)` and those given to the `TextInfo` with `markups(...)` are ignored, so a typed `<b>` shows as typed and the cursor stays on the right character. `markup(true)` turns the markups of the `TextInfo` back on for the text and the placeholder; `isMarkup()` tells whether they are on.
+
 ## Focus
 
 A field receives the keyboard only while it is focused. `isFocused()` tells whether it is.
@@ -122,6 +126,8 @@ A field receives the keyboard only while it is focused. `isFocused()` tells whet
 | Mouse press anywhere else | Unfocuses it and drops the selection. This includes a press on the field that another node already consumed (a node drawn above it). |
 | Enter, Numpad Enter, Escape | Unfocuses it, then calls `onEnter`. |
 | `focused(true)` / `focused(false)` | Focuses / unfocuses it from code. Calls `onFocus` only when the state changes. |
+
+Losing the focus, whatever the cause, drops the selection.
 
 - A disabled or hidden field is never hovered, so a click cannot focus it. Disabling a focused field does not unfocus it: call `focused(false)` as well.
 - A press that a UI opened above the field's UI consumes never reaches the field, which then stays focused.
@@ -163,7 +169,7 @@ public boolean close() {
 
 ## Keyboard shortcuts
 
-"Ctrl" is either Control key (`Key.LEFT_CONTROL` or `Key.RIGHT_CONTROL`) on every platform; the Command / Super key is not used. "Shift" is either Shift key.
+The shortcut keys follow the platform. On macOS (when the `os.name` system property contains `mac`), Ctrl+A, Ctrl+C, Ctrl+X and Ctrl+V use Command (`Key.LEFT_SUPER` or `Key.RIGHT_SUPER`) and the word moves and deletions use Option (`Key.LEFT_ALT` or `Key.RIGHT_ALT`). Elsewhere, both use either Control key (`Key.LEFT_CONTROL` or `Key.RIGHT_CONTROL`). In the tables, "Ctrl" stands for that key. "Shift" is either Shift key.
 
 | Keys | Action |
 | --- | --- |
@@ -173,7 +179,8 @@ public boolean close() {
 | Ctrl+Right | Moves the cursor to the start of the next word. |
 | Shift+Left / Shift+Right | Extends the selection by one character (the selection starts at the cursor if there is none). |
 | Ctrl+Shift+Left / Ctrl+Shift+Right | Extends the selection by one word. |
-| Home / End | Moves the cursor to the start / end of the text. Home and End do not read Shift and keep the selection anchor: with a selection, the selection then runs from its anchor to the new cursor position. |
+| Home / End | Moves the cursor to the start / end of the text and drops the selection. |
+| Shift+Home / Shift+End | Extends the selection to the start / end of the text (the selection starts at the cursor if there is none). |
 | Backspace | Deletes the selection, or else the character before the cursor. |
 | Ctrl+Backspace | Deletes from the start of the current or previous word to the cursor (the spaces just before the cursor included). |
 | Delete | Deletes the selection, or else the character after the cursor. |
@@ -190,11 +197,11 @@ public boolean close() {
 
 ### Held keys repeat
 
-Left, Right, Backspace and Delete repeat while held: the first repeat comes 500 ms after the press, then one every 100 ms, until the key is released or there is nothing left to delete. The Ctrl state is read again at each repeat, so a held Ctrl+Backspace keeps deleting whole words.
+Left, Right, Backspace and Delete repeat while held: the first repeat comes 500 ms after the press, then one every 100 ms, until the key is released or there is nothing left to delete. The word key (Ctrl, Option on macOS) is read again at each repeat, so a held Ctrl+Backspace keeps deleting whole words.
 
 ### Accepted characters
 
-Typed and pasted text keeps only the characters from U+0020 (space) to U+0233, except U+007F (delete) and U+00A7 (`§`). Line breaks, tabs, other control characters and every character above U+0233 (for example `€`, Greek, Cyrillic, CJK, emoji) are dropped; a key that leaves nothing to insert changes nothing. Pasting `"x\ny\tz"` inserts `"xyz"`. This rule applies to the keyboard and the clipboard only: `text(String)` stores any character.
+The text keeps only the characters from U+0020 (space) to U+0233, except U+007F (delete) and U+00A7 (`§`). Line breaks, tabs, other control characters and every character above U+0233 (for example `€`, Greek, Cyrillic, CJK, emoji) are dropped; a key that leaves nothing to insert changes nothing. The rule applies to every new text: typed, pasted, given to `text(String)`, set through the bound signal, and returned by the filter. Pasting `"x\ny\tz"` inserts `"xyz"`, and `text("a\tb")` stores `"ab"`.
 
 ## Mouse, selection and clipboard
 
@@ -218,7 +225,7 @@ There is no setter for the selection. `cursorPosition(int)` moves the cursor, cl
 
 ## Filtering with filter
 
-`filter(BiFunction<String, String, String>)` decides the text to keep each time the text would change: typing, pasting, deleting, cutting and `text(String)`. It receives `(oldText, newText)` and returns the text to store, never `null`. The default returns `newText`. Return `oldText` to refuse a change.
+`filter(BiFunction<String, String, String>)` decides the text to keep each time the text would change: typing, pasting, deleting, cutting, `text(String)` and the bound signal. It receives `(oldText, newText)` and returns the text to store, never `null`. The default returns `newText`. Return `oldText` to refuse a change. The characters the field cannot show (see [Accepted characters](#accepted-characters)) are removed before the filter receives the text and from the text it returns.
 
 ```java
 TextFieldNode
@@ -243,7 +250,7 @@ TextFieldNode
 
 | Method | Lambda | Called |
 | --- | --- | --- |
-| `onChange(NodeTextFieldChangeCallback<T>)` | `(node, oldText, newText)` | After the text changed, by the keyboard, the clipboard or `text(String)`. Only when the stored text differs from the previous one. `newText` is the text after the filter and the length cut, and equals `node.getText()`. When typing, the cursor has not moved yet. |
+| `onChange(NodeTextFieldChangeCallback<T>)` | `(node, oldText, newText)` | After the text changed, by the keyboard, the clipboard, `text(String)` or the bound signal. Only when the stored text differs from the previous one. `newText` is the text after the filter and the length cut, and equals `node.getText()`. When typing, the cursor has not moved yet. |
 | `onFocus(NodeTextFieldFocusCallback<T>)` | `(node)` | After the focus changed, in both directions: read `node.isFocused()`. Not called when `focused(...)` receives the current state. |
 | `onEnter(NodeTextFieldEnterCallback<T>)` | `(node, text)` | On Enter, Numpad Enter or Escape, after the field was unfocused (so `onFocus` runs first). |
 
@@ -264,6 +271,27 @@ TextFieldNode
 .attach(this);
 ```
 
+## Binding a signal with signal
+
+`signal(Signal<String>)` keeps the text and a [signal](../../state/signals.md) in sync, both ways:
+
+```java
+final Signal<String> name = new Signal<>("Alex");
+
+TextFieldNode
+.create(760, 500, 400)
+.info(TextInfo.create(font, 24F, Color.WHITE))
+.signal(name)
+.attach(this);
+```
+
+- The field starts on the signal's text, through the filter and the length cut: here it shows `Alex`.
+- Each change of the text, from the keyboard, the clipboard or `text(String)`, writes the new text into the signal before `onChange` runs.
+- Each value the signal publishes later replaces the text, and calls `onChange` when it changes, while the field's UI is open. A `null` value is ignored.
+- When the filter, the length cut or a `pre(...)` veto keeps a text other than the signal's value, the field writes its own text back into the signal.
+
+`Signal` is in `dev.joid.lib.utils.signal`.
+
 ## IntegerFieldNode
 
 `IntegerFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield.impl`) is a `TextFieldNode` whose filter keeps an integer inside a range.
@@ -279,17 +307,18 @@ final IntegerFieldNode amount = IntegerFieldNode
 final int value = amount.getValue();
 ```
 
-![An integer field showing 16: two backspaces leave 1, typing 999 gives 64](../../images/integer-field.gif "Deleting every digit shows min (1); a value above max is stored as max (64).")
+![An integer field showing 16: two backspaces empty it, typing 999 gives 64](../../images/integer-field.gif "Deleting every digit leaves the field empty; a value above max is stored as max (64).")
 
 | Method | Description |
 | --- | --- |
 | `IntegerFieldNode.create(double x, double y, double width)` | Same sizing as `TextFieldNode.create(x, y, width)`. |
 | `IntegerFieldNode.create(double x, double y, double width, double height)` | Fixed height. |
-| `min(int)` | Lowest value. Default `Integer.MIN_VALUE`. |
-| `max(int)` | Highest value. Default `Integer.MAX_VALUE`. |
-| `range(int min, int max)` | Sets both bounds. |
+| `min(int)` | Lowest value. Default `Integer.MIN_VALUE`. Clamps the current value. |
+| `max(int)` | Highest value. Default `Integer.MAX_VALUE`. Clamps the current value. |
+| `range(int min, int max)` | Sets both bounds and clamps the current value. |
 | `value(int)` | Writes the value as text, through the filter (so clamped to the range). |
-| `getValue()` | Parses the current text with `Integer.parseInt`. |
+| `signal(IntegerSignal)` | Binds the value to the signal, both ways. |
+| `getValue()` | The value of the text, or the middle of the range, `(min + max) / 2` rounded toward zero, while the text is empty or a lone `-`. |
 
 Each new text goes through this filter:
 
@@ -299,12 +328,26 @@ Each new text goes through this filter:
 | Other characters mixed in | Removed; the number is negative only if the text starts with `-`. |
 | Above `max` / below `min` | `max` / `min`. |
 | Too large for an `int` | `max`, or `min` if it starts with `-`. |
-| Empty, or without any digit | `min`. |
+| A lone `-` | Kept while `min` is negative, so a negative number can be typed; empty otherwise. |
+| Empty, or without any digit | Empty. |
 
-- The field cannot be emptied: deleting every digit shows `min`. With the default range that is `-2147483648`, so set a range.
-- `min`, `max` and `range` apply from the next change; they do not clamp the current text. Call them before `value(int)`.
-- The text starts empty: until you call `value(int)` or `text(String)`, `getValue()` throws a `NumberFormatException`.
+- Deleting every digit leaves the field empty while the user types. When the field loses the focus with an empty text or a lone `-`, it writes the middle of the range. With the default range the middle is `0`.
+- The text starts empty: until you call `value(int)` or `text(String)`, `getValue()` returns the middle of the range.
+- `min`, `max` and `range` pass the current text through the filter again, so a value outside the new range is clamped and `onChange` runs.
 - `filter(...)` replaces the integer filter.
+
+`signal(IntegerSignal)` binds the value both ways, like `signal(Signal<String>)` binds the text: the field starts on the signal's value, each change of the text writes `getValue()` into the signal, and each value the signal publishes is written with `value(int)`, clamped to the range (the clamped value is written back into the signal). A published value equal to `getValue()` leaves the text as it is, so an empty field bound to a signal stays empty while the user types. The method takes an `IntegerSignal` (`dev.joid.lib.utils.signal.impl.primitive`): a `signal(Signal<Integer>)` overload cannot exist next to the inherited `signal(Signal<String>)`, which binds the raw text.
+
+```java
+final IntegerSignal amount = new IntegerSignal(16);
+
+IntegerFieldNode
+.create(760, 500, 200)
+.range(1, 64)
+.signal(amount)
+.info(TextInfo.create(font, 24F, Color.WHITE))
+.attach(this);
+```
 
 The `TextFieldNode` setters return `TextFieldNode` when chained, so call the `IntegerFieldNode` methods first, assign the result to an `IntegerFieldNode` variable (as above), or give the type explicitly:
 
@@ -340,6 +383,8 @@ IntegerFieldNode
 | `focused(boolean)` | `false` | Focuses or unfocuses the field. |
 | `filter(BiFunction<String, String, String>)` | `(oldText, newText) -> newText` | Text filter. |
 | `maxTextLength(int)` | `-1` | Maximum length, `-1` for none. |
+| `markup(boolean)` | `false` | Draws the text with the markups of the `TextInfo`. |
+| `signal(Signal<String>)` | none | Binds a signal to the text, both ways. |
 | `margin(double)` | | Sets the four margins. |
 | `margin(double margin, double cursorMargin)` | | Sets the four margins and `cursorMargin`. |
 | `marginHorizontal(double)` | `2` | Left and right margins. |
@@ -371,6 +416,8 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 | `getSelectionStart()` | Selection anchor index, `-1` without selection. |
 | `getMaxTextLength()` | Maximum length, `-1` for none. |
 | `getFilter()` | Current filter. |
+| `isMarkup()` | Whether the text is drawn with markup. |
+| `getSignal()` | Bound signal, or `null`. |
 | `getHorizontalAlignment()`, `getVerticalAlignment()` | Alignments. |
 | `getMarginTop()`, `getMarginLeft()`, `getMarginRight()`, `getMarginBottom()`, `getCursorMargin()` | Margins. |
 | `getXOffset()` | Horizontal scroll offset. |

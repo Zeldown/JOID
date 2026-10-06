@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.design.textfield.impl;
 
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
+import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
@@ -9,17 +10,15 @@ public class IntegerFieldNode extends TextFieldNode {
 	private int maxValue = Integer.MAX_VALUE;
 	private int minValue = Integer.MIN_VALUE;
 
+	private IntegerSignal signal;
+
 	protected IntegerFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		this.filter((oldValue, nextValue) -> {
-			if (nextValue.isEmpty()) {
-				return Integer.toString(this.minValue);
-			}
-
 			final boolean negative = nextValue.startsWith("-");
 			final String digits = nextValue.replaceAll("[^0-9]", "");
 			if (digits.isEmpty()) {
-				return Integer.toString(this.minValue);
+				return negative && this.minValue < 0 ? "-" : "";
 			}
 
 			final String newValue = negative ? "-" + digits : digits;
@@ -37,6 +36,12 @@ public class IntegerFieldNode extends TextFieldNode {
 
 			return Integer.toString(negative ? this.minValue : this.maxValue);
 		});
+		super.<IntegerFieldNode>onChange((field, oldText, newText) -> field.sync(field.signal, field.getValue()));
+		super.<IntegerFieldNode>onFocus(field -> {
+			if (!field.isFocused() && field.getText().replace("-", "").isEmpty()) {
+				field.value(field.getValue());
+			}
+		});
 	}
 
 	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width) {
@@ -49,17 +54,20 @@ public class IntegerFieldNode extends TextFieldNode {
 
 	public final <T extends IntegerFieldNode> @NonNull T max(final int maxValue) {
 		this.maxValue = maxValue;
+		super.text(super.getText());
 		return (T) this;
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T min(final int minValue) {
 		this.minValue = minValue;
+		super.text(super.getText());
 		return (T) this;
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T range(final int minValue, final int maxValue) {
 		this.minValue = minValue;
 		this.maxValue = maxValue;
+		super.text(super.getText());
 		return (T) this;
 	}
 
@@ -68,8 +76,24 @@ public class IntegerFieldNode extends TextFieldNode {
 		return (T) this;
 	}
 
+	public final <T extends IntegerFieldNode> @NonNull T signal(final @NonNull IntegerSignal signal) {
+		this.signal = signal;
+		super.bind(signal, value -> {
+			if (value != this.getValue()) {
+				this.value(value);
+			}
+
+			super.sync(this.signal, this.getValue());
+		});
+		return (T) this;
+	}
+
 	public final int getValue() {
-		return Integer.parseInt(this.getText());
+		try {
+			return Integer.parseInt(super.getText());
+		} catch (final NumberFormatException silent) {
+			return (int) (((long) this.minValue + this.maxValue) / 2L);
+		}
 	}
 
 }

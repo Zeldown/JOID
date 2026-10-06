@@ -106,7 +106,7 @@ TextInfo.create(font, 16).markups(new TagTextMarkup());
 TextInfo.create(font, 16).markups();
 ```
 
-The first line uses only this markup for the run; the second one draws the raw string with no markup at all. Disable markup for text typed by users so it shows exactly as entered.
+The first line uses only this markup for the run; the second one draws the raw string with no markup at all. Disable markup for text typed by users so it shows exactly as entered; the text fields do it by default (see [TextFieldNode](../nodes/input/text-field.md#markup)).
 
 ## The demo markup
 

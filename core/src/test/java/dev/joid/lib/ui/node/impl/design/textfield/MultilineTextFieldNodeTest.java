@@ -16,12 +16,14 @@ import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.markup.ITextMarkup;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.signal.Signal;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -73,12 +75,13 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void movesDownPastAWindowsLineEnding() {
-		final FieldUI ui = new FieldUI("ab\r\ncd");
+	public void storesAWindowsLineEndingAsOneLineBreak() {
+		final FieldUI ui = new FieldUI("ab\r\ncd\ref");
 		this.bridges.open(ui);
+		Assert.assertEquals("ab\ncd\nef", ui.field.getText());
 		ui.field.cursorPosition(1);
 		ui.field.keyPressed(' ', Key.DOWN, InternalContext.create());
-		Assert.assertEquals(5, ui.field.getCursorPos());
+		Assert.assertEquals(4, ui.field.getCursorPos());
 	}
 
 	@Test
@@ -586,9 +589,9 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void scrollsOneLinePerWheelTickWhileFocused() {
+	public void scrollsOneLinePerWheelTickWhileHovered() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		this.bridges.scroll(-1);
+		this.bridges.move(10D, 10D).frames(2).scroll(-1);
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
 		for (int i = 0; i < 5; i++) {
 			this.bridges.scroll(-1);
@@ -603,10 +606,17 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void ignoresTheWheelWhileUnfocused() {
-		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne").focused(false);
-		this.bridges.scroll(-1);
+	public void ignoresTheWheelOutsideItself() {
+		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
+		this.bridges.move(600D, 100D).frames(2).scroll(-1);
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
+	}
+
+	@Test
+	public void scrollsUnderTheMouseWhileUnfocused() {
+		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne").focused(false);
+		this.bridges.move(10D, 10D).frames(2).scroll(-1);
+		Assert.assertEquals(20D, field.getYOffset(), 0D);
 	}
 
 	@Test
@@ -619,7 +629,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void ignoresAWheelThatDoesNotTurn() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		this.bridges.scroll(-1);
+		this.bridges.move(10D, 10D).frames(2).scroll(-1);
 		field.mouseScroll(10D, 10D, 0, InternalContext.create());
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
 	}
@@ -995,6 +1005,119 @@ public class MultilineTextFieldNodeTest {
 		this.bridges.getWindow().setClipboard("${newline}");
 		this.control(field, Key.V);
 		Assert.assertEquals("${newline}", field.getText());
+	}
+
+	@Test
+	public void breaksItsLinesOnlyOnRealLineBreaks() {
+		this.field("a<br>b\nc");
+		final List<Drawn> drawn = this.draw();
+		Assert.assertEquals(2, drawn.size());
+		Assert.assertEquals("a<br>b", drawn.get(0).getText());
+		Assert.assertEquals("c", drawn.get(1).getText());
+	}
+
+	@Test
+	public void extendsItsSelectionToBothEndsWithShiftHomeAndEnd() {
+		final MultilineTextFieldNode field = this.field("ab\ncd").cursorPosition(2);
+		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
+		this.press(field, Key.END);
+		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(5, field.getCursorPos());
+		this.press(field, Key.HOME);
+		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(0, field.getCursorPos());
+		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
+		this.press(field, Key.END);
+		Assert.assertEquals(-1, field.getSelectionStart());
+	}
+
+	@Test
+	public void dropsItsSelectionOnceUnfocused() {
+		final MultilineTextFieldNode field = this.field("ab\ncd");
+		this.control(field, Key.A);
+		this.press(field, Key.ESCAPE);
+		Assert.assertEquals(-1, field.getSelectionStart());
+	}
+
+	@Test
+	public void dropsTheCharactersItCannotShowFromEveryText() {
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).text("a\u00a7b\tc\u20ac\nd");
+		Assert.assertEquals("abc\nd", field.getText());
+		Assert.assertEquals("x\ny", field.filter((oldText, newText) -> "x\r\ny\t").text("z").getText());
+	}
+
+	@Test
+	public void drawsItsTextWithoutMarkupUnlessAllowed() {
+		final List<TextInfo> infos = new ArrayList<>();
+		final IFontProvider provider = new IFontProvider() {
+
+			@Override
+			public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
+				infos.add(info);
+				return new FontBounds(this.getWidth(text, info), this.getHeight(text, info));
+			}
+
+			@Override
+			public double getWidth(final String text, final TextInfo info) {
+				return text.length() * 10D;
+			}
+
+			@Override
+			public double getHeight(final String text, final TextInfo info) {
+				return 20D;
+			}
+
+			@Override
+			public double getLineHeight(final TextInfo info) {
+				return 20D;
+			}
+
+		};
+		final IFont font = () -> provider;
+		final ITextMarkup markup = (text, index, style) -> 0;
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(font, 10F).markups(markup)).text("ab");
+		this.bridges.open(new NodeUI(field));
+		Assert.assertFalse(field.isMarkup());
+		Assert.assertTrue(infos.get(infos.size() - 1).getMarkups().isEmpty());
+		field.markup(true);
+		this.bridges.frame();
+		Assert.assertEquals(Collections.singletonList(markup), infos.get(infos.size() - 1).getMarkups());
+	}
+
+	@Test
+	public void usesCommandForShortcutsAndAltForWordsOnMac() {
+		final String system = System.getProperty("os.name");
+		System.setProperty("os.name", "Mac OS X");
+		try {
+			final MultilineTextFieldNode field = this.field("one two");
+			this.control(field, Key.A);
+			Assert.assertEquals(-1, field.getSelectionStart());
+			this.bridges.getWindow().getKeys().add(Key.RIGHT_SUPER);
+			this.press(field, Key.A);
+			this.bridges.getWindow().getKeys().remove(Key.RIGHT_SUPER);
+			Assert.assertEquals(0, field.getSelectionStart());
+			this.press(field, Key.END);
+			this.bridges.getWindow().getKeys().add(Key.RIGHT_ALT);
+			this.press(field, Key.BACKSPACE);
+			this.bridges.getWindow().getKeys().remove(Key.RIGHT_ALT);
+			Assert.assertEquals(" one ", field.getText());
+		} finally {
+			System.setProperty("os.name", system);
+		}
+	}
+
+	@Test
+	public void bindsItsTextToASignalBothWays() {
+		final List<String> changes = new ArrayList<>();
+		final Signal<String> signal = new Signal<>("a\r\nb");
+		final MultilineTextFieldNode field = this.field("").onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
+		Assert.assertEquals("a\nb", field.getText());
+		Assert.assertEquals("a\nb", signal.getOrDefault());
+		this.press(field, Key.ENTER);
+		Assert.assertEquals("\na\nb", signal.getOrDefault());
+		signal.set("c");
+		Assert.assertEquals("c", field.getText());
+		Assert.assertEquals(Arrays.asList("a\nb", "\na\nb", "c"), changes);
 	}
 
 	private MultilineTextFieldNode field(final String text) {
