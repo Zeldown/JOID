@@ -278,7 +278,7 @@ public abstract class Node implements INode {
 				this.skeleton.load(this.ui);
 			}
 
-			this.effectMap.values().stream().filter(this::shouldApplyEffect).forEachOrdered(effect -> effect.init(this, this.ui));
+			this.getAppliedEffects().forEach(effect -> effect.init(this, this.ui));
 			this.init(this.ui);
 		});
 
@@ -521,8 +521,9 @@ public abstract class Node implements INode {
 					this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
 				}
 
-				final List<NodeEffect<Node>> shaderEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
-				final List<NodeEffect<Node>> otherEffects = this.effectMap.values().stream().filter(this::shouldApplyEffect).filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
+				final List<NodeEffect<Node>> effects = this.getAppliedEffects();
+				final List<NodeEffect<Node>> shaderEffects = effects.stream().filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
+				final List<NodeEffect<Node>> otherEffects = effects.stream().filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
 
 				final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
 				final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
@@ -593,7 +594,9 @@ public abstract class Node implements INode {
 						maskDraw.run();
 					}
 				} finally {
-					otherEffects.forEach(effect -> effect.post(this, mouseX, mouseY));
+					for (int i = otherEffects.size() - 1; i >= 0; i--) {
+						otherEffects.get(i).post(this, mouseX, mouseY);
+					}
 				}
 
 				if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.hasOverflowX() || this.hasOverflowY())) {
@@ -1358,6 +1361,10 @@ public abstract class Node implements INode {
 		return effect.shouldApply(this);
 	}
 
+	private @NonNull List<NodeEffect<Node>> getAppliedEffects() {
+		return this.effectMap.values().stream().filter(this::shouldApplyEffect).sorted(Comparator.comparingInt(NodeEffect::getPriority)).collect(Collectors.toList());
+	}
+
 	public final <T extends Node> @NonNull T copy() {
 		Node copy = null;
 		try {
@@ -1459,11 +1466,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T effect(final @NonNull NodeEffect<? super T> effect) {
-		final Map<Class<?>, NodeEffect<Node>> copiedMap = new LinkedHashMap<>(this.effectMap);
-		copiedMap.put(effect.getClass(), (NodeEffect<Node>) effect);
-
-		this.effectMap.clear();
-		this.effectMap.putAll(copiedMap.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.comparingInt(NodeEffect::getPriority))).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, (Supplier<Map<Class<?>, NodeEffect<Node>>>) LinkedHashMap::new)));
+		this.effectMap.put(effect.getClass(), (NodeEffect<Node>) effect);
 		return (T) this;
 	}
 

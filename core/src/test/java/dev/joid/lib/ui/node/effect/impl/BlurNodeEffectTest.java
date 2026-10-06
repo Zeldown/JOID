@@ -55,6 +55,24 @@ public class BlurNodeEffectTest {
 	}
 
 	@Test
+	public void turnsTheBlurOffWithoutRadius() {
+		Assert.assertTrue(BlurNodeEffect.create(0F).toShaderPasses(RectNode.create(0D, 0D, 10D, 10D)).isEmpty());
+		Assert.assertTrue(BlurNodeEffect.create(-2F).toShaderPasses(RectNode.create(0D, 0D, 10D, 10D)).isEmpty());
+	}
+
+	@Test
+	public void drawsTheNodeAsItIsWithoutRadius() {
+		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(BlurNodeEffect.create(0F)))).frame();
+		final List<Draw> draws = this.bridges.getRender().getDraws();
+		final Draw quad = draws.get(draws.size() - 1);
+		Assert.assertEquals(0.2F, quad.getRed(), 0F);
+		Assert.assertEquals(100D, quad.getLeft(), 1E-3D);
+		Assert.assertEquals(100D, quad.getTop(), 1E-3D);
+		Assert.assertEquals(300D, quad.getRight(), 1E-3D);
+		Assert.assertEquals(150D, quad.getBottom(), 1E-3D);
+	}
+
+	@Test
 	public void spreadsTheBlurredNodeAroundItsBox() {
 		final RecordingShader shader = (RecordingShader) BlurShader.inst().getShader();
 		shader.getValues().clear();

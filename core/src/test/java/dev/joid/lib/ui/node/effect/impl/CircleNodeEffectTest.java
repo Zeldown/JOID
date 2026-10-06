@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,16 +40,12 @@ public class CircleNodeEffectTest {
 	}
 
 	@Test
-	public void bindsTheLargestCircleOfItsNode() {
+	public void leavesTheShaderToItsPass() {
 		final CircleNodeEffect<Node> effect = CircleNodeEffect.create();
 		final RectNode node = RectNode.create(10D, 20D, 100D, 60D);
 		effect.pre(node, 0D, 0D);
-		final Map<String, Object> values = this.shader.getValues();
-		Assert.assertTrue(this.shader.isBound());
-		Assert.assertEquals(30F, (Float) values.get("radius"), 0F);
-		Assert.assertArrayEquals(new float[] {60F, 50F}, (float[]) values.get("center"), 0F);
 		effect.post(node, 0D, 0D);
-		Assert.assertFalse(this.shader.isBound());
+		Assert.assertTrue(this.shader.getValues().isEmpty());
 	}
 
 	@Test

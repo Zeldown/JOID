@@ -54,13 +54,13 @@ public class RoundedShaderPassTest {
 
 	@Test
 	public void keepsTheSquareCornersOnTheEdges() {
-		new RoundedShaderPass(RoundedNodeEffect.create(5F, false, true, false, true), RectNode.create(10D, 20D, 100D, 60D)).bindForTexture(this.context());
+		new RoundedShaderPass(RoundedNodeEffect.create(5F, false, false, true, true), RectNode.create(10D, 20D, 100D, 60D)).bindForTexture(this.context());
 		Assert.assertArrayEquals(new float[] {10F, 20F, 105F, 75F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);
 	}
 
 	@Test
 	public void keepsTheSquareCornersOnTheOtherEdges() {
-		new RoundedShaderPass(RoundedNodeEffect.create(5F, true, false, true, false), RectNode.create(10D, 20D, 100D, 60D)).bindForTexture(this.context());
+		new RoundedShaderPass(RoundedNodeEffect.create(5F, true, true, false, false), RectNode.create(10D, 20D, 100D, 60D)).bindForTexture(this.context());
 		Assert.assertArrayEquals(new float[] {15F, 25F, 110F, 80F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);
 	}
 

@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -33,6 +34,10 @@ public class BlurNodeEffect<T extends Node> extends NodeEffect<T> {
 	@Override
 	public List<ShaderPass> toShaderPasses(final @NonNull T node) {
 		final float radius = this.radiusSupplier.get();
+		if (radius <= 0F) {
+			return Collections.emptyList();
+		}
+
 		return Arrays.asList(new BlurShaderPass(radius, true, 0), new BlurShaderPass(radius, false, 0));
 	}
 

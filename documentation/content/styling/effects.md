@@ -90,13 +90,13 @@ RectNode
 
 ## Effect order and priority
 
-Every effect has a priority (`priority(int)`, default `0`). The node keeps its effects sorted by ascending priority; effects of equal priority keep the order in which they were added, and a replaced effect keeps its place. The node sorts its effects when one is added, so set the priority before calling `effect(...)`.
+Every effect has a priority (`priority(int)`, default `0`). The node runs its effects by ascending priority; effects of equal priority keep the order in which they were added, and a replaced effect keeps its place. The node sorts its effects again on every frame, so a priority changed after `effect(...)` applies from the next frame.
 
 Effects come in two kinds, rendered differently:
 
 | Kind | Effects | How it renders |
 | --- | --- | --- |
-| Render state | `MaskNodeEffect`, `TransformNodeEffect` | `pre(...)` runs before the node renders and `post(...)` after, both in priority order. They wrap the whole render of the node: its own drawing, its children and the shader effects. |
+| Render state | `MaskNodeEffect`, `TransformNodeEffect` | `pre(...)` runs before the node renders, in priority order, and `post(...)` after, in the reverse order, so the effects nest. They wrap the whole render of the node: its own drawing, its children and the shader effects. |
 | Shader | `RoundedNodeEffect`, `CircleNodeEffect`, `BorderNodeEffect`, `BlurNodeEffect` | Each effect produces shader passes. The node is drawn into an offscreen framebuffer, then the passes run one after the other on the result. |
 
 Between render-state effects, the order matters. A `TransformNodeEffect` that runs before a `MaskNodeEffect` transforms the mask with the node; a mask that runs first stays in place while the content moves under it:

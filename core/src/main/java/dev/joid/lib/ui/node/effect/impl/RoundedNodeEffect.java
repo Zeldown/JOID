@@ -2,9 +2,6 @@ package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.matrix.PixelGrid;
-import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import dev.joid.lib.ui.node.Node;
@@ -21,15 +18,15 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 
 	private Supplier<Float> radiusSupplier;
 	private Supplier<Boolean> leftSupplier;
-	private Supplier<Boolean> rightSupplier;
 	private Supplier<Boolean> topSupplier;
+	private Supplier<Boolean> rightSupplier;
 	private Supplier<Boolean> bottomSupplier;
 
-	private RoundedNodeEffect(final float radius, final boolean left, final boolean right, final boolean top, final boolean bottom) {
+	private RoundedNodeEffect(final float radius, final boolean left, final boolean top, final boolean right, final boolean bottom) {
 		this.radiusSupplier = () -> radius;
 		this.leftSupplier = () -> left;
-		this.rightSupplier = () -> right;
 		this.topSupplier = () -> top;
+		this.rightSupplier = () -> right;
 		this.bottomSupplier = () -> bottom;
 	}
 
@@ -41,18 +38,12 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 		return RoundedNodeEffect.create(radiusSupplier, () -> true, () -> true, () -> true, () -> true);
 	}
 
-	public static <T extends Node> RoundedNodeEffect<T> create(final float radius, final boolean left, final boolean right, final boolean top, final boolean bottom) {
-		return new RoundedNodeEffect<>(radius, left, right, top, bottom);
+	public static <T extends Node> RoundedNodeEffect<T> create(final float radius, final boolean left, final boolean top, final boolean right, final boolean bottom) {
+		return new RoundedNodeEffect<>(radius, left, top, right, bottom);
 	}
 
-	public static <T extends Node> RoundedNodeEffect<T> create(final @NonNull Supplier<Float> radiusSupplier, final @NonNull Supplier<Boolean> leftSupplier, final @NonNull Supplier<Boolean> rightSupplier, final @NonNull Supplier<Boolean> topSupplier, final @NonNull Supplier<Boolean> bottomSupplier) {
-		final RoundedNodeEffect<T> effect = new RoundedNodeEffect<>(0, true, true, true, true);
-		effect.radiusSupplier = radiusSupplier;
-		effect.leftSupplier = leftSupplier;
-		effect.rightSupplier = rightSupplier;
-		effect.topSupplier = topSupplier;
-		effect.bottomSupplier = bottomSupplier;
-		return effect;
+	public static <T extends Node> RoundedNodeEffect<T> create(final @NonNull Supplier<Float> radiusSupplier, final @NonNull Supplier<Boolean> leftSupplier, final @NonNull Supplier<Boolean> topSupplier, final @NonNull Supplier<Boolean> rightSupplier, final @NonNull Supplier<Boolean> bottomSupplier) {
+		return new RoundedNodeEffect<>(radiusSupplier, leftSupplier, topSupplier, rightSupplier, bottomSupplier);
 	}
 
 	public float getRadius() {
@@ -83,34 +74,6 @@ public class RoundedNodeEffect<T extends Node> extends NodeEffect<T> {
 	@Override
 	public ShaderPass toShaderPass(final @NonNull T node) {
 		return new RoundedShaderPass(this, node);
-	}
-
-	@Override
-	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
-		if (!RoundedShader.inst().isAvailable()) {
-			return;
-		}
-
-		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
-		final double x = grid.snapX(node.getX());
-		final double y = grid.snapY(node.getY());
-		final double maxX = grid.snapRight(node.getX(), node.getX() + node.getWidth());
-		final double maxY = grid.snapBottom(node.getY(), node.getY() + node.getHeight());
-		final float radius = this.getRadius();
-		final boolean left = this.isLeft();
-		final boolean right = this.isRight();
-		final boolean top = this.isTop();
-		final boolean bottom = this.isBottom();
-		RoundedShader.inst().bind(radius, (float) (x + (left ? radius : 0)), (float) (y + (top ? radius : 0)), (float) (maxX - (right ? radius : 0)), (float) (maxY - (bottom ? radius : 0)));
-	}
-
-	@Override
-	public void post(final @NonNull T node, final double mouseX, final double mouseY) {
-		if (!RoundedShader.inst().isAvailable()) {
-			return;
-		}
-
-		RoundedShader.inst().unbind();
 	}
 
 	public <E extends RoundedNodeEffect<T>> @NonNull E radius(final float radius) {

@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,6 +53,16 @@ public class RoundedNodeEffectTest {
 	}
 
 	@Test
+	public void takesItsSidesInTheOrderOfDrawRoundedRect() {
+		final RoundedNodeEffect<Node> left = RoundedNodeEffect.create(6F, true, false, false, false);
+		final RoundedNodeEffect<Node> top = RoundedNodeEffect.create(6F, false, true, false, false);
+		final RoundedNodeEffect<Node> right = RoundedNodeEffect.create(() -> 6F, () -> false, () -> false, () -> true, () -> false);
+		Assert.assertTrue(left.isLeft() && !left.isTop() && !left.isRight() && !left.isBottom());
+		Assert.assertTrue(top.isTop() && !top.isLeft() && !top.isRight() && !top.isBottom());
+		Assert.assertTrue(right.isRight() && !right.isLeft() && !right.isTop() && !right.isBottom());
+	}
+
+	@Test
 	public void readsItsSuppliedRadius() {
 		final float[] radius = {2F};
 		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(() -> radius[0]);
@@ -65,7 +74,7 @@ public class RoundedNodeEffectTest {
 	@Test
 	public void readsItsSuppliedSides() {
 		final boolean[] sides = {true};
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(() -> 4F, () -> sides[0], () -> !sides[0], () -> sides[0], () -> !sides[0]);
+		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(() -> 4F, () -> sides[0], () -> sides[0], () -> !sides[0], () -> !sides[0]);
 		Assert.assertTrue(effect.isLeft());
 		Assert.assertFalse(effect.isRight());
 		sides[0] = false;
@@ -93,23 +102,12 @@ public class RoundedNodeEffectTest {
 	}
 
 	@Test
-	public void bindsTheShaderAroundTheInnerBoxOfItsNode() {
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(5F, false, true, true, false);
+	public void leavesTheShaderToItsPass() {
+		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(5F);
 		final RectNode node = RectNode.create(10D, 20D, 100D, 60D);
 		effect.pre(node, 0D, 0D);
-		final Map<String, Object> values = this.shader.getValues();
-		Assert.assertTrue(this.shader.isBound());
-		Assert.assertEquals(5F, (Float) values.get("u_Radius"), 0F);
-		Assert.assertArrayEquals(new float[] {10F, 25F, 105F, 80F}, (float[]) values.get("u_InnerRect"), 1E-3F);
 		effect.post(node, 0D, 0D);
-		Assert.assertFalse(this.shader.isBound());
-	}
-
-	@Test
-	public void bindsTheShaderInsideEveryRoundedCorner() {
-		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(5F);
-		effect.pre(RectNode.create(10D, 20D, 100D, 60D), 0D, 0D);
-		Assert.assertArrayEquals(new float[] {15F, 25F, 105F, 75F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);
+		Assert.assertTrue(this.shader.getValues().isEmpty());
 	}
 
 	@Test

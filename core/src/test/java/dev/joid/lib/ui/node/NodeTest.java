@@ -472,7 +472,19 @@ public class NodeTest {
 		final OtherEffect early = new OtherEffect("early", events).priority(1);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(late).effect(early);
 		this.bridges.open(new NodeUI(node));
-		Assert.assertEquals(Arrays.asList("early init", "late init", "early pre", "late pre", "early post", "late post"), events);
+		Assert.assertEquals(Arrays.asList("early init", "late init", "early pre", "late pre", "late post", "early post"), events);
+	}
+
+	@Test
+	public void sortsItsEffectsAgainWhenAPriorityChanges() {
+		final List<String> events = new ArrayList<>();
+		final RecordingEffect first = new RecordingEffect("first", events);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(first).effect(new OtherEffect("second", events));
+		this.bridges.open(new NodeUI(node));
+		events.clear();
+		first.priority(1);
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList("second pre", "first pre", "first post", "second post"), events);
 	}
 
 	@Test

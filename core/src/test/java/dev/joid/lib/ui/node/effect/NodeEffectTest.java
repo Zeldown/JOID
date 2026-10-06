@@ -118,7 +118,7 @@ public class NodeEffectTest {
 		this.bridges.open(new NodeUI(node));
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("pre early 0.0 0.0", "pre late 0.0 0.0", "draw node", "post early 0.0 0.0", "post late 0.0 0.0"), this.trace);
+		Assert.assertEquals(Arrays.asList("pre early 0.0 0.0", "pre late 0.0 0.0", "draw node", "post late 0.0 0.0", "post early 0.0 0.0"), this.trace);
 	}
 
 	@Test

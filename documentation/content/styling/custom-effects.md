@@ -245,7 +245,7 @@ Override `expansion()` (default `0F`) when the pass draws outside the node's rec
 | `init(T node, UI ui)` | When the node is loaded into a UI and on `Node.reload()`, if `shouldApply` returns `true`. An effect added to a node that is already loaded is not initialized until the next reload. | Nothing. |
 | `shouldApply(T node)` | Every frame before the other hooks, and before `init`. Returning `false` skips the effect. | `true` |
 | `pre(T node, double mouseX, double mouseY)` | Every frame the node is visible, before its render, in priority order. Render-state effects only. | Nothing. |
-| `post(T node, double mouseX, double mouseY)` | After the render of the node and its children, in the same order as `pre`, in a `finally` block. Render-state effects only. | Nothing. |
+| `post(T node, double mouseX, double mouseY)` | After the render of the node and its children, in the reverse order of `pre`, in a `finally` block. Render-state effects only. | Nothing. |
 | `isShaderEffect()` | Every frame, to sort the effect. | `false` |
 | `toShaderPasses(T node)` | Every frame, for shader effects. | A list with the result of `toShaderPass`, or an empty list when it is `null`. |
 | `toShaderPass(T node)` | By the default `toShaderPasses`. | `null` |

@@ -18,8 +18,8 @@ public void init() {
 | --- | --- |
 | `create(float radius)` | Rounds the four corners. |
 | `create(Supplier<Float> radius)` | Same, with a radius read every frame. |
-| `create(float radius, boolean left, boolean right, boolean top, boolean bottom)` | Rounds the corners of the enabled sides. |
-| `create(Supplier<Float> radius, Supplier<Boolean> left, Supplier<Boolean> right, Supplier<Boolean> top, Supplier<Boolean> bottom)` | Same, every value read every frame. |
+| `create(float radius, boolean left, boolean top, boolean right, boolean bottom)` | Rounds the corners of the enabled sides. The sides come in the order of `DrawShape.drawRoundedRect`. |
+| `create(Supplier<Float> radius, Supplier<Boolean> left, Supplier<Boolean> top, Supplier<Boolean> right, Supplier<Boolean> bottom)` | Same, every value read every frame. |
 
 The radius is in UI units. A corner is rounded only when both of its sides are enabled:
 
@@ -27,10 +27,10 @@ The radius is in UI units. A corner is rounded only when both of its sides are e
 | --- | --- |
 | All four | `create(16F)` |
 | Top-left and top-right | `create(16F, true, true, true, false)` |
-| Bottom-left and bottom-right | `create(16F, true, true, false, true)` |
-| Top-left and bottom-left | `create(16F, true, false, true, true)` |
+| Bottom-left and bottom-right | `create(16F, true, false, true, true)` |
+| Top-left and bottom-left | `create(16F, true, true, false, true)` |
 | Top-right and bottom-right | `create(16F, false, true, true, true)` |
-| Top-left only | `create(16F, true, false, true, false)` |
+| Top-left only | `create(16F, true, true, false, false)` |
 
 ![Six white rectangles with all, top, bottom, left, right and only the top-left corners rounded](../images/rounded-corners.png "The six calls of the table, in order.")
 

@@ -42,11 +42,12 @@ RectNode
 - The blur is separable: a horizontal pass (pass priority 150), then a vertical pass (151).
 - The radius is converted to screen pixels with the current scale of the UI, so the blur looks the same at any window size.
 - The standard deviation is half the radius, with a minimum of one pixel. Each pass takes 65 samples, spaced by `radius / 32` pixels (at least one pixel).
+- A radius of `0F` or less turns the blur off: the node is drawn as is, without framebuffer.
 - The node is rendered into an area enlarged by `radius` on each side, so the blur spreads outside the node's rectangle.
 
-![The same blue rectangle blurred with radii 0, 4, 8 and 16](../images/blur-radius.png "Larger radii spread the edge further; 0F still softens it by about one pixel.")
+![The same blue rectangle blurred with radii 0, 4, 8 and 16](../images/blur-radius.png "Larger radii spread the edge further; 0F keeps the edge sharp.")
 
-Because the minimum standard deviation is one pixel, a radius of `0F` still softens the node slightly and still renders it through framebuffers. To turn the blur off, remove the effect:
+A radius supplier that reaches `0F` turns the blur off for those frames. To drop the blur for good, remove the effect:
 
 ```java
 final RectNode card = RectNode.create(100, 100, 200, 120).color(Color.BLUE).effect(BlurNodeEffect.create(8F));

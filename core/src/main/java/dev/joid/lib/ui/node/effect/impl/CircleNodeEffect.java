@@ -1,6 +1,5 @@
 package dev.joid.lib.ui.node.effect.impl;
 
-import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.shader.pipeline.pass.CircleShaderPass;
 import dev.joid.lib.ui.node.Node;
@@ -26,24 +25,6 @@ public class CircleNodeEffect<T extends Node> extends NodeEffect<T> {
 	@Override
 	public ShaderPass toShaderPass(final @NonNull T node) {
 		return new CircleShaderPass(node);
-	}
-
-	@Override
-	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {
-		if (!CircleShader.inst().isAvailable()) {
-			return;
-		}
-
-		CircleShader.inst().bind((float) Math.min(node.dw(2), node.dh(2)), (float) node.ax(node.dw(2)), (float) node.ay(node.dh(2)));
-	}
-
-	@Override
-	public void post(final @NonNull T node, final double mouseX, final double mouseY) {
-		if (!CircleShader.inst().isAvailable()) {
-			return;
-		}
-
-		CircleShader.inst().unbind();
 	}
 
 }
