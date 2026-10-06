@@ -72,9 +72,8 @@ public class MultilineTextFieldNode extends FieldNode<String, MultilineTextField
 				final int safeCol = Math.min(cursorCol, cursorLine.length());
 				final double cursorX = textX + this.getTextWidth(cursorLine.substring(0, safeCol));
 				final double cursorY = textY + lineHeight * cursorLineIdx;
-				final Color cursorColor = new Color(info.getColor());
 				final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1) / 2F);
-				cursorColor.a = cursorOpacity;
+				final Color cursorColor = new Color(info.getColor().r, info.getColor().g, info.getColor().b, cursorOpacity);
 				DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
 			}
 

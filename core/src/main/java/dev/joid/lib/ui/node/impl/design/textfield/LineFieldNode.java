@@ -69,9 +69,8 @@ public abstract class LineFieldNode<V> extends FieldNode<V, LineFieldNode<V>> {
 			if (super.isFocused()) {
 				final String beforeCursor = text.substring(0, super.getCursorPos());
 				final double cursorX = textX + super.getShownInfo().getWidth(beforeCursor);
-				final Color cursorColor = new Color(info.getColor());
 				final float cursorOpacity = (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F);
-				cursorColor.a = cursorOpacity;
+				final Color cursorColor = new Color(info.getColor().r, info.getColor().g, info.getColor().b, cursorOpacity);
 				DrawUtils.SHAPE.drawRect(cursorX, textY, 2D, info.getHeight(), cursorColor);
 			}
 

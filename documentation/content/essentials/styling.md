@@ -20,13 +20,13 @@ RectNode.create(760, 100, 200, 120).color(Color.decode("#3366CC")).attach(this);
 | Presets | `Color.WHITE`, `Color.BLACK`, `Color.GRAY`, `Color.DARKGRAY`, `Color.RED`, `Color.BLUE`, `Color.TRANSPARENT`... |
 | Float components, `0F` to `1F` | `new Color(1F, 0.5F, 0F)`, `new Color(1F, 1F, 1F, 0.5F)` |
 | Integer components, `0` to `255` | `new Color(255, 128, 0)`, `new Color(255, 128, 0, 128)` |
-| Strings | `Color.decode("#3366CC")`, `"#3366CC80"`, `"rgb(255, 128, 0)"`, `"rgba(255, 128, 0, 64)"` |
+| Strings | `Color.decode("#3366CC")`, `"#3366CC80"`, `"rgb(255, 128, 0)"`, `"rgba(255, 128, 0, 0.25)"` |
 
 > NOTE: Integer arguments select the `0`–`255` constructor: `new Color(1, 0, 0)` is almost black. Write `new Color(1F, 0F, 0F)` for red.
 
 To derive a color, use the methods that return a new one: `copyAlpha(0.5F)` (same color, half opacity), `darker()`, `brighter()`, or `to(other, 0.25F)` (a quarter of the way to `other`).
 
-> WARNING: Presets are shared instances. Never modify `Color.RED` itself (its fields or `add`/`scale`): derive a copy instead.
+Colors are immutable, so presets such as `Color.RED` are safe to share.
 
 ## Gradients
 

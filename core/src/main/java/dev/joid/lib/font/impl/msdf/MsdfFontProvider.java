@@ -122,14 +122,15 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 	}
 
 	private void bindColor(final @NonNull Color color) {
-		this.color = color.update();
-		MsdfShader.COLOR.setValue(color.r, color.g, color.b, color.a);
-		if (!color.isGradient()) {
+		this.color = color;
+		final Color current = color.update();
+		MsdfShader.COLOR.setValue(current.r, current.g, current.b, current.a);
+		if (!current.isGradient()) {
 			MsdfShader.HAS_GRADIENT.setValue(0);
 			return;
 		}
 
-		final ColorGradient gradient = color.gradient;
+		final ColorGradient gradient = current.gradient;
 		MsdfShader.HAS_GRADIENT.setValue(1);
 		MsdfShader.GRADIENT_START.setValue(gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a);
 		MsdfShader.GRADIENT_END.setValue(gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a);

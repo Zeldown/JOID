@@ -1,7 +1,8 @@
 package dev.joid.lib.color;
 
+import java.lang.reflect.Modifier;
 import java.nio.FloatBuffer;
-import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 import javax.vecmath.Vector4f;
 
@@ -60,7 +61,7 @@ public class ColorTest {
 
 	@Test
 	public void readsAnRgbInteger() {
-		final Color color = new Color(0x336699);
+		final Color color = new Color(0xFF336699);
 		Assert.assertEquals(51, color.getRed());
 		Assert.assertEquals(102, color.getGreen());
 		Assert.assertEquals(153, color.getBlue());
@@ -80,12 +81,11 @@ public class ColorTest {
 	}
 
 	@Test
-	public void readsItsComponentsAsBytes() {
-		final Color color = new Color(0x80336699);
-		Assert.assertEquals(51, color.getRedByte());
-		Assert.assertEquals(102, color.getGreenByte());
-		Assert.assertEquals(153, color.getBlueByte());
-		Assert.assertEquals(128, color.getAlphaByte());
+	public void keepsTheZeroAlphaOfAnInteger() {
+		final Color color = new Color(0x336699);
+		Assert.assertEquals(0F, color.a, 0F);
+		Assert.assertEquals(51, color.getRed());
+		Assert.assertEquals(0x00336699, color.getRGB());
 	}
 
 	@Test
@@ -129,7 +129,29 @@ public class ColorTest {
 	@Test
 	public void capsItsComponentsAtOne() {
 		Assert.assertEquals(Color.WHITE, new Color(2F, 1.5F, 1F, 3F));
-		Assert.assertEquals(Color.WHITE, new Color(2F, 1.5F, 1F, 3F, color -> color.r = 0F));
+		Assert.assertEquals(Color.WHITE, new Color(2F, 1.5F, 1F, 3F, color -> color.copyRed(0F)));
+		Assert.assertEquals(Color.WHITE, new Color(300, 256, 255, 1000));
+	}
+
+	@Test
+	public void raisesItsComponentsToZero() {
+		Assert.assertEquals(Color.TRANSPARENT, new Color(-1F, -0.5F, -0F, -2F));
+		Assert.assertEquals(new Color(0F, 0F, 0F, 1F), new Color(-10, -1, 0));
+	}
+
+	@Test
+	public void keepsEveryDerivedColorBetweenZeroAndOne() {
+		final Color color = new Color(0.5F, 0.75F, 0.25F, 0.5F);
+		Assert.assertEquals(new Color(1F, 1F, 0.5F, 1F), color.scaleCopy(2F));
+		Assert.assertEquals(Color.TRANSPARENT, color.scaleCopy(-1F));
+		Assert.assertEquals(new Color(1F, 1F, 0.5F, 1F), color.addToCopy(new Color(0.75F, 0.75F, 0.25F, 0.75F)));
+		Assert.assertEquals(new Color(0F, 0F, 0F, 0.5F), color.darker(2F));
+		Assert.assertEquals(1F, color.copyAlpha(2F).a, 0F);
+		Assert.assertEquals(0F, color.copyRed(-1F).r, 0F);
+		Assert.assertEquals(1F, color.copyGreen(2F).g, 0F);
+		Assert.assertEquals(0F, color.copyBlue(-1F).b, 0F);
+		Assert.assertEquals(Color.RED, Color.RED.to(Color.BLUE, -1F));
+		Assert.assertEquals(Color.BLUE, Color.RED.to(Color.BLUE, 2F));
 	}
 
 	@Test
@@ -140,8 +162,9 @@ public class ColorTest {
 
 	@Test
 	public void decodesAHexCode() {
-		Assert.assertEquals(new Color(0x336699), Color.decode("#336699"));
-		Assert.assertEquals(new Color(0x336699), Color.decode("336699"));
+		Assert.assertEquals(new Color(0xFF336699), Color.decode("#336699"));
+		Assert.assertEquals(new Color(0xFF336699), Color.decode("336699"));
+		Assert.assertEquals(new Color(0xFFFFAA00), Color.decode("#ffaa00"));
 	}
 
 	@Test
@@ -159,10 +182,40 @@ public class ColorTest {
 		Color.decode("#GG6699");
 	}
 
+	@Test(expected = NumberFormatException.class)
+	public void refusesANegativeHexCode() {
+		Color.decode("#-12345");
+	}
+
 	@Test
 	public void decodesRgbFunctions() {
 		Assert.assertEquals(new Color(255, 128, 0), Color.decode("rgb(255, 128, 0)"));
-		Assert.assertEquals(new Color(255, 128, 0, 64), Color.decode("rgba(255,128,0,64)"));
+		Assert.assertEquals(new Color(1F, 128 / 255F, 0F, 0.25F), Color.decode("rgba(255,128,0,0.25)"));
+	}
+
+	@Test
+	public void readsTheAlphaOfRgbaAsAFraction() {
+		Assert.assertEquals(0.5F, Color.decode("rgba(0, 0, 0, 0.5)").a, 0F);
+		Assert.assertEquals(1F, Color.decode("rgba(0, 0, 0, 1)").a, 0F);
+		Assert.assertEquals(0F, Color.decode("rgba(0, 0, 0, 0)").a, 0F);
+		Assert.assertEquals(1F, Color.decode("rgba(0, 0, 0, 64)").a, 0F);
+	}
+
+	@Test
+	public void decodesFunctionsWhateverTheCaseOfTheirName() {
+		Assert.assertEquals(new Color(255, 128, 0), Color.decode("RGB(255, 128, 0)"));
+		Assert.assertEquals(new Color(1F, 128 / 255F, 0F, 0.5F), Color.decode("Rgba(255, 128, 0, 0.5)"));
+		Assert.assertEquals(Color.BLUE, Color.decode("GRADIENT(#FF0000, #0000FF)").gradient.getEndColor());
+	}
+
+	@Test(expected = NumberFormatException.class)
+	public void refusesAFunctionWithAMissingComponent() {
+		Color.decode("rgb(255, 128)");
+	}
+
+	@Test(expected = NumberFormatException.class)
+	public void refusesAFunctionWithoutItsClosingParenthesis() {
+		Color.decode("rgb(255, 128, 0");
 	}
 
 	@Test
@@ -180,9 +233,46 @@ public class ColorTest {
 	}
 
 	@Test
+	public void decodesAGradientBetweenFunctions() {
+		final Color color = Color.decode("gradient(rgb(255, 0, 0), rgba(0, 0, 255, 0.5), 0, 0, 0, 1)");
+		Assert.assertEquals(Color.RED, color.gradient.getStartColor());
+		Assert.assertEquals(new Color(0F, 0F, 1F, 0.5F), color.gradient.getEndColor());
+		Assert.assertEquals(new Vector4f(0F, 0F, 0F, 1F), color.gradient.getDirection());
+	}
+
+	@Test
+	public void decodesANestedGradient() {
+		final Color color = Color.decode("gradient(gradient(#FF0000, #00FF00), #0000FF)");
+		Assert.assertTrue(color.gradient.getStartColor().isGradient());
+		Assert.assertEquals(Color.GREEN, color.gradient.getStartColor().gradient.getEndColor());
+	}
+
+	@Test(expected = NumberFormatException.class)
+	public void refusesAGradientWithAnIncompleteDirection() {
+		Color.decode("gradient(#FF0000, #0000FF, 1, 0)");
+	}
+
+	@Test
 	public void decodesTheAnimatedColors() {
+		Assert.assertSame(Color.RAINBOW, Color.decode("#Rainbow"));
+		Assert.assertSame(Color.LOADING, Color.decode("LOADING"));
 		ColorTest.assertRainbow(Color.decode("#Rainbow").update());
 		ColorTest.assertLoading(Color.decode("LOADING").update());
+	}
+
+	@Test
+	public void animatesADecodedRainbow() {
+		final Color rainbow = Color.decode("rainbow");
+		final Color first = rainbow.update();
+		this.bridges.getClock().advance(1000L);
+		Assert.assertNotEquals(first, rainbow.update());
+		Assert.assertEquals(Color.RAINBOW(1000L), rainbow.update());
+	}
+
+	@Test
+	public void keepsTheAlphaOfAFadedRainbow() {
+		Assert.assertEquals(0.5F, Color.RAINBOW.copyAlpha(0.5F).update().a, 0F);
+		Assert.assertEquals(0.5F, Color.LOADING.copyAlpha(0.5F).update().a, 0F);
 	}
 
 	@Test
@@ -219,8 +309,8 @@ public class ColorTest {
 
 	@Test
 	public void keepsTheUpdateOfTheClosestColor() {
-		final Consumer<Color> first = color -> color.r = 1F;
-		final Consumer<Color> second = color -> color.b = 1F;
+		final UnaryOperator<Color> first = color -> color.copyRed(1F);
+		final UnaryOperator<Color> second = color -> color.copyBlue(1F);
 		final Color from = new Color(1F, 0F, 0F, 1F, first);
 		final Color to = new Color(0F, 0F, 1F, 1F, second);
 		Assert.assertSame(first, Color.transition(from, to, 0.5F).update);
@@ -319,22 +409,27 @@ public class ColorTest {
 	}
 
 	@Test
-	public void addsAnotherColorInPlace() {
-		final Color color = new Color(0.25F, 0.5F, 0F, 0.5F);
-		color.add(new Color(0.5F, 0.25F, 0.25F, 0.5F));
-		Assert.assertEquals(new Color(0.75F, 0.75F, 0.25F, 1F), color);
+	public void cannotBeModified() throws ReflectiveOperationException {
+		for (final String field : new String[] {"r", "g", "b", "a", "update", "gradient"}) {
+			Assert.assertTrue(field, Modifier.isFinal(Color.class.getField(field).getModifiers()));
+		}
 	}
 
 	@Test
-	public void scalesInPlace() {
-		final Color color = new Color(0.5F, 1F, 0.25F, 1F);
-		color.scale(0.5F);
-		Assert.assertEquals(new Color(0.25F, 0.5F, 0.125F, 0.5F), color);
+	public void keepsItsPresetsUnchanged() {
+		Color.RED.addToCopy(Color.BLUE);
+		Color.RED.scaleCopy(0.5F);
+		Color.RED.copyAlpha(0.5F);
+		Color.RAINBOW.update();
+		Color.LOADING.update();
+		Assert.assertEquals(new Color(1F, 0F, 0F, 1F), Color.RED);
+		Assert.assertEquals(Color.WHITE, Color.RAINBOW);
+		Assert.assertEquals(Color.WHITE, Color.LOADING);
 	}
 
 	@Test
 	public void addsAnotherColorToACopy() {
-		final Consumer<Color> update = color -> color.r = 1F;
+		final UnaryOperator<Color> update = color -> color.copyRed(1F);
 		final Color color = new Color(0.25F, 0.5F, 0F, 0.5F, update);
 		final Color sum = color.addToCopy(new Color(0.5F, 0.25F, 0.25F, 0.5F));
 		Assert.assertEquals(new Color(0.75F, 0.75F, 0.25F, 1F), sum);
@@ -344,7 +439,7 @@ public class ColorTest {
 
 	@Test
 	public void scalesACopy() {
-		final Consumer<Color> update = color -> color.r = 1F;
+		final UnaryOperator<Color> update = color -> color.copyRed(1F);
 		final Color color = new Color(0.5F, 1F, 0.25F, 1F, update);
 		final Color scaled = color.scaleCopy(0.5F);
 		Assert.assertEquals(new Color(0.25F, 0.5F, 0.125F, 0.5F), scaled);
@@ -387,7 +482,7 @@ public class ColorTest {
 
 	@Test
 	public void copiesAColorWithItsUpdate() {
-		final Consumer<Color> update = color -> color.r = 1F;
+		final UnaryOperator<Color> update = color -> color.copyRed(1F);
 		final Color color = new Color(0.25F, 0.5F, 0.75F, 0.5F, update);
 		final Color copy = color.copy();
 		Assert.assertNotSame(color, copy);
@@ -397,7 +492,7 @@ public class ColorTest {
 
 	@Test
 	public void replacesOneComponentInACopy() {
-		final Consumer<Color> update = color -> color.r = 1F;
+		final UnaryOperator<Color> update = color -> color.copyRed(1F);
 		final Color color = new Color(0.25F, 0.5F, 0.75F, 0.5F, update);
 		Assert.assertEquals(new Color(1F, 0.5F, 0.75F, 0.5F), color.copyRed(1F));
 		Assert.assertEquals(new Color(0.25F, 0F, 0.75F, 0.5F), color.copyGreen(0F));
@@ -409,10 +504,10 @@ public class ColorTest {
 	}
 
 	@Test
-	public void updatesItselfThroughItsConsumer() {
-		final Color animated = new Color(0F, 0F, 0F, 1F, color -> color.r = 1F);
-		Assert.assertSame(animated, animated.update());
-		Assert.assertEquals(1F, animated.r, 0F);
+	public void returnsTheFrameOfItsUpdate() {
+		final Color animated = new Color(0F, 0F, 0F, 0.5F, color -> new Color(1F, 0F, 0F, color.a));
+		Assert.assertEquals(new Color(1F, 0F, 0F, 0.5F), animated.update());
+		Assert.assertEquals(0F, animated.r, 0F);
 	}
 
 	@Test
@@ -431,6 +526,22 @@ public class ColorTest {
 		Assert.assertNotEquals(new Color(1F, 0F, 0.5F, 1F), Color.RED);
 		Assert.assertNotEquals(new Color(1F, 0F, 0F, 0.5F), Color.RED);
 		Assert.assertNotEquals(Color.RED, "#FF0000FF");
+	}
+
+	@Test
+	public void hashesEveryComponent() {
+		Assert.assertNotEquals(new Color(0.2F, 0.4F, 0F, 1F).hashCode(), new Color(0.4F, 0.2F, 0F, 1F).hashCode());
+		Assert.assertNotEquals(new Color(0F, 0.2F, 0.4F, 1F).hashCode(), new Color(0F, 0.4F, 0.2F, 1F).hashCode());
+		Assert.assertNotEquals(new Color(0.5F, 0.5F, 0.5F, 1F).hashCode(), new Color(0.5F, 0.5F, 0.5F, 0.9F).hashCode());
+		Assert.assertNotEquals(new Color(0.1F, 0F, 0F, 1F).hashCode(), new Color(0.2F, 0F, 0F, 1F).hashCode());
+	}
+
+	@Test
+	public void hashesLikeAnEqualColor() {
+		final Color animated = new Color(0.25F, 0.5F, 0.75F, 1F, color -> Color.RED);
+		Assert.assertEquals(new Color(0.25F, 0.5F, 0.75F, 1F), animated);
+		Assert.assertEquals(new Color(0.25F, 0.5F, 0.75F, 1F).hashCode(), animated.hashCode());
+		Assert.assertEquals(Color.RED.hashCode(), Color.RED.toGradient(Color.BLUE).hashCode());
 	}
 
 	private static void assertRainbow(final Color color) {
@@ -454,6 +565,14 @@ public class ColorTest {
 		Assert.assertEquals(0.2F, state.getRed(), 0F);
 		Assert.assertEquals(0.4F, state.getGreen(), 0F);
 		Assert.assertEquals(0.6F, state.getBlue(), 0F);
+		Assert.assertEquals(0.8F, state.getAlpha(), 0F);
+	}
+
+	@Test
+	public void bindsTheFrameOfAnAnimatedColor() {
+		new Color(0F, 0F, 0F, 1F, color -> new Color(0.2F, 0.4F, 0.6F, 0.8F)).bind();
+		final RenderState state = this.bridges.getRender().getState();
+		Assert.assertEquals(0.2F, state.getRed(), 0F);
 		Assert.assertEquals(0.8F, state.getAlpha(), 0F);
 	}
 

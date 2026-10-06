@@ -1,15 +1,20 @@
 package dev.joid.lib.color;
 
 import java.nio.FloatBuffer;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.function.UnaryOperator;
 
 import javax.vecmath.Vector4f;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
+@EqualsAndHashCode
 public final class Color {
 
 	public static final Color RED         = new Color(1F, 0F, 0F, 1F);
@@ -27,46 +32,19 @@ public final class Color {
 	public static final Color LIGHTGRAY   = new Color(0.7F, 0.7F, 0.7F, 1F);
 	public static final Color TRANSPARENT = new Color(0F, 0F, 0F, 0F);
 
-	public static final Color RAINBOW = new Color(1F, 1F, 1F, 1F, color -> {
-		final Color rainbow = Color.RAINBOW();
-		color.r = rainbow.r;
-		color.g = rainbow.g;
-		color.b = rainbow.b;
-		color.a = rainbow.a;
-	});
-	public static final Color LOADING = new Color(1F, 1F, 1F, 1F, color -> {
-		final Color loading = Color.LOADING();
-		color.r = loading.r;
-		color.g = loading.g;
-		color.b = loading.b;
-		color.a = loading.a;
-	});
+	public static final Color RAINBOW = new Color(1F, 1F, 1F, 1F, color -> Color.RAINBOW().copyAlpha(color.a));
+	public static final Color LOADING = new Color(1F, 1F, 1F, 1F, color -> Color.LOADING().copyAlpha(color.a));
 
-	public float r = 0F;
-	public float g = 0F;
-	public float b = 0F;
-	public float a = 1F;
+	public final float r;
+	public final float g;
+	public final float b;
+	public final float a;
 
-	public Consumer<Color> update;
-	public ColorGradient gradient;
+	@EqualsAndHashCode.Exclude public final UnaryOperator<Color> update;
+	@EqualsAndHashCode.Exclude public final ColorGradient        gradient;
 
 	public Color(final int value) {
-		final int r = (value & 0x00FF0000) >> 16;
-		final int g = (value & 0x0000FF00) >> 8;
-		final int b = value & 0x000000FF;
-		int a = (value & 0xFF000000) >> 24;
-
-		if (a < 0) {
-			a += 256;
-		}
-		if (a == 0) {
-			a = 255;
-		}
-
-		this.r = r / 255F;
-		this.g = g / 255F;
-		this.b = b / 255F;
-		this.a = a / 255F;
+		this((value >> 16 & 0xFF) / 255F, (value >> 8 & 0xFF) / 255F, (value & 0xFF) / 255F, (value >>> 24) / 255F);
 	}
 
 	public Color(final Color color) {
@@ -82,8 +60,7 @@ public final class Color {
 	}
 
 	public Color(final ColorGradient gradient) {
-		this(gradient.getStartColor());
-		this.gradient = gradient;
+		this(gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a, null, gradient);
 	}
 
 	public Color(final int r, final int g, final int b) {
@@ -99,49 +76,53 @@ public final class Color {
 	}
 
 	public Color(final float r, final float g, final float b, final float a) {
-		this.r = Math.min(r, 1);
-		this.g = Math.min(g, 1);
-		this.b = Math.min(b, 1);
-		this.a = Math.min(a, 1);
+		this(r, g, b, a, null, null);
 	}
 
-	public Color(final float r, final float g, final float b, final float a, final Consumer<Color> update) {
-		this.r = Math.min(r, 1);
-		this.g = Math.min(g, 1);
-		this.b = Math.min(b, 1);
-		this.a = Math.min(a, 1);
+	public Color(final float r, final float g, final float b, final float a, final UnaryOperator<Color> update) {
+		this(r, g, b, a, update, null);
+	}
+
+	private Color(final float r, final float g, final float b, final float a, final UnaryOperator<Color> update, final ColorGradient gradient) {
+		this.r = Color.clamp(r);
+		this.g = Color.clamp(g);
+		this.b = Color.clamp(b);
+		this.a = Color.clamp(a);
 
 		this.update = update;
+		this.gradient = gradient;
 	}
 
 	public static @NonNull Color decode(final @NonNull String nm) {
-		if ("rainbow".equalsIgnoreCase(nm.replace("#", ""))) {
-			return Color.RAINBOW();
+		final String lower = nm.toLowerCase(Locale.ROOT);
+
+		if ("rainbow".equals(lower.replace("#", ""))) {
+			return Color.RAINBOW;
 		}
 
-		if ("loading".equalsIgnoreCase(nm.replace("#", ""))) {
-			return Color.LOADING();
+		if ("loading".equals(lower.replace("#", ""))) {
+			return Color.LOADING;
 		}
 
-		if (nm.startsWith("rgb(")) {
-			final String[] parts = nm.substring(4, nm.length() - 1).split(",");
-			return new Color(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim()));
+		if (lower.startsWith("rgb(")) {
+			final List<String> parts = Color.arguments(nm, 4, 3);
+			return new Color(Integer.parseInt(parts.get(0)), Integer.parseInt(parts.get(1)), Integer.parseInt(parts.get(2)));
 		}
 
-		if (nm.startsWith("rgba(")) {
-			final String[] parts = nm.substring(5, nm.length() - 1).split(",");
-			return new Color(Integer.parseInt(parts[0].trim()), Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[2].trim()), Integer.parseInt(parts[3].trim()));
+		if (lower.startsWith("rgba(")) {
+			final List<String> parts = Color.arguments(nm, 5, 4);
+			return new Color(Integer.parseInt(parts.get(0)) / 255F, Integer.parseInt(parts.get(1)) / 255F, Integer.parseInt(parts.get(2)) / 255F, Float.parseFloat(parts.get(3)));
 		}
 
-		if (nm.startsWith("gradient(")) {
-			final String[] parts = nm.substring(9, nm.length() - 1).split(",");
-			final Vector4f direction = parts.length < 6 ? new Vector4f(0F, 0F, 1F, 0F) : new Vector4f(Float.parseFloat(parts[2].trim()), Float.parseFloat(parts[3].trim()), Float.parseFloat(parts[4].trim()), Float.parseFloat(parts[5].trim()));
-			return new Color(new ColorGradient(Color.decode(parts[0].trim()), Color.decode(parts[1].trim()), direction));
+		if (lower.startsWith("gradient(")) {
+			final List<String> parts = Color.arguments(nm, 9, 2, 6);
+			final Vector4f direction = parts.size() == 2 ? new Vector4f(0F, 0F, 1F, 0F) : new Vector4f(Float.parseFloat(parts.get(2)), Float.parseFloat(parts.get(3)), Float.parseFloat(parts.get(4)), Float.parseFloat(parts.get(5)));
+			return new Color(new ColorGradient(Color.decode(parts.get(0)), Color.decode(parts.get(1)), direction));
 		}
 
 		final String hex = nm.startsWith("#") ? nm : "#" + nm;
 		if (hex.length() == 7) {
-			return new Color(Integer.decode(hex.substring(0, 7)));
+			return new Color(0xFF000000 | Integer.parseUnsignedInt(hex.substring(1), 16));
 		}
 
 		if (hex.length() == 9) {
@@ -255,8 +236,8 @@ public final class Color {
 	}
 
 	public void bind() {
-		this.update();
-		BridgeHandler.RENDER.get().color(this.r, this.g, this.b, this.a);
+		final Color color = this.update();
+		BridgeHandler.RENDER.get().color(color.r, color.g, color.b, color.a);
 	}
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
@@ -302,22 +283,6 @@ public final class Color {
 		return (int) (this.g * 255F);
 	}
 
-	public int getRedByte() {
-		return (int) (this.r * 255F);
-	}
-
-	public int getBlueByte() {
-		return (int) (this.b * 255F);
-	}
-
-	public int getAlphaByte() {
-		return (int) (this.a * 255F);
-	}
-
-	public int getGreenByte() {
-		return (int) (this.g * 255F);
-	}
-
 	public @NonNull Color darker() {
 		return this.darker(0.5F);
 	}
@@ -340,36 +305,12 @@ public final class Color {
 		return new Color(this.r * c.r, this.g * c.g, this.b * c.b, this.a * c.a);
 	}
 
-	public void add(final @NonNull Color c) {
-		this.r += c.r;
-		this.g += c.g;
-		this.b += c.b;
-		this.a += c.a;
-	}
-
-	public void scale(final float value) {
-		this.r *= value;
-		this.g *= value;
-		this.b *= value;
-		this.a *= value;
-	}
-
 	public @NonNull Color addToCopy(final @NonNull Color c) {
-		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
-		copy.r += c.r;
-		copy.g += c.g;
-		copy.b += c.b;
-		copy.a += c.a;
-		return copy;
+		return new Color(this.r + c.r, this.g + c.g, this.b + c.b, this.a + c.a, this.update);
 	}
 
 	public @NonNull Color scaleCopy(final float value) {
-		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
-		copy.r *= value;
-		copy.g *= value;
-		copy.b *= value;
-		copy.a *= value;
-		return copy;
+		return new Color(this.r * value, this.g * value, this.b * value, this.a * value, this.update);
 	}
 
 	public @NonNull Color to(final @NonNull Color target, final float progress) {
@@ -477,22 +418,20 @@ public final class Color {
 	}
 
 	public @NonNull Color copy() {
-		final Color copy = new Color(this.r, this.g, this.b, this.a, this.update);
 		if (this.isGradient()) {
-			copy.gradient = new ColorGradient(this.gradient.getStartColor().copy(), this.gradient.getEndColor().copy(), new Vector4f(this.gradient.getDirection()));
+			return new Color(this.r, this.g, this.b, this.a, this.update, new ColorGradient(this.gradient.getStartColor().copy(), this.gradient.getEndColor().copy(), new Vector4f(this.gradient.getDirection())));
 		}
-		return copy;
+		return new Color(this.r, this.g, this.b, this.a, this.update);
 	}
 
 	public @NonNull Color copyAlpha(final float alpha) {
-		final Color copy = new Color(this.r, this.g, this.b, alpha, this.update);
 		if (this.isGradient()) {
 			final Color start = this.gradient.getStartColor();
 			final Color end = this.gradient.getEndColor();
 			final float scale = this.a > 0F ? alpha / this.a : 0F;
-			copy.gradient = new ColorGradient(start.copyAlpha(this.a > 0F ? start.a * scale : alpha), end.copyAlpha(this.a > 0F ? end.a * scale : alpha), new Vector4f(this.gradient.getDirection()));
+			return new Color(this.r, this.g, this.b, alpha, this.update, new ColorGradient(start.copyAlpha(this.a > 0F ? start.a * scale : alpha), end.copyAlpha(this.a > 0F ? end.a * scale : alpha), new Vector4f(this.gradient.getDirection())));
 		}
-		return copy;
+		return new Color(this.r, this.g, this.b, alpha, this.update);
 	}
 
 	public @NonNull Color copyRed(final float red) {
@@ -508,10 +447,7 @@ public final class Color {
 	}
 
 	public @NonNull Color update() {
-		if (this.update != null) {
-			this.update.accept(this);
-		}
-		return this;
+		return this.update == null ? this : this.update.apply(this);
 	}
 
 	public boolean isGradient() {
@@ -526,6 +462,39 @@ public final class Color {
 		return str.length() == 1 ? "0" + str : str;
 	}
 
+	private static float clamp(final float value) {
+		return Math.max(0F, Math.min(1F, value));
+	}
+
+	private static @NonNull List<String> arguments(final @NonNull String text, final int start, final int... counts) {
+		if (!text.endsWith(")")) {
+			throw new NumberFormatException("Invalid color: " + text);
+		}
+
+		final List<String> arguments = new ArrayList<>();
+		int depth = 0;
+		int from = start;
+		for (int i = start; i < text.length() - 1; i++) {
+			final char character = text.charAt(i);
+			if (character == '(') {
+				depth++;
+			} else if (character == ')') {
+				depth--;
+			} else if (character == ',' && depth == 0) {
+				arguments.add(text.substring(from, i).trim());
+				from = i + 1;
+			}
+		}
+		arguments.add(text.substring(from, text.length() - 1).trim());
+
+		for (final int count : counts) {
+			if (arguments.size() == count) {
+				return arguments;
+			}
+		}
+		throw new NumberFormatException("Invalid color: " + text);
+	}
+
 	@Override
 	public @NonNull String toString() {
 		return String.format(
@@ -533,20 +502,6 @@ public final class Color {
 				this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha(),
 				this.encode()
 				);
-	}
-
-	@Override
-	public int hashCode() {
-		return (int) (this.r + this.g + this.b + this.a) * 255;
-	}
-
-	@Override
-	public boolean equals(final Object other) {
-		if (other instanceof Color) {
-			final Color o = (Color) other;
-			return o.r == this.r && o.g == this.g && o.b == this.b && o.a == this.a;
-		}
-		return false;
 	}
 
 }
