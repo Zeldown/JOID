@@ -40,6 +40,7 @@ public abstract class CheckboxNode extends Node {
 
 	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
 		this.checked = checked;
+		super.sync(this.signal, checked);
 		return (T) this;
 	}
 

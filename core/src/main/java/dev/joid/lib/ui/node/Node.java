@@ -1663,6 +1663,12 @@ public abstract class Node implements INode {
 		});
 	}
 
+	protected final <V> void sync(final Signal<V> signal, final @NonNull V value) {
+		if (signal != null && !value.equals(signal.getOrDefault())) {
+			signal.set(value);
+		}
+	}
+
 	private <V> void listen(final Signal<V> signal, final Supplier<Boolean> condition, final Consumer<V> consumer) {
 		signal.subscribe(value -> {
 			consumer.accept(value);

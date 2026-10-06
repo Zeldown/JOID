@@ -157,6 +157,14 @@ public class SelectorNodeTest {
 	}
 
 	@Test
+	public void writesAChosenValueIntoItsSignal() {
+		final Signal<String> language = new Signal<>("first");
+		this.selector.signal(language).value("third");
+		Assert.assertEquals("third", language.getOrDefault());
+		Assert.assertTrue(this.changes.isEmpty());
+	}
+
+	@Test
 	public void opensDownwardsOnlyInItsDownDirection() {
 		Assert.assertTrue(SelectorDirection.DOWN.isDown());
 		Assert.assertFalse(SelectorDirection.UP.isDown());

@@ -99,6 +99,7 @@ public abstract class SliderNode<O> extends Node {
 
 		this.valueSet = valueSet;
 		this.value    = value;
+		super.sync(this.signal, value);
 		return (T) this;
 	}
 
@@ -108,6 +109,7 @@ public abstract class SliderNode<O> extends Node {
 		}
 
 		this.value = value;
+		super.sync(this.signal, value);
 		if (super.getUi() != null) {
 			this.init(super.getUi());
 		}

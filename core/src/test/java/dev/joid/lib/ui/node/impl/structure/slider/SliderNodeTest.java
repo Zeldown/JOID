@@ -107,6 +107,18 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void writesAChosenValueIntoItsSignal() {
+		final List<Integer> changes = new ArrayList<>();
+		final Signal<Integer> signal = new Signal<>(5);
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor()).signal(signal).onChange((node, value) -> changes.add(value));
+		this.bridges.open(new NodeUI(slider)).frame();
+		slider.value(3);
+		this.bridges.frame();
+		Assert.assertEquals(3, signal.getOrDefault().intValue());
+		Assert.assertTrue(changes.isEmpty());
+	}
+
+	@Test
 	public void followsItsDraggedCursor() {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor());
 		this.bridges.open(new NodeUI(slider)).frame();

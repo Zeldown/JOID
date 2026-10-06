@@ -67,7 +67,7 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 | `getValue()` | `Optional<V>` of the selected value, empty while the selector has no option. |
 
 - Values are compared with `equals`. Give each option a distinct value: `value(...)` selects the first option equal to the value.
-- `values(...)` and `value(...)` do not call `onChange` and do not write the signal.
+- `values(...)` and `value(...)` write the selected value into the signal, without calling `onChange`.
 - `values(...)` checks the selected value last: with a value that is not in the list, it creates the options, then throws an `IllegalArgumentException`.
 
 > WARNING: Let `values(...)` create the options. A child that you attach yourself is laid out as an option but has no value: selecting it gives `onChange` a `null` value and leaves `getValue()` empty.

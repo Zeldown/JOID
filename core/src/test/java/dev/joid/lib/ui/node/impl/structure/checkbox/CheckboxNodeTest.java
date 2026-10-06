@@ -59,6 +59,16 @@ public class CheckboxNodeTest {
 	}
 
 	@Test
+	public void writesAChosenStateIntoItsSignal() {
+		final List<Boolean> changes = new ArrayList<>();
+		final BooleanSignal subtitles = new BooleanSignal(false);
+		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange((node, value) -> changes.add(value));
+		checkbox.checked(true);
+		Assert.assertTrue(subtitles.getOrDefault());
+		Assert.assertTrue(changes.isEmpty());
+	}
+
+	@Test
 	public void ignoresAClickBesideIt() {
 		final Checkbox checkbox = new Checkbox();
 		this.bridges.open(new NodeUI(checkbox)).frame();

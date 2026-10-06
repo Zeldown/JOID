@@ -65,6 +65,16 @@ public class ToggleNodeTest {
 	}
 
 	@Test
+	public void writesAChosenSideIntoItsSignal() {
+		final List<Object> changes = new ArrayList<>();
+		final BooleanSignal music = new BooleanSignal(false);
+		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange((node, value) -> changes.add(value));
+		toggle.toggle(true);
+		Assert.assertTrue(music.getOrDefault());
+		Assert.assertTrue(changes.isEmpty());
+	}
+
+	@Test
 	public void ignoresAClickBesideIt() {
 		final Toggle toggle = new Toggle().state("on", 0);
 		this.bridges.open(new NodeUI(toggle)).frame();

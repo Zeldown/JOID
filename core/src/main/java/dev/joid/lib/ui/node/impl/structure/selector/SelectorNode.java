@@ -144,6 +144,7 @@ public abstract class SelectorNode<V> extends Node {
 		for (final Map.Entry<Node, V> entry : this.optionMap.entrySet()) {
 			if (Objects.equals(entry.getValue(), value)) {
 				this.selected = entry.getKey();
+				super.sync(this.signal, value);
 				return (T) this;
 			}
 		}

@@ -41,6 +41,7 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final boolean toggle) {
 		this.toggle = toggle;
+		super.sync(this.signal, toggle);
 		return (T) this;
 	}
 

@@ -83,7 +83,7 @@ ThemeToggleNode
 - The toggle starts on the signal's value: here on its toggled side, `"dark"`.
 - Each click writes the new side into the signal, before `onChange` runs.
 - Each value the signal publishes later sets the side without calling `onChange`, while the toggle's UI is open.
-- `toggle(boolean)` does not write the signal.
+- `toggle(boolean)` writes the signal too, without calling `onChange`.
 
 ## onChange
 

@@ -97,7 +97,7 @@ SegmentedSwitchNode
 - The switch starts on the signal's value: here "High".
 - Each `index(...)` writes the name of the new state into the signal, before `(node, state)` runs.
 - Each value the signal publishes later selects that state without calling `onChange`, while the switch's UI is open, and the switch rebuilds. A name that is not one of the states is ignored.
-- Call `signal(...)` after `state(...)`: the signal's value is applied once, when you bind it, and only an existing state can be selected. `state(...)` does not write the signal.
+- Call `signal(...)` after `state(...)`: the signal's value is applied once, when you bind it, and only an existing state can be selected. `state(...)` does not write the signal; `index(...)` does, and calls `onChange`, because it is also the method your subclass calls on a click.
 
 ## Rebuilding on change
 
