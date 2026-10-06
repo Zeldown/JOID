@@ -21,7 +21,7 @@ public class NodeKeyPressedCallbackTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void runsAfterTheNodeAndConsumesTheContext() {
+	public void runsAfterTheNodeWithoutConsumingTheContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeKeyPressedCallback<RectNode> callback = (node, character, key) -> received.addAll(Arrays.asList(node, character, key));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
@@ -31,7 +31,7 @@ public class NodeKeyPressedCallbackTest {
 		Assert.assertFalse(context.isCancelled());
 		callback.post(rect, context, 'z', Key.Z);
 		Assert.assertEquals(Arrays.asList(rect, 'z', Key.Z), received);
-		Assert.assertTrue(context.isCancelled());
+		Assert.assertFalse(context.isCancelled());
 	}
 
 	@Test
@@ -62,6 +62,16 @@ public class NodeKeyPressedCallbackTest {
 		this.bridges.open(new NodeUI(parent)).frames(30);
 		this.bridges.getUi().keyTyped('b', Key.B);
 		Assert.assertEquals(Arrays.asList(child, 'b'), received);
+	}
+
+	@Test
+	public void ignoresAKeyOnAHiddenOrDisabledNode() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(rect -> false).onKeyPressed((node, character, key) -> received.add(node));
+		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(rect -> false).onKeyPressed((node, character, key) -> received.add(node));
+		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
+		this.bridges.getUi().keyTyped('a', Key.A);
+		Assert.assertTrue(received.isEmpty());
 	}
 
 	public static final class NodeUI extends UI {

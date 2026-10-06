@@ -18,7 +18,9 @@ public interface NodeKeyPressedCallback<T extends Node> extends NodeCallback {
 
 	@NodeCallbackMethod(Type.POST)
 	public default void post(final @NonNull T node, final @NonNull InternalContext context, final char c, final @NonNull Key key) {
-		context.cancel(() -> this.apply(node, c, key));
+		if (!context.isCancelled()) {
+			this.apply(node, c, key);
+		}
 	}
 
 }

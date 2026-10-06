@@ -32,7 +32,7 @@ The blue square follows the mouse while you hold the left button on it and stays
 3. **Follow**: on every frame, the node eases its absolute position toward the target, covering a sixth of the remaining distance per 1/60 s (frame-rate independent) and landing on it once closer than `0.5` unit.
 4. **End**: a mouse button release ends the drag, and so does the window grabbing the mouse (`IWindowBridge.isMouseGrabbed()`). `onDragEnd` fires: with snap targets, the node heads to a target or back to its start; without, it stays where it was dropped.
 
-> NOTE: The drag starts only when the press is still unconsumed after the node's own handlers. A child that consumes the press (a button with `onClick`, a text field...) or an `onClick`/`onMousePressed` lambda on the node itself prevents the drag. Starting a drag does not consume the press: overlapping draggable nodes under the mouse all start dragging.
+> NOTE: The drag starts only when the press is still unconsumed after the node's own handlers. A child that consumes the press (a button with `onClick`, a text field...) or an `onClick` on the node itself prevents the drag. Starting a drag does not consume the press: overlapping draggable nodes under the mouse all start dragging.
 
 ## Areas with DraggableProperty factories
 

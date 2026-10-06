@@ -17,7 +17,9 @@ public interface NodeMouseScrollCallback<T extends Node> extends NodeCallback {
 
 	@NodeCallbackMethod(Type.POST)
 	public default void post(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final int value) {
-		context.cancel(() -> this.apply(node, mouseX, mouseY, value));
+		if (!context.isCancelled()) {
+			this.apply(node, mouseX, mouseY, value);
+		}
 	}
 
 }

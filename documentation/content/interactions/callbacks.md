@@ -134,18 +134,18 @@ Every method except `isCancelled` returns the context.
 
 A mouse or key event travels through every node of the UI with a single context. A node consumes the event by cancelling that context. The following consume an event:
 
-- the default `post` of the input callbacks: any lambda given to `onClick`, `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` or `onKeyPressed` consumes the event it runs for;
+- `onClick`: a click on a node consumes the press;
 - built-in nodes that handle the event, such as a focused text field or a clicked checkbox;
 - a node that scrolls its content with the wheel;
 - UI keybinds and the zoom shortcuts (see [Mouse and Keyboard](mouse-and-keyboard.md)).
 
 Once the event is consumed, the input lambdas of the nodes reached afterwards do not run, `onClick` does not fire, built-in nodes ignore it, no drag starts, the UI keybinds do not run, and the UI bridge does not pass it to the UIs below.
 
-> WARNING: `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` receive every event of their kind, wherever the mouse is, and their lambda consumes it. A node with such a lambda takes the event away from every node reached after it (the nodes behind it and its own ancestors) and from the UI keybinds. Use `onClick` for clicks on the node, and override `post` as shown below when the other nodes must still receive the event.
+`onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` are listeners: their lambda runs for every event of its kind that is not consumed yet, wherever the mouse is, and leaves the event to the other nodes, the UI keybinds and the UIs below. Hidden and disabled nodes receive no input event at all: neither their lambdas nor their built-in handling run, and the children of a hidden node are skipped too.
 
-### Observing an event without consuming it
+### Consuming an event from a listener
 
-Override `post` so it does not cancel the context. This callback logs every key, handled or not, and leaves it to the other nodes:
+Override `post` and cancel the context to keep an event for your node. This field-like node takes Enter for itself, so the keybinds and the other nodes no longer see it:
 
 ```java
 RectNode
@@ -157,7 +157,10 @@ RectNode
 
     @Override
     public void post(final RectNode node, final InternalContext context, final char c, final Key key) {
-        System.out.println(key + (context.isCancelled() ? " (handled by another node)" : ""));
+        if (!context.isCancelled() && key == Key.ENTER) {
+            System.out.println("Submitted");
+            context.cancel();
+        }
     }
 
 })
@@ -205,14 +208,14 @@ Inside a UI, an input event reaches the top-level nodes from front to back: high
 1. The node's scrollbar, and its skeleton node while the node is not mounted.
 2. The node's PRE callbacks.
 3. The children with a z-index of 0 or more, front to back, each one recursively.
-4. For a press: `onClick` when the node is hovered. For a wheel event: the scrolling of the node when it is hovered and the event is not consumed.
+4. For a press: `onClick` when the node is hovered and the press is not consumed; the click then consumes it. For a wheel event: the scrolling of the node when it is hovered and the event is not consumed.
 5. The node's own hook (`mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`).
 6. The children with a negative z-index, front to back.
 7. For a mouse drag: the move of the node's drag target when it is being dragged.
 8. The node's POST callbacks.
 9. For a press: the start of a drag when the press is a left click over the node and is not consumed.
 
-A release ends the drag of the node between steps 1 and 2. PRE callbacks therefore run from parent to child and POST callbacks from child to parent: the deepest, front-most node gets the first chance to consume the event in its POST phase. After the nodes, the UI's own hooks run; the full path from the window to the nodes is described in [Mouse and Keyboard](mouse-and-keyboard.md#event-dispatch-order).
+A hidden node is skipped with its whole subtree. A disabled node still passes the event to its children (steps 1, 3, 6 and 7) but runs none of its own steps. A release ends the drag of the node between steps 1 and 2, even when the node is hidden. PRE callbacks therefore run from parent to child and POST callbacks from child to parent: the deepest, front-most node gets the first chance to consume the event in its POST phase. After the nodes, the UI's own hooks run; the full path from the window to the nodes is described in [Mouse and Keyboard](mouse-and-keyboard.md#event-dispatch-order).
 
 ### Nested lifecycle callbacks
 

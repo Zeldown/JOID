@@ -22,7 +22,7 @@ public class NodeMousePressedCallbackTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void runsAfterTheNodeAndConsumesTheContext() {
+	public void runsAfterTheNodeWithoutConsumingTheContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeMousePressedCallback<RectNode> callback = (node, mouseX, mouseY, clickType) -> received.addAll(Arrays.asList(node, mouseX, mouseY, clickType));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
@@ -32,7 +32,7 @@ public class NodeMousePressedCallbackTest {
 		Assert.assertFalse(context.isCancelled());
 		callback.post(rect, context, 3D, 4D, ClickType.LEFT);
 		Assert.assertEquals(Arrays.asList(rect, 3D, 4D, ClickType.LEFT), received);
-		Assert.assertTrue(context.isCancelled());
+		Assert.assertFalse(context.isCancelled());
 	}
 
 	@Test
@@ -51,6 +51,30 @@ public class NodeMousePressedCallbackTest {
 		this.bridges.move(10D, 20D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.RIGHT);
 		Assert.assertEquals(Arrays.asList(rect, 10D, 20D, ClickType.RIGHT), received);
+	}
+
+	@Test
+	public void ignoresAPressOnAHiddenOrDisabledNode() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(rect -> false).onMousePressed((node, mouseX, mouseY, clickType) -> received.add(node));
+		final RectNode child = RectNode.create(0D, 0D, 20D, 20D).onMousePressed((node, mouseX, mouseY, clickType) -> received.add(node));
+		hidden.append(child);
+		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(rect -> false).onMousePressed((node, mouseX, mouseY, clickType) -> received.add(node));
+		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		Assert.assertTrue(received.isEmpty());
+	}
+
+	@Test
+	public void letsEveryListenerAndTheClickBehindReceiveThePress() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode back = RectNode.create(100D, 100D, 200D, 100D).onClick((node, mouseX, mouseY, clickType) -> received.add("click"));
+		final RectNode first = RectNode.create(500D, 100D, 20D, 20D).onMousePressed((node, mouseX, mouseY, clickType) -> received.add("first"));
+		final RectNode second = RectNode.create(600D, 100D, 20D, 20D).onMousePressed((node, mouseX, mouseY, clickType) -> received.add("second"));
+		this.bridges.open(new NodeUI(back, first, second)).frames(30);
+		this.bridges.move(150D, 160D).frames(2);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		Assert.assertEquals(Arrays.asList("second", "first", "click"), received);
 	}
 
 	@Test

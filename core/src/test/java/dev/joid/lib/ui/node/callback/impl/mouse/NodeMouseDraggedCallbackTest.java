@@ -21,7 +21,7 @@ public class NodeMouseDraggedCallbackTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void runsAfterTheNodeAndConsumesTheContext() {
+	public void runsAfterTheNodeWithoutConsumingTheContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeMouseDraggedCallback<RectNode> callback = (node, mouseX, mouseY, clickType, deltaTime) -> received.addAll(Arrays.asList(node, mouseX, mouseY, clickType, deltaTime));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
@@ -31,7 +31,7 @@ public class NodeMouseDraggedCallbackTest {
 		Assert.assertFalse(context.isCancelled());
 		callback.post(rect, context, 3D, 4D, ClickType.LEFT, 16L);
 		Assert.assertEquals(Arrays.asList(rect, 3D, 4D, ClickType.LEFT, 16L), received);
-		Assert.assertTrue(context.isCancelled());
+		Assert.assertFalse(context.isCancelled());
 	}
 
 	@Test

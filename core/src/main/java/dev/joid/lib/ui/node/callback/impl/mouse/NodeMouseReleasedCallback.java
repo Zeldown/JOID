@@ -18,7 +18,9 @@ public interface NodeMouseReleasedCallback<T extends Node> extends NodeCallback 
 
 	@NodeCallbackMethod(Type.POST)
 	public default void post(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final @NonNull ClickType clickType) {
-		context.cancel(() -> this.apply(node, mouseX, mouseY, clickType));
+		if (!context.isCancelled()) {
+			this.apply(node, mouseX, mouseY, clickType);
+		}
 	}
 
 }

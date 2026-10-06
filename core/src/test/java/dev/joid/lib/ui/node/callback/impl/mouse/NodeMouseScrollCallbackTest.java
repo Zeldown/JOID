@@ -20,7 +20,7 @@ public class NodeMouseScrollCallbackTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void runsAfterTheNodeAndConsumesTheContext() {
+	public void runsAfterTheNodeWithoutConsumingTheContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeMouseScrollCallback<RectNode> callback = (node, mouseX, mouseY, value) -> received.addAll(Arrays.asList(node, mouseX, mouseY, value));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
@@ -30,7 +30,7 @@ public class NodeMouseScrollCallbackTest {
 		Assert.assertFalse(context.isCancelled());
 		callback.post(rect, context, 3D, 4D, -120);
 		Assert.assertEquals(Arrays.asList(rect, 3D, 4D, -120), received);
-		Assert.assertTrue(context.isCancelled());
+		Assert.assertFalse(context.isCancelled());
 	}
 
 	@Test

@@ -57,8 +57,8 @@ public class EditorUI extends UI {
 
 - `value` of a wheel event is the delta forwarded by the UI bridge: positive when the wheel rolls up, never `0` (the bridge drops still events). The demo window of the GLFW module sends 120 per notch.
 - `deltaTime` of a drag event is the time value forwarded by the UI bridge; the demo windows of the GLFW and LWJGL 2 modules send the milliseconds elapsed since the button was pressed.
-- A lambda given to any of these methods consumes the event. `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` therefore take the event away from every node reached after theirs; see [Consumed input events](callbacks.md#consumed-input-events).
-- `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` fire whatever `visible(...)` and `enabled(...)` return. `onClick`, hover and drags require a visible, enabled node.
+- `onClick` consumes the press: the nodes behind and the UIs below do not receive it. `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` are listeners: they run for every event not consumed yet and leave it to the others; see [Consumed input events](callbacks.md#consumed-input-events).
+- Hidden and disabled nodes receive no mouse event: none of these callbacks, nor hover and drags, fire for a node whose `visible(...)` or `enabled(...)` returns `false`, or for the children of a hidden node.
 
 ## Mouse coordinates
 
@@ -78,12 +78,12 @@ public class EditorUI extends UI {
 
 ## Keyboard callbacks with onKeyPressed
 
-`onKeyPressed((node, c, key) -> ...)` fires for every key event the UI receives, wherever the mouse is and whatever `visible(...)` and `enabled(...)` return.
+`onKeyPressed((node, c, key) -> ...)` fires for every key event the UI receives that is not consumed yet, wherever the mouse is, as long as the node is visible and enabled.
 
 - `c` is the character the UI bridge sends with the key. The demo window of the GLFW module sends the typed character for text input and `(char) 0` for the other keys, including text keys pressed with Ctrl or Alt.
 - `key` is a `Key` constant; a key the bridge cannot map is `Key.UNKNOWN`.
 - There is no release event for keys. Read the current state of a key with `Key.isDown()`.
-- The lambda consumes the event, so the nodes reached afterwards and the UI keybinds do not receive it. Override `post` to observe keys without consuming them (see [Callbacks](callbacks.md#observing-an-event-without-consuming-it)).
+- The lambda leaves the event to the other nodes and to the UI keybinds. Override `post` to consume the keys your node handles (see [Callbacks](callbacks.md#consuming-an-event-from-a-listener)).
 
 ## Keys with Key
 
@@ -139,7 +139,7 @@ public void init() {
 - Each call adds a keybind, even for a combination already registered.
 - The UI clears its keybinds every time it initializes (first open and every `UI.reload()`), so register them in `init()`.
 
-> WARNING: Keybinds run only when no node consumed the key. A focused text field consumes every key, and any `onKeyPressed` lambda consumes every key it receives, which disables the keybinds of its UI.
+> WARNING: Keybinds run only when no node consumed the key. A focused text field consumes every key, so the keybinds of its UI wait until it loses the focus.
 
 ## UI input hooks
 

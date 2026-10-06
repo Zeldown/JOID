@@ -61,9 +61,9 @@ this.keybind(() -> System.out.println("Help"), Key.F1);
 
 A keybind runs when a key is pressed while all its keys are down. To test a key anywhere else, for example in a click callback, use `Key.LEFT_SHIFT.isDown()` or the helpers `UI.isCtrlKeyDown()`, `UI.isShiftKeyDown()` and `UI.isAltKeyDown()`.
 
-Nodes also have `onKeyPressed((node, c, key) -> ...)`, but it receives every key the UI gets, wherever the mouse is, and consumes it: the keybinds and the other nodes no longer see it. Prefer keybinds, and keep `onKeyPressed` for nodes that really own the keyboard.
+Nodes also have `onKeyPressed((node, c, key) -> ...)`: it listens to every key the UI gets while the node is visible and enabled, wherever the mouse is, and leaves the key to the keybinds and the other nodes. Prefer keybinds for shortcuts.
 
-> NOTE: The same applies to `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll`: they receive every event of their kind, wherever the mouse is. For clicks on a node, use `onClick`.
+> NOTE: `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` are listeners too: they receive every event of their kind, wherever the mouse is, without taking it from the others. For clicks on a node, use `onClick`, which consumes the click.
 
 ## How events travel: PRE and POST
 
