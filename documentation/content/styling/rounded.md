@@ -46,13 +46,13 @@ A radius of half the node's smaller side gives a pill (`create(60F)` on a 200 ×
 | `top(boolean top)`, `top(Supplier<Boolean> top)` | Enables the top corners. |
 | `bottom(boolean bottom)`, `bottom(Supplier<Boolean> bottom)` | Enables the bottom corners. |
 
-The setters return the effect, typed by the context. Passed straight to `effect(...)`, a configured effect needs a type witness on its last setter (see [Effects](effects.md#applying-effects-with-effect)):
+The setters return the effect, typed by the context, so a configured effect goes straight into `effect(...)` (see [Effects](effects.md#applying-effects-with-effect)):
 
 ```java
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(RoundedNodeEffect.create(16F).<RoundedNodeEffect>bottom(false))
+.effect(RoundedNodeEffect.create(16F).bottom(false))
 .attach(this);
 ```
 
@@ -62,7 +62,7 @@ A supplier animates the corners, here with the hover progress:
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(node -> RoundedNodeEffect.create(() -> 8F + node.hoverValue(24F)))
+.self(node -> node.effect(RoundedNodeEffect.create(() -> 8F + node.hoverValue(24F))))
 .attach(this);
 ```
 
@@ -76,7 +76,7 @@ By default the effect has the `SELF` scope: it rounds what the node draws itself
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(RoundedNodeEffect.create(16F).<RoundedNodeEffect>scope(NodeEffectScope.CHILDREN))
+.effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))
 .body(card -> {
     ResourceNode.create(0, 0, card.getWidth(), 120).resource(Resource.of("https://placehold.co/300x120.png")).attach(card);
 })

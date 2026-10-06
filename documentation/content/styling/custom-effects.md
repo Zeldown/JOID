@@ -314,7 +314,7 @@ final HoverBorderNodeEffect border = HoverBorderNodeEffect.create(Color.BLUE, 2F
 RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(border).attach(this);
 ```
 
-`fill` is declared by `BorderNodeEffect`: without the witness `<HoverBorderNodeEffect>`, it returns a `BorderNodeEffect` in the middle of the chain and `hoverOnly` is not found. The last setter takes its type from the variable. Passed straight to `effect(...)`, the last setter needs a witness too: `.effect(HoverBorderNodeEffect.create(Color.BLUE, 2F).<HoverBorderNodeEffect>fill(false).<HoverBorderNodeEffect>hoverOnly(true))`. The class of the effect is your subclass, so `getEffect(HoverBorderNodeEffect.class)` finds it and `getEffect(BorderNodeEffect.class)` does not.
+`fill` is declared by `BorderNodeEffect`: without the witness `<HoverBorderNodeEffect>`, it returns a `BorderNodeEffect` in the middle of the chain and `hoverOnly` is not found. The last setter takes its type from the variable, or from `effect(...)` when you pass the effect straight to it: `.effect(HoverBorderNodeEffect.create(Color.BLUE, 2F).<HoverBorderNodeEffect>fill(false).hoverOnly(true))`. The class of the effect is your subclass, so `getEffect(HoverBorderNodeEffect.class)` finds it and `getEffect(BorderNodeEffect.class)` does not.
 
 ## The NodeEffect contract
 
@@ -339,7 +339,7 @@ RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(border).attach(thi
 - The same effect instance can be added to several nodes, and `Node.copy()` shares it with the copy. Keep per-node state out of the effect, or create one effect per node.
 - To make values dynamic, store `Supplier`s and read them in the hooks, as the built-in effects do.
 - Fluent setters return the type the context asks for, as those of the built-in effects and of the nodes: `public final <E extends MyNodeEffect> E amount(final float amount)` with `return (E) this;` (and `@SuppressWarnings("unchecked")` on the class). Assigned to a variable or at the end of a chain, the setter returns the type you expect; in the middle of a chain it returns the class that declares it, so the setter of a subclass after it needs a type witness.
-- A configured effect passed straight to `node.effect(...)` matches both `effect(NodeEffect)` and `effect(Function)` and does not compile ("reference to effect is ambiguous"): give its last setter a type witness (`.<MyNodeEffect>amount(1F)`), store the effect in a variable, or use the function form `effect(node -> MyNodeEffect.create().amount(1F))`.
+- A configured effect goes straight into `node.effect(...)`, without witness on its last setter: `node.effect(MyNodeEffect.create().amount(1F))`. To build it from the node, add it in `self(...)`: `node.self(target -> target.effect(MyNodeEffect.create().amount(() -> target.hoverValue(1F))))`.
 
 ## See also
 

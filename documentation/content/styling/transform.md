@@ -8,7 +8,7 @@ public void init() {
     RectNode
     .create(100, 100, 200, 120)
     .color(Color.RED)
-    .effect(node -> TransformNodeEffect.create(new RotateOperation(15D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D))))))
+    .self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(15D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))))))
     .attach(this);
 }
 ```
@@ -38,7 +38,7 @@ Before the node renders, the effect pushes the matrix stack and applies the oper
 
 Operations work in the coordinate space of the node's position: the same space as `getX()`/`getY()`, which is relative to the parent. A pivot at `(getX(), getY())` is the node's top-left corner.
 
-To pivot on the node's center and keep following it when it moves or resizes, build the pivot from suppliers in the function form of `effect(...)`, as in the first example: `Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))`. `ax(value)` is `x + value` and `dw(value)` is `width / value` (see [Node Fundamentals](../nodes/node-fundamentals.md)).
+To pivot on the node's center and keep following it when it moves or resizes, build the pivot from suppliers in `self(...)`, which hands you the node, as in the first example: `Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))`. `ax(value)` is `x + value` and `dw(value)` is `width / value` (see [Node Fundamentals](../nodes/node-fundamentals.md)).
 
 ## Operations
 
@@ -52,7 +52,7 @@ The operations are in `dev.joid.lib.render.transform.operation`, the value types
 RectNode
 .create(100, 100, 200, 120)
 .color(Color.WHITE)
-.effect(node -> TransformNodeEffect.create(new TranslateOperation(Vector.Y(() -> (double) -node.hoverValue(6F)))))
+.self(node -> node.effect(TransformNodeEffect.create(new TranslateOperation(Vector.Y(() -> (double) -node.hoverValue(6F))))))
 .attach(this);
 ```
 
@@ -68,10 +68,10 @@ The node lifts by 6 units while hovered.
 RectNode
 .create(100, 100, 200, 120)
 .color(Color.WHITE)
-.effect(node -> {
+.self(node -> {
     final Vector center = Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)));
     final Scale scale = Scale.create(() -> 1D + node.hoverValue(0.05F), () -> 1D + node.hoverValue(0.05F), () -> 1D);
-    return TransformNodeEffect.create(new ScaleOperation(scale, center));
+    node.effect(TransformNodeEffect.create(new ScaleOperation(scale, center)));
 })
 .attach(this);
 ```
@@ -98,7 +98,7 @@ An angle supplier makes a continuous rotation, here one turn per second driven b
 RectNode
 .create(100, 100, 64, 64)
 .color(Color.WHITE)
-.effect(node -> TransformNodeEffect.create(new RotateOperation(() -> BridgeHandler.CLOCK.get().currentTimeMillis() % 1000L * 0.36D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D))))))
+.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(() -> BridgeHandler.CLOCK.get().currentTimeMillis() % 1000L * 0.36D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))))))
 .attach(this);
 ```
 

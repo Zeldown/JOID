@@ -63,13 +63,13 @@ RectNode
 | `mode(BorderMode mode)` | Replaces the mode. |
 | `fill(boolean fill)` | Fills the outer corners or not. |
 
-Suppliers are read every frame, which animates the border. Configure the effect in the function form of `effect(...)` (see [Effects](effects.md#applying-effects-with-effect)):
+Suppliers are read every frame, which animates the border. Add the effect in `self(...)`, which hands you the node (see [Effects](effects.md#applying-effects-with-effect)):
 
 ```java
 RectNode
 .create(100, 100, 200, 120)
 .color(Color.WHITE)
-.effect(node -> BorderNodeEffect.create(Color.BLACK, 1F).width(() -> 1F + node.hoverValue(3F)).fill(false))
+.self(node -> node.effect(BorderNodeEffect.create(Color.BLACK, 1F).width(() -> 1F + node.hoverValue(3F)).fill(false)))
 .attach(this);
 ```
 

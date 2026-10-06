@@ -117,14 +117,14 @@ The order in which you add effects does not matter here: the shape is always cut
 
 ## Effects that move with the mouse
 
-The values of the effects also accept suppliers, read every frame. Use the function form of `effect(...)`, which hands you the node, and read its hover progress with `hoverValue(max)` (from `0` when not hovered to `max` when hovered):
+The values of the effects also accept suppliers, read every frame. Add them in `self(...)`, which hands you the node, and read its hover progress with `hoverValue(max)` (from `0` when not hovered to `max` when hovered):
 
 ```java
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(node -> RoundedNodeEffect.create(() -> 8F + node.hoverValue(16F)))
-.effect(node -> BorderNodeEffect.create(Color.BLACK, 1F).width(() -> 1F + node.hoverValue(2F)))
+.self(node -> node.effect(RoundedNodeEffect.create(() -> 8F + node.hoverValue(16F))))
+.self(node -> node.effect(BorderNodeEffect.create(Color.BLACK, 1F).width(() -> 1F + node.hoverValue(2F))))
 .attach(this);
 ```
 
@@ -138,7 +138,7 @@ By default an effect applies to the node's own drawing only; its children are dr
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(RoundedNodeEffect.create(16F).<RoundedNodeEffect>scope(NodeEffectScope.CHILDREN))
+.effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))
 .body(card -> {
     ResourceNode.create(0, 0, 300, 120).resource(Resource.of("https://placehold.co/300x120.png")).attach(card);
 })
@@ -147,7 +147,7 @@ RectNode
 
 ![Two cards with an image header: with SELF the header keeps square top corners, with CHILDREN it is rounded](../images/rounded-children.png "Left, the default SELF scope; right, CHILDREN as in the snippet: the image is rounded with the card.")
 
-> TIP: A configured effect passed straight to `effect(...)` needs a type witness on its last setter, as `<RoundedNodeEffect>scope(...)` above: without it, `effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))` matches both `effect(NodeEffect)` and `effect(Function)` and does not compile. Store the effect in a variable or use the function form `effect(node -> ...)` instead if you prefer.
+> TIP: A configured effect goes straight into `effect(...)`: its last setter returns the type `effect` asks for, so `effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))` compiles as is.
 
 Effects only change pixels: clicks and hover still use the node's rectangle, so the corners of a rounded button still react to the mouse.
 

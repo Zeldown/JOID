@@ -120,8 +120,8 @@ public class NodeEffectTest {
 	@Test
 	public void runsTheLowestPriorityFirst() {
 		final TraceNode node = new TraceNode("node", this.trace);
-		node.effect(new TraceEffect("late", this.trace, true).<TraceEffect>priority(2));
-		node.effect(new OtherTraceEffect("early", this.trace).<OtherTraceEffect>priority(1));
+		node.effect(new TraceEffect("late", this.trace, true).priority(2));
+		node.effect(new OtherTraceEffect("early", this.trace).priority(1));
 		this.bridges.open(new NodeUI(node));
 		this.trace.clear();
 		this.bridges.frame();
@@ -142,7 +142,7 @@ public class NodeEffectTest {
 	public void bindsItsShaderAroundTheChildrenWithTheChildrenScope() {
 		final TraceNode node = new TraceNode("parent", this.trace);
 		new TraceNode("child", this.trace).attach(node);
-		this.bridges.open(new NodeUI(node.effect(new ShaderEffect(this.trace).<ShaderEffect>scope(NodeEffectScope.CHILDREN))));
+		this.bridges.open(new NodeUI(node.effect(new ShaderEffect(this.trace).scope(NodeEffectScope.CHILDREN))));
 		this.trace.clear();
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("bind", "draw parent", "draw child", "unbind"), this.trace);

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -563,24 +564,24 @@ public class NodeTest {
 	}
 
 	@Test
-	public void buildsAnEffectFromItsNode() {
+	public void buildsAnEffectFromItsNodeInSelf() {
 		final List<String> events = new ArrayList<>();
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(rect -> new RecordingEffect(rect.getClass().getSimpleName(), events));
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).self(rect -> rect.effect(new RecordingEffect(rect.getClass().getSimpleName(), events)));
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals("RectNode init", events.get(0));
 	}
 
 	@Test
-	public void chainsAConfiguredCustomEffectWithATypeWitness() {
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", new ArrayList<>()).<RecordingEffect>priority(2)).effect(BorderNodeEffect.create(Color.BLACK, 2F).<BorderNodeEffect>fill(false));
+	public void chainsAConfiguredCustomEffectWithoutTypeWitness() {
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", new ArrayList<>()).priority(2)).effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false));
 		final BorderNodeEffect border = node.getEffect(BorderNodeEffect.class);
 		Assert.assertEquals(2, node.getEffect(RecordingEffect.class).getPriority());
 		Assert.assertFalse(border.isFill());
 	}
 
 	@Test
-	public void chainsAConfiguredEffectWithATypeWitness() {
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(BlurNodeEffect.create(2F).<BlurNodeEffect>radius(4F)).effect(RoundedNodeEffect.create(6F).<RoundedNodeEffect>scope(NodeEffectScope.CHILDREN));
+	public void chainsAConfiguredEffectWithoutTypeWitness() {
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(BlurNodeEffect.create(2F).radius(4F)).effect(RoundedNodeEffect.create(6F).scope(NodeEffectScope.CHILDREN));
 		final BlurNodeEffect blur = node.getEffect(BlurNodeEffect.class);
 		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
 		Assert.assertEquals(4F, blur.getRadiusSupplier().get(), 0F);
@@ -615,8 +616,8 @@ public class NodeTest {
 	}
 
 	@Test
-	public void buildsAnEffectFromItsTypedNode() {
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect((final RectNode rect) -> RoundedNodeEffect.create((float) rect.getWidth()));
+	public void buildsAnEffectFromItsTypedNodeInSelf() {
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).self((final RectNode rect) -> rect.effect(RoundedNodeEffect.create((float) rect.getWidth())));
 		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
 		Assert.assertEquals(10F, rounded.getRadius(), 0F);
 	}
@@ -635,7 +636,7 @@ public class NodeTest {
 	public void drawsItsChildrenIntoAChildrenScopedShader() {
 		final List<Boolean> buffered = new ArrayList<>();
 		final RectNode child = RectNode.create(10D, 10D, 20D, 20D).color(new Color(0.6F, 0.4F, 0.2F, 1F)).onDraw((rect, mouseX, mouseY) -> buffered.add(this.bridges.getRender().getState().getFrameBuffer() != null));
-		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).append(child).effect(BlurNodeEffect.create(4F).<BlurNodeEffect>scope(NodeEffectScope.CHILDREN));
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).append(child).effect(BlurNodeEffect.create(4F).scope(NodeEffectScope.CHILDREN));
 		this.bridges.open(new NodeUI(parent));
 		Assert.assertEquals(Arrays.asList(true), buffered);
 		parent.effect(BlurNodeEffect.create(4F));
@@ -1670,6 +1671,26 @@ public class NodeTest {
 	}
 
 	@Test
+	public void runsItsSelfConsumerRightAwayWithoutStoringIt() {
+		final List<Node> received = new ArrayList<>();
+		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).self(received::add);
+		Assert.assertEquals(Arrays.asList(node), received);
+		Assert.assertNull(node.getBodyConsumer());
+	}
+
+	@Test
+	public void keepsItsBodyWhenItsSelfConsumerRuns() {
+		final Signal<Integer> count = new Signal<>(1);
+		final int[] runs = {0, 0};
+		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).watch(count, WatchProperty.BODY).body(() -> runs[0]++).self(rect -> runs[1]++);
+		final Consumer<Node> body = node.getBodyConsumer();
+		this.bridges.open(new NodeUI(node));
+		count.set(2);
+		Assert.assertSame(body, node.getBodyConsumer());
+		Assert.assertArrayEquals(new int[] {2, 1}, runs);
+	}
+
+	@Test
 	public void findsTheUiBeingInitialized() {
 		final CurrentUI ui = new CurrentUI();
 		this.bridges.open(ui);
@@ -2004,7 +2025,7 @@ public class NodeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingEffect() {
-		RectNode.create(0D, 0D, 10D, 10D).effect((NodeEffect<Node>) null);
+		RectNode.create(0D, 0D, 10D, 10D).effect(null);
 	}
 
 	@Test

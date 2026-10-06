@@ -25,13 +25,13 @@ public void init() {
 | `radius(Supplier<Float> radius)` | Reads the radius every frame. |
 | `getRadiusSupplier()` | The radius supplier. |
 
-The function form of `effect(...)` hands you the node, to read its hover progress (see [Effects](effects.md#applying-effects-with-effect)):
+`self(...)` hands you the node, to read its hover progress (see [Effects](effects.md#applying-effects-with-effect)):
 
 ```java
 RectNode
 .create(100, 100, 200, 120)
 .color(Color.BLUE)
-.effect(node -> BlurNodeEffect.create(0F).radius(() -> 2F + node.hoverValue(10F)))
+.self(node -> node.effect(BlurNodeEffect.create(0F).radius(() -> 2F + node.hoverValue(10F))))
 .attach(this);
 ```
 
@@ -62,7 +62,7 @@ With the default `SELF` scope, only what the node draws itself is blurred; its c
 RectNode
 .create(100, 100, 400, 300)
 .color(Color.WHITE)
-.effect(BlurNodeEffect.create(6F).<BlurNodeEffect>scope(NodeEffectScope.CHILDREN))
+.effect(BlurNodeEffect.create(6F).scope(NodeEffectScope.CHILDREN))
 .body(panel -> {
     RectNode.create(20, 20, 200, 60).color(Color.RED).attach(panel);
 })

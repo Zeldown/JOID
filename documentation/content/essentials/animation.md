@@ -28,8 +28,8 @@ RectNode
 .color(Color.WHITE)
 .hoverDuration(250L)
 .hoverEquation(TweenEquations.CUBIC_OUT)
-.effect(node -> RoundedNodeEffect.create(() -> 8F + node.hoverValue(8F)))
-.effect(node -> TransformNodeEffect.create(new TranslateOperation(Vector.Y(() -> (double) -node.hoverValue(6F)))))
+.self(node -> node.effect(RoundedNodeEffect.create(() -> 8F + node.hoverValue(8F))))
+.self(node -> node.effect(TransformNodeEffect.create(new TranslateOperation(Vector.Y(() -> (double) -node.hoverValue(6F))))))
 .attach(this);
 ```
 

@@ -38,7 +38,7 @@ RectNode
 .create(100, 100, 300, 180)
 .color(Color.WHITE)
 .effect(RoundedNodeEffect.create(16F))
-.effect(node -> ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 8F).blur(() -> 8F + node.hoverValue(16F)).offset(() -> 0D, () -> 2D + node.hoverValue(8F)))
+.self(node -> node.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 8F).blur(() -> 8F + node.hoverValue(16F)).offset(() -> 0D, () -> 2D + node.hoverValue(8F))))
 .attach(this);
 ```
 

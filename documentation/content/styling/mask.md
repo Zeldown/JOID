@@ -39,13 +39,13 @@ Every bound is a `Supplier<Double>` read every frame, so the mask can follow the
 | `create(Resource resource, double x, double y, double width, double height)` | Image shape at an offset. |
 | `create(Resource resource, Node node)` | Image shape at the masked node's corner, sized like `node`. |
 
-Pass the masked node itself to `create(Node)` through the function form of `effect(...)`, so the mask always matches its size. `Resource` is in `dev.joid.lib.resource`, `File` in `java.io`:
+Pass the masked node itself to `create(Node)` in `self(...)`, which hands you the node, so the mask always matches its size. `Resource` is in `dev.joid.lib.resource`, `File` in `java.io`:
 
 ```java
 ResourceNode
 .create(100, 100, 200, 200)
 .resource(Resource.of("https://placehold.co/400x400.png"))
-.effect(node -> MaskNodeEffect.create(Resource.of(new File("assets/star-mask.png")), node))
+.self(node -> node.effect(MaskNodeEffect.create(Resource.of(new File("assets/star-mask.png")), node)))
 .attach(this);
 ```
 
@@ -76,7 +76,7 @@ Suppliers make reveal animations straightforward, here a node that uncovers from
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.ORANGE)
-.effect(node -> MaskNodeEffect.create(() -> node.getWidth() * node.hoverValue(1F), () -> node.getHeight()))
+.self(node -> node.effect(MaskNodeEffect.create(() -> node.getWidth() * node.hoverValue(1F), () -> node.getHeight())))
 .attach(this);
 ```
 

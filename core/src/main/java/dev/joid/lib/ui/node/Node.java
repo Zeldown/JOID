@@ -955,6 +955,11 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
+	public final <T extends Node> @NonNull T self(final @NonNull Consumer<@NonNull T> consumer) {
+		consumer.accept((T) this);
+		return (T) this;
+	}
+
 	public final <T extends Node> @NonNull T scrollX(final double value, final double speed) {
 		this.scrollOffsetX(this.targetScrollX + value * speed);
 		return (T) this;
@@ -1490,10 +1495,6 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T effect(final @NonNull NodeEffect<? super T> effect) {
 		this.effectMap.put(effect.getClass(), (NodeEffect<Node>) effect);
 		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T effect(final @NonNull Function<@NonNull T, @NonNull NodeEffect<? super T>> factory) {
-		return this.effect(factory.apply((T) this));
 	}
 
 	public final <T extends Node> @NonNull T removeEffect(final @NonNull Class<?> effect) {

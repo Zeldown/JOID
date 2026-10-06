@@ -30,37 +30,28 @@ The built-in effects are in `dev.joid.lib.ui.node.effect.impl`:
 
 ## Applying effects with effect
 
-`Node.effect(...)` adds an effect and returns the node, so it chains like any other setter. It has two overloads:
-
-| Method | Description |
-| --- | --- |
-| `effect(NodeEffect<? super T> effect)` | Adds `effect`. The effect is typed by the node (an effect declared for `RectNode` on a `RectNode`) or by one of its parent classes (`Node`, as the built-in effects). |
-| `effect(Function<T, NodeEffect<? super T>> factory)` | Calls `factory` immediately with the node and adds the effect it returns. Use it when the effect needs the node. |
+`Node.effect(NodeEffect<? super T> effect)` adds an effect and returns the node, so it chains like any other setter. The effect is typed by the node (an effect declared for `RectNode` on a `RectNode`) or by one of its parent classes (`Node`, as the built-in effects).
 
 ```java
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(node -> RoundedNodeEffect.create(() -> node.hoverValue(24F)))
-.effect(node -> BorderNodeEffect.create(Color.BLACK, 2F).fill(false))
+.effect(RoundedNodeEffect.create(24F))
+.effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false))
 .attach(this);
 ```
 
-The setters of the effects (`radius`, `fill`, `color`, `priority`, `scope`...) return the effect with the type the context asks for, like the setters of the nodes: `public final <E extends BorderNodeEffect> E fill(boolean fill)`. In the middle of a chain, Java picks the class that declares the setter, so `BorderNodeEffect.create(Color.BLACK, 2F).fill(false).width(3F)` chains as is.
+The setters of the effects (`radius`, `fill`, `color`, `priority`, `scope`...) return the effect with the type the context asks for, like the setters of the nodes: `public final <E extends BorderNodeEffect> E fill(boolean fill)`. In the middle of a chain, Java picks the class that declares the setter, so `BorderNodeEffect.create(Color.BLACK, 2F).fill(false).width(3F)` chains as is, and the last setter returns the type `effect(...)` asks for: a configured effect goes straight into `effect(...)`, without witness.
 
-A configured effect passed straight to `effect(...)` matches both overloads, `effect(NodeEffect)` and `effect(Function)`, and does not compile ("reference to effect is ambiguous"). Give its last setter a type witness, store it in a variable, or use the function form:
+When the effect needs the node, to read its size or its hover progress, add it in `self(...)`, which runs right away with the node (see [Node Fundamentals](../nodes/node-fundamentals.md#self)):
 
 ```java
-final RectNode card = RectNode.create(100, 100, 300, 200).color(Color.WHITE);
-card.effect(BorderNodeEffect.create(Color.BLACK, 2F).<BorderNodeEffect>fill(false));
-
-final BorderNodeEffect border = BorderNodeEffect.create(Color.BLACK, 2F).fill(false);
-card.effect(border);
-
-card.effect(node -> BorderNodeEffect.create(Color.BLACK, 2F).fill(false));
+RectNode
+.create(100, 100, 300, 200)
+.color(Color.WHITE)
+.self(node -> node.effect(RoundedNodeEffect.create(() -> node.hoverValue(24F))))
+.attach(this);
 ```
-
-An effect without setter call (`effect(BorderNodeEffect.create(Color.BLACK, 2F))`) needs nothing: the factories return the effect class.
 
 A node holds at most one effect per class: adding an effect whose class is already present replaces the previous one. Different classes stack freely.
 
@@ -95,7 +86,7 @@ The values of the built-in effects (radius, sides, color, width, mask bounds, tr
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.effect(node -> BorderNodeEffect.create(Color.BLACK, 1F).color(() -> Color.BLACK.to(Color.BLUE, node.hoverValue(1F))).width(() -> 1F + node.hoverValue(2F)))
+.self(node -> node.effect(BorderNodeEffect.create(Color.BLACK, 1F).color(() -> Color.BLACK.to(Color.BLUE, node.hoverValue(1F))).width(() -> 1F + node.hoverValue(2F))))
 .attach(this);
 ```
 
@@ -152,8 +143,8 @@ So the shape is cut first, then blurred, then outlined: a border always follows 
 `NodeEffectScope` is nested in `NodeEffect`: `import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;`.
 
 ```java
-final RectNode selfScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().<CircleNodeEffect>scope(NodeEffectScope.SELF));
-final RectNode childrenScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().<CircleNodeEffect>scope(NodeEffectScope.CHILDREN));
+final RectNode selfScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().scope(NodeEffectScope.SELF));
+final RectNode childrenScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().scope(NodeEffectScope.CHILDREN));
 ```
 
 With `SELF`, a child that overflows the circle stays visible; with `CHILDREN`, the circle cuts the child too. Use `CHILDREN` to round a card together with its content.
@@ -187,7 +178,6 @@ Effects only change the pixels. Layout, hovering and clicks keep using the node'
 | Method | Description |
 | --- | --- |
 | `effect(NodeEffect<? super T> effect)` | Adds or replaces the effect of the same class. |
-| `effect(Function<T, NodeEffect<? super T>> factory)` | Same, with an effect built from the node. |
 | `getEffect(Class<T> type)` | The effect of that class, typed by it, or `null`. |
 | `hasEffect(Class<?> type)` | Whether an effect of that class is present. |
 | `removeEffect(Class<?> type)` | Removes the effect of that class. |

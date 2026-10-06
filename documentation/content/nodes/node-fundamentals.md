@@ -86,6 +86,22 @@ FlexNode
 .attach(this);
 ```
 
+### self
+
+| Method | Description |
+| --- | --- |
+| `self(Consumer<T> consumer)` | Runs `consumer` immediately with this node. Returns this node. The consumer is not stored. |
+
+`self` hands you the node in the middle of a chain, to configure it from its own values, such as an effect that reads its hover progress. Unlike `body(Consumer)`, it keeps the stored body consumer, so `WatchProperty.BODY` does not run it again:
+
+```java
+RectNode
+.create(100, 100, 300, 200)
+.color(Color.WHITE)
+.self(node -> node.effect(RoundedNodeEffect.create(() -> 8F + node.hoverValue(16F))))
+.attach(this);
+```
+
 ### Chaining and generic return types
 
 Most setters are declared as `<T extends Node> T method(...)`: the compiler infers `T` from where the result goes.
@@ -339,7 +355,7 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
 
 | Stage | Trigger | What runs |
 | --- | --- | --- |
-| Creation | The factory | The constructor. `body` consumers run as soon as you call `body`. |
+| Creation | The factory | The constructor. `body` and `self` consumers run as soon as you call them. |
 | Load | `attach` to a UI, `append` to a node that has a UI, the UI opening, a reload | `load(UI)`, wrapped by the `onInit` callbacks: the children are loaded first, then the scrollbar and skeleton, then the effects' `init`, then the node's `init(UI)` hook. A node loaded again after a detach then subscribes again to its signals (see below). |
 | Frame | Every frame, while visible | `render(mouseX, mouseY)`: anchors and aspect ratio, hover, animators, scroll, drag, mount check, then drawing (wrapped by `onRender`, with `draw` wrapped by `onDraw`). |
 | Update | Each update tick of the UI bridge (once per frame, before drawing, in the bundled demo windows) | `onUpdate()`: the children first, then the node's `update()` hook, wrapped by the `onUpdate` callbacks. Runs for hidden nodes too. |
@@ -406,7 +422,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | --- | --- | --- |
 | Callbacks | `onInit`, `onReload`, `onDetach`, `onAppend`, `onMount`, `onUpdate`, `onRender`, `onDraw`, `onClick`, `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed`, `onHover`, `onHoverStart`, `onHoverEnd`, `onDrag`, `onDragStart`, `onDragEnd`, `onSnap`, `onWatch`, `onAnimate`, `onScrollUpdate`, `onScrollEnding`, `onScrollEnd` | [Callbacks](../interactions/callbacks.md) |
 | Hover and tooltips | `hover(...)`, `hoverLines(...)`, `hoverElements(...)`, `clearHover()`, `clearHoverLines()`, `clearHoverElements()`, `hoverDuration(long)`, `hoverEquation(TweenEquation)`, `hoverValue(float)`, `hovered(boolean)`, `isHovered()`, `isHovered(double, double)`, `isHovered(double, double, boolean)`, `renderHover(double, double)`, `getHoverDuration()`, `getHoverEquation()` | [Hover and Tooltips](../interactions/hover.md) |
-| Effects | `effect(NodeEffect)`, `effect(Function)`, `removeEffect(Class)`, `clearEffects()`, `getEffect(Class)`, `hasEffect(Class)`, `getEffectMap()`, `shouldApplyEffect(NodeEffect)` | [Effects](../styling/effects.md) |
+| Effects | `effect(NodeEffect)`, `removeEffect(Class)`, `clearEffects()`, `getEffect(Class)`, `hasEffect(Class)`, `getEffectMap()`, `shouldApplyEffect(NodeEffect)` | [Effects](../styling/effects.md) |
 | Drag and drop | `draggable(DraggableProperty)`, `startDragging(double, double)`, `stopDragging()`, `dragging(boolean, double, double)`, `isDragging()`, `isDragged()`, `getDraggable()`, `getDraggedNode()` | [Drag and Drop](../interactions/drag-drop.md) |
 | Signals | `watch(Signal)`, `watch(Signal, WatchProperty...)`, `watch(Signal, Supplier<Boolean>, WatchProperty...)` | [Watching Signals](../state/watch.md) |
 | Stores | `useStore(Class<T>)`, the store of the node's UI | [Stores](../state/stores.md) |
@@ -424,6 +440,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | `remove(Node... nodes)` | Detaches and removes children. |
 | `attach(Node parent)`, `attach(UI ui)` | Attaches this node to a parent or to a UI. |
 | `body(Consumer<T>)`, `body(Runnable)` | Runs and stores a builder. |
+| `self(Consumer<T>)` | Runs a consumer with this node right away, without storing it. |
 | `clearChildren()` | Detaches and removes every child, which loses its parent. |
 | `getChildren()`, `getChildren(Class<T>)`, `getChild(int, Class<T>)` | Children access. |
 | `getParent()`, `getUi()`, `hasUi()` | Tree context. |
