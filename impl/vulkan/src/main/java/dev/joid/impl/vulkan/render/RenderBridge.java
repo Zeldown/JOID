@@ -201,6 +201,17 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
+	public void clearDepth() {
+		this.requireFrame();
+		this.beginPass((FrameBuffer) super.getState().getFrameBuffer());
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_DEPTH_BIT);
+			attachment.clearValue().depthStencil().depth(1F);
+			VK10.vkCmdClearAttachments(this.commandBuffer, attachment, this.createClearRect(stack));
+		}
+	}
+
+	@Override
 	public void clearStencil() {
 		this.requireFrame();
 		if (super.getState().getFrameBuffer() != null) {
@@ -319,7 +330,9 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 				this.passWidth = target.getWidth();
 				this.passHeight = target.getHeight();
 				Context.transition(this.commandBuffer, target.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-				info.renderPass(this.context.getOffscreenRenderPass()).framebuffer(target.getFramebuffer());
+				final VkClearValue.Buffer clearValues = VkClearValue.calloc(2, stack);
+				clearValues.get(1).depthStencil().depth(1F).stencil(0);
+				info.renderPass(this.context.getOffscreenRenderPass()).framebuffer(target.getFramebuffer()).pClearValues(clearValues);
 			}
 
 			info.renderArea().extent().set(this.passWidth, this.passHeight);
@@ -357,7 +370,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		VK13.vkCmdSetDepthTestEnable(this.commandBuffer, state.isDepthTest());
 		VK13.vkCmdSetDepthWriteEnable(this.commandBuffer, state.isDepthWrite());
 		VK13.vkCmdSetDepthCompareOp(this.commandBuffer, VK10.VK_COMPARE_OP_LESS);
-		VK13.vkCmdSetStencilTestEnable(this.commandBuffer, state.isStencilTest());
+		VK13.vkCmdSetStencilTestEnable(this.commandBuffer, state.isStencilTest() && !offscreen);
 		VK13.vkCmdSetStencilOp(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, RenderBridge.operation(state.getStencilFail()), RenderBridge.operation(state.getStencilPass()), RenderBridge.operation(state.getStencilDepthFail()), RenderBridge.compare(state.getStencilFunction()));
 		VK10.vkCmdSetStencilCompareMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilMask());
 		VK10.vkCmdSetStencilWriteMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, 0xFF);

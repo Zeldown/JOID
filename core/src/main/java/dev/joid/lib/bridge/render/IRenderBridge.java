@@ -48,6 +48,7 @@ public interface IRenderBridge extends IBridge {
 	public void stencilFunction(final @NonNull StencilFunction function, final int reference, final int mask);
 	public void stencilOperation(final @NonNull StencilOperation fail, final @NonNull StencilOperation depthFail, final @NonNull StencilOperation pass);
 
+	public void clearDepth();
 	public void clearStencil();
 	public int getViewportWidth();
 	public int getViewportHeight();

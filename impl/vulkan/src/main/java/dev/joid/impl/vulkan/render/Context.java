@@ -94,11 +94,11 @@ public final class Context {
 			VK10.vkGetPhysicalDeviceMemoryProperties(this.physicalDevice, this.memoryProperties);
 
 			this.depthStencilFormat  = Context.selectDepthStencilFormat(stack, this.physicalDevice);
-			this.offscreenRenderPass = this.createRenderPass(Context.TEXTURE_FORMAT, false, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, false);
+			this.offscreenRenderPass = this.createRenderPass(Context.TEXTURE_FORMAT, false, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, true, true);
 		}
 	}
 
-	public long createRenderPass(final int colorFormat, final boolean clear, final int initialLayout, final int finalLayout, final boolean depthStencil) {
+	public long createRenderPass(final int colorFormat, final boolean clear, final int initialLayout, final int finalLayout, final boolean depthStencil, final boolean clearDepthStencil) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final int loadOperation = clear ? VK10.VK_ATTACHMENT_LOAD_OP_CLEAR : VK10.VK_ATTACHMENT_LOAD_OP_LOAD;
 			final VkAttachmentDescription.Buffer attachments = VkAttachmentDescription.calloc(depthStencil ? 2 : 1, stack);
@@ -118,14 +118,15 @@ public final class Context {
 					.pColorAttachments(VkAttachmentReference.calloc(1, stack).attachment(0).layout(VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL));
 
 			if (depthStencil) {
+				final int depthLoadOperation = clearDepthStencil ? VK10.VK_ATTACHMENT_LOAD_OP_CLEAR : VK10.VK_ATTACHMENT_LOAD_OP_LOAD;
 				attachments.get(1)
 						.format(this.depthStencilFormat)
 						.samples(VK10.VK_SAMPLE_COUNT_1_BIT)
-						.loadOp(loadOperation)
+						.loadOp(depthLoadOperation)
 						.storeOp(VK10.VK_ATTACHMENT_STORE_OP_STORE)
-						.stencilLoadOp(loadOperation)
+						.stencilLoadOp(depthLoadOperation)
 						.stencilStoreOp(VK10.VK_ATTACHMENT_STORE_OP_STORE)
-						.initialLayout(clear ? VK10.VK_IMAGE_LAYOUT_UNDEFINED : VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+						.initialLayout(clearDepthStencil ? VK10.VK_IMAGE_LAYOUT_UNDEFINED : VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
 						.finalLayout(VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 				subpass.pDepthStencilAttachment(VkAttachmentReference.calloc(stack).attachment(1).layout(VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 			}

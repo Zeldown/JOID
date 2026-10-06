@@ -30,10 +30,12 @@ public void postDraw(final double mouseX, final double mouseY) {
 
 Around `model.render()`, `drawModel`:
 
-1. pushes the matrix, translates to `(x, y, 0)`, scales by `(sizeX, sizeY, sizeZ)` and rotates 180° around the Y axis;
-2. turns face culling off and lighting on;
+1. pushes the matrix and the render state, translates to `(x, y, 0)`, scales by `(sizeX, sizeY, sizeZ)` and rotates 180° around the Y axis;
+2. turns face culling off and lighting on, enables the depth test and depth writes, and clears the depth buffer (`clearDepth()`);
 3. renders the model;
-4. turns lighting off and pops the matrix, even when `render()` throws.
+4. pops the render state and the matrix, even when `render()` throws.
+
+The depth test keeps, for every pixel, the face nearest to the viewer: a closed model shows its front faces whatever the order of its faces in the file, also inside the framebuffer of an effect.
 
 | Model axis | On screen |
 |---|---|
@@ -41,8 +43,6 @@ Around `model.render()`, `drawModel`:
 | +Y | Down, like the UI canvas: model point `(0, 1, 0)` lands on `y + sizeY`. |
 | +Z | Mirrored by the rotation, like X. |
 
-- Face culling stays off after the call: wrap it in `pushState()`/`popState()` if you rely on culling (see [Render state basics](draw-utils.md#render-state-basics)).
-- The depth test is not enabled: the triangles are drawn in the order of the model.
 - Lighting gives each face a flat shade computed from its normal by the default shader of the backend.
 
 ## OBJModel

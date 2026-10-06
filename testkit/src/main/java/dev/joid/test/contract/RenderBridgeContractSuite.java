@@ -195,6 +195,36 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void hidesFarFacesBehindNearOnes() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> RenderBridgeContractSuite.drawInDepth(bridge, false));
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
+	}
+
+	@Test
+	public void clearsTheDepth() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> RenderBridgeContractSuite.drawInDepth(bridge, true));
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.BLUE);
+	}
+
+	@Test
+	public void testsTheDepthInFrameBuffers() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, TextureFilter.NEAREST);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.frameBuffer(frameBuffer);
+			bridge.clear(0F, 0F, 0F, 1F);
+			RenderBridgeContractSuite.drawInDepth(bridge, false);
+			bridge.frameBuffer(null);
+			bridge.color(1F, 1F, 1F, 1F);
+			bridge.texture(frameBuffer.getTexture(), TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
+		});
+		frameBuffer.delete();
+
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
+	}
+
+	@Test
 	public void drawsWithTheCurrentColor() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.color(1F, 0F, 0F, 1F);
@@ -279,6 +309,27 @@ public abstract class RenderBridgeContractSuite {
 		final SnapshotImage image = RenderBridgeContractSuite.backend.capture(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		RenderBridgeContractSuite.backend.present();
 		return image;
+	}
+
+	private static void drawInDepth(final IRenderBridge bridge, final boolean clearBetween) {
+		bridge.pushMatrix();
+		try {
+			bridge.depth(true, true);
+			bridge.clearDepth();
+			bridge.translate(0D, 0D, -10D);
+			bridge.color(1F, 0F, 0F, 1F);
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			if (clearBetween) {
+				bridge.clearDepth();
+			}
+
+			bridge.translate(0D, 0D, -10D);
+			bridge.color(0F, 0F, 1F, 1F);
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+		} finally {
+			bridge.depth(false, false);
+			bridge.popMatrix();
+		}
 	}
 
 	private static int[] checkerboard() {

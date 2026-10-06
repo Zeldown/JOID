@@ -1,6 +1,7 @@
 package dev.joid.impl.lwjgl3.render.framebuffer;
 
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL14C;
 import org.lwjgl.opengl.GL30C;
 
 import dev.joid.impl.lwjgl3.render.texture.Texture;
@@ -15,6 +16,7 @@ import lombok.NonNull;
 public final class FrameBuffer implements IFrameBuffer {
 
 	private final int     id;
+	private final int     depth;
 	private final Texture texture;
 
 	public static @NonNull FrameBuffer create(final int width, final int height) {
@@ -22,8 +24,14 @@ public final class FrameBuffer implements IFrameBuffer {
 		final int id = GL30C.glGenFramebuffers();
 		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, id);
 		GL30C.glFramebufferTexture2D(GL30C.GL_FRAMEBUFFER, GL30C.GL_COLOR_ATTACHMENT0, GL11C.GL_TEXTURE_2D, texture.getId(), 0);
+
+		final int depth = GL30C.glGenRenderbuffers();
+		GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, depth);
+		GL30C.glRenderbufferStorage(GL30C.GL_RENDERBUFFER, GL14C.GL_DEPTH_COMPONENT24, width, height);
+		GL30C.glFramebufferRenderbuffer(GL30C.GL_FRAMEBUFFER, GL30C.GL_DEPTH_ATTACHMENT, GL30C.GL_RENDERBUFFER, depth);
+		GL30C.glBindRenderbuffer(GL30C.GL_RENDERBUFFER, 0);
 		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
-		return new FrameBuffer(id, texture);
+		return new FrameBuffer(id, depth, texture);
 	}
 
 	@Override
@@ -39,6 +47,7 @@ public final class FrameBuffer implements IFrameBuffer {
 	@Override
 	public void delete() {
 		GL30C.glDeleteFramebuffers(this.id);
+		GL30C.glDeleteRenderbuffers(this.depth);
 		this.texture.delete();
 	}
 

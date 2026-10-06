@@ -246,6 +246,14 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public void clearDepth() {
+		final boolean write = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK);
+		GL11.glDepthMask(true);
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glDepthMask(write);
+	}
+
+	@Override
 	public void clearStencil() {
 		GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 	}

@@ -20,6 +20,11 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
+	public void clearDepth() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void clearStencil() {
 		throw new UnsupportedOperationException();
 	}

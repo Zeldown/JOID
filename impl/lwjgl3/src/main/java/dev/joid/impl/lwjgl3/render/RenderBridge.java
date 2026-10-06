@@ -71,6 +71,14 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
+	public void clearDepth() {
+		this.applyTarget(super.getState());
+		GL11C.glDepthMask(true);
+		GL11C.glClear(GL11C.GL_DEPTH_BUFFER_BIT);
+		GL11C.glDepthMask(super.getState().isDepthWrite());
+	}
+
+	@Override
 	public void clearStencil() {
 		this.applyTarget(super.getState());
 		GL11C.glStencilMask(0xFF);

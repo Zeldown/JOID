@@ -90,7 +90,7 @@ public final class PipelineCache {
 					.pViewportState(VkPipelineViewportStateCreateInfo.calloc(stack).sType$Default().viewportCount(1).scissorCount(1))
 					.pRasterizationState(rasterization)
 					.pMultisampleState(VkPipelineMultisampleStateCreateInfo.calloc(stack).sType$Default().rasterizationSamples(VK10.VK_SAMPLE_COUNT_1_BIT))
-					.pDepthStencilState(key.isOffscreen() ? null : VkPipelineDepthStencilStateCreateInfo.calloc(stack).sType$Default().depthCompareOp(VK10.VK_COMPARE_OP_LESS))
+					.pDepthStencilState(VkPipelineDepthStencilStateCreateInfo.calloc(stack).sType$Default().depthCompareOp(VK10.VK_COMPARE_OP_LESS))
 					.pColorBlendState(VkPipelineColorBlendStateCreateInfo.calloc(stack).sType$Default().pAttachments(blendAttachment))
 					.pDynamicState(VkPipelineDynamicStateCreateInfo.calloc(stack).sType$Default().pDynamicStates(stack.ints(VK10.VK_DYNAMIC_STATE_VIEWPORT, VK10.VK_DYNAMIC_STATE_SCISSOR, VK10.VK_DYNAMIC_STATE_LINE_WIDTH, VK10.VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK, VK10.VK_DYNAMIC_STATE_STENCIL_WRITE_MASK, VK10.VK_DYNAMIC_STATE_STENCIL_REFERENCE, VK13.VK_DYNAMIC_STATE_CULL_MODE, VK13.VK_DYNAMIC_STATE_FRONT_FACE, VK13.VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY, VK13.VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE, VK13.VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE, VK13.VK_DYNAMIC_STATE_DEPTH_COMPARE_OP, VK13.VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE, VK13.VK_DYNAMIC_STATE_STENCIL_OP)))
 					.layout(key.getShader().getPipelineLayout())

@@ -59,6 +59,9 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 	}
 
 	@Override
+	public void clearDepth() {}
+
+	@Override
 	public void clearStencil() {}
 
 	@Override

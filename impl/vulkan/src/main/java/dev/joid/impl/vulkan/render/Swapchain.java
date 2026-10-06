@@ -56,8 +56,8 @@ public final class Swapchain {
 			this.colorSpace = selected.colorSpace();
 		}
 
-		this.clearRenderPass = context.createRenderPass(this.format, true, VK10.VK_IMAGE_LAYOUT_UNDEFINED, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, true);
-		this.loadRenderPass  = context.createRenderPass(this.format, false, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, true);
+		this.clearRenderPass = context.createRenderPass(this.format, true, VK10.VK_IMAGE_LAYOUT_UNDEFINED, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, true, true);
+		this.loadRenderPass  = context.createRenderPass(this.format, false, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, true, false);
 		this.create();
 	}
 

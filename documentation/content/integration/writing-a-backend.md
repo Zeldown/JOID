@@ -9,7 +9,7 @@ Each release publishes `joid-backend-template-<version>.zip` (built by the `back
 | File | Role |
 |---|---|
 | `Backend.java` | Calls `JOID.checkVersion` and registers the three bridges. |
-| `render/RenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearStencil`, `draw`, `createTexture`, `createFrameBuffer` and `createShader`, plus `beginFrame` and `endFrame` when your engine needs them. |
+| `render/RenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearDepth`, `clearStencil`, `draw`, `createTexture`, `createFrameBuffer` and `createShader`, plus `beginFrame` and `endFrame` when your engine needs them. |
 | `window/WindowBridge.java` | Window size, mouse, keyboard and clipboard. |
 | `audio/AudioBridge.java` | Streaming audio sources for the sound of videos. |
 | `demo/DemoWindow.java` | Opens the JOID demo UIs on your engine. |
@@ -85,6 +85,7 @@ public final class Backend {
 | Abstract method | What it must do |
 |---|---|
 | `clear(float red, float green, float blue, float alpha)` | Clear the color of the current target. |
+| `clearDepth()` | Clear the depth of the current target to the far plane (1), whatever the depth write state; the depth write state is kept. |
 | `clearStencil()` | Clear the stencil of the current target to 0. |
 | `draw(DrawMode mode, VertexBuffer buffer)` | Draw with the current state. |
 | `createTexture()` | Create an empty `ITexture`. |
@@ -138,7 +139,7 @@ Without a bound shader, a draw outputs the bound texture sampled at the texture 
 
 ### Framebuffers
 
-`createFrameBuffer(width, height, filter)` returns an `IFrameBuffer` with a color texture only (no depth, no stencil). `frameBuffer(IFrameBuffer)` makes it the target, `frameBuffer(null)` returns to the screen; its `getTexture()` can then be bound like any texture. `getWidth()`, `getHeight()` and `delete()` complete it.
+`createFrameBuffer(width, height, filter)` returns an `IFrameBuffer` with a color texture and a depth attachment of the same size (no stencil: the stencil test does not apply inside framebuffers), so the depth test of 3D models works inside effects as on the screen. `frameBuffer(IFrameBuffer)` makes it the target, `frameBuffer(null)` returns to the screen; its `getTexture()` can then be bound like any texture. `getWidth()`, `getHeight()` and `delete()` complete it.
 
 ### State
 

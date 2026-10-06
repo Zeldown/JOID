@@ -19,7 +19,7 @@ Load a model once and reuse it. `OBJModel`, its data and writing your own `IDraw
 ModelNode.create(100, 100, 300, 300).model(model).rotationYaw(30D).rotationPitch(15D).attach(this);
 ```
 
-![A cube with colored faces seen from above and from the side](../../images/model-node.png "A cube model turned by 30 degrees of yaw and 15 degrees of pitch.")
+![A cube with colored faces, its three nearest faces visible](../../images/model-node.png "A cube model turned by 30 degrees of yaw and 15 degrees of pitch.")
 
 ### Fitting and scale
 
