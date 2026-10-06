@@ -245,10 +245,10 @@ Some nodes add their own callbacks. They follow the same PRE/POST rules.
 | [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `onChange` | `NodeTextFieldChangeCallback<T>` | `(node, oldText, newText)` | The text changes. |
 | [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `onFocus` | `NodeTextFieldFocusCallback<T>` | `(node)` | The focus changes. |
 | [SliderNode](../nodes/input/slider.md) | `onChange` | `NodeSliderChangeCallback<T, O>` | `(node, value)` | The selected value changes. |
-| [CheckboxNode](../nodes/input/checkbox.md) | `onChange` | `NodeCheckboxChangeCallback<T>` | `(node, checked)` | A click toggles the box. |
-| [ToggleNode](../nodes/input/toggle.md) | `onChange` | `NodeToggleChangeCallback<T, F, S>` | `(node, toggle)` | A click toggles the node. |
-| [SwitchNode](../nodes/input/switch.md) | `onChange` | `NodeSwitchChangeCallback<T>` | `(node, value)` | The state changes through `index(...)`. |
-| [SelectorNode](../nodes/input/selector.md) | `onChange` | `NodeSelectorChangeCallback<T, V>` | `(node, value)` | Another option is selected with the mouse. |
+| [CheckboxNode](../nodes/input/checkbox.md) | `onChange` | `NodeCheckboxChangeCallback<T>` | `(node, checked)` | The checked state changes: click, `checked(...)` or bound signal. |
+| [ToggleNode](../nodes/input/toggle.md) | `onChange` | `NodeToggleChangeCallback<T, F, S>` | `(node, toggle)` | The side changes: click, `toggle(...)` or bound signal. |
+| [SwitchNode](../nodes/input/switch.md) | `onChange` | `NodeSwitchChangeCallback<T>` | `(node, value)` | The state changes: `index(...)`, `state(...)` or bound signal. |
+| [SelectorNode](../nodes/input/selector.md) | `onChange` | `NodeSelectorChangeCallback<T, V>` | `(node, value)` | The selected value changes: click, `value(...)`, `values(...)` or bound signal. |
 | [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onPlay`, `onPause`, `onEnd` | `NodeResourcePlayerPlayCallback<T>`, `NodeResourcePlayerPauseCallback<T>`, `NodeResourcePlayerEndCallback<T>` | `(node)` | Playback starts, is paused, reaches its end. |
 | [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onProgress` | `NodeResourcePlayerProgressCallback<T>` | `(node, progress, currentTime)` | The progress changes while playing. |
 | [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | `onReorderStart`, `onReorder` | `NodeReorderStartCallback`, `NodeReorderCallback` | `(node, child)` | A child starts moving, moves. |

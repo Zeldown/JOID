@@ -41,6 +41,7 @@ public class SelectorNodeTest {
 		this.first = (RectNode) this.selector.getChildren().ordered().get(0);
 		this.second = (RectNode) this.selector.getChildren().ordered().get(1);
 		this.third = (RectNode) this.selector.getChildren().ordered().get(2);
+		this.changes.clear();
 	}
 
 	@Test
@@ -131,6 +132,20 @@ public class SelectorNodeTest {
 		Assert.assertTrue(this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).isEmpty());
 	}
 
+	@Test
+	public void reportsItsFirstSelection() {
+		final List<String> selections = new ArrayList<>();
+		new Selector().onChange((node, value) -> selections.add(value)).values("second", "first", "second");
+		Assert.assertEquals(Arrays.asList("second"), selections);
+	}
+
+	@Test
+	public void keepsItsValueWhenItsOptionsAreRebuilt() {
+		this.selector.values("first", "first", "second");
+		Assert.assertEquals(Optional.of("first"), this.selector.getValue());
+		Assert.assertTrue(this.changes.isEmpty());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAValueThatIsNoOption() {
 		this.selector.value("fourth");
@@ -153,15 +168,15 @@ public class SelectorNodeTest {
 		this.bridges.frame();
 		Assert.assertSame(this.third, this.selector.getSelected());
 		this.assertDrawn(0.5F, 0.7F, 0.9F, 100D, 140D);
-		Assert.assertTrue(this.changes.isEmpty());
+		Assert.assertEquals(Arrays.asList("second", "third"), this.changes);
 	}
 
 	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final Signal<String> language = new Signal<>("first");
-		this.selector.signal(language).value("third");
+		this.selector.signal(language).value("third").value("third");
 		Assert.assertEquals("third", language.getOrDefault());
-		Assert.assertTrue(this.changes.isEmpty());
+		Assert.assertEquals(Arrays.asList("third"), this.changes);
 	}
 
 	@Test

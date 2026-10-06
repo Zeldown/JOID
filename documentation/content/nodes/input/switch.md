@@ -65,7 +65,7 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 | `state(List<String> stateList, int index)` | The given list itself | `stateList.get(index)` |
 | `state(List<String> stateList, String state)` | A copy of the list | `state` |
 
-- `state(...)` does not call `onChange`.
+- `state(...)` calls `onChange` when the selected state name changes.
 - Call `state(...)` before the switch is shown: `getState()` and your `init(UI)` need the list.
 - The arguments are checked with `assert` statements only, active when the JVM runs with `-ea`. Without them, an empty list, an index out of range or an unknown state is stored as is and fails later in `getState()`.
 
@@ -96,8 +96,8 @@ SegmentedSwitchNode
 
 - The switch starts on the signal's value: here "High".
 - Each `index(...)` writes the name of the new state into the signal, before `(node, state)` runs.
-- Each value the signal publishes later selects that state without calling `onChange`, while the switch's UI is open, and the switch rebuilds. A name that is not one of the states is ignored.
-- Call `signal(...)` after `state(...)`: the signal's value is applied once, when you bind it, and only an existing state can be selected. `state(...)` does not write the signal; `index(...)` does, and calls `onChange`, because it is also the method your subclass calls on a click.
+- Each value the signal publishes later selects that state through `index(...)`, while the switch's UI is open, and the switch rebuilds. A name that is not one of the states is ignored.
+- Call `signal(...)` after `state(...)`: the signal's value is applied once, when you bind it, and only an existing state can be selected. `state(...)` and `index(...)` write the signal and call `onChange` when the state changes; selecting the current state again does nothing.
 
 ## Rebuilding on change
 

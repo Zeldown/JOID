@@ -58,7 +58,7 @@ public class SwitchNodeTest {
 		Assert.assertEquals("low", quality.getOrDefault());
 		quality.set("medium");
 		Assert.assertEquals("medium", node.getState());
-		Assert.assertEquals(Arrays.asList("low"), this.changes);
+		Assert.assertEquals(Arrays.asList("high", "low", "medium"), this.changes);
 	}
 
 	@Test

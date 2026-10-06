@@ -55,7 +55,7 @@ public class CheckboxNodeTest {
 		Assert.assertFalse(subtitles.getOrDefault());
 		subtitles.set(true);
 		Assert.assertTrue(checkbox.isChecked());
-		Assert.assertEquals(Arrays.asList(false), changes);
+		Assert.assertEquals(Arrays.asList(false, true), changes);
 	}
 
 	@Test
@@ -64,8 +64,9 @@ public class CheckboxNodeTest {
 		final BooleanSignal subtitles = new BooleanSignal(false);
 		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange((node, value) -> changes.add(value));
 		checkbox.checked(true);
+		checkbox.checked(true);
 		Assert.assertTrue(subtitles.getOrDefault());
-		Assert.assertTrue(changes.isEmpty());
+		Assert.assertEquals(Arrays.asList(true), changes);
 	}
 
 	@Test

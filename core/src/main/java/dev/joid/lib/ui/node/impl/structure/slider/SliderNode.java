@@ -60,9 +60,7 @@ public abstract class SliderNode<O> extends Node {
 		if (!this.value.equals(newValue)) {
 			super.executeCallback(SliderNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
 				this.value = newValue;
-				if (this.signal != null) {
-					this.signal.set(this.value);
-				}
+				super.sync(this.signal, newValue);
 			}, newValue);
 		}
 
@@ -98,8 +96,7 @@ public abstract class SliderNode<O> extends Node {
 		}
 
 		this.valueSet = valueSet;
-		this.value    = value;
-		super.sync(this.signal, value);
+		this.change(value);
 		return (T) this;
 	}
 
@@ -108,18 +105,14 @@ public abstract class SliderNode<O> extends Node {
 			throw new IllegalArgumentException("The value is not in the value set");
 		}
 
-		this.value = value;
-		super.sync(this.signal, value);
-		if (super.getUi() != null) {
-			this.init(super.getUi());
-		}
+		this.change(value);
 		return (T) this;
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
 		this.signal = signal;
 		super.bind(signal, value -> {
-			if (this.valueSet.contains(value) && !value.equals(this.value)) {
+			if (this.valueSet.contains(value)) {
 				this.value(value);
 			}
 		});
@@ -129,6 +122,20 @@ public abstract class SliderNode<O> extends Node {
 	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull NodeSliderChangeCallback<T, O> callback) {
 		super.registerCallback(SliderNode.CALLBACK_CHANGE, callback);
 		return (T) this;
+	}
+
+	private void change(final O value) {
+		if (value.equals(this.value)) {
+			return;
+		}
+
+		super.executeCallback(SliderNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+			this.value = value;
+			super.sync(this.signal, value);
+			if (super.getUi() != null) {
+				this.init(super.getUi());
+			}
+		}, value);
 	}
 
 }

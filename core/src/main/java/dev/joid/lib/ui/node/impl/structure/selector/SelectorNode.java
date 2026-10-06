@@ -95,15 +95,7 @@ public abstract class SelectorNode<V> extends Node {
 			}
 
 			final Node option = clicked;
-			context.cancel(() -> {
-				super.executeCallback(SelectorNode.CALLBACK_CHANGE, context, () -> {
-					this.selected = option;
-					this.active = false;
-					if (this.signal != null) {
-						this.signal.set(this.optionMap.get(option));
-					}
-				}, this.optionMap.get(option));
-			});
+			context.cancel(() -> this.select(option, context));
 			return;
 		}
 
@@ -130,6 +122,7 @@ public abstract class SelectorNode<V> extends Node {
 			throw new IllegalArgumentException("The value " + value + " is not an option of the selector");
 		}
 
+		final Optional<V> previous = this.getValue();
 		super.clearChildren();
 		this.optionMap.clear();
 		for (final V option : values) {
@@ -137,24 +130,23 @@ public abstract class SelectorNode<V> extends Node {
 			this.optionMap.put(node, option);
 			super.append(node);
 		}
+
+		if (previous.isPresent() && previous.get().equals(value)) {
+			this.selected = this.find(value);
+			return (T) this;
+		}
 		return this.value(value);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull V value) {
-		for (final Map.Entry<Node, V> entry : this.optionMap.entrySet()) {
-			if (Objects.equals(entry.getValue(), value)) {
-				this.selected = entry.getKey();
-				super.sync(this.signal, value);
-				return (T) this;
-			}
-		}
-		throw new IllegalArgumentException("The value " + value + " is not an option of the selector");
+		this.select(this.find(value), InternalContext.create());
+		return (T) this;
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = signal;
 		super.bind(signal, value -> {
-			if (this.optionMap.containsValue(value) && !value.equals(this.getValue().orElse(null))) {
+			if (this.optionMap.containsValue(value)) {
 				this.value(value);
 			}
 		});
@@ -174,6 +166,28 @@ public abstract class SelectorNode<V> extends Node {
 	public final <T extends SelectorNode<V>> @NonNull T onChange(final @NonNull NodeSelectorChangeCallback<T, V> callback) {
 		super.registerCallback(SelectorNode.CALLBACK_CHANGE, callback);
 		return (T) this;
+	}
+
+	private @NonNull Node find(final V value) {
+		for (final Map.Entry<Node, V> entry : this.optionMap.entrySet()) {
+			if (Objects.equals(entry.getValue(), value)) {
+				return entry.getKey();
+			}
+		}
+		throw new IllegalArgumentException("The value " + value + " is not an option of the selector");
+	}
+
+	private void select(final Node option, final InternalContext context) {
+		if (option == this.selected) {
+			return;
+		}
+
+		final V value = this.optionMap.get(option);
+		super.executeCallback(SelectorNode.CALLBACK_CHANGE, context, () -> {
+			this.selected = option;
+			this.active   = false;
+			super.sync(this.signal, value);
+		}, value);
 	}
 
 	public static enum SelectorDirection {

@@ -28,31 +28,34 @@ public abstract class CheckboxNode extends Node {
 			return;
 		}
 
-		context.cancel(() -> {
-			super.executeCallback(CheckboxNode.CALLBACK_CHANGE, context, () -> {
-				this.checked = !this.checked;
-				if (this.signal != null) {
-					this.signal.set(this.checked);
-				}
-			}, !this.checked);
-		});
+		context.cancel(() -> this.change(!this.checked, context));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
-		this.checked = checked;
-		super.sync(this.signal, checked);
+		this.change(checked, InternalContext.create());
 		return (T) this;
 	}
 
 	public final <T extends CheckboxNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
 		this.signal = signal;
-		super.bind(signal, value -> this.checked = value);
+		super.bind(signal, value -> this.change(value, InternalContext.create()));
 		return (T) this;
 	}
 
 	public final <T extends CheckboxNode> @NonNull T onChange(final @NonNull NodeCheckboxChangeCallback<T> callback) {
 		super.registerCallback(CheckboxNode.CALLBACK_CHANGE, callback);
 		return (T) this;
+	}
+
+	private void change(final boolean checked, final InternalContext context) {
+		if (this.checked == checked) {
+			return;
+		}
+
+		super.executeCallback(CheckboxNode.CALLBACK_CHANGE, context, () -> {
+			this.checked = checked;
+			super.sync(this.signal, checked);
+		}, checked);
 	}
 
 }

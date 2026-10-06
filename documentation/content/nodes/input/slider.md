@@ -117,7 +117,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 ## Reading and setting the value
 
 - `getValue()` returns the selected value.
-- `value(O value)` selects a value from code. Once the slider is attached to a UI, it also moves the cursor to the value position; before that, the cursor is placed when the slider loads. It writes the signal, like `valueSet(...)`, and does not call `onChange`. It throws an `IllegalArgumentException` when the value is not one of the values.
+- `value(O value)` selects a value from code. Once the slider is attached to a UI, it also moves the cursor to the value position; before that, the cursor is placed when the slider loads. It writes the signal, like `valueSet(...)`, and calls `onChange` when the value changes. It throws an `IllegalArgumentException` when the value is not one of the values.
 
 ## Binding a signal with signal
 
@@ -125,7 +125,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 
 - The slider starts on the signal's value, when it is one of the values.
 - Each value the user selects is written into the signal, before `onChange` runs.
-- Each value the signal publishes later goes through `value(...)`: the cursor moves to it and `onChange` is not called, while the slider's UI is open. A value outside the values is ignored.
+- Each value the signal publishes later goes through `value(...)`: the cursor moves to it and `onChange` runs when it changes, while the slider's UI is open. A value outside the values is ignored.
 - Call `signal(...)` after `values(...)` or `valueSet(...)`: the signal's value is applied once, when you bind it, and only an existing value can be selected.
 
 ## onChange

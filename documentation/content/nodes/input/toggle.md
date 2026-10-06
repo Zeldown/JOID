@@ -64,7 +64,7 @@ Here `fpsToggle` is a `ToggleNode<Integer, Integer>` created with `.state(60, 30
 - A mouse press on the toggle (any button) flips `isToggle()`, then calls `onChange` with the new side. The press is consumed.
 - A press that a node above already consumed is ignored, and a disabled or hidden toggle ignores presses.
 - The toggle reacts on press, not on release, and has no keyboard control.
-- `toggle(boolean)` sets the side from code without calling `onChange`.
+- `toggle(boolean)` sets the side from code. `onChange` runs on every real change of the side, whatever its source: a click, a setter or the bound signal. Setting the current side again runs nothing.
 
 ## Binding a signal with signal
 
@@ -82,8 +82,8 @@ ThemeToggleNode
 
 - The toggle starts on the signal's value: here on its toggled side, `"dark"`.
 - Each click writes the new side into the signal, before `onChange` runs.
-- Each value the signal publishes later sets the side without calling `onChange`, while the toggle's UI is open.
-- `toggle(boolean)` writes the signal too, without calling `onChange`.
+- Each value the signal publishes later sets the side, and calls `onChange` when it changes, while the toggle's UI is open.
+- `toggle(boolean)` writes the signal too.
 
 ## onChange
 
@@ -95,7 +95,7 @@ ThemeToggleNode
 | --- | --- | --- |
 | `ToggleNode(double x, double y, double width, double height)` | | Protected constructor for your subclass. |
 | `state(F toggle, S back)` | none | Values of the toggled and back sides. |
-| `toggle(boolean)` | `false` | Sets the side without calling `onChange`. |
+| `toggle(boolean)` | `false` | Sets the side; calls `onChange` and writes the signal when it changes. |
 | `signal(Signal<Boolean>)` | none | Binds a signal to the side (`true` for toggled), both ways. |
 | `isToggle()` | | `true` on the toggled side. |
 | `getSignal()` | | Bound signal, or `null`. |

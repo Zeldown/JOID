@@ -49,7 +49,7 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 
 ## Setting the state with checked
 
-`checked(boolean)` sets the state from code without calling `onChange`. A new checkbox is unchecked.
+`checked(boolean)` sets the state from code. `onChange` runs on every real change of the state, whatever its source: a click, a setter or the bound signal. Setting the current state again runs nothing. A new checkbox is unchecked.
 
 ## Binding a signal with signal
 
@@ -66,8 +66,8 @@ SettingCheckboxNode
 
 - The checkbox starts on the signal's value: here it is checked.
 - Each click writes the new state into the signal, before `onChange` runs.
-- Each value the signal publishes later sets the state without calling `onChange`, while the checkbox's UI is open.
-- `checked(boolean)` writes the signal too, without calling `onChange`.
+- Each value the signal publishes later sets the state, and calls `onChange` when it changes, while the checkbox's UI is open.
+- `checked(boolean)` writes the signal too.
 
 `BooleanSignal` is in `dev.joid.lib.utils.signal.impl.primitive`.
 
@@ -82,7 +82,7 @@ Cancelling the context in the `pre(...)` phase of the callback keeps the previou
 | Method | Default | Description |
 | --- | --- | --- |
 | `CheckboxNode(double x, double y, double width, double height)` | | Protected constructor for your subclass. |
-| `checked(boolean)` | `false` | Sets the state without calling `onChange`. |
+| `checked(boolean)` | `false` | Sets the state; calls `onChange` and writes the signal when it changes. |
 | `signal(Signal<Boolean>)` | none | Binds a signal to the state, both ways. |
 | `isChecked()` | | Current state. |
 | `getSignal()` | | Bound signal, or `null`. |

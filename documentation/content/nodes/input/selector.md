@@ -67,7 +67,7 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 | `getValue()` | `Optional<V>` of the selected value, empty while the selector has no option. |
 
 - Values are compared with `equals`. Give each option a distinct value: `value(...)` selects the first option equal to the value.
-- `values(...)` and `value(...)` write the selected value into the signal, without calling `onChange`.
+- `values(...)` and `value(...)` write the selected value into the signal and call `onChange` when the selected value changes. `values(...)` that keeps the current value selected calls nothing.
 - `values(...)` checks the selected value last: with a value that is not in the list, it creates the options, then throws an `IllegalArgumentException`.
 
 > WARNING: Let `values(...)` create the options. A child that you attach yourself is laid out as an option but has no value: selecting it gives `onChange` a `null` value and leaves `getValue()` empty.
@@ -78,7 +78,7 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 
 - the selector starts on the signal's value, when the signal holds one of the options;
 - each value the user picks is written into the signal;
-- each value the signal publishes later selects its option, without calling `onChange`. A value that is not an option is ignored.
+- each value the signal publishes later selects its option, and calls `onChange` when it changes. A value that is not an option is ignored.
 
 ```java
 private final StringSignal difficulty = new StringSignal("Normal");
@@ -127,7 +127,7 @@ The selector's own height follows: with `DOWN` it grows to cover the open list (
 
 ## onChange
 
-`onChange(NodeSelectorChangeCallback<T, V>)` takes `(node, value)`, where `value` is the newly selected value; `node.getValue()` already returns it and the signal already holds it. It runs only for a selection made with the mouse. Cancelling the context in the `pre(...)` phase keeps the previous option selected, leaves the list open and does not write the signal (see [Callbacks](../../interactions/callbacks.md)). The callback interface is in `dev.joid.lib.ui.node.impl.structure.selector.callback`.
+`onChange(NodeSelectorChangeCallback<T, V>)` takes `(node, value)`, where `value` is the newly selected value; `node.getValue()` already returns it and the signal already holds it. It runs on every change of the selected value: a click on an option, `value(...)`, `values(...)` or the bound signal. Cancelling the context in the `pre(...)` phase keeps the previous option selected, leaves the list open and does not write the signal (see [Callbacks](../../interactions/callbacks.md)). The callback interface is in `dev.joid.lib.ui.node.impl.structure.selector.callback`.
 
 ## Reference
 
@@ -143,7 +143,7 @@ The selector's own height follows: with `DOWN` it grows to cover the open list (
 | `signal(Signal<V>)` | none | Binds a signal both ways. |
 | `direction(SelectorDirection)` | `DOWN` | Side the list opens to. |
 | `active(boolean)` | `false` | Opens or closes the list. |
-| `onChange(NodeSelectorChangeCallback<T, V>)` | | Adds a callback `(node, value)` run after each selection with the mouse. |
+| `onChange(NodeSelectorChangeCallback<T, V>)` | | Adds a callback `(node, value)` run after each change of the selected value. |
 | `getValue()` | | `Optional<V>` of the selected value. |
 | `getSelected()` | | Node of the selected option, `null` while there is no option. |
 | `isSelected(Node)` | | Whether the node is the selected option. |

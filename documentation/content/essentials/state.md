@@ -123,7 +123,7 @@ The link goes both ways:
 
 - the control starts on the signal's value;
 - each time the user changes the value, the control sets `volume`, so anything that reads or watches it follows;
-- each time other code sets `volume`, the control shows the new value, without calling its `onChange`.
+- each time other code sets `volume`, the control shows the new value and calls its `onChange`.
 
 | Control | Method | Signal holds |
 | --- | --- | --- |

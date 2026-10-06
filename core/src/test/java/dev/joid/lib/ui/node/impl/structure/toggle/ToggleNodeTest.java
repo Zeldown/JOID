@@ -61,7 +61,7 @@ public class ToggleNodeTest {
 		Assert.assertFalse(music.getOrDefault());
 		music.set(true);
 		Assert.assertTrue(toggle.isToggle());
-		Assert.assertEquals(1, changes.size());
+		Assert.assertEquals(Arrays.asList(false, true), changes);
 	}
 
 	@Test
@@ -70,8 +70,9 @@ public class ToggleNodeTest {
 		final BooleanSignal music = new BooleanSignal(false);
 		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange((node, value) -> changes.add(value));
 		toggle.toggle(true);
+		toggle.toggle(true);
 		Assert.assertTrue(music.getOrDefault());
-		Assert.assertTrue(changes.isEmpty());
+		Assert.assertEquals(Arrays.asList(true), changes);
 	}
 
 	@Test

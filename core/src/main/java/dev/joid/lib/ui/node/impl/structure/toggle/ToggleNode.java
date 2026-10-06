@@ -29,19 +29,11 @@ public abstract class ToggleNode<F, S> extends Node {
 			return;
 		}
 
-		context.cancel(() -> {
-			super.executeCallback(ToggleNode.CALLBACK_CHANGE, context, () -> {
-				this.toggle = !this.toggle;
-				if (this.signal != null) {
-					this.signal.set(this.toggle);
-				}
-			}, !this.toggle);
-		});
+		context.cancel(() -> this.change(!this.toggle, context));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final boolean toggle) {
-		this.toggle = toggle;
-		super.sync(this.signal, toggle);
+		this.change(toggle, InternalContext.create());
 		return (T) this;
 	}
 
@@ -56,13 +48,24 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	public final <T extends ToggleNode<F, S>> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
 		this.signal = signal;
-		super.bind(signal, value -> this.toggle = value);
+		super.bind(signal, value -> this.change(value, InternalContext.create()));
 		return (T) this;
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T onChange(final @NonNull NodeToggleChangeCallback<T, F, S> callback) {
 		super.registerCallback(ToggleNode.CALLBACK_CHANGE, callback);
 		return (T) this;
+	}
+
+	private void change(final boolean toggle, final InternalContext context) {
+		if (this.toggle == toggle) {
+			return;
+		}
+
+		super.executeCallback(ToggleNode.CALLBACK_CHANGE, context, () -> {
+			this.toggle = toggle;
+			super.sync(this.signal, toggle);
+		}, toggle);
 	}
 
 }

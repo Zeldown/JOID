@@ -103,7 +103,7 @@ public class SliderNodeTest {
 		signal.set(2);
 		this.bridges.frame();
 		Assert.assertEquals(2, slider.getValue().intValue());
-		Assert.assertTrue(changes.isEmpty());
+		Assert.assertEquals(Arrays.asList(2), changes);
 	}
 
 	@Test
@@ -113,9 +113,10 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor()).signal(signal).onChange((node, value) -> changes.add(value));
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.value(3);
+		slider.value(3);
 		this.bridges.frame();
 		Assert.assertEquals(3, signal.getOrDefault().intValue());
-		Assert.assertTrue(changes.isEmpty());
+		Assert.assertEquals(Arrays.asList(3), changes);
 	}
 
 	@Test
