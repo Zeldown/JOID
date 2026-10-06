@@ -1,6 +1,7 @@
 package dev.joid.internal;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.InternalFont;
@@ -39,6 +40,10 @@ public final class JOID {
 	}
 
 	public JOID load() {
+		if (!this.configDir.isDirectory()) {
+			this.configDir.mkdirs();
+		}
+
 		System.out.println("=================================");
 		System.out.println("");
 		System.out.println("         _  ____ _____ _____    ");
@@ -135,6 +140,10 @@ public final class JOID {
 		}
 
 		final IUIBridge bridge = BridgeHandler.UI.get(ui);
+		if (bridge == null) {
+			return;
+		}
+
 		ui.properlyClose();
 		bridge.close(ui);
 	}
@@ -159,7 +168,7 @@ public final class JOID {
 			return null;
 		}
 
-		for (final UI currentUi : bridge.getUiList()) {
+		for (final UI currentUi : new ArrayList<>(bridge.getUiList().ordered())) {
 			currentUi.properlyClose();
 			bridge.close(currentUi);
 		}

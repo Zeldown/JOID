@@ -94,7 +94,7 @@ bridge.draw();
 
 Chaque `DemoWindow` de backend contient une boucle complète pour sa bibliothèque de fenêtrage — polling `Mouse` / `Keyboard` sur LWJGL 2, callbacks GLFW dans la `DemoWindow` du module `glfw`, partagée par LWJGL 3 et Vulkan.
 
-`UIBridge` gère déjà le tracking du drag et ESC-to-close ; il suffit de lui fournir les événements.
+`UIBridge` distribue déjà chaque événement aux UIs, de celle du dessus vers le bas, et ferme une UI fermable sur ESC ; il suffit de lui fournir les événements. Le temps de drag donné à `mouseDragged` est transmis tel quel : c'est votre boucle qui le mesure.
 
 ## Échelle d'interface
 
@@ -111,7 +111,7 @@ L'UI fait le reste : elle se dessine autour de son ancre à cette échelle, conv
 
 ## Plusieurs bridges
 
-Une vraie app a souvent plusieurs bridges — par exemple un pour les UIs in-world, un pour le menu principal. `BridgeHandler.UI` route chaque `UI` vers le bridge approprié selon `canHandle(Class<? extends UI>)`. Quand plusieurs bridges peuvent gérer la même `UI`, celui qui a le plus grand `getIndex()` l'emporte, puis le dernier enregistré.
+Une vraie app a souvent plusieurs bridges — par exemple un pour les UIs in-world, un pour le menu principal. `BridgeHandler.UI` route chaque `UI` vers le bridge approprié selon `canHandle(UI)` ; `canHandle(Class<? extends UI>)` répond aux recherches par classe, `JOID.getUI` et `JOID.isOpen(Class)`. Quand plusieurs bridges peuvent gérer la même `UI`, celui qui a le plus grand `getIndex()` l'emporte, puis le dernier enregistré.
 
 ```java
 BridgeHandler.UI.register(new MainMenuBridge());
@@ -122,11 +122,11 @@ BridgeHandler.UI.register(new WorldUIBridge());
 JOID.open(new SettingsUI());  // → MainMenuBridge (car il canHandle SettingsUI)
 ```
 
-Utilisez l'annotation `@UIBridge` sur vos classes d'UI pour indiquer le routage, ou override la logique `canHandle` dans chaque bridge.
+Le routage est décidé par les méthodes `canHandle` de chaque bridge.
 
 ## Ordre des bridges
 
-Les bridges sont itérés dans l'ordre d'enregistrement. Le premier dont `canHandle(ui)` retourne `true` gagne. Gardez le routage déterministe.
+Les bridges sont essayés du plus grand `getIndex()` au plus petit, puis du dernier enregistré au premier. Le premier dont `canHandle(ui)` retourne `true` gagne. Gardez le routage déterministe.
 
 ## Bonnes pratiques
 

@@ -94,7 +94,7 @@ bridge.draw();
 
 Every backend `DemoWindow` contains a complete loop for its windowing library — `Mouse` / `Keyboard` polling on LWJGL 2, GLFW callbacks in the `DemoWindow` of the `glfw` module, shared by LWJGL 3 and Vulkan.
 
-`UIBridge` already implements mouse drag tracking and ESC-to-close; you just need to feed it events.
+`UIBridge` already dispatches each event to the UIs from the top one down and closes a closeable UI on ESC; you just need to feed it events. The drag time given to `mouseDragged` is forwarded as is: your loop measures it.
 
 ## Interface scale
 
@@ -111,7 +111,7 @@ The UI does the rest: it draws around its anchor at that scale, converts the mou
 
 ## Multiple bridges
 
-A real app often has multiple bridges — e.g., one for in-world UIs, one for main menu. `BridgeHandler.UI` routes each `UI` to the appropriate bridge based on `canHandle(Class<? extends UI>)`. When several bridges can handle the same `UI`, the one with the highest `getIndex()` wins, then the latest registered.
+A real app often has multiple bridges — e.g., one for in-world UIs, one for main menu. `BridgeHandler.UI` routes each `UI` to the appropriate bridge based on `canHandle(UI)`; `canHandle(Class<? extends UI>)` answers the lookups by class, `JOID.getUI` and `JOID.isOpen(Class)`. When several bridges can handle the same `UI`, the one with the highest `getIndex()` wins, then the latest registered.
 
 ```java
 BridgeHandler.UI.register(new MainMenuBridge());
@@ -122,11 +122,11 @@ BridgeHandler.UI.register(new WorldUIBridge());
 JOID.open(new SettingsUI());  // → MainMenuBridge (because it canHandle SettingsUI)
 ```
 
-Use the `@UIBridge` annotation on your UI classes to hint the routing, or override `canHandle` logic in each bridge.
+The routing is decided by the `canHandle` methods of each bridge.
 
 ## Bridge ordering
 
-Bridges are iterated in registration order. The first one whose `canHandle(ui)` returns `true` wins. Keep your routing deterministic.
+Bridges are tried from the highest `getIndex()` down, then from the latest registered. The first one whose `canHandle(ui)` returns `true` wins. Keep your routing deterministic.
 
 ## Best practices
 

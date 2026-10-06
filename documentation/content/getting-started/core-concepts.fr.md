@@ -24,8 +24,8 @@ Active des comportements réservés au développement. Quand `true` :
 
 - **Alt-glisser** sur un nœud imprime ses coordonnées et permet de le déplacer à la volée — utile pendant qu'on positionne à l'œil.
 - **Alt + flèches** nudge le nœud survolé d'un pixel.
-- **Overlay profiler** disponible quand l'UI déclare `@UIData(debug = @Debug(profiler = true))`.
-- **Hot-reload** surveille les fichiers source et relance `init()` en cas de changement (même flag `@Debug`).
+- **Overlay profiler** disponible sur chaque UI ; déclarez `@UIDataDebug(profiler = false)` pour le désactiver.
+- **Hot-reload** surveille les classes compilées de l'UI — son dossier de classes ou son jar — et relance `init()` en cas de changement ; `@UIDataDebug(hotreload = false)` le désactive.
 - **Logs d'introspection de layout** pour les problèmes structurels.
 
 Laissez `false` en production — les gestes de debug et le file-watcher sont inutiles, et les bindings Alt peuvent entrer en conflit avec vos propres raccourcis. Seul l'artefact `-dev` contient le mode dev : sur un artefact `-prod`, `setDevMode(true)` lève une `IllegalStateException`.
@@ -34,7 +34,7 @@ Laissez `false` en production — les gestes de debug et le file-watcher sont in
 
 Charge la `DemoFont` embarquée (shippée avec l'artefact `-dev`) pour que les snippets du quick-start, les UIs de démo et les exemples de doc aient une police utilisable sans que vous fournissiez votre propre atlas MSDF. Une fois vos polices chargées avec `MsdfFontLoader`, désactivez-le. Comme le mode dev, il n'existe que dans l'artefact `-dev` : sur un artefact `-prod`, `setDemoMode(true)` lève une `IllegalStateException`.
 
-`load()` doit être appelée **exactement une fois**, avant d'enregistrer des bridges ou d'ouvrir des UIs.
+`load()` doit être appelée **exactement une fois**, après l'enregistrement des bridges — le backend et votre `UIBridge` — et avant d'ouvrir des UIs : les modes dev et démo chargent leurs polices via le bridge de rendu.
 
 ## La racine UI
 

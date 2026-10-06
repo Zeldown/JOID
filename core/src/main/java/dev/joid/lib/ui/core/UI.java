@@ -142,6 +142,11 @@ public abstract class UI implements IUI, IndexedElement {
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
 			this.keybindMap.clear();
+			for (final Node node : this.nodeList) {
+				if (node != this.devNode) {
+					node.onDetach();
+				}
+			}
 			this.nodeList.clear();
 			this.scheduledTaskList.clear();
 
@@ -405,7 +410,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	@Override
 	public int getIndex() {
-		return 0;
+		return (int) Math.floor(this.data.zlevel());
 	}
 
 	public final double getWidth() {
@@ -505,16 +510,16 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.drawBackground(mx, my);
 
-		if (this.transition != null) {
-			if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
-				this.transition.getIn().update();
-				this.transition.getIn().pre(this, mx, my);
-			}
+		final boolean transitionIn = this.transition != null && this.transition.getIn() != null && this.transition.getIn().isRunning();
+		final boolean transitionOut = this.transition != null && this.transition.getOut() != null && this.transition.getOut().isRunning();
+		if (transitionIn) {
+			this.transition.getIn().update();
+			this.transition.getIn().pre(this, mx, my);
+		}
 
-			if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
-				this.transition.getOut().update();
-				this.transition.getOut().pre(this, mx, my);
-			}
+		if (transitionOut) {
+			this.transition.getOut().update();
+			this.transition.getOut().pre(this, mx, my);
 		}
 
 		render.alphaTest(0F);
@@ -578,14 +583,12 @@ public abstract class UI implements IUI, IndexedElement {
 				}
 			});
 		} finally {
-			if (this.transition != null) {
-				if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
-					this.transition.getIn().post(this, mx, my);
-				}
+			if (transitionIn) {
+				this.transition.getIn().post(this, mx, my);
+			}
 
-				if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
-					this.transition.getOut().post(this, mx, my);
-				}
+			if (transitionOut) {
+				this.transition.getOut().post(this, mx, my);
 			}
 		}
 

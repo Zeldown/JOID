@@ -57,7 +57,7 @@ this.getData().setCloseable(false).setBackground(false);
 ## Cycle de vie
 
 ```
-constructeur → JOID.open(ui) → load() → init() → (boucle de frames) → onClose() → properlyClose()
+constructeur → JOID.open(ui) → load() → init() → (boucle de frames) → close() → properlyClose()
 ```
 
 ### `init()`
@@ -73,8 +73,7 @@ Appelée à chaque tick du jeu (chaque frame en mode autonome). Override pour de
 ```java
 @Override
 public void update() {
-    super.update();  // exécute les updates des nœuds
-    // votre logique
+    // votre logique, exécutée une fois les nœuds mis à jour
 }
 ```
 
@@ -89,9 +88,9 @@ public void postDraw(final double mouseX, final double mouseY) {
 }
 ```
 
-### `onClose()`
+### `close()`
 
-Retournez `false` pour bloquer la fermeture via ESC (par exemple avertissement de modifs non sauvegardées). Retournez `true` pour laisser JOID fermer l'UI.
+Retournez `false` pour bloquer la fermeture demandée par ESC ou `JOID.close(ui)` (par exemple avertissement de modifs non sauvegardées). Retournez `true`, la valeur par défaut, pour laisser JOID fermer l'UI. La méthode finale `onClose()` la consulte, puis lance la transition de sortie.
 
 ### `properlyClose()`
 
@@ -104,12 +103,12 @@ Enregistrez des shortcuts globaux avec `keybind(Runnable, Key... keys)` :
 ```java
 @Override
 public void init() {
-    this.keybind(() -> JOID.open(new SettingsUI()), Key.ESCAPE);
+    this.keybind(() -> JOID.open(new SettingsUI()), Key.TAB);
     this.keybind(() -> this.reload(), Key.R, Key.LEFT_CONTROL);
 }
 ```
 
-Plusieurs touches = combinaison (toutes appuyées simultanément).
+Plusieurs touches = combinaison (toutes appuyées simultanément). Sur une UI fermable — le défaut de `@UIData` — ESC ferme l'UI avant que les keybinds ne la voient : n'associez `Key.ESCAPE` qu'à une UI déclarée `@UIData(closeable = false)`.
 
 ## Rechargement
 
@@ -119,18 +118,18 @@ Plusieurs touches = combinaison (toutes appuyées simultanément).
 mySignal.subscribe(val -> this.reload());  // ou utilisez .watch() sur un nœud spécifique
 ```
 
-En interne, reload vide les enfants, les callbacks stockés sont préservés, et `init()` tourne à nouveau avec un état frais.
+En interne, reload détache les nœuds précédents (`onDetach`) et les vide, les callbacks stockés sont préservés, et `init()` tourne à nouveau avec un état frais.
 
 ## Tâches planifiées
 
 Planifiez des callbacks à exécuter après un délai ou périodiquement :
 
 ```java
-this.schedule(() -> System.out.println("Pong"), 1000L, 0L);        // une fois après 1s
+this.schedule(() -> System.out.println("Pong"), 1000L);            // une fois après 1s
 this.schedule(() -> this.tick(), 0L, 100L);                        // toutes les 100ms
 ```
 
-Les tâches tournent sur le thread de rendu ; utilisez-les pour de la logique UI pilotée par le temps (timers, polling). Elles sont thread-safe (backing `CopyOnWriteArrayList`).
+Sans période la tâche tourne une fois, et une période de `0L` la lance à chaque frame. Les tâches tournent sur le thread de rendu ; utilisez-les pour de la logique UI pilotée par le temps (timers, polling). Elles sont thread-safe (backing `CopyOnWriteArrayList`).
 
 ## Stores & properties
 

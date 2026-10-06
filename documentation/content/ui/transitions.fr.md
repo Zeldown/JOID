@@ -95,7 +95,7 @@ public class SlideTransition extends Transition {
             start(timeline);
         }
         @Override public void pre(UI ui, double mx, double my) {
-            final float offset = (1F - getAnimator().getValue()) * (float) ui.getWidth();
+            final float offset = (1F - getAnimator().getValue()) * (float) ui.getScaledWidth().getOrDefault();
             BridgeHandler.RENDER.get().pushMatrix();
             BridgeHandler.RENDER.get().translate(offset, 0D, 0D);
         }
@@ -109,7 +109,7 @@ public class SlideTransition extends Transition {
             start(timeline);
         }
         @Override public void pre(UI ui, double mx, double my) {
-            final float offset = (1F - getAnimator().getValue()) * -(float) ui.getWidth();
+            final float offset = (1F - getAnimator().getValue()) * -(float) ui.getScaledWidth().getOrDefault();
             BridgeHandler.RENDER.get().pushMatrix();
             BridgeHandler.RENDER.get().translate(offset, 0D, 0D);
         }
@@ -130,7 +130,7 @@ ui.getTransition().getIn().disable();
 
 ## UIs sans transition
 
-N'appelez pas `setTransition(...)` du tout — l'UI entre et sort instantanément. Il n'y a pas de constructeur `Transition` « no-op » puisque la classe est abstract.
+N'appelez pas `setTransition(...)` du tout — l'UI entre et sort instantanément. Une popup active (`@UIDataPopup(active = true)`) reçoit une `PopTransition` par défaut ; `transition = PopupTransition.NONE` la désactive, `IN` ou `OUT` garde un seul sens. Il n'y a pas de constructeur `Transition` « no-op » puisque la classe est abstract.
 
 ## Voir aussi
 

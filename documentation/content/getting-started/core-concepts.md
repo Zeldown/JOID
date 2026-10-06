@@ -24,8 +24,8 @@ Enables development-only behavior. When `true`:
 
 - **Alt-drag** on a node prints its coordinates and lets you move it live — useful while laying out by eye.
 - **Alt+arrow keys** nudge the hovered node by one pixel.
-- **Profiler overlay** is available when the UI declares `@UIData(debug = @Debug(profiler = true))`.
-- **Hot-reload** watches source files and re-runs `init()` when they change (same `@Debug` flag).
+- **Profiler overlay** is available on every UI; declare `@UIDataDebug(profiler = false)` to turn it off.
+- **Hot-reload** watches the compiled classes of the UI — its classes folder or jar — and re-runs `init()` when they change; `@UIDataDebug(hotreload = false)` turns it off.
 - **Layout introspection** logs are emitted for structural issues.
 
 Leave it `false` in production — the debug gestures and file-watcher are unnecessary overhead, and the Alt-key bindings may collide with your own shortcuts. Only the `-dev` artifact contains the dev mode: on a `-prod` artifact, `setDevMode(true)` throws an `IllegalStateException`.
@@ -34,7 +34,7 @@ Leave it `false` in production — the debug gestures and file-watcher are unnec
 
 Loads the bundled `DemoFont` (shipped with the `-dev` artifact) so the quick-start snippets, demo UIs, and documentation examples have a usable font without you providing your own MSDF atlas. Once you load your own fonts with `MsdfFontLoader`, turn it off. Like the dev mode, it only exists in the `-dev` artifact: on a `-prod` artifact, `setDemoMode(true)` throws an `IllegalStateException`.
 
-`load()` must be called **exactly once**, before registering bridges or opening UIs.
+`load()` must be called **exactly once**, after registering the bridges — the backend and your `UIBridge` — and before opening UIs: the dev and demo modes load their fonts through the render bridge.
 
 ## The UI root
 

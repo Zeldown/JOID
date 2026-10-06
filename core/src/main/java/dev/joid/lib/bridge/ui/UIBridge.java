@@ -1,6 +1,6 @@
 package dev.joid.lib.bridge.ui;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 import dev.joid.lib.bridge.BridgeHandler;
@@ -29,30 +29,36 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void mousePressed(final @NonNull ClickType clickType) {
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMousePressed(clickType) || ui.getPopup().active()) {
+		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
+			if (!ui.getData().active() || !ui.getData().visible()) {
+				continue;
+			}
+
+			if (ui.onMousePressed(clickType) || ui.getPopup().active()) {
 				break;
 			}
 		}
 	}
 
 	public final void mouseDragged(final @NonNull ClickType clickType, final long delaTime) {
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseDragged(clickType, delaTime) || ui.getPopup().active()) {
+		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
+			if (!ui.getData().active() || !ui.getData().visible()) {
+				continue;
+			}
+
+			if (ui.onMouseDragged(clickType, delaTime) || ui.getPopup().active()) {
 				break;
 			}
 		}
 	}
 
 	public final void mouseReleased(final @NonNull ClickType clickType) {
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseReleased(clickType) || ui.getPopup().active()) {
+		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
+			if (!ui.getData().active() || !ui.getData().visible()) {
+				continue;
+			}
+
+			if (ui.onMouseReleased(clickType) || ui.getPopup().active()) {
 				break;
 			}
 		}
@@ -63,10 +69,12 @@ public abstract class UIBridge implements IUIBridge {
 			return;
 		}
 
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (ui.getData().active() && ui.getData().visible() && ui.onMouseScroll(value) || ui.getPopup().active()) {
+		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
+			if (!ui.getData().active() || !ui.getData().visible()) {
+				continue;
+			}
+
+			if (ui.onMouseScroll(value) || ui.getPopup().active()) {
 				break;
 			}
 		}
@@ -92,7 +100,11 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void update() {
-		this.uiList.forEach(UI::onUpdate);
+		for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
+			if (ui.getData().active()) {
+				ui.onUpdate();
+			}
+		}
 	}
 
 	public final void draw() {
@@ -103,15 +115,13 @@ public abstract class UIBridge implements IUIBridge {
 
 			final IWindowBridge window = BridgeHandler.WINDOW.get();
 			final IRenderBridge render = BridgeHandler.RENDER.get();
-			final Iterator<UI> iterator = this.uiList.iterator();
 
 			double renderPipeline = 0D;
 			render.pushMatrix();
 			try {
 				render.translate(0D, 0D, -2000D);
-				while (iterator.hasNext()) {
-					final UI ui = iterator.next();
-					if (!ui.getData().visible()) {
+				for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
+					if (!ui.getData().active() || !ui.getData().visible()) {
 						continue;
 					}
 

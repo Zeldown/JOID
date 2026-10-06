@@ -57,7 +57,7 @@ this.getData().setCloseable(false).setBackground(false);
 ## Lifecycle
 
 ```
-constructor → JOID.open(ui) → load() → init() → (frame loop) → onClose() → properlyClose()
+constructor → JOID.open(ui) → load() → init() → (frame loop) → close() → properlyClose()
 ```
 
 ### `init()`
@@ -73,8 +73,7 @@ Called every game tick (frame when standalone). Override to run logic that doesn
 ```java
 @Override
 public void update() {
-    super.update();  // runs node updates
-    // your logic
+    // your logic, run once the nodes have updated
 }
 ```
 
@@ -89,9 +88,9 @@ public void postDraw(final double mouseX, final double mouseY) {
 }
 ```
 
-### `onClose()`
+### `close()`
 
-Return `false` to veto ESC-based close (e.g., unsaved changes warning). Return `true` to let JOID close the UI.
+Return `false` to veto the close requested by ESC or `JOID.close(ui)` (e.g., unsaved changes warning). Return `true`, the default, to let JOID close the UI. The final `onClose()` asks it, then starts the exit transition.
 
 ### `properlyClose()`
 
@@ -104,12 +103,12 @@ Register global UI shortcuts with `keybind(Runnable, Key... keys)`:
 ```java
 @Override
 public void init() {
-    this.keybind(() -> JOID.open(new SettingsUI()), Key.ESCAPE);
+    this.keybind(() -> JOID.open(new SettingsUI()), Key.TAB);
     this.keybind(() -> this.reload(), Key.R, Key.LEFT_CONTROL);
 }
 ```
 
-Multiple keys = combination (all pressed simultaneously).
+Multiple keys = combination (all pressed simultaneously). On a closeable UI — the default of `@UIData` — ESC closes the UI before the keybinds see it: bind `Key.ESCAPE` only on a UI declared `@UIData(closeable = false)`.
 
 ## Reload
 
@@ -119,18 +118,18 @@ Multiple keys = combination (all pressed simultaneously).
 mySignal.subscribe(val -> this.reload());  // or use .watch() on a specific node
 ```
 
-Internally, reload clears children, stored callbacks are preserved, and `init()` runs again with fresh state.
+Internally, reload detaches the previous nodes (`onDetach`) and clears them, stored callbacks are preserved, and `init()` runs again with fresh state.
 
 ## Scheduled tasks
 
 Schedule callbacks to run after a delay or periodically:
 
 ```java
-this.schedule(() -> System.out.println("Pong"), 1000L, 0L);        // run once after 1s
+this.schedule(() -> System.out.println("Pong"), 1000L);            // run once after 1s
 this.schedule(() -> this.tick(), 0L, 100L);                        // every 100ms
 ```
 
-Tasks run on the render thread; use them for time-driven UI updates (timers, polling). They're thread-safe (`CopyOnWriteArrayList` backing).
+Without a period the task runs once, and a period of `0L` runs it on every frame. Tasks run on the render thread; use them for time-driven UI updates (timers, polling). They're thread-safe (`CopyOnWriteArrayList` backing).
 
 ## Stores & properties
 
