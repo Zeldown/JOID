@@ -1,6 +1,5 @@
 package dev.joid.lib.font;
 
-import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import lombok.AccessLevel;
@@ -26,8 +25,8 @@ public final class FontUsage {
 		}
 	}
 
-	public static @NonNull Optional<StackTraceElement[]> getOrigin() {
-		return Optional.ofNullable(FontUsage.ORIGIN.get());
+	public static StackTraceElement[] getOrigin() {
+		return FontUsage.ORIGIN.get();
 	}
 
 }

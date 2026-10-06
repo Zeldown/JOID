@@ -89,7 +89,7 @@ public class RectNodeTest {
 	public void turnsIntoItsHoveredColorUnderTheMouse() {
 		final Color hovered = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F), hovered);
-		Assert.assertSame(hovered, rect.getHoveredColor().get());
+		Assert.assertSame(hovered, rect.getHoveredColor());
 		this.bridges.open(new NodeUI(rect)).frame();
 		this.single(0.2F, 0.4F, 0.6F);
 		this.bridges.move(150D, 220D).frames(20);
@@ -112,7 +112,7 @@ public class RectNodeTest {
 	public void takesAHoveredColorOfItsOwn() {
 		final Color hovered = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).hoveredColor(hovered);
-		Assert.assertSame(hovered, rect.getHoveredColor().get());
+		Assert.assertSame(hovered, rect.getHoveredColor());
 		this.bridges.open(new NodeUI(rect)).move(150D, 220D).frames(20);
 		this.single(0.6F, 0.4F, 0.2F);
 	}
@@ -134,7 +134,7 @@ public class RectNodeTest {
 		final Color hovered = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(() -> color, () -> hovered);
 		Assert.assertSame(color, rect.getColor());
-		Assert.assertSame(hovered, rect.getHoveredColor().get());
+		Assert.assertSame(hovered, rect.getHoveredColor());
 		this.bridges.open(new NodeUI(rect)).move(150D, 220D).frames(20);
 		this.single(0.6F, 0.4F, 0.2F);
 	}
@@ -142,7 +142,7 @@ public class RectNodeTest {
 	@Test
 	public void keepsItsColorWhenTheHoveredOneIsMissing() {
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F), null);
-		Assert.assertFalse(rect.getHoveredColor().isPresent());
+		Assert.assertNull(rect.getHoveredColor());
 		this.bridges.open(new NodeUI(rect)).move(150D, 220D).frames(20);
 		this.single(0.2F, 0.4F, 0.6F);
 	}
@@ -226,7 +226,7 @@ public class RectNodeTest {
 	public void turnsTheBorderIntoItsHoveredColorUnderTheMouse() {
 		final Color hovered = new Color(0.4F, 0.6F, 0.2F, 1F);
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).border(new Color(0.6F, 0.4F, 0.2F, 1F), hovered, 3D, true);
-		Assert.assertSame(hovered, rect.getHoveredBorderColor().get());
+		Assert.assertSame(hovered, rect.getHoveredBorderColor());
 		this.bridges.open(new NodeUI(rect)).frame();
 		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 1F}, (float[]) this.border.getValues().get("u_BorderColor"), 0F);
 		this.bridges.move(150D, 220D).frames(20);
@@ -247,7 +247,7 @@ public class RectNodeTest {
 	public void takesAHoveredBorderColorOfItsOwn() {
 		final Color hovered = new Color(0.4F, 0.6F, 0.2F, 1F);
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).border(new Color(0.6F, 0.4F, 0.2F, 1F), 3D).hoveredBorderColor(hovered);
-		Assert.assertSame(hovered, rect.getHoveredBorderColor().get());
+		Assert.assertSame(hovered, rect.getHoveredBorderColor());
 		this.bridges.open(new NodeUI(rect)).move(150D, 220D).frames(20);
 		Assert.assertArrayEquals(new float[] {0.4F, 0.6F, 0.2F, 1F}, (float[]) this.border.getValues().get("u_BorderColor"), 0F);
 	}
@@ -265,7 +265,7 @@ public class RectNodeTest {
 	@Test
 	public void keepsItsBorderColorWhenTheHoveredOneIsMissing() {
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).border(new Color(0.6F, 0.4F, 0.2F, 1F), null, 3D, true);
-		Assert.assertFalse(rect.getHoveredBorderColor().isPresent());
+		Assert.assertNull(rect.getHoveredBorderColor());
 		this.bridges.open(new NodeUI(rect)).move(150D, 220D).frames(20);
 		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 1F}, (float[]) this.border.getValues().get("u_BorderColor"), 0F);
 	}
@@ -323,12 +323,12 @@ public class RectNodeTest {
 
 	@Test
 	public void hasNoHoveredColorByDefault() {
-		Assert.assertFalse(RectNode.create(100D, 200D, 200D, 50D).getHoveredColor().isPresent());
+		Assert.assertNull(RectNode.create(100D, 200D, 200D, 50D).getHoveredColor());
 	}
 
 	@Test
 	public void hasNoHoveredBorderColorByDefault() {
-		Assert.assertFalse(RectNode.create(100D, 200D, 200D, 50D).border(new Color(0.6F, 0.4F, 0.2F, 1F), 3D).getHoveredBorderColor().isPresent());
+		Assert.assertNull(RectNode.create(100D, 200D, 200D, 50D).border(new Color(0.6F, 0.4F, 0.2F, 1F), 3D).getHoveredBorderColor());
 	}
 
 	private Draw single(final float red, final float green, final float blue) {

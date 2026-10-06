@@ -292,7 +292,7 @@ These methods let a custom `draw` hook, shader or effect sample a resource. `Dra
 | `static create()` | Blocking, nearest, automatic mipmaps, no texture coordinates. |
 | `async()` / `blocking()` / `isAsync()` | Decoding thread. |
 | `interpolation(TextureFilter)` / `linear()` / `nearest()` / `getInterpolation()` | Texture filtering. |
-| `mipmap(boolean)` / `getMipmap()` | `getMipmap()` returns an empty `Optional` while the choice is automatic. |
+| `mipmap(boolean)` / `getMipmap()` | `getMipmap()` returns `null` while the choice is automatic. |
 | `textureCoords(double u, double v, double width, double height)` / `getTextureCoords()` | Region in source pixels; `getTextureCoords()` returns `{u, v, width, height}` or `null`. |
 | `copy()` | A new object with the same values. |
 | `copy(ResourceProperties properties)` | Copies the values of `properties` into this object. |

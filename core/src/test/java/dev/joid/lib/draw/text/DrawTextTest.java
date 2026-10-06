@@ -370,7 +370,7 @@ public class DrawTextTest {
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
 			this.drawn.add(text + "@" + x + "," + y);
-			this.origin = FontUsage.getOrigin().orElse(null);
+			this.origin = FontUsage.getOrigin();
 			return new FontBounds(this.getWidth(text, info), this.getHeight(text, info));
 		}
 

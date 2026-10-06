@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
@@ -69,7 +68,7 @@ public class ResourceTest {
 		Assert.assertSame(resource, resource.async().linear().mipmap(true).textureCoords(1D, 2D, 3D, 4D));
 		Assert.assertTrue(resource.getProperties().isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, resource.getProperties().getInterpolation());
-		Assert.assertEquals(Optional.of(true), resource.getProperties().getMipmap());
+		Assert.assertEquals(Boolean.TRUE, resource.getProperties().getMipmap());
 		Assert.assertArrayEquals(new double[] {1D, 2D, 3D, 4D}, resource.getProperties().getTextureCoords(), 0D);
 		Assert.assertSame(TextureFilter.NEAREST, resource.nearest().getProperties().getInterpolation());
 		Assert.assertSame(TextureFilter.LINEAR, resource.interpolation(TextureFilter.LINEAR).getProperties().getInterpolation());
@@ -91,7 +90,7 @@ public class ResourceTest {
 		Assert.assertNotSame(builder.getProperties(), resource.getProperties());
 		Assert.assertFalse(resource.getProperties().isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, resource.getProperties().getInterpolation());
-		Assert.assertFalse(resource.getProperties().getMipmap().isPresent());
+		Assert.assertNull(resource.getProperties().getMipmap());
 	}
 
 	@Test

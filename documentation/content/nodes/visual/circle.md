@@ -24,18 +24,19 @@ CircleNode.create(20, 20, 16).color(Color.DARKGRAY, Color.GREEN).attach(this);
 
 | Method | Description |
 | --- | --- |
-| `color(Color color)` | Sets the fill color. |
-| `color(Color color, Color hoveredColor)` | Sets the fill and hovered colors. |
-| `hoveredColor(Color color)` | Sets or replaces the hovered color. |
+| `color(Color color)` / `color(Supplier<Color> color)` | Sets the fill color, fixed or read on every frame. |
+| `color(Color color, Color hoveredColor)` / `color(Supplier<Color> color, Supplier<Color> hoveredColor)` | Sets the fill and hovered colors. |
+| `hoveredColor(Color color)` / `hoveredColor(Supplier<Color> color)` | Sets, replaces or removes the hovered color. |
 
 - The default color is `Color.WHITE`, without hovered color.
 - With a hovered color, the drawn color blends from the fill color to the hovered color following the node's hover animation (see [Hover and Tooltips](../../interactions/hover.md)).
 - Both colors can be gradients built with `Color.toGradient(...)`; the gradient spans the circle's bounding square (see [Colors and Gradients](../../styling/colors.md)).
-- Colors are fixed values: no supplier overloads. Every parameter is non-null, so a hovered color cannot be removed once set; set it to the fill color instead.
+- A supplier is called on every frame, so the circle follows a value that changes, such as a theme color.
+- A `null` hovered color, or a hovered supplier that returns `null`, removes the hover blend. Write `hoveredColor((Color) null)`: the cast picks the `Color` overload.
 
 ## Size and shape
 
-The radius is half of the node's width, and the center is `(x + width / 2, y + width / 2)`. Only the width is read: if you resize the node to a non-square size (with `size(...)`, `width(...)` or a layout), the circle keeps a diameter equal to the width.
+The circle is centered on the node, at `(x + width / 2, y + height / 2)`, and its radius is half of the smaller side. A node resized to a non-square size (with `size(...)`, `width(...)` or a layout) draws the largest circle that fits in it.
 
 > TIP: For a circle with a border, a blur or children clipped to the circle, use a [`RectNode`](rect.md) with a [`CircleNodeEffect`](../../styling/circle.md) instead.
 
@@ -51,9 +52,8 @@ The radius is half of the node's width, and the center is `(x + width / 2, y + w
 
 | Method | Default | Description |
 | --- | --- | --- |
-| `color(Color)` | `Color.WHITE` | Fill color. |
-| `color(Color, Color)` | | Fill and hovered colors. |
-| `hoveredColor(Color)` | none | Color reached when hovered. |
+| `color(...)` | `Color.WHITE` | Fill color, fixed or supplied, with an optional hovered color. |
+| `hoveredColor(...)` | none | Color reached when hovered. |
 
 Every setter returns the node itself, typed by the generic return of the fluent API.
 
@@ -61,8 +61,8 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 
 | Method | Description |
 | --- | --- |
-| `getColor()` | Fill color. |
-| `getHoveredColor()` | `Optional<Color>`, empty without hovered color. |
+| `getColor()` | Current fill color (the supplier is evaluated). |
+| `getHoveredColor()` | Current hovered color, or `null` without hovered color or when the supplier returns `null`. |
 
 ### Loading skeleton
 

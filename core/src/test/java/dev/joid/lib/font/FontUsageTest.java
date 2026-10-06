@@ -10,7 +10,7 @@ public class FontUsageTest {
 
 	@Test
 	public void hasNoOriginOutsideAUsage() {
-		Assert.assertFalse(FontUsage.getOrigin().isPresent());
+		Assert.assertNull(FontUsage.getOrigin());
 	}
 
 	@Test
@@ -30,7 +30,7 @@ public class FontUsageTest {
 		});
 		Assert.assertSame(inner, seen.get(0));
 		Assert.assertSame(outer, seen.get(1));
-		Assert.assertFalse(FontUsage.getOrigin().isPresent());
+		Assert.assertNull(FontUsage.getOrigin());
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class FontUsageTest {
 			Assert.fail("The failure of the usage must reach the caller");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("measure failed", expected.getMessage());
-			Assert.assertFalse(FontUsage.getOrigin().isPresent());
+			Assert.assertNull(FontUsage.getOrigin());
 		}
 	}
 
@@ -59,7 +59,7 @@ public class FontUsageTest {
 	}
 
 	private static double see(final List<StackTraceElement[]> seen) {
-		seen.add(FontUsage.getOrigin().orElse(null));
+		seen.add(FontUsage.getOrigin());
 		return 0D;
 	}
 

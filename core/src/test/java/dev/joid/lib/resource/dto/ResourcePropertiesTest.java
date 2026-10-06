@@ -9,15 +9,15 @@ public class ResourcePropertiesTest {
 
 	@Test
 	public void leavesTheMipmapsToTheDrawByDefault() {
-		Assert.assertFalse(ResourceProperties.create().getMipmap().isPresent());
+		Assert.assertNull(ResourceProperties.create().getMipmap());
 	}
 
 	@Test
 	public void keepsAnExplicitMipmapChoice() {
 		final ResourceProperties properties = ResourceProperties.create().mipmap(false);
-		Assert.assertFalse(properties.getMipmap().get());
-		Assert.assertFalse(properties.copy().getMipmap().get());
-		Assert.assertTrue(ResourceProperties.create().copy(properties.mipmap(true)).getMipmap().get());
+		Assert.assertFalse(properties.getMipmap());
+		Assert.assertFalse(properties.copy().getMipmap());
+		Assert.assertTrue(ResourceProperties.create().copy(properties.mipmap(true)).getMipmap());
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class ResourcePropertiesTest {
 		Assert.assertNotSame(properties, copy);
 		Assert.assertTrue(copy.isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, copy.getInterpolation());
-		Assert.assertTrue(copy.getMipmap().get());
+		Assert.assertTrue(copy.getMipmap());
 		Assert.assertArrayEquals(new double[] {0D, 0D, 0.5D, 0.5D}, copy.getTextureCoords(), 0D);
 	}
 
@@ -67,7 +67,7 @@ public class ResourcePropertiesTest {
 		properties.copy().async().linear().mipmap(true);
 		Assert.assertFalse(properties.isAsync());
 		Assert.assertSame(TextureFilter.NEAREST, properties.getInterpolation());
-		Assert.assertFalse(properties.getMipmap().isPresent());
+		Assert.assertNull(properties.getMipmap());
 	}
 
 	@Test
@@ -77,7 +77,7 @@ public class ResourcePropertiesTest {
 		Assert.assertSame(properties, properties.copy(other));
 		Assert.assertTrue(properties.isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, properties.getInterpolation());
-		Assert.assertFalse(properties.getMipmap().isPresent());
+		Assert.assertNull(properties.getMipmap());
 		Assert.assertArrayEquals(new double[] {0D, 0D, 1D, 1D}, properties.getTextureCoords(), 0D);
 	}
 

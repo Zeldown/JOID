@@ -60,7 +60,7 @@ public final class DrawResource {
 			resource.request(pixelWidth, pixelHeight);
 
 			final ITexture texture = resource.getTexture();
-			if (!properties.getMipmap().isPresent() && resource.isMipmappable() && properties.getInterpolation() == TextureFilter.LINEAR && texture != null && (pixelWidth < texture.getWidth() || pixelHeight < texture.getHeight())) {
+			if (properties.getMipmap() == null && resource.isMipmappable() && properties.getInterpolation() == TextureFilter.LINEAR && texture != null && (pixelWidth < texture.getWidth() || pixelHeight < texture.getHeight())) {
 				properties.mipmap(true);
 			}
 		}

@@ -32,7 +32,7 @@ public class CircleNodeTest {
 	public void startsWhiteWithoutHoveredColor() {
 		final CircleNode circle = CircleNode.create(100D, 200D, 50D);
 		Assert.assertSame(Color.WHITE, circle.getColor());
-		Assert.assertFalse(circle.getHoveredColor().isPresent());
+		Assert.assertNull(circle.getHoveredColor());
 	}
 
 	@Test
@@ -48,6 +48,20 @@ public class CircleNodeTest {
 		final Map<String, Object> values = shader.getValues();
 		Assert.assertEquals(25F, (Float) values.get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {125F, 225F}, (float[]) values.get("center"), 0F);
+	}
+
+	@Test
+	public void fitsItsSmallestSide() {
+		final RecordingShader shader = (RecordingShader) CircleShader.inst().getShader();
+		this.bridges.open(new NodeUI(CircleNode.create(100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).width(80D))).frame();
+		final Draw draw = this.single(0.2F, 0.4F, 0.6F);
+		Assert.assertEquals(115D, draw.getLeft(), 1E-3D);
+		Assert.assertEquals(200D, draw.getTop(), 1E-3D);
+		Assert.assertEquals(165D, draw.getRight(), 1E-3D);
+		Assert.assertEquals(250D, draw.getBottom(), 1E-3D);
+		final Map<String, Object> values = shader.getValues();
+		Assert.assertEquals(25F, (Float) values.get("radius"), 0F);
+		Assert.assertArrayEquals(new float[] {140F, 225F}, (float[]) values.get("center"), 0F);
 	}
 
 	@Test
@@ -68,7 +82,7 @@ public class CircleNodeTest {
 		final Color hovered = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final CircleNode circle = CircleNode.create(100D, 200D, 50D).color(color, hovered);
 		Assert.assertSame(color, circle.getColor());
-		Assert.assertSame(hovered, circle.getHoveredColor().get());
+		Assert.assertSame(hovered, circle.getHoveredColor());
 		this.bridges.open(new NodeUI(circle)).frame();
 		this.single(0.2F, 0.4F, 0.6F);
 		this.bridges.move(125D, 225D).frames(20);
@@ -90,9 +104,39 @@ public class CircleNodeTest {
 	public void takesAHoveredColorOfItsOwn() {
 		final Color hovered = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final CircleNode circle = CircleNode.create(100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).hoveredColor(hovered);
-		Assert.assertSame(hovered, circle.getHoveredColor().get());
+		Assert.assertSame(hovered, circle.getHoveredColor());
 		this.bridges.open(new NodeUI(circle)).move(125D, 225D).frames(20);
 		this.single(0.6F, 0.4F, 0.2F);
+	}
+
+	@Test
+	public void readsASuppliedHoveredColor() {
+		final Color[] hovered = {new Color(0.6F, 0.4F, 0.2F, 1F)};
+		final CircleNode circle = CircleNode.create(100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).hoveredColor(() -> hovered[0]);
+		this.bridges.open(new NodeUI(circle)).move(125D, 225D).frames(20);
+		this.single(0.6F, 0.4F, 0.2F);
+		hovered[0] = new Color(0.4F, 0.6F, 0.2F, 1F);
+		this.bridges.frame();
+		this.single(0.4F, 0.6F, 0.2F);
+	}
+
+	@Test
+	public void readsBothSuppliedColors() {
+		final Color color = new Color(0.2F, 0.4F, 0.6F, 1F);
+		final Color hovered = new Color(0.6F, 0.4F, 0.2F, 1F);
+		final CircleNode circle = CircleNode.create(100D, 200D, 50D).color(() -> color, () -> hovered);
+		Assert.assertSame(color, circle.getColor());
+		Assert.assertSame(hovered, circle.getHoveredColor());
+		this.bridges.open(new NodeUI(circle)).move(125D, 225D).frames(20);
+		this.single(0.6F, 0.4F, 0.2F);
+	}
+
+	@Test
+	public void dropsItsHoveredColorSetToNull() {
+		final CircleNode circle = CircleNode.create(100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F), new Color(0.6F, 0.4F, 0.2F, 1F)).hoveredColor((Color) null);
+		Assert.assertNull(circle.getHoveredColor());
+		this.bridges.open(new NodeUI(circle)).move(125D, 225D).frames(20);
+		this.single(0.2F, 0.4F, 0.6F);
 	}
 
 	@Test
@@ -120,8 +164,11 @@ public class CircleNodeTest {
 		final CircleNode circle = CircleNode.create(100D, 200D, 50D);
 		final Color color = new Color(0.2F, 0.4F, 0.6F, 1F);
 		Assert.assertSame(circle, circle.color(color));
+		Assert.assertSame(circle, circle.color(() -> color));
 		Assert.assertSame(circle, circle.color(color, color));
+		Assert.assertSame(circle, circle.color(() -> color, () -> color));
 		Assert.assertSame(circle, circle.hoveredColor(color));
+		Assert.assertSame(circle, circle.hoveredColor(() -> color));
 	}
 
 	private Draw single(final float red, final float green, final float blue) {

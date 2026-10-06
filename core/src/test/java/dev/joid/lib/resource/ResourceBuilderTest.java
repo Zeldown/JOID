@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,7 +43,7 @@ public class ResourceBuilderTest {
 		Assert.assertSame(ResourceBuilder.DEFAULT_CACHE, builder.getCache());
 		Assert.assertFalse(builder.getProperties().isAsync());
 		Assert.assertSame(TextureFilter.NEAREST, builder.getProperties().getInterpolation());
-		Assert.assertFalse(builder.getProperties().getMipmap().isPresent());
+		Assert.assertNull(builder.getProperties().getMipmap());
 		Assert.assertNull(builder.getProperties().getTextureCoords());
 	}
 
@@ -63,7 +62,7 @@ public class ResourceBuilderTest {
 		Assert.assertSame(builder, builder.async().linear().mipmap(true).textureCoords(1D, 2D, 3D, 4D).cache(cache));
 		Assert.assertTrue(builder.getProperties().isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, builder.getProperties().getInterpolation());
-		Assert.assertEquals(Optional.of(true), builder.getProperties().getMipmap());
+		Assert.assertEquals(Boolean.TRUE, builder.getProperties().getMipmap());
 		Assert.assertArrayEquals(new double[] {1D, 2D, 3D, 4D}, builder.getProperties().getTextureCoords(), 0D);
 		Assert.assertSame(cache, builder.getCache());
 	}

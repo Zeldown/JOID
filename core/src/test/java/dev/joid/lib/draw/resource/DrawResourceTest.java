@@ -171,7 +171,7 @@ public class DrawResourceTest {
 	public void mipmapsAnImageDrawnSmallerThanItsTexture() {
 		final Resource resource = DrawResourceTest.image(64, 32);
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 32D, 16D, resource);
-		Assert.assertEquals(Boolean.TRUE, resource.getProperties().getMipmap().orElse(null));
+		Assert.assertEquals(Boolean.TRUE, resource.getProperties().getMipmap());
 		Assert.assertTrue(((RecordingTexture) resource.getTexture()).isMipmapped());
 	}
 
@@ -180,7 +180,7 @@ public class DrawResourceTest {
 		final Resource resource = DrawResourceTest.image(64, 32);
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 64D, 32D, resource);
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 128D, 64D, resource);
-		Assert.assertFalse(resource.getProperties().getMipmap().isPresent());
+		Assert.assertNull(resource.getProperties().getMipmap());
 		Assert.assertFalse(((RecordingTexture) resource.getTexture()).isMipmapped());
 	}
 
@@ -191,7 +191,7 @@ public class DrawResourceTest {
 		final Resource chosen = DrawResourceTest.decoded(new SizedDecoder(true), TextureFilter.LINEAR).mipmap(false);
 		for (final Resource resource : new Resource[] {nearest, flat, chosen}) {
 			DrawUtils.RESOURCE.drawResource(0D, 0D, 16D, 8D, resource);
-			Assert.assertFalse(resource.getProperties().getMipmap().orElse(false));
+			Assert.assertNotEquals(Boolean.TRUE, resource.getProperties().getMipmap());
 		}
 	}
 

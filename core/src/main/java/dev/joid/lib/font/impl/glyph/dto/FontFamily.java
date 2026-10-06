@@ -63,7 +63,8 @@ public final class FontFamily<F extends IFontFace> {
 		final StringBuilder warning = new StringBuilder("[JOID] The font weight ").append(weight.getValue()).append(" is not loaded in the family of ").append(face.getName());
 		warning.append(", ").append(face.getWeight().getValue()).append(" is drawn instead (loaded: ").append(this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", "))).append(")");
 
-		for (final StackTraceElement element : FontUsage.getOrigin().orElseGet(FontFamily::locate)) {
+		final StackTraceElement[] origin = FontUsage.getOrigin();
+		for (final StackTraceElement element : origin != null ? origin : FontFamily.locate()) {
 			warning.append(System.lineSeparator()).append("\tat ").append(element);
 		}
 		System.err.println(warning);

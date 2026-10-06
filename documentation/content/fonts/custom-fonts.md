@@ -228,7 +228,7 @@ final double width = FontUsage.trace(element.getOrigin(), () -> element.getInfo(
 | Method | Description |
 |---|---|
 | `FontUsage.trace(StackTraceElement[] origin, DoubleSupplier usage)` | Runs the usage with this origin and returns its result; a `null` origin (outside dev mode) runs it as is. |
-| `FontUsage.getOrigin()` | `Optional` origin of the usage in progress. |
+| `FontUsage.getOrigin()` | Origin of the usage in progress, `null` outside `trace` or for a `null` origin. |
 
 ## See also
 

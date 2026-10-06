@@ -1,6 +1,5 @@
 package dev.joid.lib.ui.node.impl.design.shape;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import dev.joid.lib.color.Color;
@@ -44,20 +43,20 @@ public class RectNode extends Node {
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
 	}
 
+	public final Color getHoveredColor() {
+		return this.hoveredColor == null ? null : this.hoveredColor.get();
+	}
+
 	public final @NonNull Color getColor() {
 		return this.color.get();
 	}
 
+	public final Color getHoveredBorderColor() {
+		return this.hoveredBorderColor == null ? null : this.hoveredBorderColor.get();
+	}
+
 	public final @NonNull Color getBorderColor() {
 		return this.borderColor.get();
-	}
-
-	public final @NonNull Optional<Color> getHoveredColor() {
-		return this.hoveredColor == null ? Optional.empty() : Optional.ofNullable(this.hoveredColor.get());
-	}
-
-	public final @NonNull Optional<Color> getHoveredBorderColor() {
-		return this.hoveredBorderColor == null ? Optional.empty() : Optional.ofNullable(this.hoveredBorderColor.get());
 	}
 
 	public final <T extends RectNode> @NonNull T color(final @NonNull Color color) {

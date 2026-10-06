@@ -133,9 +133,9 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 | Method | Description |
 | --- | --- |
 | `getColor()` | Current fill color (the supplier is evaluated). |
-| `getHoveredColor()` | `Optional<Color>`, empty without hovered color or when the supplier returns `null`. |
+| `getHoveredColor()` | Current hovered color, or `null` without hovered color or when the supplier returns `null`. |
 | `getBorderColor()` | Current border color, `Color.TRANSPARENT` until a border is set. |
-| `getHoveredBorderColor()` | `Optional<Color>`, empty without hovered border color. |
+| `getHoveredBorderColor()` | Current hovered border color, or `null` without hovered border color or when the supplier returns `null`. |
 | `getBorderStroke()` | Border width in UI units, `0` without border. |
 | `isBorderFill()` | The `fill` flag of the border, `false` until a border is set. |
 

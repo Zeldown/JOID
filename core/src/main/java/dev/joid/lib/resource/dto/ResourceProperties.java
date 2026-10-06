@@ -1,7 +1,5 @@
 package dev.joid.lib.resource.dto;
 
-import java.util.Optional;
-
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import lombok.Getter;
 import lombok.NonNull;
@@ -26,10 +24,6 @@ public class ResourceProperties {
 	public final @NonNull ResourceProperties blocking() {
 		this.async = false;
 		return this;
-	}
-
-	public final @NonNull Optional<Boolean> getMipmap() {
-		return Optional.ofNullable(this.mipmap);
 	}
 
 	public final @NonNull ResourceProperties interpolation(final @NonNull TextureFilter interpolation) {

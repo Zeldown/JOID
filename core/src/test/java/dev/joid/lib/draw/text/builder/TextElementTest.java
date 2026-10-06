@@ -38,9 +38,9 @@ public class TextElementTest {
 	@Test
 	public void exposesTheOriginOnlyDuringItsUsage() {
 		final StackTraceElement[] origin = {new StackTraceElement("com.example.Screen", "init", "Screen.java", 42)};
-		Assert.assertEquals(1D, FontUsage.trace(origin, () -> FontUsage.getOrigin().get() == origin ? 1D : 0D), 0D);
-		Assert.assertFalse(FontUsage.getOrigin().isPresent());
-		Assert.assertEquals(2D, FontUsage.trace(null, () -> FontUsage.getOrigin().isPresent() ? 0D : 2D), 0D);
+		Assert.assertEquals(1D, FontUsage.trace(origin, () -> FontUsage.getOrigin() == origin ? 1D : 0D), 0D);
+		Assert.assertNull(FontUsage.getOrigin());
+		Assert.assertEquals(2D, FontUsage.trace(null, () -> FontUsage.getOrigin() != null ? 0D : 2D), 0D);
 	}
 
 	@Test
