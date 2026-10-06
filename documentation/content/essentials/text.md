@@ -72,15 +72,20 @@ RectNode
 
 ## Text that changes
 
-`Text.create` also takes a supplier, read at every frame, and the node resizes to the current value:
+To show a value that changes, make the node watch its signal and write the text in `onInit`, which runs again each time the signal publishes. `getText().text(...)` replaces the content in place, and the node resizes to it:
 
 ```java
 final IntegerSignal score = new IntegerSignal();
 
-TextNode.create(20, 20).text(Text.create(() -> "Score: " + score.getOrDefault(), body)).attach(this);
+TextNode
+.create(20, 20)
+.text(Text.create("", body))
+.<TextNode>onInit(node -> node.getText().text("Score: " + score.getOrDefault()))
+.watch(score)
+.attach(this);
 ```
 
-This is the same pattern as in [State and Reactivity](state.md): nothing to rebuild when the score changes.
+This is the same pattern as in [State and Reactivity](state.md). `Text.create` also takes a `Supplier`, called on every frame: keep it for a text that changes on every frame, such as a clock.
 
 ## Several styles in one line
 

@@ -134,7 +134,13 @@ public final class CounterUI extends UI {
         .effect(RoundedNodeEffect.create(16F))
         .onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
         .body(button -> {
-            TextNode.create(button.dw(2), button.dh(2)).text(Text.create(() -> "Clicks: " + this.clicks.getOrDefault(), info)).anchor(Align.CENTER).attach(button);
+            TextNode
+            .create(button.dw(2), button.dh(2))
+            .text(Text.create("", info))
+            .<TextNode>onInit(node -> node.getText().text("Clicks: " + this.clicks.getOrDefault()))
+            .watch(this.clicks)
+            .anchor(Align.CENTER)
+            .attach(button);
         })
         .attach(this);
     }
@@ -150,7 +156,7 @@ What each part does:
 - `body(...)` builds the children of the rectangle right away. Children are positioned relative to their parent: `button.dw(2)` is half its width, `button.dh(2)` half its height. `anchor(Align.CENTER)` makes the text node's position its center.
 - `attach(this)` adds a node to the UI; `attach(button)` adds it to another node.
 - `IntegerSignal` (`dev.joid.lib.utils.signal.impl.primitive`) holds the count. `increment()` updates it and notifies its subscribers.
-- `Text.create(() -> ..., info)` takes a supplier: the text node reads the signal each time it draws, so the label always shows the current count.
+- `watch(this.clicks)` subscribes the text node to the signal. Each time the signal publishes, the node reloads and runs its `onInit` callback again, which writes the new count with `getText().text(...)`; the text starts empty and is filled by the first `onInit`. `<TextNode>` gives the callback a `TextNode` parameter.
 
 ## Step 4: create the window and run the frame loop
 

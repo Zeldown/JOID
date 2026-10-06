@@ -32,15 +32,20 @@ RectNode.create(100, 100, 300, 60).color(Color.DARKGRAY).body(rect -> {
 
 ## Dynamic text
 
-The node reads its `Text` on every frame. Build the text from a supplier and the node shows (and resizes to) the current value without any rebuild:
+To show a [signal](../../state/signals.md), make the node [watch](../../state/watch.md) it and write the text in `onInit`: the node reloads each time the signal publishes, `onInit` runs again, and `getText().text(...)` changes the content in place. The node resizes to the new text:
 
 ```java
 final IntegerSignal score = new IntegerSignal(0);
 
-TextNode.create(20, 20).text(Text.create(() -> "Score: " + score.getOrDefault(), TextInfo.create(font, 20, Color.WHITE))).attach(this);
+TextNode
+    .create(20, 20)
+    .text(Text.create("", TextInfo.create(font, 20, Color.WHITE)))
+    .<TextNode>onInit(node -> node.getText().text("Score: " + score.getOrDefault()))
+    .watch(score)
+    .attach(this);
 ```
 
-You can also change the content in place with `getText().text("...")`, or give the node another `Text` with `text(...)`. See [Signals](../../state/signals.md) and [Watching Signals](../../state/watch.md) for the other ways to react to state.
+You can also give the node another `Text` with `text(...)`. A `Text` built from a supplier (`Text.create(Supplier, info)`) is read on every frame: keep it for a text that changes on every frame, such as a clock, and watch a signal instead of reading it in a supplier.
 
 ## Text modes with mode
 

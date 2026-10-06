@@ -38,19 +38,22 @@ RectNode
 
 The default fill is `Color.TRANSPARENT`. A transparent `RectNode` is still a node that receives the mouse, which makes it a convenient click area or invisible container.
 
-A supplier lets the color follow your state, for example a [signal](../../state/signals.md), without rebuilding the node:
+To follow a [signal](../../state/signals.md), [watch](../../state/watch.md) it and set the color in `onInit`, which runs again each time the signal publishes:
 
 ```java
 final BooleanSignal selected = new BooleanSignal(false);
 
 RectNode
     .create(0, 0, 200, 60)
-    .color(() -> selected.getOrDefault() ? Color.BLUE : Color.DARKGRAY)
+    .<RectNode>onInit(rect -> rect.color(selected.getOrDefault() ? Color.BLUE : Color.DARKGRAY))
+    .watch(selected)
     .onClick((node, mouseX, mouseY, clickType) -> selected.toggle())
     .attach(this);
 ```
 
-![Clicking a gray rectangle turns it blue, clicking again turns it gray](../../images/rect-supplier.gif "The supplier reads the signal on every frame, so each click switches the color.")
+![Clicking a gray rectangle turns it blue, clicking again turns it gray](../../images/rect-supplier.gif "The node watches the signal and takes its new color on each click.")
+
+A supplier color is called on every frame: keep it for a color that changes on every frame, such as an animation driven by a [TweenAnimator](../../animation/tween-animator.md), and watch a signal instead of reading it in a supplier.
 
 ### Hover blending
 

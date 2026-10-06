@@ -26,7 +26,13 @@ public final class CounterUI extends UI {
         .effect(RoundedNodeEffect.create(16F))
         .onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
         .body(button -> {
-            TextNode.create(button.dw(2), button.dh(2)).text(Text.create(() -> "Clicks: " + this.clicks.getOrDefault(), info)).anchor(Align.CENTER).attach(button);
+            TextNode
+            .create(button.dw(2), button.dh(2))
+            .text(Text.create("", info))
+            .<TextNode>onInit(node -> node.getText().text("Clicks: " + this.clicks.getOrDefault()))
+            .watch(this.clicks)
+            .anchor(Align.CENTER)
+            .attach(button);
         })
         .attach(this);
     }
@@ -36,7 +42,7 @@ public final class CounterUI extends UI {
 
 ![The mouse moves onto a dark rounded button, which lightens, then clicks it three times while its label counts from Clicks: 0 to Clicks: 3](../images/intro-counter.gif "The label follows the signal; the button lightens under the mouse")
 
-The whole screen is Java: factories, chained setters and lambdas, checked by the compiler and completed by your IDE. The rectangle lightens under the mouse, its corners are rounded by a shader effect, and the label always shows the current value of the signal. The [Quick Start](quick-start.md) turns this class into a running program.
+The whole screen is Java: factories, chained setters and lambdas, checked by the compiler and completed by your IDE. The rectangle lightens under the mouse, its corners are rounded by a shader effect, and the label watches the signal: each click publishes a new count and the label writes it. The [Quick Start](quick-start.md) turns this class into a running program.
 
 ## Why JOID
 
@@ -94,7 +100,7 @@ JOID draws straight through your engine's graphics API: each node turns into GPU
 
 ### Reactive state
 
-A `Signal<T>` holds a value and notifies whoever depends on it: a text supplier shows its current value, `watch` rebuilds just the part of the tree that depends on it, and a slider or a text field writes to it. Stores share state between UIs and persist it to disk. You change the data; the interface follows. See [Signals](../state/signals.md).
+A `Signal<T>` holds a value and notifies whoever depends on it: `watch` updates or rebuilds just the part of the tree that depends on it, and a slider or a text field writes to it. Stores share state between UIs and persist it to disk. You change the data; the interface follows. See [Signals](../state/signals.md).
 
 ## Key ideas
 

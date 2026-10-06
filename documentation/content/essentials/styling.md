@@ -57,19 +57,22 @@ RectNode
 
 `border(color, hoveredColor, width, fill)` adds an outline outside the rectangle, with its own hover color. The fade lasts 200 ms by default; [Animation](animation.md) shows how to tune it.
 
-A color can also come from a supplier, read every frame, so it follows your state without rebuilding the node:
+A color can also follow your state. Make the node watch the signal and set the color in `onInit`, which runs again each time the signal publishes:
 
 ```java
 final BooleanSignal selected = new BooleanSignal(false);
 
 RectNode
 .create(0, 0, 200, 60)
-.color(() -> selected.getOrDefault() ? Color.BLUE : Color.DARKGRAY)
+.<RectNode>onInit(rect -> rect.color(selected.getOrDefault() ? Color.BLUE : Color.DARKGRAY))
+.watch(selected)
 .onClick((node, mouseX, mouseY, clickType) -> selected.toggle())
 .attach(this);
 ```
 
-![Clicking a gray rectangle turns it blue, clicking again turns it gray](../images/rect-supplier.gif "The supplier reads the signal on every frame, so each click switches the color.")
+![Clicking a gray rectangle turns it blue, clicking again turns it gray](../images/rect-supplier.gif "The node watches the signal and takes its new color on each click.")
+
+`color(...)` also takes a `Supplier<Color>`, called on every frame: keep it for a color that changes on every frame, such as an animation (see [Animation](animation.md)).
 
 ## Effects
 

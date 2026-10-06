@@ -73,15 +73,13 @@ They run while the node is drawn, before its `onAnimate`, `onMount` and `onRende
 
 ## Text tooltips with hover
 
-Text tooltips are lines given by suppliers. The suppliers are called on every frame the tooltip shows, so the text can change.
+Text tooltips are lines given by suppliers. The suppliers are called on every frame the tooltip shows.
 
 ```java
-final IntegerSignal price = new IntegerSignal(25);
-
 RectNode
 .create(100, 100, 300, 80)
 .color(Color.WHITE)
-.hover(() -> "Buy for " + price.getOrDefault() + " coins")
+.hover(() -> "Buy for 25 coins")
 .hover(() -> Arrays.asList("Left click: buy", "Right click: preview"))
 .attach(this);
 ```
@@ -96,6 +94,26 @@ RectNode
 | `clearHoverLines()` | Removes every line supplier. |
 
 The lines of all the suppliers are concatenated in the order you added them and drawn as one tooltip. When there is no line, no text tooltip shows. `HoverSupplier` is in `dev.joid.lib.ui.node.hover`.
+
+### Tooltips that follow a signal
+
+To show the value of a [signal](../state/signals.md), make the node [watch](../state/watch.md) it and set the line in `onInit`, which runs again each time the signal publishes. `hoverLines(...)` removes the previous line supplier first, so the lines do not pile up:
+
+```java
+final IntegerSignal price = new IntegerSignal(25);
+
+RectNode
+.create(100, 100, 300, 80)
+.color(Color.WHITE)
+.onInit(node -> {
+    final String line = "Buy for " + price.getOrDefault() + " coins";
+    node.hoverLines(() -> line);
+})
+.watch(price)
+.attach(this);
+```
+
+The line is built once per publish, not on every frame the tooltip shows.
 
 ### Drawing text tooltips with drawHover
 

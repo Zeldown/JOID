@@ -76,7 +76,7 @@ The font files are loaded from the working directory; see [Adding Fonts](../font
 
 ### Panel and Label
 
-The card that holds a screen, with its title, and the text of a row. The `Supplier` overload of `Label` shows a value that changes, such as the slider value.
+The card that holds a screen, with its title, and the text of a row. The signal overload of `Label` shows a value that changes, such as the slider value: the label watches the signal and formats each value it publishes.
 
 ```java
 package kit.flat;
@@ -111,11 +111,12 @@ public class Panel extends Node {
 ```java
 package kit.flat;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.signal.Signal;
 
 public class Label extends TextNode {
 
@@ -128,8 +129,10 @@ public class Label extends TextNode {
         return new Label(x, y, width, height, Text.create(text, Theme.TEXT, Align.START, Align.CENTER));
     }
 
-    public static Label create(final double x, final double y, final double width, final double height, final Supplier<?> text) {
-        return new Label(x, y, width, height, Text.create(text, Theme.VALUE, Align.END, Align.CENTER));
+    public static <T> Label create(final double x, final double y, final double width, final double height, final Signal<T> signal, final Function<T, String> format) {
+        return new Label(x, y, width, height, Text.create("", Theme.VALUE, Align.END, Align.CENTER))
+        .<Label>onInit(label -> label.getText().text(format.apply(signal.getOrDefault())))
+        .watch(signal);
     }
 
 }
@@ -387,7 +390,7 @@ public class SettingsUI extends UI {
             .values(0, 100, this.volume.getOrDefault())
             .signal(this.volume)
             .attach(panel);
-            Label.create(500, 110, 60, 44, () -> this.volume.getOrDefault() + " %").attach(panel);
+            Label.create(500, 110, 60, 44, this.volume, value -> value + " %").attach(panel);
 
             Label.create(40, 180, 160, 44, "Subtitles").attach(panel);
             Checkbox
@@ -416,7 +419,7 @@ public class SettingsUI extends UI {
 }
 ```
 
-The values flow through [signals](../state/signals.md): the slider sets `volume` through `signal(...)`, the selector sets `language` through the kit's own `signal(...)`, and the checkbox and the switch set theirs in `onChange`.
+The values flow through [signals](../state/signals.md): the slider sets `volume` through `signal(...)`, the selector sets `language` through the kit's own `signal(...)`, and the checkbox and the switch set theirs in `onChange`. The value label watches `volume`, so it changes only when the slider writes a new value.
 
 ![The cursor drags the volume slider, unchecks Subtitles, picks Medium and selects Deutsch in both kits at once](../images/uikit-use.gif "The same clicks on both kits: the components behave the same, only the drawing differs.")
 

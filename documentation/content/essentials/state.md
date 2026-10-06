@@ -1,6 +1,6 @@
 # State and Reactivity
 
-Your UI shows data that changes: a counter, a list of items, a setting. JOID keeps that data in signals, values that notify whoever depends on them when they change. Nodes read signals directly or watch them to rebuild themselves, stores share state between UIs, and persistent stores and properties keep it between runs. This page shows each of them with small examples.
+Your UI shows data that changes: a counter, a list of items, a setting. JOID keeps that data in signals, values that notify whoever depends on them when they change. Nodes watch signals to update or rebuild themselves, stores share state between UIs, and persistent stores and properties keep it between runs. This page shows each of them with small examples.
 
 ## Signals
 
@@ -28,29 +28,37 @@ This prints `6`. `getOrDefault()` reads the value, or the default given to the c
 
 > WARNING: Changing an object held by a plain `Signal` (for example a list you read with `getOrDefault()`) notifies nobody. Use the typed collection signals, or call `publish()` after the change.
 
-## Reading a signal in a supplier
+## Updating a node with watch
 
-The simplest way to show a signal is to read it in a supplier. Many setters accept one, and the node reads it every frame:
+To show a signal, make the node watch it. `watch(signal)` subscribes the node: each time the signal publishes, the node reloads and its `onInit` callback runs again, so it reads the new value there:
 
 ```java
 final IntegerSignal score = new IntegerSignal();
 
-TextNode.create(20, 20).text(Text.create(() -> "Score: " + score.getOrDefault(), info)).attach(this);
+TextNode
+.create(20, 20)
+.text(Text.create("", info))
+.<TextNode>onInit(node -> node.getText().text("Score: " + score.getOrDefault()))
+.watch(score)
+.attach(this);
 
 RectNode
 .create(20, 80, 200, 60)
-.color(() -> score.getOrDefault() >= 10 ? Color.GREEN : Color.DARKGRAY)
+.<RectNode>onInit(rect -> rect.color(score.getOrDefault() >= 10 ? Color.GREEN : Color.DARKGRAY))
+.watch(score)
 .onClick((node, mouseX, mouseY, clickType) -> score.increment())
 .attach(this);
 ```
 
-![Clicking a gray rectangle eleven times: the score text counts up and the rectangle turns green at 10](../images/ess-state-score.gif "The text and the color read the signal every frame, so each click shows at once.")
+![Clicking a gray rectangle eleven times: the score text counts up and the rectangle turns green at 10](../images/ess-state-score.gif "The text and the rectangle watch the signal, so each click shows at once.")
 
-`info` is a `TextInfo`, the style of a text, covered in [Text](text.md). Each click increments the score; the text and the color follow on the next frame. Suppliers are perfect for values that change what a node displays, not which nodes exist.
+`info` is a `TextInfo`, the style of a text, covered in [Text](text.md). `onInit` runs when the node loads, so the text starts empty and gets its first value at once; `<TextNode>` and `<RectNode>` give the callback the type of the node. Each click increments the score, the score publishes, and both nodes update. Reloading suits values that change what a node displays, not which nodes exist.
+
+> TIP: Setters that take a `Supplier`, such as `Text.create(Supplier, info)` or `color(Supplier)`, call it on every frame. Keep them for values that change on every frame, such as an animation. A signal changes only when it publishes: watch it.
 
 ## Rebuilding nodes with watch
 
-When the structure must change (a list with one row per item), make the node watch the signal. `watch(signal, properties...)` tells the node what to do each time the signal changes; `WatchProperty` is in `dev.joid.lib.ui.node.property.watch`:
+When the structure must change (a list with one row per item), rebuild the children instead of reloading the node. `watch(signal, properties...)` tells the node what to do each time the signal changes; `WatchProperty` is in `dev.joid.lib.ui.node.property.watch`:
 
 ```java
 final ListSignal<String> items = new ListSignal<>(new ArrayList<>());

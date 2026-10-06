@@ -73,14 +73,18 @@ RectNode
 
 ## Step 4: tooltips
 
-`hover(() -> "text")` gives a node a tooltip; the supplier is called every frame the tooltip shows, so the text can follow your state. Add tooltips to the two switches:
+`hover(() -> "text")` gives a node a tooltip; the supplier is called every frame the tooltip shows. The tooltip of the Music switch depends on the `music` signal, so the switch watches it: each publish reloads the switch, and its `onInit` builds the line again. `hoverLines(...)` replaces the previous line instead of adding one more. Add tooltips to the two switches:
 
 ```java
 ToggleSwitchNode
 .create(music.aw(-100), 18, 76, 36)
 .checked(settings.getMusic().getOrDefault())
 .onChange((toggle, checked) -> settings.getMusic().set(checked))
-.hover(() -> settings.getMusic().getOrDefault() ? "Music is playing" : "Music is muted")
+.onInit(toggle -> {
+    final String line = settings.getMusic().getOrDefault() ? "Music is playing" : "Music is muted";
+    toggle.hoverLines(() -> line);
+})
+.watch(settings.getMusic())
 .attach(music);
 ```
 
@@ -251,7 +255,11 @@ public final class SettingsUI extends UI {
                 .create(music.aw(-100), 18, 76, 36)
                 .checked(settings.getMusic().getOrDefault())
                 .onChange((toggle, checked) -> settings.getMusic().set(checked))
-                .hover(() -> settings.getMusic().getOrDefault() ? "Music is playing" : "Music is muted")
+                .onInit(toggle -> {
+                    final String line = settings.getMusic().getOrDefault() ? "Music is playing" : "Music is muted";
+                    toggle.hoverLines(() -> line);
+                })
+                .watch(settings.getMusic())
                 .attach(music);
 
                 final RectNode volume = this.row(flex, "Volume", label);
@@ -261,7 +269,13 @@ public final class SettingsUI extends UI {
                 .values(0, 100, settings.getVolume().getOrDefault())
                 .signal(settings.getVolume())
                 .attach(volume);
-                TextNode.create(volume.aw(-24), volume.dh(2)).text(Text.create(() -> settings.getVolume().getOrDefault() + " %", label)).anchor(Align.END, Align.CENTER).attach(volume);
+                TextNode
+                .create(volume.aw(-24), volume.dh(2))
+                .text(Text.create("", label))
+                .<TextNode>onInit(node -> node.getText().text(settings.getVolume().getOrDefault() + " %"))
+                .watch(settings.getVolume())
+                .anchor(Align.END, Align.CENTER)
+                .attach(volume);
 
                 TextNode.create(0, 0, 0, 36).text(Text.create("GENERAL", section, Align.START, Align.END)).attach(flex);
                 final RectNode notifications = this.row(flex, "Notifications", label);

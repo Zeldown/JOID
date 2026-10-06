@@ -141,6 +141,8 @@ A `Supplier<?>` or a mutable object (a `StringBuilder`, an object with its own `
 final Text score = Text.create(() -> "Score: " + this.score, info);
 ```
 
+> NOTE: A supplier is called on every measure and draw, whether the value changed or not. When the value lives in a [signal](../state/signals.md), do not read it in a supplier: make the node watch the signal and write the text with `getText().text(...)` (see [TextNode](../nodes/visual/text.md#dynamic-text) and [Watching Signals](../state/watch.md)).
+
 ### Editing a Text
 
 | Method | Description |

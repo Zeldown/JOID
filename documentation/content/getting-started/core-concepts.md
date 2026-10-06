@@ -109,12 +109,17 @@ Setters are generic: `public final <T extends Node> T anchor(Align anchor)`. The
 
 ## Signals and effects at a glance
 
-State lives in signals (`dev.joid.lib.utils.signal`): `Signal<T>` and typed variants such as `IntegerSignal`, `StringSignal` or `ListSignal`. `set(value)` notifies the subscribers when the value changes. Nodes read signals in suppliers, or watch them to reload or rebuild themselves:
+State lives in signals (`dev.joid.lib.utils.signal`): `Signal<T>` and typed variants such as `IntegerSignal`, `StringSignal` or `ListSignal`. `set(value)` notifies the subscribers when the value changes. Nodes watch signals: on each change, a node reloads to update itself, or rebuilds its children:
 
 ```java
 final StringSignal name = new StringSignal("world");
 
-TextNode.create(100, 100).text(Text.create(() -> "Hello " + name.getOrDefault(), info)).attach(this);
+TextNode
+.create(100, 100)
+.text(Text.create("", info))
+.<TextNode>onInit(node -> node.getText().text("Hello " + name.getOrDefault()))
+.watch(name)
+.attach(this);
 
 ContainerNode
 .create(100, 200, 400, 300)
@@ -124,6 +129,8 @@ ContainerNode
 })
 .attach(this);
 ```
+
+The text node reloads on each change, which runs its `onInit` callback again with the new name; the container removes its children and runs its `body` again.
 
 Effects change how a node is drawn. They are applied with `effect(...)` and run through the shader pipeline:
 

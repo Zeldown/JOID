@@ -176,7 +176,13 @@ VolumeSliderNode
 .values(0, 100, this.volume.getOrDefault())
 .signal(this.volume)
 .attach(volume);
-TextNode.create(volume.aw(-24), volume.dh(2)).text(Text.create(() -> this.volume.getOrDefault() + " %", label)).anchor(Align.END, Align.CENTER).attach(volume);
+TextNode
+.create(volume.aw(-24), volume.dh(2))
+.text(Text.create("", label))
+.<TextNode>onInit(node -> node.getText().text(this.volume.getOrDefault() + " %"))
+.watch(this.volume)
+.anchor(Align.END, Align.CENTER)
+.attach(volume);
 ```
 
 ```java
@@ -196,12 +202,12 @@ Each control takes a different route to its signal:
 | `onChange((toggle, checked) -> ...)` | Runs after each click with the new state; here it writes the signal. |
 | `values(0, 100, value)` | Gives the slider the integers from 0 to 100 and selects `value`. |
 | `signal(this.volume)` | Makes the slider write each new value into the signal. |
-| `Text.create(() -> ..., label)` | A text built from a supplier: the node reads it every frame, so "80 %" follows the slider without any rebuild. |
+| `watch(this.volume)` and `onInit(...)` | The text node watches the signal: each value the slider writes reloads the node, and `onInit` writes the new text, so "80 %" follows the slider. The text starts empty and the first `onInit` fills it. |
 | `visible(node -> ...)` | A predicate evaluated every frame: the Volume row shows only while the music is on. |
 
 Turn the music off: the Volume row disappears and the GENERAL and LANGUAGE sections move up, because a `FlexNode` gives no room to hidden children. Turn it on again and the row comes back with the slider where you left it.
 
-![The Music switch is turned off and on, hiding then showing the Volume row, the slider is dragged from 80 % to 65 %, and the Notifications switch is turned on](../images/tutorial-controls.gif "Hidden rows give their room back; the value text follows the slider every frame")
+![The Music switch is turned off and on, hiding then showing the Volume row, the slider is dragged from 80 % to 65 %, and the Notifications switch is turned on](../images/tutorial-controls.gif "Hidden rows give their room back; the value text follows the signal written by the slider")
 
 ## Step 4: persist the settings with a store
 
@@ -392,7 +398,13 @@ public final class SettingsUI extends UI {
                 .values(0, 100, settings.getVolume().getOrDefault())
                 .signal(settings.getVolume())
                 .attach(volume);
-                TextNode.create(volume.aw(-24), volume.dh(2)).text(Text.create(() -> settings.getVolume().getOrDefault() + " %", label)).anchor(Align.END, Align.CENTER).attach(volume);
+                TextNode
+                .create(volume.aw(-24), volume.dh(2))
+                .text(Text.create("", label))
+                .<TextNode>onInit(node -> node.getText().text(settings.getVolume().getOrDefault() + " %"))
+                .watch(settings.getVolume())
+                .anchor(Align.END, Align.CENTER)
+                .attach(volume);
 
                 TextNode.create(0, 0, 0, 36).text(Text.create("GENERAL", section, Align.START, Align.END)).attach(flex);
                 final RectNode notifications = this.row(flex, "Notifications", label);
@@ -449,7 +461,7 @@ The rows now hold working controls: two switches, a slider with its value on the
 
 - Callbacks such as `onClick` and `onChange` are lambdas registered on a node; an input callback consumes the event it handles.
 - Input controls are abstract: you subclass `CheckboxNode`, `IntegerSliderNode` and the others, and only draw them.
-- A `Signal<T>` holds state. Nodes follow it three ways: a supplier read every frame (`Text.create(() -> ...)`, `visible(...)`), a `watch` that rebuilds part of the tree, or a control that writes it (`signal(...)`, `onChange`).
+- A `Signal<T>` holds state. Nodes `watch` it: by default the node reloads and its `onInit` writes the new value, and `CLEAR_CHILDREN` with `BODY` rebuilds part of the tree. Controls write it (`signal(...)`, `onChange`), and a `visible(...)` predicate, evaluated every frame, can read it.
 - A `PERMANENT` store keeps signals between runs; `UIStoreHook.saveAll()` saves it when the application exits.
 
 Next, [Tutorial 4: Polish](polish.md) gives the screen its final look.
