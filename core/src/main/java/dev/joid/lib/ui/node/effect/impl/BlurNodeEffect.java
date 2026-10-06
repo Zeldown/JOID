@@ -13,8 +13,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
-public class BlurNodeEffect<T extends Node> extends NodeEffect<T> {
+public class BlurNodeEffect<T extends Node> extends NodeEffect<T, BlurNodeEffect<T>> {
 
 	private Supplier<Float> radiusSupplier;
 
@@ -41,14 +40,14 @@ public class BlurNodeEffect<T extends Node> extends NodeEffect<T> {
 		return Arrays.asList(new BlurShaderPass(radius, true, 0), new BlurShaderPass(radius, false, 0));
 	}
 
-	public <E extends BlurNodeEffect<T>> @NonNull E radius(final float radius) {
+	public @NonNull BlurNodeEffect<T> radius(final float radius) {
 		this.radiusSupplier = () -> radius;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends BlurNodeEffect<T>> @NonNull E radius(final @NonNull Supplier<Float> radiusSupplier) {
+	public @NonNull BlurNodeEffect<T> radius(final @NonNull Supplier<Float> radiusSupplier) {
 		this.radiusSupplier = radiusSupplier;
-		return (E) this;
+		return this;
 	}
 
 }

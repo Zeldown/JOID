@@ -35,6 +35,7 @@ import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -469,7 +470,7 @@ public class NodeTest {
 	public void appliesItsEffectsInPriorityOrder() {
 		final List<String> events = new ArrayList<>();
 		final RecordingEffect late = new RecordingEffect("late", events).priority(2);
-		final OtherEffect early = new OtherEffect("early", events).priority(1);
+		final RecordingEffect early = new OtherEffect("early", events).priority(1);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(late).effect(early);
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(Arrays.asList("early init", "late init", "early pre", "late pre", "late post", "early post"), events);
@@ -522,11 +523,11 @@ public class NodeTest {
 	}
 
 	@Test
-	public void buildsSeveralEffectsFromItsNode() {
-		final List<String> events = new ArrayList<>();
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(rect -> new RecordingEffect("first", events), rect -> new OtherEffect("second", events));
-		Assert.assertEquals(2, node.getEffectMap().size());
-		Assert.assertTrue(node.hasEffect(RecordingEffect.class) && node.hasEffect(OtherEffect.class));
+	public void chainsAConfiguredCustomEffectWithoutCast() {
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", new ArrayList<>()).priority(2)).effect(BorderNodeEffect.create(Color.BLACK, 2F).fill(false));
+		final Optional<BorderNodeEffect<Node>> border = node.getEffect(BorderNodeEffect.class);
+		Assert.assertEquals(2, node.getEffect(RecordingEffect.class).get().getPriority());
+		Assert.assertFalse(border.get().isFill());
 	}
 
 	@Test
@@ -1834,7 +1835,7 @@ public class NodeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingEffect() {
-		RectNode.create(0D, 0D, 10D, 10D).effect((NodeEffect<Node>) null);
+		RectNode.create(0D, 0D, 10D, 10D).effect((NodeEffect<Node, ?>) null);
 	}
 
 	@Test
@@ -2161,7 +2162,7 @@ public class NodeTest {
 	}
 
 	@AllArgsConstructor
-	public static class RecordingEffect extends NodeEffect<Node> {
+	public static class RecordingEffect extends NodeEffect<Node, RecordingEffect> {
 
 		private final String       name;
 		private final List<String> events;
@@ -2205,7 +2206,7 @@ public class NodeTest {
 	}
 
 	@AllArgsConstructor
-	public static final class ColorEffect extends NodeEffect<RectNode> {
+	public static final class ColorEffect extends NodeEffect<RectNode, ColorEffect> {
 
 		private final List<String> events;
 

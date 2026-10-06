@@ -11,9 +11,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class MaskNodeEffect<T extends Node> extends NodeEffect<T> {
+public class MaskNodeEffect<T extends Node> extends NodeEffect<T, MaskNodeEffect<T>> {
 
 	private Resource resource;
 	private Supplier<Double> xSupplier;
@@ -104,89 +103,89 @@ public class MaskNodeEffect<T extends Node> extends NodeEffect<T> {
 		node.getUi().stopMask();
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E x(final double x) {
+	public @NonNull MaskNodeEffect<T> x(final double x) {
 		this.xSupplier = () -> x;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E x(final @NonNull Supplier<Double> xSupplier) {
+	public @NonNull MaskNodeEffect<T> x(final @NonNull Supplier<Double> xSupplier) {
 		this.xSupplier = xSupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E y(final double y) {
+	public @NonNull MaskNodeEffect<T> y(final double y) {
 		this.ySupplier = () -> y;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E y(final @NonNull Supplier<Double> ySupplier) {
+	public @NonNull MaskNodeEffect<T> y(final @NonNull Supplier<Double> ySupplier) {
 		this.ySupplier = ySupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E width(final double width) {
+	public @NonNull MaskNodeEffect<T> width(final double width) {
 		this.widthSupplier = () -> width;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E width(final @NonNull Supplier<Double> widthSupplier) {
+	public @NonNull MaskNodeEffect<T> width(final @NonNull Supplier<Double> widthSupplier) {
 		this.widthSupplier = widthSupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E height(final double height) {
+	public @NonNull MaskNodeEffect<T> height(final double height) {
 		this.heightSupplier = () -> height;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E height(final @NonNull Supplier<Double> heightSupplier) {
+	public @NonNull MaskNodeEffect<T> height(final @NonNull Supplier<Double> heightSupplier) {
 		this.heightSupplier = heightSupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E position(final double x, final double y) {
-		this.xSupplier = () -> x;
-		this.ySupplier = () -> y;
-		return (E) this;
-	}
-
-	public <E extends MaskNodeEffect<T>> @NonNull E position(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier) {
-		this.xSupplier = xSupplier;
-		this.ySupplier = ySupplier;
-		return (E) this;
-	}
-
-	public <E extends MaskNodeEffect<T>> @NonNull E size(final double width, final double height) {
-		this.widthSupplier = () -> width;
-		this.heightSupplier = () -> height;
-		return (E) this;
-	}
-
-	public <E extends MaskNodeEffect<T>> @NonNull E size(final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
-		this.widthSupplier = widthSupplier;
-		this.heightSupplier = heightSupplier;
-		return (E) this;
-	}
-
-	public <E extends MaskNodeEffect<T>> @NonNull E bounds(final double x, final double y, final double width, final double height) {
+	public @NonNull MaskNodeEffect<T> position(final double x, final double y) {
 		this.xSupplier = () -> x;
 		this.ySupplier = () -> y;
-		this.widthSupplier = () -> width;
-		this.heightSupplier = () -> height;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E bounds(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier, final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
+	public @NonNull MaskNodeEffect<T> position(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier) {
+		this.xSupplier = xSupplier;
+		this.ySupplier = ySupplier;
+		return this;
+	}
+
+	public @NonNull MaskNodeEffect<T> size(final double width, final double height) {
+		this.widthSupplier = () -> width;
+		this.heightSupplier = () -> height;
+		return this;
+	}
+
+	public @NonNull MaskNodeEffect<T> size(final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
+		this.widthSupplier = widthSupplier;
+		this.heightSupplier = heightSupplier;
+		return this;
+	}
+
+	public @NonNull MaskNodeEffect<T> bounds(final double x, final double y, final double width, final double height) {
+		this.xSupplier = () -> x;
+		this.ySupplier = () -> y;
+		this.widthSupplier = () -> width;
+		this.heightSupplier = () -> height;
+		return this;
+	}
+
+	public @NonNull MaskNodeEffect<T> bounds(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier, final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
 		this.xSupplier = xSupplier;
 		this.ySupplier = ySupplier;
 		this.widthSupplier = widthSupplier;
 		this.heightSupplier = heightSupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends MaskNodeEffect<T>> @NonNull E resource(final Resource resource) {
+	public @NonNull MaskNodeEffect<T> resource(final Resource resource) {
 		this.resource = resource;
-		return (E) this;
+		return this;
 	}
 
 }

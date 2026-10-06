@@ -11,7 +11,7 @@ import lombok.NonNull;
 
 @Getter
 @SuppressWarnings("unchecked")
-public abstract class NodeEffect<T extends Node> {
+public abstract class NodeEffect<T extends Node, E extends NodeEffect<T, E>> {
 
 	private int priority;
 	private NodeEffectScope scope = NodeEffectScope.SELF;
@@ -39,12 +39,12 @@ public abstract class NodeEffect<T extends Node> {
 		return pass != null ? Collections.singletonList(pass) : Collections.emptyList();
 	}
 
-	public <E extends NodeEffect<T>> @NonNull E priority(final int priority) {
+	public @NonNull E priority(final int priority) {
 		this.priority = priority;
 		return (E) this;
 	}
 
-	public <E extends NodeEffect<T>> @NonNull E scope(final @NonNull NodeEffectScope scope) {
+	public @NonNull E scope(final @NonNull NodeEffectScope scope) {
 		this.scope = scope;
 		return (E) this;
 	}

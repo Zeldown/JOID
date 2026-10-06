@@ -11,8 +11,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
-public class ShadowNodeEffect<T extends Node> extends NodeEffect<T> {
+public class ShadowNodeEffect<T extends Node> extends NodeEffect<T, ShadowNodeEffect<T>> {
 
 	private Supplier<Float>  blurSupplier;
 	private Supplier<Color>  colorSupplier;
@@ -64,36 +63,36 @@ public class ShadowNodeEffect<T extends Node> extends NodeEffect<T> {
 		DrawUtils.SHAPE.drawShadow(x, y, node.getWidth(), node.getHeight(), this.getColor(), radius, this.getBlur());
 	}
 
-	public <E extends ShadowNodeEffect<T>> @NonNull E blur(final float blur) {
+	public @NonNull ShadowNodeEffect<T> blur(final float blur) {
 		this.blurSupplier = () -> blur;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends ShadowNodeEffect<T>> @NonNull E blur(final @NonNull Supplier<Float> blurSupplier) {
+	public @NonNull ShadowNodeEffect<T> blur(final @NonNull Supplier<Float> blurSupplier) {
 		this.blurSupplier = blurSupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends ShadowNodeEffect<T>> @NonNull E color(final @NonNull Color color) {
+	public @NonNull ShadowNodeEffect<T> color(final @NonNull Color color) {
 		this.colorSupplier = () -> color;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends ShadowNodeEffect<T>> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
+	public @NonNull ShadowNodeEffect<T> color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
 		this.colorSupplier = colorSupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends ShadowNodeEffect<T>> @NonNull E offset(final double offsetX, final double offsetY) {
+	public @NonNull ShadowNodeEffect<T> offset(final double offsetX, final double offsetY) {
 		this.offsetXSupplier = () -> offsetX;
 		this.offsetYSupplier = () -> offsetY;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends ShadowNodeEffect<T>> @NonNull E offset(final @NonNull Supplier<Double> offsetXSupplier, final @NonNull Supplier<Double> offsetYSupplier) {
+	public @NonNull ShadowNodeEffect<T> offset(final @NonNull Supplier<Double> offsetXSupplier, final @NonNull Supplier<Double> offsetYSupplier) {
 		this.offsetXSupplier = offsetXSupplier;
 		this.offsetYSupplier = offsetYSupplier;
-		return (E) this;
+		return this;
 	}
 
 }

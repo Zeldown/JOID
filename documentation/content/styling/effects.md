@@ -34,8 +34,8 @@ The built-in effects are in `dev.joid.lib.ui.node.effect.impl`:
 
 | Method | Description |
 | --- | --- |
-| `effect(NodeEffect<? super T> effect)` | Adds `effect`. The effect is typed by the node (`NodeEffect<RectNode>` on a `RectNode`) or by one of its parent classes (`NodeEffect<Node>`, as the built-in effects). |
-| `effect(Function<T, NodeEffect<? super T>>... factories)` | Calls each factory immediately with the node and adds the effect it returns. Use it when the effect needs the node. |
+| `effect(NodeEffect<? super T, ?> effect)` | Adds `effect`. The effect is typed by the node (an effect declared for `RectNode` on a `RectNode`) or by one of its parent classes (`Node`, as the built-in effects). |
+| `effect(Function<T, NodeEffect<? super T, ?>> factory)` | Calls `factory` immediately with the node and adds the effect it returns. Use it when the effect needs the node. |
 
 ```java
 RectNode
@@ -146,11 +146,11 @@ final RectNode childrenScoped = RectNode.create(0, 0, 200, 120).color(Color.RED)
 
 With `SELF`, a child that overflows the circle stays visible; with `CHILDREN`, the circle cuts the child too. Use `CHILDREN` to round a card together with its content.
 
-`scope(...)` and `priority(...)` return the effect typed like the variable or the parameter that receives it. Inside a chain they return a `NodeEffect`, so call the setters of the effect before them: `RoundedNodeEffect.create(16F).top(false).scope(NodeEffectScope.CHILDREN)`. Render-state effects ignore the scope, they always wrap the whole render.
+`scope(...)` and `priority(...)` return the effect with its own class, so the setters of the effect chain after them: `RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN).top(false)`. Render-state effects ignore the scope, they always wrap the whole render.
 
 ## Applying effects conditionally
 
-`shouldApply(T node)` is checked every frame (and when the node is initialized); an effect that returns `false` is skipped. The built-in effects always return `true`; override it in [your own effects](custom-effects.md). A custom node can also override `Node.shouldApplyEffect(NodeEffect<Node> effect)`, which defaults to `effect.shouldApply(this)`.
+`shouldApply(T node)` is checked every frame (and when the node is initialized); an effect that returns `false` is skipped. The built-in effects always return `true`; override it in [your own effects](custom-effects.md). A custom node can also override `Node.shouldApplyEffect(NodeEffect<Node, ?> effect)`, which defaults to `effect.shouldApply(this)`.
 
 To toggle a built-in effect, add and remove it, or drive its value with a supplier (a `RoundedNodeEffect` radius of `0F` draws square corners).
 
@@ -174,13 +174,13 @@ Effects only change the pixels. Layout, hovering and clicks keep using the node'
 
 | Method | Description |
 | --- | --- |
-| `effect(NodeEffect<? super T> effect)` | Adds or replaces the effect of the same class. |
-| `effect(Function<T, NodeEffect<? super T>>... factories)` | Same, with effects built from the node. |
+| `effect(NodeEffect<? super T, ?> effect)` | Adds or replaces the effect of the same class. |
+| `effect(Function<T, NodeEffect<? super T, ?>> factory)` | Same, with an effect built from the node. |
 | `getEffect(Class<T> type)` | The effect of that class, as an `Optional`. |
 | `hasEffect(Class<?> type)` | Whether an effect of that class is present. |
 | `removeEffect(Class<?> type)` | Removes the effect of that class. |
 | `clearEffects()` | Removes every effect. |
-| `shouldApplyEffect(NodeEffect<Node> effect)` | Overridable filter, defaults to `effect.shouldApply(this)`. |
+| `shouldApplyEffect(NodeEffect<Node, ?> effect)` | Overridable filter, defaults to `effect.shouldApply(this)`. |
 
 ### NodeEffect
 

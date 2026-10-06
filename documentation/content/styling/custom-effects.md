@@ -1,6 +1,6 @@
 # Custom Effects
 
-A custom effect is a subclass of `NodeEffect<T extends Node>` (`dev.joid.lib.ui.node.effect`). Write one when the [built-in effects](effects.md) do not cover a visual treatment you want to reuse on any node: a hard shadow, a hover lift, a color filter.
+A custom effect is a subclass of `NodeEffect<T extends Node, E extends NodeEffect<T, E>>` (`dev.joid.lib.ui.node.effect`): `T` is the node it applies to and `E` the effect class itself, which `priority(...)` and `scope(...)` return. Write one when the [built-in effects](effects.md) do not cover a visual treatment you want to reuse on any node: a hard shadow, a hover lift, a color filter.
 
 There are two kinds of effects, and you pick one by overriding different hooks:
 
@@ -19,7 +19,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 
-public class HardShadowNodeEffect<T extends Node> extends NodeEffect<T> {
+public class HardShadowNodeEffect<T extends Node> extends NodeEffect<T, HardShadowNodeEffect<T>> {
 
     private final Color color;
     private final double offset;
@@ -65,7 +65,7 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 
-public class LiftNodeEffect<T extends Node> extends NodeEffect<T> {
+public class LiftNodeEffect<T extends Node> extends NodeEffect<T, LiftNodeEffect<T>> {
 
     private final float height;
 
@@ -199,7 +199,7 @@ import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 
-public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T> {
+public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T, GrayscaleNodeEffect<T>> {
 
     private final float amount;
 
@@ -256,11 +256,11 @@ Override `expansion()` (default `0F`) when the pass draws outside the node's rec
 
 ## Rules for effect classes
 
-- `Node.effect(...)` takes a `NodeEffect` typed by the node or by one of its parent classes. Declare your effect generic (`MyNodeEffect<T extends Node> extends NodeEffect<T>`) with a generic factory, as the built-in effects do, or extend `NodeEffect<Node>` directly, to add it to any node. An effect declared for a specific node type (`NodeEffect<RectNode>`) receives that type in its hooks and reads its getters; add it only to nodes of that type.
+- `Node.effect(...)` takes a `NodeEffect` typed by the node or by one of its parent classes. Declare your effect generic, with itself as second type argument (`MyNodeEffect<T extends Node> extends NodeEffect<T, MyNodeEffect<T>>`) and a generic factory, as the built-in effects do, or extend `NodeEffect<Node, MyNodeEffect>` directly, to add it to any node. An effect declared for a specific node type (`MyNodeEffect extends NodeEffect<RectNode, MyNodeEffect>`) receives that type in its hooks and reads its getters; add it only to nodes of that type.
 - A node holds one effect per class: a second instance of your class replaces the first.
 - The same effect instance can be added to several nodes, and `Node.copy()` shares it with the copy. Keep per-node state out of the effect, or create one effect per node.
 - To make values dynamic, store `Supplier`s and read them in the hooks, as the built-in effects do.
-- Fluent setters in the library style return `<E extends MyNodeEffect<T>> E` with `return (E) this;` and `@SuppressWarnings("unchecked")`. Such setters cannot be chained inline inside `node.effect(...)` (see [Effects](effects.md#applying-effects-with-effect)).
+- Fluent setters return the effect class with `return this;` (`public MyNodeEffect<T> amount(final float amount)`), as the built-in effects do, so a configured effect chains inline inside `node.effect(...)`. A setter that returns a generic type inferred from the context (`<E extends MyNodeEffect<T>> E`) also matches the function form of `effect(...)`, and the call no longer compiles ("reference to effect is ambiguous").
 
 ## See also
 

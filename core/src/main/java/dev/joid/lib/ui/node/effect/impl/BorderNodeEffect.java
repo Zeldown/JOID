@@ -12,8 +12,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
-public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
+public class BorderNodeEffect<T extends Node> extends NodeEffect<T, BorderNodeEffect<T>> {
 
 	private boolean fill = true;
 	private BorderMode mode;
@@ -44,34 +43,34 @@ public class BorderNodeEffect<T extends Node> extends NodeEffect<T> {
 		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fill, this.mode);
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Color color) {
+	public @NonNull BorderNodeEffect<T> color(final @NonNull Color color) {
 		this.colorSupplier = () -> color;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
+	public @NonNull BorderNodeEffect<T> color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
 		this.colorSupplier = colorSupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E width(final float width) {
+	public @NonNull BorderNodeEffect<T> width(final float width) {
 		this.widthSupplier = () -> width;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E width(final @NonNull Supplier<Float> widthSupplier) {
+	public @NonNull BorderNodeEffect<T> width(final @NonNull Supplier<Float> widthSupplier) {
 		this.widthSupplier = widthSupplier;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E mode(final @NonNull BorderMode mode) {
+	public @NonNull BorderNodeEffect<T> mode(final @NonNull BorderMode mode) {
 		this.mode = mode;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends BorderNodeEffect<T>> @NonNull E fill(final boolean fill) {
+	public @NonNull BorderNodeEffect<T> fill(final boolean fill) {
 		this.fill = fill;
-		return (E) this;
+		return this;
 	}
 
 }

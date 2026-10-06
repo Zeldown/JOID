@@ -63,6 +63,13 @@ public class NodeEffectTest {
 	}
 
 	@Test
+	public void keepsTheTypeOfACustomEffectThroughItsSetters() {
+		final PlainEffect effect = new PlainEffect().priority(3).scope(NodeEffectScope.CHILDREN);
+		Assert.assertEquals(3, effect.getPriority());
+		Assert.assertEquals(NodeEffectScope.CHILDREN, effect.getScope());
+	}
+
+	@Test
 	public void keepsItsOwnTypeThroughItsScope() {
 		final RoundedNodeEffect<Node> effect = RoundedNodeEffect.create(4F).scope(NodeEffectScope.CHILDREN);
 		Assert.assertEquals(NodeEffectScope.CHILDREN, effect.getScope());
@@ -113,8 +120,8 @@ public class NodeEffectTest {
 	@Test
 	public void runsTheLowestPriorityFirst() {
 		final TraceNode node = new TraceNode("node", this.trace);
-		node.effect(new TraceEffect("late", this.trace, true).<TraceEffect>priority(2));
-		node.effect(new OtherTraceEffect("early", this.trace).<OtherTraceEffect>priority(1));
+		node.effect(new TraceEffect("late", this.trace, true).priority(2));
+		node.effect(new OtherTraceEffect("early", this.trace).priority(1));
 		this.bridges.open(new NodeUI(node));
 		this.trace.clear();
 		this.bridges.frame();
@@ -186,9 +193,9 @@ public class NodeEffectTest {
 
 	}
 
-	public static final class PlainEffect extends NodeEffect<Node> {}
+	public static final class PlainEffect extends NodeEffect<Node, PlainEffect> {}
 
-	public static class TraceEffect extends NodeEffect<Node> {
+	public static class TraceEffect extends NodeEffect<Node, TraceEffect> {
 
 		private final String       name;
 		private final List<String> trace;
@@ -233,7 +240,7 @@ public class NodeEffectTest {
 
 	}
 
-	public static final class ShaderEffect extends NodeEffect<Node> {
+	public static final class ShaderEffect extends NodeEffect<Node, ShaderEffect> {
 
 		private final ShaderPass pass;
 

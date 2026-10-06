@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class CircleNodeEffect<T extends Node> extends NodeEffect<T> {
+public class CircleNodeEffect<T extends Node> extends NodeEffect<T, CircleNodeEffect<T>> {
 
 	public static <T extends Node> CircleNodeEffect<T> create() {
 		return new CircleNodeEffect<>();

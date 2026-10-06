@@ -16,9 +16,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class TransformNodeEffect<T extends Node> extends NodeEffect<T> {
+public class TransformNodeEffect<T extends Node> extends NodeEffect<T, TransformNodeEffect<T>> {
 
 	private Supplier<Transformation> transformationSupplier;
 
@@ -55,14 +54,14 @@ public class TransformNodeEffect<T extends Node> extends NodeEffect<T> {
 		BridgeHandler.RENDER.get().popMatrix();
 	}
 
-	public <E extends TransformNodeEffect<T>> @NonNull E transformation(final @NonNull Transformation transformation) {
+	public @NonNull TransformNodeEffect<T> transformation(final @NonNull Transformation transformation) {
 		this.transformationSupplier = () -> transformation;
-		return (E) this;
+		return this;
 	}
 
-	public <E extends TransformNodeEffect<T>> @NonNull E transformation(final @NonNull Supplier<Transformation> transformationSupplier) {
+	public @NonNull TransformNodeEffect<T> transformation(final @NonNull Supplier<Transformation> transformationSupplier) {
 		this.transformationSupplier = transformationSupplier;
-		return (E) this;
+		return this;
 	}
 
 }

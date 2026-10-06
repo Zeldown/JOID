@@ -189,7 +189,7 @@ public class GrayscaleShaderPass implements ShaderPass {
 To use the pass on nodes, wrap it in a shader effect:
 
 ```java
-public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T> {
+public class GrayscaleNodeEffect<T extends Node> extends NodeEffect<T, GrayscaleNodeEffect<T>> {
 
     private final float amount;
 
