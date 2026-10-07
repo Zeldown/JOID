@@ -1890,7 +1890,7 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T visible(final @NonNull Signal<?>... signals) {
 		this.visible = node -> {
 			for (final Signal<?> signal : signals) {
-				final Object value = signal.getOrDefault();
+				final Object value = signal.peek();
 				if (value == null || Boolean.FALSE.equals(value)) {
 					return false;
 				}

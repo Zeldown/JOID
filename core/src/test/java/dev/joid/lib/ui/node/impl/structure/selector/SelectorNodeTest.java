@@ -213,7 +213,7 @@ public class SelectorNodeTest {
 		final Signal<String> language = new Signal<>();
 		this.bridges.open(new NodeUI(this.selector.signal(language).active(true))).frames(2);
 		this.click(150D, 200D);
-		Assert.assertEquals("third", language.getOrDefault());
+		Assert.assertEquals("third", language.get());
 	}
 
 	@Test
@@ -234,8 +234,8 @@ public class SelectorNodeTest {
 		final Signal<String> subtitles = new Signal<>("first");
 		this.bridges.open(new NodeUI(this.selector.signal(language).signal(subtitles))).frame();
 		this.selector.value("third");
-		Assert.assertEquals("third", subtitles.getOrDefault());
-		Assert.assertEquals("second", language.getOrDefault());
+		Assert.assertEquals("third", subtitles.get());
+		Assert.assertEquals("second", language.get());
 		language.set("first");
 		this.bridges.frame();
 		Assert.assertEquals("third", this.selector.getValue());
@@ -263,7 +263,7 @@ public class SelectorNodeTest {
 	public void writesAChosenValueIntoItsSignal() {
 		final Signal<String> language = new Signal<>("first");
 		this.selector.signal(language).value("third").value("third");
-		Assert.assertEquals("third", language.getOrDefault());
+		Assert.assertEquals("third", language.get());
 		Assert.assertEquals(Arrays.asList("third"), this.changes);
 	}
 

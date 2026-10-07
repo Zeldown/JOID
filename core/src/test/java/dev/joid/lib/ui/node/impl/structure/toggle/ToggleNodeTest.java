@@ -58,7 +58,7 @@ public class ToggleNodeTest {
 		Assert.assertSame(music, toggle.getSignal());
 		this.bridges.open(new NodeUI(toggle)).frame();
 		this.click(110D, 110D);
-		Assert.assertFalse(music.getOrDefault());
+		Assert.assertFalse(music.get());
 		music.set(true);
 		Assert.assertTrue(toggle.isToggle());
 		Assert.assertEquals(Arrays.asList(false, true), changes);
@@ -71,8 +71,8 @@ public class ToggleNodeTest {
 		final Toggle toggle = new Toggle().state("on", 0).signal(music).signal(sounds);
 		this.bridges.open(new NodeUI(toggle)).frame();
 		toggle.toggle(true);
-		Assert.assertTrue(sounds.getOrDefault());
-		Assert.assertFalse(music.getOrDefault());
+		Assert.assertTrue(sounds.get());
+		Assert.assertFalse(music.get());
 		music.set(true);
 		music.set(false);
 		Assert.assertTrue(toggle.isToggle());
@@ -103,7 +103,7 @@ public class ToggleNodeTest {
 		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange((node, value) -> changes.add(value));
 		toggle.toggle(true);
 		toggle.toggle(true);
-		Assert.assertTrue(music.getOrDefault());
+		Assert.assertTrue(music.get());
 		Assert.assertEquals(Arrays.asList(true), changes);
 	}
 

@@ -50,19 +50,19 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public boolean contains(final E e) {
-		return this.getOrDefault().contains(e);
+		return this.get().contains(e);
 	}
 
 	public E get(final int index) {
-		return this.getOrDefault().get(index);
+		return this.get().get(index);
 	}
 
 	public int indexOf(final E e) {
-		return this.getOrDefault().indexOf(e);
+		return this.get().indexOf(e);
 	}
 
 	public boolean isEmpty() {
-		return this.getOrDefault().isEmpty();
+		return this.get().isEmpty();
 	}
 
 	public E set(final int index, final E element) {
@@ -72,20 +72,20 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public int size() {
-		return this.getOrDefault().size();
+		return this.get().size();
 	}
 
 	private List<E> mutable() {
 		if (!this.isPresent()) {
-			this.silent().set(this.getOrDefault() == null ? new ArrayList<>() : new ArrayList<>(this.getOrDefault()));
+			this.silent().set(this.peek() == null ? new ArrayList<>() : new ArrayList<>(this.peek()));
 		}
 
-		return this.getOrDefault();
+		return this.peek();
 	}
 
 	@Override
 	public String toString() {
-		return this.getOrDefault() == null ? "ListSignal{null}" : "ListSignal{" + this.getOrDefault().toString() + "}";
+		return this.peek() == null ? "ListSignal{null}" : "ListSignal{" + this.peek().toString() + "}";
 	}
 
 }

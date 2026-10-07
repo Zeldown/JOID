@@ -166,7 +166,7 @@ public class UITest {
 		Assert.assertEquals(1920D, ui.getWidth(), 0D);
 		Assert.assertEquals(1080D, ui.getHeight(), 0D);
 		Assert.assertEquals(0.5D, ui.getView().getZoom(), 0D);
-		Assert.assertEquals(0.5D, ui.getZoomLevel().getOrDefault(), 0D);
+		Assert.assertEquals(0.5D, ui.getZoomLevel().get(), 0D);
 	}
 
 	@Test
@@ -374,15 +374,15 @@ public class UITest {
 		ui.load(1920D, 1080D);
 		ui.zoom(0.5D);
 		Assert.assertEquals(0.5D, ui.getView().getZoom(), 0D);
-		Assert.assertEquals(0.5D, ui.getZoomLevel().getOrDefault(), 0D);
-		Assert.assertEquals(3840D, ui.getScaledWidth().getOrDefault(), 0D);
-		Assert.assertEquals(2160D, ui.getScaledHeight().getOrDefault(), 0D);
+		Assert.assertEquals(0.5D, ui.getZoomLevel().get(), 0D);
+		Assert.assertEquals(3840D, ui.getScaledWidth().get(), 0D);
+		Assert.assertEquals(2160D, ui.getScaledHeight().get(), 0D);
 		ui.zoom(0.01D);
 		Assert.assertEquals(0.1D, ui.getView().getZoom(), 0D);
 		ui.zoom(3D);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
-		Assert.assertEquals(1920D, ui.getScaledWidth().getOrDefault(), 0D);
-		Assert.assertEquals(1080D, ui.getScaledHeight().getOrDefault(), 0D);
+		Assert.assertEquals(1920D, ui.getScaledWidth().get(), 0D);
+		Assert.assertEquals(1080D, ui.getScaledHeight().get(), 0D);
 	}
 
 	@Test
@@ -809,8 +809,8 @@ public class UITest {
 			this.bridges.move(0D, 0D).frame();
 			bridge.draw();
 			Assert.assertEquals(0.5D, ui.getView().getInterfaceScale(), 0D);
-			Assert.assertEquals(3840D, ui.getScaledWidth().getOrDefault(), 0D);
-			Assert.assertEquals(2160D, ui.getScaledHeight().getOrDefault(), 0D);
+			Assert.assertEquals(3840D, ui.getScaledWidth().get(), 0D);
+			Assert.assertEquals(2160D, ui.getScaledHeight().get(), 0D);
 			Assert.assertEquals(-960D, ui.getMouseX(), 0D);
 			Assert.assertEquals(-540D, ui.getMouseY(), 0D);
 			final Draw draw = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).get(0);
@@ -820,7 +820,7 @@ public class UITest {
 			Assert.assertEquals(565D, draw.getBottom(), 0.001D);
 			ui.zoom(3D);
 			Assert.assertEquals(2D, ui.getView().getZoom(), 0D);
-			Assert.assertEquals(1920D, ui.getScaledWidth().getOrDefault(), 0D);
+			Assert.assertEquals(1920D, ui.getScaledWidth().get(), 0D);
 		} finally {
 			BridgeHandler.UI.unregister(bridge);
 		}

@@ -1187,9 +1187,9 @@ public class MultilineTextFieldNodeTest {
 		final Signal<String> signal = new Signal<>("a\r\nb");
 		final MultilineTextFieldNode field = this.field("").onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
 		Assert.assertEquals("a\nb", field.getText());
-		Assert.assertEquals("a\nb", signal.getOrDefault());
+		Assert.assertEquals("a\nb", signal.get());
 		this.press(field, Key.ENTER);
-		Assert.assertEquals("\na\nb", signal.getOrDefault());
+		Assert.assertEquals("\na\nb", signal.get());
 		signal.set("c");
 		Assert.assertEquals("c", field.getText());
 		Assert.assertEquals(Arrays.asList("a\nb", "\na\nb", "c"), changes);

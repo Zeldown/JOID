@@ -107,11 +107,11 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")), Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
 				.watch(this.inspectSignal)
 				.<ResourceNode>onInit(node -> {
-					node.color(this.inspectSignal.getOrDefault() ? DevNode.ACTION : DevNode.WHITE);
+					node.color(this.inspectSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
 					node.hoveredColor(node.getColor().darker(0.3F));
 				})
 				.onClick((node, mouseX, mouseY, clickType) -> {
-					this.inspectSignal.set(!this.inspectSignal.getOrDefault());
+					this.inspectSignal.set(!this.inspectSignal.peek());
 					this.inspectedNode.set(null);
 					this.inspectedNodeLocked.set(false);
 					this.inspectedNodeLocked.publish();
@@ -138,11 +138,11 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")), Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")))
 				.watch(this.eyeSignal)
 				.<ResourceNode>onInit(node -> {
-					node.color(this.eyeSignal.getOrDefault() ? DevNode.ACTION : DevNode.WHITE);
+					node.color(this.eyeSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
 					node.hoveredColor(node.getColor().darker(0.3F));
 				})
 				.onClick((node, mouseX, mouseY, clickType) -> {
-					this.eyeSignal.set(!this.eyeSignal.getOrDefault());
+					this.eyeSignal.set(!this.eyeSignal.peek());
 				})
 				.hover(() -> "[U] Update")
 				.attach(flex);
@@ -152,11 +152,11 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")), Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
 				.watch(this.gridSignal)
 				.<ResourceNode>onInit(node -> {
-					node.color(this.gridSignal.getOrDefault() ? DevNode.ACTION : DevNode.WHITE);
+					node.color(this.gridSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
 					node.hoveredColor(node.getColor().darker(0.3F));
 				})
 				.onClick((node, mouseX, mouseY, clickType) -> {
-					this.gridSignal.set(!this.gridSignal.getOrDefault());
+					this.gridSignal.set(!this.gridSignal.peek());
 				})
 				.hover(() -> "[G] Grid")
 				.attach(flex);
@@ -174,18 +174,18 @@ public final class DevNode extends Node {
 		RectNode
 		.create(0, super.getHeight() - super.getDefaultHeight(), super.getWidth(), 2)
 		.color(DevNode.LIGHT_BLACK)
-		.visible(node -> this.inspectedNodeLocked.getOrDefault())
+		.visible(node -> this.inspectedNodeLocked.peek())
 		.attach(this);
 
 		ContainerNode
 		.create(0, 0, super.getWidth(), super.getHeight() - super.getDefaultHeight())
 		.onInit(node -> {
 			node.size(super.getWidth(), super.getHeight() - super.getDefaultHeight());
-			if (!this.inspectedNodeLocked.getOrDefault()) {
+			if (!this.inspectedNodeLocked.peek()) {
 				return;
 			}
 
-			final Node inspectedNode = this.inspectedNode.getOrDefault();
+			final Node inspectedNode = this.inspectedNode.peek();
 
 			RectNode
 			.create(0, 53, node.getWidth(), 2)
@@ -375,7 +375,7 @@ public final class DevNode extends Node {
 			.attach(node);
 		})
 		.watch(this.inspectedNodeLocked, WatchProperty.CLEAR_CHILDREN, WatchProperty.RELOAD)
-		.visible(node -> this.inspectedNodeLocked.getOrDefault())
+		.visible(node -> this.inspectedNodeLocked.peek())
 		.attach(this);
 
 		TextNode
@@ -395,8 +395,8 @@ public final class DevNode extends Node {
 			this.reloadSignal.set(newReloadAnimatorValue > 0F);
 		}
 
-		if (this.inspectSignal.getOrDefault()) {
-			if (!this.inspectedNodeLocked.getOrDefault()) {
+		if (this.inspectSignal.peek()) {
+			if (!this.inspectedNodeLocked.peek()) {
 				this.inspectedNode.set(null);
 				for (final Node node : UI.isCtrlKeyDown() ? super.getUi().getNodeList().recursive() : super.getUi().getNodeList().recursive().reversed()) {
 					if (!node.isHovered(mouseX, mouseY, false) || node instanceof DevNode || this.getChildren().recursive().contains(node)) {
@@ -408,11 +408,11 @@ public final class DevNode extends Node {
 				}
 			}
 
-			if (this.inspectedNode.getOrDefault() != null) {
-				this.targetInspectX = this.inspectedNode.getOrDefault().getAbsoluteX();
-				this.targetInspectY = this.inspectedNode.getOrDefault().getAbsoluteY();
-				this.targetInspectWidth = this.inspectedNode.getOrDefault().getWidth();
-				this.targetInspectHeight = this.inspectedNode.getOrDefault().getHeight();
+			if (this.inspectedNode.peek() != null) {
+				this.targetInspectX = this.inspectedNode.peek().getAbsoluteX();
+				this.targetInspectY = this.inspectedNode.peek().getAbsoluteY();
+				this.targetInspectWidth = this.inspectedNode.peek().getWidth();
+				this.targetInspectHeight = this.inspectedNode.peek().getHeight();
 			}
 
 			this.inspectX = super.getUi().lerpByFramerate(this.inspectX, this.targetInspectX, 0.5D, 0.5D, true);
@@ -420,22 +420,22 @@ public final class DevNode extends Node {
 			this.inspectWidth = super.getUi().lerpByFramerate(this.inspectWidth, this.targetInspectWidth, 0.5D, 0.5D, true);
 			this.inspectHeight = super.getUi().lerpByFramerate(this.inspectHeight, this.targetInspectHeight, 0.5D, 0.5D, true);
 
-			if (this.inspectedNode.getOrDefault() != null) {
-				this.drawInfoBox(this.inspectX, this.inspectY, this.inspectWidth, this.inspectHeight, DevNode.ACTION, 1F, this.inspectedNode.getOrDefault());
+			if (this.inspectedNode.peek() != null) {
+				this.drawInfoBox(this.inspectX, this.inspectY, this.inspectWidth, this.inspectHeight, DevNode.ACTION, 1F, this.inspectedNode.peek());
 			}
 		}
 
-		if (super.getHeight() == super.getDefaultHeight() && this.inspectedNodeLocked.getOrDefault()) {
+		if (super.getHeight() == super.getDefaultHeight() && this.inspectedNodeLocked.peek()) {
 			super.width(super.getDefaultWidth() + 200);
 			super.height(super.getDefaultHeight() + 220);
 			super.reload();
-		} else if (super.getHeight() != super.getDefaultHeight() && !this.inspectedNodeLocked.getOrDefault()) {
+		} else if (super.getHeight() != super.getDefaultHeight() && !this.inspectedNodeLocked.peek()) {
 			super.width(super.getDefaultWidth());
 			super.height(super.getDefaultHeight());
 			super.reload();
 		}
 
-		if (this.eyeSignal.getOrDefault()) {
+		if (this.eyeSignal.peek()) {
 			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 			final long duration = 2000L;
 			for (final Node node : super.getUi().getNodeList().recursive()) {
@@ -458,7 +458,7 @@ public final class DevNode extends Node {
 			}
 		}
 
-		if (this.gridSignal.getOrDefault()) {
+		if (this.gridSignal.peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, new Vector2d(1920 / 2 - 1, 0), new Vector2d(1920 / 2 + 1, 1080));
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, new Vector2d(0, 1080 / 2 - 1), new Vector2d(1920, 1080 / 2 + 1));
@@ -485,19 +485,19 @@ public final class DevNode extends Node {
 			return;
 		}
 
-		if (this.inspectSignal.getOrDefault() && this.inspectedNode.getOrDefault() != null) {
-			if (clickType.isLeft() && !this.inspectedNodeLocked.getOrDefault()) {
+		if (this.inspectSignal.peek() && this.inspectedNode.peek() != null) {
+			if (clickType.isLeft() && !this.inspectedNodeLocked.peek()) {
 				this.inspectedNodeLocked.set(true);
 				this.inspectedNodeLocked.publish();
 				context.cancel();
-			} else if (clickType.isRight() && this.inspectedNodeLocked.getOrDefault()) {
+			} else if (clickType.isRight() && this.inspectedNodeLocked.peek()) {
 				this.inspectedNodeLocked.set(false);
 				this.inspectedNodeLocked.publish();
 				context.cancel();
 			}
 		}
 
-		if (clickType.isRight() && this.gridSignal.getOrDefault()) {
+		if (clickType.isRight() && this.gridSignal.peek()) {
 			this.gridColorIndex = (this.gridColorIndex + 1) % DevNode.GRID_COLORS.length;
 		}
 	}
@@ -509,7 +509,7 @@ public final class DevNode extends Node {
 		}
 
 		if (key == Key.I) {
-			this.inspectSignal.set(!this.inspectSignal.getOrDefault());
+			this.inspectSignal.set(!this.inspectSignal.peek());
 			this.inspectedNode.set(null);
 			this.inspectedNodeLocked.set(false);
 			this.inspectedNodeLocked.publish();
@@ -522,20 +522,20 @@ public final class DevNode extends Node {
 		}
 
 		if (key == Key.U) {
-			this.eyeSignal.set(!this.eyeSignal.getOrDefault());
+			this.eyeSignal.set(!this.eyeSignal.peek());
 			return;
 		}
 
 		if (key == Key.G) {
-			this.gridSignal.set(!this.gridSignal.getOrDefault());
+			this.gridSignal.set(!this.gridSignal.peek());
 			return;
 		}
 
-		if (key != Key.NUMPAD_ENTER && key != Key.ENTER || this.inspectedNode.getOrDefault() == null || this.inspectedNode.getOrDefault().getParent() == null) {
+		if (key != Key.NUMPAD_ENTER && key != Key.ENTER || this.inspectedNode.peek() == null || this.inspectedNode.peek().getParent() == null) {
 			return;
 		}
 
-		this.inspectedNode.set(this.inspectedNode.getOrDefault().getParent());
+		this.inspectedNode.set(this.inspectedNode.peek().getParent());
 		this.inspectedNodeLocked.set(true);
 		this.inspectedNodeLocked.publish();
 	}

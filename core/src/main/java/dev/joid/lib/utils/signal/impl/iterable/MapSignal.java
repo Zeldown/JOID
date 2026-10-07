@@ -30,23 +30,23 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public boolean containsKey(final K key) {
-		return this.getOrDefault().containsKey(key);
+		return this.get().containsKey(key);
 	}
 
 	public Set<Entry<K, V>> entrySet() {
-		return this.getOrDefault().entrySet();
+		return this.get().entrySet();
 	}
 
 	public V get(final K key) {
-		return this.getOrDefault().get(key);
+		return this.get().get(key);
 	}
 
 	public boolean isEmpty() {
-		return this.getOrDefault().isEmpty();
+		return this.get().isEmpty();
 	}
 
 	public Set<K> keySet() {
-		return this.getOrDefault().keySet();
+		return this.get().keySet();
 	}
 
 	public V put(final K key, final V value) {
@@ -62,24 +62,24 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public int size() {
-		return this.getOrDefault().size();
+		return this.get().size();
 	}
 
 	public Collection<V> values() {
-		return this.getOrDefault().values();
+		return this.get().values();
 	}
 
 	private Map<K, V> mutable() {
 		if (!this.isPresent()) {
-			this.silent().set(this.getOrDefault() == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.getOrDefault()));
+			this.silent().set(this.peek() == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.peek()));
 		}
 
-		return this.getOrDefault();
+		return this.peek();
 	}
 
 	@Override
 	public String toString() {
-		return this.getOrDefault() == null ? "MapSignal{null}" : "MapSignal{" + this.getOrDefault().toString() + "}";
+		return this.peek() == null ? "MapSignal{null}" : "MapSignal{" + this.peek().toString() + "}";
 	}
 
 }

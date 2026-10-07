@@ -19,17 +19,17 @@ public class DoubleSignal extends Signal<Double> {
 	}
 
 	public void add(final double value) {
-		final double updatedValue = this.getOrDefault() + value;
+		final double updatedValue = this.peek() + value;
 		this.set(updatedValue);
 	}
 
 	public void subtract(final double value) {
-		final double updatedValue = this.getOrDefault() - value;
+		final double updatedValue = this.peek() - value;
 		this.set(updatedValue);
 	}
 
 	public void multiply(final double value) {
-		final double updatedValue = this.getOrDefault() * value;
+		final double updatedValue = this.peek() * value;
 		this.set(updatedValue);
 	}
 
@@ -37,23 +37,23 @@ public class DoubleSignal extends Signal<Double> {
 		if (value == 0) {
 			throw new ArithmeticException("Division by zero");
 		}
-		final double updatedValue = this.getOrDefault() / value;
+		final double updatedValue = this.peek() / value;
 		this.set(updatedValue);
 	}
 
 	public void decrement() {
-		final double updatedValue = this.getOrDefault() - 1;
+		final double updatedValue = this.peek() - 1;
 		this.set(updatedValue);
 	}
 
 	public void increment() {
-		final double updatedValue = this.getOrDefault() + 1;
+		final double updatedValue = this.peek() + 1;
 		this.set(updatedValue);
 	}
 
 	@Override
 	public String toString() {
-		return this.getOrDefault() == null ? "DoubleSignal{null}" : "DoubleSignal{" + this.getOrDefault().toString() + "}";
+		return this.peek() == null ? "DoubleSignal{null}" : "DoubleSignal{" + this.peek().toString() + "}";
 	}
 
 }

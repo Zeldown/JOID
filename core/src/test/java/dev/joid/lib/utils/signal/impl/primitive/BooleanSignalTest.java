@@ -13,21 +13,21 @@ public class BooleanSignalTest {
 	public void startsFalse() {
 		final BooleanSignal signal = new BooleanSignal();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertFalse(signal.getOrDefault());
+		Assert.assertFalse(signal.get());
 	}
 
 	@Test
 	public void fallsBackOnTheGivenDefault() {
 		final BooleanSignal signal = new BooleanSignal(true);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertTrue(signal.getOrDefault());
+		Assert.assertTrue(signal.get());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final BooleanSignal signal = BooleanSignal.of(true);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertTrue(signal.getOrDefault());
+		Assert.assertTrue(signal.get());
 	}
 
 	@Test
@@ -36,9 +36,9 @@ public class BooleanSignalTest {
 		final BooleanSignal signal = new BooleanSignal();
 		signal.subscribe(received::add);
 		signal.toggle();
-		Assert.assertTrue(signal.getOrDefault());
+		Assert.assertTrue(signal.get());
 		signal.toggle();
-		Assert.assertFalse(signal.getOrDefault());
+		Assert.assertFalse(signal.get());
 		Assert.assertEquals(Arrays.asList(true, false), received);
 	}
 
@@ -47,7 +47,7 @@ public class BooleanSignalTest {
 		final BooleanSignal signal = new BooleanSignal(true);
 		signal.toggle();
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertFalse(signal.getOrDefault());
+		Assert.assertFalse(signal.get());
 	}
 
 	@Test

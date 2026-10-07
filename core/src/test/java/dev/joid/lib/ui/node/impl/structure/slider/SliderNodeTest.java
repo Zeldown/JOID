@@ -102,7 +102,7 @@ public class SliderNodeTest {
 		Assert.assertTrue(slider.getCursor().isDragging());
 		Assert.assertEquals(7, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(7), changes);
-		Assert.assertEquals(7, signal.getOrDefault().intValue());
+		Assert.assertEquals(7, signal.get().intValue());
 		Assert.assertSame(signal, slider.getSignal());
 	}
 
@@ -127,8 +127,8 @@ public class SliderNodeTest {
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.value(7);
 		this.bridges.frame();
-		Assert.assertEquals(7, balance.getOrDefault().intValue());
-		Assert.assertEquals(5, volume.getOrDefault().intValue());
+		Assert.assertEquals(7, balance.get().intValue());
+		Assert.assertEquals(5, volume.get().intValue());
 		volume.set(2);
 		this.bridges.frame();
 		Assert.assertEquals(7, slider.getValue().intValue());
@@ -161,7 +161,7 @@ public class SliderNodeTest {
 		slider.value(3);
 		slider.value(3);
 		this.bridges.frame();
-		Assert.assertEquals(3, signal.getOrDefault().intValue());
+		Assert.assertEquals(3, signal.get().intValue());
 		Assert.assertEquals(Arrays.asList(3), changes);
 	}
 

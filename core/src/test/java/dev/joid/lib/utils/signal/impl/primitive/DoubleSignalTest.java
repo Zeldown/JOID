@@ -13,21 +13,21 @@ public class DoubleSignalTest {
 	public void startsAtZero() {
 		final DoubleSignal signal = new DoubleSignal();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(0D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(0D, signal.get(), 0D);
 	}
 
 	@Test
 	public void fallsBackOnTheGivenDefault() {
 		final DoubleSignal signal = new DoubleSignal(1.5D);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(1.5D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(1.5D, signal.get(), 0D);
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final DoubleSignal signal = DoubleSignal.of(1.5D);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertEquals(1.5D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(1.5D, signal.get(), 0D);
 	}
 
 	@Test
@@ -35,35 +35,35 @@ public class DoubleSignalTest {
 		final DoubleSignal signal = new DoubleSignal(2D);
 		signal.add(0.5D);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertEquals(2.5D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(2.5D, signal.get(), 0D);
 	}
 
 	@Test
 	public void addsAndSubtracts() {
 		final DoubleSignal signal = DoubleSignal.of(1D);
 		signal.add(2.5D);
-		Assert.assertEquals(3.5D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(3.5D, signal.get(), 0D);
 		signal.subtract(0.25D);
-		Assert.assertEquals(3.25D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(3.25D, signal.get(), 0D);
 	}
 
 	@Test
 	public void incrementsAndDecrements() {
 		final DoubleSignal signal = DoubleSignal.of(0.5D);
 		signal.increment();
-		Assert.assertEquals(1.5D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(1.5D, signal.get(), 0D);
 		signal.decrement();
 		signal.decrement();
-		Assert.assertEquals(-0.5D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(-0.5D, signal.get(), 0D);
 	}
 
 	@Test
 	public void multipliesAndDivides() {
 		final DoubleSignal signal = DoubleSignal.of(3D);
 		signal.multiply(2.5D);
-		Assert.assertEquals(7.5D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(7.5D, signal.get(), 0D);
 		signal.divide(0.5D);
-		Assert.assertEquals(15D, signal.getOrDefault(), 0D);
+		Assert.assertEquals(15D, signal.get(), 0D);
 	}
 
 	@Test(expected = ArithmeticException.class)

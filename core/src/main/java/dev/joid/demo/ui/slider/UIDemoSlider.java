@@ -20,14 +20,14 @@ public class UIDemoSlider extends UIDemo {
 		TextNode
 		.create(1920 / 2, 1080 / 2 - 70)
 		.text(Text.create("", TextInfo.create(DemoFont.MONTSERRAT, 25).color(Color.WHITE), Align.CENTER).modifier(TextModifier.UPPER_CASE))
-		.<TextNode>onInit(node -> node.getText().text("value: " + valueSignal.getOrDefault()))
+		.<TextNode>onInit(node -> node.getText().text("value: " + valueSignal.get()))
 		.watch(valueSignal)
 		.anchorX(Align.CENTER)
 		.attach(this);
 
 		DemoIntegerSliderNode
 		.create(1920 / 2 - 200, 1080 / 2 - 25, 400, 50)
-		.values(1, 9, valueSignal.getOrDefault())
+		.values(1, 9, valueSignal.get())
 		.onChange((node, value) -> System.out.println("value: " + value))
 		.signal(valueSignal)
 		.attach(this);

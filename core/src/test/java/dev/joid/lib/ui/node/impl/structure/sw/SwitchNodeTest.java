@@ -27,8 +27,8 @@ public class SwitchNodeTest {
 	public void startsOnItsFirstState() {
 		final Switch node = this.open();
 		Assert.assertEquals("low", node.getState());
-		Assert.assertEquals(0, node.getStateIndex().getOrDefault().intValue());
-		Assert.assertEquals(Arrays.asList("low", "medium", "high"), node.getStateList().getOrDefault());
+		Assert.assertEquals(0, node.getStateIndex().get().intValue());
+		Assert.assertEquals(Arrays.asList("low", "medium", "high"), node.getStateList().get());
 	}
 
 	@Test
@@ -36,7 +36,7 @@ public class SwitchNodeTest {
 		final Switch node = this.open();
 		Assert.assertSame(node, node.index("high"));
 		Assert.assertEquals("high", node.getState());
-		Assert.assertEquals(2, node.getStateIndex().getOrDefault().intValue());
+		Assert.assertEquals(2, node.getStateIndex().get().intValue());
 		Assert.assertEquals(Arrays.asList("high"), this.changes);
 	}
 
@@ -55,7 +55,7 @@ public class SwitchNodeTest {
 		Assert.assertSame(node, node.signal(quality));
 		Assert.assertEquals("high", node.getState());
 		node.index("low");
-		Assert.assertEquals("low", quality.getOrDefault());
+		Assert.assertEquals("low", quality.get());
 		quality.set("medium");
 		Assert.assertEquals("medium", node.getState());
 		Assert.assertEquals(Arrays.asList("high", "low", "medium"), this.changes);
@@ -68,8 +68,8 @@ public class SwitchNodeTest {
 		final Signal<String> shadows = new Signal<>("medium");
 		node.signal(quality).signal(shadows);
 		node.index("low");
-		Assert.assertEquals("low", shadows.getOrDefault());
-		Assert.assertEquals("high", quality.getOrDefault());
+		Assert.assertEquals("low", shadows.get());
+		Assert.assertEquals("high", quality.get());
 		quality.set("medium");
 		Assert.assertEquals("low", node.getState());
 		Assert.assertSame(shadows, node.getSignal());
@@ -105,7 +105,7 @@ public class SwitchNodeTest {
 		final Switch node = this.open();
 		Assert.assertSame(node, node.state(Arrays.asList("off", "eco", "on"), "eco"));
 		Assert.assertEquals("eco", node.getState());
-		Assert.assertEquals(1, node.getStateIndex().getOrDefault().intValue());
+		Assert.assertEquals(1, node.getStateIndex().get().intValue());
 	}
 
 	@Test
@@ -143,8 +143,8 @@ public class SwitchNodeTest {
 		final List<String> states = new ArrayList<>(Arrays.asList("off", "on"));
 		node.state(states, 1);
 		states.add("eco");
-		Assert.assertEquals(Arrays.asList("off", "on"), node.getStateList().getOrDefault());
-		Assert.assertNotSame(states, node.getStateList().getOrDefault());
+		Assert.assertEquals(Arrays.asList("off", "on"), node.getStateList().get());
+		Assert.assertNotSame(states, node.getStateList().get());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

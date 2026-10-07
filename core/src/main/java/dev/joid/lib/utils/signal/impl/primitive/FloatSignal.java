@@ -19,17 +19,17 @@ public class FloatSignal extends Signal<Float> {
 	}
 
 	public void add(final float value) {
-		final float updatedValue = this.getOrDefault() + value;
+		final float updatedValue = this.peek() + value;
 		this.set(updatedValue);
 	}
 
 	public void subtract(final float value) {
-		final float updatedValue = this.getOrDefault() - value;
+		final float updatedValue = this.peek() - value;
 		this.set(updatedValue);
 	}
 
 	public void multiply(final float value) {
-		final float updatedValue = this.getOrDefault() * value;
+		final float updatedValue = this.peek() * value;
 		this.set(updatedValue);
 	}
 
@@ -37,23 +37,23 @@ public class FloatSignal extends Signal<Float> {
 		if (value == 0F) {
 			throw new ArithmeticException("Division by zero");
 		}
-		final float updatedValue = this.getOrDefault() / value;
+		final float updatedValue = this.peek() / value;
 		this.set(updatedValue);
 	}
 
 	public void decrement() {
-		final float updatedValue = this.getOrDefault() - 1F;
+		final float updatedValue = this.peek() - 1F;
 		this.set(updatedValue);
 	}
 
 	public void increment() {
-		final float updatedValue = this.getOrDefault() + 1F;
+		final float updatedValue = this.peek() + 1F;
 		this.set(updatedValue);
 	}
 
 	@Override
 	public String toString() {
-		return this.getOrDefault() == null ? "FloatSignal{null}" : "FloatSignal{" + this.getOrDefault().toString() + "}";
+		return this.peek() == null ? "FloatSignal{null}" : "FloatSignal{" + this.peek().toString() + "}";
 	}
 
 }

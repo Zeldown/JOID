@@ -133,11 +133,6 @@ public class Signal<T> implements ISignal<T> {
 		return this.value != null ? this.value : this.defaultValue;
 	}
 
-	@Override
-	public T getOrDefault() {
-		return this.get();
-	}
-
 	public @NonNull Set<@NonNull SignalSubscriber<@NonNull T>> getEventSet() {
 		return this.eventSet;
 	}

@@ -23,7 +23,7 @@ public class SignalContextTest {
 		final Signal<String> first = Signal.of("a");
 		final Signal<String> second = Signal.of("b");
 		first.get();
-		second.getOrDefault();
+		second.get();
 		first.isPresent();
 		Assert.assertEquals(Arrays.asList(first, second, first), SignalContext.current().takeReads());
 		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());

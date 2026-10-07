@@ -19,12 +19,12 @@ public class BooleanSignal extends Signal<Boolean> {
 	}
 
 	public void toggle() {
-		this.set(!this.getOrDefault());
+		this.set(!this.peek());
 	}
 
 	@Override
 	public String toString() {
-		return this.getOrDefault() == null ? "BooleanSignal{null}" : "BooleanSignal{" + this.getOrDefault().toString() + "}";
+		return this.peek() == null ? "BooleanSignal{null}" : "BooleanSignal{" + this.peek().toString() + "}";
 	}
 
 }

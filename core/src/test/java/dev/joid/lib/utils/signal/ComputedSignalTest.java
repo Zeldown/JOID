@@ -393,7 +393,7 @@ public class ComputedSignalTest {
 		final Signal<String> name = new Signal<>();
 		final ComputedSignal<String> upper = name.map(value -> value == null ? null : value.toUpperCase());
 		Assert.assertFalse(upper.isPresent());
-		Assert.assertNull(upper.getOrDefault());
+		Assert.assertNull(upper.get());
 		name.set("joid");
 		Assert.assertTrue(upper.isPresent());
 		Assert.assertEquals("JOID", upper.peek());

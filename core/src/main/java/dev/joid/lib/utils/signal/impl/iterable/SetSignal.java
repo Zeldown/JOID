@@ -45,28 +45,28 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	public boolean contains(final E e) {
-		return this.getOrDefault().contains(e);
+		return this.get().contains(e);
 	}
 
 	public boolean isEmpty() {
-		return this.getOrDefault().isEmpty();
+		return this.get().isEmpty();
 	}
 
 	public int size() {
-		return this.getOrDefault().size();
+		return this.get().size();
 	}
 
 	private Set<E> mutable() {
 		if (!this.isPresent()) {
-			this.silent().set(this.getOrDefault() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(this.getOrDefault()));
+			this.silent().set(this.peek() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(this.peek()));
 		}
 
-		return this.getOrDefault();
+		return this.peek();
 	}
 
 	@Override
 	public String toString() {
-		return this.getOrDefault() == null ? "SetSignal{null}" : "SetSignal{" + this.getOrDefault().toString() + "}";
+		return this.peek() == null ? "SetSignal{null}" : "SetSignal{" + this.peek().toString() + "}";
 	}
 
 }

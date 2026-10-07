@@ -53,7 +53,7 @@ public class CheckboxNodeTest {
 		Assert.assertSame(subtitles, checkbox.getSignal());
 		this.bridges.open(new NodeUI(checkbox)).frame();
 		this.click(110D, 110D);
-		Assert.assertFalse(subtitles.getOrDefault());
+		Assert.assertFalse(subtitles.get());
 		subtitles.set(true);
 		Assert.assertTrue(checkbox.isChecked());
 		Assert.assertEquals(Arrays.asList(false, true), changes);
@@ -82,8 +82,8 @@ public class CheckboxNodeTest {
 		final ContainerNode container = ContainerNode.create(0D, 0D, 200D, 200D).append(checkbox);
 		this.bridges.open(new NodeUI(container)).frame();
 		checkbox.checked(true);
-		Assert.assertTrue(captions.getOrDefault());
-		Assert.assertFalse(subtitles.getOrDefault());
+		Assert.assertTrue(captions.get());
+		Assert.assertFalse(subtitles.get());
 		subtitles.set(true);
 		subtitles.set(false);
 		Assert.assertTrue(checkbox.isChecked());
@@ -120,7 +120,7 @@ public class CheckboxNodeTest {
 		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange((node, value) -> changes.add(value));
 		checkbox.checked(true);
 		checkbox.checked(true);
-		Assert.assertTrue(subtitles.getOrDefault());
+		Assert.assertTrue(subtitles.get());
 		Assert.assertEquals(Arrays.asList(true), changes);
 	}
 

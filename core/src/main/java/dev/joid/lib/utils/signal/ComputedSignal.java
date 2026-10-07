@@ -267,7 +267,7 @@ public class ComputedSignal<T> extends Signal<T> {
 
 	@Override
 	public String toString() {
-		return super.getOrDefault() == null ? "ComputedSignal{null}" : "ComputedSignal{" + super.getOrDefault().toString() + "}";
+		return this.peek() == null ? "ComputedSignal{null}" : "ComputedSignal{" + this.peek().toString() + "}";
 	}
 
 }

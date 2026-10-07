@@ -134,14 +134,14 @@ public class IntegerFieldNodeTest {
 		Assert.assertEquals(7, (int) field.getValue());
 		signal.set(42);
 		Assert.assertEquals("10", field.getText());
-		Assert.assertEquals(10, (int) signal.getOrDefault());
+		Assert.assertEquals(10, (int) signal.get());
 		field.value(3);
-		Assert.assertEquals(3, (int) signal.getOrDefault());
+		Assert.assertEquals(3, (int) signal.get());
 		field.focused(true).text("");
-		Assert.assertEquals(5, (int) signal.getOrDefault());
+		Assert.assertEquals(5, (int) signal.get());
 		Assert.assertEquals("", field.getText());
 		field.keyPressed('8', Key.DIGIT_8, InternalContext.create());
-		Assert.assertEquals(8, (int) signal.getOrDefault());
+		Assert.assertEquals(8, (int) signal.get());
 		Assert.assertEquals(Arrays.asList("7", "10", "3", "", "8"), changes);
 	}
 
@@ -154,9 +154,9 @@ public class IntegerFieldNodeTest {
 		Assert.assertSame(signal, field.getSignal());
 		signal.set(12);
 		Assert.assertEquals(10, (int) field.getValue());
-		Assert.assertEquals(10, (int) signal.getOrDefault());
+		Assert.assertEquals(10, (int) signal.get());
 		field.value(6);
-		Assert.assertEquals(6, (int) signal.getOrDefault());
+		Assert.assertEquals(6, (int) signal.get());
 	}
 
 	@Test

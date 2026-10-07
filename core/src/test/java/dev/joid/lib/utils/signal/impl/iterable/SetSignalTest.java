@@ -16,7 +16,7 @@ public class SetSignalTest {
 	public void startsEmptyWithoutDefault() {
 		final SetSignal<String> signal = new SetSignal<>();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.getOrDefault());
+		Assert.assertNull(signal.get());
 	}
 
 	@Test
@@ -24,14 +24,14 @@ public class SetSignalTest {
 		final Set<String> set = new HashSet<>(Arrays.asList("a", "b"));
 		final SetSignal<String> signal = new SetSignal<>(set);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertSame(set, signal.getOrDefault());
+		Assert.assertSame(set, signal.get());
 	}
 
 	@Test
 	public void copiesAGivenCollectionWithoutDuplicates() {
 		final List<String> source = new ArrayList<>(Arrays.asList("a", "b", "a"));
 		final SetSignal<String> signal = new SetSignal<>(source);
-		Assert.assertEquals(new HashSet<>(Arrays.asList("a", "b")), signal.getOrDefault());
+		Assert.assertEquals(new HashSet<>(Arrays.asList("a", "b")), signal.get());
 		signal.add("c");
 		Assert.assertEquals(Arrays.asList("a", "b", "a"), source);
 	}
@@ -41,7 +41,7 @@ public class SetSignalTest {
 		final Set<String> set = new HashSet<>(Arrays.asList("a", "b"));
 		final SetSignal<String> signal = SetSignal.of(set);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertSame(set, signal.getOrDefault());
+		Assert.assertSame(set, signal.get());
 	}
 
 	@Test

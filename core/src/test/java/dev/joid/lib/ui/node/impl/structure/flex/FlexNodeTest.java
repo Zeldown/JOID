@@ -172,7 +172,7 @@ public class FlexNodeTest {
 	public void laysOutTheChildrenRebuiltByAWatchedBody() {
 		final Signal<Integer> count = new Signal<>(1);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).margin(10D).watch(count, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY).body(node -> {
-			for (int i = 0; i < count.getOrDefault(); i++) {
+			for (int i = 0; i < count.get(); i++) {
 				RectNode.create(0D, 0D, 100D, 50D).attach(node);
 			}
 		});

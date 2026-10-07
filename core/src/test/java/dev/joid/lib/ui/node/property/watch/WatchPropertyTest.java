@@ -104,7 +104,7 @@ public class WatchPropertyTest {
 		@Override
 		public void init() {
 			this.node = RectNode.create(0D, 0D, 100D, 100D).watch(this.count, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY).body(node -> {
-				for (int i = 0; i < this.count.getOrDefault(); i++) {
+				for (int i = 0; i < this.count.get(); i++) {
 					RectNode.create(0D, i * 10D, 10D, 10D).attach(node);
 				}
 			});

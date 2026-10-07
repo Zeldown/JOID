@@ -65,25 +65,25 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final int index) {
-		if (this.stateList.getOrDefault() == null || index < 0 || index >= this.stateList.size()) {
-			throw new IllegalArgumentException("The index " + index + " is out of the state list " + this.stateList.getOrDefault());
+		if (this.stateList.peek() == null || index < 0 || index >= this.stateList.size()) {
+			throw new IllegalArgumentException("The index " + index + " is out of the state list " + this.stateList.peek());
 		}
 
-		this.change(this.stateList.getOrDefault(), index, this.getState());
+		this.change(this.stateList.peek(), index, this.getState());
 		return (T) this;
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final @NonNull String state) {
-		if (this.stateList.getOrDefault() == null || !this.stateList.contains(state)) {
-			throw new IllegalArgumentException("The state " + state + " is not in the state list " + this.stateList.getOrDefault());
+		if (this.stateList.peek() == null || !this.stateList.contains(state)) {
+			throw new IllegalArgumentException("The state " + state + " is not in the state list " + this.stateList.peek());
 		}
 
-		this.change(this.stateList.getOrDefault(), this.stateList.indexOf(state), this.getState());
+		this.change(this.stateList.peek(), this.stateList.indexOf(state), this.getState());
 		return (T) this;
 	}
 
 	public final @NonNull String getState() {
-		return this.stateList.get(this.stateIndex.getOrDefault());
+		return this.stateList.get(this.stateIndex.get());
 	}
 
 	public final <T extends SwitchNode> @NonNull T signal(final @NonNull Signal<String> signal) {
@@ -102,7 +102,7 @@ public abstract class SwitchNode extends Node {
 	}
 
 	private void configure(final List<String> stateList, final int index) {
-		final String previous = this.stateList.getOrDefault() == null || this.stateList.isEmpty() ? null : this.getState();
+		final String previous = this.stateList.peek() == null || this.stateList.isEmpty() ? null : this.getState();
 		this.change(stateList, index, previous);
 	}
 

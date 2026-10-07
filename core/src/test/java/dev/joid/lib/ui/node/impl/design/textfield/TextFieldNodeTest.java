@@ -1089,14 +1089,14 @@ public class TextFieldNodeTest {
 		final TextFieldNode field = this.field("").onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
 		Assert.assertEquals("hi", field.getText());
 		this.type(field.cursorPosition(2), "!");
-		Assert.assertEquals("hi!", signal.getOrDefault());
+		Assert.assertEquals("hi!", signal.get());
 		signal.set("yo");
 		Assert.assertEquals("yo", field.getText());
 		signal.set("a	b");
 		Assert.assertEquals("ab", field.getText());
-		Assert.assertEquals("ab", signal.getOrDefault());
+		Assert.assertEquals("ab", signal.get());
 		field.text("cd");
-		Assert.assertEquals("cd", signal.getOrDefault());
+		Assert.assertEquals("cd", signal.get());
 		Assert.assertEquals(Arrays.asList("hi", "hi!", "yo", "ab", "cd"), changes);
 	}
 
@@ -1107,8 +1107,8 @@ public class TextFieldNodeTest {
 		final TextFieldNode field = this.field("").signal(name).signal(nickname);
 		Assert.assertEquals("Al", field.getText());
 		field.text("Sam");
-		Assert.assertEquals("Sam", nickname.getOrDefault());
-		Assert.assertEquals("Alex", name.getOrDefault());
+		Assert.assertEquals("Sam", nickname.get());
+		Assert.assertEquals("Alex", name.get());
 		name.set("Max");
 		Assert.assertEquals("Sam", field.getText());
 		Assert.assertSame(nickname, field.getSignal());

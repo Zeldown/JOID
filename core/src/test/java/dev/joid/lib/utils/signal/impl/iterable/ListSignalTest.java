@@ -16,7 +16,7 @@ public class ListSignalTest {
 	public void startsEmptyWithoutDefault() {
 		final ListSignal<String> signal = new ListSignal<>();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.getOrDefault());
+		Assert.assertNull(signal.get());
 	}
 
 	@Test
@@ -24,14 +24,14 @@ public class ListSignalTest {
 		final List<String> list = new ArrayList<>(Arrays.asList("a", "b"));
 		final ListSignal<String> signal = new ListSignal<>(list);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertSame(list, signal.getOrDefault());
+		Assert.assertSame(list, signal.get());
 	}
 
 	@Test
 	public void copiesAGivenCollection() {
 		final Set<String> source = new LinkedHashSet<>(Arrays.asList("a", "b"));
 		final ListSignal<String> signal = new ListSignal<>(source);
-		Assert.assertEquals(Arrays.asList("a", "b"), signal.getOrDefault());
+		Assert.assertEquals(Arrays.asList("a", "b"), signal.get());
 		signal.add("c");
 		Assert.assertEquals(new LinkedHashSet<>(Arrays.asList("a", "b")), source);
 	}
@@ -41,7 +41,7 @@ public class ListSignalTest {
 		final List<String> list = new ArrayList<>(Arrays.asList("a", "b"));
 		final ListSignal<String> signal = ListSignal.of(list);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertSame(list, signal.getOrDefault());
+		Assert.assertSame(list, signal.get());
 	}
 
 	@Test
@@ -64,14 +64,14 @@ public class ListSignalTest {
 		Assert.assertTrue(signal.remove("a"));
 		Assert.assertFalse(signal.remove("a"));
 		Assert.assertEquals("c", signal.remove(1));
-		Assert.assertEquals(Collections.singletonList("b"), signal.getOrDefault());
+		Assert.assertEquals(Collections.singletonList("b"), signal.get());
 	}
 
 	@Test
 	public void replacesAnElement() {
 		final ListSignal<String> signal = ListSignal.of(new ArrayList<>(Arrays.asList("a", "b")));
 		Assert.assertEquals("b", signal.set(1, "c"));
-		Assert.assertEquals(Arrays.asList("a", "c"), signal.getOrDefault());
+		Assert.assertEquals(Arrays.asList("a", "c"), signal.get());
 	}
 
 	@Test

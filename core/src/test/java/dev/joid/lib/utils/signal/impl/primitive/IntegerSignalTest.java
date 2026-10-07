@@ -13,21 +13,21 @@ public class IntegerSignalTest {
 	public void startsAtZero() {
 		final IntegerSignal signal = new IntegerSignal();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(0, signal.getOrDefault().intValue());
+		Assert.assertEquals(0, signal.get().intValue());
 	}
 
 	@Test
 	public void fallsBackOnTheGivenDefault() {
 		final IntegerSignal signal = new IntegerSignal(5);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(5, signal.getOrDefault().intValue());
+		Assert.assertEquals(5, signal.get().intValue());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final IntegerSignal signal = IntegerSignal.of(5);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertEquals(5, signal.getOrDefault().intValue());
+		Assert.assertEquals(5, signal.get().intValue());
 	}
 
 	@Test
@@ -35,38 +35,38 @@ public class IntegerSignalTest {
 		final IntegerSignal signal = new IntegerSignal(5);
 		signal.increment();
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertEquals(6, signal.getOrDefault().intValue());
+		Assert.assertEquals(6, signal.get().intValue());
 	}
 
 	@Test
 	public void incrementsAndDecrements() {
 		final IntegerSignal signal = IntegerSignal.of(1);
 		signal.increment();
-		Assert.assertEquals(2, signal.getOrDefault().intValue());
+		Assert.assertEquals(2, signal.get().intValue());
 		signal.decrement();
 		signal.decrement();
 		signal.decrement();
-		Assert.assertEquals(-1, signal.getOrDefault().intValue());
+		Assert.assertEquals(-1, signal.get().intValue());
 	}
 
 	@Test
 	public void addsAndSubtracts() {
 		final IntegerSignal signal = IntegerSignal.of(1);
 		signal.add(10);
-		Assert.assertEquals(11, signal.getOrDefault().intValue());
+		Assert.assertEquals(11, signal.get().intValue());
 		signal.subtract(4);
-		Assert.assertEquals(7, signal.getOrDefault().intValue());
+		Assert.assertEquals(7, signal.get().intValue());
 	}
 
 	@Test
 	public void multipliesAndDividesWholeNumbers() {
 		final IntegerSignal signal = IntegerSignal.of(7);
 		signal.multiply(3);
-		Assert.assertEquals(21, signal.getOrDefault().intValue());
+		Assert.assertEquals(21, signal.get().intValue());
 		signal.divide(4);
-		Assert.assertEquals(5, signal.getOrDefault().intValue());
+		Assert.assertEquals(5, signal.get().intValue());
 		signal.divide(-2);
-		Assert.assertEquals(-2, signal.getOrDefault().intValue());
+		Assert.assertEquals(-2, signal.get().intValue());
 	}
 
 	@Test(expected = ArithmeticException.class)
@@ -78,9 +78,9 @@ public class IntegerSignalTest {
 	public void raisesToAPower() {
 		final IntegerSignal signal = IntegerSignal.of(3);
 		signal.power(4);
-		Assert.assertEquals(81, signal.getOrDefault().intValue());
+		Assert.assertEquals(81, signal.get().intValue());
 		signal.power(0);
-		Assert.assertEquals(1, signal.getOrDefault().intValue());
+		Assert.assertEquals(1, signal.get().intValue());
 	}
 
 	@Test

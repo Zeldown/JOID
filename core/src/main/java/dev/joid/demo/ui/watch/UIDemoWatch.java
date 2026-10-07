@@ -31,8 +31,8 @@ public class UIDemoWatch extends UIDemo {
 				TextNode.create(10, 195).text(Text.create(this.cardInformations.get(3), TextInfo.create(DemoFont.MONTSERRAT, 25, Color.WHITE))).attach(container);
 				TextNode.create(10, 230).text(Text.create(this.cardInformations.get(4), TextInfo.create(DemoFont.MONTSERRAT, 25, Color.WHITE))).attach(container);
 			}).onWatch((container, signal, properties) -> {
-				for (int i = 0; i < this.cardInformations.getOrDefault().size(); i++) {
-					container.getChild(i, TextNode.class).getText().text(this.cardInformations.getOrDefault().get(i));
+				for (int i = 0; i < this.cardInformations.get().size(); i++) {
+					container.getChild(i, TextNode.class).getText().text(this.cardInformations.get().get(i));
 				}
 			});
 		}).attach(this);

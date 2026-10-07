@@ -18,7 +18,7 @@ public class MapSignalTest {
 	public void startsEmptyWithoutDefault() {
 		final MapSignal<String, Integer> signal = new MapSignal<>();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.getOrDefault());
+		Assert.assertNull(signal.get());
 	}
 
 	@Test
@@ -26,7 +26,7 @@ public class MapSignalTest {
 		final Map<String, Integer> map = new HashMap<>();
 		final MapSignal<String, Integer> signal = new MapSignal<>(map);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertSame(map, signal.getOrDefault());
+		Assert.assertSame(map, signal.get());
 	}
 
 	@Test
@@ -34,7 +34,7 @@ public class MapSignalTest {
 		final Map<String, Integer> map = new HashMap<>();
 		final MapSignal<String, Integer> signal = MapSignal.of(map);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertSame(map, signal.getOrDefault());
+		Assert.assertSame(map, signal.get());
 	}
 
 	@Test

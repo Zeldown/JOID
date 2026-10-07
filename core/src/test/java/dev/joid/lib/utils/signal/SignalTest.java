@@ -20,35 +20,35 @@ public class SignalTest {
 	public void startsEmptyWithoutDefault() {
 		final Signal<String> signal = new Signal<>();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.getOrDefault());
+		Assert.assertNull(signal.get());
 	}
 
 	@Test
 	public void fallsBackOnItsDefault() {
 		final Signal<String> signal = new Signal<>("joid");
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals("joid", signal.getOrDefault());
+		Assert.assertEquals("joid", signal.get());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final Signal<String> signal = Signal.of("joid");
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertEquals("joid", signal.getOrDefault());
+		Assert.assertEquals("joid", signal.get());
 	}
 
 	@Test
 	public void keepsItsValueOverItsDefault() {
 		final Signal<String> signal = new Signal<>("joid").set("ui");
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertEquals("ui", signal.getOrDefault());
+		Assert.assertEquals("ui", signal.get());
 	}
 
 	@Test
 	public void resetsToItsDefault() {
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("joid").set("ui").subscribe(received::add).reset();
-		Assert.assertEquals("joid", signal.getOrDefault());
+		Assert.assertEquals("joid", signal.get());
 		Assert.assertEquals(Collections.singletonList("joid"), received);
 	}
 
@@ -56,7 +56,7 @@ public class SignalTest {
 	public void forgetsItsValueOnResetWithoutDefault() {
 		final Signal<String> signal = new Signal<String>().set("joid").reset();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.getOrDefault());
+		Assert.assertNull(signal.get());
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class SignalTest {
 	public void silencesOnlyTheNextPublish() {
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<String>().subscribe(received::add).silent().set("a");
-		Assert.assertEquals("a", signal.getOrDefault());
+		Assert.assertEquals("a", signal.get());
 		Assert.assertTrue(received.isEmpty());
 		signal.set("b");
 		Assert.assertEquals(Collections.singletonList("b"), received);
@@ -220,7 +220,7 @@ public class SignalTest {
 	public void takesTheValueOfACompletedStage() {
 		final Signal<String> signal = Signal.of(CompletableFuture.completedFuture("joid"));
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertEquals("joid", signal.getOrDefault());
+		Assert.assertEquals("joid", signal.get());
 	}
 
 	@Test
@@ -230,7 +230,7 @@ public class SignalTest {
 		final Signal<String> signal = Signal.of(future).subscribe(received::add);
 		Assert.assertFalse(signal.isPresent());
 		future.complete("joid");
-		Assert.assertEquals("joid", signal.getOrDefault());
+		Assert.assertEquals("joid", signal.get());
 		Assert.assertEquals(Collections.singletonList("joid"), received);
 	}
 

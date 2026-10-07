@@ -33,7 +33,7 @@ public class DemoSwitchNode extends SwitchNode {
 		FlexNode
 		.horizontal(0, 0, super.getHeight())
 		.body(flex -> {
-			for (final String state : super.getStateList().getOrDefault()) {
+			for (final String state : super.getStateList().get()) {
 				RectNode
 				.create(0, 0, stateWidth, super.getHeight())
 				.color(() -> super.getState().equals(state) ? Color.BLUE : Color.RED)
