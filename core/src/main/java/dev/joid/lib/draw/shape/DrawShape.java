@@ -124,16 +124,24 @@ public final class DrawShape {
 
 	public void drawLine(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.lineSmooth(true);
-		this.drawShape(DrawMode.LINE_STRIP, color, points);
-		render.lineSmooth(false);
+		render.pushState();
+		try {
+			render.lineSmooth(true);
+			this.drawShape(DrawMode.LINE_STRIP, color, points);
+		} finally {
+			render.popState();
+		}
 	}
 
 	public void drawLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d @NonNull... points) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.lineWidth(stroke);
-		this.drawLine(color, points);
-		render.lineWidth(1F);
+		render.pushState();
+		try {
+			render.lineWidth(stroke);
+			this.drawLine(color, points);
+		} finally {
+			render.popState();
+		}
 	}
 
 	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Vector2d @NonNull... points) {
@@ -155,11 +163,14 @@ public final class DrawShape {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.lineWidth(stroke);
-		render.lineSmooth(true);
-		this.drawShape(DrawMode.LINES, color, dashes.toArray(new Vector2d[0]));
-		render.lineSmooth(false);
-		render.lineWidth(1F);
+		render.pushState();
+		try {
+			render.lineWidth(stroke);
+			render.lineSmooth(true);
+			this.drawShape(DrawMode.LINES, color, dashes.toArray(new Vector2d[0]));
+		} finally {
+			render.popState();
+		}
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
@@ -174,9 +185,13 @@ public final class DrawShape {
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.lineWidth(stroke);
-		this.drawCurvedLine(color, start, end, control);
-		render.lineWidth(1F);
+		render.pushState();
+		try {
+			render.lineWidth(stroke);
+			this.drawCurvedLine(color, start, end, control);
+		} finally {
+			render.popState();
+		}
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
@@ -191,9 +206,13 @@ public final class DrawShape {
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.lineWidth(stroke);
-		this.drawCurvedLine(color, start, startControl, end, endControl);
-		render.lineWidth(1F);
+		render.pushState();
+		try {
+			render.lineWidth(stroke);
+			this.drawCurvedLine(color, start, startControl, end, endControl);
+		} finally {
+			render.popState();
+		}
 	}
 
 	public void drawShape(final @NonNull DrawMode mode, final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
@@ -212,6 +231,7 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final Tessellator tessellator = Tessellator.inst();
 		render.pushMatrix();
+		render.pushState();
 		try {
 			render.blend(BlendState.NORMAL);
 			render.resetTexture();
@@ -223,7 +243,7 @@ public final class DrawShape {
 				tessellator.draw();
 			}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
 		} finally {
-			render.blend(BlendState.DISABLED);
+			render.popState();
 			render.popMatrix();
 		}
 	}
@@ -235,6 +255,7 @@ public final class DrawShape {
 		final Span horizontal = grid.spanX(x, width);
 		final Span vertical = grid.spanY(y, height);
 		render.pushMatrix();
+		render.pushState();
 		try {
 			render.blend(BlendState.NORMAL);
 			render.resetTexture();
@@ -245,7 +266,7 @@ public final class DrawShape {
 			tessellator.addVertex(horizontal.getStart(), vertical.getStart(), 0D);
 			tessellator.draw();
 		} finally {
-			render.blend(BlendState.DISABLED);
+			render.popState();
 			render.popMatrix();
 		}
 	}

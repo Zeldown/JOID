@@ -17,6 +17,7 @@ public class FrameBuffer {
 	private final IFrameBuffer  handle;
 	private final TextureFilter filter;
 
+	private boolean bound;
 	private boolean filled;
 
 	protected FrameBuffer(final @NonNull IFrameBuffer handle, final @NonNull TextureFilter filter) {
@@ -29,12 +30,24 @@ public class FrameBuffer {
 	}
 
 	public @NonNull FrameBuffer bind() {
-		BridgeHandler.RENDER.get().frameBuffer(this.handle);
+		if (this.bound) {
+			throw new IllegalStateException("The framebuffer is already bound, call unbind() first");
+		}
+
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.pushState();
+		render.frameBuffer(this.handle);
+		this.bound = true;
 		return this;
 	}
 
 	public @NonNull FrameBuffer unbind() {
-		BridgeHandler.RENDER.get().frameBuffer(null);
+		if (!this.bound) {
+			throw new IllegalStateException("The framebuffer is not bound, call bind() first");
+		}
+
+		this.bound = false;
+		BridgeHandler.RENDER.get().popState();
 		return this;
 	}
 

@@ -52,6 +52,30 @@ public class FrameBufferTest {
 	}
 
 	@Test
+	public void restoresThePreviousTargetOnUnbind() {
+		final FrameBuffer outer = FrameBuffer.create(64, 32, TextureFilter.NEAREST);
+		final FrameBuffer inner = FrameBuffer.create(16, 8, TextureFilter.NEAREST);
+		outer.bind();
+		this.render.viewport(0, 0, 64, 32);
+		inner.fill(() -> this.render.viewport(0, 0, 16, 8));
+		Assert.assertSame(outer.getHandle(), this.render.getState().getFrameBuffer());
+		Assert.assertEquals(64, this.render.getViewportWidth());
+		outer.unbind();
+		Assert.assertNull(this.render.getState().getFrameBuffer());
+		Assert.assertEquals(1920, this.render.getViewportWidth());
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesToBindTwice() {
+		FrameBuffer.create(64, 32, TextureFilter.NEAREST).bind().bind();
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesToUnbindWithoutBind() {
+		FrameBuffer.create(64, 32, TextureFilter.NEAREST).unbind();
+	}
+
+	@Test
 	public void runsItsFillInsideItsHandle() {
 		final FrameBuffer frameBuffer = FrameBuffer.create(64, 32, TextureFilter.NEAREST);
 		final IFrameBuffer[] bound = new IFrameBuffer[1];

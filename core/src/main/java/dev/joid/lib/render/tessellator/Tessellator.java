@@ -66,6 +66,9 @@ public final class Tessellator {
 		this.hasColor = false;
 		this.hasTexture = false;
 		this.isColorDisabled = false;
+		this.xOffset = 0D;
+		this.yOffset = 0D;
+		this.zOffset = 0D;
 	}
 
 	public void draw() {

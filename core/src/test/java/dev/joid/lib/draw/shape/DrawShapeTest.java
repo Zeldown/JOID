@@ -15,6 +15,9 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -311,6 +314,18 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void restoresTheBlendingAndTheTextureOfTheCallerAfterAShape() {
+		final ITexture texture = this.bridges.getRender().createTexture();
+		this.bridges.getRender().blend(BlendState.PREMULTIPLIED);
+		this.bridges.getRender().texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), new Vector2d(0D, 0D), new Vector2d(10D, 0D), new Vector2d(10D, 10D));
+		DrawUtils.SHAPE.drawRawRect(0D, 0D, 10D, 10D);
+		Assert.assertSame(BlendState.PREMULTIPLIED, this.bridges.getRender().getState().getBlend());
+		Assert.assertSame(texture, this.bridges.getRender().getState().getTexture());
+		Assert.assertSame(TextureFilter.LINEAR, this.bridges.getRender().getState().getTextureFilter());
+	}
+
+	@Test
 	public void paintsAGradientOverTheShape() {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.8F, 0.6F, 0.4F, 0.5F), new Vector4f(0F, 0F, 0F, 1F)));
@@ -365,6 +380,31 @@ public class DrawShapeTest {
 		Assert.assertEquals(4F, (Float) ((RecordingShader) this.single(0F, 1F, 0F).getShader()).getValues().get("u_Width"), 0F);
 		Assert.assertEquals(1F, this.bridges.getRender().getLineWidth(), 0F);
 		Assert.assertFalse(this.bridges.getRender().isLineSmooth());
+	}
+
+	@Test
+	public void restoresTheLineStateOfTheCallerAfterALine() {
+		this.bridges.getRender().lineWidth(3F);
+		this.bridges.getRender().lineSmooth(true);
+		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), new Vector2d(10D, 20D), new Vector2d(110D, 20D));
+		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, new Vector2d(10D, 20D), new Vector2d(110D, 20D));
+		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 2F, new Vector2d(0D, 50D), new Vector2d(100D, 50D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, new Vector2d(0D, 0D), new Vector2d(10D, 0D), new Vector2d(5D, 5D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, new Vector2d(0D, 0D), new Vector2d(0D, 5D), new Vector2d(10D, 0D), new Vector2d(10D, 5D));
+		Assert.assertEquals(3F, this.bridges.getRender().getLineWidth(), 0F);
+		Assert.assertTrue(this.bridges.getRender().isLineSmooth());
+	}
+
+	@Test
+	public void restoresTheLineStateWhenALineFails() {
+		this.bridges.getRender().lineWidth(3F);
+		try {
+			DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, new Vector2d(10D, 20D), null);
+			Assert.fail();
+		} catch (final NullPointerException exception) {
+			Assert.assertEquals(3F, this.bridges.getRender().getLineWidth(), 0F);
+			Assert.assertFalse(this.bridges.getRender().isLineSmooth());
+		}
 	}
 
 	@Test

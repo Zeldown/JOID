@@ -303,9 +303,9 @@ public class TessellatorTest {
 	@Test
 	public void offsetsTheFollowingVertices() {
 		final Tessellator tessellator = Tessellator.inst().copy();
+		tessellator.start(DrawMode.TRIANGLES);
 		tessellator.translate(10F, 20F, 30F);
 		tessellator.translate(1F, 2F, 3F);
-		tessellator.start(DrawMode.TRIANGLES);
 		TessellatorTest.triangle(tessellator);
 
 		final Capture capture = this.single();
@@ -314,6 +314,25 @@ public class TessellatorTest {
 		Assert.assertEquals(33F, capture.getZ(0), 0F);
 		Assert.assertEquals(12F, capture.getX(1), 0F);
 		Assert.assertEquals(11D, tessellator.getXOffset(), 0D);
+	}
+
+	@Test
+	public void forgetsItsOffsetAtTheNextStart() {
+		final Tessellator tessellator = Tessellator.inst().copy();
+		tessellator.start(DrawMode.TRIANGLES);
+		tessellator.translate(10F, 20F, 30F);
+		TessellatorTest.triangle(tessellator);
+		tessellator.start(DrawMode.TRIANGLES);
+		Assert.assertEquals(0D, tessellator.getXOffset(), 0D);
+		Assert.assertEquals(0D, tessellator.getYOffset(), 0D);
+		Assert.assertEquals(0D, tessellator.getZOffset(), 0D);
+		TessellatorTest.triangle(tessellator);
+
+		final Capture capture = this.render.getLast();
+		Assert.assertEquals(0F, capture.getX(0), 0F);
+		Assert.assertEquals(0F, capture.getY(0), 0F);
+		Assert.assertEquals(0F, capture.getZ(0), 0F);
+		Assert.assertEquals(1F, capture.getX(1), 0F);
 	}
 
 	@Test
