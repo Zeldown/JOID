@@ -88,7 +88,12 @@ public final class SnapshotRunner {
 	}
 
 	public @NonNull Map<String, SnapshotImage> run(final @NonNull String scenario) {
+		return this.execute(SnapshotRunner.read(scenario).toArray(new String[0]));
+	}
+
+	public @NonNull Map<String, SnapshotImage> execute(final @NonNull String... commands) {
 		this.bridge.closeAll();
+		this.bridge.interfaceScale(1D);
 		this.window.getKeys().clear();
 		this.masks.clear();
 		this.clock.setTime(1735689600000L);
@@ -96,7 +101,7 @@ public final class SnapshotRunner {
 		this.resize(1920, 1080);
 
 		final Map<String, SnapshotImage> shots = new LinkedHashMap<>();
-		for (final String line : SnapshotRunner.read(scenario)) {
+		for (final String line : commands) {
 			final String command = line.trim();
 			if (command.isEmpty() || command.startsWith("#")) {
 				continue;
@@ -116,6 +121,7 @@ public final class SnapshotRunner {
 			case "move":
 				this.window.setMouseX(Double.parseDouble(arguments[1]));
 				this.window.setMouseY(Double.parseDouble(arguments[2]));
+				this.render(false);
 				break;
 			case "moveto":
 				this.moveTo(Double.parseDouble(arguments[1]), Double.parseDouble(arguments[2]), Long.parseLong(arguments[3]));
@@ -190,7 +196,7 @@ public final class SnapshotRunner {
 
 	private void advance(final long duration) {
 		for (long elapsed = 0L; elapsed < duration; elapsed += 16L) {
-			this.clock.advance(16L);
+			this.clock.advance(Math.min(16L, duration - elapsed));
 			this.render(false);
 			this.awaitPlayback();
 		}
@@ -246,16 +252,16 @@ public final class SnapshotRunner {
 	private void moveTo(final double x, final double y, final long duration) {
 		final double startX = this.window.getMouseX();
 		final double startY = this.window.getMouseY();
-		final long steps = Math.max(1L, duration / 16L);
+		final long steps = Math.max(1L, (duration + 15L) / 16L);
 		for (long step = 1L; step <= steps; step++) {
-			final double progress = (double) step / steps;
-			this.clock.advance(16L);
+			final double progress = Math.min(1D, step * 16D / Math.max(1L, duration));
+			this.clock.advance(Math.min(16L, duration - (step - 1L) * 16L));
 			this.window.setMouseX(startX + (x - startX) * progress);
 			this.window.setMouseY(startY + (y - startY) * progress);
+			this.render(false);
 			if (this.pressed != null) {
 				this.bridge.mouseDragged(this.pressed, this.clock.currentTimeMillis() - this.pressTime);
 			}
-			this.render(false);
 		}
 	}
 
@@ -268,7 +274,7 @@ public final class SnapshotRunner {
 
 	private void awaitResources() {
 		for (int attempt = 0; attempt < 3000; attempt++) {
-			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> !data.isGenerated() || data.isLoaded())) {
+			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> data.getTasks().stream().noneMatch(Thread::isAlive) && (!data.isGenerated() || data.isLoaded()))) {
 				return;
 			}
 			SnapshotRunner.sleep(10L);
@@ -277,6 +283,7 @@ public final class SnapshotRunner {
 	}
 
 	private SnapshotImage settle(final String name) {
+		this.awaitResources();
 		SnapshotImage previous = null;
 		SnapshotImage current = this.mask(this.render(true));
 		for (int attempt = 0; attempt < 300 && (previous == null || !current.isSame(previous) || !SnapshotRunner.isSettled()); attempt++) {

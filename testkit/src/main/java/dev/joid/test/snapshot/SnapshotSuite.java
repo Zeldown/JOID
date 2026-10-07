@@ -1,6 +1,7 @@
 package dev.joid.test.snapshot;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,6 +12,14 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.JOID;
+import dev.joid.lib.asset.Asset;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.resource.Resource;
+import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.utils.context.InternalContext;
+import lombok.Getter;
 import lombok.NonNull;
 
 public abstract class SnapshotSuite {
@@ -67,6 +76,46 @@ public abstract class SnapshotSuite {
 	@Test
 	public void matchesInteractionSnapshots() {
 		this.verify("interaction");
+	}
+
+	@Test
+	public void resetsTheInterfaceScaleBetweenScenarios() {
+		this.getRunner().execute("ui " + TraceUI.class.getName(), "scale 2");
+		this.getRunner().execute("ui " + TraceUI.class.getName());
+		Assert.assertEquals(1D, JOID.getUI(TraceUI.class).getView().getInterfaceScale(), 0D);
+	}
+
+	@Test
+	public void rendersAFrameAfterAMove() {
+		this.getRunner().execute("ui " + TraceUI.class.getName(), "move 100 200");
+		final TraceUI ui = JOID.getUI(TraceUI.class);
+		Assert.assertEquals(ui.getView().toUiX(100D), ui.getMouseX(), 0D);
+		Assert.assertEquals(ui.getView().toUiY(200D), ui.getMouseY(), 0D);
+	}
+
+	@Test
+	public void dragsWithThePositionOfEachStep() {
+		this.getRunner().execute("ui " + TraceUI.class.getName(), "move 100 100", "press LEFT", "moveto 300 140 160", "release LEFT");
+		final TraceUI ui = JOID.getUI(TraceUI.class);
+		Assert.assertEquals(ui.getView().toUiX(300D), ui.getDragX(), 0D);
+		Assert.assertEquals(ui.getView().toUiY(140D), ui.getDragY(), 0D);
+	}
+
+	@Test
+	public void advancesTheClockByTheExactDuration() {
+		this.getRunner().execute();
+		final long start = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.getRunner().execute("wait 40");
+		Assert.assertEquals(start + 40L, BridgeHandler.CLOCK.get().currentTimeMillis());
+		this.getRunner().execute("moveto 10 10 40");
+		Assert.assertEquals(start + 40L, BridgeHandler.CLOCK.get().currentTimeMillis());
+	}
+
+	@Test
+	public void waitsForTheDownloadsBeforeAShot() {
+		final Resource resource = Resource.of(new DownloadAsset());
+		this.getRunner().execute("shot download");
+		Assert.assertNotNull(resource.getResourceData().getDecoder());
 	}
 
 	private SnapshotRunner getRunner() {
@@ -129,6 +178,42 @@ public abstract class SnapshotSuite {
 				}
 			}
 		}
+	}
+
+	public static final class TraceUI extends UI {
+
+		@Getter private double dragX;
+		@Getter private double dragY;
+
+		@Override
+		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
+			this.dragX = mouseX;
+			this.dragY = mouseY;
+		}
+
+	}
+
+	private static final class DownloadAsset extends Asset {
+
+		private DownloadAsset() {
+			super("snapshot-download");
+		}
+
+		@Override
+		public boolean isRemote() {
+			return true;
+		}
+
+		@Override
+		public @NonNull InputStream open() {
+			try {
+				Thread.sleep(300L);
+			} catch (final InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+			return JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png");
+		}
+
 	}
 
 }
