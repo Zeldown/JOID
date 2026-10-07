@@ -23,6 +23,7 @@ import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
@@ -41,6 +42,7 @@ public final class RenderBridge implements IRenderBridge {
 
 	private final Deque<StateSnapshot> stateStack;
 
+	private Shader  fixedShader;
 	private Texture emptyTexture;
 
 	public RenderBridge() {
@@ -289,7 +291,13 @@ public final class RenderBridge implements IRenderBridge {
 
 	@Override
 	public void draw(final @NonNull DrawMode mode, final @NonNull VertexBuffer buffer) {
-		final Shader shader = Shader.current();
+		final Shader current = Shader.current();
+		final boolean lit = current == null && GL11.glIsEnabled(GL11.GL_LIGHTING);
+		final Shader shader = lit ? this.getFixedShader() : current;
+		if (lit) {
+			GL20.glUseProgram(shader.getProgram());
+		}
+
 		if (shader != null) {
 			shader.use();
 		}
@@ -311,6 +319,8 @@ public final class RenderBridge implements IRenderBridge {
 			data.position(VertexBuffer.NORMAL_OFFSET);
 			GL11.glNormalPointer(GL11.GL_BYTE, VertexBuffer.STRIDE, data);
 			GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+			GL20.glVertexAttribPointer(Shader.NORMAL_LOCATION, 3, false, false, VertexBuffer.STRIDE, data);
+			GL20.glEnableVertexAttribArray(Shader.NORMAL_LOCATION);
 		}
 
 		data.position(VertexBuffer.POSITION_OFFSET);
@@ -329,6 +339,11 @@ public final class RenderBridge implements IRenderBridge {
 
 		if (buffer.isNormal()) {
 			GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+			GL20.glDisableVertexAttribArray(Shader.NORMAL_LOCATION);
+		}
+
+		if (lit) {
+			GL20.glUseProgram(0);
 		}
 	}
 
@@ -345,6 +360,13 @@ public final class RenderBridge implements IRenderBridge {
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
 		return Shader.create(ShaderTranslator.translate(vertex), ShaderTranslator.translate(fragment), blend);
+	}
+
+	private @NonNull Shader getFixedShader() {
+		if (this.fixedShader == null) {
+			this.fixedShader = (Shader) this.createShader(ShaderSource.read(ShaderStage.VERTEX, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
+		}
+		return this.fixedShader;
 	}
 
 	public static void toggle(final int capability, final boolean enabled) {

@@ -12,7 +12,6 @@ import javax.vecmath.Vector2d;
 import dev.joid.internal.JOID;
 import dev.joid.internal.font.InternalFont;
 import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
@@ -46,17 +45,16 @@ import lombok.NonNull;
 @Getter
 public final class DevNode extends Node {
 
+	private static final Color RED         = new Color(239, 57, 38);
 	private static final Color ACTION      = new Color(57, 120, 255);
-	private static final Color UPDATE      = new Color(239, 57, 38);
 
 	private static final Color BLACK       = new Color(23, 23, 25);
 	private static final Color WHITE       = new Color(250, 250, 250);
 	private static final Color LIGHT_BLACK = new Color(56, 56, 62);
 	private static final Color LIGHT_WHITE = new Color(161, 161, 170);
 
-	private static final Color[] GRID_COLORS = {DevNode.ACTION, DevNode.UPDATE};
+	private static final Color[] GRID_COLORS = {DevNode.ACTION, DevNode.RED};
 
-	private final BooleanSignal eyeSignal;
 	private final BooleanSignal gridSignal;
 	private final BooleanSignal inspectSignal;
 
@@ -82,7 +80,6 @@ public final class DevNode extends Node {
 		super.anchor(Align.END);
 
 		this.inspectSignal = new BooleanSignal(true);
-		this.eyeSignal = new BooleanSignal(true);
 		this.gridSignal = new BooleanSignal(false);
 
 		this.inspectedNode = new Signal<>();
@@ -131,17 +128,6 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")))
-				.color(this.eyeSignal.map(eye -> eye ? DevNode.ACTION : DevNode.WHITE))
-				.hoveredColor(this.eyeSignal.map(eye -> (eye ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
-				.onClick((node, mouseX, mouseY, clickType) -> {
-					this.eyeSignal.set(!this.eyeSignal.peek());
-				})
-				.hover(() -> "[U] Update")
-				.attach(flex);
-
-				ResourceNode
-				.create(0, 0, 24, 24)
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
 				.color(this.gridSignal.map(grid -> grid ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.gridSignal.map(grid -> (grid ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
@@ -157,7 +143,7 @@ public final class DevNode extends Node {
 		.attach(this);
 
 		RectNode
-		.create(156, super.getHeight() - super.getDefaultHeight(), 2, super.getDefaultHeight())
+		.create(122, super.getHeight() - super.getDefaultHeight(), 2, super.getDefaultHeight())
 		.color(DevNode.LIGHT_BLACK)
 		.attach(this);
 
@@ -188,12 +174,6 @@ public final class DevNode extends Node {
 				TextNode
 				.create(0, flex.dh(2))
 				.text(Text.create(inspectedNode.getClass().getSimpleName(), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE), Align.START, Align.CENTER))
-				.anchorY(Align.CENTER)
-				.attach(flex);
-
-				TextNode
-				.create(0, flex.dh(2))
-				.text(Text.create(inspectedNode.getUpdateCount() + " update" + (inspectedNode.getUpdateCount() > 1 ? "s" : ""), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 
@@ -367,7 +347,7 @@ public final class DevNode extends Node {
 		.attach(this);
 
 		TextNode
-		.create(157 + super.aw(-157) / 2, super.getHeight() - super.getDefaultHeight() + super.getDefaultHeight() / 2)
+		.create(123 + super.aw(-123) / 2, super.getHeight() - super.getDefaultHeight() + super.getDefaultHeight() / 2)
 		.text(Text.create(() -> String.format("%.0f fps", super.getUi().getFps()), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
 		.anchor(Align.CENTER)
 		.attach(this);
@@ -415,29 +395,6 @@ public final class DevNode extends Node {
 			super.width(super.getDefaultWidth());
 			super.height(super.getDefaultHeight());
 			this.init(super.getUi());
-		}
-
-		if (this.eyeSignal.peek()) {
-			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-			final long duration = 2000L;
-			for (final Node node : super.getUi().getNodeList().recursive()) {
-				if (node instanceof DevNode || this.getChildren().recursive().contains(node)) {
-					continue;
-				}
-
-				final long lastUpdate = node.getLastUpdate();
-				if (now - lastUpdate > duration) {
-					continue;
-				}
-
-				final float value = Math.min(1F, 2F - (now - lastUpdate) / (duration / 2F));
-				final double x = node.getAbsoluteX();
-				final double y = node.getAbsoluteY();
-				final double width = node.getWidth();
-				final double height = node.getHeight();
-
-				this.drawInfoBox(x, y, width, height, DevNode.UPDATE, value, node);
-			}
 		}
 
 		if (this.gridSignal.peek()) {
@@ -500,11 +457,6 @@ public final class DevNode extends Node {
 			return;
 		}
 
-		if (key == Key.U) {
-			this.eyeSignal.set(!this.eyeSignal.peek());
-			return;
-		}
-
 		if (key == Key.G) {
 			this.gridSignal.set(!this.gridSignal.peek());
 			return;
@@ -527,7 +479,6 @@ public final class DevNode extends Node {
 
 		final TextInfo textInfo = TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.WHITE.copyAlpha(opacity)).shadow().shadow(Color.BLACK.copyAlpha(0.7F * opacity));
 		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);
-		final Text nodeUpdateText = Text.create(node.getUpdateCount() + " update" + (node.getUpdateCount() > 1 ? "s" : ""), textInfo);
 		final Text nodeTimeText = Text.create(String.format("%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
 
 		final double margin = 15;
@@ -535,14 +486,12 @@ public final class DevNode extends Node {
 
 		final double infoBoxX = x;
 		final double infoBoxY = y - 35 < 0 ? y + height + 5 : y - 35;
-		final double infoBoxWidth = margin * 2 + padding * 2 + nodeNameText.getWidth() + nodeUpdateText.getWidth() + nodeTimeText.getWidth();
+		final double infoBoxWidth = margin + padding * 2 + nodeNameText.getWidth() + nodeTimeText.getWidth();
 
 		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.copyAlpha(0.8F * opacity), 5F);
 
 		double ox = infoBoxX + padding;
 		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeNameText.verticalAlign(Align.CENTER)).getWidth() + margin;
-		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.copyAlpha(opacity), 2);
-		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeUpdateText.verticalAlign(Align.CENTER)).getWidth() + margin;
 		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.copyAlpha(opacity), 2);
 		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.verticalAlign(Align.CENTER)).getWidth() + margin;
 	}

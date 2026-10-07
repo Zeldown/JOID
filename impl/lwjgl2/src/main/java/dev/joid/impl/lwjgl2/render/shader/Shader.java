@@ -26,6 +26,8 @@ import lombok.NonNull;
 @Getter
 public final class Shader implements IShader {
 
+	public static final int NORMAL_LOCATION = 6;
+
 	private static final Map<Integer, Shader> SHADER_MAP = new HashMap<>();
 
 	private final int                         program;
@@ -173,6 +175,7 @@ public final class Shader implements IShader {
 
 		GL20.glAttachShader(program, vertex);
 		GL20.glAttachShader(program, fragment);
+		GL20.glBindAttribLocation(program, Shader.NORMAL_LOCATION, "joid_Normal");
 		GL20.glLinkProgram(program);
 		GL20.glValidateProgram(program);
 

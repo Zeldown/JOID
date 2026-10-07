@@ -1,11 +1,16 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.dto.markup.ITextMarkup;
+import dev.joid.lib.font.dto.markup.TextMarkup;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
@@ -45,6 +50,15 @@ public abstract class FieldNode<V> extends Node {
 	private int cursorPos;
 	private int selectionStart;
 
+	private int    pressCount;
+	private long   lastPress;
+	private double lastPressX;
+	private double lastPressY;
+
+	private int     anchorEnd;
+	private int     anchorStart;
+	private boolean selecting;
+
 	private double marginTop;
 	private double marginLeft;
 	private double marginRight;
@@ -74,7 +88,7 @@ public abstract class FieldNode<V> extends Node {
 
 	protected abstract boolean handleKey(final @NonNull Key key);
 
-	protected abstract void placeCursor(final double mouseX, final double mouseY);
+	protected abstract int getPositionAt(final double mouseX, final double mouseY);
 
 	protected abstract void followCursorForward();
 	protected abstract void followCursorBackward();
@@ -261,14 +275,26 @@ public abstract class FieldNode<V> extends Node {
 		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
 			this.focus(false);
 			this.selectionStart = -1;
+			this.pressCount = 0;
 			return;
 		}
 
 		context.cancel(() -> {
-			this.updateSelection();
-			this.placeCursor(mouseX, mouseY);
+			this.press(mouseX, mouseY, clickType.isLeft());
 			this.focus(true);
 		});
+	}
+
+	@Override
+	public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
+		if (this.selecting) {
+			this.select(this.getPositionAt(mouseX, mouseY));
+		}
+	}
+
+	@Override
+	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		this.selecting = false;
 	}
 
 	@Override
@@ -284,6 +310,7 @@ public abstract class FieldNode<V> extends Node {
 	public void detach() {
 		this.focus(false);
 		this.inputting = false;
+		this.selecting = false;
 	}
 
 	public final V getValue() {
@@ -475,7 +502,7 @@ public abstract class FieldNode<V> extends Node {
 	protected final void write(final @NonNull V value) {
 		final String text = this.limit(this.format(this.correct(value)));
 		if (!text.equals(this.text)) {
-			this.change(text);
+			this.rewrite(text);
 		}
 
 		this.commit();
@@ -573,7 +600,7 @@ public abstract class FieldNode<V> extends Node {
 	private final void replace(final String newText) {
 		final String text = this.limit(newText == null ? "" : newText);
 		if (!text.equals(this.text)) {
-			this.change(text);
+			this.rewrite(text);
 		}
 
 		if (!this.focused) {
@@ -608,10 +635,23 @@ public abstract class FieldNode<V> extends Node {
 		this.fallback = value;
 		final String text = value == null ? "" : this.limit(this.format(value));
 		if (!text.equals(this.text)) {
-			this.change(text);
+			this.rewrite(text);
 		}
 
 		this.sync();
+	}
+
+	private final void rewrite(final @NonNull String newText) {
+		final int cursorFromEnd = this.text.length() - this.cursorPos;
+		final int selectionFromEnd = this.text.length() - this.selectionStart;
+		if (!this.change(newText) || !this.focused) {
+			return;
+		}
+
+		this.cursorPos = Math.max(0, this.text.length() - cursorFromEnd);
+		if (this.selectionStart != -1) {
+			this.selectionStart = Math.max(0, this.text.length() - selectionFromEnd);
+		}
 	}
 
 	private final void sync() {
@@ -667,6 +707,90 @@ public abstract class FieldNode<V> extends Node {
 		this.inputType  = key;
 	}
 
+	private final void press(final double mouseX, final double mouseY, final boolean left) {
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final boolean repeated = left && this.pressCount > 0 && now - this.lastPress <= 500L && Math.abs(mouseX - this.lastPressX) <= 4D && Math.abs(mouseY - this.lastPressY) <= 4D;
+		this.pressCount = repeated ? Math.min(this.pressCount + 1, 3) : 1;
+		this.lastPress  = now;
+		this.lastPressX = mouseX;
+		this.lastPressY = mouseY;
+		this.selecting  = left;
+
+		final int position = this.getPositionAt(mouseX, mouseY);
+		if (this.pressCount == 1) {
+			this.updateSelection();
+			this.anchorStart = this.selectionStart == -1 ? position : this.selectionStart;
+			this.anchorEnd = this.anchorStart;
+			this.cursorPos = position;
+			return;
+		}
+
+		final int[] range = this.getRange(position);
+		this.anchorStart = range[0];
+		this.anchorEnd = range[1];
+		this.selectionStart = range[0] == range[1] ? -1 : range[0];
+		this.cursorPos = range[1];
+	}
+
+	private final void select(final int position) {
+		final int[] range = this.getRange(position);
+		final int previous = this.cursorPos;
+		if (range[0] < this.anchorStart) {
+			this.selectionStart = this.anchorEnd;
+			this.cursorPos = range[0];
+		} else {
+			this.selectionStart = this.anchorStart;
+			this.cursorPos = Math.max(range[1], this.anchorEnd);
+		}
+
+		if (this.selectionStart == this.cursorPos) {
+			this.selectionStart = -1;
+		}
+
+		if (this.cursorPos < previous) {
+			this.decreaseCursor(0);
+		} else {
+			this.increaseCursor(0);
+		}
+	}
+
+	private final int[] getRange(final int position) {
+		if (this.pressCount == 2) {
+			return this.getWordRange(position);
+		}
+
+		if (this.pressCount == 3) {
+			return this.getLineRange(position);
+		}
+
+		return new int[] {position, position};
+	}
+
+	private final int[] getWordRange(final int position) {
+		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
+		final boolean word = position < this.text.length() && !this.isSeparator(tags, position) || position > 0 && !this.isSeparator(tags, position - 1);
+		int start = position;
+		while (start > 0 && this.isSeparator(tags, start - 1) != word) {
+			start--;
+		}
+
+		int end = position;
+		while (end < this.text.length() && this.isSeparator(tags, end) != word) {
+			end++;
+		}
+
+		return new int[] {start, end};
+	}
+
+	private final int[] getLineRange(final int position) {
+		if (!this.isMultiline()) {
+			return new int[] {0, this.text.length()};
+		}
+
+		final int end = this.text.indexOf('\n', position);
+		return new int[] {this.text.lastIndexOf('\n', position - 1) + 1, end < 0 ? this.text.length() : end};
+	}
+
 	private final boolean deleteSelection() {
 		if (this.selectionStart == -1 || this.selectionStart == this.cursorPos) {
 			this.selectionStart = -1;
@@ -685,12 +809,13 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private final int nextWordIndex() {
+		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
 		int index = this.cursorPos;
-		while (index < this.text.length() && !this.isSeparator(this.text.charAt(index))) {
+		while (index < this.text.length() && !this.isSeparator(tags, index)) {
 			index++;
 		}
 
-		while (index < this.text.length() && this.isSeparator(this.text.charAt(index))) {
+		while (index < this.text.length() && this.isSeparator(tags, index)) {
 			index++;
 		}
 
@@ -698,12 +823,13 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private final int previousWordIndex() {
+		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
 		int index = this.cursorPos;
-		while (index > 0 && this.isSeparator(this.text.charAt(index - 1))) {
+		while (index > 0 && this.isSeparator(tags, index - 1)) {
 			index--;
 		}
 
-		while (index > 0 && !this.isSeparator(this.text.charAt(index - 1))) {
+		while (index > 0 && !this.isSeparator(tags, index - 1)) {
 			index--;
 		}
 
@@ -722,8 +848,42 @@ public abstract class FieldNode<V> extends Node {
 		return this.isMac() ? Key.LEFT_SUPER.isDown() || Key.RIGHT_SUPER.isDown() : UI.isCtrlKeyDown();
 	}
 
-	private final boolean isSeparator(final char c) {
-		return c == ' ' || c == '\n';
+	private final boolean isSeparator(final @NonNull int[] tags, final int index) {
+		final char c = this.text.charAt(index);
+		return tags[index] == -1 && (c == ' ' || c == '\n');
+	}
+
+	protected static @NonNull int[] tags(final @NonNull String text, final @NonNull TextInfo info) {
+		final int[] tags = new int[text.length()];
+		Arrays.fill(tags, -1);
+
+		final List<ITextMarkup> markups = info.getMarkups();
+		if (markups.isEmpty()) {
+			return tags;
+		}
+
+		final TextStyle style = info.getStyle().derive();
+		for (int index = 0; index < text.length();) {
+			final int consumed = TextMarkup.parse(markups, text, index, style);
+			if (consumed > 0) {
+				Arrays.fill(tags, index, index + consumed, index);
+				index += consumed;
+				continue;
+			}
+
+			index += Character.charCount(text.codePointAt(index));
+		}
+		return tags;
+	}
+
+	protected static @NonNull String opened(final @NonNull String text, final @NonNull int[] tags, final int end) {
+		final StringBuilder opened = new StringBuilder();
+		for (int i = 0; i < end; i++) {
+			if (tags[i] != -1) {
+				opened.append(text.charAt(i));
+			}
+		}
+		return opened.toString();
 	}
 
 }

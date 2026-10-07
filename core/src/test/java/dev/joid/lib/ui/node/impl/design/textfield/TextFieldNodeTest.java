@@ -310,6 +310,7 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(1, field.getSelectionStart());
 		Assert.assertEquals(2, field.getCursorPos());
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
+		this.bridges.getClock().advance(600L);
 		this.click(124D, 120D);
 		Assert.assertEquals(-1, field.getSelectionStart());
 	}
@@ -934,11 +935,11 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void bringsItsCursorAndSelectionBackInsideAShorterText() {
+	public void keepsItsCursorAndSelectionAtTheirDistanceFromTheEndOfARewrittenText() {
 		final TextFieldNode field = this.selected(6, 5);
 		field.text("ab");
 		this.bridges.frame();
-		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(1, field.getCursorPos());
 		Assert.assertEquals(2, field.getSelectionStart());
 	}
 

@@ -59,11 +59,32 @@ public class JOIDTest {
 
 	@Test
 	public void startsInTheConfigFolderWithoutDevNorDemoMode() {
-		final JOID joid = new JOID();
-		Assert.assertEquals(new File("config"), joid.getConfigDir());
-		Assert.assertTrue(joid.getConfigDir().isDirectory());
-		Assert.assertFalse(joid.isDevMode());
-		Assert.assertFalse(joid.isDemoMode());
+		final String property = System.clearProperty("joid.config");
+		try {
+			final JOID joid = new JOID();
+			Assert.assertEquals(new File("config"), joid.getConfigDir());
+			Assert.assertFalse(joid.isDevMode());
+			Assert.assertFalse(joid.isDemoMode());
+		} finally {
+			if (property != null) {
+				System.setProperty("joid.config", property);
+			}
+		}
+	}
+
+	@Test
+	public void readsItsConfigFolderFromTheJoidConfigProperty() {
+		final File config = new File(this.folder.getRoot(), "config");
+		final String property = System.setProperty("joid.config", config.getPath());
+		try {
+			Assert.assertEquals(config, new JOID().getConfigDir());
+		} finally {
+			if (property == null) {
+				System.clearProperty("joid.config");
+			} else {
+				System.setProperty("joid.config", property);
+			}
+		}
 	}
 
 	@Test
@@ -356,16 +377,23 @@ public class JOIDTest {
 	}
 
 	@Test
-	public void createsAMissingConfigFolderOnLoad() {
+	public void createsNoConfigFolderBeforeWritingIntoIt() {
 		final File config = new File(this.folder.getRoot(), "config");
+		final String property = System.setProperty("joid.config", config.getPath());
 		final PrintStream previous = System.out;
 		System.setOut(new PrintStream(new ByteArrayOutputStream(), true));
 		try {
+			new JOID().load();
 			new JOID().setConfigDir(config).load();
 		} finally {
 			System.setOut(previous);
+			if (property == null) {
+				System.clearProperty("joid.config");
+			} else {
+				System.setProperty("joid.config", property);
+			}
 		}
-		Assert.assertTrue(config.isDirectory());
+		Assert.assertFalse(config.exists());
 	}
 
 	@Test

@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -11,9 +10,6 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.utils.TextOverflow;
 import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.TextStyle;
-import dev.joid.lib.font.dto.markup.ITextMarkup;
-import dev.joid.lib.font.dto.markup.TextMarkup;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
@@ -155,10 +151,13 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	@Override
-	protected final void placeCursor(final double mouseX, final double mouseY) {
+	protected final int getPositionAt(final double mouseX, final double mouseY) {
 		final FieldLayout layout = this.getLayout();
 		final List<FieldLine> lines = layout.getLines();
 		final double lineHeight = this.getLineHeight();
+		if (lines.isEmpty()) {
+			return 0;
+		}
 
 		int lineIndex = -1;
 		for (int i = 0; i < lines.size(); i++) {
@@ -170,14 +169,12 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			}
 		}
 
-		if (lineIndex < 0 && !lines.isEmpty()) {
+		if (lineIndex < 0) {
 			final double firstLineY = super.getAbsoluteY() + super.getMarginTop() - this.yOffset;
 			lineIndex = mouseY < firstLineY ? 0 : lines.size() - 1;
 		}
 
-		if (lineIndex >= 0) {
-			super.cursorPosition(this.getPosition(layout, lines.get(lineIndex), mouseX - super.getAbsoluteX() - super.getMarginLeft()));
-		}
+		return this.getPosition(layout, lines.get(lineIndex), mouseX - super.getAbsoluteX() - super.getMarginLeft());
 	}
 
 	@Override
@@ -244,7 +241,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 	private final @NonNull FieldLayout getLayout(final @NonNull String text) {
 		final TextInfo info = super.getShownInfo();
-		final int[] tags = MultilineTextFieldNode.tags(text, info);
+		final int[] tags = FieldNode.tags(text, info);
 		final List<FieldLine> lines = new ArrayList<>();
 		final FieldLayout layout = new FieldLayout(text, tags, lines);
 		if (text.isEmpty()) {
@@ -257,7 +254,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			final int paragraphEnd = newLine < 0 ? text.length() : newLine;
 			boolean wrapped = false;
 			int start = paragraphStart;
-			String prefix = MultilineTextFieldNode.opened(text, tags, start);
+			String prefix = FieldNode.opened(text, tags, start);
 			for (int i = paragraphStart; i < paragraphEnd; i++) {
 				if (tags[i] != -1 || info.getWidth(prefix + text.substring(start, i + 1)) <= this.getRawWidth()) {
 					continue;
@@ -281,7 +278,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 				if (split > start) {
 					lines.add(new FieldLine(start, split, prefix));
 					start = text.charAt(split) == ' ' ? split + 1 : split;
-					prefix = MultilineTextFieldNode.opened(text, tags, start);
+					prefix = FieldNode.opened(text, tags, start);
 					wrapped = true;
 				}
 			}
@@ -329,7 +326,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 				continue;
 			}
 
-			final double charWidth = super.getShownInfo().getWidth(MultilineTextFieldNode.opened(text, layout.getTags(), i) + text.charAt(i));
+			final double charWidth = super.getShownInfo().getWidth(FieldNode.opened(text, layout.getTags(), i) + text.charAt(i));
 			if (x < this.getX(layout, line, i) + charWidth / 2) {
 				return previous;
 			}
@@ -338,39 +335,6 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 
 		return previous;
-	}
-
-	private static @NonNull int[] tags(final @NonNull String text, final @NonNull TextInfo info) {
-		final int[] tags = new int[text.length()];
-		Arrays.fill(tags, -1);
-
-		final List<ITextMarkup> markups = info.getMarkups();
-		if (markups.isEmpty()) {
-			return tags;
-		}
-
-		final TextStyle style = info.getStyle().derive();
-		for (int index = 0; index < text.length();) {
-			final int consumed = TextMarkup.parse(markups, text, index, style);
-			if (consumed > 0) {
-				Arrays.fill(tags, index, index + consumed, index);
-				index += consumed;
-				continue;
-			}
-
-			index += Character.charCount(text.codePointAt(index));
-		}
-		return tags;
-	}
-
-	private static @NonNull String opened(final @NonNull String text, final @NonNull int[] tags, final int end) {
-		final StringBuilder opened = new StringBuilder();
-		for (int i = 0; i < end; i++) {
-			if (tags[i] != -1) {
-				opened.append(text.charAt(i));
-			}
-		}
-		return opened.toString();
 	}
 
 	@Getter

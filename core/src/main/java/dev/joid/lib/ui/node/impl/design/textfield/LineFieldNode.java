@@ -66,23 +66,20 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 		final double textX = this.getTextX(super.getX(), isPlaceholder ? super.getPlaceholder() : text);
 		final double textY = tmpTextY;
+		final int[] tags = FieldNode.tags(text, super.getShownInfo());
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY(), super.getWidth() - super.getMarginLeft() - super.getMarginRight(), super.getHeight(), () -> {
 			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getShownInfo().copy().color(new Color(info.getColor().r, info.getColor().g, info.getColor().b, 0.5F)) : super.getShownInfo(), Align.START, Align.START);
 
 			if (super.isFocused()) {
-				final String beforeCursor = text.substring(0, super.getCursorPos());
-				final double cursorX = textX + super.getShownInfo().getWidth(beforeCursor);
+				final double cursorX = textX + this.getX(text, tags, super.getCursorPos());
 				final float cursorOpacity = (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F);
 				final Color cursorColor = new Color(info.getColor().r, info.getColor().g, info.getColor().b, cursorOpacity);
 				DrawUtils.SHAPE.drawRect(cursorX, textY, 2D, info.getHeight(), cursorColor);
 			}
 
 			if (super.getSelectionStart() != -1) {
-				final String beforeCursor = text.substring(0, super.getCursorPos());
-				final double cursorX = textX + super.getShownInfo().getWidth(beforeCursor);
-
-				final String beforeSelection = text.substring(0, super.getSelectionStart());
-				final double selectionX = textX + super.getShownInfo().getWidth(beforeSelection);
+				final double cursorX = textX + this.getX(text, tags, super.getCursorPos());
+				final double selectionX = textX + this.getX(text, tags, super.getSelectionStart());
 
 				if (selectionX > cursorX) {
 					DrawUtils.SHAPE.drawRect(cursorX, textY, selectionX - cursorX, info.getHeight(), new Color(50, 152, 253, 100));
@@ -116,21 +113,25 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	@Override
-	protected final void placeCursor(final double mouseX, final double mouseY) {
+	protected final int getPositionAt(final double mouseX, final double mouseY) {
 		final String text = super.getText();
-		final double textX = this.getTextX(super.getAbsoluteX(), text);
+		final int[] tags = FieldNode.tags(text, super.getShownInfo());
+		final double x = mouseX - this.getTextX(super.getAbsoluteX(), text);
+		int previous = 0;
 		for (int i = 0; i < text.length(); i++) {
-			final String beforeCursor = text.substring(0, i);
-			final String cursorChar = text.substring(i, i + 1);
-			final double cursorX = textX + super.getShownInfo().getWidth(beforeCursor) + super.getShownInfo().dw(cursorChar, 2);
-			if (mouseX < cursorX) {
-				super.cursorPosition(i);
-				break;
+			if (tags[i] != -1) {
+				continue;
 			}
-			if (i == text.length() - 1) {
-				super.cursorPosition(text.length());
+
+			final double charWidth = super.getShownInfo().getWidth(FieldNode.opened(text, tags, i) + text.charAt(i));
+			if (x < this.getX(text, tags, i) + charWidth / 2D) {
+				return previous;
 			}
+
+			previous = i + 1;
 		}
+
+		return previous;
 	}
 
 	@Override
@@ -141,9 +142,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		final double textX = this.getTextX(super.getX(), super.getText());
-
-		final String beforeCursor = super.getText().substring(0, super.getCursorPos());
-		final double cursorX = textX + super.getShownInfo().getWidth(beforeCursor);
+		final double cursorX = textX + this.getX(super.getText(), FieldNode.tags(super.getText(), super.getShownInfo()), super.getCursorPos());
 		if (cursorX > super.getX() + super.getWidth() - super.getMarginRight() - super.getCursorMargin()) {
 			this.xOffset += cursorX - (super.getX() + super.getWidth() - super.getMarginRight() - super.getCursorMargin());
 		}
@@ -162,9 +161,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		final double textX = this.getTextX(super.getX(), super.getText());
-
-		final String beforeCursor = super.getText().substring(0, super.getCursorPos());
-		final double cursorX = textX + super.getShownInfo().getWidth(beforeCursor);
+		final double cursorX = textX + this.getX(super.getText(), FieldNode.tags(super.getText(), super.getShownInfo()), super.getCursorPos());
 		if (cursorX < super.getX() + super.getMarginLeft() + super.getCursorMargin()) {
 			this.xOffset -= super.getX() + super.getMarginLeft() + super.getCursorMargin() - cursorX;
 		}
@@ -193,6 +190,11 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	private final boolean isScrolling(final @NonNull String shown) {
 		return this.horizontalAlignment.isStart() || super.getShownInfo().getWidth(shown) > super.getWidth() - super.getMarginLeft() - super.getMarginRight() - 2D;
+	}
+
+	private final double getX(final @NonNull String text, final @NonNull int[] tags, final int position) {
+		final int end = position < text.length() && tags[position] != -1 ? tags[position] : position;
+		return super.getShownInfo().getWidth(text.substring(0, end));
 	}
 
 	private final double getTextX(final double x, final @NonNull String shown) {

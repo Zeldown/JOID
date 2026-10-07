@@ -344,6 +344,67 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void keepsItsCursorAtItsDistanceFromTheEndAfterAStepUp() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(9)).cursorPosition(1);
+		this.press(field, Key.UP);
+		Assert.assertEquals("10", field.getText());
+		Assert.assertEquals(2, field.getCursorPos());
+		field.cursorPosition(0);
+		this.press(field, Key.DOWN);
+		Assert.assertEquals("9", field.getText());
+		Assert.assertEquals(0, field.getCursorPos());
+		this.press(field, Key.UP);
+		Assert.assertEquals(1, field.getCursorPos());
+	}
+
+	@Test
+	public void keepsItsCursorAtItsDistanceFromTheEndAfterAStepDown() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(100)).cursorPosition(2);
+		this.press(field, Key.DOWN);
+		Assert.assertEquals("99", field.getText());
+		Assert.assertEquals(1, field.getCursorPos());
+		field.cursorPosition(2);
+		this.press(field, Key.UP);
+		Assert.assertEquals("100", field.getText());
+		Assert.assertEquals(3, field.getCursorPos());
+	}
+
+	@Test
+	public void keepsItsCursorAtItsDistanceFromTheEndAfterAWheelStep() {
+		final IntegerFieldNode field = IntegerFieldNode.create(100D, 100D, 100D, 30D).value(99).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
+		this.bridges.open(new NodeUI(field));
+		field.focused(true).cursorPosition(1);
+		this.bridges.move(150D, 110D).frames(2);
+		this.bridges.scroll(120);
+		Assert.assertEquals("100", field.getText());
+		Assert.assertEquals(2, field.getCursorPos());
+	}
+
+	@Test
+	public void keepsItsCursorAtItsDistanceFromTheEndWhenItsSignalRewritesIt() {
+		final IntegerSignal signal = new IntegerSignal(5);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).signal(signal)).cursorPosition(1);
+		signal.set(1000);
+		Assert.assertEquals("1000", field.getText());
+		Assert.assertEquals(4, field.getCursorPos());
+		field.cursorPosition(0);
+		signal.set(7);
+		Assert.assertEquals("7", field.getText());
+		Assert.assertEquals(0, field.getCursorPos());
+	}
+
+	@Test
+	public void keepsItsCursorAtItsDistanceFromTheEndWhenItsCommitReformatsIt() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(5)).cursorPosition(0);
+		this.type(field, "00");
+		Assert.assertEquals("005", field.getText());
+		Assert.assertEquals(2, field.getCursorPos());
+		this.press(field, Key.UP);
+		Assert.assertEquals("6", field.getText());
+		Assert.assertEquals(0, field.getCursorPos());
+	}
+
+	@Test
 	public void commitsAPasteAtOnce() {
 		final List<String> changes = new ArrayList<>();
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).value(4).onChange((node, text, value, valid) -> changes.add(text))).cursorPosition(1);

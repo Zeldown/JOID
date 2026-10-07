@@ -303,6 +303,51 @@ public class MultilineTextFieldMarkupTest {
 		Assert.assertEquals(22D, this.cursor().getTop(), 1E-5D);
 	}
 
+	@Test
+	public void selectsTheWordOfADoubleClickOnAWrappedLine() {
+		final MultilineTextFieldNode field = this.field("<b>aaaa bbbbb cc</b>", true);
+		this.clicks(20D, 25D, 2);
+		Assert.assertEquals(8, field.getSelectionStart());
+		Assert.assertEquals(13, field.getCursorPos());
+	}
+
+	@Test
+	public void selectsTheLineOfATripleClickWithoutItsLineBreak() {
+		for (final boolean markup : new boolean[] {true, false}) {
+			final MultilineTextFieldNode field = this.field("<b>aa\nbb</b>\ncc", markup);
+			this.clicks(5D, 25D, 3);
+			Assert.assertEquals(6, field.getSelectionStart());
+			Assert.assertEquals(12, field.getCursorPos());
+		}
+	}
+
+	@Test
+	public void extendsItsSelectionByLinesWhenDraggedAfterATripleClick() {
+		final MultilineTextFieldNode field = this.field("<b>aa\nbb</b>\ncc", true);
+		this.clicks(5D, 25D, 3);
+		this.drag(5D, 45D);
+		Assert.assertEquals(6, field.getSelectionStart());
+		Assert.assertEquals(15, field.getCursorPos());
+		this.drag(5D, 5D);
+		Assert.assertEquals(12, field.getSelectionStart());
+		Assert.assertEquals(0, field.getCursorPos());
+	}
+
+	@Test
+	public void selectsTheCharactersDraggedOverAcrossLines() {
+		final MultilineTextFieldNode field = this.field("<b>aa\nbb</b>\ncc", true);
+		this.clicks(20D, 5D, 1);
+		this.drag(20D, 25D);
+		Assert.assertEquals(4, field.getSelectionStart());
+		Assert.assertEquals(7, field.getCursorPos());
+		this.drag(20D, 5D);
+		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(4, field.getCursorPos());
+		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.drag(20D, 45D);
+		Assert.assertEquals(4, field.getCursorPos());
+	}
+
 	private MultilineTextFieldNode field(final String text, final boolean markup) {
 		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 104D, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldMarkupTest.INK).markups(MultilineTextFieldMarkupTest.MARKUP)).markup(markup).text(text).focused(true);
 		this.bridges.open(new NodeUI(field));
@@ -319,6 +364,20 @@ public class MultilineTextFieldMarkupTest {
 		this.bridges.move(2D + x, 5D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		return field.getCursorPos();
+	}
+
+	private void clicks(final double x, final double y, final int count) {
+		this.bridges.getClock().advance(600L);
+		this.bridges.move(2D + x, 2D + y).frames(2);
+		for (int i = 0; i < count; i++) {
+			this.bridges.getUi().mouseReleased(ClickType.LEFT);
+			this.bridges.getUi().mousePressed(ClickType.LEFT);
+		}
+	}
+
+	private void drag(final double x, final double y) {
+		this.bridges.move(2D + x, 2D + y).frames(1);
+		this.bridges.getUi().mouseDragged(ClickType.LEFT, 40L);
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {

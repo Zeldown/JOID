@@ -753,17 +753,14 @@ public class NodeTest {
 	@Test
 	public void countsItsLoads() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D);
-		this.bridges.getClock().advance(40L);
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(1L, node.getUpdateCount());
-		Assert.assertEquals(40L, node.getLastUpdate());
 		node.load(node.getUi());
 		Assert.assertEquals(2L, node.getUpdateCount());
-		Assert.assertEquals(56L, node.getLastUpdate());
 	}
 
 	@Test
-	public void countsTheRefreshesOfItsFollowedProperties() {
+	public void countsNoLoadOnTheRefreshOfAFollowedProperty() {
 		final DoubleSignal x = DoubleSignal.of(0D);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).x(x);
 		this.bridges.open(new NodeUI(node)).frames(2);
@@ -771,10 +768,7 @@ public class NodeTest {
 		x.set(20D);
 		this.bridges.frame();
 		Assert.assertEquals(20D, node.getX(), 0D);
-		Assert.assertEquals(2L, node.getUpdateCount());
-		Assert.assertEquals(this.bridges.getClock().currentTimeMillis(), node.getLastUpdate());
-		this.bridges.frames(2);
-		Assert.assertEquals(2L, node.getUpdateCount());
+		Assert.assertEquals(1L, node.getUpdateCount());
 	}
 
 	@Test

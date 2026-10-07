@@ -45,6 +45,21 @@ public class OBJModelTest {
 	}
 
 	@Test
+	public void readsTheDemoModelWithItsOwnNormalAndTextureCoordinateOnEveryVertex() {
+		final OBJModel model = OBJModel.load("demo", OBJModel.class.getResourceAsStream("/assets/demo/models/model.obj"), OBJModelTest.TEXTURE);
+		Assert.assertEquals(2D, model.getWidth(), 1E-5D);
+		Assert.assertEquals(1.2D, model.getHeight(), 1E-5D);
+		Assert.assertEquals(1.2D, model.getDepth(), 1E-5D);
+		Assert.assertEquals(model.getVertices().size(), model.getVertexNormals().size());
+		Assert.assertEquals(model.getVertices().size(), model.getTextureCoordinates().size());
+		Assert.assertSame(DrawMode.TRIANGLES, model.getCurrentGroup().getDrawMode());
+		for (final OBJFace face : model.getCurrentGroup().getFaces()) {
+			Assert.assertEquals(3, face.getVertexNormals().length);
+			Assert.assertEquals(3, face.getTextureCoordinates().length);
+		}
+	}
+
+	@Test
 	public void computesTheNormalOfEveryFace() {
 		for (final OBJFace face : OBJModelTest.cube().getCurrentGroup().getFaces()) {
 			Assert.assertEquals(face.getVertexNormals()[0].getX(), face.getFaceNormal().getX(), 0F);

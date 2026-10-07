@@ -10,7 +10,6 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderCallback;
-import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderStartCallback;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.context.InternalContext;
@@ -141,46 +140,32 @@ public class UIDemoReorderable extends UIDemo {
 		.create(1420, 40, 400, 260)
 		.color(UIDemoReorderable.PLACEHOLDER)
 		.body(rect -> {
-			ReorderableFlexNode
-			.vertical(20, 20, 360)
-			.margin(6D)
-			.onReorderStart(new NodeReorderStartCallback() {
-
-				@Override
-				public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child) {}
-
-				@Override
-				public void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
-					if (node.getChildIndex(child) == 0) {
-						context.cancel();
+			final ReorderableFlexNode slots = ReorderableFlexNode
+					.vertical(20, 20, 360)
+					.margin(6D);
+			slots.body(flex -> {
+				for (int i = 0; i < 5; i++) {
+					final int index = i;
+					final boolean locked = index == 0 || index == 2;
+					final RectNode node = RectNode
+							.create(0, 0, 360, 34)
+							.color(locked ? UIDemoReorderable.INK.copyAlpha(0.4F) : UIDemoReorderable.INK)
+							.body(item -> {
+								if (!locked) {
+									RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
+									RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
+									RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
+								}
+								TextNode.create(50, item.dh(2)).text(Text.create((locked ? "Locked " : "Item ") + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+							})
+							.attach(flex);
+					if (locked) {
+						slots.lock(node);
 					}
 				}
-
-			})
-			.body(flex -> {
-				RectNode
-				.create(0, 0, 360, 34)
-				.color(UIDemoReorderable.INK.copyAlpha(0.4F))
-				.body(item -> {
-					TextNode.create(50, item.dh(2)).text(Text.create("Locked", label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
-				})
-				.attach(flex);
-				for (int i = 0; i < 4; i++) {
-					final int index = i;
-					RectNode
-					.create(0, 0, 360, 34)
-					.color(UIDemoReorderable.INK)
-					.body(item -> {
-						RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-						RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-						RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
-					})
-					.attach(flex);
-				}
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Locked first", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			});
+			slots.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Locked", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

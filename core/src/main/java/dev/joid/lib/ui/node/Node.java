@@ -226,7 +226,6 @@ public abstract class Node implements INode {
 	private long lastKeyTime;
 	private char lastCharacter;
 
-	private long lastUpdate;
 	private long renderTime;
 	private long updateCount;
 
@@ -301,7 +300,6 @@ public abstract class Node implements INode {
 		}
 
 		this.updateCount++;
-		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 	}
 
 	public final void render(final double mouseX, final double mouseY) {
@@ -1716,19 +1714,13 @@ public abstract class Node implements INode {
 			return;
 		}
 
-		boolean refreshed = false;
 		for (final Entry<String, NodeSource<?>> source : new ArrayList<>(this.sourceMap.entrySet())) {
 			try {
-				refreshed |= source.getValue().pull();
+				source.getValue().pull();
 			} catch (final RuntimeException exception) {
 				System.err.println("[JOID] The " + source.getKey() + " of " + this.getClass().getSimpleName() + " cannot take its new value: " + exception);
 				exception.printStackTrace();
 			}
-		}
-
-		if (refreshed) {
-			this.updateCount++;
-			this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		}
 	}
 
@@ -2244,15 +2236,14 @@ public abstract class Node implements INode {
 
 		private V value;
 
-		private boolean pull() {
+		private void pull() {
 			final V next = this.supplier.get();
 			if (Objects.equals(this.value, next)) {
-				return false;
+				return;
 			}
 
 			this.value = next;
 			this.consumer.accept(next);
-			return true;
 		}
 
 	}

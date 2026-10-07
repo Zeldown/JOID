@@ -2,8 +2,10 @@ package dev.joid.lib.ui.node.impl.structure.reorderable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import dev.joid.lib.ui.core.UI;
@@ -31,6 +33,7 @@ public final class ReorderableFlexNode extends Node {
 	private static final double SCROLL_HOT_ZONE  = 60D;
 	private static final double SCROLL_SPEED_MAX = 2D;
 
+	private final Set<Node>         lockedNodes  = new HashSet<>();
 	private final List<Node>        logicalOrder = new ArrayList<>();
 	private final Map<Node, Double> childCurrent = new HashMap<>();
 
@@ -94,6 +97,10 @@ public final class ReorderableFlexNode extends Node {
 
 		for (final Node child : super.getChildren()) {
 			if (child.isHovered(mouseX, mouseY)) {
+				if (this.lockedNodes.contains(child)) {
+					return;
+				}
+
 				this.startDragInternal(child, mouseX, mouseY);
 				if (this.reorderedNode == child) {
 					context.cancel();
@@ -129,6 +136,10 @@ public final class ReorderableFlexNode extends Node {
 		}
 
 		this.getChildIndex(child);
+		if (this.lockedNodes.contains(child)) {
+			return this;
+		}
+
 		final UI ui = super.getUi();
 		final double mouseX = ui != null ? ui.getMouseX() : 0D;
 		final double mouseY = ui != null ? ui.getMouseY() : 0D;
@@ -142,6 +153,20 @@ public final class ReorderableFlexNode extends Node {
 		}
 
 		this.releasing = true;
+		return this;
+	}
+
+	public final @NonNull ReorderableFlexNode lock(final @NonNull Node @NonNull... children) {
+		for (final Node child : children) {
+			this.lockedNodes.add(child);
+		}
+		return this;
+	}
+
+	public final @NonNull ReorderableFlexNode unlock(final @NonNull Node @NonNull... children) {
+		for (final Node child : children) {
+			this.lockedNodes.remove(child);
+		}
 		return this;
 	}
 
@@ -198,6 +223,10 @@ public final class ReorderableFlexNode extends Node {
 			throw new IllegalArgumentException("Node is not a child of this ReorderableFlexNode");
 		}
 		return index;
+	}
+
+	public final boolean isLocked(final @NonNull Node child) {
+		return this.lockedNodes.contains(child);
 	}
 
 	public final boolean isDragging(final @NonNull Node child) {
@@ -298,16 +327,50 @@ public final class ReorderableFlexNode extends Node {
 		this.autoScrollParent(mouseX, mouseY);
 
 		dragged.fireDrag(null);
-		if (newIndex == this.currentIndex) {
+		final int index = this.freeSlot(newIndex);
+		if (index == this.currentIndex) {
 			return;
 		}
 
-		final int index = newIndex;
 		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER, InternalContext.create(), () -> {
-			this.logicalOrder.remove(dragged);
-			this.logicalOrder.add(index, dragged);
+			this.move(dragged, index);
 			this.currentIndex = index;
 		}, dragged);
+	}
+
+	private int freeSlot(final int index) {
+		final int step = index < this.currentIndex ? 1 : -1;
+		int slot = index;
+		while (slot != this.currentIndex && this.lockedNodes.contains(this.logicalOrder.get(slot))) {
+			slot += step;
+		}
+		return slot;
+	}
+
+	private void move(final @NonNull Node dragged, final int index) {
+		final List<Node> free = new ArrayList<>();
+		int position = 0;
+		for (int i = 0; i < this.logicalOrder.size(); i++) {
+			final Node child = this.logicalOrder.get(i);
+			if (this.lockedNodes.contains(child)) {
+				continue;
+			}
+
+			if (i < index) {
+				position++;
+			}
+			if (child != dragged) {
+				free.add(child);
+			}
+		}
+		free.add(position, dragged);
+
+		int next = 0;
+		for (int i = 0; i < this.logicalOrder.size(); i++) {
+			if (!this.lockedNodes.contains(this.logicalOrder.get(i))) {
+				this.logicalOrder.set(i, free.get(next++));
+			}
+		}
 	}
 
 	private double computeDraggedTarget() {

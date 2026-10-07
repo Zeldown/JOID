@@ -45,6 +45,13 @@ public class ShaderTranslatorTest {
 	}
 
 	@Test
+	public void readsTheExactByteNormalsLikeTheOtherBackends() {
+		final String vertex = ShaderTranslator.translate(CoreShaders.read("fixed", ShaderStage.VERTEX));
+		Assert.assertTrue(vertex.contains("attribute vec3 joid_Normal;\n#define aNormal (joid_Normal / 127.0)\n"));
+		Assert.assertEquals(6, Shader.NORMAL_LOCATION);
+	}
+
+	@Test
 	public void keepsBodyAfterLineDirective() {
 		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT);
 		Assert.assertTrue(ShaderTranslator.translate(source).endsWith("#line 0\n" + source.getBody()));

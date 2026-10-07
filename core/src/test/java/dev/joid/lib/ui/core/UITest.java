@@ -4,9 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,7 +16,6 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -48,11 +44,9 @@ import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.core.data.UIDataObject;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
-import dev.joid.lib.ui.core.data.popup.UIDataPopupObject;
 import dev.joid.lib.ui.core.hook.property.UIProperty;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
@@ -213,28 +207,25 @@ public class UITest {
 	}
 
 	@Test
-	public void appliesOnReloadOnlyTheAnnotationValuesChangedSinceTheirLastRead() throws Exception {
-		final UIData data = AnnotatedUI.class.getAnnotation(UIData.class);
-		final UIDataPopup popup = AnnotatedUI.class.getAnnotation(UIDataPopup.class);
+	public void appliesOnReloadOnlyTheAnnotationValuesChangedSinceTheirLastRead() {
 		final AnnotatedUI ui = new AnnotatedUI(this.trace);
 		this.bridges.open(ui);
 		ui.getData().setZlevel(4D).setAnchorX(Align.START);
-		try {
-			UITest.annotate(AnnotatedUI.class, new UIDataObject(data).setZlevel(2D));
-			UITest.annotate(AnnotatedUI.class, new UIDataPopupObject(popup).setActive(true));
-			ui.reload();
-			this.bridges.frame();
-			Assert.assertEquals(2D, ui.getData().zlevel(), 0D);
-			Assert.assertSame(Align.START, ui.getData().anchorX());
-			Assert.assertTrue(ui.getPopup().active());
-			Assert.assertTrue(ui.getTransition() instanceof PopTransition);
-			ui.getData().setZlevel(5D);
-			ui.reload();
-			Assert.assertEquals(5D, ui.getData().zlevel(), 0D);
-		} finally {
-			UITest.annotate(AnnotatedUI.class, data);
-			UITest.annotate(AnnotatedUI.class, popup);
-		}
+		ui.getPopup().setActive(true);
+		this.bridges.frame();
+		Assert.assertTrue(ui.getTransition() instanceof PopTransition);
+		ui.getAnnotatedData().setZlevel(2D);
+		ui.getAnnotatedPopup().setActive(true);
+		ui.reload();
+		this.bridges.frame();
+		Assert.assertEquals(1D, ui.getData().zlevel(), 0D);
+		Assert.assertSame(Align.START, ui.getData().anchorX());
+		Assert.assertFalse(ui.getPopup().active());
+		Assert.assertNull(ui.getTransition());
+		Assert.assertEquals(1D, ui.getAnnotatedData().zlevel(), 0D);
+		ui.getData().setZlevel(5D);
+		ui.reload();
+		Assert.assertEquals(5D, ui.getData().zlevel(), 0D);
 	}
 
 	@Test
@@ -1524,16 +1515,6 @@ public class UITest {
 		final byte[] bytes = IOUtils.toByteArray(HotReloadUI.class.getResource("HotReloadUI.class"));
 		final Class<?> clazz = new LocationClassLoader(location).define(HotReloadUI.class.getName(), bytes);
 		return (UI) clazz.getConstructor(AtomicInteger.class).newInstance(inits);
-	}
-
-	@SuppressWarnings("unchecked")
-	private static void annotate(final Class<?> type, final Annotation annotation) throws Exception {
-		final Method method = Class.class.getDeclaredMethod("annotationData");
-		method.setAccessible(true);
-		final Object data = method.invoke(type);
-		final Field field = data.getClass().getDeclaredField("annotations");
-		field.setAccessible(true);
-		((Map<Class<? extends Annotation>, Annotation>) field.get(data)).put(annotation.annotationType(), annotation);
 	}
 
 	private static BlockingQueue<String> listen(final UI ui) {

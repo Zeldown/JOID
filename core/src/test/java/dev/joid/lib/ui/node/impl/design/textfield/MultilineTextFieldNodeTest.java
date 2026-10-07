@@ -598,6 +598,7 @@ public class MultilineTextFieldNodeTest {
 		Assert.assertEquals(1, field.getSelectionStart());
 		Assert.assertEquals(4, field.getCursorPos());
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
+		this.bridges.getClock().advance(600L);
 		this.click(14D, 30D);
 		Assert.assertEquals(-1, field.getSelectionStart());
 	}
@@ -771,11 +772,11 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void bringsItsCursorAndSelectionBackInsideAShorterText() {
+	public void keepsItsCursorAndSelectionAtTheirDistanceFromTheEndOfARewrittenText() {
 		final MultilineTextFieldNode field = this.selected("ab\ncd", 5, 4);
 		field.text("ab");
 		this.bridges.frame();
-		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(1, field.getCursorPos());
 		Assert.assertEquals(2, field.getSelectionStart());
 	}
 
@@ -1209,10 +1210,10 @@ public class MultilineTextFieldNodeTest {
 		Assert.assertEquals("a\nb", field.getText());
 		Assert.assertEquals("a\nb", signal.get());
 		this.press(field, Key.ENTER);
-		Assert.assertEquals("\na\nb", signal.get());
+		Assert.assertEquals("a\nb\n", signal.get());
 		signal.set("c");
 		Assert.assertEquals("c", field.getText());
-		Assert.assertEquals(Arrays.asList("a\nb", "\na\nb", "c"), changes);
+		Assert.assertEquals(Arrays.asList("a\nb", "a\nb\n", "c"), changes);
 	}
 
 	@Test

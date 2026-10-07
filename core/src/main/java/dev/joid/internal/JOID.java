@@ -23,11 +23,7 @@ public final class JOID {
 	private boolean demoMode;
 
 	public JOID() {
-		this.configDir = new File("config");
-		if (!this.configDir.exists()) {
-			this.configDir.mkdirs();
-		}
-
+		this.configDir = new File(System.getProperty("joid.config", "config"));
 		this.devMode = false;
 		this.demoMode = false;
 	}
@@ -40,10 +36,6 @@ public final class JOID {
 	}
 
 	public JOID load() {
-		if (!this.configDir.isDirectory()) {
-			this.configDir.mkdirs();
-		}
-
 		System.out.println("=================================");
 		System.out.println("");
 		System.out.println("         _  ____ _____ _____    ");

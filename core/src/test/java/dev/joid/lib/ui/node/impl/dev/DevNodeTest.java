@@ -29,12 +29,13 @@ import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
 import lombok.NonNull;
 
 public class DevNodeTest {
 
+	private static final Color RED    = new Color(239, 57, 38);
 	private static final Color ACTION = new Color(57, 120, 255);
-	private static final Color UPDATE = new Color(239, 57, 38);
 	private static final Color BLACK  = new Color(23, 23, 25);
 	private static final Color WHITE  = new Color(250, 250, 250);
 
@@ -60,7 +61,7 @@ public class DevNodeTest {
 	}
 
 	@Test
-	public void startsInspectingAndHighlightingTheUpdates() {
+	public void startsInspecting() {
 		final DevNode panel = DevNode.create(1625D, 1007D);
 		Assert.assertEquals(1625D, panel.getX(), 0D);
 		Assert.assertEquals(1007D, panel.getY(), 0D);
@@ -69,7 +70,6 @@ public class DevNodeTest {
 		Assert.assertSame(Align.END, panel.getAnchorX());
 		Assert.assertSame(Align.END, panel.getAnchorY());
 		Assert.assertTrue(panel.getInspectSignal().get());
-		Assert.assertTrue(panel.getEyeSignal().get());
 		Assert.assertFalse(panel.getGridSignal().get());
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 		Assert.assertNull(panel.getInspectedNode().get());
@@ -89,11 +89,11 @@ public class DevNodeTest {
 	}
 
 	@Test
-	public void showsFourButtonsBesideTheFramerate() {
+	public void showsThreeButtonsBesideTheFramerate() {
 		final DevUI ui = new DevUI();
 		final DevNode panel = DevNodeTest.open(this.bridges, ui);
 		final List<ResourceNode> buttons = DevNodeTest.buttons(panel);
-		Assert.assertEquals(4, buttons.size());
+		Assert.assertEquals(3, buttons.size());
 		for (int i = 0; i < buttons.size(); i++) {
 			Assert.assertEquals(1640D + i * 34D, buttons.get(i).getAbsoluteX(), 0D);
 			Assert.assertEquals(1022D, buttons.get(i).getAbsoluteY(), 0D);
@@ -110,7 +110,7 @@ public class DevNodeTest {
 		for (final ResourceNode button : DevNodeTest.buttons(panel)) {
 			this.bridges.move(button.getAbsoluteX() + 12D, button.getAbsoluteY() + 12D).frames(2);
 		}
-		Assert.assertEquals(Arrays.asList("[I] Inspect", "[R] Reload", "[U] Update", "[G] Grid"), ui.hovers.stream().distinct().collect(Collectors.toList()));
+		Assert.assertEquals(Arrays.asList("[I] Inspect", "[R] Reload", "[G] Grid"), ui.hovers.stream().distinct().collect(Collectors.toList()));
 	}
 
 	@Test
@@ -219,20 +219,20 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		final List<String> texts = DevNodeTest.texts(panel);
-		for (final String text : Arrays.asList("RectNode", "1 update", "Bounds", "position: RELATIVE", "x: 200.0 / 200.0 (200.0)", "y: 200.0 / 200.0 (200.0)", "width: 300.0 (300.0)", "height: 150.0 (150.0)", "Hierarchy", "hierarchy: RectNode", "children: 0", "Properties", "hoveredColor: null")) {
+		for (final String text : Arrays.asList("RectNode", "Bounds", "position: RELATIVE", "x: 200.0 / 200.0 (200.0)", "y: 200.0 / 200.0 (200.0)", "width: 300.0 (300.0)", "height: 150.0 (150.0)", "Hierarchy", "hierarchy: RectNode", "children: 0", "Properties", "hoveredColor: null")) {
 			Assert.assertTrue(text + " in " + texts, texts.contains(text));
 		}
 		Assert.assertFalse(texts.contains("Callbacks"));
+		Assert.assertFalse(texts.contains("1 update"));
 	}
 
 	@Test
-	public void countsTheCallbacksAndTheUpdatesOfTheLockedNode() {
+	public void countsTheCallbacksOfTheLockedNode() {
 		final DevUI ui = new DevUI(RectNode.create(200D, 200D, 300D, 150D).onClick((node, mouseX, mouseY, clickType) -> {}));
 		final DevNode panel = DevNodeTest.open(this.bridges, ui);
 		ui.reload();
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		final List<String> texts = DevNodeTest.texts(panel);
-		Assert.assertTrue(texts.toString(), texts.contains("2 updates"));
 		Assert.assertTrue(texts.toString(), texts.contains("Callbacks"));
 		Assert.assertTrue(texts.toString(), texts.contains("NodeMousePressedCallback: 1"));
 	}
@@ -414,39 +414,15 @@ public class DevNodeTest {
 	}
 
 	@Test
-	public void highlightsTheNodesUpdatedInTheLastTwoSeconds() {
-		DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
-		final Draw highlight = DevNodeTest.draws(this.bridges, DevNodeTest.UPDATE, 0.3F).get(0);
-		Assert.assertEquals(200D, highlight.getLeft(), 0.001D);
-		Assert.assertEquals(200D, highlight.getTop(), 0.001D);
-		Assert.assertEquals(500D, highlight.getRight(), 0.001D);
-		Assert.assertEquals(350D, highlight.getBottom(), 0.001D);
-		this.bridges.getClock().advance(1500L);
-		this.bridges.frame();
-		Assert.assertEquals(1, DevNodeTest.draws(this.bridges, DevNodeTest.UPDATE, 0.3F * (2F - 1564F / 1000F)).size());
-		this.bridges.getClock().advance(500L);
-		this.bridges.frame();
-		Assert.assertTrue(this.bridges.getRender().getDraws(DevNodeTest.UPDATE.r, DevNodeTest.UPDATE.g, DevNodeTest.UPDATE.b).isEmpty());
-	}
-
-	@Test
-	public void togglesTheUpdateHighlightWithItsButton() {
-		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
-		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(2));
-		Assert.assertFalse(panel.getEyeSignal().get());
-		this.bridges.frame();
-		Assert.assertTrue(this.bridges.getRender().getDraws(DevNodeTest.UPDATE.r, DevNodeTest.UPDATE.g, DevNodeTest.UPDATE.b).isEmpty());
-		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(2));
-		Assert.assertTrue(panel.getEyeSignal().get());
-	}
-
-	@Test
-	public void togglesTheUpdateHighlightWithU() {
-		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
+	public void neverHighlightsTheUpdatedNodes() {
+		final DoubleSignal x = DoubleSignal.of(200D);
+		final DevUI ui = new DevUI(RectNode.create(200D, 200D, 300D, 150D).x(x));
+		DevNodeTest.open(this.bridges, ui);
 		this.bridges.getUi().keyTyped('u', Key.U);
-		Assert.assertFalse(panel.getEyeSignal().get());
-		this.bridges.getUi().keyTyped('u', Key.U);
-		Assert.assertTrue(panel.getEyeSignal().get());
+		x.set(250D);
+		ui.reload();
+		this.bridges.frames(2);
+		Assert.assertTrue(this.bridges.getRender().getDraws(DevNodeTest.RED.r, DevNodeTest.RED.g, DevNodeTest.RED.b).isEmpty());
 	}
 
 	@Test
@@ -479,7 +455,7 @@ public class DevNodeTest {
 		this.bridges.getUi().mousePressed(ClickType.RIGHT);
 		Assert.assertEquals(1, panel.getGridColorIndex());
 		this.bridges.frame();
-		Assert.assertEquals(4, DevNodeTest.draws(this.bridges, DevNodeTest.UPDATE, 1F).stream().filter(draw -> draw.getShader() == null && draw.getTop() < 1000D).count());
+		Assert.assertEquals(4, DevNodeTest.draws(this.bridges, DevNodeTest.RED, 1F).stream().filter(draw -> draw.getShader() == null && draw.getTop() < 1000D).count());
 		this.bridges.getUi().mousePressed(ClickType.RIGHT);
 		Assert.assertEquals(0, panel.getGridColorIndex());
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
@@ -496,9 +472,9 @@ public class DevNodeTest {
 	@Test
 	public void togglesTheGridWithItsButton() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
-		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(3));
+		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(2));
 		Assert.assertTrue(panel.getGridSignal().get());
-		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(3));
+		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(2));
 		Assert.assertFalse(panel.getGridSignal().get());
 	}
 

@@ -16,6 +16,8 @@ public final class ShaderTranslator {
 		for (final ShaderBuiltin builtin : source.getBuiltins()) {
 			if (builtin == ShaderBuiltin.LIGHTING) {
 				builder.append("uniform ").append(builtin.getType()).append(' ').append(builtin.getIdentifier()).append(";\n");
+			} else if (builtin == ShaderBuiltin.NORMAL) {
+				builder.append("attribute ").append(builtin.getType()).append(" joid_Normal;\n#define ").append(builtin.getIdentifier()).append(" (joid_Normal / 127.0)\n");
 			} else {
 				builder.append("#define ").append(builtin.getIdentifier()).append(' ').append(ShaderTranslator.getBuiltin(builtin)).append('\n');
 			}
@@ -44,8 +46,6 @@ public final class ShaderTranslator {
 			return "gl_MultiTexCoord0.xy";
 		case COLOR:
 			return "gl_Color";
-		case NORMAL:
-			return "gl_Normal";
 		case PROJECTION_MATRIX:
 			return "gl_ProjectionMatrix";
 		case MODEL_VIEW_MATRIX:

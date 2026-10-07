@@ -57,6 +57,10 @@ subprojects {
         options.encoding = 'UTF-8'
     }
 
+    tasks.withType(Test) {
+        systemProperty 'joid.config', file("$buildDir/config").absolutePath
+    }
+
     dependencies {
         compile "org.projectlombok:lombok:1.18.34"
 
