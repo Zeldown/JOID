@@ -21,62 +21,97 @@
 
 <br>
 
+JOID is a UI engine for Java 8. You build each screen from nodes, JOID draws it on the GPU of the engine you already use, and you decide how everything looks.
+
 <p align="center">
   <img src="documentation/content/images/pixel-perfect.webp" alt="A design rebuilt in JOID by copying each layer's values, then overlaid on the design export" width="100%">
 </p>
 
 ## Why JOID
 
-- 🔌 **Renderer-agnostic** — your UIs talk only to JOID, and a backend adapts it to the engine underneath. The same code runs on LWJGL 2, LWJGL 3, Vulkan or your own engine, and on every version of them, every backend being checked pixel by pixel against the others.
-- 📐 **Pixel-perfect from your design** — every UI is laid out on a 1920×1080 canvas, the frame you design on: copy the positions, sizes, colors and font settings from your design tool and the render lands on the mockup pixel for pixel, scaled to any window.
-- 🎨 **Design-neutral** — every component an interface needs comes with its behavior, state and input handled, and the look you give it. Draw them once in your own UI kit: the same usage code gets an entirely different design with another kit.
-- 🧰 **Developer experience, end to end** — a fluent, typed API completed by your IDE and checked by the compiler, sensible defaults, and a dev mode with an inspector, a profiler, hot reload and warnings that point at your own line of code.
-- 🧱 **Everything in one library** — from a simple rectangle to a video: MSDF text sharp at any size, images, SVG, animated GIF/APNG/WebP, video with positional audio, 3D models, gradients, rounded corners, borders, blur, masks, custom shaders, tweens and transitions.
-- ⚡ **Direct GPU rendering** — nodes turn straight into GPU draw calls and shader passes of your engine, with no intermediate rendering layer.
-- 🔄 **Reactive state** — signals update exactly the parts of the interface that depend on them, and stores share and persist your state across UIs.
+- **One UI, any engine.** Write your interface once and run it anywhere: LWJGL 2, LWJGL 3, Vulkan, or any other engine, even one you built yourself.
+- **Your mockup, at any size.** Lay out your UI on a fixed design canvas, copy positions, sizes and colors straight from your mockup, and JOID scales it to any window.
+- **Reactive to your data.** Show your data and forget about it: when a value changes, everything displaying it on screen updates by itself.
+- **Your look, not ours.** Components handle behavior and input. You draw them in your own UI kit, and another kit gives the same code a whole new design.
+- **Looks great at any size.** Text and shapes stay razor-sharp at any size and any resolution, thanks to built-in MSDF text and anti-aliasing.
+- **Everything included.** Images, SVG, animated GIF and WebP, video, 3D models, shadows, blur, masks, shaders, animations, and whatever else you can imagine.
+- **Made to be pleasant to use.** A typed fluent API, sensible defaults, and a dev mode with an inspector, hot reload and warnings that point at your line of code.
 
 ## Showcase
 
+Every frame below is a real JOID render on the 1920×1080 canvas. Only the mouse pointer is drawn on top.
+
+<p align="center">
+  <img src="documentation/content/images/showcase-hero.webp" alt="A dashboard drawn by JOID: a large gradient headline, a video card with rounded corners, a live chart, a spinning 3D model and a notification sliding in, over soft blurred colors" width="100%">
+</p>
+
+<p align="center"><sub>Video, a lit 3D model, a live chart, gradients, glows and blur in one screen. <a href="documentation/content/images/showcase.mp4">Watch the full showcase in 1080p (MP4)</a>.</sub></p>
+
 <table>
   <tr>
-    <td width="50%"><img src="documentation/content/images/tutorial-overview.png" alt="A settings screen built with JOID"></td>
-    <td width="50%"><img src="documentation/content/images/tutorial-polish-hover.gif" alt="Hover animations and a tooltip"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-reactive.webp" alt="Three sliders drive a glowing orb: its size, colors and glow, the numbers and an equalizer follow every move"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-type.webp" alt="Text from 14 to 108 px in several fonts, with markup and animated effects, then a 6x zoom that stays perfectly sharp"></td>
   </tr>
   <tr>
-    <td align="center"><sub>A settings screen, built step by step in the tutorial</sub></td>
-    <td align="center"><sub>Hover animations, tooltips and an animated switch</sub></td>
+    <td align="center"><sub><b>Reactive.</b> Drag a slider and every node that reads its value follows.</sub></td>
+    <td align="center"><sub><b>Typography.</b> Markup, animated effects, and a 6× zoom that stays sharp.</sub></td>
   </tr>
   <tr>
-    <td colspan="2"><img src="documentation/content/images/uikit-side-by-side.png" alt="The same code drawn by two UI kits"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-drag.webp" alt="A record is dragged from a library into a player, snaps into place, and the player shows its title and color"></td>
+    <td width="50%"><img src="documentation/content/images/uikit-side-by-side.png" alt="The same screen code drawn by two different UI kits"></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><sub>The same screen code, drawn by two UI kits: only the import changes</sub></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="documentation/content/images/text-effects-animated.gif" alt="Animated text effects"></td>
-    <td width="50%"><img src="documentation/content/images/msdf-sizes.png" alt="MSDF text at 16, 64 and 256 px"></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>Markup and per-glyph text effects</sub></td>
-    <td align="center"><sub>MSDF text, sharp from 16 to 256 px</sub></td>
+    <td align="center"><sub><b>Drag and drop.</b> Drop a record, it snaps into place and the player updates.</sub></td>
+    <td align="center"><sub><b>Your design.</b> The same screen code, drawn by two UI kits.</sub></td>
   </tr>
 </table>
+
+The code stays short. This button counts its clicks, and its label updates by itself:
+
+```java
+public final class CounterUI extends UI {
+
+	private static final Color VIOLET = Color.decode("#8B5CF6");
+	private static final Color CYAN   = Color.decode("#22D3EE");
+
+	private final IntegerSignal clicks = IntegerSignal.of(0);
+
+	@Override
+	public void init() {
+		final TextInfo info = TextInfo.create(Theme.getFont(), 40F, Color.WHITE);
+
+		RectNode
+		.create(760, 440, 400, 120)
+		.color(CounterUI.VIOLET.toGradient(CounterUI.CYAN))
+		.effect(RoundedNodeEffect.create(24F))
+		.effect(ShadowNodeEffect.create(CounterUI.VIOLET, 32F))
+		.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
+		.body(button -> {
+			TextNode.create(button.dw(2), button.dh(2)).text(Text.create("Clicks: " + this.clicks.get(), info)).anchor(Align.CENTER).attach(button);
+		})
+		.attach(this);
+	}
+
+}
+```
+
+`Theme` loads your font once at startup: the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) shows the whole program, window included.
 
 ## Documentation
 
 <div align="center">
 
-### 📖 [**joid.dev-zeldown.workers.dev**](https://joid.dev-zeldown.workers.dev/)
+### [**joid.dev-zeldown.workers.dev**](https://joid.dev-zeldown.workers.dev/)
 
 Getting started · Tutorial · Essentials · Components · Guides · Search (`Ctrl+K`)
 
 </div>
 
-Start with the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) for a first window in a few minutes, or the [Tutorial](https://joid.dev-zeldown.workers.dev/#/tutorial/setup) to build a complete screen. The site also lives in the [`documentation/`](documentation) folder: serve it with any static HTTP server (`cd documentation && npx serve .`).
+Start with the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) for a first window in a few minutes, or follow the [Tutorial](https://joid.dev-zeldown.workers.dev/#/tutorial/setup) to build a complete screen. The site also lives in the [`documentation/`](documentation) folder: serve it with any static HTTP server (`cd documentation && npx serve .`).
 
 ## Credits
 
-- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon** — Tween animation engine (Apache-2.0, bundled in `lib/animation/tweenengine`)
-- [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco** — Video decoding (Apache-2.0; the FFmpeg builds carry their own terms)
+- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon**: tween animation engine (Apache-2.0, bundled in `lib/animation/tweenengine`)
+- [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco**: video decoding (Apache-2.0; the FFmpeg builds carry their own terms)
 
 JOID is released under the [Apache License 2.0](LICENSE).
