@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.objectweb.asm.tree.AbstractInsnNode;
-
 import dev.joid.lib.utils.signal.Signal;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,7 +17,7 @@ public final class ReplayMatch {
 	private final Object                           self;
 	private final boolean                          definitions;
 	private final Map<String, String>              holeMap;
-	private final Map<AbstractInsnNode, Signal<?>> positionalMap;
+	private final Map<Object, Signal<?>>           positionalMap;
 	private final boolean[]                        consumed;
 
 	public static ReplayMatch create(final ReplaySlice slice, final ReplayRun run, final Map<String, String> holeMap, final boolean[] consumed) {

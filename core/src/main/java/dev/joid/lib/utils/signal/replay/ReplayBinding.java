@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import org.objectweb.asm.tree.AbstractInsnNode;
-
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.SignalContext;
 import lombok.AccessLevel;
@@ -21,7 +19,7 @@ public final class ReplayBinding<T> implements Supplier<T> {
 	private final Object                           self;
 	private final boolean                          definitions;
 	private final Map<String, String>              holeMap;
-	private final Map<AbstractInsnNode, Signal<?>> positionalMap;
+	private final Map<Object, Signal<?>>           positionalMap;
 	private final List<Signal<?>>                  readList;
 	private final long                             epoch;
 

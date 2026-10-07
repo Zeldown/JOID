@@ -230,6 +230,17 @@ public class SignalReplayTest {
 	}
 
 	@Test
+	public void followsALocalSignalReadAgainInABranchTakenLater() {
+		final ReplayLocalUI ui = new ReplayLocalUI("branch");
+		Assert.assertEquals("", this.open(ui));
+		Assert.assertEquals("none", SignalReplayTest.node(ui, 0).getText().get());
+		ui.getListList().get(0).add("Ada");
+		Assert.assertEquals("Ada and Ada", SignalReplayTest.node(ui, 0).getText().get());
+		ui.getListList().get(0).clear();
+		Assert.assertEquals("none", SignalReplayTest.node(ui, 0).getText().get());
+	}
+
+	@Test
 	public void followsTheLocalSignalOfEachTurnOfALoop() {
 		final ReplayLocalUI ui = new ReplayLocalUI("loop");
 		Assert.assertEquals("", this.open(ui));

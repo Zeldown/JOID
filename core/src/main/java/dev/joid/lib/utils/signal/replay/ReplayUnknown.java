@@ -9,9 +9,14 @@ import lombok.RequiredArgsConstructor;
 public final class ReplayUnknown {
 
 	private final String description;
+	private final Object key;
 
 	public static ReplayUnknown create(final String description) {
-		return new ReplayUnknown(description);
+		return new ReplayUnknown(description, null);
+	}
+
+	public static ReplayUnknown create(final String description, final Object key) {
+		return new ReplayUnknown(description, key);
 	}
 
 }

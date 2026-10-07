@@ -2,11 +2,10 @@ package dev.joid.lib.utils.signal.replay;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.objectweb.asm.tree.AbstractInsnNode;
 
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.SignalContext;
@@ -22,7 +21,7 @@ public final class ReplayRun {
 	private final boolean                          definitions;
 	private final Map<String, String>              holeMap;
 	private final List<Signal<?>>                  positionalList;
-	private final Map<AbstractInsnNode, Signal<?>> positionalMap;
+	private final Map<Object, Signal<?>>           positionalMap;
 
 	private final List<Group>                groupList;
 	private final List<Signal<?>>            directList;
@@ -31,7 +30,7 @@ public final class ReplayRun {
 	private boolean         positionalNeeded;
 	private List<Signal<?>> currentList;
 
-	private ReplayRun(final Object self, final boolean definitions, final boolean matching, final Map<String, String> holeMap, final List<Signal<?>> positionalList, final Map<AbstractInsnNode, Signal<?>> positionalMap) {
+	private ReplayRun(final Object self, final boolean definitions, final boolean matching, final Map<String, String> holeMap, final List<Signal<?>> positionalList, final Map<Object, Signal<?>> positionalMap) {
 		this.self            = self;
 		this.definitions     = definitions;
 		this.matching        = matching;
@@ -45,10 +44,10 @@ public final class ReplayRun {
 	}
 
 	public static ReplayRun match(final Object self, final boolean definitions, final List<Signal<?>> positionalList) {
-		return new ReplayRun(self, definitions, true, null, positionalList, new IdentityHashMap<>());
+		return new ReplayRun(self, definitions, true, null, positionalList, new HashMap<>());
 	}
 
-	public static ReplayRun replay(final Object self, final boolean definitions, final Map<String, String> holeMap, final Map<AbstractInsnNode, Signal<?>> positionalMap) {
+	public static ReplayRun replay(final Object self, final boolean definitions, final Map<String, String> holeMap, final Map<Object, Signal<?>> positionalMap) {
 		return new ReplayRun(self, definitions, false, holeMap, null, positionalMap);
 	}
 
@@ -87,9 +86,9 @@ public final class ReplayRun {
 		return result;
 	}
 
-	public Signal<?> position(final AbstractInsnNode instruction, final Class<?> owner) {
+	public Signal<?> position(final Object key, final Class<?> owner) {
 		if (!this.matching) {
-			final Signal<?> signal = this.positionalMap.get(instruction);
+			final Signal<?> signal = this.positionalMap.get(key);
 			if (signal == null) {
 				throw new ReplayException(ReplayFailure.SIGNALS_DIFFER);
 			}
@@ -108,7 +107,10 @@ public final class ReplayRun {
 		}
 
 		final Signal<?> signal = this.positionalList.get(position);
-		this.positionalMap.put(instruction, signal);
+		final Signal<?> previous = this.positionalMap.put(key, signal);
+		if (previous != null && previous != signal) {
+			throw new ReplayException(ReplayFailure.SIGNALS_DIFFER);
+		}
 		return signal;
 	}
 

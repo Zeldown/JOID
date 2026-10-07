@@ -371,7 +371,7 @@ public final class ReplayFrame {
 		if (result != null) {
 			this.push(result[0], (Boolean) result[1], size);
 		} else {
-			this.push(ReplayUnknown.create(this.method.describeLocal(variable, index)), false, size);
+			this.push(ReplayUnknown.create(this.method.describeLocal(variable, index), variable), false, size);
 		}
 	}
 
@@ -646,7 +646,8 @@ public final class ReplayFrame {
 			receiver = this.pop();
 			live |= this.lastLive;
 			if (receiver instanceof ReplayUnknown && this.method.isSignal(instruction.owner)) {
-				receiver = this.run.position(instruction, this.method.type(Type.getObjectType(instruction.owner)));
+				final Object key = ((ReplayUnknown) receiver).getKey();
+				receiver = this.run.position(key != null ? key : instruction, this.method.type(Type.getObjectType(instruction.owner)));
 			} else if (unknown == null && ReplayFrame.isUnknown(receiver)) {
 				unknown = "this".equals(ReplayFrame.describe(receiver)) ? ReplayUnknown.create("the method " + instruction.name + "()") : receiver;
 			}
@@ -781,7 +782,7 @@ public final class ReplayFrame {
 		if (live || this.controlLive) {
 			throw new ReplayException(ReplayFailure.LOCAL_COMBINED, ReplayFrame.describe(unknown));
 		}
-		this.push(unknown instanceof ReplayUnknown ? unknown : ReplayUnknown.create(ReplayFrame.describe(unknown)), false, size);
+		this.push(ReplayUnknown.create(ReplayFrame.describe(unknown)), false, size);
 	}
 
 	private void push(final Object value, final boolean live, final int size) {

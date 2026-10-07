@@ -1,10 +1,12 @@
 package dev.joid.demo.replay;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.signal.ComputedSignal;
+import dev.joid.lib.utils.signal.impl.iterable.ListSignal;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.utils.signal.replay.ReplayNode;
 import lombok.Getter;
@@ -14,8 +16,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReplayLocalUI extends UI {
 
-	private final IntegerSignal       other      = IntegerSignal.of(100);
-	private final List<IntegerSignal> signalList = new ArrayList<>();
+	private final IntegerSignal            other      = IntegerSignal.of(100);
+	private final List<IntegerSignal>      signalList = new ArrayList<>();
+	private final List<ListSignal<String>> listList   = new ArrayList<>();
 
 	private final String scenario;
 
@@ -52,6 +55,12 @@ public class ReplayLocalUI extends UI {
 			case "body": {
 				final IntegerSignal clicks = this.create(0);
 				ReplayNode.create().<ReplayNode>body(node -> node.text("Body " + clicks.get())).attach(this);
+				break;
+			}
+			case "branch": {
+				final ListSignal<String> names = new ListSignal<>(Collections.emptyList());
+				this.listList.add(names);
+				ReplayNode.create().text(names.isEmpty() ? "none" : names.get(0) + " and " + names.get(0)).attach(this);
 				break;
 			}
 			case "loop": {
