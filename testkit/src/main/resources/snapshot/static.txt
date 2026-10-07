@@ -30,12 +30,9 @@ shot static-UIDemoResource
 ui dev.joid.demo.ui.shader.UIDemoShader
 wait 3500
 shot static-UIDemoShader
-ui dev.joid.demo.ui.wait.UIDemoWait
+ui dev.joid.demo.ui.signal.UIDemoSignal
 wait 3500
-shot static-UIDemoWait
-ui dev.joid.demo.ui.watch.UIDemoWatch
-wait 3500
-shot static-UIDemoWatch
+shot static-UIDemoSignal
 ui dev.joid.demo.ui.textfield.UIDemoTextField
 wait 3500
 shot static-UIDemoTextField
