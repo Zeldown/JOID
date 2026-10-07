@@ -56,6 +56,22 @@ public class NodeResourcePlayerPauseCallbackTest {
 	}
 
 	@Test
+	public void firesNothingWhenNothingPlays() {
+		final List<Object> received = new ArrayList<>();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(NodeResourcePlayerPauseCallbackTest.blink()).autoplay(false).onPause(received::add);
+		this.bridges.open(new NodeUI(player)).frames(2);
+		Assert.assertFalse(player.isPlaying());
+		player.pause();
+		Assert.assertTrue(received.isEmpty());
+		Assert.assertFalse(player.isPaused());
+		player.play();
+		this.bridges.frames(2);
+		player.pause();
+		player.pause();
+		Assert.assertEquals(Collections.singletonList(player), received);
+	}
+
+	@Test
 	public void firesNothingWithoutPlayback() {
 		final List<Object> received = new ArrayList<>();
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).onPause(received::add);

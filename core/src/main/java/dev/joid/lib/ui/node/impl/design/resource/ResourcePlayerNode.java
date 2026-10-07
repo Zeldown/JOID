@@ -164,7 +164,7 @@ public class ResourcePlayerNode extends Node {
 
 	public final @NonNull ResourcePlayerNode pause() {
 		final IResourcePlayback playback = this.getPlayback();
-		if (playback != null) {
+		if (playback != null && playback.isPlaying()) {
 			playback.pause();
 			super.executeCallback(ResourcePlayerNode.CALLBACK_PAUSE, InternalContext.create());
 		}
