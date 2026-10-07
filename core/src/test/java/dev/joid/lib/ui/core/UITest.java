@@ -1175,7 +1175,7 @@ public class UITest {
 	}
 
 	@Test
-	public void reloadsOnceItsOwnFileChanges() throws Exception {
+	public void reloadsOnItsNextFrameOnceItsJarChanges() throws Exception {
 		final File location = new File(this.folder.newFolder("classes"), "ui.jar");
 		final AtomicInteger inits = new AtomicInteger();
 		Files.write(location.toPath(), new byte[] {1});
@@ -1186,8 +1186,64 @@ public class UITest {
 			final BlockingQueue<String> changes = UITest.listen(ui);
 			Files.write(location.toPath(), new byte[] {1, 2});
 			UITest.await(changes, "file change ui.jar");
+			UITest.await(changes, "stop");
+			Assert.assertTrue(ui.isReloadPending());
+			Assert.assertEquals(1, inits.get());
+			final String output = UITest.out(() -> ui.draw(0D, 0D));
+			Assert.assertFalse(ui.isReloadPending());
 			Assert.assertEquals(2, inits.get());
 			Assert.assertTrue(ui.isInitialized());
+			Assert.assertTrue(output, output.contains("Reload completed in "));
+		} finally {
+			ui.properlyClose();
+		}
+	}
+
+	@Test
+	public void reloadsOnItsNextFrameOnceAClassOfItsFolderChanges() throws Exception {
+		final File location = this.folder.newFolder("class folder \u00E9");
+		final File type = new File(new File(location, "shop"), "ShopNode.class");
+		final AtomicInteger inits = new AtomicInteger();
+		Assert.assertTrue(type.getParentFile().mkdir());
+		final UI ui = UITest.hotReloaded(location, inits);
+		JOID.inst().setDevMode(true);
+		UITest.out(() -> ui.load(1920D, 1080D));
+		try {
+			final BlockingQueue<String> changes = UITest.listen(ui);
+			Files.write(type.toPath(), new byte[] {1});
+			UITest.await(changes, "file create ShopNode.class");
+			UITest.await(changes, "stop");
+			Assert.assertTrue(ui.isReloadPending());
+			Assert.assertEquals(1, inits.get());
+			UITest.out(() -> ui.draw(0D, 0D));
+			Assert.assertEquals(2, inits.get());
+			Files.write(type.toPath(), new byte[] {1, 2});
+			Assert.assertTrue(type.setLastModified(type.lastModified() + 10000L));
+			UITest.await(changes, "file change ShopNode.class");
+			UITest.await(changes, "stop");
+			UITest.out(() -> ui.draw(0D, 0D));
+			Assert.assertEquals(3, inits.get());
+		} finally {
+			ui.properlyClose();
+		}
+	}
+
+	@Test
+	public void ignoresTheOtherFilesOfItsClassFolder() throws Exception {
+		final File location = this.folder.newFolder("classes");
+		final File other = new File(location, "logo.png");
+		final AtomicInteger inits = new AtomicInteger();
+		final UI ui = UITest.hotReloaded(location, inits);
+		JOID.inst().setDevMode(true);
+		UITest.out(() -> ui.load(1920D, 1080D));
+		try {
+			final BlockingQueue<String> changes = UITest.listen(ui);
+			Files.write(other.toPath(), new byte[] {1});
+			UITest.await(changes, "file create logo.png");
+			UITest.await(changes, "stop");
+			Assert.assertFalse(ui.isReloadPending());
+			UITest.out(() -> ui.draw(0D, 0D));
+			Assert.assertEquals(1, inits.get());
 		} finally {
 			ui.properlyClose();
 		}
@@ -1215,6 +1271,9 @@ public class UITest {
 			Assert.assertTrue(other.delete());
 			Assert.assertTrue(directory.delete());
 			UITest.await(changes, "file delete other.txt", "directory delete assets");
+			UITest.await(changes, "stop");
+			Assert.assertFalse(ui.isReloadPending());
+			UITest.out(() -> ui.draw(0D, 0D));
 			Assert.assertEquals(1, inits.get());
 		} finally {
 			ui.properlyClose();
@@ -1765,6 +1824,11 @@ public class UITest {
 		@Override
 		public void onDirectoryDelete(final File directory) {
 			this.changes.add("directory delete " + directory.getName());
+		}
+
+		@Override
+		public void onStop(final FileAlterationObserver observer) {
+			this.changes.add("stop");
 		}
 
 	}

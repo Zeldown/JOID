@@ -83,6 +83,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	private boolean closed;
 	private boolean initialized;
+	private volatile boolean reloadPending;
 
 	private double fps;
 	private long   lastFrame;
@@ -198,62 +199,65 @@ public abstract class UI implements IUI, IndexedElement {
 		this.closed = false;
 
 		if (JOID.inst().isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
-			final File currentFile = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-			final FileAlterationObserver observer = new FileAlterationObserver(currentFile.getParentFile());
-			observer.addListener(new FileAlterationListener() {
+			try {
+				final File location = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+				final FileAlterationObserver observer = new FileAlterationObserver(location.isDirectory() ? location : location.getParentFile());
+				observer.addListener(new FileAlterationListener() {
 
-				@Override
-				public void onFileChange(final @NonNull File file) {
-					if (!file.getName().equals(currentFile.getName())) {
-						return;
+					private File change;
+
+					@Override
+					public void onFileChange(final @NonNull File file) {
+						this.track(file);
 					}
 
-					try {
-						Thread.sleep(1000L);
-					} catch (final Exception e) {}
+					@Override
+					public void onStop(final @NonNull FileAlterationObserver observer) {
+						if (this.change == null) {
+							return;
+						}
 
-					System.out.println("##########################");
-					System.out.println("Detected file change: " + file.getName());
-					System.out.println("Starting reload...");
+						try {
+							Thread.sleep(1000L);
+						} catch (final Exception e) {}
 
-					final long start = System.nanoTime();
-					UIPropertyHook.save(UI.this);
-					SignalReplay.clear();
-					UI.this.initialized = false;
-					UI.this.load(UI.this.view.getWidth(), UI.this.view.getHeight(), UI.this.view.getZoom());
-					final long end = System.nanoTime();
+						System.out.println("##########################");
+						System.out.println("Detected file change: " + this.change.getName());
+						this.change = null;
+						UI.this.reloadPending = true;
+					}
 
-					System.out.println("Reload completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
-					System.out.println("##########################");
-				}
+					@Override
+					public void onStart(final @NonNull FileAlterationObserver observer) {}
 
-				@Override
-				public void onStop(final @NonNull FileAlterationObserver observer) {}
+					@Override
+					public void onFileDelete(final @NonNull File file) {}
 
-				@Override
-				public void onStart(final @NonNull FileAlterationObserver observer) {}
+					@Override
+					public void onFileCreate(final @NonNull File file) {
+						this.track(file);
+					}
 
-				@Override
-				public void onFileDelete(final @NonNull File file) {}
+					@Override
+					public void onDirectoryDelete(final @NonNull File file) {}
 
-				@Override
-				public void onFileCreate(final @NonNull File file) {}
+					@Override
+					public void onDirectoryCreate(final @NonNull File file) {}
 
-				@Override
-				public void onDirectoryDelete(final @NonNull File file) {}
+					@Override
+					public void onDirectoryChange(final @NonNull File file) {}
 
-				@Override
-				public void onDirectoryCreate(final @NonNull File file) {}
+					private void track(final File file) {
+						if (location.isDirectory() ? file.getName().endsWith(".class") : file.equals(location)) {
+							this.change = file;
+						}
+					}
 
-				@Override
-				public void onDirectoryChange(final @NonNull File file) {}
+				});
 
-			});
-
-			this.fileMonitor = new FileAlterationMonitor(500);
-			this.fileMonitor.setThreadFactory(ThreadUtils.daemonFactory("UI/" + this.getClass().getName() + "/monitor"));
-			this.fileMonitor.addObserver(observer);
-			try {
+				this.fileMonitor = new FileAlterationMonitor(500);
+				this.fileMonitor.setThreadFactory(ThreadUtils.daemonFactory("UI/" + this.getClass().getName() + "/monitor"));
+				this.fileMonitor.addObserver(observer);
 				this.fileMonitor.start();
 
 				System.out.println("##########################");
@@ -485,6 +489,18 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void draw(final double mouseX, final double mouseY) {
+		if (this.reloadPending) {
+			this.reloadPending = false;
+			System.out.println("Starting reload...");
+
+			final long start = System.nanoTime();
+			this.reload();
+			final long end = System.nanoTime();
+
+			System.out.println("Reload completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
+			System.out.println("##########################");
+		}
+
 		this.untraced(() -> this.drawFrame(mouseX, mouseY));
 	}
 
