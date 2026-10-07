@@ -1,7 +1,9 @@
 package dev.joid.lib.resource;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
@@ -88,6 +90,11 @@ public final class Resource {
 		return this;
 	}
 
+	public final @NonNull Resource onError(final @NonNull BiConsumer<@NonNull Resource, @NonNull Throwable> callback) {
+		this.data.onError(error -> callback.accept(this, error));
+		return this;
+	}
+
 	public final @NonNull Resource reset() {
 		this.properties = this.builder.getProperties().copy();
 		return this;
@@ -153,6 +160,10 @@ public final class Resource {
 		return this.data.isGenerated();
 	}
 
+	public final boolean isFailed() {
+		return this.data.isFailed();
+	}
+
 	public final void dispatch(final @NonNull Runnable task) {
 		this.data.dispatch(task, this.properties.isAsync());
 	}
@@ -187,6 +198,14 @@ public final class Resource {
 
 	public final void bindTextureOnly(final @NonNull TextureWrap wrap) {
 		this.prepareBind();
+		if (this.isFailed()) {
+			if (JOID.inst().isDevMode()) {
+				BridgeHandler.RENDER.get().texture(this.data.getMissingTexture(), TextureFilter.NEAREST, wrap);
+			} else {
+				BridgeHandler.RENDER.get().resetTexture();
+			}
+			return;
+		}
 
 		final IResourceDecoder decoder = this.data.getDecoder();
 		if (decoder != null) {

@@ -388,13 +388,14 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
-	public void reportsAnUnreadableVideo() {
+	public void failsAnUnreadableVideo() {
 		final VideoResourceDecoder decoder = this.decoder(new ByteArrayInputStream("not a video".getBytes(StandardCharsets.UTF_8)));
 		final ResourceData data = new ResourceData("notes.mkv", decoder);
 		decoder.prepare(data);
 		final String error = VideoResourceDecoderTest.capture(() -> decoder.decode(data));
 		decoder.upload(data);
-		Assert.assertTrue(error, error.startsWith("Failed to decode video: "));
+		Assert.assertEquals("", error);
+		Assert.assertTrue(data.isFailed());
 		Assert.assertNull(data.getData());
 		Assert.assertFalse(decoder.isPlaying());
 	}

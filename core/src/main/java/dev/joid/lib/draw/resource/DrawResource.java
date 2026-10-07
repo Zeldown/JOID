@@ -1,5 +1,6 @@
 package dev.joid.lib.draw.resource;
 
+import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
@@ -46,6 +47,11 @@ public final class DrawResource {
 	}
 
 	private void drawRegion(final double x, final double y, final double width, final double height, final double[] region, final Resource resource) {
+		final boolean failed = resource.isFailed();
+		if (failed && !JOID.inst().isDevMode()) {
+			return;
+		}
+
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final PixelGrid grid = render.getPixelGrid();
 		final double left = grid.snapX(x);
@@ -53,7 +59,7 @@ public final class DrawResource {
 		final double right = grid.snapRight(x, x + width);
 		final double bottom = grid.snapBottom(y, y + height);
 		final ResourceProperties properties = resource.getProperties();
-		if (properties.getTextureCoords() == null) {
+		if (!failed && properties.getTextureCoords() == null) {
 			final boolean cropped = region != null && region.length == 4;
 			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX() * (cropped ? resource.getWidth() / region[2] : 1D));
 			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY() * (cropped ? resource.getHeight() / region[3] : 1D));
@@ -71,7 +77,7 @@ public final class DrawResource {
 			resource.bind(grid.isAligned() ? TextureWrap.CLAMP_TO_EDGE : TextureWrap.CLAMP_TO_BORDER, () -> {
 				final Tessellator tess = Tessellator.inst();
 				tess.start(DrawMode.QUADS);
-				if (region == null || region.length != 4) {
+				if (failed || region == null || region.length != 4) {
 					tess.addVertexWithUV(left, bottom, 0D, 0D, 1D);
 					tess.addVertexWithUV(right, bottom, 0D, 1D, 1D);
 					tess.addVertexWithUV(right, top, 0D, 1D, 0D);

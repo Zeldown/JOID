@@ -49,7 +49,7 @@ public class ResourceFormatTest {
 				ResourceFormat.decoder(asset);
 				Assert.fail("A HEIF or AVIF image must be refused");
 			} catch (final IllegalArgumentException expected) {
-				Assert.assertEquals(asset.getUniqueId() + " is a HEIF or AVIF image, which JOID cannot decode: convert it to PNG, JPEG or WebP", expected.getMessage());
+				Assert.assertEquals(asset.getUniqueId() + " is a HEIF or AVIF image, which JOID cannot decode", expected.getMessage());
 			}
 		}
 	}

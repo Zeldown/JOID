@@ -1,12 +1,16 @@
 package dev.joid.lib.resource.dto;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
+import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
 import dev.joid.lib.utils.thread.ThreadUtils;
@@ -19,13 +23,17 @@ public final class ResourceData {
 	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 	private static final Queue<ResourceData> COLLECTED      = new ConcurrentLinkedQueue<>();
 
-	private final List<Thread> tasks = new CopyOnWriteArrayList<>();
+	private final List<Thread>              tasks          = new CopyOnWriteArrayList<>();
+	private final List<Consumer<Throwable>> errorListeners = new CopyOnWriteArrayList<>();
 
 	private String           uniqueId;
 	private IResourceDecoder decoder;
 
 	private int[][]    data;
 	private ITexture[] textures;
+	private ITexture   missingTexture;
+
+	private volatile Throwable error;
 
 	private boolean loaded;
 	private boolean uploaded;
@@ -120,14 +128,29 @@ public final class ResourceData {
 	}
 
 	public final void generate(final boolean async) {
-		if (this.decoder != null) {
+		if (this.error != null) {
+			this.generated = true;
+		} else if (this.decoder != null) {
 			this.generated = true;
 
-			this.decoder.prepare(this);
+			try {
+				this.decoder.prepare(this);
+			} catch (final RuntimeException exception) {
+				this.fail(exception);
+				return;
+			}
+
 			final Runnable task = () -> {
-				this.decoder.decode(this);
-				this.loaded = true;
-				this.uploaded = false;
+				try {
+					this.decoder.decode(this);
+				} catch (final RuntimeException exception) {
+					this.fail(exception);
+				}
+
+				if (this.error == null) {
+					this.loaded = true;
+					this.uploaded = false;
+				}
 			};
 
 			if (async) {
@@ -166,11 +189,56 @@ public final class ResourceData {
 		this.data = null;
 	}
 
+	public final synchronized void fail(final @NonNull Throwable error) {
+		if (this.error != null) {
+			return;
+		}
+
+		this.error = error;
+		this.loaded = false;
+		this.data = null;
+		if (JOID.inst().isDevMode()) {
+			System.err.println("[JOID] The resource " + this.uniqueId + " cannot be read and is drawn empty: " + ResourceData.describe(error));
+		}
+
+		for (final Consumer<Throwable> listener : this.errorListeners) {
+			listener.accept(error);
+		}
+	}
+
+	public final synchronized @NonNull ResourceData onError(final @NonNull Consumer<@NonNull Throwable> listener) {
+		this.errorListeners.add(listener);
+		if (this.error != null) {
+			listener.accept(this.error);
+		}
+		return this;
+	}
+
+	public final boolean isFailed() {
+		return this.error != null;
+	}
+
+	public final @NonNull ITexture getMissingTexture() {
+		if (this.missingTexture == null) {
+			final int[] pixels = new int[64];
+			for (int i = 0; i < pixels.length; i++) {
+				pixels[i] = (i / 8 + i % 8) % 2 == 0 ? 0xFFFF00FF : 0xFF000000;
+			}
+			this.missingTexture = BridgeHandler.RENDER.get().createTexture().allocate(8, 8).upload(pixels, 8, 8);
+		}
+		return this.missingTexture;
+	}
+
 	public final void clear() {
 		if (this.textures != null) {
 			for (final ITexture texture : this.textures) {
 				texture.delete();
 			}
+		}
+
+		if (this.missingTexture != null) {
+			this.missingTexture.delete();
+			this.missingTexture = null;
 		}
 
 		this.data = null;
@@ -190,6 +258,16 @@ public final class ResourceData {
 			return null;
 		}
 		return clazz.cast(this.decoder);
+	}
+
+	private static @NonNull String describe(final @NonNull Throwable error) {
+		Throwable cause = error;
+		while (cause.getCause() != null && cause.getCause() != cause) {
+			cause = cause.getCause();
+		}
+
+		final String reason = cause == error ? String.valueOf(error.getMessage()) : error.getMessage() + " (" + cause + ")";
+		return reason + (cause instanceof IOException ? ", check that the file or the URL exists and can be read" : ", convert it to PNG, JPEG or WebP");
 	}
 
 	@Override

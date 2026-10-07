@@ -75,6 +75,12 @@ public class ResourcePlayerNode extends Node {
 			this.resource.prepareBind();
 		}
 
+		if (this.resource != null && this.resource.isFailed()) {
+			Color.WHITE.bind();
+			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
+			return;
+		}
+
 		if (this.resource == null || !this.resource.isLoaded()) {
 			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.LOADING());
 			return;

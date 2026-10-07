@@ -50,6 +50,12 @@ public class ResourceNode extends Node {
 			this.hoveredResource.prepareBind();
 		}
 
+		if (this.resource != null && this.resource.isFailed()) {
+			Color.WHITE.bind();
+			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
+			return;
+		}
+
 		if (this.resource == null || !this.resource.isLoaded()) {
 			final double skeletonWidth = super.getWidth();
 			final double skeletonHeight = super.getHeight();

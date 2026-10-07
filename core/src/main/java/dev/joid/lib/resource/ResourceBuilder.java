@@ -108,7 +108,12 @@ public final class ResourceBuilder {
 			final Resource resource = this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), null), computed -> {
 				created.set(true);
 				computed.dispatch(() -> {
-					computed.decoder(ResourceFormat.decoder(asset));
+					try {
+						computed.decoder(ResourceFormat.decoder(asset));
+					} catch (final RuntimeException exception) {
+						computed.getResourceData().fail(exception);
+					}
+
 					if (callback != null) {
 						callback.accept(computed);
 					}
@@ -120,7 +125,7 @@ public final class ResourceBuilder {
 			return resource;
 		}
 
-		final Resource resource = this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), ResourceFormat.decoder(asset)));
+		final Resource resource = this.compute(asset.getUniqueId(), () -> ResourceBuilder.read(asset));
 		if (callback != null) {
 			callback.accept(resource);
 		}
@@ -166,6 +171,16 @@ public final class ResourceBuilder {
 	public static @NonNull List<@NonNull ResourceBuilder> getBuilders() {
 		synchronized (ResourceBuilder.BUILDER_SET) {
 			return new ArrayList<>(ResourceBuilder.BUILDER_SET);
+		}
+	}
+
+	private static @NonNull ResourceData read(final @NonNull Asset asset) {
+		try {
+			return new ResourceData(asset.getUniqueId(), ResourceFormat.decoder(asset));
+		} catch (final RuntimeException exception) {
+			final ResourceData data = new ResourceData(asset.getUniqueId(), null);
+			data.fail(exception);
+			return data;
 		}
 	}
 

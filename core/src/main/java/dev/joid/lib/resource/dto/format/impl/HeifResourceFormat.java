@@ -17,7 +17,7 @@ public class HeifResourceFormat implements IResourceFormat {
 
 	@Override
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-		throw new IllegalArgumentException(asset.getUniqueId() + " is a HEIF or AVIF image, which JOID cannot decode: convert it to PNG, JPEG or WebP");
+		throw new IllegalArgumentException(asset.getUniqueId() + " is a HEIF or AVIF image, which JOID cannot decode");
 	}
 
 	public static boolean isHeif(final @NonNull byte[] header) {
