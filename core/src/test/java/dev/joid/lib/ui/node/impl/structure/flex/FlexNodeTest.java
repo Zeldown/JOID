@@ -186,13 +186,14 @@ public class FlexNodeTest {
 	}
 
 	@Test
-	public void laysOutTheChildrenAgainOnAReload() {
+	public void laysOutTheChildrenAgainOnTheNextFrame() {
 		final RectNode first = RectNode.create(0D, 0D, 100D, 50D);
 		final RectNode second = RectNode.create(0D, 0D, 100D, 30D);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(first, second);
 		this.bridges.open(new NodeUI(flex));
 		first.height(70D);
-		flex.margin(5D).reload();
+		flex.margin(5D);
+		this.bridges.frame();
 		Assert.assertEquals(75D, second.getY(), 0D);
 		Assert.assertEquals(105D, flex.getHeight(), 0D);
 	}

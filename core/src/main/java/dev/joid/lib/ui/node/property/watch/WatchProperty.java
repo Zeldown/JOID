@@ -1,31 +1,31 @@
 package dev.joid.lib.ui.node.property.watch;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.signal.Signal;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
-public enum WatchProperty {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class WatchProperty {
 
-	NONE(node -> {}),
-	CLEAR_CHILDREN(Node::clearChildren),
-	BODY(node -> {
-		if (node.getBodyConsumer() == null) {
-			return;
+	public static final WatchProperty BODY           = new WatchProperty((node, signal) -> {
+		if (node.getBodyConsumer() != null) {
+			node.getBodyConsumer().accept(node);
 		}
+	});
+	public static final WatchProperty CLEAR_CHILDREN = new WatchProperty((node, signal) -> node.clearChildren());
 
-		node.getBodyConsumer().accept(node);
-	}),
-	RELOAD(Node::reload);
+	private final @NonNull BiConsumer<@NonNull Node, @NonNull Signal<?>> action;
 
-	private final @NonNull Consumer<@NonNull Node> callback;
-
-	private WatchProperty(final @NonNull Consumer<@NonNull Node> callback) {
-		this.callback = callback;
+	public static @NonNull WatchProperty custom(final @NonNull BiConsumer<@NonNull Node, @NonNull Signal<?>> action) {
+		return new WatchProperty(action);
 	}
 
-	public void apply(final @NonNull Node node) {
-		this.callback.accept(node);
+	public void apply(final @NonNull Node node, final @NonNull Signal<?> signal) {
+		this.action.accept(node, signal);
 	}
 
 }

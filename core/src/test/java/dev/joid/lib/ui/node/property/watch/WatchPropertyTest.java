@@ -1,5 +1,9 @@
 package dev.joid.lib.ui.node.property.watch;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,9 +22,12 @@ public class WatchPropertyTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void leavesTheNodeAsItIs() {
+	public void runsACustomAction() {
+		final List<Object> received = new ArrayList<>();
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D));
-		WatchProperty.NONE.apply(node);
+		final Signal<Integer> signal = Signal.of(2);
+		WatchProperty.custom((target, source) -> received.addAll(Arrays.asList(target, source))).apply(node, signal);
+		Assert.assertEquals(Arrays.asList(node, signal), received);
 		Assert.assertEquals(1, node.getChildren().size());
 	}
 
@@ -28,7 +35,7 @@ public class WatchPropertyTest {
 	public void detachesEveryChild() {
 		final int[] detached = {0};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D).onDetach(child -> detached[0]++), RectNode.create(5D, 5D, 5D, 5D));
-		WatchProperty.CLEAR_CHILDREN.apply(node);
+		WatchProperty.CLEAR_CHILDREN.apply(node, Signal.of(1));
 		Assert.assertTrue(node.getChildren().isEmpty());
 		Assert.assertEquals(1, detached[0]);
 	}
@@ -37,24 +44,15 @@ public class WatchPropertyTest {
 	public void runsTheBodyAgain() {
 		final int[] runs = {0};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).body(() -> runs[0]++);
-		WatchProperty.BODY.apply(node);
+		WatchProperty.BODY.apply(node, Signal.of(1));
 		Assert.assertEquals(2, runs[0]);
 	}
 
 	@Test
 	public void runsNoBodyWithoutOne() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D));
-		WatchProperty.BODY.apply(node);
+		WatchProperty.BODY.apply(node, Signal.of(1));
 		Assert.assertEquals(1, node.getChildren().size());
-	}
-
-	@Test
-	public void loadsTheNodeAgain() {
-		final int[] loads = {0};
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).onInit(target -> loads[0]++);
-		this.bridges.open(new NodeUI(node)).frame();
-		WatchProperty.RELOAD.apply(node);
-		Assert.assertEquals(2, loads[0]);
 	}
 
 	@Test

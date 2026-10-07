@@ -11,7 +11,6 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
-import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.signal.impl.iterable.ListSignal;
 
@@ -23,7 +22,7 @@ public class UIDemoWatch extends UIDemo {
 	public void init() {
 		this.cardInformations.set(Arrays.asList("auteur", "Gros Titre", "ceci est une description", "moyenne description", "petite description"));
 		RectNode.create(10, 10, 400, 280).color(new Color(50, 50, 50)).body(node -> {
-			ContainerNode.create(node).watch(this.cardInformations, WatchProperty.NONE).body(container -> {
+			ContainerNode.create(node).watch(this.cardInformations).body(container -> {
 				CircleNode.create(10, 10, 50).attach(container);
 				TextNode.create(container.aw(-10), 10).text(Text.create(this.cardInformations.get(0), TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE), Align.END)).anchorX(Align.END).attach(container);
 				TextNode.create(10, 90).text(Text.create(this.cardInformations.get(1), TextInfo.create(DemoFont.MONTSERRAT, 40, Color.WHITE))).attach(container);

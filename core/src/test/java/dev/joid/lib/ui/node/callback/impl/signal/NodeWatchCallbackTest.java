@@ -33,11 +33,11 @@ public class NodeWatchCallbackTest {
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final Signal<Integer> signal = Signal.of(1);
 		final InternalContext context = InternalContext.create();
-		callback.pre(rect, context, signal, WatchProperty.NONE, WatchProperty.BODY);
+		callback.pre(rect, context, signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
-		callback.post(rect, context, signal, WatchProperty.NONE, WatchProperty.BODY);
-		Assert.assertEquals(Arrays.asList(rect, signal, Arrays.asList(WatchProperty.NONE, WatchProperty.BODY)), received);
+		callback.post(rect, context, signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY);
+		Assert.assertEquals(Arrays.asList(rect, signal, Arrays.asList(WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)), received);
 		Assert.assertTrue(context.isCancelled());
 	}
 
@@ -45,7 +45,7 @@ public class NodeWatchCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeWatchCallback<RectNode> callback = (node, signal, properties) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), Signal.of(1), WatchProperty.NONE);
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), Signal.of(1), WatchProperty.BODY);
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -53,11 +53,11 @@ public class NodeWatchCallbackTest {
 	public void receivesTheSignalAndItsProperties() {
 		final List<Object> received = new ArrayList<>();
 		final Signal<Integer> signal = Signal.of(1);
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).watch(signal, () -> true, WatchProperty.NONE).onWatch((node, watched, properties) -> received.addAll(Arrays.asList(node, watched, Arrays.asList(properties))));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).watch(signal, () -> true, WatchProperty.CLEAR_CHILDREN).onWatch((node, watched, properties) -> received.addAll(Arrays.asList(node, watched, Arrays.asList(properties))));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		Assert.assertTrue(received.isEmpty());
 		signal.set(2);
-		Assert.assertEquals(Arrays.asList(rect, signal, Collections.singletonList(WatchProperty.NONE)), received);
+		Assert.assertEquals(Arrays.asList(rect, signal, Collections.singletonList(WatchProperty.CLEAR_CHILDREN)), received);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class NodeWatchCallbackTest {
 	public void waitsForTheNodeToJoinAUi() {
 		final List<Object> received = new ArrayList<>();
 		final Signal<Integer> signal = Signal.of(1);
-		RectNode.create(100D, 100D, 200D, 100D).watch(signal, () -> true, WatchProperty.NONE).onWatch((node, watched, properties) -> received.add(node));
+		RectNode.create(100D, 100D, 200D, 100D).watch(signal).onWatch((node, watched, properties) -> received.add(node));
 		signal.set(2);
 		Assert.assertTrue(received.isEmpty());
 	}

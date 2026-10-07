@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,8 +32,9 @@ import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.node.callback.impl.signal.NodeWatchCallback;
+import dev.joid.lib.ui.node.callback.impl.state.NodeDetachCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeInitCallback;
-import dev.joid.lib.ui.node.callback.impl.state.NodeReloadCallback;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
@@ -753,7 +755,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(1L, node.getUpdateCount());
 		Assert.assertEquals(40L, node.getLastUpdate());
-		node.reload();
+		node.load(node.getUi());
 		Assert.assertEquals(2L, node.getUpdateCount());
 		Assert.assertEquals(56L, node.getLastUpdate());
 	}
@@ -779,8 +781,8 @@ public class NodeTest {
 		node.executePostCallback(NodeCallbackRegistry.getId(NodeInitCallback.class), InternalContext.create());
 		Assert.assertEquals(Arrays.asList("pre", "apply"), phases);
 		final InternalContext context = InternalContext.create();
-		node.executePreCallback(NodeCallbackRegistry.getId(NodeReloadCallback.class), context);
-		node.executePostCallback(NodeCallbackRegistry.getId(NodeReloadCallback.class), context);
+		node.executePreCallback(NodeCallbackRegistry.getId(NodeDetachCallback.class), context);
+		node.executePostCallback(NodeCallbackRegistry.getId(NodeDetachCallback.class), context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(2, phases.size());
 	}
@@ -788,24 +790,24 @@ public class NodeTest {
 	@Test
 	public void runsItsActionOnceItsCallbacksAreCleared() {
 		final List<String> events = new ArrayList<>();
-		final int[] reloads = {0};
-		final RecordingNode node = new RecordingNode("node", events, 0D, 0D, 10D, 10D).onReload(target -> reloads[0]++);
+		final int[] detaches = {0};
+		final RecordingNode node = new RecordingNode("node", events, 0D, 0D, 10D, 10D).onDetach(target -> detaches[0]++);
 		this.bridges.open(new NodeUI(node));
 		events.clear();
 		node.getCallbackMap().values().forEach(List::clear);
-		node.reload();
-		Assert.assertEquals(0, reloads[0]);
-		Assert.assertEquals(Arrays.asList("node init"), events);
+		node.onDetach();
+		Assert.assertEquals(0, detaches[0]);
+		Assert.assertEquals(Arrays.asList("node detach"), events);
 	}
 
 	@Test
 	public void skipsItsActionWhenAPreCallbackCancelsIt() {
 		final List<String> events = new ArrayList<>();
-		final RecordingNode node = new RecordingNode("node", events, 0D, 0D, 10D, 10D).onReload(new NodeReloadCallback<RecordingNode>() {
+		final RecordingNode node = new RecordingNode("node", events, 0D, 0D, 10D, 10D).onDetach(new NodeDetachCallback<RecordingNode>() {
 
 			@Override
 			public void apply(final @NonNull RecordingNode target) {
-				events.add("reloaded");
+				events.add("detached");
 			}
 
 			@Override
@@ -816,18 +818,18 @@ public class NodeTest {
 		});
 		this.bridges.open(new NodeUI(node));
 		events.clear();
-		node.reload();
+		node.onDetach();
 		Assert.assertTrue(events.isEmpty());
 	}
 
 	@Test
 	public void skipsAMissingCallback() {
-		final int[] reloads = {0};
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).onReload(rect -> reloads[0]++);
-		node.getCallbackMap().get(NodeCallbackRegistry.getId(NodeReloadCallback.class)).add(null);
+		final int[] detaches = {0};
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).onDetach(rect -> detaches[0]++);
+		node.getCallbackMap().get(NodeCallbackRegistry.getId(NodeDetachCallback.class)).add(null);
 		this.bridges.open(new NodeUI(node));
-		node.reload();
-		Assert.assertEquals(1, reloads[0]);
+		node.onDetach();
+		Assert.assertEquals(1, detaches[0]);
 	}
 
 	@Test
@@ -1626,20 +1628,6 @@ public class NodeTest {
 	}
 
 	@Test
-	public void reloadsItsWholeTree() {
-		final List<String> events = new ArrayList<>();
-		final int[] reloads = {0};
-		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D);
-		final RecordingNode parent = new RecordingNode("parent", events, 0D, 0D, 100D, 100D).append(child).onReload(target -> reloads[0]++);
-		this.bridges.open(new NodeUI(parent));
-		events.clear();
-		parent.reload();
-		Assert.assertEquals(1, reloads[0]);
-		Assert.assertTrue(events.contains("child init"));
-		Assert.assertEquals("parent init", events.get(events.size() - 1));
-	}
-
-	@Test
 	public void describesItsHierarchy() {
 		final PointNode leaf = new PointNode(0D, 0D);
 		final ContainerNode root = ContainerNode.create(0D, 0D, 100D, 100D).append(RectNode.create(0D, 0D, 10D, 10D).append(leaf));
@@ -1803,16 +1791,69 @@ public class NodeTest {
 	}
 
 	@Test
-	public void reloadsOnEveryChangeOfAWatchedSignal() {
+	public void cannotBeReloadedAlone() {
+		for (final Method method : Node.class.getMethods()) {
+			Assert.assertNotEquals("reload", method.getName());
+			Assert.assertNotEquals("onReload", method.getName());
+		}
+	}
+
+	@Test
+	public void onlyCallsItsWatchCallbacksForAWatchWithoutProperty() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final List<WatchProperty> watched = new ArrayList<>();
-		final int[] reloads = {0};
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++).onWatch((rect, source, properties) -> watched.addAll(Arrays.asList(properties)));
+		final int[] inits = {0};
+		final int[] watches = {0};
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D)).onInit(rect -> inits[0]++).watch(signal).onWatch((rect, source, properties) -> {
+			watches[0]++;
+			watched.addAll(Arrays.asList(properties));
+		});
 		this.bridges.open(new NodeUI(node));
 		signal.set(1);
 		signal.set(2);
-		Assert.assertEquals(2, reloads[0]);
-		Assert.assertEquals(Arrays.asList(WatchProperty.RELOAD, WatchProperty.RELOAD), watched);
+		Assert.assertEquals(2, watches[0]);
+		Assert.assertEquals(1, inits[0]);
+		Assert.assertTrue(watched.isEmpty());
+		Assert.assertEquals(1, node.getChildren().size());
+	}
+
+	@Test
+	public void appliesItsWatchPropertiesInTheirOrder() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final List<String> applied = new ArrayList<>();
+		final RectNode node = RectNode
+		.create(0D, 0D, 10D, 10D)
+		.body(rect -> {
+			applied.add("body " + rect.getChildren().size());
+			RectNode.create(0D, 0D, 5D, 5D).attach(rect);
+		})
+		.watch(signal, WatchProperty.custom((rect, source) -> applied.add("first " + source.get())), WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY, WatchProperty.custom((rect, source) -> applied.add("last " + rect.getChildren().size())));
+		this.bridges.open(new NodeUI(node));
+		applied.clear();
+		signal.set(3);
+		Assert.assertEquals(Arrays.asList("first 3", "body 0", "last 1"), applied);
+	}
+
+	@Test
+	public void letsAPreWatchCallbackRefuseTheProperties() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final int[] bodies = {0};
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).body(rect -> bodies[0]++).watch(signal, WatchProperty.BODY).onWatch(new NodeWatchCallback<RectNode>() {
+
+			@Override
+			public void apply(final @NonNull RectNode rect, final @NonNull Signal<?> source, final @NonNull WatchProperty @NonNull... properties) {
+				bodies[0] += 10;
+			}
+
+			@Override
+			public void pre(final @NonNull RectNode rect, final @NonNull InternalContext context, final @NonNull Signal<?> source, final @NonNull WatchProperty @NonNull... properties) {
+				context.cancel();
+			}
+
+		});
+		this.bridges.open(new NodeUI(node));
+		signal.set(1);
+		Assert.assertEquals(1, bodies[0]);
 	}
 
 	@Test
@@ -1847,7 +1888,7 @@ public class NodeTest {
 	public void stopsWatchingOnceRemoved() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final int[] reloads = {0};
-		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++);
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch((rect, source, properties) -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
 		parent.remove(child);
@@ -1860,8 +1901,8 @@ public class NodeTest {
 	public void stopsWatchingInTheWholeClearedTree() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final int[] reloads = {0};
-		final RectNode grandchild = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++);
-		final ContainerNode child = ContainerNode.create(0D, 0D, 50D, 50D).watch(signal).onReload(container -> reloads[0]++).append(grandchild);
+		final RectNode grandchild = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch((rect, source, properties) -> reloads[0]++);
+		final ContainerNode child = ContainerNode.create(0D, 0D, 50D, 50D).watch(signal).onWatch((container, source, properties) -> reloads[0]++).append(grandchild);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
 		parent.clearChildren();
@@ -1874,7 +1915,7 @@ public class NodeTest {
 	public void ignoresAPublishThatReachesItAfterItsDetach() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final int[] reloads = {0};
-		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++);
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch((rect, source, properties) -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
 		final List<SignalSubscriber<Integer>> pending = new ArrayList<>(signal.getEventSet());
@@ -1889,7 +1930,7 @@ public class NodeTest {
 	public void watchesAgainOnceAttachedAgain() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final int[] reloads = {0};
-		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++);
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch((rect, source, properties) -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
 		parent.remove(child);
@@ -1905,7 +1946,7 @@ public class NodeTest {
 	public void catchesUpWithAChangeMissedWhileDetached() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final int[] watches = {0};
-		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal, WatchProperty.NONE).onWatch((rect, source, properties) -> watches[0]++);
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch((rect, source, properties) -> watches[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
 		parent.remove(child);
@@ -1922,7 +1963,7 @@ public class NodeTest {
 	public void watchesAgainOnceItsUiIsOpenedAgain() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final int[] reloads = {0};
-		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D).watch(signal).onReload(rect -> reloads[0]++));
+		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch((rect, source, properties) -> reloads[0]++));
 		this.bridges.open(ui);
 		JOID.close(ui);
 		Assert.assertTrue(signal.getEventSet().isEmpty());
@@ -2269,17 +2310,6 @@ public class NodeTest {
 	public void copiesTheEffectsOfTheNode() {
 		final RectNode node = RectNode.create(0D, 0D, 50D, 50D).effect(RoundedNodeEffect.create(6F));
 		Assert.assertEquals(1, node.copy().getEffectMap().size());
-	}
-
-	@Test
-	public void initializesEachChildOnceOnReload() {
-		final int[] inits = {0};
-		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).onInit(rect -> inits[0]++);
-		final RectNode parent = RectNode.create(0D, 0D, 100D, 100D).append(child);
-		this.bridges.open(new NodeUI(parent));
-		Assert.assertEquals(1, inits[0]);
-		parent.reload();
-		Assert.assertEquals(2, inits[0]);
 	}
 
 	@Test

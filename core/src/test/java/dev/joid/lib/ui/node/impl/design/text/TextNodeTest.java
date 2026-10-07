@@ -178,14 +178,13 @@ public class TextNodeTest {
 	}
 
 	@Test
-	public void sizesItselfAgainToItsTextOnReload() {
+	public void sizesItselfAgainToItsTextOnTheNextFrame() {
 		final AtomicReference<String> value = new AtomicReference<>("hello");
 		final TextNode node = TextNode.create(0D, 0D).text(Text.create(value::get, this.info()));
 		final TextNode given = TextNode.create(0D, 100D, 200D, 40D).text(Text.create(value::get, this.info()));
 		this.bridges.getUi().add(new NodeUI(node, given));
 		value.set("hi");
-		node.reload();
-		given.reload();
+		this.bridges.frame();
 		Assert.assertEquals(20D, node.getWidth(), 0D);
 		Assert.assertEquals(200D, given.getWidth(), 0D);
 		Assert.assertEquals(40D, given.getHeight(), 0D);

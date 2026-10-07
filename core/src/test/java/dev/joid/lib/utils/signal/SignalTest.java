@@ -1,5 +1,6 @@
 package dev.joid.lib.utils.signal;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,6 +16,13 @@ import org.junit.Test;
 import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
 
 public class SignalTest {
+
+	@Test
+	public void readsItsValueWithGetOrPeekOnly() {
+		for (final Method method : ISignal.class.getMethods()) {
+			Assert.assertNotEquals("getOrDefault", method.getName());
+		}
+	}
 
 	@Test
 	public void startsEmptyWithoutDefault() {

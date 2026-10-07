@@ -19,9 +19,7 @@ public class UIDemoSlider extends UIDemo {
 
 		TextNode
 		.create(1920 / 2, 1080 / 2 - 70)
-		.text(Text.create("", TextInfo.create(DemoFont.MONTSERRAT, 25).color(Color.WHITE), Align.CENTER).modifier(TextModifier.UPPER_CASE))
-		.<TextNode>onInit(node -> node.getText().text("value: " + valueSignal.get()))
-		.watch(valueSignal)
+		.text(Text.create(valueSignal.map(value -> "value: " + value), TextInfo.create(DemoFont.MONTSERRAT, 25).color(Color.WHITE), Align.CENTER).modifier(TextModifier.UPPER_CASE))
 		.anchorX(Align.CENTER)
 		.attach(this);
 

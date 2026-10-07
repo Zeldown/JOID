@@ -35,7 +35,7 @@ public abstract class SwitchNode extends Node {
 		this.stateList = new ListSignal<>();
 		this.stateIndex = new IntegerSignal(0);
 
-		super.watch(this.stateList, WatchProperty.CLEAR_CHILDREN, WatchProperty.RELOAD);
+		super.watch(this.stateList, WatchProperty.CLEAR_CHILDREN, WatchProperty.custom((node, signal) -> node.init(node.getUi())));
 	}
 
 	public final <T extends SwitchNode> @NonNull T states(final @NonNull String @NonNull... states) {

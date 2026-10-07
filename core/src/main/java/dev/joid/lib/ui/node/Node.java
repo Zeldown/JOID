@@ -60,7 +60,6 @@ import dev.joid.lib.ui.node.callback.impl.state.NodeAppendCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeDetachCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeDrawCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeInitCallback;
-import dev.joid.lib.ui.node.callback.impl.state.NodeReloadCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeRenderCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeUpdateCallback;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
@@ -115,7 +114,6 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_DRAW           = NodeCallbackRegistry.next(NodeDrawCallback.class);
 	private static final int CALLBACK_RENDER         = NodeCallbackRegistry.next(NodeRenderCallback.class);
 	private static final int CALLBACK_UPDATE         = NodeCallbackRegistry.next(NodeUpdateCallback.class);
-	private static final int CALLBACK_RELOAD         = NodeCallbackRegistry.next(NodeReloadCallback.class);
 	private static final int CALLBACK_DETACH         = NodeCallbackRegistry.next(NodeDetachCallback.class);
 	private static final int CALLBACK_APPEND         = NodeCallbackRegistry.next(NodeAppendCallback.class);
 
@@ -273,16 +271,9 @@ public abstract class Node implements INode {
 	}
 
 	public final void load(final @NonNull UI ui) {
-		this.load(ui, true);
-	}
-
-	private void load(final UI ui, final boolean children) {
 		this.executeCallback(Node.CALLBACK_INIT, InternalContext.create(), () -> {
 			this.ui = ui;
-
-			if (children) {
-				this.children.forEach(child -> child.load(this.ui));
-			}
+			this.children.forEach(child -> child.load(this.ui));
 
 			if (this.scrollbar != null) {
 				this.scrollbar.load(this.ui);
@@ -894,13 +885,6 @@ public abstract class Node implements INode {
 		if (enabled && this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
 			this.executePostCallback(Node.CALLBACK_KEY_PRESSED, context, c, key);
 		}
-	}
-
-	public final void reload() {
-		this.executeCallback(Node.CALLBACK_RELOAD, InternalContext.create(), () -> {
-			this.children.forEach(Node::reload);
-			this.load(this.ui, false);
-		});
 	}
 
 	public final void onDetach() {
@@ -1762,7 +1746,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal) {
-		return this.watch(signal, WatchProperty.RELOAD);
+		return this.watch(signal, new WatchProperty[0]);
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
@@ -1780,7 +1764,7 @@ public abstract class Node implements INode {
 				try {
 					for (final WatchProperty property : properties) {
 						try {
-							property.apply(this);
+							property.apply(this, signal);
 						} catch (final Exception e) {
 							e.printStackTrace();
 						}
@@ -2043,10 +2027,6 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T onDraw(final @NonNull NodeDrawCallback<T> callback) {
 		return this.registerCallback(Node.CALLBACK_DRAW, callback);
-	}
-
-	public final <T extends Node> @NonNull T onReload(final @NonNull NodeReloadCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_RELOAD, callback);
 	}
 
 	public final <T extends Node> @NonNull T onAppend(final @NonNull NodeAppendCallback<T> callback) {

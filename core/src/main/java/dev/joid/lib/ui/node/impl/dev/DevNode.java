@@ -107,11 +107,8 @@ public final class DevNode extends Node {
 				ResourceNode
 				.create(0, 0, 24, 24)
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
-				.watch(this.inspectSignal)
-				.<ResourceNode>onInit(node -> {
-					node.color(this.inspectSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
-					node.hoveredColor(node.getColor().darker(0.3F));
-				})
+				.color(this.inspectSignal.map(inspect -> inspect ? DevNode.ACTION : DevNode.WHITE))
+				.hoveredColor(this.inspectSignal.map(inspect -> (inspect ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					this.inspectSignal.set(!this.inspectSignal.peek());
 					this.inspectedNode.set(null);
@@ -124,11 +121,8 @@ public final class DevNode extends Node {
 				ResourceNode
 				.create(0, 0, 24, 24)
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
-				.watch(this.reloadSignal)
-				.<ResourceNode>onInit(node -> {
-					node.color(DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()));
-					node.hoveredColor(node.getColor().darker(0.3F));
-				})
+				.color(this.reloadSignal.map(reloading -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue())))
+				.hoveredColor(this.reloadSignal.map(reloading -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()).darker(0.3F)))
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					node.getUi().reload();
 				})
@@ -138,11 +132,8 @@ public final class DevNode extends Node {
 				ResourceNode
 				.create(0, 0, 24, 24)
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")))
-				.watch(this.eyeSignal)
-				.<ResourceNode>onInit(node -> {
-					node.color(this.eyeSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
-					node.hoveredColor(node.getColor().darker(0.3F));
-				})
+				.color(this.eyeSignal.map(eye -> eye ? DevNode.ACTION : DevNode.WHITE))
+				.hoveredColor(this.eyeSignal.map(eye -> (eye ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					this.eyeSignal.set(!this.eyeSignal.peek());
 				})
@@ -152,11 +143,8 @@ public final class DevNode extends Node {
 				ResourceNode
 				.create(0, 0, 24, 24)
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
-				.watch(this.gridSignal)
-				.<ResourceNode>onInit(node -> {
-					node.color(this.gridSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
-					node.hoveredColor(node.getColor().darker(0.3F));
-				})
+				.color(this.gridSignal.map(grid -> grid ? DevNode.ACTION : DevNode.WHITE))
+				.hoveredColor(this.gridSignal.map(grid -> (grid ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					this.gridSignal.set(!this.gridSignal.peek());
 				})
@@ -181,7 +169,7 @@ public final class DevNode extends Node {
 
 		ContainerNode
 		.create(0, 0, super.getWidth(), super.getHeight() - super.getDefaultHeight())
-		.onInit(node -> {
+		.body(node -> {
 			node.width(super.getWidth()).height(super.getHeight() - super.getDefaultHeight());
 			if (!this.inspectedNodeLocked.peek()) {
 				return;
@@ -377,7 +365,7 @@ public final class DevNode extends Node {
 			})
 			.attach(node);
 		})
-		.watch(this.inspectedNodeLocked, WatchProperty.CLEAR_CHILDREN, WatchProperty.RELOAD)
+		.watch(this.inspectedNodeLocked, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
 		.visible(node -> this.inspectedNodeLocked.peek())
 		.attach(this);
 
@@ -431,11 +419,11 @@ public final class DevNode extends Node {
 		if (super.getHeight() == super.getDefaultHeight() && this.inspectedNodeLocked.peek()) {
 			super.width(super.getDefaultWidth() + 200);
 			super.height(super.getDefaultHeight() + 220);
-			super.reload();
+			this.init(super.getUi());
 		} else if (super.getHeight() != super.getDefaultHeight() && !this.inspectedNodeLocked.peek()) {
 			super.width(super.getDefaultWidth());
 			super.height(super.getDefaultHeight());
-			super.reload();
+			this.init(super.getUi());
 		}
 
 		if (this.eyeSignal.peek()) {
