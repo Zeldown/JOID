@@ -21,7 +21,7 @@ Load a model once and reuse it. `OBJModel`, its data and writing your own `IDraw
 ModelNode.create(100, 100, 300, 300).model(model).rotationYaw(30D).rotationPitch(15D).attach(this);
 ```
 
-![A rounded box with a checkered texture, smoothly lit, turned to show three sides](../../images/model-node.png "The demo model turned by 30 degrees of yaw and 15 degrees of pitch.")
+![The demo teapot, smoothly lit, turned to show its side and its base](../../images/model-node.png "The demo model turned by 30 degrees of yaw and 15 degrees of pitch.")
 
 ![Diagram: the OBJ axes, +X right, +Y up, +Z toward the viewer](../../images/diagram-model-axes.png "The axes of a model: rotationYaw turns around Y, rotationPitch around X")
 
@@ -61,7 +61,7 @@ ModelViewerNode
 .attach(this);
 ```
 
-![The cursor drags a cube to turn it, then the wheel zooms it out](../../images/model-viewer.gif "Dragging turns the model; the wheel changes its size. Both ease toward their targets.")
+![The cursor drags the teapot to turn it, then the wheel zooms it out](../../images/model-viewer.gif "Dragging turns the model; the wheel changes its size. Both ease toward their targets.")
 
 > NOTE: In a chain, a setter returns the type that declares it. Call the `ModelViewerNode` setters (`sizeRange`, `rotationYawRange`, `rotationPitchRange`, `zoom`) before `model(...)` and the other `ModelNode` setters, or assign the node to a `ModelViewerNode` variable first.
 

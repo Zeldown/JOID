@@ -15,9 +15,9 @@ public class UIShop extends UI {
 }
 ```
 
-![A rounded box with a gray checkerboard texture, seen from the front, lit from the viewer](../images/models-demo.png "The model is centered on (300, 200), one model unit is 120 UI units")
+![The demo teapot with its neutral ornamented texture, seen from the side, lit from the viewer](../images/models-demo.png "The model is centered on (300, 200), one model unit is 120 UI units")
 
-The model used on this page is the demo model of JOID (`assets/demo/models/model.obj`): a rounded box of 2 × 1.2 × 1.2 units centered on its origin, with a normal and a texture coordinate on every vertex, and a checkerboard texture.
+The model used on this page is the demo model of JOID (`assets/demo/models/model.obj`): a teapot swept from the curves of the Utah teapot, 2 × 0.98 × 1.24 units centered on its origin, with a smooth normal and a texture coordinate on every vertex, and an ornamented texture.
 
 ## Axes of a model
 
@@ -72,7 +72,7 @@ ModelNode.create(300, 100, 300, 300).model(this.model).rotationYaw(-30D).attach(
 RectNode.create(250, 300, 200, 80).color(Color.decode("#999999")).attach(this);
 ```
 
-![Two rounded boxes overlapping, the second one drawn over the first, and a gray card drawn over both](../images/models-depth.png "Drawing order decides between models and nodes; depth only sorts the faces of one model")
+![Two teapots overlapping, the second one drawn over the first, and a gray card drawn over both](../images/models-depth.png "Drawing order decides between models and nodes; depth only sorts the faces of one model")
 
 You can put any number of models in a UI: each node after a model is drawn in front of it, at its usual place in the drawing order.
 

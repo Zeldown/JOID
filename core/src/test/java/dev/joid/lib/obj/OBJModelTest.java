@@ -47,9 +47,9 @@ public class OBJModelTest {
 	@Test
 	public void readsTheDemoModelWithItsOwnNormalAndTextureCoordinateOnEveryVertex() {
 		final OBJModel model = OBJModel.load("demo", OBJModel.class.getResourceAsStream("/assets/demo/models/model.obj"), OBJModelTest.TEXTURE);
-		Assert.assertEquals(2D, model.getWidth(), 1E-5D);
-		Assert.assertEquals(1.2D, model.getHeight(), 1E-5D);
-		Assert.assertEquals(1.2D, model.getDepth(), 1E-5D);
+		Assert.assertEquals(2D, model.getWidth(), 1E-4D);
+		Assert.assertEquals(0.9792D, model.getHeight(), 1E-4D);
+		Assert.assertEquals(1.2434D, model.getDepth(), 1E-4D);
 		Assert.assertEquals(model.getVertices().size(), model.getVertexNormals().size());
 		Assert.assertEquals(model.getVertices().size(), model.getTextureCoordinates().size());
 		Assert.assertSame(DrawMode.TRIANGLES, model.getCurrentGroup().getDrawMode());
