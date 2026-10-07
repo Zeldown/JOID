@@ -376,9 +376,39 @@ wait 1500
 shot inter-reorderable
 ui dev.joid.demo.ui.simple.UIDemoSimple
 wait 800
-move 1100 540
+move 180 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 180 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 180 785
+wait 100
+press RIGHT
+release RIGHT
+wait 100
+move 540 800
+wait 300
+move 700 1000
+wait 300
+move 540 800
+wait 300
+move 1320 490
 wait 800
 shot inter-hover
+ui dev.joid.demo.ui.animation.UIDemoAnimation
+wait 800
+move 1520 895
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 1200
+shot inter-animation
 ui dev.joid.demo.ui.UIDemoChoice
 wait 1500
 move 1180 75
