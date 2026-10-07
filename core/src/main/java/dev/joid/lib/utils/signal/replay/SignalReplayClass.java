@@ -24,44 +24,44 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplayClass {
+public final class SignalReplayClass {
 
 	private final File        file;
 	private final long        modified;
 	private final ClassNode   node;
 	private final ClassLoader loader;
 
-	private final Map<MethodNode, ReplayMethod> methodMap = new ConcurrentHashMap<>();
+	private final Map<MethodNode, SignalReplayMethod> methodMap = new ConcurrentHashMap<>();
 
-	public static ReplayClass read(final String name, final Class<?> type, final ClassLoader loader) {
+	public static SignalReplayClass read(final String name, final Class<?> type, final ClassLoader loader) {
 		final String path = name.replace('.', '/') + ".class";
-		final File file = ReplayClass.locate(type, path);
+		final File file = SignalReplayClass.locate(type, path);
 		if (file != null) {
 			final long modified = file.lastModified();
 			try (InputStream input = new FileInputStream(file)) {
-				return new ReplayClass(file, modified, ReplayClass.parse(input), loader);
+				return new SignalReplayClass(file, modified, SignalReplayClass.parse(input), loader);
 			} catch (final IOException | RuntimeException exception) {
-				return ReplayClass.read(name, path, loader);
+				return SignalReplayClass.read(name, path, loader);
 			}
 		}
-		return ReplayClass.read(name, path, loader);
+		return SignalReplayClass.read(name, path, loader);
 	}
 
 	public boolean isStale() {
 		return this.file != null && this.file.lastModified() != this.modified;
 	}
 
-	public ReplayMethod method(final MethodNode method) {
+	public SignalReplayMethod method(final MethodNode method) {
 		return this.methodMap.computeIfAbsent(method, key -> {
 			try {
-				return ReplayMethod.create(this, key);
+				return SignalReplayMethod.create(this, key);
 			} catch (final AnalyzerException exception) {
-				throw new ReplayException(ReplayFailure.CLASS_NOT_FOUND, this.node.name.replace('/', '.'));
+				throw new SignalReplayException(SignalReplayFailure.CLASS_NOT_FOUND, this.node.name.replace('/', '.'));
 			}
 		});
 	}
 
-	private static ReplayClass read(final String name, final String path, final ClassLoader loader) {
+	private static SignalReplayClass read(final String name, final String path, final ClassLoader loader) {
 		for (final ClassLoader candidate : new ClassLoader[] {loader, Thread.currentThread().getContextClassLoader(), ClassLoader.getSystemClassLoader()}) {
 			if (candidate == null) {
 				continue;
@@ -71,13 +71,13 @@ public final class ReplayClass {
 				if (input == null) {
 					continue;
 				}
-				return new ReplayClass(null, 0L, ReplayClass.parse(input), candidate);
+				return new SignalReplayClass(null, 0L, SignalReplayClass.parse(input), candidate);
 			} catch (final IOException | RuntimeException exception) {
 				continue;
 			}
 		}
 
-		throw new ReplayException(ReplayFailure.CLASS_NOT_FOUND, name);
+		throw new SignalReplayException(SignalReplayFailure.CLASS_NOT_FOUND, name);
 	}
 
 	private static File locate(final Class<?> type, final String path) {
@@ -102,7 +102,7 @@ public final class ReplayClass {
 
 	private static ClassNode parse(final InputStream input) throws IOException {
 		final ClassNode node = new ClassNode();
-		new ClassReader(ReplayClass.bytes(input)).accept(node, ClassReader.SKIP_FRAMES);
+		new ClassReader(SignalReplayClass.bytes(input)).accept(node, ClassReader.SKIP_FRAMES);
 		return node;
 	}
 

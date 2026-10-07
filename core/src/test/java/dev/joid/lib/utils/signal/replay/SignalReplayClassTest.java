@@ -14,7 +14,7 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.demo.replay.ReplayHiddenFixture;
 
-public class ReplayClassTest {
+public class SignalReplayClassTest {
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
@@ -24,7 +24,7 @@ public class ReplayClassTest {
 		final File file = this.copy();
 		try (URLClassLoader loader = new URLClassLoader(new URL[] {this.folder.getRoot().toURI().toURL()}, null)) {
 			final Class<?> type = Class.forName(ReplayHiddenFixture.class.getName(), false, loader);
-			final ReplayClass replayClass = ReplayClass.read(ReplayHiddenFixture.class.getName(), type, ReplayClassTest.class.getClassLoader());
+			final SignalReplayClass replayClass = SignalReplayClass.read(ReplayHiddenFixture.class.getName(), type, SignalReplayClassTest.class.getClassLoader());
 			Assert.assertEquals(file.getCanonicalFile(), replayClass.getFile().getCanonicalFile());
 			Assert.assertEquals("dev/joid/demo/replay/ReplayHiddenFixture", replayClass.getNode().name);
 		}
@@ -35,7 +35,7 @@ public class ReplayClassTest {
 		final File file = this.copy();
 		try (URLClassLoader loader = new URLClassLoader(new URL[] {this.folder.getRoot().toURI().toURL()}, null)) {
 			final Class<?> type = Class.forName(ReplayHiddenFixture.class.getName(), false, loader);
-			final ReplayClass replayClass = ReplayClass.read(ReplayHiddenFixture.class.getName(), type, ReplayClassTest.class.getClassLoader());
+			final SignalReplayClass replayClass = SignalReplayClass.read(ReplayHiddenFixture.class.getName(), type, SignalReplayClassTest.class.getClassLoader());
 			Assert.assertFalse(replayClass.isStale());
 			Assert.assertTrue(file.setLastModified(file.lastModified() + 10000L));
 			Assert.assertTrue(replayClass.isStale());
@@ -44,7 +44,7 @@ public class ReplayClassTest {
 
 	@Test
 	public void readsTheBytecodeThroughTheLoadersWithoutClass() {
-		final ReplayClass replayClass = ReplayClass.read(ReplayHiddenFixture.class.getName(), null, ReplayClassTest.class.getClassLoader());
+		final SignalReplayClass replayClass = SignalReplayClass.read(ReplayHiddenFixture.class.getName(), null, SignalReplayClassTest.class.getClassLoader());
 		Assert.assertNull(replayClass.getFile());
 		Assert.assertFalse(replayClass.isStale());
 		Assert.assertEquals("dev/joid/demo/replay/ReplayHiddenFixture", replayClass.getNode().name);

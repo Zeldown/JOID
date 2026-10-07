@@ -19,7 +19,7 @@ import dev.joid.demo.replay.ReplayScenarioUI;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.bridge.replay.IReplayRemapper;
+import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -331,7 +331,7 @@ public class SignalReplayTest {
 			public void checkPermission(final Permission permission) {
 				if (permission instanceof ReflectPermission && permission.getName().equals("suppressAccessChecks")) {
 					for (final StackTraceElement element : Thread.currentThread().getStackTrace()) {
-						if (element.getClassName().equals(ReplayMethod.class.getName())) {
+						if (element.getClassName().equals(SignalReplayMethod.class.getName())) {
 							throw new SecurityException("refused");
 						}
 					}
@@ -356,8 +356,8 @@ public class SignalReplayTest {
 
 	@Test
 	public void warnsWhenTheBytecodeOfTheCallerCannotBeRead() throws IOException {
-		final ReplayHiddenLoader loader = ReplayHiddenLoader.create("ReplayHiddenMissing", true, false, null, null);
-		final ReplayNode node = ReplayNode.create();
+		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenMissing", true, false, null, null);
+		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);
 		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads a signal but cannot follow it: the bytecode of dev.joid.demo.replay.ReplayHiddenMissing cannot be read. The value stays \"Hidden 0\". Use map(...) or a lambda.\n", SignalReplayTest.hidden(loader, node, clicks));
 		clicks.set(2);
@@ -366,8 +366,8 @@ public class SignalReplayTest {
 
 	@Test
 	public void readsTheBytecodeThroughTheContextLoader() throws IOException {
-		final ReplayHiddenLoader loader = ReplayHiddenLoader.create("ReplayHiddenContext", true, true, null, null);
-		final ReplayNode node = ReplayNode.create();
+		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenContext", true, true, null, null);
+		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);
 		Assert.assertEquals("", SignalReplayTest.hidden(loader, node, clicks));
 		clicks.set(2);
@@ -376,8 +376,8 @@ public class SignalReplayTest {
 
 	@Test
 	public void searchesTheWholeMethodWithoutLineNumbers() throws IOException {
-		final ReplayHiddenLoader loader = ReplayHiddenLoader.create("ReplayHiddenLineless", false, true, null, null);
-		final ReplayNode node = ReplayNode.create();
+		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenLineless", false, true, null, null);
+		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);
 		Assert.assertEquals("", SignalReplayTest.hidden(loader, node, clicks));
 		clicks.set(2);
@@ -386,26 +386,26 @@ public class SignalReplayTest {
 
 	@Test
 	public void warnsWhenTheCallIsNotOnTheLine() throws IOException {
-		final ReplayHiddenLoader loader = ReplayHiddenLoader.create("ReplayHiddenMoved", true, true, "text", "texture");
-		final ReplayNode node = ReplayNode.create();
+		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenMoved", true, true, "text", "texture");
+		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);
 		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads a signal but cannot follow it: no call to text(...) is found on this line, the .class file on disk may no longer match the loaded class (recompiled since the launch). The value stays \"Hidden 0\". Restart the application, or use map(...) or a lambda.\n", SignalReplayTest.hidden(loader, node, clicks));
 	}
 
 	@Test
 	public void warnsWhenAMemberIsRenamedWithoutRemapper() throws IOException {
-		final ReplayHiddenLoader loader = ReplayHiddenLoader.create("ReplayHiddenRenamed", true, true, "get", "obtain");
-		final ReplayNode node = ReplayNode.create();
+		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenRenamed", true, true, "get", "obtain");
+		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);
-		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads clicks but cannot follow it: the method dev.joid.lib.utils.signal.impl.primitive.IntegerSignal.obtain(...) does not exist at runtime. The value stays \"Hidden 0\". Configure the IReplayRemapper of the bridge or use map(...).\n", SignalReplayTest.hidden(loader, node, clicks));
+		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads clicks but cannot follow it: the method dev.joid.lib.utils.signal.impl.primitive.IntegerSignal.obtain(...) does not exist at runtime. The value stays \"Hidden 0\". Configure the ISignalReplayRemapper of the bridge or use map(...).\n", SignalReplayTest.hidden(loader, node, clicks));
 	}
 
 	@Test
 	public void mapsTheRenamedMembersThroughTheBridgeRemapper() throws IOException {
-		final ReplayHiddenLoader loader = ReplayHiddenLoader.create("ReplayHiddenRemapped", true, true, "get", "obtain");
-		final ReplayNode node = ReplayNode.create();
+		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenRemapped", true, true, "get", "obtain");
+		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);
-		final IReplayRemapper remapper = new IReplayRemapper() {
+		final ISignalReplayRemapper remapper = new ISignalReplayRemapper() {
 
 			@Override
 			public String mapMethod(final String owner, final String name, final String descriptor) {
@@ -413,25 +413,25 @@ public class SignalReplayTest {
 			}
 
 		};
-		BridgeHandler.REPLAY.register(remapper);
+		BridgeHandler.SIGNAL_REPLAY.register(remapper);
 		try {
 			Assert.assertEquals("", SignalReplayTest.hidden(loader, node, clicks));
 		} finally {
-			BridgeHandler.REPLAY.unregister(remapper);
+			BridgeHandler.SIGNAL_REPLAY.unregister(remapper);
 		}
 		clicks.set(2);
 		Assert.assertEquals("Hidden 2", node.getText().get());
 	}
 
-	private static ReplayNode node(final UI ui, final int index) {
-		return (ReplayNode) ui.getNodeList().get(index);
+	private static SignalReplayNode node(final UI ui, final int index) {
+		return (SignalReplayNode) ui.getNodeList().get(index);
 	}
 
 	private String open(final UI ui) {
 		return SignalReplayTest.capture(true, () -> this.bridges.getUi().add(ui)).replaceAll("\\.java:\\d+ ", ".java:N ");
 	}
 
-	private static String hidden(final ReplayHiddenLoader loader, final ReplayNode node, final IntegerSignal clicks) {
+	private static String hidden(final SignalReplayHiddenLoader loader, final SignalReplayNode node, final IntegerSignal clicks) {
 		final ClassLoader previous = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(loader);
 		try {

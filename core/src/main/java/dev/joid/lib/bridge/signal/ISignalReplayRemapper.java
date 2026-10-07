@@ -1,9 +1,9 @@
-package dev.joid.lib.bridge.replay;
+package dev.joid.lib.bridge.signal;
 
 import dev.joid.lib.bridge.IBridge;
 import lombok.NonNull;
 
-public interface IReplayRemapper extends IBridge {
+public interface ISignalReplayRemapper extends IBridge {
 
 	public default @NonNull String mapClass(final @NonNull String name) {
 		return name;

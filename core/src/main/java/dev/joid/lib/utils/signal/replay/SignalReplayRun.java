@@ -14,23 +14,23 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-public final class ReplayRun {
+public final class SignalReplayRun {
 
-	private final Object                           self;
-	private final boolean                          matching;
-	private final boolean                          definitions;
-	private final Map<String, String>              holeMap;
-	private final List<Signal<?>>                  positionalList;
-	private final Map<Object, Signal<?>>           positionalMap;
+	private final Object                 self;
+	private final boolean                matching;
+	private final boolean                definitions;
+	private final Map<String, String>    holeMap;
+	private final List<Signal<?>>        positionalList;
+	private final Map<Object, Signal<?>> positionalMap;
 
-	private final List<Group>                groupList;
-	private final List<Signal<?>>            directList;
-	private final Map<ReplaySlice, Object[]> definitionCache;
+	private final List<Group>                      groupList;
+	private final List<Signal<?>>                  directList;
+	private final Map<SignalReplaySlice, Object[]> definitionCache;
 
 	private boolean         positionalNeeded;
 	private List<Signal<?>> currentList;
 
-	private ReplayRun(final Object self, final boolean definitions, final boolean matching, final Map<String, String> holeMap, final List<Signal<?>> positionalList, final Map<Object, Signal<?>> positionalMap) {
+	private SignalReplayRun(final Object self, final boolean definitions, final boolean matching, final Map<String, String> holeMap, final List<Signal<?>> positionalList, final Map<Object, Signal<?>> positionalMap) {
 		this.self            = self;
 		this.definitions     = definitions;
 		this.matching        = matching;
@@ -43,21 +43,21 @@ public final class ReplayRun {
 		this.currentList     = this.directList;
 	}
 
-	public static ReplayRun match(final Object self, final boolean definitions, final List<Signal<?>> positionalList) {
-		return new ReplayRun(self, definitions, true, null, positionalList, new HashMap<>());
+	public static SignalReplayRun match(final Object self, final boolean definitions, final List<Signal<?>> positionalList) {
+		return new SignalReplayRun(self, definitions, true, null, positionalList, new HashMap<>());
 	}
 
-	public static ReplayRun replay(final Object self, final boolean definitions, final Map<String, String> holeMap, final Map<Object, Signal<?>> positionalMap) {
-		return new ReplayRun(self, definitions, false, holeMap, null, positionalMap);
+	public static SignalReplayRun replay(final Object self, final boolean definitions, final Map<String, String> holeMap, final Map<Object, Signal<?>> positionalMap) {
+		return new SignalReplayRun(self, definitions, false, holeMap, null, positionalMap);
 	}
 
-	public Object run(final ReplaySlice slice) {
-		final Object value = ReplayFrame.create(this, slice, 0).execute();
+	public Object run(final SignalReplaySlice slice) {
+		final Object value = SignalReplayFrame.create(this, slice, 0).execute();
 		this.flush();
 		return value;
 	}
 
-	public Object[] define(final ReplaySlice slice, final int depth) {
+	public Object[] define(final SignalReplaySlice slice, final int depth) {
 		if (this.definitionCache.containsKey(slice)) {
 			return this.definitionCache.get(slice);
 		}
@@ -68,11 +68,11 @@ public final class ReplayRun {
 		this.currentList = readList;
 		Object[] result;
 		try {
-			final ReplayFrame frame = ReplayFrame.create(this, slice, depth);
+			final SignalReplayFrame frame = SignalReplayFrame.create(this, slice, depth);
 			final Object value = frame.execute();
 			this.flush();
-			result = value instanceof ReplayUnknown || value instanceof ReplayParts ? null : new Object[] {value, frame.isLastLive()};
-		} catch (final ReplayException exception) {
+			result = value instanceof SignalReplayUnknown || value instanceof SignalReplayParts ? null : new Object[] {value, frame.isLastLive()};
+		} catch (final SignalReplayException exception) {
 			this.flush();
 			result = null;
 		} finally {
@@ -90,26 +90,26 @@ public final class ReplayRun {
 		if (!this.matching) {
 			final Signal<?> signal = this.positionalMap.get(key);
 			if (signal == null) {
-				throw new ReplayException(ReplayFailure.SIGNALS_DIFFER);
+				throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 			}
 			return signal;
 		}
 
 		if (this.positionalList == null) {
 			this.positionalNeeded = true;
-			throw new ReplayException(ReplayFailure.SIGNALS_DIFFER);
+			throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 		}
 
 		this.flush();
 		final int position = this.directList.size();
 		if (this.currentList != this.directList || position >= this.positionalList.size() || !owner.isInstance(this.positionalList.get(position))) {
-			throw new ReplayException(ReplayFailure.SIGNALS_DIFFER);
+			throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 		}
 
 		final Signal<?> signal = this.positionalList.get(position);
 		final Signal<?> previous = this.positionalMap.put(key, signal);
 		if (previous != null && previous != signal) {
-			throw new ReplayException(ReplayFailure.SIGNALS_DIFFER);
+			throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 		}
 		return signal;
 	}

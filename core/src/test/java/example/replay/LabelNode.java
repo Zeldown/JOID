@@ -3,13 +3,13 @@ package example.replay;
 import java.util.function.Supplier;
 
 import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.replay.ReplayNode;
+import dev.joid.lib.utils.signal.replay.SignalReplayNode;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 @SuppressWarnings("unchecked")
-public class LabelNode extends ReplayNode {
+public class LabelNode extends SignalReplayNode {
 
 	private Supplier<String> label;
 

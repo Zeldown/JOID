@@ -18,39 +18,39 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplaySite {
+public final class SignalReplaySite {
 
-	private final List<ReplaySlice> sliceList;
-	private final ReplayException   failure;
+	private final List<SignalReplaySlice> sliceList;
+	private final SignalReplayException   failure;
 
-	public static ReplaySite analyze(final ReplayClass replayClass, final StackTraceElement caller, final String setter) {
+	public static SignalReplaySite analyze(final SignalReplayClass replayClass, final StackTraceElement caller, final String setter) {
 		try {
-			final List<ReplaySlice> sliceList = new ArrayList<>();
+			final List<SignalReplaySlice> sliceList = new ArrayList<>();
 			for (final MethodNode method : replayClass.getNode().methods) {
 				if (method.name.equals(caller.getMethodName())) {
-					ReplaySite.collect(replayClass, method, caller.getLineNumber(), setter, sliceList);
+					SignalReplaySite.collect(replayClass, method, caller.getLineNumber(), setter, sliceList);
 				}
 			}
 
 			if (sliceList.isEmpty()) {
-				throw new ReplayException(ReplayFailure.CALL_NOT_FOUND, setter, caller.getLineNumber() >= 0 ? "on this line" : "in this method");
+				throw new SignalReplayException(SignalReplayFailure.CALL_NOT_FOUND, setter, caller.getLineNumber() >= 0 ? "on this line" : "in this method");
 			}
-			return new ReplaySite(sliceList, null);
-		} catch (final ReplayException exception) {
-			return ReplaySite.fail(exception);
+			return new SignalReplaySite(sliceList, null);
+		} catch (final SignalReplayException exception) {
+			return SignalReplaySite.fail(exception);
 		}
 	}
 
-	public static ReplaySite fail(final ReplayException exception) {
-		return new ReplaySite(Collections.emptyList(), exception);
+	public static SignalReplaySite fail(final SignalReplayException exception) {
+		return new SignalReplaySite(Collections.emptyList(), exception);
 	}
 
 	public boolean isPassThrough() {
-		return this.sliceList.stream().allMatch(slice -> slice.getSignalCount() == 0) && this.sliceList.stream().anyMatch(ReplaySlice::isParameter);
+		return this.sliceList.stream().allMatch(slice -> slice.getSignalCount() == 0) && this.sliceList.stream().anyMatch(SignalReplaySlice::isParameter);
 	}
 
-	private static void collect(final ReplayClass replayClass, final MethodNode method, final int lineNumber, final String setter, final List<ReplaySlice> sliceList) {
-		ReplayMethod replayMethod = null;
+	private static void collect(final SignalReplayClass replayClass, final MethodNode method, final int lineNumber, final String setter, final List<SignalReplaySlice> sliceList) {
+		SignalReplayMethod replayMethod = null;
 		int line = -1;
 		for (final AbstractInsnNode instruction : method.instructions) {
 			if (instruction instanceof LineNumberNode) {
@@ -73,12 +73,12 @@ public final class ReplaySite {
 			}
 
 			final Type[] argumentTypes = Type.getArgumentTypes(((MethodInsnNode) instruction).desc);
-			final List<ReplaySlice> callList = new ArrayList<>();
+			final List<SignalReplaySlice> callList = new ArrayList<>();
 			int end = index;
 			for (int argument = argumentTypes.length - 1; argument >= 0; argument--) {
 				final SourceValue value = frame.getStack(frame.getStackSize() - argumentTypes.length + argument);
 				final int start = replayMethod.expressionStart(value.insns, end);
-				callList.add(0, ReplaySlice.create(replayMethod, start, end, argumentTypes[argument]));
+				callList.add(0, SignalReplaySlice.create(replayMethod, start, end, argumentTypes[argument]));
 				end = start;
 			}
 			sliceList.addAll(callList);

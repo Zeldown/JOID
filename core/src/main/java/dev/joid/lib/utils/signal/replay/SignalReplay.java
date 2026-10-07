@@ -23,8 +23,8 @@ public final class SignalReplay {
 
 	private static final Set<String>              WARNINGS = ConcurrentHashMap.newKeySet();
 	private static final ThreadLocal<State>       STATE    = ThreadLocal.withInitial(State::new);
-	private static final Map<String, ReplaySite>  SITES    = new ConcurrentHashMap<>();
-	private static final Map<String, ReplayClass> CLASSES  = new ConcurrentHashMap<>();
+	private static final Map<String, SignalReplaySite>  SITES    = new ConcurrentHashMap<>();
+	private static final Map<String, SignalReplayClass> CLASSES  = new ConcurrentHashMap<>();
 
 	public static <T> Supplier<T> replay(final T value) {
 		final SignalContext context = SignalContext.current();
@@ -43,7 +43,7 @@ public final class SignalReplay {
 		final ComputedSignal<?> observer = context.observe(null);
 		state.replaying = true;
 		try {
-			final ReplayCall call = SignalReplay.locate(new Throwable().getStackTrace(), state);
+			final SignalReplayCall call = SignalReplay.locate(new Throwable().getStackTrace(), state);
 			if (call == null) {
 				state.putBack(readList);
 				return null;
@@ -92,28 +92,28 @@ public final class SignalReplay {
 		SignalReplay.SITES.clear();
 	}
 
-	public static void warn(final ReplayCall call, final List<String> nameList, final int readCount, final ReplayException exception, final Object value) {
+	public static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
 		if (!JOID.inst().isDevMode() || !SignalReplay.WARNINGS.add(call.getKey())) {
 			return;
 		}
 		System.err.println("[JOID] " + call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());
 	}
 
-	private static <T> Supplier<T> resolve(final T value, final List<Signal<?>> readList, final ReplayCall call, final State state, final int stale) {
+	private static <T> Supplier<T> resolve(final T value, final List<Signal<?>> readList, final SignalReplayCall call, final State state, final int stale) {
 		final Object self = state.findOwner(call.getCaller().getClassName());
-		final ReplaySite site = SignalReplay.site(call, self);
+		final SignalReplaySite site = SignalReplay.site(call, self);
 		if (site.getFailure() != null) {
 			SignalReplay.warn(call, Collections.emptyList(), readList.size(), site.getFailure(), value);
 			return null;
 		}
 
-		final List<ReplayMatch> matchList = new ArrayList<>();
-		ReplayException failure = null;
-		ReplaySlice failedSlice = null;
-		for (final ReplaySlice slice : site.getSliceList()) {
+		final List<SignalReplayMatch> matchList = new ArrayList<>();
+		SignalReplayException failure = null;
+		SignalReplaySlice failedSlice = null;
+		for (final SignalReplaySlice slice : site.getSliceList()) {
 			try {
 				matchList.add(SignalReplay.attempt(slice, self, value, readList));
-			} catch (final ReplayException exception) {
+			} catch (final SignalReplayException exception) {
 				if (failedSlice == null || SignalReplay.rank(slice, exception) > SignalReplay.rank(failedSlice, failure)) {
 					failure = exception;
 					failedSlice = slice;
@@ -135,27 +135,27 @@ public final class SignalReplay {
 			return null;
 		}
 
-		for (final ReplayMatch match : matchList) {
+		for (final SignalReplayMatch match : matchList) {
 			if (!match.getSlice().isEquivalent(matchList.get(0).getSlice()) && !match.getReadList(readList).isEmpty()) {
-				SignalReplay.warn(call, match.getSlice().getSignalNameList(), readList.size(), new ReplayException(ReplayFailure.AMBIGUOUS_CALL, call.getSetter()), value);
+				SignalReplay.warn(call, match.getSlice().getSignalNameList(), readList.size(), new SignalReplayException(SignalReplayFailure.AMBIGUOUS_CALL, call.getSetter()), value);
 				return null;
 			}
 		}
 
-		final ReplayMatch match = state.pick(call.getKey(), matchList);
+		final SignalReplayMatch match = state.pick(call.getKey(), matchList);
 		state.putBack(match.getRemainingList(readList));
 		final List<Signal<?>> consumedList = match.getReadList(readList);
-		return consumedList.isEmpty() ? null : ReplayBinding.create(call, match, readList, value);
+		return consumedList.isEmpty() ? null : SignalReplayBinding.create(call, match, readList, value);
 	}
 
-	private static ReplayCall locate(final StackTraceElement[] stack, final State state) {
+	private static SignalReplayCall locate(final StackTraceElement[] stack, final State state) {
 		for (int index = 2; index < stack.length && index < 18; index++) {
 			if (SignalReplay.isRuntime(stack[index].getClassName())) {
 				return null;
 			}
 
-			final ReplayCall call = ReplayCall.create(stack[index], stack[index - 1].getMethodName());
-			final ReplaySite site = SignalReplay.site(call, state.findOwner(call.getCaller().getClassName()));
+			final SignalReplayCall call = SignalReplayCall.create(stack[index], stack[index - 1].getMethodName());
+			final SignalReplaySite site = SignalReplay.site(call, state.findOwner(call.getCaller().getClassName()));
 			if (!site.isPassThrough()) {
 				return SignalReplay.isLibrary(stack[index].getClassName()) ? null : call;
 			}
@@ -163,9 +163,9 @@ public final class SignalReplay {
 		return null;
 	}
 
-	private static ReplaySite site(final ReplayCall call, final Object self) {
+	private static SignalReplaySite site(final SignalReplayCall call, final Object self) {
 		final String name = call.getCaller().getClassName();
-		final ReplayClass replayClass = SignalReplay.CLASSES.get(name);
+		final SignalReplayClass replayClass = SignalReplay.CLASSES.get(name);
 		if (replayClass != null && replayClass.isStale()) {
 			SignalReplay.CLASSES.remove(name, replayClass);
 			SignalReplay.SITES.keySet().removeIf(key -> key.startsWith(name + "#"));
@@ -173,47 +173,47 @@ public final class SignalReplay {
 		return SignalReplay.SITES.computeIfAbsent(call.getKey(), key -> SignalReplay.analyze(call, self));
 	}
 
-	private static ReplaySite analyze(final ReplayCall call, final Object self) {
+	private static SignalReplaySite analyze(final SignalReplayCall call, final Object self) {
 		final StackTraceElement caller = call.getCaller();
 		try {
-			final ReplayClass replayClass = SignalReplay.CLASSES.computeIfAbsent(caller.getClassName(), name -> {
+			final SignalReplayClass replayClass = SignalReplay.CLASSES.computeIfAbsent(caller.getClassName(), name -> {
 				final Class<?> type = SignalReplay.typeOf(self, name);
-				return ReplayClass.read(name, type, type != null ? type.getClassLoader() : SignalReplay.class.getClassLoader());
+				return SignalReplayClass.read(name, type, type != null ? type.getClassLoader() : SignalReplay.class.getClassLoader());
 			});
-			return ReplaySite.analyze(replayClass, caller, call.getSetter());
-		} catch (final ReplayException exception) {
-			return ReplaySite.fail(exception);
+			return SignalReplaySite.analyze(replayClass, caller, call.getSetter());
+		} catch (final SignalReplayException exception) {
+			return SignalReplaySite.fail(exception);
 		}
 	}
 
-	private static ReplayMatch attempt(final ReplaySlice slice, final Object self, final Object value, final List<Signal<?>> readList) {
-		final ReplayRun run = ReplayRun.match(self, true, null);
+	private static SignalReplayMatch attempt(final SignalReplaySlice slice, final Object self, final Object value, final List<Signal<?>> readList) {
+		final SignalReplayRun run = SignalReplayRun.match(self, true, null);
 		try {
 			return SignalReplay.attempt(slice, run, value, readList);
-		} catch (final ReplayException exception) {
+		} catch (final SignalReplayException exception) {
 			if (run.getDefinitionCache().isEmpty()) {
 				throw exception;
 			}
-			return SignalReplay.attempt(slice, ReplayRun.match(self, false, null), value, readList);
+			return SignalReplay.attempt(slice, SignalReplayRun.match(self, false, null), value, readList);
 		}
 	}
 
-	private static ReplayMatch attempt(final ReplaySlice slice, final ReplayRun run, final Object value, final List<Signal<?>> readList) {
+	private static SignalReplayMatch attempt(final SignalReplaySlice slice, final SignalReplayRun run, final Object value, final List<Signal<?>> readList) {
 		try {
 			return SignalReplay.check(slice, run, run.run(slice), value, readList);
-		} catch (final ReplayException exception) {
+		} catch (final SignalReplayException exception) {
 			SignalContext.current().clearReads();
 			if (!run.isPositionalNeeded()) {
 				throw SignalReplay.translate(exception);
 			}
 		}
 
-		ReplayException failure = new ReplayException(ReplayFailure.SIGNALS_DIFFER);
+		SignalReplayException failure = new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 		for (int count = 1; count <= Math.min(readList.size(), slice.getSignalCount()); count++) {
-			final ReplayRun positional = ReplayRun.match(run.getSelf(), run.isDefinitions(), readList.subList(readList.size() - count, readList.size()));
+			final SignalReplayRun positional = SignalReplayRun.match(run.getSelf(), run.isDefinitions(), readList.subList(readList.size() - count, readList.size()));
 			try {
 				return SignalReplay.check(slice, positional, positional.run(slice), value, readList);
-			} catch (final ReplayException exception) {
+			} catch (final SignalReplayException exception) {
 				SignalContext.current().clearReads();
 				failure = SignalReplay.translate(exception);
 			}
@@ -221,29 +221,29 @@ public final class SignalReplay {
 		throw failure;
 	}
 
-	private static ReplayMatch check(final ReplaySlice slice, final ReplayRun run, final Object result, final Object value, final List<Signal<?>> readList) {
+	private static SignalReplayMatch check(final SignalReplaySlice slice, final SignalReplayRun run, final Object result, final Object value, final List<Signal<?>> readList) {
 		Map<String, String> holeMap = Collections.emptyMap();
-		if (result instanceof ReplayUnknown) {
-			throw new ReplayException(ReplayFailure.LOCAL_COMBINED, ((ReplayUnknown) result).getDescription());
+		if (result instanceof SignalReplayUnknown) {
+			throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, ((SignalReplayUnknown) result).getDescription());
 		}
 
-		if (result instanceof ReplayParts) {
-			holeMap = value instanceof String ? ((ReplayParts) result).solve((String) value) : null;
+		if (result instanceof SignalReplayParts) {
+			holeMap = value instanceof String ? ((SignalReplayParts) result).solve((String) value) : null;
 			if (holeMap == null) {
-				throw new ReplayException(ReplayFailure.VALUE_DIFFERS, "a text that does not fit");
+				throw new SignalReplayException(SignalReplayFailure.VALUE_DIFFERS, "a text that does not fit");
 			}
 		} else {
 			final Object converted = slice.convert(result);
 			if (!SignalReplay.isSame(converted, value)) {
-				throw new ReplayException(ReplayFailure.VALUE_DIFFERS, "\"" + converted + "\"");
+				throw new SignalReplayException(SignalReplayFailure.VALUE_DIFFERS, "\"" + converted + "\"");
 			}
 		}
 
 		final boolean[] consumed = SignalReplay.consume(readList, run.getDirectList(), run.getDefinitionList());
 		if (consumed == null) {
-			throw new ReplayException(ReplayFailure.SIGNALS_DIFFER);
+			throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 		}
-		return ReplayMatch.create(slice, run, holeMap, consumed);
+		return SignalReplayMatch.create(slice, run, holeMap, consumed);
 	}
 
 	private static boolean[] consume(final List<Signal<?>> readList, final List<Signal<?>> directList, final List<Signal<?>> definitionList) {
@@ -274,12 +274,12 @@ public final class SignalReplay {
 		return consumed;
 	}
 
-	private static ReplayException translate(final ReplayException exception) {
-		return exception.getFailure() == ReplayFailure.REPLAY_FAILED ? new ReplayException(ReplayFailure.VALUE_DIFFERS, exception.getArguments()) : exception;
+	private static SignalReplayException translate(final SignalReplayException exception) {
+		return exception.getFailure() == SignalReplayFailure.REPLAY_FAILED ? new SignalReplayException(SignalReplayFailure.VALUE_DIFFERS, exception.getArguments()) : exception;
 	}
 
-	private static int rank(final ReplaySlice slice, final ReplayException exception) {
-		final int weight = exception.getFailure() == ReplayFailure.VALUE_DIFFERS || exception.getFailure() == ReplayFailure.SIGNALS_DIFFER ? 1 : 2;
+	private static int rank(final SignalReplaySlice slice, final SignalReplayException exception) {
+		final int weight = exception.getFailure() == SignalReplayFailure.VALUE_DIFFERS || exception.getFailure() == SignalReplayFailure.SIGNALS_DIFFER ? 1 : 2;
 		return slice.getSignalCount() > 0 ? weight + 10 : weight;
 	}
 
@@ -330,7 +330,7 @@ public final class SignalReplay {
 
 		private final List<Object>                  ownerList   = new ArrayList<>();
 		private final List<Boolean>                 tracingList = new ArrayList<>();
-		private final Map<String, Set<ReplaySlice>> usedMap     = new HashMap<>();
+		private final Map<String, Set<SignalReplaySlice>> usedMap     = new HashMap<>();
 
 		private int     staleCount;
 		private boolean replaying;
@@ -357,9 +357,9 @@ public final class SignalReplay {
 			return null;
 		}
 
-		private ReplayMatch pick(final String key, final List<ReplayMatch> matchList) {
-			final Set<ReplaySlice> usedSet = this.usedMap.computeIfAbsent(key, ignored -> Collections.newSetFromMap(new IdentityHashMap<>()));
-			for (final ReplayMatch match : matchList) {
+		private SignalReplayMatch pick(final String key, final List<SignalReplayMatch> matchList) {
+			final Set<SignalReplaySlice> usedSet = this.usedMap.computeIfAbsent(key, ignored -> Collections.newSetFromMap(new IdentityHashMap<>()));
+			for (final SignalReplayMatch match : matchList) {
 				if (usedSet.add(match.getSlice())) {
 					return match;
 				}

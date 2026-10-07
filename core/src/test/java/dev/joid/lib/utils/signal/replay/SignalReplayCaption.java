@@ -9,12 +9,12 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplayCaption {
+public final class SignalReplayCaption {
 
 	private final Supplier<String> text;
 
-	public static ReplayCaption create(final String text) {
-		return new ReplayCaption(Signal.from(text));
+	public static SignalReplayCaption create(final String text) {
+		return new SignalReplayCaption(Signal.from(text));
 	}
 
 }

@@ -20,18 +20,18 @@ import org.objectweb.asm.tree.VarInsnNode;
 import lombok.Getter;
 
 @Getter
-public final class ReplaySlice {
+public final class SignalReplaySlice {
 
-	private final int          end;
-	private final int          start;
-	private final Type         type;
-	private final String       signature;
-	private final ReplayMethod method;
-	private final List<String> signalNameList;
+	private final int                end;
+	private final int                start;
+	private final Type               type;
+	private final String             signature;
+	private final SignalReplayMethod method;
+	private final List<String>       signalNameList;
 
 	private int signalCount;
 
-	private ReplaySlice(final ReplayMethod method, final int start, final int end, final Type type) {
+	private SignalReplaySlice(final SignalReplayMethod method, final int start, final int end, final Type type) {
 		this.method         = method;
 		this.start          = start;
 		this.end            = end;
@@ -40,11 +40,11 @@ public final class ReplaySlice {
 		this.signature      = this.describe();
 	}
 
-	public static ReplaySlice create(final ReplayMethod method, final int start, final int end, final Type type) {
-		return new ReplaySlice(method, start, end, type);
+	public static SignalReplaySlice create(final SignalReplayMethod method, final int start, final int end, final Type type) {
+		return new SignalReplaySlice(method, start, end, type);
 	}
 
-	public boolean isEquivalent(final ReplaySlice slice) {
+	public boolean isEquivalent(final SignalReplaySlice slice) {
 		return Objects.equals(this.type, slice.type) && this.signature.equals(slice.signature);
 	}
 

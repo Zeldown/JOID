@@ -32,24 +32,24 @@ import org.objectweb.asm.tree.analysis.SourceInterpreter;
 import org.objectweb.asm.tree.analysis.SourceValue;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.replay.IReplayRemapper;
+import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
 import dev.joid.lib.utils.signal.ISignal;
 import lombok.Getter;
 
 @Getter
-public final class ReplayMethod {
+public final class SignalReplayMethod {
 
 	private final boolean              isStatic;
 	private final MethodNode           method;
-	private final ReplayClass          replayClass;
 	private final Frame<SourceValue>[] frames;
+	private final SignalReplayClass    replayClass;
 	private final AbstractInsnNode[]   instructions;
 
-	private final Map<String, Class<?>>              classMap;
-	private final Map<AbstractInsnNode, Object>      memberMap;
-	private final Map<AbstractInsnNode, ReplaySlice> definitionMap;
+	private final Map<String, Class<?>>                    classMap;
+	private final Map<AbstractInsnNode, Object>            memberMap;
+	private final Map<AbstractInsnNode, SignalReplaySlice> definitionMap;
 
-	private ReplayMethod(final ReplayClass replayClass, final MethodNode method) throws AnalyzerException {
+	private SignalReplayMethod(final SignalReplayClass replayClass, final MethodNode method) throws AnalyzerException {
 		this.replayClass   = replayClass;
 		this.method        = method;
 		this.isStatic      = (method.access & Opcodes.ACC_STATIC) != 0;
@@ -61,8 +61,8 @@ public final class ReplayMethod {
 		this.define();
 	}
 
-	public static ReplayMethod create(final ReplayClass replayClass, final MethodNode method) throws AnalyzerException {
-		return new ReplayMethod(replayClass, method);
+	public static SignalReplayMethod create(final SignalReplayClass replayClass, final MethodNode method) throws AnalyzerException {
+		return new SignalReplayMethod(replayClass, method);
 	}
 
 	public int indexOf(final AbstractInsnNode instruction) {
@@ -88,7 +88,7 @@ public final class ReplayMethod {
 					continue;
 				}
 
-				final int consumed = ReplayMethod.popCount(instruction, before);
+				final int consumed = SignalReplayMethod.popCount(instruction, before);
 				for (int depth = 0; depth < consumed && depth < before.getStackSize(); depth++) {
 					work.addAll(before.getStack(before.getStackSize() - 1 - depth).insns);
 				}
@@ -166,7 +166,7 @@ public final class ReplayMethod {
 	public boolean isSignal(final String owner) {
 		try {
 			return ISignal.class.isAssignableFrom(this.type(Type.getObjectType(owner)));
-		} catch (final ReplayException exception) {
+		} catch (final SignalReplayException exception) {
 			return false;
 		}
 	}
@@ -214,11 +214,11 @@ public final class ReplayMethod {
 	private Class<?> load(final String internalName) {
 		Class<?> loaded = this.classMap.get(internalName);
 		if (loaded == null) {
-			final String name = BridgeHandler.REPLAY.get().mapClass(internalName).replace('/', '.');
+			final String name = BridgeHandler.SIGNAL_REPLAY.get().mapClass(internalName).replace('/', '.');
 			try {
 				loaded = Class.forName(name, false, this.replayClass.getLoader());
 			} catch (final ClassNotFoundException | LinkageError exception) {
-				throw new ReplayException(ReplayFailure.MEMBER_NOT_FOUND, "the class " + name);
+				throw new SignalReplayException(SignalReplayFailure.MEMBER_NOT_FOUND, "the class " + name);
 			}
 			this.classMap.put(internalName, loaded);
 		}
@@ -226,7 +226,7 @@ public final class ReplayMethod {
 	}
 
 	private Object resolve(final AbstractInsnNode instruction) {
-		final IReplayRemapper remapper = BridgeHandler.REPLAY.get();
+		final ISignalReplayRemapper remapper = BridgeHandler.SIGNAL_REPLAY.get();
 		if (instruction instanceof FieldInsnNode) {
 			final FieldInsnNode field = (FieldInsnNode) instruction;
 			final Class<?> owner = this.type(Type.getObjectType(field.owner));
@@ -242,7 +242,7 @@ public final class ReplayMethod {
 			try {
 				return this.access(owner.getField(name));
 			} catch (final NoSuchFieldException exception) {
-				throw new ReplayException(ReplayFailure.MEMBER_NOT_FOUND, "the field " + owner.getName() + "." + name);
+				throw new SignalReplayException(SignalReplayFailure.MEMBER_NOT_FOUND, "the field " + owner.getName() + "." + name);
 			}
 		}
 
@@ -259,7 +259,7 @@ public final class ReplayMethod {
 			try {
 				return this.access(owner.getDeclaredConstructor(parameterTypes));
 			} catch (final NoSuchMethodException exception) {
-				throw new ReplayException(ReplayFailure.MEMBER_NOT_FOUND, "a constructor of " + owner.getName());
+				throw new SignalReplayException(SignalReplayFailure.MEMBER_NOT_FOUND, "a constructor of " + owner.getName());
 			}
 		}
 
@@ -274,7 +274,7 @@ public final class ReplayMethod {
 		try {
 			return this.access(owner.getMethod(name, parameterTypes));
 		} catch (final NoSuchMethodException exception) {
-			throw new ReplayException(ReplayFailure.MEMBER_NOT_FOUND, "the method " + owner.getName() + "." + name + "(...)");
+			throw new SignalReplayException(SignalReplayFailure.MEMBER_NOT_FOUND, "the method " + owner.getName() + "." + name + "(...)");
 		}
 	}
 
@@ -287,7 +287,7 @@ public final class ReplayMethod {
 			member.setAccessible(true);
 		} catch (final RuntimeException exception) {
 			final String name = member.getDeclaringClass().getName();
-			throw new ReplayException(ReplayFailure.ACCESS_REFUSED, name + "." + member.getName(), name.substring(0, Math.max(0, name.lastIndexOf('.'))));
+			throw new SignalReplayException(SignalReplayFailure.ACCESS_REFUSED, name + "." + member.getName(), name.substring(0, Math.max(0, name.lastIndexOf('.'))));
 		}
 		return member;
 	}
@@ -314,7 +314,7 @@ public final class ReplayMethod {
 			final Frame<SourceValue> frame = this.frames[end];
 			final int start = this.expressionStart(frame.getStack(frame.getStackSize() - 1).insns, end);
 			if (store.getOpcode() != Opcodes.ASTORE || this.isValue(((VarInsnNode) instruction).var, index) || this.isPure(start, end)) {
-				this.definitionMap.put(instruction, ReplaySlice.create(this, start, end, null));
+				this.definitionMap.put(instruction, SignalReplaySlice.create(this, start, end, null));
 			}
 		}
 	}
@@ -344,7 +344,7 @@ public final class ReplayMethod {
 				try {
 					final Class<?> loaded = this.type(type);
 					return loaded == String.class || loaded.isEnum() || Number.class.isAssignableFrom(loaded) && loaded.getName().startsWith("java.lang.") || loaded == Boolean.class || loaded == Character.class;
-				} catch (final ReplayException exception) {
+				} catch (final SignalReplayException exception) {
 					return false;
 				}
 			}

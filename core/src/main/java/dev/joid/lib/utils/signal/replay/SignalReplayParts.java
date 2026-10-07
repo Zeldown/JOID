@@ -16,19 +16,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplayParts {
+public final class SignalReplayParts {
 
 	private final List<Object> partList = new ArrayList<>();
 
 	private boolean live;
 
-	public static ReplayParts create() {
-		return new ReplayParts();
+	public static SignalReplayParts create() {
+		return new SignalReplayParts();
 	}
 
 	public void add(final Object part) {
-		if (part instanceof ReplayParts) {
-			this.partList.addAll(((ReplayParts) part).partList);
+		if (part instanceof SignalReplayParts) {
+			this.partList.addAll(((SignalReplayParts) part).partList);
 		} else {
 			this.partList.add(part);
 		}

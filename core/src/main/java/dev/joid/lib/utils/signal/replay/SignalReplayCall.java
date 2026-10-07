@@ -8,13 +8,13 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplayCall {
+public final class SignalReplayCall {
 
 	private final StackTraceElement caller;
 	private final String            setter;
 
-	public static ReplayCall create(final StackTraceElement caller, final String setter) {
-		return new ReplayCall(caller, setter);
+	public static SignalReplayCall create(final StackTraceElement caller, final String setter) {
+		return new SignalReplayCall(caller, setter);
 	}
 
 	public String getKey() {

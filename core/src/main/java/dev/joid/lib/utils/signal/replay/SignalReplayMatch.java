@@ -11,17 +11,17 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReplayMatch {
+public final class SignalReplayMatch {
 
-	private final ReplaySlice                      slice;
-	private final Object                           self;
-	private final boolean                          definitions;
-	private final Map<String, String>              holeMap;
-	private final Map<Object, Signal<?>>           positionalMap;
-	private final boolean[]                        consumed;
+	private final SignalReplaySlice      slice;
+	private final Object                 self;
+	private final boolean                definitions;
+	private final Map<String, String>    holeMap;
+	private final Map<Object, Signal<?>> positionalMap;
+	private final boolean[]              consumed;
 
-	public static ReplayMatch create(final ReplaySlice slice, final ReplayRun run, final Map<String, String> holeMap, final boolean[] consumed) {
-		return new ReplayMatch(slice, run.getSelf(), run.isDefinitions(), holeMap, run.getPositionalMap(), consumed);
+	public static SignalReplayMatch create(final SignalReplaySlice slice, final SignalReplayRun run, final Map<String, String> holeMap, final boolean[] consumed) {
+		return new SignalReplayMatch(slice, run.getSelf(), run.isDefinitions(), holeMap, run.getPositionalMap(), consumed);
 	}
 
 	public List<Signal<?>> getReadList(final List<Signal<?>> readList) {

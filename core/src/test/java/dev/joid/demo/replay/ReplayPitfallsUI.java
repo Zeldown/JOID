@@ -8,7 +8,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.replay.ReplayNode;
+import dev.joid.lib.utils.signal.replay.SignalReplayNode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,22 +26,22 @@ public class ReplayPitfallsUI extends UI {
 
 	@Override
 	public void init() {
-		ReplayNode.create().text("Next: " + (this.clicks.get() + 1) + ", double: " + this.clicks.get() * 2).attach(this);
-		ReplayNode.create().color(this.clicks.get() >= 3 ? Color.GREEN : Color.GRAY).attach(this);
-		ReplayNode.create().shown(this.clicks.get() > 0).attach(this);
-		ReplayNode.create().text("Clicks + bonus: " + (this.clicks.get() + this.bonus)).attach(this);
+		SignalReplayNode.create().text("Next: " + (this.clicks.get() + 1) + ", double: " + this.clicks.get() * 2).attach(this);
+		SignalReplayNode.create().color(this.clicks.get() >= 3 ? Color.GREEN : Color.GRAY).attach(this);
+		SignalReplayNode.create().shown(this.clicks.get() > 0).attach(this);
+		SignalReplayNode.create().text("Clicks + bonus: " + (this.clicks.get() + this.bonus)).attach(this);
 		for (final String name : this.names) {
-			ReplayNode.create().text(name.toUpperCase() + " has " + this.clicks.get() + " clicks").attach(this);
+			SignalReplayNode.create().text(name.toUpperCase() + " has " + this.clicks.get() + " clicks").attach(this);
 		}
 		final int offset = this.bonus / 10;
-		ReplayNode.create().text("Clicks + offset: " + (this.clicks.get() + offset)).attach(this);
+		SignalReplayNode.create().text("Clicks + offset: " + (this.clicks.get() + offset)).attach(this);
 		final int doubled = this.clicks.get() * 2;
-		ReplayNode.create().text("Doubled: " + doubled).attach(this);
-		ReplayNode.create().text("A " + this.clicks.get()).attach(this); ReplayNode.create().text("B " + this.other.get()).attach(this);
-		ReplayNode.create().text("" + this.clicks.get()).attach(this); ReplayNode.create().text("" + this.other.get()).attach(this);
-		(this.compact ? ReplayNode.create().text("Skip A " + this.clicks.get()) : ReplayNode.create().text("Skip B " + this.other.get())).attach(this);
-		ReplayNode.create().text(() -> "Frame " + this.frame + ", clicks " + this.clicks.get()).attach(this);
-		ReplayNode.create().extent(this.clicks.get() * 10D, this.other.get() + 5D).attach(this);
+		SignalReplayNode.create().text("Doubled: " + doubled).attach(this);
+		SignalReplayNode.create().text("A " + this.clicks.get()).attach(this); SignalReplayNode.create().text("B " + this.other.get()).attach(this);
+		SignalReplayNode.create().text("" + this.clicks.get()).attach(this); SignalReplayNode.create().text("" + this.other.get()).attach(this);
+		(this.compact ? SignalReplayNode.create().text("Skip A " + this.clicks.get()) : SignalReplayNode.create().text("Skip B " + this.other.get())).attach(this);
+		SignalReplayNode.create().text(() -> "Frame " + this.frame + ", clicks " + this.clicks.get()).attach(this);
+		SignalReplayNode.create().extent(this.clicks.get() * 10D, this.other.get() + 5D).attach(this);
 		RectNode.create(0D, 0D, 10D, 10D).color(Signal.from(this.clicks.get() >= 3 ? Color.GREEN : Color.GRAY)).attach(this);
 	}
 

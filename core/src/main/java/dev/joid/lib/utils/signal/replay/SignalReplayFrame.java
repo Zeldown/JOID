@@ -29,7 +29,7 @@ import dev.joid.lib.utils.signal.SignalContext;
 import lombok.Getter;
 
 @Getter
-public final class ReplayFrame {
+public final class SignalReplayFrame {
 
 	private static final Map<Integer, String> OPCODE_MAP = new HashMap<>();
 
@@ -38,7 +38,7 @@ public final class ReplayFrame {
 			final String name = field.getName();
 			if (field.getType() == int.class && name.matches("[A-Z0-9_]+") && !name.matches("(ACC|ASM|V|T|H|F|SOURCE)_.*|V\\d.*|ASM\\d.*")) {
 				try {
-					ReplayFrame.OPCODE_MAP.putIfAbsent(field.getInt(null), name);
+					SignalReplayFrame.OPCODE_MAP.putIfAbsent(field.getInt(null), name);
 				} catch (final IllegalAccessException exception) {
 					continue;
 				}
@@ -46,10 +46,10 @@ public final class ReplayFrame {
 		}
 	}
 
-	private final int          depth;
-	private final ReplayRun    run;
-	private final ReplaySlice  slice;
-	private final ReplayMethod method;
+	private final int                depth;
+	private final SignalReplayRun    run;
+	private final SignalReplaySlice  slice;
+	private final SignalReplayMethod method;
 
 	private final int[]     sizes;
 	private final Object[]  values;
@@ -62,7 +62,7 @@ public final class ReplayFrame {
 	private boolean lastLive;
 	private boolean controlLive;
 
-	private ReplayFrame(final ReplayRun run, final ReplaySlice slice, final int depth) {
+	private SignalReplayFrame(final SignalReplayRun run, final SignalReplaySlice slice, final int depth) {
 		this.run         = run;
 		this.slice       = slice;
 		this.method      = slice.getMethod();
@@ -75,8 +75,8 @@ public final class ReplayFrame {
 		this.localStates = new boolean[this.locals.length];
 	}
 
-	public static ReplayFrame create(final ReplayRun run, final ReplaySlice slice, final int depth) {
-		return new ReplayFrame(run, slice, depth);
+	public static SignalReplayFrame create(final SignalReplayRun run, final SignalReplaySlice slice, final int depth) {
+		return new SignalReplayFrame(run, slice, depth);
 	}
 
 	public Object execute() {
@@ -86,12 +86,12 @@ public final class ReplayFrame {
 			try {
 				index = this.step(instructions[index], index);
 			} catch (final RuntimeException exception) {
-				throw exception instanceof ReplayException ? (ReplayException) exception : new ReplayException(ReplayFailure.REPLAY_FAILED, exception);
+				throw exception instanceof SignalReplayException ? (SignalReplayException) exception : new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
 			}
 		}
 
 		if (this.top == 0) {
-			throw new ReplayException(ReplayFailure.UNSUPPORTED_INSTRUCTION, "ending without a value");
+			throw new SignalReplayException(SignalReplayFailure.UNSUPPORTED_INSTRUCTION, "ending without a value");
 		}
 		return this.pop();
 	}
@@ -281,12 +281,12 @@ public final class ReplayFrame {
 				return this.jump(((JumpInsnNode) instruction).label, opcode);
 			case Opcodes.TABLESWITCH: {
 				final TableSwitchInsnNode table = (TableSwitchInsnNode) instruction;
-				final int key = ReplayFrame.toInt(this.known());
+				final int key = SignalReplayFrame.toInt(this.known());
 				return this.jump(key >= table.min && key <= table.max ? table.labels.get(key - table.min) : table.dflt, opcode);
 			}
 			case Opcodes.LOOKUPSWITCH: {
 				final LookupSwitchInsnNode lookup = (LookupSwitchInsnNode) instruction;
-				final int position = lookup.keys.indexOf(ReplayFrame.toInt(this.known()));
+				final int position = lookup.keys.indexOf(SignalReplayFrame.toInt(this.known()));
 				return this.jump(position >= 0 ? lookup.labels.get(position) : lookup.dflt, opcode);
 			}
 			case Opcodes.GETSTATIC:
@@ -306,7 +306,7 @@ public final class ReplayFrame {
 				return index + 1;
 			case Opcodes.NEW: {
 				final String type = ((TypeInsnNode) instruction).desc;
-				this.push(type.equals("java/lang/StringBuilder") || type.equals("java/lang/StringBuffer") ? ReplayParts.create() : new Object(), false, 1);
+				this.push(type.equals("java/lang/StringBuilder") || type.equals("java/lang/StringBuffer") ? SignalReplayParts.create() : new Object(), false, 1);
 				return index + 1;
 			}
 			case Opcodes.NEWARRAY:
@@ -315,7 +315,7 @@ public final class ReplayFrame {
 				return index + 1;
 			case Opcodes.ARRAYLENGTH: {
 				final Object array = this.pop();
-				if (ReplayFrame.isUnknown(array)) {
+				if (SignalReplayFrame.isUnknown(array)) {
 					this.unknown(array, this.lastLive, 1);
 				} else {
 					this.push(Array.getLength(array), this.lastLive, 1);
@@ -324,7 +324,7 @@ public final class ReplayFrame {
 			}
 			case Opcodes.INSTANCEOF: {
 				final Object value = this.pop();
-				if (ReplayFrame.isUnknown(value)) {
+				if (SignalReplayFrame.isUnknown(value)) {
 					this.unknown(value, this.lastLive, 1);
 				} else {
 					this.push(this.method.type(Type.getObjectType(((TypeInsnNode) instruction).desc)).isInstance(value) ? 1 : 0, this.lastLive, 1);
@@ -332,7 +332,7 @@ public final class ReplayFrame {
 				return index + 1;
 			}
 			default:
-				throw new ReplayException(ReplayFailure.UNSUPPORTED_INSTRUCTION, ReplayFrame.OPCODE_MAP.getOrDefault(opcode, String.valueOf(opcode)));
+				throw new SignalReplayException(SignalReplayFailure.UNSUPPORTED_INSTRUCTION, SignalReplayFrame.OPCODE_MAP.getOrDefault(opcode, String.valueOf(opcode)));
 		}
 	}
 
@@ -340,7 +340,7 @@ public final class ReplayFrame {
 		if (constant instanceof Type) {
 			final Type type = (Type) constant;
 			if (type.getSort() != Type.OBJECT && type.getSort() != Type.ARRAY) {
-				throw new ReplayException(ReplayFailure.UNSUPPORTED_INSTRUCTION, "LDC " + type);
+				throw new SignalReplayException(SignalReplayFailure.UNSUPPORTED_INSTRUCTION, "LDC " + type);
 			}
 			this.push(this.method.type(type), false, 1);
 		} else if (constant instanceof Integer || constant instanceof Float || constant instanceof String) {
@@ -348,7 +348,7 @@ public final class ReplayFrame {
 		} else if (constant instanceof Long || constant instanceof Double) {
 			this.push(constant, false, 2);
 		} else {
-			throw new ReplayException(ReplayFailure.UNSUPPORTED_INSTRUCTION, "LDC " + constant);
+			throw new SignalReplayException(SignalReplayFailure.UNSUPPORTED_INSTRUCTION, "LDC " + constant);
 		}
 	}
 
@@ -362,16 +362,16 @@ public final class ReplayFrame {
 
 		if (variable == 0 && !this.method.isStatic()) {
 			final Object self = this.run.getSelf();
-			this.push(self != null ? self : ReplayUnknown.create("this"), false, 1);
+			this.push(self != null ? self : SignalReplayUnknown.create("this"), false, 1);
 			return;
 		}
 
-		final ReplaySlice definition = this.run.isDefinitions() && this.depth < 8 ? this.method.getDefinitionMap().get(instruction) : null;
+		final SignalReplaySlice definition = this.run.isDefinitions() && this.depth < 8 ? this.method.getDefinitionMap().get(instruction) : null;
 		final Object[] result = definition != null ? this.run.define(definition, this.depth + 1) : null;
 		if (result != null) {
 			this.push(result[0], (Boolean) result[1], size);
 		} else {
-			this.push(ReplayUnknown.create(this.method.describeLocal(variable, index), variable), false, size);
+			this.push(SignalReplayUnknown.create(this.method.describeLocal(variable, index), variable), false, size);
 		}
 	}
 
@@ -384,10 +384,10 @@ public final class ReplayFrame {
 
 	private void increment(final IincInsnNode instruction, final int index) {
 		final int variable = instruction.var;
-		if (this.localStates[variable] && !ReplayFrame.isUnknown(this.locals[variable])) {
-			this.locals[variable] = ReplayFrame.toInt(this.locals[variable]) + instruction.incr;
+		if (this.localStates[variable] && !SignalReplayFrame.isUnknown(this.locals[variable])) {
+			this.locals[variable] = SignalReplayFrame.toInt(this.locals[variable]) + instruction.incr;
 		} else {
-			this.locals[variable] = ReplayUnknown.create(this.method.describeLocal(variable, index));
+			this.locals[variable] = SignalReplayUnknown.create(this.method.describeLocal(variable, index));
 			this.localStates[variable] = true;
 		}
 	}
@@ -398,16 +398,16 @@ public final class ReplayFrame {
 		final Object array = this.pop();
 		live |= this.lastLive;
 		final int size = opcode == Opcodes.LALOAD || opcode == Opcodes.DALOAD ? 2 : 1;
-		if (ReplayFrame.isUnknown(array) || ReplayFrame.isUnknown(position)) {
-			this.unknown(ReplayFrame.isUnknown(array) ? array : position, live, size);
+		if (SignalReplayFrame.isUnknown(array) || SignalReplayFrame.isUnknown(position)) {
+			this.unknown(SignalReplayFrame.isUnknown(array) ? array : position, live, size);
 			return;
 		}
 
 		try {
-			final Object element = Array.get(array, ReplayFrame.toInt(position));
-			this.push(opcode == Opcodes.AALOAD ? element : ReplayFrame.normalize(element), live, size);
+			final Object element = Array.get(array, SignalReplayFrame.toInt(position));
+			this.push(opcode == Opcodes.AALOAD ? element : SignalReplayFrame.normalize(element), live, size);
 		} catch (final RuntimeException exception) {
-			throw new ReplayException(ReplayFailure.REPLAY_FAILED, exception);
+			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
 		}
 	}
 
@@ -418,22 +418,22 @@ public final class ReplayFrame {
 		live |= this.lastLive;
 		final Object array = this.pop();
 		live |= this.lastLive;
-		if (ReplayFrame.isUnknown(array)) {
+		if (SignalReplayFrame.isUnknown(array)) {
 			return;
 		}
 
-		if (ReplayFrame.isUnknown(value) || ReplayFrame.isUnknown(position)) {
+		if (SignalReplayFrame.isUnknown(value) || SignalReplayFrame.isUnknown(position)) {
 			if (live || this.controlLive) {
-				throw new ReplayException(ReplayFailure.LOCAL_COMBINED, ReplayFrame.describe(ReplayFrame.isUnknown(value) ? value : position));
+				throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, SignalReplayFrame.describe(SignalReplayFrame.isUnknown(value) ? value : position));
 			}
-			this.replace(array, ReplayUnknown.create(ReplayFrame.describe(ReplayFrame.isUnknown(value) ? value : position)), false);
+			this.replace(array, SignalReplayUnknown.create(SignalReplayFrame.describe(SignalReplayFrame.isUnknown(value) ? value : position)), false);
 			return;
 		}
 
 		try {
-			Array.set(array, ReplayFrame.toInt(position), ReplayFrame.convert(value, array.getClass().getComponentType()));
+			Array.set(array, SignalReplayFrame.toInt(position), SignalReplayFrame.convert(value, array.getClass().getComponentType()));
 		} catch (final RuntimeException exception) {
-			throw new ReplayException(ReplayFailure.REPLAY_FAILED, exception);
+			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
 		}
 		if (live) {
 			this.replace(array, array, true);
@@ -443,7 +443,7 @@ public final class ReplayFrame {
 	private void newArray(final AbstractInsnNode instruction) {
 		final Object count = this.pop();
 		final boolean live = this.lastLive;
-		if (ReplayFrame.isUnknown(count)) {
+		if (SignalReplayFrame.isUnknown(count)) {
 			this.unknown(count, live, 1);
 			return;
 		}
@@ -452,9 +452,9 @@ public final class ReplayFrame {
 		if (instruction.getOpcode() == Opcodes.ANEWARRAY) {
 			component = this.method.type(Type.getObjectType(((TypeInsnNode) instruction).desc));
 		} else {
-			component = ReplayFrame.primitive(((IntInsnNode) instruction).operand);
+			component = SignalReplayFrame.primitive(((IntInsnNode) instruction).operand);
 		}
-		this.push(Array.newInstance(component, ReplayFrame.toInt(count)), live, 1);
+		this.push(Array.newInstance(component, SignalReplayFrame.toInt(count)), live, 1);
 	}
 
 	private void binary(final int opcode) {
@@ -462,16 +462,16 @@ public final class ReplayFrame {
 		boolean live = this.lastLive;
 		final Object left = this.pop();
 		live |= this.lastLive;
-		final int size = ReplayFrame.resultSize(opcode);
-		if (ReplayFrame.isUnknown(left) || ReplayFrame.isUnknown(right)) {
-			this.unknown(ReplayFrame.isUnknown(left) ? left : right, live, size);
+		final int size = SignalReplayFrame.resultSize(opcode);
+		if (SignalReplayFrame.isUnknown(left) || SignalReplayFrame.isUnknown(right)) {
+			this.unknown(SignalReplayFrame.isUnknown(left) ? left : right, live, size);
 			return;
 		}
 
 		try {
-			this.push(ReplayFrame.compute(opcode, left, right), live, size);
+			this.push(SignalReplayFrame.compute(opcode, left, right), live, size);
 		} catch (final ArithmeticException exception) {
-			throw new ReplayException(ReplayFailure.REPLAY_FAILED, exception);
+			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
 		}
 	}
 
@@ -479,7 +479,7 @@ public final class ReplayFrame {
 		final Object value = this.pop();
 		final boolean live = this.lastLive;
 		final int size = opcode == Opcodes.LNEG || opcode == Opcodes.DNEG || opcode == Opcodes.I2L || opcode == Opcodes.I2D || opcode == Opcodes.F2L || opcode == Opcodes.F2D || opcode == Opcodes.L2D || opcode == Opcodes.D2L ? 2 : 1;
-		if (ReplayFrame.isUnknown(value)) {
+		if (SignalReplayFrame.isUnknown(value)) {
 			this.unknown(value, live, size);
 			return;
 		}
@@ -530,7 +530,7 @@ public final class ReplayFrame {
 
 	private boolean isTaken(final int opcode) {
 		if (opcode >= Opcodes.IFEQ && opcode <= Opcodes.IFLE) {
-			final int value = ReplayFrame.toInt(this.known());
+			final int value = SignalReplayFrame.toInt(this.known());
 			switch (opcode) {
 				case Opcodes.IFEQ:
 					return value == 0;
@@ -548,8 +548,8 @@ public final class ReplayFrame {
 		}
 
 		if (opcode >= Opcodes.IF_ICMPEQ && opcode <= Opcodes.IF_ICMPLE) {
-			final int right = ReplayFrame.toInt(this.known());
-			final int left = ReplayFrame.toInt(this.known());
+			final int right = SignalReplayFrame.toInt(this.known());
+			final int left = SignalReplayFrame.toInt(this.known());
 			switch (opcode) {
 				case Opcodes.IF_ICMPEQ:
 					return left == right;
@@ -577,7 +577,7 @@ public final class ReplayFrame {
 	private int jump(final LabelNode label, final int opcode) {
 		final int target = this.method.indexOf(label);
 		if (target < this.slice.getStart() || target > this.slice.getEnd()) {
-			throw new ReplayException(ReplayFailure.UNSUPPORTED_INSTRUCTION, ReplayFrame.OPCODE_MAP.get(opcode) + " out of the expression");
+			throw new SignalReplayException(SignalReplayFailure.UNSUPPORTED_INSTRUCTION, SignalReplayFrame.OPCODE_MAP.get(opcode) + " out of the expression");
 		}
 		return target;
 	}
@@ -586,9 +586,9 @@ public final class ReplayFrame {
 		final Field field = (Field) this.method.member(instruction);
 		try {
 			final Object value = field.get(target);
-			return field.getType().isPrimitive() ? ReplayFrame.normalize(value) : value;
+			return field.getType().isPrimitive() ? SignalReplayFrame.normalize(value) : value;
 		} catch (final IllegalAccessException | RuntimeException exception) {
-			throw new ReplayException(ReplayFailure.REPLAY_FAILED, exception);
+			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
 		}
 	}
 
@@ -596,9 +596,9 @@ public final class ReplayFrame {
 		final Object target = this.pop();
 		final boolean live = this.lastLive;
 		final int size = Type.getType(instruction.desc).getSize();
-		if (target instanceof ReplayUnknown) {
-			final String description = ((ReplayUnknown) target).getDescription();
-			this.unknown(ReplayUnknown.create(description.equals("this") ? "the field " + instruction.name : description), live, size);
+		if (target instanceof SignalReplayUnknown) {
+			final String description = ((SignalReplayUnknown) target).getDescription();
+			this.unknown(SignalReplayUnknown.create(description.equals("this") ? "the field " + instruction.name : description), live, size);
 			return;
 		}
 		this.push(this.fieldValue(instruction, target), live, size);
@@ -613,12 +613,12 @@ public final class ReplayFrame {
 		for (int position = argumentTypes.length - 1; position >= 0; position--) {
 			arguments[position] = this.pop();
 			live |= this.lastLive;
-			if (unknown == null && ReplayFrame.isUnknown(arguments[position])) {
+			if (unknown == null && SignalReplayFrame.isUnknown(arguments[position])) {
 				unknown = arguments[position];
 			}
 		}
 
-		if (instruction.getOpcode() != Opcodes.INVOKESTATIC && this.values[this.top - 1] instanceof ReplayParts && (instruction.owner.equals("java/lang/StringBuilder") || instruction.owner.equals("java/lang/StringBuffer"))) {
+		if (instruction.getOpcode() != Opcodes.INVOKESTATIC && this.values[this.top - 1] instanceof SignalReplayParts && (instruction.owner.equals("java/lang/StringBuilder") || instruction.owner.equals("java/lang/StringBuffer"))) {
 			this.build(instruction, arguments, argumentTypes, index, live);
 			return;
 		}
@@ -628,15 +628,15 @@ public final class ReplayFrame {
 			live |= this.lastLive;
 			if (unknown != null) {
 				if (live || this.controlLive) {
-					throw new ReplayException(ReplayFailure.LOCAL_COMBINED, ReplayFrame.describe(unknown));
+					throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, SignalReplayFrame.describe(unknown));
 				}
-				this.replace(target, ReplayUnknown.create(ReplayFrame.describe(unknown)), false);
+				this.replace(target, SignalReplayUnknown.create(SignalReplayFrame.describe(unknown)), false);
 				return;
 			}
 
 			final Constructor<?> constructor = (Constructor<?>) this.method.member(instruction);
 			final long readTotal = SignalContext.current().getReadTotal();
-			final Object instance = this.call(() -> constructor.newInstance(ReplayFrame.convert(arguments, constructor.getParameterTypes())));
+			final Object instance = this.call(() -> constructor.newInstance(SignalReplayFrame.convert(arguments, constructor.getParameterTypes())));
 			this.replace(target, instance, live || SignalContext.current().getReadTotal() != readTotal);
 			return;
 		}
@@ -645,11 +645,11 @@ public final class ReplayFrame {
 		if (instruction.getOpcode() != Opcodes.INVOKESTATIC) {
 			receiver = this.pop();
 			live |= this.lastLive;
-			if (receiver instanceof ReplayUnknown && this.method.isSignal(instruction.owner)) {
-				final Object key = ((ReplayUnknown) receiver).getKey();
+			if (receiver instanceof SignalReplayUnknown && this.method.isSignal(instruction.owner)) {
+				final Object key = ((SignalReplayUnknown) receiver).getKey();
 				receiver = this.run.position(key != null ? key : instruction, this.method.type(Type.getObjectType(instruction.owner)));
-			} else if (unknown == null && ReplayFrame.isUnknown(receiver)) {
-				unknown = "this".equals(ReplayFrame.describe(receiver)) ? ReplayUnknown.create("the method " + instruction.name + "()") : receiver;
+			} else if (unknown == null && SignalReplayFrame.isUnknown(receiver)) {
+				unknown = "this".equals(SignalReplayFrame.describe(receiver)) ? SignalReplayUnknown.create("the method " + instruction.name + "()") : receiver;
 			}
 		}
 
@@ -657,7 +657,7 @@ public final class ReplayFrame {
 			if (returnType.getSort() != Type.VOID) {
 				this.unknown(unknown, live, returnType.getSize());
 			} else if (live || this.controlLive) {
-				throw new ReplayException(ReplayFailure.LOCAL_COMBINED, ReplayFrame.describe(unknown));
+				throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, SignalReplayFrame.describe(unknown));
 			}
 			return;
 		}
@@ -665,14 +665,14 @@ public final class ReplayFrame {
 		final Method method = (Method) this.method.member(instruction);
 		final Object target = Modifier.isStatic(method.getModifiers()) ? null : receiver;
 		final long readTotal = SignalContext.current().getReadTotal();
-		final Object result = this.call(() -> method.invoke(target, ReplayFrame.convert(arguments, method.getParameterTypes())));
+		final Object result = this.call(() -> method.invoke(target, SignalReplayFrame.convert(arguments, method.getParameterTypes())));
 		if (returnType.getSort() != Type.VOID) {
-			this.push(returnType.getSort() == Type.OBJECT || returnType.getSort() == Type.ARRAY ? result : ReplayFrame.normalize(result), live || SignalContext.current().getReadTotal() != readTotal, returnType.getSize());
+			this.push(returnType.getSort() == Type.OBJECT || returnType.getSort() == Type.ARRAY ? result : SignalReplayFrame.normalize(result), live || SignalContext.current().getReadTotal() != readTotal, returnType.getSize());
 		}
 	}
 
 	private void build(final MethodInsnNode instruction, final Object[] arguments, final Type[] argumentTypes, final int index, final boolean live) {
-		final ReplayParts parts = (ReplayParts) this.pop();
+		final SignalReplayParts parts = (SignalReplayParts) this.pop();
 		parts.setLive(parts.isLive() || live || this.lastLive || this.controlLive);
 		switch (instruction.name) {
 			case "<init>":
@@ -688,18 +688,18 @@ public final class ReplayFrame {
 				this.push(parts.result(), parts.isLive(), 1);
 				return;
 			default:
-				throw new ReplayException(ReplayFailure.UNSUPPORTED_INSTRUCTION, "StringBuilder." + instruction.name);
+				throw new SignalReplayException(SignalReplayFailure.UNSUPPORTED_INSTRUCTION, "StringBuilder." + instruction.name);
 		}
 	}
 
 	private void invokeDynamic(final InvokeDynamicInsnNode instruction, final int index) {
 		final String bootstrap = instruction.bsm.getOwner();
 		if (bootstrap.equals("java/lang/invoke/LambdaMetafactory")) {
-			throw new ReplayException(ReplayFailure.LAMBDA);
+			throw new SignalReplayException(SignalReplayFailure.LAMBDA);
 		}
 
 		if (!bootstrap.equals("java/lang/invoke/StringConcatFactory")) {
-			throw new ReplayException(ReplayFailure.UNSUPPORTED_INSTRUCTION, "INVOKEDYNAMIC " + instruction.name);
+			throw new SignalReplayException(SignalReplayFailure.UNSUPPORTED_INSTRUCTION, "INVOKEDYNAMIC " + instruction.name);
 		}
 
 		final Type[] argumentTypes = Type.getArgumentTypes(instruction.desc);
@@ -710,7 +710,7 @@ public final class ReplayFrame {
 			live |= this.lastLive;
 		}
 
-		final ReplayParts parts = ReplayParts.create();
+		final SignalReplayParts parts = SignalReplayParts.create();
 		final String recipe = instruction.bsm.getName().equals("makeConcatWithConstants") ? (String) instruction.bsmArgs[0] : null;
 		if (recipe == null) {
 			for (int position = 0; position < arguments.length; position++) {
@@ -733,8 +733,8 @@ public final class ReplayFrame {
 		this.push(parts.result(), live || this.controlLive, 1);
 	}
 
-	private void piece(final ReplayParts parts, final Object value, final Type type, final String key) {
-		if (value instanceof ReplayUnknown) {
+	private void piece(final SignalReplayParts parts, final Object value, final Type type, final String key) {
+		if (value instanceof SignalReplayUnknown) {
 			final Map<String, String> holeMap = this.run.getHoleMap();
 			if (holeMap != null && holeMap.containsKey(key)) {
 				parts.add(holeMap.get(key));
@@ -742,15 +742,15 @@ public final class ReplayFrame {
 			}
 
 			if (this.controlLive) {
-				throw new ReplayException(ReplayFailure.LOCAL_COMBINED, ReplayFrame.describe(value));
+				throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, SignalReplayFrame.describe(value));
 			}
-			parts.addHole(key, ReplayFrame.describe(value));
-		} else if (value instanceof ReplayParts) {
+			parts.addHole(key, SignalReplayFrame.describe(value));
+		} else if (value instanceof SignalReplayParts) {
 			parts.add(value);
 		} else if (type.getSort() == Type.CHAR) {
-			parts.add(String.valueOf((char) ReplayFrame.toInt(value)));
+			parts.add(String.valueOf((char) SignalReplayFrame.toInt(value)));
 		} else if (type.getSort() == Type.BOOLEAN) {
-			parts.add(String.valueOf(ReplayFrame.toInt(value) != 0));
+			parts.add(String.valueOf(SignalReplayFrame.toInt(value) != 0));
 		} else if (value instanceof char[]) {
 			parts.add(String.valueOf((char[]) value));
 		} else {
@@ -762,16 +762,16 @@ public final class ReplayFrame {
 		try {
 			return invocation.invoke();
 		} catch (final InvocationTargetException exception) {
-			throw new ReplayException(ReplayFailure.REPLAY_FAILED, exception.getCause());
+			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getCause());
 		} catch (final ReflectiveOperationException | IllegalArgumentException exception) {
-			throw new ReplayException(ReplayFailure.REPLAY_FAILED, exception);
+			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
 		}
 	}
 
 	private Object known() {
 		final Object value = this.pop();
-		if (ReplayFrame.isUnknown(value)) {
-			throw new ReplayException(ReplayFailure.LOCAL_CONDITION, ReplayFrame.describe(value));
+		if (SignalReplayFrame.isUnknown(value)) {
+			throw new SignalReplayException(SignalReplayFailure.LOCAL_CONDITION, SignalReplayFrame.describe(value));
 		}
 
 		this.controlLive |= this.lastLive;
@@ -780,9 +780,9 @@ public final class ReplayFrame {
 
 	private void unknown(final Object unknown, final boolean live, final int size) {
 		if (live || this.controlLive) {
-			throw new ReplayException(ReplayFailure.LOCAL_COMBINED, ReplayFrame.describe(unknown));
+			throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, SignalReplayFrame.describe(unknown));
 		}
-		this.push(ReplayUnknown.create(ReplayFrame.describe(unknown)), false, size);
+		this.push(SignalReplayUnknown.create(SignalReplayFrame.describe(unknown)), false, size);
 	}
 
 	private void push(final Object value, final boolean live, final int size) {
@@ -839,14 +839,14 @@ public final class ReplayFrame {
 	}
 
 	private static boolean isUnknown(final Object value) {
-		return value instanceof ReplayUnknown || value instanceof ReplayParts && ((ReplayParts) value).hasHoles();
+		return value instanceof SignalReplayUnknown || value instanceof SignalReplayParts && ((SignalReplayParts) value).hasHoles();
 	}
 
 	private static String describe(final Object unknown) {
-		if (unknown instanceof ReplayUnknown) {
-			return ((ReplayUnknown) unknown).getDescription();
+		if (unknown instanceof SignalReplayUnknown) {
+			return ((SignalReplayUnknown) unknown).getDescription();
 		}
-		return unknown instanceof ReplayParts ? ((ReplayParts) unknown).getDescription() : "a local variable";
+		return unknown instanceof SignalReplayParts ? ((SignalReplayParts) unknown).getDescription() : "a local variable";
 	}
 
 	private static int resultSize(final int opcode) {
@@ -985,7 +985,7 @@ public final class ReplayFrame {
 
 	private static Object[] convert(final Object[] arguments, final Class<?>[] types) {
 		for (int position = 0; position < arguments.length; position++) {
-			arguments[position] = ReplayFrame.convert(arguments[position], types[position]);
+			arguments[position] = SignalReplayFrame.convert(arguments[position], types[position]);
 		}
 		return arguments;
 	}

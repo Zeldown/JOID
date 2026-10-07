@@ -15,28 +15,28 @@ import org.objectweb.asm.Opcodes;
 import dev.joid.demo.replay.ReplayHiddenFixture;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
-public final class ReplayHiddenLoader extends ClassLoader {
+public final class SignalReplayHiddenLoader extends ClassLoader {
 
 	private final String hiddenName;
 	private final byte[] defined;
 	private final byte[] served;
 
-	private ReplayHiddenLoader(final String name, final byte[] defined, final byte[] served) {
-		super(ReplayHiddenLoader.class.getClassLoader());
+	private SignalReplayHiddenLoader(final String name, final byte[] defined, final byte[] served) {
+		super(SignalReplayHiddenLoader.class.getClassLoader());
 		this.hiddenName = name;
 		this.defined    = defined;
 		this.served     = served;
 	}
 
-	public static ReplayHiddenLoader create(final String simpleName, final boolean lines, final boolean served, final String renamed, final String replacement) throws IOException {
+	public static SignalReplayHiddenLoader create(final String simpleName, final boolean lines, final boolean served, final String renamed, final String replacement) throws IOException {
 		final String name = "dev.joid.demo.replay." + simpleName;
-		final byte[] defined = ReplayHiddenLoader.transform(name, lines, null, null);
-		return new ReplayHiddenLoader(name, defined, served ? ReplayHiddenLoader.transform(name, lines, renamed, replacement) : null);
+		final byte[] defined = SignalReplayHiddenLoader.transform(name, lines, null, null);
+		return new SignalReplayHiddenLoader(name, defined, served ? SignalReplayHiddenLoader.transform(name, lines, renamed, replacement) : null);
 	}
 
-	public void run(final ReplayNode node, final IntegerSignal clicks) {
+	public void run(final SignalReplayNode node, final IntegerSignal clicks) {
 		try {
-			super.loadClass(this.hiddenName).getMethod("run", ReplayNode.class, IntegerSignal.class).invoke(null, node, clicks);
+			super.loadClass(this.hiddenName).getMethod("run", SignalReplayNode.class, IntegerSignal.class).invoke(null, node, clicks);
 		} catch (final ReflectiveOperationException exception) {
 			throw new IllegalStateException(exception);
 		}

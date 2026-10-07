@@ -3,12 +3,12 @@ package dev.joid.lib.utils.signal.replay;
 import lombok.Getter;
 
 @Getter
-public class ReplayException extends RuntimeException {
+public class SignalReplayException extends RuntimeException {
 
-	private final Object[]      arguments;
-	private final ReplayFailure failure;
+	private final Object[]            arguments;
+	private final SignalReplayFailure failure;
 
-	public ReplayException(final ReplayFailure failure, final Object... arguments) {
+	public SignalReplayException(final SignalReplayFailure failure, final Object... arguments) {
 		super(String.format(failure.getReason(), arguments), null, false, false);
 		this.failure   = failure;
 		this.arguments = arguments;
