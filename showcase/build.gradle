@@ -1,0 +1,37 @@
+archivesBaseName = "joid-showcase"
+
+dependencies {
+    compile project(':vulkan')
+    compile project(':testkit')
+}
+
+jar.enabled = false
+
+/* Showcase */
+task run(type: JavaExec) {
+    group = 'JOID'
+    description = 'Launches the README showcase in a Vulkan window.'
+    main = "dev.joid.showcase.ShowcaseWindow"
+    classpath = sourceSets.main.runtimeClasspath
+    systemProperty 'joid.config', file("$buildDir/config").absolutePath
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+}
+
+task runShowcase {
+    group = 'JOID'
+    description = 'Launches the README showcase in a Vulkan window, like :showcase:run.'
+    dependsOn run
+}
+
+task renderClasspath {
+    group = 'JOID'
+    description = 'Builds the showcase and writes its runtime classpath for the render tools.'
+    dependsOn sourceSets.main.runtimeClasspath
+    doLast {
+        def output = file("$buildDir/render/classpath.txt")
+        output.parentFile.mkdirs()
+        output.setText(sourceSets.main.runtimeClasspath.asPath, 'UTF-8')
+    }
+}

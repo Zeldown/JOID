@@ -6,6 +6,7 @@
 
 out/
 bin/
+__pycache__/
 libs/
 !template/libs/
 build/

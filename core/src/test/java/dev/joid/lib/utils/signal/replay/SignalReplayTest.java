@@ -25,6 +25,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.utils.signal.SignalContext;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
+import dev.joid.showcase.ReplayShowcaseFixture;
 import example.replay.LabelNode;
 import example.replay.LabelUI;
 
@@ -302,6 +303,15 @@ public class SignalReplayTest {
 		Assert.assertEquals("", this.open(ui));
 		ui.getClicks().set(3);
 		Assert.assertEquals("> Prefixed 0", SignalReplayTest.node(ui, 4).getText().get());
+	}
+
+	@Test
+	public void followsTheNativeExpressionsOfTheShowcase() {
+		final SignalReplayNode node = SignalReplayNode.create();
+		final IntegerSignal clicks = IntegerSignal.of(0);
+		Assert.assertEquals("", SignalReplayTest.capture(true, () -> ReplayShowcaseFixture.run(node, clicks)));
+		clicks.set(2);
+		Assert.assertEquals("Showcase 2", node.getText().get());
 	}
 
 	@Test

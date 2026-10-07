@@ -3,7 +3,12 @@
 mode=$1
 files=$(cat)
 
-if ! printf '%s\n' "$files" | grep -qE '^(core/|msdf/|impl/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
+sources=0
+if printf '%s\n' "$files" | grep -qE '^(core/|msdf/|impl/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
+    sources=1
+fi
+
+if [ $sources -eq 0 ] && ! printf '%s\n' "$files" | grep -qE '^showcase/(src/|build\.gradle$)'; then
     echo "🔍 No source change, tests skipped"
     echo ""
     exit 0
@@ -70,9 +75,15 @@ for module in lwjgl2 lwjgl3 vulkan; do
     esac
 done
 
-echo "🔍 Testing$modules, then comparing the backends"
-echo ""
-./gradlew $tasks crossBackendTest --offline
+if [ $sources -eq 1 ]; then
+    echo "🔍 Testing$modules, then comparing the backends"
+    echo ""
+    ./gradlew $tasks :showcase:compileJava crossBackendTest --offline
+else
+    echo "🔍 Compiling the showcase"
+    echo ""
+    ./gradlew :showcase:compileJava --offline
+fi
 status=$?
 
 echo ""

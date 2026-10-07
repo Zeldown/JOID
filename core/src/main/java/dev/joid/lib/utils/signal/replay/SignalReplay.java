@@ -300,7 +300,7 @@ public final class SignalReplay {
 	}
 
 	private static boolean isLibrary(final String name) {
-		return name.startsWith("dev.joid.") && !name.startsWith("dev.joid.demo.") && !name.contains(".demo.");
+		return name.startsWith("dev.joid.") && !name.startsWith("dev.joid.demo.") && !name.startsWith("dev.joid.showcase.") && !name.contains(".demo.");
 	}
 
 	private static boolean isRuntime(final String name) {
