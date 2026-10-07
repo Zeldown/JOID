@@ -25,8 +25,8 @@ import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class UIDemoSignal extends UIDemo {
 
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 	private static final Color INK         = new Color(153, 153, 153);
+	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 
 	@Override
 	public void init() {

@@ -28,7 +28,7 @@ public class UIDemoSlider extends UIDemo {
 		DemoIntegerSliderNode
 		.create(1920 / 2 - 200, 1080 / 2 - 25, 400, 50)
 		.values(1, 9, 3)
-		.onChange((node, newValue) -> System.out.println("value: " + newValue))
+		.onChange((node, newValue) -> System.out.println("[UIDemoSlider] slider value: " + newValue))
 		.signal(value)
 		.attach(this);
 	}

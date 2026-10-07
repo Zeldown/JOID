@@ -25,8 +25,12 @@ public class UIDemoSimple extends UIDemo {
 					1920D / 2D,
 					1080D / 2D
 					)
-			.color(Color.RED).hoveredColor(Color.GREEN)
-			.borderColor(Color.GREEN).hoveredBorderColor(Color.RED).borderStroke(3D).borderFill(true)
+			.color(Color.RED)
+			.hoveredColor(Color.GREEN)
+			.borderColor(Color.GREEN)
+			.hoveredBorderColor(Color.RED)
+			.borderStroke(3D)
+			.borderFill(true)
 			.effect(RoundedNodeEffect.create(30F))
 			.body(n -> {
 				final double childWidth = n.dw(3D);
@@ -38,9 +42,10 @@ public class UIDemoSimple extends UIDemo {
 						childWidth,
 						childHeight
 						)
-				.color(Color.RED).hoveredColor(Color.WHITE)
+				.color(Color.RED)
+				.hoveredColor(Color.WHITE)
 				.onClick((node, mouseX, mouseY, clickType) -> {
-					System.out.println(node);
+					System.out.println("[UIDemoSimple] left child clicked");
 				})
 				.hover(() -> "hover1")
 				.attach(n);
@@ -51,9 +56,10 @@ public class UIDemoSimple extends UIDemo {
 						childWidth,
 						childHeight
 						)
-				.color(Color.RED).hoveredColor(Color.WHITE)
+				.color(Color.RED)
+				.hoveredColor(Color.WHITE)
 				.onClick((node, mouseX, mouseY, clickType) -> {
-					System.out.println(node);
+					System.out.println("[UIDemoSimple] right child clicked");
 				})
 				.hover(() -> Arrays.asList("hover1", "hover2"))
 				.body(n1 -> {
@@ -63,9 +69,10 @@ public class UIDemoSimple extends UIDemo {
 							n1.dw(2D),
 							n1.dh(2D)
 							)
-					.color(Color.RED).hoveredColor(Color.MAGENTA)
+					.color(Color.RED)
+					.hoveredColor(Color.MAGENTA)
 					.onClick((node, mouseX, mouseY, clickType) -> {
-						System.out.println(node);
+						System.out.println("[UIDemoSimple] right child of the right child clicked");
 					})
 					.hover(() -> Arrays.asList("hover1", "hover2", "hover3"))
 					.attach(n1);

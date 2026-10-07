@@ -9,7 +9,7 @@ public class UIDemoCheckbox extends UIDemo {
 	public void init() {
 		DemoCheckboxNode
 		.create(1920 / 2 - 50, 1080 / 2 - 50, 100, 100)
-		.onChange((node, checked) -> System.out.println("checked: " + checked))
+		.onChange((node, checked) -> System.out.println("[UIDemoCheckbox] checkbox checked: " + checked))
 		.attach(this);
 	}
 

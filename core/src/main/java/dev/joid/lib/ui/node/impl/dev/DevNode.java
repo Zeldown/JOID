@@ -107,7 +107,7 @@ public final class DevNode extends Node {
 			try {
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
 				.color(this.inspectSignal.map(inspect -> inspect ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.inspectSignal.map(inspect -> (inspect ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
 				.onClick((node, mouseX, mouseY, clickType) -> {
@@ -120,7 +120,7 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
 				.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()))
 				.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()).darker(0.3F))
 				.onClick((node, mouseX, mouseY, clickType) -> {
@@ -131,7 +131,7 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")))
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")))
 				.color(this.eyeSignal.map(eye -> eye ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.eyeSignal.map(eye -> (eye ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
 				.onClick((node, mouseX, mouseY, clickType) -> {
@@ -142,7 +142,7 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
 				.color(this.gridSignal.map(grid -> grid ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.gridSignal.map(grid -> (grid ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
 				.onClick((node, mouseX, mouseY, clickType) -> {

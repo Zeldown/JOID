@@ -13,7 +13,8 @@ public class UIDemoChart extends UIDemo {
 	public void init() {
 		DemoChartNode
 		.create(50, 50, 923, 345)
-		.xAxis(ChartAxis.x("date", "13/03", "14/03", "15/03", "16/03", "17/03", "18/03", "19/03", "20/03")).yAxis(ChartAxis.y("value").suffix("$"))
+		.xAxis(ChartAxis.x("date", "13/03", "14/03", "15/03", "16/03", "17/03", "18/03", "19/03", "20/03"))
+		.yAxis(ChartAxis.y("value").suffix("$"))
 		.data(
 				"Zeldown",
 				ChartData
@@ -32,7 +33,8 @@ public class UIDemoChart extends UIDemo {
 		DemoChartNode
 		.create(50, 450, 923, 345)
 		.smooth(false)
-		.xAxis(ChartAxis.x("date", "13/03", "14/03", "15/03", "16/03", "17/03", "18/03", "19/03", "20/03")).yAxis(ChartAxis.y("value").suffix("$"))
+		.xAxis(ChartAxis.x("date", "13/03", "14/03", "15/03", "16/03", "17/03", "18/03", "19/03", "20/03"))
+		.yAxis(ChartAxis.y("value").suffix("$"))
 		.data(
 				"Zeldown",
 				ChartData

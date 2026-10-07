@@ -11,14 +11,14 @@ public class UIDemoSelector extends UIDemo {
 	public void init() {
 		DemoSelectorNode
 		.create(1920 / 2 - 450, 1080 / 2 - 25, 400, 50)
-		.onChange((node, color) -> System.out.println(color))
+		.onChange((node, color) -> System.out.println("[UIDemoSelector] down selector value: " + color))
 		.values(Color.WHITE, Color.WHITE, Color.RED, Color.GREEN, Color.BLUE)
 		.attach(this);
 
 		DemoSelectorNode
 		.create(1920 / 2 + 50, 1080 / 2 - 25, 400, 50)
 		.direction(SelectorDirection.UP)
-		.onChange((node, color) -> System.out.println(color))
+		.onChange((node, color) -> System.out.println("[UIDemoSelector] up selector value: " + color))
 		.values(Color.WHITE, Color.WHITE, Color.RED, Color.GREEN, Color.BLUE)
 		.attach(this);
 	}

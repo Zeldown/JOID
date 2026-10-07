@@ -35,18 +35,17 @@ public class UIDemoReorderable extends UIDemo {
 			ReorderableFlexNode
 			.vertical(0D, 0D, 400D)
 			.margin(10D)
-			.onReorderStart((flex, child) -> System.out.println("vertical auto reorder start " + child))
-			.onReorder((flex, child) -> System.out.println("vertical auto reorder " + child))
-			.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("vertical auto reorder end " + oldIndex + " -> " + newIndex))
+			.onReorderStart((flex, child) -> System.out.println("[UIDemoReorderable] vertical auto list: reorder start"))
+			.onReorder((flex, child) -> System.out.println("[UIDemoReorderable] vertical auto list: reorder"))
+			.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] vertical auto list: reorder end " + oldIndex + " -> " + newIndex))
 			.body(flex -> {
 				for (int i = 0; i < UIDemoReorderable.ITEM_COUNT; i++) {
 					final int index = i;
 					RectNode
 					.create(0D, 0D, 400D, 60D)
 					.color(this.colorAt(index, UIDemoReorderable.ITEM_COUNT))
-					.onDragStart(node -> System.out.println("vertical auto drag start " + index))
-					.onDrag(node -> System.out.println("vertical auto drag " + index))
-					.onDragEnd(node -> System.out.println("vertical auto drag end " + index))
+					.onDragStart(node -> System.out.println("[UIDemoReorderable] vertical auto list: drag start of item " + (index + 1)))
+					.onDragEnd(node -> System.out.println("[UIDemoReorderable] vertical auto list: drag end of item " + (index + 1)))
 					.body(rect -> {
 						TextNode
 						.create(rect.dw(2D), rect.dh(2D))
@@ -76,9 +75,9 @@ public class UIDemoReorderable extends UIDemo {
 					.vertical(0D, 0D, 400D)
 					.margin(10D)
 					.auto(false)
-					.onReorderStart((flex, child) -> System.out.println("vertical manual reorder start " + child))
-					.onReorder((flex, child) -> System.out.println("vertical manual reorder " + child))
-					.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("vertical manual reorder end " + oldIndex + " -> " + newIndex));
+					.onReorderStart((flex, child) -> System.out.println("[UIDemoReorderable] vertical manual list: reorder start"))
+					.onReorder((flex, child) -> System.out.println("[UIDemoReorderable] vertical manual list: reorder"))
+					.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] vertical manual list: reorder end " + oldIndex + " -> " + newIndex));
 
 			manual.body(flex -> {
 				for (int i = 0; i < UIDemoReorderable.ITEM_COUNT; i++) {
@@ -86,9 +85,8 @@ public class UIDemoReorderable extends UIDemo {
 					RectNode
 					.create(0D, 0D, 400D, 60D)
 					.color(this.colorAt(index, UIDemoReorderable.ITEM_COUNT))
-					.onDragStart(node -> System.out.println("vertical manual drag start " + index))
-					.onDrag(node -> System.out.println("vertical manual drag " + index))
-					.onDragEnd(node -> System.out.println("vertical manual drag end " + index))
+					.onDragStart(node -> System.out.println("[UIDemoReorderable] vertical manual list: drag start of item " + (index + 1)))
+					.onDragEnd(node -> System.out.println("[UIDemoReorderable] vertical manual list: drag end of item " + (index + 1)))
 					.body(rect -> {
 						RectNode
 						.create(10D, 15D, 30D, 30D)
@@ -136,18 +134,17 @@ public class UIDemoReorderable extends UIDemo {
 			.horizontal(0D, 0D, 110D)
 			.margin(10D)
 			.direction(FlexDirection.ROW)
-			.onReorderStart((flex, child) -> System.out.println("horizontal auto reorder start " + child))
-			.onReorder((flex, child) -> System.out.println("horizontal auto reorder " + child))
-			.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("horizontal auto reorder end " + oldIndex + " -> " + newIndex))
+			.onReorderStart((flex, child) -> System.out.println("[UIDemoReorderable] horizontal auto list: reorder start"))
+			.onReorder((flex, child) -> System.out.println("[UIDemoReorderable] horizontal auto list: reorder"))
+			.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] horizontal auto list: reorder end " + oldIndex + " -> " + newIndex))
 			.body(flex -> {
 				for (int i = 0; i < UIDemoReorderable.ITEM_COUNT; i++) {
 					final int index = i;
 					RectNode
 					.create(0D, 0D, 200D, 110D)
 					.color(this.colorAt(index, UIDemoReorderable.ITEM_COUNT))
-					.onDragStart(node -> System.out.println("horizontal auto drag start " + index))
-					.onDrag(node -> System.out.println("horizontal auto drag " + index))
-					.onDragEnd(node -> System.out.println("horizontal auto drag end " + index))
+					.onDragStart(node -> System.out.println("[UIDemoReorderable] horizontal auto list: drag start of item " + (index + 1)))
+					.onDragEnd(node -> System.out.println("[UIDemoReorderable] horizontal auto list: drag end of item " + (index + 1)))
 					.body(rect -> {
 						TextNode
 						.create(rect.dw(2D), rect.dh(2D))
@@ -177,9 +174,9 @@ public class UIDemoReorderable extends UIDemo {
 					.horizontal(0D, 0D, 110D)
 					.margin(10D)
 					.auto(false)
-					.onReorderStart((flex, child) -> System.out.println("horizontal manual reorder start " + child))
-					.onReorder((flex, child) -> System.out.println("horizontal manual reorder " + child))
-					.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("horizontal manual reorder end " + oldIndex + " -> " + newIndex));
+					.onReorderStart((flex, child) -> System.out.println("[UIDemoReorderable] horizontal manual list: reorder start"))
+					.onReorder((flex, child) -> System.out.println("[UIDemoReorderable] horizontal manual list: reorder"))
+					.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] horizontal manual list: reorder end " + oldIndex + " -> " + newIndex));
 
 			manual.body(flex -> {
 				for (int i = 0; i < UIDemoReorderable.ITEM_COUNT; i++) {
@@ -187,9 +184,8 @@ public class UIDemoReorderable extends UIDemo {
 					RectNode
 					.create(0D, 0D, 200D, 110D)
 					.color(this.colorAt(index, UIDemoReorderable.ITEM_COUNT))
-					.onDragStart(node -> System.out.println("horizontal manual drag start " + index))
-					.onDrag(node -> System.out.println("horizontal manual drag " + index))
-					.onDragEnd(node -> System.out.println("horizontal manual drag end " + index))
+					.onDragStart(node -> System.out.println("[UIDemoReorderable] horizontal manual list: drag start of item " + (index + 1)))
+					.onDragEnd(node -> System.out.println("[UIDemoReorderable] horizontal manual list: drag end of item " + (index + 1)))
 					.body(rect -> {
 						RectNode
 						.create(10D, 10D, 30D, 30D)

@@ -30,9 +30,9 @@ public class UIDemoOverflow extends UIDemo {
 			.color(Color.BLUE)
 			.overflow(OverflowProperty.SCROLL)
 			.scrollbar(DemoScrollbarNode.create(0, -20D, 30D, 10D, BoundingBox.create(0, -20D, 1920D / 2D, 10D)))
-			.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
-			.onScrollUpdate((node, value) -> System.out.println("horizontal scroll update " + value))
-			.onScrollEnd((node, scrollX, scrollY) -> System.out.println("horizontal scroll end " + scrollX + ", " + scrollY))
+			.onClick((node, mouseX, mouseY, clickType) -> System.out.println("[UIDemoOverflow] horizontal list clicked"))
+			.onScrollUpdate((node, value) -> System.out.println("[UIDemoOverflow] horizontal list scroll update: " + value))
+			.onScrollEnd((node, scrollX, scrollY) -> System.out.println("[UIDemoOverflow] horizontal list scroll end: " + scrollX + ", " + scrollY))
 			.onScrollEnding((node, scrollX, scrollY) -> {
 				RectNode.create(
 						0D,
@@ -52,7 +52,7 @@ public class UIDemoOverflow extends UIDemo {
 					.effect(MaskNodeEffect.create(rect.getWidth(), 10D))
 					.attach(rect);
 				})
-				.onClick((child, mouseX, mouseY, clickType) -> System.out.println(child))
+				.onClick((child, mouseX, mouseY, clickType) -> System.out.println("[UIDemoOverflow] horizontal list: loaded item clicked"))
 				.attach(node.getChild(0, FlexNode.class));
 			})
 			.body(n -> {
@@ -80,7 +80,7 @@ public class UIDemoOverflow extends UIDemo {
 							.effect(MaskNodeEffect.create(rect.getWidth(), 10D))
 							.attach(rect);
 						})
-						.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+						.onClick((node, mouseX, mouseY, clickType) -> System.out.println("[UIDemoOverflow] horizontal list: item clicked"))
 						.attach(flex);
 					}
 				})
@@ -97,9 +97,9 @@ public class UIDemoOverflow extends UIDemo {
 			.color(Color.BLUE)
 			.overflow(OverflowProperty.SCROLL)
 			.scrollbar(DemoScrollbarNode.create(130D, 0, 10D, 30D, BoundingBox.create(130D, 0, 10D, 1080 / 2D)))
-			.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
-			.onScrollUpdate((node, value) -> System.out.println("vertical scroll update " + value))
-			.onScrollEnd((node, scrollX, scrollY) -> System.out.println("vertical scroll end " + scrollX + ", " + scrollY))
+			.onClick((node, mouseX, mouseY, clickType) -> System.out.println("[UIDemoOverflow] vertical list clicked"))
+			.onScrollUpdate((node, value) -> System.out.println("[UIDemoOverflow] vertical list scroll update: " + value))
+			.onScrollEnd((node, scrollX, scrollY) -> System.out.println("[UIDemoOverflow] vertical list scroll end: " + scrollX + ", " + scrollY))
 			.body(n -> {
 				FlexNode
 				.vertical(0D, 10D, 120D)
@@ -124,7 +124,7 @@ public class UIDemoOverflow extends UIDemo {
 							.color(Color.GREEN)
 							.attach(rect);
 						})
-						.onClick((node, mouseX, mouseY, clickType) -> System.out.println(node))
+						.onClick((node, mouseX, mouseY, clickType) -> System.out.println("[UIDemoOverflow] vertical list: item clicked"))
 						.attach(flex);
 					}
 				})

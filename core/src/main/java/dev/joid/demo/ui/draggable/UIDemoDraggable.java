@@ -24,13 +24,13 @@ import lombok.NonNull;
 
 public class UIDemoDraggable extends UIDemo {
 
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 	private static final Color INK         = new Color(153, 153, 153);
+	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 
-	private final IntegerSignal starts = IntegerSignal.of(0);
+	private final IntegerSignal ends   = IntegerSignal.of(0);
 	private final IntegerSignal drags  = IntegerSignal.of(0);
 	private final IntegerSignal snaps  = IntegerSignal.of(0);
-	private final IntegerSignal ends   = IntegerSignal.of(0);
+	private final IntegerSignal starts = IntegerSignal.of(0);
 
 	@Override
 	public void init() {

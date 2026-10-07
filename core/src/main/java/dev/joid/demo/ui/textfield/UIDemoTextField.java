@@ -15,8 +15,8 @@ import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class UIDemoTextField extends UIDemo {
 
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 	private static final Color INK         = new Color(153, 153, 153);
+	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 
 	@Override
 	public void init() {
@@ -32,7 +32,7 @@ public class UIDemoTextField extends UIDemo {
 			.info(info)
 			.marginHorizontal(12D)
 			.placeholder("Placeholder")
-			.onChange((node, oldText, newText) -> System.out.println("Text: " + oldText + " -> " + newText))
+			.onChange((node, oldText, newText) -> System.out.println("[UIDemoTextField] text field: " + oldText + " -> " + newText))
 			.attach(rect);
 			TextNode.create(260, 315).text(Text.create("Text", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -47,7 +47,7 @@ public class UIDemoTextField extends UIDemo {
 			.info(info)
 			.margin(12D)
 			.placeholder("Placeholder")
-			.onChange((node, oldText, newText) -> System.out.println("Text: " + oldText + " -> " + newText))
+			.onChange((node, oldText, newText) -> System.out.println("[UIDemoTextField] multiline field: " + oldText + " -> " + newText))
 			.attach(rect);
 			TextNode.create(260, 315).text(Text.create("Multiline", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
