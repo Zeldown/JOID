@@ -26,6 +26,11 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 
 	@Override
 	public void add(final E element) {
+		final int position = this.orderedList.indexOf(element);
+		if (position >= 0 && this.isInPlace(position)) {
+			return;
+		}
+
 		this.orderedList.remove(element);
 		for (int i = 0; i < this.orderedList.size(); i++) {
 			if (this.orderedList.get(i).getIndex() > element.getIndex()) {
@@ -127,6 +132,11 @@ public class IndexedLinkedList<E extends IndexedElement> implements IndexedList<
 	@Override
 	public Iterator<E> iterator() {
 		return this.orderedList.iterator();
+	}
+
+	private boolean isInPlace(final int position) {
+		final int index = this.orderedList.get(position).getIndex();
+		return (position == 0 || this.orderedList.get(position - 1).getIndex() <= index) && (position == this.orderedList.size() - 1 || this.orderedList.get(position + 1).getIndex() >= index);
 	}
 
 	@SuppressWarnings("unchecked")

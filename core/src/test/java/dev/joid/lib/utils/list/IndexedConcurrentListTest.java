@@ -233,6 +233,29 @@ public class IndexedConcurrentListTest {
 	}
 
 	@Test
+	public void keepsThePlaceOfAnElementAddedAgainWithTheSameIndex() {
+		final Element first = new Element(1);
+		final Element second = new Element(1);
+		final IndexedConcurrentList<Element> list = new IndexedConcurrentList<>();
+		list.add(first);
+		list.add(second);
+		list.add(first);
+		Assert.assertEquals(Arrays.asList(first, second), list.ordered());
+	}
+
+	@Test
+	public void sortsAnElementAddedAgainWithAnotherIndex() {
+		final Element first = new Element(0);
+		final Element second = new Element(1);
+		final IndexedConcurrentList<Element> list = new IndexedConcurrentList<>();
+		list.add(first);
+		list.add(second);
+		first.index = 2;
+		list.add(first);
+		Assert.assertEquals(Arrays.asList(second, first), list.ordered());
+	}
+
+	@Test
 	public void ignoresAnElementAddedTwice() {
 		final Element first = new Element(0);
 		final Element second = new Element(1);
