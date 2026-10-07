@@ -10,6 +10,7 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.NonNull;
 
 public class DemoSwitchNode extends SwitchNode {
@@ -36,7 +37,7 @@ public class DemoSwitchNode extends SwitchNode {
 			for (final String state : super.getStateList().get()) {
 				RectNode
 				.create(0, 0, stateWidth, super.getHeight())
-				.color(() -> super.getState().equals(state) ? Color.BLUE : Color.RED)
+				.color(Signal.from(() -> super.getState().equals(state) ? Color.BLUE : Color.RED))
 				.body(rect -> {
 					TextNode
 					.create(0, 0, rect.getWidth(), rect.getHeight())

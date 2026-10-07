@@ -668,17 +668,9 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	private void refreshView() {
-		if (this.zoomLevel.peek() != this.view.getZoom()) {
-			this.zoomLevel.set(this.view.getZoom());
-		}
-
-		if (this.scaledWidth.peek() != this.view.getVisibleWidth()) {
-			this.scaledWidth.set(this.view.getVisibleWidth());
-		}
-
-		if (this.scaledHeight.peek() != this.view.getVisibleHeight()) {
-			this.scaledHeight.set(this.view.getVisibleHeight());
-		}
+		this.zoomLevel.set(this.view.getZoom());
+		this.scaledWidth.set(this.view.getVisibleWidth());
+		this.scaledHeight.set(this.view.getVisibleHeight());
 	}
 
 	private void drawFrame(final double mouseX, final double mouseY) {

@@ -17,9 +17,9 @@ public class UIDemoStore extends UIDemo {
 
 	@Override
 	public void init() {
-		super.useStore(DemoLocalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
-		super.useStore(DemoGlobalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
-		super.useStore(DemoPermanentStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
+		final DemoLocalStore local = super.useStore(DemoLocalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
+		final DemoGlobalStore global = super.useStore(DemoGlobalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
+		final DemoPermanentStore permanent = super.useStore(DemoPermanentStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
 
 		FlexNode
 		.vertical(0, 1080 / 2, 1920)
@@ -27,29 +27,17 @@ public class UIDemoStore extends UIDemo {
 		.body(flex -> {
 			TextNode
 			.create(0, 0)
-			.text(Text.create("", TextInfo.create(DemoFont.MONTSERRAT, 30).color(Color.WHITE), Align.CENTER))
-			.<TextNode>onInit(node -> {
-				final DemoLocalStore store = node.useStore(DemoLocalStore.class);
-				node.getText().text("DemoLocalStore: " + store.getTime());
-			})
+			.text(Text.create("DemoLocalStore: " + local.getTime(), TextInfo.create(DemoFont.MONTSERRAT, 30).color(Color.WHITE), Align.CENTER))
 			.attach(flex);
 
 			TextNode
 			.create(0, 0)
-			.text(Text.create("", TextInfo.create(DemoFont.MONTSERRAT, 30).color(Color.WHITE), Align.CENTER))
-			.<TextNode>onInit(node -> {
-				final DemoGlobalStore store = node.useStore(DemoGlobalStore.class);
-				node.getText().text("DemoGlobalStore: " + store.getTime());
-			})
+			.text(Text.create("DemoGlobalStore: " + global.getTime(), TextInfo.create(DemoFont.MONTSERRAT, 30).color(Color.WHITE), Align.CENTER))
 			.attach(flex);
 
 			TextNode
 			.create(0, 0)
-			.text(Text.create("", TextInfo.create(DemoFont.MONTSERRAT, 30).color(Color.WHITE), Align.CENTER))
-			.<TextNode>onInit(node -> {
-				final DemoPermanentStore store = node.useStore(DemoPermanentStore.class);
-				node.getText().text("DemoPermanentStore: " + store.getTime());
-			})
+			.text(Text.create("DemoPermanentStore: " + permanent.getTime(), TextInfo.create(DemoFont.MONTSERRAT, 30).color(Color.WHITE), Align.CENTER))
 			.attach(flex);
 		})
 		.attach(this);
