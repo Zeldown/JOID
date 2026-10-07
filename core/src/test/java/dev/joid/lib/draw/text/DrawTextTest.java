@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -17,15 +18,33 @@ import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.draw.text.builder.utils.TextOverflow;
 import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.FontUsage;
+import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.dto.markup.ITextMarkup;
+import dev.joid.lib.font.dto.markup.TextMarkup;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.lib.utils.align.Align;
 
 public class DrawTextTest {
+
+	private static final ITextMarkup MARKUP = (text, index, style) -> {
+		if (text.startsWith("<b>", index)) {
+			style.weight(FontWeight.BOLD);
+			return 3;
+		}
+
+		if (text.startsWith("</b>", index)) {
+			style.weight(style.getBase().getWeight());
+			return 4;
+		}
+
+		return text.startsWith("<c red>", index) ? 7 : 0;
+	};
 
 	private static MsdfFont montserrat;
 
@@ -347,6 +366,30 @@ public class DrawTextTest {
 		Assert.assertEquals(Collections.singletonList("helloBi.@0.0,0.0"), this.font.drawn);
 	}
 
+	@Test
+	public void neverWrapsInsideATag() {
+		Assert.assertEquals(Arrays.asList("a<c red>bc", "<c red>d"), DrawTextTest.draw().getLines(35D, "a<c red>bcd", this.info.copy().markups(DrawTextTest.MARKUP)));
+	}
+
+	@Test
+	public void continuesAnOpenStyleOnTheWrappedLines() {
+		final List<Text> lines = DrawTextTest.draw().getLines(55D, Text.create("<b>ab cd</b> ef", this.info.copy().markups(DrawTextTest.MARKUP)));
+		Assert.assertEquals(Arrays.asList("<b>ab", "<b>cd</b>", "<b></b>ef"), lines.stream().map(Text::getText).collect(Collectors.toList()));
+		Assert.assertEquals(40D, lines.get(1).getWidth(), 0D);
+		Assert.assertEquals(20D, lines.get(2).getWidth(), 0D);
+	}
+
+	@Test
+	public void continuesAnOpenStyleAfterALineBreak() {
+		Assert.assertEquals(Arrays.asList("<b>ab", "<b>cd"), DrawTextTest.draw().getLines(1000D, "<b>ab\ncd", this.info.copy().markups(DrawTextTest.MARKUP)));
+	}
+
+	@Test
+	public void neverCutsInsideATag() {
+		DrawTextTest.draw().drawText(0D, 0D, 55D, 30D, "a<c red>bcdef", this.info.copy().markups(DrawTextTest.MARKUP), Align.START, Align.START, TextOverflow.ELLIPSIS, TextMode.OVERFLOW);
+		Assert.assertEquals(Collections.singletonList("a<c red>b...@0.0,0.0"), this.font.drawn);
+	}
+
 	private Text text() {
 		return Text.create(TextElement.create("ab", this.info), TextElement.create("c", this.info.copy().fontSize(20F)));
 	}
@@ -382,7 +425,20 @@ public class DrawTextTest {
 
 		@Override
 		public double getWidth(final String text, final TextInfo info) {
-			return text.length() * info.getFontSize();
+			final List<ITextMarkup> markups = info.getMarkups();
+			final TextStyle style = info.getStyle().derive();
+			double width = 0D;
+			for (int index = 0; index < text.length();) {
+				final int consumed = TextMarkup.parse(markups, text, index, style);
+				if (consumed > 0) {
+					index += consumed;
+					continue;
+				}
+
+				width += style.getWeight() == FontWeight.BOLD ? info.getFontSize() * 2D : info.getFontSize();
+				index++;
+			}
+			return width;
 		}
 
 		@Override

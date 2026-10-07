@@ -1,5 +1,6 @@
 package dev.joid.lib.draw.text;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,9 @@ import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.dto.markup.ITextMarkup;
+import dev.joid.lib.font.dto.markup.TextMarkup;
 import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 import lombok.NonNull;
@@ -87,15 +91,23 @@ public final class DrawText {
 				double overflowWidth = 0;
 				for (final TextElement element : text.getElementList()) {
 					final String elementText = text.getText(element);
+					final int[] tags = DrawText.tags(element, elementText);
 					final double overflowStrWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(overflowStr));
+					int fit = 0;
 					for (int i = 0; i <= elementText.length(); i++) {
+						if (i < elementText.length() && tags[i] != -1 && tags[i] != i) {
+							continue;
+						}
+
 						final String subText = elementText.substring(0, i);
 						final double subTextWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(subText));
 						if (overflowWidth + subTextWidth + overflowStrWidth > width && !subText.isEmpty()) {
-							overflowText.add(element.copyWithText(subText.substring(0, subText.length() - 1)).modifier(null));
+							overflowText.add(element.copyWithText(elementText.substring(0, fit)).modifier(null));
 							overflow = true;
 							break;
 						}
+
+						fit = i;
 					}
 
 					if (overflow) {
@@ -177,42 +189,50 @@ public final class DrawText {
 		Text currentText = text.copyProperties().modifier(null);
 		for (final TextElement element : text.getElementList()) {
 			final String elementText = text.getText(element).replace("<br>", String.valueOf('\n'));
+			final int[] tags = DrawText.tags(element, elementText);
+			String opened = "";
 			int lastSplit = 0;
 			for (int i = 0; i < elementText.length(); i++) {
+				if (tags[i] != -1) {
+					continue;
+				}
+
 				final char c = elementText.charAt(i);
 				if (c == '\n' || c == '\r') {
-					currentText.add(element.copyWithText(elementText.substring(lastSplit, i)).modifier(null));
+					currentText.add(element.copyWithText(opened + elementText.substring(lastSplit, i)).modifier(null));
 					textList.add(currentText);
 					currentText = text.copyProperties().modifier(null).add(element.copyWithText("").modifier(null));
 					if (elementText.startsWith("\r\n", i)) {
 						i++;
 					}
 					lastSplit = i + 1;
+					opened = DrawText.opened(elementText, tags, lastSplit);
 					continue;
 				}
 
-				final String part = elementText.substring(lastSplit, i + 1);
+				final String part = opened + elementText.substring(lastSplit, i + 1);
 				final double elementWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(part));
 				if (currentText.getWidth() + elementWidth > width) {
 					int foundSplit = i;
 					for (int j = i; j >= lastSplit; j--) {
-						if (elementText.charAt(j) == ' ') {
+						if (elementText.charAt(j) == ' ' && tags[j] == -1) {
 							foundSplit = j;
 							break;
 						}
 					}
 
 					if (foundSplit > lastSplit || !currentText.getText().isEmpty()) {
-						currentText.add(element.copyWithText(elementText.substring(lastSplit, foundSplit)).modifier(null));
+						currentText.add(element.copyWithText(opened + elementText.substring(lastSplit, foundSplit)).modifier(null));
 						textList.add(currentText);
 						currentText = text.copyProperties().modifier(null);
 						lastSplit = elementText.charAt(foundSplit) == ' ' ? foundSplit + 1 : foundSplit;
+						opened = DrawText.opened(elementText, tags, lastSplit);
 					}
 				}
 			}
 
 			if (lastSplit < elementText.length()) {
-				currentText.add(element.copyWithText(elementText.substring(lastSplit)).modifier(null));
+				currentText.add(element.copyWithText(opened + elementText.substring(lastSplit)).modifier(null));
 			}
 		}
 
@@ -225,6 +245,39 @@ public final class DrawText {
 
 	public @NonNull List<@NonNull String> getLines(final double width, final @NonNull String text, final @NonNull TextInfo info) {
 		return this.getLines(width, Text.create(text, info)).stream().map(Text::getText).collect(Collectors.toList());
+	}
+
+	private static @NonNull int[] tags(final @NonNull TextElement element, final @NonNull String text) {
+		final int[] tags = new int[text.length()];
+		Arrays.fill(tags, -1);
+
+		final List<ITextMarkup> markups = element.getInfo().getMarkups();
+		if (markups.isEmpty()) {
+			return tags;
+		}
+
+		final TextStyle style = element.getInfo().getStyle().derive();
+		for (int index = 0; index < text.length();) {
+			final int consumed = TextMarkup.parse(markups, text, index, style);
+			if (consumed > 0) {
+				Arrays.fill(tags, index, index + consumed, index);
+				index += consumed;
+				continue;
+			}
+
+			index += Character.charCount(text.codePointAt(index));
+		}
+		return tags;
+	}
+
+	private static @NonNull String opened(final @NonNull String text, final @NonNull int[] tags, final int end) {
+		final StringBuilder opened = new StringBuilder();
+		for (int i = 0; i < end; i++) {
+			if (tags[i] != -1) {
+				opened.append(text.charAt(i));
+			}
+		}
+		return opened.toString();
 	}
 
 }
