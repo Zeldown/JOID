@@ -274,7 +274,7 @@ public final class SnapshotRunner {
 
 	private void awaitResources() {
 		for (int attempt = 0; attempt < 3000; attempt++) {
-			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> data.getTasks().stream().noneMatch(Thread::isAlive) && (!data.isGenerated() || data.isLoaded()))) {
+			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> data.getTasks().stream().noneMatch(Thread::isAlive) && (!data.isGenerated() || data.isLoaded() || data.isFailed()))) {
 				return;
 			}
 			SnapshotRunner.sleep(10L);

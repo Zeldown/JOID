@@ -1,5 +1,6 @@
 package dev.joid.test.snapshot;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.Getter;
@@ -118,6 +120,12 @@ public abstract class SnapshotSuite {
 		Assert.assertNotNull(resource.getResourceData().getDecoder());
 	}
 
+	@Test
+	public void doesNotWaitForAFailedResourceBeforeAShot() {
+		this.getRunner().execute("ui " + FailedResourceUI.class.getName(), "shot failed");
+		Assert.assertTrue(JOID.getUI(FailedResourceUI.class).getResource().isFailed());
+	}
+
 	private SnapshotRunner getRunner() {
 		if (SnapshotSuite.runner == null) {
 			SnapshotSuite.runner = SnapshotRunner.start(this.createBackend());
@@ -189,6 +197,17 @@ public abstract class SnapshotSuite {
 		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
 			this.dragX = mouseX;
 			this.dragY = mouseY;
+		}
+
+	}
+
+	public static final class FailedResourceUI extends UI {
+
+		@Getter private final Resource resource = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3}));
+
+		@Override
+		public void init() {
+			ResourceNode.create(0, 0, 10, 10).resource(this.resource).attach(this);
 		}
 
 	}
