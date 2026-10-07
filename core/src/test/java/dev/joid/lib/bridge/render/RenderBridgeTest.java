@@ -73,6 +73,15 @@ public class RenderBridgeTest {
 	}
 
 	@Test
+	public void disablesTheAlphaTestAtZero() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.alphaTest(0.5F);
+		render.alphaTest(0F);
+		Assert.assertFalse(render.getState().isAlphaTest());
+		Assert.assertEquals(0F, render.getState().getAlphaThreshold(), 0F);
+	}
+
+	@Test
 	public void storesItsLines() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.lineWidth(2.5F);

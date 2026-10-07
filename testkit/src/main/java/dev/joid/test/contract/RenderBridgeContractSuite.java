@@ -65,6 +65,7 @@ public abstract class RenderBridgeContractSuite {
 		render.color(1F, 1F, 1F, 1F);
 		render.lineWidth(1F);
 		render.lineSmooth(false);
+		render.alphaTest(0F);
 	}
 
 	@AfterClass
@@ -132,6 +133,19 @@ public abstract class RenderBridgeContractSuite {
 		final int lit = unit.getPixels()[32 + 32 * unit.getWidth()];
 		Assert.assertTrue("A face turned to the light must be brighter than the ambient light", (lit & 255) > 0x80);
 		RenderBridgeContractSuite.assertPixel(scaled, 32, 32, lit);
+	}
+
+	@Test
+	public void disablesTheAlphaTestAtZero() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.blend(BlendState.PREMULTIPLIED);
+			bridge.alphaTest(0.5F);
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
+			bridge.alphaTest(0F);
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
+		});
+		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
+		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test

@@ -134,7 +134,7 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	@Override
 	public final void alphaTest(final float threshold) {
-		this.state.setAlphaTest(true);
+		this.state.setAlphaTest(threshold > 0F);
 		this.state.setAlphaThreshold(threshold);
 	}
 

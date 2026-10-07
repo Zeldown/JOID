@@ -175,7 +175,7 @@ public final class RenderBridge implements IRenderBridge {
 
 	@Override
 	public void alphaTest(final float threshold) {
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		RenderBridge.toggle(GL11.GL_ALPHA_TEST, threshold > 0F);
 		GL11.glAlphaFunc(GL11.GL_GREATER, threshold);
 	}
 
