@@ -12,7 +12,6 @@ public class UIDataObjectTest {
 	@Test
 	public void startsWithTheDefaultsOfTheAnnotation() {
 		final UIDataObject data = new UIDataObject();
-		Assert.assertTrue(data.pause());
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.visible());
 		Assert.assertTrue(data.closeable());
@@ -28,7 +27,6 @@ public class UIDataObjectTest {
 	@Test
 	public void readsTheDefaultsOfTheAnnotation() {
 		final UIDataObject data = UIDataObject.get(DefaultUI.class);
-		Assert.assertTrue(data.pause());
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.visible());
 		Assert.assertTrue(data.closeable());
@@ -44,7 +42,6 @@ public class UIDataObjectTest {
 	@Test
 	public void copiesEveryValueOfTheAnnotation() {
 		final UIDataObject data = UIDataObject.get(CustomUI.class);
-		Assert.assertFalse(data.pause());
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.visible());
 		Assert.assertFalse(data.closeable());
@@ -61,7 +58,6 @@ public class UIDataObjectTest {
 	@Test
 	public void inheritsTheAnnotationOfAParent() {
 		final UIDataObject data = UIDataObject.get(ChildUI.class);
-		Assert.assertFalse(data.pause());
 		Assert.assertEquals(2.5D, data.zlevel(), 0D);
 	}
 
@@ -72,8 +68,8 @@ public class UIDataObjectTest {
 
 	@Test
 	public void fallsBackOnTheDefaults() {
-		Assert.assertTrue(UIDataObject.getOrDefault(PlainUI.class).pause());
-		Assert.assertFalse(UIDataObject.getOrDefault(CustomUI.class).pause());
+		Assert.assertTrue(UIDataObject.getOrDefault(PlainUI.class).active());
+		Assert.assertFalse(UIDataObject.getOrDefault(CustomUI.class).active());
 	}
 
 	@Test
@@ -102,8 +98,7 @@ public class UIDataObjectTest {
 	@Test
 	public void changesEveryValue() {
 		final UIDataObject data = new UIDataObject();
-		Assert.assertSame(data, data.setPause(false).setActive(false).setVisible(false).setCloseable(false).setZoomable(false).setBackground(false).setProjection(false).setZlevel(4D));
-		Assert.assertFalse(data.pause());
+		Assert.assertSame(data, data.setActive(false).setVisible(false).setCloseable(false).setZoomable(false).setBackground(false).setProjection(false).setZlevel(4D));
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.visible());
 		Assert.assertFalse(data.closeable());
@@ -139,7 +134,7 @@ public class UIDataObjectTest {
 	@UIData
 	public static class DefaultUI extends UI {}
 
-	@UIData(pause = false, active = false, visible = false, closeable = false, zoomable = false, background = false, projection = false, backgroundColor = "#33669980", zlevel = 2.5D, anchorX = Align.START, anchorY = Align.END)
+	@UIData(active = false, visible = false, closeable = false, zoomable = false, background = false, projection = false, backgroundColor = "#33669980", zlevel = 2.5D, anchorX = Align.START, anchorY = Align.END)
 	public static class CustomUI extends UI {}
 
 	public static class ChildUI extends CustomUI {}

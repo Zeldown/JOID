@@ -10,7 +10,6 @@ import dev.joid.lib.utils.align.Align;
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 public @interface UIData {
 
-	public boolean pause()           default true;
 	public boolean active()          default true;
 	public boolean visible()         default true;
 	public boolean closeable()       default true;

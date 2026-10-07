@@ -13,7 +13,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public final class UIDataObject implements UIData {
 
-	private boolean pause           = true;
 	private double  zlevel          = 0D;
 	private Align   anchorX         = Align.CENTER;
 	private Align   anchorY         = Align.CENTER;
@@ -30,7 +29,6 @@ public final class UIDataObject implements UIData {
 	public UIDataObject(final @NonNull UIData data) {
 		this.active          = data.active();
 		this.visible         = data.visible();
-		this.pause           = data.pause();
 		this.closeable       = data.closeable();
 		this.zoomable        = data.zoomable();
 		this.projection      = data.projection();
@@ -102,11 +100,6 @@ public final class UIDataObject implements UIData {
 	}
 
 	@Override
-	public boolean pause() {
-		return this.pause;
-	}
-
-	@Override
 	public boolean closeable() {
 		return this.closeable;
 	}
@@ -144,11 +137,6 @@ public final class UIDataObject implements UIData {
 	@Override
 	public Align anchorY() {
 		return this.anchorY;
-	}
-
-	public final @NonNull UIDataObject setPause(final boolean pause) {
-		this.pause = pause;
-		return this;
 	}
 
 	public final @NonNull UIDataObject setZlevel(final double zlevel) {
