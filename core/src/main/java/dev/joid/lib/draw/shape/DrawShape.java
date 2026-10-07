@@ -87,25 +87,14 @@ public final class DrawShape {
 	}
 
 	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
-		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
-		final double left = grid.snapX(x);
-		final double top = grid.snapY(y);
-		final double right = grid.snapX(x2);
-		final double bottom = grid.snapY(y2);
-		final Color horizontal = DrawShape.cover(color, stroke * grid.getScaleY());
-		final Color vertical = DrawShape.cover(color, stroke * grid.getScaleX());
-		this.drawEdges(left, grid.snapHeight(y, -stroke), right, top, horizontal);
-		this.drawEdges(grid.snapWidth(x, -stroke), top, left, bottom, vertical);
-		this.drawEdges(left, bottom, right, grid.snapHeight(y2, stroke), horizontal);
-		this.drawEdges(right, top, grid.snapWidth(x2, stroke), bottom, vertical);
-	}
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final PixelGrid grid = render.getPixelGrid();
+		final IShader rounded = RoundedShader.inst().getShader();
+		if (!grid.isAligned() && render.getShader() == null && rounded != null && rounded.isActive()) {
+			this.drawOutline(Math.min(x, x2) - stroke, Math.min(y, y2) - stroke, Math.max(x, x2) + stroke, Math.max(y, y2) + stroke, color, stroke);
+			return;
+		}
 
-	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
-		this.drawFilledBorder(x, y, x2, y2, color, 1D);
-	}
-
-	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
-		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
 		final double left = grid.snapX(x);
 		final double top = grid.snapY(y);
 		final double right = grid.snapX(x2);
@@ -118,6 +107,14 @@ public final class DrawShape {
 		this.drawEdges(outerLeft, top, left, bottom, vertical);
 		this.drawEdges(outerLeft, bottom, outerRight, grid.snapHeight(y2, stroke), horizontal);
 		this.drawEdges(right, top, outerRight, bottom, vertical);
+	}
+
+	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
+		this.drawFilledBorder(x, y, x2, y2, color, 1D);
+	}
+
+	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
+		this.drawBorder(x, y, x2, y2, color, stroke);
 	}
 
 	public void drawPolygon(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
@@ -290,6 +287,18 @@ public final class DrawShape {
 			}
 
 			this.drawQuad(minX - 1D, minY - 1D, maxX + 1D, maxY + 1D, color.isGradient() ? Color.WHITE : color);
+		});
+	}
+
+	private void drawOutline(final double left, final double top, final double right, final double bottom, final @NonNull Color color, final double stroke) {
+		RoundedShader.use(0F, (float) (left + 0.5D), (float) (top + 0.5D), (float) (right - 0.5D), (float) (bottom - 0.5D), () -> {
+			RoundedShader.inst().aligned(false);
+			RoundedShader.inst().stroke((float) Math.max(stroke - 0.5D, 1E-3D));
+			if (color.isGradient()) {
+				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) left, (float) top, (float) right, (float) bottom));
+			}
+
+			this.drawQuad(left - 1D, top - 1D, right + 1D, bottom + 1D, color.isGradient() ? Color.WHITE : color);
 		});
 	}
 
