@@ -36,7 +36,6 @@ dependencies {
     libraries "com.google.code.gson:gson:2.2.4"
 
     libraries "org.apache.commons:commons-lang3:3.1"
-    libraries "org.apache.commons:commons-compress:1.8.1"
     libraries "commons-io:commons-io:2.4"
 
     libraries "java3d:vecmath:1.3.1"
