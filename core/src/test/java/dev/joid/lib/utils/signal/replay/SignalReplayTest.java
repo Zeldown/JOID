@@ -241,6 +241,22 @@ public class SignalReplayTest {
 	}
 
 	@Test
+	public void followsALocalSignalWrittenByASubscriber() {
+		final ReplayLocalUI ui = new ReplayLocalUI("subscribed");
+		Assert.assertEquals("", this.open(ui));
+		ui.getSignalList().get(0).set(4);
+		Assert.assertEquals("Saved: 4", SignalReplayTest.node(ui, 0).getText().get());
+	}
+
+	@Test
+	public void ignoresTheReadsLeftByAnEarlierLineWhenTheyDoNotFit() {
+		final ReplayLocalUI ui = new ReplayLocalUI("stale");
+		Assert.assertEquals("", this.open(ui));
+		ui.getSignalList().get(0).set(4);
+		Assert.assertEquals("Saved 4", SignalReplayTest.node(ui, 1).getCaption().get().getText().get());
+	}
+
+	@Test
 	public void followsTheLocalSignalOfEachTurnOfALoop() {
 		final ReplayLocalUI ui = new ReplayLocalUI("loop");
 		Assert.assertEquals("", this.open(ui));
@@ -373,7 +389,7 @@ public class SignalReplayTest {
 		final ReplayHiddenLoader loader = ReplayHiddenLoader.create("ReplayHiddenMoved", true, true, "text", "texture");
 		final ReplayNode node = ReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);
-		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads a signal but cannot follow it: no call to text(...) is found on this line. The value stays \"Hidden 0\". Use map(...) or a lambda.\n", SignalReplayTest.hidden(loader, node, clicks));
+		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads a signal but cannot follow it: no call to text(...) is found on this line, the .class file on disk may no longer match the loaded class (recompiled since the launch). The value stays \"Hidden 0\". Restart the application, or use map(...) or a lambda.\n", SignalReplayTest.hidden(loader, node, clicks));
 	}
 
 	@Test

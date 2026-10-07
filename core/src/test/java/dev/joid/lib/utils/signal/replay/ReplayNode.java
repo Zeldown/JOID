@@ -18,6 +18,8 @@ public class ReplayNode extends Node {
 	private Supplier<Double>  sizeX;
 	private Supplier<Double>  sizeY;
 
+	private Supplier<ReplayCaption> caption;
+
 	protected ReplayNode(final double x, final double y) {
 		super(x, y);
 	}
@@ -49,6 +51,15 @@ public class ReplayNode extends Node {
 
 	public final <T extends ReplayNode> @NonNull T color(final @NonNull Supplier<Color> color) {
 		this.color = color;
+		return (T) this;
+	}
+
+	public final <T extends ReplayNode> @NonNull T caption(final ReplayCaption caption) {
+		return this.caption(Signal.from(caption));
+	}
+
+	public final <T extends ReplayNode> @NonNull T caption(final @NonNull Supplier<ReplayCaption> caption) {
+		this.caption = caption;
 		return (T) this;
 	}
 

@@ -8,6 +8,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.signal.ComputedSignal;
 import dev.joid.lib.utils.signal.impl.iterable.ListSignal;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.utils.signal.replay.ReplayCaption;
 import dev.joid.lib.utils.signal.replay.ReplayNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,25 @@ public class ReplayLocalUI extends UI {
 				final ListSignal<String> names = new ListSignal<>(Collections.emptyList());
 				this.listList.add(names);
 				ReplayNode.create().text(names.isEmpty() ? "none" : names.get(0) + " and " + names.get(0)).attach(this);
+				break;
+			}
+			case "subscribed": {
+				final IntegerSignal sent = this.create(0);
+				final IntegerSignal saved = this.create(0);
+				sent.subscribe(value -> {
+					saved.set(value);
+					return true;
+				});
+				ReplayNode.create().<ReplayNode>body(node -> node.text("Saved: " + saved.get())).attach(this);
+				break;
+			}
+			case "stale": {
+				final IntegerSignal saved = this.create(0);
+				final ListSignal<String> names = new ListSignal<>(Collections.singletonList("Ada"));
+				for (final String name : names.get()) {
+					ReplayNode.create().text(name).attach(this);
+				}
+				ReplayNode.create().caption(ReplayCaption.create("Saved " + saved.get())).attach(this);
 				break;
 			}
 			case "loop": {

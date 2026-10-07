@@ -38,15 +38,17 @@ public final class SignalReplay {
 		}
 
 		final List<Signal<?>> readList = context.takeReads();
+		final int stale = Math.min(state.staleCount, readList.size());
+		state.staleCount = 0;
 		final ComputedSignal<?> observer = context.observe(null);
 		state.replaying = true;
 		try {
 			final ReplayCall call = SignalReplay.locate(new Throwable().getStackTrace(), state);
 			if (call == null) {
-				context.putBackReads(readList);
+				state.putBack(readList);
 				return null;
 			}
-			return SignalReplay.resolve(value, readList, call, state);
+			return SignalReplay.resolve(value, readList, call, state, stale);
 		} catch (final RuntimeException | LinkageError exception) {
 			return null;
 		} finally {
@@ -62,7 +64,7 @@ public final class SignalReplay {
 	public static void enter(final Object owner, final Object parent) {
 		final State state = SignalReplay.STATE.get();
 		if (state.ownerList.isEmpty()) {
-			SignalContext.current().clearReads();
+			state.clear();
 		}
 
 		state.ownerList.add(owner);
@@ -76,12 +78,12 @@ public final class SignalReplay {
 		state.ownerList.remove(state.ownerList.size() - 1);
 		SignalContext.current().tracing(state.tracingList.remove(state.tracingList.size() - 1));
 		if (state.ownerList.isEmpty()) {
-			SignalContext.current().clearReads();
+			state.clear();
 		}
 	}
 
 	public static void reset() {
-		SignalContext.current().clearReads();
+		SignalReplay.STATE.get().clear();
 		SignalReplay.STATE.get().usedMap.clear();
 	}
 
@@ -97,9 +99,9 @@ public final class SignalReplay {
 		System.err.println("[JOID] " + call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());
 	}
 
-	private static <T> Supplier<T> resolve(final T value, final List<Signal<?>> readList, final ReplayCall call, final State state) {
+	private static <T> Supplier<T> resolve(final T value, final List<Signal<?>> readList, final ReplayCall call, final State state, final int stale) {
 		final Object self = state.findOwner(call.getCaller().getClassName());
-		final ReplaySite site = SignalReplay.SITES.computeIfAbsent(call.getKey(), key -> SignalReplay.analyze(call, self));
+		final ReplaySite site = SignalReplay.site(call, self);
 		if (site.getFailure() != null) {
 			SignalReplay.warn(call, Collections.emptyList(), readList.size(), site.getFailure(), value);
 			return null;
@@ -121,7 +123,12 @@ public final class SignalReplay {
 
 		if (matchList.isEmpty()) {
 			if (failedSlice.getSignalCount() == 0) {
-				SignalContext.current().putBackReads(readList);
+				state.putBack(readList);
+			} else if (stale > 0) {
+				final List<Signal<?>> freshList = new ArrayList<>(readList.subList(stale, readList.size()));
+				final Supplier<T> supplier = freshList.isEmpty() ? null : SignalReplay.resolve(value, freshList, call, state, 0);
+				state.putBack(new ArrayList<>(readList.subList(0, stale)));
+				return supplier;
 			} else {
 				SignalReplay.warn(call, failedSlice.getSignalNameList(), readList.size(), failure, value);
 			}
@@ -136,7 +143,7 @@ public final class SignalReplay {
 		}
 
 		final ReplayMatch match = state.pick(call.getKey(), matchList);
-		SignalContext.current().putBackReads(match.getRemainingList(readList));
+		state.putBack(match.getRemainingList(readList));
 		final List<Signal<?>> consumedList = match.getReadList(readList);
 		return consumedList.isEmpty() ? null : ReplayBinding.create(call, match, readList, value);
 	}
@@ -148,7 +155,7 @@ public final class SignalReplay {
 			}
 
 			final ReplayCall call = ReplayCall.create(stack[index], stack[index - 1].getMethodName());
-			final ReplaySite site = SignalReplay.SITES.computeIfAbsent(call.getKey(), key -> SignalReplay.analyze(call, state.findOwner(call.getCaller().getClassName())));
+			final ReplaySite site = SignalReplay.site(call, state.findOwner(call.getCaller().getClassName()));
 			if (!site.isPassThrough()) {
 				return SignalReplay.isLibrary(stack[index].getClassName()) ? null : call;
 			}
@@ -156,10 +163,23 @@ public final class SignalReplay {
 		return null;
 	}
 
+	private static ReplaySite site(final ReplayCall call, final Object self) {
+		final String name = call.getCaller().getClassName();
+		final ReplayClass replayClass = SignalReplay.CLASSES.get(name);
+		if (replayClass != null && replayClass.isStale()) {
+			SignalReplay.CLASSES.remove(name, replayClass);
+			SignalReplay.SITES.keySet().removeIf(key -> key.startsWith(name + "#"));
+		}
+		return SignalReplay.SITES.computeIfAbsent(call.getKey(), key -> SignalReplay.analyze(call, self));
+	}
+
 	private static ReplaySite analyze(final ReplayCall call, final Object self) {
 		final StackTraceElement caller = call.getCaller();
 		try {
-			final ReplayClass replayClass = SignalReplay.CLASSES.computeIfAbsent(caller.getClassName(), name -> ReplayClass.read(name, SignalReplay.loaderOf(self, name)));
+			final ReplayClass replayClass = SignalReplay.CLASSES.computeIfAbsent(caller.getClassName(), name -> {
+				final Class<?> type = SignalReplay.typeOf(self, name);
+				return ReplayClass.read(name, type, type != null ? type.getClassLoader() : SignalReplay.class.getClassLoader());
+			});
 			return ReplaySite.analyze(replayClass, caller, call.getSetter());
 		} catch (final ReplayException exception) {
 			return ReplaySite.fail(exception);
@@ -287,15 +307,23 @@ public final class SignalReplay {
 		return name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("sun.") || name.startsWith("jdk.") || name.startsWith("com.sun.");
 	}
 
-	private static ClassLoader loaderOf(final Object self, final String name) {
+	private static Class<?> typeOf(final Object self, final String name) {
 		if (self != null) {
 			for (Class<?> type = self.getClass(); type != null; type = type.getSuperclass()) {
 				if (type.getName().equals(name)) {
-					return type.getClassLoader();
+					return type;
 				}
 			}
 		}
-		return SignalReplay.class.getClassLoader();
+
+		for (final ClassLoader loader : new ClassLoader[] {Thread.currentThread().getContextClassLoader(), SignalReplay.class.getClassLoader()}) {
+			try {
+				return Class.forName(name, false, loader);
+			} catch (final ClassNotFoundException | LinkageError | RuntimeException exception) {
+				continue;
+			}
+		}
+		return null;
 	}
 
 	private static final class State {
@@ -304,7 +332,18 @@ public final class SignalReplay {
 		private final List<Boolean>                 tracingList = new ArrayList<>();
 		private final Map<String, Set<ReplaySlice>> usedMap     = new HashMap<>();
 
+		private int     staleCount;
 		private boolean replaying;
+
+		private void clear() {
+			SignalContext.current().clearReads();
+			this.staleCount = 0;
+		}
+
+		private void putBack(final List<Signal<?>> readList) {
+			SignalContext.current().putBackReads(readList);
+			this.staleCount += readList.size();
+		}
 
 		private Object findOwner(final String name) {
 			for (int index = this.ownerList.size() - 1; index >= 0; index--) {
