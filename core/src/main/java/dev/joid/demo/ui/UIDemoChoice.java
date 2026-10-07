@@ -17,6 +17,7 @@ import dev.joid.demo.ui.popup.UIDemoPopup;
 import dev.joid.demo.ui.reorderable.UIDemoReorderable;
 import dev.joid.demo.ui.resource.UIDemoResource;
 import dev.joid.demo.ui.selector.UIDemoSelector;
+import dev.joid.demo.ui.shader.UIDemoEffect;
 import dev.joid.demo.ui.shader.UIDemoShader;
 import dev.joid.demo.ui.signal.UIDemoSignal;
 import dev.joid.demo.ui.simple.UIDemoSimple;
@@ -61,6 +62,7 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoSlider.class);
 		UIDemoChoice.LIST.add(UIDemoSelector.class);
 		UIDemoChoice.LIST.add(UIDemoShader.class);
+		UIDemoChoice.LIST.add(UIDemoEffect.class);
 		UIDemoChoice.LIST.add(UIDemoResource.class);
 		UIDemoChoice.LIST.add(UIDemoChart.class);
 		UIDemoChoice.LIST.add(UIDemoSignal.class);
