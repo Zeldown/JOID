@@ -267,7 +267,6 @@ public abstract class Node implements INode {
 		this.hoverDuration = 200L;
 		this.hoverEquation = TweenEquations.LINEAR;
 		this.scrollSpeed = 1D;
-		this.subscribed = true;
 	}
 
 	public final void load(final @NonNull UI ui) {
@@ -1780,11 +1779,11 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
-		return this.watch(signal, () -> JOID.isOpen(this.ui), properties);
+		return this.watch(signal, () -> !this.ui.isClosed(), properties);
 	}
 
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
-		this.listen(signal, condition, value -> {
+		this.listen(signal, condition, false, value -> {
 			if (this.ui == null) {
 				return;
 			}
@@ -1813,7 +1812,7 @@ public abstract class Node implements INode {
 			consumer.accept(current);
 		}
 
-		return this.listen(signal, () -> JOID.isOpen(this.ui), value -> {
+		return this.listen(signal, () -> !this.ui.isClosed(), true, value -> {
 			if (value != null) {
 				consumer.accept(value);
 			}
@@ -1857,8 +1856,8 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	private <V> NodeSubscription<V> listen(final Signal<V> signal, final Supplier<Boolean> condition, final Consumer<V> consumer) {
-		final NodeSubscription<V> subscription = new NodeSubscription<>(signal, condition, consumer);
+	private <V> NodeSubscription<V> listen(final Signal<V> signal, final Supplier<Boolean> condition, final boolean bound, final Consumer<V> consumer) {
+		final NodeSubscription<V> subscription = new NodeSubscription<>(signal, condition, bound, consumer);
 		this.subscriptionList.add(subscription);
 		if (this.subscribed) {
 			signal.subscribe(subscription);
@@ -1874,8 +1873,9 @@ public abstract class Node implements INode {
 		}
 
 		this.subscribed = true;
+		final boolean loaded = this.updateCount > 0;
 		for (final SignalSubscriber<?> subscriber : new ArrayList<>(this.subscriptionList)) {
-			((NodeSubscription<?>) subscriber).subscribe();
+			((NodeSubscription<?>) subscriber).subscribe(loaded);
 		}
 	}
 
@@ -2213,6 +2213,7 @@ public abstract class Node implements INode {
 
 		private final Signal<V>         signal;
 		private final Supplier<Boolean> condition;
+		private final boolean           bound;
 		private final Consumer<V>       consumer;
 
 		private V value;
@@ -2223,19 +2224,19 @@ public abstract class Node implements INode {
 				return true;
 			}
 
-			this.consumer.accept(value);
-			if (Node.this.ui == null ? UI.getCurrent() != null : this.condition.get()) {
-				return true;
+			if (!this.condition.get()) {
+				Node.this.subscriptionList.remove(this);
+				return false;
 			}
 
-			Node.this.subscriptionList.remove(this);
-			return false;
+			this.consumer.accept(value);
+			return true;
 		}
 
-		private void subscribe() {
+		private void subscribe(final boolean loaded) {
 			this.signal.subscribe(this);
 			final V current = this.signal.peek();
-			if (!Objects.equals(this.value, current) && !this.update(current)) {
+			if ((loaded || this.bound) && !Objects.equals(this.value, current) && !this.update(current)) {
 				this.signal.unsubscribe(this);
 			}
 		}

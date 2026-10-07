@@ -254,6 +254,7 @@ public class SelectorNodeTest {
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("Selector.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
 		}
+		this.bridges.open(new NodeUI(this.selector));
 		language.set("third");
 		Assert.assertEquals("third", this.selector.getValue());
 		Assert.assertSame(language, this.selector.getSignal());

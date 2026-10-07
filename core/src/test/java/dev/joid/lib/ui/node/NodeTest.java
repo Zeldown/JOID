@@ -1869,19 +1869,53 @@ public class NodeTest {
 	}
 
 	@Test
-	public void forgetsAWatchOutsideAnyUi() {
+	public void startsAWatchMadeOutsideAnyUiOnceAttached() {
 		final Signal<Integer> signal = new Signal<>(0);
-		RectNode.create(0D, 0D, 10D, 10D).watch(signal);
-		Assert.assertEquals(1, signal.getEventSet().size());
-		signal.set(1);
+		final int[] watches = {0};
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch((rect, source, properties) -> watches[0]++);
 		Assert.assertTrue(signal.getEventSet().isEmpty());
+		signal.set(1);
+		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
+		this.bridges.open(ui);
+		node.attach(ui);
+		Assert.assertEquals(0, watches[0]);
+		Assert.assertEquals(1, signal.getEventSet().size());
+		signal.set(2);
+		Assert.assertEquals(1, watches[0]);
 	}
 
 	@Test
 	public void keepsAWatchMadeWhileItsUiIsBuilt() {
 		final WatchingUI ui = new WatchingUI();
 		this.bridges.open(ui);
+		Assert.assertEquals(1, ui.watches);
 		Assert.assertEquals(1, ui.signal.getEventSet().size());
+		ui.signal.set(2);
+		Assert.assertEquals(2, ui.watches);
+	}
+
+	@Test
+	public void checksItsConditionBeforeApplyingAChange() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final boolean[] kept = {true};
+		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).append(RectNode.create(0D, 0D, 10D, 10D)).watch(signal, () -> kept[0], WatchProperty.CLEAR_CHILDREN);
+		this.bridges.open(new NodeUI(node));
+		kept[0] = false;
+		signal.set(1);
+		Assert.assertEquals(1, node.getChildren().size());
+		Assert.assertTrue(signal.getEventSet().isEmpty());
+	}
+
+	@Test
+	public void forgetsTheWatchesOfTheNodesDroppedByAReload() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final ReloadedUI ui = new ReloadedUI(signal);
+		this.bridges.open(ui);
+		ui.reload();
+		ui.reload();
+		Assert.assertEquals(1, signal.getEventSet().size());
+		signal.set(1);
+		Assert.assertEquals(1, ui.watches);
 	}
 
 	@Test
@@ -2535,10 +2569,26 @@ public class NodeTest {
 
 		private final Signal<Integer> signal = new Signal<>(0);
 
+		private int watches;
+
 		@Override
 		public void init() {
-			RectNode.create(0D, 0D, 10D, 10D).watch(this.signal);
+			RectNode.create(0D, 0D, 10D, 10D).watch(this.signal).onWatch((rect, source, properties) -> this.watches++).attach(this);
 			this.signal.set(1);
+		}
+
+	}
+
+	@RequiredArgsConstructor
+	public static final class ReloadedUI extends UI {
+
+		private final Signal<Integer> signal;
+
+		private int watches;
+
+		@Override
+		public void init() {
+			RectNode.create(0D, 0D, 10D, 10D).watch(this.signal).onWatch((rect, source, properties) -> this.watches++).attach(this);
 		}
 
 	}

@@ -91,6 +91,7 @@ public class ToggleNodeTest {
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("Toggle.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
 		}
+		this.bridges.open(new NodeUI(toggle));
 		music.set(true);
 		Assert.assertTrue(toggle.isToggle());
 		Assert.assertSame(music, toggle.getSignal());

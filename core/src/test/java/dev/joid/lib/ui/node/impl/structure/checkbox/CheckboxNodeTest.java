@@ -108,6 +108,7 @@ public class CheckboxNodeTest {
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("Checkbox.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
 		}
+		this.bridges.open(new NodeUI(checkbox));
 		subtitles.set(false);
 		Assert.assertFalse(checkbox.isChecked());
 		Assert.assertSame(subtitles, checkbox.getSignal());
