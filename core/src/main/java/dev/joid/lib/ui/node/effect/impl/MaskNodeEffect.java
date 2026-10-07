@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,13 +16,14 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class MaskNodeEffect extends NodeEffect<Node> {
 
-	private Resource resource;
+	private Supplier<Resource> resourceSupplier;
 	private Supplier<Double> xSupplier;
 	private Supplier<Double> ySupplier;
 	private Supplier<Double> widthSupplier;
 	private Supplier<Double> heightSupplier;
 
 	protected MaskNodeEffect(final double x, final double y, final double width, final double height) {
+		this.resourceSupplier = () -> null;
 		this.xSupplier = () -> x;
 		this.ySupplier = () -> y;
 		this.widthSupplier = () -> width;
@@ -43,7 +45,7 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 
 	public static @NonNull MaskNodeEffect create(final @NonNull Resource resource, final @NonNull Node node) {
 		final MaskNodeEffect effect = MaskNodeEffect.create(node);
-		effect.resource = resource;
+		effect.resourceSupplier = () -> resource;
 		return effect;
 	}
 
@@ -61,7 +63,7 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 
 	public static @NonNull MaskNodeEffect create(final @NonNull Resource resource, final double x, final double y, final double width, final double height) {
 		final MaskNodeEffect effect = new MaskNodeEffect(x, y, width, height);
-		effect.resource = resource;
+		effect.resourceSupplier = () -> resource;
 		return effect;
 	}
 
@@ -72,6 +74,10 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 		effect.widthSupplier = widthSupplier;
 		effect.heightSupplier = heightSupplier;
 		return effect;
+	}
+
+	public Resource getResource() {
+		return this.resourceSupplier.get();
 	}
 
 	public double getX() {
@@ -92,8 +98,9 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 
 	@Override
 	public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
-		if (this.resource != null) {
-			node.getUi().startMask(this.resource, node.getX() + this.getX(), node.getY() + this.getY(), this.getWidth(), this.getHeight());
+		final Resource resource = this.getResource();
+		if (resource != null) {
+			node.getUi().startMask(resource, node.getX() + this.getX(), node.getY() + this.getY(), this.getWidth(), this.getHeight());
 		} else {
 			node.getUi().startMask(node.getX() + this.getX(), node.getY() + this.getY(), this.getWidth(), this.getHeight());
 		}
@@ -105,8 +112,7 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E x(final double x) {
-		this.xSupplier = () -> x;
-		return (E) this;
+		return this.x(Signal.from(x));
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E x(final @NonNull Supplier<Double> xSupplier) {
@@ -115,8 +121,7 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E y(final double y) {
-		this.ySupplier = () -> y;
-		return (E) this;
+		return this.y(Signal.from(y));
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E y(final @NonNull Supplier<Double> ySupplier) {
@@ -125,8 +130,7 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E width(final double width) {
-		this.widthSupplier = () -> width;
-		return (E) this;
+		return this.width(Signal.from(width));
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E width(final @NonNull Supplier<Double> widthSupplier) {
@@ -135,8 +139,7 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E height(final double height) {
-		this.heightSupplier = () -> height;
-		return (E) this;
+		return this.height(Signal.from(height));
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E height(final @NonNull Supplier<Double> heightSupplier) {
@@ -144,48 +147,12 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 		return (E) this;
 	}
 
-	public final <E extends MaskNodeEffect> @NonNull E position(final double x, final double y) {
-		this.xSupplier = () -> x;
-		this.ySupplier = () -> y;
-		return (E) this;
-	}
-
-	public final <E extends MaskNodeEffect> @NonNull E position(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier) {
-		this.xSupplier = xSupplier;
-		this.ySupplier = ySupplier;
-		return (E) this;
-	}
-
-	public final <E extends MaskNodeEffect> @NonNull E size(final double width, final double height) {
-		this.widthSupplier = () -> width;
-		this.heightSupplier = () -> height;
-		return (E) this;
-	}
-
-	public final <E extends MaskNodeEffect> @NonNull E size(final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
-		this.widthSupplier = widthSupplier;
-		this.heightSupplier = heightSupplier;
-		return (E) this;
-	}
-
-	public final <E extends MaskNodeEffect> @NonNull E bounds(final double x, final double y, final double width, final double height) {
-		this.xSupplier = () -> x;
-		this.ySupplier = () -> y;
-		this.widthSupplier = () -> width;
-		this.heightSupplier = () -> height;
-		return (E) this;
-	}
-
-	public final <E extends MaskNodeEffect> @NonNull E bounds(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier, final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
-		this.xSupplier = xSupplier;
-		this.ySupplier = ySupplier;
-		this.widthSupplier = widthSupplier;
-		this.heightSupplier = heightSupplier;
-		return (E) this;
-	}
-
 	public final <E extends MaskNodeEffect> @NonNull E resource(final Resource resource) {
-		this.resource = resource;
+		return this.resource(Signal.from(resource));
+	}
+
+	public final <E extends MaskNodeEffect> @NonNull E resource(final @NonNull Supplier<Resource> resourceSupplier) {
+		this.resourceSupplier = resourceSupplier;
 		return (E) this;
 	}
 

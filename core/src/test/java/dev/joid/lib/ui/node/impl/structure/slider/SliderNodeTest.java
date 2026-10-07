@@ -137,7 +137,6 @@ public class SliderNodeTest {
 		Assert.assertEquals(1, balance.getEventSet().size());
 	}
 
-
 	@Test
 	public void refusesAComputedSignal() {
 		final Signal<Integer> volume = new Signal<>(5);
@@ -152,6 +151,7 @@ public class SliderNodeTest {
 		Assert.assertEquals(2, slider.getValue().intValue());
 		Assert.assertSame(volume, slider.getSignal());
 	}
+
 	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final List<Integer> changes = new ArrayList<>();

@@ -1,8 +1,11 @@
 package dev.joid.lib.ui.node.impl.structure.grid;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -41,19 +44,30 @@ public final class GridNode extends Node {
 	}
 
 	public final @NonNull GridNode verticalMargin(final double verticalMargin) {
-		this.verticalMargin = verticalMargin;
-		return this;
+		return this.verticalMargin(Signal.from(verticalMargin));
+	}
+
+	public final @NonNull GridNode verticalMargin(final @NonNull Supplier<Double> verticalMargin) {
+		return super.follow("verticalMargin", verticalMargin, value -> this.verticalMargin = value);
 	}
 
 	public final @NonNull GridNode horizontalMargin(final double horizontalMargin) {
-		this.horizontalMargin = horizontalMargin;
-		return this;
+		return this.horizontalMargin(Signal.from(horizontalMargin));
+	}
+
+	public final @NonNull GridNode horizontalMargin(final @NonNull Supplier<Double> horizontalMargin) {
+		return super.follow("horizontalMargin", horizontalMargin, value -> this.horizontalMargin = value);
 	}
 
 	public final @NonNull GridNode margin(final double margin) {
-		this.verticalMargin   = margin;
-		this.horizontalMargin = margin;
-		return this;
+		return this.margin(Signal.from(margin));
+	}
+
+	public final @NonNull GridNode margin(final @NonNull Supplier<Double> margin) {
+		return super.follow("margin", margin, value -> {
+			this.verticalMargin   = value;
+			this.horizontalMargin = value;
+		});
 	}
 
 	private final void updateGrid() {

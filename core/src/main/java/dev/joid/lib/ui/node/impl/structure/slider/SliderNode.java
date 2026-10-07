@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.impl.structure.slider;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -103,19 +104,24 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull O value) {
-		if (!this.valueSet.contains(value)) {
-			throw new IllegalArgumentException("The value is not in the value set");
-		}
+		return this.value(Signal.from(value));
+	}
 
-		this.change(value);
-		return (T) this;
+	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Supplier<@NonNull O> value) {
+		return super.follow("value", value, option -> {
+			if (!this.valueSet.contains(option)) {
+				throw new IllegalArgumentException("The value is not in the value set");
+			}
+
+			this.change(option);
+		});
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
 		this.signal = super.writable(signal);
 		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (this.valueSet.contains(value)) {
-				this.value(value);
+				this.change(value);
 			}
 		});
 		return (T) this;

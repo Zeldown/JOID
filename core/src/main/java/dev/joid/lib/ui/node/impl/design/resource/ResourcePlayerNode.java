@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.design.resource;
 
+import java.util.function.Supplier;
+
 import javax.vecmath.Vector3f;
 
 import dev.joid.lib.color.Color;
@@ -16,6 +18,7 @@ import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPlay
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerProgressCallback;
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerStopCallback;
 import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -231,65 +234,101 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Resource resource) {
-		this.release();
-		this.resource = resource;
-		this.resourceStarted = false;
-		return (T) this;
+		return this.resource(Signal.from(resource));
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
+		return super.follow("resource", resource, value -> {
+			this.release();
+			this.resource = value;
+			this.resourceStarted = false;
+		});
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull StretchType stretchType) {
-		this.stretchType = stretchType;
-		return (T) this;
+		return this.stretch(Signal.from(stretchType));
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretchType) {
+		return super.follow("stretchType", stretchType, value -> this.stretchType = value);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T autoplay(final boolean autoplay) {
-		this.autoplay = autoplay;
-		return (T) this;
+		return this.autoplay(Signal.from(autoplay));
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T autoplay(final @NonNull Supplier<Boolean> autoplay) {
+		return super.follow("autoplay", autoplay, value -> this.autoplay = value);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T loop(final boolean loop) {
-		this.loop = loop;
-		final IResourcePlayback playback = this.getPlayback();
-		if (playback != null) {
-			playback.loop(loop);
-		}
-		return (T) this;
+		return this.loop(Signal.from(loop));
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T loop(final @NonNull Supplier<Boolean> loop) {
+		return super.follow("loop", loop, value -> {
+			this.loop = value;
+			final IResourcePlayback playback = this.getPlayback();
+			if (playback != null) {
+				playback.loop(value);
+			}
+		});
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T volume(final float volume) {
-		this.volume = volume;
-		final VideoResourceDecoder video = this.getVideo();
-		if (video != null) {
-			video.volume(volume);
-		}
-		return (T) this;
+		return this.volume(Signal.from(volume));
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T location(final float x, final float y, final float z) {
-		this.location = new Vector3f(x, y, z);
-		final VideoResourceDecoder video = this.getVideo();
-		if (video != null) {
-			video.location(x, y, z);
-		}
-		return (T) this;
+	public final <T extends ResourcePlayerNode> @NonNull T volume(final @NonNull Supplier<Float> volume) {
+		return super.follow("volume", volume, value -> {
+			this.volume = value;
+			final VideoResourceDecoder video = this.getVideo();
+			if (video != null) {
+				video.volume(value);
+			}
+		});
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T referenceDistance(final float distance) {
-		this.referenceDistance = distance;
-		final VideoResourceDecoder video = this.getVideo();
-		if (video != null) {
-			video.referenceDistance(distance);
-		}
-		return (T) this;
+	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Vector3f location) {
+		return this.location(Signal.from(location));
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T maxDistance(final float distance) {
-		this.maxDistance = distance;
-		final VideoResourceDecoder video = this.getVideo();
-		if (video != null) {
-			video.maxDistance(distance);
-		}
-		return (T) this;
+	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Supplier<@NonNull Vector3f> location) {
+		return super.follow("location", location, value -> {
+			this.location = value;
+			final VideoResourceDecoder video = this.getVideo();
+			if (video != null) {
+				video.location(value.x, value.y, value.z);
+			}
+		});
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T referenceDistance(final float referenceDistance) {
+		return this.referenceDistance(Signal.from(referenceDistance));
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T referenceDistance(final @NonNull Supplier<Float> referenceDistance) {
+		return super.follow("referenceDistance", referenceDistance, value -> {
+			this.referenceDistance = value;
+			final VideoResourceDecoder video = this.getVideo();
+			if (video != null) {
+				video.referenceDistance(value);
+			}
+		});
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T maxDistance(final float maxDistance) {
+		return this.maxDistance(Signal.from(maxDistance));
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T maxDistance(final @NonNull Supplier<Float> maxDistance) {
+		return super.follow("maxDistance", maxDistance, value -> {
+			this.maxDistance = value;
+			final VideoResourceDecoder video = this.getVideo();
+			if (video != null) {
+				video.maxDistance(value);
+			}
+		});
 	}
 
 	public final double getDuration() {

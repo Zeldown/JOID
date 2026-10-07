@@ -348,7 +348,7 @@ public class TextTest {
 
 	@Test
 	public void changesItsAlignmentAndOverflow() {
-		final Text text = Text.create("ab", TextTest.info()).align(Align.CENTER, Align.END);
+		final Text text = Text.create("ab", TextTest.info()).horizontalAlign(Align.CENTER).verticalAlign(Align.END);
 		Assert.assertSame(Align.CENTER, text.getHorizontalAlignment());
 		Assert.assertSame(Align.END, text.getVerticalAlignment());
 		text.horizontalAlign(Align.END).verticalAlign(Align.CENTER).overflow(TextOverflow.HYPHEN);
@@ -359,7 +359,7 @@ public class TextTest {
 
 	@Test
 	public void describesItself() {
-		final Text text = Text.create(TextElement.create("ab", TextTest.info()), TextElement.create("cd", TextTest.info())).align(Align.CENTER, Align.END).overflow(TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE);
+		final Text text = Text.create(TextElement.create("ab", TextTest.info()), TextElement.create("cd", TextTest.info())).horizontalAlign(Align.CENTER).verticalAlign(Align.END).overflow(TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE);
 		Assert.assertEquals("\"ABCD\" - CENTER / END - ELLIPSIS [2]", text.toString());
 	}
 

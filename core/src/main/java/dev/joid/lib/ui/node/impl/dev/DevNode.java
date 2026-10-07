@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import javax.vecmath.Vector2d;
 
@@ -36,6 +37,7 @@ import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.utils.signal.SignalContext;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 import lombok.Getter;
 import lombok.NonNull;
@@ -104,7 +106,7 @@ public final class DevNode extends Node {
 			try {
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")), Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
 				.watch(this.inspectSignal)
 				.<ResourceNode>onInit(node -> {
 					node.color(this.inspectSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
@@ -121,7 +123,7 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")), Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
 				.watch(this.reloadSignal)
 				.<ResourceNode>onInit(node -> {
 					node.color(DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()));
@@ -135,7 +137,7 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")), Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")))
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png")))
 				.watch(this.eyeSignal)
 				.<ResourceNode>onInit(node -> {
 					node.color(this.eyeSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
@@ -149,7 +151,7 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")), Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
+				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
 				.watch(this.gridSignal)
 				.<ResourceNode>onInit(node -> {
 					node.color(this.gridSignal.peek() ? DevNode.ACTION : DevNode.WHITE);
@@ -180,7 +182,7 @@ public final class DevNode extends Node {
 		ContainerNode
 		.create(0, 0, super.getWidth(), super.getHeight() - super.getDefaultHeight())
 		.onInit(node -> {
-			node.size(super.getWidth(), super.getHeight() - super.getDefaultHeight());
+			node.width(super.getWidth()).height(super.getHeight() - super.getDefaultHeight());
 			if (!this.inspectedNodeLocked.peek()) {
 				return;
 			}
@@ -356,7 +358,8 @@ public final class DevNode extends Node {
 						for (final Field field : fields) {
 							try {
 								field.setAccessible(true);
-								final Object value = field.get(inspectedNode);
+								final Object raw = field.get(inspectedNode);
+								final Object value = raw instanceof Supplier ? SignalContext.current().untracked((Supplier<?>) raw) : raw;
 
 								TextNode
 								.create(10, 0)

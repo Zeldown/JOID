@@ -91,6 +91,7 @@ import dev.joid.lib.utils.signal.SignalContext;
 import dev.joid.lib.utils.signal.SignalSubscriber;
 import dev.joid.lib.utils.signal.replay.SignalReplay;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -136,6 +137,7 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_HOVER_START    = NodeCallbackRegistry.next(NodeHoverStartCallback.class);
 
 	private final transient List<Predicate<Node>>                     waitingList;
+	private final transient Map<String, Runnable>                     sourceMap;
 	private final transient List<SignalSubscriber<?>>                 subscriptionList;
 	private final transient Map<Integer, List<NodeCallbackObject<?>>> callbackMap;
 
@@ -235,6 +237,7 @@ public abstract class Node implements INode {
 
 	public Node(final double x, final double y, final double width, final double height) {
 		this.waitingList = new ArrayList<>();
+		this.sourceMap = new LinkedHashMap<>();
 		this.subscriptionList = new ArrayList<>();
 		this.callbackMap = new HashMap<>();
 
@@ -310,6 +313,7 @@ public abstract class Node implements INode {
 		render.pushMatrix();
 		try {
 			Color.reset();
+			this.pull();
 			if (this.parent != null) {
 				render.translate(this.parent.x, this.parent.y, 0D);
 				if (this.position == PositionProperty.ABSOLUTE) {
@@ -1543,88 +1547,93 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T x(final double x) {
-		this.x = x;
-		return (T) this;
+		return this.x(Signal.from(x));
+	}
+
+	public final <T extends Node> @NonNull T x(final @NonNull Supplier<Double> x) {
+		return this.follow("x", x, value -> this.x = value);
 	}
 
 	public final <T extends Node> @NonNull T y(final double y) {
-		this.y = y;
-		return (T) this;
+		return this.y(Signal.from(y));
+	}
+
+	public final <T extends Node> @NonNull T y(final @NonNull Supplier<Double> y) {
+		return this.follow("y", y, value -> this.y = value);
 	}
 
 	public final <T extends Node> @NonNull T width(final double width) {
-		this.width = width;
-		return (T) this;
+		return this.width(Signal.from(width));
+	}
+
+	public final <T extends Node> @NonNull T width(final @NonNull Supplier<Double> width) {
+		return this.follow("width", width, value -> this.width = value);
 	}
 
 	public final <T extends Node> @NonNull T height(final double height) {
-		this.height = height;
-		return (T) this;
+		return this.height(Signal.from(height));
 	}
 
-	public final <T extends Node> @NonNull T position(final double x, final double y) {
-		this.x = x;
-		this.y = y;
-		return (T) this;
+	public final <T extends Node> @NonNull T height(final @NonNull Supplier<Double> height) {
+		return this.follow("height", height, value -> this.height = value);
 	}
 
 	public final <T extends Node> @NonNull T position(final @NonNull PositionProperty position) {
-		this.position = position;
-		return (T) this;
+		return this.position(Signal.from(position));
+	}
+
+	public final <T extends Node> @NonNull T position(final @NonNull Supplier<@NonNull PositionProperty> position) {
+		return this.follow("position", position, value -> this.position = value);
 	}
 
 	public final <T extends Node> @NonNull T overflow(final @NonNull OverflowProperty overflow) {
-		if (this.overflow == OverflowProperty.SCROLL && overflow != OverflowProperty.SCROLL) {
-			for (final Node child : this.children) {
-				if (this.hasOverflowX()) {
-					child.x = child.defaultX;
-				}
+		return this.overflow(Signal.from(overflow));
+	}
 
-				if (this.hasOverflowY()) {
-					child.y = child.defaultY;
-				}
-			}
-
-			this.maxScrollX = this.maxScrollY = 0D;
-			this.scrollX = this.targetScrollX = 0D;
-			this.scrollY = this.targetScrollY = 0D;
-			this.scrollEndX = this.scrollEndY = false;
-		}
-
-		this.overflow = overflow;
-		return (T) this;
+	public final <T extends Node> @NonNull T overflow(final @NonNull Supplier<@NonNull OverflowProperty> overflow) {
+		return this.follow("overflow", overflow, this::changeOverflow);
 	}
 
 	public final <T extends Node> @NonNull T anchor(final @NonNull Align anchor) {
-		this.anchorX = anchor;
-		this.anchorY = anchor;
-		return (T) this;
+		return this.anchor(Signal.from(anchor));
 	}
 
-	public final <T extends Node> @NonNull T anchor(final @NonNull Align anchorX, final @NonNull Align anchorY) {
-		this.anchorX = anchorX;
-		this.anchorY = anchorY;
-		return (T) this;
+	public final <T extends Node> @NonNull T anchor(final @NonNull Supplier<@NonNull Align> anchor) {
+		return this.follow("anchor", anchor, value -> {
+			this.anchorX = value;
+			this.anchorY = value;
+		});
 	}
 
 	public final <T extends Node> @NonNull T anchorX(final @NonNull Align anchorX) {
-		this.anchorX = anchorX;
-		return (T) this;
+		return this.anchorX(Signal.from(anchorX));
+	}
+
+	public final <T extends Node> @NonNull T anchorX(final @NonNull Supplier<@NonNull Align> anchorX) {
+		return this.follow("anchorX", anchorX, value -> this.anchorX = value);
 	}
 
 	public final <T extends Node> @NonNull T anchorY(final @NonNull Align anchorY) {
-		this.anchorY = anchorY;
-		return (T) this;
+		return this.anchorY(Signal.from(anchorY));
+	}
+
+	public final <T extends Node> @NonNull T anchorY(final @NonNull Supplier<@NonNull Align> anchorY) {
+		return this.follow("anchorY", anchorY, value -> this.anchorY = value);
 	}
 
 	public final <T extends Node> @NonNull T draggable(final @NonNull DraggableProperty draggable) {
-		this.draggable   = draggable;
-		this.dragging    = false;
-		this.startDragX  = this.getAbsoluteX();
-		this.startDragY  = this.getAbsoluteY();
-		this.targetDragX = this.getAbsoluteX();
-		this.targetDragY = this.getAbsoluteY();
-		return (T) this;
+		return this.draggable(Signal.from(draggable));
+	}
+
+	public final <T extends Node> @NonNull T draggable(final @NonNull Supplier<@NonNull DraggableProperty> draggable) {
+		return this.follow("draggable", draggable, value -> {
+			this.draggable   = value;
+			this.dragging    = false;
+			this.startDragX  = this.getAbsoluteX();
+			this.startDragY  = this.getAbsoluteY();
+			this.targetDragX = this.getAbsoluteX();
+			this.targetDragY = this.getAbsoluteY();
+		});
 	}
 
 	public final <T extends Node> @NonNull T dragging(final boolean dragging, final double mouseX, final double mouseY) {
@@ -1646,23 +1655,11 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T aspectRatio(final double aspectRatio) {
-		this.aspectRatio = aspectRatio;
-		return (T) this;
+		return this.aspectRatio(Signal.from(aspectRatio));
 	}
 
-	public final <T extends Node> @NonNull T size(final double width, final double height) {
-		this.width = width;
-		this.height = height;
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T bounds(final double x, final double y, final double width, final double height) {
-		this.x = x;
-		this.y = y;
-
-		this.width = width;
-		this.height = height;
-		return (T) this;
+	public final <T extends Node> @NonNull T aspectRatio(final @NonNull Supplier<Double> aspectRatio) {
+		return this.follow("aspectRatio", aspectRatio, value -> this.aspectRatio = value);
 	}
 
 	public final <T extends Node> @NonNull T ui(final @NonNull UI ui) {
@@ -1678,6 +1675,42 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T overflowArea(final Node overflowArea) {
 		this.overflowArea = overflowArea;
 		return (T) this;
+	}
+
+	private void changeOverflow(final OverflowProperty overflow) {
+		if (this.overflow == OverflowProperty.SCROLL && overflow != OverflowProperty.SCROLL) {
+			for (final Node child : this.children) {
+				if (this.hasOverflowX()) {
+					child.x = child.defaultX;
+				}
+
+				if (this.hasOverflowY()) {
+					child.y = child.defaultY;
+				}
+			}
+
+			this.maxScrollX = this.maxScrollY = 0D;
+			this.scrollX = this.targetScrollX = 0D;
+			this.scrollY = this.targetScrollY = 0D;
+			this.scrollEndX = this.scrollEndY = false;
+		}
+
+		this.overflow = overflow;
+	}
+
+	private void pull() {
+		if (this.sourceMap.isEmpty()) {
+			return;
+		}
+
+		for (final Entry<String, Runnable> source : new ArrayList<>(this.sourceMap.entrySet())) {
+			try {
+				source.getValue().run();
+			} catch (final RuntimeException exception) {
+				System.err.println("[JOID] The " + source.getKey() + " of " + this.getClass().getSimpleName() + " cannot take its new value: " + exception);
+				exception.printStackTrace();
+			}
+		}
 	}
 
 	private void endInteraction() {
@@ -1798,6 +1831,18 @@ public abstract class Node implements INode {
 		}
 	}
 
+	protected final <T extends Node, V> @NonNull T follow(final @NonNull String property, final @NonNull Supplier<V> supplier, final @NonNull Consumer<V> consumer) {
+		final V value = SignalContext.current().untracked(supplier);
+		if (supplier instanceof ComputedSignal && ((ComputedSignal<V>) supplier).isConstant()) {
+			this.sourceMap.remove(property);
+		} else {
+			this.sourceMap.put(property, new NodeSource<>(supplier, consumer, value));
+		}
+
+		consumer.accept(value);
+		return (T) this;
+	}
+
 	private <V> NodeSubscription<V> listen(final Signal<V> signal, final Supplier<Boolean> condition, final Consumer<V> consumer) {
 		final NodeSubscription<V> subscription = new NodeSubscription<>(signal, condition, consumer);
 		this.subscriptionList.add(subscription);
@@ -1837,18 +1882,27 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T hoverDuration(final long hoverDuration) {
-		this.hoverDuration = hoverDuration;
-		return (T) this;
+		return this.hoverDuration(Signal.from(hoverDuration));
 	}
 
-	public final <T extends Node> @NonNull T hoverEquation(final @NonNull TweenEquation equation) {
-		this.hoverEquation = equation;
-		return (T) this;
+	public final <T extends Node> @NonNull T hoverDuration(final @NonNull Supplier<Long> hoverDuration) {
+		return this.follow("hoverDuration", hoverDuration, value -> this.hoverDuration = value);
+	}
+
+	public final <T extends Node> @NonNull T hoverEquation(final @NonNull TweenEquation hoverEquation) {
+		return this.hoverEquation(Signal.from(hoverEquation));
+	}
+
+	public final <T extends Node> @NonNull T hoverEquation(final @NonNull Supplier<@NonNull TweenEquation> hoverEquation) {
+		return this.follow("hoverEquation", hoverEquation, value -> this.hoverEquation = value);
 	}
 
 	public final <T extends Node> @NonNull T scrollSpeed(final double scrollSpeed) {
-		this.scrollSpeed = scrollSpeed;
-		return (T) this;
+		return this.scrollSpeed(Signal.from(scrollSpeed));
+	}
+
+	public final <T extends Node> @NonNull T scrollSpeed(final @NonNull Supplier<Double> scrollSpeed) {
+		return this.follow("scrollSpeed", scrollSpeed, value -> this.scrollSpeed = value);
 	}
 
 	public final <T extends Node> @NonNull T scrollbar(final @NonNull ScrollbarNode scrollbar) {
@@ -1873,35 +1927,48 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T zindex(final int zindex) {
-		this.zindex = zindex;
-		if (this.parent != null && this.parent.children.contains(this)) {
-			this.parent.children.add(this);
-		} else if (this.parent == null && this.ui != null && this.ui.getNodeList().contains(this)) {
-			this.ui.getNodeList().add(this);
-		}
-		return (T) this;
+		return this.zindex(Signal.from(zindex));
+	}
+
+	public final <T extends Node> @NonNull T zindex(final @NonNull Supplier<Integer> zindex) {
+		return this.follow("zindex", zindex, value -> {
+			this.zindex = value;
+			if (this.parent != null && this.parent.children.contains(this)) {
+				this.parent.children.add(this);
+			} else if (this.parent == null && this.ui != null && this.ui.getNodeList().contains(this)) {
+				this.ui.getNodeList().add(this);
+			}
+		});
 	}
 
 	public final <T extends Node> @NonNull T zlevel(final double zlevel) {
-		this.zlevel = zlevel;
+		return this.zlevel(Signal.from(zlevel));
+	}
+
+	public final <T extends Node> @NonNull T zlevel(final @NonNull Supplier<Double> zlevel) {
+		return this.follow("zlevel", zlevel, value -> this.zlevel = value);
+	}
+
+	public final <T extends Node> @NonNull T visible(final boolean visible) {
+		return this.visible(Signal.from(visible));
+	}
+
+	public final <T extends Node> @NonNull T visible(final @NonNull Supplier<Boolean> visible) {
+		this.visible = node -> Boolean.TRUE.equals(visible.get());
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T visible(final @NonNull Signal<?>... signals) {
-		this.visible = node -> {
-			for (final Signal<?> signal : signals) {
-				final Object value = signal.peek();
-				if (value == null || Boolean.FALSE.equals(value)) {
-					return false;
-				}
-			}
-			return true;
-		};
+	public final <T extends Node> @NonNull T visible(final @NonNull Predicate<@NonNull T> visible) {
+		this.visible = (Predicate<Node>) visible;
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T visible(final @NonNull Predicate<@NonNull T> visibility) {
-		this.visible = (Predicate<Node>) visibility;
+	public final <T extends Node> @NonNull T enabled(final boolean enabled) {
+		return this.enabled(Signal.from(enabled));
+	}
+
+	public final <T extends Node> @NonNull T enabled(final @NonNull Supplier<Boolean> enabled) {
+		this.enabled = node -> Boolean.TRUE.equals(enabled.get());
 		return (T) this;
 	}
 
@@ -2110,6 +2177,25 @@ public abstract class Node implements INode {
 		}
 
 		return Node.GSON.toJson(json);
+	}
+
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class NodeSource<V> implements Runnable {
+
+		private final Supplier<V> supplier;
+		private final Consumer<V> consumer;
+
+		private V value;
+
+		@Override
+		public void run() {
+			final V next = this.supplier.get();
+			if (!Objects.equals(this.value, next)) {
+				this.value = next;
+				this.consumer.accept(next);
+			}
+		}
+
 	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)

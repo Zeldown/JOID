@@ -91,7 +91,7 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(3D, field.getMarginTop(), 0D);
 		Assert.assertEquals(3D, field.getMarginBottom(), 0D);
 		Assert.assertEquals(15D, field.getCursorMargin(), 0D);
-		Assert.assertSame(field, field.margin(4D, 6D));
+		Assert.assertSame(field, field.margin(4D).cursorMargin(6D));
 		Assert.assertEquals(4D, field.getMarginLeft(), 0D);
 		Assert.assertEquals(4D, field.getMarginRight(), 0D);
 		Assert.assertEquals(4D, field.getMarginTop(), 0D);
@@ -118,7 +118,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void takesItsAlignment() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D);
-		Assert.assertSame(field, field.align(Align.END, Align.START));
+		Assert.assertSame(field, field.horizontalAlign(Align.END).verticalAlign(Align.START));
 		Assert.assertSame(Align.END, field.getHorizontalAlignment());
 		Assert.assertSame(Align.START, field.getVerticalAlignment());
 		Assert.assertSame(field, field.horizontalAlign(Align.CENTER));
@@ -765,7 +765,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void alignsItsTextToTheEnd() {
-		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).<TextFieldNode>text("abcd").align(Align.END, Align.END)));
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).<TextFieldNode>text("abcd").horizontalAlign(Align.END).verticalAlign(Align.END)));
 		Assert.assertEquals(256D, this.font.last().getX(), 0D);
 		Assert.assertEquals(130D, this.font.last().getY(), 0D);
 	}
@@ -1116,7 +1116,6 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(1, nickname.getEventSet().size());
 	}
 
-
 	@Test
 	public void refusesAComputedSignal() {
 		final Signal<String> name = new Signal<>("Alex");
@@ -1131,6 +1130,7 @@ public class TextFieldNodeTest {
 		Assert.assertEquals("Max", field.getText());
 		Assert.assertSame(name, field.getSignal());
 	}
+
 	@Test
 	public void readsItsTextAsItsValue() {
 		final TextFieldNode field = this.field("abc");

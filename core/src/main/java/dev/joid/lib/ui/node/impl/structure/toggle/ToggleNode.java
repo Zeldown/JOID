@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.structure.toggle;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.toggle.callback.NodeToggleChangeCallback;
@@ -35,8 +37,11 @@ public abstract class ToggleNode<F, S> extends Node {
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final boolean toggle) {
-		this.change(toggle, InternalContext.create());
-		return (T) this;
+		return this.toggle(Signal.from(toggle));
+	}
+
+	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final @NonNull Supplier<Boolean> toggle) {
+		return super.follow("toggle", toggle, value -> this.change(value, InternalContext.create()));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T state(final F toggle, final S back) {

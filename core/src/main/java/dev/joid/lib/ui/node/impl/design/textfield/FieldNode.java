@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.Locale;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.font.dto.TextInfo;
@@ -232,7 +233,7 @@ public abstract class FieldNode<V> extends Node {
 	@Override
 	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
-			this.focused(false);
+			this.focus(false);
 			this.selectionStart = -1;
 			return;
 		}
@@ -240,45 +241,48 @@ public abstract class FieldNode<V> extends Node {
 		context.cancel(() -> {
 			this.updateSelection();
 			this.placeCursor(mouseX, mouseY);
-			this.focused(true);
+			this.focus(true);
 		});
 	}
 
 	@Override
 	public void detach() {
-		this.focused(false);
+		this.focus(false);
 		this.inputting = false;
 	}
 
 	public abstract @NonNull V getValue();
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull String text) {
-		this.setText(text);
-		return (T) this;
+		return this.text(Signal.from(text));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull Supplier<@NonNull String> text) {
+		return super.follow("text", text, this::setText);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T placeholder(final @NonNull String placeholder) {
-		this.placeholder = placeholder;
-		return (T) this;
+		return this.placeholder(Signal.from(placeholder));
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T info(final @NonNull TextInfo textInfo) {
-		this.info = textInfo;
-		return (T) this;
+	public final <T extends FieldNode<V>> @NonNull T placeholder(final @NonNull Supplier<@NonNull String> placeholder) {
+		return super.follow("placeholder", placeholder, value -> this.placeholder = value);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T info(final @NonNull TextInfo info) {
+		return this.info(Signal.from(info));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T info(final @NonNull Supplier<@NonNull TextInfo> info) {
+		return super.follow("info", info, value -> this.info = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focused(final boolean focused) {
-		if (this.focused == focused) {
-			return (T) this;
-		}
+		return this.focused(Signal.from(focused));
+	}
 
-		super.executeCallback(FieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
-			this.focused = focused;
-			if (!focused) {
-				this.selectionStart = -1;
-			}
-		});
-		return (T) this;
+	public final <T extends FieldNode<V>> @NonNull T focused(final @NonNull Supplier<Boolean> focused) {
+		return super.follow("focused", focused, this::focus);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T filter(final @NonNull BiFunction<String, String, String> filter) {
@@ -287,72 +291,102 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T maxTextLength(final int maxTextLength) {
-		this.maxTextLength = maxTextLength;
-		return (T) this;
+		return this.maxTextLength(Signal.from(maxTextLength));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T maxTextLength(final @NonNull Supplier<Integer> maxTextLength) {
+		return super.follow("maxTextLength", maxTextLength, value -> this.maxTextLength = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T markup(final boolean markup) {
-		this.markup = markup;
-		return (T) this;
+		return this.markup(Signal.from(markup));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T markup(final @NonNull Supplier<Boolean> markup) {
+		return super.follow("markup", markup, value -> this.markup = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T margin(final double margin) {
-		this.marginLeft   = margin;
-		this.marginRight  = margin;
-		this.marginTop    = margin;
-		this.marginBottom = margin;
-		return (T) this;
+		return this.margin(Signal.from(margin));
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T margin(final double margin, final double cursorMargin) {
-		this.marginLeft   = margin;
-		this.marginRight  = margin;
-		this.marginTop    = margin;
-		this.marginBottom = margin;
-		this.cursorMargin = cursorMargin;
-		return (T) this;
+	public final <T extends FieldNode<V>> @NonNull T margin(final @NonNull Supplier<Double> margin) {
+		return super.follow("margin", margin, value -> {
+			this.marginLeft   = value;
+			this.marginRight  = value;
+			this.marginTop    = value;
+			this.marginBottom = value;
+		});
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginTop(final double marginTop) {
-		this.marginTop = marginTop;
-		return (T) this;
+		return this.marginTop(Signal.from(marginTop));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginTop(final @NonNull Supplier<Double> marginTop) {
+		return super.follow("marginTop", marginTop, value -> this.marginTop = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginLeft(final double marginLeft) {
-		this.marginLeft = marginLeft;
-		return (T) this;
+		return this.marginLeft(Signal.from(marginLeft));
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T marginVertical(final double margin) {
-		this.marginTop = margin;
-		this.marginBottom = margin;
-		return (T) this;
+	public final <T extends FieldNode<V>> @NonNull T marginLeft(final @NonNull Supplier<Double> marginLeft) {
+		return super.follow("marginLeft", marginLeft, value -> this.marginLeft = value);
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T marginHorizontal(final double margin) {
-		this.marginLeft = margin;
-		this.marginRight = margin;
-		return (T) this;
+	public final <T extends FieldNode<V>> @NonNull T marginVertical(final double marginVertical) {
+		return this.marginVertical(Signal.from(marginVertical));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginVertical(final @NonNull Supplier<Double> marginVertical) {
+		return super.follow("marginVertical", marginVertical, value -> {
+			this.marginTop    = value;
+			this.marginBottom = value;
+		});
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginHorizontal(final double marginHorizontal) {
+		return this.marginHorizontal(Signal.from(marginHorizontal));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginHorizontal(final @NonNull Supplier<Double> marginHorizontal) {
+		return super.follow("marginHorizontal", marginHorizontal, value -> {
+			this.marginLeft  = value;
+			this.marginRight = value;
+		});
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginRight(final double marginRight) {
-		this.marginRight = marginRight;
-		return (T) this;
+		return this.marginRight(Signal.from(marginRight));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginRight(final @NonNull Supplier<Double> marginRight) {
+		return super.follow("marginRight", marginRight, value -> this.marginRight = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginBottom(final double marginBottom) {
-		this.marginBottom = marginBottom;
-		return (T) this;
+		return this.marginBottom(Signal.from(marginBottom));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginBottom(final @NonNull Supplier<Double> marginBottom) {
+		return super.follow("marginBottom", marginBottom, value -> this.marginBottom = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorMargin(final double cursorMargin) {
-		this.cursorMargin = cursorMargin;
-		return (T) this;
+		return this.cursorMargin(Signal.from(cursorMargin));
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final int cursorPos) {
-		this.cursorPos = Math.min(Math.max(0, cursorPos), this.text.length());
-		return (T) this;
+	public final <T extends FieldNode<V>> @NonNull T cursorMargin(final @NonNull Supplier<Double> cursorMargin) {
+		return super.follow("cursorMargin", cursorMargin, value -> this.cursorMargin = value);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final int cursorPosition) {
+		return this.cursorPosition(Signal.from(cursorPosition));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final @NonNull Supplier<Integer> cursorPosition) {
+		return super.follow("cursorPosition", cursorPosition, value -> this.cursorPos = Math.min(Math.max(0, value), this.text.length()));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
@@ -428,7 +462,20 @@ public abstract class FieldNode<V> extends Node {
 		return this.markup ? this.info : this.info.copy().markups();
 	}
 
-	private final void setText(final String newText) {
+	protected final void focus(final boolean focused) {
+		if (this.focused == focused) {
+			return;
+		}
+
+		super.executeCallback(FieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
+			this.focused = focused;
+			if (!focused) {
+				this.selectionStart = -1;
+			}
+		});
+	}
+
+	protected final void setText(final String newText) {
 		final String oldText = this.text == null ? "" : this.text;
 		final String filtered = this.clean(this.filter.apply(oldText, this.clean(newText == null ? "" : newText)));
 		final String accepted = this.maxTextLength >= 0 && filtered.length() > this.maxTextLength ? filtered.substring(0, this.maxTextLength) : filtered;

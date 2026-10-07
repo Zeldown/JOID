@@ -198,7 +198,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 
 		if (key == Key.ESCAPE) {
-			super.focused(false);
+			super.focus(false);
 			return true;
 		}
 

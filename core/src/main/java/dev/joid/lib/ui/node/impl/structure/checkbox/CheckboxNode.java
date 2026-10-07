@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.structure.checkbox;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.checkbox.callback.NodeCheckboxChangeCallback;
@@ -34,8 +36,11 @@ public abstract class CheckboxNode extends Node {
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
-		this.change(checked, InternalContext.create());
-		return (T) this;
+		return this.checked(Signal.from(checked));
+	}
+
+	public final <T extends CheckboxNode> @NonNull T checked(final @NonNull Supplier<Boolean> checked) {
+		return super.follow("checked", checked, value -> this.change(value, InternalContext.create()));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {

@@ -2,9 +2,11 @@ package dev.joid.lib.ui.node.impl.structure.chart;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -54,19 +56,18 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		return (T) this;
 	}
 
-	@Getter
 	public static class RadarChartData {
 
-		private String label;
-		private Number value;
+		private Supplier<String> label;
+		private Supplier<? extends Number> value;
 
 		protected RadarChartData(final @NonNull String label) {
 			this(label, null);
 		}
 
 		protected RadarChartData(final @NonNull String label, final Number value) {
-			this.label = label;
-			this.value = value;
+			this.label = () -> label;
+			this.value = () -> value;
 		}
 
 		public static @NonNull RadarChartData create(final @NonNull String label) {
@@ -78,21 +79,37 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		}
 
 		public boolean isEmpty() {
-			return this.value == null;
+			return this.value.get() == null;
 		}
 
-		public final <T extends RadarChartData> T value(final Number value) {
+		public final String getLabel() {
+			return this.label.get();
+		}
+
+		public final Number getValue() {
+			return this.value.get();
+		}
+
+		public final <T extends RadarChartData> @NonNull T value(final Number value) {
+			return this.value(Signal.from(value));
+		}
+
+		public final <T extends RadarChartData> @NonNull T value(final @NonNull Supplier<? extends Number> value) {
 			this.value = value;
 			return (T) this;
 		}
 
-		public final <T extends RadarChartData> T label(final String label) {
+		public final <T extends RadarChartData> @NonNull T label(final String label) {
+			return this.label(Signal.from(label));
+		}
+
+		public final <T extends RadarChartData> @NonNull T label(final @NonNull Supplier<String> label) {
 			this.label = label;
 			return (T) this;
 		}
 
 		public final <T extends RadarChartData> @NonNull T clear() {
-			this.value = null;
+			this.value = () -> null;
 			return (T) this;
 		}
 

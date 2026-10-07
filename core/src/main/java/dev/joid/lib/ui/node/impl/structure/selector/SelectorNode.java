@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
@@ -152,34 +153,44 @@ public abstract class SelectorNode<V> extends Node {
 
 		if (value.equals(previous)) {
 			this.selected = this.find(value);
-			return (T) this;
+		} else {
+			this.select(this.find(value), InternalContext.create());
 		}
-		return this.value(value);
+		return (T) this;
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull V value) {
-		this.select(this.find(value), InternalContext.create());
-		return (T) this;
+		return this.value(Signal.from(value));
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Supplier<@NonNull V> value) {
+		return super.follow("value", value, option -> this.select(this.find(option), InternalContext.create()));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = super.writable(signal);
 		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (this.optionMap.containsValue(value)) {
-				this.value(value);
+				this.select(this.find(value), InternalContext.create());
 			}
 		});
 		return (T) this;
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T direction(final @NonNull SelectorDirection direction) {
-		this.direction = direction;
-		return (T) this;
+		return this.direction(Signal.from(direction));
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T direction(final @NonNull Supplier<@NonNull SelectorDirection> direction) {
+		return super.follow("direction", direction, value -> this.direction = value);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final boolean active) {
-		this.active = active;
-		return (T) this;
+		return this.active(Signal.from(active));
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T active(final @NonNull Supplier<Boolean> active) {
+		return super.follow("active", active, value -> this.active = value);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T onChange(final @NonNull NodeSelectorChangeCallback<T, V> callback) {

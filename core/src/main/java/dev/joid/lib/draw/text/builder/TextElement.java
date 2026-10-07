@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import dev.joid.internal.JOID;
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -19,10 +20,6 @@ public class TextElement {
 	private Supplier<?>   text;
 	private ITextModifier modifier;
 
-	protected TextElement(final @NonNull Object text, final @NonNull TextInfo info, final ITextModifier modifier) {
-		this(() -> text.toString(), info, modifier);
-	}
-
 	protected TextElement(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final ITextModifier modifier) {
 		this(text, info, modifier, JOID.inst().isDevMode() ? TextElement.locate() : null);
 	}
@@ -34,77 +31,16 @@ public class TextElement {
 		this.origin = origin;
 	}
 
-	public static final @NonNull TextElement create(final int text, final @NonNull TextInfo info) {
-		return new TextElement(String.valueOf(text), info, null);
-	}
-
-	public static final @NonNull TextElement create(final long text, final @NonNull TextInfo info) {
-		return new TextElement(String.valueOf(text), info, null);
-	}
-
-	public static final @NonNull TextElement create(final char text, final @NonNull TextInfo info) {
-		return new TextElement(String.valueOf(text), info, null);
-	}
-
-	public static final @NonNull TextElement create(final float text, final @NonNull TextInfo info) {
-		return new TextElement(String.valueOf(text), info, null);
-	}
-
-	public static final @NonNull TextElement create(final double text, final @NonNull TextInfo info) {
-		return new TextElement(String.valueOf(text), info, null);
-	}
-
-	public static final @NonNull TextElement create(final boolean text, final @NonNull TextInfo info) {
-		return new TextElement(String.valueOf(text), info, null);
-	}
-
 	public static final @NonNull TextElement create(final @NonNull Object text, final @NonNull TextInfo info) {
-		return new TextElement(text, info, null);
+		return new TextElement(Signal.from(text), info, null);
 	}
 
 	public static final @NonNull TextElement create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
 		return new TextElement(() -> text.get(), info, null);
 	}
 
-	public final <T extends TextElement> @NonNull T text(final int text) {
-		final String value = String.valueOf(text);
-		this.text = () -> value;
-		return (T) this;
-	}
-
-	public final <T extends TextElement> @NonNull T text(final long text) {
-		final String value = String.valueOf(text);
-		this.text = () -> value;
-		return (T) this;
-	}
-
-	public final <T extends TextElement> @NonNull T text(final char text) {
-		final String value = String.valueOf(text);
-		this.text = () -> value;
-		return (T) this;
-	}
-
-	public final <T extends TextElement> @NonNull T text(final float text) {
-		final String value = String.valueOf(text);
-		this.text = () -> value;
-		return (T) this;
-	}
-
-	public final <T extends TextElement> @NonNull T text(final double text) {
-		final String value = String.valueOf(text);
-		this.text = () -> value;
-		return (T) this;
-	}
-
-	public final <T extends TextElement> @NonNull T text(final boolean text) {
-		final String value = String.valueOf(text);
-		this.text = () -> value;
-		return (T) this;
-	}
-
 	public final <T extends TextElement> @NonNull T text(final @NonNull Object text) {
-		this.text = () -> text;
-		return (T) this;
+		return this.text(Signal.from(text));
 	}
 
 	public final <T extends TextElement> @NonNull T text(final @NonNull Supplier<?> text) {

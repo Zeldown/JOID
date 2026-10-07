@@ -1,7 +1,10 @@
 package dev.joid.lib.ui.node.impl.design.model;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -21,14 +24,14 @@ public class ModelViewerNode extends ModelNode {
 	private double lastRotationYaw;
 	private double lastRotationPitch;
 
-	private double minSize;
-	private double maxSize;
+	private Supplier<Double> minSize;
+	private Supplier<Double> maxSize;
 
-	private double minRotationYaw;
-	private double maxRotationYaw;
+	private Supplier<Double> minRotationYaw;
+	private Supplier<Double> maxRotationYaw;
 
-	private double minRotationPitch;
-	private double maxRotationPitch;
+	private Supplier<Double> minRotationPitch;
+	private Supplier<Double> maxRotationPitch;
 
 	protected ModelViewerNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -41,14 +44,14 @@ public class ModelViewerNode extends ModelNode {
 		this.lastRotationYaw = super.getRotationYaw();
 		this.lastRotationPitch = super.getRotationPitch();
 
-		this.minSize = 0.1D;
-		this.maxSize = 2D;
+		this.minSize = () -> 0.1D;
+		this.maxSize = () -> 2D;
 
-		this.minRotationYaw = -Double.MAX_VALUE;
-		this.maxRotationYaw = Double.MAX_VALUE;
+		this.minRotationYaw = () -> -Double.MAX_VALUE;
+		this.maxRotationYaw = () -> Double.MAX_VALUE;
 
-		this.minRotationPitch = -Double.MAX_VALUE;
-		this.maxRotationPitch = Double.MAX_VALUE;
+		this.minRotationPitch = () -> -Double.MAX_VALUE;
+		this.maxRotationPitch = () -> Double.MAX_VALUE;
 	}
 
 	public static @NonNull ModelViewerNode create(final double x, final double y, final double width, final double height) {
@@ -70,21 +73,14 @@ public class ModelViewerNode extends ModelNode {
 			this.targetRotationPitch -= (mouseY - this.draggedMouseY) / 5F;
 			this.draggedMouseY = mouseY;
 
-			this.targetRotationYaw = Math.max(this.minRotationYaw, Math.min(this.maxRotationYaw, this.targetRotationYaw));
-			this.targetRotationPitch = Math.max(this.minRotationPitch, Math.min(this.maxRotationPitch, this.targetRotationPitch));
+			this.targetRotationYaw = Math.max(this.minRotationYaw.get(), Math.min(this.maxRotationYaw.get(), this.targetRotationYaw));
+			this.targetRotationPitch = Math.max(this.minRotationPitch.get(), Math.min(this.maxRotationPitch.get(), this.targetRotationPitch));
 		}
 
-		if(super.getRotationYaw() != this.targetRotationYaw) {
-			super.rotationYaw(super.getUi().lerpByFramerate(super.getRotationYaw(), this.targetRotationYaw, 0.1D, 0.1D, true));
-		}
-
-		if(super.getRotationPitch() != this.targetRotationPitch) {
-			super.rotationPitch(super.getUi().lerpByFramerate(this.getRotationPitch(), this.targetRotationPitch, 0.1D, 0.1D, true));
-		}
-
-		if(super.getSize() != this.targetSize) {
-			super.size(super.getUi().lerpByFramerate(this.getSize(), this.targetSize, 0.1D, 0D, true));
-		}
+		final double rotationYaw = super.getRotationYaw() != this.targetRotationYaw ? super.getUi().lerpByFramerate(super.getRotationYaw(), this.targetRotationYaw, 0.1D, 0.1D, true) : super.getRotationYaw();
+		final double rotationPitch = super.getRotationPitch() != this.targetRotationPitch ? super.getUi().lerpByFramerate(super.getRotationPitch(), this.targetRotationPitch, 0.1D, 0.1D, true) : super.getRotationPitch();
+		final double size = super.getSize() != this.targetSize ? super.getUi().lerpByFramerate(super.getSize(), this.targetSize, 0.1D, 0D, true) : super.getSize();
+		super.transform(size, rotationYaw, rotationPitch);
 
 		this.lastSize = super.getSize();
 		this.lastRotationYaw = super.getRotationYaw();
@@ -139,27 +135,51 @@ public class ModelViewerNode extends ModelNode {
 		return super.getRotationPitch() != this.lastRotationPitch ? super.getRotationPitch() : this.targetRotationPitch;
 	}
 
+	public final double getMinSize() {
+		return this.minSize.get();
+	}
+
+	public final double getMaxSize() {
+		return this.maxSize.get();
+	}
+
+	public final double getMinRotationYaw() {
+		return this.minRotationYaw.get();
+	}
+
+	public final double getMaxRotationYaw() {
+		return this.maxRotationYaw.get();
+	}
+
+	public final double getMinRotationPitch() {
+		return this.minRotationPitch.get();
+	}
+
+	public final double getMaxRotationPitch() {
+		return this.maxRotationPitch.get();
+	}
+
 	public final <T extends ModelViewerNode> @NonNull T rotationYawRange(final double min, final double max) {
-		this.minRotationYaw = min;
-		this.maxRotationYaw = max;
+		this.maxRotationYaw = Signal.from(max);
+		this.minRotationYaw = Signal.from(min);
 		return (T) this;
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitchRange(final double min, final double max) {
-		this.minRotationPitch = min;
-		this.maxRotationPitch = max;
+		this.maxRotationPitch = Signal.from(max);
+		this.minRotationPitch = Signal.from(min);
 		return (T) this;
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T sizeRange(final double min, final double max) {
-		this.minSize = min;
-		this.maxSize = max;
+		this.maxSize = Signal.from(max);
+		this.minSize = Signal.from(min);
 		return (T) this;
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoom(final double zoom) {
 		this.sync();
-		this.targetSize = Math.max(this.minSize, Math.min(this.maxSize, zoom));
+		this.targetSize = Math.max(this.minSize.get(), Math.min(this.maxSize.get(), zoom));
 		return (T) this;
 	}
 

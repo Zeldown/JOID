@@ -1,11 +1,14 @@
 package dev.joid.lib.ui.node.impl.design.text;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -102,13 +105,19 @@ public class TextNode extends Node {
 	}
 
 	public final <T extends TextNode> @NonNull T text(final Text text) {
-		this.text = text;
-		return (T) this;
+		return this.text(Signal.from(text));
+	}
+
+	public final <T extends TextNode> @NonNull T text(final @NonNull Supplier<Text> text) {
+		return super.follow("text", text, value -> this.text = value);
 	}
 
 	public final <T extends TextNode> @NonNull T mode(final @NonNull TextMode mode) {
-		this.mode = mode;
-		return (T) this;
+		return this.mode(Signal.from(mode));
+	}
+
+	public final <T extends TextNode> @NonNull T mode(final @NonNull Supplier<@NonNull TextMode> mode) {
+		return super.follow("mode", mode, value -> this.mode = value);
 	}
 
 	public final <T extends TextNode> @NonNull T reset() {

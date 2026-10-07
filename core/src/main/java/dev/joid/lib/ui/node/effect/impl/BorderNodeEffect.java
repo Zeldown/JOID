@@ -8,6 +8,7 @@ import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.shader.pipeline.pass.BorderShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -15,15 +16,16 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public class BorderNodeEffect extends NodeEffect<Node> {
 
-	private boolean fill = true;
-	private BorderMode mode;
-	private Supplier<Color> colorSupplier;
-	private Supplier<Float> widthSupplier;
+	private Supplier<Boolean>    fillSupplier;
+	private Supplier<BorderMode> modeSupplier;
+	private Supplier<Color>      colorSupplier;
+	private Supplier<Float>      widthSupplier;
 
 	protected BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
+		this.fillSupplier  = () -> true;
+		this.modeSupplier  = () -> mode;
 		this.colorSupplier = () -> color;
 		this.widthSupplier = () -> width;
-		this.mode = mode;
 	}
 
 	public static @NonNull BorderNodeEffect create(final @NonNull Color color, final float width) {
@@ -34,6 +36,19 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 		return new BorderNodeEffect(color, width, mode);
 	}
 
+	public boolean isFill() {
+		return this.fillSupplier.get();
+	}
+
+	public @NonNull BorderMode getMode() {
+		return this.modeSupplier.get();
+	}
+
+	@Override
+	public boolean shouldApply(final @NonNull Node node) {
+		return this.widthSupplier.get() > 0F;
+	}
+
 	@Override
 	public boolean isShaderEffect() {
 		return true;
@@ -41,12 +56,11 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 
 	@Override
 	public ShaderPass toShaderPass(final @NonNull Node node) {
-		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fill, this.mode);
+		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fillSupplier.get(), this.modeSupplier.get());
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E color(final @NonNull Color color) {
-		this.colorSupplier = () -> color;
-		return (E) this;
+		return this.color(Signal.from(color));
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
@@ -55,8 +69,7 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E width(final float width) {
-		this.widthSupplier = () -> width;
-		return (E) this;
+		return this.width(Signal.from(width));
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E width(final @NonNull Supplier<Float> widthSupplier) {
@@ -65,12 +78,20 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E mode(final @NonNull BorderMode mode) {
-		this.mode = mode;
+		return this.mode(Signal.from(mode));
+	}
+
+	public final <E extends BorderNodeEffect> @NonNull E mode(final @NonNull Supplier<@NonNull BorderMode> modeSupplier) {
+		this.modeSupplier = modeSupplier;
 		return (E) this;
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E fill(final boolean fill) {
-		this.fill = fill;
+		return this.fill(Signal.from(fill));
+	}
+
+	public final <E extends BorderNodeEffect> @NonNull E fill(final @NonNull Supplier<Boolean> fillSupplier) {
+		this.fillSupplier = fillSupplier;
 		return (E) this;
 	}
 

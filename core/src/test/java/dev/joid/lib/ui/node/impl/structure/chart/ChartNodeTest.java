@@ -43,10 +43,10 @@ public class ChartNodeTest {
 		final XChartAxis x = ChartAxis.x("weekday", "Mon");
 		final YChartAxis y = ChartAxis.y("requests");
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D);
-		Assert.assertSame(chart, chart.axis(x));
+		Assert.assertSame(chart, chart.xAxis(x));
 		Assert.assertSame(x, chart.getXAxis());
 		Assert.assertNull(chart.getYAxis());
-		Assert.assertSame(chart, chart.axis(y));
+		Assert.assertSame(chart, chart.yAxis(y));
 		Assert.assertSame(y, chart.getYAxis());
 	}
 
@@ -55,7 +55,7 @@ public class ChartNodeTest {
 		final XChartAxis x = ChartAxis.x("weekday", "Mon");
 		final YChartAxis y = ChartAxis.y("requests");
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D);
-		Assert.assertSame(chart, chart.axis(x, y));
+		Assert.assertSame(chart, chart.xAxis(x).yAxis(y));
 		Assert.assertSame(x, chart.getXAxis());
 		Assert.assertSame(y, chart.getYAxis());
 	}
@@ -64,7 +64,7 @@ public class ChartNodeTest {
 	public void keepsTheSeriesOnItsXAxis() {
 		final XChartAxis x = ChartAxis.x("weekday", "Mon", "Tue");
 		final ChartData api = ChartData.create().add("Mon", 120);
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(x);
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(x);
 		Assert.assertSame(chart, chart.data("api", api));
 		Assert.assertSame(api, chart.getData("api"));
 		Assert.assertSame(api, x.get("api"));
@@ -74,7 +74,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void removesASeries() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 120)).data("web", ChartData.create().add("Mon", 80));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 120)).data("web", ChartData.create().add("Mon", 80));
 		Assert.assertSame(chart, chart.remove("api"));
 		Assert.assertNull(chart.getData("api"));
 		Assert.assertEquals(1, chart.getDataMap().size());
@@ -82,7 +82,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void keepsItsSeriesInTheirOrder() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon"));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon"));
 		for (final String name : new String[] {"web", "api", "mobile", "desktop", "batch", "cron"}) {
 			chart.data(name, ChartData.create().add("Mon", 1));
 		}
@@ -102,7 +102,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void givesAUnitScaleToAMissingSeries() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon"));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon"));
 		Assert.assertEquals(1D, chart.getMax("api").doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getMin("api").doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getAverage("api").doubleValue(), 0D);
@@ -120,7 +120,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void loadsOnceEverySeriesIsFilled() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon"), ChartAxis.y("requests"));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).yAxis(ChartAxis.y("requests"));
 		Assert.assertFalse(chart.isLoaded());
 		chart.data("api", ChartData.create().add("Mon", 120));
 		Assert.assertTrue(chart.isLoaded());
@@ -132,9 +132,9 @@ public class ChartNodeTest {
 
 	@Test
 	public void needsAYAxisToLoad() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 120));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 120));
 		Assert.assertFalse(chart.isLoaded());
-		chart.axis(ChartAxis.y("requests"));
+		chart.yAxis(ChartAxis.y("requests"));
 		Assert.assertTrue(chart.isLoaded());
 	}
 
@@ -142,7 +142,7 @@ public class ChartNodeTest {
 	public void waitsForItsNodeToMount() {
 		final boolean[] ready = {false};
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).wait(node -> ready[0]);
-		chart.axis(ChartAxis.x("weekday", "Mon"), ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 120));
+		chart.xAxis(ChartAxis.x("weekday", "Mon")).yAxis(ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 120));
 		Assert.assertFalse(chart.isLoaded());
 		ready[0] = true;
 		Assert.assertTrue(chart.isLoaded());
@@ -150,7 +150,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void measuresEverySeries() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon", "Tue")).data("api", ChartData.create().add("Mon", 1).add("Tue", 5)).data("web", ChartData.create().add("Mon", 3).add("Tue", 9));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon", "Tue")).data("api", ChartData.create().add("Mon", 1).add("Tue", 5)).data("web", ChartData.create().add("Mon", 3).add("Tue", 9));
 		Assert.assertEquals(9D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(1D, chart.getMin().doubleValue(), 0D);
 		Assert.assertEquals(4.5D, chart.getAverage().doubleValue(), 0D);
@@ -158,7 +158,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void measuresOneSeries() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon", "Tue")).data("api", ChartData.create().add("Mon", 1).add("Tue", 5)).data("web", ChartData.create().add("Mon", 3).add("Tue", 9));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon", "Tue")).data("api", ChartData.create().add("Mon", 1).add("Tue", 5)).data("web", ChartData.create().add("Mon", 3).add("Tue", 9));
 		Assert.assertEquals(5D, chart.getMax("api").doubleValue(), 0D);
 		Assert.assertEquals(1D, chart.getMin("api").doubleValue(), 0D);
 		Assert.assertEquals(3D, chart.getAverage("api").doubleValue(), 0D);
@@ -167,7 +167,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void spreadsTheScaleOfAFlatSeries() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon", "Tue")).data("api", ChartData.create().add("Mon", 4).add("Tue", 4));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon", "Tue")).data("api", ChartData.create().add("Mon", 4).add("Tue", 4));
 		Assert.assertEquals(8D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getMin().doubleValue(), 0D);
 		Assert.assertEquals(8D, chart.getMax("api").doubleValue(), 0D);
@@ -176,7 +176,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void givesAUnitScaleToASeriesOfZeros() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 0));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 0));
 		Assert.assertEquals(1D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getMin().doubleValue(), 0D);
 		Assert.assertEquals(1D, chart.getMax("api").doubleValue(), 0D);
@@ -185,7 +185,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void givesAUnitScaleWithoutSeries() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon"));
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon"));
 		Assert.assertEquals(1D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getMin().doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getAverage().doubleValue(), 0D);
@@ -193,7 +193,7 @@ public class ChartNodeTest {
 
 	@Test
 	public void drawsItsSeriesOnceLoaded() {
-		final BarChartNode chart = new BarChartNode(100D, 100D, 300D, 200D).axis(ChartAxis.x("weekday", "Mon", "Tue", "Wed"), ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 50).add("Tue", 100).add("Wed", 25));
+		final BarChartNode chart = new BarChartNode(100D, 100D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon", "Tue", "Wed")).yAxis(ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 50).add("Tue", 100).add("Wed", 25));
 		this.bridges.open(new NodeUI(chart)).frame();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(3, draws.size());
@@ -205,7 +205,7 @@ public class ChartNodeTest {
 	@Test
 	public void drawsTheLoadingSkeletonWhileLoading() {
 		final BarChartNode chart = new BarChartNode(100D, 100D, 300D, 200D).wait(node -> false);
-		chart.axis(ChartAxis.x("weekday", "Mon"), ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 50));
+		chart.xAxis(ChartAxis.x("weekday", "Mon")).yAxis(ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 50));
 		this.bridges.open(new NodeUI(chart)).frame();
 		final Color loading = Color.LOADING();
 		final List<Draw> draws = this.bridges.getRender().getDraws(loading.r, loading.g, loading.b);

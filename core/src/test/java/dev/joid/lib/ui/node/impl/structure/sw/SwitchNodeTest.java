@@ -34,7 +34,7 @@ public class SwitchNodeTest {
 	@Test
 	public void jumpsToANamedState() {
 		final Switch node = this.open();
-		Assert.assertSame(node, node.index("high"));
+		Assert.assertSame(node, node.state("high"));
 		Assert.assertEquals("high", node.getState());
 		Assert.assertEquals(2, node.getStateIndex().get().intValue());
 		Assert.assertEquals(Arrays.asList("high"), this.changes);
@@ -54,7 +54,7 @@ public class SwitchNodeTest {
 		final Signal<String> quality = new Signal<>("high");
 		Assert.assertSame(node, node.signal(quality));
 		Assert.assertEquals("high", node.getState());
-		node.index("low");
+		node.state("low");
 		Assert.assertEquals("low", quality.get());
 		quality.set("medium");
 		Assert.assertEquals("medium", node.getState());
@@ -67,7 +67,7 @@ public class SwitchNodeTest {
 		final Signal<String> quality = new Signal<>("high");
 		final Signal<String> shadows = new Signal<>("medium");
 		node.signal(quality).signal(shadows);
-		node.index("low");
+		node.state("low");
 		Assert.assertEquals("low", shadows.get());
 		Assert.assertEquals("high", quality.get());
 		quality.set("medium");
@@ -76,7 +76,6 @@ public class SwitchNodeTest {
 		Assert.assertTrue(quality.getEventSet().isEmpty());
 		Assert.assertEquals(1, shadows.getEventSet().size());
 	}
-
 
 	@Test
 	public void refusesAComputedSignal() {
@@ -93,17 +92,18 @@ public class SwitchNodeTest {
 		Assert.assertEquals("low", node.getState());
 		Assert.assertSame(quality, node.getSignal());
 	}
+
 	@Test
 	public void startsOnAChosenIndex() {
 		final Switch node = this.open();
-		Assert.assertSame(node, node.state(Arrays.asList("off", "on"), 1));
+		Assert.assertSame(node, node.states("off", "on").index(1));
 		Assert.assertEquals("on", node.getState());
 	}
 
 	@Test
 	public void startsOnAChosenState() {
 		final Switch node = this.open();
-		Assert.assertSame(node, node.state(Arrays.asList("off", "eco", "on"), "eco"));
+		Assert.assertSame(node, node.states("off", "eco", "on").state("eco"));
 		Assert.assertEquals("eco", node.getState());
 		Assert.assertEquals(1, node.getStateIndex().get().intValue());
 	}
@@ -111,7 +111,7 @@ public class SwitchNodeTest {
 	@Test
 	public void goesBackToTheFirstOfNewStates() {
 		final Switch node = this.open();
-		node.index(2).state("off", "on");
+		node.index(2).states("off", "on");
 		Assert.assertEquals("off", node.getState());
 	}
 
@@ -119,8 +119,8 @@ public class SwitchNodeTest {
 	public void keepsItsChildrenWhenItsIndexChanges() {
 		final Switch node = this.open();
 		final int loads = node.loads;
-		node.index(2).index("medium");
-		node.state("low", "medium", "high");
+		node.index(2).state("medium");
+		node.states("low", "medium", "high");
 		Assert.assertEquals(loads, node.loads);
 		Assert.assertEquals(1, node.getChildren().size());
 	}
@@ -129,7 +129,7 @@ public class SwitchNodeTest {
 	public void rebuildsItsChildrenWhenItsStatesChange() {
 		final Switch node = this.open();
 		final int loads = node.loads;
-		node.state("off", "on");
+		node.states("off", "on");
 		Assert.assertEquals(loads + 1, node.loads);
 		Assert.assertEquals(1, node.getChildren().size());
 		node.getStateList().add("eco");
@@ -141,7 +141,7 @@ public class SwitchNodeTest {
 	public void copiesTheStatesItIsGiven() {
 		final Switch node = this.open();
 		final List<String> states = new ArrayList<>(Arrays.asList("off", "on"));
-		node.state(states, 1);
+		node.states(() -> states);
 		states.add("eco");
 		Assert.assertEquals(Arrays.asList("off", "on"), node.getStateList().get());
 		Assert.assertNotSame(states, node.getStateList().get());
@@ -149,17 +149,17 @@ public class SwitchNodeTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesNoState() {
-		new Switch().state();
+		new Switch().states();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnIndexOutOfItsStates() {
-		new Switch().state(Arrays.asList("off", "on"), 2);
+		new Switch().states("off", "on").index(2);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAStateOutOfItsStates() {
-		new Switch().state(Arrays.asList("off", "on"), "eco");
+		new Switch().states("off", "on").state("eco");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -169,7 +169,7 @@ public class SwitchNodeTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesToJumpToAnUnknownState() {
-		this.open().index("eco");
+		this.open().state("eco");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -200,7 +200,7 @@ public class SwitchNodeTest {
 
 		@Override
 		public void init() {
-			this.node = new Switch().state("low", "medium", "high").onChange((node, value) -> this.changes.add(value));
+			this.node = new Switch().states("low", "medium", "high").onChange((node, value) -> this.changes.add(value));
 			super.add(this.node);
 		}
 

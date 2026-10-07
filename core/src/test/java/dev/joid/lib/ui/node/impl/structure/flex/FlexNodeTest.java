@@ -235,7 +235,7 @@ public class FlexNodeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullDirection() {
-		FlexNode.vertical(0D, 0D, 300D).direction(null);
+		FlexNode.vertical(0D, 0D, 300D).direction((FlexDirection) null);
 	}
 
 	@Test
@@ -255,7 +255,7 @@ public class FlexNodeTest {
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D);
 		Assert.assertSame(flex, flex.margin(10D));
 		Assert.assertSame(flex, flex.align(Align.CENTER));
-		Assert.assertSame(flex, flex.align(null));
+		Assert.assertSame(flex, flex.align((Align) null));
 		Assert.assertSame(flex, flex.direction(FlexDirection.ROW));
 	}
 

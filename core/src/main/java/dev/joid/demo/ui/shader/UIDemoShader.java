@@ -50,11 +50,11 @@ public class UIDemoShader extends UIDemo {
 				RectNode.create(0, 0, 120, 120).color(Color.GREEN.toGradient(Color.BLUE, new Vector4f(0F, 0F, 0F, 1F))).effect(CircleNodeEffect.create()).attach(node);
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 130).margin(20).body(node -> {
-				RectNode.create(0, 0, 200, 120).color(Color.RED.toGradient(Color.BLUE)).border(Color.WHITE, 3).effect(RoundedNodeEffect.create(20F)).attach(node);
-				RectNode.create(0, 0, 200, 120).color(Color.ORANGE.toGradient(Color.PINK)).border(Color.WHITE, 3).effect(RoundedNodeEffect.create(40F)).attach(node);
-				RectNode.create(0, 0, 120, 120).color(Color.CYAN.toGradient(Color.MAGENTA)).border(Color.WHITE, 3).effect(CircleNodeEffect.create()).attach(node);
-				RectNode.create(0, 0, 200, 120).color(Color.RED).border(Color.CYAN, 3).attach(node);
-				RectNode.create(0, 0, 200, 120).color(Color.BLUE).border(Color.WHITE, 3, false).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.RED.toGradient(Color.BLUE)).borderColor(Color.WHITE).borderStroke(3).effect(RoundedNodeEffect.create(20F)).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.ORANGE.toGradient(Color.PINK)).borderColor(Color.WHITE).borderStroke(3).effect(RoundedNodeEffect.create(40F)).attach(node);
+				RectNode.create(0, 0, 120, 120).color(Color.CYAN.toGradient(Color.MAGENTA)).borderColor(Color.WHITE).borderStroke(3).effect(CircleNodeEffect.create()).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.RED).borderColor(Color.CYAN).borderStroke(3).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.BLUE).borderColor(Color.WHITE).borderStroke(3).borderFill(false).attach(node);
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 130).margin(20).body(node -> {
 				RectNode.create(0, 0, 200, 120).color(Color.GREEN.toGradient(Color.BLUE)).effect(RoundedNodeEffect.create(20F)).effect(BorderNodeEffect.create(Color.WHITE, 3F, BorderMode.OUT)).attach(node);
@@ -124,11 +124,11 @@ public class UIDemoShader extends UIDemo {
 				childrenScoped.attach(node);
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 120).margin(20).body(node -> {
-				RectNode.create(0, 0, 200, 120).color(Color.RED.toGradient(Color.BLUE), Color.GREEN.toGradient(Color.YELLOW)).effect(RoundedNodeEffect.create(20F)).attach(node);
-				RectNode.create(0, 0, 200, 120).color(Color.RED.toGradient(Color.BLUE), Color.CYAN).effect(RoundedNodeEffect.create(20F)).attach(node);
-				RectNode.create(0, 0, 200, 120).color(Color.ORANGE, Color.CYAN.toGradient(Color.MAGENTA)).effect(RoundedNodeEffect.create(20F)).attach(node);
-				RectNode.create(0, 0, 200, 120).color(Color.RED, Color.GREEN).effect(RoundedNodeEffect.create(20F)).attach(node);
-				RectNode.create(0, 0, 120, 120).color(Color.RED.toGradient(Color.YELLOW), Color.BLUE.toGradient(Color.GREEN)).effect(CircleNodeEffect.create()).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.RED.toGradient(Color.BLUE)).hoveredColor(Color.GREEN.toGradient(Color.YELLOW)).effect(RoundedNodeEffect.create(20F)).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.RED.toGradient(Color.BLUE)).hoveredColor(Color.CYAN).effect(RoundedNodeEffect.create(20F)).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.ORANGE).hoveredColor(Color.CYAN.toGradient(Color.MAGENTA)).effect(RoundedNodeEffect.create(20F)).attach(node);
+				RectNode.create(0, 0, 200, 120).color(Color.RED).hoveredColor(Color.GREEN).effect(RoundedNodeEffect.create(20F)).attach(node);
+				RectNode.create(0, 0, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).hoveredColor(Color.BLUE.toGradient(Color.GREEN)).effect(CircleNodeEffect.create()).attach(node);
 			}).attach(flex);
 		}).attach(container);
 		container.attach(this);

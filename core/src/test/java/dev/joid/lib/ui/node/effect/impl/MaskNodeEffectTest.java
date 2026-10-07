@@ -28,7 +28,7 @@ public class MaskNodeEffectTest {
 	public void followsTheSizeOfANode() {
 		final RectNode node = RectNode.create(10D, 20D, 100D, 60D);
 		final MaskNodeEffect effect = MaskNodeEffect.create(node);
-		node.size(40D, 30D);
+		node.width(40D).height(30D);
 		Assert.assertEquals(0D, effect.getX(), 0D);
 		Assert.assertEquals(0D, effect.getY(), 0D);
 		Assert.assertEquals(40D, effect.getWidth(), 0D);
@@ -88,9 +88,9 @@ public class MaskNodeEffectTest {
 		final MaskNodeEffect effect = MaskNodeEffect.create(0D, 0D);
 		Assert.assertSame(effect, effect.x(1D).y(2D).width(3D).height(4D));
 		Assert.assertArrayEquals(new double[] {1D, 2D, 3D, 4D}, MaskNodeEffectTest.bounds(effect), 0D);
-		Assert.assertSame(effect, effect.position(5D, 6D).size(7D, 8D));
+		Assert.assertSame(effect, effect.x(5D).y(6D).width(7D).height(8D));
 		Assert.assertArrayEquals(new double[] {5D, 6D, 7D, 8D}, MaskNodeEffectTest.bounds(effect), 0D);
-		Assert.assertSame(effect, effect.bounds(9D, 10D, 11D, 12D));
+		Assert.assertSame(effect, effect.x(9D).y(10D).width(11D).height(12D));
 		Assert.assertArrayEquals(new double[] {9D, 10D, 11D, 12D}, MaskNodeEffectTest.bounds(effect), 0D);
 	}
 
@@ -101,9 +101,9 @@ public class MaskNodeEffectTest {
 		Assert.assertSame(effect, effect.x(() -> value[0]).y(() -> value[0] + 1D).width(() -> value[0] + 2D).height(() -> value[0] + 3D));
 		value[0] = 10D;
 		Assert.assertArrayEquals(new double[] {10D, 11D, 12D, 13D}, MaskNodeEffectTest.bounds(effect), 0D);
-		Assert.assertSame(effect, effect.position(() -> value[0] * 2D, () -> value[0] * 3D).size(() -> value[0] * 4D, () -> value[0] * 5D));
+		Assert.assertSame(effect, effect.x(() -> value[0] * 2D).y(() -> value[0] * 3D).width(() -> value[0] * 4D).height(() -> value[0] * 5D));
 		Assert.assertArrayEquals(new double[] {20D, 30D, 40D, 50D}, MaskNodeEffectTest.bounds(effect), 0D);
-		Assert.assertSame(effect, effect.bounds(() -> value[0], () -> value[0], () -> value[0], () -> -value[0]));
+		Assert.assertSame(effect, effect.x(() -> value[0]).y(() -> value[0]).width(() -> value[0]).height(() -> -value[0]));
 		value[0] = 2D;
 		Assert.assertArrayEquals(new double[] {2D, 2D, 2D, -2D}, MaskNodeEffectTest.bounds(effect), 0D);
 	}
@@ -114,7 +114,7 @@ public class MaskNodeEffectTest {
 		final MaskNodeEffect effect = MaskNodeEffect.create(0D, 0D);
 		Assert.assertSame(effect, effect.resource(resource));
 		Assert.assertSame(resource, effect.getResource());
-		effect.resource(null);
+		effect.resource((Resource) null);
 		Assert.assertNull(effect.getResource());
 	}
 

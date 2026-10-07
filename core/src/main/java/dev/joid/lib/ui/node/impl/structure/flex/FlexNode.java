@@ -1,8 +1,11 @@
 package dev.joid.lib.ui.node.impl.structure.flex;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -51,6 +54,30 @@ public final class FlexNode extends Node {
 	}
 
 	public final @NonNull FlexNode direction(final @NonNull FlexDirection direction) {
+		return this.direction(Signal.from(direction));
+	}
+
+	public final @NonNull FlexNode direction(final @NonNull Supplier<@NonNull FlexDirection> direction) {
+		return super.follow("direction", direction, this::changeDirection);
+	}
+
+	public final @NonNull FlexNode align(final Align align) {
+		return this.align(Signal.from(align));
+	}
+
+	public final @NonNull FlexNode align(final @NonNull Supplier<Align> align) {
+		return super.follow("align", align, value -> this.align = value);
+	}
+
+	public final @NonNull FlexNode margin(final double margin) {
+		return this.margin(Signal.from(margin));
+	}
+
+	public final @NonNull FlexNode margin(final @NonNull Supplier<Double> margin) {
+		return super.follow("margin", margin, value -> this.margin = value);
+	}
+
+	private final void changeDirection(final FlexDirection direction) {
 		if (this.direction != direction) {
 			for (final Node child : super.getChildren()) {
 				child.x(child.getDefaultX());
@@ -59,17 +86,6 @@ public final class FlexNode extends Node {
 		}
 
 		this.direction = direction;
-		return this;
-	}
-
-	public final @NonNull FlexNode align(final Align align) {
-		this.align = align;
-		return this;
-	}
-
-	public final @NonNull FlexNode margin(final double margin) {
-		this.margin = margin;
-		return this;
 	}
 
 	private final void updateFlex() {

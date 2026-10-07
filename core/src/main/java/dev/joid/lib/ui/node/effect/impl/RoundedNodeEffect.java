@@ -6,6 +6,7 @@ import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -77,8 +78,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E radius(final float radius) {
-		this.radiusSupplier = () -> radius;
-		return (E) this;
+		return this.radius(Signal.from(radius));
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E radius(final @NonNull Supplier<Float> radiusSupplier) {
@@ -87,8 +87,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E left(final boolean left) {
-		this.leftSupplier = () -> left;
-		return (E) this;
+		return this.left(Signal.from(left));
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E left(final @NonNull Supplier<Boolean> leftSupplier) {
@@ -97,8 +96,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E right(final boolean right) {
-		this.rightSupplier = () -> right;
-		return (E) this;
+		return this.right(Signal.from(right));
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E right(final @NonNull Supplier<Boolean> rightSupplier) {
@@ -107,8 +105,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E top(final boolean top) {
-		this.topSupplier = () -> top;
-		return (E) this;
+		return this.top(Signal.from(top));
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E top(final @NonNull Supplier<Boolean> topSupplier) {
@@ -117,8 +114,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E bottom(final boolean bottom) {
-		this.bottomSupplier = () -> bottom;
-		return (E) this;
+		return this.bottom(Signal.from(bottom));
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E bottom(final @NonNull Supplier<Boolean> bottomSupplier) {

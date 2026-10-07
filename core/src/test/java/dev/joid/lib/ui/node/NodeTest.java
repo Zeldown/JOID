@@ -146,12 +146,12 @@ public class NodeTest {
 		Assert.assertSame(node, node.x(1D).y(2D));
 		Assert.assertEquals(1D, node.getX(), 0D);
 		Assert.assertEquals(2D, node.getY(), 0D);
-		node.position(3D, 4D).size(5D, 6D);
+		node.x(3D).y(4D).width(5D).height(6D);
 		Assert.assertEquals(3D, node.getX(), 0D);
 		Assert.assertEquals(4D, node.getY(), 0D);
 		Assert.assertEquals(5D, node.getWidth(), 0D);
 		Assert.assertEquals(6D, node.getHeight(), 0D);
-		node.bounds(7D, 8D, 9D, 10D).width(11D).height(12D);
+		node.x(7D).y(8D).width(9D).height(10D).width(11D).height(12D);
 		Assert.assertEquals(7D, node.getX(), 0D);
 		Assert.assertEquals(8D, node.getY(), 0D);
 		Assert.assertEquals(11D, node.getWidth(), 0D);
@@ -209,7 +209,7 @@ public class NodeTest {
 	public void keepsItsCenterWhenResizedAroundACenterAnchor() {
 		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchor(Align.CENTER);
 		this.bridges.open(new NodeUI(node)).frame();
-		node.size(100D, 50D);
+		node.width(100D).height(50D);
 		this.bridges.frame();
 		Assert.assertSame(Align.CENTER, node.getAnchorX());
 		Assert.assertSame(Align.CENTER, node.getAnchorY());
@@ -221,11 +221,11 @@ public class NodeTest {
 	public void keepsItsFarEdgesWhenResizedAroundEndAnchors() {
 		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchorX(Align.END).anchorY(Align.END);
 		this.bridges.open(new NodeUI(node)).frame();
-		node.size(150D, 40D);
+		node.width(150D).height(40D);
 		this.bridges.frame();
 		Assert.assertEquals(150D, node.getX(), 0D);
 		Assert.assertEquals(160D, node.getY(), 0D);
-		node.size(200D, 100D);
+		node.width(200D).height(100D);
 		this.bridges.frame();
 		Assert.assertEquals(100D, node.getX(), 0D);
 		Assert.assertEquals(100D, node.getY(), 0D);
@@ -233,9 +233,9 @@ public class NodeTest {
 
 	@Test
 	public void keepsItsOriginWhenResizedAroundAStartAnchor() {
-		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchor(Align.START, Align.CENTER);
+		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchorX(Align.START).anchorY(Align.CENTER);
 		this.bridges.open(new NodeUI(node)).frame();
-		node.size(100D, 50D);
+		node.width(100D).height(50D);
 		this.bridges.frame();
 		Assert.assertSame(Align.START, node.getAnchorX());
 		Assert.assertSame(Align.CENTER, node.getAnchorY());
@@ -278,7 +278,7 @@ public class NodeTest {
 	public void showsItselfOnceEverySignalHasAValue() {
 		final Signal<String> first = new Signal<>();
 		final Signal<Integer> second = new Signal<>(3);
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(first, second);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(Signal.from(() -> first.get() != null && second.get() != null));
 		Assert.assertFalse(node.isVisible());
 		first.set("ready");
 		Assert.assertTrue(node.isVisible());
@@ -1720,7 +1720,7 @@ public class NodeTest {
 		final Color color = new Color(0.2F, 0.4F, 0.6F, 1F);
 		final DraggableProperty draggable = DraggableProperty.free();
 		final RectNode child = RectNode.create(1D, 2D, 3D, 4D).color(color);
-		final RectNode node = RectNode.create(10D, 20D, 30D, 40D).color(color).append(child).position(PositionProperty.ABSOLUTE).overflow(OverflowProperty.HIDDEN).anchor(Align.CENTER, Align.END).draggable(draggable).zindex(3).zlevel(4D).aspectRatio(0.5D);
+		final RectNode node = RectNode.create(10D, 20D, 30D, 40D).color(color).append(child).position(PositionProperty.ABSOLUTE).overflow(OverflowProperty.HIDDEN).anchorX(Align.CENTER).anchorY(Align.END).draggable(draggable).zindex(3).zlevel(4D).aspectRatio(0.5D);
 		node.x(15D);
 		final RectNode copy = node.copy();
 		Assert.assertNotSame(node, copy);
@@ -1765,7 +1765,7 @@ public class NodeTest {
 
 	@Test
 	public void copiesANodeBuiltFromItsPositionOnly() {
-		final PointNode node = new PointNode(5D, 6D).size(7D, 8D);
+		final PointNode node = new PointNode(5D, 6D).width(7D).height(8D);
 		final PointNode copy = node.copy();
 		Assert.assertEquals(5D, copy.getX(), 0D);
 		Assert.assertEquals(6D, copy.getY(), 0D);
@@ -1775,7 +1775,7 @@ public class NodeTest {
 
 	@Test
 	public void copiesANodeBuiltWithoutArguments() {
-		final EmptyNode node = new EmptyNode().bounds(1D, 2D, 3D, 4D);
+		final EmptyNode node = new EmptyNode().x(1D).y(2D).width(3D).height(4D);
 		final EmptyNode copy = node.copy();
 		Assert.assertEquals(1D, copy.getX(), 0D);
 		Assert.assertEquals(2D, copy.getY(), 0D);

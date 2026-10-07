@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -9,6 +11,7 @@ import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldEnterCal
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -101,7 +104,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 			return false;
 		}
 
-		super.focused(false);
+		super.focus(false);
 		super.executeCallback(LineFieldNode.CALLBACK_ENTER, InternalContext.create(), super.getText());
 		return true;
 	}
@@ -161,20 +164,20 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 	}
 
-	public final <T extends LineFieldNode<V>> @NonNull T align(final @NonNull Align horizontal, final @NonNull Align vertical) {
-		this.horizontalAlignment = horizontal;
-		this.verticalAlignment   = vertical;
-		return (T) this;
+	public final <T extends LineFieldNode<V>> @NonNull T verticalAlign(final @NonNull Align verticalAlignment) {
+		return this.verticalAlign(Signal.from(verticalAlignment));
 	}
 
-	public final <T extends LineFieldNode<V>> @NonNull T verticalAlign(final @NonNull Align align) {
-		this.verticalAlignment = align;
-		return (T) this;
+	public final <T extends LineFieldNode<V>> @NonNull T verticalAlign(final @NonNull Supplier<@NonNull Align> verticalAlignment) {
+		return super.follow("verticalAlignment", verticalAlignment, value -> this.verticalAlignment = value);
 	}
 
-	public final <T extends LineFieldNode<V>> @NonNull T horizontalAlign(final @NonNull Align align) {
-		this.horizontalAlignment = align;
-		return (T) this;
+	public final <T extends LineFieldNode<V>> @NonNull T horizontalAlign(final @NonNull Align horizontalAlignment) {
+		return this.horizontalAlign(Signal.from(horizontalAlignment));
+	}
+
+	public final <T extends LineFieldNode<V>> @NonNull T horizontalAlign(final @NonNull Supplier<@NonNull Align> horizontalAlignment) {
+		return super.follow("horizontalAlignment", horizontalAlignment, value -> this.horizontalAlignment = value);
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T onEnter(final @NonNull NodeTextFieldEnterCallback<T> callback) {

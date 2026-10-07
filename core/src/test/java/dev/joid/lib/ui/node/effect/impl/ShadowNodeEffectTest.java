@@ -54,7 +54,7 @@ public class ShadowNodeEffectTest {
 	@Test
 	public void replacesEachValue() {
 		final ShadowNodeEffect effect = ShadowNodeEffect.create(Color.RED, 8F);
-		Assert.assertSame(effect, effect.blur(4F).color(Color.BLUE).offset(1D, 3D));
+		Assert.assertSame(effect, effect.blur(4F).color(Color.BLUE).offsetX(1D).offsetY(3D));
 		Assert.assertSame(Color.BLUE, effect.getColor());
 		Assert.assertEquals(4F, effect.getBlur(), 0F);
 		Assert.assertEquals(1D, effect.getOffsetX(), 0D);
@@ -65,7 +65,7 @@ public class ShadowNodeEffectTest {
 	public void readsItsSuppliedValues() {
 		final double[] offset = {1D};
 		final ShadowNodeEffect effect = ShadowNodeEffect.create(Color.RED, 8F);
-		Assert.assertSame(effect, effect.blur(() -> (float) offset[0] * 10F).color(() -> Color.GREEN).offset(() -> offset[0], () -> -offset[0]));
+		Assert.assertSame(effect, effect.blur(() -> (float) offset[0] * 10F).color(() -> Color.GREEN).offsetX(() -> offset[0]).offsetY(() -> -offset[0]));
 		offset[0] = 2D;
 		Assert.assertEquals(20F, effect.getBlur(), 0F);
 		Assert.assertSame(Color.GREEN, effect.getColor());

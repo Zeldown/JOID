@@ -164,11 +164,11 @@ public final class DrawText {
 	}
 
 	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {
-		return this.drawText(x, y, Text.create(text, info).align(horizontalAlign, verticalAlign));
+		return this.drawText(x, y, Text.create(text, info).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign));
 	}
 
 	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow, final @NonNull TextMode mode) {
-		return this.drawText(x, y, width, height, Text.create(text, info).align(horizontalAlign, verticalAlign).overflow(overflow), mode);
+		return this.drawText(x, y, width, height, Text.create(text, info).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign).overflow(overflow), mode);
 	}
 
 	public @NonNull List<@NonNull Text> getLines(final double width, final @NonNull Text text) {

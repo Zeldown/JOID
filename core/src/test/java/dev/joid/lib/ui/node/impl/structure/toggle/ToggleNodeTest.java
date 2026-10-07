@@ -81,7 +81,6 @@ public class ToggleNodeTest {
 		Assert.assertEquals(1, sounds.getEventSet().size());
 	}
 
-
 	@Test
 	public void refusesAComputedSignal() {
 		final BooleanSignal music = new BooleanSignal(false);
@@ -96,6 +95,7 @@ public class ToggleNodeTest {
 		Assert.assertTrue(toggle.isToggle());
 		Assert.assertSame(music, toggle.getSignal());
 	}
+
 	@Test
 	public void writesAChosenSideIntoItsSignal() {
 		final List<Object> changes = new ArrayList<>();

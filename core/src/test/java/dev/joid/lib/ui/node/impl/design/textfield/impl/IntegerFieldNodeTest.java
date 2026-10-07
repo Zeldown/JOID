@@ -77,7 +77,7 @@ public class IntegerFieldNodeTest {
 
 	@Test
 	public void keepsAValueInsideItsRange() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(1, 9);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(1).max(9);
 		Assert.assertEquals(5, (int) field.value(5).getValue());
 		Assert.assertEquals(9, (int) field.value(12).getValue());
 		Assert.assertEquals(1, (int) field.value(0).getValue());
@@ -85,31 +85,31 @@ public class IntegerFieldNodeTest {
 
 	@Test
 	public void readsTheMiddleOfItsRangeOnceEmptied() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(3, 9).value(5).text("");
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(3).max(9).value(5).text("");
 		Assert.assertEquals("", field.getText());
 		Assert.assertEquals(6, (int) field.getValue());
 	}
 
 	@Test
 	public void readsTheMiddleOfItsRangeWithoutDigits() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(3, 9).text("abc");
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(3).max(9).text("abc");
 		Assert.assertEquals("", field.getText());
 		Assert.assertEquals(6, (int) field.getValue());
 		Assert.assertEquals(0, (int) IntegerFieldNode.create(0D, 0D, 100D).getValue());
-		Assert.assertEquals(-3, (int) IntegerFieldNode.create(0D, 0D, 100D).range(Integer.MIN_VALUE + 2, Integer.MAX_VALUE - 7).getValue());
+		Assert.assertEquals(-3, (int) IntegerFieldNode.create(0D, 0D, 100D).min(Integer.MIN_VALUE + 2).max(Integer.MAX_VALUE - 7).getValue());
 	}
 
 	@Test
 	public void keepsALoneMinusOnlyWhileNegativeValuesAreAllowed() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(-4, 9).text("-");
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(-4).max(9).text("-");
 		Assert.assertEquals("-", field.getText());
 		Assert.assertEquals(2, (int) field.getValue());
-		Assert.assertEquals("", IntegerFieldNode.create(0D, 0D, 100D).range(0, 9).text("-").getText());
+		Assert.assertEquals("", IntegerFieldNode.create(0D, 0D, 100D).min(0).max(9).text("-").getText());
 	}
 
 	@Test
 	public void putsAnEmptiedFieldBackToTheMiddleOnceUnfocused() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(0, 10).value(4).focused(true).text("");
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).value(4).focused(true).text("");
 		Assert.assertEquals("", field.getText());
 		field.focused(false);
 		Assert.assertEquals("5", field.getText());
@@ -121,7 +121,7 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).value(50);
 		Assert.assertEquals(20, (int) field.max(20).getValue());
 		Assert.assertEquals(25, (int) field.min(25).getValue());
-		Assert.assertEquals(3, (int) field.range(0, 3).getValue());
+		Assert.assertEquals(3, (int) field.min(0).max(3).getValue());
 		Assert.assertEquals("", field.<IntegerFieldNode>text("").min(1).getText());
 	}
 
@@ -129,7 +129,7 @@ public class IntegerFieldNodeTest {
 	public void bindsItsValueToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
 		final IntegerSignal signal = new IntegerSignal(7);
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(0, 10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
 		this.bridges.open(new NodeUI(field));
 		Assert.assertEquals(7, (int) field.getValue());
 		signal.set(42);
@@ -148,7 +148,7 @@ public class IntegerFieldNodeTest {
 	@Test
 	public void bindsItsValueToAnyIntegerSignal() {
 		final Signal<Integer> signal = new Signal<>(4);
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(0, 10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).signal(signal);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).signal(signal);
 		this.bridges.open(new NodeUI(field));
 		Assert.assertEquals("4", field.getText());
 		Assert.assertSame(signal, field.getSignal());
@@ -161,7 +161,7 @@ public class IntegerFieldNodeTest {
 
 	@Test
 	public void lowersANumberTooLongForAnInteger() {
-		Assert.assertEquals(50, (int) IntegerFieldNode.create(0D, 0D, 100D).range(0, 50).<IntegerFieldNode>text("99999999999").getValue());
+		Assert.assertEquals(50, (int) IntegerFieldNode.create(0D, 0D, 100D).min(0).max(50).<IntegerFieldNode>text("99999999999").getValue());
 		Assert.assertEquals(Integer.MAX_VALUE, (int) IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>text("99999999999").getValue());
 	}
 
@@ -174,7 +174,7 @@ public class IntegerFieldNodeTest {
 
 	@Test
 	public void filtersWhatTheUserTypes() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).range(0, 500).value(4).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).focused(true).cursorPosition(1);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(500).value(4).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).focused(true).cursorPosition(1);
 		field.keyPressed('2', Key.DIGIT_2, InternalContext.create());
 		field.keyPressed('x', Key.X, InternalContext.create());
 		Assert.assertEquals("42", field.getText());
@@ -186,7 +186,7 @@ public class IntegerFieldNodeTest {
 
 	@Test
 	public void keepsANegativeValueInsideItsRange() {
-		Assert.assertEquals(-5, (int) IntegerFieldNode.create(0D, 0D, 100D).range(-10, 10).value(-5).getValue());
+		Assert.assertEquals(-5, (int) IntegerFieldNode.create(0D, 0D, 100D).min(-10).max(10).value(-5).getValue());
 	}
 
 	public static final class NodeUI extends UI {

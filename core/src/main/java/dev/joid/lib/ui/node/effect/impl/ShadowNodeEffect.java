@@ -7,6 +7,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -66,8 +67,7 @@ public class ShadowNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends ShadowNodeEffect> @NonNull E blur(final float blur) {
-		this.blurSupplier = () -> blur;
-		return (E) this;
+		return this.blur(Signal.from(blur));
 	}
 
 	public final <E extends ShadowNodeEffect> @NonNull E blur(final @NonNull Supplier<Float> blurSupplier) {
@@ -76,8 +76,7 @@ public class ShadowNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends ShadowNodeEffect> @NonNull E color(final @NonNull Color color) {
-		this.colorSupplier = () -> color;
-		return (E) this;
+		return this.color(Signal.from(color));
 	}
 
 	public final <E extends ShadowNodeEffect> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
@@ -85,14 +84,20 @@ public class ShadowNodeEffect extends NodeEffect<Node> {
 		return (E) this;
 	}
 
-	public final <E extends ShadowNodeEffect> @NonNull E offset(final double offsetX, final double offsetY) {
-		this.offsetXSupplier = () -> offsetX;
-		this.offsetYSupplier = () -> offsetY;
+	public final <E extends ShadowNodeEffect> @NonNull E offsetX(final double offsetX) {
+		return this.offsetX(Signal.from(offsetX));
+	}
+
+	public final <E extends ShadowNodeEffect> @NonNull E offsetX(final @NonNull Supplier<Double> offsetXSupplier) {
+		this.offsetXSupplier = offsetXSupplier;
 		return (E) this;
 	}
 
-	public final <E extends ShadowNodeEffect> @NonNull E offset(final @NonNull Supplier<Double> offsetXSupplier, final @NonNull Supplier<Double> offsetYSupplier) {
-		this.offsetXSupplier = offsetXSupplier;
+	public final <E extends ShadowNodeEffect> @NonNull E offsetY(final double offsetY) {
+		return this.offsetY(Signal.from(offsetY));
+	}
+
+	public final <E extends ShadowNodeEffect> @NonNull E offsetY(final @NonNull Supplier<Double> offsetYSupplier) {
 		this.offsetYSupplier = offsetYSupplier;
 		return (E) this;
 	}

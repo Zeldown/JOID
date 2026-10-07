@@ -135,7 +135,7 @@ public class MultilineTextFieldNodeTest {
 		Assert.assertEquals(3D, field.getMarginRight(), 0D);
 		Assert.assertEquals(3D, field.getMarginBottom(), 0D);
 		Assert.assertEquals(-1D, field.getCursorMargin(), 0D);
-		Assert.assertSame(field, field.margin(4D, 6D));
+		Assert.assertSame(field, field.margin(4D).cursorMargin(6D));
 		Assert.assertEquals(4D, field.getMarginTop(), 0D);
 		Assert.assertEquals(4D, field.getMarginLeft(), 0D);
 		Assert.assertEquals(4D, field.getMarginRight(), 0D);

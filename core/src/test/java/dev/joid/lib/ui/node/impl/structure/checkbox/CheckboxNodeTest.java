@@ -98,7 +98,6 @@ public class CheckboxNodeTest {
 		Assert.assertFalse(checkbox.isChecked());
 	}
 
-
 	@Test
 	public void refusesAComputedSignal() {
 		final BooleanSignal subtitles = new BooleanSignal(true);
@@ -113,6 +112,7 @@ public class CheckboxNodeTest {
 		Assert.assertFalse(checkbox.isChecked());
 		Assert.assertSame(subtitles, checkbox.getSignal());
 	}
+
 	@Test
 	public void writesAChosenStateIntoItsSignal() {
 		final List<Boolean> changes = new ArrayList<>();

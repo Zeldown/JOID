@@ -6,10 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartAxis.XChartAxis;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartAxis.YChartAxis;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -75,20 +77,20 @@ public abstract class ChartNode extends Node {
 		return this.xAxis == null ? Collections.emptyMap() : this.xAxis.getDataMap();
 	}
 
-	public final <T extends ChartNode> @NonNull T axis(final @NonNull XChartAxis x) {
-		this.xAxis = x;
-		return (T) this;
+	public final <T extends ChartNode> @NonNull T xAxis(final @NonNull XChartAxis xAxis) {
+		return this.xAxis(Signal.from(xAxis));
 	}
 
-	public final <T extends ChartNode> @NonNull T axis(final @NonNull YChartAxis y) {
-		this.yAxis = y;
-		return (T) this;
+	public final <T extends ChartNode> @NonNull T xAxis(final @NonNull Supplier<@NonNull XChartAxis> xAxis) {
+		return super.follow("xAxis", xAxis, value -> this.xAxis = value);
 	}
 
-	public final <T extends ChartNode> @NonNull T axis(final @NonNull XChartAxis x, final @NonNull YChartAxis y) {
-		this.xAxis = x;
-		this.yAxis = y;
-		return (T) this;
+	public final <T extends ChartNode> @NonNull T yAxis(final @NonNull YChartAxis yAxis) {
+		return this.yAxis(Signal.from(yAxis));
+	}
+
+	public final <T extends ChartNode> @NonNull T yAxis(final @NonNull Supplier<@NonNull YChartAxis> yAxis) {
+		return super.follow("yAxis", yAxis, value -> this.yAxis = value);
 	}
 
 	public final <T extends ChartNode> @NonNull T data(final @NonNull String dataName, final @NonNull ChartData data) {

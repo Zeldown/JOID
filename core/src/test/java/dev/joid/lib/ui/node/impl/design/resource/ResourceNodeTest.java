@@ -125,7 +125,7 @@ public class ResourceNodeTest {
 	public void fadesInItsHoveredResourceInItsHoveredColor() {
 		final Resource main = ResourceNodeTest.resource(20, 10);
 		final Resource hovered = ResourceNodeTest.resource(20, 10);
-		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).resource(main, hovered).color(ResourceNodeTest.TINT).hoveredColor(ResourceNodeTest.HOVER);
+		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).resource(main).hoveredResource(hovered).color(ResourceNodeTest.TINT).hoveredColor(ResourceNodeTest.HOVER);
 		Assert.assertSame(main, node.getResource());
 		Assert.assertSame(hovered, node.getHoveredResource());
 		this.bridges.open(new NodeUI(node)).frames(30);
@@ -140,7 +140,7 @@ public class ResourceNodeTest {
 
 	@Test
 	public void fadesInItsHoveredResourceInItsOwnColor() {
-		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).resource(ResourceNodeTest.resource(20, 10)).hoverResource(ResourceNodeTest.resource(20, 10)).color(ResourceNodeTest.TINT);
+		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).resource(ResourceNodeTest.resource(20, 10)).hoveredResource(ResourceNodeTest.resource(20, 10)).color(ResourceNodeTest.TINT);
 		this.bridges.open(new NodeUI(node)).frames(30);
 		this.bridges.move(105D, 105D).frames(30);
 		final List<Draw> draws = this.draws(ResourceNodeTest.TINT);
@@ -152,7 +152,7 @@ public class ResourceNodeTest {
 	@Test
 	public void drawsAResourceSharedWithItsHoverOnce() {
 		final Resource resource = ResourceNodeTest.resource(20, 10);
-		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 20D, 10D).resource(resource, resource).color(ResourceNodeTest.TINT).hoveredColor(ResourceNodeTest.HOVER)));
+		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 20D, 10D).resource(resource).hoveredResource(resource).color(ResourceNodeTest.TINT).hoveredColor(ResourceNodeTest.HOVER)));
 		Assert.assertEquals(1, this.draws(ResourceNodeTest.TINT).size());
 		Assert.assertTrue(this.draws(ResourceNodeTest.HOVER).isEmpty());
 	}
@@ -160,7 +160,7 @@ public class ResourceNodeTest {
 	@Test
 	public void preparesItsHoveredResourceWithoutMainOne() {
 		final Resource hovered = ResourceNodeTest.resource(20, 10);
-		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).hoverResource(hovered);
+		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).hoveredResource(hovered);
 		this.bridges.open(new NodeUI(node));
 		Assert.assertNull(node.getResource());
 		Assert.assertTrue(hovered.isGenerated());
@@ -173,12 +173,12 @@ public class ResourceNodeTest {
 		final Resource hovered = ResourceNodeTest.resource(20, 10);
 		final ResourceNode node = ResourceNode.create(100D, 100D);
 		Assert.assertSame(node, node.resource(main));
-		Assert.assertSame(node, node.hoverResource(hovered));
+		Assert.assertSame(node, node.hoveredResource(hovered));
 		Assert.assertSame(main, node.getResource());
 		Assert.assertSame(hovered, node.getHoveredResource());
-		node.hoverResource(null);
+		node.hoveredResource((Resource) null);
 		Assert.assertNull(node.getHoveredResource());
-		node.resource(hovered, null);
+		node.resource(hovered);
 		Assert.assertSame(hovered, node.getResource());
 	}
 
@@ -186,7 +186,7 @@ public class ResourceNodeTest {
 	public void switchesTheFilteringOfBothResources() {
 		final Resource main = ResourceNodeTest.resource(20, 10);
 		final Resource hovered = ResourceNodeTest.resource(20, 10);
-		final ResourceNode node = ResourceNode.create(100D, 100D).resource(main, hovered);
+		final ResourceNode node = ResourceNode.create(100D, 100D).resource(main).hoveredResource(hovered);
 		Assert.assertSame(node, node.linear(true));
 		Assert.assertSame(TextureFilter.LINEAR, main.getProperties().getInterpolation());
 		Assert.assertSame(TextureFilter.LINEAR, hovered.getProperties().getInterpolation());

@@ -64,19 +64,19 @@ public class DrawTextTest {
 
 	@Test
 	public void centersTheTextOnItsPosition() {
-		DrawTextTest.draw().drawText(100D, 100D, this.text().align(Align.CENTER, Align.CENTER));
+		DrawTextTest.draw().drawText(100D, 100D, this.text().horizontalAlign(Align.CENTER).verticalAlign(Align.CENTER));
 		Assert.assertEquals(Arrays.asList("ab@80.0,90.0", "c@100.0,80.0"), this.font.drawn);
 	}
 
 	@Test
 	public void endsTheTextOnItsPosition() {
-		DrawTextTest.draw().drawText(100D, 100D, this.text().align(Align.END, Align.END));
+		DrawTextTest.draw().drawText(100D, 100D, this.text().horizontalAlign(Align.END).verticalAlign(Align.END));
 		Assert.assertEquals(Arrays.asList("ab@60.0,80.0", "c@80.0,60.0"), this.font.drawn);
 	}
 
 	@Test
 	public void sharesTheBoundsOfTheWholeTextWithEveryElement() {
-		DrawTextTest.draw().drawText(100D, 100D, this.text().align(Align.CENTER, Align.CENTER));
+		DrawTextTest.draw().drawText(100D, 100D, this.text().horizontalAlign(Align.CENTER).verticalAlign(Align.CENTER));
 		Assert.assertEquals(Arrays.asList("80.0,80.0 40.0x40.0", "80.0,80.0 40.0x40.0"), this.font.runs);
 	}
 

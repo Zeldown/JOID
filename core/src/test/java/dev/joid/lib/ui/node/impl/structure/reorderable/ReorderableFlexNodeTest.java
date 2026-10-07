@@ -174,7 +174,7 @@ public class ReorderableFlexNodeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullDirection() {
-		ReorderableFlexNode.vertical(0D, 0D, 300D).direction(null);
+		ReorderableFlexNode.vertical(0D, 0D, 300D).direction((FlexDirection) null);
 	}
 
 	@Test

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -16,6 +17,7 @@ import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -159,30 +161,35 @@ public final class ReorderableFlexNode extends Node {
 	}
 
 	public final @NonNull ReorderableFlexNode direction(final @NonNull FlexDirection direction) {
-		if (this.direction != direction) {
-			for (final Node child : super.getChildren()) {
-				child.x(child.getDefaultX());
-				child.y(child.getDefaultY());
-			}
-		}
+		return this.direction(Signal.from(direction));
+	}
 
-		this.direction = direction;
-		return this;
+	public final @NonNull ReorderableFlexNode direction(final @NonNull Supplier<@NonNull FlexDirection> direction) {
+		return super.follow("direction", direction, this::changeDirection);
 	}
 
 	public final @NonNull ReorderableFlexNode align(final Align align) {
-		this.align = align;
-		return this;
+		return this.align(Signal.from(align));
+	}
+
+	public final @NonNull ReorderableFlexNode align(final @NonNull Supplier<Align> align) {
+		return super.follow("align", align, value -> this.align = value);
 	}
 
 	public final @NonNull ReorderableFlexNode margin(final double margin) {
-		this.margin = margin;
-		return this;
+		return this.margin(Signal.from(margin));
+	}
+
+	public final @NonNull ReorderableFlexNode margin(final @NonNull Supplier<Double> margin) {
+		return super.follow("margin", margin, value -> this.margin = value);
 	}
 
 	public final @NonNull ReorderableFlexNode auto(final boolean auto) {
-		this.autoDrag = auto;
-		return this;
+		return this.auto(Signal.from(auto));
+	}
+
+	public final @NonNull ReorderableFlexNode auto(final @NonNull Supplier<Boolean> auto) {
+		return super.follow("auto", auto, value -> this.autoDrag = value);
 	}
 
 	public final int getChildIndex(final @NonNull Node child) {
@@ -195,6 +202,17 @@ public final class ReorderableFlexNode extends Node {
 
 	public final boolean isDragging(final @NonNull Node child) {
 		return this.reorderedNode == child;
+	}
+
+	private void changeDirection(final FlexDirection direction) {
+		if (this.direction != direction) {
+			for (final Node child : super.getChildren()) {
+				child.x(child.getDefaultX());
+				child.y(child.getDefaultY());
+			}
+		}
+
+		this.direction = direction;
 	}
 
 	private void startDragInternal(final @NonNull Node child, final double mouseX, final double mouseY) {

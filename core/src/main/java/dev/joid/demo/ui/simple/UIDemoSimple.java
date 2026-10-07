@@ -25,8 +25,8 @@ public class UIDemoSimple extends UIDemo {
 					1920D / 2D,
 					1080D / 2D
 					)
-			.color(Color.RED, Color.GREEN)
-			.border(Color.GREEN, Color.RED, 3D, true)
+			.color(Color.RED).hoveredColor(Color.GREEN)
+			.borderColor(Color.GREEN).hoveredBorderColor(Color.RED).borderStroke(3D).borderFill(true)
 			.effect(RoundedNodeEffect.create(30F))
 			.body(n -> {
 				final double childWidth = n.dw(3D);
@@ -38,7 +38,7 @@ public class UIDemoSimple extends UIDemo {
 						childWidth,
 						childHeight
 						)
-				.color(Color.RED, Color.WHITE)
+				.color(Color.RED).hoveredColor(Color.WHITE)
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					System.out.println(node);
 				})
@@ -51,7 +51,7 @@ public class UIDemoSimple extends UIDemo {
 						childWidth,
 						childHeight
 						)
-				.color(Color.RED, Color.WHITE)
+				.color(Color.RED).hoveredColor(Color.WHITE)
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					System.out.println(node);
 				})
@@ -63,7 +63,7 @@ public class UIDemoSimple extends UIDemo {
 							n1.dw(2D),
 							n1.dh(2D)
 							)
-					.color(Color.RED, Color.MAGENTA)
+					.color(Color.RED).hoveredColor(Color.MAGENTA)
 					.onClick((node, mouseX, mouseY, clickType) -> {
 						System.out.println(node);
 					})

@@ -10,6 +10,7 @@ import dev.joid.lib.render.transform.operation.TransformOperation;
 import dev.joid.lib.render.transform.operation.TranslateOperation;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -56,8 +57,7 @@ public class TransformNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends TransformNodeEffect> @NonNull E transformation(final @NonNull Transformation transformation) {
-		this.transformationSupplier = () -> transformation;
-		return (E) this;
+		return this.transformation(Signal.from(transformation));
 	}
 
 	public final <E extends TransformNodeEffect> @NonNull E transformation(final @NonNull Supplier<Transformation> transformationSupplier) {

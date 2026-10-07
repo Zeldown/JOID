@@ -52,7 +52,7 @@ public class TextNodeTest {
 		Assert.assertSame(node, node.mode(TextMode.SPLIT));
 		Assert.assertSame(text, node.getText());
 		Assert.assertSame(TextMode.SPLIT, node.getMode());
-		Assert.assertNull(node.text(null).getText());
+		Assert.assertNull(node.text((Text) null).getText());
 	}
 
 	@Test

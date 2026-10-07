@@ -6,6 +6,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -16,19 +17,21 @@ public class RectNode extends Node {
 	private Supplier<Color> color;
 	private Supplier<Color> hoveredColor;
 
-	private boolean         borderFill;
-	private double          borderStroke;
-	private Supplier<Color> borderColor;
-	private Supplier<Color> hoveredBorderColor;
+	private Supplier<Boolean> borderFill;
+	private Supplier<Double>  borderStroke;
+	private Supplier<Color>   borderColor;
+	private Supplier<Color>   hoveredBorderColor;
 
 	protected RectNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
 		this.color = () -> Color.TRANSPARENT;
-		this.hoveredColor = null;
+		this.hoveredColor = () -> null;
 
+		this.borderFill = () -> true;
+		this.borderStroke = () -> 0D;
 		this.borderColor = () -> Color.TRANSPARENT;
-		this.hoveredBorderColor = null;
+		this.hoveredBorderColor = () -> null;
 	}
 
 	public static @NonNull RectNode create(final double x, final double y, final double width, final double height) {
@@ -37,13 +40,13 @@ public class RectNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final Color hoveredColor = this.hoveredColor != null ? this.hoveredColor.get() : null;
+		final Color hoveredColor = this.hoveredColor.get();
 		final Color color = hoveredColor != null ? this.color.get().to(hoveredColor, super.hoverValue(1F)) : this.color.get();
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
 	}
 
 	public final Color getHoveredColor() {
-		return this.hoveredColor == null ? null : this.hoveredColor.get();
+		return this.hoveredColor.get();
 	}
 
 	public final @NonNull Color getColor() {
@@ -51,16 +54,23 @@ public class RectNode extends Node {
 	}
 
 	public final Color getHoveredBorderColor() {
-		return this.hoveredBorderColor == null ? null : this.hoveredBorderColor.get();
+		return this.hoveredBorderColor.get();
 	}
 
 	public final @NonNull Color getBorderColor() {
 		return this.borderColor.get();
 	}
 
+	public final double getBorderStroke() {
+		return this.borderStroke.get();
+	}
+
+	public final boolean isBorderFill() {
+		return this.borderFill.get();
+	}
+
 	public final <T extends RectNode> @NonNull T color(final @NonNull Color color) {
-		this.color(() -> color);
-		return (T) this;
+		return this.color(Signal.from(color));
 	}
 
 	public final <T extends RectNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color) {
@@ -68,82 +78,60 @@ public class RectNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends RectNode> @NonNull T color(final @NonNull Color color, final Color hoveredColor) {
-		this.color(() -> color, () -> hoveredColor);
-		return (T) this;
+	public final <T extends RectNode> @NonNull T hoveredColor(final Color hoveredColor) {
+		return this.hoveredColor(Signal.from(hoveredColor));
 	}
 
-	public final <T extends RectNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color, final Supplier<Color> hoveredColor) {
-		this.color        = color;
+	public final <T extends RectNode> @NonNull T hoveredColor(final @NonNull Supplier<Color> hoveredColor) {
 		this.hoveredColor = hoveredColor;
 		return (T) this;
 	}
 
-	public final <T extends RectNode> @NonNull T hoveredColor(final Color color) {
-		this.hoveredColor(() -> color);
-		return (T) this;
+	public final <T extends RectNode> @NonNull T borderColor(final @NonNull Color borderColor) {
+		return this.borderColor(Signal.from(borderColor));
 	}
 
-	public final <T extends RectNode> @NonNull T hoveredColor(final Supplier<Color> color) {
-		this.hoveredColor = color;
-		return (T) this;
+	public final <T extends RectNode> @NonNull T borderColor(final @NonNull Supplier<@NonNull Color> borderColor) {
+		this.borderColor = borderColor;
+		return this.applyBorderEffect();
 	}
 
-	public final <T extends RectNode> @NonNull T border(final @NonNull Color border, final double stroke) {
-		return this.border(() -> border, stroke);
+	public final <T extends RectNode> @NonNull T hoveredBorderColor(final Color hoveredBorderColor) {
+		return this.hoveredBorderColor(Signal.from(hoveredBorderColor));
 	}
 
-	public final <T extends RectNode> @NonNull T border(final @NonNull Color color, final double stroke, final boolean fill) {
-		return this.border(() -> color, stroke, fill);
+	public final <T extends RectNode> @NonNull T hoveredBorderColor(final @NonNull Supplier<Color> hoveredBorderColor) {
+		this.hoveredBorderColor = hoveredBorderColor;
+		return this.applyBorderEffect();
 	}
 
-	public final <T extends RectNode> @NonNull T border(final @NonNull Supplier<@NonNull Color> border, final double stroke) {
-		return this.border(border, stroke, true);
+	public final <T extends RectNode> @NonNull T borderStroke(final double borderStroke) {
+		return this.borderStroke(Signal.from(borderStroke));
 	}
 
-	public final <T extends RectNode> @NonNull T border(final @NonNull Supplier<@NonNull Color> color, final double stroke, final boolean fill) {
-		this.borderColor  = color;
-		this.borderStroke = stroke;
-		this.borderFill   = fill;
-		this.applyBorderEffect();
-		return (T) this;
+	public final <T extends RectNode> @NonNull T borderStroke(final @NonNull Supplier<Double> borderStroke) {
+		this.borderStroke = borderStroke;
+		return this.applyBorderEffect();
 	}
 
-	public final <T extends RectNode> @NonNull T border(final @NonNull Color color, final Color hoveredColor, final double stroke, final boolean fill) {
-		return this.border(() -> color, () -> hoveredColor, stroke, fill);
+	public final <T extends RectNode> @NonNull T borderFill(final boolean borderFill) {
+		return this.borderFill(Signal.from(borderFill));
 	}
 
-	public final <T extends RectNode> @NonNull T border(final @NonNull Supplier<@NonNull Color> color, final Supplier<Color> hoveredColor, final double stroke, final boolean fill) {
-		this.borderColor        = color;
-		this.hoveredBorderColor = hoveredColor;
-		this.borderStroke       = stroke;
-		this.borderFill         = fill;
-		this.applyBorderEffect();
-		return (T) this;
+	public final <T extends RectNode> @NonNull T borderFill(final @NonNull Supplier<Boolean> borderFill) {
+		this.borderFill = borderFill;
+		return this.applyBorderEffect();
 	}
 
-	public final <T extends RectNode> @NonNull T hoveredBorderColor(final Color hoveredColor) {
-		this.hoveredBorderColor(() -> hoveredColor);
-		return (T) this;
-	}
-
-	public final <T extends RectNode> @NonNull T hoveredBorderColor(final Supplier<Color> hoveredColor) {
-		this.hoveredBorderColor = hoveredColor;
-		return (T) this;
-	}
-
-	private void applyBorderEffect() {
-		super.removeEffect(BorderNodeEffect.class);
-		if (this.borderStroke > 0D) {
-			final BorderNodeEffect effect = BorderNodeEffect.create(Color.TRANSPARENT, (float) this.borderStroke);
-			effect.color(this::computeBorderColor);
-			effect.fill(this.borderFill);
-			super.effect(effect);
+	private <T extends RectNode> T applyBorderEffect() {
+		if (!super.hasEffect(BorderNodeEffect.class)) {
+			super.effect(BorderNodeEffect.create(Color.TRANSPARENT, 0F).color(this::computeBorderColor).width(() -> this.borderStroke.get().floatValue()).fill(() -> this.borderFill.get()));
 		}
+		return (T) this;
 	}
 
 	private Color computeBorderColor() {
-		final Color hovered = this.hoveredBorderColor != null ? this.hoveredBorderColor.get() : null;
+		final Color hovered = this.hoveredBorderColor.get();
 		return hovered != null ? this.borderColor.get().to(hovered, super.hoverValue(1F)) : this.borderColor.get();
 	}
 

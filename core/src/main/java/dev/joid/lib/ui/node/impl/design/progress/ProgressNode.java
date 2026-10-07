@@ -1,29 +1,34 @@
 package dev.joid.lib.ui.node.impl.design.progress;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class ProgressNode extends Node {
 
-	private float progress;
+	private float             progress;
 	private ProgressDirection direction;
 
-	private Color[] colors;
-	private Resource[] resources;
+	private Color background;
+	private Color foreground;
+
+	private Resource backgroundResource;
+	private Resource foregroundResource;
 
 	protected ProgressNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.progress  = 0F;
-		this.direction = ProgressDirection.LEFT_TO_RIGHT;
-		this.colors    = new Color[] {Color.BLACK, Color.WHITE};
-		this.resources = new Resource[] {null, null};
+		this.progress   = 0F;
+		this.direction  = ProgressDirection.LEFT_TO_RIGHT;
+		this.background = Color.BLACK;
+		this.foreground = Color.WHITE;
 	}
 
 	public static @NonNull ProgressNode create(final double x, final double y, final double width, final double height) {
@@ -32,60 +37,63 @@ public class ProgressNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.resources[0] != null && this.resources[1] != null) {
-			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resources[0]);
+		if (this.backgroundResource != null && this.foregroundResource != null) {
+			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.backgroundResource);
 			super.getUi().mask(this.getProgressX(), this.getProgressY(), this.getProgressWidth(), this.getProgressHeight(), () -> {
-				DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resources[1]);
+				DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.foregroundResource);
 			});
 		} else {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.colors[0]);
-			DrawUtils.SHAPE.drawRect(this.getProgressX(), this.getProgressY(), this.getProgressWidth(), this.getProgressHeight(), this.colors[1]);
+			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.background);
+			DrawUtils.SHAPE.drawRect(this.getProgressX(), this.getProgressY(), this.getProgressWidth(), this.getProgressHeight(), this.foreground);
 		}
 	}
 
 	public final <T extends ProgressNode> @NonNull T progress(final float progress) {
-		this.progress = progress;
-		return (T) this;
+		return this.progress(Signal.from(progress));
 	}
 
-	public final <T extends ProgressNode> @NonNull T progress(final float min, final float max, final float value) {
-		this.progress = min == max ? value < max ? 0F : 1F : (value - min) / (max - min);
-		return (T) this;
+	public final <T extends ProgressNode> @NonNull T progress(final @NonNull Supplier<Float> progress) {
+		return super.follow("progress", progress, value -> this.progress = value);
 	}
 
 	public final <T extends ProgressNode> @NonNull T direction(final @NonNull ProgressDirection direction) {
-		this.direction = direction;
-		return (T) this;
+		return this.direction(Signal.from(direction));
 	}
 
-	public final <T extends ProgressNode> @NonNull T color(final @NonNull Color background, final @NonNull Color foreground) {
-		this.colors = new Color[] {background, foreground};
-		return (T) this;
+	public final <T extends ProgressNode> @NonNull T direction(final @NonNull Supplier<@NonNull ProgressDirection> direction) {
+		return super.follow("direction", direction, value -> this.direction = value);
 	}
 
-	public final <T extends ProgressNode> @NonNull T background(final @NonNull Color color) {
-		this.colors[0] = color;
-		return (T) this;
+	public final <T extends ProgressNode> @NonNull T background(final @NonNull Color background) {
+		return this.background(Signal.from(background));
 	}
 
-	public final <T extends ProgressNode> @NonNull T background(final @NonNull Resource resource) {
-		this.resources[0] = resource;
-		return (T) this;
+	public final <T extends ProgressNode> @NonNull T background(final @NonNull Supplier<@NonNull Color> background) {
+		return super.follow("background", background, value -> this.background = value);
 	}
 
-	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Color color) {
-		this.colors[1] = color;
-		return (T) this;
+	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Color foreground) {
+		return this.foreground(Signal.from(foreground));
 	}
 
-	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Resource resource) {
-		this.resources[1] = resource;
-		return (T) this;
+	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Supplier<@NonNull Color> foreground) {
+		return super.follow("foreground", foreground, value -> this.foreground = value);
 	}
 
-	public final <T extends ProgressNode> @NonNull T resource(final @NonNull Resource background, final @NonNull Resource foreground) {
-		this.resources = new Resource[] { background, foreground };
-		return (T) this;
+	public final <T extends ProgressNode> @NonNull T backgroundResource(final Resource backgroundResource) {
+		return this.backgroundResource(Signal.from(backgroundResource));
+	}
+
+	public final <T extends ProgressNode> @NonNull T backgroundResource(final @NonNull Supplier<Resource> backgroundResource) {
+		return super.follow("backgroundResource", backgroundResource, value -> this.backgroundResource = value);
+	}
+
+	public final <T extends ProgressNode> @NonNull T foregroundResource(final Resource foregroundResource) {
+		return this.foregroundResource(Signal.from(foregroundResource));
+	}
+
+	public final <T extends ProgressNode> @NonNull T foregroundResource(final @NonNull Supplier<Resource> foregroundResource) {
+		return super.follow("foregroundResource", foregroundResource, value -> this.foregroundResource = value);
 	}
 
 	private double getProgressX() {

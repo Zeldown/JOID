@@ -16,7 +16,7 @@ public class UIDemoAnimation extends UIDemo {
 		RectNode
 		.create(0, 0, 100, 100)
 		.color(Color.RED)
-		.onAnimate((node, animator, value) -> node.position((1920 - 100) * value, (1080 - 100) * value))
+		.onAnimate((node, animator, value) -> node.x((1920 - 100) * value).y((1080 - 100) * value))
 		.animate(moveAnimator)
 		.attach(this);
 	}

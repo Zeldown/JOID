@@ -1,15 +1,17 @@
 package dev.joid.lib.ui.node.impl.design.model;
 
+import java.util.function.Supplier;
+
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.model.utils.IDrawableModel;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class ModelNode extends Node {
 
 	private IDrawableModel model;
@@ -68,28 +70,49 @@ public class ModelNode extends Node {
 	}
 
 	public final <T extends ModelNode> @NonNull T model(final @NonNull IDrawableModel model) {
-		this.model = model;
-		return (T) this;
+		return this.model(Signal.from(model));
+	}
+
+	public final <T extends ModelNode> @NonNull T model(final @NonNull Supplier<@NonNull IDrawableModel> model) {
+		return super.follow("model", model, value -> this.model = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T size(final double size) {
-		this.size = size;
-		return (T) this;
+		return this.size(Signal.from(size));
+	}
+
+	public final <T extends ModelNode> @NonNull T size(final @NonNull Supplier<Double> size) {
+		return super.follow("size", size, value -> this.size = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
-		this.rotationYaw = rotationYaw;
-		return (T) this;
+		return this.rotationYaw(Signal.from(rotationYaw));
+	}
+
+	public final <T extends ModelNode> @NonNull T rotationYaw(final @NonNull Supplier<Double> rotationYaw) {
+		return super.follow("rotationYaw", rotationYaw, value -> this.rotationYaw = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationPitch(final double rotationPitch) {
-		this.rotationPitch = rotationPitch;
-		return (T) this;
+		return this.rotationPitch(Signal.from(rotationPitch));
+	}
+
+	public final <T extends ModelNode> @NonNull T rotationPitch(final @NonNull Supplier<Double> rotationPitch) {
+		return super.follow("rotationPitch", rotationPitch, value -> this.rotationPitch = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T pipeLineLevel(final double pipeLineLevel) {
-		this.pipeLineLevel = pipeLineLevel;
-		return (T) this;
+		return this.pipeLineLevel(Signal.from(pipeLineLevel));
+	}
+
+	public final <T extends ModelNode> @NonNull T pipeLineLevel(final @NonNull Supplier<Double> pipeLineLevel) {
+		return super.follow("pipeLineLevel", pipeLineLevel, value -> this.pipeLineLevel = value);
+	}
+
+	protected final void transform(final double size, final double rotationYaw, final double rotationPitch) {
+		this.size          = size;
+		this.rotationYaw   = rotationYaw;
+		this.rotationPitch = rotationPitch;
 	}
 
 }

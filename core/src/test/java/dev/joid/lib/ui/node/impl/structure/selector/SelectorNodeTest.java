@@ -244,7 +244,6 @@ public class SelectorNodeTest {
 		Assert.assertEquals(1, subtitles.getEventSet().size());
 	}
 
-
 	@Test
 	public void refusesAComputedSignal() {
 		final Signal<String> language = new Signal<>("second");
@@ -259,6 +258,7 @@ public class SelectorNodeTest {
 		Assert.assertEquals("third", this.selector.getValue());
 		Assert.assertSame(language, this.selector.getSignal());
 	}
+
 	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final Signal<String> language = new Signal<>("first");

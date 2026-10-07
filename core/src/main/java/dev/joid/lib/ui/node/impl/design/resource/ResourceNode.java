@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.design.resource;
 
+import java.util.function.Supplier;
+
 import javax.vecmath.Vector4f;
 
 import dev.joid.lib.bridge.render.texture.TextureFilter;
@@ -7,11 +9,11 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class ResourceNode extends Node {
 
 	private Resource resource;
@@ -90,46 +92,59 @@ public class ResourceNode extends Node {
 	}
 
 	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource) {
-		this.resource = resource;
-		return (T) this;
+		return this.resource(Signal.from(resource));
 	}
 
-	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Resource resource, final Resource hoveredResource) {
-		this.resource = resource;
-		this.hoveredResource = hoveredResource;
-		return (T) this;
+	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
+		return super.follow("resource", resource, value -> this.resource = value);
 	}
 
-	public final <T extends ResourceNode> @NonNull T hoverResource(final Resource resource) {
-		this.hoveredResource = resource;
-		return (T) this;
+	public final <T extends ResourceNode> @NonNull T hoveredResource(final Resource hoveredResource) {
+		return this.hoveredResource(Signal.from(hoveredResource));
+	}
+
+	public final <T extends ResourceNode> @NonNull T hoveredResource(final @NonNull Supplier<Resource> hoveredResource) {
+		return super.follow("hoveredResource", hoveredResource, value -> this.hoveredResource = value);
 	}
 
 	public final <T extends ResourceNode> @NonNull T color(final @NonNull Color color) {
-		this.color = color;
-		return (T) this;
+		return this.color(Signal.from(color));
 	}
 
-	public final <T extends ResourceNode> @NonNull T hoveredColor(final Color color) {
-		this.hoveredColor = color;
-		return (T) this;
+	public final <T extends ResourceNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color) {
+		return super.follow("color", color, value -> this.color = value);
 	}
 
-	public final <T extends ResourceNode> @NonNull T linear(final boolean linearInterpolation) {
-		if (this.resource != null) {
-			this.resource.interpolation(linearInterpolation ? TextureFilter.LINEAR : TextureFilter.NEAREST);
-		}
+	public final <T extends ResourceNode> @NonNull T hoveredColor(final Color hoveredColor) {
+		return this.hoveredColor(Signal.from(hoveredColor));
+	}
 
-		if (this.hoveredResource != null) {
-			this.hoveredResource.interpolation(linearInterpolation ? TextureFilter.LINEAR : TextureFilter.NEAREST);
-		}
+	public final <T extends ResourceNode> @NonNull T hoveredColor(final @NonNull Supplier<Color> hoveredColor) {
+		return super.follow("hoveredColor", hoveredColor, value -> this.hoveredColor = value);
+	}
 
-		return (T) this;
+	public final <T extends ResourceNode> @NonNull T linear(final boolean linear) {
+		return this.linear(Signal.from(linear));
+	}
+
+	public final <T extends ResourceNode> @NonNull T linear(final @NonNull Supplier<Boolean> linear) {
+		return super.follow("linear", linear, value -> {
+			if (this.resource != null) {
+				this.resource.interpolation(value ? TextureFilter.LINEAR : TextureFilter.NEAREST);
+			}
+
+			if (this.hoveredResource != null) {
+				this.hoveredResource.interpolation(value ? TextureFilter.LINEAR : TextureFilter.NEAREST);
+			}
+		});
 	}
 
 	public final <T extends ResourceNode> @NonNull T stretch(final @NonNull StretchType stretchType) {
-		this.stretchType = stretchType;
-		return (T) this;
+		return this.stretch(Signal.from(stretchType));
+	}
+
+	public final <T extends ResourceNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretchType) {
+		return super.follow("stretchType", stretchType, value -> this.stretchType = value);
 	}
 
 	private void drawResource(final @NonNull Resource resource) {

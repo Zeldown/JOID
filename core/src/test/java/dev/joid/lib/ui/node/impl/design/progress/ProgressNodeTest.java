@@ -29,21 +29,10 @@ public class ProgressNodeTest {
 		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D);
 		Assert.assertEquals(0F, progress.getProgress(), 0F);
 		Assert.assertSame(ProgressDirection.LEFT_TO_RIGHT, progress.getDirection());
-		Assert.assertArrayEquals(new Color[] {Color.BLACK, Color.WHITE}, progress.getColors());
-		Assert.assertArrayEquals(new Resource[] {null, null}, progress.getResources());
-	}
-
-	@Test
-	public void spreadsAValueOverItsRange() {
-		Assert.assertEquals(0.25F, ProgressNode.create(0D, 0D, 10D, 10D).progress(10F, 50F, 20F).getProgress(), 0F);
-		Assert.assertEquals(1F, ProgressNode.create(0D, 0D, 10D, 10D).progress(10F, 50F, 50F).getProgress(), 0F);
-	}
-
-	@Test
-	public void fillsAnEmptyRangeOnceReached() {
-		Assert.assertEquals(0F, ProgressNode.create(0D, 0D, 10D, 10D).progress(5F, 5F, 4F).getProgress(), 0F);
-		Assert.assertEquals(1F, ProgressNode.create(0D, 0D, 10D, 10D).progress(5F, 5F, 5F).getProgress(), 0F);
-		Assert.assertEquals(1F, ProgressNode.create(0D, 0D, 10D, 10D).progress(5F, 5F, 9F).getProgress(), 0F);
+		Assert.assertSame(Color.BLACK, progress.getBackground());
+		Assert.assertSame(Color.WHITE, progress.getForeground());
+		Assert.assertNull(progress.getBackgroundResource());
+		Assert.assertNull(progress.getForegroundResource());
 	}
 
 	@Test
@@ -72,7 +61,7 @@ public class ProgressNodeTest {
 
 	@Test
 	public void drawsItsBackgroundUnderTheFill() {
-		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.5F).color(new Color(0.2F, 0.4F, 0.6F, 1F), new Color(0.6F, 0.4F, 0.2F, 1F)));
+		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.5F).background(new Color(0.2F, 0.4F, 0.6F, 1F)).foreground(new Color(0.6F, 0.4F, 0.2F, 1F)));
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		final Draw background = this.single(0.2F, 0.4F, 0.6F);
 		Assert.assertEquals(100D, background.getLeft(), 1E-3D);
@@ -86,12 +75,13 @@ public class ProgressNodeTest {
 		final Color background = new Color(0.2F, 0.4F, 0.6F, 1F);
 		final Color foreground = new Color(0.6F, 0.4F, 0.2F, 1F);
 		Assert.assertSame(progress, progress.background(background).foreground(foreground));
-		Assert.assertArrayEquals(new Color[] {background, foreground}, progress.getColors());
+		Assert.assertSame(background, progress.getBackground());
+		Assert.assertSame(foreground, progress.getForeground());
 	}
 
 	@Test
 	public void needsBothResourcesToDrawThem() {
-		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.5F).background(ProgressNodeTest.resource()).color(new Color(0.2F, 0.4F, 0.6F, 1F), new Color(0.6F, 0.4F, 0.2F, 1F)));
+		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.5F).backgroundResource(ProgressNodeTest.resource()).background(new Color(0.2F, 0.4F, 0.6F, 1F)).foreground(new Color(0.6F, 0.4F, 0.2F, 1F)));
 		Assert.assertEquals(200D, this.single(0.2F, 0.4F, 0.6F).getRight() - this.single(0.2F, 0.4F, 0.6F).getLeft(), 1E-3D);
 		Assert.assertEquals(100D, this.single(0.6F, 0.4F, 0.2F).getRight() - this.single(0.6F, 0.4F, 0.2F).getLeft(), 1E-3D);
 	}
@@ -100,8 +90,9 @@ public class ProgressNodeTest {
 	public void masksTheForegroundResourceToTheProgress() {
 		final Resource background = ProgressNodeTest.resource();
 		final Resource foreground = ProgressNodeTest.resource();
-		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D).progress(0.25F).direction(ProgressDirection.RIGHT_TO_LEFT).resource(background, foreground);
-		Assert.assertArrayEquals(new Resource[] {background, foreground}, progress.getResources());
+		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D).progress(0.25F).direction(ProgressDirection.RIGHT_TO_LEFT).backgroundResource(background).foregroundResource(foreground);
+		Assert.assertSame(background, progress.getBackgroundResource());
+		Assert.assertSame(foreground, progress.getForegroundResource());
 		this.open(progress);
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		final Draw mask = this.single(1F, 0F, 0F);
@@ -120,8 +111,9 @@ public class ProgressNodeTest {
 		final Resource background = ProgressNodeTest.resource();
 		final Resource foreground = ProgressNodeTest.resource();
 		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D);
-		Assert.assertSame(progress, progress.background(background).foreground(foreground));
-		Assert.assertArrayEquals(new Resource[] {background, foreground}, progress.getResources());
+		Assert.assertSame(progress, progress.backgroundResource(background).foregroundResource(foreground));
+		Assert.assertSame(background, progress.getBackgroundResource());
+		Assert.assertSame(foreground, progress.getForegroundResource());
 	}
 
 	private void open(final ProgressNode progress) {

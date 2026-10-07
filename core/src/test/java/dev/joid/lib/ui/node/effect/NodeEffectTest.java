@@ -150,7 +150,7 @@ public class NodeEffectTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingScope() {
-		new PlainEffect().scope(null);
+		new PlainEffect().scope((NodeEffectScope) null);
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -9,6 +9,7 @@ import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.shader.pipeline.pass.BlurShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
+import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -42,8 +43,7 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends BlurNodeEffect> @NonNull E radius(final float radius) {
-		this.radiusSupplier = () -> radius;
-		return (E) this;
+		return this.radius(Signal.from(radius));
 	}
 
 	public final <E extends BlurNodeEffect> @NonNull E radius(final @NonNull Supplier<Float> radiusSupplier) {
