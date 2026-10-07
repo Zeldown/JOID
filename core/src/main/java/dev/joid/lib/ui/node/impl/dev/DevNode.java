@@ -36,6 +36,7 @@ import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.signal.ComputedSignal;
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.SignalContext;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
@@ -57,10 +58,10 @@ public final class DevNode extends Node {
 
 	private final BooleanSignal eyeSignal;
 	private final BooleanSignal gridSignal;
-	private final BooleanSignal reloadSignal;
 	private final BooleanSignal inspectSignal;
 
 	private final Signal<Node> inspectedNode;
+	private final ComputedSignal<Node> lockedNode;
 	private final BooleanSignal inspectedNodeLocked;
 
 	private final TweenAnimator reloadAnimator;
@@ -81,12 +82,12 @@ public final class DevNode extends Node {
 		super.anchor(Align.END);
 
 		this.inspectSignal = new BooleanSignal(true);
-		this.reloadSignal = new BooleanSignal(false);
 		this.eyeSignal = new BooleanSignal(true);
 		this.gridSignal = new BooleanSignal(false);
 
 		this.inspectedNode = new Signal<>();
 		this.inspectedNodeLocked = new BooleanSignal();
+		this.lockedNode = Signal.from(() -> this.inspectedNodeLocked.get() ? this.inspectedNode.get() : null);
 
 		this.reloadAnimator = TweenAnimator.create(0F);
 	}
@@ -113,7 +114,6 @@ public final class DevNode extends Node {
 					this.inspectSignal.set(!this.inspectSignal.peek());
 					this.inspectedNode.set(null);
 					this.inspectedNodeLocked.set(false);
-					this.inspectedNodeLocked.publish();
 				})
 				.hover(() -> "[I] Inspect")
 				.attach(flex);
@@ -121,8 +121,8 @@ public final class DevNode extends Node {
 				ResourceNode
 				.create(0, 0, 24, 24)
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png"))).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
-				.color(this.reloadSignal.map(reloading -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue())))
-				.hoveredColor(this.reloadSignal.map(reloading -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()).darker(0.3F)))
+				.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()))
+				.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()).darker(0.3F))
 				.onClick((node, mouseX, mouseY, clickType) -> {
 					node.getUi().reload();
 				})
@@ -164,18 +164,17 @@ public final class DevNode extends Node {
 		RectNode
 		.create(0, super.getHeight() - super.getDefaultHeight(), super.getWidth(), 2)
 		.color(DevNode.LIGHT_BLACK)
-		.visible(node -> this.inspectedNodeLocked.peek())
+		.visible(this.inspectedNodeLocked)
 		.attach(this);
 
 		ContainerNode
 		.create(0, 0, super.getWidth(), super.getHeight() - super.getDefaultHeight())
 		.body(node -> {
 			node.width(super.getWidth()).height(super.getHeight() - super.getDefaultHeight());
-			if (!this.inspectedNodeLocked.peek()) {
+			final Node inspectedNode = this.lockedNode.peek();
+			if (inspectedNode == null) {
 				return;
 			}
-
-			final Node inspectedNode = this.inspectedNode.peek();
 
 			RectNode
 			.create(0, 53, node.getWidth(), 2)
@@ -291,7 +290,6 @@ public final class DevNode extends Node {
 						if (inspectedNode.getParent() != null) {
 							this.inspectedNode.set(inspectedNode.getParent());
 							this.inspectedNodeLocked.set(true);
-							this.inspectedNodeLocked.publish();
 						}
 					})
 					.attach(scroll);
@@ -308,7 +306,6 @@ public final class DevNode extends Node {
 						.onClick((clickedNode, mouseX, mouseY, clickType) -> {
 							this.inspectedNode.set(child);
 							this.inspectedNodeLocked.set(true);
-							this.inspectedNodeLocked.publish();
 						})
 						.attach(scroll);
 					}
@@ -365,26 +362,20 @@ public final class DevNode extends Node {
 			})
 			.attach(node);
 		})
-		.watch(this.inspectedNodeLocked, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
-		.visible(node -> this.inspectedNodeLocked.peek())
+		.watch(this.lockedNode, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+		.visible(this.inspectedNodeLocked)
 		.attach(this);
 
 		TextNode
 		.create(157 + super.aw(-157) / 2, super.getHeight() - super.getDefaultHeight() + super.getDefaultHeight() / 2)
-		.text(Text.create(String.format("%.0f fps", super.getUi().getFps()), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
-		.<TextNode>onUpdate(node -> node.getText().text(String.format("%.0f fps", super.getUi().getFps())))
+		.text(Text.create(() -> String.format("%.0f fps", super.getUi().getFps()), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
 		.anchor(Align.CENTER)
 		.attach(this);
 	}
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final float oldReloadAnimatorValue = this.reloadAnimator.getValue();
 		this.reloadAnimator.update();
-		final float newReloadAnimatorValue = this.reloadAnimator.getValue();
-		if (oldReloadAnimatorValue != newReloadAnimatorValue) {
-			this.reloadSignal.set(newReloadAnimatorValue > 0F);
-		}
 
 		if (this.inspectSignal.peek()) {
 			if (!this.inspectedNodeLocked.peek()) {
@@ -479,11 +470,9 @@ public final class DevNode extends Node {
 		if (this.inspectSignal.peek() && this.inspectedNode.peek() != null) {
 			if (clickType.isLeft() && !this.inspectedNodeLocked.peek()) {
 				this.inspectedNodeLocked.set(true);
-				this.inspectedNodeLocked.publish();
 				context.cancel();
 			} else if (clickType.isRight() && this.inspectedNodeLocked.peek()) {
 				this.inspectedNodeLocked.set(false);
-				this.inspectedNodeLocked.publish();
 				context.cancel();
 			}
 		}
@@ -503,7 +492,6 @@ public final class DevNode extends Node {
 			this.inspectSignal.set(!this.inspectSignal.peek());
 			this.inspectedNode.set(null);
 			this.inspectedNodeLocked.set(false);
-			this.inspectedNodeLocked.publish();
 			return;
 		}
 
@@ -528,7 +516,6 @@ public final class DevNode extends Node {
 
 		this.inspectedNode.set(this.inspectedNode.peek().getParent());
 		this.inspectedNodeLocked.set(true);
-		this.inspectedNodeLocked.publish();
 	}
 
 	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {

@@ -36,6 +36,7 @@ public class DevNodeTest {
 	private static final Color ACTION = new Color(57, 120, 255);
 	private static final Color UPDATE = new Color(239, 57, 38);
 	private static final Color BLACK  = new Color(23, 23, 25);
+	private static final Color WHITE  = new Color(250, 250, 250);
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
@@ -70,7 +71,6 @@ public class DevNodeTest {
 		Assert.assertTrue(panel.getInspectSignal().get());
 		Assert.assertTrue(panel.getEyeSignal().get());
 		Assert.assertFalse(panel.getGridSignal().get());
-		Assert.assertFalse(panel.getReloadSignal().get());
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 		Assert.assertNull(panel.getInspectedNode().get());
 		Assert.assertEquals(0F, panel.getReloadAnimator().getValue(), 0F);
@@ -294,6 +294,19 @@ public class DevNodeTest {
 	}
 
 	@Test
+	public void describesTheParentReachedOnEnter() {
+		final ContainerNode container = ContainerNode.create(100D, 100D, 600D, 400D);
+		RectNode.create(100D, 100D, 300D, 150D).attach(container);
+		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(container));
+		DevNodeTest.lock(this.bridges, 250D, 250D);
+		Assert.assertTrue(DevNodeTest.texts(panel).contains("children: 0"));
+		this.bridges.getUi().keyTyped('\n', Key.ENTER);
+		final List<String> texts = DevNodeTest.texts(panel);
+		Assert.assertTrue(texts.toString(), texts.contains("ContainerNode"));
+		Assert.assertTrue(texts.toString(), texts.contains("children: 1"));
+	}
+
+	@Test
 	public void ignoresEnterWithoutInspectedNode() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.getUi().keyTyped('\n', Key.ENTER);
@@ -363,11 +376,24 @@ public class DevNodeTest {
 		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(1));
 		Assert.assertEquals(2, ui.inits);
 		this.bridges.frames(2);
-		Assert.assertTrue(panel.getReloadSignal().get());
 		Assert.assertTrue(panel.getReloadAnimator().getValue() > 0F);
 		this.bridges.frames(20);
-		Assert.assertFalse(panel.getReloadSignal().get());
 		Assert.assertEquals(0F, panel.getReloadAnimator().getValue(), 0F);
+	}
+
+	@Test
+	public void colorsTheReloadButtonAlongItsAnimation() {
+		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
+		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(1));
+		final List<Color> colors = new ArrayList<>();
+		for (int i = 0; i < 20; i++) {
+			this.bridges.frame();
+			final ResourceNode button = DevNodeTest.buttons(panel).get(1);
+			Assert.assertEquals(DevNodeTest.WHITE.to(DevNodeTest.ACTION, panel.getReloadAnimator().getValue()), button.getColor());
+			colors.add(button.getColor());
+		}
+		Assert.assertTrue(colors.toString(), colors.stream().distinct().count() > 3L);
+		Assert.assertEquals(DevNodeTest.WHITE, colors.get(colors.size() - 1));
 	}
 
 	@Test
