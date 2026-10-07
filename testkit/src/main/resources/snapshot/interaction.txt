@@ -87,62 +87,91 @@ wait 1200
 shot inter-overflow-loading
 ui dev.joid.demo.ui.draggable.UIDemoDraggable
 wait 800
-move 250 570
+move 300 170
 wait 100
 press LEFT
-moveto 390 440 500
+moveto 420 240 400
 wait 200
 release LEFT
-wait 800
-move 670 570
+wait 600
+move 640 140
 wait 100
 press LEFT
-moveto 800 430 500
+moveto 1000 400 400
+wait 200
+release LEFT
+wait 600
+move 1080 140
+wait 100
+press LEFT
+moveto 1200 450 400
+wait 200
+release LEFT
+wait 600
+move 1520 140
+wait 100
+press LEFT
+moveto 1900 200 400
+wait 200
+release LEFT
+wait 600
+move 300 570
+wait 100
+press LEFT
+moveto 430 470 400
+wait 200
+release LEFT
+wait 600
+move 740 570
+wait 100
+press LEFT
+moveto 870 470 400
 wait 300
 shot inter-draggable-copy
 release LEFT
-wait 800
-move 290 750
+wait 600
+move 1080 520
 wait 100
 press LEFT
-moveto 600 560 500
+moveto 1250 540 400
+wait 200
+release LEFT
+wait 600
+scroll -120
+wait 600
+move 1610 500
+wait 100
+press LEFT
+moveto 1700 560 400
+wait 200
+release LEFT
+wait 600
+move 300 850
+wait 100
+press LEFT
+moveto 420 900 300
+release LEFT
+wait 400
+move 740 850
+wait 100
+press LEFT
+moveto 860 900 400
+wait 200
+release LEFT
+wait 600
+move 1180 850
+wait 100
+press LEFT
+moveto 1300 900 300
+release LEFT
+wait 400
+move 1500 790
+wait 100
+press LEFT
+moveto 1500 900 400
 wait 200
 release LEFT
 wait 1200
-move 520 800
-wait 100
-press LEFT
-moveto 600 900 500
-wait 200
-release LEFT
-wait 800
-move 950 750
-wait 100
-press LEFT
-moveto 1150 850 500
-wait 200
-release LEFT
-wait 800
-scroll -120
-wait 800
-move 1050 130
-wait 100
-press LEFT
-moveto 1400 400 500
-wait 200
-release LEFT
-wait 800
-move 130 750
-wait 100
-press LEFT
-moveto 200 900 300
-release LEFT
-move 730 750
-wait 100
-press LEFT
-moveto 800 900 300
-release LEFT
-wait 2720
 shot inter-draggable
 ui dev.joid.demo.ui.reorderable.UIDemoReorderable
 wait 800
