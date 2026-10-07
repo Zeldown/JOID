@@ -3,6 +3,7 @@ package dev.joid.impl.lwjgl2;
 import dev.joid.impl.lwjgl2.audio.AudioBridge;
 import dev.joid.impl.lwjgl2.render.RenderBridge;
 import dev.joid.impl.lwjgl2.window.WindowBridge;
+import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 public final class Backend {
 
 	public static void register() {
+		JOID.checkVersion(JOID.VERSION);
 		Natives.install();
 		BridgeHandler.AUDIO.register(new AudioBridge());
 		BridgeHandler.WINDOW.register(new WindowBridge());
