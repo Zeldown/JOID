@@ -1,5 +1,7 @@
 package dev.joid.lib.draw.text.builder.modifier.impl;
 
+import java.util.Locale;
+
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 
 public class TextUpperCamelCaseModifier implements ITextModifier {
@@ -9,7 +11,7 @@ public class TextUpperCamelCaseModifier implements ITextModifier {
 		final StringBuilder builder = new StringBuilder();
 		for (final String word : text.split("(?U)[\\W_]+")) {
 			if (!word.isEmpty()) {
-				builder.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase());
+				builder.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase(Locale.ROOT));
 			}
 		}
 

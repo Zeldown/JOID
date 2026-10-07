@@ -1,5 +1,6 @@
 package dev.joid.lib.draw.text.builder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,9 +26,9 @@ public final class Text {
 	@Getter private Align         verticalAlignment;
 	@Getter private Align         horizontalAlignment;
 
-	private double width;
-	private double height;
-	private String measuredText;
+	private double       width;
+	private double       height;
+	private List<Object> measured;
 
 	protected Text() {
 		this.elementList         = new LinkedList<>();
@@ -146,7 +147,7 @@ public final class Text {
 			return "";
 		}
 
-		return this.elementList.stream().map(TextElement::getText).reduce("", (a, b) -> a + b);
+		return this.elementList.stream().map(TextElement::getRawText).reduce("", (a, b) -> a + b);
 	}
 
 	public final @NonNull FontBounds getBounds() {
@@ -175,7 +176,7 @@ public final class Text {
 		}
 
 		this.elementList.get(index).text(text);
-		this.measuredText = null;
+		this.measured = null;
 		return this;
 	}
 
@@ -189,37 +190,37 @@ public final class Text {
 		}
 
 		this.elementList.get(index).info(info);
-		this.measuredText = null;
+		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text addAll(final @NonNull List<@NonNull TextElement> elementList) {
 		this.elementList.addAll(elementList);
-		this.measuredText = null;
+		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text add(final @NonNull Text builder) {
 		this.elementList.addAll(builder.getElementList());
-		this.measuredText = null;
+		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text add(final @NonNull TextElement element) {
 		this.elementList.add(element);
-		this.measuredText = null;
+		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text remove(final @NonNull TextElement element) {
 		this.elementList.remove(element);
-		this.measuredText = null;
+		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text clear() {
 		this.elementList.clear();
-		this.measuredText = null;
+		this.measured = null;
 		return this;
 	}
 
@@ -263,8 +264,8 @@ public final class Text {
 	}
 
 	public final @NonNull Text modifier(final ITextModifier modifier) {
-		this.modifier     = modifier;
-		this.measuredText = null;
+		this.modifier = modifier;
+		this.measured = null;
 		return this;
 	}
 
@@ -289,14 +290,32 @@ public final class Text {
 	}
 
 	private void measure() {
-		final String text = this.getRawText();
-		if (text.equals(this.measuredText)) {
+		final List<Object> key = this.measureKey();
+		if (key.equals(this.measured)) {
 			return;
 		}
 
-		this.measuredText = text;
+		this.measured     = key;
 		this.width        = this.elementList.stream().mapToDouble(element -> FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(this.getText(element)))).sum();
 		this.height       = this.elementList.stream().mapToDouble(element -> FontUsage.trace(element.getOrigin(), () -> element.getInfo().getHeight(this.getText(element)))).max().orElse(0);
+	}
+
+	private @NonNull List<Object> measureKey() {
+		final List<Object> key = new ArrayList<>();
+		key.add(this.modifier);
+		for (final TextElement element : this.elementList) {
+			final TextInfo info = element.getInfo();
+			key.add(element.getRawText());
+			key.add(element.getModifier());
+			key.add(info.getFont());
+			key.add(info.getFontSize());
+			key.add(info.getWeight());
+			key.add(info.isItalic());
+			key.add(info.getLetterSpacing());
+			key.add(info.getLineHeight());
+			key.add(new ArrayList<>(info.getMarkups()));
+		}
+		return key;
 	}
 
 	@Override

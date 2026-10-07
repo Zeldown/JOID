@@ -270,6 +270,40 @@ public class TextTest {
 	}
 
 	@Test
+	public void remeasuresOnceItsInfoChangesInPlace() {
+		final TextInfo info = TextTest.info();
+		final Text text = Text.create("ab", info);
+		Assert.assertEquals(20D, text.getWidth(), 0D);
+		info.fontSize(20F);
+		Assert.assertEquals(40D, text.getWidth(), 0D);
+		Assert.assertEquals(40D, text.getHeight(), 0D);
+	}
+
+	@Test
+	public void remeasuresOnceTheModifierOfAnElementChanges() {
+		final Text text = Text.create("ab", TextTest.info());
+		Assert.assertEquals(20D, text.getWidth(), 0D);
+		text.get(0).modifier(value -> value + value);
+		Assert.assertEquals(40D, text.getWidth(), 0D);
+	}
+
+	@Test
+	public void remeasuresOnceItsMarkupChanges() {
+		final TextInfo info = TextTest.montserrat();
+		final Text text = Text.create("*ab", info);
+		Assert.assertEquals(info.getWidth("*ab"), text.getWidth(), 0D);
+		info.markups((value, index, style) -> value.charAt(index) == '*' ? 1 : 0);
+		Assert.assertEquals(info.getWidth("ab"), text.getWidth(), 0D);
+	}
+
+	@Test
+	public void readsItsRawTextWithoutTheModifiersOfItsElements() {
+		final Text text = Text.create(TextElement.create("ab", TextTest.info()).modifier(TextModifier.UPPER_CASE), TextElement.create("cd", TextTest.info())).modifier(TextModifier.CAPITALIZE);
+		Assert.assertEquals("abcd", text.getRawText());
+		Assert.assertEquals("ABcd", text.getText());
+	}
+
+	@Test
 	public void ignoresAnIndexOutsideItsElements() {
 		final Text text = Text.create("ab", TextTest.info());
 		Assert.assertEquals(20D, text.getWidth(), 0D);
