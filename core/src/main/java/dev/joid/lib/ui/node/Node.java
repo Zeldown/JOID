@@ -364,14 +364,7 @@ public abstract class Node implements INode {
 					this.executeCallback(Node.CALLBACK_HOVER, InternalContext.create(), mouseX, mouseY);
 				}
 
-				for (final Entry<TweenAnimator, Float> entry : this.animatorMap.entrySet()) {
-					final TweenAnimator animator = entry.getKey().update();
-					final float value = animator.getValue();
-					if (value != entry.getValue()) {
-						this.executeCallback(Node.CALLBACK_ANIMATION, InternalContext.create(), animator, value);
-						entry.setValue(value);
-					}
-				}
+				this.updateAnimators();
 
 				boolean scrollsX = false;
 				boolean scrollsY = false;
@@ -617,6 +610,8 @@ public abstract class Node implements INode {
 				if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
 					this.scrollbar.render(mouseX, mouseY);
 				}
+			} else {
+				this.updateHiddenAnimators();
 			}
 		} finally {
 			Color.reset();
@@ -1262,6 +1257,10 @@ public abstract class Node implements INode {
 		return String.valueOf(this.ui.getNodeList().ordered().indexOf(this));
 	}
 
+	public final @NonNull Map<@NonNull TweenAnimator, @NonNull Float> getAnimatorMap() {
+		return Collections.unmodifiableMap(this.animatorMap);
+	}
+
 	public final <T extends NodeEffect<?>> T getEffect(final @NonNull Class<T> clazz) {
 		return clazz.cast(this.effectMap.get(clazz));
 	}
@@ -1536,6 +1535,11 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
+	public final <T extends Node> @NonNull T removeAnimator(final @NonNull TweenAnimator animator) {
+		this.animatorMap.remove(animator);
+		return (T) this;
+	}
+
 	public final <T extends Node> @NonNull T x(final double x) {
 		return this.x(Signal.from(x));
 	}
@@ -1701,6 +1705,26 @@ public abstract class Node implements INode {
 				exception.printStackTrace();
 			}
 		}
+	}
+
+	private void updateAnimators() {
+		for (final TweenAnimator animator : new ArrayList<>(this.animatorMap.keySet())) {
+			final Float previous = this.animatorMap.get(animator);
+			if (previous == null) {
+				continue;
+			}
+
+			final float value = animator.update().getValue();
+			if (value != previous) {
+				this.animatorMap.put(animator, value);
+				this.executeCallback(Node.CALLBACK_ANIMATION, InternalContext.create(), animator, value);
+			}
+		}
+	}
+
+	private void updateHiddenAnimators() {
+		this.updateAnimators();
+		this.children.ordered().forEach(Node::updateHiddenAnimators);
 	}
 
 	private void endInteraction() {

@@ -103,25 +103,74 @@ public class TweenAnimatorTest {
 	public void notifiesTheEndOfItsTimeline() {
 		final List<BaseTween<?>> ends = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).setCallback(ends::add).start();
+		final Timeline timeline = animator.getTimeline();
 		animator.update(0.5F);
 		Assert.assertTrue(ends.isEmpty());
 		animator.update(1F);
-		Assert.assertEquals(Collections.singletonList(animator.getTimeline()), ends);
+		Assert.assertEquals(Collections.singletonList(timeline), ends);
+	}
+
+	@Test
+	public void keepsItsTimelineWhileItRuns() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).start();
+		final Timeline timeline = animator.getTimeline();
+		animator.update(0.5F);
+		Assert.assertSame(timeline, animator.getTimeline());
+	}
+
+	@Test
+	public void forgetsItsTimelineOnceItEnds() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).start();
+		animator.update(2F);
+		Assert.assertNull(animator.getTimeline());
+		Assert.assertEquals(10F, animator.getValue(), 0F);
+	}
+
+	@Test
+	public void killsThePreviousTimelineOfANewSequence() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).start();
+		final Timeline previous = animator.getTimeline();
+		animator.sequence(1F, 20F).start();
+		Assert.assertTrue(previous.isFinished());
+		animator.update(0.5F);
+		Assert.assertEquals(1, animator.getManager().size());
+		Assert.assertEquals(10F, animator.getValue(), 0F);
+	}
+
+	@Test
+	public void killsThePreviousTimelineOfANewParallel() {
+		final TweenAnimator animator = TweenAnimator.create().parallel(1F, 10F).start();
+		final Timeline previous = animator.getTimeline();
+		animator.parallel(1F, 20F).start();
+		Assert.assertTrue(previous.isFinished());
+		animator.update(0.5F);
+		Assert.assertEquals(1, animator.getManager().size());
 	}
 
 	@Test
 	public void clearsItsAnimation() {
 		final TweenAnimator animator = TweenAnimator.create(5F).sequence(1F, 10F).start();
-		final TweenManager manager = animator.getManager();
 		animator.setSpeed(2F);
 		animator.clear();
 		Assert.assertEquals(0F, animator.getValue(), 0F);
 		Assert.assertEquals(1F, animator.getSpeed(), 0F);
 		Assert.assertEquals(0L, animator.getLastUpdate());
 		Assert.assertNull(animator.getTimeline());
-		Assert.assertNotSame(manager, animator.getManager());
 		animator.update(1F);
 		Assert.assertEquals(0F, animator.getValue(), 0F);
+	}
+
+	@Test
+	public void killsAndFreesItsTimelineWhenItClears() {
+		final List<BaseTween<?>> ends = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).setCallback(ends::add).start();
+		final TweenManager manager = animator.getManager();
+		final int pooled = Timeline.getPoolSize();
+		animator.clear();
+		Assert.assertEquals(0, manager.size());
+		Assert.assertEquals(pooled + 1, Timeline.getPoolSize());
+		animator.update(2F);
+		Assert.assertTrue(ends.isEmpty());
 	}
 
 	@Test
@@ -137,6 +186,26 @@ public class TweenAnimatorTest {
 		Assert.assertEquals(42L, animator.getLastUpdate());
 		Assert.assertSame(timeline, animator.getTimeline());
 		Assert.assertSame(manager, animator.getManager());
+	}
+
+	@Test
+	public void refusesToStartWithoutTimeline() {
+		try {
+			TweenAnimator.create().start();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The animator has no timeline, call sequence(...) or parallel(...) first", exception.getMessage());
+		}
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesAStepWithoutTimeline() {
+		TweenAnimator.create().push(1F, 10F);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesACallbackWithoutTimeline() {
+		TweenAnimator.create().setCallback(tween -> {});
 	}
 
 	@Test(expected = NullPointerException.class)

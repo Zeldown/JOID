@@ -1,17 +1,9 @@
 package dev.joid.lib.animation.tweenengine.equation;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class BackTest {
-
-	@After
-	public void restoreTheOvershoot() {
-		Back.IN.s(1.70158F);
-		Back.OUT.s(1.70158F);
-		Back.INOUT.s(1.70158F);
-	}
 
 	@Test
 	public void startsAtZeroAndEndsAtOne() {
@@ -49,15 +41,32 @@ public class BackTest {
 
 	@Test
 	public void becomesACubicWithoutOvershoot() {
-		Assert.assertSame(Back.IN, Back.IN.s(0F));
-		Assert.assertSame(Back.OUT, Back.OUT.s(0F));
-		Assert.assertSame(Back.INOUT, Back.INOUT.s(0F));
+		final Back in = Back.IN.s(0F);
+		final Back out = Back.OUT.s(0F);
+		final Back inOut = Back.INOUT.s(0F);
 		for (int i = 0; i <= 20; i++) {
 			final float t = i / 20F;
-			Assert.assertEquals(Cubic.IN.compute(t), Back.IN.compute(t), 0.0001F);
-			Assert.assertEquals(Cubic.OUT.compute(t), Back.OUT.compute(t), 0.0001F);
-			Assert.assertEquals(Cubic.INOUT.compute(t), Back.INOUT.compute(t), 0.0001F);
+			Assert.assertEquals(Cubic.IN.compute(t), in.compute(t), 0.0001F);
+			Assert.assertEquals(Cubic.OUT.compute(t), out.compute(t), 0.0001F);
+			Assert.assertEquals(Cubic.INOUT.compute(t), inOut.compute(t), 0.0001F);
 		}
+	}
+
+	@Test
+	public void leavesTheSharedEquationsUntouched() {
+		Assert.assertNotSame(Back.IN, Back.IN.s(0F));
+		Assert.assertNotSame(Back.OUT, Back.OUT.s(0F));
+		Assert.assertNotSame(Back.INOUT, Back.INOUT.s(0F));
+		Assert.assertEquals(-0.0876975F, Back.IN.compute(0.5F), 0.0001F);
+		Assert.assertEquals(1.0876975F, Back.OUT.compute(0.5F), 0.0001F);
+		Assert.assertEquals(-0.0996818F, Back.INOUT.compute(0.25F), 0.0001F);
+	}
+
+	@Test
+	public void keepsItsNameWithAnotherOvershoot() {
+		Assert.assertEquals("Back.IN", Back.IN.s(3F).toString());
+		Assert.assertEquals("Back.OUT", Back.OUT.s(3F).toString());
+		Assert.assertEquals("Back.INOUT", Back.INOUT.s(3F).toString());
 	}
 
 	@Test

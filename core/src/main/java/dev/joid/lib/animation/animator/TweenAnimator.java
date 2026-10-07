@@ -26,6 +26,7 @@ public class TweenAnimator {
 	private TweenManager manager;
 
 	private TweenAnimator(final float value) {
+		this.manager = new TweenManager();
 		this.clear();
 		this.value = value;
 	}
@@ -39,16 +40,17 @@ public class TweenAnimator {
 	}
 
 	public @NonNull TweenAnimator start() {
-		assert this.timeline != null;
+		this.requireTimeline();
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.timeline.start(this.manager);
 		return this;
 	}
 
 	public void clear() {
+		this.manager.killAll();
+		this.manager.update(0F);
 		this.value      = 0F;
 		this.speed      = 1F;
-		this.manager    = new TweenManager();
 		this.timeline   = null;
 		this.lastUpdate = 0L;
 	}
@@ -58,6 +60,7 @@ public class TweenAnimator {
 	}
 
 	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation equation) {
+		this.killTimeline();
 		this.timeline = Timeline.createSequence();
 		this.push(duration, value, equation);
 		return this;
@@ -68,6 +71,7 @@ public class TweenAnimator {
 	}
 
 	public @NonNull TweenAnimator parallel(final float duration, final float value, final @NonNull TweenEquation equation) {
+		this.killTimeline();
 		this.timeline = Timeline.createParallel();
 		this.push(duration, value, equation);
 		return this;
@@ -79,12 +83,13 @@ public class TweenAnimator {
 	}
 
 	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
+		this.requireTimeline();
 		this.timeline.push(Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
 		return this;
 	}
 
 	public @NonNull TweenAnimator setCallback(final @NonNull Consumer<@NonNull BaseTween<@NonNull ?>> callback) {
-		assert this.timeline != null;
+		this.requireTimeline();
 		this.timeline.addCallback(TweenCallback.END, callback);
 		return this;
 	}
@@ -98,7 +103,22 @@ public class TweenAnimator {
 
 	public @NonNull TweenAnimator update(final float delta) {
 		this.manager.update(delta * this.speed);
+		if (this.timeline != null && this.timeline.isFinished()) {
+			this.timeline = null;
+		}
 		return this;
+	}
+
+	private void killTimeline() {
+		if (this.timeline != null) {
+			this.timeline.kill();
+		}
+	}
+
+	private void requireTimeline() {
+		if (this.timeline == null) {
+			throw new IllegalStateException("The animator has no timeline, call sequence(...) or parallel(...) first");
+		}
 	}
 
 }

@@ -48,7 +48,7 @@ public abstract class Transition {
 			}
 
 			this.animator.update();
-			if (this.animator.getTimeline().isFinished()) {
+			if (this.animator.getTimeline() == null) {
 				this.running = false;
 			}
 		}

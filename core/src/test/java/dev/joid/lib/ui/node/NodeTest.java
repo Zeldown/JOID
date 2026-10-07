@@ -2199,6 +2199,62 @@ public class NodeTest {
 	}
 
 	@Test
+	public void stopsReportingARemovedAnimator() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate((rect, tween, value) -> values.add(value));
+		this.bridges.open(new NodeUI(node)).frame();
+		Assert.assertSame(node, node.removeAnimator(animator));
+		Assert.assertTrue(node.getAnimatorMap().isEmpty());
+		animator.start();
+		this.bridges.frames(3);
+		Assert.assertTrue(values.isEmpty());
+	}
+
+	@Test
+	public void removesAnAnimatorFromItsOwnCallback() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).animate(TweenAnimator.create()).onAnimate((rect, tween, value) -> {
+			values.add(value);
+			rect.removeAnimator(tween);
+		});
+		this.bridges.open(new NodeUI(node)).frame();
+		animator.start();
+		this.bridges.frames(3);
+		Assert.assertEquals(Arrays.asList(0.5F), values);
+		Assert.assertEquals(1, node.getAnimatorMap().size());
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesItsAnimatorsReadOnly() {
+		RectNode.create(0D, 0D, 10D, 10D).getAnimatorMap().put(TweenAnimator.create(), 0F);
+	}
+
+	@Test
+	public void updatesTheAnimatorsOfAHiddenNode() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(false).animate(animator).onAnimate((rect, tween, value) -> values.add(value));
+		this.bridges.open(new NodeUI(node)).frame();
+		animator.start();
+		this.bridges.frames(3);
+		Assert.assertEquals(Arrays.asList(0.5F, 1F), values);
+	}
+
+	@Test
+	public void updatesTheAnimatorsUnderAHiddenParent() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate((rect, tween, value) -> values.add(value));
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).visible(false).append(ContainerNode.create(0D, 0D, 100D, 100D).append(node));
+		this.bridges.open(new NodeUI(parent)).frame();
+		animator.start();
+		this.bridges.frames(3);
+		Assert.assertEquals(Arrays.asList(0.5F, 1F), values);
+	}
+
+	@Test
 	public void describesItselfInJson() {
 		final RectNode node = RectNode.create(10D, 20D, 30D, 40D).zindex(2);
 		node.x(15D);
