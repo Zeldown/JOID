@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import dev.joid.lib.utils.signal.Signal;
@@ -24,8 +25,10 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public @NonNull MapSignal<K, V> clear() {
-		this.mutable().clear();
-		this.publish();
+		final Map<K, V> map = this.mutable();
+		final boolean changed = !map.isEmpty();
+		map.clear();
+		this.publishIf(changed);
 		return this;
 	}
 
@@ -50,14 +53,18 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public V put(final K key, final V value) {
-		final V result = this.mutable().put(key, value);
-		this.publish();
+		final Map<K, V> map = this.mutable();
+		final boolean changed = !map.containsKey(key) || !Objects.equals(map.get(key), value);
+		final V result = map.put(key, value);
+		this.publishIf(changed);
 		return result;
 	}
 
 	public V remove(final K key) {
-		final V result = this.mutable().remove(key);
-		this.publish();
+		final Map<K, V> map = this.mutable();
+		final boolean changed = map.containsKey(key);
+		final V result = map.remove(key);
+		this.publishIf(changed);
 		return result;
 	}
 
@@ -71,7 +78,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 
 	private Map<K, V> mutable() {
 		if (!this.isPresent()) {
-			this.silent().set(this.peek() == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.peek()));
+			this.assign(this.peek() == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.peek()));
 		}
 
 		return this.peek();

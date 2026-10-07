@@ -27,20 +27,22 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	public @NonNull SetSignal<E> clear() {
-		this.mutable().clear();
-		this.publish();
+		final Set<E> set = this.mutable();
+		final boolean changed = !set.isEmpty();
+		set.clear();
+		this.publishIf(changed);
 		return this;
 	}
 
 	public boolean add(final E e) {
 		final boolean success = this.mutable().add(e);
-		this.publish();
+		this.publishIf(success);
 		return success;
 	}
 
 	public boolean remove(final E e) {
 		final boolean success = this.mutable().remove(e);
-		this.publish();
+		this.publishIf(success);
 		return success;
 	}
 
@@ -58,7 +60,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 
 	private Set<E> mutable() {
 		if (!this.isPresent()) {
-			this.silent().set(this.peek() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(this.peek()));
+			this.assign(this.peek() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(this.peek()));
 		}
 
 		return this.peek();

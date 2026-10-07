@@ -3,6 +3,7 @@ package dev.joid.lib.utils.signal.impl.iterable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import dev.joid.lib.utils.signal.Signal;
 import lombok.NonNull;
@@ -26,20 +27,22 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public @NonNull ListSignal<E> clear() {
-		this.mutable().clear();
-		this.publish();
+		final List<E> list = this.mutable();
+		final boolean changed = !list.isEmpty();
+		list.clear();
+		this.publishIf(changed);
 		return this;
 	}
 
 	public boolean add(final E e) {
 		final boolean success = this.mutable().add(e);
-		this.publish();
+		this.publishIf(success);
 		return success;
 	}
 
 	public boolean remove(final E e) {
 		final boolean success = this.mutable().remove(e);
-		this.publish();
+		this.publishIf(success);
 		return success;
 	}
 
@@ -67,7 +70,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 
 	public E set(final int index, final E element) {
 		final E result = this.mutable().set(index, element);
-		this.publish();
+		this.publishIf(!Objects.equals(result, element));
 		return result;
 	}
 
@@ -77,7 +80,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 
 	private List<E> mutable() {
 		if (!this.isPresent()) {
-			this.silent().set(this.peek() == null ? new ArrayList<>() : new ArrayList<>(this.peek()));
+			this.assign(this.peek() == null ? new ArrayList<>() : new ArrayList<>(this.peek()));
 		}
 
 		return this.peek();

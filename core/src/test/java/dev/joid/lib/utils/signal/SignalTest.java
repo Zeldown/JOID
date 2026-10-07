@@ -280,4 +280,28 @@ public class SignalTest {
 		Assert.assertNotEquals(signal, null);
 	}
 
+	@Test
+	public void disarmsItsSilenceOnAnUnchangedValue() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<String>().set("a").subscribe(received::add);
+		signal.silent().set("a");
+		signal.set("b");
+		Assert.assertEquals(Collections.singletonList("b"), received);
+	}
+
+	@Test
+	public void notifiesItsDefaultOnceItsValueIsCleared() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<>("joid").set("ui").subscribe(received::add).set(null);
+		Assert.assertEquals("joid", signal.get());
+		Assert.assertEquals(Collections.singletonList("joid"), received);
+	}
+
+	@Test
+	public void notifiesNullWithoutDefault() {
+		final List<String> received = new ArrayList<>();
+		new Signal<String>().set("ui").subscribe(received::add).set(null);
+		Assert.assertEquals(Collections.singletonList(null), received);
+	}
+
 }

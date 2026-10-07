@@ -98,4 +98,16 @@ public class SetSignalTest {
 		Assert.assertEquals(Collections.singletonList(Collections.singleton("a")), received);
 	}
 
+	@Test
+	public void ignoresAMutationThatChangesNothing() {
+		final List<Set<String>> received = new ArrayList<>();
+		final SetSignal<String> signal = SetSignal.of(new HashSet<>(Collections.singleton("a")));
+		signal.subscribe(received::add);
+		Assert.assertFalse(signal.add("a"));
+		Assert.assertFalse(signal.remove("b"));
+		signal.remove("a");
+		signal.clear();
+		Assert.assertEquals(Collections.singletonList(Collections.emptySet()), received);
+	}
+
 }

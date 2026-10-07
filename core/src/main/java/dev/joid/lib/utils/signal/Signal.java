@@ -16,8 +16,8 @@ import lombok.NonNull;
 
 public class Signal<T> implements ISignal<T> {
 
-	private final transient List<@NonNull ComputedSignal<?>>           observerList;
-	private final transient Set<@NonNull SignalSubscriber<@NonNull T>> eventSet;
+	private final transient List<@NonNull ComputedSignal<?>>  observerList;
+	private final transient Set<@NonNull SignalSubscriber<T>> eventSet;
 
 	private volatile T value;
 	private volatile T defaultValue;
@@ -79,6 +79,7 @@ public class Signal<T> implements ISignal<T> {
 		final T oldValue = this.value;
 		this.value = value;
 		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
+			this.nextSilent = false;
 			return this;
 		}
 
@@ -86,13 +87,13 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	@Override
-	public @NonNull Signal<T> subscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
+	public @NonNull Signal<T> subscribe(final @NonNull SignalSubscriber<T> subscriber) {
 		this.eventSet.add(subscriber);
 		return this;
 	}
 
 	@Override
-	public @NonNull Signal<T> unsubscribe(final @NonNull SignalSubscriber<@NonNull T> subscriber) {
+	public @NonNull Signal<T> unsubscribe(final @NonNull SignalSubscriber<T> subscriber) {
 		this.eventSet.remove(subscriber);
 		return this;
 	}
@@ -133,7 +134,7 @@ public class Signal<T> implements ISignal<T> {
 		return this.value != null ? this.value : this.defaultValue;
 	}
 
-	public @NonNull Set<@NonNull SignalSubscriber<@NonNull T>> getEventSet() {
+	public @NonNull Set<@NonNull SignalSubscriber<T>> getEventSet() {
 		return this.eventSet;
 	}
 
@@ -152,7 +153,7 @@ public class Signal<T> implements ISignal<T> {
 	protected void refresh() {}
 
 	protected void dispatch() {
-		this.emit(this.value);
+		this.emit(this.peek());
 	}
 
 	protected boolean isObserved() {
@@ -186,6 +187,21 @@ public class Signal<T> implements ISignal<T> {
 
 	protected final void nextVersion() {
 		this.version++;
+	}
+
+	protected final void assign(final T value) {
+		final boolean silent = this.nextSilent;
+		this.nextSilent = true;
+		this.set(value);
+		this.nextSilent = silent;
+	}
+
+	protected final void publishIf(final boolean changed) {
+		if (changed) {
+			this.publish();
+		} else {
+			this.nextSilent = false;
+		}
 	}
 
 	protected final void emit(final T value) {

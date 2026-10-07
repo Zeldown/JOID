@@ -100,4 +100,26 @@ public class MapSignalTest {
 		Assert.assertEquals(Collections.singletonList(Collections.singletonMap("a", 1)), received);
 	}
 
+	@Test
+	public void ignoresAMutationThatChangesNothing() {
+		final List<Map<String, Integer>> received = new ArrayList<>();
+		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>(Collections.singletonMap("a", 1)));
+		signal.subscribe(received::add);
+		Assert.assertEquals(Integer.valueOf(1), signal.put("a", 1));
+		Assert.assertNull(signal.remove("b"));
+		signal.remove("a");
+		signal.clear();
+		Assert.assertEquals(Collections.singletonList(Collections.emptyMap()), received);
+	}
+
+	@Test
+	public void notifiesANullValuePutUnderANewKey() {
+		final List<Map<String, Integer>> received = new ArrayList<>();
+		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>());
+		signal.subscribe(value -> received.add(new HashMap<>(value)));
+		signal.put("a", null);
+		signal.put("a", null);
+		Assert.assertEquals(Collections.singletonList(Collections.singletonMap("a", null)), received);
+	}
+
 }
