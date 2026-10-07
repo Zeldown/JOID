@@ -29,7 +29,7 @@ public class DemoSwitchNode extends SwitchNode {
 	public void init(final @NonNull UI ui) {
 		RectNode
 		.create(0, 0, super.getWidth(), super.getHeight())
-		.color(Color.WHITE)
+		.color(Signal.from(() -> Color.WHITE.copyAlpha(super.isEnabled() ? 1F : 0.4F)))
 		.attach(this);
 
 		final double stateWidth = super.getWidth() / super.getStateList().size();
@@ -39,7 +39,7 @@ public class DemoSwitchNode extends SwitchNode {
 			for (final String state : super.getStateList().get()) {
 				RectNode
 				.create(0, 0, stateWidth, super.getHeight())
-				.color(Signal.from(() -> super.getState().equals(state) ? DemoSwitchNode.INK : Color.WHITE))
+				.color(Signal.from(() -> (super.getState().equals(state) ? DemoSwitchNode.INK : Color.WHITE).copyAlpha(super.isEnabled() ? 1F : 0.4F)))
 				.body(rect -> {
 					TextNode
 					.create(0, 0, rect.getWidth(), rect.getHeight())

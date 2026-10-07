@@ -19,9 +19,10 @@ public class DemoCheckboxNode extends CheckboxNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
+		final float alpha = super.isEnabled() ? 1F : 0.4F;
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.copyAlpha(alpha));
 		if (super.isChecked()) {
-			DrawUtils.SHAPE.drawRect(super.getX() + super.dw(2) - super.dw(4), super.getY() + super.dh(2) - super.dh(4), super.dw(2), super.dh(2), DemoCheckboxNode.INK);
+			DrawUtils.SHAPE.drawRect(super.getX() + super.dw(2) - super.dw(4), super.getY() + super.dh(2) - super.dh(4), super.dw(2), super.dh(2), DemoCheckboxNode.INK.copyAlpha(alpha));
 		}
 	}
 

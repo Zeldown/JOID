@@ -45,15 +45,9 @@ shot static-UIDemoGrid
 ui dev.joid.demo.ui.slider.UIDemoSlider
 wait 3500
 shot static-UIDemoSlider
-ui dev.joid.demo.ui.checkbox.UIDemoCheckbox
+ui dev.joid.demo.ui.control.UIDemoControl
 wait 3500
-shot static-UIDemoCheckbox
-ui dev.joid.demo.ui.toggle.UIDemoToggle
-wait 3500
-shot static-UIDemoToggle
-ui dev.joid.demo.ui.sw.UIDemoSwitch
-wait 3500
-shot static-UIDemoSwitch
+shot static-UIDemoControl
 ui dev.joid.demo.ui.chart.UIDemoChart
 wait 3500
 shot static-UIDemoChart

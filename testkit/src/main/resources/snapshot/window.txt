@@ -15,7 +15,7 @@ wait 1500
 shot window-choice-zoom
 zoom 1
 scale 0.4
-move 960 345
+move 1048 354
 wait 1000
 shot window-choice-scale-hover
 zoom 2

@@ -3,20 +3,20 @@ package dev.joid.demo.ui.slider.node;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.impl.structure.slider.SliderCursorNode;
-import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
+import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
 import lombok.NonNull;
 
-public class DemoIntegerSliderNode extends IntegerSliderNode {
+public class DemoDoubleSliderNode extends DoubleSliderNode {
 
 	private static final Color INK = new Color(153, 153, 153);
 
-	protected DemoIntegerSliderNode(final double x, final double y, final double width, final double height) {
+	protected DemoDoubleSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		super.cursor(new Cursor(height, height));
 	}
 
-	public static @NonNull DemoIntegerSliderNode create(final double x, final double y, final double width, final double height) {
-		return new DemoIntegerSliderNode(x, y, width, height);
+	public static @NonNull DemoDoubleSliderNode create(final double x, final double y, final double width, final double height) {
+		return new DemoDoubleSliderNode(x, y, width, height);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class DemoIntegerSliderNode extends IntegerSliderNode {
 
 		@Override
 		public void drawCursor(final double mouseX, final double mouseY) {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DemoIntegerSliderNode.INK.copyAlpha(super.isEnabled() ? 1F : 0.4F));
+			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DemoDoubleSliderNode.INK.copyAlpha(super.isEnabled() ? 1F : 0.4F));
 		}
 
 	}

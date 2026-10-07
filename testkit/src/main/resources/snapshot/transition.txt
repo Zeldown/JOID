@@ -2,7 +2,7 @@ ui dev.joid.demo.ui.UIDemoChoice
 wait 400
 shot transition-choice-in
 wait 1200
-move 960 180
+move 740 75
 wait 100
 press LEFT
 release LEFT

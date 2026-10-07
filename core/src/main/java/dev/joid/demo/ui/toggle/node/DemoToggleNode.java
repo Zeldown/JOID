@@ -19,8 +19,9 @@ public class DemoToggleNode extends ToggleNode<String, String> {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
-		DrawUtils.SHAPE.drawRect(super.getX() + (super.isToggle() ? super.dw(2) : 0), super.getY(), super.dw(2), super.getHeight(), DemoToggleNode.INK);
+		final float alpha = super.isEnabled() ? 1F : 0.4F;
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.copyAlpha(alpha));
+		DrawUtils.SHAPE.drawRect(super.getX() + (super.isToggle() ? super.dw(2) : 0), super.getY(), super.dw(2), super.getHeight(), DemoToggleNode.INK.copyAlpha(alpha));
 	}
 
 }

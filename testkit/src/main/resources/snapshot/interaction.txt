@@ -40,45 +40,166 @@ wait 300
 shot inter-textfield
 ui dev.joid.demo.ui.slider.UIDemoSlider
 wait 800
-move 770 540
+move 240 270
 wait 100
 press LEFT
-moveto 1150 540 600
-wait 300
+moveto 340 270 600
+wait 200
 release LEFT
-wait 800
+wait 100
+move 680 270
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 260 745
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 260 745
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 640 610
+wait 100
+press LEFT
+moveto 520 610 400
+wait 200
+release LEFT
+wait 100
+move 900 695
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1260 610
+wait 100
+press LEFT
+moveto 1440 610 400
+wait 200
+release LEFT
+wait 100
+move 1600 610
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 600
 shot inter-slider
-ui dev.joid.demo.ui.checkbox.UIDemoCheckbox
+ui dev.joid.demo.ui.control.UIDemoControl
 wait 800
-move 960 540
+move 150 110
 wait 100
 press LEFT
 release LEFT
-wait 800
-shot inter-checkbox
-ui dev.joid.demo.ui.toggle.UIDemoToggle
-wait 800
-move 960 540
+wait 100
+move 870 110
 wait 100
 press LEFT
 release LEFT
-wait 800
-shot inter-toggle
-ui dev.joid.demo.ui.sw.UIDemoSwitch
-wait 800
-move 1100 515
+wait 100
+move 1230 110
 wait 100
 press LEFT
 release LEFT
-wait 800
-shot inter-switch
+wait 100
+move 1590 110
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 180 450
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 900 450
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1260 450
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1620 450
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 320 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 880 855
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1400 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1320 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1680 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 600
+shot inter-control
 ui dev.joid.demo.ui.selector.UIDemoSelector
 wait 800
-move 700 540
+move 520 265
 wait 100
 press LEFT
 release LEFT
-wait 800
+wait 100
+move 520 365
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 435 605
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 435 705
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 960 605
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 960 705
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1400 605
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 960 415
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 600
 shot inter-selector
 ui dev.joid.demo.ui.overflow.UIDemoOverflow
 wait 800
@@ -204,7 +325,7 @@ wait 800
 shot inter-hover
 ui dev.joid.demo.ui.UIDemoChoice
 wait 1500
-move 960 75
+move 1180 75
 wait 800
 shot inter-choice-hover
 ui dev.joid.demo.ui.signal.UIDemoSignal
