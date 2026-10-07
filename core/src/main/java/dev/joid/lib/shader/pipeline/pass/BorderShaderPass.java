@@ -46,7 +46,7 @@ public class BorderShaderPass implements ShaderPass {
 
 	@Override
 	public void bindForTexture(final @NonNull ShaderPassContext context) {
-		if (!BorderShader.inst().isAvailable()) {
+		if (!BorderShader.inst().canDraw()) {
 			return;
 		}
 

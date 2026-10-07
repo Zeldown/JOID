@@ -30,7 +30,7 @@ public class GradientShader extends ShaderImpl {
 	}
 
 	public static void use(final @NonNull Vector2f startPos, final @NonNull Vector2f endPos, final @NonNull Color startColor, final @NonNull Color endColor, final boolean hasTexture, final Runnable runnable, final @NonNull Vector4f canvas) {
-		if (!GradientShader.INSTANCE.isAvailable()) {
+		if (!GradientShader.INSTANCE.canDraw()) {
 			return;
 		}
 

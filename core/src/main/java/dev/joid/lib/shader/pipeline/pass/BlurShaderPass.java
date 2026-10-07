@@ -34,7 +34,7 @@ public class BlurShaderPass implements ShaderPass {
 
 	@Override
 	public void bindForTexture(final @NonNull ShaderPassContext context) {
-		if (!BlurShader.inst().isAvailable()) {
+		if (!BlurShader.inst().canDraw()) {
 			return;
 		}
 

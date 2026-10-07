@@ -26,7 +26,7 @@ public class RoundedShader extends ShaderImpl {
 	}
 
 	public static void use(final float radius, final float x1, final float y1, final float x2, final float y2, final @NonNull Runnable runnable) {
-		if (!RoundedShader.INSTANCE.isAvailable()) {
+		if (!RoundedShader.INSTANCE.canDraw()) {
 			return;
 		}
 

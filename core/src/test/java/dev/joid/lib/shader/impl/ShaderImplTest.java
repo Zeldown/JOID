@@ -66,8 +66,8 @@ public class ShaderImplTest {
 		JOID.inst().setDevMode(true);
 		try {
 			final String error = ShaderImplTest.capture(() -> {
-				shader[0].isAvailable();
-				shader[0].isAvailable();
+				shader[0].canDraw();
+				shader[0].canDraw();
 			});
 			Assert.assertEquals("[JOID] The shader SourceShader is unavailable, what it draws is skipped" + System.lineSeparator(), error);
 		} finally {
@@ -79,7 +79,20 @@ public class ShaderImplTest {
 	public void staysSilentOutOfDevModeWhenItIsUnavailable() {
 		final SourceShader[] shader = new SourceShader[1];
 		ShaderImplTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderImplTest.source()));
-		Assert.assertEquals("", ShaderImplTest.capture(() -> shader[0].isAvailable()));
+		Assert.assertEquals("", ShaderImplTest.capture(() -> shader[0].canDraw()));
+	}
+
+	@Test
+	public void checksItsAvailabilitySilentlyInDevMode() {
+		final SourceShader[] shader = new SourceShader[1];
+		ShaderImplTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderImplTest.source()));
+		JOID.inst().setDevMode(true);
+		try {
+			Assert.assertEquals("", ShaderImplTest.capture(() -> Assert.assertFalse(shader[0].isAvailable())));
+			Assert.assertNotEquals("", ShaderImplTest.capture(() -> Assert.assertFalse(shader[0].canDraw())));
+		} finally {
+			JOID.inst().setDevMode(false);
+		}
 	}
 
 	@Test
@@ -87,7 +100,7 @@ public class ShaderImplTest {
 		final SourceShader shader = new SourceShader(ShaderImplTest.source(), ShaderImplTest.source());
 		JOID.inst().setDevMode(true);
 		try {
-			Assert.assertEquals("", ShaderImplTest.capture(() -> shader.isAvailable()));
+			Assert.assertEquals("", ShaderImplTest.capture(() -> Assert.assertTrue(shader.canDraw())));
 		} finally {
 			JOID.inst().setDevMode(false);
 		}

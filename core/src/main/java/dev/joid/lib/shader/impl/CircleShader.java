@@ -26,7 +26,7 @@ public class CircleShader extends ShaderImpl {
 	}
 
 	public static void use(final float radius, final float centerX, final float centerY, final Runnable runnable) {
-		if (!CircleShader.INSTANCE.isAvailable()) {
+		if (!CircleShader.INSTANCE.canDraw()) {
 			return;
 		}
 

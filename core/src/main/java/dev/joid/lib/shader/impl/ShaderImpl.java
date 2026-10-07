@@ -39,13 +39,17 @@ public abstract class ShaderImpl {
 		}
 	}
 
-	public boolean isAvailable() {
-		final boolean available = this.shader != null && this.shader.isActive();
+	public boolean canDraw() {
+		final boolean available = this.isAvailable();
 		if (!available && JOID.inst().isDevMode() && !this.warned) {
 			this.warned = true;
 			System.err.println("[JOID] The shader " + this.getClass().getSimpleName() + " is unavailable, what it draws is skipped");
 		}
 		return available;
+	}
+
+	public boolean isAvailable() {
+		return this.shader != null && this.shader.isActive();
 	}
 
 }

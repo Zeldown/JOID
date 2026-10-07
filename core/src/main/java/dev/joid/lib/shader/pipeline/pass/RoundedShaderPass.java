@@ -53,7 +53,7 @@ public class RoundedShaderPass implements ShaderPass {
 
 	@Override
 	public void bindForTexture(final @NonNull ShaderPassContext context) {
-		if (!RoundedShader.inst().isAvailable()) {
+		if (!RoundedShader.inst().canDraw()) {
 			return;
 		}
 

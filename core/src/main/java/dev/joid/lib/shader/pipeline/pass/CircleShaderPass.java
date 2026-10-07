@@ -37,7 +37,7 @@ public class CircleShaderPass implements ShaderPass {
 
 	@Override
 	public void bindForTexture(final @NonNull ShaderPassContext context) {
-		if (!CircleShader.inst().isAvailable()) {
+		if (!CircleShader.inst().canDraw()) {
 			return;
 		}
 

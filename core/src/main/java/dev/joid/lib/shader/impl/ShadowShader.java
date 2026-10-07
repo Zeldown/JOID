@@ -21,7 +21,7 @@ public class ShadowShader extends ShaderImpl {
 	}
 
 	public static void use(final float radius, final float blur, final float x1, final float y1, final float x2, final float y2, final @NonNull Runnable runnable) {
-		if (!ShadowShader.INSTANCE.isAvailable()) {
+		if (!ShadowShader.INSTANCE.canDraw()) {
 			return;
 		}
 
