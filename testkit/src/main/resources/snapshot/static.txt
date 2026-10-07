@@ -33,6 +33,9 @@ shot static-UIDemoReorderable
 ui dev.joid.demo.ui.resource.UIDemoResource
 wait 3500
 shot static-UIDemoResource
+ui dev.joid.demo.ui.resource.UIDemoPlayer
+wait 3500
+shot static-UIDemoPlayer
 ui dev.joid.demo.ui.shader.UIDemoShader
 wait 3500
 shot static-UIDemoShader

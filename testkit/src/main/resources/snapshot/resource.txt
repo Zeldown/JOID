@@ -3,19 +3,55 @@ wait 1500
 shot resource-start
 wait 700
 shot resource-later
-move 840 656
+move 615 560
+wait 800
+shot resource-hover
+scale 0.5
+mask 990 293 80 55
+wait 500
+shot resource-scale
+unmask
+scale 1
+ui dev.joid.demo.ui.resource.UIDemoPlayer
+wait 1500
+shot resource-player
+move 1240 130
 wait 100
 press LEFT
 release LEFT
+wait 100
 key SPACE
 wait 500
 shot resource-paused
+move 1600 130
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 600 470
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1680 470
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1210 588
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 240 470
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 800
+shot resource-controls
 key F
 wait 500
 shot resource-fullscreen
 key F
-scale 0.5
-mask 710 414 60 60
-wait 500
-shot resource-scale
-unmask
+wait 300
