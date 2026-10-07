@@ -21,5 +21,4 @@ shot window-choice-scale-hover
 zoom 2
 wait 500
 shot window-choice-scale-zoom
-scale 1
 zoom 1

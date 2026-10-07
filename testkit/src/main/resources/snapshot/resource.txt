@@ -19,4 +19,3 @@ mask 710 414 60 60
 wait 500
 shot resource-scale
 unmask
-scale 1
