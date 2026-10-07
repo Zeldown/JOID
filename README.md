@@ -39,7 +39,7 @@ JOID is a UI engine for Java 8. You build each screen from nodes, JOID draws it 
 
 ## Showcase
 
-Every frame below is a real JOID render on the 1920×1080 canvas. Only the mouse pointer is drawn on top. Watch them all in the [1080p video](documentation/content/images/showcase.mp4).
+Every frame below is a real JOID render on the 1920×1080 canvas, with only the mouse pointer drawn on top. The look itself was designed for this showcase: JOID comes with no design of its own, so your components look exactly the way you draw them. Watch them all in the [1080p video](documentation/content/images/showcase.mp4).
 
 <p align="center">
   <img src="documentation/content/images/showcase-hero.webp" alt="A dashboard drawn by JOID: a large gradient headline, a video card with rounded corners, a live chart, a spinning 3D teapot and a notification sliding in, over soft blurred colors" width="100%">
