@@ -8,8 +8,14 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
@@ -195,6 +201,34 @@ public class MsdfFontCacheTest {
 		} catch (final IOException expected) {
 			Assert.assertEquals("Unable to create the msdf cache " + cache.getAbsolutePath(), expected.getMessage());
 		}
+	}
+
+	@Test(timeout = 120000L)
+	public void generatesSeveralFontsAtOnceIntoAMissingDirectory() throws Exception {
+		final byte[] font = MsdfFontCacheTest.font();
+		final File cache = new File(this.folder.getRoot(), "shared/msdf");
+		final CountDownLatch start = new CountDownLatch(1);
+		final ExecutorService executor = Executors.newFixedThreadPool(8);
+		try {
+			final List<CompletableFuture<Void>> futures = new ArrayList<>();
+			for (int i = 0; i < 8; i++) {
+				final File file = new File(cache, "font-" + i + ".msdf");
+				futures.add(CompletableFuture.runAsync(() -> {
+					try {
+						start.await();
+						MsdfFontCache.generate(font, file);
+					} catch (final Exception exception) {
+						throw new CompletionException(exception);
+					}
+				}, executor));
+			}
+
+			start.countDown();
+			CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).join();
+		} finally {
+			executor.shutdownNow();
+		}
+		Assert.assertEquals(8, cache.list().length);
 	}
 
 	@Test

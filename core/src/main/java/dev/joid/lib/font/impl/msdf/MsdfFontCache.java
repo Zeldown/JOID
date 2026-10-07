@@ -41,8 +41,10 @@ public final class MsdfFontCache {
 
 	public static void generate(final @NonNull byte[] font, final @NonNull File file) throws IOException {
 		final File directory = file.getAbsoluteFile().getParentFile();
-		if (!directory.isDirectory() && !directory.mkdirs()) {
-			throw new IOException("Unable to create the msdf cache " + directory.getAbsolutePath());
+		try {
+			Files.createDirectories(directory.toPath());
+		} catch (final IOException exception) {
+			throw new IOException("Unable to create the msdf cache " + directory.getAbsolutePath(), exception);
 		}
 
 		final File temporary = File.createTempFile("msdf-", ".tmp", directory);
