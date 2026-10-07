@@ -15,6 +15,7 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.render.tessellator.EdgeSmoothing;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.RoundedShader;
@@ -67,7 +68,7 @@ public final class DrawShape {
 		final double spread = blur * 1.5D;
 		final Color shadow = color.isGradient() ? color.gradient.getStartColor() : color;
 		ShadowShader.use(radius, blur, (float) x, (float) y, (float) (x + width), (float) (y + height), () -> {
-			this.drawPolygon(shadow, new Vector2d(x - spread, y + height + spread), new Vector2d(x + width + spread, y + height + spread), new Vector2d(x + width + spread, y - spread), new Vector2d(x - spread, y - spread));
+			this.drawPoints(DrawMode.POLYGON, shadow, false, new Vector2d(x - spread, y + height + spread), new Vector2d(x + width + spread, y + height + spread), new Vector2d(x + width + spread, y - spread), new Vector2d(x - spread, y - spread));
 		});
 	}
 
@@ -77,7 +78,7 @@ public final class DrawShape {
 				CircleShader.inst().gradient(color.gradient, new Vector4f((float) (x - radius), (float) (y - radius), (float) (x + radius), (float) (y + radius)));
 			}
 
-			this.drawPolygon(color.isGradient() ? Color.WHITE : color, new Vector2d(x - radius, y + radius), new Vector2d(x + radius, y + radius), new Vector2d(x + radius, y - radius), new Vector2d(x - radius, y - radius));
+			this.drawPoints(DrawMode.POLYGON, color.isGradient() ? Color.WHITE : color, false, new Vector2d(x - radius, y + radius), new Vector2d(x + radius, y + radius), new Vector2d(x + radius, y - radius), new Vector2d(x - radius, y - radius));
 		});
 	}
 
@@ -217,36 +218,8 @@ public final class DrawShape {
 	}
 
 	public void drawShape(final @NonNull DrawMode mode, final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
-		double minX = Double.POSITIVE_INFINITY;
-		double minY = Double.POSITIVE_INFINITY;
-		double maxX = Double.NEGATIVE_INFINITY;
-		double maxY = Double.NEGATIVE_INFINITY;
-
-		for (final Vector2d point : points) {
-			minX = Math.min(minX, point.x);
-			minY = Math.min(minY, point.y);
-			maxX = Math.max(maxX, point.x);
-			maxY = Math.max(maxY, point.y);
-		}
-
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final Tessellator tessellator = Tessellator.inst();
-		render.pushMatrix();
-		render.pushState();
-		try {
-			render.blend(BlendState.NORMAL);
-			render.resetTexture();
-			color.bind(() -> {
-				tessellator.start(mode);
-				for (final Vector2d point : points) {
-					tessellator.addVertex(point.x, point.y, 0D);
-				}
-				tessellator.draw();
-			}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
-		} finally {
-			render.popState();
-			render.popMatrix();
-		}
+		final boolean smooth = mode == DrawMode.POLYGON && EdgeSmoothing.isConvex(points) && (!BridgeHandler.RENDER.get().getPixelGrid().isAligned() || DrawShape.isSlanted(points));
+		this.drawPoints(mode, color, smooth, points);
 	}
 
 	public void drawRawRect(final double x, final double y, final double width, final double height) {
@@ -295,9 +268,14 @@ public final class DrawShape {
 
 	private void drawEdges(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IShader rounded = RoundedShader.inst().getShader();
-		if (render.getPixelGrid().isAligned() || render.getShader() != null || rounded == null || !rounded.isActive()) {
+		if (render.getPixelGrid().isAligned()) {
 			this.drawQuad(left, top, right, bottom, color);
+			return;
+		}
+
+		final IShader rounded = RoundedShader.inst().getShader();
+		if (render.getShader() != null || rounded == null || !rounded.isActive()) {
+			this.drawPoints(DrawMode.POLYGON, color, true, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
 			return;
 		}
 
@@ -316,7 +294,57 @@ public final class DrawShape {
 	}
 
 	private void drawQuad(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
-		this.drawPolygon(color, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
+		this.drawPoints(DrawMode.POLYGON, color, false, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
+	}
+
+	private void drawPoints(final @NonNull DrawMode mode, final @NonNull Color color, final boolean smooth, final @NonNull Vector2d @NonNull... points) {
+		double minX = Double.POSITIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
+
+		for (final Vector2d point : points) {
+			minX = Math.min(minX, point.x);
+			minY = Math.min(minY, point.y);
+			maxX = Math.max(maxX, point.x);
+			maxY = Math.max(maxY, point.y);
+		}
+
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final Tessellator tessellator = Tessellator.inst();
+		render.pushMatrix();
+		render.pushState();
+		try {
+			render.blend(BlendState.NORMAL);
+			render.resetTexture();
+			color.bind(() -> {
+				if (smooth) {
+					final Color resolved = color.isGradient() ? Color.WHITE : color.update();
+					EdgeSmoothing.polygon(resolved.r, resolved.g, resolved.b, resolved.a, points);
+					return;
+				}
+
+				tessellator.start(mode);
+				for (final Vector2d point : points) {
+					tessellator.addVertex(point.x, point.y, 0D);
+				}
+				tessellator.draw();
+			}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
+		} finally {
+			render.popState();
+			render.popMatrix();
+		}
+	}
+
+	private static boolean isSlanted(final @NonNull Vector2d @NonNull... points) {
+		for (int i = 0; i < points.length; i++) {
+			final Vector2d start = points[i];
+			final Vector2d end = points[(i + 1) % points.length];
+			if (start.x != end.x && start.y != end.y) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static Color cover(final Color color, final double coverage) {

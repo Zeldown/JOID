@@ -81,18 +81,25 @@ public final class ShaderPipeline {
 		}
 	}
 
-	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final double x, final double y, final double w, final double h) {
+	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final @NonNull ShaderPassContext context) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final boolean aligned = render.getPixelGrid().isAligned();
 		render.blend(BlendState.PREMULTIPLIED);
-		render.texture(frameBuffer.getHandle().getTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		render.texture(frameBuffer.getHandle().getTexture(), TextureFilter.LINEAR, aligned ? TextureWrap.CLAMP_TO_BORDER : TextureWrap.CLAMP_TO_EDGE);
 		render.color(1F, 1F, 1F, 1F);
 
+		final double growU = aligned ? 0D : 1D / context.getTextureWidth();
+		final double growV = aligned ? 0D : 1D / context.getTextureHeight();
+		final double x = context.getRegionX() - context.getRegionWidth() * growU;
+		final double y = context.getRegionY() - context.getRegionHeight() * growV;
+		final double w = context.getRegionWidth() * (1D + growU * 2D);
+		final double h = context.getRegionHeight() * (1D + growV * 2D);
 		final Tessellator tess = Tessellator.inst();
 		tess.start(DrawMode.QUADS);
-		tess.addVertexWithUV(x, y + h, 0D, 0D, 0D);
-		tess.addVertexWithUV(x + w, y + h, 0D, 1D, 0D);
-		tess.addVertexWithUV(x + w, y, 0D, 1D, 1D);
-		tess.addVertexWithUV(x, y, 0D, 0D, 1D);
+		tess.addVertexWithUV(x, y + h, 0D, -growU, -growV);
+		tess.addVertexWithUV(x + w, y + h, 0D, 1D + growU, -growV);
+		tess.addVertexWithUV(x + w, y, 0D, 1D + growU, 1D + growV);
+		tess.addVertexWithUV(x, y, 0D, -growU, 1D + growV);
 		tess.draw();
 
 		render.blend(BlendState.DISABLED);
@@ -151,7 +158,7 @@ public final class ShaderPipeline {
 	private static void drawPass(final @NonNull ShaderPass pass, final @NonNull ShaderPassContext context, final @NonNull FrameBuffer source) {
 		pass.bindForTexture(context);
 		try {
-			ShaderPipeline.drawTexturedQuad(source, context.getRegionX(), context.getRegionY(), context.getRegionWidth(), context.getRegionHeight());
+			ShaderPipeline.drawTexturedQuad(source, context);
 		} finally {
 			pass.unbind();
 		}

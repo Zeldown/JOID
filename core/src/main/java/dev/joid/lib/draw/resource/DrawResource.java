@@ -9,9 +9,11 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.render.tessellator.EdgeSmoothing;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.dto.ResourceProperties;
+import dev.joid.lib.shader.impl.RoundedShader;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -71,35 +73,36 @@ public final class DrawResource {
 			}
 		}
 
+		final double[] uv = failed || region == null || region.length != 4 ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getWidth(), region[1] / resource.getHeight(), (region[0] + region[2]) / resource.getWidth(), (region[1] + region[3]) / resource.getHeight()};
 		render.pushMatrix();
 		try {
 			render.blend(BlendState.NORMAL);
-			resource.bind(grid.isAligned() ? TextureWrap.CLAMP_TO_EDGE : TextureWrap.CLAMP_TO_BORDER, () -> {
-				final Tessellator tess = Tessellator.inst();
-				tess.start(DrawMode.QUADS);
-				if (failed || region == null || region.length != 4) {
-					tess.addVertexWithUV(left, bottom, 0D, 0D, 1D);
-					tess.addVertexWithUV(right, bottom, 0D, 1D, 1D);
-					tess.addVertexWithUV(right, top, 0D, 1D, 0D);
-					tess.addVertexWithUV(left, top, 0D, 0D, 0D);
-				} else {
-					final double u = region[0] / resource.getWidth();
-					final double v = region[1] / resource.getHeight();
-					final double u2 = (region[0] + region[2]) / resource.getWidth();
-					final double v2 = (region[1] + region[3]) / resource.getHeight();
-
-					tess.addVertexWithUV(left, bottom, 0D, u, v2);
-					tess.addVertexWithUV(right, bottom, 0D, u2, v2);
-					tess.addVertexWithUV(right, top, 0D, u2, v);
-					tess.addVertexWithUV(left, top, 0D, u, v);
-				}
-				tess.draw();
-
-				render.blend(BlendState.DISABLED);
-			});
+			if (grid.isAligned()) {
+				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> DrawResource.drawQuad(left, top, right, bottom, uv, 0D));
+			} else if (render.getShader() == null && RoundedShader.inst().isAvailable()) {
+				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> RoundedShader.use(0F, (float) (left + 0.5D), (float) (top + 0.5D), (float) (right - 0.5D), (float) (bottom - 0.5D), () -> {
+					RoundedShader.inst().aligned(false);
+					DrawResource.drawQuad(left, top, right, bottom, uv, 1D);
+				}));
+			} else {
+				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> EdgeSmoothing.rect(left, top, right, bottom, uv, 1F, 1F, 1F, 1F));
+			}
+			render.blend(BlendState.DISABLED);
 		} finally {
 			render.popMatrix();
 		}
+	}
+
+	private static void drawQuad(final double left, final double top, final double right, final double bottom, final double[] uv, final double grow) {
+		final double growU = grow == 0D ? 0D : (uv[2] - uv[0]) / (right - left) * grow;
+		final double growV = grow == 0D ? 0D : (uv[3] - uv[1]) / (bottom - top) * grow;
+		final Tessellator tess = Tessellator.inst();
+		tess.start(DrawMode.QUADS);
+		tess.addVertexWithUV(left - grow, bottom + grow, 0D, uv[0] - growU, uv[3] + growV);
+		tess.addVertexWithUV(right + grow, bottom + grow, 0D, uv[2] + growU, uv[3] + growV);
+		tess.addVertexWithUV(right + grow, top - grow, 0D, uv[2] + growU, uv[1] - growV);
+		tess.addVertexWithUV(left - grow, top - grow, 0D, uv[0] - growU, uv[1] - growV);
+		tess.draw();
 	}
 
 }

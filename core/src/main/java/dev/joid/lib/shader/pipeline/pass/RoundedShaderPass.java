@@ -57,18 +57,20 @@ public class RoundedShaderPass implements ShaderPass {
 			return;
 		}
 
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
 		if (this.effect == null) {
 			RoundedShader.inst().bind(this.fixedRadius, this.fixedX1, this.fixedY1, this.fixedX2, this.fixedY2, RoundedShaderType.TEXTURE);
+			RoundedShader.inst().aligned(grid.isAligned());
 			return;
 		}
 
-		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
 		final float radius = this.effect.getRadius();
 		final float x1 = (float) (grid.snapX(this.node.getX()) + (this.effect.isLeft() ? radius : 0));
 		final float y1 = (float) (grid.snapY(this.node.getY()) + (this.effect.isTop() ? radius : 0));
 		final float x2 = (float) (grid.snapRight(this.node.getX(), this.node.getX() + this.node.getWidth()) - (this.effect.isRight() ? radius : 0));
 		final float y2 = (float) (grid.snapBottom(this.node.getY(), this.node.getY() + this.node.getHeight()) - (this.effect.isBottom() ? radius : 0));
 		RoundedShader.inst().bind(radius, x1, y1, x2, y2, RoundedShaderType.TEXTURE);
+		RoundedShader.inst().aligned(grid.isAligned());
 	}
 
 }

@@ -9,6 +9,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
+import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
@@ -18,6 +19,7 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
+import dev.joid.lib.shader.impl.RoundedShader;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -106,7 +108,7 @@ public class DrawResourceTest {
 	}
 
 	@Test
-	public void keepsARotatedImageExact() {
+	public void smoothsTheEdgesOfARotatedImageWithTheRoundedShader() {
 		this.render.pushMatrix();
 		try {
 			this.render.rotate(30D, 0D, 0D, 1D);
@@ -116,9 +118,36 @@ public class DrawResourceTest {
 		}
 
 		final Capture capture = this.single();
-		Assert.assertEquals(10.3D, capture.getLeft(), 1E-4D);
-		Assert.assertEquals(70.6D, capture.getBottom(), 1E-4D);
-		Assert.assertSame(TextureWrap.CLAMP_TO_BORDER, capture.getState().getTextureWrap());
+		Assert.assertSame(RoundedShader.inst().getShader(), capture.getState().getShader());
+		Assert.assertEquals(0, capture.getUniforms().get("u_Aligned"));
+		Assert.assertArrayEquals(new float[] {10.8F, 21.1F, 109.8F, 70.1F}, (float[]) capture.getUniforms().get("u_InnerRect"), 1E-4F);
+		Assert.assertEquals(9.3D, capture.getLeft(), 1E-4D);
+		Assert.assertEquals(71.6D, capture.getBottom(), 1E-4D);
+		Assert.assertEquals(-0.01F, capture.getU(0), 1E-6F);
+		Assert.assertEquals(1.02F, capture.getV(0), 1E-6F);
+		Assert.assertSame(TextureWrap.CLAMP_TO_EDGE, capture.getState().getTextureWrap());
+		Assert.assertNull(this.render.getShader());
+	}
+
+	@Test
+	public void smoothsTheEdgesOfARotatedImageUnderTheShaderOfTheCaller() {
+		final RecordingShader shader = new RecordingShader();
+		this.render.shader(shader);
+		this.render.pushMatrix();
+		try {
+			this.render.rotate(30D, 0D, 0D, 1D);
+			DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 50D, DrawResourceTest.image(64, 32));
+		} finally {
+			this.render.popMatrix();
+		}
+
+		final Capture capture = this.single();
+		Assert.assertSame(shader, capture.getState().getShader());
+		Assert.assertTrue(capture.isColor());
+		Assert.assertEquals(30, capture.getCount());
+		Assert.assertEquals(9.5D, capture.getLeft(), 1E-4D);
+		Assert.assertEquals(110.5D, capture.getRight(), 1E-4D);
+		Assert.assertEquals(0.005F, capture.getU(0), 1E-6F);
 	}
 
 	@Test

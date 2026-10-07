@@ -1,9 +1,12 @@
 package dev.joid.demo.ui.shader;
 
+import javax.vecmath.Vector2d;
+import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
@@ -13,6 +16,7 @@ import dev.joid.lib.render.modifier.Vector;
 import dev.joid.lib.render.transform.operation.RotateOperation;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
@@ -288,6 +292,59 @@ public class UIDemoShader extends UIDemo {
 					.effect(CircleNodeEffect.create())
 					.attach(column);
 					TextNode.create(0, 0).text(Text.create("Vertical circle", caption)).attach(column);
+				})
+				.attach(node);
+				FlexNode
+				.vertical(0, 0, 160)
+				.margin(20D)
+				.align(Align.CENTER)
+				.body(column -> {
+					RectNode
+					.create(0, 0, 160, 80)
+					.color(Color.TRANSPARENT)
+					.self(rect -> rect.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, new Vector2d(rect.getX(), rect.getY() + 80D), new Vector2d(rect.getX() + 160D, rect.getY() + 80D), new Vector2d(rect.getX() + 110D, rect.getY()), new Vector2d(rect.getX() + 30D, rect.getY()))).effect(TransformNodeEffect.create(new RotateOperation(12D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+					.attach(column);
+					TextNode.create(0, 0).text(Text.create("Rotated polygon", caption)).attach(column);
+				})
+				.attach(node);
+				FlexNode
+				.vertical(0, 0, 160)
+				.margin(8D)
+				.align(Align.CENTER)
+				.body(column -> {
+					ResourceNode
+					.create(0, 0, 120, 120)
+					.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp")))
+					.self(image -> image.effect(TransformNodeEffect.create(new RotateOperation(10D, Rotation.ROLL, Vector.create(() -> image.getX() + 60D, () -> image.getY() + 60D)))))
+					.attach(column);
+					TextNode.create(0, 0).text(Text.create("Rotated image", caption)).attach(column);
+				})
+				.attach(node);
+				FlexNode
+				.vertical(0, 0, 160)
+				.margin(20D)
+				.align(Align.CENTER)
+				.body(column -> {
+					RectNode
+					.create(0, 0, 160, 80)
+					.color(Color.GREEN.toGradient(Color.BLUE))
+					.effect(RoundedNodeEffect.create(20F))
+					.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(-10D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+					.attach(column);
+					TextNode.create(0, 0).text(Text.create("Rotated effect", caption)).attach(column);
+				})
+				.attach(node);
+				FlexNode
+				.vertical(0, 0, 160)
+				.margin(20D)
+				.align(Align.CENTER)
+				.body(column -> {
+					RectNode
+					.create(0, 0, 160, 80)
+					.color(Color.TRANSPARENT)
+					.self(rect -> rect.layer((mouseX, mouseY) -> GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), Color.WHITE), new Vector4f((float) rect.getX(), (float) rect.getY(), (float) (rect.getX() + rect.getWidth()), (float) (rect.getY() + rect.getHeight())))).effect(TransformNodeEffect.create(new RotateOperation(8D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+					.attach(column);
+					TextNode.create(0, 0).text(Text.create("Shader bound", caption)).attach(column);
 				})
 				.attach(node);
 			})

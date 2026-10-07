@@ -126,10 +126,11 @@ public class RadarChartNodeTest {
 		this.bridges.open(new NodeUI(chart)).frame();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(1, draws.size());
-		Assert.assertEquals(100D, draws.get(0).getTop(), 1E-3D);
-		Assert.assertEquals(300D, draws.get(0).getBottom(), 1E-3D);
-		Assert.assertEquals(150D, draws.get(0).getLeft(), 1E-3D);
-		Assert.assertEquals(250D, draws.get(0).getRight(), 1E-3D);
+		Assert.assertEquals(30, draws.get(0).getXs().length);
+		Assert.assertEquals(100D - Math.sqrt(5D) / 2D, draws.get(0).getTop(), 1E-3D);
+		Assert.assertEquals(300D + Math.sqrt(5D) / 2D, draws.get(0).getBottom(), 1E-3D);
+		Assert.assertEquals(150D - Math.sqrt(5D) / 4D, draws.get(0).getLeft(), 1E-3D);
+		Assert.assertEquals(250D + Math.sqrt(5D) / 4D, draws.get(0).getRight(), 1E-3D);
 	}
 
 	@Test

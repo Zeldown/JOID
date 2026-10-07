@@ -175,9 +175,13 @@ public class DrawShapeTest {
 			this.bridges.getRender().popMatrix();
 		}
 
-		Assert.assertSame(shader, this.single(1F, 0F, 0F).getShader());
-		Assert.assertEquals(10F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
-		Assert.assertEquals(70F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
+		final Draw draw = this.single(1F, 0F, 0F);
+		Assert.assertSame(shader, draw.getShader());
+		Assert.assertEquals(30, draw.getXs().length);
+		Assert.assertEquals(10.5F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
+		Assert.assertEquals(69.5F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
+		Assert.assertEquals(255, Tessellator.inst().getRawBuffer()[5] >>> 24);
+		Assert.assertEquals(0, Tessellator.inst().getRawBuffer()[14 * 8 + 5] >>> 24);
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -346,11 +350,11 @@ public class DrawShapeTest {
 	}
 
 	@Test
-	public void keepsAPolygonOnItsExactPoints() {
-		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), new Vector2d(10.3D, 20.6D), new Vector2d(110.3D, 20.6D), new Vector2d(60.3D, 70.6D));
+	public void keepsAnAxisAlignedPolygonOnItsExactPoints() {
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), new Vector2d(10.3D, 20.6D), new Vector2d(110.3D, 20.6D), new Vector2d(110.3D, 70.6D), new Vector2d(10.3D, 70.6D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertSame(DrawMode.TRIANGLES, draw.getMode());
-		Assert.assertEquals(3, draw.getXs().length);
+		Assert.assertEquals(6, draw.getXs().length);
 		Assert.assertEquals(10.3D * 1366D / 1920D, draw.getLeft(), 1E-4D);
 		Assert.assertEquals(110.3D * 1366D / 1920D, draw.getRight(), 1E-4D);
 		Assert.assertEquals(20.6D * 768D / 1080D, draw.getTop(), 1E-4D);
@@ -358,8 +362,39 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void smoothsTheSlantedEdgesOfAPolygon() {
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 0.8F), new Vector2d(10D, 20D), new Vector2d(110D, 20D), new Vector2d(60D, 70D));
+		final Draw draw = this.single(0F, 1F, 0F);
+		Assert.assertSame(DrawMode.TRIANGLES, draw.getMode());
+		Assert.assertEquals(21, draw.getXs().length);
+		Assert.assertTrue(draw.getLeft() < 10D * 1366D / 1920D);
+		Assert.assertTrue(draw.getBottom() > 70D * 768D / 1080D);
+		Assert.assertEquals(204, Tessellator.inst().getRawBuffer()[5] >>> 24);
+	}
+
+	@Test
+	public void smoothsTheEdgesOfARotatedPolygon() {
+		this.bridges.resize(1920, 1080);
+		this.bridges.getRender().pushMatrix();
+		try {
+			this.bridges.getRender().rotate(10D, 0D, 0D, 1D);
+			DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), new Vector2d(10D, 20D), new Vector2d(110D, 20D), new Vector2d(110D, 70D), new Vector2d(10D, 70D));
+		} finally {
+			this.bridges.getRender().popMatrix();
+		}
+
+		Assert.assertEquals(30, this.single(0F, 1F, 0F).getXs().length);
+	}
+
+	@Test
+	public void keepsAConcavePolygonOnItsExactPoints() {
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), new Vector2d(0D, 0D), new Vector2d(100D, 0D), new Vector2d(50D, 20D), new Vector2d(100D, 100D), new Vector2d(0D, 100D));
+		Assert.assertEquals(9, this.single(0F, 1F, 0F).getXs().length);
+	}
+
+	@Test
 	public void drawsEveryModeWithTheColorOfTheShape() {
-		final int[] counts = {6, 10, 12, 6, 6, 12};
+		final int[] counts = {6, 10, 12, 6, 6, 48};
 		final Vector2d[] points = {new Vector2d(0D, 0D), new Vector2d(10D, 0D), new Vector2d(20D, 10D), new Vector2d(10D, 20D), new Vector2d(0D, 20D), new Vector2d(-10D, 10D)};
 		for (final DrawMode mode : DrawMode.values()) {
 			DrawUtils.SHAPE.drawShape(mode, new Color(0.2F, 0.4F, 0.6F, 0.8F), points);

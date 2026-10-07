@@ -21,6 +21,7 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
@@ -98,6 +99,27 @@ public class ShaderPipelineTest {
 		Assert.assertEquals(70F, composite.getY(0), 1E-3F);
 		Assert.assertEquals(0F, composite.getV(0), 0F);
 		Assert.assertEquals(1F, composite.getV(2), 0F);
+		Assert.assertSame(TextureWrap.CLAMP_TO_BORDER, composite.getState().getTextureWrap());
+	}
+
+	@Test
+	public void spreadsARotatedCompositeByOneTexelToSmoothItsEdges() {
+		this.render.pushMatrix();
+		try {
+			this.render.rotate(30D, 0D, 0D, 1D);
+			ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
+		} finally {
+			this.render.popMatrix();
+		}
+
+		final Capture composite = this.render.getLast();
+		Assert.assertSame(TextureWrap.CLAMP_TO_EDGE, composite.getState().getTextureWrap());
+		Assert.assertEquals(9D, composite.getLeft(), 1E-3D);
+		Assert.assertEquals(111D, composite.getRight(), 1E-3D);
+		Assert.assertEquals(19D, composite.getTop(), 1E-3D);
+		Assert.assertEquals(71D, composite.getBottom(), 1E-3D);
+		Assert.assertEquals(-0.01F, composite.getU(0), 1E-6F);
+		Assert.assertEquals(-0.02F, composite.getV(0), 1E-6F);
 	}
 
 	@Test
