@@ -7,6 +7,8 @@ import lombok.NonNull;
 
 public class DemoToggleNode extends ToggleNode<String, String> {
 
+	private static final Color INK = new Color(153, 153, 153);
+
 	protected DemoToggleNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 	}
@@ -17,8 +19,8 @@ public class DemoToggleNode extends ToggleNode<String, String> {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.BLACK);
-		DrawUtils.SHAPE.drawRect(super.getX() + (super.isToggle() ? super.dw(2) : 0), super.getY(), super.dw(2), super.getHeight(), Color.RED);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
+		DrawUtils.SHAPE.drawRect(super.getX() + (super.isToggle() ? super.dw(2) : 0), super.getY(), super.dw(2), super.getHeight(), DemoToggleNode.INK);
 	}
 
 }

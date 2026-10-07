@@ -15,6 +15,8 @@ import lombok.NonNull;
 
 public class DemoSwitchNode extends SwitchNode {
 
+	private static final Color INK = new Color(153, 153, 153);
+
 	protected DemoSwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 	}
@@ -27,7 +29,7 @@ public class DemoSwitchNode extends SwitchNode {
 	public void init(final @NonNull UI ui) {
 		RectNode
 		.create(0, 0, super.getWidth(), super.getHeight())
-		.color(Color.BLACK)
+		.color(Color.WHITE)
 		.attach(this);
 
 		final double stateWidth = super.getWidth() / super.getStateList().size();
@@ -37,11 +39,11 @@ public class DemoSwitchNode extends SwitchNode {
 			for (final String state : super.getStateList().get()) {
 				RectNode
 				.create(0, 0, stateWidth, super.getHeight())
-				.color(Signal.from(() -> super.getState().equals(state) ? Color.BLUE : Color.RED))
+				.color(Signal.from(() -> super.getState().equals(state) ? DemoSwitchNode.INK : Color.WHITE))
 				.body(rect -> {
 					TextNode
 					.create(0, 0, rect.getWidth(), rect.getHeight())
-					.text(Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE).shadow(Color.BLACK), Align.CENTER, Align.CENTER))
+					.text(Signal.from(() -> Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, super.getState().equals(state) ? Color.WHITE : DemoSwitchNode.INK), Align.CENTER, Align.CENTER)))
 					.attach(rect);
 				})
 				.onClick((node, mouseX, mouseY, clickType) -> {
@@ -49,7 +51,8 @@ public class DemoSwitchNode extends SwitchNode {
 				})
 				.attach(flex);
 			}
-		}).attach(this);
+		})
+		.attach(this);
 	}
 
 }

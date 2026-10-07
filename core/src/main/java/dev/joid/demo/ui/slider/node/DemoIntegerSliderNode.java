@@ -8,6 +8,8 @@ import lombok.NonNull;
 
 public class DemoIntegerSliderNode extends IntegerSliderNode {
 
+	private static final Color INK = new Color(153, 153, 153);
+
 	protected DemoIntegerSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		super.cursor(new Cursor(height, height));
@@ -19,7 +21,7 @@ public class DemoIntegerSliderNode extends IntegerSliderNode {
 
 	@Override
 	public void drawSlider(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.BLACK);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
 	}
 
 	private final class Cursor extends SliderCursorNode {
@@ -30,7 +32,7 @@ public class DemoIntegerSliderNode extends IntegerSliderNode {
 
 		@Override
 		public void drawCursor(final double mouseX, final double mouseY) {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.RED);
+			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DemoIntegerSliderNode.INK);
 		}
 
 	}

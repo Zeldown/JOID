@@ -1,6 +1,6 @@
 ui dev.joid.demo.ui.textfield.UIDemoTextField
 wait 800
-move 800 540
+move 400 260
 wait 100
 press LEFT
 release LEFT
@@ -14,7 +14,7 @@ key LEFT
 key LEFT
 up LEFT_SHIFT
 wait 200
-move 800 700
+move 960 260
 wait 100
 press LEFT
 release LEFT
@@ -22,6 +22,20 @@ wait 100
 type multi line: [a] {b} <c> "d" #f %h ^i &j *k _l |m ~n
 key ENTER
 type second
+wait 200
+move 1730 260
+wait 100
+press LEFT
+release LEFT
+wait 100
+type 5
+wait 200
+move 890 615
+wait 100
+press LEFT
+release LEFT
+wait 100
+type 3
 wait 300
 shot inter-textfield
 ui dev.joid.demo.ui.slider.UIDemoSlider

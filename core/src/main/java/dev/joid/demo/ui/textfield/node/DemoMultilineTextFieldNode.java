@@ -7,6 +7,8 @@ import lombok.NonNull;
 
 public class DemoMultilineTextFieldNode extends MultilineTextFieldNode {
 
+	private static final Color INK = new Color(153, 153, 153);
+
 	protected DemoMultilineTextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 	}
@@ -17,9 +19,9 @@ public class DemoMultilineTextFieldNode extends MultilineTextFieldNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.BLACK);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
 		if (super.isFocused()) {
-			DrawUtils.SHAPE.drawFilledBorder(super.getX(), super.getY(), super.getX() + super.getWidth(), super.getY() + super.getHeight(), Color.WHITE);
+			DrawUtils.SHAPE.drawFilledBorder(super.getX(), super.getY(), super.getX() + super.getWidth(), super.getY() + super.getHeight(), DemoMultilineTextFieldNode.INK, 2D);
 		}
 
 		super.draw(mouseX, mouseY);
