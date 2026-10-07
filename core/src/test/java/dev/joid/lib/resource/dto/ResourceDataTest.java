@@ -57,7 +57,19 @@ public class ResourceDataTest {
 		Assert.assertTrue(data.isLoaded());
 		Assert.assertTrue(data.isUploaded());
 		Assert.assertTrue(data.isGenerated());
-		Assert.assertTrue(decoder.calls.isEmpty());
+		Assert.assertEquals(Collections.singletonList("init"), decoder.calls);
+	}
+
+	@Test
+	public void initializesTheDecoderItIsGivenLater() {
+		final Decoder first = new Decoder();
+		final Decoder second = new Decoder();
+		final ResourceData data = new ResourceData("image", first);
+		Assert.assertSame(data, data.decoder(second));
+		Assert.assertSame(second, data.getDecoder());
+		Assert.assertEquals(Collections.singletonList("init"), second.calls);
+		Assert.assertSame(data, data.decoder(null));
+		Assert.assertNull(data.getDecoder());
 	}
 
 	@Test

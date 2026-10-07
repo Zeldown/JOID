@@ -1,7 +1,9 @@
 package dev.joid.lib.asset.dto.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,16 +12,24 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class UrlAssetTest {
+
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
 
 	private Server server;
 
@@ -58,6 +68,38 @@ public class UrlAssetTest {
 	public void fallsBackToPlainHttp() throws IOException {
 		Assert.assertArrayEquals("joid remote asset".getBytes(StandardCharsets.UTF_8), UrlAsset.create(this.server.url("https", "/image.png")).read());
 		Assert.assertEquals(Collections.singletonList("/image.png"), this.server.paths);
+	}
+
+	@Test
+	public void readsAFileUrl() throws IOException {
+		final File file = this.folder.newFile("image.png");
+		Files.write(file.toPath(), "joid file asset".getBytes(StandardCharsets.UTF_8));
+		final UrlAsset asset = UrlAsset.create(file.toURI().toString());
+		Assert.assertArrayEquals("joid file asset".getBytes(StandardCharsets.UTF_8), asset.read());
+		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.peek(4));
+	}
+
+	@Test
+	public void readsAJarUrl() throws IOException {
+		final File file = this.folder.newFile("assets.jar");
+		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
+			output.putNextEntry(new ZipEntry("image.png"));
+			output.write("joid jar asset".getBytes(StandardCharsets.UTF_8));
+			output.closeEntry();
+		}
+		final UrlAsset asset = UrlAsset.create("jar:" + file.toURI() + "!/image.png");
+		Assert.assertArrayEquals("joid jar asset".getBytes(StandardCharsets.UTF_8), asset.read());
+	}
+
+	@Test
+	public void peeksNothingFromAMissingFileUrl() {
+		Assert.assertEquals(0, UrlAsset.create(new File(this.folder.getRoot(), "missing.png").toURI().toString()).peek(4).length);
+	}
+
+	@Test
+	public void requestsAMissingPlainHttpAssetOnce() {
+		UrlAsset.create(this.server.url("http", "/missing.png")).peek(4);
+		Assert.assertEquals(Collections.singletonList("/missing.png"), this.server.paths);
 	}
 
 	@Test

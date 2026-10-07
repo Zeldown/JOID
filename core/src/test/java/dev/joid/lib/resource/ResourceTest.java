@@ -96,11 +96,21 @@ public class ResourceTest {
 	@Test
 	public void copiesItselfOverTheSameData() {
 		final ResourceBuilder builder = ResourceBuilder.create().cache(null);
-		final Resource resource = builder.compute("image", () -> new ResourceData("image", null)).linear();
+		final Resource resource = builder.compute("image", () -> new ResourceData("image", null)).linear().mipmap(true);
 		final Resource copy = resource.copy();
 		Assert.assertNotSame(resource, copy);
 		Assert.assertSame(resource.getResourceData(), copy.getResourceData());
 		Assert.assertSame(builder, copy.getBuilder());
+		Assert.assertSame(TextureFilter.LINEAR, copy.getProperties().getInterpolation());
+		Assert.assertEquals(Boolean.TRUE, copy.getProperties().getMipmap());
+	}
+
+	@Test
+	public void copiesItsPropertiesApartFromItself() {
+		final Resource resource = ResourceTest.resource(null).linear();
+		final Resource copy = resource.copy().nearest();
+		Assert.assertNotSame(resource.getProperties(), copy.getProperties());
+		Assert.assertSame(TextureFilter.LINEAR, resource.getProperties().getInterpolation());
 		Assert.assertSame(TextureFilter.NEAREST, copy.getProperties().getInterpolation());
 	}
 
@@ -119,6 +129,7 @@ public class ResourceTest {
 		Assert.assertSame(resource, resource.decoder(decoder));
 		Assert.assertSame(decoder, resource.getDecoder());
 		Assert.assertSame(decoder, resource.getResourceData().getDecoder());
+		Assert.assertEquals(Collections.singletonList("init"), decoder.calls);
 	}
 
 	@Test

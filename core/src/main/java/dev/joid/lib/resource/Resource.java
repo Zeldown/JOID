@@ -94,7 +94,7 @@ public final class Resource {
 	}
 
 	public final @NonNull Resource copy() {
-		return new Resource(this.builder, this.data);
+		return new Resource(this.builder, this.data).properties(this.properties.copy());
 	}
 
 	public final int getWidth() {

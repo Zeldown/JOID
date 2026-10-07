@@ -21,6 +21,10 @@ public class ResourceFormatTest {
 
 	private static final byte[] PNG  = {(byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10, 0, 0, 0, 13, 'I', 'H', 'D', 'R'};
 	private static final byte[] MP4  = {0, 0, 0, 32, 'f', 't', 'y', 'p', 'i', 's', 'o', 'm', 0, 0, 2, 0};
+	private static final byte[] MOV  = {0, 0, 0, 20, 'f', 't', 'y', 'p', 'q', 't', ' ', ' ', 0, 0, 2, 0};
+	private static final byte[] HEIC = {0, 0, 0, 24, 'f', 't', 'y', 'p', 'h', 'e', 'i', 'c', 0, 0, 0, 0, 'm', 'i', 'f', '1', 'h', 'e', 'i', 'c'};
+	private static final byte[] AVIF = {0, 0, 0, 28, 'f', 't', 'y', 'p', 'a', 'v', 'i', 'f', 0, 0, 0, 0, 'a', 'v', 'i', 'f', 'm', 'i', 'f', '1', 'm', 'i', 'a', 'f'};
+	private static final byte[] HEIF = {0, 0, 0, 24, 'f', 't', 'y', 'p', 'm', 'i', 'f', '1', 0, 0, 0, 0, 'm', 'i', 'f', '1', 'h', 'e', 'i', 'c'};
 	private static final byte[] WEBM = {(byte) 0x1A, (byte) 0x45, (byte) 0xDF, (byte) 0xA3, 1, 0, 0, 0, 0, 0, 0, 31};
 
 	@Test
@@ -30,10 +34,23 @@ public class ResourceFormatTest {
 
 	@Test
 	public void picksTheVideoDecoderOnAVideoHeader() {
-		for (final byte[] header : new byte[][] {ResourceFormatTest.MP4, ResourceFormatTest.WEBM}) {
+		for (final byte[] header : new byte[][] {ResourceFormatTest.MP4, ResourceFormatTest.MOV, ResourceFormatTest.WEBM}) {
 			final IResourceDecoder decoder = ResourceFormat.decoder(Asset.of(new ByteArrayInputStream(header)));
 			Assert.assertTrue(decoder instanceof VideoResourceDecoder);
 			Assert.assertFalse(((VideoResourceDecoder) decoder).isLoop());
+		}
+	}
+
+	@Test
+	public void refusesAHeifOrAvifImage() {
+		for (final byte[] header : new byte[][] {ResourceFormatTest.HEIC, ResourceFormatTest.AVIF, ResourceFormatTest.HEIF}) {
+			final Asset asset = Asset.of(new ByteArrayInputStream(header));
+			try {
+				ResourceFormat.decoder(asset);
+				Assert.fail("A HEIF or AVIF image must be refused");
+			} catch (final IllegalArgumentException expected) {
+				Assert.assertEquals(asset.getUniqueId() + " is a HEIF or AVIF image, which JOID cannot decode: convert it to PNG, JPEG or WebP", expected.getMessage());
+			}
 		}
 	}
 

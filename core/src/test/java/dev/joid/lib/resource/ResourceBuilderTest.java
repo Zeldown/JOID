@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,6 +54,17 @@ public class ResourceBuilderTest {
 		final ResourceBuilder copy = builder.copy();
 		Assert.assertTrue(ResourceBuilder.getBuilders().contains(builder));
 		Assert.assertTrue(ResourceBuilder.getBuilders().contains(copy));
+	}
+
+	@Test
+	public void forgetsABuilderNoLongerUsed() throws InterruptedException {
+		final WeakReference<ResourceBuilder> reference = new WeakReference<>(ResourceBuilder.create());
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (reference.get() != null && System.currentTimeMillis() < deadline) {
+			System.gc();
+			Thread.sleep(10L);
+		}
+		Assert.assertNull(reference.get());
 	}
 
 	@Test
@@ -227,6 +239,23 @@ public class ResourceBuilderTest {
 		builder.reload();
 		Assert.assertEquals(0L, cache.size());
 		Assert.assertEquals("image2", builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null)).getUniqueId());
+	}
+
+	@Test
+	public void reloadsOnlyWhatItLoaded() {
+		final Cache<String, ResourceData> cache = CacheBuilder.newBuilder().build();
+		final ResourceBuilder first = ResourceBuilder.create().cache(cache);
+		final ResourceBuilder second = ResourceBuilder.create().cache(cache);
+		first.compute("first", () -> new ResourceData("first", null));
+		first.compute("shared", () -> new ResourceData("shared", null));
+		second.compute("second", () -> new ResourceData("second", null));
+		second.compute("shared", () -> new ResourceData("shared", null));
+		first.reload();
+		Assert.assertNull(cache.getIfPresent("first"));
+		Assert.assertNull(cache.getIfPresent("shared"));
+		Assert.assertNotNull(cache.getIfPresent("second"));
+		second.reload();
+		Assert.assertEquals(0L, cache.size());
 	}
 
 	@Test

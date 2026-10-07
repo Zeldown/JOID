@@ -8,6 +8,7 @@ import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
 import dev.joid.lib.resource.dto.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.dto.format.impl.ApngResourceFormat;
 import dev.joid.lib.resource.dto.format.impl.GifResourceFormat;
+import dev.joid.lib.resource.dto.format.impl.HeifResourceFormat;
 import dev.joid.lib.resource.dto.format.impl.SvgResourceFormat;
 import dev.joid.lib.resource.dto.format.impl.VideoResourceFormat;
 import dev.joid.lib.resource.dto.format.impl.WebpResourceFormat;
@@ -24,6 +25,7 @@ public class ResourceFormat {
 		ResourceFormat.register(new GifResourceFormat());
 		ResourceFormat.register(new ApngResourceFormat());
 		ResourceFormat.register(new VideoResourceFormat());
+		ResourceFormat.register(new HeifResourceFormat());
 		ResourceFormat.register(new WebpResourceFormat());
 		ResourceFormat.register(new SvgResourceFormat());
 	}

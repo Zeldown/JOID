@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 
 import dev.joid.lib.asset.Asset;
 import lombok.Getter;
@@ -32,14 +33,19 @@ public final class UrlAsset extends Asset {
 	public @NonNull InputStream open() throws IOException {
 		try {
 			return UrlAsset.connect(this.url);
-		} catch (final IOException silent) {
+		} catch (final IOException exception) {
+			if (!this.url.startsWith("https:")) {
+				throw exception;
+			}
 			return UrlAsset.connect(this.url.replaceFirst("^https:", "http:"));
 		}
 	}
 
 	private static @NonNull InputStream connect(final @NonNull String url) throws IOException {
-		final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36");
+		final URLConnection connection = new URL(url).openConnection();
+		if (connection instanceof HttpURLConnection) {
+			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36");
+		}
 
 		return connection.getInputStream();
 	}

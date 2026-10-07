@@ -1,7 +1,11 @@
 package dev.joid.lib.resource;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -19,21 +23,23 @@ import dev.joid.lib.resource.dto.resolver.ResourceResolver;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public final class ResourceBuilder {
 
-	private static final List<ResourceBuilder> BUILDER_LIST = new ArrayList<>();
+	private static final Set<ResourceBuilder> BUILDER_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	public static final Cache<String, ResourceData> DEFAULT_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
 
-	private ResourceProperties properties;
-	private Cache<String, ResourceData> cache;
+	private final Set<String> uniqueIdSet;
+
+	@Getter private ResourceProperties properties;
+	@Getter private Cache<String, ResourceData> cache;
 
 	private ResourceBuilder() {
 		this.cache = ResourceBuilder.DEFAULT_CACHE;
 		this.properties = new ResourceProperties();
+		this.uniqueIdSet = ConcurrentHashMap.newKeySet();
 
-		ResourceBuilder.BUILDER_LIST.add(this);
+		ResourceBuilder.BUILDER_SET.add(this);
 	}
 
 	public static @NonNull ResourceBuilder create() {
@@ -134,6 +140,7 @@ public final class ResourceBuilder {
 			return resource;
 		}
 
+		this.uniqueIdSet.add(uniqueId);
 		final ResourceData cached = this.cache.getIfPresent(uniqueId);
 		if (cached != null) {
 			return new Resource(this, cached);
@@ -152,11 +159,14 @@ public final class ResourceBuilder {
 		if (this.cache == null) {
 			return;
 		}
-		this.cache.invalidateAll();
+		this.cache.invalidateAll(this.uniqueIdSet);
+		this.uniqueIdSet.clear();
 	}
 
 	public static @NonNull List<@NonNull ResourceBuilder> getBuilders() {
-		return ResourceBuilder.BUILDER_LIST;
+		synchronized (ResourceBuilder.BUILDER_SET) {
+			return new ArrayList<>(ResourceBuilder.BUILDER_SET);
+		}
 	}
 
 }

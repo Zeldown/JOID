@@ -17,6 +17,7 @@ import org.bytedeco.javacv.FFmpegLogCallback;
 import org.bytedeco.javacv.Frame;
 
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.asset.dto.impl.FileAsset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.texture.ITexture;
@@ -293,6 +294,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public @NonNull VideoResourceDecoder pause() {
+		if (!this.running.get()) {
+			return this;
+		}
+
 		if (!this.paused.getAndSet(true)) {
 			this.pauseTime = BridgeHandler.CLOCK.get().nanoTime();
 		}
@@ -607,6 +612,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	}
 
 	private static @NonNull File extract(final @NonNull Asset asset) throws IOException {
+		if (asset instanceof FileAsset) {
+			return ((FileAsset) asset).getFile();
+		}
+
 		final File target = File.createTempFile("joid-video-", ".mp4");
 		target.deleteOnExit();
 

@@ -19,7 +19,7 @@ public class VideoResourceFormat implements IResourceFormat {
 	}
 
 	private static boolean isMp4(final byte[] header) {
-		return header.length >= 8 && header[4] == 'f' && header[5] == 't' && header[6] == 'y' && header[7] == 'p';
+		return header.length >= 8 && header[4] == 'f' && header[5] == 't' && header[6] == 'y' && header[7] == 'p' && !HeifResourceFormat.isHeif(header);
 	}
 
 	private static boolean isMatroska(final byte[] header) {

@@ -49,6 +49,9 @@ public final class ResourceData {
 
 	public final @NonNull ResourceData decoder(final IResourceDecoder decoder) {
 		this.decoder = decoder;
+		if (this.decoder != null) {
+			this.decoder.init(this);
+		}
 		return this;
 	}
 

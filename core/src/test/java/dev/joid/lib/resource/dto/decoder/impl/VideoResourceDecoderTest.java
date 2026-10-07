@@ -122,6 +122,17 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void readsAFileAssetInPlace() throws IOException {
+		final File file = this.folder.newFile("frames.mkv");
+		Files.write(file.toPath(), VideoResourceDecoderTest.bytes("frames.mkv"));
+		final VideoResourceDecoder decoder = this.decoder(file);
+		final ResourceData data = new ResourceData("frames.mkv", null);
+		decoder.decode(data);
+		Assert.assertSame(file, decoder.getFile());
+		Assert.assertEquals(16, data.getWidth());
+	}
+
+	@Test
 	public void preparesTwoPlaceholders() {
 		final VideoResourceDecoder decoder = this.frames();
 		final ResourceData data = new ResourceData("frames.mkv", decoder);
@@ -157,6 +168,28 @@ public class VideoResourceDecoderTest {
 		Assert.assertFalse(decoder.isAutoplay());
 		Assert.assertFalse(decoder.isPlaying());
 		Assert.assertEquals(20, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	@Test
+	public void ignoresAPauseBeforePlaying() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames().autoplay(false);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		Assert.assertSame(decoder, decoder.pause());
+		Assert.assertFalse(decoder.isPaused());
+		decoder.play();
+		this.play(decoder, data, 3);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertFalse(decoder.isPaused());
+	}
+
+	@Test
+	public void ignoresAPauseOnceStopped() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 3);
+		decoder.stop().pause();
+		Assert.assertFalse(decoder.isPaused());
+		Assert.assertFalse(decoder.isPlaying());
 	}
 
 	@Test
