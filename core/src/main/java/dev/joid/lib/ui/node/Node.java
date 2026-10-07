@@ -149,8 +149,6 @@ public abstract class Node implements INode {
 	private final List<HoverElement>           hoverElementList;
 	private final List<Supplier<List<String>>> hoverSupplierList;
 
-	private final double defaultX;
-	private final double defaultY;
 	private final double defaultWidth;
 	private final double defaultHeight;
 
@@ -161,6 +159,9 @@ public abstract class Node implements INode {
 	private transient Node           overflowArea;
 	private transient ScrollbarNode  scrollbar;
 	private transient Consumer<Node> bodyConsumer;
+
+	private double defaultX;
+	private double defaultY;
 
 	private double x;
 	private double y;
@@ -458,27 +459,33 @@ public abstract class Node implements INode {
 				}
 
 				if (this.draggable != null && this.draggable.isEnabled(this)) {
-					if (!this.dragging && this.draggable.getAreaType() != DraggableAreaType.FREE) {
+					if (!this.dragging && !this.dragged) {
+						this.targetDragX = this.getAbsoluteX();
+						this.targetDragY = this.getAbsoluteY();
+					}
+
+					if (this.draggable.getAreaType() != DraggableAreaType.FREE && (this.dragging || this.draggable.getType() == DraggableType.MOVE)) {
 						final double[] bounds = this.draggable.getBounds(this);
 						final double boundX = bounds[0];
 						final double boundY = bounds[1];
 						final double boundWidth = bounds[2];
 						final double boundHeight = bounds[3];
 
-						final boolean inside = this.getAbsoluteX() >= boundX && this.getAbsoluteY() >= boundY && this.getAbsoluteX() + this.width <= boundX + boundWidth && this.getAbsoluteY() + this.height <= boundY + boundHeight;
-						if (!inside) {
-							if (this.targetDragX < boundX) {
-								this.targetDragX = boundX;
-							} else if (this.targetDragX + this.width > boundX + boundWidth) {
-								this.targetDragX = boundX + boundWidth - this.width;
-							}
+						final double targetX = this.targetDragX;
+						final double targetY = this.targetDragY;
+						if (this.targetDragX < boundX) {
+							this.targetDragX = boundX;
+						} else if (this.targetDragX + this.width > boundX + boundWidth) {
+							this.targetDragX = boundX + boundWidth - this.width;
+						}
 
-							if (this.targetDragY < boundY) {
-								this.targetDragY = boundY;
-							} else if (this.targetDragY + this.height > boundY + boundHeight) {
-								this.targetDragY = boundY + boundHeight - this.height;
-							}
+						if (this.targetDragY < boundY) {
+							this.targetDragY = boundY;
+						} else if (this.targetDragY + this.height > boundY + boundHeight) {
+							this.targetDragY = boundY + boundHeight - this.height;
+						}
 
+						if (this.targetDragX != targetX || this.targetDragY != targetY) {
 							this.dragged = true;
 						}
 					}
@@ -490,8 +497,7 @@ public abstract class Node implements INode {
 							final double diffX = this.getAbsoluteX() - this.x;
 							final double diffY = this.getAbsoluteY() - this.y;
 
-							this.x = newAbsoluteX - diffX;
-							this.y = newAbsoluteY - diffY;
+							this.moveTo(newAbsoluteX - diffX, newAbsoluteY - diffY);
 						} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
 							final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteX(), this.targetDragX);
 							final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteY(), this.targetDragY);
@@ -810,6 +816,9 @@ public abstract class Node implements INode {
 
 		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && clickType.isLeft() && this.isHovered(mouseX, mouseY)) {
 			this.startDragging(mouseX, mouseY);
+			if (this.dragging) {
+				context.cancel();
+			}
 		}
 	}
 
@@ -1065,12 +1074,23 @@ public abstract class Node implements INode {
 				}
 			}
 			this.dragging = false;
-			this.draggedNode = null;
 		});
+
+		if (this.dragging) {
+			this.dragging = false;
+			this.targetDragX = this.startDragX;
+			this.targetDragY = this.startDragY;
+		}
+
+		if (this.draggedNode != null) {
+			this.draggedNode = null;
+			this.dragged = false;
+		}
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T startDragging(final double mouseX, final double mouseY) {
+		this.checkDraggable();
 		this.fireDragStart(() -> {
 			this.dragging = true;
 			this.dragX = mouseX - this.getAbsoluteX();
@@ -1622,10 +1642,8 @@ public abstract class Node implements INode {
 		return this.follow("draggable", draggable, value -> {
 			this.draggable   = value;
 			this.dragging    = false;
-			this.startDragX  = this.getAbsoluteX();
-			this.startDragY  = this.getAbsoluteY();
-			this.targetDragX = this.getAbsoluteX();
-			this.targetDragY = this.getAbsoluteY();
+			this.dragged     = false;
+			this.draggedNode = null;
 		});
 	}
 
@@ -1636,6 +1654,7 @@ public abstract class Node implements INode {
 			return (T) this;
 		}
 
+		this.checkDraggable();
 		this.dragging = dragging;
 		this.dragX = mouseX - this.getAbsoluteX();
 		this.dragY = mouseY - this.getAbsoluteY();
@@ -1732,8 +1751,7 @@ public abstract class Node implements INode {
 		}
 
 		if (this.dragged && this.draggable != null && this.draggable.getType() == DraggableType.MOVE) {
-			this.x += this.targetDragX - this.getAbsoluteX();
-			this.y += this.targetDragY - this.getAbsoluteY();
+			this.moveTo(this.x + (this.targetDragX - this.getAbsoluteX()), this.y + (this.targetDragY - this.getAbsoluteY()));
 		}
 
 		this.dragged = false;
@@ -1747,6 +1765,22 @@ public abstract class Node implements INode {
 
 		this.hoverAnimator.clear();
 		this.mounted = false;
+	}
+
+	private void moveTo(final double x, final double y) {
+		if (this.parent != null && this.parent.overflow == OverflowProperty.SCROLL) {
+			this.defaultX += x - this.x;
+			this.defaultY += y - this.y;
+		}
+
+		this.x = x;
+		this.y = y;
+	}
+
+	private void checkDraggable() {
+		if (this.draggable == null) {
+			throw new IllegalStateException("The node " + this.getClass().getSimpleName() + " has no DraggableProperty, call draggable(...) first");
+		}
 	}
 
 	private void clearOverflowArea(final Node area) {

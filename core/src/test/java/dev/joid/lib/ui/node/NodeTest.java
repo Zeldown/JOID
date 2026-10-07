@@ -32,6 +32,7 @@ import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
 import dev.joid.lib.ui.node.callback.impl.signal.NodeWatchCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeDetachCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeInitCallback;
@@ -1494,6 +1495,138 @@ public class NodeTest {
 		this.bridges.move(150D, 150D).frame();
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		Assert.assertTrue(parent.isDragging());
+	}
+
+	@Test
+	public void startsTheDragOfTheFrontNodeOnly() {
+		final RectNode back = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free());
+		final RectNode front = RectNode.create(120D, 120D, 50D, 50D).draggable(DraggableProperty.free());
+		this.press(ContainerNode.create(0D, 0D, 400D, 400D).append(back, front), 130D, 130D);
+		Assert.assertTrue(front.isDragging());
+		Assert.assertFalse(back.isDragging());
+	}
+
+	@Test
+	public void startsTheDragOfAChildBeforeItsDraggableParent() {
+		final RectNode child = RectNode.create(0D, 0D, 20D, 20D).draggable(DraggableProperty.free());
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).draggable(DraggableProperty.free()).append(child);
+		this.press(parent, 110D, 110D);
+		Assert.assertTrue(child.isDragging());
+		Assert.assertFalse(parent.isDragging());
+	}
+
+	@Test
+	public void sendsTheNodeBackWhenItsDragEndIsRefused() {
+		final List<String> events = new ArrayList<>();
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free()).onDragEnd(new NodeDragCallback<RectNode>() {
+
+			@Override
+			public void apply(final @NonNull RectNode rect) {
+				events.add("end");
+			}
+
+			@Override
+			public void pre(final @NonNull RectNode rect, final @NonNull InternalContext context) {
+				context.cancel();
+			}
+
+		});
+		this.press(node, 110D, 110D);
+		this.bridges.move(310D, 210D).frames(100);
+		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.frames(100);
+		Assert.assertEquals(300D, node.getX(), 0D);
+		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		Assert.assertFalse(node.isDragging());
+		this.bridges.frames(100);
+		Assert.assertEquals(100D, node.getX(), 0D);
+		Assert.assertEquals(100D, node.getY(), 0D);
+		Assert.assertTrue(events.isEmpty());
+	}
+
+	@Test
+	public void dropsTheCopyOfARefusedDragEnd() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().type(DraggableType.COPY)).onDragEnd(new NodeDragCallback<RectNode>() {
+
+			@Override
+			public void apply(final @NonNull RectNode rect) {}
+
+			@Override
+			public void pre(final @NonNull RectNode rect, final @NonNull InternalContext context) {
+				context.cancel();
+			}
+
+		});
+		this.press(node, 110D, 110D);
+		this.drop(310D, 210D);
+		Assert.assertFalse(node.isDragging());
+		Assert.assertFalse(node.isDragged());
+		Assert.assertNull(node.getDraggedNode());
+		Assert.assertEquals(100D, node.getX(), 0D);
+	}
+
+	@Test
+	public void keepsTheNodeInsideItsAreaDuringTheDrag() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.custom(0D, 0D, 300D, 300D));
+		this.press(node, 110D, 110D);
+		this.bridges.move(410D, 510D).frame();
+		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.frames(100);
+		Assert.assertTrue(node.isDragging());
+		Assert.assertEquals(250D, node.getX(), 0D);
+		Assert.assertEquals(250D, node.getY(), 0D);
+	}
+
+	@Test
+	public void showsTheDroppedCopyAndItsSnapToTheDragEnd() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
+		final DraggableProperty draggable = DraggableProperty.free().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP, target);
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(draggable).onDragEnd(rect -> received.addAll(Arrays.asList(rect.getDraggedNode().getX(), rect.getDraggable().getSnapping(rect.getDraggedNode()))));
+		this.press(node, 110D, 110D);
+		this.bridges.move(430D, 430D).frame();
+		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.frames(100);
+		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		Assert.assertEquals(Arrays.asList(420D, target), received);
+		Assert.assertNull(node.getDraggedNode());
+		Assert.assertFalse(node.isDragged());
+	}
+
+	@Test
+	public void refusesToStartADragWithoutDraggableProperty() {
+		try {
+			RectNode.create(100D, 100D, 50D, 50D).startDragging(110D, 110D);
+			Assert.fail("A node without DraggableProperty cannot start a drag");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The node RectNode has no DraggableProperty, call draggable(...) first", expected.getMessage());
+		}
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesToDragWithoutDraggableProperty() {
+		RectNode.create(100D, 100D, 50D, 50D).dragging(true, 110D, 110D);
+	}
+
+	@Test
+	public void bringsAChildBackInsideItsParentFromItsAttachedPosition() {
+		final RectNode child = RectNode.create(480D, 10D, 50D, 50D).draggable(DraggableProperty.parent());
+		this.bridges.open(new NodeUI(ContainerNode.create(300D, 200D, 500D, 500D).append(child))).frames(100);
+		Assert.assertEquals(450D, child.getX(), 0D);
+		Assert.assertEquals(10D, child.getY(), 0D);
+	}
+
+	@Test
+	public void keepsADroppedChildInItsScrolledParent() {
+		final RectNode child = RectNode.create(10D, 10D, 50D, 50D).draggable(DraggableProperty.parent());
+		final ContainerNode list = ContainerNode.create(100D, 100D, 400D, 200D).overflow(OverflowProperty.SCROLL).append(RectNode.create(0D, 0D, 400D, 1000D), child);
+		this.press(list, 120D, 120D);
+		this.drop(120D, 220D);
+		Assert.assertEquals(110D, child.getY(), 0D);
+		Assert.assertEquals(110D, child.getDefaultY(), 0D);
+		list.scrollOffsetY(-50D).updateScroll();
+		this.bridges.frames(2);
+		Assert.assertEquals(60D, child.getY(), 1E-5D);
 	}
 
 	@Test
