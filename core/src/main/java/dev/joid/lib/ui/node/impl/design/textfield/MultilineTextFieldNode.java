@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -10,11 +11,16 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.utils.TextOverflow;
 import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.dto.markup.ITextMarkup;
+import dev.joid.lib.font.dto.markup.TextMarkup;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @SuppressWarnings("unchecked")
@@ -40,7 +46,8 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		final String text = super.getText();
 		final TextInfo info = super.getInfo();
 		final double maxWidth = this.getRawWidth();
-		final List<String> lines = this.getLines();
+		final FieldLayout layout = this.getLayout();
+		final List<FieldLine> lines = layout.getLines();
 		final double lineHeight = this.getLineHeight();
 		if (super.getCursorMargin() == -1D) {
 			super.cursorMargin(lineHeight * 2);
@@ -65,17 +72,14 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			}
 
 			for (int i = 0; i < lines.size(); i++) {
-				DrawUtils.TEXT.drawText(textX, textY + lineHeight * i, lines.get(i), super.getShownInfo(), Align.START, Align.START);
+				final FieldLine line = lines.get(i);
+				DrawUtils.TEXT.drawText(textX, textY + lineHeight * i, line.getPrefix() + text.substring(line.getStart(), line.getEnd()), super.getShownInfo(), Align.START, Align.START);
 			}
 
 			if (super.isFocused()) {
-				final int[] cursorLineCol = this.getLineAndColumn(super.getCursorPos());
-				final int cursorLineIdx = cursorLineCol[0];
-				final int cursorCol = cursorLineCol[1];
-				final String cursorLine = lines.isEmpty() ? "" : lines.get(cursorLineIdx).replace("\n", "").replace("\r", "");
-				final int safeCol = Math.min(cursorCol, cursorLine.length());
-				final double cursorX = textX + this.getTextWidth(cursorLine.substring(0, safeCol));
-				final double cursorY = textY + lineHeight * cursorLineIdx;
+				final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPos());
+				final double cursorX = textX + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPos()));
+				final double cursorY = textY + lineHeight * cursorLineCol[0];
 				final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1) / 2F);
 				final Color cursorColor = new Color(info.getColor().r, info.getColor().g, info.getColor().b, cursorOpacity);
 				DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
@@ -85,54 +89,15 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 				final Color selectionColor = new Color(50, 152, 253, 100);
 				final int start = Math.min(super.getCursorPos(), super.getSelectionStart());
 				final int end = Math.max(super.getCursorPos(), super.getSelectionStart());
-
-				final int[] startLineCol = this.getLineAndColumn(start);
-				final int[] endLineCol = this.getLineAndColumn(end);
-				final int startLine = startLineCol[0];
-				final int startChar = startLineCol[1];
-				final int endLine = endLineCol[0];
-				final int endChar = endLineCol[1];
-
-				if (startLine == endLine) {
-					final String line = lines.get(startLine).replace("\n", "").replace("\r", "");
-					final int safeStart = Math.min(startChar, line.length());
-					final int safeEnd = Math.min(endChar, line.length());
-					final double selectionX = textX + this.getTextWidth(line.substring(0, safeStart));
-					final double selectionY = textY + lineHeight * startLine;
-					final String subLine = line.substring(safeStart, safeEnd);
-					final double selectionWidth = subLine.isEmpty() ? 2 : this.getTextWidth(subLine);
-					DrawUtils.SHAPE.drawRect(selectionX, selectionY, selectionWidth, lineHeight, selectionColor);
-				} else {
-					for (int i = startLine; i <= endLine; i++) {
-						final String line = lines.get(i).replace("\n", "").replace("\r", "");
-						final boolean isStart = i == startLine;
-						final boolean isEnd = i == endLine;
-
-						if (isStart) {
-							final int safeStart = Math.min(startChar, line.length());
-							final double selectionX = textX + this.getTextWidth(line.substring(0, safeStart));
-							final double selectionY = textY + lineHeight * i;
-							final String subLine = line.substring(safeStart);
-							final double selectionWidth = subLine.isEmpty() ? 2 : this.getTextWidth(subLine);
-							DrawUtils.SHAPE.drawRect(selectionX, selectionY, selectionWidth, lineHeight, selectionColor);
-							continue;
-						}
-
-						if (isEnd) {
-							final int safeEnd = Math.min(endChar, line.length());
-							final double selectionX = textX;
-							final double selectionY = textY + lineHeight * i;
-							final String subLine = line.substring(0, safeEnd);
-							final double selectionWidth = subLine.isEmpty() ? 2 : this.getTextWidth(subLine);
-							DrawUtils.SHAPE.drawRect(selectionX, selectionY, selectionWidth, lineHeight, selectionColor);
-							continue;
-						}
-
-						final double selectionX = textX;
-						final double selectionY = textY + lineHeight * i;
-						final double selectionWidth = line.isEmpty() ? 2 : this.getTextWidth(line);
-						DrawUtils.SHAPE.drawRect(selectionX, selectionY, selectionWidth, lineHeight, selectionColor);
-					}
+				final int startLine = this.getLineAndColumn(layout, start)[0];
+				final int endLine = this.getLineAndColumn(layout, end)[0];
+				for (int i = startLine; i <= endLine; i++) {
+					final FieldLine line = lines.get(i);
+					final int from = i == startLine ? Math.min(start, line.getEnd()) : line.getStart();
+					final int to = i == endLine ? Math.min(end, line.getEnd()) : line.getEnd();
+					final double selectionX = this.getX(layout, line, from);
+					final double selectionWidth = this.getX(layout, line, to) - selectionX;
+					DrawUtils.SHAPE.drawRect(textX + selectionX, textY + lineHeight * i, selectionWidth <= 0D ? 2 : selectionWidth, lineHeight, selectionColor);
 				}
 			}
 		});
@@ -155,59 +120,23 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 	@Override
 	protected final boolean handleKey(final @NonNull Key key) {
-		if (key == Key.UP) {
-			final int[] cursorLineCol = this.getLineAndColumn(super.getCursorPos());
-			if (cursorLineCol[0] <= 0) {
+		if (key == Key.UP || key == Key.DOWN) {
+			final FieldLayout layout = this.getLayout();
+			final List<FieldLine> lines = layout.getLines();
+			final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPos());
+			final int newLineIdx = cursorLineCol[0] + (key == Key.UP ? -1 : 1);
+			if (newLineIdx < 0 || newLineIdx >= lines.size()) {
 				return true;
 			}
 
-			final List<String> lines = this.getLines();
-			final String currentLine = lines.get(cursorLineCol[0]).replace("\n", "").replace("\r", "");
-			final int currentCol = Math.min(cursorLineCol[1], currentLine.length());
-			final double cursorX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(currentLine.substring(0, currentCol));
-
-			final int newLineIdx = cursorLineCol[0] - 1;
-			final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
-			int newCol = targetLine.length();
-			for (int i = 0; i < targetLine.length(); i++) {
-				final double colX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(targetLine.substring(0, i)) + this.getTextWidth(targetLine.substring(i, i + 1)) / 2D;
-				if (cursorX < colX) {
-					newCol = i;
-					break;
-				}
-			}
-
-			final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
+			final double cursorX = this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPos());
+			final int newCursorPos = this.getPosition(layout, lines.get(newLineIdx), cursorX);
 			super.updateSelection();
-			super.decreaseCursor(super.getCursorPos() - newCursorPos);
-			return true;
-		}
-
-		if (key == Key.DOWN) {
-			final List<String> lines = this.getLines();
-			final int[] cursorLineCol = this.getLineAndColumn(super.getCursorPos());
-			if (cursorLineCol[0] >= lines.size() - 1) {
-				return true;
+			if (key == Key.UP) {
+				super.decreaseCursor(super.getCursorPos() - newCursorPos);
+			} else {
+				super.increaseCursor(newCursorPos - super.getCursorPos());
 			}
-
-			final String currentLine = lines.get(cursorLineCol[0]).replace("\n", "").replace("\r", "");
-			final int currentCol = Math.min(cursorLineCol[1], currentLine.length());
-			final double cursorX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(currentLine.substring(0, currentCol));
-
-			final int newLineIdx = cursorLineCol[0] + 1;
-			final String targetLine = lines.get(newLineIdx).replace("\n", "").replace("\r", "");
-			int newCol = targetLine.length();
-			for (int i = 0; i < targetLine.length(); i++) {
-				final double colX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(targetLine.substring(0, i)) + this.getTextWidth(targetLine.substring(i, i + 1)) / 2D;
-				if (cursorX < colX) {
-					newCol = i;
-					break;
-				}
-			}
-
-			final int newCursorPos = this.getTextPosition(newLineIdx, newCol);
-			super.updateSelection();
-			super.increaseCursor(newCursorPos - super.getCursorPos());
 			return true;
 		}
 
@@ -227,7 +156,8 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 	@Override
 	protected final void placeCursor(final double mouseX, final double mouseY) {
-		final List<String> lines = this.getLines();
+		final FieldLayout layout = this.getLayout();
+		final List<FieldLine> lines = layout.getLines();
 		final double lineHeight = this.getLineHeight();
 
 		int lineIndex = -1;
@@ -246,18 +176,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 
 		if (lineIndex >= 0) {
-			final String line = lines.get(lineIndex).replace("\n", "").replace("\r", "");
-			int col = line.length();
-			for (int i = 0; i < line.length(); i++) {
-				final String beforeCursor = line.substring(0, i);
-				final String cursorChar = line.substring(i, i + 1);
-				final double cursorX = super.getAbsoluteX() + super.getMarginLeft() + this.getTextWidth(beforeCursor) + this.getTextWidth(cursorChar) / 2;
-				if (mouseX < cursorX) {
-					col = i;
-					break;
-				}
-			}
-			super.cursorPosition(this.getTextPosition(lineIndex, col));
+			super.cursorPosition(this.getPosition(layout, lines.get(lineIndex), mouseX - super.getAbsoluteX() - super.getMarginLeft()));
 		}
 	}
 
@@ -265,8 +184,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	protected final void followCursorForward() {
 		final double lineHeight = this.getLineHeight();
 		final String beforeCursor = super.getText().substring(0, super.getCursorPos());
-		final List<String> beforeCursorLines = this.getLines(beforeCursor);
-		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (beforeCursorLines.size() - 1);
+		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (this.getLayout(beforeCursor).getLines().size() - 1);
 		if (cursorY + lineHeight - this.yOffset > super.getY() + super.getHeight() - super.getMarginBottom()) {
 			this.yOffset = cursorY + lineHeight - super.getY() - super.getHeight() + super.getMarginBottom();
 		}
@@ -281,8 +199,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 		final double lineHeight = this.getLineHeight();
 		final String beforeCursor = super.getText().substring(0, super.getCursorPos());
-		final List<String> beforeCursorLines = this.getLines(beforeCursor);
-		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (beforeCursorLines.size() - 1);
+		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (this.getLayout(beforeCursor).getLines().size() - 1);
 		if (cursorY - this.yOffset < super.getY() + super.getMarginTop() + super.getCursorMargin()) {
 			this.yOffset = cursorY - super.getY() - super.getMarginTop() - super.getCursorMargin();
 		}
@@ -295,7 +212,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 
 		final double lineHeight = this.getLineHeight();
-		final double maxOffset = Math.max(0D, this.getLines().size() * lineHeight - this.getRawHeight());
+		final double maxOffset = Math.max(0D, this.getLayout().getLines().size() * lineHeight - this.getRawHeight());
 		final double offset = value > 0 ? Math.max(0D, this.yOffset - lineHeight) : Math.min(maxOffset, this.yOffset + lineHeight);
 		if (value > 0 ? offset < this.yOffset : offset > this.yOffset) {
 			context.cancel(() -> {
@@ -321,99 +238,159 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		return super.getInfo().getHeight();
 	}
 
-	private final @NonNull List<String> getLines() {
-		return this.getLines(super.getText());
+	private final @NonNull FieldLayout getLayout() {
+		return this.getLayout(super.getText());
 	}
 
-	private final @NonNull List<String> getLines(final @NonNull String text) {
-		final List<String> lines = new ArrayList<>();
+	private final @NonNull FieldLayout getLayout(final @NonNull String text) {
+		final TextInfo info = super.getShownInfo();
+		final int[] tags = MultilineTextFieldNode.tags(text, info);
+		final List<FieldLine> lines = new ArrayList<>();
+		final FieldLayout layout = new FieldLayout(text, tags, lines);
 		if (text.isEmpty()) {
-			return lines;
+			return layout;
 		}
 
-		final TextInfo info = super.getShownInfo();
-		final String[] paragraphs = text.split("\n", -1);
-		for (int index = 0; index < paragraphs.length; index++) {
-			final String paragraph = paragraphs[index];
+		int paragraphStart = 0;
+		while (true) {
+			final int newLine = text.indexOf('\n', paragraphStart);
+			final int paragraphEnd = newLine < 0 ? text.length() : newLine;
 			boolean wrapped = false;
-			int start = 0;
-			for (int i = 0; i < paragraph.length(); i++) {
-				if (info.getWidth(paragraph.substring(start, i + 1)) <= this.getRawWidth()) {
+			int start = paragraphStart;
+			String prefix = MultilineTextFieldNode.opened(text, tags, start);
+			for (int i = paragraphStart; i < paragraphEnd; i++) {
+				if (tags[i] != -1 || info.getWidth(prefix + text.substring(start, i + 1)) <= this.getRawWidth()) {
 					continue;
 				}
 
-				int split = i;
+				int split = -1;
 				for (int j = i; j >= start; j--) {
-					if (paragraph.charAt(j) == ' ') {
+					if (text.charAt(j) == ' ' && tags[j] == -1) {
 						split = j;
 						break;
 					}
 				}
 
+				if (split == -1) {
+					split = i;
+					while (split > start && tags[split - 1] != -1) {
+						split = tags[split - 1];
+					}
+				}
+
 				if (split > start) {
-					lines.add(paragraph.substring(start, split));
-					start = paragraph.charAt(split) == ' ' ? split + 1 : split;
+					lines.add(new FieldLine(start, split, prefix));
+					start = text.charAt(split) == ' ' ? split + 1 : split;
+					prefix = MultilineTextFieldNode.opened(text, tags, start);
 					wrapped = true;
 				}
 			}
 
-			if (index < paragraphs.length - 1 || start < paragraph.length() || index > 0 && !wrapped) {
-				lines.add(paragraph.substring(start));
+			if (newLine >= 0 || start < paragraphEnd || paragraphStart > 0 && !wrapped) {
+				lines.add(new FieldLine(start, paragraphEnd, prefix));
 			}
-		}
 
-		return lines;
+			if (newLine < 0) {
+				return layout;
+			}
+
+			paragraphStart = newLine + 1;
+		}
 	}
 
-	private final int[] getLineAndColumn(final int pos) {
-		final String text = super.getText();
-		final List<String> lines = this.getLines();
+	private final int[] getLineAndColumn(final @NonNull FieldLayout layout, final int pos) {
+		final List<FieldLine> lines = layout.getLines();
 		if (lines.isEmpty()) {
 			return new int[] {0, 0};
 		}
 
-		int textIdx = 0;
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
-			if (lineIdx > 0 && textIdx < text.length() && (text.charAt(textIdx) == '\n' || text.charAt(textIdx) == '\r')) {
-				textIdx += text.startsWith("\r\n", textIdx) ? 2 : 1;
-			}
-
-			final String line = lines.get(lineIdx).replace("\n", "").replace("\r", "");
-			final int lineEnd = textIdx + line.length();
-			if (pos >= textIdx && pos <= lineEnd) {
-				return new int[] {lineIdx, pos - textIdx};
-			}
-
-			textIdx = lineEnd;
-			if (textIdx < text.length() && text.charAt(textIdx) == ' ' && lineIdx < lines.size() - 1) {
-				textIdx++;
+			final FieldLine line = lines.get(lineIdx);
+			if (pos >= line.getStart() && pos <= line.getEnd()) {
+				return new int[] {lineIdx, pos - line.getStart()};
 			}
 		}
 
-		final String lastLine = lines.get(lines.size() - 1).replace("\n", "").replace("\r", "");
-		return new int[] {lines.size() - 1, lastLine.length()};
+		final FieldLine lastLine = lines.get(lines.size() - 1);
+		return new int[] {lines.size() - 1, lastLine.getEnd() - lastLine.getStart()};
 	}
 
-	private final double getTextWidth(final @NonNull String text) {
-		return super.getShownInfo().getWidth(text.replace("\n", ""));
+	private final double getX(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final int pos) {
+		final int clamped = Math.max(line.getStart(), Math.min(pos, line.getEnd()));
+		final int end = clamped < layout.getText().length() && layout.getTags()[clamped] != -1 ? layout.getTags()[clamped] : clamped;
+		return super.getShownInfo().getWidth(line.getPrefix() + layout.getText().substring(line.getStart(), Math.max(line.getStart(), end)));
 	}
 
-	private final int getTextPosition(final int lineIdx, final int col) {
-		final String text = super.getText();
-		final List<String> lines = this.getLines();
-		int textIdx = 0;
-		for (int i = 0; i < lineIdx; i++) {
-			textIdx += lines.get(i).replace("\n", "").replace("\r", "").length();
-			if (textIdx < text.length() && text.charAt(textIdx) == ' ') {
-				textIdx++;
+	private final int getPosition(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final double x) {
+		final String text = layout.getText();
+		int previous = line.getStart();
+		for (int i = line.getStart(); i < line.getEnd(); i++) {
+			if (layout.getTags()[i] != -1) {
+				continue;
 			}
 
-			if (textIdx < text.length() && (text.charAt(textIdx) == '\n' || text.charAt(textIdx) == '\r')) {
-				textIdx += text.startsWith("\r\n", textIdx) ? 2 : 1;
+			final double charWidth = super.getShownInfo().getWidth(MultilineTextFieldNode.opened(text, layout.getTags(), i) + text.charAt(i));
+			if (x < this.getX(layout, line, i) + charWidth / 2) {
+				return previous;
 			}
+
+			previous = i + 1;
 		}
 
-		return textIdx + Math.min(Math.max(0, col), lines.get(lineIdx).replace("\n", "").replace("\r", "").length());
+		return previous;
+	}
+
+	private static @NonNull int[] tags(final @NonNull String text, final @NonNull TextInfo info) {
+		final int[] tags = new int[text.length()];
+		Arrays.fill(tags, -1);
+
+		final List<ITextMarkup> markups = info.getMarkups();
+		if (markups.isEmpty()) {
+			return tags;
+		}
+
+		final TextStyle style = info.getStyle().derive();
+		for (int index = 0; index < text.length();) {
+			final int consumed = TextMarkup.parse(markups, text, index, style);
+			if (consumed > 0) {
+				Arrays.fill(tags, index, index + consumed, index);
+				index += consumed;
+				continue;
+			}
+
+			index += Character.charCount(text.codePointAt(index));
+		}
+		return tags;
+	}
+
+	private static @NonNull String opened(final @NonNull String text, final @NonNull int[] tags, final int end) {
+		final StringBuilder opened = new StringBuilder();
+		for (int i = 0; i < end; i++) {
+			if (tags[i] != -1) {
+				opened.append(text.charAt(i));
+			}
+		}
+		return opened.toString();
+	}
+
+	@Getter
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class FieldLayout {
+
+		private final String          text;
+		private final int[]           tags;
+		private final List<FieldLine> lines;
+
+	}
+
+	@Getter
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class FieldLine {
+
+		private final int    start;
+		private final int    end;
+		private final String prefix;
+
 	}
 
 }
