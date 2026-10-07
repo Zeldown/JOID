@@ -3,7 +3,7 @@ wait 1500
 shot resource-start
 wait 700
 shot resource-later
-move 270 704
+move 840 656
 wait 100
 press LEFT
 release LEFT
@@ -15,7 +15,7 @@ wait 500
 shot resource-fullscreen
 key F
 scale 0.5
-mask 480 660 60 60
+mask 710 414 60 60
 wait 500
 shot resource-scale
 unmask
