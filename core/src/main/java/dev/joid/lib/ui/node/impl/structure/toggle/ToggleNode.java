@@ -49,7 +49,7 @@ public abstract class ToggleNode<F, S> extends Node {
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
-		this.signal = signal;
+		this.signal = super.writable(signal);
 		this.subscription = super.rebind(this.subscription, signal, value -> this.change(value, InternalContext.create()));
 		return (T) this;
 	}

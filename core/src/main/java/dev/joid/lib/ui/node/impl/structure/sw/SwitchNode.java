@@ -87,7 +87,7 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T signal(final @NonNull Signal<String> signal) {
-		this.signal = signal;
+		this.signal = super.writable(signal);
 		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (this.stateList.contains(value)) {
 				this.index(value);

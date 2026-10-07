@@ -77,6 +77,22 @@ public class SwitchNodeTest {
 		Assert.assertEquals(1, shadows.getEventSet().size());
 	}
 
+
+	@Test
+	public void refusesAComputedSignal() {
+		final Switch node = this.open();
+		final Signal<String> quality = new Signal<>("high");
+		node.signal(quality);
+		try {
+			node.signal(quality.map(value -> value));
+			Assert.fail("A ComputedSignal cannot be bound in both directions");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("Switch.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
+		}
+		quality.set("low");
+		Assert.assertEquals("low", node.getState());
+		Assert.assertSame(quality, node.getSignal());
+	}
 	@Test
 	public void startsOnAChosenIndex() {
 		final Switch node = this.open();

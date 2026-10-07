@@ -98,6 +98,21 @@ public class CheckboxNodeTest {
 		Assert.assertFalse(checkbox.isChecked());
 	}
 
+
+	@Test
+	public void refusesAComputedSignal() {
+		final BooleanSignal subtitles = new BooleanSignal(true);
+		final Checkbox checkbox = new Checkbox().signal(subtitles);
+		try {
+			checkbox.signal(subtitles.map(value -> !value));
+			Assert.fail("A ComputedSignal cannot be bound in both directions");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("Checkbox.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
+		}
+		subtitles.set(false);
+		Assert.assertFalse(checkbox.isChecked());
+		Assert.assertSame(subtitles, checkbox.getSignal());
+	}
 	@Test
 	public void writesAChosenStateIntoItsSignal() {
 		final List<Boolean> changes = new ArrayList<>();

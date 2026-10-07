@@ -84,6 +84,7 @@ import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedLinkedList;
+import dev.joid.lib.utils.signal.ComputedSignal;
 import dev.joid.lib.utils.signal.ISignal;
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.SignalContext;
@@ -1779,8 +1780,16 @@ public abstract class Node implements INode {
 	}
 
 	protected final <V> @NonNull SignalSubscriber<V> rebind(final SignalSubscriber<?> previous, final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
+		this.writable(signal);
 		this.unbind(previous);
 		return this.bind(signal, consumer);
+	}
+
+	protected final <V> @NonNull Signal<V> writable(final @NonNull Signal<V> signal) {
+		if (signal instanceof ComputedSignal) {
+			throw new IllegalArgumentException(this.getClass().getSimpleName() + ".signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead");
+		}
+		return signal;
 	}
 
 	protected final <V> void sync(final Signal<V> signal, final @NonNull V value) {

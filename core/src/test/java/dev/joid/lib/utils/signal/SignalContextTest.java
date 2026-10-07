@@ -51,6 +51,36 @@ public class SignalContextTest {
 	}
 
 	@Test
+	public void ignoresTheReadsWhileTracingIsOff() {
+		final Signal<String> signal = Signal.of("a");
+		final boolean previous = SignalContext.current().tracing(false);
+		try {
+			signal.get();
+		} finally {
+			SignalContext.current().tracing(previous);
+		}
+		Assert.assertTrue(previous);
+		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());
+		signal.get();
+		Assert.assertEquals(Collections.singletonList(signal), SignalContext.current().takeReads());
+	}
+
+	@Test
+	public void readsUntrackedWithoutFollowingNorTracing() {
+		final IntegerSignal count = IntegerSignal.of(1);
+		final IntegerSignal bonus = IntegerSignal.of(10);
+		final ComputedSignal<Integer> total = Signal.from(() -> count.get() + SignalContext.current().untracked(bonus::get));
+		Assert.assertEquals(11, total.get().intValue());
+		bonus.set(20);
+		Assert.assertEquals(11, total.get().intValue());
+		count.set(2);
+		Assert.assertEquals(22, total.get().intValue());
+		SignalContext.current().takeReads();
+		Assert.assertEquals(20, SignalContext.current().untracked(bonus::get).intValue());
+		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());
+	}
+
+	@Test
 	public void leavesTheReadsOfAComputationToIt() {
 		final IntegerSignal count = IntegerSignal.of(1);
 		final ComputedSignal<Integer> doubled = count.map(value -> value * 2);

@@ -1116,6 +1116,21 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(1, nickname.getEventSet().size());
 	}
 
+
+	@Test
+	public void refusesAComputedSignal() {
+		final Signal<String> name = new Signal<>("Alex");
+		final TextFieldNode field = this.field("").signal(name);
+		try {
+			field.signal(name.map(String::toUpperCase));
+			Assert.fail("A ComputedSignal cannot be bound in both directions");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("TextFieldNode.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
+		}
+		name.set("Max");
+		Assert.assertEquals("Max", field.getText());
+		Assert.assertSame(name, field.getSignal());
+	}
 	@Test
 	public void readsItsTextAsItsValue() {
 		final TextFieldNode field = this.field("abc");

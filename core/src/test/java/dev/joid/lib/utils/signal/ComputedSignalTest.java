@@ -400,6 +400,18 @@ public class ComputedSignalTest {
 	}
 
 	@Test
+	public void keepsAPlainValueAsAConstant() {
+		final ComputedSignal<String> name = Signal.from("joid");
+		SignalContext.current().takeReads();
+		Assert.assertTrue(name.isConstant());
+		Assert.assertEquals("joid", name.get());
+		Assert.assertEquals("joid", name.peek());
+		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());
+		Assert.assertFalse(Signal.from(() -> "joid").isConstant());
+		Assert.assertFalse(IntegerSignal.of(1).map(value -> value * 2).isConstant());
+	}
+
+	@Test
 	public void describesItself() {
 		Assert.assertEquals("ComputedSignal{2}", IntegerSignal.of(1).map(value -> value * 2).toString());
 		Assert.assertEquals("ComputedSignal{null}", Signal.from(() -> null).toString());

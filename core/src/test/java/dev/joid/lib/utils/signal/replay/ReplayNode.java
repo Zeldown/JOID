@@ -26,6 +26,10 @@ public class ReplayNode extends Node {
 		return new ReplayNode(0D, 0D);
 	}
 
+	public static @NonNull ReplayNode titled(final String title) {
+		return ReplayNode.create().text(title);
+	}
+
 	public final <T extends ReplayNode> @NonNull T text(final String text) {
 		return this.text(Signal.from(text));
 	}
@@ -33,6 +37,10 @@ public class ReplayNode extends Node {
 	public final <T extends ReplayNode> @NonNull T text(final @NonNull Supplier<String> text) {
 		this.text = text;
 		return (T) this;
+	}
+
+	public final <T extends ReplayNode> @NonNull T prefixed(final String text) {
+		return this.text("> " + text);
 	}
 
 	public final <T extends ReplayNode> @NonNull T color(final Color color) {

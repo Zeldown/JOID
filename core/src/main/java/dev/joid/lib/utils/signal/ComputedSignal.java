@@ -8,6 +8,7 @@ import lombok.NonNull;
 
 public class ComputedSignal<T> extends Signal<T> {
 
+	private final transient boolean     constant;
 	private final transient Supplier<T> supplier;
 
 	private transient int[]       versions;
@@ -27,11 +28,24 @@ public class ComputedSignal<T> extends Signal<T> {
 	private transient volatile boolean stale = true;
 
 	protected ComputedSignal(final @NonNull Supplier<T> supplier) {
+		this.constant = false;
 		this.supplier = supplier;
 		this.versions = new int[4];
 		this.collectedVersions = new int[4];
 		this.dependencies = new Signal<?>[4];
 		this.collectedDependencies = new Signal<?>[4];
+	}
+
+	private ComputedSignal(final T value) {
+		this.constant = true;
+		this.supplier = null;
+		this.value = value;
+		this.computed = true;
+		this.stale = false;
+	}
+
+	protected static <T> @NonNull ComputedSignal<T> constant(final T value) {
+		return new ComputedSignal<>(value);
 	}
 
 	@Override
@@ -64,9 +78,20 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
+	public T get() {
+		return this.constant ? this.value : super.get();
+	}
+
+	@Override
 	public T peek() {
-		this.refresh();
+		if (!this.constant) {
+			this.refresh();
+		}
 		return this.value;
+	}
+
+	public boolean isConstant() {
+		return this.constant;
 	}
 
 	@Override
@@ -76,6 +101,10 @@ public class ComputedSignal<T> extends Signal<T> {
 
 	@Override
 	protected synchronized void refresh() {
+		if (this.constant) {
+			return;
+		}
+
 		if (this.computing) {
 			throw new IllegalStateException("A ComputedSignal cannot read itself while it computes its value");
 		}

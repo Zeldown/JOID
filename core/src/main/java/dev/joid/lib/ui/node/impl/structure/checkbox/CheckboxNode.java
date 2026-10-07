@@ -39,7 +39,7 @@ public abstract class CheckboxNode extends Node {
 	}
 
 	public final <T extends CheckboxNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
-		this.signal = signal;
+		this.signal = super.writable(signal);
 		this.subscription = super.rebind(this.subscription, signal, value -> this.change(value, InternalContext.create()));
 		return (T) this;
 	}

@@ -44,6 +44,7 @@ import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedElement;
+import dev.joid.lib.utils.signal.SignalContext;
 import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.utils.signal.replay.SignalReplay;
 import dev.joid.lib.utils.thread.ThreadUtils;
@@ -274,9 +275,9 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, value, context));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, value, context)));
 
-		this.mouseScroll(mx, my, value, context);
+		this.traced(() -> this.mouseScroll(mx, my, value, context));
 		return context.isCancelled();
 	}
 
@@ -290,10 +291,12 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final InternalContext context = InternalContext.create();
 
-		this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
-		this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+		this.untraced(() -> {
+			this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+			this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+		});
 
-		this.mousePressed(mx, my, clickType, context);
+		this.traced(() -> this.mousePressed(mx, my, clickType, context));
 		return context.isCancelled();
 	}
 
@@ -306,9 +309,9 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, clickType, context));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, clickType, context)));
 
-		this.mouseReleased(mx, my, clickType, context);
+		this.traced(() -> this.mouseReleased(mx, my, clickType, context));
 		return context.isCancelled();
 	}
 
@@ -321,9 +324,9 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, clickType, deltaTime, context));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, clickType, deltaTime, context)));
 
-		this.mouseDragged(mx, my, clickType, deltaTime, context);
+		this.traced(() -> this.mouseDragged(mx, my, clickType, deltaTime, context));
 		return context.isCancelled();
 	}
 
@@ -333,7 +336,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		final InternalContext context = InternalContext.create();
-		this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context)));
 
 		if (!context.isCancelled()) {
 			for (final Map.Entry<Key[], Runnable> entry : this.keybindMap.entrySet()) {
@@ -346,7 +349,7 @@ public abstract class UI implements IUI, IndexedElement {
 				}
 
 				if (match) {
-					entry.getValue().run();
+					this.traced(entry.getValue());
 					context.cancel();
 				}
 			}
@@ -389,13 +392,15 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
-		this.keyPressed(c, key, context);
+		this.traced(() -> this.keyPressed(c, key, context));
 		return context.isCancelled();
 	}
 
 	public final void onUpdate() {
-		this.nodeList.forEach(Node::onUpdate);
-		this.update();
+		this.untraced(() -> {
+			this.nodeList.forEach(Node::onUpdate);
+			this.update();
+		});
 	}
 
 	public final boolean onClose() {
@@ -475,162 +480,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void draw(final double mouseX, final double mouseY) {
-		final long start = System.nanoTime();
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-
-		final long frame = BridgeHandler.CLOCK.get().nanoTime();
-		this.frameTime = this.lastFrame == 0L ? 1000D / 60D : (frame - this.lastFrame) / 1_000_000D;
-		this.lastFrame = frame;
-
-		this.mouseX = mouseX;
-		this.mouseY = mouseY;
-		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
-
-		final List<UIScheduledTask> toRemove = new ArrayList<>();
-		for (final UIScheduledTask task : this.scheduledTaskList) {
-			if (!task.shouldRun()) {
-				continue;
-			}
-
-			if (!task.execute()) {
-				toRemove.add(task);
-			}
-		}
-		this.scheduledTaskList.removeAll(toRemove);
-
-		final IUIBridge bridge = this.getBridge();
-		final double interfaceScale = bridge == null ? 1D : bridge.getInterfaceScale(this);
-		if (interfaceScale != this.view.getInterfaceScale()) {
-			this.view.interfaceScale(interfaceScale);
-			this.refreshView();
-		}
-
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-
-		if (this.data.background()) {
-			float opacity = this.data.getBackgroundColor().getAlpha() / 255F;
-			if (this.transition != null) {
-				if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
-					opacity = this.transition.getIn().getAnimator().getValue() * (this.data.getBackgroundColor().getAlpha() / 255F);
-				}
-
-				if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
-					opacity = this.transition.getOut().getAnimator().getValue() * (this.data.getBackgroundColor().getAlpha() / 255F);
-				}
-			}
-			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().copyAlpha(opacity));
-		}
-
-		this.drawBackground(mx, my);
-
-		final boolean transitionIn = this.transition != null && this.transition.getIn() != null && this.transition.getIn().isRunning();
-		final boolean transitionOut = this.transition != null && this.transition.getOut() != null && this.transition.getOut().isRunning();
-		if (transitionIn) {
-			this.transition.getIn().update();
-			this.transition.getIn().pre(this, mx, my);
-		}
-
-		if (transitionOut) {
-			this.transition.getOut().update();
-			this.transition.getOut().pre(this, mx, my);
-		}
-
-		render.alphaTest(0F);
-		try {
-			this.view.render(render, this.data.projection(), () -> {
-				this.renderPipelineLevel = 0;
-				final AtomicDouble lastRenderPipelineLevel = new AtomicDouble(this.renderPipelineLevel);
-
-				this.nodeList
-				.ordered()
-				.stream()
-				.filter(node -> node.getZindex() < 0)
-				.forEach(node -> {
-					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-					lastRenderPipelineLevel.set(this.renderPipelineLevel);
-					node.render(mx, my);
-				});
-
-				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-				lastRenderPipelineLevel.set(this.renderPipelineLevel);
-				this.preDraw(mx, my);
-
-				this.nodeList
-				.ordered()
-				.stream()
-				.filter(node -> node.getZindex() >= 0 && node.getZindex() < 100)
-				.forEach(node -> {
-					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-					lastRenderPipelineLevel.set(this.renderPipelineLevel);
-					node.render(mx, my);
-				});
-
-				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-				lastRenderPipelineLevel.set(this.renderPipelineLevel);
-				this.postDraw(mx, my);
-
-				this.nodeList
-				.ordered()
-				.stream()
-				.filter(node -> node.getZindex() >= 100)
-				.forEach(node -> {
-					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-					lastRenderPipelineLevel.set(this.renderPipelineLevel);
-					node.render(mx, my);
-				});
-
-				if (this.onTop) {
-					render.pushMatrix();
-					render.pushState();
-					try {
-						render.depth(false, false);
-						for (final Node node : this.nodeList.reversed()) {
-							if (node.renderHover(mx, my)) {
-								break;
-							}
-						}
-					} finally {
-						render.popState();
-						render.popMatrix();
-					}
-				}
-			});
-		} finally {
-			if (transitionIn) {
-				this.transition.getIn().post(this, mx, my);
-			}
-
-			if (transitionOut) {
-				this.transition.getOut().post(this, mx, my);
-			}
-		}
-
-		final long end = System.nanoTime();
-		this.renderTime = end - start;
-
-		if (JOID.inst().isDevMode() && this.debug.profiler()) {
-			final float ms = this.renderTime / 1_000_000F;
-			if (ms > 16.66F) {
-				System.err.println("##########################");
-				System.err.println("[!] Frame took " + String.format("%.2f", ms) + "ms to render");
-				System.err.println("##########################");
-			}
-		}
-
-		if (this.lastFpsUpdate == 0L) {
-			this.fps = 0;
-			this.fpsCounter = 0;
-			this.lastFpsUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
-		} else if (this.frameTime > 0D) {
-			this.fpsCounter++;
-			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-			if (now - this.lastFpsUpdate >= 1000L) {
-				this.fps = this.fpsCounter / ((now - this.lastFpsUpdate) / 1000D);
-				this.fpsCounter = 0;
-				this.lastFpsUpdate = now;
-			}
-		}
+		this.untraced(() -> this.drawFrame(mouseX, mouseY));
 	}
 
 	public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
@@ -828,6 +678,188 @@ public abstract class UI implements IUI, IndexedElement {
 
 		if (this.scaledHeight.getOrDefault() != this.view.getVisibleHeight()) {
 			this.scaledHeight.set(this.view.getVisibleHeight());
+		}
+	}
+
+	private void drawFrame(final double mouseX, final double mouseY) {
+		final long start = System.nanoTime();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+
+		final long frame = BridgeHandler.CLOCK.get().nanoTime();
+		this.frameTime = this.lastFrame == 0L ? 1000D / 60D : (frame - this.lastFrame) / 1_000_000D;
+		this.lastFrame = frame;
+
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
+		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
+
+		final List<UIScheduledTask> toRemove = new ArrayList<>();
+		for (final UIScheduledTask task : this.scheduledTaskList) {
+			if (!task.shouldRun()) {
+				continue;
+			}
+
+			SignalReplay.enter(this);
+			try {
+				if (!task.execute()) {
+					toRemove.add(task);
+				}
+			} finally {
+				SignalReplay.exit();
+			}
+		}
+		this.scheduledTaskList.removeAll(toRemove);
+
+		final IUIBridge bridge = this.getBridge();
+		final double interfaceScale = bridge == null ? 1D : bridge.getInterfaceScale(this);
+		if (interfaceScale != this.view.getInterfaceScale()) {
+			this.view.interfaceScale(interfaceScale);
+			this.refreshView();
+		}
+
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+
+		if (this.data.background()) {
+			float opacity = this.data.getBackgroundColor().getAlpha() / 255F;
+			if (this.transition != null) {
+				if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
+					opacity = this.transition.getIn().getAnimator().getValue() * (this.data.getBackgroundColor().getAlpha() / 255F);
+				}
+
+				if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
+					opacity = this.transition.getOut().getAnimator().getValue() * (this.data.getBackgroundColor().getAlpha() / 255F);
+				}
+			}
+			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().copyAlpha(opacity));
+		}
+
+		this.drawBackground(mx, my);
+
+		final boolean transitionIn = this.transition != null && this.transition.getIn() != null && this.transition.getIn().isRunning();
+		final boolean transitionOut = this.transition != null && this.transition.getOut() != null && this.transition.getOut().isRunning();
+		if (transitionIn) {
+			this.transition.getIn().update();
+			this.transition.getIn().pre(this, mx, my);
+		}
+
+		if (transitionOut) {
+			this.transition.getOut().update();
+			this.transition.getOut().pre(this, mx, my);
+		}
+
+		render.alphaTest(0F);
+		try {
+			this.view.render(render, this.data.projection(), () -> {
+				this.renderPipelineLevel = 0;
+				final AtomicDouble lastRenderPipelineLevel = new AtomicDouble(this.renderPipelineLevel);
+
+				this.nodeList
+				.ordered()
+				.stream()
+				.filter(node -> node.getZindex() < 0)
+				.forEach(node -> {
+					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					node.render(mx, my);
+				});
+
+				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+				lastRenderPipelineLevel.set(this.renderPipelineLevel);
+				this.preDraw(mx, my);
+
+				this.nodeList
+				.ordered()
+				.stream()
+				.filter(node -> node.getZindex() >= 0 && node.getZindex() < 100)
+				.forEach(node -> {
+					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					node.render(mx, my);
+				});
+
+				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+				lastRenderPipelineLevel.set(this.renderPipelineLevel);
+				this.postDraw(mx, my);
+
+				this.nodeList
+				.ordered()
+				.stream()
+				.filter(node -> node.getZindex() >= 100)
+				.forEach(node -> {
+					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
+					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					node.render(mx, my);
+				});
+
+				if (this.onTop) {
+					render.pushMatrix();
+					render.pushState();
+					try {
+						render.depth(false, false);
+						for (final Node node : this.nodeList.reversed()) {
+							if (node.renderHover(mx, my)) {
+								break;
+							}
+						}
+					} finally {
+						render.popState();
+						render.popMatrix();
+					}
+				}
+			});
+		} finally {
+			if (transitionIn) {
+				this.transition.getIn().post(this, mx, my);
+			}
+
+			if (transitionOut) {
+				this.transition.getOut().post(this, mx, my);
+			}
+		}
+
+		final long end = System.nanoTime();
+		this.renderTime = end - start;
+
+		if (JOID.inst().isDevMode() && this.debug.profiler()) {
+			final float ms = this.renderTime / 1_000_000F;
+			if (ms > 16.66F) {
+				System.err.println("##########################");
+				System.err.println("[!] Frame took " + String.format("%.2f", ms) + "ms to render");
+				System.err.println("##########################");
+			}
+		}
+
+		if (this.lastFpsUpdate == 0L) {
+			this.fps = 0;
+			this.fpsCounter = 0;
+			this.lastFpsUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
+		} else if (this.frameTime > 0D) {
+			this.fpsCounter++;
+			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+			if (now - this.lastFpsUpdate >= 1000L) {
+				this.fps = this.fpsCounter / ((now - this.lastFpsUpdate) / 1000D);
+				this.fpsCounter = 0;
+				this.lastFpsUpdate = now;
+			}
+		}
+	}
+
+	private void traced(final Runnable runnable) {
+		SignalReplay.enter(this);
+		try {
+			runnable.run();
+		} finally {
+			SignalReplay.exit();
+		}
+	}
+
+	private void untraced(final Runnable runnable) {
+		final boolean tracing = SignalContext.current().tracing(false);
+		try {
+			runnable.run();
+		} finally {
+			SignalContext.current().tracing(tracing);
 		}
 	}
 

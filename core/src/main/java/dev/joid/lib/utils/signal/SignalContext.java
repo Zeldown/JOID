@@ -8,6 +8,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,6 +29,7 @@ public final class SignalContext {
 	private int               readIndex;
 	private int               readCount;
 	private boolean           flushing;
+	private boolean           tracing = true;
 	private ComputedSignal<?> observer;
 
 	@Getter
@@ -58,8 +60,25 @@ public final class SignalContext {
 		this.readTotal++;
 		if (this.observer != null) {
 			this.observer.depend(signal);
-		} else {
+		} else if (this.tracing) {
 			this.record(signal);
+		}
+	}
+
+	public boolean tracing(final boolean tracing) {
+		final boolean previous = this.tracing;
+		this.tracing = tracing;
+		return previous;
+	}
+
+	public <T> T untracked(final @NonNull Supplier<T> supplier) {
+		final ComputedSignal<?> observer = this.observe(null);
+		final boolean tracing = this.tracing(false);
+		try {
+			return supplier.get();
+		} finally {
+			this.tracing(tracing);
+			this.observe(observer);
 		}
 	}
 

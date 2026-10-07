@@ -21,7 +21,10 @@ import dev.joid.lib.bridge.replay.IReplayRemapper;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.utils.signal.SignalContext;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
+import example.replay.LabelNode;
+import example.replay.LabelUI;
 
 public class SignalReplayTest {
 
@@ -183,6 +186,44 @@ public class SignalReplayTest {
 		this.bridges.open(ui);
 		ui.getClicks().set(2);
 		Assert.assertEquals("Update 2", SignalReplayTest.node(ui, 0).getText().get());
+	}
+
+	@Test
+	public void followsTheSettersOfACustomNodeOutsideTheLibrary() {
+		final LabelUI ui = new LabelUI();
+		Assert.assertEquals("", this.open(ui));
+		ui.getClicks().set(3);
+		Assert.assertEquals("Label 3", ((LabelNode) ui.getNodeList().get(0)).getLabel().get());
+		Assert.assertEquals("Title 3", ((LabelNode) ui.getNodeList().get(1)).getLabel().get());
+		Assert.assertEquals("Caption 3", SignalReplayTest.node(ui, 2).getText().get());
+		Assert.assertEquals("Titled 3", SignalReplayTest.node(ui, 3).getText().get());
+		Assert.assertEquals("Direct 3", ((LabelNode) ui.getNodeList().get(5)).getLabel().get());
+	}
+
+	@Test
+	public void keepsAValueComputedInsideTheLibraryFixed() {
+		final LabelUI ui = new LabelUI();
+		Assert.assertEquals("", this.open(ui));
+		ui.getClicks().set(3);
+		Assert.assertEquals("> Prefixed 0", SignalReplayTest.node(ui, 4).getText().get());
+	}
+
+	@Test
+	public void leavesNoReadBehindAFrame() {
+		final IntegerSignal clicks = IntegerSignal.of(1);
+		final UI ui = new UI() {
+
+			@Override
+			public void init() {
+				RectNode.create(0D, 0D, 10D, 10D).color(() -> clicks.get() > 0 ? Color.GREEN : Color.GRAY).attach(this);
+			}
+
+		};
+		this.bridges.open(ui);
+		final long total = SignalContext.current().getReadTotal();
+		this.bridges.frames(3);
+		Assert.assertTrue(SignalContext.current().getReadTotal() > total);
+		Assert.assertFalse(SignalContext.current().hasReads());
 	}
 
 	@Test

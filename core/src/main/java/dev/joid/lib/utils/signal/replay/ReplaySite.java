@@ -45,6 +45,10 @@ public final class ReplaySite {
 		return new ReplaySite(Collections.emptyList(), exception);
 	}
 
+	public boolean isPassThrough() {
+		return this.sliceList.stream().allMatch(slice -> slice.getSignalCount() == 0) && this.sliceList.stream().anyMatch(ReplaySlice::isParameter);
+	}
+
 	private static void collect(final ReplayClass replayClass, final MethodNode method, final int lineNumber, final String setter, final List<ReplaySlice> sliceList) {
 		ReplayMethod replayMethod = null;
 		int line = -1;

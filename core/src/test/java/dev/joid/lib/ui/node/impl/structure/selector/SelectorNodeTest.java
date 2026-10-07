@@ -244,6 +244,21 @@ public class SelectorNodeTest {
 		Assert.assertEquals(1, subtitles.getEventSet().size());
 	}
 
+
+	@Test
+	public void refusesAComputedSignal() {
+		final Signal<String> language = new Signal<>("second");
+		this.selector.signal(language);
+		try {
+			this.selector.signal(language.map(value -> value));
+			Assert.fail("A ComputedSignal cannot be bound in both directions");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("Selector.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
+		}
+		language.set("third");
+		Assert.assertEquals("third", this.selector.getValue());
+		Assert.assertSame(language, this.selector.getSignal());
+	}
 	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final Signal<String> language = new Signal<>("first");

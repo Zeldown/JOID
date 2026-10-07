@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -45,6 +46,24 @@ public final class ReplaySlice {
 
 	public boolean isEquivalent(final ReplaySlice slice) {
 		return Objects.equals(this.type, slice.type) && this.signature.equals(slice.signature);
+	}
+
+	public boolean isParameter() {
+		final AbstractInsnNode[] instructions = this.method.getInstructions();
+		boolean loaded = false;
+		for (int index = this.start; index < this.end; index++) {
+			final AbstractInsnNode instruction = instructions[index];
+			if (instruction.getOpcode() < 0 || instruction.getOpcode() == Opcodes.CHECKCAST) {
+				continue;
+			}
+
+			if (!loaded && instruction instanceof VarInsnNode && instruction.getOpcode() <= Opcodes.ALOAD && this.method.isParameter(((VarInsnNode) instruction).var)) {
+				loaded = true;
+			} else if (!loaded || instruction.getOpcode() != Opcodes.INVOKESTATIC || !((MethodInsnNode) instruction).name.equals("valueOf")) {
+				return false;
+			}
+		}
+		return loaded;
 	}
 
 	public Object convert(final Object value) {

@@ -51,7 +51,7 @@ public class Signal<T> implements ISignal<T> {
 
 	public static <T> @NonNull ComputedSignal<T> from(final T value) {
 		final Supplier<T> replay = SignalReplay.replay(value);
-		return new ComputedSignal<>(replay != null ? replay : () -> value);
+		return replay != null ? new ComputedSignal<>(replay) : ComputedSignal.constant(value);
 	}
 
 	public static <T> @NonNull ComputedSignal<T> from(final @NonNull Supplier<T> supplier) {

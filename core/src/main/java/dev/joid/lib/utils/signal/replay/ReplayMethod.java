@@ -159,6 +159,10 @@ public final class ReplayMethod {
 		return null;
 	}
 
+	public boolean isParameter(final int variable) {
+		return variable >= (this.isStatic ? 0 : 1) && variable < (Type.getArgumentsAndReturnSizes(this.method.desc) >> 2) - (this.isStatic ? 1 : 0);
+	}
+
 	public boolean isSignal(final String owner) {
 		try {
 			return ISignal.class.isAssignableFrom(this.type(Type.getObjectType(owner)));

@@ -81,6 +81,21 @@ public class ToggleNodeTest {
 		Assert.assertEquals(1, sounds.getEventSet().size());
 	}
 
+
+	@Test
+	public void refusesAComputedSignal() {
+		final BooleanSignal music = new BooleanSignal(false);
+		final Toggle toggle = new Toggle().state("on", 0).signal(music);
+		try {
+			toggle.signal(music.map(value -> !value));
+			Assert.fail("A ComputedSignal cannot be bound in both directions");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("Toggle.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
+		}
+		music.set(true);
+		Assert.assertTrue(toggle.isToggle());
+		Assert.assertSame(music, toggle.getSignal());
+	}
 	@Test
 	public void writesAChosenSideIntoItsSignal() {
 		final List<Object> changes = new ArrayList<>();

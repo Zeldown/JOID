@@ -137,6 +137,21 @@ public class SliderNodeTest {
 		Assert.assertEquals(1, balance.getEventSet().size());
 	}
 
+
+	@Test
+	public void refusesAComputedSignal() {
+		final Signal<Integer> volume = new Signal<>(5);
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 1).cursor(new Cursor()).signal(volume);
+		try {
+			slider.signal(volume.map(value -> value + 1));
+			Assert.fail("A ComputedSignal cannot be bound in both directions");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("Slider.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
+		}
+		volume.set(2);
+		Assert.assertEquals(2, slider.getValue().intValue());
+		Assert.assertSame(volume, slider.getSignal());
+	}
 	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final List<Integer> changes = new ArrayList<>();

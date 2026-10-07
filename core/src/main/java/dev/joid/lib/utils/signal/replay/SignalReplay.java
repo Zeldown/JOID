@@ -38,21 +38,15 @@ public final class SignalReplay {
 		}
 
 		final List<Signal<?>> readList = context.takeReads();
-		final StackTraceElement[] stack = new Throwable().getStackTrace();
-		int index = 0;
-		while (index < stack.length && SignalReplay.isLibrary(stack[index].getClassName())) {
-			index++;
-		}
-
-		if (index == 0 || index >= stack.length || SignalReplay.isRuntime(stack[index].getClassName())) {
-			context.putBackReads(readList);
-			return null;
-		}
-
 		final ComputedSignal<?> observer = context.observe(null);
 		state.replaying = true;
 		try {
-			return SignalReplay.resolve(value, readList, ReplayCall.create(stack[index], stack[index - 1].getMethodName()), state);
+			final ReplayCall call = SignalReplay.locate(new Throwable().getStackTrace(), state);
+			if (call == null) {
+				context.putBackReads(readList);
+				return null;
+			}
+			return SignalReplay.resolve(value, readList, call, state);
 		} catch (final RuntimeException | LinkageError exception) {
 			return null;
 		} finally {
@@ -67,14 +61,23 @@ public final class SignalReplay {
 
 	public static void enter(final Object owner, final Object parent) {
 		final State state = SignalReplay.STATE.get();
+		if (state.ownerList.isEmpty()) {
+			SignalContext.current().clearReads();
+		}
+
 		state.ownerList.add(owner);
 		state.ownerList.add(parent);
+		state.tracingList.add(SignalContext.current().tracing(true));
 	}
 
 	public static void exit() {
-		final List<Object> ownerList = SignalReplay.STATE.get().ownerList;
-		ownerList.remove(ownerList.size() - 1);
-		ownerList.remove(ownerList.size() - 1);
+		final State state = SignalReplay.STATE.get();
+		state.ownerList.remove(state.ownerList.size() - 1);
+		state.ownerList.remove(state.ownerList.size() - 1);
+		SignalContext.current().tracing(state.tracingList.remove(state.tracingList.size() - 1));
+		if (state.ownerList.isEmpty()) {
+			SignalContext.current().clearReads();
+		}
 	}
 
 	public static void reset() {
@@ -136,6 +139,21 @@ public final class SignalReplay {
 		SignalContext.current().putBackReads(match.getRemainingList(readList));
 		final List<Signal<?>> consumedList = match.getReadList(readList);
 		return consumedList.isEmpty() ? null : ReplayBinding.create(call, match, readList, value);
+	}
+
+	private static ReplayCall locate(final StackTraceElement[] stack, final State state) {
+		for (int index = 2; index < stack.length && index < 18; index++) {
+			if (SignalReplay.isRuntime(stack[index].getClassName())) {
+				return null;
+			}
+
+			final ReplayCall call = ReplayCall.create(stack[index], stack[index - 1].getMethodName());
+			final ReplaySite site = SignalReplay.SITES.computeIfAbsent(call.getKey(), key -> SignalReplay.analyze(call, state.findOwner(call.getCaller().getClassName())));
+			if (!site.isPassThrough()) {
+				return SignalReplay.isLibrary(stack[index].getClassName()) ? null : call;
+			}
+		}
+		return null;
 	}
 
 	private static ReplaySite analyze(final ReplayCall call, final Object self) {
@@ -282,8 +300,9 @@ public final class SignalReplay {
 
 	private static final class State {
 
-		private final List<Object>                  ownerList = new ArrayList<>();
-		private final Map<String, Set<ReplaySlice>> usedMap   = new HashMap<>();
+		private final List<Object>                  ownerList   = new ArrayList<>();
+		private final List<Boolean>                 tracingList = new ArrayList<>();
+		private final Map<String, Set<ReplaySlice>> usedMap     = new HashMap<>();
 
 		private boolean replaying;
 
