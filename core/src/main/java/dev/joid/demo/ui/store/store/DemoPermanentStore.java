@@ -21,7 +21,7 @@ public class DemoPermanentStore extends UIStore {
 
 	@Override
 	public void init() {
-		System.out.println("init DemoPermanentStore at " + this.time);
+		System.out.println("[UIDemoStore] DemoPermanentStore created at " + this.time);
 	}
 
 	@Override

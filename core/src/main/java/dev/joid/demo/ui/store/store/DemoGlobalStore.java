@@ -17,7 +17,7 @@ public class DemoGlobalStore extends UIStore {
 
 	@Override
 	public void init() {
-		System.out.println("init DemoGlobalStore at " + this.time);
+		System.out.println("[UIDemoStore] DemoGlobalStore created at " + this.time);
 	}
 
 }

@@ -17,15 +17,18 @@ import lombok.NonNull;
 @UIDataPopup(active = true)
 public class UIDemoPopup extends UI {
 
+	private static final Color INK = new Color(153, 153, 153);
+
 	@Override
 	public void init() {
 		final Random random = new Random(BridgeHandler.CLOCK.get().currentTimeMillis());
 
 		DemoTextFieldNode
 		.create(random.nextInt(1920 - 500) + 50, random.nextInt(1080 - 100) + 50, 400)
-		.info(TextInfo.create(DemoFont.MONTSERRAT, 30, Color.WHITE))
+		.info(TextInfo.create(DemoFont.MONTSERRAT, 30, UIDemoPopup.INK))
+		.marginHorizontal(12D)
 		.placeholder("Placeholder")
-		.onChange((node, oldText, newText) -> System.out.println("Text: " + oldText + " -> " + newText))
+		.onChange((node, oldText, newText) -> System.out.println("[UIDemoPopup] popup field text: " + oldText + " -> " + newText))
 		.attach(this);
 	}
 
