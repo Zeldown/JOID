@@ -87,11 +87,11 @@ Every frame below is a real JOID render on the 1920×1080 canvas. Only the mouse
     <td align="center"><sub><b>Themes.</b> Flip one signal and the whole screen changes theme.</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="documentation/content/images/showcase-inspect.webp" alt="The dev mode over the playlist: hovered nodes are outlined with their render time, and a click shows the details of a row"></td>
-    <td width="50%"><img src="documentation/content/images/uikit-side-by-side.png" alt="The same screen code drawn by two different UI kits"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-inspect.webp" alt="The dev mode over the playlist: the grid is turned on and off, a reload rebuilds the list, the panel is dragged to the top, hovered nodes are outlined with their render time, and a click locks a row whose details scroll in the panel"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-design.webp" alt="A settings screen drawn by a dark neon kit, then wiped into a flat paper kit by the same code: switches, a slider and a save button react in both, and the values follow from one kit to the other"></td>
   </tr>
   <tr>
-    <td align="center"><sub><b>Dev mode.</b> Hover any node to see its bounds and render time, click to inspect it.</sub></td>
+    <td align="center"><sub><b>Dev mode.</b> Grid, reload, a movable panel, and a click to inspect any node.</sub></td>
     <td align="center"><sub><b>Your design.</b> The same screen code, drawn by two UI kits.</sub></td>
   </tr>
 </table>
