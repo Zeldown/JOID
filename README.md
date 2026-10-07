@@ -39,17 +39,15 @@ JOID is a UI engine for Java 8. You build each screen from nodes, JOID draws it 
 
 ## Showcase
 
-Every frame below is a real JOID render on the 1920×1080 canvas. Only the mouse pointer is drawn on top.
+Every frame below is a real JOID render on the 1920×1080 canvas. Only the mouse pointer is drawn on top. Watch them all in the [1080p video](documentation/content/images/showcase.mp4).
 
 <p align="center">
-  <img src="documentation/content/images/showcase-hero.webp" alt="A dashboard drawn by JOID: a large gradient headline, a video card with rounded corners, a live chart, a spinning 3D model and a notification sliding in, over soft blurred colors" width="100%">
+  <img src="documentation/content/images/showcase-hero.webp" alt="A dashboard drawn by JOID: a large gradient headline, a video card with rounded corners, a live chart, a spinning 3D teapot and a notification sliding in, over soft blurred colors" width="100%">
 </p>
-
-<p align="center"><sub>Video, a lit 3D model, a live chart, gradients, glows and blur in one screen. <a href="documentation/content/images/showcase.mp4">Watch the full showcase in 1080p (MP4)</a>.</sub></p>
 
 <table>
   <tr>
-    <td width="50%"><img src="documentation/content/images/showcase-reactive.webp" alt="Three sliders drive a glowing orb: its size, colors and glow, the numbers and an equalizer follow every move"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-reactive.webp" alt="Three sliders drive a glowing orb: its size, colors and glow, the numbers, the swatches and an equalizer follow every move"></td>
     <td width="50%"><img src="documentation/content/images/showcase-type.webp" alt="Text from 14 to 108 px in several fonts, with markup and animated effects, then a 6x zoom that stays perfectly sharp"></td>
   </tr>
   <tr>
@@ -57,11 +55,43 @@ Every frame below is a real JOID render on the 1920×1080 canvas. Only the mouse
     <td align="center"><sub><b>Typography.</b> Markup, animated effects, and a 6× zoom that stays sharp.</sub></td>
   </tr>
   <tr>
+    <td width="50%"><img src="documentation/content/images/showcase-effects.webp" alt="Seven switches add rounded corners, a gradient, an inner border, a drop shadow, a glow, a blur and a tilt to a card, one by one"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-motion.webp" alt="Six balls slide along their tracks with six easing curves, each curve plotted next to its track"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Effects.</b> Stack corners, gradients, shadows, glow and blur, and animate every value.</sub></td>
+    <td align="center"><sub><b>Motion.</b> Ease any property with the curve you pick.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="documentation/content/images/showcase-form.webp" alt="A sign-up form: a name and an email are typed, a word is selected with a double click and replaced, and a live profile card follows"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-player.webp" alt="A video player with designed controls: the pointer pauses the video, drags the progress bar to seek, then plays it again"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Text input.</b> Typing, selection, markup and validation, drawn in your kit.</sub></td>
+    <td align="center"><sub><b>Video.</b> Play, pause and seek a video with controls you design.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="documentation/content/images/showcase-model.webp" alt="A textured teapot turned with the mouse and zoomed with the wheel, its yaw, pitch and zoom shown live"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-lists.webp" alt="A playlist: a track is dragged to a new place, the others make room, then the list scrolls with a custom scrollbar"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>3D models.</b> Show a lit, textured OBJ model and let the mouse turn it.</sub></td>
+    <td align="center"><sub><b>Lists.</b> Drag rows to reorder them, scroll with a scrollbar you draw.</sub></td>
+  </tr>
+  <tr>
     <td width="50%"><img src="documentation/content/images/showcase-drag.webp" alt="A record is dragged from a library into a player, snaps into place, and the player shows its title and color"></td>
-    <td width="50%"><img src="documentation/content/images/uikit-side-by-side.png" alt="The same screen code drawn by two different UI kits"></td>
+    <td width="50%"><img src="documentation/content/images/showcase-theme.webp" alt="A dashboard switches from light to dark and back with one toggle, every color fading smoothly"></td>
   </tr>
   <tr>
     <td align="center"><sub><b>Drag and drop.</b> Drop a record, it snaps into place and the player updates.</sub></td>
+    <td align="center"><sub><b>Themes.</b> Flip one signal and the whole screen changes theme.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="documentation/content/images/showcase-inspect.webp" alt="The dev mode over the playlist: hovered nodes are outlined with their render time, and a click shows the details of a row"></td>
+    <td width="50%"><img src="documentation/content/images/uikit-side-by-side.png" alt="The same screen code drawn by two different UI kits"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Dev mode.</b> Hover any node to see its bounds and render time, click to inspect it.</sub></td>
     <td align="center"><sub><b>Your design.</b> The same screen code, drawn by two UI kits.</sub></td>
   </tr>
 </table>
