@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.lwjgl.openal.AL10;
 
+import dev.joid.lib.bridge.audio.AudioDownmix;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import lombok.NonNull;
 
@@ -14,6 +15,7 @@ public final class AudioSource implements IAudioSource {
 
 	private final int source;
 	private final int format;
+	private final int channels;
 	private final int sampleRate;
 
 	private final List<Integer>  bufferList;
@@ -22,6 +24,7 @@ public final class AudioSource implements IAudioSource {
 	public AudioSource(final int sampleRate, final int channels) {
 		this.source          = AL10.alGenSources();
 		this.format          = channels > 1 ? AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16;
+		this.channels        = channels;
 		this.sampleRate      = sampleRate;
 		this.bufferList      = new ArrayList<>();
 		this.freeBufferQueue = new ArrayDeque<>();
@@ -62,7 +65,7 @@ public final class AudioSource implements IAudioSource {
 	@Override
 	public void queue(final @NonNull short[] samples) {
 		final int buffer = this.nextBuffer();
-		AL10.alBufferData(buffer, this.format, samples, this.sampleRate);
+		AL10.alBufferData(buffer, this.format, AudioDownmix.stereo(samples, this.channels), this.sampleRate);
 		AL10.alSourceQueueBuffers(this.source, buffer);
 	}
 

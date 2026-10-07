@@ -257,7 +257,7 @@ public final class VideoAudioPlayer {
 	}
 
 	private short[] mergeNextChunk() {
-		final short[] chunk = new short[4096];
+		final short[] chunk = new short[4096 / this.channels * this.channels];
 		int offset = 0;
 
 		if (this.pendingSamples != null) {

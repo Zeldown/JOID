@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.lwjgl.openal.AL10;
 
+import dev.joid.lib.bridge.audio.AudioDownmix;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import lombok.NonNull;
 
@@ -16,6 +17,7 @@ public final class AudioSource implements IAudioSource {
 
 	private final int source;
 	private final int format;
+	private final int channels;
 	private final int sampleRate;
 
 	private final List<Integer>  bufferList;
@@ -26,6 +28,7 @@ public final class AudioSource implements IAudioSource {
 	public AudioSource(final int sampleRate, final int channels) {
 		this.source          = AL10.alGenSources();
 		this.format          = channels > 1 ? AL10.AL_FORMAT_STEREO16 : AL10.AL_FORMAT_MONO16;
+		this.channels        = channels;
 		this.sampleRate      = sampleRate;
 		this.bufferList      = new ArrayList<>();
 		this.freeBufferQueue = new ArrayDeque<>();
@@ -66,13 +69,14 @@ public final class AudioSource implements IAudioSource {
 	@Override
 	public void queue(final @NonNull short[] samples) {
 		final int buffer = this.nextBuffer();
-		final int size = samples.length * 2;
+		final short[] stereo = AudioDownmix.stereo(samples, this.channels);
+		final int size = stereo.length * 2;
 		if (this.uploadBuffer == null || this.uploadBuffer.capacity() < size) {
 			this.uploadBuffer = ByteBuffer.allocateDirect(size).order(ByteOrder.nativeOrder());
 		}
 
 		this.uploadBuffer.clear();
-		this.uploadBuffer.asShortBuffer().put(samples);
+		this.uploadBuffer.asShortBuffer().put(stereo);
 		this.uploadBuffer.limit(size);
 
 		AL10.alBufferData(buffer, this.format, this.uploadBuffer, this.sampleRate);

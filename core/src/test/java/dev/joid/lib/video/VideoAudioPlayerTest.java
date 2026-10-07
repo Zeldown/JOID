@@ -117,6 +117,20 @@ public class VideoAudioPlayerTest {
 	}
 
 	@Test
+	public void cutsItsChunksBetweenTwoFramesOfAMultichannelTrack() {
+		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 6);
+		player.play();
+		player.update();
+		VideoAudioPlayerTest.push(player, 16, 3000);
+		player.update();
+		final RecordingAudioSource source = this.audio.source();
+		Assert.assertEquals(8, source.queued.size());
+		for (final short[] chunk : source.queued) {
+			Assert.assertEquals(4092, chunk.length);
+		}
+	}
+
+	@Test
 	public void trimsItsLastChunk() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		VideoAudioPlayerTest.push(player, 16, 100);
