@@ -17,11 +17,11 @@ A round avatar cropped from a non-square image:
 
 ```java
 ResourceNode
-    .create(0, 0, 100, 100)
-    .resource(Resource.of("https://placehold.co/400x800.png"))
-    .stretch(StretchType.COVER)
-    .effect(CircleNodeEffect.create())
-    .attach(this);
+.create(0, 0, 100, 100)
+.resource(Resource.of("https://placehold.co/400x800.png"))
+.stretch(StretchType.COVER)
+.effect(CircleNodeEffect.create())
+.attach(this);
 ```
 
 ![A round avatar cut from a tall placeholder image](../../images/resource-avatar.png "COVER fills the square without distortion and the CircleNodeEffect makes it round.")
@@ -75,7 +75,7 @@ ResourceNode.create(0, 0, 64, 64).resource(Resource.of("https://placehold.co/64x
 
 ![The same placeholder drawn opaque and half transparent](../../images/resource-tint.png "Left: the default Color.WHITE; right: a tint with alpha 0.5F (2× scale).")
 
-## Hover: hoveredColor and hoverResource
+## Hover: hoveredColor and hoveredResource
 
 The node reacts to the mouse in two ways, both following the node's hover animation (see [Hover and Tooltips](../../interactions/hover.md)):
 
@@ -84,12 +84,13 @@ The node reacts to the mouse in two ways, both following the node's hover animat
 
 ```java
 ResourceNode
-    .create(0, 0, 48, 48)
-    .resource(Resource.of("https://placehold.co/48x48.png"), Resource.of("https://placehold.co/48x48/orange/white.png"))
-    .attach(this);
+.create(0, 0, 48, 48)
+.resource(Resource.of("https://placehold.co/48x48/DDDDDD/999999.png"))
+.hoveredResource(Resource.of("https://placehold.co/48x48/999999/DDDDDD.png"))
+.attach(this);
 ```
 
-![The cursor hovers a gray placeholder that fades to an orange one](../../images/resource-hover.gif "The hovered resource fades in over the main one (2× scale).")
+![The cursor hovers a light placeholder that fades to its inverted version](../../images/resource-hover.gif "The hovered resource fades in over the main one (2× scale).")
 
 - The hovered resource is loaded from the first frame, so it is ready when the mouse arrives.
 - When the hovered resource is the same `Resource` object as the main one, the node draws it once with `color` and shows no hover change.
@@ -117,15 +118,14 @@ ResourceNode.create(0, 0, 160, 160).resource(Resource.of("https://placehold.co/1
 
 | Method | Default | Description |
 | --- | --- | --- |
-| `resource(Resource resource)` | `null` | Main resource. |
-| `resource(Resource resource, Resource hoveredResource)` | | Main and hovered resources. A `null` `hoveredResource` removes the hovered resource. |
-| `hoverResource(Resource resource)` | `null` | Hovered resource. `null` removes it. |
-| `color(Color color)` | `Color.WHITE` | Tint of the resource. |
-| `hoveredColor(Color color)` | `null` | Tint reached when hovered. `null` removes it. |
-| `stretch(StretchType stretchType)` | `StretchType.STRETCH` | How the resource fills the box. |
-| `linear(boolean linear)` | | Linear (`true`) or nearest (`false`) filtering of the resources already set. |
+| `resource(Resource)`, `resource(Supplier<Resource>)` | `null` | Main resource. |
+| `hoveredResource(Resource)`, `hoveredResource(Supplier<Resource>)` | `null` | Hovered resource. `hoveredResource((Resource) null)` removes it. |
+| `color(Color)`, `color(Supplier<Color>)` | `Color.WHITE` | Tint of the resource. |
+| `hoveredColor(Color)`, `hoveredColor(Supplier<Color>)` | `null` | Tint reached when hovered. `(Color) null` removes it. |
+| `stretch(StretchType)`, `stretch(Supplier<StretchType>)` | `StretchType.STRETCH` | How the resource fills the box. |
+| `linear(boolean)`, `linear(Supplier<Boolean>)` | | Linear (`true`) or nearest (`false`) filtering of the resources already set. |
 
-Every setter returns the node itself, typed by the generic return of the fluent API.
+Every setter takes a value, a native expression that reads signals (`resource(this.selected.get() ? on : off)`), a signal or a lambda (see [Reactive Properties](../../state/reactive-properties.md)).
 
 ### Getters
 
@@ -137,9 +137,30 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 | `getHoveredColor()` | The hovered tint, or `null`. |
 | `getStretchType()` | The current `StretchType`. |
 
+## Unreadable resources
+
+A resource that cannot be read (missing file, unknown URL, corrupted data, a HEIF or AVIF image) never throws: it is in a failed state, `isFailed()` is `true`, and the node draws nothing in its place. In dev mode the node draws a magenta and black checkerboard instead, and JOID prints once `[JOID] The resource <id> cannot be read and is drawn empty: <reason>, <advice>`. React to it with `onError`:
+
+```java
+final Resource photo = Resource.of(new File("photos/missing.png"));
+photo.onError((resource, error) -> System.err.println("[Gallery] " + error.getMessage()));
+
+ResourceNode.create(100, 100, 200, 200).resource(photo).attach(this);
+```
+
+![A dev-mode checkerboard drawn in place of an unreadable image](../../images/resource-failed.png "In dev mode, a failed resource is drawn as a missing-image checkerboard")
+
+See [Resources](../../resources/resources.md#resources-in-error).
+
 ## Animated resources
 
 Animated images (GIF, APNG, animated WebP) play by themselves on a `ResourceNode`, with the defaults of their decoder. To play, pause, seek, loop or listen to a video or an animation, use [`ResourcePlayerNode`](resource-player.md).
+
+## Pitfalls
+
+- A `Resource` shared by nodes of different sizes is rasterized for each size (SVG): create one resource per size when sizes differ a lot.
+- `linear(...)` changes the shared `Resource` objects: every node that displays them is affected.
+- A failed resource takes no space when the node is sized by its resource: give the node a size.
 
 ## See also
 

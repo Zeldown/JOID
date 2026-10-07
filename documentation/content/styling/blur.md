@@ -5,7 +5,7 @@
 ```java
 @Override
 public void init() {
-    RectNode.create(100, 100, 200, 120).color(Color.BLUE).effect(BlurNodeEffect.create(8F)).attach(this);
+	RectNode.create(100, 100, 200, 120).color(Color.BLUE).effect(BlurNodeEffect.create(8F)).attach(this);
 }
 ```
 
@@ -64,7 +64,7 @@ RectNode
 .color(Color.WHITE)
 .effect(BlurNodeEffect.create(6F).scope(NodeEffectScope.CHILDREN))
 .body(panel -> {
-    RectNode.create(20, 20, 200, 60).color(Color.RED).attach(panel);
+	RectNode.create(20, 20, 200, 60).color(Color.RED).attach(panel);
 })
 .attach(this);
 ```
@@ -96,6 +96,12 @@ Each blurred node adds two passes of 65 texture samples per pixel over its enlar
 | `priority(int)`, `scope(NodeEffectScope)` | Inherited, see [Effects](effects.md). |
 
 Shader pass priorities: 150 (horizontal) and 151 (vertical). Expansion: `radius`.
+
+## Pitfalls
+
+- A blur costs two framebuffer passes per frame: keep the radius moderate on large nodes.
+- A radius of `0` disables the blur pass.
+- The blur reads only what the node draws (or its subtree with `CHILDREN`), not what lies behind it.
 
 ## See also
 

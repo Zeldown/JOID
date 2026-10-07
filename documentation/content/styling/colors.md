@@ -5,10 +5,10 @@
 ```java
 @Override
 public void init() {
-    RectNode.create(100, 100, 200, 120).color(Color.RED).attach(this);
-    RectNode.create(320, 100, 200, 120).color(new Color(0.2F, 0.4F, 0.6F, 0.8F)).attach(this);
-    RectNode.create(540, 100, 200, 120).color(Color.decode("#3366CC")).attach(this);
-    RectNode.create(760, 100, 200, 120).color(Color.BLUE.toGradient(Color.GREEN)).attach(this);
+	RectNode.create(100, 100, 200, 120).color(Color.RED).attach(this);
+	RectNode.create(320, 100, 200, 120).color(new Color(0.2F, 0.4F, 0.6F, 0.8F)).attach(this);
+	RectNode.create(540, 100, 200, 120).color(Color.decode("#3366CC")).attach(this);
+	RectNode.create(760, 100, 200, 120).color(Color.BLUE.toGradient(Color.GREEN)).attach(this);
 }
 ```
 
@@ -219,8 +219,8 @@ A color can carry an update function (`UnaryOperator<Color>`) that receives the 
 
 ```java
 final Color pulse = new Color(1F, 1F, 1F, 1F, color -> {
-    final float t = (float) ((Math.sin(BridgeHandler.CLOCK.get().currentTimeMillis() / 500D) + 1D) / 2D);
-    return new Color(t, 1F - t, 0F, color.a);
+	final float t = (float) ((Math.sin(BridgeHandler.CLOCK.get().currentTimeMillis() / 500D) + 1D) / 2D);
+	return new Color(t, 1F - t, 0F, color.a);
 });
 RectNode.create(100, 100, 200, 120).color(pulse).attach(this);
 ```
@@ -257,6 +257,12 @@ Inside a `draw` hook you can bind a color yourself (see [Drawing Overview](../dr
 | `bind(Runnable draw, Vector4f canvas)` | Runs `draw` with this color: a plain color is bound then reset to white afterwards, a gradient binds the gradient shader over `canvas` (`minX, minY, maxX, maxY`) and restores the previous shader. |
 | `bind(Runnable draw, Vector4f canvas, boolean hasTexture)` | Same; with `hasTexture`, a gradient multiplies the bound texture. |
 | `Color.reset()` | Sets the renderer's current color back to opaque white. |
+
+## Pitfalls
+
+- The presets (`Color.WHITE`...) are immutable: derive a new color with `copyAlpha`, `to`, `brighter`... instead of changing them.
+- Alpha components are fractions of 1 (`0.5F` = 50 %), in `rgba(...)` strings too.
+- `Color.RAINBOW` and `Color.LOADING` animate through `update()`: call it once per frame when you draw them yourself.
 
 ## See also
 

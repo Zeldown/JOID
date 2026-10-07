@@ -7,9 +7,11 @@
 Both nodes draw an `IDrawableModel` (`dev.joid.lib.draw.model.utils`). JOID ships `OBJModel` (`dev.joid.lib.obj`), which reads a Wavefront OBJ file with a texture:
 
 ```java
-final Resource texture = Resource.of(MyUI.class.getResourceAsStream("/models/chest.png"));
-final OBJModel model = OBJModel.load("chest", MyUI.class.getResourceAsStream("/models/chest.obj"), texture);
+final Resource texture = Resource.of(MyUI.class.getResourceAsStream("/models/box.png"));
+final OBJModel model = OBJModel.load("box", MyUI.class.getResourceAsStream("/models/box.obj"), texture);
 ```
+
+The model follows the OBJ convention: +X to the right, +Y up, +Z toward the viewer. With `rotationYaw(0D)` you see its +Z face. Vertex normals (`v//vn`, `v/vt/vn`) give a smooth shading, and the lighting does not depend on the size of the model.
 
 Load a model once and reuse it. `OBJModel`, its data and writing your own `IDrawableModel` are covered in [3D Models](../../drawing/models.md).
 
@@ -19,32 +21,44 @@ Load a model once and reuse it. `OBJModel`, its data and writing your own `IDraw
 ModelNode.create(100, 100, 300, 300).model(model).rotationYaw(30D).rotationPitch(15D).attach(this);
 ```
 
-![A cube with colored faces, its three nearest faces visible](../../images/model-node.png "A cube model turned by 30 degrees of yaw and 15 degrees of pitch.")
+![A rounded box with a checkered texture, smoothly lit, turned to show three sides](../../images/model-node.png "The demo model turned by 30 degrees of yaw and 15 degrees of pitch.")
+
+![Diagram: the OBJ axes, +X right, +Y up, +Z toward the viewer](../../images/diagram-model-axes.png "The axes of a model: rotationYaw turns around Y, rotationPitch around X")
 
 ### Fitting and scale
 
 - The model is centered on the center of the node.
 - It is scaled so that its width fills the node's width, multiplied by `size(...)`. The node's height is not used: a model taller than it is wide can extend above and below the node.
 - A model dimension of `0` counts as `1`.
-- `size(double)` is a scale factor (default `1D`, `0.5D` = half the width). At `0`, nothing is drawn. Do not confuse it with `size(width, height)` inherited from `Node`, which resizes the node.
+- `size(double)` is a scale factor (default `1D`, `0.5D` = half the width). At `0`, nothing is drawn.
 
 ### Rotation
 
-`rotationYaw(double)` turns the model around the vertical axis and `rotationPitch(double)` tilts it around the horizontal axis, both in degrees and around the node's center. Both default to `0D`.
+`rotationYaw(double)` turns the model around the vertical axis and `rotationPitch(double)` tilts it around the horizontal axis, both in degrees and around the node's center. Both default to `0D`. Like every setter, they take a value, a native expression that reads signals or a lambda: a turntable is a lambda driven by an animator.
 
-### Depth of the following nodes with pipeLineLevel
+```java
+final TweenAnimator spin = TweenAnimator.create().sequence(4000F, 1F);
+spin.getTimeline().repeat(-1, 0F);
+spin.start();
 
-After drawing the model, the node raises the UI's render pipeline level: the UI pushes the root nodes drawn after it forward by that depth, so that they are drawn in front of the model's geometry instead of intersecting it. By default (`-1D`), the depth is the model's diagonal multiplied by its scale. `pipeLineLevel(double)` sets an explicit depth instead.
+ModelNode.create(100, 100, 300, 300).model(model).rotationYaw(() -> spin.getValue() * 360D).animate(spin).attach(this);
+```
+
+![The demo model spinning on itself](../../images/model-spin.gif "rotationYaw read from the animator every frame")
+
+### Depth
+
+Each model is drawn with its own depth: the depth buffer is cleared before and after it, so a model never hides or cuts the nodes drawn after it, and several models in one UI never interfere.
 
 ## Interactive viewer with ModelViewerNode
 
 ```java
 ModelViewerNode
-    .create(100, 100, 400, 400)
-    .sizeRange(0.5D, 1.5D)
-    .rotationPitchRange(-45D, 45D)
-    .model(model)
-    .attach(this);
+.create(100, 100, 400, 400)
+.sizeRange(0.5D, 1.5D)
+.rotationPitchRange(-45D, 45D)
+.model(model)
+.attach(this);
 ```
 
 ![The cursor drags a cube to turn it, then the wheel zooms it out](../../images/model-viewer.gif "Dragging turns the model; the wheel changes its size. Both ease toward their targets.")
@@ -81,13 +95,12 @@ The displayed size and rotation ease toward their targets on every frame with `U
 | Method | Default | Description |
 | --- | --- | --- |
 | `ModelNode.create(double x, double y, double width, double height)` | | Creates an empty model node. |
-| `model(IDrawableModel model)` | `null` | Model to draw. Nothing is drawn without one. |
-| `size(double size)` | `1D` | Scale factor applied on top of the width fitting. |
-| `rotationYaw(double rotationYaw)` | `0D` | Rotation around the vertical axis, in degrees. |
-| `rotationPitch(double rotationPitch)` | `0D` | Rotation around the horizontal axis, in degrees. |
-| `pipeLineLevel(double pipeLineLevel)` | `-1D` (automatic) | Depth added in front of the model for the following root nodes. |
+| `model(IDrawableModel)`, `model(Supplier<IDrawableModel>)` | `null` | Model to draw. Nothing is drawn without one. |
+| `size(double)`, `size(Supplier<Double>)` | `1D` | Scale factor applied on top of the width fitting. |
+| `rotationYaw(double)`, `rotationYaw(Supplier<Double>)` | `0D` | Rotation around the vertical axis, in degrees. |
+| `rotationPitch(double)`, `rotationPitch(Supplier<Double>)` | `0D` | Rotation around the horizontal axis, in degrees. |
 
-Getters: `getModel()`, `getSize()`, `getRotationYaw()`, `getRotationPitch()`, `getPipeLineLevel()`.
+Getters: `getModel()`, `getSize()`, `getRotationYaw()`, `getRotationPitch()`.
 
 ### ModelViewerNode
 
@@ -97,7 +110,7 @@ Getters: `getModel()`, `getSize()`, `getRotationYaw()`, `getRotationPitch()`, `g
 | --- | --- | --- |
 | `ModelViewerNode.create(double x, double y, double width, double height)` | | Creates an empty viewer. |
 | `zoom(double zoom)` | | Eased, clamped target size. |
-| `sizeRange(double min, double max)` | `0.1D`, `2D` | Size limits. |
+| `sizeRange(double min, double max)` | `0.1D`, `2D` | Size limits. Each bound follows its own argument when it reads signals. |
 | `rotationYawRange(double min, double max)` | `-Double.MAX_VALUE`, `Double.MAX_VALUE` | Yaw limits while dragging. |
 | `rotationPitchRange(double min, double max)` | `-Double.MAX_VALUE`, `Double.MAX_VALUE` | Pitch limits while dragging. |
 
@@ -112,6 +125,12 @@ Getters: `getModel()`, `getSize()`, `getRotationYaw()`, `getRotationPitch()`, `g
 | `getDraggedMouseX()`, `getDraggedMouseY()` | Mouse position of the last drag step. |
 
 All setters are `final` and return the node itself, typed by the generic return of the fluent API: the `ModelNode` setters return a `ModelNode`, the `ModelViewerNode` setters a `ModelViewerNode`.
+
+## Pitfalls
+
+- A model taller than wide extends above and below its node: the fitting uses the width only.
+- Two arguments of a range method that give the same value from signals may be confused by the expression replay: prefer distinct values.
+- The viewer consumes the left press and the wheel over it: a scrolling parent does not scroll under a viewer.
 
 ## See also
 

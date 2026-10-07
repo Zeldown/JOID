@@ -5,11 +5,11 @@
 ```java
 @Override
 public void init() {
-    RectNode
-    .create(100, 100, 300, 200)
-    .color(Color.GREEN)
-    .effect(MaskNodeEffect.create(300D, 50D))
-    .attach(this);
+	RectNode
+	.create(100, 100, 300, 200)
+	.color(Color.GREEN)
+	.effect(MaskNodeEffect.create(300D, 50D))
+	.attach(this);
 }
 ```
 
@@ -55,7 +55,7 @@ ResourceNode
 
 With a resource, the mask is the shape of the image stretched over the mask bounds: pixels where the image's alpha is above `0.5` are visible, the others are clipped. The edge is hard (no anti-aliasing). Use a PNG (or any format with transparency) whose opaque part is the shape you want. See [Resources](../resources/resources.md) to load it.
 
-`resource(Resource)` sets or replaces the image; `resource(null)` turns the mask back into a rectangle.
+`resource(Resource)` sets or replaces the image; `resource((Resource) null)` turns the mask back into a rectangle.
 
 ## Changing the bounds
 
@@ -65,9 +65,6 @@ With a resource, the mask is the shape of the image stretched over the mask boun
 | `y(double)`, `y(Supplier<Double>)` | Vertical offset from the node's top side. |
 | `width(double)`, `width(Supplier<Double>)` | Mask width. |
 | `height(double)`, `height(Supplier<Double>)` | Mask height. |
-| `position(double x, double y)`, `position(Supplier<Double>, Supplier<Double>)` | Both offsets. |
-| `size(double width, double height)`, `size(Supplier<Double>, Supplier<Double>)` | Both dimensions. |
-| `bounds(double x, double y, double width, double height)`, `bounds(Supplier<Double> ×4)` | All four. |
 | `resource(Resource resource)` | Image shape, or `null` for a rectangle. |
 
 Suppliers make reveal animations straightforward, here a node that uncovers from left to right while hovered:
@@ -98,13 +95,18 @@ To clip the children of a node to its own rectangle, an overflow setting is simp
 | Method | Description |
 | --- | --- |
 | `create(...)` | Factories, see above. |
-| `x`, `y`, `width`, `height`, `position`, `size`, `bounds`, `resource` | Setters, see above. |
+| `x`, `y`, `width`, `height`, `resource` | Setters, value or `Supplier`. |
 | `getX()`, `getY()`, `getWidth()`, `getHeight()` | Current bounds (the suppliers are read). |
 | `getXSupplier()`, `getYSupplier()`, `getWidthSupplier()`, `getHeightSupplier()` | The suppliers. |
 | `getResource()` | The image, or `null`. |
 | `priority(int)` | Inherited, see [Effects](effects.md). |
 
 `MaskNodeEffect` is a render-state effect: it uses the stencil buffer in `pre` and releases it in `post`.
+
+## Pitfalls
+
+- A mask image has hard edges (alpha above `0.5` is visible): use `RoundedNodeEffect` or `CircleNodeEffect` for smooth shapes.
+- The mask and a `TransformNodeEffect` apply in priority order: masking before or after the rotation gives a different result.
 
 ## See also
 

@@ -403,6 +403,7 @@ kbd, .kbd {
 	padding: 12px 16px;
 	overflow-x: auto;
 	margin: 10px 0 14px;
+	tab-size: 4;
 }
 .markdown pre code {
 	background: transparent;

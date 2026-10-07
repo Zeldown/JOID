@@ -1,87 +1,74 @@
 # MSDF Generator
 
-The `msdf` module turns a `.ttf`, `.otf` or `.ttc` font into the `font.msdf` atlas that `MsdfFontLoader` reads (see [How Fonts Work](how-fonts-work.md#the-atlas) for what an atlas holds). It is pure Java (Java 8 or later, no native binary) and ships as a runnable zip. Use it to ship ready-made atlases, so the first launch does not generate them, or to choose your own characters and atlas size.
-
-## Quick start
-
-1. Download `joid-msdf-generator-8.0.0.zip` from the release and unzip it anywhere.
-2. Run the script of your system:
+The `msdf` module turns a `.ttf`, `.otf` or `.ttc` font into the `font.msdf` atlas that `MsdfFontLoader` reads (see [How Fonts Work](how-fonts-work.md#the-atlas) for what an atlas holds). It is pure Java (Java 8 or later, no native binary) and ships as a runnable zip. Use it to ship ready-made atlases, so the first launch generates nothing, or to choose your own characters and atlas size.
 
 ```sh
 ./msdf.sh --font Inter-Regular.ttf --output assets/fonts/Inter-Regular
 ```
 
-```bat
-.\msdf.bat --font Inter-Regular.ttf --output assets\fonts\Inter-Regular
-```
-
-3. Put the output directory in your resources and load the atlas:
-
 ```java
 final MsdfFont inter = MsdfFontLoader.load(Fonts.class.getResourceAsStream("/assets/fonts/Inter-Regular/font.msdf")).join();
 ```
 
-The command writes a single `font.msdf` in the output directory and prints one line:
+![Colored distance fields of five glyphs above the shapes rebuilt from them](../images/msdf-atlas.png "The pixels of a real font.msdf (Montserrat Bold, 2× scale): three distances per texel; below, the median of the channels cut at the outline.")
+
+The command writes a single `font.msdf` in the output folder and prints one line:
 
 ```
 <file> -> <font name>, weight <weight>[ italic], <glyphs> glyphs, <pairs> kerning pairs, size <em size>px, <file size>kb, <time>ms
 ```
 
-## The release zip
+The generator is the step between the font file and the atlas in the MSDF pipeline:
+
+![Five steps: the ttf or otf outlines, the generator, the font.msdf atlas, one glyph quad per character, the MSDF shader](../images/diagram-msdf-pipeline.png "The generator runs once per face, ahead of time with this tool or at runtime into the MSDF cache.")
+
+## Running the release zip
+
+1. Download `joid-msdf-generator-8.0.0.zip` from the release and unzip it anywhere.
+2. Run the script of your system with your font (`.\msdf.bat` on Windows, `./msdf.sh` elsewhere), or `java -jar joid-msdf-8.0.0.jar` with the same options.
+3. Put the output folder in your resources and load its `font.msdf` with `MsdfFontLoader.load(...)`.
 
 | File | Content |
 |---|---|
 | `joid-msdf-8.0.0.jar` | The generator, runnable with `java -jar` (main class `dev.joid.msdf.MsdfGenerator`). |
-| `msdf.sh`, `msdf.bat` | Run `java -jar joid-msdf-8.0.0.jar` with your arguments. |
+| `msdf.sh`, `msdf.bat` | Run the jar with your arguments. |
 | `charset.txt` | The default charset, `[32, 563]`. |
 | `README.md`, `LICENSE`, `NOTICE` | Usage and licenses. |
 
 From a clone of the repository, `./gradlew msdfGenerator` builds the zip into `build/distributions`.
 
-## Command-line options
+## Choosing the characters with --charset
 
-Options are `--name value` pairs. Without `--font`, the command prints its usage.
-
-| Option | Default | Description |
-|---|---|---|
-| `--font` | Required | Source `.ttf`, `.otf` or `.ttc` file. A collection gives the atlas of its first font. |
-| `--output` | `output` | Directory that receives `font.msdf`, created when missing. |
-| `--charset` | `[32, 563]` | Characters to include: a charset file, or the charset inline. |
-| `--range` | `24` | Distance field range, in atlas pixels. |
-| `--width` | `2048` | Atlas width, in pixels. |
-| `--height` | `2048` | Atlas height, in pixels. |
-| `--size` | Fitted | Em size, in atlas pixels. |
-
-Without `--size`, the generator searches the largest em size, in steps of 1/16 pixel, whose glyphs still fit the atlas, and writes it into the file: a larger charset or a smaller atlas gives a smaller em size. With `--size`, the generation fails with `IllegalStateException` "The glyphs do not fit in WxH at Spx" when the glyphs do not fit.
-
-The fonts `MsdfFontLoader` generates at runtime use the defaults: charset `[32, 563]`, 2048×2048, range 24, fitted size.
-
-## Charsets
-
-A charset is a comma-separated list of decimal codepoints and inclusive ranges `[first, last]`:
+A charset is a comma-separated list of decimal codepoints and inclusive ranges `[first, last]`, written inline or in a file:
 
 ```
 [32, 126], [160, 255], 8364
 ```
 
-- `--charset` takes the path of a file holding that text, or the text itself when no such file exists.
-- `[32, 563]` covers Basic Latin, Latin-1, Latin Extended-A and part of Latin Extended-B.
-- Characters the font does not provide are skipped, so one charset works for every font.
-- A character without outline, like the space, keeps its advance and takes no room in the atlas.
-- A large set such as a full CJK block does not fit a 2048×2048 atlas at a usable size: generate the subset you need.
-
 ```sh
 ./msdf.sh --font NotoSansJP-Regular.otf --output assets/fonts/NotoSansJP --charset japanese-charset.txt --width 4096 --height 4096
 ```
 
+- `--charset` takes the path of a file holding that text, or the text itself when no such file exists.
+- `[32, 563]` covers Basic Latin, Latin-1, Latin Extended-A and part of Latin Extended-B.
+- Characters the font does not have are skipped, so one charset works for every font.
+- A character without outline, like the space, keeps its advance and takes no room in the atlas.
+- A large set such as a full CJK block does not fit a 2048×2048 atlas at a usable size: generate the subset you need, or a larger atlas.
+
+## Sizing the atlas with --width, --height and --size
+
+Without `--size`, the generator searches the largest em size, in steps of 1/16 pixel, whose glyphs still fit the atlas, and writes it into the file: a larger charset or a smaller atlas gives a smaller em size, and less precise details. With `--size`, the generation fails with `IllegalStateException("The glyphs do not fit in WxH at Spx")` when the glyphs do not fit.
+
+The atlases `MsdfFontLoader` generates at runtime use the defaults: charset `[32, 563]`, 2048×2048, range 24, fitted size.
+
 ## Kerning
 
-The generator reads the kerning out of the font:
+The generator reads the kerning of the font:
 
-- The `GPOS` pair positioning of the `kern` feature, with single pairs, class pairs and extension lookups. In a lookup, the first subtable that describes a pair wins; the values of several lookups add up.
-- The legacy `kern` table (horizontal format 0 subtables), only when `GPOS` gives no pair.
+- The `GPOS` pair positioning of the `kern` feature, with single pairs, class pairs and extension lookups. Each lookup is read once; in a lookup, the first subtable that describes a pair wins, even with a value of 0; the values of several lookups add up.
+- The `kern` table (horizontal format 0 subtables), only when the font has no `GPOS` pair.
 
-Only the pairs of two characters of the charset are kept. Text drawn and measured with the atlas applies them on its own, scaled to the font size.
+Only the pairs of two characters of the charset are kept. Text drawn and measured with the atlas applies them, scaled to the font size.
 
 ## Families and styles
 
@@ -95,9 +82,9 @@ Generate one atlas per face, then load them together as one family:
 
 ```java
 final MsdfFont inter = MsdfFontLoader.load(
-    Fonts.class.getResourceAsStream("/assets/fonts/Inter-Regular/font.msdf"),
-    Fonts.class.getResourceAsStream("/assets/fonts/Inter-Italic/font.msdf"),
-    Fonts.class.getResourceAsStream("/assets/fonts/Inter-Bold/font.msdf")
+	Fonts.class.getResourceAsStream("/assets/fonts/Inter-Regular/font.msdf"),
+	Fonts.class.getResourceAsStream("/assets/fonts/Inter-Italic/font.msdf"),
+	Fonts.class.getResourceAsStream("/assets/fonts/Inter-Bold/font.msdf")
 ).join();
 ```
 
@@ -119,21 +106,11 @@ In a clone of the repository, the `msdf` module has a `generateFont` task:
 | `-Prange` | `24` |
 | `-Pwidth`, `-Pheight` | `2048` |
 
-Relative paths resolve against the `msdf` module directory; the task has no `--size` property.
+Relative paths resolve against the `msdf` module folder; the task has no size property (the em size is fitted).
 
 ## Generating from code with MsdfGenerator
 
 `dev.joid.msdf.MsdfGenerator` is part of the JOID core jar, so your build or your application can generate atlases itself:
-
-| Member | Description |
-|---|---|
-| `MsdfGenerator.generate(File font, File output, int[] codepoints, int width, int height, double range, double size)` | Writes `output/font.msdf`, creating the directory, and prints the summary line. `size` 0 fits the em size. |
-| `MsdfGenerator.generate(byte[] font, File target, int[] codepoints, int width, int height, double range, double size)` | Writes the atlas into `target` and returns the summary (name, weight, glyph and pair counts, em size). |
-| `MsdfGenerator.codepoints(String charset)` | Codepoints of an inline charset or of a charset file. |
-| `MsdfGenerator.main(String[] arguments)` | The command line. |
-| `WIDTH`, `HEIGHT`, `RANGE`, `CHARSET` | The defaults: `2048`, `2048`, `24D`, `"[32, 563]"`. |
-
-Every method throws `Exception`.
 
 ```java
 final int[] codepoints = MsdfGenerator.codepoints("[32, 126], [160, 255], 8364");
@@ -142,9 +119,37 @@ MsdfGenerator.generate(new File("fonts/Inter-Regular.ttf"), new File("build/font
 
 `MsdfFontCache.resolve(byte[])` and `MsdfFontCache.generate(byte[], File)` generate with the defaults (see [The MSDF cache](adding-fonts.md#the-msdf-cache-with-msdffontcache)).
 
-## The .msdf format
+## Reference
 
-A `.msdf` file starts with the 8 bytes `JOIDMSDF`, followed by one deflate (zlib) stream. JOID 8.0.0 reads and writes version 4 only: a file of another version is refused with an `IOException`, generate it again. Numbers are big-endian, as written by `DataOutputStream`.
+### Command-line options
+
+Options are `--name value` pairs. Without `--font`, the command prints its usage.
+
+| Option | Default | Description |
+|---|---|---|
+| `--font` | Required | Source `.ttf`, `.otf` or `.ttc` file; a collection gives the atlas of its first font. |
+| `--output` | `output` | Folder that receives `font.msdf`, created when missing. |
+| `--charset` | `[32, 563]` | Characters to include: a charset file, or the charset inline. |
+| `--range` | `24` | Distance range, in atlas pixels. |
+| `--width` | `2048` | Atlas width, in pixels. |
+| `--height` | `2048` | Atlas height, in pixels. |
+| `--size` | Fitted | Em size, in atlas pixels. |
+
+### MsdfGenerator
+
+Every method throws `Exception`.
+
+| Member | Description |
+|---|---|
+| `MsdfGenerator.generate(File font, File output, int[] codepoints, int width, int height, double range, double size)` | Writes `output/font.msdf`, creating the folder, and prints the summary line. A `size` of 0 fits the em size. |
+| `MsdfGenerator.generate(byte[] font, File target, int[] codepoints, int width, int height, double range, double size)` | Writes the atlas into `target` and returns the summary (name, weight, glyph and pair counts, em size). |
+| `MsdfGenerator.codepoints(String charset)` | Codepoints of an inline charset or of a charset file. |
+| `MsdfGenerator.main(String[] arguments)` | The command line. |
+| `WIDTH`, `HEIGHT`, `RANGE`, `CHARSET` | The defaults: `2048`, `2048`, `24D`, `"[32, 563]"`. |
+
+### The .msdf format
+
+A `.msdf` file starts with the 8 bytes `JOIDMSDF`, followed by one deflate (zlib) stream. JOID 8.0.0 reads and writes the version 4 only: a file of another version is refused with an `IOException`. Numbers are big-endian, as written by `DataOutputStream`.
 
 | Field | Type | Content |
 |---|---|---|
@@ -164,11 +169,15 @@ A `.msdf` file starts with the 8 bytes `JOIDMSDF`, followed by one deflate (zlib
 
 Variable-length integers store 7 bits per byte, low bits first, with the high bit set on every byte but the last.
 
-![Colored distance fields of five glyphs above the shapes rebuilt from them](../images/msdf-atlas.png "The pixels of a real font.msdf (Montserrat Bold, 2× scale): three distances per texel; below, the median of the channels thresholded at the outline.")
+## Pitfalls
+
+- Write each range with a space after its comma, `[32, 126]`: the comma inside the brackets is dropped before the bounds are split on spaces, so `[32,126]` reads as the single codepoint 32126.
+- A `.msdf` file written by another format version does not load: generate it again with the generator of your JOID version.
+- More characters or a smaller atlas lower the em size and the precision of the outlines: generate only the characters you use.
 
 ## See also
 
 - [How Fonts Work](how-fonts-work.md)
 - [Adding Your Own Fonts](adding-fonts.md)
-- [Text and TextInfo](../text/text-and-textinfo.md)
+- [Custom Font Implementations](custom-fonts.md)
 - [Installation](../getting-started/installation.md)

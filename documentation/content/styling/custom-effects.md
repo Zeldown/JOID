@@ -21,28 +21,28 @@ import dev.joid.lib.ui.node.effect.NodeEffect;
 
 public class HardShadowNodeEffect extends NodeEffect<Node> {
 
-    private final Color color;
-    private final double offset;
+	private final Color color;
+	private final double offset;
 
-    private HardShadowNodeEffect(final Color color, final double offset) {
-        this.color = color;
-        this.offset = offset;
-    }
+	private HardShadowNodeEffect(final Color color, final double offset) {
+		this.color = color;
+		this.offset = offset;
+	}
 
-    public static HardShadowNodeEffect create(final Color color, final double offset) {
-        return new HardShadowNodeEffect(color, offset);
-    }
+	public static HardShadowNodeEffect create(final Color color, final double offset) {
+		return new HardShadowNodeEffect(color, offset);
+	}
 
-    @Override
-    public boolean shouldApply(final Node node) {
-        return node.hoverValue(1F) > 0F;
-    }
+	@Override
+	public boolean shouldApply(final Node node) {
+		return node.hoverValue(1F) > 0F;
+	}
 
-    @Override
-    public void pre(final Node node, final double mouseX, final double mouseY) {
-        final Color shadow = this.color.copyAlpha(this.color.a * node.hoverValue(1F));
-        DrawUtils.SHAPE.drawRect(node.getX() + this.offset, node.getY() + this.offset, node.getWidth(), node.getHeight(), shadow);
-    }
+	@Override
+	public void pre(final Node node, final double mouseX, final double mouseY) {
+		final Color shadow = this.color.copyAlpha(this.color.a * node.hoverValue(1F));
+		DrawUtils.SHAPE.drawRect(node.getX() + this.offset, node.getY() + this.offset, node.getWidth(), node.getHeight(), shadow);
+	}
 
 }
 ```
@@ -67,27 +67,27 @@ import dev.joid.lib.ui.node.effect.NodeEffect;
 
 public class LiftNodeEffect extends NodeEffect<Node> {
 
-    private final float height;
+	private final float height;
 
-    private LiftNodeEffect(final float height) {
-        this.height = height;
-    }
+	private LiftNodeEffect(final float height) {
+		this.height = height;
+	}
 
-    public static LiftNodeEffect create(final float height) {
-        return new LiftNodeEffect(height);
-    }
+	public static LiftNodeEffect create(final float height) {
+		return new LiftNodeEffect(height);
+	}
 
-    @Override
-    public void pre(final Node node, final double mouseX, final double mouseY) {
-        final IRenderBridge render = BridgeHandler.RENDER.get();
-        render.pushMatrix();
-        render.translate(0D, -node.hoverValue(this.height), 0D);
-    }
+	@Override
+	public void pre(final Node node, final double mouseX, final double mouseY) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.pushMatrix();
+		render.translate(0D, -node.hoverValue(this.height), 0D);
+	}
 
-    @Override
-    public void post(final Node node, final double mouseX, final double mouseY) {
-        BridgeHandler.RENDER.get().popMatrix();
-    }
+	@Override
+	public void post(final Node node, final double mouseX, final double mouseY) {
+		BridgeHandler.RENDER.get().popMatrix();
+	}
 
 }
 ```
@@ -107,20 +107,20 @@ import dev.joid.lib.shader.impl.ShaderImpl;
 
 public final class GrayscaleShader extends ShaderImpl {
 
-    private static final GrayscaleShader INSTANCE = new GrayscaleShader();
+	private static final GrayscaleShader INSTANCE = new GrayscaleShader();
 
-    private GrayscaleShader() {
-        super.load(GrayscaleShader.class.getResourceAsStream("/assets/myapp/shaders/grayscale.vsh"), GrayscaleShader.class.getResourceAsStream("/assets/myapp/shaders/grayscale.fsh"));
-    }
+	private GrayscaleShader() {
+		super.load(GrayscaleShader.class.getResourceAsStream("/assets/myapp/shaders/grayscale.vsh"), GrayscaleShader.class.getResourceAsStream("/assets/myapp/shaders/grayscale.fsh"));
+	}
 
-    public static GrayscaleShader inst() {
-        return GrayscaleShader.INSTANCE;
-    }
+	public static GrayscaleShader inst() {
+		return GrayscaleShader.INSTANCE;
+	}
 
-    public void bind(final float amount) {
-        super.bind();
-        super.shader.getFloatUniform("u_Amount").setValue(amount);
-    }
+	public void bind(final float amount) {
+		super.bind();
+		super.shader.getFloatUniform("u_Amount").setValue(amount);
+	}
 
 }
 ```
@@ -161,33 +161,28 @@ import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 
 public final class GrayscaleShaderPass implements ShaderPass {
 
-    private final float amount;
+	private final float amount;
 
-    public GrayscaleShaderPass(final float amount) {
-        this.amount = amount;
-    }
+	public GrayscaleShaderPass(final float amount) {
+		this.amount = amount;
+	}
 
-    @Override
-    public int priority() {
-        return 175;
-    }
+	@Override
+	public int priority() {
+		return 175;
+	}
 
-    @Override
-    public void bindDirect(final ShaderPassContext context) {
-        this.bindForTexture(context);
-    }
+	@Override
+	public void bindForTexture(final ShaderPassContext context) {
+		if (GrayscaleShader.inst().canDraw()) {
+			GrayscaleShader.inst().bind(this.amount);
+		}
+	}
 
-    @Override
-    public void bindForTexture(final ShaderPassContext context) {
-        if (GrayscaleShader.inst().isAvailable()) {
-            GrayscaleShader.inst().bind(this.amount);
-        }
-    }
-
-    @Override
-    public void unbind() {
-        GrayscaleShader.inst().unbind();
-    }
+	@Override
+	public void unbind() {
+		GrayscaleShader.inst().unbind();
+	}
 
 }
 ```
@@ -201,25 +196,25 @@ import dev.joid.lib.ui.node.effect.NodeEffect;
 
 public class GrayscaleNodeEffect extends NodeEffect<Node> {
 
-    private final float amount;
+	private final float amount;
 
-    private GrayscaleNodeEffect(final float amount) {
-        this.amount = amount;
-    }
+	private GrayscaleNodeEffect(final float amount) {
+		this.amount = amount;
+	}
 
-    public static GrayscaleNodeEffect create(final float amount) {
-        return new GrayscaleNodeEffect(amount);
-    }
+	public static GrayscaleNodeEffect create(final float amount) {
+		return new GrayscaleNodeEffect(amount);
+	}
 
-    @Override
-    public boolean isShaderEffect() {
-        return true;
-    }
+	@Override
+	public boolean isShaderEffect() {
+		return true;
+	}
 
-    @Override
-    public ShaderPass toShaderPass(final Node node) {
-        return new GrayscaleShaderPass(this.amount);
-    }
+	@Override
+	public ShaderPass toShaderPass(final Node node) {
+		return new GrayscaleShaderPass(this.amount);
+	}
 
 }
 ```
@@ -236,7 +231,7 @@ The pipeline sorts the passes of a node by `priority()`, lowest first. The built
 
 Override `expansion()` (default `0F`) when the pass draws outside the node's rectangle, as a glow or a shadow would: the node is then rendered into an area enlarged by the largest expansion of its passes, in UI units on each side. Return several passes from `toShaderPasses(T node)` when the effect needs more than one, as the blur does with its horizontal and vertical passes.
 
-`supportsDirectBind()` (default `false`) and `bindDirect(...)` let a single pass skip the framebuffers and bind its shader while the node draws; the details are in [Shader Pipeline](../shaders/pipeline.md).
+The pipeline always renders the node into a framebuffer, then composes it through the passes; `bindForTexture` binds the shader while that texture is drawn (see [Shader Pipeline](../shaders/pipeline.md)). `canDraw()` answers like `isAvailable()` and, in dev mode, prints once `[JOID] The shader <Class> is unavailable, what it draws is skipped`; call `isAvailable()` instead to choose a fallback silently.
 
 ## An effect for one node type
 
@@ -249,20 +244,20 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 public class UnderlineNodeEffect extends NodeEffect<RectNode> {
 
-    private final double thickness;
+	private final double thickness;
 
-    private UnderlineNodeEffect(final double thickness) {
-        this.thickness = thickness;
-    }
+	private UnderlineNodeEffect(final double thickness) {
+		this.thickness = thickness;
+	}
 
-    public static UnderlineNodeEffect create(final double thickness) {
-        return new UnderlineNodeEffect(thickness);
-    }
+	public static UnderlineNodeEffect create(final double thickness) {
+		return new UnderlineNodeEffect(thickness);
+	}
 
-    @Override
-    public void post(final RectNode node, final double mouseX, final double mouseY) {
-        DrawUtils.SHAPE.drawRect(node.getX(), node.getY() + node.getHeight() + 4D, node.getWidth(), this.thickness, node.getColor());
-    }
+	@Override
+	public void post(final RectNode node, final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawRect(node.getX(), node.getY() + node.getHeight() + 4D, node.getWidth(), this.thickness, node.getColor());
+	}
 
 }
 ```
@@ -285,26 +280,26 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 
 public class HoverBorderNodeEffect extends BorderNodeEffect {
 
-    private boolean hoverOnly = true;
+	private boolean hoverOnly = true;
 
-    private HoverBorderNodeEffect(final Color color, final float width) {
-        super(color, width, BorderMode.OUT);
-    }
+	private HoverBorderNodeEffect(final Color color, final float width) {
+		super(color, width, BorderMode.OUT);
+	}
 
-    public static HoverBorderNodeEffect create(final Color color, final float width) {
-        return new HoverBorderNodeEffect(color, width);
-    }
+	public static HoverBorderNodeEffect create(final Color color, final float width) {
+		return new HoverBorderNodeEffect(color, width);
+	}
 
-    @SuppressWarnings("unchecked")
-    public final <E extends HoverBorderNodeEffect> E hoverOnly(final boolean hoverOnly) {
-        this.hoverOnly = hoverOnly;
-        return (E) this;
-    }
+	@SuppressWarnings("unchecked")
+	public final <E extends HoverBorderNodeEffect> E hoverOnly(final boolean hoverOnly) {
+		this.hoverOnly = hoverOnly;
+		return (E) this;
+	}
 
-    @Override
-    public boolean shouldApply(final Node node) {
-        return !this.hoverOnly || node.hoverValue(1F) > 0F;
-    }
+	@Override
+	public boolean shouldApply(final Node node) {
+		return !this.hoverOnly || node.hoverValue(1F) > 0F;
+	}
 
 }
 ```
@@ -341,6 +336,12 @@ RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(border).attach(thi
 - To make values dynamic, store `Supplier`s and read them in the hooks, as the built-in effects do.
 - Fluent setters return the type the context asks for, as those of the built-in effects and of the nodes: `public final <E extends MyNodeEffect> E amount(final float amount)` with `return (E) this;` (and `@SuppressWarnings("unchecked")` on the class). Assigned to a variable or at the end of a chain, the setter returns the type you expect; in the middle of a chain it returns the class that declares it, so the setter of a subclass after it needs a type witness.
 - A configured effect goes straight into `node.effect(...)`, without witness on its last setter: `node.effect(MyNodeEffect.create().amount(1F))`. To build it from the node, add it in `self(...)`: `node.self(target -> target.effect(MyNodeEffect.create().amount(() -> target.hoverValue(1F))))`.
+
+## Pitfalls
+
+- A shader pass draws the node's texture: keep the output premultiplied.
+- Use `canDraw()` in a pass that skips its draw when the shader is missing (dev warning), `isAvailable()` to pick a fallback silently.
+- `detach` is called when the node is detached and `init` again when it is attached: release there what the effect holds.
 
 ## See also
 

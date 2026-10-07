@@ -1,168 +1,144 @@
 # Watching Signals
 
-`Node.watch(...)` subscribes a node to a [signal](signals.md): each time the signal publishes, the node reloads, rebuilds its children or runs your code. Use it to keep a part of the tree in sync with your state without rebuilding the whole UI.
+`watch` rebuilds part of the node tree when a signal changes, and `wait` delays a node until its data is ready. Use `watch` when the structure changes (a list that grows, a set of tabs); a text, a color, a size or a visibility that depends on a signal is a [reactive property](reactive-properties.md), not a watch.
 
-## Watching a signal
+## Rebuilding a list with watch
 
 ```java
-public class ProfileUI extends UI {
+private final ListSignal<String> items = new ListSignal<>(new ArrayList<>(Arrays.asList("First item")));
 
-    private final StringSignal name = new StringSignal("Guest");
+@Override
+public void init() {
+	FlexNode
+	.vertical(100, 100, 400)
+	.margin(8D)
+	.watch(this.items, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+	.body(flex -> {
+		for (final String item : this.items.peek()) {
+			RectNode.create(0, 0, 400, 50).color(Color.decode("#DDDDDD")).attach(flex);
+		}
+	})
+	.attach(this);
 
-    @Override
-    public void init() {
-        TextNode
-        .create(100, 100)
-        .text(Text.create("", info))
-        .<TextNode>onInit(node -> node.getText().text("Hello " + this.name.getOrDefault()))
-        .watch(this.name)
-        .attach(this);
-
-        RectNode
-        .create(100, 160, 200, 60)
-        .color(Color.WHITE)
-        .onClick((node, mouseX, mouseY, clickType) -> this.name.set("Alex"))
-        .attach(this);
-    }
-
+	RectNode
+	.create(560, 100, 160, 50)
+	.color(Color.GRAY)
+	.onClick((node, mouseX, mouseY, clickType) -> this.items.add("Item " + (this.items.size() + 1)))
+	.attach(this);
 }
 ```
 
-`watch(signal)` reloads the node on every publish: `reload()` loads the node and its children again, so their `onInit` callbacks and `init(ui)` hooks run with the new value. `info` is a `TextInfo` (see [Text Model](../text/text-and-textinfo.md)).
+![Clicking Add appends a row to a vertical list rebuilt by watch](../images/watch-list.gif "Each change clears the children and runs the body again")
 
-## Choosing the reaction with WatchProperty
+On each change of `items`, `CLEAR_CHILDREN` detaches the children of the flex, then `BODY` runs the body again. The body reads the list with `peek()`: the structure is rebuilt by the watch, not followed expression by expression.
 
-`WatchProperty` (`dev.joid.lib.ui.node.property.watch`) says what the node does when the signal publishes. `watch(signal, properties...)` applies the given values in order; an exception thrown by one is printed and the next ones still run.
+![Diagram: a signal change goes through the onWatch PRE callbacks, the watch properties in order, then the POST callbacks](../images/diagram-watch.png "What a change of a watched signal does")
 
-| Value | Effect |
-|---|---|
-| `RELOAD` | Calls `reload()`: the children and the node are loaded again, and their `onInit` callbacks fire inside `onReload`. The children stay. Default of `watch(signal)`. |
-| `BODY` | Runs again the consumer given to `body(...)`, with the node. Does nothing for a node without a body. |
-| `CLEAR_CHILDREN` | Calls `clearChildren()`: every child is detached (`onDetach`), removed and loses its parent. |
-| `NONE` | Does nothing; react in `onWatch`. |
+## WatchProperty
 
-`apply(Node node)` applies one value to a node directly.
+`WatchProperty` (`dev.joid.lib.ui.node.property.watch`) is an action applied to the node on each change. Properties combine and run in the given order:
 
-### Rebuilding children with CLEAR_CHILDREN and BODY
-
-`BODY` alone appends a new set of children next to the old ones; clear them first:
+| Property | Action |
+| --- | --- |
+| `WatchProperty.CLEAR_CHILDREN` | Detaches every child of the node. |
+| `WatchProperty.BODY` | Runs the body set with `body(...)` again. |
+| `WatchProperty.custom((node, signal) -> ...)` | Runs your action with the node and the signal that changed. |
 
 ```java
-final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
+private final IntegerSignal level = IntegerSignal.of(1);
 
-FlexNode
-.vertical(100, 100, 400)
-.watch(items, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
-.body(flex -> {
-    for (final String item : items.getOrDefault()) {
-        TextNode.create(0, 0).text(Text.create(item, info)).attach(flex);
-    }
-})
+RectNode
+.create(100, 100, 60, 60)
+.color(Color.GRAY)
+.watch(this.level, WatchProperty.custom((node, signal) -> node.effect(RoundedNodeEffect.create(this.level.peek() * 6F))))
 .attach(this);
-
-items.add("Sword");
 ```
 
-`body(...)` runs its consumer immediately and keeps it, so the order of `watch` and `body` in the chain does not matter. Children appended to a node already in a UI are loaded at once.
+## Reacting with onWatch
 
-### Updating in place with onWatch
-
-`onWatch((node, signal, properties) -> ...)` fires on every publish, after the properties are applied. With `NONE`, it updates the existing nodes without rebuilding them:
+`watch(signal)` without property only fires the `onWatch` callbacks of the node:
 
 ```java
-final StringSignal title = new StringSignal("Loading");
-
 TextNode
 .create(100, 100)
-.text(Text.create(title.getOrDefault(), info))
-.watch(title, WatchProperty.NONE)
-.<TextNode>onWatch((node, signal, properties) -> node.getText().text(title.getOrDefault()))
+.text(Text.create("Saved", this.info))
+.watch(this.saves)
+.onWatch((node, signal, properties) -> System.out.println("[Editor] saved"))
 .attach(this);
 ```
 
-`signal` is the signal that published and `properties` the values given to `watch`. Overriding the `pre` method of `NodeWatchCallback` and cancelling its context skips the properties and the POST phase for that publish (see [Callbacks](../interactions/callbacks.md#pre-and-post-phases)).
+`onWatch` runs around the properties: its PRE phase may cancel the change (`context.cancel()`), then the properties run, then the POST phase (see [Callbacks](../interactions/callbacks.md)).
 
-## watch overloads
+## Conditions
 
-| Method | Description |
-|---|---|
-| `watch(Signal<?> signal)` | Same as `watch(signal, WatchProperty.RELOAD)`. |
-| `watch(Signal<?> signal, WatchProperty... properties)` | Same as `watch(signal, condition, properties)` with a condition that is `true` while the node's UI is open (`JOID.isOpen(ui)`). |
-| `watch(Signal<?> signal, Supplier<Boolean> condition, WatchProperty... properties)` | Watches with your own condition. |
-
-Each call adds one subscription: a node can watch several signals, and watching the same signal twice applies its properties twice.
-
-## Conditions and lifetime of a watch
-
-A watch follows the attachment of its node. `onDetach()` (`remove(...)`, `clearChildren()`, an `append` that moves the node, `WatchProperty.CLEAR_CHILDREN`, `UI.reload()`, the UI closing) unsubscribes the node and its whole subtree at once, so a detached node is never reloaded or rebuilt by its signals. Loading it again (`append`, `attach`, reopening its UI) subscribes it again, exactly once; when the signal changed while the node was detached, the watch is applied once right away.
-
-On every publish of the signal, the subscription of the node:
-
-1. Does nothing when the node is not in a UI yet. It stays subscribed only when a UI is running its `init()` at that moment (`UI.getCurrent()` is not `null`); otherwise it unsubscribes.
-2. Fires `onWatch` with the properties as its default action.
-3. Evaluates the condition. When it returns `false`, the node stops watching the signal.
-
-The condition is evaluated after the properties are applied: the publish that ends a watch still updates the node. Closing the UI detaches its nodes, which stops their watches before the default condition is even evaluated.
-
-> NOTE: A subscription keeps its node in memory as long as the signal is reachable and the subscription is active. Detaching the node removes it; a node built but never attached stays subscribed until the next publish outside a UI's `init()`. A condition that never returns `false` (such as `() -> true`) keeps an attached node subscribed until it is detached.
-
-### Custom conditions
-
-A custom condition decides when the watch ends; once it returns `false`, the node does not subscribe again by itself. A condition that is always `false` reacts to the next publish only:
+`watch(signal, condition, properties...)` applies a change only while `condition` returns `true`. The condition is checked before each change; when it is `false`, the change is ignored and the watch unsubscribes for good (it is not a pause). Without a condition, the watch lasts while the UI of the node is open.
 
 ```java
-final StringSignal motd = new StringSignal("Loading");
-
-TextNode
-.create(100, 100)
-.text(Text.create("", info))
-.<TextNode>onInit(node -> node.getText().text(motd.getOrDefault()))
-.watch(motd, () -> false, WatchProperty.RELOAD)
-.attach(this);
+.watch(this.squares, () -> this.live.peek(), WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
 ```
 
-### JOID.isOpen
+## When a node subscribes
 
-The default condition relies on `JOID.isOpen` (`dev.joid.internal.JOID`), which you can also use in your own conditions.
+- A node subscribes to its watches when it is attached to a UI. A watch declared before `attach` (or outside `init()`) starts at the attachment.
+- At the first attachment, the changes made before are not replayed: the body already reads the current values.
+- When the node is detached (`remove`, `clearChildren`, a closed or reloaded UI), it unsubscribes; attached again, it subscribes again.
+- A watch that depends on several signals watches one signal that combines them: `watch(Signal.from(() -> ...), ...)`.
 
-| Method | Description |
-|---|---|
-| `JOID.isOpen(UI ui)` | `true` while `ui` is in the list of its UI bridge. |
-| `JOID.isOpen(Class<? extends UI> uiClass)` | `true` while an instance of `uiClass` (or of a subclass) is open in the UI bridge that handles that class. |
+## Waiting before mounting with wait
 
-See [Opening and Closing UIs](../ui/managing-uis.md) for the other `JOID` methods.
-
-## Waiting for a signal with wait and onMount
-
-`wait(ISignal<?> signal)` keeps a node unmounted until the signal has a value (`isPresent()`). An unmounted node draws its skeleton instead of itself (see [Node Fundamentals](../nodes/node-fundamentals.md) for `wait` and `skeleton`). `onMount` fires on the first frame the node is drawn mounted:
+`wait(...)` keeps a node unmounted (not drawn, its children not shown) until every condition is met. A skeleton is drawn in the meantime, and `onMount` runs when the node appears:
 
 ```java
-final ListSignal<String> lines = new ListSignal<>();
+private final Signal<String> profile = Signal.of(this.loadProfile());
 
-ContainerNode
-.create(100, 100, 400, 200)
-.body(container -> {
-    TextNode.create(10, 10).text(Text.create("", info)).attach(container);
-    TextNode.create(10, 60).text(Text.create("", info)).attach(container);
-})
-.wait(lines)
-.onMount(container -> {
-    for (int i = 0; i < lines.size(); i++) {
-        container.getChild(i, TextNode.class).getText().text(lines.get(i));
-    }
+RectNode
+.create(100, 100, 400, 120)
+.color(Color.decode("#DDDDDD"))
+.wait(this.profile)
+.skeleton(rect -> RectNode.create(0, 0, rect.getWidth(), rect.getHeight()).color(Color.LOADING))
+.onMount(rect -> System.out.println("[Profile] shown"))
+.body(rect -> {
+	TextNode.create(20, 40).text(Text.create("Hello " + this.profile.get(), this.info)).attach(rect);
 })
 .attach(this);
-
-this.schedule(() -> lines.set(Arrays.asList("First line", "Second line")), 2000L);
 ```
 
-- A node is mounted when all its `wait(...)` conditions (`wait(ISignal<?>)`, `wait(long, TimeUnit)`, `wait(Predicate<T>)`) are met and its parent is mounted.
-- Mounting is checked on every frame the node is visible, so `onMount` fires only for a visible node.
-- `onMount` fires again each time the node becomes mounted after being unmounted, for example when the signal is reset to an empty value and set again.
+![A loading skeleton shimmers, then the card appears with its text](../images/watch-wait.gif "The skeleton is drawn until the signal has a value")
+
+| Method | Waits until |
+| --- | --- |
+| `wait(ISignal<?> signal)` | The signal has a value (`isPresent()`). |
+| `wait(long time, TimeUnit unit)` | The time has passed (UI clock). |
+| `wait(Predicate<T> predicate)` | The predicate returns `true` (checked every frame). |
+
+Several `wait` calls add up: all must pass. `skeleton(function)` builds the node drawn while waiting (`Color.LOADING` is an animated placeholder color). `onMount(...)` runs once the node is mounted, and again after a detachment and a new attachment.
+
+## Reference
+
+| Method (on `Node`) | Description |
+| --- | --- |
+| `watch(Signal<?> signal)` | Fires `onWatch` on each change. |
+| `watch(Signal<?> signal, WatchProperty... properties)` | Applies the properties on each change, while the UI is open. |
+| `watch(Signal<?> signal, Supplier<Boolean> condition, WatchProperty... properties)` | Same, while `condition` is `true`; unsubscribes at the first change where it is `false`. |
+| `onWatch(NodeWatchCallback<T> callback)` | `(node, signal, properties) -> ...` on each applied change. |
+| `wait(ISignal<?> signal)`, `wait(long time, TimeUnit unit)`, `wait(Predicate<T> predicate)` | Conditions before mounting. |
+| `skeleton(Function<T, Node> skeleton)` | Node drawn while waiting. |
+| `onMount(NodeMountCallback<T> callback)` | `node -> ...` when the node is mounted. |
+| `WatchProperty.CLEAR_CHILDREN`, `WatchProperty.BODY`, `WatchProperty.custom(BiConsumer<Node, Signal<?>> action)` | Watch actions. |
+
+Custom nodes subscribe to signals with `bind`, `unbind` and `rebind`: see [Custom Nodes](../nodes/custom-nodes.md).
+
+## Pitfalls
+
+- A watch only to refresh a value rebuilds nodes for nothing: pass the expression to the setter instead.
+- Inside a rebuilt body, read the watched signal with `peek()`: a `get()` in a setter would also follow it, twice.
+- `CLEAR_CHILDREN` detaches the children: their drags, hovers and focus end (`onDragEnd`, `onHoverEnd`, `onFocus` run).
+- A `false` condition ends the watch for good.
 
 ## See also
 
 - [Signals](signals.md)
-- [Callbacks](../interactions/callbacks.md)
+- [Reactive Properties](reactive-properties.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md)
-- [Opening and Closing UIs](../ui/managing-uis.md)
+- [Callbacks](../interactions/callbacks.md)
+- [Custom Nodes](../nodes/custom-nodes.md)

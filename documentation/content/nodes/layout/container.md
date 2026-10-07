@@ -1,87 +1,164 @@
 # ContainerNode
 
-`ContainerNode` (`dev.joid.lib.ui.node.impl.structure.container`) is an invisible node that groups children. Use it to give a set of nodes a common origin, to clip or scroll them, or to scope a reactive or loading section of a UI without drawing anything.
-
-## Grouping nodes in a ContainerNode
+`ContainerNode` (`dev.joid.lib.ui.node.impl.structure.container`) is an invisible node that groups children under a common origin. Use it to move, hide, clip, scroll, rebuild or load a section of a UI as one block, without drawing anything for the group itself.
 
 ```java
-final ContainerNode container = ContainerNode.create(0, 0, 1920, 1080);
-
-container.body(() -> {
-    RectNode.create(480, 270, 960, 540).color(Color.DARKGRAY).attach(container);
-    RectNode.create(500, 290, 200, 60).color(Color.RED).attach(container);
-});
-
-container.attach(this);
+ContainerNode
+.create(100, 100, 460, 200)
+.body(container -> {
+	RectNode.create(0, 0, 220, 200).color(Color.LIGHTGRAY).attach(container);
+	RectNode.create(240, 0, 220, 200).color(Color.GRAY).attach(container);
+})
+.attach(this);
 ```
 
-![A dark gray panel with a red bar in its top-left corner](../../images/container-group.png "The container draws nothing: only its two children are visible.")
+![Two gray panels side by side inside a thin outline labeled ContainerNode](../../images/container-group.png "Only the two children are drawn; the outline marks the bounds of the container, which draws nothing.")
 
-The children are placed relative to the container: moving it with `container.x(...)` moves all of them.
+The children are placed relative to the container: a child at (240, 0) sits at (340, 100) on the 1920×1080 canvas.
 
-## Creating a ContainerNode
+## Moving and hiding a group with x and visible
 
-| Factory | Description |
-| --- | --- |
-| `create(double x, double y, double width, double height)` | A container with the given bounds. It is not attached: call `attach(...)`. |
-| `create(Node parent)` | A container at (0, 0) with the current size of `parent`, already attached to `parent`. |
+Every [Node](../node-fundamentals.md) setter applied to the container applies to the whole group: `x(...)` and `y(...)` move it, `visible(...)` hides it, `enabled(...)` disables its children. Like every setter, they accept a native expression that reads [signals](../../state/signals.md) and follow it. Here `moved` is a `BooleanSignal` field of the UI and `label` a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)).
 
-`create(Node parent)` reads the parent's size once, at creation; the container does not follow later resizes of the parent. Since the container is already attached, do not call `attach` on it again.
+```java
+private final BooleanSignal moved = BooleanSignal.of(false);
+
+ContainerNode
+.create(100, 100, 460, 200)
+.x(this.moved.get() ? 600D : 100D)
+.body(container -> {
+	RectNode.create(0, 0, 220, 200).color(Color.LIGHTGRAY).attach(container);
+	RectNode.create(240, 0, 220, 200).color(Color.GRAY).attach(container);
+})
+.attach(this);
+
+RectNode
+.create(100, 340, 160, 50)
+.color(Color.GRAY)
+.onClick((node, mouseX, mouseY, clickType) -> this.moved.toggle())
+.body(button -> {
+	TextNode.create(80, 25).text(Text.create("Move", this.label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
+})
+.attach(this);
+```
+
+![The cursor clicks Move and both panels jump to the right, then back](../../images/container-move.gif "One followed x on the container moves both children.")
+
+## Covering a parent with create(Node parent)
+
+`ContainerNode.create(Node parent)` creates a container at (0, 0) with the current size of `parent` and attaches it to `parent` right away: do not call `attach` on it again. It reads the size once, at creation, and does not follow a later resize of the parent.
 
 ```java
 RectNode
-.create(10, 10, 400, 280)
-.color(new Color(50, 50, 50))
+.create(100, 100, 400, 300)
+.color(Color.WHITE)
 .body(card -> {
-    ContainerNode.create(card).body(content -> {
-        RectNode.create(10, 10, 50, 50).color(Color.RED).attach(content);
-    });
+	ContainerNode.create(card).body(content -> {
+		RectNode.create(20, 20, 160, 60).color(Color.GRAY).attach(content);
+	});
 })
 .attach(this);
 ```
 
-## What a ContainerNode draws
+## Rebuilding a section with watch
 
-Nothing: `draw` and `drawSkeleton` are empty, even while the container waits for data (see [Waiting and skeletons](../node-fundamentals.md#waiting-and-skeletons)). Its children draw normally, or draw their own placeholder while not mounted. Like any node, a container still has bounds: they are used for hover, clipping and scrolling.
-
-## Common uses
-
-| Use | How |
-| --- | --- |
-| Move or hide a group | `x(...)`, `y(...)`, `visible(...)` on the container apply to the whole group. |
-| Clip a group | `overflow(OverflowProperty.HIDDEN)` clips the children to the container's bounds. |
-| Scroll a group | `overflow(OverflowProperty.SCROLL)` and an optional `scrollbar(...)` (see [Overflow and Scrolling](overflow-and-scroll.md)). |
-| Rebuild a section from a signal | `watch(signal, ...)` on the container, with the children built in `body` (see [Watching Signals](../../state/watch.md)). |
-| Show a placeholder while loading | `wait(...)` and `skeleton(...)` on the container, then fill the children in `onMount`. |
-
-A container that rebuilds its children when a signal changes:
+A container is the natural root of a section rebuilt from data. `watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)` detaches the children and runs the `body` again each time the signal changes (`WatchProperty` is in `dev.joid.lib.ui.node.property.watch`, `ListSignal` in `dev.joid.lib.utils.signal.impl.iterable`). Use `watch` only when the structure changes; a text, color or position that depends on a signal goes through a setter (see [Watching Signals](../../state/watch.md)).
 
 ```java
-final ListSignal<String> names = new ListSignal<>(Arrays.asList("Sword", "Shield", "Bow"));
+private final ListSignal<String> items = new ListSignal<>(Arrays.asList("Item 1", "Item 2"));
 
 ContainerNode
 .create(100, 100, 400, 300)
-.watch(names, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+.watch(this.items, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
 .body(container -> {
-    for (int i = 0; i < names.getOrDefault().size(); i++) {
-        RectNode.create(0, i * 40, 400, 30).color(Color.GRAY).attach(container);
-    }
+	double y = 0D;
+	for (final String item : this.items.get()) {
+		RectNode
+		.create(0, y, 400, 40)
+		.color(Color.WHITE)
+		.body(row -> {
+			TextNode.create(12, 6).text(Text.create(item, this.info)).attach(row);
+		})
+		.attach(container);
+		y += 50D;
+	}
+})
+.attach(this);
+
+RectNode
+.create(100, 420, 160, 50)
+.color(Color.GRAY)
+.onClick((node, mouseX, mouseY, clickType) -> this.items.add("Item " + (this.items.size() + 1)))
+.body(button -> {
+	TextNode.create(80, 25).text(Text.create("Add", this.label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
 })
 .attach(this);
 ```
 
+![Each click on Add appends a row to the list](../../images/container-watch.gif "Each change of the ListSignal clears the container and runs its body again.")
+
+To place the rows without computing `y`, build them in a [FlexNode](flex.md) instead.
+
+## Loading a section with wait and skeleton
+
+`wait(...)` keeps a node unmounted until its condition holds. With a `skeleton(...)` node, the skeleton is drawn in place of the children until then; without one, each child draws its own placeholder (`drawSkeleton`), while the container itself draws nothing (see [Watching Signals](../../state/watch.md) for `wait` and `onMount`).
+
+```java
+ContainerNode
+.create(100, 100, 400, 300)
+.wait(2L, TimeUnit.SECONDS)
+.skeleton(container -> RectNode.create(0, 0, 400, 300).color(Color.LOADING))
+.body(container -> {
+	RectNode.create(0, 0, 400, 300).color(Color.WHITE).attach(container);
+})
+.attach(this);
+```
+
+## Clipping and scrolling a group
+
+A container has bounds even though it draws nothing: they are used for hover, clipping and scrolling. `overflow(OverflowProperty.HIDDEN)` clips the children to them, `overflow(OverflowProperty.SCROLL)` makes them scroll with the wheel. See [Overflow and Scrolling](overflow-and-scroll.md).
+
 ## Extending ContainerNode
 
-`ContainerNode` is not final and its constructor `ContainerNode(double x, double y, double width, double height)` is `protected`, so you can extend it to build a composite node. `draw` and `drawSkeleton` are `final`: a subclass draws through [layers](../node-fundamentals.md#layers-with-layer) or children. See [Custom Nodes](../custom-nodes.md).
+`ContainerNode` is not final and its constructor is `protected`: extend it to build a composite node with its own factory. Its `draw` and `drawSkeleton` draw nothing and can be overridden.
+
+```java
+public class CardNode extends ContainerNode {
+
+	protected CardNode(final double x, final double y, final double width, final double height) {
+		super(x, y, width, height);
+	}
+
+	public static @NonNull CardNode create(final double x, final double y, final double width, final double height) {
+		return new CardNode(x, y, width, height);
+	}
+
+	@Override
+	public void draw(final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
+	}
+
+}
+```
+
+See [Custom Nodes](../custom-nodes.md) for the full contract.
 
 ## Reference
 
 | Method | Description |
 | --- | --- |
-| `create(double x, double y, double width, double height)` | New unattached container. |
-| `create(Node parent)` | New container covering `parent`, attached to it. |
+| `create(double x, double y, double width, double height)` | New container with these bounds, not attached: call `attach(...)`. |
+| `create(Node parent)` | New container at (0, 0) with the size `parent` has at that moment, already attached to `parent`. |
+| `ContainerNode(double x, double y, double width, double height)` | Protected constructor, for subclasses. |
+| `draw(double mouseX, double mouseY)`, `drawSkeleton(double mouseX, double mouseY)` | Draw nothing. Overridable. |
 
 Everything else is inherited from [Node](../node-fundamentals.md).
+
+## Pitfalls
+
+- `create(Node parent)` attaches the container: a second `attach(...)` moves it to another parent.
+- A container waiting with `wait(...)` and no `skeleton(...)` draws no placeholder of its own: only its children draw theirs.
+- A container is invisible but not transparent to the mouse: its bounds count for hover, so a `hover(...)` tooltip or an `onClick` on it reacts over its whole area.
 
 ## See also
 
@@ -89,3 +166,5 @@ Everything else is inherited from [Node](../node-fundamentals.md).
 - [FlexNode](flex.md)
 - [GridNode](grid.md)
 - [Overflow and Scrolling](overflow-and-scroll.md)
+- [Watching Signals](../../state/watch.md)
+- [Custom Nodes](../custom-nodes.md)

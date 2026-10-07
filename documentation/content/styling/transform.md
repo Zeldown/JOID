@@ -5,15 +5,15 @@
 ```java
 @Override
 public void init() {
-    RectNode
-    .create(100, 100, 200, 120)
-    .color(Color.RED)
-    .self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(15D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))))))
-    .attach(this);
+	RectNode
+	.create(100, 100, 200, 120)
+	.color(Color.LIGHTGRAY)
+	.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(15D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))))))
+	.attach(this);
 }
 ```
 
-![A red rectangle turned by 15 degrees](../images/transform-rotate.png "The rendering turns around the node center; the layout keeps the straight rectangle.")
+![A light gray rectangle turned by 15 degrees, with smooth edges](../images/transform-rotate.png "The rendering turns around the node center; the layout keeps the straight rectangle.")
 
 The node is drawn turned by 15 degrees around its center.
 
@@ -69,9 +69,9 @@ RectNode
 .create(100, 100, 200, 120)
 .color(Color.WHITE)
 .self(node -> {
-    final Vector center = Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)));
-    final Scale scale = Scale.create(() -> 1D + node.hoverValue(0.05F), () -> 1D + node.hoverValue(0.05F), () -> 1D);
-    node.effect(TransformNodeEffect.create(new ScaleOperation(scale, center)));
+	final Vector center = Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)));
+	final Scale scale = Scale.create(() -> 1D + node.hoverValue(0.05F), () -> 1D + node.hoverValue(0.05F), () -> 1D);
+	node.effect(TransformNodeEffect.create(new ScaleOperation(scale, center)));
 })
 .attach(this);
 ```
@@ -160,6 +160,12 @@ Suppliers in these types are read each time the operation is applied, every fram
 | `transformation(Transformation)`, `transformation(Supplier<Transformation>)` | Replaces the transformation. |
 | `getTransformationSupplier()` | The transformation supplier. |
 | `priority(int)` | Inherited, see [Effects](effects.md). |
+
+## Pitfalls
+
+- Hit testing and layout ignore the transform: a translated node is clicked at its original place.
+- Rotated edges are smoothed, polygons and images included; a concave polygon drawn with `drawPolygon` keeps hard edges.
+- `Vector.add(...)` with values freezes the vector: pass suppliers to keep it following.
 
 ## See also
 

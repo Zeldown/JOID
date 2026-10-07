@@ -5,8 +5,8 @@
 ```java
 @Override
 public void init() {
-    RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(RoundedNodeEffect.create(16F)).attach(this);
-    ResourceNode.create(450, 100, 200, 200).resource(Resource.of("https://placehold.co/400x400.png")).effect(RoundedNodeEffect.create(10F)).attach(this);
+	RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(RoundedNodeEffect.create(16F)).attach(this);
+	ResourceNode.create(450, 100, 200, 200).resource(Resource.of("https://placehold.co/400x400.png")).effect(RoundedNodeEffect.create(10F)).attach(this);
 }
 ```
 
@@ -78,7 +78,7 @@ RectNode
 .color(Color.WHITE)
 .effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))
 .body(card -> {
-    ResourceNode.create(0, 0, card.getWidth(), 120).resource(Resource.of("https://placehold.co/300x120.png")).attach(card);
+	ResourceNode.create(0, 0, card.getWidth(), 120).resource(Resource.of("https://placehold.co/300x120.png")).attach(card);
 })
 .attach(this);
 ```
@@ -89,13 +89,14 @@ RectNode
 
 ## Combining with a border
 
-A [BorderNodeEffect](border.md) follows the rounded corners, because the rounding pass runs before the border pass. `RectNode.border(...)` uses a `BorderNodeEffect` too:
+A [BorderNodeEffect](border.md) follows the rounded corners, because the rounding pass runs before the border pass. The border setters of `RectNode` use a `BorderNodeEffect` too:
 
 ```java
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
-.border(Color.BLACK, 2D)
+.borderColor(Color.BLACK)
+.borderStroke(2D)
 .effect(RoundedNodeEffect.create(16F))
 .attach(this);
 ```
@@ -123,6 +124,10 @@ To draw a rounded rectangle without a node, use `DrawUtils.SHAPE.drawRoundedRect
 | `priority(int)`, `scope(NodeEffectScope)` | Inherited, see [Effects](effects.md). |
 
 Shader pass priority: 100 (before blur and border).
+
+## Pitfalls
+
+- With the default `SELF` scope, children are drawn over the rounded corners: use `scope(NodeEffectScope.CHILDREN)` to round a card and its content together.
 
 ## See also
 

@@ -19,15 +19,18 @@ When you distribute JOID or a work that contains it, for example an application 
 
 The license does not grant the use of the JOID name or trademarks beyond describing the origin of the work (section 6). JOID comes without warranty (section 7) and without liability of its contributors (section 8).
 
+A backend written from the [backend template](installation.md#backend-template) stays yours: license it as you want, as long as you keep the JOID notices in what you redistribute.
+
 ## Third-party software
 
-`NOTICE` lists the software that JOID includes:
+The JOID jars include the following software:
 
 | Software | License | Where |
 | --- | --- | --- |
 | Universal Tween Engine, by Aurelien Ribon | Apache License 2.0 | The classes under `dev.joid.lib.animation.tweenengine` are derived from it. |
 | JSVG | MIT License | Embedded in the core and backend jars, relocated under `dev.joid.shaded.jsvg`. |
 | TwelveMonkeys ImageIO | BSD 3-Clause License | Embedded in the core and backend jars, relocated under `dev.joid.shaded.twelvemonkeys`. |
+| ASM | BSD 3-Clause License | Embedded in the core and backend jars, relocated under `dev.joid.shaded.asm`. |
 | JavaCV and JavaCPP | Apache License 2.0 | Embedded in the core and backend jars. |
 | FFmpeg, built by the JavaCPP Presets | GNU LGPL 2.1 or later | Embedded in the core and backend jars. |
 | Montserrat, Pacifico, Playfair Display | SIL Open Font License 1.1 | Embedded in the `-dev` jars only, with the license text next to each font. |
@@ -40,3 +43,4 @@ The libraries you declare yourself (Guava, Gson, Apache Commons, vecmath, LWJGL)
 
 - [Introduction](introduction.md)
 - [Installation](installation.md)
+- [Developer Tools](dev-tools.md)

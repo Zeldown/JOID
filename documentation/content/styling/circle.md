@@ -5,8 +5,8 @@
 ```java
 @Override
 public void init() {
-    ResourceNode.create(100, 100, 120, 120).resource(Resource.of("https://placehold.co/400x400.png")).effect(CircleNodeEffect.create()).attach(this);
-    RectNode.create(260, 100, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).effect(CircleNodeEffect.create()).attach(this);
+	ResourceNode.create(100, 100, 120, 120).resource(Resource.of("https://placehold.co/400x400.png")).effect(CircleNodeEffect.create()).attach(this);
+	RectNode.create(260, 100, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).effect(CircleNodeEffect.create()).attach(this);
 }
 ```
 
@@ -71,6 +71,11 @@ The hover and click area of a node with a `CircleNodeEffect` stays its full rect
 | `priority(int)`, `scope(NodeEffectScope)` | Inherited, see [Effects](effects.md). |
 
 Shader pass priority: 100 (before blur and border).
+
+## Pitfalls
+
+- The cut is the largest centered circle: on a non-square node, the sides are cut.
+- The node still reacts to the mouse in its corners: hit testing uses the rectangle.
 
 ## See also
 

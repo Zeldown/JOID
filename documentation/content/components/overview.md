@@ -1,20 +1,22 @@
 # Component Catalog
 
-Every node JOID ships, grouped by purpose. All of them share the [node fundamentals](../nodes/node-fundamentals.md): position and size, `attach`, `body`, callbacks, effects and the fluent API. If you are new to nodes, read [Essentials: Nodes](../essentials/nodes.md) first.
+Every node JOID ships, grouped by purpose, with what to use it for. All of them share the [Node Fundamentals](../nodes/node-fundamentals.md): position and size on the 1920×1080 canvas, `attach`, `body`, callbacks, effects, and setters that take a value or follow a signal.
 
-JOID is design-neutral: no component imposes a look. Some components are **abstract**: they handle the state, the input and the values, and you draw them once in a small subclass so they match your design. Those subclasses are your **UI kit**: your screens use them with the same code whatever kit draws them, so another kit gives the same screens a completely different design. [Building a UI Kit](ui-kit.md) shows two complete kits rendering the same code; each component page also starts with a subclass you can copy.
+![A grid of cards, one per component: rectangle, circle, text, image, progress bar, flex, grid, scroll area, chart, text field, checkbox, toggle, switch, slider and selector](../images/components-catalog.png "The components drawn with the neutral demo kit; your kit gives them your own look.")
+
+JOID is design-neutral: no component imposes a look. The display and layout nodes draw plain shapes, text and images that you color and style. The input and data components marked abstract handle the state, the input and the values, and leave the drawing to a small subclass you write once. Those subclasses are your UI kit: your screens use them with the same code whatever kit draws them, so another kit gives the same screens a different design. [Building a UI Kit](ui-kit.md) shows how; each component page starts with a subclass you can copy.
 
 ## Layout
 
-Nodes that group and place other nodes. They draw nothing by themselves.
+Nodes that group and place other nodes. They draw nothing themselves.
 
 | Component | Use it for |
 | --- | --- |
-| [ContainerNode](../nodes/layout/container.md) | Grouping children under a common origin, clipping, scrolling, or loading a section of a UI. |
-| [FlexNode](../nodes/layout/flex.md) | Lists, toolbars and menus: children one after the other in a row or a column. |
-| [GridNode](../nodes/layout/grid.md) | Tiles of the same size: inventories, galleries, icon pickers. |
-| [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | A row or column the user reorders by dragging. |
-| [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md) | Clipping or scrolling the children of any node, with or without a scrollbar. |
+| [ContainerNode](../nodes/layout/container.md) | Grouping children under a common origin to move, hide, clip, scroll, rebuild or load them together. |
+| [FlexNode](../nodes/layout/flex.md) | Lists, toolbars and menus: children one after the other in a column or a row. |
+| [GridNode](../nodes/layout/grid.md) | Tiles that wrap into rows: inventories, galleries, icon pickers. |
+| [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | A column or row the user reorders by dragging, with locked slots. |
+| [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md) | Clipping or scrolling the children of any node, with the wheel, from code or with a `ScrollbarNode`. |
 
 ## Display
 
@@ -27,16 +29,16 @@ Nodes that draw something.
 | [TextNode](../nodes/visual/text.md) | A line, a truncated line or a wrapped paragraph of text. |
 | [ResourceNode](../nodes/visual/resource.md) | Images, SVGs and animated images, fitted with STRETCH, CONTAIN or COVER. |
 | [ResourcePlayerNode](../nodes/visual/resource-player.md) | Videos and animations with playback control and sound. |
-| [ModelNode and ModelViewerNode](../nodes/visual/model.md) | 3D models, static or with drag-to-rotate and zoom. |
+| [ModelNode and ModelViewerNode](../nodes/visual/model.md) | 3D models, still or turned with the mouse. |
 | [ProgressNode](../nodes/visual/progress.md) | Loading bars, health bars, gauges. |
 
 ## Inputs
 
-Nodes the user edits. Each one keeps its value and calls you back when it changes. The checkbox, toggle, slider, switch and selector also bind their value to a [signal](../state/signals.md) with `signal(...)`.
+Nodes the user edits. Each one keeps its value, calls `onChange` on every change, follows a value or a signal given to its value setter, and binds both ways to a [signal](../state/signals.md) with `signal(...)`.
 
 | Component | Abstract | Use it for |
 | --- | --- | --- |
-| [TextFieldNode](../nodes/input/text-field.md) | No | A single line of text: names, search boxes. |
+| [TextFieldNode](../nodes/input/text-field.md) | No | A single line of text or a number (`IntegerFieldNode`): names, search boxes, amounts. |
 | [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | No | A text area that wraps and scrolls. |
 | [SliderNode](../nodes/input/slider.md) | Yes | Picking a number or a value from an ordered set. |
 | [CheckboxNode](../nodes/input/checkbox.md) | Yes | A yes / no choice. |
@@ -48,11 +50,19 @@ Nodes the user edits. Each one keeps its value and calls you back when it change
 
 | Component | Abstract | Use it for |
 | --- | --- | --- |
-| [ChartNode](../nodes/data/chart.md) | Yes | Line, bar and area charts over labeled values. |
+| [ChartNode](../nodes/data/chart.md) | Yes | Line charts over labeled values. |
 | [RadarChartNode](../nodes/data/radar-chart.md) | Yes | Radar (spider) charts. |
 
-## Not finding what you need?
+## Not finding what you need
 
 - Combine nodes: a button is a `RectNode` with a `TextNode` child and an `onClick` callback.
-- Change how any node looks with [effects](../styling/effects.md): rounded corners, borders, blur, masks, transforms.
+- Change how any node looks with [effects](../styling/effects.md): rounded corners, borders, blur, shadows, masks, transforms.
 - Draw anything yourself in a [custom node](../nodes/custom-nodes.md).
+
+## See also
+
+- [Essentials: Nodes](../essentials/nodes.md)
+- [Node Fundamentals](../nodes/node-fundamentals.md)
+- [Building a UI Kit](ui-kit.md)
+- [Reactive Properties](../state/reactive-properties.md)
+- [Custom Nodes](../nodes/custom-nodes.md)

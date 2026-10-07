@@ -9,26 +9,26 @@ A subclass implements `option(V value)`, which returns the node that shows one v
 ```java
 public class DifficultySelectorNode extends SelectorNode<String> {
 
-    private final TextInfo info;
+	private final TextInfo info;
 
-    protected DifficultySelectorNode(final double x, final double y, final double width, final double height, final TextInfo info) {
-        super(x, y, width, height);
-        this.info = info;
-    }
+	protected DifficultySelectorNode(final double x, final double y, final double width, final double height, final TextInfo info) {
+		super(x, y, width, height);
+		this.info = info;
+	}
 
-    public static DifficultySelectorNode create(final double x, final double y, final double width, final double height, final TextInfo info) {
-        return new DifficultySelectorNode(x, y, width, height, info);
-    }
+	public static DifficultySelectorNode create(final double x, final double y, final double width, final double height, final TextInfo info) {
+		return new DifficultySelectorNode(x, y, width, height, info);
+	}
 
-    @Override
-    protected Node option(final String value) {
-        return TextNode.create(0, 0, super.getDefaultWidth(), super.getDefaultHeight()).text(Text.create(value, this.info, Align.CENTER, Align.CENTER));
-    }
+	@Override
+	protected Node option(final String value) {
+		return TextNode.create(0, 0, super.getDefaultWidth(), super.getDefaultHeight()).text(Text.create(value, this.info, Align.CENTER, Align.CENTER));
+	}
 
-    @Override
-    public void drawBackground(final double mouseX, final double mouseY) {
-        DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.BLACK);
-    }
+	@Override
+	public void drawBackground(final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.BLACK);
+	}
 
 }
 ```
@@ -81,20 +81,21 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 - each value the signal publishes later selects its option, and calls `onChange` when it changes. A value that is not an option is ignored.
 
 ```java
-private final StringSignal difficulty = new StringSignal("Normal");
+private final Signal<String> difficulty = Signal.of("Normal");
 ```
 
 ```java
 DifficultySelectorNode
 .create(810, 400, 300, 50, TextInfo.create(font, 20F, Color.WHITE))
-.values(this.difficulty.getOrDefault(), "Easy", "Normal", "Hard")
+.values("Normal", "Easy", "Normal", "Hard")
 .signal(this.difficulty)
 .attach(this);
 ```
 
 - Call `signal(...)` after `values(...)`: the signal's value is applied once, when you bind it, and it can only select an existing option.
 - The selector follows the signal while its UI is open, and one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer selects an option nor receives the picked values.
-- Any other node can [watch](../../state/watch.md) the same signal to follow the selection.
+- Any other node follows the selection by reading the signal in a setter: `text(Text.create("Difficulty: " + this.difficulty.get(), info))`.
+- `value(...)`, `direction(...)` and `active(...)` also take a `Supplier` (a native expression that reads signals, a signal or a lambda) and follow it one way.
 
 ## Options and layout
 
@@ -140,10 +141,10 @@ The selector's own height follows: with `DOWN` it grows to cover the open list (
 | `option(V value)` | | Abstract, protected. Returns the node of one option. |
 | `drawBackground(double mouseX, double mouseY)` | | Abstract. Draws the background. |
 | `values(V value, V... values)` | no option | Replaces the options and selects `value`. |
-| `value(V value)` | | Selects the option of this value. |
+| `value(V value)`, `value(Supplier<V>)` | | Selects the option of this value. |
 | `signal(Signal<V>)` | none | Binds a signal both ways. |
-| `direction(SelectorDirection)` | `DOWN` | Side the list opens to. |
-| `active(boolean)` | `false` | Opens or closes the list. |
+| `direction(SelectorDirection)`, `direction(Supplier<SelectorDirection>)` | `DOWN` | Side the list opens to. |
+| `active(boolean)`, `active(Supplier<Boolean>)` | `false` | Opens or closes the list. |
 | `onChange(NodeSelectorChangeCallback<T, V>)` | | Adds a callback `(node, value)` run after each change of the selected value. |
 | `getValue()` | | The selected value, `null` while there is no option. |
 | `getSelected()` | | Node of the selected option, `null` while there is no option. |
@@ -154,7 +155,7 @@ The selector's own height follows: with `DOWN` it grows to cover the open list (
 | `getOptionMap()` | | Option nodes mapped to their values, in order. Read it only. |
 | `SelectorNode.CALLBACK_CHANGE` | | Callback id of `onChange`. |
 
-`draw` and `mousePressed` are final. Every setter returns the node itself, typed by the generic return of the fluent API.
+Every setter returns the node itself, typed by the generic return of the fluent API; `draw` and `mousePressed` can be overridden.
 
 ### SelectorDirection
 
@@ -165,6 +166,12 @@ The selector's own height follows: with `DOWN` it grows to cover the open list (
 | `UP` | The list opens above the selector. |
 | `DOWN` | The list opens below the selector. |
 | `isDown()` | `true` for `DOWN`. |
+
+## Pitfalls
+
+- An option node appended by hand, outside `values(...)`, throws an explicit exception: build the options through `option(V)`.
+- A click on the open list, or on the current option, is consumed; a click beside it closes the list and goes through to the nodes below.
+- A detached selector closes its list.
 
 ## See also
 

@@ -1,6 +1,6 @@
 # Node Fundamentals
 
-`Node` (`dev.joid.lib.ui.node`) is the base class of everything you place in a UI: a box with a position, a size, children, callbacks and effects. This page covers the API every node inherits: building the tree, placing and sizing nodes, visibility, drawing order, lifecycle and copies.
+`Node` (`dev.joid.lib.ui.node`) is the base class of everything you place in a UI: a box with a position, a size, children, callbacks and effects. This page covers the API every node inherits: building the tree, placing and sizing nodes, visibility, drawing order, lifecycle and copies. Every property setter takes a plain value, a native expression that reads signals, a signal or a lambda (see [Reactive Properties](../state/reactive-properties.md)).
 
 ## A first node tree
 
@@ -11,17 +11,17 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 public class ShopUI extends UI {
 
-    @Override
-    public void init() {
-        RectNode
-        .create(560, 240, 800, 600)
-        .color(Color.DARKGRAY)
-        .body(panel -> {
-            RectNode.create(20, 20, panel.aw(-40), 80).color(Color.GRAY).attach(panel);
-            RectNode.create(20, 120, panel.dw(2) - 30, panel.ah(-140)).color(Color.LIGHTGRAY).attach(panel);
-        })
-        .attach(this);
-    }
+	@Override
+	public void init() {
+		RectNode
+		.create(560, 240, 800, 600)
+		.color(Color.DARKGRAY)
+		.body(panel -> {
+			RectNode.create(20, 20, panel.aw(-40), 80).color(Color.GRAY).attach(panel);
+			RectNode.create(20, 120, panel.dw(2) - 30, panel.ah(-140)).color(Color.LIGHTGRAY).attach(panel);
+		})
+		.attach(this);
+	}
 
 }
 ```
@@ -53,7 +53,7 @@ Children appended before their tree is attached are loaded together with it, so 
 ```java
 final ContainerNode toolbar = ContainerNode.create(0, 0, 1920, 80);
 final RectNode back = RectNode.create(20, 20, 40, 40).color(Color.WHITE);
-final RectNode close = RectNode.create(1860, 20, 40, 40).color(Color.RED);
+final RectNode close = RectNode.create(1860, 20, 40, 40).color(Color.LIGHTGRAY);
 toolbar.append(back, close).attach(this);
 ```
 
@@ -69,19 +69,19 @@ Each appended child fires the parent's `onAppend` callbacks; cancelling their PR
 | `body(Runnable runnable)` | Same without the node parameter. |
 | `getBodyConsumer()` | The stored consumer (`null` when `body` was never called). |
 
-`WatchProperty.BODY` runs the stored consumer again when a watched signal changes, which rebuilds the children from fresh data (see [Watching Signals](../state/watch.md) and [Signals](../state/signals.md), package `dev.joid.lib.utils.signal`):
+`WatchProperty.BODY` runs the stored consumer again when a watched signal changes, which rebuilds the children from fresh data (see [Watching Signals](../state/watch.md) and [Signals](../state/signals.md)):
 
 ```java
-final Signal<Integer> count = new Signal<>(3);
+final IntegerSignal count = IntegerSignal.of(3);
 
 FlexNode
 .vertical(100, 100, 300)
 .margin(10)
 .watch(count, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
 .body(flex -> {
-    for (int i = 0; i < count.getOrDefault(); i++) {
-        RectNode.create(0, 0, 300, 50).color(Color.GRAY).attach(flex);
-    }
+	for (int i = 0; i < count.peek(); i++) {
+		RectNode.create(0, 0, 300, 50).color(Color.GRAY).attach(flex);
+	}
 })
 .attach(this);
 ```
@@ -107,8 +107,8 @@ RectNode
 Most setters are declared as `<T extends Node> T method(...)`: the compiler infers `T` from where the result goes.
 
 - Assigned to a variable or passed as an argument, `T` is the expected type: `final RectNode card = RectNode.create(0, 0, 200, 100).anchor(Align.CENTER);`.
-- In the middle of a chain, a `Node` setter returns `Node`, so the setters of the concrete type are no longer visible after it. Call the type-specific setters first (`color` of `RectNode`, `margin` of `FlexNode`), then the `Node` ones, or give the type explicitly: `RectNode.create(0, 0, 200, 100).<RectNode>anchor(Align.CENTER).color(Color.RED)`.
-- Lambda parameters follow the same rule: in `RectNode.create(...).body(rect -> ...)`, `rect` is a `Node`. Type the parameter to get the concrete type: `.body((final RectNode rect) -> rect.color(Color.RED))`.
+- In the middle of a chain, a `Node` setter returns `Node`, so the setters of the concrete type are no longer visible after it. Call the type-specific setters first (`color` of `RectNode`, `margin` of `FlexNode`), then the `Node` ones, or give the type explicitly: `RectNode.create(0, 0, 200, 100).<RectNode>anchor(Align.CENTER).color(Color.WHITE)`.
+- Lambda parameters follow the same rule: in `RectNode.create(...).body(rect -> ...)`, `rect` is a `Node`. Type the parameter to get the concrete type: `.body((final RectNode rect) -> rect.color(Color.WHITE))`.
 
 ### Removing nodes
 
@@ -127,14 +127,11 @@ Positions and sizes are in UI units of the 1920×1080 virtual canvas. With the d
 
 | Method | Description |
 | --- | --- |
-| `x(double x)`, `y(double y)` | Sets the position on one axis. |
-| `width(double width)`, `height(double height)` | Sets the size on one axis. |
-| `position(double x, double y)` | Sets both coordinates. |
-| `size(double width, double height)` | Sets both dimensions. |
-| `bounds(double x, double y, double width, double height)` | Sets position and size. |
+| `x(double x)`, `x(Supplier<Double> x)`, `y(...)` | Sets the position on one axis. |
+| `width(double width)`, `width(Supplier<Double> width)`, `height(...)` | Sets the size on one axis. |
 | `getX()`, `getY()`, `getWidth()`, `getHeight()` | Current position and size. `w()` and `h()` are short aliases of `getWidth()` and `getHeight()`. |
 
-All setters return the node.
+All setters return the node. One setter sets one property: `RectNode.create(0, 0, 100, 40).x(this.offset.get()).width(this.size.get() * 2D)` follows each signal separately.
 
 ### Default bounds
 
@@ -164,13 +161,13 @@ RectNode
 .create(100, 100, 400, 300)
 .color(Color.DARKGRAY)
 .body(card -> {
-    RectNode.create(card.dw(2) - 50, card.dh(2) - 25, 100, 50).color(Color.RED).attach(card);
-    RectNode.create(card.aw(-110), card.ah(-60), 100, 50).color(Color.GREEN).attach(card);
+	RectNode.create(card.dw(2) - 50, card.dh(2) - 25, 100, 50).color(Color.WHITE).attach(card);
+	RectNode.create(card.aw(-110), card.ah(-60), 100, 50).color(Color.LIGHTGRAY).attach(card);
 })
 .attach(this);
 ```
 
-![A dark gray card with a red rectangle in its center and a green one in its bottom-right corner](../images/node-helpers.png "dw(2) and dh(2) center the red child; aw and ah place the green one 10 units from the corner.")
+![A dark gray card with a white rectangle in its center and a light gray one in its bottom-right corner](../images/node-helpers.png "dw(2) and dh(2) center the white child; aw and ah place the light gray one 10 units from the corner.")
 
 The first child is centered in the card; the second sits 10 units from its bottom-right corner. `ax` and `ay` add to the node's own position, which is expressed in its parent's space: use them to place siblings.
 
@@ -187,12 +184,12 @@ The first child is centered in the card; the second sits 10 units from its botto
 ContainerNode
 .create(200, 300, 400, 400)
 .body(container -> {
-    RectNode.create(30, 40, 20, 20).color(Color.RED).position(PositionProperty.ABSOLUTE).attach(container);
+	RectNode.create(30, 40, 20, 20).color(Color.WHITE).position(PositionProperty.ABSOLUTE).attach(container);
 })
 .attach(this);
 ```
 
-The red square is drawn at (30, 40) on the canvas. `getPosition()` returns the current value.
+The white square is drawn at (30, 40) on the canvas. `getPosition()` returns the current value.
 
 ### Anchors with anchor, anchorX and anchorY
 
@@ -200,9 +197,8 @@ An anchor decides which point of the node stays in place when its size changes. 
 
 | Method | Description |
 | --- | --- |
-| `anchor(Align anchor)` | Sets both anchors. |
-| `anchor(Align anchorX, Align anchorY)` | Sets each anchor. |
-| `anchorX(Align anchorX)`, `anchorY(Align anchorY)` | Sets one anchor. |
+| `anchor(Align anchor)` | Sets both anchors to the same value. |
+| `anchorX(Align anchorX)`, `anchorY(Align anchorY)` | Sets one anchor (value or `Supplier`). |
 | `getAnchorX()`, `getAnchorY()` | Current anchors. Default: `Align.START`. |
 
 | `Align` | Point that stays in place |
@@ -211,7 +207,7 @@ An anchor decides which point of the node stays in place when its size changes. 
 | `CENTER` | Center. |
 | `END` | Right or bottom edge. |
 
-An anchor does not move a node that already has its final size. It matters for nodes whose size is computed after creation, such as a `TextNode` created without a size or a `FlexNode` that grows with its children: their anchored point ends up at the `x`/`y` you gave.
+An anchor is the point that stays fixed when the size changes, not an offset. It does not move a node that already has its final size. It matters for nodes whose size is computed after creation, such as a `TextNode` created without a size or a `FlexNode` that grows with its children: their anchored point ends up at the `x`/`y` you gave.
 
 ```java
 FlexNode
@@ -219,9 +215,9 @@ FlexNode
 .margin(10)
 .anchorX(Align.CENTER)
 .body(flex -> {
-    for (int i = 0; i < 3; i++) {
-        RectNode.create(0, 0, 100, 100).color(Color.RED).attach(flex);
-    }
+	for (int i = 0; i < 3; i++) {
+		RectNode.create(0, 0, 100, 100).color(Color.LIGHTGRAY).attach(flex);
+	}
 })
 .attach(this);
 ```
@@ -233,7 +229,7 @@ The row stays centered on x = 960 whatever the number of children.
 `aspectRatio(double aspectRatio)` keeps `width / height` equal to the ratio. On every rendered frame, when the width is not 0 the height becomes `width / ratio`; otherwise, when the height is not 0, the width becomes `height × ratio`. A 0×0 node stays empty. The default, `-1`, disables it; `getAspectRatio()` returns the value.
 
 ```java
-RectNode.create(0, 0, 320, 0).color(Color.BLACK).aspectRatio(16D / 9D).attach(this);
+RectNode.create(0, 0, 320, 0).color(Color.GRAY).aspectRatio(16D / 9D).attach(this);
 ```
 
 > NOTE: When a node's position changes between two frames (scroll, drag, tween, layout or your own code), JOID moves the drawing of the node and its subtree by whole screen pixels so the content does not shimmer; once the node stops moving, it is drawn at its exact position. See [Drawing Overview](../drawing/draw-utils.md) for the pixel grid.
@@ -242,23 +238,23 @@ RectNode.create(0, 0, 320, 0).color(Color.BLACK).aspectRatio(16D / 9D).attach(th
 
 | Method | Description |
 | --- | --- |
-| `visible(Predicate<T> visibility)` | Replaces the visibility predicate. Default: always visible. |
-| `visible(Signal<?>... signals)` | Visible while every signal holds a value that is not `false`: `getOrDefault()` is neither `null` nor `Boolean.FALSE` (a default value counts), so a `BooleanSignal` shows and hides the node. Replaces the predicate. |
-| `enabled(Predicate<T> enabled)` | Replaces the enabled predicate. Default: always enabled. |
+| `visible(boolean visible)`, `visible(Supplier<Boolean> visible)` | A fixed value, a followed expression or signal (`visible(this.open)`), or a lambda. Default: visible. |
+| `visible(Predicate<T> visible)` | A predicate on the node, evaluated on each check. |
+| `enabled(boolean enabled)`, `enabled(Supplier<Boolean> enabled)`, `enabled(Predicate<T> enabled)` | Same for the enabled state. Default: enabled. |
 | `isVisible()` | `true` when the parent is visible, the node is not entirely outside its [overflow area](layout/overflow-and-scroll.md), and its own predicate passes. |
 | `isVisibleProperty()` | The node's own predicate only. Layout nodes use it to give no room to hidden children. |
 | `isEnabled()` | `true` when the parent is enabled and the node's own predicate passes. |
 | `getVisible()`, `getEnabled()` | The predicates themselves. |
 
-The predicates are evaluated each time the state is checked (several times per frame), so they can read any state directly:
+The state is evaluated each time it is checked (several times per frame). A `BooleanSignal` goes as is:
 
 ```java
-final BooleanSignal open = new BooleanSignal(false);
+private final BooleanSignal open = BooleanSignal.of(false);
 
 RectNode
 .create(660, 340, 600, 400)
 .color(Color.DARKGRAY)
-.visible(panel -> open.getOrDefault())
+.visible(this.open)
 .attach(this);
 ```
 
@@ -305,10 +301,10 @@ Layers draw in the same space as the node's own `draw`, the parent's origin, so 
 
 ```java
 final RectNode card = RectNode.create(100, 100, 300, 200).color(Color.DARKGRAY);
-card.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRect(card.getX() + card.aw(-20), card.getY() + 10, 10, 10, Color.RED)).attach(this);
+card.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRect(card.getX() + card.aw(-20), card.getY() + 10, 10, 10, Color.WHITE)).attach(this);
 ```
 
-![A dark gray card with a small red square near its top-right corner](../images/node-layer.png "The layer draws a 10 × 10 badge above the card and its children.")
+![A dark gray card with a small white square near its top-right corner](../images/node-layer.png "The layer draws a 10 × 10 badge above the card and its children.")
 
 Layers are drawn inside the node's clip when its overflow is `HIDDEN` or `SCROLL`.
 
@@ -347,11 +343,13 @@ Reading the rectangles of a `panel` node:
 ```java
 final RectNode second = panel.getChild(1, RectNode.class);
 for (final RectNode tile : panel.getChildren(RectNode.class)) {
-    tile.color(Color.GRAY);
+	tile.color(Color.GRAY);
 }
 ```
 
 ## Lifecycle
+
+![Diagram: create, attach and load, frames with render and update, mount, then detach and a new attach that loads the node again](../images/diagram-node-lifecycle.png "The life of a node, from its factory to its detachment")
 
 | Stage | Trigger | What runs |
 | --- | --- | --- |
@@ -360,11 +358,10 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
 | Frame | Every frame, while visible | `render(mouseX, mouseY)`: anchors and aspect ratio, hover, animators, scroll, drag, mount check, then drawing (wrapped by `onRender`, with `draw` wrapped by `onDraw`). |
 | Update | Each update tick of the UI bridge (once per frame, before drawing, in the bundled demo windows) | `onUpdate()`: the children first, then the node's `update()` hook, wrapped by the `onUpdate` callbacks. Runs for hidden nodes too. |
 | Mount | The first rendered frame in which `isMounted()` is `true` | The `onMount` callbacks. Without [wait conditions](#waiting-and-skeletons), this is the node's first rendered frame. |
-| Reload | `reload()`, `WatchProperty.RELOAD` | The children reload first, then the node is loaded again (`init` and `onInit` run again), all wrapped by `onReload`. `body` consumers are not run again. |
 | Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the scrollbar and the skeleton, then the node unsubscribes from its signals, ends its interactions (see below), runs the `detach` hook of its effects and its own `detach()` hook, all wrapped by the `onDetach` callbacks. When the node leaves its parent, it also forgets the overflow area of its former container (see `getOverflowArea()`). |
 
-- Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, clickType, context)`...) are the entry points that run the stage. You call `reload()` and `onDetach()` yourself when needed; the others are called by the framework.
-- `init` runs on every load, including reloads: keep it repeatable. Override the hooks in your own nodes (see [Custom Nodes](custom-nodes.md)).
+- Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, clickType, context)`...) are the entry points that run the stage, called by the framework.
+- `init` runs on every load, including a new attachment after a detach: keep it repeatable. Override the hooks in your own nodes (see [Custom Nodes](custom-nodes.md)).
 - A node follows the signals of its [`watch(...)`](../state/watch.md) calls and of the controls' `signal(...)` only while it is attached: `onDetach()` unsubscribes the whole subtree, so a detached node is no longer reloaded, rebuilt or updated by a signal. Loading it again (`append`, `attach`, reopening its UI) subscribes each of them again, once, and applies right away a value published while it was detached. `isSubscribed()` tells whether the node follows its signals.
 - A detached node is inert: it is no longer drawn, updated or reached by the input, and nothing global keeps it, so you can drop it. `onDetach()` also ends what was in progress, so that a node attached again behaves like a new one, without double registration:
   - an ongoing drag ends with its `onDragEnd` callbacks; a `MOVE` node lands at once where the drag aimed, and the copy of a `COPY` drag is dropped;
@@ -373,7 +370,7 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
   - the built-in nodes end their own interactions: a text field loses its focus (with its `onFocus` callbacks), a selector closes, a scrollbar, a slider cursor or a model viewer stops following the mouse, a `ReorderableFlexNode` drops the dragged child on its current slot, and a `ResourcePlayerNode` releases its video and starts its resource again from the beginning on its next draw.
 - The node keeps its configuration: position, size, scroll offsets, callbacks, effects, layers, wait conditions and the animators given to `animate(...)`, which it stops updating while detached.
 - `UI.reload()` and the dev reload shortcut rebuild the whole tree: the old nodes are detached and the UI's `init()` runs again.
-- `getUpdateCount()` counts the loads of the node, `getLastUpdate()` is the clock time (ms) of the last load, and `getRenderTime()` is the time (ns) of the last `render`, subtree included.
+- `getUpdateCount()` counts the loads of the node (`0` before the first one), and `getRenderTime()` is the time (ns) of the last `render`, subtree included.
 
 ### Waiting and skeletons
 
@@ -402,7 +399,7 @@ RectNode
 .color(Color.DARKGRAY)
 .wait(title)
 .skeleton(card -> RectNode.create(0, 0, 400, 80).color(Color.LOADING))
-.onMount(card -> System.out.println("Loaded " + title.getOrDefault()))
+.onMount(card -> System.out.println("[Shop] loaded " + title.peek()))
 .attach(this);
 ```
 
@@ -426,17 +423,17 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 
 | Feature | Node methods | Page |
 | --- | --- | --- |
-| Callbacks | `onInit`, `onReload`, `onDetach`, `onAppend`, `onMount`, `onUpdate`, `onRender`, `onDraw`, `onClick`, `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed`, `onHover`, `onHoverStart`, `onHoverEnd`, `onDrag`, `onDragStart`, `onDragEnd`, `onSnap`, `onWatch`, `onAnimate`, `onScrollUpdate`, `onScrollEnding`, `onScrollEnd` | [Callbacks](../interactions/callbacks.md) |
+| Callbacks | `onInit`, `onDetach`, `onAppend`, `onMount`, `onUpdate`, `onRender`, `onDraw`, `onClick`, `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed`, `onHover`, `onHoverStart`, `onHoverEnd`, `onDrag`, `onDragStart`, `onDragEnd`, `onSnap`, `onWatch`, `onAnimate`, `onScrollUpdate`, `onScrollEnding`, `onScrollEnd` | [Callbacks](../interactions/callbacks.md) |
 | Hover and tooltips | `hover(...)`, `hoverLines(...)`, `hoverElements(...)`, `clearHover()`, `clearHoverLines()`, `clearHoverElements()`, `hoverDuration(long)`, `hoverEquation(TweenEquation)`, `hoverValue(float)`, `hovered(boolean)`, `isHovered()`, `isHovered(double, double)`, `isHovered(double, double, boolean)`, `renderHover(double, double)`, `getHoverDuration()`, `getHoverEquation()` | [Hover and Tooltips](../interactions/hover.md) |
 | Effects | `effect(NodeEffect)`, `removeEffect(Class)`, `clearEffects()`, `getEffect(Class)`, `hasEffect(Class)`, `getEffectMap()`, `shouldApplyEffect(NodeEffect)` | [Effects](../styling/effects.md) |
 | Drag and drop | `draggable(DraggableProperty)`, `startDragging(double, double)`, `stopDragging()`, `dragging(boolean, double, double)`, `isDragging()`, `isDragged()`, `getDraggable()`, `getDraggedNode()` | [Drag and Drop](../interactions/drag-drop.md) |
-| Signals | `watch(Signal)`, `watch(Signal, WatchProperty...)`, `watch(Signal, Supplier<Boolean>, WatchProperty...)` | [Watching Signals](../state/watch.md) |
+| Signals | `watch(Signal)`, `watch(Signal, WatchProperty...)`, `watch(Signal, Supplier<Boolean>, WatchProperty...)`; every setter with its `Supplier` overload | [Watching Signals](../state/watch.md), [Reactive Properties](../state/reactive-properties.md) |
 | Stores | `useStore(Class<T>)`, the store of the node's UI | [Stores](../state/stores.md) |
 | Animation | `animate(TweenAnimator)`: the node updates the animator on every rendered frame and fires `onAnimate` when its value changes | [TweenAnimator](../animation/tween-animator.md) |
 | Overflow and scrolling | `overflow(OverflowProperty)`, `scrollX`, `scrollY`, `scrollOffsetX`, `scrollOffsetY`, `scrollRatioX`, `scrollRatioY`, `updateScroll`, `scrollSpeed`, `scrollbar`, `hasOverflowX`, `hasOverflowY` | [Overflow and Scrolling](layout/overflow-and-scroll.md) |
 | Writing nodes | Hooks, input dispatch entry points, `registerCallback`, `executeCallback`, `executePreCallback`, `executePostCallback`, `fireDrag`, `fireDragStart`, `fireDragEnd`, `hasCallback`, `getCallbackList`, `getCallbackMap` | [Custom Nodes](custom-nodes.md) |
 
-## Node API reference
+## Reference
 
 ### Tree
 
@@ -457,23 +454,23 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 
 | Method | Description |
 | --- | --- |
-| `x`, `y`, `width`, `height`, `position(double, double)`, `size`, `bounds` | Setters. |
+| `x`, `y`, `width`, `height` (value or `Supplier`) | Setters. |
 | `getX()`, `getY()`, `getWidth()`, `getHeight()`, `w()`, `h()` | Current values. |
 | `getDefaultX()`, `getDefaultY()`, `getDefaultWidth()`, `getDefaultHeight()` | Factory values. |
 | `getAbsoluteX()`, `getAbsoluteY()`, `getAbsoluteDefaultX()`, `getAbsoluteDefaultY()` | Canvas coordinates. |
 | `dw`, `dh`, `mw`, `mh`, `aw`, `ah`, `ax`, `ay` | Relative helpers. |
 | `position(PositionProperty)`, `getPosition()` | Relative or absolute placement. Default `RELATIVE`. |
-| `anchor(Align)`, `anchor(Align, Align)`, `anchorX`, `anchorY`, `getAnchorX()`, `getAnchorY()` | Anchors. Default `START`. |
-| `aspectRatio(double)`, `getAspectRatio()` | Width / height ratio. Default `-1` (off). |
+| `anchor(Align)`, `anchorX`, `anchorY`, `getAnchorX()`, `getAnchorY()` | Anchors. Default `START`. |
+| `aspectRatio(double)`, `aspectRatio(Supplier<Double>)`, `getAspectRatio()` | Width / height ratio. Default `-1` (off). |
 
 ### State and order
 
 | Method | Description |
 | --- | --- |
-| `visible(Predicate<T>)`, `visible(Signal<?>...)`, `enabled(Predicate<T>)` | Predicates. |
+| `visible(boolean)`, `visible(Supplier<Boolean>)`, `visible(Predicate<T>)`, and the same three `enabled(...)` | Visibility and enabled state. |
 | `isVisible()`, `isVisibleProperty()`, `isEnabled()`, `getVisible()`, `getEnabled()` | State. |
-| `zindex(int)`, `getZindex()`, `getIndex()` | Order among siblings. Default `0`. |
-| `zlevel(double)`, `getZlevel()` | Depth translation. Default `0`. |
+| `zindex(int)`, `zindex(Supplier<Integer>)`, `getZindex()`, `getIndex()` | Order among siblings. Default `0`. |
+| `zlevel(double)`, `zlevel(Supplier<Double>)`, `getZlevel()` | Depth translation. Default `0`. |
 | `layer(NodeLayer)`, `layer(int, NodeLayer)`, `clearLayers()`, `getLayerList()` | Layers. |
 
 ### Lifecycle
@@ -481,13 +478,12 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | Method | Description |
 | --- | --- |
 | `load(UI ui)` | Loads the node and its subtree in `ui`. Called by `attach`/`append`. |
-| `reload()` | Loads the subtree again. |
 | `onDetach()` | Detaches the subtree (runs the detach hooks). |
 | `onUpdate()` | Runs one update tick on the subtree. Called by the UI. |
 | `render(double mouseX, double mouseY)` | Draws the node for one frame. Called by the UI or by the parent. |
 | `wait(...)`, `skeleton(...)`, `isMounted()`, `getSkeleton()`, `getWaitingList()` | Loading state. |
 | `copy()` | Copies the node. |
-| `getUpdateCount()`, `getLastUpdate()`, `getRenderTime()` | Load count, last load time (ms), last render duration (ns). |
+| `getUpdateCount()`, `getRenderTime()` | Load count, last render duration (ns). |
 
 ### Debugging
 
@@ -512,8 +508,17 @@ These getters expose the node's internal bookkeeping. They are read-only views f
 | `getAnimatorMap()`, `getHoverAnimator()`, `getHoverElementList()`, `getHoverSupplierList()` | Registered animators and hover state. |
 | `getDragX()`, `getDragY()`, `getStartDragX()`, `getStartDragY()`, `getTargetDragX()`, `getTargetDragY()` | Drag bookkeeping. |
 
+## Pitfalls
+
+- In the middle of a chain a `Node` setter returns `Node`: call the setters of the concrete type first, or add a witness (`.<RectNode>anchorX(Align.CENTER)`).
+- A literal `null` is ambiguous between the value and `Supplier` overloads: cast it (`hoveredColor((Color) null)`).
+- `getChildren().remove(child)` skips the detach hooks: use `remove(child)`.
+- A layout node (`FlexNode`, `GridNode`, `ReorderableFlexNode`) places its children: their `x`/`y` are offsets from their slot.
+- A hidden node keeps its update ticks and its animators: detach it to stop everything.
+
 ## See also
 
+- [Reactive Properties](../state/reactive-properties.md)
 - [Callbacks](../interactions/callbacks.md)
 - [ContainerNode](layout/container.md)
 - [FlexNode](layout/flex.md)

@@ -1,239 +1,278 @@
 # Signals
 
-A `Signal<T>` holds a value and notifies its subscribers when the value changes. Nodes rebuild themselves from signals with [watch](watch.md), wait for them before showing with `wait`, and some input nodes write their value into one. Typed signals add operations for numbers, strings and collections.
+A signal holds a value and tells whoever depends on it when the value changes. Signals are the state of a JOID UI: you write to a signal, and every node, computed value and subscriber that reads it follows the change. This page covers the signal model itself; [Reactive Properties](reactive-properties.md) shows how nodes follow signals.
 
 ## A first signal
 
 ```java
-public class CounterUI extends UI {
+private final IntegerSignal clicks = IntegerSignal.of(0);
 
-    private final IntegerSignal count = new IntegerSignal();
+@Override
+public void init() {
+	RectNode
+	.create(100, 100, 200, 60)
+	.color(Color.GRAY)
+	.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
+	.attach(this);
 
-    @Override
-    public void init() {
-        TextNode
-        .create(100, 100)
-        .text(Text.create("", info))
-        .<TextNode>onInit(node -> node.getText().text("Clicked " + this.count.getOrDefault() + " times"))
-        .watch(this.count)
-        .attach(this);
+	TextNode.create(100, 190).text(Text.create("Clicks: " + this.clicks.get(), this.info)).attach(this);
+}
+```
 
-        RectNode
-        .create(100, 160, 200, 60)
-        .color(Color.WHITE)
-        .onClick((node, mouseX, mouseY, clickType) -> this.count.increment())
-        .attach(this);
-    }
+![A gray button clicked three times; the text under it counts Clicks: 1, 2, 3](../images/signals-first.gif "The text reads the signal and follows it")
+
+`IntegerSignal.of(0)` creates a signal that holds `0`. A click calls `increment()`, and the text, built from an expression that reads `this.clicks.get()`, is recomputed. `info` is a `TextInfo` (see [Text and TextInfo](../text/text-and-textinfo.md)).
+
+`Signal` is in `dev.joid.lib.utils.signal`, the typed signals in `dev.joid.lib.utils.signal.impl.primitive` (`BooleanSignal`, `IntegerSignal`, `LongSignal`, `FloatSignal`, `DoubleSignal`, `StringSignal`) and `dev.joid.lib.utils.signal.impl.iterable` (`ListSignal`, `SetSignal`, `MapSignal`).
+
+## Sources and derived signals
+
+![Diagram: source signals at the left, computed signals in the middle, nodes and subscribers at the right](../images/diagram-signal-graph.png "Sources are written, computed signals derive from them, nodes and subscribers read the end of the chain")
+
+A JOID state is a small graph:
+
+| Kind | Created with | Writable | Role |
+| --- | --- | --- | --- |
+| Source signal | `Signal.of(value)`, `IntegerSignal.of(0)`, `new ListSignal<>(...)`... | yes | Holds a value you set. |
+| Computed signal | `signal.map(...)`, `Signal.from(...)` | no | Derives its value from the signals it reads. Type `ComputedSignal<T>`. |
+| Reader | a node setter, `subscribe(...)`, `watch(...)` | — | Follows a signal. |
+
+## Reading a signal with get and peek
+
+| Method | Returns | Followed |
+| --- | --- | --- |
+| `get()` | The value, or the default value when no value is set. | Yes: a computation or a native expression that calls `get()` depends on the signal. |
+| `peek()` | The same value. | No: reads without creating a dependency. |
+| `isPresent()` | `true` when a value is set (not `null`). | Yes. |
+
+Use `get()` everywhere a value must follow the signal, and `peek()` to read a value once without following it (inside a click handler, inside a `watch` body that must not depend on the value, in a computation that must ignore one of its inputs).
+
+## Writing a signal
+
+| Method | Effect |
+| --- | --- |
+| `set(value)` | Sets the value. Nothing happens when the new value `equals` the current one. |
+| `reset()` | Sets the default value again. |
+| `publish()` | Notifies the readers without changing the value (after mutating an object held by the signal in place). |
+| `silent()` | The next write does not notify the direct subscribers of this signal (see [silent](#writing-without-notifying-with-silent)). |
+
+`Signal` and the typed signals take a default value in their constructor and a starting value in `of(...)`:
+
+```java
+final IntegerSignal lives = new IntegerSignal(3);
+final IntegerSignal score = IntegerSignal.of(10);
+
+lives.decrement();
+lives.reset();
+score.reset();
+```
+
+`lives` starts at its default `3`, goes to `2`, and `reset()` brings it back to `3`. `score` starts at `10` with the default value of `IntegerSignal`, `0`: `reset()` gives `0`.
+
+### Typed signals
+
+| Signal | Default | Operations |
+| --- | --- | --- |
+| `Signal<T>` | `null` | `set`, `reset`, `publish` |
+| `BooleanSignal` | `false` | `toggle()` |
+| `IntegerSignal`, `LongSignal` | `0` | `increment()`, `decrement()`, `add(v)`, `subtract(v)`, `multiply(v)`, `divide(v)`, `power(e)` (`IntegerSignal`) |
+| `FloatSignal`, `DoubleSignal` | `0` | `increment()`, `decrement()`, `add(v)`, `subtract(v)`, `multiply(v)`, `divide(v)` |
+| `StringSignal` | `null` | `append`, `concat`, `replace`, `toLowerCase`, `toUpperCase`, `trim`, `substring`, `intern` |
+| `ListSignal<E>` | `null` | `add`, `remove(e)`, `remove(index)`, `set(index, e)`, `clear`; reads `get(index)`, `size`, `isEmpty`, `contains`, `indexOf` |
+| `SetSignal<E>` | `null` | `add`, `remove`, `clear`; reads `size`, `isEmpty`, `contains` |
+| `MapSignal<K, V>` | `null` | `put`, `remove`, `clear`; reads `get(key)`, `containsKey`, `keySet`, `values`, `entrySet`, `size`, `isEmpty` |
+
+Each operation goes through `set` or publishes only when it changes something: removing a missing element, putting the same value under a key, or clearing an empty collection notifies nobody. The read methods of the collection signals are followed reads, like `get()`.
+
+```java
+private final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
+
+this.items.add("First");
+this.items.remove("Missing");
+```
+
+The `add` notifies, the `remove` of a missing element does not.
+
+## Deriving with map
+
+`map(function)` derives a read-only signal from one signal:
+
+```java
+final ComputedSignal<String> label = this.clicks.map(clicks -> "Clicks: " + clicks);
+final ComputedSignal<Boolean> enough = this.clicks.map(clicks -> clicks >= 3);
+```
+
+`map` chains (`this.clicks.map(...).map(...)`) and its result is a signal like any other: pass it to a setter, `subscribe` to it, or read it in another computation.
+
+## Combining signals with Signal.from
+
+`Signal.from(() -> ...)` derives a signal from a lambda. Every signal read with `get()` inside the lambda is a dependency:
+
+```java
+private final IntegerSignal price = IntegerSignal.of(12);
+private final IntegerSignal quantity = IntegerSignal.of(3);
+
+final ComputedSignal<Integer> total = Signal.from(() -> this.price.get() * this.quantity.get());
+```
+
+`Signal.from(value)` takes a native expression instead of a lambda: when the expression reads signals, JOID follows them and recomputes the expression when they change; when it reads none, the result is a constant (`isConstant()` is `true`).
+
+```java
+final ComputedSignal<String> summary = Signal.from("Total: " + this.price.get() * this.quantity.get());
+```
+
+How a native expression is followed, and its limits, are explained in [Reactive Properties](reactive-properties.md#native-expressions).
+
+## How a ComputedSignal computes
+
+![Diagram: a diamond of signals a, b, c and d, with d recomputed once after a changes](../images/diagram-computed-signal.png "A change marks the computed signals stale; each one recomputes once, when it is read")
+
+| Rule | Meaning |
+| --- | --- |
+| Lazy | A computed signal computes nothing before its first read, then returns its cached value. It recomputes only when a dependency changed since: reading it every frame costs a version check when nothing changed. |
+| Dynamic dependencies | Only the signals read during the last computation count: `flag.get() ? a.get() : b.get()` follows `flag` and the branch taken. |
+| Glitch-free | In a diamond (`a` → `b`, `a` → `c`, `d = b + c`), `d` is computed once per change of `a` and never sees an old `b` with a new `c`. |
+| Equality cutoff | When a recomputation gives a value `equals` to the previous one, nothing downstream is recomputed or notified. |
+| Read-only | `set(...)` and `reset()` throw `UnsupportedOperationException`: write the signals it reads instead. |
+| No self-read | A computation that reads its own signal throws `IllegalStateException`. |
+| Errors | An exception in the computation reaches the reader; the computation runs again at the next read. |
+
+## Acting on changes with subscribe
+
+`subscribe(subscriber)` calls a `SignalSubscriber` each time the value changes. The subscriber returns `true` to stay subscribed, `false` to unsubscribe itself:
+
+```java
+this.score.subscribe(score -> {
+	System.out.println("[Game] score: " + score);
+	return true;
+});
+```
+
+The subscriber receives the value `get()` would return (the default value when the signal is set to `null`), so it can receive `null` for a signal without default value. It is not called at subscription, only on changes. `unsubscribe(subscriber)` removes it.
+
+A computed signal notifies its subscribers when its value changes, not each time a source changes:
+
+```java
+Signal.from(() -> "Total: " + this.price.get() * this.quantity.get()).subscribe(text -> {
+	System.out.println("[Shop] " + text);
+	return true;
+});
+```
+
+Subscriptions are for actions outside the node tree (saving, logging, sending). To show a value, pass the signal or an expression to a node setter: nodes manage their own subscriptions and drop them when they are detached.
+
+## Grouping writes with Signal.batch
+
+```java
+Signal.batch(() -> {
+	this.price.set(15);
+	this.quantity.set(4);
+});
+```
+
+Inside `batch`, subscribers and computed signals are notified once, at the end, with the final values. Reading a computed signal inside the batch already gives its up-to-date value. Batches nest. When a subscriber throws during a batch, the other notifications still run and the first exception is thrown at the end (the next ones are attached as suppressed).
+
+## Writing without notifying with silent
+
+```java
+this.score.silent().set(0);
+```
+
+`silent()` mutes the next write for the direct subscribers of the signal (`subscribe`, `watch`, the `signal(...)` binding of a control), even when that write changes nothing. Computed signals that read it stay correct, and nodes that follow the value through a setter still show it.
+
+## Signals from futures
+
+`Signal.of(CompletionStage)` creates a signal without value that takes the result of the future when it completes:
+
+```java
+final Signal<String> profile = Signal.of(this.loadProfile());
+
+TextNode.create(100, 100).text(Text.create("Hello " + profile.get(), this.info)).wait(profile).attach(this);
+```
+
+`wait(profile)` keeps the node unmounted until the signal has a value (see [Watching Signals](watch.md#waiting-before-mounting-with-wait)).
+
+## Threads
+
+Dependency tracking is per thread: a computation follows the reads of the thread that runs it. A `set` from another thread (for example the completion of a future) notifies the subscribers on that thread, and computed signals see the new value at their next read. A graph built or subscribed from several threads at once has no guarantee: write from your own threads, read in the UI.
+
+## Memory
+
+A computed signal that nobody subscribes to is referenced by none of its sources: dropping it is enough. Once subscribed (directly or through another subscribed signal), it is held by its sources until it is unsubscribed or its subscriber returns `false`. Nodes subscribe when they are attached and unsubscribe when they are detached.
+
+## Custom signals
+
+Extend `Signal<T>` to add typed operations. Two protected helpers keep the notification rules:
+
+| Method | Use |
+| --- | --- |
+| `publishIf(boolean changed)` | Publishes when the operation changed the value; otherwise clears a pending `silent()`. |
+| `assign(T value)` | Sets a value without notifying the subscribers, keeping a pending `silent()` of the caller. |
+
+```java
+public class CounterSignal extends Signal<Integer> {
+
+	public CounterSignal() {
+		super(0);
+	}
+
+	public void addPositive(final int amount) {
+		if (amount > 0) {
+			super.set(super.peek() + amount);
+		}
+	}
 
 }
 ```
 
-Each click increments the signal; the text node watches it and reloads, which runs its `onInit` callback again with the new value. `info` is a `TextInfo` (see [Text Model](../text/text-and-textinfo.md)). `Signal`, `ISignal` and `SignalSubscriber` are in `dev.joid.lib.utils.signal`, the typed signals in `dev.joid.lib.utils.signal.impl.primitive` and `dev.joid.lib.utils.signal.impl.iterable`.
+## Reference
 
-## Value, default and presence
-
-A signal keeps two values: the current value, set by `set`, and a default value, given at construction.
-
-| Creation | Value | Default | `isPresent()` | `getOrDefault()` |
-|---|---|---|---|---|
-| `new Signal<>()` | `null` | `null` | `false` | `null` |
-| `new Signal<>(T defaultValue)` | `null` | `defaultValue` | `false` | `defaultValue` |
-| `Signal.of(T value)` | `value` | `null` | `true` when `value` is not `null` | `value` |
-| `Signal.of(CompletionStage<T> future)` | `null`, then the result of `future` | `null` | `false` until `future` completes | the result once completed |
+### Signal
 
 | Method | Description |
-|---|---|
-| `getOrDefault()` | The value when it is not `null`, otherwise the default. |
-| `isPresent()` | `true` when the value is not `null`. The default does not count. |
-| `set(T value)` | Stores `value` and publishes it when it differs from the previous value. `set(null)` clears the value. |
-| `reset()` | `set(default)`: with a non-`null` default the signal holds the default as its value; with a `null` default it becomes empty. |
+| --- | --- |
+| `new Signal<>()`, `new Signal<>(T defaultValue)` | A signal without value, with a default value. |
+| `Signal.of(T value)` | A signal holding `value` (no default value). |
+| `Signal.of(CompletionStage<T> future)` | A signal that takes the result of the future. |
+| `Signal.from(T value)` | A `ComputedSignal` following the native expression passed as `value`, or a constant. |
+| `Signal.from(Supplier<T> supplier)` | A `ComputedSignal` computed by the lambda, following the signals it reads. |
+| `Signal.batch(Runnable runnable)` | Runs the writes and notifies once at the end. |
+| `get()` | Followed read: value, or default value. `Signal` implements `Supplier<T>`. |
+| `peek()` | Unfollowed read. |
+| `isPresent()` | Followed: `true` when a value is set. |
+| `set(T value)` | Sets the value, notifies when it changed. |
+| `reset()` | Sets the default value. |
+| `publish()` | Notifies without changing the value. |
+| `silent()` | Mutes the next write for the direct subscribers. |
+| `map(Function<T, R> function)` | A `ComputedSignal<R>` derived from this signal. |
+| `subscribe(SignalSubscriber<T> subscriber)`, `unsubscribe(...)` | Adds or removes a subscriber. |
+| `getEventSet()` | The direct subscribers. |
 
-## Change detection
-
-- `set` compares the new value with the previous value (not with the default) using `equals`; two `null`s are equal. An equal value publishes nothing.
-- Because the default is not compared, setting the default on a signal that holds no value publishes it.
-- Mutating an object held by a signal publishes nothing, and setting the same instance again publishes nothing either: call `publish()` after the mutation. The typed collection signals do this for you.
-
-| Method | Description |
-|---|---|
-| `publish()` | Notifies every subscriber with the current value (the value, not the default), changed or not. |
-| `silent()` | Skips the next publish, whether it comes from `set` or `publish`. The flag stays armed until a publish consumes it, so a `set` that publishes nothing leaves it for the next one. |
-
-```java
-final Signal<String> title = new Signal<>("Untitled");
-title.silent().set("Draft");
-title.set("Final");
-```
-
-The first `set` stores `"Draft"` without notifying anyone; the second notifies `"Final"`.
-
-## Subscribing with SignalSubscriber
-
-`SignalSubscriber<T>` is a functional interface: `boolean update(T value)`. Return `true` to stay subscribed, `false` to be removed after this call.
-
-```java
-final StringSignal name = new StringSignal("Guest");
-
-name.subscribe(value -> {
-    System.out.println("Hello " + value);
-    return true;
-});
-
-name.set("Alex");
-```
+### ComputedSignal
 
 | Method | Description |
-|---|---|
-| `subscribe(SignalSubscriber<T> subscriber)` | Adds a subscriber. Adding the same instance twice keeps one subscription. |
-| `unsubscribe(SignalSubscriber<T> subscriber)` | Removes the subscriber; pass the same instance you subscribed. |
-| `getEventSet()` | The live set of subscribers. |
+| --- | --- |
+| `get()`, `peek()`, `isPresent()` | As `Signal`, computing first when a dependency changed. |
+| `isConstant()` | `true` for a `Signal.from(value)` that follows nothing. |
+| `set(...)`, `reset()` | Throw `UnsupportedOperationException`. |
 
-- Subscribers are stored in a set: their notification order is unspecified.
-- A publish notifies the subscribers present when it starts; a subscriber added during a publish is notified from the next one.
-- Subscribers run synchronously, on the thread that calls `set` or `publish`.
+### SignalSubscriber
 
-> WARNING: A signal set from another thread (a network callback, the completion of a `CompletableFuture`) runs its subscribers on that thread, including the watches that rebuild nodes. Set it on the thread that draws the UI instead, for example with `ui.schedule(() -> signal.set(value))` (see [The UI Class](../ui/ui-class.md)).
+`boolean update(T value)`: called with the new value; return `false` to unsubscribe.
 
-## Values from a CompletableFuture
+## Pitfalls
 
-`Signal.of(CompletionStage<T> future)` creates an empty signal that takes the result of the stage when it completes, and publishes it. A stage that fails leaves the signal empty. Combined with `wait`, a node shows its skeleton until the data arrives:
+> WARNING: Mutating an object held by a plain `Signal` (a list read with `get()` then changed) notifies nobody. Use `ListSignal`, `SetSignal`, `MapSignal`, or call `publish()` after the change.
 
-```java
-final Signal<String> motd = Signal.of(CompletableFuture.supplyAsync(() -> "Welcome back"));
-
-TextNode
-.create(100, 100, 400, 40)
-.text(Text.create("", info))
-.wait(motd)
-.<TextNode>onMount(node -> node.getText().text(motd.getOrDefault()))
-.attach(this);
-```
-
-The value is set on the thread that completes the stage (see the warning above). See [Watching Signals](watch.md#waiting-for-a-signal-with-wait-and-onmount) for `wait` and `onMount`.
-
-## Equality
-
-Two signals are equal when they have the same class and their `getOrDefault()` values are equal; `hashCode` follows `getOrDefault()`. A `StringSignal` is never equal to a `Signal<String>`, even with the same value. The typed signals print as `ClassName{value}`, for example `IntegerSignal{3}`.
-
-## Number signals
-
-| Class | Value type | `new X()` default | `new X(v)` | `X.of(v)` |
-|---|---|---|---|---|
-| `BooleanSignal` | `Boolean` | `false` | default `v` | value `v`, default `false` |
-| `IntegerSignal` | `Integer` | `0` | default `v` | value `v`, default `0` |
-| `LongSignal` | `Long` | `0L` | default `v` | value `v`, default `0L` |
-| `FloatSignal` | `Float` | `0F` | default `v` | value `v`, default `0F` |
-| `DoubleSignal` | `Double` | `0D` | default `v` | value `v`, default `0D` |
-
-Every operation reads `getOrDefault()`, computes the result and calls `set`, so it publishes only when the result differs from the stored value (on a signal that holds only its default, the first operation always publishes). The operations return `void`.
-
-| Operation | `BooleanSignal` | `IntegerSignal` | `LongSignal` | `FloatSignal` | `DoubleSignal` |
-|---|---|---|---|---|---|
-| `toggle()` | Yes | | | | |
-| `increment()`, `decrement()` | | Yes | Yes | Yes | Yes |
-| `add(v)`, `subtract(v)`, `multiply(v)` | | Yes | Yes | Yes | Yes |
-| `divide(v)` | | Integer division | Integer division | Yes | Yes |
-| `power(int exponent)` | | Yes | Yes | | |
-
-- `divide(0)` throws an `ArithmeticException` for every number signal, including `FloatSignal` and `DoubleSignal`.
-- `IntegerSignal.power` computes with `Math.pow` and casts the result to `int`.
-- `LongSignal.power` is exact for exponents of 0 and more (it overflows like `long` multiplication) and truncates toward zero for negative exponents (`2` to the power `-1` gives `0`).
-
-## StringSignal
-
-`new StringSignal()` has a `null` default; `new StringSignal(String v)` uses `v` as the default; `StringSignal.of(String v)` holds `v` as its value.
-
-| Operation | Description |
-|---|---|
-| `append(String value)`, `concat(String str)` | Adds text at the end. On an empty signal, the value becomes the argument. |
-| `replace(char oldChar, char newChar)`, `replace(CharSequence target, CharSequence replacement)` | Same as `String.replace`. |
-| `toLowerCase()`, `toUpperCase()`, `trim()` | Same as the `String` methods. |
-| `substring(int beginIndex)`, `substring(int beginIndex, int endIndex)` | Keeps a part of the text. |
-| `intern()` | Replaces the value by its interned instance, an equal string, so nothing is published when the signal already holds a value. |
-
-Every operation except `append` and `concat` throws a `NullPointerException` when the signal has neither value nor default. Like the number signals, they call `set` and publish only when the text differs from the stored value.
-
-## Collection signals
-
-`ListSignal<E>`, `SetSignal<E>` and `MapSignal<K, V>` wrap a collection, publish after every mutation they perform, and expose read methods.
-
-| Creation | Behavior |
-|---|---|
-| `new ListSignal<>()`, `new SetSignal<>()`, `new MapSignal<>()` | No value, no default. Reads throw a `NullPointerException` until a mutation creates the collection. |
-| `new ListSignal<>(List<E> list)`, `new SetSignal<>(Set<E> set)`, `new MapSignal<>(Map<K, V> map)` | The collection is the default. The first mutation copies it into the value, so the collection you passed is never modified. |
-| `new ListSignal<>(Collection<E> values)`, `new SetSignal<>(Collection<E> values)` | The default is a copy of `values` (an `ArrayList` or a `HashSet`). |
-| `ListSignal.of(List<E> list)`, `SetSignal.of(Set<E> set)`, `MapSignal.of(Map<K, V> map)` | The collection is the value itself: mutations write into it, so it must be mutable. |
-
-The copy made by the first mutation is an `ArrayList` for lists, a `LinkedHashSet` for sets and a `LinkedHashMap` for maps.
-
-| Class | Mutations (publish every time) | Reads |
-|---|---|---|
-| `ListSignal<E>` | `add(E e)`, `remove(E e)`, `remove(int index)`, `set(int index, E element)`, `clear()` | `get(int index)`, `indexOf(E e)`, `contains(E e)`, `isEmpty()`, `size()` |
-| `SetSignal<E>` | `add(E e)`, `remove(E e)`, `clear()` | `contains(E e)`, `isEmpty()`, `size()` |
-| `MapSignal<K, V>` | `put(K key, V value)`, `remove(K key)`, `clear()` | `get(K key)`, `containsKey(K key)`, `keySet()`, `values()`, `entrySet()`, `isEmpty()`, `size()` |
-
-- Mutations return what the `java.util` method returns (`boolean`, the previous element or value); `clear()` returns the signal.
-- A mutation publishes even when it changes nothing, such as removing a missing element.
-- Changes made through `getOrDefault()`, `keySet()`, `values()` or `entrySet()` go straight to the collection and publish nothing: call `publish()` afterwards.
-- As with `List`, `remove(1)` on a `ListSignal<Integer>` removes by index.
-
-```java
-final ListSignal<String> cart = new ListSignal<>(new ArrayList<>());
-
-cart.subscribe(items -> {
-    System.out.println(items.size() + " items");
-    return true;
-});
-
-cart.add("Sword");
-cart.add("Shield");
-cart.remove("Sword");
-```
-
-## Deriving a signal from others
-
-Compute a signal from other signals with a subscriber that sets it:
-
-```java
-final IntegerSignal price = new IntegerSignal(10);
-final IntegerSignal quantity = new IntegerSignal(1);
-final IntegerSignal total = new IntegerSignal(10);
-
-final SignalSubscriber<Integer> recompute = value -> {
-    total.set(price.getOrDefault() * quantity.getOrDefault());
-    return true;
-};
-
-price.subscribe(recompute);
-quantity.subscribe(recompute);
-```
-
-## Signals in the rest of JOID
-
-| API | Behavior | Page |
-|---|---|---|
-| `Node.watch(Signal<?> signal, ...)` | Reloads or rebuilds the node when the signal publishes. | [Watching Signals](watch.md) |
-| `Node.wait(ISignal<?> signal)` | Keeps the node unmounted (skeleton) until the signal has a value. | [Watching Signals](watch.md#waiting-for-a-signal-with-wait-and-onmount) |
-| `Node.visible(Signal<?>... signals)` | Shows the node only while every signal's `getOrDefault()` is neither `null` nor `false`: a `BooleanSignal` toggles it. | [Node Fundamentals](../nodes/node-fundamentals.md) |
-| `CheckboxNode.signal(Signal<Boolean> signal)`, `ToggleNode.signal(Signal<Boolean> signal)` | Binds the checked state or the side to the signal, both ways. | [CheckboxNode](../nodes/input/checkbox.md), [ToggleNode](../nodes/input/toggle.md) |
-| `SliderNode.signal(Signal<O> signal)` | Binds the selected value to the signal, both ways. | [SliderNode](../nodes/input/slider.md) |
-| `SwitchNode.signal(Signal<String> signal)` | Binds the name of the current state to the signal, both ways. | [SwitchNode](../nodes/input/switch.md) |
-| `SelectorNode.signal(Signal<V> signal)` | Binds the selected value to the signal, both ways. | [SelectorNode](../nodes/input/selector.md) |
-| `TextFieldNode.signal(Signal<String> signal)`, `MultilineTextFieldNode.signal(Signal<String> signal)` | Binds the text to the signal, both ways. | [TextFieldNode](../nodes/input/text-field.md#binding-a-signal-with-signal), [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) |
-| `IntegerFieldNode.signal(Signal<Integer> signal)` | Binds the value to the signal, both ways. | [TextFieldNode](../nodes/input/text-field.md#integerfieldnode) |
-| `UI.getZoomLevel()`, `UI.getScaledWidth()`, `UI.getScaledHeight()` | `DoubleSignal`s updated when the view changes. | [View and Scaling](../ui/view-and-scaling.md) |
-
-A control follows one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer drives the control nor receives its value, and keeps no reference to it. A node can still watch any number of signals with `watch(...)`.
-
-A node follows its `watch(...)` and `signal(...)` signals only while it is attached: once detached (`remove(...)`, `clearChildren()`, its UI closing), it is unsubscribed, and attaching it again subscribes it again and applies the value published in the meantime. See [Watching Signals](watch.md#conditions-and-lifetime-of-a-watch).
-
-## ISignal
-
-`ISignal<T>` is the interface of `Signal`: `set`, `reset`, `subscribe`, `unsubscribe`, `silent`, `publish`, `getOrDefault` and `isPresent`. `Node.wait(ISignal<?>)` accepts any implementation; `watch` and `visible` take a `Signal`.
+- A `ComputedSignal` cannot be bound to a control with `signal(...)` (it is read-only): pass it to a setter, or bind the source signal.
+- `IntegerSignal.of(5)` has the default `0`: `reset()` gives `0`, not `5`. Use `new IntegerSignal(5)` when `reset()` must return `5`.
+- Writing a signal from inside a computation is allowed but recomputes at the next read: keep computations free of side effects.
+- A signal is a `Supplier`: a method with both `foo(Supplier<T>)` and `foo(Signal<T>...)` overloads takes the `Supplier` one.
 
 ## See also
 
+- [Reactive Properties](reactive-properties.md)
 - [Watching Signals](watch.md)
 - [Stores](stores.md)
-- [Node Fundamentals](../nodes/node-fundamentals.md)
-- [SliderNode](../nodes/input/slider.md)
+- [State and Reactivity](../essentials/state.md)
+- [Custom Nodes](../nodes/custom-nodes.md)

@@ -1,132 +1,141 @@
 # The UI Class
 
-`UI` (`dev.joid.lib.ui.core.UI`) is the root of a screen: it owns a tree of nodes, receives input from its bridge, and draws itself on the 1920×1080 virtual canvas. Extend it for each screen of your application, build its nodes in `init()`, and configure it with the `@UIData` annotation.
+`UI` (`dev.joid.lib.ui.core.UI`) is the root of a screen: it owns a tree of nodes, receives input from its bridge and draws itself on the 1920×1080 virtual canvas. Extend it once per screen, build the nodes in `init()` and configure the class with `@UIData`.
 
 ## A minimal UI
 
 ```java
-@UIData(backgroundColor = "#000000A0", zoomable = false)
-public final class MenuUI extends UI {
+@UIData(backgroundColor = "#00000080", zoomable = false)
+public class MenuUI extends UI {
 
-    @Override
-    public void init() {
-        RectNode.create(760, 400, 400, 280).color(Color.DARKGRAY).attach(this);
+	@Override
+	public void init() {
+		RectNode.create(760, 390, 400, 300).color(Color.decode("#DDDDDD")).attach(this);
 
-        this.keybind(() -> JOID.close(this), Key.Q, Key.LEFT_CONTROL);
-    }
+		RectNode
+		.create(800, 590, 320, 60)
+		.color(Color.decode("#999999"))
+		.hoveredColor(Color.GRAY)
+		.onClick((node, mouseX, mouseY, clickType) -> JOID.close(this))
+		.attach(this);
 
-    @Override
-    public void update() {
-        if (this.getFps() > 0D && this.getFps() < 30D) {
-            System.err.println("Slow menu: " + this.getFps() + " fps");
-        }
-    }
+		this.keybind(() -> JOID.close(this), Key.LEFT_CONTROL, Key.Q);
+	}
 
 }
 ```
 
-Open it with `JOID.open(new MenuUI())`; see [Opening and Closing UIs](managing-uis.md). `UI` has a public no-argument constructor and no abstract method: override only the hooks you need.
+![A light gray card with a darker gray button at its bottom](../images/ui-class-menu.png "MenuUI: a card and a button that closes the UI; Ctrl + Q closes it too.")
+
+`UI` is abstract but has no abstract method: override only the hooks you need. Open the UI with `JOID.open(new MenuUI())`, see [Opening and Closing UIs](managing-uis.md). Nodes, keybinds and tasks belong in `init()`: anything added in the constructor is discarded by the first load.
 
 ## Lifecycle
 
+![Boxes for the construction, the load with init(), the frames, onClose() and properlyClose(), with reload, renew, resize and reopen branching from the frames](../images/diagram-ui-lifecycle.png "The life of a UI: reload keeps the instance, renew replaces it, a resize keeps the zoom, a reopen loads the nodes again without init().")
+
 | Stage | Trigger | What happens |
 | --- | --- | --- |
-| Construction | `new MyUI()` | Reads `@UIData`, `@UIDataDebug` and `@UIDataPopup` from the class or its nearest annotated superclass, creates the view and, for a popup, the default transition. No node exists yet. |
-| First load | The bridge calls `load(width, height)`, usually from `JOID.open` | Sizes the view to the window, restores the [`@UIProperty`](../state/properties.md) fields, clears any node, keybind or task added before, runs `init()`, marks the UI initialized, then starts the In state of its transition. In dev mode, also sets up the inspector, the profiler and hot reload. |
-| Frames | The bridge | Input hooks, then `update()`, then the draw hooks. See [Core Concepts](../getting-started/core-concepts.md#the-frame-lifecycle). |
-| Resize | The bridge calls `load(width, height)` again | Resizes the view only; `init()` does not run again. |
-| Reload | `reload()`, dev shortcuts, hot reload | Detaches every node, clears the keybinds and scheduled tasks, restores the `@UIProperty` fields, runs `init()` again and replays the In transition. The zoom is kept. |
-| Close | `JOID.close(ui)`, `Escape`, the bridge | `onClose()` asks your `close()` hook; if it agrees, plays the Out transition, then `properlyClose()` releases the UI and the bridge removes it. |
-| Reopen | `JOID.open(ui)` on a closed instance, the bridge calls `load(width, height)` | `init()` does not run again: every top-level node is loaded again (`init` and `onInit` run again) and follows its signals again. |
+| Construction | `new MyUI()` | Reads `@UIData`, `@UIDataDebug` and `@UIDataPopup` (each one on the class or its nearest annotated superclass), creates the view and, for a popup, its default transition. No node exists yet. |
+| First load | The bridge adds the UI and calls `load(width, height)` | Sizes the view to the window at zoom 1, restores the [`@UIProperty`](../state/properties.md) fields, clears what was added before, runs `init()`, then starts the In state of the [transition](transitions.md). In dev mode, also adds the DevNode and starts hot reload. |
+| Frames | The bridge | Input hooks, `update()`, then the draw. See [Core Concepts](../getting-started/core-concepts.md). |
+| Resize | `UIBridge.load()`, called by the backend when the window changes | `load(width, height, zoom)` resizes the view and keeps the current zoom. `init()` does not run again. |
+| Reload | `reload()`, Ctrl + R or F5, the DevNode button, hot reload | Saves then restores the `@UIProperty` fields, applies the annotation values changed since their last read, detaches every node, clears the keybinds and tasks, runs `init()` again and replays the In transition. Same instance: fields, signals and zoom are kept. |
+| Renew | `renew()`, Ctrl + Shift + R or Shift + F5 | Creates a new instance with the constructor without argument, releases the current instance with `properlyClose()`, then removes it from the bridge and adds the new one (no `close()`, no Out transition). New fields, new signals, zoom 1. Returns the new instance. |
+| Close | `JOID.close(ui)`, Escape, the bridge | `onClose()` asks your `close()` hook; if it agrees, plays the Out transition, then `properlyClose()` releases the UI and the bridge removes it. |
+| Reopen | `JOID.open(ui)` on a closed instance | `init()` does not run again: every top-level node is loaded again and follows its signals again. |
 
-Everything you add in the constructor (nodes, keybinds, tasks) is discarded by the first load: add them in `init()`. During `init()`, `UI.getCurrent()` returns the UI being initialized; it returns `null` the rest of the time.
+`properlyClose()` detaches every node (which ends their drags, hovers and focus and unsubscribes them from their signals), stops the hot reload watcher, saves every [store](../state/stores.md), destroys the local stores of the UI and saves its `@UIProperty` fields. `JOID.close` and the Out transition call it; call it yourself only from a bridge that removes a UI without `JOID.close`.
 
-`properlyClose()` detaches every node, which unsubscribes them from their signals, stops the hot reload watcher, saves every store, destroys the local stores of the UI and saves its `@UIProperty` fields. `JOID.close` and the out transition call it; call it yourself only from a bridge that removes a UI without going through `JOID.close`.
+During `init()`, `UI.getCurrent()` returns the UI being initialized; it returns `null` the rest of the time.
 
-## Overridable hooks (IUI)
+## Overridable hooks
 
 `UI` implements `IUI` (`dev.joid.lib.ui.core.IUI`), whose methods all have empty defaults. Mouse coordinates are in canvas units.
 
 | Hook | Called |
 | --- | --- |
 | `void init()` | On the first load and on each reload. Build the nodes, keybinds and tasks here. |
-| `boolean close()` | When the UI is asked to close (`JOID.close`, `Escape`, a bridge). Return `false` to keep it open. Default `true`. Not called by `JOID.close(ui, true)` nor `JOID.open(ui, true)`. |
-| `void update()` | Every frame from `UIBridge.update()`, after the nodes have updated. |
+| `boolean close()` | When the UI is asked to close (`JOID.close`, Escape, a bridge). Return `false` to keep it open. Default `true`. Not called by the `force` variants of `JOID.open` and `JOID.close`. |
+| `void update()` | Every frame, after the nodes have updated. |
 | `void drawBackground(double mouseX, double mouseY)` | Every frame, after the `@UIData` background and before the transition and the view transform: it draws in the host's coordinate space (window pixels with the projection of the [Quick Start](../getting-started/quick-start.md)), not on the canvas. |
 | `void preDraw(double mouseX, double mouseY)` | Inside the view, after the nodes with a negative `zindex` and before the nodes with a `zindex` from 0 to 99. |
 | `void postDraw(double mouseX, double mouseY)` | Inside the view, after the nodes with a `zindex` from 0 to 99 and before the nodes with a `zindex` of 100 or more. |
-| `void mousePressed(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | After the nodes received the press (those with a positive `zindex` first). |
-| `void mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | After the nodes received the drag. `deltaTime` is given by the host (milliseconds since the press in the bundled demo windows). |
+| `void mousePressed(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | After the nodes received the press (the nodes with a positive `zindex` first). |
+| `void mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | After the nodes received the drag. `deltaTime` comes from the host. |
 | `void mouseReleased(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | After the nodes received the release. |
 | `void mouseScroll(double mouseX, double mouseY, int value, InternalContext context)` | After the nodes received the scroll. |
 | `void keyPressed(char c, Key key, InternalContext context)` | Last, after the nodes, the keybinds, the zoom keys and the dev keys. |
 
-The input hooks are always called, even when a node already consumed the event: check `context.isCancelled()` before acting, and call `context.cancel()` to consume the event so the UIs below do not receive it. See [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
+The input hooks run even when a node already consumed the event: check `context.isCancelled()` before acting, and call `context.cancel()` to consume the event so the UIs below do not receive it. See [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
 
 ```java
 @Override
 public void keyPressed(final char c, final Key key, final InternalContext context) {
-    if (!context.isCancelled() && key == Key.TAB) {
-        context.cancel(() -> JOID.close(this));
-    }
+	if (!context.isCancelled() && key == Key.TAB) {
+		context.cancel(() -> JOID.close(this));
+	}
 }
 ```
 
-`draw`, `onUpdate`, `onClose`, `load` and the `onMouseXxx`/`onKeyPressed` methods are `final`: they are the entry points bridges call, and they run the hooks above.
-
 ## Configuring a UI with @UIData
 
-`@UIData` (`dev.joid.lib.ui.core.data`) sets the options of a UI class. JOID looks for it on the class, then on its superclasses, and uses the first one found (attributes are not merged).
+`@UIData` (`dev.joid.lib.ui.core.data`) sets the options of a UI class. JOID reads it on the class, then on its superclasses, and uses the first one found (attributes are not merged).
 
 ```java
 @UIData(zlevel = 10D, background = false, closeable = false, anchorX = Align.END, anchorY = Align.START)
-public final class HudUI extends UI {}
+public class HudUI extends UI {}
 ```
 
 | Attribute | Default | Effect |
 | --- | --- | --- |
-| `active` | `true` | When `false`, `UIBridge` sends the UI no input; it is still updated and drawn. |
+| `active` | `true` | When `false`, the bridge sends the UI no input; it is still updated and drawn. |
 | `visible` | `true` | When `false`, the UI is neither drawn nor sent input; it is still updated. |
-| `closeable` | `true` | When `true`, `Escape` closes the UI. `JOID.close` works either way. |
-| `zoomable` | `true` | Enables the `Ctrl`/`Alt` + `+`/`-` zoom keys. |
+| `closeable` | `true` | When `true`, Escape closes the UI (after its nodes and keybinds had the chance to consume it). `JOID.close` works either way. |
+| `zoomable` | `true` | Enables the Ctrl or Alt + `+` / `-` zoom keys. |
 | `background` | `true` | Fills the whole window with `backgroundColor` before drawing the UI. |
 | `backgroundColor` | `"#101010c0"` | Any string accepted by `Color.decode`: `#RRGGBB`, `#RRGGBBAA`, `rgb(...)`, `rgba(...)`, `gradient(...)`. See [Colors and Gradients](../styling/colors.md). |
-| `projection` | `true` | When `true`, the UI sets its own orthographic projection for the canvas. When `false`, it draws with the projection the host has set. |
-| `zlevel` | `0D` | Order among the UIs of a bridge: higher is drawn later and receives input first. Also offsets the depth of the UI. |
-| `anchorX` | `Align.CENTER` | Horizontal anchor of the canvas in the window and pivot of the scaling. See [View and Scaling](view-and-scaling.md). |
+| `projection` | `true` | When `true`, the UI sets its own orthographic projection for the canvas. When `false`, it draws with the projection set by the host. |
+| `zlevel` | `0D` | Order among the UIs of a bridge: higher is drawn later and receives input first. Also offsets the depth of the UI. See [Several UIs at once](managing-uis.md#several-uis-at-once-with-zlevel). |
+| `anchorX` | `Align.CENTER` | Horizontal anchor of the canvas in the window and pivot of the zoom. See [View and Scaling](view-and-scaling.md). |
 | `anchorY` | `Align.CENTER` | Vertical anchor. |
-| `pause` | `true` | Not read by JOID. A host bridge can read `ui.getData().pause()` to pause its own simulation while the UI is open. |
 
-`getData()` returns the options as a `UIDataObject`, whose setters (`setActive`, `setVisible`, `setCloseable`, `setZoomable`, `setBackground`, `setBackgroundColor(String)`, `setProjection`, `setZlevel`, `setPause`, `setAnchorX`, `setAnchorY`) change them at runtime and return the object. `getBackgroundColor()` returns the decoded `Color`, and `getAnchorPositionX()`/`getAnchorPositionY()` the anchor in canvas units (0, 960 or 1920; 0, 540 or 1080).
+### Changing the options at runtime with getData
+
+`getData()` returns the options as a `UIDataObject`. Its setters (`setActive`, `setVisible`, `setCloseable`, `setZoomable`, `setBackground`, `setBackgroundColor(String)`, `setProjection`, `setZlevel`, `setAnchorX`, `setAnchorY`) return the object, and every change applies from the next frame: the bridge sorts its UIs again, the view reads the anchors again.
 
 ```java
 this.getData().setCloseable(false).setBackground(false);
 ```
 
-> NOTE: The view reads the anchors when the UI is constructed, and the bridge orders its UIs when it adds them: change `anchorX`, `anchorY` and `zlevel` through the annotation, or before opening the UI.
+The getters use the annotation names (`active()`, `zlevel()`, `anchorX()`...); `getBackgroundColor()` returns the decoded `Color`, and `getAnchorPositionX()` / `getAnchorPositionY()` the anchor in canvas units (0, 960 or 1920; 0, 540 or 1080).
 
-The other annotations of a UI are [`@UIDataPopup`](managing-uis.md#popups-with-uidatapopup) and [`@UIDataDebug`](../getting-started/dev-tools.md#profiler).
+A reload applies only the annotation values that changed since their last read: a value set at runtime survives Ctrl + R as long as you do not edit that attribute of the annotation. `getData()`, `getDebug()` and `getPopup()` keep the same object for the whole life of the UI. The other annotations are [`@UIDataPopup`](managing-uis.md#popups-with-uidatapopup) and [`@UIDataDebug`](../getting-started/dev-tools.md) (`profiler`, `hotreload`, both `true` by default).
 
-## Adding nodes
+## Adding nodes with add
 
-`add(Node... nodes)` loads each node into the UI and adds it to the top-level node list; `node.attach(ui)` does the same. Top-level nodes are kept in `getNodeList()`, an `IndexedConcurrentList<Node>` sorted by `zindex`. See [Node Fundamentals](../nodes/node-fundamentals.md).
+`add(Node... nodes)` loads each node into the UI and adds it to the top-level nodes; `node.attach(ui)` does the same. Top-level nodes are kept in `getNodeList()`, sorted by `zindex`. See [Node Fundamentals](../nodes/node-fundamentals.md).
 
 ```java
-this.add(RectNode.create(0, 0, 1920, 80).color(Color.BLACK), RectNode.create(0, 1000, 1920, 80).color(Color.BLACK));
+this.add(RectNode.create(0, 0, 1920, 80).color(Color.DARKGRAY), RectNode.create(0, 1000, 1920, 80).color(Color.DARKGRAY));
 ```
 
 ## Keybinds with keybind
 
-`keybind(Runnable runnable, Key... keys)` runs `runnable` when a key is pressed while all `keys` are down:
+`keybind(Runnable runnable, Key... keys)` runs `runnable` when a key of the set is pressed while all its keys are down:
 
 ```java
-this.keybind(() -> JOID.open(new SettingsUI()), Key.S, Key.LEFT_CONTROL);
+this.keybind(() -> JOID.open(new SettingsUI()), Key.LEFT_CONTROL, Key.S);
 ```
 
-- Keybinds are checked after the nodes, only if no node consumed the key. A matching keybind consumes the key; every matching keybind runs.
-- Each call adds a keybind. The keybinds are cleared before each `init()`, so register them in `init()`.
-- `Escape` closes a closeable UI before the keybinds see it; bind it only on a UI with `closeable = false`, or one whose `close()` returns `false`.
-- `getKeybindMap()` returns the registered keybinds.
+- A keybind is identified by its set of keys, in any order: `keybind(r, Key.LEFT_CONTROL, Key.S)` then `keybind(r2, Key.S, Key.LEFT_CONTROL)` replaces the first one.
+- It fires only when the pressed key is one of its keys: holding Ctrl + S then pressing A does not fire Ctrl + S again.
+- Keybinds run after the nodes, only if no node consumed the key. A matching keybind consumes the key; every matching keybind runs.
+- The keybinds are cleared before each `init()`: register them in `init()`. `getKeybindMap()` returns them as a `Map<Set<Key>, Runnable>`.
+- A closeable UI sees Escape before it closes: a keybind on `Key.ESCAPE` consumes it and keeps the UI open.
+
+```java
+this.keybind(() -> this.open = !this.open, Key.ESCAPE);
+```
 
 ## Scheduled tasks with schedule
 
@@ -141,99 +150,110 @@ this.schedule(() -> System.out.println("Two seconds after init"), 2000L);
 this.schedule(() -> System.out.println("Every second"), 0L, 1000L);
 ```
 
-Tasks run at the start of `draw`, on the thread that draws the UI, and are timed with the clock bridge. The task list is thread-safe, so `schedule` is the way to hand work from another thread to the UI. Tasks are cleared before each `init()`. `getScheduledTaskList()` returns the pending `UIScheduledTask` objects.
+Tasks run at the start of the draw, on the thread that draws the UI, timed with the clock bridge. The task list is thread-safe, so `schedule` is the way to hand work from another thread to the UI. Tasks are cleared before each `init()`.
 
-## Reloading with reload
+## Reloading with reload and renew
 
-`reload()` rebuilds the UI: it detaches all nodes, clears keybinds and tasks, runs `init()` again and replays the In transition, keeping the size and zoom. Prefer [watching signals](../state/watch.md) to rebuild only the nodes that depend on a value.
+| Method | Shortcut (dev mode) | Instance | Fields and signals | Zoom |
+| --- | --- | --- | --- | --- |
+| `reload()` | Ctrl + R, F5 | Same | Kept | Kept |
+| `renew()` | Ctrl + Shift + R, Shift + F5 | New, from the constructor without argument (a private one works) | New | 1 |
+
+`renew()` throws an `IllegalStateException` when the UI is not open, when its class has no constructor without argument (anonymous class, inner class that is not static) or when that constructor fails; from the keyboard, the message is printed as `[JOID] ...` and the UI stays open. Signals declared as locals in `init()` start from zero on every reload; signals held in fields keep their value until a renew. See [Developer Tools](../getting-started/dev-tools.md).
 
 ## Masks with mask and startMask
 
-Masks clip drawing to a rectangle or to the opaque pixels of a resource, using the stencil buffer. Use them inside draw hooks or custom nodes:
+Masks clip drawing to a rectangle or to the opaque pixels of a resource, with the stencil buffer. Use them in draw hooks or custom nodes:
 
 ```java
 @Override
 public void postDraw(final double mouseX, final double mouseY) {
-    this.mask(100, 100, 400, 200, () -> DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.RED, 80D));
+	this.mask(100, 100, 400, 200, () -> DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.GRAY, 80D));
 }
 ```
 
-| Method | Description |
-| --- | --- |
-| `mask(double x, double y, double width, double height, Drawing drawing)` | Runs `drawing` clipped to the rectangle. |
-| `mask(double x, double y, double width, double height, Drawing drawing, boolean enabled)` | Same; when `enabled` is `false`, runs `drawing` without clipping. |
-| `mask(Resource resource, double x, double y, double width, double height, Drawing drawing)` | Runs `drawing` clipped to the pixels of `resource`, drawn in the rectangle, whose alpha is at least 0.5. |
-| `mask(Resource resource, double x, double y, double width, double height, Drawing drawing, boolean enabled)` | Same, with the `enabled` switch. |
-| `startMask(double x, double y, double width, double height)` | Starts a rectangle mask; everything drawn until `stopMask()` is clipped. |
-| `startMask(Resource resource, double x, double y, double width, double height)` | Starts a resource mask. |
-| `stopMask()` | Ends the last started mask. Throws `EmptyStackException` when no mask is active. |
-
-Masks nest: an inner mask clips to the intersection with the outer ones. The `mask(...)` methods stop their mask even when `drawing` throws. `Drawing` is the functional interface `dev.joid.lib.render.context.Drawing` (`void draw()`). For a mask on a node, use [`MaskNodeEffect`](../styling/mask.md).
+Masks nest: an inner mask clips to the intersection with the outer ones. The `mask(...)` methods stop their mask even when the drawing throws. For a mask on a node, use [`MaskNodeEffect`](../styling/mask.md).
 
 ## Smoothing values with lerpByFramerate
 
-`lerpByFramerate(double value, double target, double speed, double snapDiff, boolean snap)` moves `value` towards `target` by a frame-rate independent step: at 60 fps and `speed` 1, a third of the remaining distance per frame, never past the target. When the distance is `snapDiff` or less, it returns `target` if `snap` is `true`, `value` otherwise. Before the first frame, it returns `value`.
+`lerpByFramerate(double value, double target, double speed, double snapDiff, boolean snap)` moves `value` towards `target` by a step independent of the frame rate: at 60 fps and `speed` 1, a third of the remaining distance per frame, never past the target. Within `snapDiff` of the target, it returns `target` when `snap` is `true`, `value` otherwise.
 
 With `panelX` a `double` field and `open` a `boolean` field of the UI:
 
 ```java
 @Override
 public void update() {
-    this.panelX = this.lerpByFramerate(this.panelX, this.open ? 0D : -400D, 1D, 0.5D, true);
+	this.panelX = this.lerpByFramerate(this.panelX, this.open ? 0D : -400D, 1D, 0.5D, true);
 }
 ```
 
-## Mouse, frame time and frame rate
-
-| Getter | Returns |
-| --- | --- |
-| `double getMouseX()`, `double getMouseY()` | The mouse position in canvas units, as sampled at the last draw. |
-| `double getFrameTime()` | Duration of the last frame in milliseconds, from the clock bridge (`1000/60` on the first frame, `0` before). |
-| `double getFps()` | Frames drawn per second, updated once per second (`0` during the first second). |
-| `long getRenderTime()` | Duration of the last `draw` in nanoseconds. |
-| `long getLastFrame()` | Clock time of the last frame, in nanoseconds. |
-| `boolean isOnTop()` | Whether the bridge reported the UI as the top one at the last draw. |
-| `boolean isInitialized()` | Whether `init()` has run. |
-| `boolean isClosed()` | Whether `properlyClose()` ran since the last `load(width, height)`. |
-
-`UI.isCtrlKeyDown()`, `UI.isShiftKeyDown()` and `UI.isAltKeyDown()` are static helpers that return `true` when the left or right modifier is down; see [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
-
-## Stores and properties
-
-- `useStore(Class<T> clazz, Object... args)` returns the [store](../state/stores.md) of the given class, creating it with `args` the first time. A store with a local context is kept per UI and destroyed when the UI closes; other stores are shared.
-- Fields annotated with [`@UIProperty`](../state/properties.md) are restored before each `init()` and saved when the UI closes, in `<configDir>/property/<class name>.property`.
+For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 
 ## Reference
 
-| Member | Description |
+### Methods
+
+| Method | Description |
 | --- | --- |
 | `static UI getCurrent()` | The UI running `init()`, or `null`. |
-| `UIDataObject getData()` | The `@UIData` options. |
-| `UIDataDebugObject getDebug()` | The `@UIDataDebug` options. |
-| `UIDataPopupObject getPopup()` | The `@UIDataPopup` options. |
+| `add(Node... nodes)` | Loads and adds top-level nodes. |
+| `keybind(Runnable runnable, Key... keys)` | Registers a keybind. |
+| `schedule(Runnable)`, `schedule(Runnable, long delay)`, `schedule(Runnable, long delay, long period)` | Schedules a task. |
+| `reload()` | Runs `init()` again on the same instance. |
+| `UI renew()` | Replaces the open UI with a new instance and returns it. |
+| `zoom(double zoom)` | Sets the zoom, clamped to its limits. See [View and Scaling](view-and-scaling.md). |
+| `UI setTransition(Transition transition)`, `Transition getTransition()` | The open and close animation, `null` for none. See [Transitions](transitions.md). |
+| `T useStore(Class<T> clazz, Object... args)` | The [store](../state/stores.md) of that class, created with `args` the first time; a local store is kept per UI. |
+| `mask(double x, double y, double width, double height, Drawing drawing)`, `mask(..., Drawing drawing, boolean enabled)` | Runs `drawing` clipped to the rectangle; with `enabled` `false`, without clipping. |
+| `mask(Resource resource, double x, double y, double width, double height, Drawing drawing)`, `mask(Resource, ..., boolean enabled)` | Runs `drawing` clipped to the pixels of `resource` drawn in the rectangle whose alpha is above 0.5. |
+| `startMask(double x, double y, double width, double height)`, `startMask(Resource resource, double x, double y, double width, double height)` | Starts a mask; everything drawn until `stopMask()` is clipped. |
+| `stopMask()` | Ends the last started mask. Throws `EmptyStackException` when no mask is active. |
+| `double lerpByFramerate(double value, double target, double speed, double snapDiff, boolean snap)` | See [Smoothing values](#smoothing-values-with-lerpbyframerate). |
+| `drawHover(List<String> lines, double mouseX, double mouseY)` | Draws a text tooltip through the bridge. Override it to draw the tooltips of this UI yourself. See [Hover and Tooltips](../interactions/hover.md). |
+| `static isCtrlKeyDown()`, `isShiftKeyDown()`, `isAltKeyDown()` | Whether the left or right modifier is down. |
+
+### Getters
+
+| Getter | Returns |
+| --- | --- |
+| `UIDataObject getData()`, `UIDataDebugObject getDebug()`, `UIDataPopupObject getPopup()` | The options of the annotations, changeable at runtime. |
+| `getAnnotatedData()`, `getAnnotatedDebug()`, `getAnnotatedPopup()` | The last read of the annotations, compared on reload. |
 | `IndexedConcurrentList<Node> getNodeList()` | The top-level nodes. |
-| `Map<Key[], Runnable> getKeybindMap()` | The keybinds. |
+| `Map<Set<Key>, Runnable> getKeybindMap()` | The keybinds. |
 | `List<UIScheduledTask> getScheduledTaskList()` | The pending tasks. |
 | `Map<Class<? extends UIStore>, UIStore> getStoreMap()` | The local stores of the UI. |
-| `UIView getView()` | The view that maps the canvas to the window. See [View and Scaling](view-and-scaling.md). |
-| `DoubleSignal getZoomLevel()` | The zoom, as a signal. |
-| `DoubleSignal getScaledWidth()`, `DoubleSignal getScaledHeight()` | The visible size of the canvas, in canvas units, as signals. |
-| `double getWidth()`, `double getHeight()` | The window size the UI was loaded with, in window pixels. |
-| `void zoom(double zoom)` | Sets the zoom, clamped to its limits. |
-| `Transition getTransition()`, `UI setTransition(Transition transition)` | The open and close animation; `null` for none. See [Transitions](transitions.md). |
+| `UIView getView()` | The view that maps the canvas to the window. |
+| `DoubleSignal getZoomLevel()`, `getScaledWidth()`, `getScaledHeight()` | The zoom and the visible size of the canvas, as signals. |
+| `double getWidth()`, `double getHeight()` | The window size, in window pixels. |
+| `double getMouseX()`, `double getMouseY()` | The mouse in canvas units, as sampled at the last draw. |
+| `double getFrameTime()` | Duration of the last frame in milliseconds (`1000 / 60` on the first frame). |
+| `double getFps()` | Frames per second, updated once per second (`0` during the first second). |
+| `long getRenderTime()`, `long getLastFrame()` | Duration of the last draw and clock time of the last frame, in nanoseconds. |
 | `IUIBridge getBridge()` | The bridge that handles this UI, or `null`. |
-| `int getIndex()` | `zlevel` rounded down, used to order the UIs of a bridge. |
-| `void drawHover(List<String> lines, double mouseX, double mouseY)` | Draws a text tooltip; delegates to the bridge's `drawHover`. Override it to draw the tooltips of this UI yourself. See [Hover and Tooltips](../interactions/hover.md). |
-| `Node getDevNode()` | The inspector in dev mode, otherwise `null`. |
-| `double getRenderPipelineLevel()`, `void setRenderPipelineLevel(double level)` | Depth offset for the nodes drawn next; nodes that draw in depth, such as `ModelNode`, raise it so later nodes stay in front. Reset to 0 at each draw. |
-| `FileAlterationMonitor getFileMonitor()` | The hot reload watcher, or `null`. |
-| `getStencilStack()` | The stack of active masks (its element type is private). |
-| `void load(double width, double height)`, `void load(double width, double height, double zoom)` | For bridges: sizes the UI to the window (zoom 1 for the first form) and initializes it on first call. |
-| `boolean onMousePressed(ClickType)`, `onMouseReleased(ClickType)`, `onMouseDragged(ClickType, long)`, `onMouseScroll(int)`, `onKeyPressed(char, Key)` | For bridges: dispatch an event to the nodes and the hooks; return `true` when it was consumed. They return `false` without dispatching before the first load. |
-| `void onUpdate()` | For bridges: updates the nodes, then calls `update()`. |
-| `void draw(double mouseX, double mouseY)` | For bridges: draws the UI; the mouse is in window coordinates. |
-| `boolean onClose()` | For bridges and `JOID.close`: asks `close()`, starts the Out transition, returns `true` when the UI can be removed now. |
-| `void properlyClose()` | Releases the UI (see [Lifecycle](#lifecycle)). |
+| `int getIndex()` | `zlevel` rounded down: the key that orders the UIs of a bridge. |
+| `boolean isOnTop()` | Whether the bridge reported the UI as the top one at the last draw. |
+| `boolean isInitialized()`, `boolean isClosed()` | Whether `init()` has run; whether `properlyClose()` ran since the last load. |
+| `boolean isReloadPending()` | Whether hot reload detected a change that the next draw reloads. |
+| `Node getDevNode()` | The DevNode in dev mode, otherwise `null`. |
+| `double getRenderPipelineLevel()`, `setRenderPipelineLevel(double)` | Depth offset for the nodes drawn next, reset to 0 at each draw; a custom node that draws in depth raises it. |
+
+### For bridges
+
+| Method | Description |
+| --- | --- |
+| `load(double width, double height)`, `load(double width, double height, double zoom)` | Sizes the UI to the window (zoom 1 for the first form) and initializes it on the first call. |
+| `draw(double mouseX, double mouseY)` | Draws the UI; the mouse is in window coordinates. Runs a pending hot reload first. |
+| `onUpdate()` | Updates the nodes, then calls `update()`. |
+| `onMousePressed(ClickType)`, `onMouseReleased(ClickType)`, `onMouseDragged(ClickType, long)`, `onMouseScroll(int)`, `onKeyPressed(char, Key)` | Dispatch an event to the nodes and the hooks; return `true` when it was consumed, `false` before the first load. |
+| `boolean onClose()` | Asks `close()`, starts the Out transition, returns `true` when the bridge can remove the UI at once. |
+| `properlyClose()` | Releases the UI (see [Lifecycle](#lifecycle)). |
+
+## Pitfalls
+
+- Build in `init()`, never in the constructor: the first load clears the nodes, keybinds and tasks added before.
+- Ctrl + R keeps the instance: a field initialized in the constructor or in its declaration keeps its value. Use Ctrl + Shift + R to start from a new instance.
+- A UI that `renew()` must recreate needs a constructor without argument; an anonymous UI can only be reloaded.
+- `drawBackground` draws in the host's space, not on the canvas: draw canvas content in `preDraw` / `postDraw` or with nodes.
 
 ## See also
 
@@ -241,4 +261,5 @@ public void update() {
 - [View and Scaling](view-and-scaling.md)
 - [Transitions](transitions.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md)
+- [Persistent UI Properties](../state/properties.md)
 - [UI Bridge](../integration/ui-bridge.md)

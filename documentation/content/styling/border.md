@@ -5,8 +5,8 @@
 ```java
 @Override
 public void init() {
-    RectNode.create(100, 100, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F)).attach(this);
-    RectNode.create(340, 100, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F, BorderMode.IN)).attach(this);
+	RectNode.create(100, 100, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F)).attach(this);
+	RectNode.create(340, 100, 200, 120).color(Color.ORANGE).effect(BorderNodeEffect.create(Color.WHITE, 4F, BorderMode.IN)).attach(this);
 }
 ```
 
@@ -36,7 +36,7 @@ An outer border extends the rendering beyond the node's rectangle. The effect re
 
 `fill(boolean)` (default `true`) decides whether an outer border covers the four corner areas that lie diagonally outside the node's rectangle. With `fill(false)`, these areas stay empty: on a rectangle, the outer border has a square notch at each corner. It has no visible effect on an inner border.
 
-`RectNode.border(color, stroke, fill)` passes its `fill` argument to this setting.
+`RectNode.borderFill(...)` sets it for the border of a [RectNode](../nodes/visual/rect.md).
 
 ![A gray rectangle with a thick white border whose outer corners are rounded, next to the same border with empty corners](../images/rect-border-fill.png "fill(true) on the left, fill(false) on the right, with a 12-unit border.")
 
@@ -60,10 +60,10 @@ RectNode
 | --- | --- |
 | `color(Color color)`, `color(Supplier<Color> color)` | Replaces the color. |
 | `width(float width)`, `width(Supplier<Float> width)` | Replaces the width. |
-| `mode(BorderMode mode)` | Replaces the mode. |
-| `fill(boolean fill)` | Fills the outer corners or not. |
+| `mode(BorderMode mode)`, `mode(Supplier<BorderMode> mode)` | Replaces the mode. |
+| `fill(boolean fill)`, `fill(Supplier<Boolean> fill)` | Fills the outer corners or not. |
 
-Suppliers are read every frame, which animates the border. Add the effect in `self(...)`, which hands you the node (see [Effects](effects.md#applying-effects-with-effect)):
+Every setter takes a value, a native expression that reads signals, a signal or a lambda (see [Reactive Properties](../state/reactive-properties.md)); a lambda is read every frame, which animates the border. Add the effect in `self(...)`, which hands you the node (see [Effects](effects.md#applying-effects-with-effect)):
 
 ```java
 RectNode
@@ -102,7 +102,7 @@ With the default `SELF` scope, the border outlines what the node draws itself; c
 
 ## RectNode borders
 
-`RectNode.border(...)` (see [RectNode](../nodes/visual/rect.md)) is a shortcut that installs a `BorderNodeEffect` on the node, with the hovered border color animated by the hover progress. Since a node holds one effect per class, the two replace each other: a `BorderNodeEffect` added after `border(...)` replaces it, `border(...)` called afterwards replaces yours, and `border(...)` with a stroke of `0` removes any `BorderNodeEffect`.
+The border setters of [RectNode](../nodes/visual/rect.md) (`borderColor`, `hoveredBorderColor`, `borderStroke`, `borderFill`) install a `BorderNodeEffect` on the node at the first call, with the hovered border color animated by the hover progress; it is drawn only while the stroke is above `0`. Since a node holds one effect per class, the two replace each other: a `BorderNodeEffect` added after the border setters replaces theirs, and a border setter called afterwards replaces yours.
 
 A node has only one border. For a double border, nest a second node.
 
@@ -111,11 +111,11 @@ A node has only one border. For a double border, nest a second node.
 | Method | Description |
 | --- | --- |
 | `create(Color, float)`, `create(Color, float, BorderMode)` | Factories. |
-| `color(...)`, `width(...)`, `mode(BorderMode)`, `fill(boolean)` | Setters. |
-| `getColorSupplier()`, `getWidthSupplier()` | The suppliers of the color and the width. |
+| `color(...)`, `width(...)`, `mode(...)`, `fill(...)` | Setters (value or `Supplier`). |
+| `getColorSupplier()`, `getWidthSupplier()`, `getModeSupplier()`, `getFillSupplier()` | The sources of the settings. |
 | `getMode()` | The mode. |
 | `isFill()` | Whether the outer corners are filled. |
-| `priority(int)`, `scope(NodeEffectScope)` | Inherited, see [Effects](effects.md). |
+| `priority(...)`, `scope(...)` | Inherited, see [Effects](effects.md). |
 
 | `BorderMode` | Description |
 | --- | --- |
@@ -123,6 +123,12 @@ A node has only one border. For a double border, nest a second node.
 | `IN` | Inside the drawn shape. |
 
 Shader pass priority: 200 (after rounding, circle and blur). Expansion: `width + 2`.
+
+## Pitfalls
+
+- The edge comes from the opaque pixels: a node that draws nothing (a transparent `RectNode`, a `ContainerNode`) gets no border. Use `DrawUtils.SHAPE.drawBorder` in a layer for an outline around an empty box.
+- `fill(false)` leaves the outer corners open; it does not remove the fill of the node.
+- A node has one `BorderNodeEffect`: the border setters of `RectNode` and your own effect replace each other.
 
 ## See also
 

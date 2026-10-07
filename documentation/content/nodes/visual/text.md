@@ -18,34 +18,39 @@ TextNode.create(100, 100).text(Text.create("Hello JOID", TextInfo.create(font, 2
 A label centered in a button:
 
 ```java
-RectNode.create(100, 100, 300, 60).color(Color.DARKGRAY).body(rect -> {
-    TextNode
-        .create(0, 0, rect.getWidth(), rect.getHeight())
-        .text(Text.create("Play", TextInfo.create(font, 24, Color.WHITE), Align.CENTER, Align.CENTER))
-        .attach(rect);
-}).attach(this);
+RectNode
+.create(100, 100, 300, 60)
+.color(Color.DARKGRAY)
+.body(rect -> {
+	TextNode.create(0, 0, rect.getWidth(), rect.getHeight()).text(Text.create("Play", TextInfo.create(font, 24, Color.WHITE), Align.CENTER, Align.CENTER)).attach(rect);
+})
+.attach(this);
 ```
 
 ![A gray button with the centered label Play](../../images/text-button.png "The TextNode covers the button and centers its text on both axes.")
 
-`Text` (`dev.joid.lib.draw.text.builder`), `TextInfo` (`dev.joid.lib.font.dto`), `Align` (`dev.joid.lib.utils.align`), overflow suffixes, modifiers and multi-style texts are described in [Text Model](../../text/text-and-textinfo.md).
+`Text` (`dev.joid.lib.draw.text.builder`), `TextInfo` (`dev.joid.lib.font.dto`), `Align` (`dev.joid.lib.utils.align`), overflow suffixes, modifiers and multi-style texts are described in [Text and TextInfo](../../text/text-and-textinfo.md).
 
 ## Dynamic text
 
-To show a [signal](../../state/signals.md), make the node [watch](../../state/watch.md) it and write the text in `onInit`: the node reloads each time the signal publishes, `onInit` runs again, and `getText().text(...)` changes the content in place. The node resizes to the new text:
+Write the text as an expression that reads a [signal](../../state/signals.md): the text follows it, and the node resizes to the new text.
 
 ```java
-final IntegerSignal score = new IntegerSignal(0);
+private final IntegerSignal score = IntegerSignal.of(0);
 
-TextNode
-    .create(20, 20)
-    .text(Text.create("", TextInfo.create(font, 20, Color.WHITE)))
-    .<TextNode>onInit(node -> node.getText().text("Score: " + score.getOrDefault()))
-    .watch(score)
-    .attach(this);
+TextNode.create(20, 20).text(Text.create("Score: " + this.score.get(), TextInfo.create(font, 20, Color.WHITE))).attach(this);
 ```
 
-You can also give the node another `Text` with `text(...)`. A `Text` built from a supplier (`Text.create(Supplier, info)`) is read on every frame: keep it for a text that changes on every frame, such as a clock, and watch a signal instead of reading it in a supplier.
+![A score text counting up as the score signal changes](../../images/text-signal.gif "The text follows the signal read in its expression")
+
+| You pass | The text |
+| --- | --- |
+| `Text.create("Score: " + this.score.get(), info)` | Follows `score`: the `Text` updates its content in place. |
+| `Text.create(this.score.map(score -> "Score: " + score), info)` | Follows the computed signal. |
+| `Text.create(() -> "Open for " + seconds() + " s", info)` | A lambda read on every measure and draw: for clocks and animations. |
+| `text(Text.create(..., this.big.get() ? large : small))` | The whole `Text` is rebuilt when `big` changes (the `TextInfo` is a plain value inside a `Text`). |
+
+See [Reactive Properties](../../state/reactive-properties.md) for the rules.
 
 ## Text modes with mode
 
@@ -62,16 +67,16 @@ You can also give the node another `Text` with `text(...)`. A `Text` built from 
 
 ```java
 TextNode
-    .create(0, 0, 300, 0)
-    .text(Text.create("A very long subtitle that does not fit", TextInfo.create(font, 20, Color.WHITE)).overflow(TextOverflow.ELLIPSIS))
-    .mode(TextMode.OVERFLOW)
-    .attach(this);
+.create(0, 0, 300, 0)
+.text(Text.create("A very long subtitle that does not fit", TextInfo.create(font, 20, Color.WHITE)).overflow(TextOverflow.ELLIPSIS))
+.mode(TextMode.OVERFLOW)
+.attach(this);
 
 TextNode
-    .create(0, 40, 300, 0)
-    .text(Text.create("A paragraph wrapped on as many lines as it needs.", TextInfo.create(font, 20, Color.WHITE)))
-    .mode(TextMode.SPLIT)
-    .attach(this);
+.create(0, 40, 300, 0)
+.text(Text.create("A paragraph wrapped on as many lines as it needs.", TextInfo.create(font, 20, Color.WHITE)))
+.mode(TextMode.SPLIT)
+.attach(this);
 ```
 
 ![A subtitle cut with an ellipsis above a paragraph wrapped on two lines](../../images/text-overflow-split.png "OVERFLOW cuts the line at 300 units and appends ..., SPLIT wraps the paragraph; the darker area marks the 300-unit width.")
@@ -124,8 +129,8 @@ See [Effects](../../styling/effects.md).
 
 | Method | Default | Description |
 | --- | --- | --- |
-| `text(Text text)` | `null` | Text to display. `null` clears it. |
-| `mode(TextMode mode)` | `TextMode.NORMAL` | Layout mode, see the table above. |
+| `text(Text text)`, `text(Supplier<Text> text)` | `null` | Text to display. `text((Text) null)` clears it. |
+| `mode(TextMode mode)`, `mode(Supplier<TextMode> mode)` | `TextMode.NORMAL` | Layout mode, see the table above. |
 | `reset()` | | Records the current size as the initial size. |
 
 Every setter returns the node itself, typed by the generic return of the fluent API.
@@ -139,9 +144,15 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 | `isInitialized()` | `true` once the initial size is recorded. |
 | `getInitialWidth()` / `getInitialHeight()` | The recorded initial size; `0` means automatic. |
 
+## Pitfalls
+
+- A text and its `TextInfo` that both read signals in one `Text.create(...)` cannot follow the text alone: pass the whole `Text.create(...)` to `text(...)` without signals in the info, or use a lambda.
+- `text(null)` does not compile: write `text((Text) null)`.
+- A `TextNode` sized by its text changes its width with the text: anchor it (`anchorX(Align.CENTER)`) to keep its center in place.
+
 ## See also
 
-- [Text Model](../../text/text-and-textinfo.md)
+- [Text and TextInfo](../../text/text-and-textinfo.md)
 - [Fonts](../../fonts/adding-fonts.md)
 - [Markup and Text Effects](../../text/markup-and-effects.md)
 - [Drawing Text](../../drawing/text.md) for drawing text without a node

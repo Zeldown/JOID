@@ -1,113 +1,122 @@
 # RectNode
 
-`RectNode` (`dev.joid.lib.ui.node.impl.design.shape`) draws a filled rectangle with an optional outside border and hover colors. Use it for backgrounds, cards, buttons, separators and invisible click areas; combine it with effects for rounded corners, circles or blur.
+`RectNode` (`dev.joid.lib.ui.node.impl.design.shape`) draws a filled rectangle with an optional border and hover colors. Use it for backgrounds, cards, buttons, separators and invisible click areas, and add effects for rounded corners, circles, shadows or blur.
 
 ## Creating a RectNode
 
 ```java
-RectNode.create(100, 100, 400, 200).color(Color.RED).attach(this);
+RectNode.create(100, 100, 400, 200).color(Color.LIGHTGRAY).attach(this);
 ```
 
-![A red rectangle](../../images/rect-basic.png "A 400 × 200 red RectNode.")
+![A light gray rectangle on a dark stage](../../images/rect-basic.png "A 400 × 200 RectNode filled with Color.LIGHTGRAY.")
 
-A card that changes color under the mouse, with a border and rounded corners:
+`create(x, y, width, height)` takes the position and the size in UI units of the 1920 × 1080 canvas. Without `color(...)`, the rectangle is transparent. Positioning, anchors, children, callbacks and the rest of the inherited API are described in [Node Fundamentals](../node-fundamentals.md).
+
+A card that reacts to the mouse, with a border and rounded corners:
 
 ```java
 RectNode
-    .create(100, 100, 400, 120)
-    .color(Color.decode("#1F2937"), Color.decode("#374151"))
-    .border(Color.decode("#4B5563"), Color.WHITE, 2D, true)
-    .effect(RoundedNodeEffect.create(12F))
-    .onClick((node, mouseX, mouseY, clickType) -> System.out.println("clicked"))
-    .attach(this);
+.create(100, 100, 400, 120)
+.color(Color.DARKGRAY)
+.hoveredColor(Color.GRAY)
+.borderColor(Color.GRAY)
+.hoveredBorderColor(Color.WHITE)
+.borderStroke(2D)
+.effect(RoundedNodeEffect.create(12F))
+.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
+.attach(this);
 ```
 
-![The cursor enters a dark rounded card: its fill lightens and its border turns white](../../images/rect-card-hover.gif "The fill and the border blend to their hovered colors with the hover animation.")
+![The cursor enters a dark gray rounded card: its fill lightens and its border turns white](../../images/rect-card-hover.gif "The fill and the border blend to their hovered colors with the hover animation.")
 
-`create(x, y, width, height)` takes the position and size in UI units (see [Node Fundamentals](../node-fundamentals.md) for positioning, anchors, children and the rest of the inherited API).
+Call the `RectNode` setters (`color`, `hoveredColor`, `border*`) first, then the setters inherited from `Node` (`effect`, `onClick`, `x`, `width`...): a `Node` setter in the middle of a chain returns a `Node`, which has no `RectNode` setter. When the order cannot change, add a type witness: `.<RectNode>width(300D).color(Color.WHITE)`.
 
 ## Fill color with color
 
-| Method | Description |
+`color(...)` sets the fill. The default is `Color.TRANSPARENT`: a transparent `RectNode` still receives the mouse, which makes it a convenient click area or invisible container.
+
+Like every node setter, `color` takes a plain value or a `Supplier<Color>`, and follows the [signals](../../state/signals.md) its value reads:
+
+| You pass | The color |
 | --- | --- |
-| `color(Color color)` | Sets the fill color. |
-| `color(Supplier<Color> color)` | Sets a fill color read on every frame. |
-| `color(Color color, Color hoveredColor)` | Sets the fill and hovered colors. `hoveredColor` can be `null`. |
-| `color(Supplier<Color> color, Supplier<Color> hoveredColor)` | Same with suppliers read on every frame. `hoveredColor` can be `null`. |
-| `hoveredColor(Color color)` / `hoveredColor(Supplier<Color> color)` | Sets or replaces the hovered color only. `null` removes it. |
+| A plain value: `color(Color.GRAY)` | Stays fixed. |
+| An expression that reads signals: `color(this.clicks.get() >= 3 ? Color.WHITE : Color.GRAY)` | Is recomputed each time one of those signals changes. |
+| A signal, `map(...)` or `Signal.from(...)`: `color(this.selected.map(selected -> selected ? Color.WHITE : Color.GRAY))` | Follows the signal. |
+| A lambda: `color(() -> Color.GRAY.to(Color.WHITE, this.pulse.getValue()))` | Is read on every frame. |
 
-The default fill is `Color.TRANSPARENT`. A transparent `RectNode` is still a node that receives the mouse, which makes it a convenient click area or invisible container.
-
-To follow a [signal](../../state/signals.md), [watch](../../state/watch.md) it and set the color in `onInit`, which runs again each time the signal publishes:
+A rectangle that turns white after three clicks:
 
 ```java
-final BooleanSignal selected = new BooleanSignal(false);
+private final IntegerSignal clicks = IntegerSignal.of(0);
 
-RectNode
-    .create(0, 0, 200, 60)
-    .<RectNode>onInit(rect -> rect.color(selected.getOrDefault() ? Color.BLUE : Color.DARKGRAY))
-    .watch(selected)
-    .onClick((node, mouseX, mouseY, clickType) -> selected.toggle())
-    .attach(this);
+@Override
+public void init() {
+	RectNode
+	.create(100, 100, 200, 120)
+	.color(this.clicks.get() >= 3 ? Color.WHITE : Color.GRAY)
+	.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
+	.attach(this);
+}
 ```
 
-![Clicking a gray rectangle turns it blue, clicking again turns it gray](../../images/rect-supplier.gif "The node watches the signal and takes its new color on each click.")
+![A gray rectangle is clicked three times and turns white](../../images/rect-signal.gif "The color expression reads clicks: JOID recomputes it on each click, and the third click turns the rectangle white.")
 
-A supplier color is called on every frame: keep it for a color that changes on every frame, such as an animation driven by a [TweenAnimator](../../animation/tween-animator.md), and watch a signal instead of reading it in a supplier.
+Keep the lambda form for values that change on every frame without a signal, such as an animation driven by a [TweenAnimator](../../animation/tween-animator.md). The rules behind these forms are in [Reactive Properties](../../state/reactive-properties.md).
 
-### Hover blending
+### Hover blending with hoveredColor
 
-When a hovered color is set, the drawn color blends from the fill color to the hovered color following the node's hover animation (`hoverValue`), so the change fades in and out instead of switching. When the hovered color is `null` (or its supplier returns `null`), the fill color is drawn as is. The hover animation itself (duration, easing) is described in [Hover and Tooltips](../../interactions/hover.md).
+`hoveredColor(...)` sets the color reached under the mouse. The drawn color blends from `color` to `hoveredColor` with the hover animation of the node (`hoverValue`), so the change fades in and out instead of switching. Without a hovered color (the default), the fill stays the same under the mouse. The duration and easing of the hover animation are described in [Hover and Tooltips](../../interactions/hover.md).
+
+`hoveredColor((Color) null)` removes the hovered color. The cast is needed because a bare `null` matches both overloads.
 
 ### Gradients
 
-Any color can be a gradient built with `Color.toGradient(...)`. The gradient spans the node's bounds; the optional `Vector4f` (`javax.vecmath`) gives the start and end points as fractions of the bounds (`startX, startY, endX, endY`). The default direction is left to right.
+Any color can be a gradient built with `Color.toGradient(...)`. The gradient spans the bounds of the node; the optional `Vector4f` (`javax.vecmath`) gives the start and end points as fractions of the bounds (`startX, startY, endX, endY`). The default direction is left to right.
 
 ```java
-RectNode.create(0, 0, 400, 200).color(Color.RED.toGradient(Color.BLUE)).attach(this);
-RectNode.create(0, 0, 400, 200).color(Color.CYAN.toGradient(Color.MAGENTA, new Vector4f(0F, 0F, 0F, 1F))).attach(this);
+RectNode.create(100, 100, 400, 200).color(Color.RED.toGradient(Color.BLUE)).attach(this);
+
+RectNode.create(560, 100, 400, 200).color(Color.CYAN.toGradient(Color.MAGENTA, new Vector4f(0F, 0F, 0F, 1F))).attach(this);
 ```
 
 ![A red-to-blue horizontal gradient next to a cyan-to-magenta vertical gradient](../../images/rect-gradients.png "Left to right by default; the Vector4f (0, 0, 0, 1) runs the second gradient from top to bottom.")
 
-See [Colors and Gradients](../../styling/colors.md).
+See [Colors and Gradients](../../styling/colors.md) for the color API.
 
-## Borders with border
+## Borders with borderColor and borderStroke
 
-`border(...)` draws a stroke of `stroke` UI units outside the rectangle. It is implemented as a [`BorderNodeEffect`](../../styling/border.md) in `BorderMode.OUT`, so it follows the shape given by [`RoundedNodeEffect`](../../styling/rounded.md) or [`CircleNodeEffect`](../../styling/circle.md).
+The border setters draw a stroke outside the rectangle. The first border setter installs a [`BorderNodeEffect`](../../styling/border.md) in `BorderMode.OUT` on the node, so the border follows the shape given by a [`RoundedNodeEffect`](../../styling/rounded.md) or a [`CircleNodeEffect`](../../styling/circle.md). The border is drawn only while its stroke is above `0`.
 
 ```java
 RectNode
-    .create(0, 0, 200, 120)
-    .color(Color.RED.toGradient(Color.BLUE))
-    .border(Color.WHITE, 3D)
-    .effect(RoundedNodeEffect.create(20F))
-    .attach(this);
+.create(100, 100, 200, 120)
+.color(Color.GRAY)
+.borderColor(Color.WHITE)
+.borderStroke(3D)
+.effect(RoundedNodeEffect.create(20F))
+.attach(this);
 ```
 
-![A rounded gradient rectangle with a white border](../../images/rect-border.png "The border follows the rounded corners of the RoundedNodeEffect.")
+![A rounded gray rectangle with a white border](../../images/rect-border.png "The border follows the rounded corners of the RoundedNodeEffect.")
 
-| Method | Description |
-| --- | --- |
-| `border(Color color, double stroke)` / `border(Supplier<Color> color, double stroke)` | Sets the border color and width, with `fill` = `true`. |
-| `border(Color color, double stroke, boolean fill)` / `border(Supplier<Color> color, double stroke, boolean fill)` | Same with an explicit `fill`. |
-| `border(Color color, Color hoveredColor, double stroke, boolean fill)` / `border(Supplier<Color> color, Supplier<Color> hoveredColor, double stroke, boolean fill)` | Also sets the hovered border color (can be `null`). |
-| `hoveredBorderColor(Color color)` / `hoveredBorderColor(Supplier<Color> color)` | Sets or replaces the hovered border color only. `null` removes it. |
+| Method | Default | Description |
+| --- | --- | --- |
+| `borderColor(Color)`, `borderColor(Supplier<Color>)` | `Color.TRANSPARENT` | Color of the border. It can be a gradient. |
+| `hoveredBorderColor(Color)`, `hoveredBorderColor(Supplier<Color>)` | none | Border color reached under the mouse, blended with the hover animation like the fill. `null` removes it. |
+| `borderStroke(double)`, `borderStroke(Supplier<Double>)` | `0D` | Width of the border in UI units. `0` or less draws no border. |
+| `borderFill(boolean)`, `borderFill(Supplier<Boolean>)` | `true` | `true` draws the stroke around the corners too; `false` leaves the four outer corner squares empty, so the stroke only runs along the sides. |
 
-- `fill` = `true` paints the whole stroke, corners included. `false` leaves the four outer corner squares empty, so the stroke only runs along the sides.
-- The border color blends to the hovered border color with the hover animation, like the fill.
-- The border color can be a gradient.
-- A node holds a single border: calling `border(...)` again replaces it, and a `stroke` of `0` or less removes it. `border(...)` also replaces a `BorderNodeEffect` you added yourself with `effect(...)`.
-- Supplier colors are read on every frame.
+`borderFill(false)` only opens the corners of the border: the rectangle keeps its fill.
 
 ```java
-RectNode.create(0, 0, 200, 120).color(Color.DARKGRAY).border(Color.WHITE, 12D, true).attach(this);
-RectNode.create(300, 0, 200, 120).color(Color.DARKGRAY).border(Color.WHITE, 12D, false).attach(this);
+RectNode.create(100, 100, 200, 120).color(Color.GRAY).borderColor(Color.WHITE).borderStroke(12D).attach(this);
+
+RectNode.create(400, 100, 200, 120).color(Color.GRAY).borderColor(Color.WHITE).borderStroke(12D).borderFill(false).attach(this);
 ```
 
-![A gray rectangle with a thick white border whose outer corners are rounded, next to the same border with empty corners](../../images/rect-border-fill.png "With fill = true the stroke goes around the corners (rounded by the stroke width); with fill = false the corner squares stay empty.")
+![A gray rectangle with a thick white border whose outer corners are rounded, next to the same border with empty corners](../../images/rect-border-fill.png "With borderFill(true) the stroke goes around the corners, rounded by its width; with borderFill(false) the corner squares stay empty.")
 
-> TIP: For a border drawn inside the rectangle, add `BorderNodeEffect.create(color, width, BorderMode.IN)` with `effect(...)` instead of calling `border(...)`.
+> NOTE: A node holds one effect per class. The border setters install their `BorderNodeEffect` only when the node has none: after `effect(BorderNodeEffect.create(...))`, the border setters no longer change what is drawn, and an `effect(BorderNodeEffect...)` added after them replaces the border of the setters. Use one or the other. For a border drawn inside the rectangle, use `effect(BorderNodeEffect.create(color, width, BorderMode.IN))`.
 
 ## Reference
 
@@ -117,31 +126,42 @@ RectNode.create(300, 0, 200, 120).color(Color.DARKGRAY).border(Color.WHITE, 12D,
 | --- | --- |
 | `RectNode.create(double x, double y, double width, double height)` | Creates a transparent rectangle without border. |
 
-### Properties
+### Setters
+
+Every setter has a value overload and a `Supplier` overload, and returns the node. A value that reads signals is followed (see [Fill color with color](#fill-color-with-color)).
 
 | Method | Default | Description |
 | --- | --- | --- |
-| `color(...)` | `Color.TRANSPARENT` | Fill color, fixed or supplied, with an optional hovered color. |
-| `hoveredColor(...)` | none | Fill color reached when hovered. |
-| `border(...)` | no border | Border color, stroke, `fill` flag and optional hovered color. |
-| `hoveredBorderColor(...)` | none | Border color reached when hovered. |
+| `color(Color)`, `color(Supplier<Color>)` | `Color.TRANSPARENT` | Fill color. |
+| `hoveredColor(Color)`, `hoveredColor(Supplier<Color>)` | none | Fill color reached under the mouse. `null` removes it. |
+| `borderColor(Color)`, `borderColor(Supplier<Color>)` | `Color.TRANSPARENT` | Border color. |
+| `hoveredBorderColor(Color)`, `hoveredBorderColor(Supplier<Color>)` | none | Border color reached under the mouse. `null` removes it. |
+| `borderStroke(double)`, `borderStroke(Supplier<Double>)` | `0D` | Border width in UI units; no border at `0`. |
+| `borderFill(boolean)`, `borderFill(Supplier<Boolean>)` | `true` | Whether the border covers its outer corners. |
 
-Every setter returns the node itself, typed by the generic return of the fluent API.
+The colors and the border are read while the node draws: a `Supplier` passed to them is called on every frame.
 
 ### Getters
 
 | Method | Description |
 | --- | --- |
-| `getColor()` | Current fill color (the supplier is evaluated). |
-| `getHoveredColor()` | Current hovered color, or `null` without hovered color or when the supplier returns `null`. |
-| `getBorderColor()` | Current border color, `Color.TRANSPARENT` until a border is set. |
-| `getHoveredBorderColor()` | Current hovered border color, or `null` without hovered border color or when the supplier returns `null`. |
-| `getBorderStroke()` | Border width in UI units, `0` without border. |
-| `isBorderFill()` | The `fill` flag of the border, `false` until a border is set. |
+| `getColor()` | Current fill color. |
+| `getHoveredColor()` | Current hovered color, or `null`. |
+| `getBorderColor()` | Current border color. |
+| `getHoveredBorderColor()` | Current hovered border color, or `null`. |
+| `getBorderStroke()` | Border width in UI units. |
+| `isBorderFill()` | Whether the border covers its outer corners. |
 
-### Loading skeleton
+## Rendering details
 
-While the node waits for a condition set with `wait(...)`, it draws the default pulsing grey placeholder over its bounds (see [Node Fundamentals](../node-fundamentals.md)).
+- The rectangle is drawn with `DrawUtils.SHAPE.drawRect` (see [Shapes](../../drawing/shapes.md)). Its edges are snapped to the pixel grid; under a rotation or a skew (a [`TransformNodeEffect`](../../styling/transform.md)), its edges are smoothed instead.
+- While the node waits for a condition set with `wait(...)`, it draws the default pulsing gray placeholder (`Color.LOADING`) over its bounds (see [Node Fundamentals](../node-fundamentals.md)).
+
+## Pitfalls
+
+- The border is drawn around the opaque pixels of the node: a transparent `RectNode` with a border draws nothing. Draw the outline in a layer with `DrawUtils.SHAPE.drawBorder` instead.
+- `hoveredColor(null)` does not compile: a bare `null` matches both overloads, write `hoveredColor((Color) null)`.
+- After a `Node` setter in a chain, the `RectNode` setters are no longer visible: call them first or add a witness.
 
 ## See also
 
@@ -150,4 +170,4 @@ While the node waits for a condition set with `wait(...)`, it draws the default 
 - [Effects](../../styling/effects.md)
 - [BorderNodeEffect](../../styling/border.md)
 - [Hover and Tooltips](../../interactions/hover.md)
-- [Shapes](../../drawing/shapes.md) for drawing rectangles without a node
+- [Reactive Properties](../../state/reactive-properties.md)

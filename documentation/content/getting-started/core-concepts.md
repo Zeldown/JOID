@@ -1,155 +1,168 @@
 # Core Concepts
 
-This page is the mental model behind what you used in the [Tutorial](../tutorial/setup.md): the singleton you configure once, the bridges that connect JOID to a host, the UIs and their node trees, the virtual canvas, what happens in a frame, and the conventions of the fluent API. Read it after the tutorial, or whenever something in JOID surprises you; each section links to the page that covers the topic in full.
-
-## The JOID singleton
-
-`JOID` (`dev.joid.internal.JOID`) is the entry point. `JOID.inst()` returns the single instance, creating it on first use. Configure it with chained setters, then call `load()` once at startup, after registering the bridges and before opening UIs:
+This page is the mental model behind what you built in the [Tutorial](../tutorial/setup.md): a design-neutral engine, a virtual canvas, a tree of nodes, signals that nodes follow, effects, and the bridges that connect all of it to a host. Read it after the tutorial, or whenever JOID surprises you; each section links to the page that covers its topic in full.
 
 ```java
-JOID
-.inst()
-.setConfigDir(new File("config"))
-.setDevMode(false)
-.setDemoMode(false)
-.load();
+private final IntegerSignal clicks = IntegerSignal.of(0);
+
+@Override
+public void init() {
+	RectNode
+	.create(760, 440, 400, 200)
+	.color(Color.decode("#DDDDDD"))
+	.body(card -> {
+		TextNode.create(200, 60).text(Text.create("Clicks: " + this.clicks.get(), this.info)).anchor(Align.CENTER).attach(card);
+		RectNode
+		.create(120, 110, 160, 60)
+		.color(Color.decode("#999999"))
+		.hoveredColor(Color.GRAY)
+		.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
+		.body(button -> {
+			TextNode.create(80, 30).text(Text.create("+1", this.label)).anchor(Align.CENTER).attach(button);
+		})
+		.attach(card);
+	})
+	.attach(this);
+}
 ```
 
-| Member | Description |
+![A gray card with the text Clicks: 3 above a +1 button, clicked three times](../images/concepts-counter.gif "Every idea of this page in one UI: canvas units, a node tree, a signal followed by a text.")
+
+`this.info` and `this.label` are `TextInfo` fields built from a loaded font, as in [Text and TextInfo](../text/text-and-textinfo.md). The code places nodes on the 1920×1080 canvas, nests them in a tree, and the text follows the `clicks` signal: no code refreshes it.
+
+## A design-neutral engine
+
+JOID imposes no look. Its nodes are primitives that draw exactly what you ask (`RectNode`, `CircleNode`, `TextNode`, `ResourceNode`), effects that change how a node is drawn, and controls that bring a behavior without any drawing (`CheckboxNode`, `SliderNode`, `FieldNode`, `SelectorNode`...). You give the controls their look by subclassing them and overriding `draw`, once, in your own kit; your screens then use the kit and the primitives.
+
+![JOID primitives and look-less controls feeding a kit of your own, then your screens](../images/diagram-concepts-neutral.png "JOID brings behavior; your kit brings the look.")
+
+The demos draw their own kit in neutral grays (`DemoCheckboxNode`, `DemoSwitchNode`...), and [Building a UI Kit](../components/ui-kit.md) shows how to write yours.
+
+## The 1920×1080 virtual canvas
+
+You design every UI on a canvas of 1920×1080 units. Positions, sizes and mouse coordinates in nodes and UI hooks are in those units, whatever the window. Each UI owns a `UIView` that fits the canvas into the window without stretching it: a 1280×720 window shows the canvas at two thirds of its size, and a window wider or taller than 16:9 shows more canvas on the sides, placed by the anchors of the UI. The interface scale of the bridge and the zoom of the user then scale the canvas around the anchor.
+
+![The 1920 by 1080 canvas shown in a 1280 by 720 window, an ultrawide window and with a zoom of 1.5](../images/diagram-concepts-canvas.png "One layout in canvas units; the view fits it to any window.")
+
+See [View and Scaling](../ui/view-and-scaling.md).
+
+## UIs and the node tree
+
+A screen is a subclass of `UI` (`dev.joid.lib.ui.core`). `JOID.open(ui)` hands it to the UI bridge that accepts it; the first time the bridge loads it, the UI runs `init()`, where you build its tree of nodes. `attach(this)` adds a node to the UI, `attach(parent)` adds it to a node: a child is placed relative to its parent and drawn inside it.
+
+![A UI whose init builds a title and a card, the card holding a flex of a checkbox and a slider](../images/diagram-concepts-tree.png "The nodes are retained: built once in init(), kept and drawn every frame.")
+
+Nodes are retained: they stay in memory between frames, keep their state, and draw every frame until you remove them or the UI closes. Layout nodes (`ContainerNode`, `FlexNode`, `GridNode`, `ReorderableFlexNode`) place their children, visual nodes draw, input nodes handle the user. Several UIs can be open at once, ordered by their `zlevel`. See [The UI Class](../ui/ui-class.md) and [Node Fundamentals](../nodes/node-fundamentals.md).
+
+## Signals and reactive setters
+
+State lives in signals (`dev.joid.lib.utils.signal`): `Signal.of(value)` and typed signals such as `IntegerSignal.of(0)` or `BooleanSignal.of(true)`. `get()` reads a value and lets JOID follow the read; `set(value)` changes it. Every setter of every node has a value overload and a `Supplier` overload, and what you pass decides how the node follows it:
+
+```java
+TextNode.create(100, 100).text(Text.create("Clicks: " + this.clicks.get(), this.info)).attach(this);
+
+RectNode.create(100, 160, 200, 40).color(this.clicks.get() >= 3 ? Color.WHITE : Color.GRAY).attach(this);
+
+RectNode.create(100, 220, 200, 40).color(Color.LIGHTGRAY).visible(this.music).attach(this);
+
+RectNode.create(100, 280, 200, 40).color(Color.GRAY).x(() -> 100D + 50D * Math.sin(BridgeHandler.CLOCK.get().currentTimeMillis() / 500D)).attach(this);
+```
+
+![Signals feeding setters as native expressions and maps, followed on change, and a lambda read every frame](../images/diagram-concepts-signals.png "A followed value recomputes only when one of its signals changes; a lambda is read every frame.")
+
+| You pass | The node |
 | --- | --- |
-| `static JOID inst()` | The singleton. Its constructor creates the `config` folder in the working directory if it does not exist. |
-| `JOID setConfigDir(File configDir)` | Folder for persistent data: stores are written to `<configDir>/store`, UI properties to `<configDir>/property`. Default: `new File("config")`. |
-| `JOID setDevMode(boolean devMode)` | Turns the developer tools on or off. Default `false`. Throws `IllegalStateException` when turned on with a `-prod` jar. See [Developer Tools](dev-tools.md). |
-| `JOID setDemoMode(boolean demoMode)` | Loads the demo fonts used by the demo UIs. Default `false`. Throws `IllegalStateException` when turned on with a `-prod` jar. |
-| `JOID load()` | Creates the configuration folder if missing, prints a banner with the settings and the version, and loads the bundled fonts when the dev or demo mode is on. |
-| `File getConfigDir()`, `boolean isDevMode()`, `boolean isDemoMode()` | The current settings. |
-| `static final String VERSION` | The library version, `"8.0.0"`. |
-| `static boolean checkVersion(String version)` | For backend authors: `true` when `version` has the same major version as the loaded JOID, otherwise prints a warning and returns `false`. See [Writing a Backend](../integration/writing-a-backend.md). |
+| A plain value, no signal read | Keeps it: nothing is followed. |
+| A native expression that reads signals with `get()` | Follows those signals and recomputes the expression when one of them changes. |
+| A signal, a `map(...)` or a `Signal.from(...)` | Follows it: a `Signal` is a `Supplier`. A boolean signal goes as is to `visible(...)` or `enabled(...)`. |
+| A lambda `() -> ...` | Reads it every frame: for animations, clocks and values without signals. |
 
-`JOID` also holds the static methods that open and close UIs (`open`, `close`, `isOpen`, `getUI`), described in [Opening and Closing UIs](../ui/managing-uis.md).
+Controls also bind both ways with `signal(...)`: `checkbox.signal(this.music)` checks the box from the signal and writes the signal when the user clicks. `watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)` rebuilds the children of a node when a signal changes, for structures such as a list that grows. See [Signals](../state/signals.md), [Reactive Properties](../state/reactive-properties.md) and [Watching Signals](../state/watch.md).
 
-## Bridges
+## Effects
 
-The core never calls a windowing, graphics or audio API itself. It goes through bridges registered in `BridgeHandler` (`dev.joid.lib.bridge`):
+An effect changes how a node is drawn without changing the node: rounded corners, a border, a blur, a shadow, a mask, a transform. `effect(...)` adds a configured effect and chains like any setter:
+
+```java
+RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(RoundedNodeEffect.create(16F)).effect(BorderNodeEffect.create(Color.GRAY, 2F)).attach(this);
+```
+
+![A node drawn into a framebuffer, then through two shader passes onto the screen; transform, shadow and mask act around the draw](../images/diagram-concepts-effects.png "Shader effects are passes over the drawn node; render-state effects act around the draw.")
+
+Shader effects draw the node and its children into a framebuffer, then run one pass each, in priority order, before the result lands on the screen. Render-state effects change the state around the draw. See [Effects](../styling/effects.md) and [Shader Pipeline](../shaders/pipeline.md).
+
+## Bridges and backends
+
+The core never calls a windowing, graphics or audio API itself. It goes through bridges registered in `BridgeHandler` (`dev.joid.lib.bridge`), so your UIs depend only on interfaces: switching from LWJGL 3 to Vulkan, or running inside a game, changes the backend you register and nothing in your UI code.
+
+![Your UIs on the JOID core, which talks to the registries of BridgeHandler, filled by your UI bridge, a backend and JOID itself](../images/diagram-concepts-bridges.png "A backend registers the window, render and audio bridges; you register the UI bridge.")
 
 | Registry | Interface | Provided by |
 | --- | --- | --- |
 | `BridgeHandler.UI` | `IUIBridge` | You or your host: holds the open UIs, feeds them input, updates and draws them. Usually a subclass of `UIBridge`. |
-| `BridgeHandler.WINDOW` | `IWindowBridge` | The backend: window size, mouse position, key states, clipboard. |
+| `BridgeHandler.WINDOW` | `IWindowBridge` | The backend: window size, mouse, keys, clipboard. |
 | `BridgeHandler.RENDER` | `IRenderBridge` | The backend: matrices, render state, textures, shaders, framebuffers, draw calls. |
 | `BridgeHandler.AUDIO` | `IAudioBridge` | The backend: audio sources for video playback. |
-| `BridgeHandler.CLOCK` | `IClockBridge` | Registered by default (`SystemClockBridge`); tests register a `ManualClockBridge`. |
+| `BridgeHandler.CLOCK` | `IClockBridge` | JOID registers `SystemClockBridge`; tests register a `ManualClockBridge`. |
+| `BridgeHandler.SIGNAL_REPLAY` | `ISignalReplayRemapper` | JOID registers an identity remapper; a host whose bytecode names differ at runtime registers its own. |
 
-This is what makes JOID renderer-agnostic: your UIs depend only on these interfaces, never on the engine behind them. Moving to another backend, or to a new version of an engine, changes the backend you register and nothing in your UI code, and the rendering stays the same.
+A backend's `Backend.register(...)` registers the window, render and audio bridges; you register the UI bridge. See [Bridges](../integration/bridges.md) and [Backends](../integration/backends.md).
 
-A backend's `Backend.register(...)` registers the window, render and audio bridges; you register the UI bridge. Using JOID before the window or render bridge is registered fails with an `IllegalStateException` that names the missing bridge. See [Bridges](../integration/bridges.md).
+## The frame
 
-## UIs and the node tree
+The host drives JOID. Each frame of your loop runs three phases through the UI bridge:
 
-A screen is a subclass of `UI` (`dev.joid.lib.ui.core`). It is opened with `JOID.open(ui)`, which hands it to the UI bridge that accepts it. When the bridge loads it the first time, the UI runs `init()`, where you build its tree of nodes:
+![Input, then update, then draw, then the next frame](../images/diagram-concepts-frame.png "The host forwards input, then calls update() and draw() of the bridge.")
 
-```
-CounterUI
-├── RectNode  (button)
-│   └── TextNode
-└── TextNode  (counter)
-```
+1. **Input.** The host forwards each event: `keyTyped(char, Key)`, `mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseDragged(ClickType, long)`, `mouseScroll(int)`. The bridge offers it to its active, visible UIs from the top down. Inside a UI, the nodes see it first, the front-most first, then the hook of the UI. A node or hook calls `context.cancel()` to consume it; a UI that consumes it, or a popup, stops it from reaching the UIs below.
+2. **Update.** `bridge.update()` calls, for each UI, `update()` on its nodes and then the `update()` hook of the UI.
+3. **Draw.** `bridge.draw()` draws each visible UI from the lowest `zlevel` up. A UI runs its due scheduled tasks, draws its background, then its nodes inside its view; each node reads its followed values at the start of its render.
 
-Nodes (`dev.joid.lib.ui.node.Node` and its subclasses) are retained: they stay in memory between frames, keep their state, and are drawn every frame until removed. Layout nodes (`ContainerNode`, `FlexNode`, `GridNode`, `ReorderableFlexNode`) place their children; visual nodes (`RectNode`, `TextNode`, `ResourceNode`...) draw; input nodes (`TextFieldNode`, `SliderNode`...) handle the user. A child's position is relative to its parent.
+> NOTE: JOID is not thread-safe. Forward input, call `update()` and `draw()`, open and close UIs and change nodes from the thread that owns the graphics context. From another thread, use `ui.schedule(runnable)`: the task list is thread-safe and the task runs at the start of the next draw of the UI. Fonts and resources load on background threads and hand their results back through futures and callbacks.
 
-Several UIs can be open at once, ordered by their `zlevel`; the last one is on top and receives input first. See [The UI Class](../ui/ui-class.md), [Opening and Closing UIs](../ui/managing-uis.md) and [Node Fundamentals](../nodes/node-fundamentals.md).
+Time in JOID (frame time, scheduled tasks, animations) comes from the clock bridge, in milliseconds. See [Callbacks](../interactions/callbacks.md) and [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
 
-## The virtual canvas
+## The fluent API
 
-You design every UI on a virtual canvas of 1920×1080 units. Positions, sizes and mouse coordinates in nodes and UI hooks are in those units. Each UI owns a `UIView` that fits the canvas into the window without stretching it: a 1280×720 window shows the canvas at two thirds of its size, and a window wider or taller than 16:9 shows more canvas on the sides. On top of that fit, the bridge's interface scale and the user's zoom scale the canvas around the UI's anchor. See [View and Scaling](../ui/view-and-scaling.md).
-
-## The frame lifecycle
-
-The host drives JOID. A frame of the loop you wrote in the [Quick Start](quick-start.md) or the [Tutorial](../tutorial/setup.md) runs three phases through the UI bridge:
-
-1. **Input.** The host forwards each event to the bridge: `keyTyped(char, Key)`, `mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseDragged(ClickType, long)`, `mouseScroll(int)`. The bridge offers the event to its active, visible UIs from the top down. Inside a UI, the nodes see the event first, the top-most in drawing order first, then the UI's own hook. A UI that consumes the event, or that is a popup, stops it from reaching the UIs below.
-2. **Update.** `bridge.update()` calls, for each UI in order, `update()` on its nodes and then the UI's `update()` hook.
-3. **Draw.** `bridge.draw()` draws each visible UI in order. A UI first runs its due scheduled tasks and draws its background, then draws its nodes and its `preDraw`/`postDraw` hooks inside its view, and finally the tooltip of the hovered node when it is on top.
-
-Event dispatch uses an `InternalContext` (`dev.joid.lib.utils.context`): a node or hook calls `context.cancel()` to consume the event. See [Callbacks](../interactions/callbacks.md) and [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
-
-> NOTE: JOID is not thread-safe. Forward input, call `update()` and `draw()`, open and close UIs and change nodes from the thread that owns the graphics context. To run code on that thread from another one, use `ui.schedule(runnable)`: the task list is thread-safe and the task runs at the start of the UI's next draw. Font and resource loading run on background threads and hand their result back through futures and callbacks.
-
-Time in JOID (frame time, scheduled tasks, animations) comes from the clock bridge, in milliseconds.
-
-## Fluent API conventions
-
-JOID builds trees with chained calls. In the snippets below, `this` is the UI being built in `init()` and `info` is a `TextInfo` created as in the [Quick Start](quick-start.md):
-
-```java
-RectNode
-.create(100, 100, 300, 80)
-.color(Color.DARKGRAY)
-.onClick((node, mouseX, mouseY, clickType) -> System.out.println("clicked"))
-.body(rect -> {
-    TextNode.create(rect.dw(2), rect.dh(2)).text(Text.create("Save", info)).anchor(Align.CENTER).attach(rect);
-})
-.attach(this);
-```
+JOID builds trees with chained calls. Built-in nodes have no public constructor: a static factory creates them (`create(...)`, or named ones such as `FlexNode.vertical(...)`).
 
 | Convention | Meaning |
 | --- | --- |
-| `create(...)` | Static factory of nodes and effects; some classes add named factories such as `FlexNode.vertical(...)`. Constructors are not public. |
-| Setters named after the property | `color(...)`, `anchor(...)`, `zindex(...)`: they return the node, so calls chain. |
+| `create(...)` | Static factory of nodes and effects, with the values the node needs. |
+| Setters named after one property | `color(...)`, `hoveredColor(...)`, `x(...)`, `width(...)`: each sets one property and returns the node. |
 | `attach(UI)` / `attach(Node)` | Adds the node to a UI or to a parent node; usually the last call of a chain. |
 | `append(Node...)` | Adds children to a node, the reverse of `attach`. |
-| `body(Consumer)` / `body(Runnable)` | Runs the given code right away with the node, to create its children inline. The node keeps it so it can run it again (see `WatchProperty.BODY`). |
-| `onXxx(callback)` | Registers a callback: `onClick`, `onHover`, `onUpdate`, `onWatch`... See [Callbacks](../interactions/callbacks.md). |
+| `body(Consumer)` | Runs the code right away with the node, to create its children inline; the node keeps it for `WatchProperty.BODY`. |
+| `self(Consumer)` | Runs the code right away with the node, without keeping it: for an effect built from the node. |
+| `onXxx(callback)` | Registers a callback: `onClick`, `onHoverStart`, `onWatch`... See [Callbacks](../interactions/callbacks.md). |
 
-Setters are generic: `public final <T extends Node> T anchor(Align anchor)`. The returned type is inferred by the compiler:
+Setters are generic: `public final <T extends Node> T x(double x)`, and the compiler infers the returned type. In a chain, a setter declared in `Node` returns `Node`: call the setters of the node's own class first (`color`, `hoveredColor`), then those of `Node` (`x`, `visible`, `onClick`), or add a witness such as `.<RectNode>width(400D)`. The parameter of a `body` or callback lambda has the type the chain has reached.
 
-- In a chain, a setter declared in `Node` returns `Node`, and a setter declared in `RectNode` returns `RectNode`. Call the setters of the subclass first, then the ones of `Node`. The `color(...)` of `RectNode` cannot follow `onClick(...)` in a chain.
-- The parameter of a callback or `body` lambda has the type the chain has reached: in the example above, `rect` is a `Node`.
-- An explicit type argument or an assignment fixes the type: `.<RectNode>body(rect -> ...)` gives a `RectNode` parameter, and `final RectNode button = RectNode.create(...).onClick(...);` compiles.
+## The JOID singleton
 
-## Signals and effects at a glance
-
-State lives in signals (`dev.joid.lib.utils.signal`): `Signal<T>` and typed variants such as `IntegerSignal`, `StringSignal` or `ListSignal`. `set(value)` notifies the subscribers when the value changes. Nodes watch signals: on each change, a node reloads to update itself, or rebuilds its children:
+`JOID.inst()` (`dev.joid.internal.JOID`) holds the global settings. Configure it, then call `load()` once at startup, after registering the bridges and before opening UIs:
 
 ```java
-final StringSignal name = new StringSignal("world");
-
-TextNode
-.create(100, 100)
-.text(Text.create("", info))
-.<TextNode>onInit(node -> node.getText().text("Hello " + name.getOrDefault()))
-.watch(name)
-.attach(this);
-
-ContainerNode
-.create(100, 200, 400, 300)
-.watch(name, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
-.body(container -> {
-    TextNode.create(0, 0).text(Text.create("Rebuilt for " + name.getOrDefault(), info)).attach(container);
-})
-.attach(this);
+JOID.inst().setConfigDir(new File("run/config")).setDevMode(true).load();
 ```
 
-The text node reloads on each change, which runs its `onInit` callback again with the new name; the container removes its children and runs its `body` again.
+| Member | Description |
+| --- | --- |
+| `static JOID inst()` | The singleton, created on first use. |
+| `JOID setConfigDir(File configDir)` | Folder of the persistent data: stores in `<configDir>/store`, UI properties in `<configDir>/property`. Default: the `joid.config` system property, else `config`. JOID creates the folder at its first write. |
+| `JOID setDevMode(boolean devMode)` | Turns the developer tools on or off. Default `false`. See [Developer Tools](dev-tools.md). |
+| `JOID setDemoMode(boolean demoMode)` | Loads the demo fonts used by the demo UIs. Default `false`. |
+| `JOID load()` | Prints a banner with the settings and the version, and loads the bundled fonts when the dev or demo mode is on. |
+| `File getConfigDir()`, `boolean isDevMode()`, `boolean isDemoMode()` | The current settings. |
+| `static final String VERSION` | The library version, `"8.0.0"`. |
 
-Effects change how a node is drawn. They are applied with `effect(...)` and run through the shader pipeline:
-
-```java
-RectNode.create(100, 100, 300, 80).color(Color.BLUE).effect(RoundedNodeEffect.create(16F)).attach(this);
-```
-
-See [Signals](../state/signals.md), [Watching Signals](../state/watch.md), [Effects](../styling/effects.md) and [Shader Pipeline](../shaders/pipeline.md).
-
-## Where to go next
-
-The [Essentials](../essentials/uis.md) pages take each of these topics one at a time, with short examples, in this order: UIs, nodes, layout, styling, input, state, text, media and animation.
+`JOID` also holds the static methods that open and close UIs (`open`, `close`, `isOpen`, `getUI`), described in [Opening and Closing UIs](../ui/managing-uis.md).
 
 ## See also
 
 - [Quick Start](quick-start.md)
-- [Tutorial 4: Polish](../tutorial/polish.md)
 - [Essentials: UIs](../essentials/uis.md)
-- [The UI Class](../ui/ui-class.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md)
+- [Reactive Properties](../state/reactive-properties.md)
 - [Bridges](../integration/bridges.md)
 - [Developer Tools](dev-tools.md)

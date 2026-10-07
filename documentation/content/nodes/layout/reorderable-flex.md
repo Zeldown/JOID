@@ -1,188 +1,206 @@
 # ReorderableFlexNode
 
-`ReorderableFlexNode` (`dev.joid.lib.ui.node.impl.structure.reorderable`) is a [FlexNode](flex.md)-style column or row whose children the user can reorder by dragging them. The other children slide aside to make room, the dropped child glides to its slot, and callbacks report the new order. Use it for playlists, task lists, tab bars and any list sorted by hand.
-
-## A reorderable list
+`ReorderableFlexNode` (`dev.joid.lib.ui.node.impl.structure.reorderable`) is a column or row laid out like a [FlexNode](flex.md) whose children the user reorders by dragging them: the other children slide aside, the dropped child glides to its slot, and callbacks report the new order. Use it for playlists, task lists, tab bars and any list sorted by hand.
 
 ```java
-final Color[] colors = {Color.decode("#A78BFA"), Color.decode("#4ADE80"), Color.decode("#22D3EE"), Color.decode("#FBBF24")};
-
-RectNode
-.create(280, 100, 400, 360)
-.color(Color.DARKGRAY)
-.overflow(OverflowProperty.SCROLL)
-.body(area -> {
-    ReorderableFlexNode
-    .vertical(0, 0, 400)
-    .margin(10)
-    .onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println(oldIndex + " -> " + newIndex))
-    .body(flex -> {
-        for (int i = 0; i < 12; i++) {
-            RectNode.create(0, 0, 400, 60).color(colors[i % colors.length]).attach(flex);
-        }
-    })
-    .attach(area);
+ReorderableFlexNode
+.vertical(100, 100, 300)
+.margin(8D)
+.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println(oldIndex + " -> " + newIndex))
+.body(flex -> {
+	for (int i = 0; i < 5; i++) {
+		final int index = i;
+		RectNode
+		.create(0, 0, 300, 50)
+		.color(Color.GRAY)
+		.hoveredColor(Color.DARKGRAY)
+		.body(item -> {
+			TextNode.create(16, 11).text(Text.create("Item " + (index + 1), this.label)).attach(item);
+		})
+		.attach(flex);
+	}
 })
 .attach(this);
 ```
 
-![The cursor drags a violet row down the list, then drags another row to the bottom edge and the list scrolls by itself](../../images/reorder-drag.gif "The other rows slide aside, the dropped row glides to its slot, and the area auto-scrolls near its edge.")
+![The cursor drags Item 1 down to the fourth slot; the other items slide up](../../images/reorder-drag.gif "The dragged item follows the mouse above the others, then glides to its new slot on release.")
 
-Pressing the left button over an item starts dragging it right away. When the pointer gets close to the top or bottom edge of the scrolling area, the area scrolls by itself.
+Dropping Item 1 on the fourth slot prints `0 -> 3`. `label` is a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)).
 
 ## Creating a ReorderableFlexNode
+
+`ReorderableFlexNode` is `final` and its constructor is private: create it with its two factories.
 
 | Factory | Direction | Fixed size | Computed size |
 | --- | --- | --- | --- |
 | `vertical(double x, double y, double width)` | `COLUMN` | `width` | Height, from the children |
 | `horizontal(double x, double y, double height)` | `ROW` | `height` | Width, from the children |
 
-`ReorderableFlexNode` is `final` and its constructor is private: create it with these factories.
-
-The layout follows the same rules as [FlexNode](flex.md#how-children-are-placed): children in the order of `getChildren()`, each child's own default offset added to its slot, `margin` between visible children, hidden children (own visibility predicate false) taking no room, main size computed from the children.
-
-| Method | Description |
-| --- | --- |
-| `margin(double margin)` | Gap between visible children. Default `0`. |
-| `align(Align align)` | Cross-axis alignment (`START`, `CENTER`, `END`), or `null` to leave the children's cross position alone. Default `null`. |
-| `direction(FlexDirection direction)` | `FlexDirection.COLUMN` or `ROW`. Resets the children to their default position when it changes. |
-| `auto(boolean auto)` | Whether a press on a child starts a drag. Default `true`. |
-
-These setters and the `onReorder*` methods return `ReorderableFlexNode`, so they can be chained in any order before the `Node` setters.
+The layout follows the rules of [FlexNode](flex.md): children in the order of `getChildren()`, their creation position added to their slot, `margin` between visible children, hidden children taking no room, main size computed from the children. `margin`, `align` and `direction` work the same way.
 
 ## Dragging with the mouse
 
-With `auto(true)`, a left press over a child starts dragging that child, unless:
-
-- the press was already consumed, for example by an `onClick` on the child or on one of its descendants;
-- the `ReorderableFlexNode` is disabled;
-- another child is already being dragged.
-
-The press that starts a drag is consumed, so the parents' `onClick` callbacks do not run. A press whose drag is refused by `onReorderStart` is not consumed: it goes on to the parents and the nodes behind.
+With `auto(true)` (default), a left press over a child starts dragging it, unless the press is already consumed (for example by an `onClick` on the child or one of its descendants), the list is disabled, another child is being dragged, or the child is locked. The press that starts a drag is consumed: the parents' `onClick` callbacks do not run.
 
 While dragging:
 
-- the child follows the pointer along the main axis, keeping the point where it was grabbed, and stays within the list;
+- the child follows the mouse along the main axis, keeping the point where it was grabbed, and stays within the list;
 - it is drawn above the other children (its z-index is raised to `Integer.MAX_VALUE` until the drop, then restored);
-- the child changes slot when its leading edge (top or left) passes the middle of a neighbor's slot, and the other children glide to their new place.
+- it changes slot when its leading edge (top or left) passes the middle of a neighbor, and the other children glide to their new place.
 
-Releasing any mouse button drops the child: it glides to its slot, then the new order is written to `getChildren()` and the end callbacks run.
+Releasing any mouse button drops the child: it glides to its slot, then the new order is written to `getChildren()` and `onReorderEnd` runs. The dragged child also fires its own `onDragStart`, `onDrag` (every frame) and `onDragEnd` callbacks (see [Drag and Drop](../../interactions/drag-drop.md)).
 
-## Drag handles with startDrag
+## Locking children with lock
 
-Disable the automatic drag with `auto(false)` and start drags from your own code, for example from a handle:
+`lock(Node...)` pins children to their slot: a locked child cannot be dragged (neither by a press nor by `startDrag`), and no move of another child shifts it. The other children skip the locked slots: dropping a child on a locked slot places it on the nearest free slot on the side it comes from. `unlock(Node...)` frees them again and `isLocked(Node)` tells whether a child is locked.
 
 ```java
-final ReorderableFlexNode list = ReorderableFlexNode.vertical(0, 0, 400).margin(10).auto(false);
-for (int i = 0; i < 12; i++) {
-    final RectNode row = RectNode.create(0, 0, 400, 60).color(Color.GRAY).attach(list);
-    RectNode
-    .create(10, 15, 30, 30)
-    .color(Color.DARKGRAY)
-    .onClick((handle, mouseX, mouseY, clickType) -> {
-        if (clickType.isLeft()) {
-            list.startDrag(row);
-        }
-    })
-    .attach(row);
+final ReorderableFlexNode list = ReorderableFlexNode.vertical(100, 100, 300).margin(8D).attach(this);
+for (int i = 1; i <= 5; i++) {
+	final boolean locked = i == 1 || i == 3;
+	final RectNode item = RectNode
+			.create(0, 0, 300, 50)
+			.color(locked ? Color.LIGHTGRAY : Color.GRAY)
+			.hoveredColor(locked ? Color.LIGHTGRAY : Color.DARKGRAY)
+			.attach(list);
+	TextNode.create(16, 11).text(Text.create((locked ? "Locked " : "Item ") + i, this.label)).attach(item);
+	if (locked) {
+		list.lock(item);
+	}
 }
-list.attach(this);
 ```
 
-| Method | Description |
-| --- | --- |
-| `startDrag(Node child)` | Starts dragging `child` as if it had been pressed at the current mouse position (`(0, 0)` when the node has no UI). Ignored while a drag is in progress. Throws `IllegalArgumentException` when `child` is not a child of this node. |
-| `endDrag()` | Drops the dragged child, like a mouse release. Ignored when nothing is dragged or the drop is already running. |
+![Item 5 is dragged to the top; it lands under Locked 1 and the locked rows stay in place](../../images/reorder-lock.gif "Dragging Item 5 to the top gives Locked 1, Item 5, Locked 3, Item 2, Item 4.")
 
-Both return the `ReorderableFlexNode`.
+## Drag handles with auto and startDrag
 
-## Auto-scroll
+`auto(false)` turns off the drag on press; start drags from your own code with `startDrag(Node child)`, for example from a handle. `startDrag` uses the current mouse position of the UI and does nothing while another child is dragged or when the child is locked.
 
-During a drag, once the pointer has moved 5 units from where the drag started, the `ReorderableFlexNode` looks up its ancestors for the first node with `OverflowProperty.SCROLL` whose content overflows. When the pointer is within 60 units of that node's edges along the list's main axis, the node scrolls toward that edge, faster as the pointer goes deeper into the margin (up to 2 units per frame).
+```java
+final ReorderableFlexNode list = ReorderableFlexNode.vertical(100, 100, 300).margin(8D).auto(false).attach(this);
+for (int i = 0; i < 5; i++) {
+	final RectNode item = RectNode.create(0, 0, 300, 50).color(Color.GRAY).attach(list);
+	RectNode
+	.create(0, 0, 40, 50)
+	.color(Color.DARKGRAY)
+	.onClick((handle, mouseX, mouseY, clickType) -> list.startDrag(item))
+	.attach(item);
+}
+```
 
-- A column scrolls its ancestor vertically, a row horizontally.
-- When the first scrolling ancestor scrolls on the other axis, nothing scrolls.
+`endDrag()` drops the dragged child as a mouse release would.
 
-Place the list in a fixed-size scroll container, as in the first example (see [Overflow and Scrolling](overflow-and-scroll.md)).
+## Auto-scroll in a scrolling parent
+
+Put the list in a fixed-size node with `OverflowProperty.SCROLL` (see [Overflow and Scrolling](overflow-and-scroll.md)). During a drag, once the mouse has moved 5 units, the list looks up its ancestors for the first scrolling node whose content overflows. When the mouse is within 60 units of its edge along the list's axis, that node scrolls toward the edge, faster as the mouse goes deeper (up to 2 units per frame). A column scrolls its ancestor vertically, a row horizontally; an ancestor that only scrolls on the other axis does not move.
+
+```java
+RectNode
+.create(100, 100, 340, 260)
+.color(Color.WHITE)
+.overflow(OverflowProperty.SCROLL)
+.body(area -> {
+	ReorderableFlexNode
+	.vertical(10, 10, 320)
+	.margin(8D)
+	.body(flex -> {
+		for (int i = 0; i < 10; i++) {
+			final int index = i;
+			RectNode
+			.create(0, 0, 320, 50)
+			.color(Color.GRAY)
+			.hoveredColor(Color.DARKGRAY)
+			.body(item -> {
+				TextNode.create(16, 11).text(Text.create("Item " + (index + 1), this.label)).attach(item);
+			})
+			.attach(flex);
+		}
+	})
+	.attach(area);
+})
+.attach(this);
+```
+
+![Item 2 is held near the bottom edge; the area scrolls by itself until the release](../../images/reorder-scroll.gif "Near the edge of the scrolling area, the area scrolls while the item is dragged.")
 
 ## Reorder callbacks
 
 | Method | Lambda | Fires |
 | --- | --- | --- |
-| `onReorderStart(NodeReorderStartCallback callback)` | `(flex, child)` | When a drag starts, from a press or from `startDrag`. Cancelling the PRE phase prevents the drag and leaves the press to the other nodes. |
-| `onReorder(NodeReorderCallback callback)` | `(flex, child)` | Each time the dragged child moves to another slot, until the drop. Read the new slot with `flex.getCurrentIndex()` in the POST phase; in the PRE phase it is still the previous one. Cancelling the PRE phase keeps the child on its current slot; the callback fires again on the next frames while the child targets another slot. |
-| `onReorderEnd(NodeReorderEndCallback callback)` | `(flex, child, oldIndex, newIndex)` | Once the dropped child has settled and `getChildren()` holds the new order. `oldIndex` equals `newIndex` for a drop in place. Cancelling the PRE phase only skips the POST phase: the order is already applied. When the list is detached during a drag, the child is dropped at once on its current slot. When the dragged child is removed from the list, the drag ends with `newIndex` at `-1`. |
+| `onReorderStart(NodeReorderStartCallback)` | `(flex, child)` | When a drag starts, from a press or from `startDrag`. Cancelling the PRE phase refuses the drag and leaves the press to the other nodes. |
+| `onReorder(NodeReorderCallback)` | `(flex, child)` | Each time the dragged child moves to another slot. In the POST phase `flex.getCurrentIndex()` is the new slot. Cancelling the PRE phase keeps the child on its current slot. |
+| `onReorderEnd(NodeReorderEndCallback)` | `(flex, child, oldIndex, newIndex)` | Once the dropped child has settled and `getChildren()` holds the new order. `oldIndex` equals `newIndex` for a drop in place. The order is already applied: cancelling the PRE phase only skips the POST phase. |
 
-The callback interfaces are in `dev.joid.lib.ui.node.impl.structure.reorderable.callback`. They are typed with `ReorderableFlexNode` for `flex`, and `child` is the dragged `Node`. Their callback ids are public: `ReorderableFlexNode.CALLBACK_REORDER_START`, `CALLBACK_REORDER` and `CALLBACK_REORDER_END`. PRE/POST phases are described in [Callbacks](../../interactions/callbacks.md).
+The callback interfaces are in `dev.joid.lib.ui.node.impl.structure.reorderable.callback`; `flex` is the `ReorderableFlexNode` and `child` the dragged `Node`. Their ids are public: `ReorderableFlexNode.CALLBACK_REORDER_START`, `CALLBACK_REORDER` and `CALLBACK_REORDER_END`. The PRE and POST phases are described in [Callbacks](../../interactions/callbacks.md).
 
-The dragged child also fires its own drag callbacks (see [Drag and Drop](../../interactions/drag-drop.md)): `onDragStart` when the drag starts, `onDrag` on every frame of the drag, and `onDragEnd` once after the drop.
-
-Saving the order once the user drops an item:
+A PRE phase that freezes the order while a signal is true:
 
 ```java
-ReorderableFlexNode
-.vertical(0, 0, 400)
-.margin(10)
-.onReorderEnd((flex, child, oldIndex, newIndex) -> {
-    for (final Node item : flex.getChildren()) {
-        System.out.println(item.getHierarchy());
-    }
-})
-.attach(this);
-```
-
-A veto that freezes the order while a condition holds:
-
-```java
-final BooleanSignal locked = new BooleanSignal(true);
+final BooleanSignal frozen = BooleanSignal.of(true);
 
 ReorderableFlexNode
-.vertical(0, 0, 400)
+.vertical(100, 100, 300)
 .onReorder(new NodeReorderCallback() {
 
-    @Override
-    public void apply(final ReorderableFlexNode flex, final Node child) {}
+	@Override
+	public void apply(final @NonNull ReorderableFlexNode flex, final @NonNull Node child) {}
 
-    @Override
-    public void pre(final ReorderableFlexNode flex, final InternalContext context, final Node child) {
-        if (locked.getOrDefault()) {
-            context.cancel();
-        }
-    }
+	@Override
+	public void pre(final @NonNull ReorderableFlexNode flex, final @NonNull InternalContext context, final @NonNull Node child) {
+		if (frozen.peek()) {
+			context.cancel();
+		}
+	}
 
 })
 .attach(this);
 ```
 
-## Logical order and indexes
+To keep a child in place for good, `lock` it rather than refusing its moves.
 
-During a drag, the order shown on screen is the logical order; `getChildren()` keeps the committed order (with the dragged child moved to the end of the list so that it draws on top) until the drop completes.
+## Order during a drag
+
+During a drag, the order shown on screen is the logical order (`getLogicalOrder()`); `getChildren()` keeps the committed order, with the dragged child moved to the end so that it draws on top, until the drop completes. Children appended during a drag join the end of the logical order and keep that place; children removed during a drag leave it.
 
 | Method | Description |
 | --- | --- |
 | `getChildIndex(Node child)` | Index of `child` in `getChildren()`. Throws `IllegalArgumentException` when it is not a child. |
 | `getLogicalOrder()` | The live order during a drag, dragged child included. Empty outside a drag. |
-| `getCurrentIndex()` | Slot currently targeted by the dragged child. |
+| `getCurrentIndex()` | Slot targeted by the dragged child. |
 | `getInitialIndex()` | Slot the dragged child started from. |
-| `isDragging(Node child)` | `true` while `child` is the dragged child, drop animation included. |
-| `getReorderedNode()` | The dragged child, or `null`. `getDraggedNode()`, inherited from `Node`, is the copy of a [`COPY` drag](../../interactions/drag-drop.md) and stays `null` here. |
+| `getReorderedNode()` | The dragged child, or `null`. |
+| `isDragging(Node child)` | `true` while `child` is dragged, drop animation included. |
 | `isReleasing()` | `true` while the dropped child glides to its slot. |
 
-Children appended during a drag join the end of the logical order and keep that place after the drop. Children removed during a drag leave it. Do not remove the dragged child itself before the drop.
+## Detaching during a drag
+
+- When the list is detached during a drag (UI closed or reloaded, `remove`, `clearChildren` of its parent), the child is dropped at once on its current slot: `onDragEnd` and `onReorderEnd` run as for a normal drop.
+- When the dragged child itself is removed from the list, the drag ends: its z-index is restored, `onDragEnd` runs and `onReorderEnd` receives `newIndex` = `-1`.
 
 ## Reference
 
 | Method | Description |
 | --- | --- |
 | `vertical(double x, double y, double width)`, `horizontal(double x, double y, double height)` | Factories. |
-| `margin(double)`, `align(Align)`, `direction(FlexDirection)`, `auto(boolean)` | Layout and drag settings. |
-| `getMargin()`, `getAlign()`, `getDirection()`, `isAutoDrag()` | Current settings. |
-| `startDrag(Node)`, `endDrag()` | Drags from code. |
+| `margin(double)`, `margin(Supplier<Double>)` | Gap between visible children. Default `0D`. |
+| `align(Align)`, `align(Supplier<Align>)` | Cross-axis alignment, or `null` to keep the children's own cross position. Default `null`. |
+| `direction(FlexDirection)`, `direction(Supplier<FlexDirection>)` | `COLUMN` or `ROW`. |
+| `auto(boolean)`, `auto(Supplier<Boolean>)` | Whether a press on a child starts a drag. Default `true`. |
+| `lock(Node...)`, `unlock(Node...)` | Pin children to their slot, or free them. |
+| `isLocked(Node)`, `getLockedNodes()` | Lock state. |
+| `startDrag(Node)`, `endDrag()` | Start or drop a drag from code. |
 | `onReorderStart`, `onReorder`, `onReorderEnd` | Callbacks. |
-| `getChildIndex(Node)`, `getLogicalOrder()`, `getCurrentIndex()`, `getInitialIndex()`, `isDragging(Node)`, `getReorderedNode()`, `isReleasing()` | Drag state. |
-| `getDragOffset()`, `getDraggedCurrent()`, `getDraggedZindex()`, `getDragStartMouseX()`, `getDragStartMouseY()`, `isScrollArmed()`, `getChildCurrent()` | Drag bookkeeping: grab offset, animated position of the dragged child, its z-index before the drag, press position, auto-scroll armed flag, animated positions of the other children. |
+| `getMargin()`, `getAlign()`, `getDirection()`, `isAutoDrag()` | Current settings. |
+| `getChildIndex(Node)`, `getLogicalOrder()`, `getCurrentIndex()`, `getInitialIndex()`, `getReorderedNode()`, `isDragging(Node)`, `isReleasing()` | Drag state. |
 
-Everything else is inherited from [Node](../node-fundamentals.md).
+The setters return `ReorderableFlexNode`. Everything else is inherited from [Node](../node-fundamentals.md).
+
+## Pitfalls
+
+- `overflow(OverflowProperty.SCROLL)` on the list itself does not scroll it: wrap it in a scrolling node, which also gives the auto-scroll.
+- An `onClick` that consumes the press on a child (or a descendant) prevents the drag of that child: keep clickable parts small, or drag from a handle with `auto(false)`.
+- `getDraggedNode()`, inherited from `Node`, is the copy of a [`COPY` drag](../../interactions/drag-drop.md) and stays `null` here: use `getReorderedNode()`.
+- Lock nodes that are children of the list: `lock` accepts any node and only the children's slots are kept.
 
 ## See also
 

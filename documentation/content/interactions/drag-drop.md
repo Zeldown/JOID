@@ -7,39 +7,41 @@ Any node becomes draggable with `draggable(DraggableProperty)`. JOID then moves 
 ```java
 public class BoardUI extends UI {
 
-    @Override
-    public void init() {
-        RectNode
-        .create(200, 200, 800, 600)
-        .color(Color.WHITE)
-        .body(board -> {
-            RectNode.create(50, 50, 100, 100).color(Color.BLUE).draggable(DraggableProperty.parent()).attach(board);
-        })
-        .attach(this);
-    }
+	@Override
+	public void init() {
+		RectNode
+		.create(200, 200, 800, 600)
+		.color(Color.decode("#DDDDDD"))
+		.body(board -> {
+			RectNode.create(50, 50, 100, 100).color(Color.decode("#999999")).draggable(DraggableProperty.parent()).attach(board);
+		})
+		.attach(this);
+	}
 
 }
 ```
 
-![The cursor drags a blue square across a white board and releases it past the right edge: the square slides back inside](../images/drag-board.gif "The square follows the mouse during the drag and returns inside its parent on release (0.5× scale).")
+![The cursor drags a gray square across a light board toward its right edge: the square stops at the edge of the board](../images/drag-board.gif "The square follows the mouse inside its parent, never past its edges (0.5× scale).")
 
-The blue square follows the mouse while you hold the left button on it and stays inside the white board when you release it. `DraggableProperty` is in `dev.joid.lib.ui.node.property.draggable`.
+The square follows the mouse while you hold the left button on it, without leaving the board. `DraggableProperty` is in `dev.joid.lib.ui.node.property.draggable`.
 
 ## How a drag works
 
-1. **Start**: a left press over the node (hovered: visible, enabled, UI on top) starts the drag, unless the property is disabled for the node or the press was consumed (see below). `onDragStart` fires. The node remembers where the mouse grabbed it and where it started.
-2. **Move**: each mouse drag event sets the drag target to the mouse position minus the grab offset. `onDrag` fires.
+![Diagram: a left press starts the drag, each mouse move sets the target, the node eases toward it every frame, the release snaps it or leaves it in place](../images/diagram-drag.png "The four steps of a drag")
+
+1. **Start**: a left press over the node (hovered: visible, enabled, UI on top) starts the drag, unless the property is disabled for the node or the press was consumed (see below). `onDragStart` fires. The node remembers where the mouse grabbed it and where it started. Starting the drag consumes the press.
+2. **Move**: each mouse drag event sets the drag target to the mouse position minus the grab offset, kept inside the area. `onDrag` fires.
 3. **Follow**: on every frame, the node eases its absolute position toward the target, covering a sixth of the remaining distance per 1/60 s (frame-rate independent) and landing on it once closer than `0.5` unit.
 4. **End**: a mouse button release ends the drag, and so does the window grabbing the mouse (`IWindowBridge.isMouseGrabbed()`). `onDragEnd` fires: with snap targets, the node heads to a target or back to its start; without, it stays where it was dropped.
 
-> NOTE: The drag starts only when the press is still unconsumed after the node's own handlers. A child that consumes the press (a button with `onClick`, a text field...) or an `onClick` on the node itself prevents the drag. Starting a drag does not consume the press: overlapping draggable nodes under the mouse all start dragging.
+> NOTE: The drag starts only when the press is still unconsumed after the node's own handlers. A child that consumes the press (a button with `onClick`, a text field...) or an `onClick` on the node itself prevents the drag. Starting a drag consumes the press: when draggable nodes overlap, only the front one starts (children before their parent, highest z-index first), and the nodes behind, the UI hook and the UIs below receive a cancelled context. A non-draggable node in front does not prevent the drag of the node behind it.
 
 ## Areas with DraggableProperty factories
 
 | Factory | Area | Bounds |
 |---|---|---|
 | `DraggableProperty.free()` | `FREE` | None. |
-| `DraggableProperty.parent()` | `PARENT` | The parent of the dragged node. |
+| `DraggableProperty.parent()` | `PARENT` | The parent of the dragged node. A node at the top of its UI has no parent: its drag refuses to start with `IllegalStateException` (`The node <Class> is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()`). |
 | `DraggableProperty.node(Node node)` | `NODE` | Another node. |
 | `DraggableProperty.custom(double x, double y, double width, double height)` | `CUSTOM` | A rectangle in absolute UI units. |
 | `DraggableProperty.ui()` | `UI` | The virtual canvas, `(0, 0, 1920, 1080)`. |
@@ -48,7 +50,7 @@ The blue square follows the mouse while you hold the left button on it and stays
 
 Every factory starts with the type `MOVE`, the snap type `NEAREST`, no snap target and dragging enabled (except `disabled()`).
 
-The area applies when the node is not being dragged: during the drag, the node follows the mouse even outside its area; on release, and whenever it lies outside while idle, it slides back inside.
+The area applies all the time: during the drag the target is kept inside it (the node, or the copy of a `COPY` drag, never leaves it), and a node that lies outside while idle slides back inside.
 
 ## DraggableProperty reference
 
@@ -64,7 +66,7 @@ The area applies when the node is not being dragged: during the drag, the node f
 | `isEnabled(Node node)` | Result of the enabled predicate. |
 | `hasSnapping()` | `true` when at least one snap target is set. |
 | `getSnapping(Node node)` | The snap target chosen for the node at its current position, or `null`. |
-| `getBounds(Node node)` | The area as `{x, y, width, height}` in absolute UI units; throws an `IllegalArgumentException` for `FREE`. |
+| `getBounds(Node node)` | The area as `{x, y, width, height}` in absolute UI units; throws an `IllegalArgumentException` for `FREE`, and the `IllegalStateException` above for `PARENT` on a top-level node. |
 | `lerp(double frameTime, double value, double target)` | The easing step used to follow the target. |
 | `getType()`, `getEnabled()`, `getAreaType()`, `getAreaObject()`, `getSnapType()`, `getSnapNodes()` | Current settings. |
 
@@ -77,30 +79,30 @@ The setters return the property, so you can chain them. A property holds no drag
 | `MOVE` | The node itself moves. |
 | `COPY` | A copy of the node (made with `copy()`, positioned absolutely, drawn after the node and its children) follows the mouse; the original stays in place. The copy is removed when the drag ends. |
 
-With `COPY`, `getDraggedNode()` returns the copy during the drag and `null` afterwards. Snapping only reports the target through `onSnap`: create the result of the drop yourself.
+With `COPY`, `getDraggedNode()` returns the copy during the drag, still at its drop position during the `onDragEnd` callbacks, and `null` afterwards: the copy is removed right after them, it never glides to the target. Snapping only reports the target through `onSnap`: create the result of the drop yourself.
 
 ```java
 public class PaletteUI extends UI {
 
-    @Override
-    public void init() {
-        final DraggableProperty drag = DraggableProperty.screen().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP);
+	@Override
+	public void init() {
+		final DraggableProperty drag = DraggableProperty.screen().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP);
 
-        final RectNode slot = RectNode.create(800, 400, 120, 120).color(Color.GRAY).attach(this);
-        drag.snap(slot);
+		final RectNode slot = RectNode.create(800, 400, 120, 120).color(Color.decode("#DDDDDD")).attach(this);
+		drag.snap(slot);
 
-        RectNode
-        .create(100, 400, 120, 120)
-        .color(Color.RED)
-        .draggable(drag)
-        .onSnap((node, snapNode) -> RectNode.create(10, 10, 100, 100).color(Color.RED).attach(snapNode))
-        .attach(this);
-    }
+		RectNode
+		.create(100, 400, 120, 120)
+		.color(Color.decode("#999999"))
+		.draggable(drag)
+		.onSnap((node, snapNode) -> RectNode.create(10, 10, 100, 100).color(Color.decode("#999999")).attach(snapNode))
+		.attach(this);
+	}
 
 }
 ```
 
-![A copy of a red square is dragged onto a gray slot, which then shows a red square; a second copy dropped elsewhere disappears](../images/drag-copy.gif "The copy overlaps the slot on release, so onSnap fills it; a copy dropped outside any target goes back and is removed (0.75× scale).")
+![A copy of a gray square is dragged onto a light slot, which then shows a gray square; a second copy dropped elsewhere disappears](../images/drag-copy.gif "The copy overlaps the slot on release, so onSnap fills it; a copy dropped outside any target is removed (0.75× scale).")
 
 `DraggableType`, `DraggableAreaType` and `DraggableSnapType` are nested in `DraggableProperty`.
 
@@ -129,7 +131,7 @@ When a target is chosen, `onSnap` fires and the drag target becomes the target's
 ```java
 RectNode
 .create(50, 50, 100, 100)
-.color(Color.BLUE)
+.color(Color.decode("#999999"))
 .draggable(DraggableProperty.parent())
 .onDragStart(node -> System.out.println("Start"))
 .onDrag(node -> System.out.println("Target " + node.getTargetDragX() + ", " + node.getTargetDragY()))
@@ -137,7 +139,7 @@ RectNode
 .attach(board);
 ```
 
-Cancelling the PRE phase vetoes the step: no drag for `onDragStart`, an unchanged target for `onDrag`, the dropped position kept for `onSnap`. Cancelling the PRE phase of `onDragEnd` skips the whole end: the node stays in the dragging state. See [Callbacks](callbacks.md#pre-and-post-phases).
+Cancelling the PRE phase vetoes the step: no drag for `onDragStart`, an unchanged target for `onDrag`, the dropped position kept for `onSnap`. Cancelling the PRE phase of `onDragEnd` refuses the drop: the drag still ends (`isDragging()` is `false`), a `MOVE` node goes back to where it started, the copy of a `COPY` drag is removed, and the `onDragEnd` lambdas do not run. See [Callbacks](callbacks.md#pre-and-post-phases).
 
 The children of a [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) also receive `onDragStart`, `onDrag` and `onDragEnd` while they are reordered.
 
@@ -145,23 +147,35 @@ The children of a [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) als
 
 | Method | Description |
 |---|---|
-| `draggable(DraggableProperty draggable)` | Sets the property, stops any drag and resets the start and target positions to the current absolute position. |
+| `draggable(DraggableProperty draggable)` | Sets the property and stops any drag in progress (removing a copy). At rest, the target follows the node's real absolute position on every frame. |
 | `getDraggable()` | The property, or `null`. |
 | `isDragging()` | `true` between the drag start and the drag end. |
-| `isDragged()` | `true` while the node moves toward its drag target. |
+| `isDragged()` | `true` while the node moves toward its drag target (`false` again at the end of a `COPY` drag). |
 | `getDraggedNode()` | The copy during a `COPY` drag, otherwise `null`. |
 | `getDragX()`, `getDragY()` | Grab offset: mouse position minus the node's absolute position at the start. |
-| `getStartDragX()`, `getStartDragY()` | Absolute position of the node when the drag started. |
+| `getStartDragX()`, `getStartDragY()` | Absolute position of the node when the last drag started (meaningful after a first drag). |
 | `getTargetDragX()`, `getTargetDragY()` | Absolute position the node is heading to. |
 
 ## Driving a drag from code
 
 | Method | Description |
 |---|---|
-| `startDragging(double mouseX, double mouseY)` | Starts a drag as a press at that mouse position would: fires `onDragStart`, creates the copy for `COPY`. The node must have a `DraggableProperty`. |
+| `startDragging(double mouseX, double mouseY)` | Starts a drag as a press at that mouse position would: fires `onDragStart`, creates the copy for `COPY`. Without a `DraggableProperty`, throws `IllegalStateException` (`The node <Class> has no DraggableProperty, call draggable(...) first`), like `dragging(true, ...)`. |
 | `stopDragging()` | Ends the drag as a release would: fires `onDragEnd`, with `onSnap` inside it when a target is chosen. |
 | `dragging(boolean dragging, double mouseX, double mouseY)` | Sets the drag state without callbacks, copy or snapping. `true` grabs the node at that mouse position; `false` stops the drag, and the node finishes its move to the current target. |
 | `fireDragStart(Runnable runnable)`, `fireDrag(Runnable runnable)`, `fireDragEnd(Runnable runnable)` | Run `runnable` as the default action of the `onDragStart`, `onDrag` or `onDragEnd` callbacks (`null` runs only the callbacks). Used by nodes that manage the drag of their children. |
+
+## Dragging inside a scrolling parent
+
+Drag coordinates are absolute: a parent that is offset or scrolled changes nothing for you. Moving a `MOVE` child of a scrolling parent (`OverflowProperty.SCROLL`) also moves its unscrolled position, so the dropped child stays where you released it and scrolls with the content.
+
+## Pitfalls
+
+- An `onClick` on the draggable node (or a child that consumes the press) prevents the drag.
+- `parent()` needs a parent node: attach the node to a container, or pick `ui()`.
+- Detaching a node in the middle of a drag (`remove`, `clearChildren`, closing the UI) ends the drag with its `onDragEnd` callbacks: a `MOVE` node lands where the drag aimed, the copy of a `COPY` drag is dropped.
+- A layout (`FlexNode`, `GridNode`) places its children again: drag the children of a [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) instead.
+- A `FREE` node dragged out of a parent with `HIDDEN` or `SCROLL` overflow is clipped by it and stops updating while outside.
 
 ## See also
 

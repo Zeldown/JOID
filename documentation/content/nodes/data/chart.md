@@ -1,164 +1,262 @@
 # ChartNode
 
-`ChartNode` (`dev.joid.lib.ui.node.impl.structure.chart`) is the abstract base of charts built on an X axis of labels and named series of values: line charts, bar charts, area charts. It stores the axes and the series and computes the scale; you subclass it and draw the chart in `draw`.
-
-## Writing a chart
-
-Subclass `ChartNode` following the [custom node](../custom-nodes.md) contract (protected constructor, static `create` factory) and draw from the data in `draw`:
+`ChartNode` (`dev.joid.lib.ui.node.impl.structure.chart`) is the base of charts built on an X axis of labels and named series of values: line charts, bar charts, area charts. It stores the axes and the series and computes the scale; it is abstract and draws nothing, so you subclass it and draw the chart your way.
 
 ```java
 public class LineChartNode extends ChartNode {
 
-    protected LineChartNode(final double x, final double y, final double width, final double height) {
-        super(x, y, width, height);
-    }
+	private static final Color[] SERIES = {Color.decode("#999999"), Color.decode("#555555")};
 
-    public static LineChartNode create(final double x, final double y, final double width, final double height) {
-        return new LineChartNode(x, y, width, height);
-    }
+	private final TextInfo info;
 
-    @Override
-    public void draw(final double mouseX, final double mouseY) {
-        if (!super.isLoaded()) {
-            return;
-        }
+	protected LineChartNode(final double x, final double y, final double width, final double height, final TextInfo info) {
+		super(x, y, width, height);
+		this.info = info;
+	}
 
-        final double min = super.getMin().doubleValue();
-        final double max = super.getMax().doubleValue();
-        final double step = super.getWidth() / Math.max(1, super.getLabels().size() - 1);
-        for (final ChartData data : super.getDataMap().values()) {
-            Vector2d last = null;
-            double x = super.getX();
-            for (final String label : super.getLabels()) {
-                final Number value = data.get(label);
-                if (value != null) {
-                    final Vector2d point = new Vector2d(x, super.getY() + super.getHeight() * (1D - (value.doubleValue() - min) / (max - min)));
-                    if (last != null) {
-                        DrawUtils.SHAPE.drawLine(Color.RED, 2F, last, point);
-                    }
-                    last = point;
-                }
-                x += step;
-            }
-        }
-    }
+	public static @NonNull LineChartNode create(final double x, final double y, final double width, final double height, final @NonNull TextInfo info) {
+		return new LineChartNode(x, y, width, height, info);
+	}
+
+	@Override
+	public void draw(final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
+		if (!super.isLoaded()) {
+			return;
+		}
+
+		final double min = super.getMin().doubleValue();
+		final double max = super.getMax().doubleValue();
+		final double left = super.getX() + 100D;
+		final double top = super.getY() + 20D;
+		final double width = super.getWidth() - 130D;
+		final double height = super.getHeight() - 60D;
+		final double step = width / Math.max(1, super.getLabels().size() - 1);
+		DrawUtils.TEXT.drawText(super.getX() + 10D, top, super.getYAxis().format(max), this.info, Align.START, Align.CENTER);
+		DrawUtils.TEXT.drawText(super.getX() + 10D, top + height, super.getYAxis().format(min), this.info, Align.START, Align.CENTER);
+
+		int index = 0;
+		for (final String label : super.getLabels()) {
+			DrawUtils.TEXT.drawText(left + step * index, top + height + 12D, label, this.info, Align.CENTER, Align.START);
+			index++;
+		}
+
+		int series = 0;
+		for (final ChartData data : super.getDataMap().values()) {
+			final Color color = LineChartNode.SERIES[series % LineChartNode.SERIES.length];
+			Vector2d last = null;
+			double x = left;
+			for (final String label : super.getLabels()) {
+				final Number value = data.get(label);
+				if (value != null) {
+					final Vector2d point = new Vector2d(x, top + height * (1D - (value.doubleValue() - min) / (max - min)));
+					if (last != null) {
+						DrawUtils.SHAPE.drawLine(color, 2F, last, point);
+					}
+					DrawUtils.SHAPE.drawCircle(point.x, point.y, color, 4D);
+					last = point;
+				}
+				x += step;
+			}
+			series++;
+		}
+	}
 
 }
 ```
 
-Then create it with its axes and series:
+Then create it with its axes and a series (`this.info` is a `TextInfo` built from a loaded font, see [Text and TextInfo](../../text/text-and-textinfo.md)):
 
 ```java
 LineChartNode
-    .create(50, 50, 900, 340)
-    .axis(ChartAxis.x("date", "13/03", "14/03", "15/03", "16/03"), ChartAxis.y("value").suffix("$"))
-    .data("Revenue", ChartData.create().add("13/03", 0).add("14/03", 4).add("15/03", 5.5D).add("16/03", 10))
-    .attach(this);
+.create(100, 100, 480, 280, this.info)
+.xAxis(ChartAxis.x("day", "Mon", "Tue", "Wed", "Thu", "Fri"))
+.yAxis(ChartAxis.y("visits"))
+.data("Visits", ChartData.create().add("Mon", 2).add("Tue", 6).add("Wed", 4).add("Thu", 8).add("Fri", 7))
+.attach(this);
 ```
 
-![A red line rising across four points](../../images/chart-line.png "The Revenue series drawn by LineChartNode: 0, 4, 5.5 and 10 across the four dates, scaled from getMin() to getMax().")
+![A gray line with five points on a white card, Mon to Fri, between 2.0 and 8.0](../../images/chart-line.png "The Visits series drawn by LineChartNode, scaled from getMin() to getMax().")
 
-`ChartAxis` and `ChartData` are nested classes: `ChartNode.ChartAxis` (with `ChartAxis.XChartAxis` and `ChartAxis.YChartAxis`) and `ChartNode.ChartData`. `Vector2d` comes from `javax.vecmath`; the drawing calls are described in [Shapes](../../drawing/shapes.md).
+`ChartAxis` and `ChartData` are nested classes: `ChartNode.ChartAxis` (with `ChartAxis.XChartAxis` and `ChartAxis.YChartAxis`) and `ChartNode.ChartData`. `Vector2d` comes from `javax.vecmath`; the drawing calls are described in [Shapes](../../drawing/shapes.md) and [Drawing Text](../../drawing/text.md). The protected constructor and the `create` factory follow the [custom node](../custom-nodes.md) contract.
 
-## Axes with ChartAxis
+## Axes with xAxis and yAxis
 
-| Factory | Description |
+`ChartAxis.x(name, labels...)` creates the X axis with its labels, in order (a repeated label is kept once, at its first position); `ChartAxis.y(name)` creates the Y axis. Set them with `xAxis(...)` and `yAxis(...)`.
+
+The series live in the X axis: set the X axis before adding a series, and know that a new X axis comes with its own series. Like every node setter, `xAxis(...)` and `yAxis(...)` also take a `Supplier`: a `map(...)` that builds the axis and its series follows a [signal](../../state/signals.md).
+
+```java
+LineChartNode
+.create(100, 100, 480, 280, this.info)
+.yAxis(ChartAxis.y("visits"))
+.xAxis(this.visits.map(visits -> ChartAxis.x("day", "Mon", "Tue", "Wed").data("Visits", ChartData.create().add("Mon", 2).add("Tue", 6).add("Wed", visits))))
+.attach(this);
+```
+
+## Several series with data
+
+`data(name, series)` adds a series, or replaces the series of that name. The series keep the order in which their names were first added, so your `draw` can give each one its color:
+
+```java
+LineChartNode
+.create(100, 100, 480, 280, this.info)
+.xAxis(ChartAxis.x("day", "Mon", "Tue", "Wed", "Thu", "Fri"))
+.yAxis(ChartAxis.y("count"))
+.data("Visits", ChartData.create().add("Mon", 2).add("Tue", 6).add("Wed", 4).add("Thu", 8).add("Fri", 7))
+.data("Orders", ChartData.create().add("Mon", 1).add("Tue", 2).add("Wed", 3).add("Thu", 3).add("Fri", 5))
+.attach(this);
+```
+
+![Two lines on one chart: a light gray Visits line and a dark gray Orders line below it, between 1.0 and 8.0](../../images/chart-series.png "getMin() and getMax() cover every series: the scale goes from 1 (Orders) to 8 (Visits).")
+
+A series does not need a value for every label: `get(label)` returns `null` for a missing one, so check it in `draw`, as above.
+
+## Value labels with prefix and suffix
+
+The Y axis formats the values for your labels: `format(value)` puts the value between the prefix and the suffix.
+
+```java
+LineChartNode
+.create(100, 100, 480, 280, this.info)
+.xAxis(ChartAxis.x("month", "Jan", "Feb", "Mar", "Apr"))
+.yAxis(ChartAxis.y("price").prefix("$").suffix(" k"))
+.data("Price", ChartData.create().add("Jan", 10).add("Feb", 12.5D).add("Mar", 11).add("Apr", 15))
+.attach(this);
+```
+
+![A line chart whose value labels read $15.0 k at the top and $10.0 k at the bottom](../../images/chart-format.png "LineChartNode draws getYAxis().format(max) and format(min).")
+
+`format` writes the value with `toString()`: the scale methods return `double` values, so `15` shows as `15.0`. Format the number yourself (`String.format`) for another notation. The node draws nothing from the Y axis: the name, the prefix and the suffix are there for your `draw`.
+
+## Updating the data
+
+The chart reads its series on every frame. Change a `ChartData` with `add(...)` or `remove(...)`, or call `data(...)` again on the node, and the next frame shows it:
+
+```java
+private int week;
+
+@Override
+public void init() {
+	final LineChartNode chart = LineChartNode
+			.create(100, 100, 480, 280, this.info)
+			.xAxis(ChartAxis.x("day", "Mon", "Tue", "Wed", "Thu"))
+			.yAxis(ChartAxis.y("value"))
+			.data("Week", ChartData.create().add("Mon", 1).add("Tue", 3).add("Wed", 2).add("Thu", 4))
+			.attach(this);
+
+	RectNode
+	.create(600, 100, 120, 60)
+	.color(Color.decode("#999999"))
+	.onClick((node, mouseX, mouseY, clickType) -> {
+		this.week++;
+		chart.data("Week", ChartData.create().add("Mon", 1 + this.week % 3).add("Tue", 3 - this.week % 3).add("Wed", 2 + this.week % 2).add("Thu", 4 - this.week % 4));
+	})
+	.body(rect -> {
+		TextNode.create(60, 30).text(Text.create("Next", this.white)).anchor(Align.CENTER).attach(rect);
+	})
+	.attach(this);
+}
+```
+
+![The cursor clicks a Next button three times: the line of the chart takes a new shape and new min and max labels at each click](../../images/chart-update.gif "Each click calls data(...) with a new Week series; the scale follows the new values.")
+
+## Scale with getMin and getMax
+
+| Method | Returns |
 | --- | --- |
-| `ChartAxis.x(String name, String... labels)` | Creates the X axis with its labels, in order. A repeated label is kept once, at its first position. |
+| `getMax()` | Largest value of all series. |
+| `getMin()` | Smallest value of all series. |
+| `getAverage()` | Average of the averages of the series. |
+| `getMax(String)`, `getMin(String)`, `getAverage(String)` | The same for one series. A missing series gives the scale `0` to `1` and an average of `0`. |
+
+- The scale starts at the smallest value, not at `0`: a series from 2 to 8 is drawn from 2 to 8.
+- When all the values are equal, `getMin()` returns `0` and `getMax()` twice the value (`1` when the value is `0`). Without series, the scale is `0` to `1`.
+- `getMax() - getMin()` is therefore never `0`: you can divide by it.
+
+## Loading state with isLoaded
+
+`isLoaded()` returns `true` once the node is mounted (no pending `wait(...)` condition), both axes are set, at least one series exists and no series is empty. Test it at the start of `draw` to draw a placeholder or nothing.
+
+While the node waits for a `wait(...)` condition, it draws the default pulsing skeleton over its bounds instead of `draw` (see [Node Fundamentals](../node-fundamentals.md)); override `drawSkeleton` to draw your own:
+
+```java
+LineChartNode
+.create(100, 100, 480, 280, this.info)
+.xAxis(ChartAxis.x("day", "Mon", "Tue", "Wed"))
+.yAxis(ChartAxis.y("value"))
+.data("Visits", ChartData.create().add("Mon", 2).add("Tue", 6).add("Wed", 4))
+.wait(2, TimeUnit.SECONDS)
+.attach(this);
+```
+
+## Reference
+
+### ChartNode
+
+| Method | Description |
+| --- | --- |
+| `ChartNode(double x, double y, double width, double height)` | Protected constructor for your subclass. |
+| `xAxis(XChartAxis)`, `xAxis(Supplier<XChartAxis>)` | Sets the X axis (labels and series), or follows it. |
+| `yAxis(YChartAxis)`, `yAxis(Supplier<YChartAxis>)` | Sets the Y axis, or follows it. |
+| `data(String dataName, ChartData data)` | Adds or replaces a series. Throws `IllegalStateException("You must set the X axis before adding data")` without X axis. |
+| `remove(String data)` | Removes a series. Throws `IllegalStateException` without X axis. |
+| `getXAxis()`, `getYAxis()` | The axes, or `null`. |
+| `getLabels()` | The X labels, in order; empty without X axis. |
+| `getData(String)` | The series of that name, or `null`. |
+| `getDataMap()` | The series by name, in the order they were first added; empty without X axis. |
+| `getMin()`, `getMax()`, `getAverage()` and their `(String)` overloads | Scale of all series, or of one. |
+| `isLoaded()` | `true` when the chart has everything to draw. |
+
+### ChartAxis
+
+| Method | Description |
+| --- | --- |
+| `ChartAxis.x(String name, String... labels)` | Creates the X axis with its labels. |
 | `ChartAxis.y(String name)` | Creates the Y axis. |
+| `getName()` | Name of the axis. |
 
-Set them on the node with `axis(XChartAxis)`, `axis(YChartAxis)` or `axis(XChartAxis, YChartAxis)`.
-
-### XChartAxis
-
-The X axis holds the labels and the series.
-
-| Method | Description |
+| `XChartAxis` method | Description |
 | --- | --- |
-| `labelSet(String... labels)` | Replaces the labels. |
-| `labelSet(Set<String> labelSet)` | Replaces the labels with a copy of any set, in its iteration order. |
-| `data(String dataName, ChartData data)` | Adds or replaces a series. |
-| `remove(String data)` | Removes a series. |
+| `labelSet(String... labels)`, `labelSet(Set<String> labelSet)` | Replaces the labels (a copy of the set, in its iteration order). |
+| `data(String dataName, ChartData data)`, `remove(String data)` | Adds, replaces or removes a series. |
 | `get(String data)` | The series of that name, or `null`. |
-| `getName()`, `getLabelSet()`, `getDataMap()` | The name, the ordered labels, and the series by name. |
+| `getLabelSet()`, `getDataMap()` | The ordered labels, and the series by name. |
 
-Because the series live in the X axis, replacing the X axis also replaces the series.
-
-### YChartAxis
-
-| Method | Description |
+| `YChartAxis` method | Description |
 | --- | --- |
-| `prefix(String prefix)` / `suffix(String suffix)` | Text to put before or after the values, for example a currency. |
-| `format(Number value)` | The value between the prefix and the suffix: `ChartAxis.y("price").prefix("$").format(12.5D)` gives `$12.5`. A missing prefix or suffix counts as empty. |
-| `getName()`, `getPrefix()`, `getSuffix()` | The name and the texts; prefix and suffix are `null` until set. |
+| `prefix(String)`, `suffix(String)` | Text before and after the formatted values. Default `null` (nothing). |
+| `format(Number value)` | Prefix + `value.toString()` + suffix: `ChartAxis.y("price").prefix("$").suffix(" k").format(12.5D)` gives `$12.5 k`. |
+| `getPrefix()`, `getSuffix()` | The texts, or `null`. |
 
-The node does not draw anything from the Y axis: your `draw` code writes the name as an axis title and `format(...)` as the value labels.
-
-## Series with ChartData
-
-A series maps each X label to a `Number`.
+### ChartData
 
 | Method | Description |
 | --- | --- |
 | `ChartData.create()` | Creates an empty series. |
-| `ChartData.create(Map<String, Number> dataMap)` | Creates a series backed by your map (not copied). A `null` map makes an empty series. |
+| `ChartData.create(Map<String, Number> dataMap)` | Creates a series backed by your map (not copied). |
 | `add(String label, Number data)` | Sets the value of a label. |
 | `remove(String label)` | Removes the value of a label. |
 | `dataMap(Map<String, Number> dataMap)` | Replaces the backing map. |
 | `get(String label)` | The value of a label, or `null`. |
 | `has(String label)` | `true` when the label has a value. |
-| `isEmpty()` | `true` when the series has no value. |
-| `getMax()`, `getMin()`, `getAverage()` | Statistics of the values, `0` for an empty series. |
+| `isEmpty()` | `true` without values (or without map). |
+| `getMax()`, `getMin()`, `getAverage()` | Statistics of the values; `0` for an empty series. |
 | `getDataMap()` | The backing map. |
 
-A series does not need a value for every label: `get(label)` returns `null` for a missing one, so check it in `draw`.
+The node setters return the node itself, typed by the generic return of the fluent API. The rest of the node API is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
 
-### Adding and removing series on the node
+## Pitfalls
 
-| Method | Description |
-| --- | --- |
-| `data(String dataName, ChartData data)` | Adds or replaces a series. Throws `IllegalStateException` when no X axis is set. |
-| `remove(String data)` | Removes a series. Throws `IllegalStateException` when no X axis is set. |
-| `getData(String data)` | The series of that name, or `null`. |
-| `getDataMap()` | The series by name, in the order they were first added. |
-| `getLabels()` | The X labels, in order. |
-
-The chart reads its data on every frame: change a `ChartData` with `add(...)` or `remove(...)`, or call `data(...)` again, and the next frame shows it.
-
-## Scale with getMin and getMax
-
-| Method | Description |
-| --- | --- |
-| `getMax()` | Largest value of all series. |
-| `getMin()` | Smallest value of all series. |
-| `getAverage()` | Average of the averages of the series. |
-| `getMax(String data)`, `getMin(String data)`, `getAverage(String data)` | The same for one series. A missing series has the scale `0` to `1` and an average of `0`. |
-
-When all the values are equal, `getMin()` returns `0` and `getMax()` returns twice the value (`1` when the value is `0`). Without series, the scale is `0` to `1`. `getMax() - getMin()` is therefore never `0`, so you can divide by it safely.
-
-## Loading state with isLoaded
-
-`isLoaded()` returns `true` when the node is mounted (no pending `wait(...)` condition), both axes are set, there is at least one series, and no series is empty. Test it at the start of `draw` to show a placeholder or nothing.
-
-- While the node waits for a `wait(...)` condition, it draws the default pulsing grey placeholder over its bounds (see [Node Fundamentals](../node-fundamentals.md)). Override `drawSkeleton` to draw your own.
-- Without an X axis, `getLabels()` and `getDataMap()` are empty, `getData(...)` returns `null` and the scale is `0` to `1`.
-
-## Reference
-
-| Method | Description |
-| --- | --- |
-| `axis(XChartAxis x)`, `axis(YChartAxis y)`, `axis(XChartAxis x, YChartAxis y)` | Sets the axes. |
-| `data(String, ChartData)`, `remove(String)` | Adds, replaces or removes a series. |
-| `getXAxis()`, `getYAxis()` | The axes, or `null`. |
-| `getLabels()`, `getData(String)`, `getDataMap()` | Labels and series. |
-| `getMin()`, `getMax()`, `getAverage()` and their per-series overloads | Scale. |
-| `isLoaded()` | `true` when the chart has everything to draw. |
-
-The setters return the node itself, typed by the generic return of the fluent API. The rest of the node API is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
+- Set the X axis before `data(...)` or `remove(...)`: both throw `IllegalStateException` without it.
+- Setting a new X axis drops the series of the previous one: they belong to the axis.
+- `ChartData.create(map)` keeps your map: changing the map changes the chart at the next frame.
+- An empty series keeps `isLoaded()` at `false`: the chart draws its placeholder until the series has a value.
 
 ## See also
 
 - [RadarChartNode](radar-chart.md)
 - [Custom Nodes](../custom-nodes.md)
 - [Shapes](../../drawing/shapes.md)
-- [Drawing Text](../../drawing/text.md) for labels and values
+- [Drawing Text](../../drawing/text.md)
+- [Signals](../../state/signals.md)

@@ -1,117 +1,182 @@
 # ToggleNode
 
-`ToggleNode<F, S>` (`dev.joid.lib.ui.node.impl.structure.toggle`) is a two-state control that flips on each click, like [`CheckboxNode`](checkbox.md), and maps each state to a value: `F` while toggled, `S` otherwise (the "back" side). Use it for on / off switches, theme pickers and any binary choice that you read as a value. It is abstract and draws nothing: you subclass it and draw both states.
-
-## Creating a toggle
+`ToggleNode<F, S>` (`dev.joid.lib.ui.node.impl.structure.toggle`) is a two-sided switch: each click flips it between its back side and its toggled side, and each side can carry a value of your choice (`F` when toggled, `S` on the back side). It is abstract and draws nothing: you subclass it once with your own look. For a plain boolean, see [CheckboxNode](checkbox.md); for more than two choices, see [SwitchNode](switch.md).
 
 ```java
-public class ThemeToggleNode extends ToggleNode<String, String> {
+public class QualityToggleNode extends ToggleNode<String, String> {
 
-    protected ThemeToggleNode(final double x, final double y, final double width, final double height) {
-        super(x, y, width, height);
-    }
+	private static final Color INK = Color.decode("#999999");
 
-    public static ThemeToggleNode create(final double x, final double y, final double width, final double height) {
-        return new ThemeToggleNode(x, y, width, height);
-    }
+	protected QualityToggleNode(final double x, final double y, final double width, final double height) {
+		super(x, y, width, height);
+	}
 
-    @Override
-    public void draw(final double mouseX, final double mouseY) {
-        DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.DARKGRAY);
-        DrawUtils.SHAPE.drawRect(super.getX() + (super.isToggle() ? super.getWidth() / 2D : 0D), super.getY(), super.getWidth() / 2D, super.getHeight(), Color.WHITE);
-    }
+	public static @NonNull QualityToggleNode create(final double x, final double y, final double width, final double height) {
+		return new QualityToggleNode(x, y, width, height);
+	}
+
+	@Override
+	public void draw(final double mouseX, final double mouseY) {
+		final float alpha = super.isEnabled() ? 1F : 0.4F;
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.copyAlpha(alpha));
+		DrawUtils.SHAPE.drawRect(super.getX() + (super.isToggle() ? super.dw(2) : 0D), super.getY(), super.dw(2), super.getHeight(), QualityToggleNode.INK.copyAlpha(alpha));
+	}
 
 }
 ```
 
-Then, in `UI.init()`:
+Then, in your UI:
 
 ```java
-ThemeToggleNode
-.create(860, 500, 200, 50)
-.state("dark", "light")
-.onChange((toggle, toggled) -> System.out.println("Theme: " + toggle.getValue()))
-.attach(this);
+private final StringSignal quality = StringSignal.of("Low");
+
+@Override
+public void init() {
+	QualityToggleNode
+	.create(100, 100, 120, 60)
+	.state("High", "Low")
+	.onChange((node, toggle) -> this.quality.set(node.getValue()))
+	.attach(this);
+
+	TextNode.create(100, 190).text(Text.create("Quality: " + this.quality.get(), this.info)).attach(this);
+}
 ```
 
-![The cursor clicks a two-part toggle twice and the white half moves right, then back left](../../images/toggle-click.gif "The white half shows the side: left for light (back), right for dark (toggled).")
+![The cursor clicks a toggle twice: the gray knob jumps right and the text reads Quality: High, then it jumps back and reads Quality: Low](../../images/toggle-click.gif "Each click flips the toggle; onChange writes getValue() into quality, and the text follows.")
 
-The toggle starts on its back side: `isToggle()` is `false` and `getValue()` returns `"light"`. A click flips it to `"dark"`, the next one back to `"light"`.
+`draw` reads `isToggle()` on every frame, so the knob follows the state. `this.info` is a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)). The protected constructor and the `create` factory follow the [custom node](../custom-nodes.md) contract.
 
-See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
+## Side values with state and getValue
 
-## Values with state and ToggleState
+`state(F toggle, S back)` gives a value to each side; `getValue()` returns the value of the current side: `toggle` when `isToggle()` is `true`, `back` otherwise. The two types are free: `ToggleNode<Integer, Integer>` for a frame rate (`state(144, 60)`), `ToggleNode<Locale, Locale>` for a language pair.
 
-`state(F toggle, S back)` stores the two values in a `ToggleState<F, S>`:
+`state(...)` only stores the two values: it does not change the side, runs no callback and is not followed. Set it before reading `getValue()`.
 
-| Side | `isToggle()` | `getValue()` returns |
-| --- | --- | --- |
-| Toggled | `true` | `getState().getToggle()`, of type `F` |
-| Back (initial) | `false` | `getState().getBack()`, of type `S` |
+## Initial side with toggle
 
-`getValue()` is generic and unchecked: it returns the value as the type you assign it to, so assign it to `F` or `S`. Call `state(...)` before `getValue()`, which otherwise throws a `NullPointerException`.
+A new toggle is on its back side. `toggle(true)` puts it on the toggled side:
 
 ```java
-final int fps = fpsToggle.<Integer>getValue();
+QualityToggleNode.create(100, 100, 120, 60).attach(this);
+
+QualityToggleNode.create(260, 100, 120, 60).toggle(true).attach(this);
+
+QualityToggleNode.create(420, 100, 120, 60).toggle(true).enabled(false).attach(this);
 ```
 
-Here `fpsToggle` is a `ToggleNode<Integer, Integer>` created with `.state(60, 30)`.
+![Three toggles: knob on the left, knob on the right, and knob on the right at 40 % opacity](../../images/toggle-states.png "The back side, toggle(true), and toggle(true) with enabled(false).")
 
-`ToggleState<T, B>` is a plain holder with a public constructor `ToggleState(T toggle, B back)` and the getters `getToggle()` and `getBack()`.
+Call `toggle(...)` and `state(...)` before the setters inherited from `Node` (`enabled`, `x`, `width`...), or add a type witness (`.<QualityToggleNode>enabled(false).toggle(true)`): a `Node` setter in the middle of a chain returns a `Node`.
 
 ## Clicking
 
-- A mouse press on the toggle (any button) flips `isToggle()`, then calls `onChange` with the new side. The press is consumed.
-- A press that a node above already consumed is ignored, and a disabled or hidden toggle ignores presses.
+- A press of any mouse button on the toggle flips it, then runs `onChange`. The press is consumed: the nodes under the toggle do not receive it.
+- Of two overlapping toggles, only the one in front flips.
+- A disabled or hidden toggle ignores presses. Draw the disabled look yourself from `isEnabled()`.
 - The toggle reacts on press, not on release, and has no keyboard control.
-- `toggle(boolean)` sets the side from code. `onChange` runs on every real change of the side, whatever its source: a click, a setter or the bound signal. Setting the current side again runs nothing.
 
-## Binding a signal with signal
+## Sharing the side with signal
 
-`signal(Signal<Boolean>)` keeps the side and a [signal](../../state/signals.md) in sync, both ways: `true` is the toggled side, `false` the back side.
+`signal(Signal<Boolean>)` binds the side to a [signal](../../state/signals.md) in both directions (`true` = toggled):
 
 ```java
-final BooleanSignal dark = new BooleanSignal(true);
+private final BooleanSignal night = BooleanSignal.of(false);
 
-ThemeToggleNode
-.create(860, 500, 200, 50)
-.state("dark", "light")
-.signal(dark)
+@Override
+public void init() {
+	QualityToggleNode.create(100, 100, 120, 60).signal(this.night).attach(this);
+
+	QualityToggleNode.create(240, 100, 120, 60).signal(this.night).attach(this);
+
+	TextNode.create(100, 190).text(Text.create(this.night.get() ? "Night mode" : "Day mode", this.info)).attach(this);
+}
+```
+
+- The toggle takes the value of the signal as soon as you bind it (a `null` value is ignored).
+- A click writes the new side into the signal before the `onChange` callbacks run; `toggle(...)` writes it too.
+- A value set on the signal from anywhere else flips the toggle, and runs `onChange` when it changes, while the UI of the toggle is open.
+- A toggle follows one signal at a time: calling `signal(...)` again unbinds the previous one.
+- A toggle that is not attached yet follows the signal once attached; a detached toggle takes the current value of the signal when it is attached again.
+
+## Following a value with toggle
+
+`toggle(...)` also takes an expression that reads signals, a signal, a `map(...)` or a `Supplier<Boolean>` (see [Reactive Properties](../../state/reactive-properties.md)). The toggle follows that value in one direction only: a click flips it, but never writes into the source.
+
+```java
+QualityToggleNode.create(100, 100, 120, 60).toggle(this.volume.get() > 50).attach(this);
+```
+
+## Reacting with onChange
+
+`onChange(NodeToggleChangeCallback<T, F, S>)` runs `(node, toggle)` after each real change of the side, whatever its source: a click, `toggle(...)`, a followed value or the bound signal. Flipping to the current side again runs nothing. `node.getValue()` already returns the value of the new side. The change follows the same steps as every control of this family:
+
+![Diagram: a click, a setter or a bound signal gives a new value; an equal value stops there; PRE callbacks can cancel; then the value is stored and the signal written; then the POST callbacks run onChange](../../images/diagram-control-change.png "How every control of this family applies a new value.")
+
+Cancel the context in the `pre(...)` phase to keep the current side. A refused click is still consumed.
+
+```java
+QualityToggleNode
+.create(100, 100, 120, 60)
+.state("High", "Low")
+.onChange(new NodeToggleChangeCallback<QualityToggleNode, String, String>() {
+
+	@Override
+	public void apply(final @NonNull QualityToggleNode node, final boolean toggle) {
+		System.out.println("Quality locked on " + node.getValue());
+	}
+
+	@Override
+	public void pre(final @NonNull QualityToggleNode node, final @NonNull InternalContext context, final boolean toggle) {
+		if (!toggle) {
+			context.cancel();
+		}
+	}
+
+})
 .attach(this);
 ```
 
-- The toggle starts on the signal's value: here on its toggled side, `"dark"`.
-- Each click writes the new side into the signal, before `onChange` runs.
-- Each value the signal publishes later sets the side, and calls `onChange` when it changes, while the toggle's UI is open.
-- `toggle(boolean)` writes the signal too.
-- The toggle follows one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer sets the side nor receives it.
-
-## onChange
-
-`onChange(NodeToggleChangeCallback<T, F, S>)` takes `(node, toggle)`, where `toggle` is the new `isToggle()` value; `node.getValue()` already returns the new value. Cancelling the context in the `pre(...)` phase keeps the previous side (see [Callbacks](../../interactions/callbacks.md)). The callback interface is in `dev.joid.lib.ui.node.impl.structure.toggle.callback`.
+Once on "High", this toggle stays there. Several `onChange` callbacks run in the order you add them (see [Callbacks](../../interactions/callbacks.md)).
 
 ## Reference
 
-| Method | Default | Description |
-| --- | --- | --- |
-| `ToggleNode(double x, double y, double width, double height)` | | Protected constructor for your subclass. |
-| `state(F toggle, S back)` | none | Values of the toggled and back sides. |
-| `toggle(boolean)` | `false` | Sets the side; calls `onChange` and writes the signal when it changes. |
-| `signal(Signal<Boolean>)` | none | Binds a signal to the side (`true` for toggled), both ways. |
-| `isToggle()` | | `true` on the toggled side. |
-| `getSignal()` | | Bound signal, or `null`. |
-| `getValue()` | | Value of the current side. |
-| `getState()` | | The `ToggleState`, `null` before `state(...)`. |
-| `onChange(NodeToggleChangeCallback<T, F, S>)` | | Adds a callback `(node, toggle)` run after each click. |
-| `mousePressed(double, double, ClickType, InternalContext)` | | Flips the side. Overridable; call `super.mousePressed(...)` to keep the behavior. |
-| `ToggleNode.CALLBACK_CHANGE` | | Callback id of `onChange`. |
+| Method | Description |
+| --- | --- |
+| `ToggleNode(double x, double y, double width, double height)` | Protected constructor for your subclass. |
+| `state(F toggle, S back)` | Values of the toggled side and of the back side. Not followed; no callback. |
+| `toggle(boolean)`, `toggle(Supplier<Boolean>)` | Sets the side, or follows a value one way. Default `false` (back side). Runs `onChange` and writes the bound signal when the side changes. |
+| `signal(Signal<Boolean>)` | Binds a signal both ways; replaces the previous binding. Throws `IllegalArgumentException` for a `ComputedSignal`. |
+| `onChange(NodeToggleChangeCallback<T, F, S>)` | Adds a callback `(node, toggle)` run after each change of the side. |
+| `isToggle()` | `true` on the toggled side. |
+| `getValue()` | Value of the current side, from `state(...)`. |
+| `getState()` | The `ToggleState<F, S>` set by `state(...)` (`getToggle()`, `getBack()`), or `null`. |
+| `getSignal()`, `getSubscription()` | Bound signal and its subscription, or `null`. |
+| `mousePressed(double, double, ClickType, InternalContext)` | Flips the toggle on a press over it. Override it to change what a press does. |
+| `ToggleNode.CALLBACK_CHANGE` | Callback id of `onChange`. |
 
-Every setter returns the node itself, typed by the generic return of the fluent API.
+`NodeToggleChangeCallback<T extends ToggleNode<F, S>, F, S>` (`dev.joid.lib.ui.node.impl.structure.toggle.callback`):
+
+| Method | Description |
+| --- | --- |
+| `apply(T node, boolean toggle)` | Runs after the change (the lambda of `onChange`). |
+| `pre(T node, InternalContext context, boolean toggle)` | Runs before the change; `context.cancel()` keeps the current side. |
+| `post(T node, InternalContext context, boolean toggle)` | Runs after the change and calls `apply`. |
+
+The setters return the node itself, typed by the generic return of the fluent API. The rest of the API is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
+
+## Pitfalls
+
+- `getValue()` without `state(...)` throws a `NullPointerException`.
+- `getValue()` is generic (`<T> T getValue()`): the target type picks `T`. Assign it to the type of the side (`final String value = node.getValue();`); a wrong type fails with a `ClassCastException` at run time, not at compile time.
+- `signal(...)` needs a writable signal: a `ComputedSignal` throws `IllegalArgumentException`. Pass it to `toggle(...)` to follow it.
+- A PRE that refuses a value coming from the bound signal keeps the toggle on its side, but the signal keeps the new value.
+- `onChange` registered after `toggle(true)` in the chain does not run for that first value; registered before, it does.
 
 ## See also
 
 - [CheckboxNode](checkbox.md)
 - [SwitchNode](switch.md)
 - [Signals](../../state/signals.md)
+- [Reactive Properties](../../state/reactive-properties.md)
 - [Callbacks](../../interactions/callbacks.md)
-- [Custom Nodes](../custom-nodes.md)
+- [Building a UI Kit](../../components/ui-kit.md)

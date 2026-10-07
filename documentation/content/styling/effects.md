@@ -5,12 +5,12 @@ A node effect (`NodeEffect`, package `dev.joid.lib.ui.node.effect`) changes how 
 ```java
 @Override
 public void init() {
-    RectNode
-    .create(100, 100, 300, 200)
-    .color(Color.WHITE)
-    .effect(RoundedNodeEffect.create(16F))
-    .effect(BorderNodeEffect.create(Color.BLACK, 2F))
-    .attach(this);
+	RectNode
+	.create(100, 100, 300, 200)
+	.color(Color.WHITE)
+	.effect(RoundedNodeEffect.create(16F))
+	.effect(BorderNodeEffect.create(Color.BLACK, 2F))
+	.attach(this);
 }
 ```
 
@@ -72,7 +72,7 @@ final RectNode card = RectNode.create(100, 100, 300, 200).color(Color.WHITE).eff
 card.getEffect(RoundedNodeEffect.class).radius(8F);
 
 if (card.hasEffect(BorderNodeEffect.class)) {
-    card.removeEffect(BorderNodeEffect.class);
+	card.removeEffect(BorderNodeEffect.class);
 }
 ```
 
@@ -80,7 +80,7 @@ if (card.hasEffect(BorderNodeEffect.class)) {
 
 ## Dynamic values with suppliers
 
-The values of the built-in effects (radius, sides, color, width, mask bounds, transformation) also accept a `Supplier`, read again each frame. Bind them to the hover progress, a signal, an animator or any state:
+Every setting of the built-in effects (radius, sides, color, width, mask bounds, transformation, priority, scope) has a value overload and a `Supplier` overload, like node setters: a native expression that reads signals is followed, a signal or `map(...)` is followed, and a lambda is read every frame (see [Reactive Properties](../state/reactive-properties.md)). A lambda suits the hover progress or an animator:
 
 ```java
 RectNode
@@ -159,6 +159,8 @@ To toggle a built-in effect, add and remove it, or drive its value with a suppli
 
 ## Effects and the shader pipeline
 
+![Diagram: the node is drawn into a framebuffer, the passes run in priority order, and the last one draws into the screen; render-state effects wrap the drawing](../images/diagram-effect-pipeline.png "How a node with effects is rendered")
+
 Shader effects go through the [Shader Pipeline](../shaders/pipeline.md):
 
 - The node (or the whole subtree with `CHILDREN`) is drawn into a framebuffer sized to its rectangle in screen pixels, enlarged on each side by the largest expansion of its passes: the blur radius for `BlurNodeEffect`, the border width plus 2 for `BorderNodeEffect`, nothing for the others. A blur or an outer border can therefore draw outside the node's rectangle, but anything drawn outside that enlarged area (a child overflowing the node with `CHILDREN`, for instance) is cut off.
@@ -207,6 +209,13 @@ The hooks are described in [Custom Effects](custom-effects.md).
 | --- | --- |
 | `SELF` | Shader passes apply to the node's own drawing. Default. |
 | `CHILDREN` | Shader passes apply to the node, its children and its layers. |
+
+## Pitfalls
+
+- A node holds one effect per class: a second `effect(RoundedNodeEffect...)` replaces the first.
+- Effects change pixels only: hit testing, hover and layout use the untransformed rectangle.
+- An effect built from the node (its size, its hover progress) goes through `self(node -> node.effect(...))`.
+- With `CHILDREN`, a child that overflows the enlarged framebuffer area is cut off.
 
 ## See also
 

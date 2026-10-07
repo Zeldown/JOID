@@ -1,10 +1,10 @@
 # Styling
 
-JOID styles nodes with two tools: colors, which can be plain, translucent, gradients or animated, and effects, which change how any node is rendered (rounded corners, borders, circles, blur, masks). This page shows both, and how to make them react to the mouse.
+JOID imposes no look: you style nodes with two tools. Colors can be plain, translucent, gradients or animated; effects change how any node is rendered (rounded corners, borders, circles, shadows, blur, masks). This page shows both, and how to make them react to the mouse and to your state.
 
 ## Colors
 
-`Color` (`dev.joid.lib.color`) is the single color type of JOID, used by nodes, text, borders and image tints. There are several ways to get one:
+`Color` (`dev.joid.lib.color`) is the single color type of JOID, used by nodes, text, borders and image tints:
 
 ```java
 RectNode.create(100, 100, 200, 120).color(Color.RED).attach(this);
@@ -17,18 +17,14 @@ RectNode.create(760, 100, 200, 120).color(Color.decode("#3366CC")).attach(this);
 
 | Source | Example |
 | --- | --- |
-| Presets | `Color.WHITE`, `Color.BLACK`, `Color.GRAY`, `Color.DARKGRAY`, `Color.RED`, `Color.BLUE`, `Color.TRANSPARENT`... |
+| Presets | `Color.WHITE`, `Color.LIGHTGRAY`, `Color.GRAY`, `Color.DARKGRAY`, `Color.BLACK`, `Color.RED`, `Color.TRANSPARENT`... |
 | Float components, `0F` to `1F` | `new Color(1F, 0.5F, 0F)`, `new Color(1F, 1F, 1F, 0.5F)` |
 | Integer components, `0` to `255` | `new Color(255, 128, 0)`, `new Color(255, 128, 0, 128)` |
 | Strings | `Color.decode("#3366CC")`, `"#3366CC80"`, `"rgb(255, 128, 0)"`, `"rgba(255, 128, 0, 0.25)"` |
 
-> NOTE: Integer arguments select the `0`–`255` constructor: `new Color(1, 0, 0)` is almost black. Write `new Color(1F, 0F, 0F)` for red.
+Colors are immutable: derive a new one with `copyAlpha(0.5F)` (same color, half opacity), `darker()`, `brighter()` or `to(other, 0.25F)` (a quarter of the way to `other`).
 
-To derive a color, use the methods that return a new one: `copyAlpha(0.5F)` (same color, half opacity), `darker()`, `brighter()`, or `to(other, 0.25F)` (a quarter of the way to `other`).
-
-Colors are immutable, so presets such as `Color.RED` are safe to share.
-
-## Gradients
+## Gradients with toGradient
 
 `toGradient(end)` turns a color into a left-to-right gradient. A `Vector4f` (`javax.vecmath`) of `(startX, startY, endX, endY)`, in fractions of the node, gives another direction:
 
@@ -39,40 +35,46 @@ RectNode.create(520, 300, 400, 200).color(Color.CYAN.toGradient(Color.MAGENTA, n
 
 ![A blue-to-green horizontal gradient next to a cyan-to-magenta vertical gradient](../images/ess-styling-gradients.png "Left to right by default, top to bottom with the Vector4f (0, 0, 0, 1).")
 
-The second one goes from top to bottom. A gradient is a `Color` like any other: you can use it for text, borders and tints too.
+A gradient is a `Color` like any other: it works for text, borders and tints too.
 
-## Hover colors
+## Hover colors and borders
 
-Most visual nodes take a second color for the hovered state. The node blends from one to the other as the mouse enters and leaves:
+`RectNode` takes one setter per property: a fill, a hovered fill, a border color, a hovered border color and a border thickness. The node blends from one color to the other as the mouse enters and leaves:
 
 ```java
 RectNode
 .create(100, 100, 300, 80)
-.color(Color.DARKGRAY, Color.GRAY)
-.border(Color.GRAY, Color.WHITE, 2D, true)
+.color(Color.DARKGRAY)
+.hoveredColor(Color.GRAY)
+.borderColor(Color.GRAY)
+.hoveredBorderColor(Color.WHITE)
+.borderStroke(2D)
 .attach(this);
 ```
 
 ![The cursor hovers a dark gray rectangle: it lightens and its border turns white](../images/ess-styling-hover.gif "The fill and the border blend to their hovered colors in 200 ms.")
 
-`border(color, hoveredColor, width, fill)` adds an outline outside the rectangle, with its own hover color. The fade lasts 200 ms by default; [Animation](animation.md) shows how to tune it.
+The border is drawn outside the rectangle. The blend lasts 200 ms by default; [Animation](animation.md) shows how to tune it.
 
-A color can also follow your state. Make the node watch the signal and set the color in `onInit`, which runs again each time the signal publishes:
+## Colors that follow your state
+
+Every color setter takes a value, a signal or an expression that reads signals. An expression is followed: here the button turns white while `selected` is `true`, and gray again when it is not.
 
 ```java
-final BooleanSignal selected = new BooleanSignal(false);
+private final BooleanSignal selected = BooleanSignal.of(false);
+```
 
+```java
 RectNode
-.create(0, 0, 200, 60)
-.<RectNode>onInit(rect -> rect.color(selected.getOrDefault() ? Color.BLUE : Color.DARKGRAY))
-.watch(selected)
-.onClick((node, mouseX, mouseY, clickType) -> selected.toggle())
+.create(100, 100, 200, 60)
+.color(this.selected.get() ? Color.WHITE : Color.GRAY)
+.onClick((node, mouseX, mouseY, clickType) -> this.selected.toggle())
 .attach(this);
 ```
 
-![Clicking a gray rectangle turns it blue, clicking again turns it gray](../images/rect-supplier.gif "The node watches the signal and takes its new color on each click.")
+![Each click on a gray button turns it white, the next one gray again](../images/ess-styling-state.gif "The color expression reads the signal, so it is computed again on each change.")
 
-`color(...)` also takes a `Supplier<Color>`, called on every frame: keep it for a color that changes on every frame, such as an animation (see [Animation](animation.md)).
+A lambda `() -> ...` is read every frame instead: keep it for colors that move on every frame, such as an animation. [State and Reactivity](state.md) explains both.
 
 ## Effects
 
@@ -83,20 +85,25 @@ RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
 .effect(RoundedNodeEffect.create(16F))
-.effect(BorderNodeEffect.create(Color.BLACK, 2F))
+.effect(BorderNodeEffect.create(Color.GRAY, 4F))
 .attach(this);
 ```
 
-![A white rounded rectangle with a thin black border](../images/effects-basic.png "Rounded corners and a border that follows them.")
+![A white rounded rectangle with a gray border that follows the corners](../images/ess-styling-effects.png "Rounded corners and a border that follows them.")
+
+The node first draws into an offscreen buffer; the effects then run as passes in a fixed order: the shape is cut, then blurred, then outlined. That is why a border follows rounded corners and circles, whatever order you add the effects in.
+
+![The node draws into a framebuffer, then the shape, blur and border passes run in this order before the result reaches the screen](../images/ess-diagram-effects.png "How effects render.")
 
 The built-in effects are in `dev.joid.lib.ui.node.effect.impl`:
 
 | Effect | Example | What it does |
 | --- | --- | --- |
 | `RoundedNodeEffect` | `RoundedNodeEffect.create(16F)` | Rounds the corners. |
-| `BorderNodeEffect` | `BorderNodeEffect.create(Color.BLACK, 2F)` | Outlines what the node draws: a rectangle, a circle, the glyphs of a text, the shape of an image. |
 | `CircleNodeEffect` | `CircleNodeEffect.create()` | Cuts the largest centered circle: avatars, round buttons. |
-| `BlurNodeEffect` | `BlurNodeEffect.create(8F)` | Blurs the node's own rendering. |
+| `BorderNodeEffect` | `BorderNodeEffect.create(Color.GRAY, 4F)` | Outlines what the node draws: a rectangle, a circle, the glyphs of a text, the shape of an image. |
+| `ShadowNodeEffect` | `ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.4F), 16F)` | Draws a shadow or a glow around the node. |
+| `BlurNodeEffect` | `BlurNodeEffect.create(8F)` | Blurs the rendering of the node. |
 | `MaskNodeEffect` | `MaskNodeEffect.create(300D, 50D)` | Shows only a rectangle of the node, or the shape of an image. |
 | `TransformNodeEffect` | `TransformNodeEffect.create(new RotateOperation(...))` | Moves, scales or rotates the rendering without changing the layout. |
 
@@ -105,7 +112,7 @@ A round avatar with a white ring, from any image (`Resource` and `ResourceNode` 
 ```java
 ResourceNode
 .create(100, 100, 120, 120)
-.resource(Resource.of("https://placehold.co/400x400.png"))
+.resource(Resource.of("https://placehold.co/400x400/DDDDDD/999999.png"))
 .effect(CircleNodeEffect.create())
 .effect(BorderNodeEffect.create(Color.WHITE, 4F))
 .attach(this);
@@ -113,50 +120,51 @@ ResourceNode
 
 ![A round placeholder image with a white ring](../images/ess-styling-avatar.png "The image cut into a circle, then outlined.")
 
-The order in which you add effects does not matter here: the shape is always cut first, then blurred, then outlined, so a border follows rounded corners and circles.
+## Effects that follow the hover with self
 
-## Effects that move with the mouse
-
-The values of the effects also accept suppliers, read every frame. Add them in `self(...)`, which hands you the node, and read its hover progress with `hoverValue(max)` (from `0` when not hovered to `max` when hovered):
+The settings of an effect also take a `Supplier`, read every frame. To build an effect from the node, use `self(...)`, which hands you the node, and read its hover progress with `hoverValue(max)` (from `0` when the mouse is away to `max` when it is over the node):
 
 ```java
 RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
 .self(node -> node.effect(RoundedNodeEffect.create(() -> 8F + node.hoverValue(16F))))
-.self(node -> node.effect(BorderNodeEffect.create(Color.BLACK, 1F).width(() -> 1F + node.hoverValue(2F))))
+.self(node -> node.effect(BorderNodeEffect.create(Color.GRAY, 1F).width(() -> 1F + node.hoverValue(4F))))
 .attach(this);
 ```
 
-![The cursor hovers a white rectangle: its corners round and its border thickens](../images/ess-styling-effect-hover.gif "The radius goes from 8 to 24 and the border from 1 to 3 with the hover progress.")
+![The cursor hovers a white rectangle: its corners round and its border thickens](../images/ess-styling-effect-hover.gif "The radius goes from 8 to 24 and the border from 1 to 5 with the hover progress.")
 
-## Effects on a whole card
+## Effects on a whole card with scope
 
-By default an effect applies to the node's own drawing only; its children are drawn untouched on top. To round a card together with its content, give the effect the `CHILDREN` scope (`NodeEffectScope` is nested in `NodeEffect`):
+By default an effect applies to the drawing of the node only; its children are drawn untouched on top. To round a card together with its content, give the effect the `CHILDREN` scope (`NodeEffectScope` is nested in `NodeEffect`):
 
 ```java
 RectNode
-.create(100, 100, 300, 200)
+.create(460, 100, 300, 200)
 .color(Color.WHITE)
-.effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))
-.body(card -> {
-    ResourceNode.create(0, 0, 300, 120).resource(Resource.of("https://placehold.co/300x120.png")).attach(card);
+.effect(RoundedNodeEffect.create(24F).scope(NodeEffectScope.CHILDREN))
+.body(rect -> {
+	ResourceNode.create(0, 0, 300, 120).resource(Resource.of("https://placehold.co/300x120/999999/DDDDDD.png")).attach(rect);
 })
 .attach(this);
 ```
 
-![Two cards with an image header: with SELF the header keeps square top corners, with CHILDREN it is rounded](../images/rounded-children.png "Left, the default SELF scope; right, CHILDREN as in the snippet: the image is rounded with the card.")
+![Two cards with an image header: with SELF the header keeps square top corners, with CHILDREN it is rounded with the card](../images/ess-styling-scope.png "Left, the default SELF scope; right, CHILDREN as in the snippet.")
 
-> TIP: A configured effect goes straight into `effect(...)`: its last setter returns the type `effect` asks for, so `effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))` compiles as is.
+A configured effect goes straight into `effect(...)`, setters included, as here with `scope(...)`.
 
-Effects only change pixels: clicks and hover still use the node's rectangle, so the corners of a rounded button still react to the mouse.
+## Pitfalls
 
-## Going further
+- Integer arguments pick the `0`–`255` constructor: `new Color(1, 0, 0)` is almost black. Write `new Color(1F, 0F, 0F)` for red.
+- Effects only change pixels: clicks and hover still use the rectangle of the node, so the corners of a round button still react to the mouse.
+- `effect(...)` returns a `Node` in the middle of a chain: call the setters of the node (`color`, `hoveredColor`...) before it.
 
+## See also
+
+- Next: [Handling Input](input.md)
 - [Colors and Gradients](../styling/colors.md): every constructor, `decode` format, gradient direction and animated colors.
 - [Effects](../styling/effects.md): order, priority, scope and how effects render.
-- [RoundedNodeEffect](../styling/rounded.md), [BorderNodeEffect](../styling/border.md), [CircleNodeEffect](../styling/circle.md), [BlurNodeEffect](../styling/blur.md), [ShadowNodeEffect](../styling/shadow.md), [MaskNodeEffect](../styling/mask.md), [TransformNodeEffect](../styling/transform.md): each effect in detail.
+- [RoundedNodeEffect](../styling/rounded.md), [BorderNodeEffect](../styling/border.md), [ShadowNodeEffect](../styling/shadow.md): the most used effects in detail.
 - [Custom Effects](../styling/custom-effects.md): writing your own effect.
 - [RectNode](../nodes/visual/rect.md): fill, border and hover colors.
-
-Next: [Handling Input](input.md).

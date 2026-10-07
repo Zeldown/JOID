@@ -272,6 +272,316 @@
 			]
 		},
 		{
+			"title": "Guides",
+			"group": "guides",
+			"items": [
+				{
+					"title": "Nodes",
+					"items": [
+						{
+							"title": "Node Fundamentals",
+							"path": "nodes/node-fundamentals",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/Node.java",
+							"refs": [
+								"Node",
+								"INode",
+								"PositionProperty",
+								"NodeLayer"
+							]
+						}
+					]
+				},
+				{
+					"title": "Styling",
+					"items": [
+						{
+							"title": "Colors and Gradients",
+							"path": "styling/colors",
+							"source": "core/src/main/java/dev/joid/lib/color/Color.java",
+							"refs": [
+								"Color",
+								"ColorGradient"
+							]
+						},
+						{
+							"title": "Effects",
+							"path": "styling/effects",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/NodeEffect.java",
+							"refs": [
+								"NodeEffect"
+							]
+						},
+						{
+							"title": "RoundedNodeEffect",
+							"path": "styling/rounded",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/RoundedNodeEffect.java"
+						},
+						{
+							"title": "CircleNodeEffect",
+							"path": "styling/circle",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/CircleNodeEffect.java"
+						},
+						{
+							"title": "BorderNodeEffect",
+							"path": "styling/border",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/BorderNodeEffect.java"
+						},
+						{
+							"title": "BlurNodeEffect",
+							"path": "styling/blur",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/BlurNodeEffect.java"
+						},
+						{
+							"title": "ShadowNodeEffect",
+							"path": "styling/shadow",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/ShadowNodeEffect.java"
+						},
+						{
+							"title": "MaskNodeEffect",
+							"path": "styling/mask",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/MaskNodeEffect.java"
+						},
+						{
+							"title": "TransformNodeEffect",
+							"path": "styling/transform",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/TransformNodeEffect.java"
+						},
+						{
+							"title": "Custom Effects",
+							"path": "styling/custom-effects",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/NodeEffect.java"
+						}
+					]
+				},
+				{
+					"title": "Interactions",
+					"items": [
+						{
+							"title": "Callbacks",
+							"path": "interactions/callbacks",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/callback/NodeCallback.java",
+							"refs": [
+								"NodeCallback",
+								"InternalContext",
+								"NodeCallbackMethod"
+							]
+						},
+						{
+							"title": "Mouse and Keyboard",
+							"path": "interactions/mouse-and-keyboard",
+							"source": "core/src/main/java/dev/joid/lib/utils/key/Key.java",
+							"refs": [
+								"Key",
+								"ClickType"
+							]
+						},
+						{
+							"title": "Hover and Tooltips",
+							"path": "interactions/hover",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/hover/HoverElement.java",
+							"refs": [
+								"HoverElement",
+								"DefaultHoverElement",
+								"CustomHoverElement",
+								"NodeHoverElement"
+							]
+						},
+						{
+							"title": "Drag and Drop",
+							"path": "interactions/drag-drop",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/property/draggable/DraggableProperty.java",
+							"refs": [
+								"DraggableProperty"
+							]
+						}
+					]
+				},
+				{
+					"title": "Animation",
+					"items": [
+						{
+							"title": "TweenAnimator",
+							"path": "animation/tween-animator",
+							"source": "core/src/main/java/dev/joid/lib/animation/animator/TweenAnimator.java"
+						},
+						{
+							"title": "Easing",
+							"path": "animation/easing",
+							"source": "core/src/main/java/dev/joid/lib/animation/tweenengine/TweenEquations.java",
+							"refs": [
+								"TweenEquations",
+								"TweenEquation"
+							]
+						},
+						{
+							"title": "Tween Engine",
+							"path": "animation/tween-engine",
+							"source": "core/src/main/java/dev/joid/lib/animation/tweenengine/Timeline.java",
+							"refs": [
+								"Tween",
+								"Timeline",
+								"TweenManager",
+								"TweenAccessor"
+							]
+						}
+					]
+				},
+				{
+					"title": "State",
+					"items": [
+						{
+							"title": "Signals",
+							"path": "state/signals",
+							"source": "core/src/main/java/dev/joid/lib/utils/signal/Signal.java",
+							"refs": [
+								"Signal",
+								"ISignal",
+								"ComputedSignal",
+								"SignalSubscriber",
+								"BooleanSignal",
+								"DoubleSignal",
+								"FloatSignal",
+								"IntegerSignal",
+								"LongSignal",
+								"StringSignal",
+								"ListSignal",
+								"MapSignal",
+								"SetSignal"
+							]
+						},
+						{
+							"title": "Reactive Properties",
+							"path": "state/reactive-properties",
+							"source": "core/src/main/java/dev/joid/lib/utils/signal/replay/SignalReplay.java",
+							"refs": [
+								"SignalReplay"
+							]
+						},
+						{
+							"title": "Watching Signals",
+							"path": "state/watch",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/property/watch/WatchProperty.java",
+							"refs": [
+								"WatchProperty"
+							]
+						},
+						{
+							"title": "Stores",
+							"path": "state/stores",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/store/UIStore.java",
+							"refs": [
+								"UIStore",
+								"UIStoreData",
+								"StoreContext"
+							]
+						},
+						{
+							"title": "Persistent UI Properties",
+							"path": "state/properties",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/property/UIProperty.java",
+							"refs": [
+								"UIProperty"
+							]
+						}
+					]
+				},
+				{
+					"title": "UIs",
+					"items": [
+						{
+							"title": "The UI Class",
+							"path": "ui/ui-class",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/UI.java",
+							"refs": [
+								"UI",
+								"IUI",
+								"UIData"
+							]
+						},
+						{
+							"title": "Opening and Closing UIs",
+							"path": "ui/managing-uis",
+							"source": "core/src/main/java/dev/joid/internal/JOID.java",
+							"refs": [
+								"UIDataPopup"
+							]
+						},
+						{
+							"title": "View and Scaling",
+							"path": "ui/view-and-scaling",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/view/UIView.java",
+							"refs": [
+								"UIView"
+							]
+						},
+						{
+							"title": "Transitions",
+							"path": "ui/transitions",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/transition/Transition.java",
+							"refs": [
+								"Transition",
+								"PopTransition",
+								"TransitionState"
+							]
+						}
+					]
+				},
+				{
+					"title": "Resources and Media",
+					"items": [
+						{
+							"title": "Resources",
+							"path": "resources/resources",
+							"source": "core/src/main/java/dev/joid/lib/resource/ResourceBuilder.java",
+							"refs": [
+								"Resource",
+								"ResourceBuilder",
+								"ResourceProperties"
+							]
+						},
+						{
+							"title": "Assets",
+							"path": "resources/assets",
+							"source": "core/src/main/java/dev/joid/lib/asset/Asset.java",
+							"refs": [
+								"Asset",
+								"AssetLocator",
+								"IAssetLocator"
+							]
+						},
+						{
+							"title": "Supported Formats",
+							"path": "resources/formats",
+							"source": "core/src/main/java/dev/joid/lib/resource/dto/format/ResourceFormat.java"
+						},
+						{
+							"title": "Playback, Video and Audio",
+							"path": "resources/playback",
+							"source": "core/src/main/java/dev/joid/lib/resource/dto/playback/IResourcePlayback.java",
+							"refs": [
+								"IResourcePlayback",
+								"VideoAudioPlayer",
+								"AudioListener"
+							]
+						},
+						{
+							"title": "Custom Formats and Decoders",
+							"path": "resources/custom-formats",
+							"source": "core/src/main/java/dev/joid/lib/resource/dto/decoder/IResourceDecoder.java",
+							"refs": [
+								"IResourceFormat",
+								"ResourceFormat",
+								"IResourceDecoder",
+								"IResourceResolver",
+								"ResourceResolver",
+								"ResourceData"
+							]
+						}
+					]
+				}
+			]
+		},
+		{
 			"title": "Text",
 			"group": "text",
 			"items": [
@@ -350,306 +660,6 @@
 					"refs": [
 						"GlyphFont",
 						"GlyphFontProvider"
-					]
-				}
-			]
-		},
-		{
-			"title": "Guides",
-			"group": "guides",
-			"items": [
-				{
-					"title": "UIs",
-					"items": [
-						{
-							"title": "The UI Class",
-							"path": "ui/ui-class",
-							"source": "core/src/main/java/dev/joid/lib/ui/core/UI.java",
-							"refs": [
-								"UI",
-								"IUI",
-								"UIData"
-							]
-						},
-						{
-							"title": "Opening and Closing UIs",
-							"path": "ui/managing-uis",
-							"source": "core/src/main/java/dev/joid/internal/JOID.java",
-							"refs": [
-								"UIDataPopup"
-							]
-						},
-						{
-							"title": "View and Scaling",
-							"path": "ui/view-and-scaling",
-							"source": "core/src/main/java/dev/joid/lib/ui/core/view/UIView.java",
-							"refs": [
-								"UIView"
-							]
-						},
-						{
-							"title": "Transitions",
-							"path": "ui/transitions",
-							"source": "core/src/main/java/dev/joid/lib/ui/core/transition/Transition.java",
-							"refs": [
-								"Transition",
-								"PopTransition",
-								"TransitionState"
-							]
-						}
-					]
-				},
-				{
-					"title": "Nodes",
-					"items": [
-						{
-							"title": "Node Fundamentals",
-							"path": "nodes/node-fundamentals",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/Node.java",
-							"refs": [
-								"Node",
-								"INode",
-								"PositionProperty",
-								"NodeLayer"
-							]
-						}
-					]
-				},
-				{
-					"title": "Interactions",
-					"items": [
-						{
-							"title": "Callbacks",
-							"path": "interactions/callbacks",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/callback/NodeCallback.java",
-							"refs": [
-								"NodeCallback",
-								"InternalContext",
-								"NodeCallbackMethod"
-							]
-						},
-						{
-							"title": "Mouse and Keyboard",
-							"path": "interactions/mouse-and-keyboard",
-							"source": "core/src/main/java/dev/joid/lib/utils/key/Key.java",
-							"refs": [
-								"Key",
-								"ClickType"
-							]
-						},
-						{
-							"title": "Hover and Tooltips",
-							"path": "interactions/hover",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/hover/HoverElement.java",
-							"refs": [
-								"HoverElement",
-								"DefaultHoverElement",
-								"CustomHoverElement",
-								"NodeHoverElement"
-							]
-						},
-						{
-							"title": "Drag and Drop",
-							"path": "interactions/drag-drop",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/property/draggable/DraggableProperty.java",
-							"refs": [
-								"DraggableProperty"
-							]
-						}
-					]
-				},
-				{
-					"title": "State",
-					"items": [
-						{
-							"title": "Signals",
-							"path": "state/signals",
-							"source": "core/src/main/java/dev/joid/lib/utils/signal/Signal.java",
-							"refs": [
-								"Signal",
-								"ISignal",
-								"BooleanSignal",
-								"DoubleSignal",
-								"FloatSignal",
-								"IntegerSignal",
-								"LongSignal",
-								"StringSignal",
-								"ListSignal",
-								"MapSignal",
-								"SetSignal"
-							]
-						},
-						{
-							"title": "Watching Signals",
-							"path": "state/watch",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/property/watch/WatchProperty.java",
-							"refs": [
-								"WatchProperty"
-							]
-						},
-						{
-							"title": "Stores",
-							"path": "state/stores",
-							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/store/UIStore.java",
-							"refs": [
-								"UIStore",
-								"UIStoreData",
-								"StoreContext"
-							]
-						},
-						{
-							"title": "Persistent UI Properties",
-							"path": "state/properties",
-							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/property/UIProperty.java",
-							"refs": [
-								"UIProperty"
-							]
-						}
-					]
-				},
-				{
-					"title": "Styling",
-					"items": [
-						{
-							"title": "Colors and Gradients",
-							"path": "styling/colors",
-							"source": "core/src/main/java/dev/joid/lib/color/Color.java",
-							"refs": [
-								"Color",
-								"ColorGradient"
-							]
-						},
-						{
-							"title": "Effects",
-							"path": "styling/effects",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/NodeEffect.java",
-							"refs": [
-								"NodeEffect"
-							]
-						},
-						{
-							"title": "RoundedNodeEffect",
-							"path": "styling/rounded",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/RoundedNodeEffect.java"
-						},
-						{
-							"title": "CircleNodeEffect",
-							"path": "styling/circle",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/CircleNodeEffect.java"
-						},
-						{
-							"title": "BorderNodeEffect",
-							"path": "styling/border",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/BorderNodeEffect.java"
-						},
-						{
-							"title": "BlurNodeEffect",
-							"path": "styling/blur",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/BlurNodeEffect.java"
-						},
-						{
-							"title": "ShadowNodeEffect",
-							"path": "styling/shadow",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/ShadowNodeEffect.java"
-						},
-						{
-							"title": "MaskNodeEffect",
-							"path": "styling/mask",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/MaskNodeEffect.java"
-						},
-						{
-							"title": "TransformNodeEffect",
-							"path": "styling/transform",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/impl/TransformNodeEffect.java"
-						},
-						{
-							"title": "Custom Effects",
-							"path": "styling/custom-effects",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/effect/NodeEffect.java"
-						}
-					]
-				},
-				{
-					"title": "Resources and Media",
-					"items": [
-						{
-							"title": "Resources",
-							"path": "resources/resources",
-							"source": "core/src/main/java/dev/joid/lib/resource/ResourceBuilder.java",
-							"refs": [
-								"Resource",
-								"ResourceBuilder",
-								"ResourceProperties"
-							]
-						},
-						{
-							"title": "Assets",
-							"path": "resources/assets",
-							"source": "core/src/main/java/dev/joid/lib/asset/Asset.java",
-							"refs": [
-								"Asset",
-								"AssetLocator",
-								"IAssetLocator"
-							]
-						},
-						{
-							"title": "Supported Formats",
-							"path": "resources/formats",
-							"source": "core/src/main/java/dev/joid/lib/resource/dto/format/ResourceFormat.java"
-						},
-						{
-							"title": "Playback, Video and Audio",
-							"path": "resources/playback",
-							"source": "core/src/main/java/dev/joid/lib/resource/dto/playback/IResourcePlayback.java",
-							"refs": [
-								"IResourcePlayback",
-								"VideoAudioPlayer",
-								"AudioListener"
-							]
-						},
-						{
-							"title": "Custom Formats and Decoders",
-							"path": "resources/custom-formats",
-							"source": "core/src/main/java/dev/joid/lib/resource/dto/decoder/IResourceDecoder.java",
-							"refs": [
-								"IResourceFormat",
-								"ResourceFormat",
-								"IResourceDecoder",
-								"IResourceResolver",
-								"ResourceResolver",
-								"ResourceData"
-							]
-						}
-					]
-				},
-				{
-					"title": "Animation",
-					"items": [
-						{
-							"title": "TweenAnimator",
-							"path": "animation/tween-animator",
-							"source": "core/src/main/java/dev/joid/lib/animation/animator/TweenAnimator.java"
-						},
-						{
-							"title": "Easing",
-							"path": "animation/easing",
-							"source": "core/src/main/java/dev/joid/lib/animation/tweenengine/TweenEquations.java",
-							"refs": [
-								"TweenEquations",
-								"TweenEquation"
-							]
-						},
-						{
-							"title": "Tween Engine",
-							"path": "animation/tween-engine",
-							"source": "core/src/main/java/dev/joid/lib/animation/tweenengine/Timeline.java",
-							"refs": [
-								"Tween",
-								"Timeline",
-								"TweenManager",
-								"TweenAccessor"
-							]
-						}
 					]
 				}
 			]
@@ -754,7 +764,8 @@
 						"IAudioBridge",
 						"IClockBridge",
 						"SystemClockBridge",
-						"ManualClockBridge"
+						"ManualClockBridge",
+						"ISignalReplayRemapper"
 					]
 				},
 				{

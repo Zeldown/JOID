@@ -6,17 +6,17 @@
 
 ```java
 final ResourcePlayerNode player = ResourcePlayerNode
-    .create(430, 10, 640, 360)
-    .resource(Resource.of(MyUI.class.getResourceAsStream("/videos/intro.mp4")))
-    .loop(true)
-    .attach(this);
+.create(430, 10, 640, 360)
+.resource(Resource.of(MyUI.class.getResourceAsStream("/videos/intro.mp4")))
+.loop(true)
+.attach(this);
 
 this.keybind(() -> {
-    if (player.isPlaying()) {
-        player.pause();
-    } else {
-        player.resume();
-    }
+	if (player.isPlaying()) {
+		player.pause();
+	} else {
+		player.resume();
+	}
 }, Key.SPACE);
 ```
 
@@ -48,7 +48,7 @@ The playback starts the first time the node draws its loaded resource with a non
 | Method | Description |
 | --- | --- |
 | `play()` | Starts the playback from the beginning when it is stopped or ended, and resumes it where it was when it is paused. |
-| `pause()` | Pauses the playback and fires `onPause` right away. |
+| `pause()` | Pauses a running playback and fires `onPause`; does nothing (no callback) when nothing plays. |
 | `resume()` | Resumes a paused playback. |
 | `stop()` | Stops the playback and fires `onStop` right away; the current frame stays displayed. |
 | `seek(double seconds)` / `seekTo(double seconds)` | Moves the playback to a time in seconds. `seekTo` is an alias of `seek`. |
@@ -85,7 +85,7 @@ A video's audio can fade with the distance to a listener, for UIs placed in a 3D
 
 | Method | Default | Description |
 | --- | --- | --- |
-| `location(float x, float y, float z)` | none | Position of the audio source. Without a location, the audio is not attenuated. |
+| `location(Vector3f location)`, `location(Supplier<Vector3f> location)` | none | Position of the audio source. Without a location, the audio is not attenuated. |
 | `referenceDistance(float distance)` | decoder default (`5F`) | Distance up to which the volume is full. |
 | `maxDistance(float distance)` | decoder default (`50F`) | Distance from which the audio is silent. |
 
@@ -95,12 +95,12 @@ Between the two distances the volume fades quadratically. The listener position 
 VideoAudioPlayer.setAudioListener(() -> new Vector3f(0F, 1.6F, 0F));
 
 ResourcePlayerNode
-    .create(0, 0, 640, 360)
-    .resource(Resource.of(MyUI.class.getResourceAsStream("/videos/screen.mp4")))
-    .location(10F, 2F, -4F)
-    .referenceDistance(3F)
-    .maxDistance(30F)
-    .attach(this);
+.create(0, 0, 640, 360)
+.resource(Resource.of(MyUI.class.getResourceAsStream("/videos/screen.mp4")))
+.location(new Vector3f(10F, 2F, -4F))
+.referenceDistance(3F)
+.maxDistance(30F)
+.attach(this);
 ```
 
 These settings apply to the current video right away and again when the playback starts. They have no effect on animated images.
@@ -108,16 +108,16 @@ These settings apply to the current video right away and again when the playback
 ## Callbacks
 
 ```java
-final ProgressNode bar = ProgressNode.create(0, 370, 640, 6).color(Color.DARKGRAY, Color.WHITE).attach(this);
+final ProgressNode bar = ProgressNode.create(0, 370, 640, 6).background(Color.DARKGRAY).foreground(Color.WHITE).attach(this);
 
 ResourcePlayerNode
-    .create(0, 0, 640, 360)
-    .resource(Resource.of(MyUI.class.getResourceAsStream("/videos/intro.mp4")))
-    .onPlay(player -> System.out.println("playing"))
-    .onProgress((player, progress, currentTime) -> bar.progress((float) progress))
-    .onStop(player -> System.out.println("stopped"))
-    .onEnd(player -> System.out.println("finished"))
-    .attach(this);
+.create(0, 0, 640, 360)
+.resource(Resource.of(MyUI.class.getResourceAsStream("/videos/intro.mp4")))
+.onPlay(player -> System.out.println("[Intro] playing"))
+.onProgress((player, progress, currentTime) -> bar.progress((float) progress))
+.onStop(player -> System.out.println("[Intro] stopped"))
+.onEnd(player -> System.out.println("[Intro] finished"))
+.attach(this);
 ```
 
 ![A placeholder video playing above a thin white bar that fills as it plays](../../images/player-progress.gif "onProgress drives the ProgressNode under the video.")
@@ -152,16 +152,16 @@ The node releases its video decoder (decoding thread, audio source) when it is d
 
 | Method | Default | Description |
 | --- | --- | --- |
-| `resource(Resource resource)` | `null` | Media to play. Releases the previous video. |
-| `stretch(StretchType stretchType)` | `StretchType.STRETCH` | How the frame fills the box. |
-| `autoplay(boolean)` | `true` | Plays when the playback starts. |
-| `loop(boolean)` | `false` | Loops the playback. |
-| `volume(float)` | `1F` | Video audio volume. |
-| `location(float, float, float)` | none | Position of the video's audio source. |
-| `referenceDistance(float)` | none | Full-volume distance. |
-| `maxDistance(float)` | none | Silent distance. |
+| `resource(Resource)`, `resource(Supplier<Resource>)` | `null` | Media to play. Releases the previous video. |
+| `stretch(StretchType)`, `stretch(Supplier<StretchType>)` | `StretchType.STRETCH` | How the frame fills the box. |
+| `autoplay(boolean)`, `autoplay(Supplier<Boolean>)` | `true` | Plays when the playback starts. |
+| `loop(boolean)`, `loop(Supplier<Boolean>)` | `false` | Loops the playback. |
+| `volume(float)`, `volume(Supplier<Float>)` | `1F` | Video audio volume. |
+| `location(Vector3f)`, `location(Supplier<Vector3f>)` | none | Position of the video's audio source. |
+| `referenceDistance(float)`, `referenceDistance(Supplier<Float>)` | none | Full-volume distance. |
+| `maxDistance(float)`, `maxDistance(Supplier<Float>)` | none | Silent distance. |
 
-These setters return the node itself, typed by the generic return of the fluent API.
+Every setter takes a value, a native expression that reads signals, a signal or a lambda (see [Reactive Properties](../../state/reactive-properties.md)).
 
 ### Getters
 
@@ -175,6 +175,12 @@ These setters return the node itself, typed by the generic return of the fluent 
 | `isResourceStarted()` | `true` once the playback of the current resource has started. |
 | `isWasPlaying()`, `getLastProgress()` | Playing state and progress seen on the previous frame, used to fire the callbacks. |
 | `isPlaying()`, `isPaused()`, `getDuration()`, `getProgress()`, `getPlayback()`, `getVideo()` | See [Reading the state](#reading-the-state). |
+
+## Pitfalls
+
+- Two players on resources that share a decoder (the same URL through `Resource.of`) play, pause and seek together.
+- `restart()` is the only control that brings a running or paused playback back to the beginning; `play()` resumes.
+- A failed resource plays nothing: no callback fires, and the dev checkerboard is drawn in dev mode.
 
 ## See also
 

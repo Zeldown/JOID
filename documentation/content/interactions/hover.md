@@ -97,23 +97,15 @@ The lines of all the suppliers are concatenated in the order you added them and 
 
 ### Tooltips that follow a signal
 
-To show the value of a [signal](../state/signals.md), make the node [watch](../state/watch.md) it and set the line in `onInit`, which runs again each time the signal publishes. `hoverLines(...)` removes the previous line supplier first, so the lines do not pile up:
+A tooltip supplier runs on every frame the tooltip shows, so it reads the current value of a [signal](../state/signals.md) directly:
 
 ```java
-final IntegerSignal price = new IntegerSignal(25);
+private final IntegerSignal price = IntegerSignal.of(25);
 
-RectNode
-.create(100, 100, 300, 80)
-.color(Color.WHITE)
-.onInit(node -> {
-    final String line = "Buy for " + price.getOrDefault() + " coins";
-    node.hoverLines(() -> line);
-})
-.watch(price)
-.attach(this);
+RectNode.create(100, 100, 300, 80).color(Color.WHITE).hover(() -> "Buy for " + this.price.get() + " coins").attach(this);
 ```
 
-The line is built once per publish, not on every frame the tooltip shows.
+The text is built only while the tooltip is visible. `hoverLines(...)` replaces the previous suppliers instead of adding one.
 
 ### Drawing text tooltips with drawHover
 
@@ -122,11 +114,11 @@ JOID hands the lines to `UI.drawHover(List<String> lines, double mouseX, double 
 ```java
 @Override
 public void drawHover(final List<String> lines, final double mouseX, final double mouseY) {
-    final double height = lines.size() * 24D + 12D;
-    DrawUtils.SHAPE.drawRect(mouseX + 12D, mouseY + 12D, 260D, height, Color.BLACK);
-    for (int i = 0; i < lines.size(); i++) {
-        DrawUtils.TEXT.drawText(mouseX + 20D, mouseY + 18D + i * 24D, Text.create(lines.get(i), info));
-    }
+	final double height = lines.size() * 24D + 12D;
+	DrawUtils.SHAPE.drawRect(mouseX + 12D, mouseY + 12D, 260D, height, Color.BLACK);
+	for (int i = 0; i < lines.size(); i++) {
+		DrawUtils.TEXT.drawText(mouseX + 20D, mouseY + 18D + i * 24D, Text.create(lines.get(i), info));
+	}
 }
 ```
 
@@ -161,30 +153,30 @@ The element is drawn with its top-left corner at `anchorX + getX()`, `anchorY + 
 ```java
 final HoverElement badge = new HoverElement() {
 
-    @Override
-    public void render(final Node node, final double mouseX, final double mouseY) {
-        DrawUtils.SHAPE.drawRect(0, 0, 160, 40, Color.BLACK);
-    }
+	@Override
+	public void render(final Node node, final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawRect(0, 0, 160, 40, Color.BLACK);
+	}
 
-    @Override
-    public double getX() {
-        return 12;
-    }
+	@Override
+	public double getX() {
+		return 12;
+	}
 
-    @Override
-    public double getY() {
-        return -8;
-    }
+	@Override
+	public double getY() {
+		return -8;
+	}
 
-    @Override
-    public double getWidth() {
-        return 160;
-    }
+	@Override
+	public double getWidth() {
+		return 160;
+	}
 
-    @Override
-    public double getHeight() {
-        return 40;
-    }
+	@Override
+	public double getHeight() {
+		return 40;
+	}
 
 };
 
@@ -207,7 +199,7 @@ RectNode.create(100, 100, 300, 80).color(Color.WHITE).hover(CustomHoverElement.f
 
 ```java
 final RectNode tooltip = RectNode.create(12, -8, 220, 60).color(Color.BLACK).body(card -> {
-    TextNode.create(10, 10).text(Text.create("Iron sword", info)).attach(card);
+	TextNode.create(10, 10).text(Text.create("Iron sword", info)).attach(card);
 });
 
 RectNode.create(100, 100, 300, 80).color(Color.WHITE).hover(NodeHoverElement.follow(tooltip)).attach(this);
@@ -234,7 +226,7 @@ The elements of a node are drawn in the order you added them, then its text tool
 - At most one node shows its tooltip per frame. JOID searches the top-level nodes from front to back and, inside a node, its children before the node itself: the deepest hovered node with tooltip content shows it. A hovered child without a tooltip lets its parent show its own. The first hovered top-level node ends the search, even without a tooltip, so the nodes behind it show nothing.
 - The tooltip search ignores `enabled(...)`: a disabled node still shows its tooltip, as long as it is visible and the mouse is over it.
 
-## Hover API reference
+## Reference
 
 | Method | Description |
 |---|---|
@@ -247,6 +239,12 @@ The elements of a node are drawn in the order you added them, then its text tool
 | `hover(...)`, `hoverLines(...)`, `hoverElements(...)` | Tooltips. |
 | `clearHover()`, `clearHoverLines()`, `clearHoverElements()` | Remove tooltips. |
 | `onHoverStart`, `onHover`, `onHoverEnd` | Hover callbacks. |
+
+## Pitfalls
+
+- A disabled node keeps its tooltip but has no hover color and no hover callbacks.
+- `hover(...)` adds a supplier on each call: a node that calls it in `init` adds one per load. Use `hoverLines(...)` to replace them.
+- Only the UI on top (`isOnTop` of its bridge) shows tooltips.
 
 ## See also
 

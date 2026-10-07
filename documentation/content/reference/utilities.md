@@ -4,7 +4,11 @@ The `dev.joid.lib.utils` packages hold small helper types used across the JOID A
 
 ## Align
 
-`Align` (`dev.joid.lib.utils.align`) is the alignment used by node anchors, text alignment, layouts and UI anchors.
+`Align` (`dev.joid.lib.utils.align`) is the alignment used by node anchors, text alignment, layouts and UI anchors. `info` is a `TextInfo` built from a loaded font (see [Text and TextInfo](../text/text-and-textinfo.md)).
+
+```java
+TextNode.create(960, 540).text(Text.create("Title", this.info, Align.CENTER)).anchor(Align.CENTER).attach(this);
+```
 
 | Constant | Meaning |
 | --- | --- |
@@ -19,13 +23,9 @@ The `dev.joid.lib.utils` packages hold small helper types used across the JOID A
 | `isEnd()`, `isRight()` | The value is `END`. |
 | `is(Align align)` | The value is `align`. |
 
-```java
-TextNode.create(960, 540).text(Text.create("Title", info, Align.CENTER)).anchor(Align.CENTER).attach(this);
-```
-
 ## BoundingBox
 
-`BoundingBox` (`dev.joid.lib.utils.box`) is a mutable rectangle stored as minimum and maximum corners. `ScrollbarNode` uses one for the area its handle moves in; see [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md).
+`BoundingBox` (`dev.joid.lib.utils.box`) is a mutable rectangle stored as minimum and maximum corners. A `ScrollbarNode` uses one for the area its handle moves in; see [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md).
 
 ```java
 final BoundingBox box = BoundingBox.create(10D, 20D, 30D, 40D);
@@ -49,6 +49,8 @@ final double width = box.getWidth();
 ```java
 final Vector2d point = Bezier.cubic(0.5D, new Vector2d(0D, 0D), new Vector2d(0D, 100D), new Vector2d(200D, 100D), new Vector2d(200D, 0D));
 ```
+
+![A cubic curve from (0, 0) to (200, 100) with its two control points, and the point at t = 0.5 in white at (100, 50)](../images/utilities-bezier.png "startControl pulls the curve near start, endControl near end; t = 0.5 gives (100, 50)")
 
 | Method | Description |
 | --- | --- |
@@ -95,33 +97,35 @@ The suffixes are `k` (thousand), `M` (million), `B` (billion), `T` (trillion), `
 
 `ImageUtils` (`dev.joid.lib.utils.image`) holds the image helpers JOID uses when it decodes raster images.
 
-| Method | Description |
-| --- | --- |
-| `static BufferedImage read(InputStream stream, ImageReaderSpi spi) throws IOException` | Reads the first image of `stream` with a reader created from `spi`, then disposes the reader. The stream is not closed. Throws `IOException` when the data cannot be read. |
-| `static void bleedAlpha(int[] pixels, int width, int height)` | In an ARGB pixel array, gives every fully transparent pixel the RGB color of the nearest visible pixel (searching through horizontal and vertical neighbors), keeping its alpha at 0. Visible pixels are untouched; an image that is fully transparent or fully visible is left as is. This avoids dark fringes around transparent areas when the image is drawn with linear filtering. |
-
 ```java
 final BufferedImage image = ImageUtils.read(stream, ImageIO.getImageReadersByFormatName("png").next().getOriginatingProvider());
 final int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
 ImageUtils.bleedAlpha(pixels, image.getWidth(), image.getHeight());
 ```
 
+| Method | Description |
+| --- | --- |
+| `static BufferedImage read(InputStream stream, ImageReaderSpi spi) throws IOException` | Reads the first image of `stream` with a reader created from `spi`, then disposes the reader. The stream is not closed. Throws `IOException` when the data cannot be read. |
+| `static void bleedAlpha(int[] pixels, int width, int height)` | In an ARGB pixel array, gives every fully transparent pixel the RGB color of the nearest visible pixel (searching through horizontal and vertical neighbors), keeping its alpha at 0. Visible pixels are untouched; an image that is fully transparent or fully visible is left as is. This avoids dark fringes around transparent areas when the image is drawn with linear filtering. |
+
 ## ThreadUtils
 
 `ThreadUtils` (`dev.joid.lib.utils.thread`) creates daemon threads, which do not keep the JVM alive. JOID names its background threads with it (font loading, resource decoding, hot reload).
+
+```java
+final ExecutorService executor = Executors.newFixedThreadPool(4, ThreadUtils.daemonFactory("MyLoader"));
+```
 
 | Method | Description |
 | --- | --- |
 | `static ThreadFactory daemonFactory(String name)` | A factory of daemon threads named `name/1`, `name/2`, and so on; each factory counts on its own. |
 | `static Thread daemonThread(Runnable task, String name)` | A daemon thread running `task`, named `name`, not started. |
 
-```java
-final ExecutorService executor = Executors.newFixedThreadPool(4, ThreadUtils.daemonFactory("MyLoader"));
-```
-
 ## IndexedList family
 
-The lists of `dev.joid.lib.utils.list` keep their elements sorted by an integer index. You meet them as `UI.getNodeList()` and `Node.getChildren()` (sorted by `zindex`), `Node.getChildren(Class)`, and `IUIBridge.getUiList()` (sorted by `zlevel`).
+The lists of `dev.joid.lib.utils.list` keep their elements sorted by an integer index. You meet them as `UI.getNodeList()` and `Node.getChildren()` (sorted by `zindex`), `Node.getChildren(Class)`, `IUIBridge.getUiList()` (sorted by `zlevel`) and the bridge registries (sorted by `getIndex()`).
+
+![Diagram of an IndexedList: elements sorted by index; a new element goes after the elements of its index; an element added again keeps its place while it is in order, and moves when its index changed](../images/diagram-indexed-list.png "add inserts after the elements of the same index; adding again moves an element only when it is out of order")
 
 | Type | Description |
 | --- | --- |
@@ -133,18 +137,21 @@ The lists of `dev.joid.lib.utils.list` keep their elements sorted by an integer 
 
 Both implementations have a no-argument constructor and a constructor that copies a `List<E>` as is (without sorting it).
 
-### Sorting rules
+### Sorting with add and sort
 
-- `add(element)` inserts the element before the first element with a greater index, so elements with the same index keep their insertion order. Adding an element that is already in the list moves it to its sorted position; the list never holds it twice.
-- The index is read when the element is added. When it changes, add the element again to move it; `Node.zindex(int)` does it for you.
+- `add(element)` inserts the element after the elements of the same index, before the first element with a greater index, so elements with the same index keep their insertion order. The list never holds an element twice.
+- Adding an element that is already in the list keeps its place while it is still in order (its index is not below the one before it nor above the one after it). When its index changed and it is out of order, it is moved after the elements of its new index, like a new element.
+- `sort()` sorts the list again after index changes, in a stable way (elements of equal index keep their relative order); it does nothing when the list is already in order.
+- The index is read when the element is added. `Node.zindex(...)` adds the node again for you, and the UI bridge calls `sort()` on its UI list at every frame, so a `zlevel` changed with `ui.getData().setZlevel(...)` applies at the next frame.
 - `ordered()` and `reversed()` are live views. Changing the list through them bypasses the sorting: use `add` and `remove`.
 
 ### IndexedList methods
 
 | Method | Description |
 | --- | --- |
-| `void add(E element)` | Inserts or moves `element` at its sorted position. |
+| `void add(E element)` | Inserts `element` at its sorted position, after the elements of the same index. Adding an element already in the list keeps its place while it is still in order, and moves it after the elements of its new index otherwise. |
 | `void remove(E element)` | Removes `element`. |
+| `void sort()` | Sorts the elements by index again, keeping the order of equal indexes; does nothing when the order is right. |
 | `void clear()` | Removes every element. |
 | `IndexedList<E> copy()` | An independent list with the same elements, of the same type. |
 | `int size()`, `boolean isEmpty()`, `boolean contains(E element)` | Size and membership. |
@@ -155,14 +162,21 @@ Both implementations have a no-argument constructor and a constructor that copie
 | `IndexedList<E> recursive()` | When the elements are `RecursiveIndexedElement`s, a new flat list of every element and its descendants, depth first (each element followed by its children, in their order). Otherwise this list itself. |
 
 ```java
-for (final Node node : this.getNodeList().recursive()) {
-    System.out.println(node.getHierarchy());
+for (final Node node : super.getNodeList().recursive()) {
+	System.out.println(node.getHierarchy());
 }
 ```
+
+## Pitfalls
+
+- Changing the value behind `getIndex()` does not move an element by itself: call `add` again or `sort()`.
+- `Tuple` and `Pair` compare by identity: do not use them as map keys for their values.
+- `Bezier` does not clamp `t`: values outside 0 to 1 extrapolate the curve.
 
 ## See also
 
 - [Node Fundamentals](../nodes/node-fundamentals.md)
 - [Shapes](../drawing/shapes.md)
+- [Bridges](../integration/bridges.md)
 - [Signals](../state/signals.md)
 - [Mouse and Keyboard](../interactions/mouse-and-keyboard.md)

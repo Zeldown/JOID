@@ -7,20 +7,20 @@ JOID receives mouse and key events from its UI bridge and dispatches them to the
 ```java
 public class EditorUI extends UI {
 
-    @Override
-    public void init() {
-        RectNode
-        .create(100, 100, 300, 80)
-        .color(Color.WHITE)
-        .onClick((node, mouseX, mouseY, clickType) -> {
-            if (clickType.isRight()) {
-                System.out.println("Context menu at " + mouseX + ", " + mouseY);
-            }
-        })
-        .attach(this);
+	@Override
+	public void init() {
+		RectNode
+		.create(100, 100, 300, 80)
+		.color(Color.WHITE)
+		.onClick((node, mouseX, mouseY, clickType) -> {
+			if (clickType.isRight()) {
+				System.out.println("Context menu at " + mouseX + ", " + mouseY);
+			}
+		})
+		.attach(this);
 
-        this.keybind(() -> System.out.println("Saved"), Key.LEFT_CONTROL, Key.S);
-    }
+		super.keybind(() -> System.out.println("Saved"), Key.LEFT_CONTROL, Key.S);
+	}
 
 }
 ```
@@ -106,9 +106,9 @@ public class EditorUI extends UI {
 
 ```java
 .onClick((node, mouseX, mouseY, clickType) -> {
-    if (Key.LEFT_SHIFT.isDown()) {
-        System.out.println("Shift-click");
-    }
+	if (Key.LEFT_SHIFT.isDown()) {
+		System.out.println("Shift-click");
+	}
 })
 ```
 
@@ -129,14 +129,14 @@ The static helpers of `UI` test the left and the right key of a modifier at once
 ```java
 @Override
 public void init() {
-    this.keybind(() -> JOID.open(new SettingsUI()), Key.LEFT_CONTROL, Key.O);
-    this.keybind(() -> System.out.println("Help"), Key.F1);
+	super.keybind(() -> JOID.open(new SettingsUI()), Key.LEFT_CONTROL, Key.O);
+	super.keybind(() -> System.out.println("Help"), Key.F1);
 }
 ```
 
-- On each key event that no node consumed, every keybind whose keys are all down (`Key.isDown()`) runs, and the event is consumed. The keys are tested as a set: their order does not matter, and the key of the event itself is not compared.
-- Several keybinds can run for the same event; their order is unspecified.
-- Each call adds a keybind, even for a combination already registered.
+- A keybind is identified by the set of its keys: their order does not matter, and registering the same set again replaces the previous runnable (`keybind(r, CTRL, S)` then `keybind(r2, S, CTRL)` keeps `r2`).
+- On each key event that no node consumed, a keybind runs when the pressed key is one of its keys and all its keys are down (`Key.isDown()`); the event is then consumed. Holding Ctrl and S then pressing A does not run Ctrl + S again.
+- Several keybinds can run for the same event; their order is unspecified. `getKeybindMap()` returns them as a `Map<Set<Key>, Runnable>`.
 - The UI clears its keybinds every time it initializes (first open and every `UI.reload()`), so register them in `init()`.
 
 > WARNING: Keybinds run only when no node consumed the key. A focused text field consumes every key, so the keybinds of its UI wait until it loses the focus.
@@ -156,24 +156,26 @@ A `UI` can override the input hooks of `IUI`. They run after all the nodes of th
 ```java
 @Override
 public void keyPressed(final char c, final Key key, final InternalContext context) {
-    if (!context.isCancelled() && key == Key.TAB) {
-        context.cancel();
-        System.out.println("Next tab");
-    }
+	if (!context.isCancelled() && key == Key.TAB) {
+		context.cancel();
+		System.out.println("Next tab");
+	}
 }
 ```
 
 ## Event dispatch order
 
+![Diagram: an event goes from the backend to the UI bridge, to the top UI, its nodes, its keybinds and hooks, then to the UI below unless it was consumed](../images/diagram-event-path.png "The path of an input event from the window to the nodes")
+
 The UI bridge receives the events from the backend through `UIBridge.mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseDragged(ClickType, long)`, `mouseScroll(int)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
 
 1. The UI bridge walks its UIs from the top one down, skipping the UIs that are not active or not visible (`active` and `visible` of `@UIData`, readable and changeable through `ui.getData()`). A wheel event with a value of `0` is dropped.
-2. Key events only: on `Key.ESCAPE`, a closeable UI (`closeable`, `true` by default) is asked to close; when it closes immediately, the dispatch stops there (see [Opening and Closing UIs](../ui/managing-uis.md)).
+2. Key events only, on `Key.ESCAPE` in a closeable UI (`closeable`, `true` by default): the UI first receives the key like any other (steps 3 to 5: a focused text field cancels its edit and consumes it, a keybind on `ESCAPE` consumes it). When nobody consumed it, the UI is asked to close (`close()` may refuse, see [Opening and Closing UIs](../ui/managing-uis.md)). Either way the dispatch stops there: the UIs below never receive that Escape. A UI that is not closeable receives Escape as a normal key.
 3. The UI dispatches the event to its nodes, front to back (see [Callbacks](callbacks.md#input-events-across-nodes) for the order inside a node). Events that arrive before the UI finished its first initialization are ignored.
 4. Key events only, when no node consumed the event:
    1. the keybinds (see above);
    2. when the UI is zoomable (`zoomable`, `true` by default) and the event is still not consumed: `+` or `NUMPAD_ADD` with Ctrl or Alt zooms in by `0.1`, `-` or `NUMPAD_SUBTRACT` with Ctrl or Alt zooms out by `0.1`; the event is consumed when the zoom changed;
-   3. in dev mode, when the event is still not consumed: Left Ctrl+R or F5 reloads the UI (with Left Shift held, the zoom also goes back to `1`), F3 shows or hides the inspector (see [Developer Tools](../getting-started/dev-tools.md)).
+   3. in dev mode, when the event is still not consumed: Left Ctrl + R or F5 reloads the UI (`UI.reload()`: same instance, fields and signals kept); with Left Shift held (Ctrl + Shift + R, Shift + F5) the UI is replaced by a new instance (`UI.renew()`, zoom back to `1`); F3 shows or hides the developer panel (see [Developer Tools](../getting-started/dev-tools.md)).
 5. The UI hook (`mousePressed`, `keyPressed`...) runs with the context.
 6. When the event is consumed, or the UI is a popup (`@UIDataPopup(active = true)`, see [Opening and Closing UIs](../ui/managing-uis.md)), the dispatch stops; otherwise the next UI below receives it.
 
@@ -185,11 +187,11 @@ The entry points of a UI are public: `onMousePressed(ClickType)`, `onMouseReleas
 
 JOID has no global focus: every key event reaches every node of the UI until one consumes it. Focus belongs to the nodes that need it:
 
-- A [TextFieldNode](../nodes/input/text-field.md) or [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) takes the focus when clicked and loses it when a press lands elsewhere; while focused it consumes every key, so the keybinds and the nodes reached after it do not see the keys.
+- A [TextFieldNode](../nodes/input/text-field.md) or [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) takes the focus when clicked and loses it when a press lands elsewhere, on Enter or on Escape; while focused it consumes every key (Tab included: there is no keyboard navigation between fields), so the keybinds and the nodes reached after it do not see the keys.
 - For your own focus, keep the state yourself and consume keys only while focused:
 
 ```java
-final BooleanSignal focused = new BooleanSignal();
+final BooleanSignal focused = BooleanSignal.of(false);
 
 RectNode
 .create(100, 100, 300, 60)
@@ -197,22 +199,22 @@ RectNode
 .onClick((node, mouseX, mouseY, clickType) -> focused.set(true))
 .onKeyPressed(new NodeKeyPressedCallback<RectNode>() {
 
-    @Override
-    public void apply(final RectNode node, final char c, final Key key) {
-        if (key == Key.ENTER) {
-            focused.set(false);
-            return;
-        }
+	@Override
+	public void apply(final RectNode node, final char c, final Key key) {
+		if (key == Key.ENTER) {
+			focused.set(false);
+			return;
+		}
 
-        System.out.println("Typed " + c);
-    }
+		System.out.println("Typed " + c);
+	}
 
-    @Override
-    public void post(final RectNode node, final InternalContext context, final char c, final Key key) {
-        if (focused.getOrDefault()) {
-            context.cancel(() -> this.apply(node, c, key));
-        }
-    }
+	@Override
+	public void post(final RectNode node, final InternalContext context, final char c, final Key key) {
+		if (focused.peek()) {
+			context.cancel(() -> this.apply(node, c, key));
+		}
+	}
 
 })
 .attach(this);
@@ -231,6 +233,12 @@ Each node records the last events dispatched to its UI, whether or not they happ
 | `getLastKey()` | Last key; `null` before the first one. |
 | `getLastCharacter()` | Character of the last key event. |
 | `getLastKeyTime()` | Time of the last key event, in milliseconds of the clock bridge. |
+
+## Pitfalls
+
+- Keybinds and UI hooks run only when no node consumed the event: a focused text field takes every key.
+- Node hooks receive every event of their UI, wherever the pointer is: test `isHovered(mouseX, mouseY)` before reacting to a click.
+- Only Left Ctrl, Left Shift and Left Alt drive the dev shortcuts and the dev zoom.
 
 ## See also
 

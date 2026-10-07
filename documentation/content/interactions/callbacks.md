@@ -7,21 +7,21 @@ Callbacks run your code when something happens to a node: a click, a key, a hove
 ```java
 public class ShopUI extends UI {
 
-    @Override
-    public void init() {
-        RectNode
-        .create(100, 100, 300, 80)
-        .color(Color.WHITE)
-        .onHoverStart((node, mouseX, mouseY) -> System.out.println("Enter"))
-        .onClick((node, mouseX, mouseY, clickType) -> System.out.println("Clicked with " + clickType))
-        .attach(this);
-    }
+	@Override
+	public void init() {
+		RectNode
+		.create(100, 100, 300, 80)
+		.color(Color.WHITE)
+		.onHoverStart((node, mouseX, mouseY) -> System.out.println("Enter"))
+		.onClick((node, mouseX, mouseY, clickType) -> System.out.println("Clicked with " + clickType))
+		.attach(this);
+	}
 
 }
 ```
 
 - Every `on...` method adds one callback and returns the node, so you can chain them. Calling the same method twice registers two callbacks: both run, in registration order.
-- A callback stays registered for the life of the node; there is no method to remove one. Guard its body with a condition (a field or a [signal](../state/signals.md)) when it must stop reacting.
+- A callback stays registered for the life of the node, across detachments; there is no method to remove one. Guard its body with a condition (a field or a [signal](../state/signals.md)) when it must stop reacting.
 - An exception thrown inside a callback is caught and reported on `System.err` with the callback interface and the cause (`[JOID] The post phase of NodeMousePressedCallback failed: java.lang.IllegalStateException: ...`), followed by its stack trace. The other callbacks and the event dispatch continue.
 
 ### Typing the node parameter
@@ -31,12 +31,12 @@ Every registration method is generic, for example `public final <T extends Node>
 ```java
 TextNode
 .create(100, 100)
-.text(Text.create("", info))
-.<TextNode>onInit(node -> node.getText().text("Ready"))
+.text(Text.create("Waiting", this.info))
+.<TextNode>onClick((text, mouseX, mouseY, clickType) -> System.out.println("[Shop] " + text.getText().getRawText()))
 .attach(this);
 ```
 
-`info` is a `TextInfo` (see [Text Model](../text/text-and-textinfo.md)). An assignment gives the target type to the last call of the chain: `final RectNode button = RectNode.create(0, 0, 100, 40).onClick((node, mouseX, mouseY, clickType) -> node.color(Color.RED));` passes a `RectNode` to the lambda. Without a witness, call the setters of the concrete class (`color`, `text`...) before the callbacks.
+`info` is a `TextInfo` (see [Text and TextInfo](../text/text-and-textinfo.md)). An assignment gives the target type to the last call of the chain: `final RectNode button = RectNode.create(0, 0, 100, 40).onClick((node, mouseX, mouseY, clickType) -> node.color(Color.WHITE));` passes a `RectNode` to the lambda. Without a witness, call the setters of the concrete class (`color`, `text`...) before the callbacks.
 
 ## Node callback reference
 
@@ -53,10 +53,9 @@ The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mo
 | `onHoverStart` | `NodeHoverStartCallback<T>` | `(node, mouseX, mouseY)` | The frame the node becomes hovered. | Nothing. |
 | `onHover` | `NodeHoverCallback<T>` | `(node, mouseX, mouseY)` | Every frame while the node is hovered. | Nothing. |
 | `onHoverEnd` | `NodeHoverEndCallback<T>` | `(node, mouseX, mouseY)` | The frame the node stops being hovered (the mouse left, or the node got disabled). | Nothing. |
-| `onInit` | `NodeInitCallback<T>` | `(node)` | The node is loaded into a UI: `UI.add` or `attach(ui)`, `append` to a node already in a UI, and again on `reload()`. | Sets the UI, loads the children, scrollbar and skeleton, initializes the effects, calls `init(ui)`. |
-| `onReload` | `NodeReloadCallback<T>` | `(node)` | `reload()` is called on the node, including through `WatchProperty.RELOAD`. | Reloads the children, then loads the node again (its `onInit` fires). |
+| `onInit` | `NodeInitCallback<T>` | `(node)` | The node is loaded into a UI: `UI.add` or `attach(ui)`, `append` to a node already in a UI, the UI reloading, a new attachment after a detach. | Sets the UI, loads the children, scrollbar and skeleton, initializes the effects, calls `init(ui)`, subscribes the node to its signals. |
 | `onAppend` | `NodeAppendCallback<T>` | `(node, child)` | On the parent, once per child given to `append(...)` or `attach(parent)`. | Sets the parent of the child, loads it when the parent is in a UI, adds it to the children. |
-| `onDetach` | `NodeDetachCallback<T>` | `(node)` | The parent calls `clearChildren()`, the UI closes, or the UI rebuilds its nodes (`UI.reload()`). | Detaches the children, then calls the node's `detach()` hook. |
+| `onDetach` | `NodeDetachCallback<T>` | `(node)` | `remove(...)` or `clearChildren()` on the parent (also through `WatchProperty.CLEAR_CHILDREN`), an `append` that moves the node, the UI closing or rebuilding its nodes (`UI.reload()`). | Detaches the children, scrollbar and skeleton, unsubscribes from the signals, ends the drag and hover, runs the `detach` hook of the effects, then the node's `detach()` hook. |
 | `onMount` | `NodeMountCallback<T>` | `(node)` | The first frame the node is drawn mounted (every `wait(...)` condition of the node and of its ancestors met), and again each time it becomes mounted after being unmounted. | Nothing. |
 | `onUpdate` | `NodeUpdateCallback<T>` | `(node)` | Every update tick of the UI. | Updates the children, then calls the node's `update()` hook. |
 | `onRender` | `NodeRenderCallback<T>` | `(node, mouseX, mouseY)` | Every frame the node is visible. | Draws the children with a negative z-index, the node itself (`onDraw`), the other children, the layers and the dragged copy (or the skeleton node while not mounted). |
@@ -74,6 +73,8 @@ The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mo
 Details per family: [Mouse and Keyboard](mouse-and-keyboard.md), [Hover and Tooltips](hover.md), [Drag and Drop](drag-drop.md), [Watching Signals](../state/watch.md), [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md), [Node Fundamentals](../nodes/node-fundamentals.md) for the lifecycle and `wait`, [TweenAnimator](../animation/tween-animator.md) for `animate`.
 
 ## PRE and POST phases
+
+![Diagram: the PRE phase of every callback, the default action unless the context is cancelled, then the POST phase that calls each lambda](../images/diagram-callback-phases.png "A lambda runs in the POST phase; a PRE override can veto the action")
 
 Every callback interface declares three methods:
 
@@ -94,17 +95,17 @@ A lambda implements `apply`, so it runs in the POST phase. To act in the PRE pha
 ```java
 final NodeAppendCallback<FlexNode> limit = new NodeAppendCallback<FlexNode>() {
 
-    @Override
-    public void apply(final FlexNode node, final Node child) {
-        System.out.println("Appended " + child.getClass().getSimpleName());
-    }
+	@Override
+	public void apply(final FlexNode node, final Node child) {
+		System.out.println("Appended " + child.getClass().getSimpleName());
+	}
 
-    @Override
-    public void pre(final FlexNode node, final InternalContext context, final Node child) {
-        if (node.getChildren().size() >= 5) {
-            context.cancel();
-        }
-    }
+	@Override
+	public void pre(final FlexNode node, final InternalContext context, final Node child) {
+		if (node.getChildren().size() >= 5) {
+			context.cancel();
+		}
+	}
 
 };
 
@@ -152,16 +153,16 @@ RectNode
 .create(100, 100, 300, 80)
 .onKeyPressed(new NodeKeyPressedCallback<RectNode>() {
 
-    @Override
-    public void apply(final RectNode node, final char c, final Key key) {}
+	@Override
+	public void apply(final RectNode node, final char c, final Key key) {}
 
-    @Override
-    public void post(final RectNode node, final InternalContext context, final char c, final Key key) {
-        if (!context.isCancelled() && key == Key.ENTER) {
-            System.out.println("Submitted");
-            context.cancel();
-        }
-    }
+	@Override
+	public void post(final RectNode node, final InternalContext context, final char c, final Key key) {
+		if (!context.isCancelled() && key == Key.ENTER) {
+			System.out.println("Submitted");
+			context.cancel();
+		}
+	}
 
 })
 .attach(this);
@@ -172,24 +173,24 @@ RectNode
 The PRE phase of a node runs before its children see the event. Cancelling there consumes it before them. This panel swallows the presses made over it while `loading` is `true`, and stays transparent otherwise because its `post` does nothing:
 
 ```java
-final BooleanSignal loading = new BooleanSignal(true);
+final BooleanSignal loading = BooleanSignal.of(true);
 
 ContainerNode
 .create(100, 100, 600, 400)
 .onMousePressed(new NodeMousePressedCallback<ContainerNode>() {
 
-    @Override
-    public void apply(final ContainerNode node, final double mouseX, final double mouseY, final ClickType clickType) {}
+	@Override
+	public void apply(final ContainerNode node, final double mouseX, final double mouseY, final ClickType clickType) {}
 
-    @Override
-    public void pre(final ContainerNode node, final InternalContext context, final double mouseX, final double mouseY, final ClickType clickType) {
-        if (loading.getOrDefault() && node.isHovered(mouseX, mouseY)) {
-            context.cancel();
-        }
-    }
+	@Override
+	public void pre(final ContainerNode node, final InternalContext context, final double mouseX, final double mouseY, final ClickType clickType) {
+		if (loading.peek() && node.isHovered(mouseX, mouseY)) {
+			context.cancel();
+		}
+	}
 
-    @Override
-    public void post(final ContainerNode node, final InternalContext context, final double mouseX, final double mouseY, final ClickType clickType) {}
+	@Override
+	public void post(final ContainerNode node, final InternalContext context, final double mouseX, final double mouseY, final ClickType clickType) {}
 
 })
 .attach(this);
@@ -219,7 +220,7 @@ A hidden node is skipped with its whole subtree. A disabled node still passes th
 
 ### Nested lifecycle callbacks
 
-`onInit`, `onReload`, `onDetach`, `onUpdate` and `onRender` wrap the same callbacks of the children: the PRE phase of a node runs before its children, the POST phase after them. For example, the `onInit` lambda of a child runs before the one of its parent, and both run after the `init(ui)` hook of their own node.
+`onInit`, `onDetach`, `onUpdate` and `onRender` wrap the same callbacks of the children: the PRE phase of a node runs before its children, the POST phase after them. For example, the `onInit` lambda of a child runs before the one of its parent, and both run after the `init(ui)` hook of their own node.
 
 ### Callbacks within a frame
 
@@ -239,11 +240,9 @@ Some nodes add their own callbacks. They follow the same PRE/POST rules.
 
 | Node | Method | Interface | Lambda arguments | Fires |
 |---|---|---|---|---|
-| [TextFieldNode](../nodes/input/text-field.md) | `onChange` | `NodeTextFieldChangeCallback<T>` | `(node, oldText, newText)` | The text changes. |
-| [TextFieldNode](../nodes/input/text-field.md) | `onFocus` | `NodeTextFieldFocusCallback<T>` | `(node)` | The focus changes. |
-| [TextFieldNode](../nodes/input/text-field.md) | `onEnter` | `NodeTextFieldEnterCallback<T>` | `(node, text)` | Enter, numpad Enter or Escape is pressed while focused. |
-| [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `onChange` | `NodeTextFieldChangeCallback<T>` | `(node, oldText, newText)` | The text changes. |
-| [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `onFocus` | `NodeTextFieldFocusCallback<T>` | `(node)` | The focus changes. |
+| [TextFieldNode, IntegerFieldNode](../nodes/input/text-field.md), [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | `onChange` | `NodeTextFieldChangeCallback<T, V>` | `(field, text, value, valid)` | Every change of the text, valid or not; `value` is the corrected value the commit will apply. |
+| Text fields | `onFocus` | `NodeTextFieldFocusCallback<T>` | `(field)` | The field gains or loses the focus: read `field.isFocused()`. |
+| Text fields | `onEnter` | `NodeTextFieldEnterCallback<T>` | `(field, text)` | Enter is pressed while focused (after the commit). |
 | [SliderNode](../nodes/input/slider.md) | `onChange` | `NodeSliderChangeCallback<T, O>` | `(node, value)` | The selected value changes. |
 | [CheckboxNode](../nodes/input/checkbox.md) | `onChange` | `NodeCheckboxChangeCallback<T>` | `(node, checked)` | The checked state changes: click, `checked(...)` or bound signal. |
 | [ToggleNode](../nodes/input/toggle.md) | `onChange` | `NodeToggleChangeCallback<T, F, S>` | `(node, toggle)` | The side changes: click, `toggle(...)` or bound signal. |
@@ -268,6 +267,11 @@ A custom node declares its own callback types and fires them with the public met
 | `getCallbackList(int type)` | The registered callbacks, as `NodeCallbackObject` wrappers. |
 
 The `type` ids come from `NodeCallbackRegistry.next(Class)` and callbacks are stored with the protected `registerCallback(int type, NodeCallback callback)`. `next` rejects, with an `IllegalArgumentException`, an interface that is not annotated `@FunctionalInterface`, or that lacks a `@NodeCallbackMethod(Type.PRE)` or `@NodeCallbackMethod(Type.POST)` method returning `void` whose first parameter is a `Node` and second an `InternalContext`. `NodeEmptyCallback<T>` (`dev.joid.lib.ui.node.callback.impl`) is a ready-made callback whose lambda takes only `(node)`.
+
+## Pitfalls
+
+- A lambda runs in the POST phase: to veto an action, override `pre` in an anonymous class and call `context.cancel()`.
+- `context.cancel(() -> this.active = false)` runs the assignment then cancels; `cancelIf(() -> ...)` cancels only when the supplier returns `true`.
 
 ## See also
 

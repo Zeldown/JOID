@@ -5,8 +5,8 @@
 ```java
 @Override
 public void init() {
-    RectNode.create(100, 100, 300, 180).color(Color.WHITE).effect(RoundedNodeEffect.create(16F)).effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 24F, 0D, 10D)).attach(this);
-    RectNode.create(500, 130, 120, 120).color(Color.CYAN).effect(CircleNodeEffect.create()).effect(ShadowNodeEffect.create(Color.CYAN, 24F)).attach(this);
+	RectNode.create(100, 100, 300, 180).color(Color.WHITE).effect(RoundedNodeEffect.create(16F)).effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 24F, 0D, 10D)).attach(this);
+	RectNode.create(500, 130, 120, 120).color(Color.CYAN).effect(CircleNodeEffect.create()).effect(ShadowNodeEffect.create(Color.CYAN, 24F)).attach(this);
 }
 ```
 
@@ -29,7 +29,7 @@ public void init() {
 | --- | --- |
 | `color(Color color)`, `color(Supplier<Color> color)` | Replaces the color. |
 | `blur(float blur)`, `blur(Supplier<Float> blur)` | Replaces the blur. |
-| `offset(double offsetX, double offsetY)`, `offset(Supplier<Double> offsetX, Supplier<Double> offsetY)` | Replaces the offset. |
+| `offsetX(double offsetX)`, `offsetX(Supplier<Double> offsetX)`, `offsetY(...)` | Replaces one offset. |
 
 The setters return the effect, and suppliers are read every frame. A shadow that grows with the hover progress:
 
@@ -38,7 +38,7 @@ RectNode
 .create(100, 100, 300, 180)
 .color(Color.WHITE)
 .effect(RoundedNodeEffect.create(16F))
-.self(node -> node.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 8F).blur(() -> 8F + node.hoverValue(16F)).offset(() -> 0D, () -> 2D + node.hoverValue(8F))))
+.self(node -> node.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 8F).blur(() -> 8F + node.hoverValue(16F)).offsetY(() -> 2D + node.hoverValue(8F))))
 .attach(this);
 ```
 
@@ -66,10 +66,15 @@ The shadow is computed from this shape, not from the drawn pixels: a text or an 
 | Method | Description |
 | --- | --- |
 | `create(...)` | Factories, see above. |
-| `color(...)`, `blur(...)`, `offset(...)` | Setters, value or `Supplier`. |
+| `color(...)`, `blur(...)`, `offsetX(...)`, `offsetY(...)` | Setters, value or `Supplier`. |
 | `getColor()`, `getBlur()`, `getOffsetX()`, `getOffsetY()` | Current values (the suppliers are read). |
 | `getColorSupplier()`, `getBlurSupplier()`, `getOffsetXSupplier()`, `getOffsetYSupplier()` | The suppliers. |
 | `priority(int)`, `scope(NodeEffectScope)` | Inherited, see [Effects](effects.md). The scope has no effect on a render-state effect. |
+
+## Pitfalls
+
+- The shadow follows the node's shape effects, not its drawn pixels: a `CircleNode` or a `CircleNodeEffect` casts a round shadow, a `RoundedNodeEffect` a rounded one, anything else a rectangle.
+- A shadow extends outside the node: a parent with `HIDDEN` overflow clips it.
 
 ## See also
 

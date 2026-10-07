@@ -1,6 +1,6 @@
 # Custom Nodes
 
-You write a custom node by extending `Node` (or an existing node) and overriding its hooks: `draw` for the visuals, `init` and `update` for state, the input hooks for interaction. This page covers the constructor and factory contract, the hooks, input handling with `InternalContext`, your own callbacks with `@NodeCallbackMethod`, and fluent setters that keep the subclass type.
+You write a custom node by extending `Node` (or an existing node) and overriding its hooks: `draw` for the visuals, `init` and `update` for state, the input hooks for interaction. This page covers the constructor and factory contract, reactive setters, the hooks, input handling with `InternalContext`, your own callbacks with `@NodeCallbackMethod`, and signal bindings.
 
 ## A complete custom node
 
@@ -11,19 +11,20 @@ import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
 import dev.joid.lib.utils.context.InternalContext;
+import lombok.NonNull;
 
 @FunctionalInterface
 public interface NodeSwatchSelectCallback<T extends SwatchNode> extends NodeCallback {
 
-    public void apply(T node, boolean selected);
+	public void apply(final @NonNull T node, final boolean selected);
 
-    @NodeCallbackMethod(Type.PRE)
-    public default void pre(final T node, final InternalContext context, final boolean selected) {}
+	@NodeCallbackMethod(Type.PRE)
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final boolean selected) {}
 
-    @NodeCallbackMethod(Type.POST)
-    public default void post(final T node, final InternalContext context, final boolean selected) {
-        context.cancel(() -> this.apply(node, selected));
-    }
+	@NodeCallbackMethod(Type.POST)
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final boolean selected) {
+		context.cancel(() -> this.apply(node, selected));
+	}
 
 }
 ```
@@ -31,78 +32,109 @@ public interface NodeSwatchSelectCallback<T extends SwatchNode> extends NodeCall
 Then the node:
 
 ```java
+import java.util.function.Supplier;
+
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.utils.signal.Signal;
+import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
 public class SwatchNode extends Node {
 
-    private static final int CALLBACK_SELECT = NodeCallbackRegistry.next(NodeSwatchSelectCallback.class);
+	private static final int CALLBACK_SELECT = NodeCallbackRegistry.next(NodeSwatchSelectCallback.class);
 
-    private Color   color;
-    private boolean selected;
+	private Supplier<Color> color;
+	private boolean         selected;
 
-    protected SwatchNode(final double x, final double y, final double width, final double height) {
-        super(x, y, width, height);
-        this.color = Color.WHITE;
-    }
+	protected SwatchNode(final double x, final double y, final double width, final double height) {
+		super(x, y, width, height);
+		this.color = Signal.from(Color.WHITE);
+	}
 
-    public static SwatchNode create(final double x, final double y, final double size) {
-        return new SwatchNode(x, y, size, size);
-    }
+	public static @NonNull SwatchNode create(final double x, final double y, final double size) {
+		return new SwatchNode(x, y, size, size);
+	}
 
-    @Override
-    public void draw(final double mouseX, final double mouseY) {
-        if (this.selected) {
-            DrawUtils.SHAPE.drawRect(this.getX() - 4, this.getY() - 4, this.getWidth() + 8, this.getHeight() + 8, Color.WHITE);
-        }
+	@Override
+	public void draw(final double mouseX, final double mouseY) {
+		if (this.selected) {
+			DrawUtils.SHAPE.drawRect(super.getX() - 4D, super.getY() - 4D, super.getWidth() + 8D, super.getHeight() + 8D, Color.WHITE);
+		}
 
-        DrawUtils.SHAPE.drawRect(this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.color.to(Color.BLACK, this.hoverValue(0.2F)));
-    }
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.color.get().to(Color.BLACK, super.hoverValue(0.2F)));
+	}
 
-    @Override
-    public void mousePressed(final double mouseX, final double mouseY, final ClickType clickType, final InternalContext context) {
-        if (context.isCancelled() || !clickType.isLeft() || !this.isHovered(mouseX, mouseY)) {
-            return;
-        }
+	@Override
+	public void mousePressed(final double mouseX, final double mouseY, final ClickType clickType, final InternalContext context) {
+		if (context.isCancelled() || !clickType.isLeft() || !super.isHovered(mouseX, mouseY)) {
+			return;
+		}
 
-        context.cancel(() -> this.executeCallback(SwatchNode.CALLBACK_SELECT, InternalContext.create(), () -> this.selected = !this.selected, !this.selected));
-    }
+		context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalContext.create(), () -> this.selected = !this.selected, !this.selected));
+	}
 
-    public final <T extends SwatchNode> T color(final Color color) {
-        this.color = color;
-        return (T) this;
-    }
+	public final <T extends SwatchNode> @NonNull T color(final @NonNull Color color) {
+		return this.color(Signal.from(color));
+	}
 
-    public final <T extends SwatchNode> T selected(final boolean selected) {
-        this.selected = selected;
-        return (T) this;
-    }
+	public final <T extends SwatchNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color) {
+		this.color = color;
+		return (T) this;
+	}
 
-    public final <T extends SwatchNode> T onSelect(final NodeSwatchSelectCallback<T> callback) {
-        return this.registerCallback(SwatchNode.CALLBACK_SELECT, callback);
-    }
+	public final <T extends SwatchNode> @NonNull T selected(final boolean selected) {
+		return this.selected(Signal.from(selected));
+	}
 
-    public final boolean isSelected() {
-        return this.selected;
-    }
+	public final <T extends SwatchNode> @NonNull T selected(final @NonNull Supplier<@NonNull Boolean> selected) {
+		return super.follow("selected", selected, value -> this.selected = value);
+	}
+
+	public final <T extends SwatchNode> @NonNull T onSelect(final @NonNull NodeSwatchSelectCallback<T> callback) {
+		return super.registerCallback(SwatchNode.CALLBACK_SELECT, callback);
+	}
+
+	public final boolean isSelected() {
+		return this.selected;
+	}
 
 }
 ```
 
-And its use in a UI:
+And its use in a UI, with a native expression that follows a signal:
 
 ```java
+private final IntegerSignal level = IntegerSignal.of(0);
+
 SwatchNode
 .create(100, 100, 40)
-.color(Color.RED)
-.onSelect((swatch, selected) -> System.out.println("selected: " + selected))
+.color(this.level.get() > 2 ? Color.WHITE : Color.GRAY)
+.onSelect((swatch, selected) -> System.out.println("[Palette] selected: " + selected))
 .attach(this);
 ```
+
+![A gray swatch hovered and clicked: it darkens on hover and gets a white frame when selected](../images/custom-node-swatch.gif "The swatch draws itself, follows the hover and fires onSelect")
+
+## Reactive setters
+
+Each property setter of a node comes in pairs, like the built-in ones:
+
+| Overload | Body |
+| --- | --- |
+| Value: `color(Color color)` | `return this.color(Signal.from(color));` and nothing else, so that the caller's expression is followed. |
+| Supplier: `color(Supplier<Color> color)` | Stores the source. |
+
+Two ways to store the source:
+
+- A value read while drawing (a color, an effect setting): keep the `Supplier` in a field and call `get()` in `draw`. A signal returns its cached value; a lambda runs every frame.
+- Any other property: `super.follow("name", supplier, consumer)` (`protected final`) applies the value at once, then reads the source at the start of each render of the node and calls `consumer` only when the value changed. A constant (`Signal.from` of a value without signal) is applied once and not stored. `getSourceMap()` lists the followed properties.
+
+A method that only passes its parameter to a setter or to `Signal.from` is traversed by the expression replay: `title(String title) { return this.label(title); }` follows the caller's expression too. A value computed inside your setter (`this.label("> " + title)`) is fixed. See [Reactive Properties](../state/reactive-properties.md).
 
 ## Constructor and factory contract
 
@@ -119,7 +151,7 @@ The hooks come from `INode` and do nothing by default, except `drawSkeleton`.
 
 | Hook | Called |
 | --- | --- |
-| `init(UI ui)` | On every load: when the node joins a UI, when the UI opens, on `reload()`. The children's `init` runs before the parent's. |
+| `init(UI ui)` | On every load: when the node joins a UI, when the UI opens or reloads, when the node is attached again after a detach. The children's `init` runs before the parent's. |
 | `draw(double mouseX, double mouseY)` | Every frame while the node is visible and mounted, after the children with a negative z-index and before the others. |
 | `drawSkeleton(double mouseX, double mouseY)` | Every frame while the node is visible but not mounted, instead of `draw`. `Node` fills the bounds with `Color.LOADING()`. |
 | `update()` | On every update tick, after the children's `update`. Also called for hidden nodes. |
@@ -139,7 +171,7 @@ The hooks come from `INode` and do nothing by default, except `drawSkeleton`.
 
 ### State in init and update
 
-- `init` runs again on every reload (`reload()`, `WatchProperty.RELOAD`): keep it repeatable, for example by recomputing values rather than appending children.
+- `init` runs again on every load (a UI reload, a new attachment): keep it repeatable, for example by recomputing values rather than appending children.
 - `update` runs on the update ticks driven by the UI bridge, independently of the frames. The layout nodes lay out their children there and in `draw`.
 - Release what the node holds (threads, sockets, resources) in `detach`. It runs when the parent clears its children, when a watch clears them, and when the UI closes or reloads.
 
@@ -148,6 +180,9 @@ The hooks come from `INode` and do nothing by default, except `drawSkeleton`.
 ### Dispatch order
 
 The UI sends each event to its top-level nodes, from the highest z-index, then to its own hook (`UI.mousePressed`...). The UI bridge stops at the first UI that consumed the event. Inside a node, for a mouse press:
+
+![Diagram: a mouse press goes through the scrollbar, the PRE callbacks, the front children, onClick, the mousePressed hook, the back children, the POST callbacks, then the drag start](../images/diagram-input-dispatch.png "The order in which a node and its children see a mouse press")
+
 
 1. the node's scrollbar, then its skeleton while the node is not mounted;
 2. the PRE phase of the node's `onMousePressed` callbacks;
@@ -160,7 +195,7 @@ The UI sends each event to its top-level nodes, from the highest z-index, then t
 
 The other events follow the same order without `onClick` and without step 8. A release ends the node's own drag before step 2; a wheel event applies the node's [wheel scrolling](layout/overflow-and-scroll.md#wheel-scrolling) between steps 3 and 5.
 
-The hooks are called on every node of the UI, whatever the pointer position, the visibility or the enabled state. Check `isHovered(mouseX, mouseY)`, which tests visibility, enabled state, the overflow area and the bounds. Key events reach every node too: keep your own focus state.
+The hooks are called on every visible node of the UI, whatever the pointer position; a disabled node passes the event to its children but its own hooks and callbacks do not run. Check `isHovered(mouseX, mouseY)`, which tests visibility, enabled state, the overflow area and the bounds. Key events reach every node too: keep your own focus state.
 
 ### Consuming events
 
@@ -181,7 +216,7 @@ All of them except `isCancelled()` return the context. Release hooks usually res
 ```java
 @Override
 public void mouseReleased(final double mouseX, final double mouseY, final ClickType clickType, final InternalContext context) {
-    this.pressed = false;
+	this.pressed = false;
 }
 ```
 
@@ -212,8 +247,8 @@ The POST phase usually runs `apply` through `context.cancel(() -> this.apply(...
 Expose a fluent `onX` method that stores the callback with `registerCallback(int type, NodeCallback callback)`. It is `protected final`, adds the callback after the existing ones, and returns the node typed by the call site:
 
 ```java
-public final <T extends SwatchNode> T onSelect(final NodeSwatchSelectCallback<T> callback) {
-    return this.registerCallback(SwatchNode.CALLBACK_SELECT, callback);
+public final <T extends SwatchNode> @NonNull T onSelect(final @NonNull NodeSwatchSelectCallback<T> callback) {
+	return super.registerCallback(SwatchNode.CALLBACK_SELECT, callback);
 }
 ```
 
@@ -249,13 +284,13 @@ For an event that only passes the node, reuse `NodeEmptyCallback<T extends Node>
 ```java
 private static final int CALLBACK_OPEN = NodeCallbackRegistry.next(NodeEmptyCallback.class);
 
-public final <T extends DrawerNode> T onOpen(final NodeEmptyCallback<T> callback) {
-    return this.registerCallback(DrawerNode.CALLBACK_OPEN, callback);
+public final <T extends DrawerNode> @NonNull T onOpen(final @NonNull NodeEmptyCallback<T> callback) {
+	return super.registerCallback(DrawerNode.CALLBACK_OPEN, callback);
 }
 
-public final <T extends DrawerNode> T open() {
-    this.executeCallback(DrawerNode.CALLBACK_OPEN, InternalContext.create(), () -> this.opened = true);
-    return (T) this;
+public final <T extends DrawerNode> @NonNull T open() {
+	super.executeCallback(DrawerNode.CALLBACK_OPEN, InternalContext.create(), () -> this.opened = true);
+	return (T) this;
 }
 ```
 
@@ -278,8 +313,8 @@ Declare setters as `public final <T extends YourNode> T name(...)` and end them 
 `bind(Signal<V> signal, Consumer<V> consumer)` is `protected final`: it runs `consumer` at once with the signal's current value (when it is not `null`), then with each value the signal publishes, while the node's UI is open. It returns the subscription it creates, a `SignalSubscriber<V>`. Each call adds an independent subscription, so a node can bind several signals at once:
 
 ```java
-this.bind(title, value -> this.title = value);
-this.bind(count, value -> this.count = value);
+super.bind(title, value -> this.title = value);
+super.bind(count, value -> this.count = value);
 ```
 
 `unbind(SignalSubscriber<?> subscriber)` unsubscribes the node from the signal of that subscription and forgets it; it does nothing with `null` or with a subscription that is not the node's. `rebind(SignalSubscriber<?> previous, Signal<V> signal, Consumer<V> consumer)` unbinds `previous`, then binds `signal` and returns the new subscription. All three follow the detach of the node: a binding made while the node is detached follows its signal once the node is loaded again, with a single subscription.
@@ -290,19 +325,17 @@ The input controls build their `signal(...)` method on `rebind`, so that a secon
 private Signal<Boolean>           signal;
 private SignalSubscriber<Boolean> subscription;
 
-public final <T extends SwatchNode> T signal(final Signal<Boolean> signal) {
-    this.signal = signal;
-    this.subscription = this.rebind(this.subscription, signal, value -> this.selected = Boolean.TRUE.equals(value));
-    return (T) this;
+public final <T extends SwatchNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
+	this.signal = signal;
+	this.subscription = super.rebind(this.subscription, signal, value -> this.selected = Boolean.TRUE.equals(value));
+	return (T) this;
 }
 ```
 
 ```java
-context.cancel(() -> this.executeCallback(SwatchNode.CALLBACK_SELECT, InternalContext.create(), () -> {
-    this.selected = !this.selected;
-    if (this.signal != null) {
-        this.signal.set(this.selected);
-    }
+context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalContext.create(), () -> {
+	this.selected = !this.selected;
+	super.sync(this.signal, this.selected);
 }, !this.selected));
 ```
 
@@ -312,12 +345,12 @@ context.cancel(() -> this.executeCallback(SwatchNode.CALLBACK_SELECT, InternalCo
 
 ## Building on existing nodes
 
-- Extend a concrete node to add behavior: `RectNode` subclasses keep the fill, border and hover colors; `ContainerNode` subclasses draw nothing themselves (its `draw` is final).
+- Extend a concrete node to add behavior: `RectNode` subclasses keep the fill, border and hover colors; `ContainerNode` draws nothing by itself. Every lifecycle and event method of the built-in nodes can be overridden; their fluent setters are `final`.
 - Extend the abstract structure nodes and implement their drawing method: `ScrollbarNode.drawScrollbar` (see [Overflow and Scrolling](layout/overflow-and-scroll.md#scrollbarnode)), and the input controls such as `CheckboxNode`, `SwitchNode` or `SliderNode` (see [CheckboxNode](input/checkbox.md)).
 - A node that owns child nodes attaches them to itself (`child.attach(this)`) and keeps a field to update them, as `SliderNode` does with its cursor.
 - Other overridable `Node` methods: `isVisible()`, `isVisibleProperty()`, `isEnabled()`, `isHovered(double mouseX, double mouseY, boolean checkEnabled)` (for a custom hit area), `getIndex()` (the sorting key, the z-index by default), `shouldApplyEffect(NodeEffect)` and `toJson()`.
 
-## Reference for node authors
+## Reference
 
 | Member | Description |
 | --- | --- |
@@ -329,13 +362,23 @@ context.cancel(() -> this.executeCallback(SwatchNode.CALLBACK_SELECT, InternalCo
 | `unbind(SignalSubscriber<?>)` | Protected. Removes a subscription of the node. Does nothing with `null`. |
 | `rebind(SignalSubscriber<?>, Signal<V>, Consumer<V>)` | Protected. Removes the previous subscription, then binds the signal. Returns the new subscription. |
 | `sync(Signal<V>, V)` | Protected. Sets the signal to the value when the signal is not `null` and holds another value. |
+| `writable(Signal<V>)` | Protected. Returns the signal, or throws `IllegalArgumentException` (`<Class>.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead`) for a `ComputedSignal`. `rebind` calls it. |
+| `follow(String property, Supplier<V> supplier, Consumer<V> consumer)` | Protected. Applies the value now, then on each change of the source (read at the start of each render). |
 | `executeCallback`, `executePreCallback`, `executePostCallback` | Fire callbacks. |
 | `fireDrag(Runnable)`, `fireDragStart(Runnable)`, `fireDragEnd(Runnable)` | Run an action inside the drag callbacks. |
 | `hasCallback(int)`, `getCallbackList(int)`, `getCallbackMap()` | Registered callbacks. |
 | `NodeCallbackRegistry.next(Class)`, `get(int)`, `getId(Class)` | Callback ids. |
 
+## Pitfalls
+
+- A value setter that computes before calling `Signal.from` (`Signal.from("> " + text)` inside the library code of your node) cannot follow the caller's expression: pass the parameter as is.
+- Keep a constructor `(double, double, double, double)`, `(double, double)` or `()`: `copy()` and copy drags need it.
+- `NodeCallbackRegistry.next` throws at class loading when the callback interface misses a phase: the class fails to load.
+- A two-way `signal(...)` receives back its own writes: make the consumer harmless for an unchanged value.
+
 ## See also
 
+- [Reactive Properties](../state/reactive-properties.md)
 - [Node Fundamentals](node-fundamentals.md)
 - [Callbacks](../interactions/callbacks.md)
 - [Mouse and Keyboard](../interactions/mouse-and-keyboard.md)

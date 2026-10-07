@@ -8,34 +8,32 @@
 ProgressNode.create(100, 100, 400, 12).progress(0.25F).attach(this);
 ```
 
-A rounded health bar:
+A rounded health bar that follows a signal:
 
 ```java
-final ProgressNode health = ProgressNode
-    .create(20, 20, 300, 16)
-    .color(Color.DARKGRAY, Color.RED)
-    .progress(0F, 100F, 72F)
-    .effect(RoundedNodeEffect.create(8F))
-    .attach(this);
+private final IntegerSignal health = IntegerSignal.of(72);
+
+ProgressNode
+.create(20, 20, 300, 16)
+.background(Color.DARKGRAY)
+.foreground(Color.LIGHTGRAY)
+.progress(this.health.get() / 100F)
+.effect(RoundedNodeEffect.create(8F))
+.attach(this);
 ```
 
-![A white bar filled to a quarter on black, and a rounded red health bar filled to 72 %](../../images/progress-basic.png "The default colors at 0.25F, and the health bar at 72 of 100.")
+![A white bar filled to a quarter on black, and a rounded light gray bar filled to 72 %](../../images/progress-basic.png "The default colors at 0.25F, and the health bar at 72 of 100.")
 
-By default the bar is empty (`0F`), black with a white fill, and fills from left to right.
+By default the bar is empty (`0F`), black with a white fill, and fills from left to right. The health bar reads `this.health.get()` in its expression: it follows the signal and redraws when the health changes (see [Reactive Properties](../../state/reactive-properties.md)).
 
 ## Setting the value with progress
 
-| Method | Description |
-| --- | --- |
-| `progress(float progress)` | Sets the filled fraction: `0F` = empty, `0.5F` = half, `1F` = full. |
-| `progress(float min, float max, float value)` | Sets the fraction of `value` in the range: `(value - min) / (max - min)`. With `min == max`, the bar is empty while `value` is below `max`, and full from `max` on. |
+`progress(float)` sets the filled fraction: `0F` is empty, `0.5F` half, `1F` full. A value from another range is a native expression: `progress((value - min) / (max - min))`.
 
-- The value is not clamped: a fraction below `0F` or above `1F` draws the fill outside the node.
-- The value is not animated and has no supplier overload: call `progress(...)` again when your value changes, for example from another node's callback, an [`onUpdate` callback](../../interactions/callbacks.md) or a [watched signal](../../state/watch.md).
+![A volume signal changed by clicks: the bar grows by a fifth at each click](../../images/progress-signal.gif "progress follows the expression that reads the signal")
 
-```java
-health.progress(0F, 100F, 35F);
-```
+- The value is not clamped: a fraction below `0F` or above `1F` draws the fill outside the node. Clamp it in the expression (`Math.min(1F, ...)`).
+- The value is not animated: a lambda (`progress(() -> this.animator.getValue())`) reads it every frame, for an animation.
 
 ## Direction with ProgressDirection
 
@@ -48,69 +46,47 @@ health.progress(0F, 100F, 35F);
 | `TOP_TO_BOTTOM` | Grows from the top edge. |
 | `BOTTOM_TO_TOP` | Grows from the bottom edge. |
 
-![Four bars filled to 60 percent from the left, the right, the top and the bottom](../../images/progress-directions.png "The four ProgressDirection values at progress(0.6F).")
-
 ```java
 ProgressNode.create(0, 0, 20, 200).direction(ProgressDirection.BOTTOM_TO_TOP).progress(0.6F).attach(this);
 ```
 
-## Colors
+![Four bars filled to 60 percent from the left, the right, the top and the bottom](../../images/progress-directions.png "The four ProgressDirection values at progress(0.6F).")
 
-| Method | Description |
-| --- | --- |
-| `color(Color background, Color foreground)` | Sets both colors. |
-| `background(Color color)` | Sets the background color. |
-| `foreground(Color color)` | Sets the fill color. |
+## Colors with background and foreground
 
-The background covers the whole node; the foreground is a rectangle covering the filled part, drawn on top.
+`background(Color)` colors the whole node, `foreground(Color)` the filled part, drawn on top. Both accept gradients and suppliers.
 
-## Resources
-
-| Method | Description |
-| --- | --- |
-| `resource(Resource background, Resource foreground)` | Sets both resources. |
-| `background(Resource resource)` | Sets the background resource. |
-| `foreground(Resource resource)` | Sets the fill resource. |
-
-When both resources are set, the node draws them instead of the colors: the background resource stretched over the whole node, then the foreground resource also stretched over the whole node but masked to the filled part. The foreground image is revealed as the value grows, not squeezed. With only one resource set, the node keeps drawing the colors.
+## Images with backgroundResource and foregroundResource
 
 ```java
 ProgressNode
-    .create(0, 0, 400, 40)
-    .resource(Resource.of(MyUI.class.getResourceAsStream("/textures/bar-empty.png")), Resource.of(MyUI.class.getResourceAsStream("/textures/bar-full.png")))
-    .progress(0.4F)
-    .attach(this);
+.create(0, 0, 400, 40)
+.backgroundResource(Resource.of(MyUI.class.getResourceAsStream("/textures/bar-empty.png")))
+.foregroundResource(Resource.of(MyUI.class.getResourceAsStream("/textures/bar-full.png")))
+.progress(0.4F)
+.attach(this);
 ```
+
+When both resources are set, the node draws them instead of the colors: the background resource stretched over the whole node, then the foreground resource also stretched over the whole node but masked to the filled part. The foreground image is revealed as the value grows, not squeezed. With only one resource set, the node keeps drawing the colors.
 
 ## Reference
 
-### Factory
-
-| Method | Description |
-| --- | --- |
-| `ProgressNode.create(double x, double y, double width, double height)` | Creates an empty bar. |
-
-### Properties
-
 | Method | Default | Description |
 | --- | --- | --- |
-| `progress(float)` / `progress(float, float, float)` | `0F` | Filled fraction. |
-| `direction(ProgressDirection)` | `LEFT_TO_RIGHT` | Where the fill starts. |
-| `color(Color, Color)` | `Color.BLACK`, `Color.WHITE` | Background and fill colors. |
-| `background(Color)` / `foreground(Color)` | | One of the colors. |
-| `resource(Resource, Resource)` | none | Background and fill resources. |
-| `background(Resource)` / `foreground(Resource)` | | One of the resources. |
+| `ProgressNode.create(double x, double y, double width, double height)` | | An empty bar. |
+| `progress(float)`, `progress(Supplier<Float>)` | `0F` | Filled fraction. |
+| `direction(ProgressDirection)`, `direction(Supplier<ProgressDirection>)` | `LEFT_TO_RIGHT` | Where the fill starts. |
+| `background(Color)`, `background(Supplier<Color>)` | `Color.BLACK` | Background color. |
+| `foreground(Color)`, `foreground(Supplier<Color>)` | `Color.WHITE` | Fill color. |
+| `backgroundResource(Resource)`, `backgroundResource(Supplier<Resource>)` | none | Background image. |
+| `foregroundResource(Resource)`, `foregroundResource(Supplier<Resource>)` | none | Fill image. |
+| `getProgress()`, `getDirection()`, `getBackground()`, `getForeground()`, `getBackgroundResource()`, `getForegroundResource()` | | Current values (resources nullable). |
 
-Every setter is `final` and returns the node itself, typed by the generic return of the fluent API.
+## Pitfalls
 
-### Getters
-
-| Method | Description |
-| --- | --- |
-| `getProgress()` | The filled fraction. |
-| `getDirection()` | The current `ProgressDirection`. |
-| `getColors()` | `Color[]` of two entries: background, then foreground. |
-| `getResources()` | `Resource[]` of two entries: background, then foreground; `null` entries when not set. |
+- An unclamped expression (`this.done.get() / 3F` with more than three steps) draws past the end of the bar.
+- Both resources are needed to draw images: with one, the colors are drawn.
+- A literal `null` resource is ambiguous between the overloads: write `backgroundResource((Resource) null)`.
 
 ## See also
 
@@ -118,3 +94,4 @@ Every setter is `final` and returns the node itself, typed by the generic return
 - [RectNode](rect.md)
 - [Effects](../../styling/effects.md) for rounded bars
 - [ResourcePlayerNode](resource-player.md) to drive a timeline with `onProgress`
+- [Reactive Properties](../../state/reactive-properties.md)

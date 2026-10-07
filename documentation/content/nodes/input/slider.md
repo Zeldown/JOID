@@ -9,32 +9,32 @@ A slider class draws the track and installs its cursor:
 ```java
 public class VolumeSliderNode extends IntegerSliderNode {
 
-    protected VolumeSliderNode(final double x, final double y, final double width, final double height) {
-        super(x, y, width, height);
-        super.cursor(new Thumb(height, height));
-    }
+	protected VolumeSliderNode(final double x, final double y, final double width, final double height) {
+		super(x, y, width, height);
+		super.cursor(new Thumb(height, height));
+	}
 
-    public static VolumeSliderNode create(final double x, final double y, final double width, final double height) {
-        return new VolumeSliderNode(x, y, width, height);
-    }
+	public static VolumeSliderNode create(final double x, final double y, final double width, final double height) {
+		return new VolumeSliderNode(x, y, width, height);
+	}
 
-    @Override
-    public void drawSlider(final double mouseX, final double mouseY) {
-        DrawUtils.SHAPE.drawRect(super.getX(), super.getY() + super.getHeight() / 2D - 2D, super.getWidth(), 4D, Color.DARKGRAY);
-    }
+	@Override
+	public void drawSlider(final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY() + super.getHeight() / 2D - 2D, super.getWidth(), 4D, Color.DARKGRAY);
+	}
 
-    private static final class Thumb extends SliderCursorNode {
+	private static final class Thumb extends SliderCursorNode {
 
-        private Thumb(final double width, final double height) {
-            super(width, height);
-        }
+		private Thumb(final double width, final double height) {
+			super(width, height);
+		}
 
-        @Override
-        public void drawCursor(final double mouseX, final double mouseY) {
-            DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
-        }
+		@Override
+		public void drawCursor(final double mouseX, final double mouseY) {
+			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
+		}
 
-    }
+	}
 
 }
 ```
@@ -98,7 +98,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 
 - The constructor `SliderCursorNode(double width, double height)` places the cursor at the start of the slider. The slider drives its position: it centers the cursor vertically on each frame (a 16-unit cursor in a 24-unit-high slider sits at `y = 4`) and moves it along the track.
 - `cursor(...)` attaches the cursor as a child of the slider and links it to the slider; a second call replaces the previous cursor.
-- `draw`, `mousePressed` and `mouseReleased` of the cursor are final: it only lets you draw.
+- Override `drawCursor` to draw it; its other methods can be overridden too.
 - The cursor counts as hovered during the whole drag, even when the pointer leaves it: `isHovered(...)` returns `true` and `hoverValue(...)` stays at its end value, so a hover effect drawn in `drawCursor` does not flicker while dragging.
 
 ## Dragging
@@ -108,9 +108,9 @@ Set the values before the slider is shown. If you replace them later, call `valu
 | Press on the slider (any mouse button) | The cursor jumps so that its center is under the pointer and starts dragging. The press is consumed. |
 | Press on the cursor | The cursor starts dragging. |
 | Each frame while dragging | The cursor center follows the pointer horizontally, kept on the track (from `0` to the slider width minus the cursor width). |
-| Release of any mouse button, anywhere | The cursor stops dragging and stays where it is. |
+| Release of any mouse button, anywhere | The cursor stops dragging; the value under it is read at once and the cursor snaps to the exact position of that value. |
 
-- The cursor does not snap to the position of its value when released: the value is the one nearest to the cursor, but the cursor keeps the released position. `value(...)` puts it back on the exact position.
+![Dragging a slider cursor between steps: on release it snaps onto the nearest step](../../images/slider-snap.gif "The cursor snaps onto its step when released")
 - There is no keyboard or mouse wheel control.
 - The slider and its cursor ignore a press that another node already consumed, such as a node with an `onClick` drawn over the slider. A node over the slider that does not consume presses (a plain panel, for example) lets them through: hide the slider while something covers it, a hidden slider and its cursor ignore presses. Disabling only the slider is not enough, as the cursor keeps its own enabled state.
 - `getCursor().isDragging()` tells whether a drag is running; `getCursor().dragging(boolean)` starts or stops one from code.
@@ -120,6 +120,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 - `getValue()` returns the selected value.
 - `getProgress()` returns the position of the cursor on its travel, from `0F` (start of the track) to `1F` (end), `0F` without cursor. Draw a filled track with it: `super.getWidth() * super.getProgress()`.
 - `value(O value)` selects a value from code. Once the slider is attached to a UI, it also moves the cursor to the value position; before that, the cursor is placed when the slider loads. It writes the signal, like `valueSet(...)`, and calls `onChange` when the value changes. It throws an `IllegalArgumentException` when the value is not one of the values.
+- `value(Supplier<O> value)` follows a value one way: `value(this.level.get())` moves the cursor each time `level` changes, and the slider never writes into `level`. A followed value refused later (not one of the values) prints `[JOID] The value of <Class> cannot take its new value: ...` instead of throwing.
 
 ## Binding a signal with signal
 
@@ -138,6 +139,12 @@ Set the values before the slider is shown. If you replace them later, call `valu
 - The callback runs during the frame, at most once per frame. A fast drag can jump over values: you receive the value under the cursor at each frame, not every value in between.
 - `value(...)`, `valueSet(...)` and the bound signal call it too, outside of `draw`, when they change the value.
 - Cancelling the context in the `pre(...)` phase keeps the previous value: the slider stops the drag and puts the cursor back on the position of the current value, so the refused change is proposed once (see [Callbacks](../../interactions/callbacks.md)).
+
+## Pitfalls
+
+- `values(...)` with exactly the arity of a range overload picks the range (see the warning above): pass an array.
+- Set the values before `signal(...)`: the signal can only select an existing value.
+- A `ComputedSignal` cannot be bound with `signal(...)`: pass it to `value(...)`.
 
 ## Reference
 
