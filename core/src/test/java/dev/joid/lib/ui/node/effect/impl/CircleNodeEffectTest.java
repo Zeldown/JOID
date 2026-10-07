@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.CircleShader;
-import dev.joid.lib.shader.impl.CircleShader.RoundedShaderType;
+import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.pass.CircleShaderPass;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;

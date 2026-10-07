@@ -10,7 +10,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.shader.impl.CircleShader;
-import dev.joid.lib.shader.impl.CircleShader.RoundedShaderType;
+import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
@@ -29,26 +29,20 @@ public class CircleShaderPassTest {
 
 	@Test
 	public void fitsTheLargestCircleInANode() {
-		new CircleShaderPass(RectNode.create(10D, 20D, 100D, 60D)).bindDirect(this.context());
+		new CircleShaderPass(RectNode.create(10D, 20D, 100D, 60D)).bindForTexture(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(30F, (Float) values.get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {60F, 50F}, (float[]) values.get("center"), 0F);
 	}
 
 	@Test
-	public void clipsTheDirectDrawing() {
-		new CircleShaderPass(15F, 40F, 50F).bindDirect(this.context());
+	public void clipsTheRenderedTexture() {
+		new CircleShaderPass(15F, 40F, 50F).bindForTexture(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(15F, (Float) values.get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {40F, 50F}, (float[]) values.get("center"), 0F);
-		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), values.get("type"));
-	}
-
-	@Test
-	public void clipsTheRenderedTexture() {
-		new CircleShaderPass(15F, 40F, 50F).bindForTexture(this.context());
-		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), this.shader.getValues().get("type"));
+		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), values.get("type"));
 	}
 
 	@Test

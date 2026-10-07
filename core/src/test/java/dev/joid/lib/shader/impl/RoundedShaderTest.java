@@ -10,7 +10,6 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.shader.impl.RoundedShader.RoundedShaderType;
 
 public class RoundedShaderTest {
 

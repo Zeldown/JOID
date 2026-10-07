@@ -10,7 +10,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.shader.impl.RoundedShader;
-import dev.joid.lib.shader.impl.RoundedShader.RoundedShaderType;
+import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -29,24 +29,18 @@ public class RoundedShaderPassTest {
 	}
 
 	@Test
-	public void roundsAFixedBox() {
-		new RoundedShaderPass(6F, 1F, 2F, 3F, 4F).bindDirect(this.context());
+	public void roundsTheRenderedTextureOfAFixedBox() {
+		new RoundedShaderPass(6F, 1F, 2F, 3F, 4F).bindForTexture(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(6F, (Float) values.get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {1F, 2F, 3F, 4F}, (float[]) values.get("u_InnerRect"), 0F);
-		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), values.get("u_Type"));
-	}
-
-	@Test
-	public void roundsTheRenderedTexture() {
-		new RoundedShaderPass(6F, 1F, 2F, 3F, 4F).bindForTexture(this.context());
-		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), this.shader.getValues().get("u_Type"));
+		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), values.get("u_Type"));
 	}
 
 	@Test
 	public void insetsTheBoxOfItsNodeByTheRadius() {
-		new RoundedShaderPass(RoundedNodeEffect.create(5F), RectNode.create(10D, 20D, 100D, 60D)).bindDirect(this.context());
+		new RoundedShaderPass(RoundedNodeEffect.create(5F), RectNode.create(10D, 20D, 100D, 60D)).bindForTexture(this.context());
 		Assert.assertEquals(5F, (Float) this.shader.getValues().get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {15F, 25F, 105F, 75F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);
 	}
@@ -68,7 +62,7 @@ public class RoundedShaderPassTest {
 		final float[] radius = {5F};
 		final RoundedShaderPass pass = new RoundedShaderPass(RoundedNodeEffect.create(() -> radius[0]), RectNode.create(10D, 20D, 100D, 60D));
 		radius[0] = 8F;
-		pass.bindDirect(this.context());
+		pass.bindForTexture(this.context());
 		Assert.assertArrayEquals(new float[] {18F, 28F, 102F, 72F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);
 	}
 
@@ -82,7 +76,7 @@ public class RoundedShaderPassTest {
 	@Test
 	public void releasesTheShader() {
 		final RoundedShaderPass pass = new RoundedShaderPass(6F, 1F, 2F, 3F, 4F);
-		pass.bindDirect(this.context());
+		pass.bindForTexture(this.context());
 		pass.unbind();
 		Assert.assertFalse(this.shader.isBound());
 	}

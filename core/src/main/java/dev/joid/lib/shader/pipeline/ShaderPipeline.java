@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.bridge.render.matrix.PixelGrid;
-import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
@@ -20,13 +19,14 @@ import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.node.Node;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderPipeline {
 
-	private static final Map<Long, FrameBuffer[]> FBO_POOL = new HashMap<>();
+	private static final Map<List<Integer>, PooledFrameBuffers> FBO_POOL = new HashMap<>();
 	private static int pipelineDepth = 0;
 
 	public static void render(final @NonNull Node node, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
@@ -52,36 +52,33 @@ public final class ShaderPipeline {
 			final List<ShaderPass> sorted = new ArrayList<>(passes);
 			sorted.sort(Comparator.comparingInt(ShaderPass::priority));
 
-			final IRenderBridge render = BridgeHandler.RENDER.get();
-			final PixelGrid grid = render.getPixelGrid();
-			if (sorted.size() == 1 && ShaderPipeline.pipelineDepth == 1 && sorted.get(0).expansion() == 0F && sorted.get(0).supportsDirectBind()) {
-				final IShader previousShader = render.getShader();
-				sorted.get(0).bindDirect(ShaderPassContext.create(x, y, width, height, 0D, grid));
-				try {
-					baseDraw.run();
-				} finally {
-					sorted.get(0).unbind();
-					render.shader(previousShader);
-				}
-				return;
-			}
-
 			float expansion = 0F;
 			for (final ShaderPass pass : sorted) {
 				expansion = Math.max(expansion, pass.expansion());
 			}
-			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, grid), sorted, baseDraw);
+			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, BridgeHandler.RENDER.get().getPixelGrid()), sorted, baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}
 	}
 
 	public static void cleanup() {
-		for (final FrameBuffer[] fbos : ShaderPipeline.FBO_POOL.values()) {
-			fbos[0].delete();
-			fbos[1].delete();
+		for (final PooledFrameBuffers pooled : ShaderPipeline.FBO_POOL.values()) {
+			pooled.delete();
 		}
 		ShaderPipeline.FBO_POOL.clear();
+	}
+
+	public static void releaseUnused() {
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final Iterator<PooledFrameBuffers> iterator = ShaderPipeline.FBO_POOL.values().iterator();
+		while (iterator.hasNext()) {
+			final PooledFrameBuffers pooled = iterator.next();
+			if (now - pooled.lastUse >= 5000L) {
+				pooled.delete();
+				iterator.remove();
+			}
+		}
 	}
 
 	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final double x, final double y, final double w, final double h) {
@@ -108,7 +105,7 @@ public final class ShaderPipeline {
 			return;
 		}
 
-		final FrameBuffer[] fbos = ShaderPipeline.getOrCreateFBOs(context.getTextureWidth(), context.getTextureHeight());
+		final FrameBuffer[] fbos = ShaderPipeline.getOrCreateFBOs(context.getTextureWidth(), context.getTextureHeight()).frameBuffers;
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
@@ -161,16 +158,32 @@ public final class ShaderPipeline {
 		}
 	}
 
-	private static FrameBuffer[] getOrCreateFBOs(final int width, final int height) {
-		final long key = (long) ShaderPipeline.pipelineDepth << 32 | (long) width << 16 | height;
-		FrameBuffer[] fbos = ShaderPipeline.FBO_POOL.get(key);
-		if (fbos != null) {
-			return fbos;
+	private static PooledFrameBuffers getOrCreateFBOs(final int width, final int height) {
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final List<Integer> key = Arrays.asList(ShaderPipeline.pipelineDepth, width, height);
+		final PooledFrameBuffers pooled = ShaderPipeline.FBO_POOL.get(key);
+		if (pooled != null) {
+			pooled.lastUse = now;
+			return pooled;
 		}
 
-		fbos = new FrameBuffer[] {FrameBuffer.create(width, height, TextureFilter.LINEAR), FrameBuffer.create(width, height, TextureFilter.LINEAR)};
-		ShaderPipeline.FBO_POOL.put(key, fbos);
-		return fbos;
+		final PooledFrameBuffers created = new PooledFrameBuffers(new FrameBuffer[] {FrameBuffer.create(width, height, TextureFilter.LINEAR), FrameBuffer.create(width, height, TextureFilter.LINEAR)}, now);
+		ShaderPipeline.FBO_POOL.put(key, created);
+		return created;
+	}
+
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class PooledFrameBuffers {
+
+		private final FrameBuffer[] frameBuffers;
+
+		private long lastUse;
+
+		private void delete() {
+			this.frameBuffers[0].delete();
+			this.frameBuffers[1].delete();
+		}
+
 	}
 
 }

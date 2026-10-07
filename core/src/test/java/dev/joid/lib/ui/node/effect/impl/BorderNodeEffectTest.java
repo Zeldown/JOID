@@ -51,7 +51,7 @@ public class BorderNodeEffectTest {
 	@Test
 	public void passesItsValuesToTheShader() {
 		final ShaderPass pass = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F, BorderMode.IN).fill(false).toShaderPass(RectNode.create(0D, 0D, 10D, 10D));
-		pass.bindDirect(this.context());
+		pass.bindForTexture(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(5F, pass.expansion(), 0F);
 		Assert.assertEquals(200, pass.priority());

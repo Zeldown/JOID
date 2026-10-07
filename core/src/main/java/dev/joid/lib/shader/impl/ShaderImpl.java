@@ -2,6 +2,7 @@ package dev.joid.lib.shader.impl;
 
 import java.io.InputStream;
 
+import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
@@ -15,9 +16,11 @@ public abstract class ShaderImpl {
 	@Getter
 	protected IShader shader;
 
+	private boolean warned;
+
 	protected void load(final @NonNull InputStream vertexShader, final @NonNull InputStream fragmentShader) {
-		try {
-			this.shader = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, vertexShader), ShaderSource.read(ShaderStage.FRAGMENT, fragmentShader), BlendState.NORMAL);
+		try (final InputStream vertex = vertexShader; final InputStream fragment = fragmentShader) {
+			this.shader = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, vertex), ShaderSource.read(ShaderStage.FRAGMENT, fragment), BlendState.NORMAL);
 		} catch (final Exception e) {
 			System.err.println("[JOID] Unable to load the shader " + this.getClass().getSimpleName() + ": " + e.getMessage());
 			e.printStackTrace();
@@ -37,7 +40,12 @@ public abstract class ShaderImpl {
 	}
 
 	public boolean isAvailable() {
-		return this.shader != null && this.shader.isActive();
+		final boolean available = this.shader != null && this.shader.isActive();
+		if (!available && JOID.inst().isDevMode() && !this.warned) {
+			this.warned = true;
+			System.err.println("[JOID] The shader " + this.getClass().getSimpleName() + " is unavailable, what it draws is skipped");
+		}
+		return available;
 	}
 
 }

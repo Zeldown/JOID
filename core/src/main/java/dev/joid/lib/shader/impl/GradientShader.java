@@ -4,6 +4,9 @@ import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
 import dev.joid.lib.bridge.render.shader.uniform.Float4Uniform;
 import dev.joid.lib.bridge.render.shader.uniform.IntUniform;
@@ -31,6 +34,8 @@ public class GradientShader extends ShaderImpl {
 			return;
 		}
 
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final IShader previousShader = render.getShader();
 		GradientShader.INSTANCE.bind();
 		final Float2Uniform startPosUniform = GradientShader.INSTANCE.shader.getFloat2Uniform("startPos");
 		startPosUniform.setValue(startPos.x, startPos.y);
@@ -56,6 +61,7 @@ public class GradientShader extends ShaderImpl {
 			}
 		} finally {
 			GradientShader.INSTANCE.unbind();
+			render.shader(previousShader);
 		}
 	}
 

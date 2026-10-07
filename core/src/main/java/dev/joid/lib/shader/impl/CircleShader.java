@@ -82,12 +82,4 @@ public class CircleShader extends ShaderImpl {
 		canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
 	}
 
-	public enum RoundedShaderType {
-
-		AUTO,
-		TEXTURE,
-		COLOR;
-
-	}
-
 }

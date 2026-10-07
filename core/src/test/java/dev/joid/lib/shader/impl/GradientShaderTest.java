@@ -71,6 +71,14 @@ public class GradientShaderTest {
 	}
 
 	@Test
+	public void restoresThePreviousShader() {
+		final RecordingShader previous = new RecordingShader();
+		previous.bind();
+		GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.BLUE, null, new Vector4f(0F, 0F, 1F, 1F));
+		Assert.assertSame(previous, this.bridges.getRender().getShader());
+	}
+
+	@Test
 	public void skipsTheDrawWithoutShader() {
 		final boolean[] ran = {false};
 		GradientShader.inst().shader = null;

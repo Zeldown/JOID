@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 
@@ -40,6 +41,56 @@ public class ShaderImplTest {
 		shader[0].bind();
 		shader[0].unbind();
 		Assert.assertNull(this.bridges.getRender().getShader());
+	}
+
+	@Test
+	public void closesItsSources() {
+		final ClosingStream vertex = new ClosingStream();
+		final ClosingStream fragment = new ClosingStream();
+		new SourceShader(vertex, fragment);
+		Assert.assertTrue(vertex.closed);
+		Assert.assertTrue(fragment.closed);
+	}
+
+	@Test
+	public void closesItsSourcesWhenOneCannotBeRead() {
+		final ClosingStream fragment = new ClosingStream();
+		ShaderImplTest.capture(() -> new SourceShader(new BrokenStream(), fragment));
+		Assert.assertTrue(fragment.closed);
+	}
+
+	@Test
+	public void warnsOnceInDevModeThatItIsUnavailable() {
+		final SourceShader[] shader = new SourceShader[1];
+		ShaderImplTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderImplTest.source()));
+		JOID.inst().setDevMode(true);
+		try {
+			final String error = ShaderImplTest.capture(() -> {
+				shader[0].isAvailable();
+				shader[0].isAvailable();
+			});
+			Assert.assertEquals("[JOID] The shader SourceShader is unavailable, what it draws is skipped" + System.lineSeparator(), error);
+		} finally {
+			JOID.inst().setDevMode(false);
+		}
+	}
+
+	@Test
+	public void staysSilentOutOfDevModeWhenItIsUnavailable() {
+		final SourceShader[] shader = new SourceShader[1];
+		ShaderImplTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderImplTest.source()));
+		Assert.assertEquals("", ShaderImplTest.capture(() -> shader[0].isAvailable()));
+	}
+
+	@Test
+	public void staysSilentWhenItIsAvailable() {
+		final SourceShader shader = new SourceShader(ShaderImplTest.source(), ShaderImplTest.source());
+		JOID.inst().setDevMode(true);
+		try {
+			Assert.assertEquals("", ShaderImplTest.capture(() -> shader.isAvailable()));
+		} finally {
+			JOID.inst().setDevMode(false);
+		}
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -73,6 +124,22 @@ public class ShaderImplTest {
 
 		private SourceShader(final InputStream vertex, final InputStream fragment) {
 			super.load(vertex, fragment);
+		}
+
+	}
+
+	private static final class ClosingStream extends ByteArrayInputStream {
+
+		private boolean closed;
+
+		private ClosingStream() {
+			super("void main() {}".getBytes(StandardCharsets.UTF_8));
+		}
+
+		@Override
+		public void close() throws IOException {
+			this.closed = true;
+			super.close();
 		}
 
 	}

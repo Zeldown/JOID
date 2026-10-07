@@ -1,7 +1,7 @@
 package dev.joid.lib.shader.pipeline.pass;
 
 import dev.joid.lib.shader.impl.CircleShader;
-import dev.joid.lib.shader.impl.CircleShader.RoundedShaderType;
+import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.node.Node;
@@ -33,15 +33,6 @@ public class CircleShaderPass implements ShaderPass {
 	@Override
 	public int priority() {
 		return 100;
-	}
-
-	@Override
-	public void bindDirect(final @NonNull ShaderPassContext context) {
-		if (!CircleShader.inst().isAvailable()) {
-			return;
-		}
-
-		CircleShader.inst().bind(this.radius, this.centerX, this.centerY, RoundedShaderType.AUTO);
 	}
 
 	@Override

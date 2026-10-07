@@ -11,6 +11,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.RecordingFrameBuffer;
@@ -41,6 +44,7 @@ public class ShaderPipelineTest {
 	@After
 	public void releaseThePool() {
 		ShaderPipeline.cleanup();
+		BridgeHandler.CLOCK.register(new SystemClockBridge());
 	}
 
 	@Test
@@ -52,24 +56,8 @@ public class ShaderPipelineTest {
 	}
 
 	@Test
-	public void bindsASinglePassDirectly() {
-		final RecordingShader previous = new RecordingShader();
-		final RecordingPass pass = new RecordingPass("rounded", 100, 0F, true, this.log);
-		previous.bind();
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, pass);
-		Assert.assertEquals(Arrays.asList("rounded direct", "rounded unbind"), this.log);
-		Assert.assertSame(pass.getShader(), this.render.getLast().getState().getShader());
-		Assert.assertNull(this.render.getLast().getState().getFrameBuffer());
-		Assert.assertTrue(this.render.getFrameBuffers().isEmpty());
-		Assert.assertSame(previous, this.render.getShader());
-		Assert.assertEquals(10D, pass.getContext().getX(), 0D);
-		Assert.assertEquals(50D, pass.getContext().getHeight(), 0D);
-		Assert.assertEquals(0D, pass.getContext().getExpansion(), 0D);
-	}
-
-	@Test
-	public void drawsThroughAFrameBufferAPassThatCannotBindDirectly() {
-		final RecordingPass pass = new RecordingPass("mask", 100, 0F, false, this.log);
+	public void drawsASinglePassThroughAFrameBuffer() {
+		final RecordingPass pass = new RecordingPass("mask", 100, 0F, this.log);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, pass);
 		Assert.assertEquals(Arrays.asList("mask texture", "mask unbind"), this.log);
 		Assert.assertEquals(2, this.render.getFrameBuffers().size());
@@ -80,7 +68,7 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void paintsTheContentIntoTheFirstFrameBuffer() {
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
 		final Capture content = this.render.getCaptures().get(0);
 		Assert.assertSame(this.render.getFrameBuffers().get(0), content.getState().getFrameBuffer());
 		Assert.assertEquals(100, content.getState().getViewportWidth());
@@ -93,7 +81,7 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void compositesTheLastPassOnTheScreen() {
-		final RecordingPass pass = new RecordingPass("mask", 100, 0F, false, this.log);
+		final RecordingPass pass = new RecordingPass("mask", 100, 0F, this.log);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, pass);
 		final Capture composite = this.render.getLast();
 		Assert.assertNull(composite.getState().getFrameBuffer());
@@ -114,7 +102,7 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void restoresTheRenderStateAfterTheFrameBuffers() {
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
 		Assert.assertNull(this.render.getState().getFrameBuffer());
 		Assert.assertNull(this.render.getState().getShader());
 		Assert.assertNull(this.render.getState().getTexture());
@@ -127,9 +115,9 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void chainsThePassesByPriority() {
-		final RecordingPass border = new RecordingPass("border", 200, 0F, false, this.log);
-		final RecordingPass rounded = new RecordingPass("rounded", 100, 0F, true, this.log);
-		final RecordingPass blur = new RecordingPass("blur", 150, 0F, false, this.log);
+		final RecordingPass border = new RecordingPass("border", 200, 0F, this.log);
+		final RecordingPass rounded = new RecordingPass("rounded", 100, 0F, this.log);
+		final RecordingPass blur = new RecordingPass("blur", 150, 0F, this.log);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, border, rounded, blur);
 		Assert.assertEquals(Arrays.asList("rounded texture", "rounded unbind", "blur texture", "blur unbind", "border texture", "border unbind"), this.log);
 
@@ -148,8 +136,8 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void growsTheFrameBufferByTheLargestExpansion() {
-		final RecordingPass blur = new RecordingPass("blur", 150, 4F, true, this.log);
-		final RecordingPass border = new RecordingPass("border", 200, 10F, false, this.log);
+		final RecordingPass blur = new RecordingPass("blur", 150, 4F, this.log);
+		final RecordingPass border = new RecordingPass("border", 200, 10F, this.log);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, blur, border);
 		Assert.assertEquals(10D, border.getContext().getExpansion(), 0D);
 		Assert.assertSame(blur.getContext(), border.getContext());
@@ -161,7 +149,7 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void drawsAnExpandedSinglePassThroughAFrameBuffer() {
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("blur", 150, 4F, true, this.log));
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("blur", 150, 4F, this.log));
 		Assert.assertEquals(Arrays.asList("blur texture", "blur unbind"), this.log);
 		Assert.assertEquals(2, this.render.getFrameBuffers().size());
 	}
@@ -170,7 +158,7 @@ public class ShaderPipelineTest {
 	public void sizesTheFrameBufferInWindowPixels() {
 		this.render.resize(1366, 768);
 		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
-		final RecordingPass pass = new RecordingPass("mask", 100, 0F, false, this.log);
+		final RecordingPass pass = new RecordingPass("mask", 100, 0F, this.log);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, pass);
 		Assert.assertEquals(72, this.render.getFrameBuffers().get(0).getWidth());
 		Assert.assertEquals(36, this.render.getFrameBuffers().get(0).getHeight());
@@ -180,8 +168,8 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void drawsAnEmptyAreaWithoutFrameBuffer() {
-		ShaderPipeline.render(10D, 20D, 0D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
-		ShaderPipeline.render(10D, 20D, 100D, -5D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
+		ShaderPipeline.render(10D, 20D, 0D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
+		ShaderPipeline.render(10D, 20D, 100D, -5D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
 		Assert.assertTrue(this.log.isEmpty());
 		Assert.assertTrue(this.render.getFrameBuffers().isEmpty());
 		Assert.assertEquals(2, this.render.getCaptures().size());
@@ -189,17 +177,17 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void reusesItsFrameBuffersForTheSameSize() {
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
-		ShaderPipeline.render(300D, 400D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
+		ShaderPipeline.render(300D, 400D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
 		Assert.assertEquals(2, this.render.getFrameBuffers().size());
-		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
+		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
 		Assert.assertEquals(4, this.render.getFrameBuffers().size());
 	}
 
 	@Test
 	public void givesANestedPipelineItsOwnFrameBuffers() {
-		final RecordingPass inner = new RecordingPass("inner", 100, 0F, true, this.log);
-		ShaderPipeline.render(10D, 20D, 100D, 50D, () -> ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, inner), new RecordingPass("outer", 100, 0F, false, this.log));
+		final RecordingPass inner = new RecordingPass("inner", 100, 0F, this.log);
+		ShaderPipeline.render(10D, 20D, 100D, 50D, () -> ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, inner), new RecordingPass("outer", 100, 0F, this.log));
 		Assert.assertEquals(Arrays.asList("inner texture", "inner unbind", "outer texture", "outer unbind"), this.log);
 		Assert.assertEquals(4, this.render.getFrameBuffers().size());
 		Assert.assertSame(this.render.getFrameBuffers().get(2), this.render.getCaptures().get(0).getState().getFrameBuffer());
@@ -208,26 +196,56 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void deletesThePooledFrameBuffers() {
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
 		ShaderPipeline.cleanup();
 		for (final IFrameBuffer frameBuffer : this.render.getFrameBuffers()) {
 			Assert.assertTrue(((RecordingFrameBuffer) frameBuffer).isDeleted());
 		}
 
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, false, this.log));
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
 		Assert.assertEquals(4, this.render.getFrameBuffers().size());
 		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(3)).isDeleted());
 	}
 
 	@Test
+	public void releasesTheFrameBuffersLeftUnusedForFiveSeconds() {
+		final ManualClockBridge clock = ManualClockBridge.create(1000L);
+		BridgeHandler.CLOCK.register(clock);
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
+		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
+		clock.advance(3000L);
+		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
+		clock.advance(1999L);
+		ShaderPipeline.releaseUnused();
+		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
+		clock.advance(1L);
+		ShaderPipeline.releaseUnused();
+		Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
+		Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(1)).isDeleted());
+		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(2)).isDeleted());
+		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(3)).isDeleted());
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
+		Assert.assertEquals(6, this.render.getFrameBuffers().size());
+	}
+
+	@Test
+	public void keepsApartTheSizesThatShareAPackedKey() {
+		ShaderPipeline.render(0D, 0D, 1D, 65537D, () -> {}, new RecordingPass("mask", 100, 0F, this.log));
+		ShaderPipeline.render(0D, 0D, 2D, 1D, () -> {}, new RecordingPass("mask", 100, 0F, this.log));
+		Assert.assertEquals(4, this.render.getFrameBuffers().size());
+		Assert.assertEquals(2, this.render.getFrameBuffers().get(2).getWidth());
+		Assert.assertEquals(1, this.render.getFrameBuffers().get(2).getHeight());
+	}
+
+	@Test
 	public void rendersANodeWithItsBounds() {
 		final RectNode node = RectNode.create(10D, 20D, 100D, 50D);
-		final RecordingPass direct = new RecordingPass("direct", 100, 0F, true, this.log);
-		final RecordingPass texture = new RecordingPass("texture", 100, 0F, false, this.log);
-		ShaderPipeline.render(node, this::drawBox, direct);
+		final RecordingPass array = new RecordingPass("array", 100, 0F, this.log);
+		final RecordingPass texture = new RecordingPass("texture", 100, 0F, this.log);
+		ShaderPipeline.render(node, this::drawBox, array);
 		ShaderPipeline.render(node, new ArrayList<>(Arrays.asList(texture)), this::drawBox);
-		Assert.assertEquals(10D, direct.getContext().getX(), 0D);
-		Assert.assertEquals(20D, direct.getContext().getY(), 0D);
+		Assert.assertEquals(10D, array.getContext().getX(), 0D);
+		Assert.assertEquals(20D, array.getContext().getY(), 0D);
 		Assert.assertEquals(100D, texture.getContext().getWidth(), 0D);
 		Assert.assertEquals(50D, texture.getContext().getHeight(), 0D);
 	}
@@ -240,22 +258,23 @@ public class ShaderPipelineTest {
 	}
 
 	@Test
-	public void releasesADirectPassWhenTheDrawFails() {
+	public void restoresTheRenderStateWhenTheDrawFails() {
 		try {
 			ShaderPipeline.render(10D, 20D, 100D, 50D, () -> {
 				throw new IllegalStateException("draw");
-			}, new RecordingPass("rounded", 100, 0F, true, this.log));
+			}, new RecordingPass("rounded", 100, 0F, this.log));
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
 			Assert.assertEquals("draw", exception.getMessage());
 		}
-		Assert.assertEquals(Arrays.asList("rounded direct", "rounded unbind"), this.log);
-		Assert.assertNull(this.render.getShader());
+		Assert.assertTrue(this.log.isEmpty());
+		Assert.assertNull(this.render.getState().getFrameBuffer());
+		Assert.assertTrue(this.render.getStateStack().isEmpty());
 	}
 
 	@Test
 	public void rendersAReadOnlyListOfPasses() {
-		final List<ShaderPass> passes = Collections.unmodifiableList(Arrays.asList(new RecordingPass("border", 200, 0F, false, this.log), new RecordingPass("rounded", 100, 0F, false, this.log)));
+		final List<ShaderPass> passes = Collections.unmodifiableList(Arrays.asList(new RecordingPass("border", 200, 0F, this.log), new RecordingPass("rounded", 100, 0F, this.log)));
 		ShaderPipeline.render(10D, 20D, 100D, 50D, passes, () -> {});
 		Assert.assertEquals(Arrays.asList("rounded texture", "rounded unbind", "border texture", "border unbind"), this.log);
 	}
@@ -270,17 +289,15 @@ public class ShaderPipelineTest {
 		private final String          name;
 		private final int             priority;
 		private final float           expansion;
-		private final boolean         direct;
 		private final List<String>    log;
 		private final RecordingShader shader = new RecordingShader();
 
 		private ShaderPassContext context;
 
-		private RecordingPass(final String name, final int priority, final float expansion, final boolean direct, final List<String> log) {
+		private RecordingPass(final String name, final int priority, final float expansion, final List<String> log) {
 			this.name = name;
 			this.priority = priority;
 			this.expansion = expansion;
-			this.direct = direct;
 			this.log = log;
 		}
 
@@ -298,18 +315,6 @@ public class ShaderPipelineTest {
 		@Override
 		public float expansion() {
 			return this.expansion;
-		}
-
-		@Override
-		public boolean supportsDirectBind() {
-			return this.direct;
-		}
-
-		@Override
-		public void bindDirect(final @NonNull ShaderPassContext context) {
-			this.context = context;
-			this.log.add(this.name + " direct");
-			this.shader.bind();
 		}
 
 		@Override

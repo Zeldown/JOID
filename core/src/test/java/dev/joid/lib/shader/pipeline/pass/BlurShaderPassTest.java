@@ -39,13 +39,12 @@ public class BlurShaderPassTest {
 	public void expandsByItsRadius() {
 		final BlurShaderPass pass = new BlurShaderPass(6.5F, true, 0);
 		Assert.assertEquals(6.5F, pass.expansion(), 0F);
-		Assert.assertFalse(pass.supportsDirectBind());
 	}
 
 	@Test
 	public void blursHorizontallyInWindowPixels() {
 		final ShaderPassContext context = this.context();
-		new BlurShaderPass(4F, true, 0).bindDirect(context);
+		new BlurShaderPass(4F, true, 0).bindForTexture(context);
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(4F * 1366F / 1920F, (Float) values.get("u_Radius"), 1E-4F);

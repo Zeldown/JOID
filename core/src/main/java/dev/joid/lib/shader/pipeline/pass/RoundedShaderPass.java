@@ -3,7 +3,7 @@ package dev.joid.lib.shader.pipeline.pass;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.RoundedShader;
-import dev.joid.lib.shader.impl.RoundedShader.RoundedShaderType;
+import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.ShaderPass;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.node.Node;
@@ -52,22 +52,13 @@ public class RoundedShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindDirect(final @NonNull ShaderPassContext context) {
-		this.bindShader(RoundedShaderType.AUTO);
-	}
-
-	@Override
 	public void bindForTexture(final @NonNull ShaderPassContext context) {
-		this.bindShader(RoundedShaderType.TEXTURE);
-	}
-
-	private void bindShader(final @NonNull RoundedShaderType type) {
 		if (!RoundedShader.inst().isAvailable()) {
 			return;
 		}
 
 		if (this.effect == null) {
-			RoundedShader.inst().bind(this.fixedRadius, this.fixedX1, this.fixedY1, this.fixedX2, this.fixedY2, type);
+			RoundedShader.inst().bind(this.fixedRadius, this.fixedX1, this.fixedY1, this.fixedX2, this.fixedY2, RoundedShaderType.TEXTURE);
 			return;
 		}
 
@@ -77,7 +68,7 @@ public class RoundedShaderPass implements ShaderPass {
 		final float y1 = (float) (grid.snapY(this.node.getY()) + (this.effect.isTop() ? radius : 0));
 		final float x2 = (float) (grid.snapRight(this.node.getX(), this.node.getX() + this.node.getWidth()) - (this.effect.isRight() ? radius : 0));
 		final float y2 = (float) (grid.snapBottom(this.node.getY(), this.node.getY() + this.node.getHeight()) - (this.effect.isBottom() ? radius : 0));
-		RoundedShader.inst().bind(radius, x1, y1, x2, y2, type);
+		RoundedShader.inst().bind(radius, x1, y1, x2, y2, RoundedShaderType.TEXTURE);
 	}
 
 }

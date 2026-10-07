@@ -7,6 +7,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.resource.dto.ResourceData;
+import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.key.Key;
@@ -109,6 +110,7 @@ public abstract class UIBridge implements IUIBridge {
 	public final void draw() {
 		try {
 			ResourceData.releaseCollected();
+			ShaderPipeline.releaseUnused();
 			if (this.uiList.isEmpty()) {
 				return;
 			}

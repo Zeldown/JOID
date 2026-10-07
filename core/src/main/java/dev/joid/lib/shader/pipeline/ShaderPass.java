@@ -13,12 +13,6 @@ public interface ShaderPass {
 		return 0F;
 	}
 
-	public default boolean supportsDirectBind() {
-		return false;
-	}
-
-	public void bindDirect(final @NonNull ShaderPassContext context);
-
 	public void bindForTexture(final @NonNull ShaderPassContext context);
 
 }

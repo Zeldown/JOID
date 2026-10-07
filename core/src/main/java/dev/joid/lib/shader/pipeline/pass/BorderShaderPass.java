@@ -45,16 +45,7 @@ public class BorderShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindDirect(final @NonNull ShaderPassContext context) {
-		this.bindInternal(context);
-	}
-
-	@Override
 	public void bindForTexture(final @NonNull ShaderPassContext context) {
-		this.bindInternal(context);
-	}
-
-	private void bindInternal(final @NonNull ShaderPassContext context) {
 		if (!BorderShader.inst().isAvailable()) {
 			return;
 		}

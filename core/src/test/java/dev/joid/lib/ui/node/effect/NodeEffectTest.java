@@ -129,23 +129,23 @@ public class NodeEffectTest {
 	}
 
 	@Test
-	public void bindsItsShaderAroundItsNodeOnly() {
+	public void composesItsShaderOverItsNodeOnly() {
 		final TraceNode node = new TraceNode("parent", this.trace);
 		new TraceNode("child", this.trace).attach(node);
 		this.bridges.open(new NodeUI(node.effect(new ShaderEffect(this.trace))));
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("bind", "draw parent", "unbind", "draw child"), this.trace);
+		Assert.assertEquals(Arrays.asList("draw parent", "bind", "unbind", "draw child"), this.trace);
 	}
 
 	@Test
-	public void bindsItsShaderAroundTheChildrenWithTheChildrenScope() {
+	public void composesItsShaderOverTheChildrenWithTheChildrenScope() {
 		final TraceNode node = new TraceNode("parent", this.trace);
 		new TraceNode("child", this.trace).attach(node);
 		this.bridges.open(new NodeUI(node.effect(new ShaderEffect(this.trace).scope(NodeEffectScope.CHILDREN))));
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("bind", "draw parent", "draw child", "unbind"), this.trace);
+		Assert.assertEquals(Arrays.asList("draw parent", "draw child", "bind", "unbind"), this.trace);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -276,18 +276,8 @@ public class NodeEffectTest {
 		}
 
 		@Override
-		public boolean supportsDirectBind() {
-			return true;
-		}
-
-		@Override
-		public void bindDirect(final @NonNull ShaderPassContext context) {
-			this.trace.add("bind");
-		}
-
-		@Override
 		public void bindForTexture(final @NonNull ShaderPassContext context) {
-			this.trace.add("bind for texture");
+			this.trace.add("bind");
 		}
 
 	}
