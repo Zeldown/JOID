@@ -81,8 +81,11 @@ The window bridge answers questions about the window. Every coordinate is in win
 | `getWidth()` / `getHeight()` | Size of the drawable area in pixels. UIs are laid out on it. |
 | `getMouseX()` / `getMouseY()` | Mouse position in pixels, in the same space as the size. Read at every frame: JOID needs no mouse-move event. |
 | `isMouseGrabbed()` | `true` while the host captures the cursor (for example a first-person camera). A node being dragged stops its drag. |
-| `isKeyDown(Key key)` | Whether a key is held. `Key.isDown()` and the modifier helpers of `UI` call it. |
+| `isKeyDown(Key key)` | Whether a key is held, a letter being the key that types it on the active keyboard layout. `Key.isDown()` and the modifier helpers of `UI` call it. |
+| `isPhysicalKeyDown(Key key)` | Whether the key at the place of `key` on a US QWERTY keyboard is held. `Key.isPhysicalDown()` calls it. Default method: `isKeyDown(key)`, for a host that knows a single code per key. |
 | `getClipboard()` / `setClipboard(String text)` | Text clipboard, used by text fields. `getClipboard()` returns `""` when it holds no text. |
+
+The keys a window bridge sends and reads follow the keyboard layout (see [Keyboard layouts](../interactions/mouse-and-keyboard.md#keyboard-layouts)). A host that reports key positions, like GLFW, translates them with `KeyLayout` (`dev.joid.lib.utils.key`): `KeyLayout.create(key -> name)` takes the character the key at the place of `key` types on the active layout (`null` when it types none), `translate(Key)` gives the layout key of a position for the events, and `isDown(Key, physicalPredicate)` answers `isKeyDown` from the positions held.
 
 ## IRenderBridge
 

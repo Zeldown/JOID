@@ -8,12 +8,14 @@ import org.lwjgl.glfw.GLFW;
 
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.key.KeyLayout;
 import lombok.NonNull;
 
 public final class WindowBridge implements IWindowBridge {
 
 	private static final Map<Integer, Key> KEY_MAP  = new HashMap<>();
 	private static final Map<Key, Integer> CODE_MAP = new EnumMap<>(Key.class);
+	private static final KeyLayout         LAYOUT   = KeyLayout.create(key -> GLFW.glfwGetKeyName(WindowBridge.CODE_MAP.get(key), 0));
 
 	static {
 		WindowBridge.map(Key.A, GLFW.GLFW_KEY_A);
@@ -189,6 +191,10 @@ public final class WindowBridge implements IWindowBridge {
 	}
 
 	public static @NonNull Key getKey(final int code) {
+		return WindowBridge.LAYOUT.translate(WindowBridge.getPhysicalKey(code));
+	}
+
+	public static @NonNull Key getPhysicalKey(final int code) {
 		return WindowBridge.KEY_MAP.getOrDefault(code, Key.UNKNOWN);
 	}
 
@@ -199,6 +205,11 @@ public final class WindowBridge implements IWindowBridge {
 
 	@Override
 	public boolean isKeyDown(final @NonNull Key key) {
+		return WindowBridge.LAYOUT.isDown(key, this::isPhysicalKeyDown);
+	}
+
+	@Override
+	public boolean isPhysicalKeyDown(final @NonNull Key key) {
 		final Integer code = WindowBridge.CODE_MAP.get(key);
 		return code != null && GLFW.glfwGetKey(this.window, code) == GLFW.GLFW_PRESS;
 	}

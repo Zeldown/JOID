@@ -137,4 +137,8 @@ public enum Key {
 		return BridgeHandler.WINDOW.get().isKeyDown(this);
 	}
 
+	public boolean isPhysicalDown() {
+		return BridgeHandler.WINDOW.get().isPhysicalKeyDown(this);
+	}
+
 }

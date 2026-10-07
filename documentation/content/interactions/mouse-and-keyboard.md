@@ -81,7 +81,7 @@ public class EditorUI extends UI {
 `onKeyPressed((node, c, key) -> ...)` fires for every key event the UI receives that is not consumed yet, wherever the mouse is, as long as the node is visible and enabled.
 
 - `c` is the character the UI bridge sends with the key. The demo window of the GLFW module sends the typed character for text input and `(char) 0` for the other keys, including text keys pressed with Ctrl or Alt.
-- `key` is a `Key` constant; a key the bridge cannot map is `Key.UNKNOWN`.
+- `key` is a `Key` constant; a key the bridge cannot map is `Key.UNKNOWN`. A letter key is the letter it types on the active keyboard layout (see [Keyboard layouts](#keyboard-layouts)).
 - There is no release event for keys. Read the current state of a key with `Key.isDown()`.
 - The lambda leaves the event to the other nodes and to the UI keybinds. Override `post` to consume the keys your node handles (see [Callbacks](callbacks.md#consuming-an-event-from-a-listener)).
 
@@ -111,6 +111,31 @@ public class EditorUI extends UI {
 	}
 })
 ```
+
+### Keyboard layouts
+
+Letter keys follow the active keyboard layout, like the shortcuts of the system applications: `Key.A` is the key that types `a`. On an AZERTY keyboard, Ctrl + A selects the text of a field with the key labelled A, the dev reload is the key labelled R, and `keybind(..., Key.LEFT_CONTROL, Key.Z)` runs with the key labelled Z. Events, `key.isDown()`, keybinds and the shortcuts of JOID all use this layout key.
+
+| Keys | On another layout |
+|---|---|
+| Letters `A` to `Z` | The key that types the letter. |
+| Punctuation (`COMMA`, `PERIOD`, `SEMICOLON`...) | The key that types the character when `Key` has a constant for it, otherwise the key at that place: on AZERTY, the key that types `,` is `COMMA` and the one that types `!` stays `SLASH`. |
+| Digits, numpad, function, editing, navigation and modifier keys, `SPACE` | Never move: Ctrl + 1 is the key labelled 1 on every layout, whatever it types without Shift. |
+
+For controls tied to a place on the keyboard, such as moving with W, A, S and D, read the key by its position. `key.isPhysicalDown()` tells whether the key at the place of `key` on a US QWERTY keyboard is held: `Key.W.isPhysicalDown()` is the key above S, labelled Z on AZERTY.
+
+```java
+.onClick((node, mouseX, mouseY, clickType) -> {
+	if (Key.W.isPhysicalDown()) {
+		System.out.println("Click while the key above S is held");
+	}
+})
+```
+
+| Backend | Letter keys | `isPhysicalDown()` |
+|---|---|---|
+| LWJGL 3 and Vulkan (GLFW) | The layout key, from the name GLFW gives the key (`glfwGetKeyName`), read again on every event so a layout change applies at once. | The key at that place. |
+| LWJGL 2 | The layout key on Windows and Linux; on macOS, LWJGL 2 reports the place of the key only. | The same as `isDown()`: LWJGL 2 gives a single code per key. |
 
 ## Modifier helpers
 
@@ -239,6 +264,7 @@ Each node records the last events dispatched to its UI, whether or not they happ
 - Keybinds and UI hooks run only when no node consumed the event: a focused text field takes every key.
 - Node hooks receive every event of their UI, wherever the pointer is: test `isHovered(mouseX, mouseY)` before reacting to a click.
 - Only Left Ctrl, Left Shift and Left Alt drive the dev shortcuts and the dev zoom.
+- `Key.W.isDown()` is the key labelled W on every layout: on AZERTY it sits where Z is on QWERTY. Use `isPhysicalDown()` for keys chosen for their place.
 
 ## See also
 

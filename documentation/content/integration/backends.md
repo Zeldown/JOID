@@ -207,7 +207,7 @@ public final class AppInput {
 
 - The render bridge maps every call onto the OpenGL state of the current context: matrices go to the OpenGL matrix stacks, and `pushState()` / `popState()` save and restore the OpenGL state itself. It needs OpenGL 2.0 shaders and 3.0 framebuffer objects.
 - A lit draw without a bound shader goes through the `fixed` shader of the core, so 3D models are shaded exactly as on LWJGL 3 and Vulkan.
-- The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, and the clipboard through AWT.
+- The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, and the clipboard through AWT. LWJGL 2 key codes follow the keyboard layout on Windows and Linux and the place of the key on macOS; `isPhysicalKeyDown` answers like `isKeyDown`.
 - The audio bridge uses LWJGL 2's OpenAL. It creates the OpenAL context on the first video with sound, unless one already exists, and destroys it when the JVM exits.
 
 ### LWJGL 2 natives
@@ -243,9 +243,11 @@ The LWJGL 3 and Vulkan backends share two modules, also published as their own j
 | `getWidth()` / `getHeight()` | The framebuffer size in pixels. |
 | `getMouseX()` / `getMouseY()` | The cursor position converted into framebuffer pixels, so the mouse matches the drawing on high-density screens. |
 | `isMouseGrabbed()` | `true` when the cursor mode is `GLFW_CURSOR_DISABLED`. |
-| `isKeyDown(Key)` | `glfwGetKey` of the matching GLFW key. |
+| `isKeyDown(Key)` | `glfwGetKey` of the GLFW keys that give `key` on the active keyboard layout. |
+| `isPhysicalKeyDown(Key)` | `glfwGetKey` of the GLFW key at the place of `key`. |
 | `getClipboard()` / `setClipboard(String)` | The GLFW clipboard. |
-| `static getKey(int code)` | The `Key` of a GLFW key code, `Key.UNKNOWN` when it has none. |
+| `static getKey(int code)` | The `Key` of a GLFW key code on the active keyboard layout: a letter or punctuation key becomes the key of the character it types (`glfwGetKeyName`); `Key.UNKNOWN` when it has none. |
+| `static getPhysicalKey(int code)` | The `Key` at the place of a GLFW key code, whatever the layout. |
 
 ### OpenAL audio bridge
 

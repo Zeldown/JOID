@@ -190,7 +190,7 @@ JOID.open(new UIMainMenu());
 loop.run();
 ```
 
-`WindowBridge` here is `dev.joid.impl.glfw.WindowBridge`, whose static `getKey(int)` converts a GLFW key code. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
+`WindowBridge` here is `dev.joid.impl.glfw.WindowBridge`, whose static `getKey(int)` converts a GLFW key code into the key of the active keyboard layout. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
 
 ## Feeding input events
 

@@ -17,4 +17,8 @@ public interface IWindowBridge extends IBridge {
 	public @NonNull String getClipboard();
 	public void setClipboard(final @NonNull String text);
 
+	public default boolean isPhysicalKeyDown(final @NonNull Key key) {
+		return this.isKeyDown(key);
+	}
+
 }

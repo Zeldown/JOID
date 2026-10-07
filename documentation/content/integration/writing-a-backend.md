@@ -224,7 +224,7 @@ Each generated header ends with a `#line` directive, so compiler errors point to
 
 ## Window and audio bridges
 
-The window bridge reports the drawable size in pixels and the mouse in the same pixels, from the top-left corner; keys use the engine-neutral `Key` enum. The audio bridge creates sources that play queued buffers of interleaved signed 16-bit samples of `channels` channels, the count given to `createSource`; each buffer holds whole frames. A sound device limited to stereo mixes them down with [`AudioDownmix.stereo`](bridges.md#stereo-output-with-audiodownmix). `gain` receives `0.3 × volume × distance factor` from the video player. See [Bridges](bridges.md#iwindowbridge) for both interfaces, and the `glfw` and `openal` modules in [Backends](backends.md#the-glfw-and-openal-modules) for complete implementations.
+The window bridge reports the drawable size in pixels and the mouse in the same pixels, from the top-left corner; keys use the engine-neutral `Key` enum, letters following the active keyboard layout: a windowing library that reports key positions translates them with `KeyLayout` (see [Bridges](bridges.md#iwindowbridge)). The audio bridge creates sources that play queued buffers of interleaved signed 16-bit samples of `channels` channels, the count given to `createSource`; each buffer holds whole frames. A sound device limited to stereo mixes them down with [`AudioDownmix.stereo`](bridges.md#stereo-output-with-audiodownmix). `gain` receives `0.3 × volume × distance factor` from the video player. See [Bridges](bridges.md#iwindowbridge) for both interfaces, and the `glfw` and `openal` modules in [Backends](backends.md#the-glfw-and-openal-modules) for complete implementations.
 
 ## Validating with the contract tests
 
