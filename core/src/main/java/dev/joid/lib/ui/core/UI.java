@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.core;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -383,11 +384,15 @@ public abstract class UI implements IUI, IndexedElement {
 
 		if (JOID.inst().isDevMode() && !context.isCancelled()) {
 			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
-				if (Key.LEFT_SHIFT.isDown()) {
-					this.zoom(1D);
+				if (!Key.LEFT_SHIFT.isDown()) {
+					this.reload();
+				} else {
+					try {
+						this.renew();
+					} catch (final IllegalStateException exception) {
+						System.err.println("[JOID] " + exception.getMessage());
+					}
 				}
-
-				this.reload();
 				context.cancel();
 			} else if (key == Key.F3 && this.devNode != null) {
 				final boolean enabled = this.nodeList.contains(this.devNode);
@@ -615,6 +620,29 @@ public abstract class UI implements IUI, IndexedElement {
 		SignalReplay.clear();
 		this.initialized = false;
 		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
+	}
+
+	public final @NonNull UI renew() {
+		final IUIBridge bridge = BridgeHandler.UI.get(this);
+		if (bridge == null || !bridge.isOpened(this)) {
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " is not open, only an open UI can be renewed");
+		}
+
+		final UI renewed;
+		try {
+			final Constructor<? extends UI> constructor = this.getClass().getDeclaredConstructor();
+			constructor.setAccessible(true);
+			renewed = constructor.newInstance();
+		} catch (final NoSuchMethodException exception) {
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead", exception);
+		} catch (final ReflectiveOperationException | RuntimeException exception) {
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be renewed: its constructor without argument failed", exception);
+		}
+
+		this.properlyClose();
+		bridge.remove(this);
+		bridge.add(renewed);
+		return renewed;
 	}
 
 	public final double lerpByFramerate(final double value, final double target, final double speed, final double snapDiff, final boolean snap) {

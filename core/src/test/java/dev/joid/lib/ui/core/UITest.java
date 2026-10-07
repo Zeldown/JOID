@@ -468,15 +468,77 @@ public class UITest {
 	}
 
 	@Test
-	public void resetsItsZoomWithControlShiftRInDevMode() {
+	public void renewsItsInstanceWithControlShiftRInDevMode() {
 		JOID.inst().setDevMode(true);
-		final TraceUI ui = new TraceUI(this.trace);
+		final RenewUI ui = new RenewUI();
 		this.bridges.open(ui);
+		ui.clicks++;
 		ui.zoom(0.5D);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
 		this.bridges.getUi().keyTyped('r', Key.R);
+		Assert.assertFalse(this.bridges.getUi().isOpened(ui));
+		Assert.assertEquals(1, ui.inits);
+		final RenewUI renewed = (RenewUI) this.bridges.getUi().getUiList().get(0);
+		Assert.assertNotSame(ui, renewed);
+		Assert.assertEquals(1, renewed.inits);
+		Assert.assertEquals(0, renewed.clicks);
+		Assert.assertEquals(1D, renewed.getView().getZoom(), 0D);
+	}
+
+	@Test
+	public void keepsItsInstanceAndItsStateWithControlRInDevMode() {
+		JOID.inst().setDevMode(true);
+		final RenewUI ui = new RenewUI();
+		this.bridges.open(ui);
+		ui.clicks++;
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		this.bridges.getUi().keyTyped('r', Key.R);
+		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
 		Assert.assertEquals(2, ui.inits);
-		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
+		Assert.assertEquals(1, ui.clicks);
+	}
+
+	@Test
+	public void refusesToRenewAUIWithoutConstructorWithoutArgument() {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		try {
+			ui.renew();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead", exception.getMessage());
+		}
+		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+	}
+
+	@Test
+	public void warnsWhenControlShiftRCannotRenewTheUI() {
+		JOID.inst().setDevMode(true);
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			this.bridges.getUi().keyTyped('r', Key.R);
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertEquals("[JOID] The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead", output.toString().trim());
+		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		Assert.assertEquals(1, ui.inits);
+	}
+
+	@Test
+	public void refusesToRenewAClosedUI() {
+		final RenewUI ui = new RenewUI();
+		try {
+			ui.renew();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The UI " + RenewUI.class.getName() + " is not open, only an open UI can be renewed", exception.getMessage());
+		}
 	}
 
 	@Test
@@ -1554,6 +1616,18 @@ public class UITest {
 			} catch (final InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
+		}
+
+	}
+
+	public static final class RenewUI extends UI {
+
+		private int inits;
+		private int clicks;
+
+		@Override
+		public void init() {
+			this.inits++;
 		}
 
 	}
