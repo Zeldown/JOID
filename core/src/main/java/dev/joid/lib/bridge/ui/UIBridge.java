@@ -90,8 +90,10 @@ public abstract class UIBridge implements IUIBridge {
 				continue;
 			}
 
-			if (key == Key.ESCAPE && ui.getData().closeable() && ui.onClose()) {
-				this.close(ui);
+			if (key == Key.ESCAPE && ui.getData().closeable()) {
+				if (ui.onClose()) {
+					this.close(ui);
+				}
 				return;
 			}
 

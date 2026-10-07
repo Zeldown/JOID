@@ -7,9 +7,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -36,9 +40,9 @@ public final class UIStoreHook {
 		}
 
 		final T store = UIStoreHook.createStoreInstance(clazz, args);
-		final File file = UIStoreHook.getFile(store.getData().id());
+		final File file = UIStoreHook.getFile(UIStoreHook.getId(store));
 		if (store.getData().context() == StoreContext.PERMANENT && file.exists()) {
-			final JsonObject json = UIStoreHook.loadFile(store.getData().id());
+			final JsonObject json = UIStoreHook.loadFile(UIStoreHook.getId(store));
 			if (json == null) {
 				if (!file.delete()) {
 					System.err.println("Failed to delete corrupted store file: " + file.getAbsolutePath());
@@ -66,7 +70,7 @@ public final class UIStoreHook {
 		}
 
 		if (store.getData().context() == StoreContext.PERMANENT) {
-			UIStoreHook.deleteFile(data.id());
+			UIStoreHook.deleteFile(UIStoreHook.getId(store));
 		}
 
 		store.destroy();
@@ -79,7 +83,7 @@ public final class UIStoreHook {
 
 		final JsonObject json = new JsonObject();
 		store.save(json);
-		UIStoreHook.saveFile(store.getData().id(), json);
+		UIStoreHook.saveFile(UIStoreHook.getId(store), json);
 	}
 
 	public static void saveAll() {
@@ -89,25 +93,46 @@ public final class UIStoreHook {
 	}
 
 	private static <T extends UIStore> T createStoreInstance(final @NonNull Class<T> clazz, final Object... args) {
+		final List<Constructor<?>> constructors = new ArrayList<>();
+		for (final Constructor<?> constructor : clazz.getConstructors()) {
+			if (UIStoreHook.accepts(constructor, args)) {
+				constructors.add(constructor);
+			}
+		}
+
+		if (constructors.isEmpty()) {
+			throw new IllegalArgumentException("No public constructor of " + clazz.getName() + " accepts the arguments " + Arrays.toString(args));
+		}
+
+		if (constructors.size() > 1) {
+			throw new IllegalArgumentException("Several public constructors of " + clazz.getName() + " accept the arguments " + Arrays.toString(args) + ": " + constructors);
+		}
+
 		try {
-			T store = null;
-			for (final Constructor<?> constructor : clazz.getConstructors()) {
-				if (constructor.getParameterCount() != args.length) {
-					continue;
-				}
-
-				constructor.setAccessible(true);
-				store = (T) constructor.newInstance(args);
-			}
-
-			if (store == null) {
-				throw new IllegalArgumentException("No constructor found for class " + clazz.getName() + " with the provided arguments.");
-			}
-
-			return store;
+			return (T) constructors.get(0).newInstance(args);
 		} catch (final Exception e) {
 			throw new RuntimeException("Failed to create store instance for class " + clazz.getName(), e);
 		}
+	}
+
+	private static boolean accepts(final Constructor<?> constructor, final Object... args) {
+		final Class<?>[] types = constructor.getParameterTypes();
+		if (types.length != args.length) {
+			return false;
+		}
+
+		for (int i = 0; i < types.length; i++) {
+			if (args[i] == null ? types[i].isPrimitive() : !MethodType.methodType(types[i]).wrap().returnType().isInstance(args[i])) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private static @NonNull String getId(final @NonNull UIStore store) {
+		final String id = store.getData().id();
+		return id.isEmpty() ? store.getClass().getName() : id;
 	}
 
 	private static void deleteFile(final @NonNull String id) {

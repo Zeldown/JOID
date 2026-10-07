@@ -319,6 +319,31 @@ public class UITest {
 	}
 
 	@Test
+	public void keepsOneKeybindPerSetOfKeys() {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		this.trace.clear();
+		ui.keybind(() -> this.trace.add("first"), Key.LEFT_CONTROL, Key.S);
+		ui.keybind(() -> this.trace.add("second"), Key.S, Key.LEFT_CONTROL);
+		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S));
+		this.bridges.getUi().keyTyped('s', Key.S);
+		Assert.assertEquals(1, ui.getKeybindMap().size());
+		Assert.assertEquals(Arrays.asList("second", "typed s S cancelled"), this.trace);
+	}
+
+	@Test
+	public void runsAKeybindOnlyForTheKeysOfItsShortcut() {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		this.trace.clear();
+		ui.keybind(() -> this.trace.add("save"), Key.LEFT_CONTROL, Key.S);
+		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S, Key.A));
+		this.bridges.getUi().keyTyped('a', Key.A);
+		this.bridges.getUi().keyTyped('s', Key.S);
+		Assert.assertEquals(Arrays.asList("typed a A", "save", "typed s S cancelled"), this.trace);
+	}
+
+	@Test
 	public void zoomsOutAndInWithTheModifierKeys() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
@@ -1065,6 +1090,17 @@ public class UITest {
 	}
 
 	@Test
+	public void createsItsLocalStoresAgainOnceReopened() {
+		final TraceUI ui = new TraceUI(this.trace);
+		final LocalStore store = ui.useStore(LocalStore.class);
+		ui.properlyClose();
+		Assert.assertTrue(ui.getStoreMap().isEmpty());
+		final LocalStore reopened = ui.useStore(LocalStore.class);
+		Assert.assertNotSame(store, reopened);
+		Assert.assertFalse(reopened.destroyed);
+	}
+
+	@Test
 	public void savesItsPropertiesOnClose() throws IOException {
 		final PropertyUI ui = new PropertyUI();
 		ui.load(1920D, 1080D);
@@ -1084,6 +1120,26 @@ public class UITest {
 		Assert.assertEquals("Home", loaded.title);
 		loaded.load(1920D, 1080D);
 		Assert.assertEquals("Shop", loaded.title);
+	}
+
+	@Test
+	public void keepsItsPropertiesAcrossAReload() {
+		final PropertyUI ui = new PropertyUI();
+		ui.properlyClose();
+		ui.load(1920D, 1080D);
+		ui.title = "Shop";
+		ui.reload();
+		Assert.assertEquals("Shop", ui.title);
+	}
+
+	@Test
+	public void leavesItsStaticFieldsOutOfItsProperties() throws IOException {
+		final StaticPropertyUI ui = new StaticPropertyUI();
+		ui.properlyClose();
+		final File file = new File(new File(this.folder.getRoot(), "property"), StaticPropertyUI.class.getName() + ".property");
+		final String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		Assert.assertEquals("{\"title\":\"" + ui.title + "\"}", json);
+		Assert.assertEquals("Light", StaticPropertyUI.theme);
 	}
 
 	@Test
@@ -1450,6 +1506,16 @@ public class UITest {
 	}
 
 	public static final class PropertyUI extends UI {
+
+		@UIProperty
+		private String title = "Home";
+
+	}
+
+	public static final class StaticPropertyUI extends UI {
+
+		@UIProperty
+		private static String theme = "Light";
 
 		@UIProperty
 		private String title = "Home";

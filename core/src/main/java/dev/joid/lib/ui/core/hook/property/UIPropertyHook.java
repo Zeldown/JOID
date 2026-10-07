@@ -106,7 +106,7 @@ public final class UIPropertyHook {
 			}
 
 			for (final Field field : clazz.getDeclaredFields()) {
-				if (!field.isAnnotationPresent(UIProperty.class) || Modifier.isFinal(field.getModifiers())) {
+				if (!field.isAnnotationPresent(UIProperty.class) || Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
 					continue;
 				}
 

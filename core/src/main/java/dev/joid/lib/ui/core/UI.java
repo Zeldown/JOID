@@ -3,10 +3,13 @@ package dev.joid.lib.ui.core;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -64,7 +67,7 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private final UIDataDebugObject    debug;
 	@NonNull private final UIDataPopupObject    popup;
 
-	@NonNull private final Map<Key[], Runnable>                 keybindMap;
+	@NonNull private final Map<Set<Key>, Runnable>              keybindMap;
 	@NonNull private final Stack<StencilState>                  stencilStack;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
@@ -214,6 +217,7 @@ public abstract class UI implements IUI, IndexedElement {
 					System.out.println("Starting reload...");
 
 					final long start = System.nanoTime();
+					UIPropertyHook.save(UI.this);
 					SignalReplay.clear();
 					UI.this.initialized = false;
 					UI.this.load(UI.this.view.getWidth(), UI.this.view.getHeight(), UI.this.view.getZoom());
@@ -339,8 +343,8 @@ public abstract class UI implements IUI, IndexedElement {
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context)));
 
 		if (!context.isCancelled()) {
-			for (final Map.Entry<Key[], Runnable> entry : this.keybindMap.entrySet()) {
-				boolean match = true;
+			for (final Map.Entry<Set<Key>, Runnable> entry : this.keybindMap.entrySet()) {
+				boolean match = entry.getKey().contains(key);
 				for (final Key bindKey : entry.getKey()) {
 					if (!bindKey.isDown()) {
 						match = false;
@@ -475,6 +479,7 @@ public abstract class UI implements IUI, IndexedElement {
 		for (final Entry<Class<? extends UIStore>, UIStore> storeEntry : this.storeMap.entrySet()) {
 			UIStoreHook.destroyStore(storeEntry.getValue());
 		}
+		this.storeMap.clear();
 
 		UIPropertyHook.save(this);
 	}
@@ -580,7 +585,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void keybind(final @NonNull Runnable runnable, final @NonNull Key... keys) {
-		this.keybindMap.put(keys, runnable);
+		this.keybindMap.put(new HashSet<>(Arrays.asList(keys)), runnable);
 	}
 
 	public final void reload() {
@@ -590,6 +595,7 @@ public abstract class UI implements IUI, IndexedElement {
 			devNode.getReloadAnimator().start();
 		}
 
+		UIPropertyHook.save(this);
 		SignalReplay.clear();
 		this.initialized = false;
 		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());

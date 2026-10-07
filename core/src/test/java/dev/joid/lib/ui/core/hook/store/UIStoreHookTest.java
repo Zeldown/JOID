@@ -76,13 +76,40 @@ public class UIStoreHookTest {
 	}
 
 	@Test
-	public void refusesArgumentsWithoutMatchingConstructor() {
+	public void savesAStoreWithoutIdUnderItsClassName() {
+		final UnnamedStore store = UIStoreHook.useStore(UnnamedStore.class);
 		try {
-			UIStoreHook.useStore(LocalStore.class, "extra");
-			Assert.fail("A store without matching constructor must be refused");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Failed to create store instance for class " + LocalStore.class.getName(), expected.getMessage());
-			Assert.assertTrue(expected.getCause() instanceof IllegalArgumentException);
+			store.save();
+			Assert.assertTrue(new File(new File(this.folder.getRoot(), "store"), UnnamedStore.class.getName() + ".store").exists());
+		} finally {
+			UIStoreHook.destroyStore(store);
+		}
+	}
+
+	@Test
+	public void buildsAStoreWithTheConstructorThatAcceptsItsArguments() {
+		Assert.assertEquals("name shop", UIStoreHook.useStore(OverloadedStore.class, "shop").origin);
+		Assert.assertEquals("size 3", UIStoreHook.useStore(OverloadedStore.class, 3).origin);
+		Assert.assertEquals("pair shop 3", UIStoreHook.useStore(OverloadedStore.class, "shop", 3).origin);
+	}
+
+	@Test
+	public void refusesArgumentsThatNoConstructorOfAStoreAccepts() {
+		try {
+			UIStoreHook.useStore(OverloadedStore.class, 3D);
+			Assert.fail("No constructor of the store accepts a double");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("No public constructor of " + OverloadedStore.class.getName() + " accepts the arguments [3.0]", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void refusesArgumentsThatSeveralConstructorsOfAStoreAccept() {
+		try {
+			UIStoreHook.useStore(OverloadedStore.class, (Object) null);
+			Assert.fail("Both constructors of the store accept null");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("Several public constructors of " + OverloadedStore.class.getName() + " accept the arguments [null]: "));
 		}
 	}
 
@@ -338,5 +365,27 @@ public class UIStoreHookTest {
 	}
 
 	public static class BareStore extends UIStore {}
+
+	@UIStoreData(context = StoreContext.PERMANENT)
+	public static class UnnamedStore extends UIStore {}
+
+	@UIStoreData(id = "overloaded")
+	public static class OverloadedStore extends UIStore {
+
+		private final String origin;
+
+		public OverloadedStore(final String name) {
+			this.origin = "name " + name;
+		}
+
+		public OverloadedStore(final Integer size) {
+			this.origin = "size " + size;
+		}
+
+		public OverloadedStore(final String name, final int size) {
+			this.origin = "pair " + name + " " + size;
+		}
+
+	}
 
 }

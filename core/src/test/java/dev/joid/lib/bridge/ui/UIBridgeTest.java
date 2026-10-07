@@ -229,14 +229,16 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void typesEscapeInAUiThatRefusesToClose() {
+	public void consumesEscapeInAUiThatRefusesToClose() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		hud.closeable = false;
-		this.bridges.open(hud);
+		this.bridges.open(menu).open(hud);
 		this.trace.clear();
 		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
-		Assert.assertEquals(Arrays.asList("close hud", "typed hud \0 ESCAPE"), this.trace);
+		Assert.assertEquals(Collections.singletonList("close hud"), this.trace);
 		Assert.assertTrue(this.bridges.getUi().isOpened(hud));
+		Assert.assertTrue(this.bridges.getUi().isOpened(menu));
 	}
 
 	@Test
