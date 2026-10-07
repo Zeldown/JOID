@@ -2,117 +2,227 @@ package dev.joid.demo.ui.font;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.font.effect.DemoHighlightTextEffect;
-import dev.joid.demo.ui.font.effect.DemoRainbowTextEffect;
-import dev.joid.demo.ui.font.effect.DemoScrambleTextEffect;
-import dev.joid.demo.ui.font.effect.DemoUnderlineTextEffect;
-import dev.joid.demo.ui.font.effect.DemoWaveTextEffect;
-import dev.joid.demo.ui.font.markup.DemoTextMarkup;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.draw.text.builder.utils.TextOverflow;
-import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.utils.align.Align;
 
 public class UIDemoFont extends UIDemo {
 
-	private static final TextInfo MARKUP     = TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE).markups(DemoTextMarkup.inst());
-	private static final TextInfo EFFECT     = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE).markups(DemoTextMarkup.inst());
+	private static final Color INK         = new Color(153, 153, 153);
+	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+
 	private static final MsdfFont LIGHT_BOLD = MsdfFont.create(DemoFont.MONTSERRAT.getFace(FontWeight.LIGHT, false), DemoFont.MONTSERRAT.getFace(FontWeight.BOLD, false));
-
-	private static final TextInfo[] FONTS = {
-			TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE).lineHeight(1.33F),
-			TextInfo.create(DemoFont.PACIFICO, 20, Color.WHITE).lineHeight(1.425F),
-			TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 20, Color.WHITE).lineHeight(1.425F)
-	};
-
-	private static final String[] TEXTS = {
-			"lorem impsum",
-			"italic",
-			"spacing",
-			"n-spacing",
-			"AVATAR Tower WAVE LT Ty",
-			"abcdefghijklmnopqrstuvwxyz",
-			"ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-			"0123456789 !?.,;:'\"()[]{}+-*/=%&@#",
-			"àâéèêëîïôùûüç ÀÉÈÊÎÔÙÇ ß œ æ ł ı",
-			"splitted text splitted text splitted text splitted text splitted splitted text splitted text splitted text splitted text splitted text splitted text",
-			"overflow overflow overflow overflow overflow overflow overflow overflow overflow overflow",
-			"shadow text",
-			"colored shadow text"
-	};
 
 	@Override
 	public void init() {
-		for (int i = 0; i < UIDemoFont.FONTS.length; i++) {
-			final TextInfo info = UIDemoFont.FONTS[i];
-			final Align align = i == 0 ? Align.START : i == 1 ? Align.CENTER : Align.END;
-			FlexNode.vertical(10D + i * 640D, 10D, 620D).margin(3D).body(flex -> {
-				for (final String text : UIDemoFont.TEXTS) {
-					final boolean italic = "italic".equals(text);
-					final boolean spacing = text.contains("spacing");
-					final boolean negativeSpacing = text.contains("n-spacing");
-					final boolean hasShadow = text.contains("shadow");
-					final boolean hasColoredShadow = text.contains("colored");
-					final boolean split = text.contains("splitted");
-					final boolean overflow = text.contains("overflow");
-					TextNode.create(0, 0).text(Text.create(text, info.copy().italic(italic).letterSpacing(negativeSpacing ? -0.16F : spacing ? 0.4F : 0F).shadow(hasShadow ? hasColoredShadow ? Color.RAINBOW() : Color.BLACK : null)).overflow(overflow ? TextOverflow.ELLIPSIS : TextOverflow.NONE).horizontalAlign(align)).mode(split ? TextMode.SPLIT : overflow ? TextMode.OVERFLOW : TextMode.NORMAL).width(flex.getWidth()).attach(flex);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoFont.INK);
+		final TextInfo montserrat = TextInfo.create(DemoFont.MONTSERRAT, 18, UIDemoFont.INK).lineHeight(1.33F);
+		final TextInfo pacifico = TextInfo.create(DemoFont.PACIFICO, 18, UIDemoFont.INK).lineHeight(1.425F);
+		final TextInfo playfair = TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 18, UIDemoFont.INK).lineHeight(1.425F);
+		final String[] specimen = {"Aa Bb Cc Dd Ee Ff Gg", "abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLM", "NOPQRSTUVWXYZ", "0123456789", "!?.,;:'\"()[]{}+-*/=%&@#", "àâéèêëîïôùûüç ß œ æ ł ı", "ÀÉÈÊÎÔÙÇ"};
+
+		RectNode
+		.create(100, 40, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.body(flex -> {
+				for (final String line : specimen) {
+					TextNode.create(0, 0).text(Text.create(line, montserrat)).attach(flex);
 				}
-			}).attach(this);
-		}
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Montserrat", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
 
-		FlexNode.horizontal(10D, 460D, 30D).body(flex -> {
-			for (final FontWeight weight : FontWeight.values()) {
-				TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, weight, 20, Color.WHITE))).width(211D).attach(flex);
-			}
-		}).attach(this);
-		FlexNode.horizontal(10D, 494D, 30D).body(flex -> {
-			for (final FontWeight weight : FontWeight.values()) {
-				TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE).weight(weight).italic(true))).width(211D).attach(flex);
-			}
-		}).attach(this);
-		FlexNode.horizontal(10D, 528D, 30D).body(flex -> {
-			for (int value = 100; value <= 900; value += 100) {
-				TextNode.create(0, 0).text(Text.create(value + " " + FontWeight.of(value), TextInfo.create(UIDemoFont.LIGHT_BOLD, FontWeight.of(value), 20, Color.WHITE))).width(211D).attach(flex);
-			}
-		}).attach(this);
-		FlexNode.horizontal(10D, 562D, 30D).body(flex -> {
-			for (int value = 100; value <= 900; value += 100) {
-				TextNode.create(0, 0).text(Text.create(value + " " + FontWeight.of(value), TextInfo.create(UIDemoFont.LIGHT_BOLD, FontWeight.of(value), 20, Color.WHITE).italic(true).shadow(Color.BLACK))).width(211D).attach(flex);
-			}
-		}).attach(this);
+		RectNode
+		.create(540, 40, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.body(flex -> {
+				for (final String line : specimen) {
+					TextNode.create(0, 0).text(Text.create(line, pacifico)).attach(flex);
+				}
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Pacifico", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
 
-		FlexNode.vertical(10D, 615D, 940D).margin(10D).body(flex -> {
-			TextNode.create(0, 0).text(Text.create("<b>bold</b> regular <w=100>thin</w> <w=300>light</w> <w=600>semi bold</w> <w=900>black</w> <w=800>extra <b>bold</b> back</w>", UIDemoFont.MARKUP)).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<i>italic</i> upright <b><i>bold italic</i></b> <w=100><i>thin italic</i></w>", UIDemoFont.MARKUP)).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<c=ff5555>red</c> <c=55ff55>green</c> <c=5555ff>blue</c> <c=ffaa00>orange <b>bold</b> still orange</c> white", UIDemoFont.MARKUP)).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<u>underline</u> <h>highlight</h> <u><h>both</h></u> <c=ff55ff><u>colored underline</u></c> <b><u>bold underline</u></b>", UIDemoFont.MARKUP)).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<c=55ffff>the shadow <b>follows</b> the <u>markup</u></c> <h>and keeps the highlight behind</h>", UIDemoFont.MARKUP.copy().shadow(Color.BLACK))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<c=ff5555>colors</c> <c=55ff55>are</c> <b>ignored</b> when the text is not colored", UIDemoFont.MARKUP.copy().colored(false))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>raw</b> <c=ff5555>markup</c> <u>when</u> markups are disabled", UIDemoFont.MARKUP.copy().markups())).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>spaced</b> <c=ffff55>markup</c> <u>keeps</u> its <h>spacing</h>", UIDemoFont.MARKUP.copy().letterSpacing(0.3F))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>measured</b> <w=900>with</w> <c=55ff55>markup</c> <u>ends here</u>", UIDemoFont.MARKUP, Align.END)).width(flex.getWidth()).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>centered</b> <w=100>with</w> <i>markup</i>", UIDemoFont.MARKUP, Align.CENTER)).width(flex.getWidth()).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=ff5555>red</c> <u>underline</u> <h>highlight</h>", UIDemoFont.MARKUP.copy().font(DemoFont.PACIFICO))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=ff5555>red</c> <u>underline</u> <h>highlight</h>", UIDemoFont.MARKUP.copy().font(DemoFont.PLAYFAIR_DISPLAY))).attach(flex);
-		}).attach(this);
-		FlexNode.vertical(970D, 615D, 940D).margin(14D).body(flex -> {
-			TextNode.create(0, 0).text(Text.create("a wave moves every glyph without touching the layout", UIDemoFont.EFFECT.copy().effects(DemoWaveTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("a rainbow colors the text glyph by glyph", UIDemoFont.EFFECT.copy().effects(DemoRainbowTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("scrambled characters keep their width", UIDemoFont.EFFECT.copy().effects(DemoScrambleTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("an underline and a highlight on the whole text", UIDemoFont.EFFECT.copy().effects(DemoUnderlineTextEffect.inst(), DemoHighlightTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("the shadow waves with the text", UIDemoFont.EFFECT.copy().effects(DemoWaveTextEffect.inst()).shadow(Color.BLACK))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("the shadow scrambles <u>like</u> the text", UIDemoFont.EFFECT.copy().effects(DemoScrambleTextEffect.inst()).shadow(Color.BLACK))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<b>markup</b> <u>adds</u> <h>effects</h> under the rainbow", UIDemoFont.EFFECT.copy().effects(DemoRainbowTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("spaced <u>wave</u> and <h>highlight</h>", UIDemoFont.EFFECT.copy().letterSpacing(0.36F).effects(DemoWaveTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<i>italic</i> <b>rainbow</b> <u>scramble</u>", UIDemoFont.EFFECT.copy().font(DemoFont.PACIFICO).effects(DemoRainbowTextEffect.inst(), DemoScrambleTextEffect.inst()))).attach(flex);
-			TextNode.create(0, 0).text(Text.create("<w=300>light</w> <b>wave</b> with a <h>highlight</h>", UIDemoFont.EFFECT.copy().font(DemoFont.PLAYFAIR_DISPLAY).effects(DemoWaveTextEffect.inst()).shadow(Color.BLACK))).attach(flex);
-		}).attach(this);
+		RectNode
+		.create(980, 40, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.body(flex -> {
+				for (final String line : specimen) {
+					TextNode.create(0, 0).text(Text.create(line, playfair)).attach(flex);
+				}
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Playfair Display", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1420, 40, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.margin(6D)
+			.body(flex -> {
+				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", montserrat.copy().fontSize(28F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", pacifico.copy().fontSize(28F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", playfair.copy().fontSize(28F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("LT Ty Yo Va", montserrat.copy().fontSize(40F))).attach(flex);
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Kerning", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(100, 380, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.body(flex -> {
+				for (final FontWeight weight : FontWeight.values()) {
+					TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, weight, 18, UIDemoFont.INK))).attach(flex);
+				}
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Weights", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(540, 380, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.body(flex -> {
+				for (final FontWeight weight : FontWeight.values()) {
+					TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, weight, 18, UIDemoFont.INK).italic(true))).attach(flex);
+				}
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Italic weights", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(980, 380, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.body(flex -> {
+				for (final FontWeight weight : FontWeight.values()) {
+					TextNode.create(0, 0).text(Text.create(weight.getValue() + " drawn with two faces", TextInfo.create(UIDemoFont.LIGHT_BOLD, weight, 18, UIDemoFont.INK))).attach(flex);
+				}
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Nearest weight", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1420, 380, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.margin(4D)
+			.body(flex -> {
+				TextNode.create(0, 0).text(Text.create("Size 12", montserrat.copy().fontSize(12F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 16", montserrat.copy().fontSize(16F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 24", montserrat.copy().fontSize(24F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 32", montserrat.copy().fontSize(32F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 48", montserrat.copy().fontSize(48F))).attach(flex);
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Sizes", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(100, 720, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.margin(10D)
+			.body(flex -> {
+				TextNode.create(0, 0).text(Text.create("Montserrat italic", montserrat.copy().fontSize(28F).italic(true))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Pacifico italic", pacifico.copy().fontSize(28F).italic(true))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Playfair italic", playfair.copy().fontSize(28F).italic(true))).attach(flex);
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Italic", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(540, 720, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.margin(6D)
+			.body(flex -> {
+				TextNode.create(0, 0).text(Text.create("Size 8: the quick brown fox jumps", montserrat.copy().fontSize(8F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 9: the quick brown fox jumps", montserrat.copy().fontSize(9F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", montserrat.copy().fontSize(10F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 11: the quick brown fox jumps", montserrat.copy().fontSize(11F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", playfair.copy().fontSize(10F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", pacifico.copy().fontSize(10F))).attach(flex);
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Small sizes", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(980, 720, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			TextNode.create(200, 130).text(Text.create("Ag", montserrat.copy().fontSize(160F), Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Large size", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1420, 720, 400, 260)
+		.color(UIDemoFont.PLACEHOLDER)
+		.body(rect -> {
+			FlexNode
+			.vertical(20, 20, 360)
+			.margin(10D)
+			.body(flex -> {
+				TextNode.create(0, 0).text(Text.create("White text", montserrat.copy().fontSize(28F).color(Color.WHITE))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Ink text", montserrat.copy().fontSize(28F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Half transparent", montserrat.copy().fontSize(28F).color(Color.BLACK.copyAlpha(0.5F)))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Black text", montserrat.copy().fontSize(28F).color(Color.BLACK))).attach(flex);
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Colors", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
 	}
 
 }

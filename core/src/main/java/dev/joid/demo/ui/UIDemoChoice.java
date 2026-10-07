@@ -10,6 +10,8 @@ import dev.joid.demo.ui.control.UIDemoControl;
 import dev.joid.demo.ui.draggable.UIDemoDraggable;
 import dev.joid.demo.ui.flex.UIDemoFlex;
 import dev.joid.demo.ui.font.UIDemoFont;
+import dev.joid.demo.ui.font.UIDemoMarkup;
+import dev.joid.demo.ui.font.UIDemoText;
 import dev.joid.demo.ui.grid.UIDemoGrid;
 import dev.joid.demo.ui.overflow.UIDemoOverflow;
 import dev.joid.demo.ui.popup.UIDemoPopup;
@@ -54,6 +56,8 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoDraggable.class);
 		UIDemoChoice.LIST.add(UIDemoReorderable.class);
 		UIDemoChoice.LIST.add(UIDemoFont.class);
+		UIDemoChoice.LIST.add(UIDemoText.class);
+		UIDemoChoice.LIST.add(UIDemoMarkup.class);
 		UIDemoChoice.LIST.add(UIDemoTextField.class);
 		UIDemoChoice.LIST.add(UIDemoControl.class);
 		UIDemoChoice.LIST.add(UIDemoSlider.class);

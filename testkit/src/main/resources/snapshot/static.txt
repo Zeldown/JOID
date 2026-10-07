@@ -16,8 +16,14 @@ shot static-UIDemoDraggable
 ui dev.joid.demo.ui.font.UIDemoFont
 wait 3500
 shot static-UIDemoFont
+ui dev.joid.demo.ui.font.UIDemoText
+wait 3500
+shot static-UIDemoText
+ui dev.joid.demo.ui.font.UIDemoMarkup
+wait 3500
+shot static-UIDemoMarkup
 wait 400
-shot static-UIDemoFont-later
+shot static-UIDemoMarkup-later
 ui dev.joid.demo.ui.flex.UIDemoFlex
 wait 3500
 shot static-UIDemoFlex
