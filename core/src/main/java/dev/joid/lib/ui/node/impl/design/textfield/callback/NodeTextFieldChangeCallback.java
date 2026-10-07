@@ -8,16 +8,16 @@ import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface NodeTextFieldChangeCallback<T extends Node> extends NodeCallback {
+public interface NodeTextFieldChangeCallback<T extends Node, V> extends NodeCallback {
 
-	public void apply(final @NonNull T node, final @NonNull String oldText, final @NonNull String newText);
+	public void apply(final @NonNull T node, final @NonNull String text, final V value, final boolean valid);
 
 	@NodeCallbackMethod(Type.PRE)
-	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String oldText, final @NonNull String newText) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String text, final V value, final boolean valid) {}
 
 	@NodeCallbackMethod(Type.POST)
-	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String oldText, final @NonNull String newText) {
-		context.cancel(() -> this.apply(node, oldText, newText));
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull String text, final V value, final boolean valid) {
+		context.cancel(() -> this.apply(node, text, value, valid));
 	}
 
 }

@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.impl.design.textfield.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -15,10 +16,17 @@ import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
+import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCallback;
+import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
+
+import lombok.NonNull;
 
 public class IntegerFieldNodeTest {
 
@@ -52,10 +60,95 @@ public class IntegerFieldNodeTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void keepsOnlyTheDigitsOfAText() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).text("1a2 b3");
-		Assert.assertEquals("123", field.getText());
-		Assert.assertEquals(123, (int) field.getValue());
+	public void acceptsOnlyAnIntegerWhileTyping() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(-10).max(10));
+		this.type(field, "1a2 b");
+		Assert.assertEquals("12", field.getText());
+		field.cursorPosition(0);
+		this.type(field, "-");
+		Assert.assertEquals("-12", field.getText());
+		this.type(field, "-");
+		Assert.assertEquals("-12", field.getText());
+	}
+
+	@Test
+	public void acceptsALoneMinusOnlyWhileNegativeValuesAreAllowed() {
+		final IntegerFieldNode negative = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(-4).max(9));
+		this.type(negative, "-");
+		Assert.assertEquals("-", negative.getText());
+		Assert.assertEquals(0, (int) negative.getValue());
+		Assert.assertFalse(negative.isValid());
+		final IntegerFieldNode positive = this.focused(IntegerFieldNode.create(0D, 200D, 100D).min(0).max(9));
+		this.type(positive, "-");
+		Assert.assertEquals("", positive.getText());
+	}
+
+	@Test
+	public void neverMovesItsCursorOnARefusedKey() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(42)).cursorPosition(1);
+		this.type(field, "x");
+		Assert.assertEquals("42", field.getText());
+		Assert.assertEquals(1, field.getCursorPos());
+	}
+
+	@Test
+	public void appliesNoBoundWhileTyping() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).value(42)).cursorPosition(2);
+		this.type(field, "5");
+		Assert.assertEquals("425", field.getText());
+		Assert.assertEquals(100, (int) field.getValue());
+		Assert.assertFalse(field.isValid());
+		this.press(field, Key.ENTER);
+		Assert.assertEquals("100", field.getText());
+		Assert.assertTrue(field.isValid());
+	}
+
+	@Test
+	public void bringsAValueBelowItsMinimumBackToItOnCommit() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(10).max(100).value(42));
+		this.control(field, Key.A);
+		this.type(field, "5");
+		Assert.assertEquals("5", field.getText());
+		Assert.assertEquals(10, (int) field.getValue());
+		field.focused(false);
+		Assert.assertEquals("10", field.getText());
+	}
+
+	@Test
+	public void fallsBackToItsLastValueOnAnEmptyOrInvalidText() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(-10).max(10).value(7));
+		this.control(field, Key.A);
+		this.press(field, Key.BACKSPACE);
+		Assert.assertEquals("", field.getText());
+		Assert.assertEquals(7, (int) field.getValue());
+		Assert.assertFalse(field.isValid());
+		this.type(field, "-");
+		Assert.assertEquals(7, (int) field.getValue());
+		field.focused(false);
+		Assert.assertEquals("7", field.getText());
+		Assert.assertEquals("7", field.<IntegerFieldNode>text("abc").getText());
+	}
+
+	@Test
+	public void startsFromZeroBroughtInsideItsRangeNeverItsMiddle() {
+		Assert.assertEquals(0, (int) IntegerFieldNode.create(0D, 0D, 100D).getValue());
+		Assert.assertEquals(3, (int) IntegerFieldNode.create(0D, 0D, 100D).min(3).max(9).getValue());
+		Assert.assertEquals(-2, (int) IntegerFieldNode.create(0D, 0D, 100D).min(-9).max(-2).getValue());
+		Assert.assertEquals("", IntegerFieldNode.create(0D, 0D, 100D).min(3).max(9).getText());
+	}
+
+	@Test
+	public void keepsAnEmptyTextWithoutValueWhenAllowed() {
+		final IntegerSignal signal = new IntegerSignal(4);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).allowEmpty(true).signal(signal));
+		this.control(field, Key.A);
+		this.press(field, Key.BACKSPACE);
+		Assert.assertNull(field.getValue());
+		Assert.assertTrue(field.isValid());
+		field.focused(false);
+		Assert.assertEquals("", field.getText());
+		Assert.assertNull(field.getValue());
+		Assert.assertEquals(4, (int) signal.get());
 	}
 
 	@Test
@@ -81,55 +174,79 @@ public class IntegerFieldNodeTest {
 		Assert.assertEquals(5, (int) field.value(5).getValue());
 		Assert.assertEquals(9, (int) field.value(12).getValue());
 		Assert.assertEquals(1, (int) field.value(0).getValue());
+		Assert.assertEquals("1", field.getText());
 	}
 
 	@Test
-	public void readsTheMiddleOfItsRangeOnceEmptied() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(3).max(9).value(5).text("");
-		Assert.assertEquals("", field.getText());
-		Assert.assertEquals(6, (int) field.getValue());
-	}
-
-	@Test
-	public void readsTheMiddleOfItsRangeWithoutDigits() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(3).max(9).text("abc");
-		Assert.assertEquals("", field.getText());
-		Assert.assertEquals(6, (int) field.getValue());
-		Assert.assertEquals(0, (int) IntegerFieldNode.create(0D, 0D, 100D).getValue());
-		Assert.assertEquals(-3, (int) IntegerFieldNode.create(0D, 0D, 100D).min(Integer.MIN_VALUE + 2).max(Integer.MAX_VALUE - 7).getValue());
-	}
-
-	@Test
-	public void keepsALoneMinusOnlyWhileNegativeValuesAreAllowed() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(-4).max(9).text("-");
-		Assert.assertEquals("-", field.getText());
-		Assert.assertEquals(2, (int) field.getValue());
-		Assert.assertEquals("", IntegerFieldNode.create(0D, 0D, 100D).min(0).max(9).text("-").getText());
-	}
-
-	@Test
-	public void putsAnEmptiedFieldBackToTheMiddleOnceUnfocused() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).value(4).focused(true).text("");
-		Assert.assertEquals("", field.getText());
-		field.focused(false);
-		Assert.assertEquals("5", field.getText());
-		Assert.assertEquals("7", field.value(7).focused(true).focused(false).getText());
+	public void keepsANegativeValueInsideItsRange() {
+		Assert.assertEquals(-5, (int) IntegerFieldNode.create(0D, 0D, 100D).min(-10).max(10).value(-5).getValue());
 	}
 
 	@Test
 	public void clampsItsValueOnceItsBoundsChange() {
 		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).value(50);
 		Assert.assertEquals(20, (int) field.max(20).getValue());
+		Assert.assertEquals("20", field.getText());
 		Assert.assertEquals(25, (int) field.min(25).getValue());
 		Assert.assertEquals(3, (int) field.min(0).max(3).getValue());
-		Assert.assertEquals("", field.<IntegerFieldNode>text("").min(1).getText());
+		Assert.assertEquals("3", field.<IntegerFieldNode>text("").getText());
+	}
+
+	@Test
+	public void lowersANumberTooLongForAnInteger() {
+		Assert.assertEquals(50, (int) IntegerFieldNode.create(0D, 0D, 100D).min(0).max(50).<IntegerFieldNode>text("99999999999").getValue());
+		Assert.assertEquals(Integer.MAX_VALUE, (int) IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>text("99999999999").getValue());
+		Assert.assertEquals(Integer.MIN_VALUE, (int) IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>text("-99999999999").getValue());
+	}
+
+	@Test
+	public void reportsEveryKeystrokeWithTheValueItsCommitWouldApply() {
+		final List<Object> changes = new ArrayList<>();
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(50).value(4).onChange((node, text, value, valid) -> changes.addAll(Arrays.asList(text, value, valid)))).cursorPosition(1);
+		this.type(field, "2");
+		this.type(field, "9");
+		this.press(field, Key.BACKSPACE);
+		this.press(field, Key.BACKSPACE);
+		this.press(field, Key.BACKSPACE);
+		field.focused(false);
+		Assert.assertEquals(Arrays.asList("42", 42, true, "429", 50, false, "42", 42, true, "4", 4, true, "", 4, false, "4", 4, true), changes);
+	}
+
+	@Test
+	public void reportsNoFinalChangeWhenItsCommitKeepsItsText() {
+		final List<String> changes = new ArrayList<>();
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(4).onChange((node, text, value, valid) -> changes.add(text))).cursorPosition(1);
+		this.type(field, "2");
+		this.press(field, Key.ENTER);
+		Assert.assertEquals(Collections.singletonList("42"), changes);
+	}
+
+	@Test
+	public void refusesAKeystrokeThePrePhaseConsumes() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(4).onChange(new NodeTextFieldChangeCallback<IntegerFieldNode, Integer>() {
+
+			@Override
+			public void apply(final @NonNull IntegerFieldNode node, final @NonNull String text, final Integer value, final boolean valid) {}
+
+			@Override
+			@NodeCallbackMethod(Type.PRE)
+			public void pre(final @NonNull IntegerFieldNode node, final @NonNull InternalContext context, final @NonNull String text, final Integer value, final boolean valid) {
+				if (value != null && value > 10) {
+					context.cancel();
+				}
+			}
+
+		})).cursorPosition(1);
+		this.type(field, "2");
+		Assert.assertEquals("4", field.getText());
+		Assert.assertEquals(1, field.getCursorPos());
 	}
 
 	@Test
 	public void bindsItsValueToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
 		final IntegerSignal signal = new IntegerSignal(7);
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>onChange((node, text, value, valid) -> changes.add(text)).signal(signal);
 		this.bridges.open(new NodeUI(field));
 		Assert.assertEquals(7, (int) field.getValue());
 		signal.set(42);
@@ -137,12 +254,33 @@ public class IntegerFieldNodeTest {
 		Assert.assertEquals(10, (int) signal.get());
 		field.value(3);
 		Assert.assertEquals(3, (int) signal.get());
-		field.focused(true).text("");
-		Assert.assertEquals(5, (int) signal.get());
+		Assert.assertEquals(Arrays.asList("7", "10", "3"), changes);
+	}
+
+	@Test
+	public void writesTheCorrectedValueToItsSignalOnEveryKeystrokeWithoutRewritingItsText() {
+		final IntegerSignal signal = new IntegerSignal(4);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).signal(signal)).cursorPosition(1);
+		this.type(field, "2");
+		Assert.assertEquals(42, (int) signal.get());
+		this.type(field, "5");
+		Assert.assertEquals(100, (int) signal.get());
+		Assert.assertEquals("425", field.getText());
+		this.press(field, Key.BACKSPACE);
+		this.press(field, Key.BACKSPACE);
+		this.press(field, Key.BACKSPACE);
 		Assert.assertEquals("", field.getText());
-		field.keyPressed('8', Key.DIGIT_8, InternalContext.create());
-		Assert.assertEquals(8, (int) signal.get());
-		Assert.assertEquals(Arrays.asList("7", "10", "3", "", "8"), changes);
+		Assert.assertEquals(4, (int) signal.get());
+	}
+
+	@Test
+	public void showsAChangeOfItsSignalMadeElsewhereEvenWhileFocused() {
+		final IntegerSignal signal = new IntegerSignal(4);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).signal(signal)).cursorPosition(1);
+		this.type(field, "2");
+		signal.set(9);
+		Assert.assertEquals("9", field.getText());
+		Assert.assertTrue(field.isFocused());
 	}
 
 	@Test
@@ -160,9 +298,106 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
-	public void lowersANumberTooLongForAnInteger() {
-		Assert.assertEquals(50, (int) IntegerFieldNode.create(0D, 0D, 100D).min(0).max(50).<IntegerFieldNode>text("99999999999").getValue());
-		Assert.assertEquals(Integer.MAX_VALUE, (int) IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>text("99999999999").getValue());
+	public void stepsItsValueWithTheArrowsInsideItsBounds() {
+		final IntegerSignal signal = new IntegerSignal(5);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(8).step(2).signal(signal));
+		this.press(field, Key.UP);
+		Assert.assertEquals("7", field.getText());
+		Assert.assertEquals(7, (int) signal.get());
+		this.press(field, Key.UP);
+		Assert.assertEquals("8", field.getText());
+		this.press(field, Key.DOWN);
+		this.press(field, Key.DOWN);
+		Assert.assertEquals("4", field.getText());
+		Assert.assertTrue(field.isFocused());
+	}
+
+	@Test
+	public void stepsByOneByDefault() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(5));
+		this.press(field, Key.DOWN);
+		Assert.assertEquals("4", field.getText());
+	}
+
+	@Test
+	public void stepsFromItsCorrectedValueWhileATypedTextIsOutOfBounds() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).value(42)).cursorPosition(2);
+		this.type(field, "5");
+		this.press(field, Key.DOWN);
+		Assert.assertEquals("99", field.getText());
+	}
+
+	@Test
+	public void stepsItsValueWithTheWheelOnlyWhenHovered() {
+		final IntegerFieldNode field = IntegerFieldNode.create(100D, 100D, 100D, 30D).min(0).max(10).value(5).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
+		this.bridges.open(new NodeUI(field));
+		this.bridges.move(500D, 500D).frames(2);
+		this.bridges.scroll(120);
+		Assert.assertEquals("5", field.getText());
+		this.bridges.move(150D, 110D).frames(2);
+		this.bridges.scroll(120);
+		Assert.assertEquals("6", field.getText());
+		this.bridges.scroll(-120);
+		this.bridges.scroll(-120);
+		Assert.assertEquals("4", field.getText());
+		Assert.assertFalse(field.isFocused());
+	}
+
+	@Test
+	public void commitsAPasteAtOnce() {
+		final List<String> changes = new ArrayList<>();
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).value(4).onChange((node, text, value, valid) -> changes.add(text))).cursorPosition(1);
+		this.bridges.getWindow().setClipboard("25");
+		this.control(field, Key.V);
+		Assert.assertEquals("100", field.getText());
+		Assert.assertEquals(Arrays.asList("425", "100"), changes);
+		this.bridges.getWindow().setClipboard("x1");
+		this.control(field, Key.V);
+		Assert.assertEquals("100", field.getText());
+	}
+
+	@Test
+	public void selectsItsWholeTextWhenReachedWithTab() {
+		final IntegerFieldNode first = IntegerFieldNode.create(0D, 0D, 100D, 30D).max(10).value(3).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
+		final TextFieldNode second = TextFieldNode.create(0D, 100D, 100D, 30D).text("hello").info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
+		this.bridges.open(new NodeUI(first, second));
+		first.focused(true).cursorPosition(1);
+		this.type(first, "5");
+		this.press(first, Key.TAB);
+		Assert.assertFalse(first.isFocused());
+		Assert.assertEquals("10", first.getText());
+		Assert.assertTrue(second.isFocused());
+		Assert.assertEquals(0, second.getSelectionStart());
+		Assert.assertEquals(5, second.getCursorPos());
+		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
+		second.keyPressed(' ', Key.TAB, InternalContext.create());
+		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
+		Assert.assertTrue(first.isFocused());
+		Assert.assertEquals(0, first.getSelectionStart());
+		Assert.assertEquals(2, first.getCursorPos());
+	}
+
+	@Test
+	public void placesItsCursorWhereClicked() {
+		final IntegerFieldNode field = IntegerFieldNode.create(100D, 100D, 200D, 30D).value(12345).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
+		this.bridges.open(new NodeUI(field));
+		this.bridges.move(124D, 110D).frames(2);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		Assert.assertTrue(field.isFocused());
+		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(-1, field.getSelectionStart());
+	}
+
+	@Test
+	public void restoresItsValueFromBeforeItsFocusOnEscape() {
+		final IntegerSignal signal = new IntegerSignal(4);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).signal(signal)).cursorPosition(1);
+		this.type(field, "21");
+		Assert.assertEquals(421, (int) signal.get());
+		this.press(field, Key.ESCAPE);
+		Assert.assertEquals("4", field.getText());
+		Assert.assertEquals(4, (int) signal.get());
+		Assert.assertFalse(field.isFocused());
 	}
 
 	@Test
@@ -172,21 +407,25 @@ public class IntegerFieldNodeTest {
 		Assert.assertEquals(100D, IntegerFieldNode.create(10D, 20D, 100D, 30D).getWidth(), 0D);
 	}
 
-	@Test
-	public void filtersWhatTheUserTypes() {
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(500).value(4).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).focused(true).cursorPosition(1);
-		field.keyPressed('2', Key.DIGIT_2, InternalContext.create());
-		field.keyPressed('x', Key.X, InternalContext.create());
-		Assert.assertEquals("42", field.getText());
-		field.keyPressed('9', Key.DIGIT_9, InternalContext.create());
-		Assert.assertEquals(429, (int) field.getValue());
-		field.keyPressed('9', Key.DIGIT_9, InternalContext.create());
-		Assert.assertEquals(500, (int) field.getValue());
+	private IntegerFieldNode focused(final IntegerFieldNode field) {
+		this.bridges.open(new NodeUI(field.info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F))));
+		return field.focused(true);
 	}
 
-	@Test
-	public void keepsANegativeValueInsideItsRange() {
-		Assert.assertEquals(-5, (int) IntegerFieldNode.create(0D, 0D, 100D).min(-10).max(10).value(-5).getValue());
+	private void press(final IntegerFieldNode field, final Key key) {
+		field.keyPressed(' ', key, InternalContext.create());
+	}
+
+	private void control(final IntegerFieldNode field, final Key key) {
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		this.press(field, key);
+		this.bridges.getWindow().getKeys().remove(Key.LEFT_CONTROL);
+	}
+
+	private void type(final IntegerFieldNode field, final String text) {
+		for (final char c : text.toCharArray()) {
+			field.keyPressed(c, Key.UNKNOWN, InternalContext.create());
+		}
 	}
 
 	public static final class NodeUI extends UI {

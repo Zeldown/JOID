@@ -49,7 +49,8 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(-1, field.getMaxTextLength());
 		Assert.assertEquals(0, field.getCursorPos());
 		Assert.assertEquals(-1, field.getSelectionStart());
-		Assert.assertEquals("abc", field.getFilter().apply("x", "abc"));
+		Assert.assertTrue(field.getAccept().test("abc"));
+		Assert.assertFalse(field.isAllowEmpty());
 		Assert.assertSame(Align.START, field.getHorizontalAlignment());
 		Assert.assertSame(Align.CENTER, field.getVerticalAlignment());
 	}
@@ -148,15 +149,15 @@ public class TextFieldNodeTest {
 	@Test
 	public void reportsEachChangeOfItsText() {
 		final List<Object> changes = new ArrayList<>();
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).onChange((node, oldText, newText) -> changes.addAll(Arrays.asList(node, oldText, newText)));
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).onChange((node, text, value, valid) -> changes.addAll(Arrays.asList(node, text, value, valid)));
 		field.text("ab").text("ab");
-		Assert.assertEquals(Arrays.asList(field, "", "ab"), changes);
+		Assert.assertEquals(Arrays.asList(field, "ab", "ab", true), changes);
 		Assert.assertEquals("ab", field.getText());
 	}
 
 	@Test
 	public void typesItsCallbacksByTheTypeInferredFromTheContext() {
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).onChange((node, oldText, newText) -> node.horizontalAlign(Align.END));
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).onChange((node, text, value, valid) -> node.horizontalAlign(Align.END));
 		final MultilineTextFieldNode notes = MultilineTextFieldNode.create(100D, 100D, 200D, 100D).placeholder("Notes").onFocus(node -> node.text("focused"));
 		field.text("ab");
 		notes.focused(true);
@@ -165,17 +166,43 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void passesEveryNewTextThroughItsFilter() {
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).filter((oldText, newText) -> oldText + newText.toUpperCase());
+	public void formatsAGivenTextAtOnce() {
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).format(String::toUpperCase);
 		Assert.assertEquals("AB", field.text("ab").getText());
-		Assert.assertEquals("ABCD", field.text("cd").getText());
+		Assert.assertEquals("CD", field.text("cd").getText());
 	}
 
 	@Test
-	public void filtersWhatIsTyped() {
-		final TextFieldNode field = this.field("ab").filter((oldText, newText) -> newText.toUpperCase()).cursorPosition(2);
+	public void formatsWhatIsTypedOnlyOnCommit() {
+		final List<Object> changes = new ArrayList<>();
+		final TextFieldNode field = this.field("ab").<TextFieldNode>format(String::toUpperCase).<TextFieldNode>onChange((node, text, value, valid) -> changes.addAll(Arrays.asList(text, value, valid))).cursorPosition(2);
 		this.type(field, "c");
+		Assert.assertEquals("abc", field.getText());
+		Assert.assertEquals("ABC", field.getValue());
+		this.press(field, Key.ENTER);
 		Assert.assertEquals("ABC", field.getText());
+		Assert.assertEquals(Arrays.asList("abc", "ABC", true, "ABC", "ABC", true), changes);
+	}
+
+	@Test
+	public void refusesWhatItsAcceptRefusesWithoutMovingItsCursor() {
+		final TextFieldNode field = this.field("ab").accept(text -> !text.contains("x")).cursorPosition(1);
+		this.type(field, "x");
+		Assert.assertEquals("ab", field.getText());
+		Assert.assertEquals(1, field.getCursorPos());
+		this.type(field, "c");
+		Assert.assertEquals("acb", field.getText());
+		Assert.assertEquals(2, field.getCursorPos());
+	}
+
+	@Test
+	public void reportsATextItsAcceptRefusesAsInvalid() {
+		final List<Boolean> valid = new ArrayList<>();
+		final TextFieldNode field = this.field("ab").<TextFieldNode>accept(text -> text.length() <= 3).onChange((node, text, value, accepted) -> valid.add(accepted));
+		field.text("abcd");
+		Assert.assertEquals("abcd", field.getText());
+		Assert.assertFalse(field.isValid());
+		Assert.assertEquals(Collections.singletonList(false), valid);
 	}
 
 	@Test
@@ -329,7 +356,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void dropsTheCharactersItCannotShow() {
 		final List<String> changes = new ArrayList<>();
-		final TextFieldNode field = this.field("ab").onChange((node, oldText, newText) -> changes.add(newText));
+		final TextFieldNode field = this.field("ab").onChange((node, text, value, valid) -> changes.add(text));
 		this.type(field, "\u0007\u001b\u007f€");
 		Assert.assertEquals("ab", field.getText());
 		Assert.assertTrue(changes.isEmpty());
@@ -601,14 +628,14 @@ public class TextFieldNodeTest {
 	@Test
 	public void ignoresAnEmptyClipboard() {
 		final List<String> changes = new ArrayList<>();
-		final TextFieldNode field = this.field("abc").onChange((node, oldText, newText) -> changes.add(newText));
+		final TextFieldNode field = this.field("abc").onChange((node, text, value, valid) -> changes.add(text));
 		this.control(field, Key.V);
 		Assert.assertEquals("abc", field.getText());
 		Assert.assertTrue(changes.isEmpty());
 	}
 
 	@Test
-	public void unfocusesAndReportsItsTextOnEnterAndEscape() {
+	public void unfocusesOnEnterAndEscapeButReportsOnlyEnter() {
 		final List<String> entered = new ArrayList<>();
 		final TextFieldNode field = this.field("hello").onEnter((node, text) -> entered.add(text));
 		for (final Key key : Arrays.asList(Key.ENTER, Key.NUMPAD_ENTER, Key.ESCAPE)) {
@@ -616,7 +643,20 @@ public class TextFieldNodeTest {
 			this.press(field, key);
 			Assert.assertFalse(field.isFocused());
 		}
-		Assert.assertEquals(Arrays.asList("hello", "hello", "hello"), entered);
+		Assert.assertEquals(Arrays.asList("hello", "hello"), entered);
+	}
+
+	@Test
+	public void restoresTheTextItHadBeforeItsFocusOnEscape() {
+		final Signal<String> signal = new Signal<>("hello");
+		final TextFieldNode field = this.field("").signal(signal).cursorPosition(5);
+		field.focused(false).focused(true);
+		this.type(field, " world");
+		Assert.assertEquals("hello world", signal.get());
+		this.press(field, Key.ESCAPE);
+		Assert.assertEquals("hello", field.getText());
+		Assert.assertEquals("hello", signal.get());
+		Assert.assertFalse(field.isFocused());
 	}
 
 	@Test
@@ -889,12 +929,13 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void bringsItsCursorBackToTheStartOfAFilteredText() {
-		final TextFieldNode field = this.selected(2, 3).filter((oldText, newText) -> newText.length() < oldText.length() ? "" : newText);
+	public void keepsItsSelectionWhenItsAcceptRefusesTheDeletion() {
+		final TextFieldNode field = this.selected(2, 3).accept(text -> text.length() > 5);
 		this.press(field, Key.BACKSPACE);
 		this.bridges.frame();
-		Assert.assertEquals("", field.getText());
-		Assert.assertEquals(0, field.getCursorPos());
+		Assert.assertEquals("abcdef", field.getText());
+		Assert.assertEquals(3, field.getCursorPos());
+		Assert.assertEquals(2, field.getSelectionStart());
 	}
 
 	@Test
@@ -944,13 +985,13 @@ public class TextFieldNodeTest {
 	@Test
 	public void reportsASingleChangeWhenTypingOverASelection() {
 		final List<String> changes = new ArrayList<>();
-		final TextFieldNode field = this.field("ab").filter((oldText, newText) -> newText.isEmpty() ? oldText : newText).onChange((node, oldText, newText) -> changes.add(oldText + ">" + newText));
+		final TextFieldNode field = this.field("ab").<TextFieldNode>accept(text -> !text.isEmpty()).onChange((node, text, value, valid) -> changes.add(text));
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		this.press(field, Key.A);
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_CONTROL);
 		field.keyPressed('c', Key.C, InternalContext.create());
 		Assert.assertEquals("c", field.getText());
-		Assert.assertEquals(Collections.singletonList("ab>c"), changes);
+		Assert.assertEquals(Collections.singletonList("c"), changes);
 	}
 
 	@Test
@@ -1019,7 +1060,7 @@ public class TextFieldNodeTest {
 	public void dropsTheCharactersItCannotShowFromEveryText() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).text("a\u00a7b\tc\u20ac\nd");
 		Assert.assertEquals("abcd", field.getText());
-		Assert.assertEquals("xy", field.filter((oldText, newText) -> "x\ty\u20ac").text("z").getText());
+		Assert.assertEquals("xy", field.format(text -> "x\ty\u20ac").text("z").getText());
 	}
 
 	@Test
@@ -1086,7 +1127,7 @@ public class TextFieldNodeTest {
 	public void bindsItsTextToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("hi");
-		final TextFieldNode field = this.field("").onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
+		final TextFieldNode field = this.field("").onChange((node, text, value, valid) -> changes.add(text)).signal(signal);
 		Assert.assertEquals("hi", field.getText());
 		this.type(field.cursorPosition(2), "!");
 		Assert.assertEquals("hi!", signal.get());

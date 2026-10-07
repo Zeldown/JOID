@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
@@ -16,15 +17,18 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
+@SuppressWarnings("unchecked")
 public class MultilineTextFieldNode extends FieldNode<String> {
 
-	private double yOffset;
+	private double                yOffset;
+	private UnaryOperator<String> formatter;
 
 	protected MultilineTextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
 		super.margin(2D);
 		super.cursorMargin(-1D);
+		this.formatter = UnaryOperator.identity();
 	}
 
 	public static @NonNull MultilineTextFieldNode create(final double x, final double y, final double width, final double height) {
@@ -135,6 +139,16 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	@Override
+	protected final String parse(final @NonNull String text) {
+		return this.formatter.apply(text);
+	}
+
+	@Override
+	protected final @NonNull String format(final @NonNull String value) {
+		return value;
+	}
+
+	@Override
 	protected final boolean isMultiline() {
 		return true;
 	}
@@ -198,6 +212,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 
 		if (key == Key.ESCAPE) {
+			super.restore();
 			super.focus(false);
 			return true;
 		}
@@ -289,9 +304,9 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 	}
 
-	@Override
-	public final @NonNull String getValue() {
-		return super.getText();
+	public final <T extends MultilineTextFieldNode> @NonNull T format(final @NonNull UnaryOperator<@NonNull String> formatter) {
+		this.formatter = formatter;
+		return (T) this;
 	}
 
 	private final double getRawWidth() {

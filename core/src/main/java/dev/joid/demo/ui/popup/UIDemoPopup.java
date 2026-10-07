@@ -28,7 +28,7 @@ public class UIDemoPopup extends UI {
 		.info(TextInfo.create(DemoFont.MONTSERRAT, 30, UIDemoPopup.INK))
 		.marginHorizontal(12D)
 		.placeholder("Placeholder")
-		.onChange((node, oldText, newText) -> System.out.println("[UIDemoPopup] popup field text: " + oldText + " -> " + newText))
+		.onChange((field, text, value, valid) -> System.out.println("[UIDemoPopup] popup field text: " + text))
 		.attach(this);
 	}
 

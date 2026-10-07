@@ -32,7 +32,7 @@ public class UIDemoTextField extends UIDemo {
 			.info(info)
 			.marginHorizontal(12D)
 			.placeholder("Placeholder")
-			.onChange((node, oldText, newText) -> System.out.println("[UIDemoTextField] text field: " + oldText + " -> " + newText))
+			.onChange((field, text, value, valid) -> System.out.println("[UIDemoTextField] text field: " + text))
 			.attach(rect);
 			TextNode.create(260, 315).text(Text.create("Text", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -47,7 +47,7 @@ public class UIDemoTextField extends UIDemo {
 			.info(info)
 			.margin(12D)
 			.placeholder("Placeholder")
-			.onChange((node, oldText, newText) -> System.out.println("[UIDemoTextField] multiline field: " + oldText + " -> " + newText))
+			.onChange((field, text, value, valid) -> System.out.println("[UIDemoTextField] multiline field: " + text))
 			.attach(rect);
 			TextNode.create(260, 315).text(Text.create("Multiline", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -93,6 +93,7 @@ public class UIDemoTextField extends UIDemo {
 			.info(info)
 			.marginHorizontal(12D)
 			.placeholder("Empty")
+			.allowEmpty(true)
 			.attach(rect);
 			TextNode.create(260, 315).text(Text.create("Empty integer", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

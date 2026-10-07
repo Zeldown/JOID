@@ -57,52 +57,52 @@ public class NodeTextFieldChangeCallbackTest {
 	@Test
 	public void runsAfterTheNodeAndConsumesTheContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeTextFieldChangeCallback<TextFieldNode> callback = (node, oldText, newText) -> received.addAll(Arrays.asList(node, oldText, newText));
+		final NodeTextFieldChangeCallback<TextFieldNode, String> callback = (node, text, value, valid) -> received.addAll(Arrays.asList(node, text, value, valid));
 		final TextFieldNode field = TextFieldNode.create(0D, 0D, 100D);
 		final InternalContext context = InternalContext.create();
-		callback.pre(field, context, "a", "ab");
+		callback.pre(field, context, "ab", "AB", false);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
-		callback.post(field, context, "a", "ab");
-		Assert.assertEquals(Arrays.asList(field, "a", "ab"), received);
+		callback.post(field, context, "ab", "AB", false);
+		Assert.assertEquals(Arrays.asList(field, "ab", "AB", false), received);
 		Assert.assertTrue(context.isCancelled());
 	}
 
 	@Test
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeTextFieldChangeCallback<TextFieldNode> callback = (node, oldText, newText) -> received.add(node);
-		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(true), "a", "ab");
+		final NodeTextFieldChangeCallback<TextFieldNode, String> callback = (node, text, value, valid) -> received.add(node);
+		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(true), "ab", "ab", true);
 		Assert.assertTrue(received.isEmpty());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingText() {
-		final NodeTextFieldChangeCallback<TextFieldNode> callback = (node, oldText, newText) -> {};
-		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(), null, "ab");
+		final NodeTextFieldChangeCallback<TextFieldNode, String> callback = (node, text, value, valid) -> {};
+		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(), null, "ab", true);
 	}
 
 	@Test
-	public void receivesTheTextsAroundATypedCharacter() {
+	public void receivesTheTextTheValueAndTheValidityOfATypedCharacter() {
 		final List<Object> received = new ArrayList<>();
-		final TextFieldNode field = this.field().onChange((node, oldText, newText) -> received.addAll(Arrays.asList(node, oldText, newText)));
-		final MultilineTextFieldNode multiline = this.multiline().onChange((node, oldText, newText) -> received.addAll(Arrays.asList(node, oldText, newText)));
+		final TextFieldNode field = this.field().onChange((node, text, value, valid) -> received.addAll(Arrays.asList(node, text, value, valid)));
+		final MultilineTextFieldNode multiline = this.multiline().onChange((node, text, value, valid) -> received.addAll(Arrays.asList(node, text, value, valid)));
 		this.bridges.open(new NodeUI(field, multiline));
 		field.keyPressed('c', Key.C, InternalContext.create());
 		multiline.keyPressed('d', Key.D, InternalContext.create());
-		Assert.assertEquals(Arrays.asList(field, "ab", "abc", multiline, "ab", "abd"), received);
+		Assert.assertEquals(Arrays.asList(field, "abc", "abc", true, multiline, "abd", "abd", true), received);
 	}
 
 	@Test
 	public void keepsTheTextWhenThePrePhaseConsumesTheChange() {
-		final TextFieldNode field = this.field().onChange(new NodeTextFieldChangeCallback<TextFieldNode>() {
+		final TextFieldNode field = this.field().onChange(new NodeTextFieldChangeCallback<TextFieldNode, String>() {
 
 			@Override
-			public void apply(final @NonNull TextFieldNode node, final @NonNull String oldText, final @NonNull String newText) {}
+			public void apply(final @NonNull TextFieldNode node, final @NonNull String text, final String value, final boolean valid) {}
 
 			@Override
 			@NodeCallbackMethod(Type.PRE)
-			public void pre(final @NonNull TextFieldNode node, final @NonNull InternalContext context, final @NonNull String oldText, final @NonNull String newText) {
+			public void pre(final @NonNull TextFieldNode node, final @NonNull InternalContext context, final @NonNull String text, final String value, final boolean valid) {
 				context.cancel();
 			}
 
@@ -115,14 +115,14 @@ public class NodeTextFieldChangeCallbackTest {
 
 	@Test
 	public void keepsTheTextOfAMultilineFieldWhenThePrePhaseConsumesTheChange() {
-		final MultilineTextFieldNode field = this.multiline().onChange(new NodeTextFieldChangeCallback<MultilineTextFieldNode>() {
+		final MultilineTextFieldNode field = this.multiline().onChange(new NodeTextFieldChangeCallback<MultilineTextFieldNode, String>() {
 
 			@Override
-			public void apply(final @NonNull MultilineTextFieldNode node, final @NonNull String oldText, final @NonNull String newText) {}
+			public void apply(final @NonNull MultilineTextFieldNode node, final @NonNull String text, final String value, final boolean valid) {}
 
 			@Override
 			@NodeCallbackMethod(Type.PRE)
-			public void pre(final @NonNull MultilineTextFieldNode node, final @NonNull InternalContext context, final @NonNull String oldText, final @NonNull String newText) {
+			public void pre(final @NonNull MultilineTextFieldNode node, final @NonNull InternalContext context, final @NonNull String text, final String value, final boolean valid) {
 				context.cancel();
 			}
 

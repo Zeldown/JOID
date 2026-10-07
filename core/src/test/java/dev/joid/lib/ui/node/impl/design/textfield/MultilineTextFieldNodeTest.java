@@ -95,7 +95,7 @@ public class MultilineTextFieldNodeTest {
 		Assert.assertEquals(-1, field.getMaxTextLength());
 		Assert.assertEquals(0, field.getCursorPos());
 		Assert.assertEquals(-1, field.getSelectionStart());
-		Assert.assertEquals("abc", field.getFilter().apply("x", "abc"));
+		Assert.assertTrue(field.getAccept().test("abc"));
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
 	}
 
@@ -174,16 +174,35 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void reportsEachChangeOfItsText() {
 		final List<Object> changes = new ArrayList<>();
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).onChange((node, oldText, newText) -> changes.addAll(Arrays.asList(node, oldText, newText)));
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).onChange((node, text, value, valid) -> changes.addAll(Arrays.asList(node, text, value, valid)));
 		field.text("a\nb").text("a\nb");
-		Assert.assertEquals(Arrays.asList(field, "", "a\nb"), changes);
+		Assert.assertEquals(Arrays.asList(field, "a\nb", "a\nb", true), changes);
 	}
 
 	@Test
-	public void passesEveryNewTextThroughItsFilter() {
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).filter((oldText, newText) -> oldText + newText.toUpperCase());
+	public void formatsAGivenTextAtOnce() {
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).format(String::toUpperCase);
 		Assert.assertEquals("AB", field.text("ab").getText());
-		Assert.assertEquals("ABCD", field.text("cd").getText());
+		Assert.assertEquals("CD\nE", field.text("cd\ne").getText());
+	}
+
+	@Test
+	public void refusesWhatItsAcceptRefusesWithoutMovingItsCursor() {
+		final MultilineTextFieldNode field = this.field("ab").accept(text -> !text.contains("\n\n")).cursorPosition(2);
+		this.press(field, Key.ENTER);
+		Assert.assertEquals("ab\n", field.getText());
+		this.press(field, Key.ENTER);
+		Assert.assertEquals("ab\n", field.getText());
+		Assert.assertEquals(3, field.getCursorPos());
+	}
+
+	@Test
+	public void restoresTheTextItHadBeforeItsFocusOnEscape() {
+		final MultilineTextFieldNode field = this.field("ab").cursorPosition(2);
+		this.type(field, "cd");
+		this.press(field, Key.ESCAPE);
+		Assert.assertEquals("ab", field.getText());
+		Assert.assertFalse(field.isFocused());
 	}
 
 	@Test
@@ -486,7 +505,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void ignoresAnEmptyClipboard() {
 		final List<String> changes = new ArrayList<>();
-		final MultilineTextFieldNode field = this.field("ab").onChange((node, oldText, newText) -> changes.add(newText));
+		final MultilineTextFieldNode field = this.field("ab").onChange((node, text, value, valid) -> changes.add(text));
 		this.control(field, Key.V);
 		Assert.assertEquals("ab", field.getText());
 		Assert.assertTrue(changes.isEmpty());
@@ -761,12 +780,13 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void bringsItsCursorBackToTheStartOfAFilteredText() {
-		final MultilineTextFieldNode field = this.selected("ab\ncd", 2, 3).filter((oldText, newText) -> newText.length() < oldText.length() ? "" : newText);
+	public void keepsItsSelectionWhenItsAcceptRefusesTheDeletion() {
+		final MultilineTextFieldNode field = this.selected("ab\ncd", 2, 3).accept(text -> text.contains("\n"));
 		this.press(field, Key.BACKSPACE);
 		this.bridges.frame();
-		Assert.assertEquals("", field.getText());
-		Assert.assertEquals(0, field.getCursorPos());
+		Assert.assertEquals("ab\ncd", field.getText());
+		Assert.assertEquals(3, field.getCursorPos());
+		Assert.assertEquals(2, field.getSelectionStart());
 	}
 
 	@Test
@@ -1060,11 +1080,11 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void reportsASingleChangeWhenTypingOverASelection() {
 		final List<String> changes = new ArrayList<>();
-		final MultilineTextFieldNode field = this.field("ab").filter((oldText, newText) -> newText.isEmpty() ? oldText : newText).onChange((node, oldText, newText) -> changes.add(oldText + ">" + newText));
+		final MultilineTextFieldNode field = this.field("ab").<MultilineTextFieldNode>accept(text -> !text.isEmpty()).onChange((node, text, value, valid) -> changes.add(text));
 		this.control(field, Key.A);
 		field.keyPressed('c', Key.C, InternalContext.create());
 		Assert.assertEquals("c", field.getText());
-		Assert.assertEquals(Collections.singletonList("ab>c"), changes);
+		Assert.assertEquals(Collections.singletonList("c"), changes);
 	}
 
 	@Test
@@ -1118,7 +1138,7 @@ public class MultilineTextFieldNodeTest {
 	public void dropsTheCharactersItCannotShowFromEveryText() {
 		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).text("a\u00a7b\tc\u20ac\nd");
 		Assert.assertEquals("abc\nd", field.getText());
-		Assert.assertEquals("x\ny", field.filter((oldText, newText) -> "x\r\ny\t").text("z").getText());
+		Assert.assertEquals("x\ny", field.format(text -> "x\r\ny\t").text("z").getText());
 	}
 
 	@Test
@@ -1185,7 +1205,7 @@ public class MultilineTextFieldNodeTest {
 	public void bindsItsTextToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("a\r\nb");
-		final MultilineTextFieldNode field = this.field("").onChange((node, oldText, newText) -> changes.add(newText)).signal(signal);
+		final MultilineTextFieldNode field = this.field("").onChange((node, text, value, valid) -> changes.add(text)).signal(signal);
 		Assert.assertEquals("a\nb", field.getText());
 		Assert.assertEquals("a\nb", signal.get());
 		this.press(field, Key.ENTER);

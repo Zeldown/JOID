@@ -100,7 +100,13 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	@Override
 	protected final boolean handleKey(final @NonNull Key key) {
-		if (key != Key.ENTER && key != Key.NUMPAD_ENTER && key != Key.ESCAPE) {
+		if (key == Key.ESCAPE) {
+			super.restore();
+			super.focus(false);
+			return true;
+		}
+
+		if (key != Key.ENTER && key != Key.NUMPAD_ENTER) {
 			return false;
 		}
 
