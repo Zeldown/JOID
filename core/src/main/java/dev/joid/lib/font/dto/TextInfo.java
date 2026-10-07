@@ -28,8 +28,8 @@ public final class TextInfo {
 	private boolean    italic;
 
 	private Color shadowColor;
-	private float shadowX;
-	private float shadowY;
+	private Float shadowX;
+	private Float shadowY;
 
 	private ITextMarkup[] markups;
 	private ITextEffect[] effects;
@@ -51,7 +51,7 @@ public final class TextInfo {
 	}
 
 	private TextInfo(final IFont font, final FontWeight weight, final float fontSize, final Color color) {
-		this(font, fontSize, weight, 0, 0, color, true, false, null, fontSize / 13.5F, fontSize / 13.5F, null, new ITextEffect[0]);
+		this(font, fontSize, weight, 0, 0, color, true, false, null, null, null, null, new ITextEffect[0]);
 	}
 
 	public final double getHeight() {
@@ -64,6 +64,14 @@ public final class TextInfo {
 
 	public final @NonNull TextStyle getStyle() {
 		return TextStyle.create(this.weight, this.italic, this.color, this.effects);
+	}
+
+	public final float getShadowX() {
+		return this.shadowX != null ? this.shadowX : this.fontSize / 13.5F;
+	}
+
+	public final float getShadowY() {
+		return this.shadowY != null ? this.shadowY : this.fontSize / 13.5F;
 	}
 
 	public final @NonNull List<ITextEffect> getEffects() {

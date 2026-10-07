@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.joid.lib.color.Color;
+import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.dto.FontBounds;
 import dev.joid.lib.font.dto.TextInfo;
@@ -47,7 +48,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 	}
 
 	public final @NonNull GlyphLayout<F> layout(final @NonNull String text, final @NonNull TextInfo info) {
-		final GlyphFont<F> font = (GlyphFont<F>) info.getFont();
+		final GlyphFont<F> font = this.getFont(info);
 		final List<ITextMarkup> markups = info.getMarkups();
 		final List<GlyphPlacement<F>> placements = new ArrayList<>();
 		final TextStyle style = info.getStyle().derive();
@@ -74,7 +75,8 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 			final int codepoint = text.codePointAt(index);
 			final int start = index;
 			index += Character.charCount(codepoint);
-			if (!face.hasGlyph(codepoint)) {
+			final boolean drawn = face.hasGlyph(codepoint);
+			if (!drawn && codepoint != ' ') {
 				continue;
 			}
 
@@ -83,7 +85,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 			}
 
 			placements.add(new GlyphPlacement<>(start, codepoint, face, pen, snapshot));
-			pen += face.getAdvance(codepoint) * size + spacing;
+			pen += (drawn ? face.getAdvance(codepoint) : 0.25F) * size + spacing;
 			previous = codepoint;
 		}
 
@@ -96,7 +98,16 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 	protected abstract void drawGlyph(final @NonNull TextGlyph<F> glyph);
 
 	private @NonNull F getFace(final @NonNull TextInfo info) {
-		return ((GlyphFont<F>) info.getFont()).getFace(info.getWeight(), info.isItalic());
+		return this.getFont(info).getFace(info.getWeight(), info.isItalic());
+	}
+
+	private @NonNull GlyphFont<F> getFont(final @NonNull TextInfo info) {
+		final IFont font = info.getFont();
+		if (!(font instanceof GlyphFont) || font.getFontProvider().getClass() != this.getClass()) {
+			throw new IllegalArgumentException(this.getClass().getName() + " cannot draw the font " + font.getClass().getName() + ", it is drawn by " + font.getFontProvider().getClass().getName() + ": draw it with info.getFont().getFontProvider()");
+		}
+
+		return (GlyphFont<F>) font;
 	}
 
 	private @NonNull FontBounds draw(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {

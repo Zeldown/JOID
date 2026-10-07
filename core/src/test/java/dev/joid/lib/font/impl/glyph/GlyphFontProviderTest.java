@@ -21,6 +21,7 @@ import dev.joid.lib.font.impl.glyph.dto.GlyphLayout;
 import dev.joid.lib.font.impl.glyph.dto.GlyphPlacement;
 import dev.joid.lib.font.impl.glyph.dto.IFontFace;
 import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
+import dev.joid.lib.font.impl.msdf.MsdfFontProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -243,6 +244,31 @@ public class GlyphFontProviderTest {
 		Assert.assertEquals(info.getWidth("AV"), info.getWidth("A#V"), 1E-6D);
 	}
 
+	@Test
+	public void advancesASpaceMissingFromTheFaceByAQuarterOfEm() {
+		final TextInfo info = GlyphFontProviderTest.info();
+		Assert.assertEquals(2.5D, info.getWidth(" "), 1E-6D);
+		Assert.assertEquals(12.5D, info.getWidth("A B"), 1E-6D);
+		Assert.assertEquals(7.5D, GlyphFontProviderTest.layout("A B", info).getPlacements().get(2).getX(), 1E-6D);
+	}
+
+	@Test
+	public void namesTheProviderOfAFontItCannotDraw() {
+		final IFontProvider other = MsdfFontProvider.inst();
+		try {
+			GlyphFontProviderTest.PROVIDER.getWidth("A", TextInfo.create(() -> other, 10F));
+			Assert.fail("A font of another provider must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith(Provider.class.getName() + " cannot draw the font "));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith(", it is drawn by " + other.getClass().getName() + ": draw it with info.getFont().getFontProvider()"));
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAGlyphFontOfAnotherProvider() {
+		MsdfFontProvider.inst().getWidth("A", GlyphFontProviderTest.info());
+	}
+
 	private static TextInfo info() {
 		return GlyphFontProviderTest.info(GlyphFontProviderTest.REGULAR, GlyphFontProviderTest.BOLD, GlyphFontProviderTest.ITALIC);
 	}
@@ -299,7 +325,7 @@ public class GlyphFontProviderTest {
 
 		@Override
 		public boolean hasGlyph(final int codepoint) {
-			return codepoint != '#';
+			return codepoint != '#' && codepoint != ' ';
 		}
 
 		@Override

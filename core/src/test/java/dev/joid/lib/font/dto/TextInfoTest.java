@@ -70,6 +70,22 @@ public class TextInfoTest {
 	}
 
 	@Test
+	public void derivesItsShadowOffsetFromItsCurrentSize() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 27F).shadow(Color.BLACK);
+		info.fontSize(54F);
+		Assert.assertEquals(4F, info.getShadowX(), 0F);
+		Assert.assertEquals(4F, info.getShadowY(), 0F);
+		Assert.assertEquals(2F, info.copy().fontSize(27F).getShadowX(), 0F);
+	}
+
+	@Test
+	public void keepsAnExplicitShadowOffsetWhateverItsSize() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 27F).shadow(3F, 4F).fontSize(54F);
+		Assert.assertEquals(3F, info.getShadowX(), 0F);
+		Assert.assertEquals(4F, info.getShadowY(), 0F);
+	}
+
+	@Test
 	public void scalesItsMeasures() {
 		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F);
 		Assert.assertEquals(20D, info.dw("abcd", 2D), 0D);

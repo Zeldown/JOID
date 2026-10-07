@@ -110,6 +110,20 @@ public class FontFamilyTest {
 	}
 
 	@Test
+	public void warnsOnceForEachWeightAndStyle() {
+		final FontFamily<Face> family = FontFamily.of(new Face(FontWeight.REGULAR, false), new Face(FontWeight.BOLD, true));
+		final String output = FontFamilyTest.capture(true, () -> {
+			family.resolve(FontWeight.SEMI_BOLD, false);
+			family.resolve(FontWeight.SEMI_BOLD, true);
+			family.resolve(FontWeight.SEMI_BOLD, true);
+		});
+		final String[] warnings = output.split("\\[JOID\\] ");
+		Assert.assertEquals(3, warnings.length);
+		Assert.assertTrue(warnings[1], warnings[1].startsWith("The font weight 600 is not loaded in the family of Test 400, 400 is drawn instead (loaded: 400 Test 400, 700 italic Test 700)"));
+		Assert.assertTrue(warnings[2], warnings[2].startsWith("The font weight 600 italic is not loaded in the family of Test 700, 700 italic is drawn instead (loaded: 400 Test 400, 700 italic Test 700)"));
+	}
+
+	@Test
 	public void pointsTheWarningAtTheOriginOfTheText() {
 		final FontFamily<Face> family = FontFamilyTest.family(400);
 		final StackTraceElement[] origin = {new StackTraceElement("com.example.Screen", "init", "Screen.java", 42)};

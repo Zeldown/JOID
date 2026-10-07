@@ -18,7 +18,7 @@ import lombok.NonNull;
 public final class FontFamily<F extends IFontFace> {
 
 	@Getter private final List<F> faces;
-	private final Set<FontWeight> warned = ConcurrentHashMap.newKeySet();
+	private final Set<String> warned = ConcurrentHashMap.newKeySet();
 
 	private FontFamily(final List<F> faces) {
 		this.faces = faces;
@@ -53,15 +53,15 @@ public final class FontFamily<F extends IFontFace> {
 		}
 
 		final F face = FontFamily.match(styled.isEmpty() ? this.faces : styled, weight.getValue());
-		if (face.getWeight() != weight && JOID.inst().isDevMode() && this.warned.add(weight)) {
-			this.warn(weight, face);
+		if (face.getWeight() != weight && JOID.inst().isDevMode() && this.warned.add(FontFamily.style(weight, italic))) {
+			this.warn(weight, italic, face);
 		}
 		return face;
 	}
 
-	private void warn(final @NonNull FontWeight weight, final @NonNull F face) {
-		final StringBuilder warning = new StringBuilder("[JOID] The font weight ").append(weight.getValue()).append(" is not loaded in the family of ").append(face.getName());
-		warning.append(", ").append(face.getWeight().getValue()).append(" is drawn instead (loaded: ").append(this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", "))).append(")");
+	private void warn(final @NonNull FontWeight weight, final boolean italic, final @NonNull F face) {
+		final StringBuilder warning = new StringBuilder("[JOID] The font weight ").append(FontFamily.style(weight, italic)).append(" is not loaded in the family of ").append(face.getName());
+		warning.append(", ").append(FontFamily.style(face.getWeight(), face.isItalic())).append(" is drawn instead (loaded: ").append(this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", "))).append(")");
 
 		final StackTraceElement[] origin = FontUsage.getOrigin();
 		for (final StackTraceElement element : origin != null ? origin : FontFamily.locate()) {
@@ -79,8 +79,12 @@ public final class FontFamily<F extends IFontFace> {
 		return Arrays.copyOfRange(trace, start, trace.length);
 	}
 
+	private static @NonNull String style(final @NonNull FontWeight weight, final boolean italic) {
+		return weight.getValue() + (italic ? " italic" : "");
+	}
+
 	private static @NonNull String describe(final @NonNull IFontFace face) {
-		return face.getWeight().getValue() + " " + face.getName();
+		return FontFamily.style(face.getWeight(), face.isItalic()) + " " + face.getName();
 	}
 
 	private static boolean closer(final int candidate, final int current, final int desired) {
