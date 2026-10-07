@@ -1,20 +1,38 @@
 ui dev.joid.demo.ui.textfield.UIDemoTextField
 wait 800
-move 400 260
+move 240 105
 wait 100
 press LEFT
 release LEFT
 wait 100
-type Hello, JOID! (1+1=2) ~ok?
-key LEFT_CONTROL+BACKSPACE
-key BACKSPACE
-type ok
-down LEFT_SHIFT
-key LEFT
-key LEFT
-up LEFT_SHIFT
-wait 200
-move 960 260
+type Hello JOID
+key TAB
+wait 100
+type <b>new</b> tags
+wait 100
+move 1320 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+type 1234567890
+wait 100
+move 1680 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+type abc123def
+wait 100
+move 240 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+type   shout  
+key ENTER
+wait 100
+move 1320 510
 wait 100
 press LEFT
 release LEFT
@@ -22,20 +40,58 @@ wait 100
 type multi line: [a] {b} <c> "d" #f %h ^i &j *k _l |m ~n
 key ENTER
 type second
-wait 200
-move 1730 260
+wait 100
+move 1790 505
 wait 100
 press LEFT
 release LEFT
 wait 100
-type 5
-wait 200
-move 890 615
+type  and <c=55ff55>green</c>
+wait 100
+move 240 785
 wait 100
 press LEFT
 release LEFT
 wait 100
+key END
+key BACKSPACE
+key BACKSPACE
+type 425
+key DOWN
+wait 100
+move 600 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+key END
 type 3
+wait 100
+move 960 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+type 12
+key ENTER
+wait 100
+move 1320 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+key ENTER
+wait 100
+move 1320 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1680 785
+wait 100
+press LEFT
+release LEFT
+wait 100
 wait 300
 shot inter-textfield
 ui dev.joid.demo.ui.slider.UIDemoSlider

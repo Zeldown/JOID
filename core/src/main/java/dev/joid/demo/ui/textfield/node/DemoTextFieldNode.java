@@ -23,7 +23,7 @@ public class DemoTextFieldNode extends TextFieldNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.copyAlpha(super.isEnabled() ? 1F : 0.4F));
 		if (super.isFocused()) {
 			DrawUtils.SHAPE.drawFilledBorder(super.getX(), super.getY(), super.getX() + super.getWidth(), super.getY() + super.getHeight(), DemoTextFieldNode.INK, 2D);
 		}
