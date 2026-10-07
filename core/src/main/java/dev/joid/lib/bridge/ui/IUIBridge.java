@@ -21,7 +21,6 @@ public interface IUIBridge extends IBridge {
 	public boolean canHandle(final @NonNull UI ui);
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz);
 
-	@NonNull public IUIBridge getInstance();
 	@NonNull public IndexedList<@NonNull UI> getUiList();
 
 	public default double getInterfaceScale(final @NonNull UI ui) {

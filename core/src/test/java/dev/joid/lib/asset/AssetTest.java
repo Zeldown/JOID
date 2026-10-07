@@ -59,7 +59,6 @@ public class AssetTest {
 		final Asset asset = Asset.of(AssetTest.file);
 		Assert.assertTrue(asset instanceof FileAsset);
 		Assert.assertEquals(AssetTest.file.getAbsolutePath(), asset.getUniqueId());
-		Assert.assertTrue(asset.isReopenable());
 		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
 		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
 	}
@@ -68,7 +67,6 @@ public class AssetTest {
 	public void locatesAStream() throws IOException {
 		final Asset asset = Asset.of(new ByteArrayInputStream(AssetTest.CONTENT));
 		Assert.assertTrue(asset instanceof StreamAsset);
-		Assert.assertFalse(asset.isReopenable());
 		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
 	}
 
@@ -96,10 +94,8 @@ public class AssetTest {
 	}
 
 	@Test
-	public void isLocalAndReopenableByDefault() {
-		final Asset asset = new HandleAsset();
-		Assert.assertFalse(asset.isRemote());
-		Assert.assertTrue(asset.isReopenable());
+	public void isLocalByDefault() {
+		Assert.assertFalse(new HandleAsset().isRemote());
 	}
 
 	@Test

@@ -26,11 +26,6 @@ public final class StreamAsset extends Asset {
 	}
 
 	@Override
-	public boolean isReopenable() {
-		return false;
-	}
-
-	@Override
 	public @NonNull byte[] peek(final int length) {
 		final byte[] header = new byte[length];
 		try {

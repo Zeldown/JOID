@@ -130,11 +130,6 @@ public class UIBridgeRegistryTest {
 		}
 
 		@Override
-		public @NonNull IUIBridge getInstance() {
-			return this;
-		}
-
-		@Override
 		public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {}
 
 	}

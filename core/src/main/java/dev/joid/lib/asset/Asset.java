@@ -27,10 +27,6 @@ public abstract class Asset {
 		return false;
 	}
 
-	public boolean isReopenable() {
-		return true;
-	}
-
 	public @NonNull byte[] peek(final int length) {
 		final byte[] header = new byte[length];
 		try (InputStream stream = this.open()) {

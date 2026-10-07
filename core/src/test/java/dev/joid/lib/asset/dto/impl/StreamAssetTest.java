@@ -35,10 +35,8 @@ public class StreamAssetTest {
 	}
 
 	@Test
-	public void isLocalButNotReopenable() {
-		final StreamAsset asset = StreamAsset.create(new ByteArrayInputStream(StreamAssetTest.CONTENT));
-		Assert.assertFalse(asset.isRemote());
-		Assert.assertFalse(asset.isReopenable());
+	public void isLocal() {
+		Assert.assertFalse(StreamAsset.create(new ByteArrayInputStream(StreamAssetTest.CONTENT)).isRemote());
 	}
 
 	@Test

@@ -49,7 +49,6 @@ public class UrlAssetTest {
 		Assert.assertEquals("https://example.invalid/image.png", asset.getUrl());
 		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());
 		Assert.assertTrue(asset.isRemote());
-		Assert.assertTrue(asset.isReopenable());
 	}
 
 	@Test

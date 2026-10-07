@@ -42,10 +42,8 @@ public class FileAssetTest {
 	}
 
 	@Test
-	public void isLocalAndReopenable() {
-		final FileAsset asset = FileAsset.create(new File("image.png"));
-		Assert.assertFalse(asset.isRemote());
-		Assert.assertTrue(asset.isReopenable());
+	public void isLocal() {
+		Assert.assertFalse(FileAsset.create(new File("image.png")).isRemote());
 	}
 
 	@Test(expected = FileNotFoundException.class)

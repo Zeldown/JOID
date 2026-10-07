@@ -42,13 +42,13 @@ public abstract class UIBridge implements IUIBridge {
 		}
 	}
 
-	public final void mouseDragged(final @NonNull ClickType clickType, final long delaTime) {
+	public final void mouseDragged(final @NonNull ClickType clickType, final long deltaTime) {
 		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
 			if (!ui.getData().active() || !ui.getData().visible()) {
 				continue;
 			}
 
-			if (ui.onMouseDragged(clickType, delaTime) || ui.getPopup().active()) {
+			if (ui.onMouseDragged(clickType, deltaTime) || ui.getPopup().active()) {
 				break;
 			}
 		}

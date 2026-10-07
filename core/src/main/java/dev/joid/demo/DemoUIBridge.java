@@ -4,7 +4,6 @@ import java.util.List;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -115,11 +114,6 @@ public class DemoUIBridge extends UIBridge {
 	@Override
 	public int getIndex() {
 		return 0;
-	}
-
-	@Override
-	public @NonNull IUIBridge getInstance() {
-		return this;
 	}
 
 }
