@@ -472,7 +472,7 @@ public class MsdfFontProviderTest {
 		glyphs.put((int) 'A', new MsdfGlyph('A', 0.625F, new MsdfBounds(0.0625F, -0.125F, 0.5625F, 0.75F), new MsdfBounds(8F, 8F, 24F, 32F)));
 		glyphs.put((int) 'x', new MsdfGlyph('x', 0.5F, new MsdfBounds(0F, 0F, 0.5F, 0.578125F), new MsdfBounds(32F, 8F, 48F, 24F)));
 		glyphs.put((int) ' ', new MsdfGlyph(' ', 0.25F, null, null));
-		return MsdfFontFace.create(new MsdfAtlas(range, 32F, 64, 64), new MsdfMetrics(1.25F, 1F, -0.25F, -0.125F, 0.0625F), glyphs, Collections.singletonMap(MsdfFontFace.pair('A', 'x'), -0.0625F), new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB), "Sample", weight, false);
+		return MsdfFontFace.create(new MsdfAtlas(64, 64, 32F, range), new MsdfMetrics(1.25F, 1F, -0.25F, -0.125F, 0.0625F), glyphs, Collections.singletonMap(MsdfFontFace.pair('A', 'x'), -0.0625F), new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB), "Sample", weight, false);
 	}
 
 }

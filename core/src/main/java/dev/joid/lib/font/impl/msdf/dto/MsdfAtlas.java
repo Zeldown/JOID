@@ -7,9 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MsdfAtlas {
 
-	private final float distanceRange;
+	private final int   width;
+	private final int   height;
 	private final float size;
-	private final int width;
-	private final int height;
+	private final float distanceRange;
 
 }

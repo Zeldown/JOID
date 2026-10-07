@@ -66,7 +66,9 @@ public final class MsdfBinarySource extends MsdfSource {
 		final String name = input.readUTF();
 		final int width = input.readInt();
 		final int height = input.readInt();
-		final MsdfAtlas atlas = new MsdfAtlas(input.readFloat(), input.readFloat(), width, height);
+		final float distanceRange = input.readFloat();
+		final float size = input.readFloat();
+		final MsdfAtlas atlas = new MsdfAtlas(width, height, size, distanceRange);
 		final MsdfMetrics metrics = new MsdfMetrics(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
 
 		final int glyphCount = input.readInt();
