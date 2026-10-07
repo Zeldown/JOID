@@ -1,5 +1,6 @@
 package dev.joid.impl.lwjgl2.render.shader.uniform;
 
+import dev.joid.impl.lwjgl2.render.shader.Shader;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public abstract class ShaderUniform implements dev.joid.lib.bridge.render.shader.uniform.ShaderUniform {
 
-	private final int location;
+	private final Shader shader;
+	private final int    location;
 
 }

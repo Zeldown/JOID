@@ -16,23 +16,21 @@ import lombok.NonNull;
 @Getter
 public final class SamplerUniform extends ShaderUniform implements dev.joid.lib.bridge.render.shader.uniform.SamplerUniform {
 
-	private final int    unit;
-	private final Shader shader;
+	private final int unit;
 
 	private Texture       texture;
 	private TextureWrap   wrap;
 	private int           previousTexture;
 	private TextureFilter filter;
 
-	public SamplerUniform(final int location, final int unit, final Shader shader) {
-		super(location);
-		this.unit   = unit;
-		this.shader = shader;
+	public SamplerUniform(final Shader shader, final int location, final int unit) {
+		super(shader, location);
+		this.unit = unit;
 	}
 
 	@Override
 	public void setValue(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
-		if (this.shader.isBound()) {
+		if (super.getShader().isBound()) {
 			this.unbind();
 		}
 
@@ -40,7 +38,7 @@ public final class SamplerUniform extends ShaderUniform implements dev.joid.lib.
 		this.filter  = filter;
 		this.wrap    = wrap;
 
-		if (this.shader.isBound()) {
+		if (super.getShader().isBound()) {
 			this.bind();
 		}
 	}

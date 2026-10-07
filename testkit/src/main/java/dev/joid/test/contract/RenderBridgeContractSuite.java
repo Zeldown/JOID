@@ -14,6 +14,7 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.ITexture;
@@ -88,6 +89,40 @@ public abstract class RenderBridgeContractSuite {
 			final IShader shader = BridgeHandler.RENDER.get().createShader(CoreShaders.read(name, ShaderStage.VERTEX), CoreShaders.read(name, ShaderStage.FRAGMENT), BlendState.NORMAL);
 			Assert.assertTrue("The " + name + " shader does not compile", shader.isActive());
 		}
+	}
+
+	@Test
+	public void appliesTheUniformsSetBeforeTheShaderIsBound() {
+		final IShader shader = RenderBridgeContractSuite.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
+		shader.getFloat4Uniform("tint").setValue(0F, 1F, 0F, 1F);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			shader.bind();
+			try {
+				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			} finally {
+				shader.unbind();
+			}
+		});
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+	}
+
+	@Test
+	public void readsTheLightingOfEachDraw() {
+		final IShader shader = RenderBridgeContractSuite.shader("void main() {\n    fragColor = uLighting ? vec4(0.0, 1.0, 0.0, 1.0) : vec4(1.0, 0.0, 0.0, 1.0);\n}");
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			shader.bind();
+			try {
+				bridge.lighting(true);
+				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
+				bridge.lighting(false);
+				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
+			} finally {
+				bridge.lighting(false);
+				shader.unbind();
+			}
+		});
+		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.GREEN);
+		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.RED);
 	}
 
 	@Test
@@ -309,6 +344,11 @@ public abstract class RenderBridgeContractSuite {
 		final SnapshotImage image = RenderBridgeContractSuite.backend.capture(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		RenderBridgeContractSuite.backend.present();
 		return image;
+	}
+
+	private static IShader shader(final String fragment) {
+		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}");
+		return BridgeHandler.RENDER.get().createShader(vertex, ShaderSource.parse(ShaderStage.FRAGMENT, fragment), BlendState.NORMAL);
 	}
 
 	private static void drawInDepth(final IRenderBridge bridge, final boolean clearBetween) {

@@ -2,16 +2,18 @@ package dev.joid.impl.lwjgl2.render.shader.uniform;
 
 import org.lwjgl.opengl.GL20;
 
+import dev.joid.impl.lwjgl2.render.shader.Shader;
 
 public final class IntUniform extends ShaderUniform implements dev.joid.lib.bridge.render.shader.uniform.IntUniform {
 
-	public IntUniform(final int location) {
-		super(location);
+	public IntUniform(final Shader shader, final int location) {
+		super(shader, location);
 	}
 
 	@Override
 	public void setValue(final int value) {
-		GL20.glUniform1i(super.getLocation(), value);
+		final int location = super.getLocation();
+		super.getShader().queueUniform(location, () -> GL20.glUniform1i(location, value));
 	}
 
 }

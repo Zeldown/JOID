@@ -32,17 +32,19 @@ public final class Shader implements IShader {
 	private final boolean                     active;
 	private final BlendState                  blend;
 	private final Map<String, Integer>        locationMap;
+	private final Map<Integer, Runnable>      uniformQueue;
 	private final Map<String, SamplerUniform> samplerMap;
 
 	private boolean       bound;
 	private BlendSnapshot previousBlend;
 
 	private Shader(final int program, final BlendState blend, final boolean active) {
-		this.samplerMap  = new HashMap<>();
-		this.locationMap = new HashMap<>();
-		this.program     = program;
-		this.blend       = blend;
-		this.active      = active;
+		this.samplerMap   = new HashMap<>();
+		this.locationMap  = new HashMap<>();
+		this.uniformQueue = new HashMap<>();
+		this.program      = program;
+		this.blend        = blend;
+		this.active       = active;
 	}
 
 	public static @NonNull Shader create(final String vertex, final String fragment, final BlendState blend) {
@@ -61,6 +63,10 @@ public final class Shader implements IShader {
 		return shader != null ? shader : new Shader(program, null, true);
 	}
 
+	public static Shader current() {
+		return Shader.SHADER_MAP.get(GL11.glGetInteger(GL20.GL_CURRENT_PROGRAM));
+	}
+
 	@Override
 	public void bind() {
 		this.previousBlend = BlendSnapshot.capture();
@@ -70,11 +76,6 @@ public final class Shader implements IShader {
 		}
 
 		this.samplerMap.values().forEach(SamplerUniform::bind);
-
-		final int lighting = this.getLocation("uLighting");
-		if (lighting != -1) {
-			GL20.glUniform1i(lighting, GL11.glIsEnabled(GL11.GL_LIGHTING) ? 1 : 0);
-		}
 
 		this.bound = true;
 	}
@@ -91,58 +92,74 @@ public final class Shader implements IShader {
 		this.bound = false;
 	}
 
+	public void queueUniform(final int location, final Runnable upload) {
+		if (location != -1) {
+			this.uniformQueue.put(location, upload);
+		}
+	}
+
+	public void use() {
+		this.uniformQueue.values().forEach(Runnable::run);
+		this.uniformQueue.clear();
+
+		final int lighting = this.getLocation("uLighting");
+		if (lighting != -1) {
+			GL20.glUniform1i(lighting, GL11.glIsEnabled(GL11.GL_LIGHTING) ? 1 : 0);
+		}
+	}
+
 	public int getLocation(final String name) {
 		return this.locationMap.computeIfAbsent(name, key -> GL20.glGetUniformLocation(this.program, key));
 	}
 
 	@Override
 	public @NonNull IntUniform getIntUniform(final @NonNull String name) {
-		return new IntUniform(this.getLocation(name));
+		return new IntUniform(this, this.getLocation(name));
 	}
 
 	@Override
 	public @NonNull FloatUniform getFloatUniform(final @NonNull String name) {
-		return new FloatUniform(this.getLocation(name));
+		return new FloatUniform(this, this.getLocation(name));
 	}
 
 	@Override
 	public @NonNull Float2Uniform getFloat2Uniform(final @NonNull String name) {
-		return new Float2Uniform(this.getLocation(name));
+		return new Float2Uniform(this, this.getLocation(name));
 	}
 
 	@Override
 	public @NonNull Float3Uniform getFloat3Uniform(final @NonNull String name) {
-		return new Float3Uniform(this.getLocation(name));
+		return new Float3Uniform(this, this.getLocation(name));
 	}
 
 	@Override
 	public @NonNull Float4Uniform getFloat4Uniform(final @NonNull String name) {
-		return new Float4Uniform(this.getLocation(name));
+		return new Float4Uniform(this, this.getLocation(name));
 	}
 
 	@Override
 	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
-		return new BooleanUniform(this.getLocation(name));
+		return new BooleanUniform(this, this.getLocation(name));
 	}
 
 	@Override
 	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
-		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform(this.getLocation(key), this.samplerMap.size() + 1, this));
+		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform(this, this.getLocation(key), this.samplerMap.size() + 1));
 	}
 
 	@Override
 	public @NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name) {
-		return new FloatArrayUniform(this.getLocation(name));
+		return new FloatArrayUniform(this, this.getLocation(name));
 	}
 
 	@Override
 	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name) {
-		return new Float4ArrayUniform(this.getLocation(name));
+		return new Float4ArrayUniform(this, this.getLocation(name));
 	}
 
 	@Override
 	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name) {
-		return new FloatMatrixUniform(this.getLocation(name));
+		return new FloatMatrixUniform(this, this.getLocation(name));
 	}
 
 	private static boolean link(final int program, final String vertexSource, final String fragmentSource) {

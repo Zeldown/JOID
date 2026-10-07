@@ -287,6 +287,11 @@ public final class RenderBridge implements IRenderBridge {
 
 	@Override
 	public void draw(final @NonNull DrawMode mode, final @NonNull VertexBuffer buffer) {
+		final Shader shader = Shader.current();
+		if (shader != null) {
+			shader.use();
+		}
+
 		final ByteBuffer data = buffer.getBuffer();
 		if (buffer.isTexture()) {
 			data.position(VertexBuffer.TEXTURE_OFFSET);
