@@ -104,6 +104,9 @@ public class DraggableProperty {
 			boundHeight = area[3];
 			break;
 		case PARENT:
+			if (node.getParent() == null) {
+				throw new IllegalStateException("The node " + node.getClass().getSimpleName() + " is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()");
+			}
 			boundX = node.getParent().getAbsoluteX();
 			boundY = node.getParent().getAbsoluteY();
 			boundWidth = node.getParent().getWidth();

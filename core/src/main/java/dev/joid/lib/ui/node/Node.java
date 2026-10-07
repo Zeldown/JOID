@@ -464,7 +464,7 @@ public abstract class Node implements INode {
 						this.targetDragY = this.getAbsoluteY();
 					}
 
-					if (this.draggable.getAreaType() != DraggableAreaType.FREE && (this.dragging || this.draggable.getType() == DraggableType.MOVE)) {
+					if (this.draggable.getAreaType() != DraggableAreaType.FREE && (this.draggable.getAreaType() != DraggableAreaType.PARENT || this.parent != null) && (this.dragging || this.draggable.getType() == DraggableType.MOVE)) {
 						final double[] bounds = this.draggable.getBounds(this);
 						final double boundX = bounds[0];
 						final double boundY = bounds[1];
@@ -1091,6 +1091,7 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T startDragging(final double mouseX, final double mouseY) {
 		this.checkDraggable();
+		this.checkDragArea();
 		this.fireDragStart(() -> {
 			this.dragging = true;
 			this.dragX = mouseX - this.getAbsoluteX();
@@ -1780,6 +1781,12 @@ public abstract class Node implements INode {
 	private void checkDraggable() {
 		if (this.draggable == null) {
 			throw new IllegalStateException("The node " + this.getClass().getSimpleName() + " has no DraggableProperty, call draggable(...) first");
+		}
+	}
+
+	private void checkDragArea() {
+		if (this.draggable.getAreaType() == DraggableAreaType.PARENT && this.parent == null) {
+			throw new IllegalStateException("The node " + this.getClass().getSimpleName() + " is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()");
 		}
 	}
 

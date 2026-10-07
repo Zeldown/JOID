@@ -1630,6 +1630,20 @@ public class NodeTest {
 	}
 
 	@Test
+	public void refusesToDragATopLevelNodeInsideItsParent() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.parent());
+		try {
+			this.press(node, 110D, 110D);
+			Assert.fail("A top level node has no parent to be dragged inside");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The node RectNode is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()", expected.getMessage());
+		}
+		Assert.assertFalse(node.isDragging());
+		this.bridges.frames(2);
+		Assert.assertEquals(100D, node.getX(), 0D);
+	}
+
+	@Test
 	public void appendsItsChildrenInOneCall() {
 		final List<Node> appended = new ArrayList<>();
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).onAppend((container, child) -> appended.add(child));

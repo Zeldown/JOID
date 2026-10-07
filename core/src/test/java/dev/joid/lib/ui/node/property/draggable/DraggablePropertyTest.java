@@ -56,6 +56,16 @@ public class DraggablePropertyTest {
 	}
 
 	@Test
+	public void explainsThatANodeWithoutParentHasNoParentArea() {
+		try {
+			DraggableProperty.parent().getBounds(RectNode.create(10D, 10D, 20D, 20D));
+			Assert.fail("A node without parent has no parent area");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The node RectNode is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void staysInsideAnotherNode() {
 		final RectNode parent = RectNode.create(100D, 50D, 300D, 200D);
 		final RectNode area = RectNode.create(10D, 20D, 80D, 60D);
