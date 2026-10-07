@@ -8,11 +8,13 @@ import lombok.NonNull;
 
 public class DemoScrollbarNode extends ScrollbarNode {
 
-	private DemoScrollbarNode(final double x, final double y, final double width, final double height, final @NonNull BoundingBox scroll) {
+	private static final Color INK = new Color(153, 153, 153);
+
+	protected DemoScrollbarNode(final double x, final double y, final double width, final double height, final @NonNull BoundingBox scroll) {
 		super(x, y, width, height, scroll);
 	}
 
-	public static final @NonNull DemoScrollbarNode create(final double x, final double y, final double width,final double height, final @NonNull BoundingBox scroll) {
+	public static @NonNull DemoScrollbarNode create(final double x, final double y, final double width, final double height, final @NonNull BoundingBox scroll) {
 		return new DemoScrollbarNode(x, y, width, height, scroll);
 	}
 
@@ -20,7 +22,7 @@ public class DemoScrollbarNode extends ScrollbarNode {
 	public void drawScrollbar(final double mouseX, final double mouseY) {
 		final BoundingBox scroll = super.getScroll();
 		DrawUtils.SHAPE.drawRect(scroll.getMinX(), scroll.getMinY(), scroll.getWidth(), scroll.getHeight(), Color.WHITE);
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.BLUE);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DemoScrollbarNode.INK);
 	}
 
 }

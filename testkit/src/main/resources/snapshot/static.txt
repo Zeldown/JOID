@@ -24,9 +24,9 @@ wait 3500
 shot static-UIDemoMarkup
 wait 400
 shot static-UIDemoMarkup-later
-ui dev.joid.demo.ui.flex.UIDemoFlex
+ui dev.joid.demo.ui.layout.UIDemoLayout
 wait 3500
-shot static-UIDemoFlex
+shot static-UIDemoLayout
 ui dev.joid.demo.ui.reorderable.UIDemoReorderable
 wait 3500
 shot static-UIDemoReorderable
@@ -45,9 +45,6 @@ shot static-UIDemoTextField
 ui dev.joid.demo.ui.selector.UIDemoSelector
 wait 3500
 shot static-UIDemoSelector
-ui dev.joid.demo.ui.grid.UIDemoGrid
-wait 3500
-shot static-UIDemoGrid
 ui dev.joid.demo.ui.slider.UIDemoSlider
 wait 3500
 shot static-UIDemoSlider

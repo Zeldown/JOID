@@ -257,21 +257,128 @@ release LEFT
 wait 100
 wait 600
 shot inter-selector
+ui dev.joid.demo.ui.layout.UIDemoLayout
+wait 800
+move 160 555
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 520 555
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 520 555
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 520 555
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1040 555
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1680 940
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 600
+shot inter-layout
 ui dev.joid.demo.ui.overflow.UIDemoOverflow
 wait 800
-move 960 330
+move 300 160
+wait 100
+scroll -120
+scroll -120
+scroll -120
+wait 300
+move 740 160
+wait 100
+scroll -120
+scroll -120
+scroll -120
+wait 300
+move 1180 160
+wait 100
+scroll -120
+scroll -120
+scroll -120
+wait 300
+move 1030 254
+wait 100
+press LEFT
+moveto 1200 254 400
+wait 200
+release LEFT
+wait 400
+move 474 420
+wait 100
+press LEFT
+moveto 474 540 400
+wait 200
+release LEFT
+wait 400
+move 590 594
+wait 100
+press LEFT
+moveto 800 594 400
+wait 200
+release LEFT
+wait 400
+move 1180 500
+wait 100
+scroll -120
+scroll -120
+wait 300
+move 1740 495
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 300 820
 wait 100
 scroll -120
 scroll -120
 scroll -120
 scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+wait 300
+move 740 810
+wait 100
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+scroll -120
+wait 300
+move 1180 790
+wait 100
+scroll -120
+scroll -120
+scroll -120
+wait 300
 wait 1200
 shot inter-overflow
 ui dev.joid.demo.ui.overflow.UIDemoOverflow
-move 960 330
+move 1600 820
 wait 16
-scroll -120
-scroll -120
 scroll -120
 scroll -120
 wait 1200
@@ -366,12 +473,55 @@ wait 1200
 shot inter-draggable
 ui dev.joid.demo.ui.reorderable.UIDemoReorderable
 wait 800
-move 480 130
+move 300 76
 wait 100
 press LEFT
-moveto 480 330 700
-wait 300
+moveto 300 250 700
+wait 800
 release LEFT
+wait 400
+move 580 77
+wait 100
+press LEFT
+moveto 580 200 400
+wait 200
+release LEFT
+wait 400
+move 1100 77
+wait 100
+press LEFT
+moveto 1100 200 400
+wait 200
+release LEFT
+wait 400
+move 1600 77
+wait 100
+press LEFT
+moveto 1600 200 400
+wait 200
+release LEFT
+wait 400
+move 205 510
+wait 100
+press LEFT
+moveto 600 510 700
+wait 200
+release LEFT
+wait 400
+move 1085 430
+wait 100
+press LEFT
+moveto 1450 430 700
+wait 200
+release LEFT
+wait 400
+move 1180 757
+wait 100
+press LEFT
+moveto 1180 860 400
+wait 200
+release LEFT
+wait 400
 wait 1500
 shot inter-reorderable
 ui dev.joid.demo.ui.simple.UIDemoSimple

@@ -187,7 +187,7 @@ public class UIDemoDraggable extends UIDemo {
 			.body(grip)
 			.draggable(DraggableProperty.free())
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Front wins", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Overlap: front only", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
