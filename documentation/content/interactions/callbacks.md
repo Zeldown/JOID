@@ -249,7 +249,7 @@ Some nodes add their own callbacks. They follow the same PRE/POST rules.
 | [SwitchNode](../nodes/input/switch.md) | `onChange` | `NodeSwitchChangeCallback<T>` | `(node, value)` | The state changes: `index(...)`, `state(...)` or bound signal. |
 | [SelectorNode](../nodes/input/selector.md) | `onChange` | `NodeSelectorChangeCallback<T, V>` | `(node, value)` | The selected value changes: click, `value(...)`, `values(...)` or bound signal. |
 | [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onPlay`, `onPause`, `onStop`, `onEnd` | `NodeResourcePlayerPlayCallback<T>`, `NodeResourcePlayerPauseCallback<T>`, `NodeResourcePlayerStopCallback<T>`, `NodeResourcePlayerEndCallback<T>` | `(node)` | Playback starts, is paused, stops (`stop()` or end of the resource), reaches the end of the resource. |
-| [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onProgress` | `NodeResourcePlayerProgressCallback<T>` | `(node, progress, currentTime)` | The progress changes while playing. |
+| [ResourcePlayerNode](../nodes/visual/resource-player.md) | `onProgress` | `NodeResourcePlayerProgressCallback<T>` | `(node, progress, currentTime)` | The progress changes: while playing, or after a seek. |
 | [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | `onReorderStart`, `onReorder` | `NodeReorderStartCallback`, `NodeReorderCallback` | `(node, child)` | A child starts moving, moves. |
 | [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | `onReorderEnd` | `NodeReorderEndCallback` | `(node, child, oldIndex, newIndex)` | The moved child is dropped. |
 

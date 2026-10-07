@@ -68,6 +68,17 @@ public class NodeResourcePlayerProgressCallbackTest {
 		Assert.assertEquals(2, received.size());
 	}
 
+	@Test
+	public void reportsASeekWhilePaused() {
+		final List<Double> received = new ArrayList<>();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(NodeResourcePlayerProgressCallbackTest.blink()).onProgress((node, progress, currentTime) -> received.add(progress));
+		this.bridges.open(new NodeUI(player)).frames(2);
+		player.pause().seekTo(0.18D);
+		this.bridges.frames(10);
+		Assert.assertEquals(3, received.size());
+		Assert.assertEquals(0.75D, received.get(2), 1E-9D);
+	}
+
 	private static Resource blink() {
 		return ResourceBuilder.create().cache(null).of(NodeResourcePlayerProgressCallbackTest.class.getResourceAsStream("/animation/blink.png"));
 	}

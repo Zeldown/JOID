@@ -128,7 +128,7 @@ ResourcePlayerNode
 | `onPause(NodeResourcePlayerPauseCallback<T>)` | `(node) -> ...` | `pause()` is called on the node and the resource has a playback. It fires immediately, inside the `pause()` call. |
 | `onStop(NodeResourcePlayerStopCallback<T>)` | `(node) -> ...` | The playback stops: `stop()` is called on the node and the resource has a playback (it fires immediately, inside the `stop()` call), or the resource reaches its end, right after `onEnd`. `restart()` does not fire it. |
 | `onEnd(NodeResourcePlayerEndCallback<T>)` | `(node) -> ...` | The resource reaches its end while `loop` is `false`. `stop()` does not fire it, and it never fires while looping. |
-| `onProgress(NodeResourcePlayerProgressCallback<T>)` | `(node, progress, currentTime) -> ...` | On each frame while playing, when the progress changed. `progress` goes from `0` to `1`, `currentTime` is in seconds. |
+| `onProgress(NodeResourcePlayerProgressCallback<T>)` | `(node, progress, currentTime) -> ...` | On each drawn frame where the progress changed: while playing, and after a `seek(...)`, also while paused. `progress` goes from `0` to `1`, `currentTime` is in seconds. |
 
 - `onPlay`, `onEnd`, `onProgress` and the `onStop` of the end of the resource are detected while the node draws: a node that is not drawn (hidden, or outside a closed UI) does not fire them. A playback stopped through `getPlayback()` instead of the node's `stop()` is seen the same way, as an end.
 - The callback interfaces live in `dev.joid.lib.ui.node.impl.design.resource.callback`. Each has an `apply(...)` method for the lambda and `pre(...)`/`post(...)` phases taking an `InternalContext`; the lambda runs in the POST phase. See [Callbacks](../../interactions/callbacks.md).

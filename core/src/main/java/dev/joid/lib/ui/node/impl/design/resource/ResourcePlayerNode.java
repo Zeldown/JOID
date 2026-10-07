@@ -147,12 +147,10 @@ public class ResourcePlayerNode extends Node {
 			}
 
 			this.wasPlaying = playing;
-			if (playing) {
-				final double progress = playback.getProgress();
-				if (progress != this.lastProgress) {
-					this.lastProgress = progress;
-					super.executeCallback(ResourcePlayerNode.CALLBACK_PROGRESS, InternalContext.create(), progress, playback.getCurrentTime());
-				}
+			final double progress = playback.getProgress();
+			if (progress != this.lastProgress) {
+				this.lastProgress = progress;
+				super.executeCallback(ResourcePlayerNode.CALLBACK_PROGRESS, InternalContext.create(), progress, playback.getCurrentTime());
 			}
 		}
 

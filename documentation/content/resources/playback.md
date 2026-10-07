@@ -54,7 +54,7 @@ The decoder of a local file exists as soon as `Resource.of` returns; for a URL, 
 | `stop()` | Stops on the current frame. | Stops the decoding and the audio; the last frame stays displayed. |
 | `pause()` | Freezes the current frame; does nothing when it does not play. | Same, and pauses the audio. |
 | `resume()` | Continues a paused playback where it was. | Same, and resumes the audio. |
-| `seek(double seconds)` | Moves to `seconds` (a negative value counts as 0), while playing, paused or stopped. | Moves to `seconds`: the frames between the previous key frame and the target are skipped. While paused, the new frame shows on `resume()`. |
+| `seek(double seconds)` | Moves to `seconds` (a negative value counts as 0, a time past the end as the last frame), while playing, paused or stopped. | Moves to `seconds`, with the same bounds: the frames between the previous key frame and the target are skipped. While paused, the frame it lands on shows right away and the position stays there; `resume()` plays on from it. |
 | `loop(boolean)` | Overrides the loop count of the file: `true` loops forever, `false` plays once. | Loops back to the first frame at the end. Default: `false`. |
 | `autoplay(boolean)` | Starts on upload. Default: `true`. | Same. |
 | `isPlaying()`, `isPaused()` | Running and not paused; paused. | Same. |

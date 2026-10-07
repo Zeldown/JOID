@@ -279,6 +279,17 @@ public class AnimatedResourceDecoderTest {
 	}
 
 	@Test
+	public void seeksToItsLastFrameWhilePaused() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		this.advance(decoder, data, 20L);
+		decoder.pause().seek(1D);
+		this.advance(decoder, data, 100L);
+		Assert.assertEquals(decoder.getAnimation().getFrames().size() - 1, decoder.getDisplayed());
+		Assert.assertEquals(0.239D, decoder.getCurrentTime(), 1E-9D);
+	}
+
+	@Test
 	public void seeksWhileStopped() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
 		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);

@@ -138,7 +138,8 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	@Override
 	public @NonNull AnimatedResourceDecoder seek(final double seconds) {
-		final long time = Math.max(0L, (long) (seconds * 1000D));
+		final long end = this.animation == null ? Long.MAX_VALUE : this.animation.getDuration() - 1L;
+		final long time = Math.max(0L, Math.min((long) (seconds * 1000D), end));
 		this.position = time;
 		this.startTime = (this.paused ? this.pauseTime : BridgeHandler.CLOCK.get().nanoTime()) - time * 1000000L;
 		return this;

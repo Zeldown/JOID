@@ -188,6 +188,34 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void showsTheFrameOfASeekWhilePaused() throws InterruptedException {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
+		this.bridges.open(new NodeUI(player));
+		this.settle(player, 6);
+		player.pause().seekTo(0.5D);
+		this.settle(player, 10);
+		Assert.assertTrue(player.isPaused());
+		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
+		Assert.assertEquals(120, ((RecordingTexture) player.getResource().getResourceData().getTextures()[0]).getPixels()[0] & 0xFF, 3);
+		player.resume();
+		this.settle(player, 7);
+		Assert.assertTrue(player.isPlaying());
+		Assert.assertEquals(0.6D, player.getProgress(), 1E-9D);
+	}
+
+	@Test
+	public void showsTheFrameOfASeekWhilePlaying() throws InterruptedException {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
+		this.bridges.open(new NodeUI(player));
+		this.settle(player, 6);
+		player.seekTo(0.5D);
+		this.settle(player, 1);
+		Assert.assertTrue(player.isPlaying());
+		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
+		Assert.assertEquals(120, ((RecordingTexture) player.getResource().getResourceData().getTextures()[0]).getPixels()[0] & 0xFF, 3);
+	}
+
+	@Test
 	public void stopsItsPlayback() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
 		this.bridges.open(new NodeUI(player)).frames(3);
@@ -338,6 +366,16 @@ public class ResourcePlayerNodeTest {
 		Assert.assertEquals(1F, video.getLocationX(), 0F);
 		Assert.assertEquals(2F, video.getReferenceDistance(), 0F);
 		Assert.assertEquals(9F, video.getMaxDistance(), 0F);
+	}
+
+	private void settle(final ResourcePlayerNode player, final int frames) throws InterruptedException {
+		for (int i = 0; i < frames; i++) {
+			final long deadline = System.currentTimeMillis() + 5000L;
+			while (!player.getVideo().isSettled() && System.currentTimeMillis() < deadline) {
+				Thread.sleep(1L);
+			}
+			this.bridges.frame();
+		}
 	}
 
 	private Draw skeleton() {

@@ -312,6 +312,75 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void showsTheFrameItSeeksToWhilePaused() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 6);
+		decoder.pause().seek(0.5D);
+		this.play(decoder, data, 1);
+		Assert.assertTrue(decoder.isPaused());
+		Assert.assertEquals(120, VideoResourceDecoderTest.shade(data), 3);
+		Assert.assertEquals(5, decoder.getDisplayedFrameIndex());
+		Assert.assertEquals(0.5D, decoder.getProgress(), 1E-9D);
+		this.play(decoder, data, 20);
+		Assert.assertEquals(120, VideoResourceDecoderTest.shade(data), 3);
+		Assert.assertEquals(0.5D, decoder.getCurrentTime(), 1E-9D);
+	}
+
+	@Test
+	public void followsEverySeekWhilePaused() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 6);
+		decoder.pause();
+		for (final int frame : new int[] {3, 8, 2, 6}) {
+			decoder.seek(frame / 10D);
+			this.play(decoder, data, 1);
+			Assert.assertEquals(20 * (frame + 1), VideoResourceDecoderTest.shade(data), 3);
+			Assert.assertEquals(frame, decoder.getDisplayedFrameIndex());
+		}
+	}
+
+	@Test
+	public void resumesFromTheFrameItSeeksToWhilePaused() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 6);
+		decoder.pause().seek(0.5D);
+		this.play(decoder, data, 10);
+		decoder.resume();
+		this.play(decoder, data, 7);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(140, VideoResourceDecoderTest.shade(data), 3);
+		Assert.assertEquals(6, decoder.getDisplayedFrameIndex());
+	}
+
+	@Test
+	public void seeksToItsFirstFrameWhilePaused() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 30);
+		decoder.pause().seek(-1D);
+		this.play(decoder, data, 1);
+		Assert.assertEquals(20, VideoResourceDecoderTest.shade(data), 3);
+		Assert.assertEquals(0D, decoder.getProgress(), 0D);
+	}
+
+	@Test
+	public void seeksToItsLastFrameWhilePaused() throws InterruptedException {
+		for (final boolean loop : new boolean[] {false, true}) {
+			final VideoResourceDecoder decoder = this.frames().loop(loop);
+			final ResourceData data = VideoResourceDecoderTest.load(decoder);
+			this.play(decoder, data, 6);
+			decoder.pause().seek(5D);
+			this.play(decoder, data, 1);
+			Assert.assertEquals(200, VideoResourceDecoderTest.shade(data), 3);
+			Assert.assertEquals(0.9D, decoder.getProgress(), 1E-9D);
+			Assert.assertTrue(decoder.isPaused());
+		}
+	}
+
+	@Test
 	public void ignoresASeekOnceReleased() {
 		final VideoResourceDecoder decoder = this.frames();
 		VideoResourceDecoderTest.load(decoder);

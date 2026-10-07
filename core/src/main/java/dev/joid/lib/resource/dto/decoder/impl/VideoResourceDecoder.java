@@ -49,6 +49,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private ArrayBlockingQueue<DecodedFrame> frameQueue;
 
 	private volatile boolean ended;
+	private volatile boolean seeked;
 	private volatile double loopOffset;
 	private volatile double seekTime;
 	private volatile int displayedFrameIndex;
@@ -93,12 +94,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	@Override
 	public @NonNull VideoResourceDecoder stop() {
 		this.running.set(false);
-		if (this.decodeThread != null) {
-			try {
-				this.decodeThread.join(1000L);
-			} catch (final InterruptedException ignored) {}
-			this.decodeThread = null;
-		}
+		this.joinDecodeThread();
 
 		if (this.audioPlayer != null) {
 			this.audioPlayer.stop();
@@ -186,7 +182,17 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.audioPlayer.setVolume(this.volume);
 		}
 
-		if (!this.running.get() || this.paused.get()) {
+		if (!this.running.get()) {
+			return;
+		}
+
+		if (this.paused.get()) {
+			if (this.seeked) {
+				final DecodedFrame frame = this.frameQueue.poll();
+				if (frame != null) {
+					this.show(resource, frame);
+				}
+			}
 			return;
 		}
 
@@ -199,16 +205,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		}
 
 		if (frame != null) {
-			final int nextBuffer = 1 - this.currentBuffer;
-			if (!this.texturesAllocated) {
-				this.textures[0].allocate(resource.getWidth(), resource.getHeight());
-				this.textures[1].allocate(resource.getWidth(), resource.getHeight());
-				this.texturesAllocated = true;
-			}
-			this.textures[nextBuffer].upload(frame.getPixels(), resource.getWidth(), resource.getHeight());
-			this.currentBuffer = nextBuffer;
-			this.displayedFrameIndex = (int) Math.round(frame.getMediaTime() * this.frameRate);
-			resource.texture(this.textures[this.currentBuffer]);
+			this.show(resource, frame);
 		}
 
 		if (this.ended && next == null && !this.loop) {
@@ -270,6 +267,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			return this.paused.get() ? this.resume() : this;
 		}
 
+		this.joinDecodeThread();
 		if (this.grabber == null) {
 			this.reopenGrabber();
 		} else if (this.decodedFrameIndex.get() > 0) {
@@ -321,7 +319,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public @NonNull VideoResourceDecoder seek(final double seconds) {
-		this.seekInternal((long) (seconds * 1000000D));
+		final double end = this.duration > 0D ? this.duration - 1D / this.frameRate : seconds;
+		this.seekInternal((long) (Math.max(0D, Math.min(seconds, end)) * 1000000D));
 		return this;
 	}
 
@@ -381,11 +380,15 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public boolean isSettled() {
-		if (!this.running.get() || this.paused.get() || this.frameQueue == null) {
+		if (!this.running.get() || this.frameQueue == null) {
 			return true;
 		}
 
 		final DecodedFrame next = this.frameQueue.peek();
+		if (this.paused.get()) {
+			return !this.seeked || next != null || this.ended;
+		}
+
 		if (next == null) {
 			return this.ended;
 		}
@@ -503,10 +506,34 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.loopOffset = 0D;
 			this.seekTime = microseconds / 1000000D;
 			this.ended = false;
+			this.seeked = true;
 
 			if (this.audioPlayer != null) {
 				this.audioPlayer.flush();
 			}
+		}
+	}
+
+	private void show(final ResourceData resource, final DecodedFrame frame) {
+		final int nextBuffer = 1 - this.currentBuffer;
+		if (!this.texturesAllocated) {
+			this.textures[0].allocate(resource.getWidth(), resource.getHeight());
+			this.textures[1].allocate(resource.getWidth(), resource.getHeight());
+			this.texturesAllocated = true;
+		}
+		this.textures[nextBuffer].upload(frame.getPixels(), resource.getWidth(), resource.getHeight());
+		this.currentBuffer = nextBuffer;
+		this.displayedFrameIndex = (int) Math.round(frame.getMediaTime() * this.frameRate);
+		this.seeked = false;
+		resource.texture(this.textures[this.currentBuffer]);
+	}
+
+	private void joinDecodeThread() {
+		if (this.decodeThread != null) {
+			try {
+				this.decodeThread.join(1000L);
+			} catch (final InterruptedException ignored) {}
+			this.decodeThread = null;
 		}
 	}
 
@@ -537,25 +564,32 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 								continue;
 							}
 							this.ended = true;
-							break;
-						}
+							decoded = null;
+						} else {
+							if (frame.samples != null && this.audioPlayer != null && this.volume > 0F) {
+								this.audioPlayer.pushSamples(frame.samples);
+							}
 
-						if (frame.samples != null && this.audioPlayer != null && this.volume > 0F) {
-							this.audioPlayer.pushSamples(frame.samples);
-						}
+							if (frame.image == null) {
+								continue;
+							}
 
-						if (frame.image == null) {
-							continue;
-						}
+							final double mediaTime = frame.timestamp / 1000000D;
+							if (mediaTime + 0.5D / this.frameRate < this.seekTime) {
+								continue;
+							}
 
-						final double mediaTime = frame.timestamp / 1000000D;
-						if (mediaTime + 0.5D / this.frameRate < this.seekTime) {
-							continue;
+							lastTime = this.loopOffset + mediaTime;
+							decoded = new DecodedFrame(lastTime, this.frameToPixels(frame, this.grabber.getImageWidth(), this.grabber.getImageHeight()), mediaTime);
+							this.decodedFrameIndex.incrementAndGet();
 						}
+					}
 
-						lastTime = this.loopOffset + mediaTime;
-						decoded = new DecodedFrame(lastTime, this.frameToPixels(frame, this.grabber.getImageWidth(), this.grabber.getImageHeight()), mediaTime);
-						this.decodedFrameIndex.incrementAndGet();
+					if (decoded == null) {
+						while (seek == this.seeks.get() && this.running.get()) {
+							Thread.sleep(5L);
+						}
+						continue;
 					}
 
 					boolean queued = false;
