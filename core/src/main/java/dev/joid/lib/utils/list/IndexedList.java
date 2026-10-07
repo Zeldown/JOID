@@ -9,6 +9,7 @@ public interface IndexedList<E extends IndexedElement> extends Iterable<E> {
 	public void add(final E element);
 	public void remove(final E element);
 
+	public void sort();
 	public void clear();
 
 	public @NonNull IndexedList<E> copy();

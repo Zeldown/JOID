@@ -115,11 +115,6 @@ public class UIBridgeRegistryTest {
 		}
 
 		@Override
-		public boolean isOnTop(final @NonNull UI ui) {
-			return super.getUiList().getLast() == ui;
-		}
-
-		@Override
 		public boolean canHandle(final @NonNull UI ui) {
 			return this.type.isInstance(ui);
 		}

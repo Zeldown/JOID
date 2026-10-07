@@ -689,6 +689,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
+		this.view.anchorX(this.data.getAnchorPositionX()).anchorY(this.data.getAnchorPositionY());
 		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
 
 		final List<UIScheduledTask> toRemove = new ArrayList<>();

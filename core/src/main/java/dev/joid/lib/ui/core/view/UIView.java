@@ -7,8 +7,8 @@ import lombok.NonNull;
 @Getter
 public final class UIView {
 
-	private final double anchorX;
-	private final double anchorY;
+	private double anchorX;
+	private double anchorY;
 
 	private double zoom;
 	private double width;
@@ -76,6 +76,16 @@ public final class UIView {
 
 	public double toScreenHeight(final double uiHeight) {
 		return uiHeight * this.getScale() * this.height / this.viewportHeight;
+	}
+
+	public @NonNull UIView anchorX(final double anchorX) {
+		this.anchorX = anchorX;
+		return this;
+	}
+
+	public @NonNull UIView anchorY(final double anchorY) {
+		this.anchorY = anchorY;
+		return this;
 	}
 
 	public @NonNull UIView zoom(final double zoom) {

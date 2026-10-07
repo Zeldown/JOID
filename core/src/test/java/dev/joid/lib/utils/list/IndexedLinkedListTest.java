@@ -103,6 +103,40 @@ public class IndexedLinkedListTest {
 	}
 
 	@Test
+	public void sortsItsElementsAgainOnceAnIndexChanges() {
+		final Element first = new Element(0);
+		final Element second = new Element(1);
+		final Element third = new Element(2);
+		final IndexedLinkedList<Element> list = new IndexedLinkedList<>(Arrays.asList(first, second, third));
+		first.index = 5;
+		list.sort();
+		Assert.assertEquals(Arrays.asList(second, third, first), list.ordered());
+	}
+
+	@Test
+	public void keepsTheOrderOfEqualIndexesWhenSortingAgain() {
+		final Element first = new Element(0);
+		final Element second = new Element(1);
+		final Element third = new Element(2);
+		final IndexedLinkedList<Element> list = new IndexedLinkedList<>(Arrays.asList(first, second, third));
+		first.index = 2;
+		third.index = 1;
+		list.sort();
+		Assert.assertEquals(Arrays.asList(second, third, first), list.ordered());
+	}
+
+	@Test
+	public void staysInOrderWhenSortedAgain() {
+		final Element first = new Element(0);
+		final Element second = new Element(0);
+		final IndexedLinkedList<Element> list = new IndexedLinkedList<>(Arrays.asList(first, second));
+		final List<Element> ordered = list.ordered();
+		second.index = 3;
+		list.sort();
+		Assert.assertEquals(Arrays.asList(first, second), ordered);
+	}
+
+	@Test
 	public void clearsEveryElement() {
 		final IndexedLinkedList<Element> list = new IndexedLinkedList<>();
 		list.add(new Element(0));
@@ -191,7 +225,7 @@ public class IndexedLinkedListTest {
 	@AllArgsConstructor
 	private static final class Element implements IndexedElement {
 
-		private final int index;
+		private int index;
 
 	}
 

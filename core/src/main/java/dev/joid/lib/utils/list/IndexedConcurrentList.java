@@ -1,5 +1,6 @@
 package dev.joid.lib.utils.list;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,19 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IndexedL
 	@Override
 	public void remove(final E element) {
 		this.orderedList.remove(element);
+	}
+
+	@Override
+	public void sort() {
+		int index = Integer.MIN_VALUE;
+		for (final E element : this.orderedList) {
+			if (element.getIndex() < index) {
+				this.orderedList.sort(Comparator.comparingInt(IndexedElement::getIndex));
+				return;
+			}
+
+			index = element.getIndex();
+		}
 	}
 
 	@Override

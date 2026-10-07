@@ -57,6 +57,7 @@ import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
+import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
@@ -224,6 +225,22 @@ public class UITest {
 		this.bridges.move(960D, 540D).frame();
 		Assert.assertEquals(960D, ui.getMouseX(), 0D);
 		Assert.assertEquals(540D, ui.getMouseY(), 0D);
+	}
+
+	@Test
+	public void followsItsAnchorChangedAfterItsOpening() {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		ui.zoom(0.5D);
+		this.bridges.move(960D, 540D).frame();
+		Assert.assertEquals(960D, ui.getMouseX(), 0D);
+		Assert.assertEquals(540D, ui.getMouseY(), 0D);
+		ui.getData().setAnchorX(Align.START).setAnchorY(Align.END);
+		this.bridges.frame();
+		Assert.assertEquals(0D, ui.getView().getAnchorX(), 0D);
+		Assert.assertEquals(1080D, ui.getView().getAnchorY(), 0D);
+		Assert.assertEquals(1920D, ui.getMouseX(), 0D);
+		Assert.assertEquals(0D, ui.getMouseY(), 0D);
 	}
 
 	@Test

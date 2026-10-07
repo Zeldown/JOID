@@ -103,14 +103,6 @@ public class DemoUIBridge extends UIBridge {
 	}
 
 	@Override
-	public boolean isOnTop(final @NonNull UI ui) {
-		if (this.getUiList().isEmpty()) {
-			return false;
-		}
-		return this.getUiList().ordered().getLast() == ui && ui.getData().active() && ui.getData().visible();
-	}
-
-	@Override
 	public boolean canHandle(final @NonNull UI ui) {
 		return true;
 	}

@@ -61,6 +61,18 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void keepsTheZoomOfEveryUiOnAResize() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		menu.zoom(0.5D);
+		this.bridges.resize(1366, 768);
+		Assert.assertEquals(0.5D, menu.getView().getZoom(), 0D);
+		Assert.assertEquals(0.5D, menu.getZoomLevel().get(), 0D);
+		Assert.assertEquals(1366D, menu.getWidth(), 0D);
+		Assert.assertEquals(1, menu.inits);
+	}
+
+	@Test
 	public void updatesEveryUi() {
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new TraceUI("hud", this.trace));
 		this.trace.clear();
@@ -365,6 +377,78 @@ public class UIBridgeTest {
 		menu.getData().setZlevel(10D);
 		this.bridges.open(menu).open(hud);
 		Assert.assertTrue(menu.depth + " behind " + hud.depth, menu.depth > hud.depth);
+	}
+
+	@Test
+	public void sortsAUiAgainOnceItsZlevelChanges() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final TraceUI hud = new TraceUI("hud", this.trace);
+		this.bridges.open(menu).open(hud);
+		menu.getData().setZlevel(10D);
+		this.trace.clear();
+		this.bridges.getUi().draw();
+		Assert.assertEquals(Arrays.asList(hud, menu), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Arrays.asList("draw hud -2000.0", "draw menu -1980.0"), this.trace);
+	}
+
+	@Test
+	public void keepsTheOpeningOrderOfTheOtherUisOnceOneMoves() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final TraceUI hud = new TraceUI("hud", this.trace);
+		final TraceUI chat = new TraceUI("chat", this.trace);
+		this.bridges.open(menu).open(hud).open(chat);
+		chat.getData().setZlevel(-1D);
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList(chat, menu, hud), this.bridges.getUi().getUiList().ordered());
+	}
+
+	@Test
+	public void putsTheLastOpenedUiOnTop() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final TraceUI hud = new TraceUI("hud", this.trace);
+		this.bridges.open(menu).open(hud);
+		Assert.assertTrue(this.bridges.getUi().isOnTop(hud));
+		Assert.assertFalse(this.bridges.getUi().isOnTop(menu));
+		Assert.assertTrue(hud.isOnTop());
+		Assert.assertFalse(menu.isOnTop());
+	}
+
+	@Test
+	public void putsTheUiOfHighestZlevelOnTop() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		menu.getData().setZlevel(10D);
+		this.bridges.open(menu).open(new TraceUI("hud", this.trace));
+		Assert.assertTrue(this.bridges.getUi().isOnTop(menu));
+		Assert.assertTrue(menu.isOnTop());
+	}
+
+	@Test
+	public void putsAUiOnTopOnceItsZlevelRises() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final TraceUI hud = new TraceUI("hud", this.trace);
+		this.bridges.open(menu).open(hud);
+		menu.getData().setZlevel(5D);
+		this.bridges.frame();
+		Assert.assertTrue(menu.isOnTop());
+		Assert.assertFalse(hud.isOnTop());
+	}
+
+	@Test
+	public void putsTheTopActiveAndVisibleUiOnTop() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final TraceUI inactive = new TraceUI("inactive", this.trace);
+		final TraceUI hidden = new TraceUI("hidden", this.trace);
+		inactive.getData().setActive(false);
+		hidden.getData().setVisible(false);
+		this.bridges.open(menu).open(inactive).open(hidden);
+		Assert.assertTrue(this.bridges.getUi().isOnTop(menu));
+		Assert.assertFalse(this.bridges.getUi().isOnTop(inactive));
+		Assert.assertFalse(this.bridges.getUi().isOnTop(hidden));
+	}
+
+	@Test
+	public void putsNoUiOnTopWithoutUi() {
+		Assert.assertFalse(this.bridges.getUi().isOnTop(new TraceUI("menu", this.trace)));
 	}
 
 	private static float depth() {

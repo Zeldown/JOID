@@ -27,7 +27,7 @@ public abstract class UIBridge implements IUIBridge {
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		final double width = window.getWidth();
 		final double height = window.getHeight();
-		this.uiList.forEach(ui -> ui.load(width, height));
+		this.uiList.forEach(ui -> ui.load(width, height, ui.getView().getZoom()));
 	}
 
 	public final void mousePressed(final @NonNull ClickType clickType) {
@@ -117,6 +117,7 @@ public abstract class UIBridge implements IUIBridge {
 				return;
 			}
 
+			this.uiList.sort();
 			final IWindowBridge window = BridgeHandler.WINDOW.get();
 			final IRenderBridge render = BridgeHandler.RENDER.get();
 
@@ -146,6 +147,17 @@ public abstract class UIBridge implements IUIBridge {
 	@Override
 	public @NonNull IndexedLinkedList<@NonNull UI> getUiList() {
 		return this.uiList;
+	}
+
+	@Override
+	public boolean isOnTop(final @NonNull UI ui) {
+		for (final UI current : this.uiList.reversed()) {
+			if (current.getData().active() && current.getData().visible()) {
+				return current == ui;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
