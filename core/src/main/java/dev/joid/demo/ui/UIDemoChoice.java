@@ -12,6 +12,7 @@ import dev.joid.demo.ui.font.UIDemoFont;
 import dev.joid.demo.ui.font.UIDemoMarkup;
 import dev.joid.demo.ui.font.UIDemoText;
 import dev.joid.demo.ui.layout.UIDemoLayout;
+import dev.joid.demo.ui.model.UIDemoModel;
 import dev.joid.demo.ui.overflow.UIDemoOverflow;
 import dev.joid.demo.ui.popup.UIDemoPopup;
 import dev.joid.demo.ui.reorderable.UIDemoReorderable;
@@ -21,6 +22,7 @@ import dev.joid.demo.ui.selector.UIDemoSelector;
 import dev.joid.demo.ui.shader.UIDemoEffect;
 import dev.joid.demo.ui.shader.UIDemoShader;
 import dev.joid.demo.ui.signal.UIDemoSignal;
+import dev.joid.demo.ui.signal.UIDemoWatch;
 import dev.joid.demo.ui.simple.UIDemoSimple;
 import dev.joid.demo.ui.slider.UIDemoSlider;
 import dev.joid.demo.ui.store.UIDemoOtherStore;
@@ -66,8 +68,10 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoEffect.class);
 		UIDemoChoice.LIST.add(UIDemoResource.class);
 		UIDemoChoice.LIST.add(UIDemoPlayer.class);
+		UIDemoChoice.LIST.add(UIDemoModel.class);
 		UIDemoChoice.LIST.add(UIDemoChart.class);
 		UIDemoChoice.LIST.add(UIDemoSignal.class);
+		UIDemoChoice.LIST.add(UIDemoWatch.class);
 		UIDemoChoice.LIST.add(UIDemoStore.class);
 		UIDemoChoice.LIST.add(UIDemoOtherStore.class);
 	}

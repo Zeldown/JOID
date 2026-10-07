@@ -658,3 +658,172 @@ release LEFT
 wait 100
 wait 600
 shot inter-signal
+ui dev.joid.demo.ui.signal.UIDemoWatch
+wait 800
+move 200 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 200 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 840 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 605 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 840 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 840 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 605 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 840 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1040 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1040 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 200 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1090 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1250 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1530 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1690 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 200 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 200 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 640 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 640 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 780 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1080 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1080 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1080 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1080 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1520 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1690 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1520 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 2500
+shot inter-watch
+ui dev.joid.demo.ui.chart.UIDemoChart
+wait 800
+move 1755 595
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 600
+shot inter-chart
+ui dev.joid.demo.ui.model.UIDemoModel
+wait 800
+move 300 670
+wait 100
+press LEFT
+moveto 380 640 400
+wait 200
+release LEFT
+scroll -120
+scroll -120
+scroll -120
+move 740 670
+wait 100
+press LEFT
+moveto 960 600 400
+wait 200
+release LEFT
+wait 1500
+shot inter-model

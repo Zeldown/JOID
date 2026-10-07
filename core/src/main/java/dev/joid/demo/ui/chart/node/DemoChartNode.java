@@ -15,6 +15,9 @@ import lombok.NonNull;
 
 public class DemoChartNode extends ChartNode {
 
+	private static final Color   INK    = new Color(153, 153, 153);
+	private static final Color[] SERIES = {new Color(153, 153, 153), new Color(85, 85, 85)};
+
 	private boolean smooth = true;
 
 	protected DemoChartNode(final double x, final double y, final double width, final double height) {
@@ -27,45 +30,55 @@ public class DemoChartNode extends ChartNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), new Color(163, 163, 163));
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 14, DemoChartNode.INK);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
 
 		if (!super.isLoaded()) {
-			DrawUtils.TEXT.drawText(super.getX() + super.dw(2), super.getY() + super.dh(2) - TextInfo.create(DemoFont.MONTSERRAT, 50).getHeight() / 2, "NO DATA", TextInfo.create(DemoFont.MONTSERRAT, 50, Color.WHITE), Align.CENTER, Align.START);
+			DrawUtils.TEXT.drawText(super.getX() + super.dw(2), super.getY() + super.dh(2), "No data", TextInfo.create(DemoFont.MONTSERRAT, 24, DemoChartNode.INK), Align.CENTER, Align.CENTER);
 			return;
 		}
 
-		final Number min = super.getMin();
-		final Number max = super.getMax();
+		final double min = super.getMin().doubleValue();
+		final double max = super.getMax().doubleValue();
+		final double left = super.getX() + 50D;
+		final double top = super.getY() + 15D;
+		final double width = super.getWidth() - 65D;
+		final double height = super.getHeight() - 40D;
+		final double offset = width / (super.getLabels().size() - 1);
 
-		double ox = super.getX();
-		Vector2d last = null;
-		final double offset = super.getWidth() / (super.getLabels().size() - 1);
+		DrawUtils.TEXT.drawText(super.getX() + 8D, top, super.getYAxis().format(max), info, Align.START, Align.CENTER);
+		DrawUtils.TEXT.drawText(super.getX() + 8D, top + height, super.getYAxis().format(min), info, Align.START, Align.CENTER);
+
+		int labelIndex = 0;
 		for (final String label : super.getLabels()) {
-			for (final Entry<String, ChartData> entry : super.getDataMap().entrySet()) {
-				final ChartData data = entry.getValue();
-				final Number value = data.get(label);
+			DrawUtils.TEXT.drawText(left + offset * labelIndex, top + height + 8D, label, info, Align.CENTER, Align.START);
+			labelIndex++;
+		}
 
-				final double oy = super.getY() + super.getHeight() - super.getHeight() * (value.doubleValue() - min.doubleValue()) / (max.doubleValue() - min.doubleValue());
-
+		int seriesIndex = 0;
+		for (final Entry<String, ChartData> entry : super.getDataMap().entrySet()) {
+			final Color color = DemoChartNode.SERIES[seriesIndex % DemoChartNode.SERIES.length];
+			Vector2d last = null;
+			double ox = left;
+			for (final String label : super.getLabels()) {
+				final double oy = top + height - height * (entry.getValue().get(label).doubleValue() - min) / (max - min);
+				final Vector2d point = new Vector2d(ox, oy);
 				if (last != null) {
-					final Vector2d start = new Vector2d(last);
-					final Vector2d startControl = new Vector2d(last.x + offset / 3, last.y);
-					final Vector2d end = new Vector2d(ox, oy);
-					final Vector2d endControl = new Vector2d(ox - offset / 3, oy);
 					if (this.smooth) {
-						DrawUtils.SHAPE.drawCurvedLine(Color.RED, 2F, start, startControl, end, endControl);
+						DrawUtils.SHAPE.drawCurvedLine(color, 2F, last, new Vector2d(last.x + offset / 3D, last.y), point, new Vector2d(ox - offset / 3D, oy));
 					} else {
-						DrawUtils.SHAPE.drawLine(Color.RED, 2F, start, end);
+						DrawUtils.SHAPE.drawLine(color, 2F, last, point);
 					}
 				}
 
 				BridgeHandler.RENDER.get().translate(0D, 0D, 1D);
-				DrawUtils.SHAPE.drawCircle(ox, oy, Color.WHITE, 7);
+				DrawUtils.SHAPE.drawCircle(ox, oy, color, 4D);
 				BridgeHandler.RENDER.get().translate(0D, 0D, -1D);
 
-				last = new Vector2d(ox, oy);
+				last = point;
 				ox += offset;
 			}
+			seriesIndex++;
 		}
 	}
 

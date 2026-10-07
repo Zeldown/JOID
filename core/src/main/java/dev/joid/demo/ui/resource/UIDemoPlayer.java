@@ -151,7 +151,7 @@ public class UIDemoPlayer extends UIDemo {
 		TextNode.create(1320, 965).text(Text.create("Muted", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1520, 720, 320, 180).color(Color.WHITE).attach(this);
-		ResourcePlayerNode.create(1522, 722, 316, 176).resource(Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3}))).attach(this);
+		ResourcePlayerNode.create(1522, 722, 316, 176).resource(Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-video")).attach(this);
 		TextNode.create(1680, 965).text(Text.create("Failed", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		this.keybind(() -> {

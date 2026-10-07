@@ -207,7 +207,7 @@ public class UIDemoSimple extends UIDemo {
 			.create(100, 50, 120, 120)
 			.color(UIDemoSimple.INK.copyAlpha(0.4F))
 			.hoveredColor(Color.WHITE)
-			.hover(() -> "Never shown")
+			.hover(() -> "Disabled: no hover color, no click")
 			.onClick((node, mouseX, mouseY, clickType) -> System.out.println("[UIDemoSimple] never clicked"))
 			.enabled(false)
 			.attach(rect);

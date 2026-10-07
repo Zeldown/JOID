@@ -2,16 +2,21 @@ package dev.joid.demo.ui.chart.node;
 
 import javax.vecmath.Vector2d;
 
+import dev.joid.demo.DemoFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode;
 import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
+import dev.joid.lib.utils.align.Align;
 import lombok.NonNull;
 
 public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
+
+	private static final Color INK = new Color(153, 153, 153);
 
 	protected DemoRadarChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -29,7 +34,7 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 		for (int i = 0; i < size; i++) {
 			points[i] = this.getPoint(i, super.dh(2));
 		}
-		DrawUtils.SHAPE.drawPolygon(new Color(163, 163, 163), points);
+		DrawUtils.SHAPE.drawPolygon(Color.WHITE, points);
 
 		points = new Vector2d[size];
 		for (int i = 0; i < size; i++) {
@@ -38,14 +43,19 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 			points[i] = this.getPoint(i, super.dh(2) * p * 0.8D);
 		}
 
-		DrawUtils.SHAPE.drawPolygon(new Color(89, 34, 30), points);
+		DrawUtils.SHAPE.drawPolygon(DemoRadarChartNode.INK.copyAlpha(0.5F), points);
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		render.lineSmooth(true);
-		render.lineWidth(6F);
-		DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, new Color(239, 57, 38), points);
+		render.lineWidth(3F);
+		DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, DemoRadarChartNode.INK, points);
 		render.popState();
+
+		for (int i = 0; i < size; i++) {
+			final Vector2d point = this.getPoint(i, super.dh(2) + 12D);
+			DrawUtils.TEXT.drawText(point.x, point.y, super.getDataList().get(i).getLabel(), TextInfo.create(DemoFont.MONTSERRAT, 16, DemoRadarChartNode.INK), Align.CENTER, Align.CENTER);
+		}
 	}
 
 	public final Vector2d getPoint(final int index, final double radius) {

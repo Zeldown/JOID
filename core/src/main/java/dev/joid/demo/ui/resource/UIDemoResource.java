@@ -28,7 +28,7 @@ public class UIDemoResource extends UIDemo {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoResource.INK);
 		final Resource vector = Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/vector/placeholder.svg"));
 		final Resource square = Resource.of("https://placehold.co/100x100.png");
-		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).onError((resource, error) -> System.out.println("[UIDemoResource] failed resource: " + error.getMessage()));
+		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-image").onError((resource, error) -> System.out.println("[UIDemoResource] failed resource: " + error.getMessage()));
 		final BooleanSignal second = BooleanSignal.of(false);
 
 		ResourceNode.create(105, 50).resource(Resource.of("https://placehold.co/100x100.png")).attach(this);

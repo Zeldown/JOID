@@ -140,7 +140,7 @@ public class UIDemoMarkup extends UIDemo {
 		.create(800, 530, 320, 190)
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=cc3333>red</c> <u>underline</u> <h>highlight</h>", markup.copy().font(DemoFont.PACIFICO))).mode(TextMode.SPLIT).attach(rect);
+			TextNode.create(20, 20, 280, 0).text(Text.create("<i>italic</i> <c=cc3333>red</c> <u>underline</u> <h>highlight</h>", markup.copy().font(DemoFont.PACIFICO))).mode(TextMode.SPLIT).attach(rect);
 			TextNode.create(160, 205).text(Text.create("Pacifico", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -149,7 +149,7 @@ public class UIDemoMarkup extends UIDemo {
 		.create(1160, 530, 320, 190)
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold</b> <i>italic</i> <c=cc3333>red</c> <u>underline</u> <h>highlight</h>", markup.copy().font(DemoFont.PLAYFAIR_DISPLAY))).mode(TextMode.SPLIT).attach(rect);
+			TextNode.create(20, 20, 280, 0).text(Text.create("<i>italic</i> <c=cc3333>red</c> <u>underline</u> <h>highlight</h>", markup.copy().font(DemoFont.PLAYFAIR_DISPLAY))).mode(TextMode.SPLIT).attach(rect);
 			TextNode.create(160, 205).text(Text.create("Playfair Display", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

@@ -36,6 +36,9 @@ shot static-UIDemoResource
 ui dev.joid.demo.ui.resource.UIDemoPlayer
 wait 3500
 shot static-UIDemoPlayer
+ui dev.joid.demo.ui.model.UIDemoModel
+wait 3500
+shot static-UIDemoModel
 ui dev.joid.demo.ui.shader.UIDemoShader
 wait 3500
 shot static-UIDemoShader
@@ -45,6 +48,9 @@ shot static-UIDemoEffect
 ui dev.joid.demo.ui.signal.UIDemoSignal
 wait 3500
 shot static-UIDemoSignal
+ui dev.joid.demo.ui.signal.UIDemoWatch
+wait 3500
+shot static-UIDemoWatch
 ui dev.joid.demo.ui.textfield.UIDemoTextField
 wait 3500
 shot static-UIDemoTextField
