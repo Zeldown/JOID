@@ -1,7 +1,5 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -154,11 +152,6 @@ public abstract class FieldNode<V> extends Node {
 				return;
 			}
 
-			if (key == Key.TAB) {
-				this.focusNext(UI.isShiftKeyDown() ? -1 : 1);
-				return;
-			}
-
 			if (key == Key.UP || key == Key.DOWN) {
 				this.stepValue(key == Key.UP ? 1 : -1);
 				return;
@@ -217,7 +210,8 @@ public abstract class FieldNode<V> extends Node {
 			}
 
 			if (key == Key.A && this.isShortcutKeyDown()) {
-				this.selectAll();
+				this.selectionStart = 0;
+				this.cursorPos = this.text.length();
 				return;
 			}
 
@@ -646,28 +640,6 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	private final void selectAll() {
-		this.selectionStart = 0;
-		this.cursorPos = this.text.length();
-	}
-
-	private final void focusNext(final int direction) {
-		final List<FieldNode<?>> fields = new ArrayList<>();
-		for (final Node node : super.getUi().getNodeList().ordered()) {
-			FieldNode.collect(node, fields);
-		}
-
-		final int index = fields.indexOf(this);
-		if (fields.size() < 2 || index < 0) {
-			return;
-		}
-
-		final FieldNode<?> next = fields.get((index + direction + fields.size()) % fields.size());
-		this.focus(false);
-		next.focus(true);
-		next.selectAll();
-	}
-
 	private final boolean isAccepted(final @NonNull String text) {
 		return this.accepts(text) && this.accept.test(text);
 	}
@@ -752,20 +724,6 @@ public abstract class FieldNode<V> extends Node {
 
 	private final boolean isSeparator(final char c) {
 		return c == ' ' || c == '\n';
-	}
-
-	private static void collect(final @NonNull Node node, final @NonNull List<FieldNode<?>> fields) {
-		if (!node.isVisible() || !node.isEnabled()) {
-			return;
-		}
-
-		if (node instanceof FieldNode) {
-			fields.add((FieldNode<?>) node);
-		}
-
-		for (final Node child : node.getChildren().ordered()) {
-			FieldNode.collect(child, fields);
-		}
 	}
 
 }

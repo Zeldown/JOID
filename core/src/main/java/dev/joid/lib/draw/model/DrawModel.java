@@ -36,6 +36,7 @@ public final class DrawModel {
 			render.clearDepth();
 
 			model.render();
+			render.clearDepth();
 		} finally {
 			render.popState();
 			render.popMatrix();

@@ -24,8 +24,12 @@ public final class RecordingRenderBridge extends RenderBridge {
 
 	private final List<Draw> draws = new ArrayList<>();
 
+	private int depthClears;
+
 	@Override
-	public void clearDepth() {}
+	public void clearDepth() {
+		this.depthClears++;
+	}
 
 	@Override
 	public void clearStencil() {}

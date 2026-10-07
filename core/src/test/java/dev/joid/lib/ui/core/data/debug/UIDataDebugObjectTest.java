@@ -53,6 +53,21 @@ public class UIDataDebugObjectTest {
 	}
 
 	@Test
+	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
+		final UIDataDebugObject data = new UIDataDebugObject().setProfiler(false);
+		Assert.assertSame(data, data.update(UIDataDebugObject.get(DefaultUI.class), UIDataDebugObject.get(DefaultUI.class)));
+		Assert.assertFalse(data.profiler());
+		Assert.assertTrue(data.hotreload());
+	}
+
+	@Test
+	public void takesEveryValueChangedInTheAnnotation() {
+		final UIDataDebugObject data = new UIDataDebugObject().update(UIDataDebugObject.get(DefaultUI.class), UIDataDebugObject.get(QuietUI.class));
+		Assert.assertFalse(data.profiler());
+		Assert.assertFalse(data.hotreload());
+	}
+
+	@Test
 	public void describesItself() {
 		Assert.assertEquals("UIDataDebugObject(profiler=false, hotreload=true)", new UIDataDebugObject().setProfiler(false).toString());
 	}

@@ -52,6 +52,14 @@ public class DrawModelTest {
 	}
 
 	@Test
+	public void clearsTheDepthBeforeAndAfterTheModel() {
+		final RecordingModel model = new RecordingModel(this.bridges.getRender(), false);
+		DrawUtils.MODEL.drawModel(0D, 0D, 1D, model);
+		Assert.assertEquals(1, model.depthClears);
+		Assert.assertEquals(2, this.bridges.getRender().getDepthClears());
+	}
+
+	@Test
 	public void restoresTheMatrixWhenTheModelFails() {
 		final float[] before = this.bridges.getRender().getModelView().getMatrix().clone();
 		try {
@@ -73,6 +81,7 @@ public class DrawModelTest {
 		private float     depth;
 		private boolean   cull;
 		private boolean   lighting;
+		private int       depthClears;
 
 		@Override
 		public void render() {
@@ -80,6 +89,7 @@ public class DrawModelTest {
 			this.depth = this.render.getModelView().getMatrix()[10];
 			this.cull = this.render.getState().isCull();
 			this.lighting = this.render.getState().isLighting();
+			this.depthClears = this.render.getDepthClears();
 			if (this.failing) {
 				throw new IllegalStateException("Model failed");
 			}

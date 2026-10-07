@@ -20,15 +20,12 @@ public class ModelNode extends Node {
 	private double  rotationYaw;
 	private double  rotationPitch;
 
-	private double pipeLineLevel;
-
 	protected ModelNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
 		this.size          = 1D;
 		this.rotationYaw   = 0D;
 		this.rotationPitch = 0D;
-		this.pipeLineLevel = -1D;
 	}
 
 	public static @NonNull ModelNode create(final double x, final double y, final double width, final double height) {
@@ -41,11 +38,8 @@ public class ModelNode extends Node {
 			return;
 		}
 
-		final double modelWidth  = this.model.getWidth() == 0 ? 1 : this.model.getWidth();
-		final double modelHeight = this.model.getHeight() == 0 ? 1 : this.model.getHeight();
-		final double modelDepth  = this.model.getDepth() == 0 ? 1 : this.model.getDepth();
-
-		final double modelDiagonal = Math.sqrt(modelWidth * modelWidth + modelHeight * modelHeight + modelDepth * modelDepth);
+		final double modelWidth = this.model.getWidth() == 0 ? 1 : this.model.getWidth();
+		final double modelDepth = this.model.getDepth() == 0 ? 1 : this.model.getDepth();
 
 		final double scale = super.dw(modelWidth) * this.size;
 
@@ -65,8 +59,6 @@ public class ModelNode extends Node {
 		} finally {
 			render.popMatrix();
 		}
-
-		super.getUi().setRenderPipelineLevel(super.getUi().getRenderPipelineLevel() + (this.pipeLineLevel == -1D ? modelDiagonal * scale : this.pipeLineLevel));
 	}
 
 	public final <T extends ModelNode> @NonNull T model(final @NonNull IDrawableModel model) {
@@ -99,14 +91,6 @@ public class ModelNode extends Node {
 
 	public final <T extends ModelNode> @NonNull T rotationPitch(final @NonNull Supplier<Double> rotationPitch) {
 		return super.follow("rotationPitch", rotationPitch, value -> this.rotationPitch = value);
-	}
-
-	public final <T extends ModelNode> @NonNull T pipeLineLevel(final double pipeLineLevel) {
-		return this.pipeLineLevel(Signal.from(pipeLineLevel));
-	}
-
-	public final <T extends ModelNode> @NonNull T pipeLineLevel(final @NonNull Supplier<Double> pipeLineLevel) {
-		return super.follow("pipeLineLevel", pipeLineLevel, value -> this.pipeLineLevel = value);
 	}
 
 	protected final void transform(final double size, final double rotationYaw, final double rotationPitch) {

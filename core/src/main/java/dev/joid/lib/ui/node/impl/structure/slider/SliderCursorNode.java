@@ -40,7 +40,12 @@ public abstract class SliderCursorNode extends Node {
 
 	@Override
 	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		if (!this.dragging) {
+			return;
+		}
+
 		this.dragging = false;
+		this.slider.release();
 	}
 
 	@Override

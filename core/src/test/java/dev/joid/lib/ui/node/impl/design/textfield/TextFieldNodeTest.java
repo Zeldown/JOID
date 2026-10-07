@@ -670,6 +670,20 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void cancelsItsEditOnEscapeBeforeItsUiCloses() {
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(true);
+		final NodeUI ui = new NodeUI(field);
+		this.bridges.open(ui);
+		this.type(field, "!");
+		this.bridges.getUi().keyTyped('\u001b', Key.ESCAPE);
+		Assert.assertFalse(field.isFocused());
+		Assert.assertEquals("hello", field.getText());
+		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		this.bridges.getUi().keyTyped('\u001b', Key.ESCAPE);
+		Assert.assertFalse(this.bridges.getUi().isOpened(ui));
+	}
+
+	@Test
 	public void repeatsAHeldArrowAfterHalfASecond() {
 		final TextFieldNode field = this.field("abcdef");
 		this.bridges.getWindow().getKeys().add(Key.RIGHT);

@@ -109,6 +109,32 @@ public class UIDataObjectTest {
 	}
 
 	@Test
+	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
+		final UIDataObject data = new UIDataObject().setZlevel(4D).setVisible(false).setAnchorX(Align.END).setBackgroundColor("#00FF00");
+		Assert.assertSame(data, data.update(UIDataObject.get(DefaultUI.class), UIDataObject.get(DefaultUI.class)));
+		Assert.assertEquals(4D, data.zlevel(), 0D);
+		Assert.assertFalse(data.visible());
+		Assert.assertSame(Align.END, data.anchorX());
+		Assert.assertEquals(new Color(0, 255, 0, 255), data.getBackgroundColor());
+	}
+
+	@Test
+	public void takesEveryValueChangedInTheAnnotation() {
+		final UIDataObject data = new UIDataObject().setZlevel(4D).setAnchorY(Align.START);
+		data.update(UIDataObject.get(DefaultUI.class), UIDataObject.get(CustomUI.class));
+		Assert.assertFalse(data.active());
+		Assert.assertFalse(data.visible());
+		Assert.assertFalse(data.closeable());
+		Assert.assertFalse(data.zoomable());
+		Assert.assertFalse(data.background());
+		Assert.assertFalse(data.projection());
+		Assert.assertEquals(2.5D, data.zlevel(), 0D);
+		Assert.assertSame(Align.START, data.anchorX());
+		Assert.assertSame(Align.END, data.anchorY());
+		Assert.assertEquals(new Color(51, 102, 153, 128), data.getBackgroundColor());
+	}
+
+	@Test
 	public void standsForAUIData() {
 		Assert.assertSame(UIData.class, new UIDataObject().annotationType());
 	}

@@ -32,7 +32,7 @@ public class UIDemoModel extends UIDemo {
 		.create(100, 210, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelNode.create(100, 20, 200, 200).model(model).size(0.5D).attach(rect);
+			ModelNode.create(100, 20, 200, 200).model(model).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Model", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -41,7 +41,7 @@ public class UIDemoModel extends UIDemo {
 		.create(540, 210, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelNode.create(100, 20, 200, 200).model(model).size(0.3D).attach(rect);
+			ModelNode.create(100, 20, 200, 200).model(model).size(0.5D).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Smaller", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -50,7 +50,7 @@ public class UIDemoModel extends UIDemo {
 		.create(980, 210, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelNode.create(100, 20, 200, 200).model(model).size(0.5D).rotationYaw(45D).attach(rect);
+			ModelNode.create(100, 20, 200, 200).model(model).rotationYaw(45D).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Yaw", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -59,7 +59,7 @@ public class UIDemoModel extends UIDemo {
 		.create(1420, 210, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelNode.create(100, 20, 200, 200).model(model).size(0.5D).rotationPitch(30D).attach(rect);
+			ModelNode.create(100, 20, 200, 200).model(model).rotationPitch(30D).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Pitch", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -68,7 +68,7 @@ public class UIDemoModel extends UIDemo {
 		.create(100, 550, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelViewerNode.create(100, 20, 200, 200).model(model).size(0.5D).attach(rect);
+			ModelViewerNode.create(100, 20, 200, 200).model(model).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Drag and zoom", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -77,7 +77,7 @@ public class UIDemoModel extends UIDemo {
 		.create(540, 550, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelViewerNode.create(100, 20, 200, 200).rotationYawRange(-45D, 45D).rotationPitchRange(0D, 0D).model(model).size(0.5D).attach(rect);
+			ModelViewerNode.create(100, 20, 200, 200).rotationYawRange(-45D, 45D).rotationPitchRange(0D, 0D).model(model).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Yaw range", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -95,7 +95,7 @@ public class UIDemoModel extends UIDemo {
 		.create(1420, 550, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelNode.create(100, 20, 200, 200).model(model).size(0.5D).rotationYaw(() -> spin.getValue() * 360D).animate(spin).attach(rect);
+			ModelNode.create(100, 20, 200, 200).model(model).rotationYaw(() -> spin.getValue() * 360D).animate(spin).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Spin", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

@@ -54,6 +54,21 @@ public class UIDataPopupObjectTest {
 	}
 
 	@Test
+	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
+		final UIDataPopupObject data = new UIDataPopupObject().setActive(true);
+		Assert.assertSame(data, data.update(UIDataPopupObject.get(DefaultUI.class), UIDataPopupObject.get(DefaultUI.class)));
+		Assert.assertTrue(data.active());
+		Assert.assertSame(PopupTransition.IN_OUT, data.transition());
+	}
+
+	@Test
+	public void takesEveryValueChangedInTheAnnotation() {
+		final UIDataPopupObject data = new UIDataPopupObject().update(UIDataPopupObject.get(DefaultUI.class), UIDataPopupObject.get(PopupUI.class));
+		Assert.assertTrue(data.active());
+		Assert.assertSame(PopupTransition.IN, data.transition());
+	}
+
+	@Test
 	public void standsForAUIDataPopup() {
 		Assert.assertSame(UIDataPopup.class, new UIDataPopupObject().annotationType());
 	}

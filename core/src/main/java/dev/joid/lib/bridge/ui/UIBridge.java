@@ -91,7 +91,7 @@ public abstract class UIBridge implements IUIBridge {
 			}
 
 			if (key == Key.ESCAPE && ui.getData().closeable()) {
-				if (ui.onClose()) {
+				if (!ui.onKeyPressed(c, key) && ui.onClose()) {
 					this.close(ui);
 				}
 				return;

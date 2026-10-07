@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,6 +19,7 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -44,9 +48,11 @@ import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.core.data.UIDataObject;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
+import dev.joid.lib.ui.core.data.popup.UIDataPopupObject;
 import dev.joid.lib.ui.core.hook.property.UIProperty;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
@@ -191,17 +197,76 @@ public class UITest {
 	}
 
 	@Test
-	public void readsItsAnnotationsAgainOnReload() {
+	public void keepsItsValuesChangedAtRuntimeOnReload() {
 		final PopupUI ui = new PopupUI(this.trace);
 		this.bridges.open(ui);
 		ui.getData().setZlevel(4D).setAnchorX(Align.START);
 		ui.getDebug().setProfiler(true);
+		ui.getPopup().setActive(false);
 		ui.reload();
 		this.bridges.frame();
-		Assert.assertEquals(0D, ui.getData().zlevel(), 0D);
-		Assert.assertEquals(960D, ui.getView().getAnchorX(), 0D);
-		Assert.assertFalse(ui.getDebug().profiler());
-		Assert.assertTrue(ui.getPopup().active());
+		Assert.assertEquals(4D, ui.getData().zlevel(), 0D);
+		Assert.assertEquals(0D, ui.getView().getAnchorX(), 0D);
+		Assert.assertTrue(ui.getDebug().profiler());
+		Assert.assertFalse(ui.getPopup().active());
+		Assert.assertNull(ui.getTransition());
+	}
+
+	@Test
+	public void appliesOnReloadOnlyTheAnnotationValuesChangedSinceTheirLastRead() throws Exception {
+		final UIData data = AnnotatedUI.class.getAnnotation(UIData.class);
+		final UIDataPopup popup = AnnotatedUI.class.getAnnotation(UIDataPopup.class);
+		final AnnotatedUI ui = new AnnotatedUI(this.trace);
+		this.bridges.open(ui);
+		ui.getData().setZlevel(4D).setAnchorX(Align.START);
+		try {
+			UITest.annotate(AnnotatedUI.class, new UIDataObject(data).setZlevel(2D));
+			UITest.annotate(AnnotatedUI.class, new UIDataPopupObject(popup).setActive(true));
+			ui.reload();
+			this.bridges.frame();
+			Assert.assertEquals(2D, ui.getData().zlevel(), 0D);
+			Assert.assertSame(Align.START, ui.getData().anchorX());
+			Assert.assertTrue(ui.getPopup().active());
+			Assert.assertTrue(ui.getTransition() instanceof PopTransition);
+			ui.getData().setZlevel(5D);
+			ui.reload();
+			Assert.assertEquals(5D, ui.getData().zlevel(), 0D);
+		} finally {
+			UITest.annotate(AnnotatedUI.class, data);
+			UITest.annotate(AnnotatedUI.class, popup);
+		}
+	}
+
+	@Test
+	public void becomesAPopupOnTheFrameAfterItsPopupChanges() {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui).frame();
+		Assert.assertNull(ui.getTransition());
+		ui.getPopup().setActive(true);
+		this.bridges.frame();
+		Assert.assertTrue(ui.getTransition() instanceof PopTransition);
+		ui.getPopup().setTransition(PopupTransition.NONE);
+		this.bridges.frame();
+		Assert.assertNull(ui.getTransition());
+	}
+
+	@Test
+	public void watchesItsClassesFromTheFrameAfterItsHotReloadChanges() throws Exception {
+		final UI ui = UITest.hotReloaded(this.folder.newFolder("classes"), new AtomicInteger());
+		JOID.inst().setDevMode(true);
+		ui.getDebug().setHotreload(false);
+		UITest.out(() -> ui.load(1920D, 1080D));
+		try {
+			Assert.assertNull(ui.getFileMonitor());
+			ui.getDebug().setHotreload(true);
+			UITest.out(() -> ui.draw(0D, 0D));
+			Assert.assertNotNull(ui.getFileMonitor());
+			ui.getDebug().setHotreload(false);
+			UITest.out(() -> ui.draw(0D, 0D));
+			Assert.assertNull(ui.getFileMonitor());
+		} finally {
+			ui.properlyClose();
+		}
 	}
 
 	@Test
@@ -1461,6 +1526,16 @@ public class UITest {
 		return (UI) clazz.getConstructor(AtomicInteger.class).newInstance(inits);
 	}
 
+	@SuppressWarnings("unchecked")
+	private static void annotate(final Class<?> type, final Annotation annotation) throws Exception {
+		final Method method = Class.class.getDeclaredMethod("annotationData");
+		method.setAccessible(true);
+		final Object data = method.invoke(type);
+		final Field field = data.getClass().getDeclaredField("annotations");
+		field.setAccessible(true);
+		((Map<Class<? extends Annotation>, Annotation>) field.get(data)).put(annotation.annotationType(), annotation);
+	}
+
 	private static BlockingQueue<String> listen(final UI ui) {
 		final ChangeListener listener = new ChangeListener();
 		for (final FileAlterationObserver observer : ui.getFileMonitor().getObservers()) {
@@ -1592,6 +1667,16 @@ public class UITest {
 
 		public PopupUI(final List<String> trace, final Node... nodes) {
 			super(trace, nodes);
+		}
+
+	}
+
+	@UIData(zlevel = 1D)
+	@UIDataPopup(active = false)
+	public static final class AnnotatedUI extends TraceUI {
+
+		public AnnotatedUI(final List<String> trace) {
+			super(trace);
 		}
 
 	}

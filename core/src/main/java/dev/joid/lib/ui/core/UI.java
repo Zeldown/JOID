@@ -73,9 +73,14 @@ public abstract class UI implements IUI, IndexedElement {
 	private final DoubleSignal scaledWidth;
 	private final DoubleSignal scaledHeight;
 
-	@NonNull private UIDataObject      data;
-	@NonNull private UIDataDebugObject debug;
-	@NonNull private UIDataPopupObject popup;
+	@NonNull private final UIDataObject      data;
+	@NonNull private final UIDataDebugObject debug;
+	@NonNull private final UIDataPopupObject popup;
+
+	@NonNull private UIDataObject      annotatedData;
+	@NonNull private UIDataDebugObject annotatedDebug;
+	@NonNull private UIDataPopupObject annotatedPopup;
+	@NonNull private UIDataPopupObject transitionPopup;
 
 	private transient Transition                             transition;
 	private transient FileAlterationMonitor                  fileMonitor;
@@ -83,6 +88,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
 
 	private boolean closed;
+	private boolean monitored;
 	private boolean initialized;
 	private volatile boolean reloadPending;
 
@@ -101,7 +107,13 @@ public abstract class UI implements IUI, IndexedElement {
 	private Node devNode;
 
 	public UI() {
-		this.readData();
+		this.annotatedData   = UIDataObject.getOrDefault(this.getClass());
+		this.annotatedDebug  = UIDataDebugObject.getOrDefault(this.getClass());
+		this.annotatedPopup  = UIDataPopupObject.getOrDefault(this.getClass());
+		this.data            = new UIDataObject(this.annotatedData);
+		this.debug           = new UIDataDebugObject(this.annotatedDebug);
+		this.popup           = new UIDataPopupObject(this.annotatedPopup);
+		this.transitionPopup = new UIDataPopupObject(this.popup);
 
 		this.stencilStack = new Stack<>();
 		this.keybindMap = new HashMap<>();
@@ -186,76 +198,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		this.closed = false;
-
-		if (JOID.inst().isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
-			try {
-				final File location = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
-				final FileAlterationObserver observer = new FileAlterationObserver(location.isDirectory() ? location : location.getParentFile());
-				observer.addListener(new FileAlterationListener() {
-
-					private File change;
-
-					@Override
-					public void onFileChange(final @NonNull File file) {
-						this.track(file);
-					}
-
-					@Override
-					public void onStop(final @NonNull FileAlterationObserver observer) {
-						if (this.change == null) {
-							return;
-						}
-
-						try {
-							Thread.sleep(1000L);
-						} catch (final Exception e) {}
-
-						System.out.println("##########################");
-						System.out.println("Detected file change: " + this.change.getName());
-						this.change = null;
-						UI.this.reloadPending = true;
-					}
-
-					@Override
-					public void onStart(final @NonNull FileAlterationObserver observer) {}
-
-					@Override
-					public void onFileDelete(final @NonNull File file) {}
-
-					@Override
-					public void onFileCreate(final @NonNull File file) {
-						this.track(file);
-					}
-
-					@Override
-					public void onDirectoryDelete(final @NonNull File file) {}
-
-					@Override
-					public void onDirectoryCreate(final @NonNull File file) {}
-
-					@Override
-					public void onDirectoryChange(final @NonNull File file) {}
-
-					private void track(final File file) {
-						if (location.isDirectory() ? file.getName().endsWith(".class") : file.equals(location)) {
-							this.change = file;
-						}
-					}
-
-				});
-
-				this.fileMonitor = new FileAlterationMonitor(500);
-				this.fileMonitor.setThreadFactory(ThreadUtils.daemonFactory("UI/" + this.getClass().getName() + "/monitor"));
-				this.fileMonitor.addObserver(observer);
-				this.fileMonitor.start();
-
-				System.out.println("##########################");
-				System.out.println("Hot-reload enabled on " + this.getClass().getSimpleName());
-				System.out.println("##########################");
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-		}
+		this.refreshMonitor();
 	}
 
 	public final boolean onMouseScroll(final int value) {
@@ -456,21 +399,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.nodeList.forEach(Node::onDetach);
 		this.closed = true;
 
-		if (this.fileMonitor != null) {
-			ThreadUtils.daemonThread(() -> {
-				try {
-					final Field runningField = FileAlterationMonitor.class.getDeclaredField("running");
-					runningField.setAccessible(true);
-					final boolean running = runningField.getBoolean(this.fileMonitor);
-					if (running) {
-						this.fileMonitor.stop();
-					}
-					this.fileMonitor = null;
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-			}, "UI/" + this.getClass().getName() + "/monitor-close").start();
-		}
+		this.stopMonitor();
 
 		UIStoreHook.saveAll();
 		for (final Entry<Class<? extends UIStore>, UIStore> storeEntry : this.storeMap.entrySet()) {
@@ -607,11 +536,8 @@ public abstract class UI implements IUI, IndexedElement {
 		UIPropertyHook.save(this);
 		SignalReplay.clear();
 
-		final UIDataPopupObject popup = this.popup;
 		this.readData();
-		if (popup.active() != this.popup.active() || popup.transition() != this.popup.transition()) {
-			this.transition = this.createPopupTransition();
-		}
+		this.refreshTransition();
 
 		this.initialized = false;
 		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
@@ -713,15 +639,128 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	private void readData() {
-		this.data  = UIDataObject.getOrDefault(this.getClass());
-		this.debug = UIDataDebugObject.getOrDefault(this.getClass());
-		this.popup = UIDataPopupObject.getOrDefault(this.getClass());
+		final UIDataObject data = UIDataObject.getOrDefault(this.getClass());
+		final UIDataDebugObject debug = UIDataDebugObject.getOrDefault(this.getClass());
+		final UIDataPopupObject popup = UIDataPopupObject.getOrDefault(this.getClass());
+		this.data.update(this.annotatedData, data);
+		this.debug.update(this.annotatedDebug, debug);
+		this.popup.update(this.annotatedPopup, popup);
+		this.annotatedData  = data;
+		this.annotatedDebug = debug;
+		this.annotatedPopup = popup;
 	}
 
 	private void refreshView() {
 		this.zoomLevel.set(this.view.getZoom());
 		this.scaledWidth.set(this.view.getVisibleWidth());
 		this.scaledHeight.set(this.view.getVisibleHeight());
+	}
+
+	private void refreshTransition() {
+		if (this.popup.active() == this.transitionPopup.active() && this.popup.transition() == this.transitionPopup.transition()) {
+			return;
+		}
+
+		this.transitionPopup = new UIDataPopupObject(this.popup);
+		this.transition = this.createPopupTransition();
+	}
+
+	private void refreshMonitor() {
+		this.monitored = this.debug.hotreload();
+		if (!this.monitored) {
+			this.stopMonitor();
+		}
+
+		if (JOID.inst().isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
+			try {
+				final File location = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
+				final FileAlterationObserver observer = new FileAlterationObserver(location.isDirectory() ? location : location.getParentFile());
+				observer.addListener(new FileAlterationListener() {
+
+					private File change;
+
+					@Override
+					public void onFileChange(final @NonNull File file) {
+						this.track(file);
+					}
+
+					@Override
+					public void onStop(final @NonNull FileAlterationObserver observer) {
+						if (this.change == null) {
+							return;
+						}
+
+						try {
+							Thread.sleep(1000L);
+						} catch (final Exception e) {}
+
+						System.out.println("##########################");
+						System.out.println("Detected file change: " + this.change.getName());
+						this.change = null;
+						UI.this.reloadPending = true;
+					}
+
+					@Override
+					public void onStart(final @NonNull FileAlterationObserver observer) {}
+
+					@Override
+					public void onFileDelete(final @NonNull File file) {}
+
+					@Override
+					public void onFileCreate(final @NonNull File file) {
+						this.track(file);
+					}
+
+					@Override
+					public void onDirectoryDelete(final @NonNull File file) {}
+
+					@Override
+					public void onDirectoryCreate(final @NonNull File file) {}
+
+					@Override
+					public void onDirectoryChange(final @NonNull File file) {}
+
+					private void track(final File file) {
+						if (location.isDirectory() ? file.getName().endsWith(".class") : file.equals(location)) {
+							this.change = file;
+						}
+					}
+
+				});
+
+				this.fileMonitor = new FileAlterationMonitor(500);
+				this.fileMonitor.setThreadFactory(ThreadUtils.daemonFactory("UI/" + this.getClass().getName() + "/monitor"));
+				this.fileMonitor.addObserver(observer);
+				this.fileMonitor.start();
+
+				System.out.println("##########################");
+				System.out.println("Hot-reload enabled on " + this.getClass().getSimpleName());
+				System.out.println("##########################");
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void stopMonitor() {
+		final FileAlterationMonitor monitor = this.fileMonitor;
+		if (monitor == null) {
+			return;
+		}
+
+		this.fileMonitor = null;
+		ThreadUtils.daemonThread(() -> {
+			try {
+				final Field runningField = FileAlterationMonitor.class.getDeclaredField("running");
+				runningField.setAccessible(true);
+				final boolean running = runningField.getBoolean(monitor);
+				if (running) {
+					monitor.stop();
+				}
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}, "UI/" + this.getClass().getName() + "/monitor-close").start();
 	}
 
 	private Transition createPopupTransition() {
@@ -751,6 +790,10 @@ public abstract class UI implements IUI, IndexedElement {
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		this.view.anchorX(this.data.getAnchorPositionX()).anchorY(this.data.getAnchorPositionY());
+		this.refreshTransition();
+		if (this.monitored != this.debug.hotreload()) {
+			this.refreshMonitor();
+		}
 		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
 
 		final List<UIScheduledTask> toRemove = new ArrayList<>();

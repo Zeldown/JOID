@@ -46,18 +46,7 @@ public abstract class SliderNode<O> extends Node {
 		}
 
 		this.cursor.y((super.getHeight() - this.cursor.getHeight()) / 2D);
-		final O newValue = (O) this.valueSet.toArray()[Math.round((this.valueSet.size() - 1) * this.getProgress())];
-		if (!this.value.equals(newValue)) {
-			super.executeCallback(SliderNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
-				this.value = newValue;
-				super.sync(this.signal, newValue);
-			}, newValue);
-
-			if (!this.value.equals(newValue)) {
-				this.cursor.dragging(false);
-				this.place();
-			}
-		}
+		this.pick();
 
 		this.drawSlider(mouseX, mouseY);
 	}
@@ -132,6 +121,15 @@ public abstract class SliderNode<O> extends Node {
 		return (T) this;
 	}
 
+	protected final void release() {
+		if (this.value == null || this.valueSet.isEmpty() || this.cursor == null) {
+			return;
+		}
+
+		this.pick();
+		this.place();
+	}
+
 	private void change(final O value) {
 		if (value.equals(this.value)) {
 			return;
@@ -144,6 +142,23 @@ public abstract class SliderNode<O> extends Node {
 				this.place();
 			}
 		}, value);
+	}
+
+	private void pick() {
+		final O newValue = (O) this.valueSet.toArray()[Math.round((this.valueSet.size() - 1) * this.getProgress())];
+		if (this.value.equals(newValue)) {
+			return;
+		}
+
+		super.executeCallback(SliderNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+			this.value = newValue;
+			super.sync(this.signal, newValue);
+		}, newValue);
+
+		if (!this.value.equals(newValue)) {
+			this.cursor.dragging(false);
+			this.place();
+		}
 	}
 
 	private void place() {

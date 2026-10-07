@@ -225,8 +225,21 @@ public class UIBridgeTest {
 		this.bridges.open(menu).open(hud);
 		this.trace.clear();
 		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
-		Assert.assertEquals(Collections.singletonList("close hud"), this.trace);
+		Assert.assertEquals(Arrays.asList("typed hud \0 ESCAPE", "close hud"), this.trace);
 		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList().ordered());
+	}
+
+	@Test
+	public void keepsTheTopUiOpenWhenItConsumesEscape() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final TraceUI hud = new TraceUI("hud", this.trace);
+		hud.cancel = true;
+		this.bridges.open(menu).open(hud);
+		this.trace.clear();
+		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
+		Assert.assertEquals(Collections.singletonList("typed hud \0 ESCAPE"), this.trace);
+		Assert.assertTrue(this.bridges.getUi().isOpened(hud));
+		Assert.assertTrue(this.bridges.getUi().isOpened(menu));
 	}
 
 	@Test
@@ -248,7 +261,7 @@ public class UIBridgeTest {
 		this.bridges.open(menu).open(hud);
 		this.trace.clear();
 		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
-		Assert.assertEquals(Collections.singletonList("close hud"), this.trace);
+		Assert.assertEquals(Arrays.asList("typed hud \0 ESCAPE", "close hud"), this.trace);
 		Assert.assertTrue(this.bridges.getUi().isOpened(hud));
 		Assert.assertTrue(this.bridges.getUi().isOpened(menu));
 	}

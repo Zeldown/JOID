@@ -357,24 +357,17 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
-	public void selectsItsWholeTextWhenReachedWithTab() {
+	public void keepsItsFocusAndItsCursorOnTab() {
 		final IntegerFieldNode first = IntegerFieldNode.create(0D, 0D, 100D, 30D).max(10).value(3).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
 		final TextFieldNode second = TextFieldNode.create(0D, 100D, 100D, 30D).text("hello").info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
 		this.bridges.open(new NodeUI(first, second));
 		first.focused(true).cursorPosition(1);
-		this.type(first, "5");
-		this.press(first, Key.TAB);
-		Assert.assertFalse(first.isFocused());
-		Assert.assertEquals("10", first.getText());
-		Assert.assertTrue(second.isFocused());
-		Assert.assertEquals(0, second.getSelectionStart());
-		Assert.assertEquals(5, second.getCursorPos());
-		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
-		second.keyPressed(' ', Key.TAB, InternalContext.create());
-		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
+		first.keyPressed('\t', Key.TAB, InternalContext.create());
 		Assert.assertTrue(first.isFocused());
-		Assert.assertEquals(0, first.getSelectionStart());
-		Assert.assertEquals(2, first.getCursorPos());
+		Assert.assertFalse(second.isFocused());
+		Assert.assertEquals("3", first.getText());
+		Assert.assertEquals(-1, first.getSelectionStart());
+		Assert.assertEquals(1, first.getCursorPos());
 	}
 
 	@Test

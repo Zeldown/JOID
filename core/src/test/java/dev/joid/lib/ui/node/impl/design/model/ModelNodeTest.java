@@ -34,7 +34,6 @@ public class ModelNodeTest {
 		Assert.assertEquals(1D, node.getSize(), 0D);
 		Assert.assertEquals(0D, node.getRotationYaw(), 0D);
 		Assert.assertEquals(0D, node.getRotationPitch(), 0D);
-		Assert.assertEquals(-1D, node.getPipeLineLevel(), 0D);
 	}
 
 	@Test
@@ -104,19 +103,10 @@ public class ModelNodeTest {
 	}
 
 	@Test
-	public void raisesTheNextNodesAboveItsDepth() {
+	public void leavesTheNextNodesAtItsDepth() {
 		final NodeUI ui = new NodeUI(ModelNode.create(100D, 100D, 200D, 200D).model(new RecordingModel(2D, 2D, 2D)));
 		this.bridges.open(ui).frame();
-		Assert.assertEquals(Math.sqrt(12D) * 100D, ui.getRenderPipelineLevel(), 1E-6D);
-	}
-
-	@Test
-	public void raisesTheNextNodesByItsPipelineLevel() {
-		final ModelNode node = ModelNode.create(100D, 100D, 200D, 200D).model(new RecordingModel(2D, 2D, 2D));
-		Assert.assertSame(node, node.pipeLineLevel(5D));
-		final NodeUI ui = new NodeUI(node);
-		this.bridges.open(ui).frame();
-		Assert.assertEquals(5D, ui.getRenderPipelineLevel(), 0D);
+		Assert.assertEquals(0D, ui.getRenderPipelineLevel(), 0D);
 	}
 
 	@Test

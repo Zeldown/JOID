@@ -178,6 +178,33 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void snapsItsCursorOnTheStepOfItsValueOnRelease() {
+		final List<Integer> changes = new ArrayList<>();
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor()).onChange((node, value) -> changes.add(value));
+		this.bridges.open(new NodeUI(slider)).frame();
+		this.bridges.move(400D, 125D).frames(2);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.move(150D, 125D).frames(2);
+		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		Assert.assertFalse(slider.getCursor().isDragging());
+		Assert.assertEquals(43.75D, slider.getCursor().getX(), 1E-9D);
+		Assert.assertEquals(2, slider.getValue().intValue());
+		this.bridges.frame();
+		Assert.assertEquals(43.75D, slider.getCursor().getX(), 1E-9D);
+		Assert.assertEquals(Arrays.asList(7, 2), changes);
+	}
+
+	@Test
+	public void picksTheValueUnderItsCursorOnRelease() {
+		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor());
+		this.bridges.open(new NodeUI(slider)).frame();
+		slider.getCursor().dragging(true).x(300D);
+		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		Assert.assertEquals(8, slider.getValue().intValue());
+		Assert.assertEquals(306.25D, slider.getCursor().getX(), 1E-9D);
+	}
+
+	@Test
 	public void ignoresAPressBesideIt() {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).cursor(new Cursor());
 		this.bridges.open(new NodeUI(slider)).frame();

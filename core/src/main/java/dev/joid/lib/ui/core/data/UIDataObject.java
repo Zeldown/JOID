@@ -190,4 +190,48 @@ public final class UIDataObject implements UIData {
 		return this;
 	}
 
+	public final @NonNull UIDataObject update(final @NonNull UIData previous, final @NonNull UIData next) {
+		if (previous.zlevel() != next.zlevel()) {
+			this.setZlevel(next.zlevel());
+		}
+
+		if (previous.active() != next.active()) {
+			this.setActive(next.active());
+		}
+
+		if (previous.visible() != next.visible()) {
+			this.setVisible(next.visible());
+		}
+
+		if (previous.zoomable() != next.zoomable()) {
+			this.setZoomable(next.zoomable());
+		}
+
+		if (previous.closeable() != next.closeable()) {
+			this.setCloseable(next.closeable());
+		}
+
+		if (previous.background() != next.background()) {
+			this.setBackground(next.background());
+		}
+
+		if (previous.projection() != next.projection()) {
+			this.setProjection(next.projection());
+		}
+
+		if (previous.anchorX() != next.anchorX()) {
+			this.setAnchorX(next.anchorX());
+		}
+
+		if (previous.anchorY() != next.anchorY()) {
+			this.setAnchorY(next.anchorY());
+		}
+
+		if (!previous.backgroundColor().equals(next.backgroundColor())) {
+			this.setBackgroundColor(next.backgroundColor());
+		}
+
+		return this;
+	}
+
 }

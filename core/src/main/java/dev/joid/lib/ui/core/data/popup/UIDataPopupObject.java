@@ -59,4 +59,16 @@ public final class UIDataPopupObject implements UIDataPopup {
 		return this;
 	}
 
+	public @NonNull UIDataPopupObject update(final @NonNull UIDataPopup previous, final @NonNull UIDataPopup next) {
+		if (previous.active() != next.active()) {
+			this.setActive(next.active());
+		}
+
+		if (previous.transition() != next.transition()) {
+			this.setTransition(next.transition());
+		}
+
+		return this;
+	}
+
 }

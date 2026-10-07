@@ -59,4 +59,16 @@ public final class UIDataDebugObject implements UIDataDebug {
 		return this;
 	}
 
+	public @NonNull UIDataDebugObject update(final @NonNull UIDataDebug previous, final @NonNull UIDataDebug next) {
+		if (previous.profiler() != next.profiler()) {
+			this.setProfiler(next.profiler());
+		}
+
+		if (previous.hotreload() != next.hotreload()) {
+			this.setHotreload(next.hotreload());
+		}
+
+		return this;
+	}
+
 }

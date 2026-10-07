@@ -6,9 +6,14 @@ press LEFT
 release LEFT
 wait 100
 type Hello JOID
-key TAB
 wait 100
-type <b>new</b> tags
+move 600 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+key END
+type  <b>new</b> tags
 wait 100
 move 1320 105
 wait 100
@@ -86,6 +91,9 @@ move 1320 785
 wait 100
 press LEFT
 release LEFT
+wait 100
+type gone
+key ESCAPE
 wait 100
 move 1680 785
 wait 100
