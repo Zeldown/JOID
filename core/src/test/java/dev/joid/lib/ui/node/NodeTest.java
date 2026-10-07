@@ -60,6 +60,7 @@ import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.SignalSubscriber;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -759,6 +760,21 @@ public class NodeTest {
 		node.load(node.getUi());
 		Assert.assertEquals(2L, node.getUpdateCount());
 		Assert.assertEquals(56L, node.getLastUpdate());
+	}
+
+	@Test
+	public void countsTheRefreshesOfItsFollowedProperties() {
+		final DoubleSignal x = DoubleSignal.of(0D);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).x(x);
+		this.bridges.open(new NodeUI(node)).frames(2);
+		Assert.assertEquals(1L, node.getUpdateCount());
+		x.set(20D);
+		this.bridges.frame();
+		Assert.assertEquals(20D, node.getX(), 0D);
+		Assert.assertEquals(2L, node.getUpdateCount());
+		Assert.assertEquals(this.bridges.getClock().currentTimeMillis(), node.getLastUpdate());
+		this.bridges.frames(2);
+		Assert.assertEquals(2L, node.getUpdateCount());
 	}
 
 	@Test
@@ -1609,6 +1625,20 @@ public class NodeTest {
 	}
 
 	@Test
+	public void refusesToDragATopLevelNodeInsideItsParent() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.parent());
+		try {
+			this.press(node, 110D, 110D);
+			Assert.fail("A top level node has no parent to be dragged inside");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The node RectNode is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()", expected.getMessage());
+		}
+		Assert.assertFalse(node.isDragging());
+		this.bridges.frames(2);
+		Assert.assertEquals(100D, node.getX(), 0D);
+	}
+
+	@Test
 	public void bringsAChildBackInsideItsParentFromItsAttachedPosition() {
 		final RectNode child = RectNode.create(480D, 10D, 50D, 50D).draggable(DraggableProperty.parent());
 		this.bridges.open(new NodeUI(ContainerNode.create(300D, 200D, 500D, 500D).append(child))).frames(100);
@@ -1627,20 +1657,6 @@ public class NodeTest {
 		list.scrollOffsetY(-50D).updateScroll();
 		this.bridges.frames(2);
 		Assert.assertEquals(60D, child.getY(), 1E-5D);
-	}
-
-	@Test
-	public void refusesToDragATopLevelNodeInsideItsParent() {
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.parent());
-		try {
-			this.press(node, 110D, 110D);
-			Assert.fail("A top level node has no parent to be dragged inside");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The node RectNode is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()", expected.getMessage());
-		}
-		Assert.assertFalse(node.isDragging());
-		this.bridges.frames(2);
-		Assert.assertEquals(100D, node.getX(), 0D);
 	}
 
 	@Test

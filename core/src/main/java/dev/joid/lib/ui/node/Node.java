@@ -135,7 +135,7 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_HOVER_START    = NodeCallbackRegistry.next(NodeHoverStartCallback.class);
 
 	private final transient List<Predicate<Node>>                     waitingList;
-	private final transient Map<String, Runnable>                     sourceMap;
+	private final transient Map<String, NodeSource<?>>                sourceMap;
 	private final transient List<SignalSubscriber<?>>                 subscriptionList;
 	private final transient Map<Integer, List<NodeCallbackObject<?>>> callbackMap;
 
@@ -1716,13 +1716,19 @@ public abstract class Node implements INode {
 			return;
 		}
 
-		for (final Entry<String, Runnable> source : new ArrayList<>(this.sourceMap.entrySet())) {
+		boolean refreshed = false;
+		for (final Entry<String, NodeSource<?>> source : new ArrayList<>(this.sourceMap.entrySet())) {
 			try {
-				source.getValue().run();
+				refreshed |= source.getValue().pull();
 			} catch (final RuntimeException exception) {
 				System.err.println("[JOID] The " + source.getKey() + " of " + this.getClass().getSimpleName() + " cannot take its new value: " + exception);
 				exception.printStackTrace();
 			}
+		}
+
+		if (refreshed) {
+			this.updateCount++;
+			this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		}
 	}
 
@@ -2231,20 +2237,22 @@ public abstract class Node implements INode {
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private static final class NodeSource<V> implements Runnable {
+	private static final class NodeSource<V> {
 
 		private final Supplier<V> supplier;
 		private final Consumer<V> consumer;
 
 		private V value;
 
-		@Override
-		public void run() {
+		private boolean pull() {
 			final V next = this.supplier.get();
-			if (!Objects.equals(this.value, next)) {
-				this.value = next;
-				this.consumer.accept(next);
+			if (Objects.equals(this.value, next)) {
+				return false;
 			}
+
+			this.value = next;
+			this.consumer.accept(next);
+			return true;
 		}
 
 	}
