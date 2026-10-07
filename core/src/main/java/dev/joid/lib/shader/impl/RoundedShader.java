@@ -61,6 +61,14 @@ public class RoundedShader extends ShaderImpl {
 
 		final FloatUniform strokeUniform = RoundedShader.INSTANCE.shader.getFloatUniform("u_Stroke");
 		strokeUniform.setValue(0F);
+
+		final IntUniform alignedUniform = RoundedShader.INSTANCE.shader.getIntUniform("u_Aligned");
+		alignedUniform.setValue(1);
+	}
+
+	public void aligned(final boolean aligned) {
+		final IntUniform alignedUniform = RoundedShader.INSTANCE.shader.getIntUniform("u_Aligned");
+		alignedUniform.setValue(aligned ? 1 : 0);
 	}
 
 	public void stroke(final float stroke) {

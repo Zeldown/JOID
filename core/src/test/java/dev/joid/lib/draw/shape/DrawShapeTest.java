@@ -21,6 +21,7 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.shader.impl.RoundedShader;
@@ -116,6 +117,69 @@ public class DrawShapeTest {
 		Assert.assertNotEquals(Math.rint(draw.getLeft()), draw.getLeft(), 1E-3D);
 	}
 
+	@Test
+	public void smoothsTheEdgesOfARotatedRectangle() {
+		this.bridges.resize(1920, 1080);
+		this.bridges.getRender().pushMatrix();
+		try {
+			this.bridges.getRender().translate(200D, 0D, 0D);
+			this.bridges.getRender().rotate(90D, 0D, 0D, 1D);
+			DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, new Color(1F, 0F, 0F, 1F));
+		} finally {
+			this.bridges.getRender().popMatrix();
+		}
+
+		final Draw draw = this.single(1F, 0F, 0F);
+		final RecordingShader shader = (RecordingShader) RoundedShader.inst().getShader();
+		Assert.assertSame(shader, draw.getShader());
+		Assert.assertEquals(0F, (Float) shader.getValues().get("u_Radius"), 0F);
+		Assert.assertArrayEquals(new float[] {10.5F, 20.5F, 109.5F, 69.5F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-4F);
+		Assert.assertEquals(0, shader.getValues().get("u_Aligned"));
+		Assert.assertEquals(9F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
+		Assert.assertEquals(71F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
+		Assert.assertNull(this.bridges.getRender().getShader());
+	}
+
+	@Test
+	public void smoothsTheStraightEdgesOfARotatedRoundedRectangle() {
+		this.bridges.resize(1920, 1080);
+		this.bridges.getRender().pushMatrix();
+		try {
+			this.bridges.getRender().translate(200D, 0D, 0D);
+			this.bridges.getRender().rotate(90D, 0D, 0D, 1D);
+			DrawUtils.SHAPE.drawRoundedRect(10D, 20D, 100D, 50D, new Color(0F, 1F, 0F, 1F), 8F);
+		} finally {
+			this.bridges.getRender().popMatrix();
+		}
+
+		final Draw draw = this.single(0F, 1F, 0F);
+		final RecordingShader shader = (RecordingShader) RoundedShader.inst().getShader();
+		Assert.assertSame(shader, draw.getShader());
+		Assert.assertArrayEquals(new float[] {18F, 28F, 102F, 62F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-4F);
+		Assert.assertEquals(0, shader.getValues().get("u_Aligned"));
+		Assert.assertEquals(9F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
+		Assert.assertEquals(71F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
+	}
+
+	@Test
+	public void keepsTheShaderOfTheCallerOnARotatedRectangle() {
+		this.bridges.resize(1920, 1080);
+		final RecordingShader shader = new RecordingShader();
+		shader.bind();
+		this.bridges.getRender().pushMatrix();
+		try {
+			this.bridges.getRender().translate(200D, 0D, 0D);
+			this.bridges.getRender().rotate(90D, 0D, 0D, 1D);
+			DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, new Color(1F, 0F, 0F, 1F));
+		} finally {
+			this.bridges.getRender().popMatrix();
+		}
+
+		Assert.assertSame(shader, this.single(1F, 0F, 0F).getShader());
+		Assert.assertEquals(10F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
+		Assert.assertEquals(70F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
+	}
+
 	@Test(expected = RuntimeException.class)
 	public void refusesASecondInstance() {
 		Assert.assertSame(DrawUtils.SHAPE, DrawShape.getInstance());
@@ -142,6 +206,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(draw.getRight() * 1920D / 1366D - 8D, inner[2], 1E-3D);
 		Assert.assertEquals(draw.getBottom() * 1080D / 768D - 8D, inner[3], 1E-3D);
 		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), shader.getValues().get("u_Type"));
+		Assert.assertEquals(1, shader.getValues().get("u_Aligned"));
 		Assert.assertNull(this.bridges.getRender().getShader());
 	}
 

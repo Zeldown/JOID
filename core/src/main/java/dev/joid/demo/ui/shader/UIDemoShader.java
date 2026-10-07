@@ -8,6 +8,9 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.render.modifier.Rotation;
+import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.transform.operation.RotateOperation;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
@@ -15,6 +18,7 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
@@ -43,6 +47,31 @@ public class UIDemoShader extends UIDemo {
 				RectNode.create(0, 0, 200, 120).color(Color.RED.toGradient(Color.BLUE)).effect(RoundedNodeEffect.create(20F)).attach(node);
 				RectNode.create(0, 0, 200, 120).color(Color.CYAN.toGradient(Color.MAGENTA, new Vector4f(0F, 0F, 0F, 1F))).effect(RoundedNodeEffect.create(30F)).attach(node);
 				RectNode.create(0, 0, 200, 120).color(Color.ORANGE.toGradient(Color.PINK)).effect(RoundedNodeEffect.create(60F)).attach(node);
+				RectNode
+				.create(0, 0, 160, 80)
+				.color(Color.RED)
+				.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(10D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+				.attach(node);
+				RectNode
+				.create(0, 0, 160, 80)
+				.color(Color.ORANGE.toGradient(Color.PINK))
+				.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(-8D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+				.attach(node);
+				RectNode
+				.create(0, 0, 160, 80)
+				.color(Color.TRANSPARENT)
+				.self(rect -> rect.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), Color.WHITE, 20F)).effect(TransformNodeEffect.create(new RotateOperation(10D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+				.attach(node);
+				RectNode
+				.create(0, 0, 160, 80)
+				.color(Color.TRANSPARENT)
+				.self(rect -> rect.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), Color.CYAN, 20F, 3D)).effect(TransformNodeEffect.create(new RotateOperation(-10D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+				.attach(node);
+				RectNode
+				.create(0, 0, 160, 80)
+				.color(Color.BLUE)
+				.self(rect -> rect.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(rect.getX(), rect.getY(), rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight(), Color.WHITE, 3D)).effect(TransformNodeEffect.create(new RotateOperation(6D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+				.attach(node);
 			}).attach(flex);
 			FlexNode.horizontal(0, 0, 120).margin(20).body(node -> {
 				RectNode.create(0, 0, 120, 120).color(Color.RED.toGradient(Color.YELLOW)).effect(CircleNodeEffect.create()).attach(node);

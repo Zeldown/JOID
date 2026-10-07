@@ -10,6 +10,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.matrix.PixelGrid.Span;
+import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.color.Color;
@@ -278,16 +279,43 @@ public final class DrawShape {
 		final double right = grid.snapRight(x, x + width);
 		final double bottom = grid.snapBottom(y, y + height);
 		RoundedShader.use(radius, (float) (left + (roundedLeft ? radius : 0)), (float) (top + (roundedTop ? radius : 0)), (float) (right - (roundedRight ? radius : 0)), (float) (bottom - (roundedBottom ? radius : 0)), () -> {
+			RoundedShader.inst().aligned(grid.isAligned());
 			RoundedShader.inst().stroke((float) stroke);
 			if (color.isGradient()) {
 				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) left, (float) top, (float) right, (float) bottom));
 			}
 
-			this.drawRect(left, top, right - left, bottom - top, color.isGradient() ? Color.WHITE : color);
+			if (grid.isAligned()) {
+				this.drawRect(left, top, right - left, bottom - top, color.isGradient() ? Color.WHITE : color);
+			} else {
+				this.drawQuad(left - 1D, top - 1D, right + 1D, bottom + 1D, color.isGradient() ? Color.WHITE : color);
+			}
 		});
 	}
 
 	private void drawEdges(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final IShader rounded = RoundedShader.inst().getShader();
+		if (render.getPixelGrid().isAligned() || render.getShader() != null || rounded == null || !rounded.isActive()) {
+			this.drawQuad(left, top, right, bottom, color);
+			return;
+		}
+
+		final double minX = Math.min(left, right);
+		final double minY = Math.min(top, bottom);
+		final double maxX = Math.max(left, right);
+		final double maxY = Math.max(top, bottom);
+		RoundedShader.use(0F, (float) (minX + 0.5D), (float) (minY + 0.5D), (float) (maxX - 0.5D), (float) (maxY - 0.5D), () -> {
+			RoundedShader.inst().aligned(false);
+			if (color.isGradient()) {
+				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
+			}
+
+			this.drawQuad(minX - 1D, minY - 1D, maxX + 1D, maxY + 1D, color.isGradient() ? Color.WHITE : color);
+		});
+	}
+
+	private void drawQuad(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
 		this.drawPolygon(color, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
 	}
 

@@ -6,6 +6,7 @@ uniform float u_Radius;
 uniform vec4 u_InnerRect;
 uniform int u_Type;
 uniform float u_Stroke;
+uniform int u_Aligned;
 
 uniform int u_Gradient;
 uniform vec2 u_StartPos;
@@ -17,6 +18,10 @@ uniform vec4 u_Canvas;
 uniform sampler2D tex;
 
 vec2 snappedPosition() {
+    if (u_Aligned == 0) {
+        return vPosition;
+    }
+
     return floor(vPosition * 256.0 + 0.5) / 256.0;
 }
 
@@ -54,8 +59,12 @@ void main() {
     }
 
     float mask = 1.0 - smoothstep(0.0, 1.0, distanceToCorner);
+    if (u_Aligned == 0) {
+        mask = 1.0 - clamp(distanceToCorner, 0.0, 1.0);
+    }
+
     if (u_Stroke > 0.0) {
-        mask *= smoothstep(-0.5, 0.5, distanceToCorner + u_Stroke);
+        mask *= u_Aligned == 0 ? clamp(distanceToCorner + u_Stroke + 0.5, 0.0, 1.0) : smoothstep(-0.5, 0.5, distanceToCorner + u_Stroke);
     }
 
     if (u_Type == 1) {
