@@ -12,6 +12,8 @@ import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.demo.replay.ReplayCountedSignal;
+import dev.joid.demo.replay.ReplayLocalUI;
 import dev.joid.demo.replay.ReplayPitfallsUI;
 import dev.joid.demo.replay.ReplayScenarioUI;
 import dev.joid.internal.JOID;
@@ -170,6 +172,73 @@ public class SignalReplayTest {
 		Assert.assertEquals("", this.open(ui));
 		ui.getClicks().set(4);
 		Assert.assertEquals("Inner 4", SignalReplayTest.node(ui, 0).getText().get());
+	}
+
+	@Test
+	public void followsASignalHeldInALocalVariable() {
+		final ReplayLocalUI ui = new ReplayLocalUI("simple");
+		Assert.assertEquals("", this.open(ui));
+		ui.getSignalList().get(0).set(3);
+		Assert.assertEquals("Clicks: 3", SignalReplayTest.node(ui, 0).getText().get());
+		ui.getSignalList().get(0).set(4);
+		Assert.assertEquals("Clicks: 4", SignalReplayTest.node(ui, 0).getText().get());
+		Assert.assertEquals(1, ui.getCreated());
+	}
+
+	@Test
+	public void followsASignalCreatedInALocalVariableWithoutCreatingItAgain() {
+		final ReplayLocalUI ui = new ReplayLocalUI("direct");
+		ReplayCountedSignal.CREATED.set(0);
+		Assert.assertEquals("", this.open(ui));
+		ui.getSignalList().get(0).set(2);
+		Assert.assertEquals("Direct 2", SignalReplayTest.node(ui, 0).getText().get());
+		ui.getSignalList().get(0).set(5);
+		Assert.assertEquals("Direct 5", SignalReplayTest.node(ui, 0).getText().get());
+		Assert.assertEquals(1, ReplayCountedSignal.CREATED.get());
+	}
+
+	@Test
+	public void followsSeveralSignalsHeldInLocalVariables() {
+		final ReplayLocalUI ui = new ReplayLocalUI("several");
+		Assert.assertEquals("", this.open(ui));
+		ui.getSignalList().get(0).set(5);
+		ui.getSignalList().get(1).set(7);
+		Assert.assertEquals("5 / 7", SignalReplayTest.node(ui, 0).getText().get());
+		Assert.assertEquals("Right 7, left 5", SignalReplayTest.node(ui, 1).getText().get());
+		Assert.assertEquals("Sum 15", SignalReplayTest.node(ui, 2).getText().get());
+		Assert.assertEquals(2, ui.getCreated());
+	}
+
+	@Test
+	public void followsALocalSignalCombinedWithAField() {
+		final ReplayLocalUI ui = new ReplayLocalUI("field");
+		Assert.assertEquals("", this.open(ui));
+		ui.getSignalList().get(0).set(2);
+		Assert.assertEquals("Total 102", SignalReplayTest.node(ui, 0).getText().get());
+		ui.getOther().set(200);
+		Assert.assertEquals("Total 202", SignalReplayTest.node(ui, 0).getText().get());
+		Assert.assertEquals(1, ui.getCreated());
+	}
+
+	@Test
+	public void followsALocalSignalCapturedByABody() {
+		final ReplayLocalUI ui = new ReplayLocalUI("body");
+		Assert.assertEquals("", this.open(ui));
+		ui.getSignalList().get(0).set(6);
+		Assert.assertEquals("Body 6", SignalReplayTest.node(ui, 0).getText().get());
+		Assert.assertEquals(1, ui.getCreated());
+	}
+
+	@Test
+	public void followsTheLocalSignalOfEachTurnOfALoop() {
+		final ReplayLocalUI ui = new ReplayLocalUI("loop");
+		Assert.assertEquals("", this.open(ui));
+		ui.getSignalList().get(0).set(10);
+		ui.getSignalList().get(2).set(30);
+		Assert.assertEquals("Row 10", SignalReplayTest.node(ui, 0).getText().get());
+		Assert.assertEquals("Row 1", SignalReplayTest.node(ui, 1).getText().get());
+		Assert.assertEquals("Row 30", SignalReplayTest.node(ui, 2).getText().get());
+		Assert.assertEquals(3, ui.getCreated());
 	}
 
 	@Test

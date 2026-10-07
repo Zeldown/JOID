@@ -357,7 +357,8 @@ public final class ReplayMethod {
 			final AbstractInsnNode instruction = this.instructions[index];
 			if (instruction instanceof MethodInsnNode) {
 				final String owner = ((MethodInsnNode) instruction).owner;
-				if (!owner.startsWith("java/") && !this.isSignal(owner)) {
+				final Type returnType = Type.getReturnType(((MethodInsnNode) instruction).desc);
+				if (!owner.startsWith("java/") && !this.isSignal(owner) || returnType.getSort() == Type.OBJECT && this.isSignal(returnType.getInternalName())) {
 					return false;
 				}
 			} else if (instruction.getOpcode() == Opcodes.NEW) {
