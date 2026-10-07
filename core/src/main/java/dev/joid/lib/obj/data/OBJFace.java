@@ -22,7 +22,10 @@ public final class OBJFace {
 			this.faceNormal = this.normal();
 		}
 
-		tessellator.setNormal(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
+		final boolean smooth = this.vertexNormals != null && this.vertexNormals.length == this.vertices.length;
+		if (!smooth) {
+			tessellator.setNormal(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
+		}
 
 		float averageU = 0F;
 		float averageV = 0F;
@@ -39,6 +42,16 @@ public final class OBJFace {
 		float offsetU;
 		float offsetV;
 		for (int i = 0; i < this.vertices.length; ++i) {
+			if (smooth) {
+				final OBJVertex normal = this.vertexNormals[i];
+				final float length = (float) Math.sqrt(normal.getX() * normal.getX() + normal.getY() * normal.getY() + normal.getZ() * normal.getZ());
+				if (length > 0F) {
+					tessellator.setNormal(normal.getX() / length, normal.getY() / length, normal.getZ() / length);
+				} else {
+					tessellator.setNormal(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
+				}
+			}
+
 			if (this.textureCoordinates != null && this.textureCoordinates.length > 0) {
 				offsetU = textureOffset;
 				offsetV = textureOffset;

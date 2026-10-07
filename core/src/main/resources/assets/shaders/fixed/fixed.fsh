@@ -1,6 +1,6 @@
 in vec2 vTexCoord;
 in vec4 vColor;
-flat in vec4 vLitColor;
+in vec4 vLitColor;
 
 uniform sampler2D tex;
 

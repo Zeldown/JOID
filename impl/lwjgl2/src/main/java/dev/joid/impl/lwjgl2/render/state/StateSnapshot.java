@@ -38,6 +38,7 @@ public final class StateSnapshot {
 	private final int     shadeModel;
 	private final float[] ambient;
 	private final boolean lighting;
+	private final boolean normalize;
 	private final boolean colorMaterial;
 
 	private final float   lineWidth;
@@ -73,6 +74,7 @@ public final class StateSnapshot {
 		this.lighting      = GL11.glIsEnabled(GL11.GL_LIGHTING);
 		this.light0        = GL11.glIsEnabled(GL11.GL_LIGHT0);
 		this.light1        = GL11.glIsEnabled(GL11.GL_LIGHT1);
+		this.normalize     = GL11.glIsEnabled(GL11.GL_NORMALIZE);
 		this.colorMaterial = GL11.glIsEnabled(GL11.GL_COLOR_MATERIAL);
 		this.shadeModel    = GL11.glGetInteger(GL11.GL_SHADE_MODEL);
 		this.ambient       = StateSnapshot.getFloats(GL11.GL_LIGHT_MODEL_AMBIENT, 4);
@@ -115,6 +117,7 @@ public final class StateSnapshot {
 		RenderBridge.toggle(GL11.GL_LIGHTING, this.lighting);
 		RenderBridge.toggle(GL11.GL_LIGHT0, this.light0);
 		RenderBridge.toggle(GL11.GL_LIGHT1, this.light1);
+		RenderBridge.toggle(GL11.GL_NORMALIZE, this.normalize);
 		RenderBridge.toggle(GL11.GL_COLOR_MATERIAL, this.colorMaterial);
 		GL11.glShadeModel(this.shadeModel);
 		StateSnapshot.FLOAT_BUFFER.clear();

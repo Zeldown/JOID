@@ -126,6 +126,15 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void litsAFaceTheSameAtAnyScale() {
+		final SnapshotImage unit = RenderBridgeContractSuite.render(bridge -> RenderBridgeContractSuite.drawLitFace(bridge, 1D));
+		final SnapshotImage scaled = RenderBridgeContractSuite.render(bridge -> RenderBridgeContractSuite.drawLitFace(bridge, 100D));
+		final int lit = unit.getPixels()[32 + 32 * unit.getWidth()];
+		Assert.assertTrue("A face turned to the light must be brighter than the ambient light", (lit & 255) > 0x80);
+		RenderBridgeContractSuite.assertPixel(scaled, 32, 32, lit);
+	}
+
+	@Test
 	public void exposesTheLineState() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.lineWidth(3F);
@@ -351,6 +360,19 @@ public abstract class RenderBridgeContractSuite {
 		return BridgeHandler.RENDER.get().createShader(vertex, ShaderSource.parse(ShaderStage.FRAGMENT, fragment), BlendState.NORMAL);
 	}
 
+	private static void drawLitFace(final IRenderBridge bridge, final double scale) {
+		bridge.pushMatrix();
+		try {
+			bridge.translate(12D, 12D, -100D);
+			bridge.scale(scale, scale, scale);
+			bridge.lighting(true);
+			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, (float) (40D / scale), (float) (40D / scale), false, 0xFF808080, true));
+		} finally {
+			bridge.lighting(false);
+			bridge.popMatrix();
+		}
+	}
+
 	private static void drawInDepth(final IRenderBridge bridge, final boolean clearBetween) {
 		bridge.pushMatrix();
 		try {
@@ -409,6 +431,10 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color) {
+		return RenderBridgeContractSuite.quad(x, y, width, height, texture, color, false);
+	}
+
+	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color, final boolean normal) {
 		final float[][] corners = {{x, y, 0F, 0F}, {x + width, y, 1F, 0F}, {x + width, y + height, 1F, 1F}, {x, y, 0F, 0F}, {x + width, y + height, 1F, 1F}, {x, y + height, 0F, 1F}};
 		final ByteBuffer buffer = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
 		for (int i = 0; i < corners.length; i++) {
@@ -421,8 +447,9 @@ public abstract class RenderBridgeContractSuite {
 			buffer.put(offset + VertexBuffer.COLOR_OFFSET + 1, (byte) (color >> 8));
 			buffer.put(offset + VertexBuffer.COLOR_OFFSET + 2, (byte) color);
 			buffer.put(offset + VertexBuffer.COLOR_OFFSET + 3, (byte) (color >> 24));
+			buffer.put(offset + VertexBuffer.NORMAL_OFFSET + 2, (byte) 127);
 		}
-		return VertexBuffer.create(buffer, corners.length, texture, color != 0, false);
+		return VertexBuffer.create(buffer, corners.length, texture, color != 0, normal);
 	}
 
 }

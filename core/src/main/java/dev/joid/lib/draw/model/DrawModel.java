@@ -28,8 +28,7 @@ public final class DrawModel {
 		render.pushState();
 		try {
 			render.translate(x, y, 0D);
-			render.scale(sizeX, sizeY, sizeZ);
-			render.rotate(180D, 0D, 1D, 0D);
+			render.scale(sizeX, -sizeY, sizeZ);
 
 			render.cull(false);
 			render.lighting(true);

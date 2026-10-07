@@ -23,22 +23,22 @@ public class DrawModelTest {
 	}
 
 	@Test
-	public void drawsAModelMirroredAtItsPosition() {
+	public void drawsAModelWithTheObjAxesAtItsPosition() {
 		final RecordingModel model = new RecordingModel(this.bridges.getRender(), false);
 		DrawUtils.MODEL.drawModel(200D, 100D, 30D, model);
 		Assert.assertEquals(200D, model.grid.toScreenX(0D), 1E-3D);
-		Assert.assertEquals(170D, model.grid.toScreenX(1D), 1E-3D);
-		Assert.assertEquals(1080D - 130D, model.grid.toScreenY(1D), 1E-3D);
-		Assert.assertEquals(-30F, model.depth, 1E-4F);
+		Assert.assertEquals(230D, model.grid.toScreenX(1D), 1E-3D);
+		Assert.assertEquals(1080D - 70D, model.grid.toScreenY(1D), 1E-3D);
+		Assert.assertEquals(30F, model.depth, 1E-4F);
 	}
 
 	@Test
 	public void scalesEachAxisOfAModel() {
 		final RecordingModel model = new RecordingModel(this.bridges.getRender(), false);
 		DrawUtils.MODEL.drawModel(200D, 100D, 10D, 20D, 30D, model);
-		Assert.assertEquals(190D, model.grid.toScreenX(1D), 1E-3D);
-		Assert.assertEquals(1080D - 120D, model.grid.toScreenY(1D), 1E-3D);
-		Assert.assertEquals(-30F, model.depth, 1E-4F);
+		Assert.assertEquals(210D, model.grid.toScreenX(1D), 1E-3D);
+		Assert.assertEquals(1080D - 80D, model.grid.toScreenY(1D), 1E-3D);
+		Assert.assertEquals(30F, model.depth, 1E-4F);
 	}
 
 	@Test

@@ -44,6 +44,28 @@ public class OBJFaceTest {
 	}
 
 	@Test
+	public void rendersEachVertexWithItsOwnNormal() {
+		final Tessellator tessellator = OBJFaceTest.tessellator();
+		final OBJFace face = OBJFaceTest.face(new OBJVertex(0F, 0F), new OBJVertex(1F, 0F), new OBJVertex(0F, 1F));
+		face.setVertexNormals(new OBJVertex[] {new OBJVertex(1F, 0F, 0F), new OBJVertex(0F, 1F, 0F), new OBJVertex(0F, 0F, 1F)});
+		face.render(tessellator);
+		Assert.assertEquals(127, tessellator.getRawBuffer()[6]);
+		Assert.assertEquals(127 << 8, tessellator.getRawBuffer()[14]);
+		Assert.assertEquals(127 << 16, tessellator.getRawBuffer()[22]);
+	}
+
+	@Test
+	public void normalizesTheVertexNormals() {
+		final Tessellator tessellator = OBJFaceTest.tessellator();
+		final OBJFace face = OBJFaceTest.face(new OBJVertex(0F, 0F), new OBJVertex(1F, 0F), new OBJVertex(0F, 1F));
+		face.setVertexNormals(new OBJVertex[] {new OBJVertex(0F, 4F, 0F), new OBJVertex(0F, 0F, 0F), new OBJVertex(0F, 0F, 2F)});
+		face.render(tessellator);
+		Assert.assertEquals(127 << 8, tessellator.getRawBuffer()[6]);
+		Assert.assertEquals(127 << 16, tessellator.getRawBuffer()[14]);
+		Assert.assertEquals(127 << 16, tessellator.getRawBuffer()[22]);
+	}
+
+	@Test
 	public void computesAMissingNormalOnRender() {
 		final OBJFace face = OBJFaceTest.face(new OBJVertex(0F, 0F), new OBJVertex(1F, 0F), new OBJVertex(0F, 1F));
 		Assert.assertNull(face.getFaceNormal());

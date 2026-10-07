@@ -74,11 +74,11 @@ public class ModelNodeTest {
 		final RecordingModel model = new RecordingModel(2D, 2D, 2D);
 		final ModelNode node = ModelNode.create(100D, 100D, 200D, 200D).model(model);
 		this.bridges.open(new NodeUI(node)).frame();
-		Assert.assertEquals(-100D, model.grid.getUnitX(), 1E-3D);
+		Assert.assertEquals(100D, model.grid.getUnitX(), 1E-3D);
 		Assert.assertSame(node, node.rotationYaw(180D));
 		this.bridges.frame();
 		Assert.assertEquals(180D, node.getRotationYaw(), 0D);
-		Assert.assertEquals(100D, model.grid.getUnitX(), 1E-3D);
+		Assert.assertEquals(-100D, model.grid.getUnitX(), 1E-3D);
 		Assert.assertEquals(200D, model.grid.toScreenX(0D), 1E-3D);
 	}
 
@@ -99,7 +99,7 @@ public class ModelNodeTest {
 	public void givesAFlatModelAUnitSize() {
 		final RecordingModel model = new RecordingModel(0D, 0D, 0D);
 		this.bridges.open(new NodeUI(ModelNode.create(100D, 100D, 200D, 200D).model(model))).frame();
-		Assert.assertEquals(-200D, model.grid.getUnitX(), 1E-3D);
+		Assert.assertEquals(200D, model.grid.getUnitX(), 1E-3D);
 		Assert.assertEquals(200D, Math.abs(model.grid.getUnitY()), 1E-3D);
 	}
 
