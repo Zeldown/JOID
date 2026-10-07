@@ -27,18 +27,22 @@ import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.IntegerSlider;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNodeTest.Toggle;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 import lombok.Getter;
 
 @Getter
 public class SetterUI extends UI {
 
-	private final IntegerSignal step = IntegerSignal.of(0);
-	private final TextInfo      info = TextInfo.create(new TextFont(), 10F);
+	private final IntegerSignal step  = IntegerSignal.of(0);
+	private final BooleanSignal muted = new BooleanSignal(false);
+	private final TextInfo      info  = TextInfo.create(new TextFont(), 10F);
 
 	private RectNode           rect;
 	private CircleNode         circle;
 	private TextNode           text;
+	private TextNode           state;
+	private TextNode           label;
 	private ProgressNode       progress;
 	private ResourcePlayerNode player;
 	private ModelNode          model;
@@ -81,6 +85,8 @@ public class SetterUI extends UI {
 		.text(Text.create("Step " + this.step.get(), this.info))
 		.mode(this.step.get() > 0 ? TextMode.SPLIT : TextMode.NORMAL)
 		.attach(this);
+		this.state = TextNode.create(0D, 0D).text(Text.create(this.muted.get() ? "Muted" : "Sound on", this.info)).attach(this);
+		this.label = TextNode.create(0D, 0D).text(Text.create("Muted " + this.muted.get(), this.info)).attach(this);
 		this.progress = ProgressNode
 		.create(0D, 0D, 100D, 10D)
 		.progress(this.step.get() / 4F)

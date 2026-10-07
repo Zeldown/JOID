@@ -404,7 +404,8 @@ public final class ReplayFrame {
 		}
 
 		try {
-			this.push(ReplayFrame.normalize(Array.get(array, ReplayFrame.toInt(position))), live, size);
+			final Object element = Array.get(array, ReplayFrame.toInt(position));
+			this.push(opcode == Opcodes.AALOAD ? element : ReplayFrame.normalize(element), live, size);
 		} catch (final RuntimeException exception) {
 			throw new ReplayException(ReplayFailure.REPLAY_FAILED, exception);
 		}
@@ -584,7 +585,8 @@ public final class ReplayFrame {
 	private Object fieldValue(final FieldInsnNode instruction, final Object target) {
 		final Field field = (Field) this.method.member(instruction);
 		try {
-			return ReplayFrame.normalize(field.get(target));
+			final Object value = field.get(target);
+			return field.getType().isPrimitive() ? ReplayFrame.normalize(value) : value;
 		} catch (final IllegalAccessException | RuntimeException exception) {
 			throw new ReplayException(ReplayFailure.REPLAY_FAILED, exception);
 		}
@@ -664,7 +666,7 @@ public final class ReplayFrame {
 		final long readTotal = SignalContext.current().getReadTotal();
 		final Object result = this.call(() -> method.invoke(target, ReplayFrame.convert(arguments, method.getParameterTypes())));
 		if (returnType.getSort() != Type.VOID) {
-			this.push(ReplayFrame.normalize(result), live || SignalContext.current().getReadTotal() != readTotal, returnType.getSize());
+			this.push(returnType.getSort() == Type.OBJECT || returnType.getSort() == Type.ARRAY ? result : ReplayFrame.normalize(result), live || SignalContext.current().getReadTotal() != readTotal, returnType.getSize());
 		}
 	}
 

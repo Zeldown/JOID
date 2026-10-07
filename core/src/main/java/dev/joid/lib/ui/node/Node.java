@@ -271,28 +271,34 @@ public abstract class Node implements INode {
 	}
 
 	public final void load(final @NonNull UI ui) {
-		this.executeCallback(Node.CALLBACK_INIT, InternalContext.create(), () -> {
-			this.ui = ui;
-			this.children.forEach(child -> child.load(this.ui));
+		final SignalContext context = SignalContext.current();
+		final List<Signal<?>> readList = context.takeReads();
+		try {
+			this.executeCallback(Node.CALLBACK_INIT, InternalContext.create(), () -> {
+				this.ui = ui;
+				this.children.forEach(child -> child.load(this.ui));
 
-			if (this.scrollbar != null) {
-				this.scrollbar.load(this.ui);
-			}
+				if (this.scrollbar != null) {
+					this.scrollbar.load(this.ui);
+				}
 
-			if (this.skeleton != null) {
-				this.skeleton.load(this.ui);
-			}
+				if (this.skeleton != null) {
+					this.skeleton.load(this.ui);
+				}
 
-			this.getAppliedEffects().forEach(effect -> effect.init(this, this.ui));
-			SignalContext.current().clearReads();
-			SignalReplay.enter(this, this.ui);
-			try {
-				this.init(this.ui);
-			} finally {
-				SignalReplay.exit();
-			}
-			this.subscribe();
-		});
+				this.getAppliedEffects().forEach(effect -> effect.init(this, this.ui));
+				SignalReplay.enter(this, this.ui);
+				try {
+					this.init(this.ui);
+				} finally {
+					SignalReplay.exit();
+				}
+				this.subscribe();
+			});
+		} finally {
+			context.clearReads();
+			context.putBackReads(readList);
+		}
 
 		this.updateCount++;
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
