@@ -76,7 +76,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 			final int start = index;
 			index += Character.charCount(codepoint);
 			final boolean drawn = face.hasGlyph(codepoint);
-			if (!drawn && codepoint != ' ') {
+			if (!drawn && codepoint != ' ' && codepoint != ' ') {
 				continue;
 			}
 
@@ -85,7 +85,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 			}
 
 			placements.add(new GlyphPlacement<>(start, codepoint, face, pen, snapshot));
-			pen += (drawn ? face.getAdvance(codepoint) : 0.25F) * size + spacing;
+			pen += (drawn ? face.getAdvance(codepoint) : GlyphFontProvider.space(face)) * size + spacing;
 			previous = codepoint;
 		}
 
@@ -166,6 +166,10 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 				effect.decorate(glyph);
 			}
 		}
+	}
+
+	private static float space(final @NonNull IFontFace face) {
+		return face.hasGlyph(' ') ? face.getAdvance(' ') : 0.25F;
 	}
 
 	private static @NonNull Color color(final @NonNull TextStyle style, final @NonNull TextInfo info) {

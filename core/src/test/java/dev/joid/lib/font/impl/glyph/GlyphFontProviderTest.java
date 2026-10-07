@@ -28,9 +28,10 @@ import lombok.NonNull;
 
 public class GlyphFontProviderTest {
 
-	private static final Face     BOLD     = new Face(FontWeight.BOLD, false, 2F);
-	private static final Face     ITALIC   = new Face(FontWeight.REGULAR, true, 1F);
-	private static final Face     REGULAR  = new Face(FontWeight.REGULAR, false, 1F);
+	private static final Face     BOLD     = new Face(FontWeight.BOLD, false, 2F, false);
+	private static final Face     ITALIC   = new Face(FontWeight.REGULAR, true, 1F, false);
+	private static final Face     SPACED   = new Face(FontWeight.REGULAR, false, 1F, true);
+	private static final Face     REGULAR  = new Face(FontWeight.REGULAR, false, 1F, false);
 	private static final Provider PROVIDER = new Provider();
 
 	private static final ITextMarkup MARKUP = (text, index, style) -> {
@@ -253,6 +254,21 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
+	public void advancesANonBreakingSpaceMissingFromTheFaceLikeAMissingSpace() {
+		final TextInfo info = GlyphFontProviderTest.info().letterSpacing(0.2F);
+		Assert.assertEquals(2.5D, info.getWidth(" "), 1E-6D);
+		Assert.assertEquals(info.getWidth("A B"), info.getWidth("A B"), 1E-6D);
+		Assert.assertEquals(3, GlyphFontProviderTest.layout("A B", info).getPlacements().size());
+	}
+
+	@Test
+	public void advancesANonBreakingSpaceMissingFromTheFaceLikeTheSpaceOfTheFace() {
+		final TextInfo info = GlyphFontProviderTest.info(GlyphFontProviderTest.SPACED);
+		Assert.assertEquals(3D, info.getWidth(" "), 1E-6D);
+		Assert.assertEquals(info.getWidth("A B"), info.getWidth("A B"), 1E-6D);
+	}
+
+	@Test
 	public void namesTheProviderOfAFontItCannotDraw() {
 		final IFontProvider other = MsdfFontProvider.inst();
 		try {
@@ -292,6 +308,7 @@ public class GlyphFontProviderTest {
 		private final FontWeight weight;
 		private final boolean    italic;
 		private final float      scale;
+		private final boolean    spaced;
 
 		@Override
 		public @NonNull String getName() {
@@ -325,12 +342,12 @@ public class GlyphFontProviderTest {
 
 		@Override
 		public boolean hasGlyph(final int codepoint) {
-			return codepoint != '#' && codepoint != ' ';
+			return codepoint != '#' && codepoint != ' ' && (codepoint != ' ' || this.spaced);
 		}
 
 		@Override
 		public float getAdvance(final int codepoint) {
-			return this.scale * 0.5F;
+			return codepoint == ' ' ? this.scale * 0.3F : this.scale * 0.5F;
 		}
 
 		@Override
