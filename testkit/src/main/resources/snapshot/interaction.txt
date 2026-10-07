@@ -209,7 +209,7 @@ wait 800
 shot inter-choice-hover
 ui dev.joid.demo.ui.signal.UIDemoSignal
 wait 800
-move 360 190
+move 200 105
 wait 100
 press LEFT
 release LEFT
@@ -220,14 +220,79 @@ wait 100
 press LEFT
 release LEFT
 wait 100
-move 257 590
+move 640 105
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1380 180
+press LEFT
+release LEFT
+wait 100
+move 1080 105
 wait 100
 press LEFT
 release LEFT
-wait 800
+wait 100
+move 1220 105
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 200 585
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 160 440
+wait 100
+press LEFT
+moveto 400 440 400
+wait 200
+release LEFT
+wait 100
+move 605 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1330 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+type !
+wait 100
+move 1520 445
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 200 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 640 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1520 785
+wait 100
+press LEFT
+release LEFT
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 600
 shot inter-signal

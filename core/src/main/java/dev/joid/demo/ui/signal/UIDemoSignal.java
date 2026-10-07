@@ -18,7 +18,6 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.ComputedSignal;
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.impl.iterable.ListSignal;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
@@ -29,105 +28,264 @@ public class UIDemoSignal extends UIDemo {
 	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 	private static final Color INK         = new Color(153, 153, 153);
 
-	private final IntegerSignal      saved  = IntegerSignal.of(0);
-	private final IntegerSignal      clicks = IntegerSignal.of(0);
-	private final IntegerSignal      volume = IntegerSignal.of(5);
-	private final BooleanSignal      muted  = new BooleanSignal(false);
-	private final Signal<String>     name   = Signal.of("Ada");
-	private final ListSignal<String> items  = new ListSignal<>(Arrays.asList("First item", "Second item"));
-	private final ListSignal<String> cards  = new ListSignal<>(Collections.emptyList());
-
-	private final ComputedSignal<Integer> doubled = this.clicks.map(clicks -> clicks * 2);
-	private final ComputedSignal<String>  summary = Signal.from(() -> this.name.get() + " doubled to " + this.doubled.get());
-
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSignal.INK);
-		final TextInfo button = TextInfo.create(DemoFont.MONTSERRAT, 24, Color.BLACK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final long opened = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final ComputedSignal<String> bonus = Signal.from("Clicks + 10: " + (this.clicks.get() + 10));
+		final IntegerSignal clicks = IntegerSignal.of(0);
+		final IntegerSignal mapped = IntegerSignal.of(0);
+		final IntegerSignal left = IntegerSignal.of(0);
+		final IntegerSignal right = IntegerSignal.of(0);
+		final IntegerSignal volume = IntegerSignal.of(5);
+		final BooleanSignal muted = BooleanSignal.of(false);
+		final Signal<String> name = Signal.of("Ada");
+		final BooleanSignal shown = BooleanSignal.of(false);
+		final IntegerSignal heat = IntegerSignal.of(0);
+		final ListSignal<String> items = new ListSignal<>(Arrays.asList("First item", "Second item"));
+		final ListSignal<String> cards = new ListSignal<>(Collections.emptyList());
+		final IntegerSignal sent = IntegerSignal.of(0);
+		final IntegerSignal saved = IntegerSignal.of(0);
 
-		this.doubled.subscribe(doubled -> {
-			this.saved.set(doubled);
+		sent.subscribe(value -> {
+			saved.set(value);
 			return true;
 		});
 
 		RectNode
-		.create(160, 160, 400, 60)
+		.create(100, 40, 400, 260)
 		.color(UIDemoSignal.PLACEHOLDER)
-		.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
-		.body(rect -> TextNode.create(rect.dw(2), rect.dh(2)).text(Text.create("+1", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect))
-		.attach(this);
-		TextNode.create(160, 240).text(Text.create("Clicks: " + this.clicks.get(), info)).attach(this);
-		RectNode.create(160, 290, 40, 20).color(UIDemoSignal.INK).width(40D + this.clicks.get() * 40D).attach(this);
-		ProgressNode
-		.create(160, 330, 400, 20)
-		.background(UIDemoSignal.PLACEHOLDER)
-		.foreground(UIDemoSignal.INK)
-		.progress(Math.min(1F, this.clicks.get() / 5F))
-		.attach(this);
-		RectNode.create(160, 370, 60, 60).color(this.clicks.get() >= 3 ? UIDemoSignal.INK : UIDemoSignal.PLACEHOLDER).attach(this);
-		RectNode.create(240, 370, 60, 60).color(UIDemoSignal.PLACEHOLDER).visible(this.clicks.get() % 2 == 1).attach(this);
-
-		TextNode.create(760, 160).text(Text.create(this.doubled.map(doubled -> "Doubled: " + doubled), info)).attach(this);
-		TextNode.create(760, 210).text(Text.create(bonus, info)).attach(this);
-		TextNode.create(760, 260).text(Text.create(this.summary, info)).attach(this);
-		TextNode.create(760, 310).text(Text.create(() -> "Open for " + (BridgeHandler.CLOCK.get().currentTimeMillis() - opened) / 1000L + " s", info)).attach(this);
-		TextNode.create(760, 360).text(Text.create("Saved: " + this.saved.get(), info)).attach(this);
-
-		DemoCheckboxNode.create(1360, 160, 40, 40).signal(this.muted).attach(this);
-		TextNode.create(1420, 168).text(Text.create(this.muted.get() ? "Muted" : "Sound on", info)).attach(this);
-		DemoIntegerSliderNode.create(1360, 230, 400, 40).values(1, 9, 5).signal(this.volume).attach(this);
-		ProgressNode
-		.create(1360, 290, 400, 20)
-		.background(UIDemoSignal.PLACEHOLDER)
-		.foreground(UIDemoSignal.INK)
-		.progress(this.volume.get() / 9F)
-		.attach(this);
-		DemoTextFieldNode.create(1360, 340, 400, 50).info(info).signal(this.name).attach(this);
-		TextNode.create(1360, 410).text(Text.create("Hello " + this.name.get(), info)).attach(this);
-
-		RectNode
-		.create(160, 560, 195, 60)
-		.color(UIDemoSignal.PLACEHOLDER)
-		.onClick((node, mouseX, mouseY, clickType) -> this.items.add("Item " + (this.items.size() + 1)))
-		.body(rect -> TextNode.create(rect.dw(2), rect.dh(2)).text(Text.create("Add", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect))
-		.attach(this);
-		RectNode
-		.create(365, 560, 195, 60)
-		.color(UIDemoSignal.PLACEHOLDER)
-		.onClick((node, mouseX, mouseY, clickType) -> this.items.remove(this.items.size() - 1))
-		.visible(!this.items.isEmpty())
-		.body(rect -> TextNode.create(rect.dw(2), rect.dh(2)).text(Text.create("Remove", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect))
-		.attach(this);
-		FlexNode
-		.vertical(160, 640, 400)
-		.margin(10D)
-		.watch(this.items, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
-		.body(flex -> {
-			for (final String item : this.items.get()) {
-				RectNode
-				.create(0, 0, 400, 40)
-				.color(UIDemoSignal.PLACEHOLDER)
-				.body(rect -> TextNode.create(10, rect.dh(2)).text(Text.create(item, button, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(rect))
-				.attach(flex);
-			}
-		})
-		.attach(this);
-
-		RectNode
-		.create(760, 560, 400, 160)
-		.color(UIDemoSignal.PLACEHOLDER)
-		.wait(this.cards)
-		.skeleton(rect -> RectNode.create(0, 0, rect.getWidth(), rect.getHeight()).color(Color.LOADING))
 		.body(rect -> {
-			TextNode.create(20, 20).text(Text.create(this.cards.isEmpty() ? "" : this.cards.get(0), button)).attach(rect);
-			TextNode.create(20, 70).text(Text.create(this.cards.isEmpty() ? "" : this.cards.get(1), button)).attach(rect);
-			TextNode.create(20, 120).text(Text.create(this.cards.isEmpty() ? "" : this.cards.get(2), button)).attach(rect);
+			RectNode
+			.create(40, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> clicks.increment())
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(40, 120).text(Text.create("Clicks: " + clicks.get(), info)).attach(rect);
+			RectNode.create(40, 180, 20, 20).color(UIDemoSignal.INK).width(Math.min(320D, 20D + clicks.get() * 40D)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Native expression", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
-		super.schedule(() -> this.cards.set(Arrays.asList("Ada Lovelace", "Analytical Engine", "1843")), 3000L);
+		RectNode
+		.create(540, 40, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> mapped.increment())
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(40, 120).text(Text.create(mapped.map(value -> "Doubled: " + value * 2), info)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("map", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(980, 40, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> left.increment())
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("A +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			RectNode
+			.create(180, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> right.increment())
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("B +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(40, 120).text(Text.create(Signal.from(() -> "A + B = " + (left.get() + right.get())), info)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Signal.from", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1420, 40, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			TextNode.create(40, 50).text(Text.create(() -> "Open for " + (BridgeHandler.CLOCK.get().currentTimeMillis() - opened) / 1000L + " s", info)).attach(rect);
+			RectNode
+			.create(40, 120, 0, 20)
+			.color(UIDemoSignal.INK)
+			.width(() -> (BridgeHandler.CLOCK.get().currentTimeMillis() - opened) % 2000L / 2000D * 320D)
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Every frame", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(100, 380, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			DemoIntegerSliderNode.create(40, 40, 320, 40).values(0, 10, 5).signal(volume).attach(rect);
+			ProgressNode
+			.create(40, 110, 320, 20)
+			.background(Color.WHITE)
+			.foreground(UIDemoSignal.INK)
+			.progress(volume.get() / 10F)
+			.attach(rect);
+			RectNode
+			.create(40, 160, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> volume.set(0))
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Two-way slider", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(540, 380, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			DemoCheckboxNode.create(40, 40, 50, 50).signal(muted).attach(rect);
+			TextNode.create(110, 52).text(Text.create(muted.get() ? "Muted" : "Sound on", info)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Checkbox", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(980, 380, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			DemoTextFieldNode.create(40, 40, 320, 50).info(info).marginHorizontal(12D).signal(name).attach(rect);
+			TextNode.create(40, 120).text(Text.create("Hello " + name.get(), info)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Text field", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1420, 380, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> shown.toggle())
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			RectNode.create(40, 120, 80, 80).color(UIDemoSignal.INK).visible(shown).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Visibility", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(100, 720, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> heat.increment())
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			RectNode.create(40, 120, 80, 80).color(heat.get() >= 3 ? UIDemoSignal.INK : Color.WHITE).attach(rect);
+			TextNode.create(140, 145).text(Text.create(heat.get() >= 3 ? "3 clicks or more" : "Under 3 clicks", info)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Color", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(540, 720, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> {
+				if (items.size() < 4) {
+					items.add("Item " + (items.size() + 1));
+				}
+			})
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			RectNode
+			.create(180, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> items.remove(items.size() - 1))
+			.visible(!items.isEmpty())
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Remove", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			FlexNode
+			.vertical(40, 110, 320)
+			.margin(6D)
+			.watch(items, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+			.body(flex -> {
+				for (final String item : items.get()) {
+					RectNode
+					.create(0, 0, 320, 30)
+					.color(Color.WHITE)
+					.body(container -> {
+						TextNode.create(10, container.dh(2)).text(Text.create(item, info, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(container);
+					})
+					.attach(flex);
+				}
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("watch", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(980, 720, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 40, 320, 180)
+			.color(Color.WHITE)
+			.wait(cards)
+			.skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.LOADING))
+			.body(container -> {
+				TextNode.create(20, 20).text(Text.create(cards.isEmpty() ? "" : cards.get(0), info)).attach(container);
+				TextNode.create(20, 70).text(Text.create(cards.isEmpty() ? "" : cards.get(1), info)).attach(container);
+				TextNode.create(20, 120).text(Text.create(cards.isEmpty() ? "" : cards.get(2), info)).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("wait", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1420, 720, 400, 260)
+		.color(UIDemoSignal.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 40, 120, 50)
+			.color(UIDemoSignal.INK)
+			.onClick((node, mouseX, mouseY, clickType) -> sent.increment())
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(40, 120).text(Text.create("Saved: " + saved.get(), info)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("subscribe", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		super.schedule(() -> cards.set(Arrays.asList("Ada Lovelace", "Analytical Engine", "1843")), 3000L);
 	}
 
 }
