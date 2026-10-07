@@ -64,10 +64,6 @@ public abstract class UI implements IUI, IndexedElement {
 	@Getter
 	private static UI current;
 
-	@NonNull private final UIDataObject         data;
-	@NonNull private final UIDataDebugObject    debug;
-	@NonNull private final UIDataPopupObject    popup;
-
 	@NonNull private final Map<Set<Key>, Runnable>              keybindMap;
 	@NonNull private final Stack<StencilState>                  stencilStack;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
@@ -76,6 +72,10 @@ public abstract class UI implements IUI, IndexedElement {
 	private final DoubleSignal zoomLevel;
 	private final DoubleSignal scaledWidth;
 	private final DoubleSignal scaledHeight;
+
+	@NonNull private UIDataObject      data;
+	@NonNull private UIDataDebugObject debug;
+	@NonNull private UIDataPopupObject popup;
 
 	private transient Transition                             transition;
 	private transient FileAlterationMonitor                  fileMonitor;
@@ -101,9 +101,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private Node devNode;
 
 	public UI() {
-		this.data = UIDataObject.getOrDefault(this.getClass());
-		this.debug = UIDataDebugObject.getOrDefault(this.getClass());
-		this.popup = UIDataPopupObject.getOrDefault(this.getClass());
+		this.readData();
 
 		this.stencilStack = new Stack<>();
 		this.keybindMap = new HashMap<>();
@@ -111,17 +109,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.storeMap = new HashMap<>();
 		this.scheduledTaskList = new CopyOnWriteArrayList<>();
 
-		if (this.popup.active() && this.popup.transition().isActive()) {
-			this.transition = new PopTransition();
-
-			if (!this.popup.transition().isIn()) {
-				this.transition.getIn().disable();
-			}
-
-			if (!this.popup.transition().isOut()) {
-				this.transition.getOut().disable();
-			}
-		}
+		this.transition = this.createPopupTransition();
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
 		this.zoomLevel = new DoubleSignal(1D);
@@ -618,6 +606,13 @@ public abstract class UI implements IUI, IndexedElement {
 
 		UIPropertyHook.save(this);
 		SignalReplay.clear();
+
+		final UIDataPopupObject popup = this.popup;
+		this.readData();
+		if (popup.active() != this.popup.active() || popup.transition() != this.popup.transition()) {
+			this.transition = this.createPopupTransition();
+		}
+
 		this.initialized = false;
 		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
 	}
@@ -717,10 +712,32 @@ public abstract class UI implements IUI, IndexedElement {
 		this.refreshView();
 	}
 
+	private void readData() {
+		this.data  = UIDataObject.getOrDefault(this.getClass());
+		this.debug = UIDataDebugObject.getOrDefault(this.getClass());
+		this.popup = UIDataPopupObject.getOrDefault(this.getClass());
+	}
+
 	private void refreshView() {
 		this.zoomLevel.set(this.view.getZoom());
 		this.scaledWidth.set(this.view.getVisibleWidth());
 		this.scaledHeight.set(this.view.getVisibleHeight());
+	}
+
+	private Transition createPopupTransition() {
+		if (!this.popup.active() || !this.popup.transition().isActive()) {
+			return null;
+		}
+
+		final Transition transition = new PopTransition();
+		if (!this.popup.transition().isIn()) {
+			transition.getIn().disable();
+		}
+
+		if (!this.popup.transition().isOut()) {
+			transition.getOut().disable();
+		}
+		return transition;
 	}
 
 	private void drawFrame(final double mouseX, final double mouseY) {

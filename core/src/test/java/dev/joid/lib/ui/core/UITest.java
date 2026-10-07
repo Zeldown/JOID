@@ -191,6 +191,30 @@ public class UITest {
 	}
 
 	@Test
+	public void readsItsAnnotationsAgainOnReload() {
+		final PopupUI ui = new PopupUI(this.trace);
+		this.bridges.open(ui);
+		ui.getData().setZlevel(4D).setAnchorX(Align.START);
+		ui.getDebug().setProfiler(true);
+		ui.reload();
+		this.bridges.frame();
+		Assert.assertEquals(0D, ui.getData().zlevel(), 0D);
+		Assert.assertEquals(960D, ui.getView().getAnchorX(), 0D);
+		Assert.assertFalse(ui.getDebug().profiler());
+		Assert.assertTrue(ui.getPopup().active());
+	}
+
+	@Test
+	public void keepsItsTransitionAcrossAReloadThatLeavesItsPopupUnchanged() {
+		final PopupUI ui = new PopupUI(this.trace);
+		final Transition transition = new PopTransition();
+		ui.setTransition(transition);
+		this.bridges.open(ui);
+		ui.reload();
+		Assert.assertSame(transition, ui.getTransition());
+	}
+
+	@Test
 	public void ignoresTheInputBeforeItsFirstLoad() {
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.cancel = true;
