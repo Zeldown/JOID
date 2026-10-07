@@ -1,10 +1,11 @@
-package dev.joid.impl.glfw;
+package dev.joid.impl.glfw.demo;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.demo.ui.UIDemoChoice;
+import dev.joid.impl.glfw.WindowBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;

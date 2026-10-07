@@ -18,6 +18,13 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    demo {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
 configurations {
     joidDev
     joidProd
@@ -25,6 +32,8 @@ configurations {
     baseline
     libraries
     compile.extendsFrom joidDev, embed, libraries
+    demoCompile.extendsFrom compile
+    demoRuntime.extendsFrom runtime
 }
 
 dependencies {
@@ -52,9 +61,10 @@ dependencies {
 /* Packaging */
 task devJar(type: Jar) {
     group = 'build'
-    description = 'Builds the dev jar, with the JOID core and its demo assets.'
+    description = 'Builds the dev jar, with the JOID core, its demo assets and the demo window.'
     classifier = 'dev'
     from sourceSets.main.output
+    from sourceSets.demo.output
     from({ (configurations.joidDev + configurations.embed).collect { zipTree(it) } }) {
         exclude 'META-INF/MANIFEST.MF'
     }
@@ -62,7 +72,7 @@ task devJar(type: Jar) {
 
 task prodJar(type: Jar) {
     group = 'build'
-    description = 'Builds the prod jar, with the JOID core and without the demo assets.'
+    description = 'Builds the prod jar, with the JOID core and without the demo assets or the demo window.'
     classifier = 'prod'
     from sourceSets.main.output
     from({ (configurations.joidProd + configurations.embed).collect { zipTree(it) } }) {
@@ -173,7 +183,7 @@ task runDemo(type: JavaExec) {
     group = 'JOID'
     description = 'Launches the demo window.'
     main = 'com.example.joid.engine.demo.DemoWindow'
-    classpath = sourceSets.main.runtimeClasspath
+    classpath = sourceSets.demo.runtimeClasspath
     if (macOs) {
         jvmArgs '-XstartOnFirstThread'
     }

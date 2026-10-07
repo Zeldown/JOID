@@ -8,7 +8,7 @@ import dev.joid.impl.vulkan.render.RenderBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 
-public class DemoWindow extends dev.joid.impl.glfw.DemoWindow {
+public class DemoWindow extends dev.joid.impl.glfw.demo.DemoWindow {
 
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);

@@ -23,7 +23,7 @@ shadowJar {
 
     if (!project.hasProperty('dev')) {
         rootProject.excludeDevelopment(it)
-        exclude "dev/joid/impl/${project.name}/demo/**", "dev/joid/impl/${project.name}/snapshot/**"
+        exclude 'dev/joid/impl/*/demo/**', 'dev/joid/impl/*/snapshot/**'
     }
 }
 
