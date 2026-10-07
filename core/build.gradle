@@ -57,10 +57,13 @@ task updateVersion() {
     description = 'Writes the project version into JOID.VERSION.'
     def javaFile = file('src/main/java/dev/joid/internal/JOID.java')
     if (javaFile.exists()) {
-        javaFile.text = javaFile.text.replaceAll(
+        def text = javaFile.text.replaceAll(
             /public static final String VERSION = "[^"]*";/,
             "public static final String VERSION = \"${project.version}\";"
         )
+        if (text != javaFile.text) {
+            javaFile.text = text
+        }
     }
 }
 
