@@ -122,7 +122,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public final void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+	public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !this.focused) {
 			return;
 		}
@@ -231,7 +231,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
 			this.focus(false);
 			this.selectionStart = -1;

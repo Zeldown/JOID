@@ -46,7 +46,7 @@ public abstract class SelectorNode<V> extends Node {
 	public abstract void drawBackground(final double mouseX, final double mouseY);
 
 	@Override
-	public final void draw(final double mouseX, final double mouseY) {
+	public void draw(final double mouseX, final double mouseY) {
 		if (super.getChildren().isEmpty()) {
 			return;
 		}
@@ -84,7 +84,7 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (this.selected == null) {
 			return;
 		}

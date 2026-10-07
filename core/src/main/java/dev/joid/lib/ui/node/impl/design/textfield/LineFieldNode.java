@@ -38,7 +38,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	@Override
-	protected final void drawField() {
+	protected void drawField() {
 		final String text = super.getText();
 		final TextInfo info = super.getInfo();
 		if (super.getHeight() == 0 && info != null) {

@@ -24,7 +24,7 @@ public abstract class ScrollbarNode extends Node {
 	}
 
 	@Override
-	public final void draw(final double mouseX, final double mouseY) {
+	public void draw(final double mouseX, final double mouseY) {
 		if (this.scrollNode == null) {
 			return;
 		}
@@ -54,7 +54,7 @@ public abstract class ScrollbarNode extends Node {
 	}
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (this.dragging || !this.isHovered(mouseX, mouseY)) {
 			return;
 		}
@@ -66,7 +66,7 @@ public abstract class ScrollbarNode extends Node {
 	}
 
 	@Override
-	public final void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (clickType == this.dragButton) {
 			this.dragging   = false;
 			this.dragButton = null;

@@ -40,7 +40,7 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	@Override
-	public final void draw(final double mouseX, final double mouseY) {
+	public void draw(final double mouseX, final double mouseY) {
 		if (this.value == null || this.valueSet.isEmpty() || this.cursor == null) {
 			return;
 		}

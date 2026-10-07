@@ -39,12 +39,12 @@ public final class FlexNode extends Node {
 	}
 
 	@Override
-	public final void draw(final double mouseX, final double mouseY) {
+	public void draw(final double mouseX, final double mouseY) {
 		this.updateFlex();
 	}
 
 	@Override
-	public final void drawSkeleton(final double mouseX, final double mouseY) {
+	public void drawSkeleton(final double mouseX, final double mouseY) {
 		this.updateFlex();
 	}
 

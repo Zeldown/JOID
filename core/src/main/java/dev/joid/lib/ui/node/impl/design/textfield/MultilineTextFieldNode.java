@@ -32,7 +32,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	@Override
-	protected final void drawField() {
+	protected void drawField() {
 		final String text = super.getText();
 		final TextInfo info = super.getInfo();
 		final double maxWidth = this.getRawWidth();

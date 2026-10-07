@@ -18,7 +18,7 @@ public abstract class SliderCursorNode extends Node {
 	}
 
 	@Override
-	public final void draw(final double mouseX, final double mouseY) {
+	public void draw(final double mouseX, final double mouseY) {
 		if (this.dragging) {
 			final double newX = Math.min(Math.max(super.getDefaultX(), mouseX - super.getAbsoluteDefaultX() + super.getDefaultX() - super.dw(2D)), super.getDefaultX() + this.slider.getWidth() - super.getWidth());
 			super.x(newX);
@@ -30,7 +30,7 @@ public abstract class SliderCursorNode extends Node {
 	public abstract void drawCursor(final double mouseX, final double mouseY);
 
 	@Override
-	public final void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
 			return;
 		}
@@ -39,7 +39,7 @@ public abstract class SliderCursorNode extends Node {
 	}
 
 	@Override
-	public final void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
 		this.dragging = false;
 	}
 
