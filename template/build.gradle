@@ -22,10 +22,9 @@ configurations {
     joidDev
     joidProd
     embed
-    video
     baseline
     libraries
-    compile.extendsFrom joidDev, embed, libraries, video
+    compile.extendsFrom joidDev, embed, libraries
 }
 
 dependencies {
@@ -39,15 +38,6 @@ dependencies {
     libraries "commons-io:commons-io:2.4"
 
     libraries "java3d:vecmath:1.3.1"
-
-    video("org.bytedeco:javacv:1.5.9") { transitive = false }
-    video "org.bytedeco:javacpp:1.5.9"
-    video("org.bytedeco:ffmpeg:6.0-1.5.9") { transitive = false }
-
-    video "org.bytedeco:ffmpeg:6.0-1.5.9:windows-x86_64"
-    video "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-x86_64"
-    video "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-arm64"
-    video "org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64"
 
     testCompile files("libs/joid-testkit-${joidVersion}.jar")
     testCompile "junit:junit:4.13.2"
@@ -140,7 +130,7 @@ task renderBaseline(type: JavaExec) {
     group = 'JOID'
     description = 'Renders the snapshot scenarios with the official LWJGL 3 backend.'
     main = 'dev.joid.test.snapshot.SnapshotBaseline'
-    classpath = configurations.baseline + files("libs/joid-testkit-${joidVersion}.jar") + configurations.libraries + configurations.video
+    classpath = configurations.baseline + files("libs/joid-testkit-${joidVersion}.jar") + configurations.libraries
     workingDir = file("$buildDir/snapshot/lwjgl3")
     systemProperty 'joid.snapshot.cache', file('.snapshots/cache').absolutePath
     args 'dev.joid.impl.lwjgl3.snapshot.SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
