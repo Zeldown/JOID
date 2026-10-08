@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.demo.ui.UIDemoChoice;
 import dev.joid.impl.glfw.WindowBridge;
+import dev.joid.impl.glfw.input.KeyCharacterMerger;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
@@ -13,7 +14,6 @@ import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.key.Key;
 import lombok.Getter;
 
 public abstract class DemoWindow extends DemoUIBridge {
@@ -21,9 +21,10 @@ public abstract class DemoWindow extends DemoUIBridge {
 	@Getter
 	private final long window;
 
-	private Key pendingKey = null;
+	private final KeyCharacterMerger keyMerger;
+
+	private long pressTime = 0L;
 	private ClickType clickType = null;
-	private long lastMouseEvent = 0L;
 
 	protected DemoWindow() {
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -40,6 +41,8 @@ public abstract class DemoWindow extends DemoUIBridge {
 		}
 
 		this.registerBackend(this.window);
+
+		this.keyMerger = KeyCharacterMerger.create(super::keyTyped);
 
 		this.registerCallbacks();
 		this.identity();
@@ -63,7 +66,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 			}
 
 			GLFW.glfwPollEvents();
-			this.flushPendingKey();
+			this.keyMerger.flush();
 
 			super.update();
 			this.beginFrame();
@@ -100,7 +103,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 	}
 
 	private void registerCallbacks() {
-		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.onCharacter(codepoint));
+		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.onCursorMove());
 		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> super.mouseScroll((int) (y * 120D)));
 		GLFW.glfwSetKeyCallback(this.window, (handle, key, scancode, action, mods) -> this.onKey(key, action, mods));
@@ -113,36 +116,13 @@ public abstract class DemoWindow extends DemoUIBridge {
 			return;
 		}
 
-		this.flushPendingKey();
-		final Key key = WindowBridge.getKey(code);
-		if (DemoWindow.isTextKey(code) && (mods & (GLFW.GLFW_MOD_CONTROL | GLFW.GLFW_MOD_ALT)) == 0) {
-			this.pendingKey = key;
-			return;
-		}
-
-		super.keyTyped((char) 0, key);
-	}
-
-	private void onCharacter(final int codepoint) {
-		final Key key = this.pendingKey == null ? Key.UNKNOWN : this.pendingKey;
-		this.pendingKey = null;
-		super.keyTyped((char) codepoint, key);
-	}
-
-	private void flushPendingKey() {
-		if (this.pendingKey == null) {
-			return;
-		}
-
-		final Key key = this.pendingKey;
-		this.pendingKey = null;
-		super.keyTyped((char) 0, key);
+		this.keyMerger.keyPressed(WindowBridge.getKey(code), code, mods);
 	}
 
 	private void onMouseButton(final int button, final int action) {
 		if (action == GLFW.GLFW_PRESS) {
 			this.clickType = ClickType.from(button);
-			this.lastMouseEvent = System.currentTimeMillis();
+			this.pressTime = System.currentTimeMillis();
 			super.mousePressed(this.clickType);
 		} else if (this.clickType != null) {
 			super.mouseReleased(this.clickType);
@@ -151,8 +131,8 @@ public abstract class DemoWindow extends DemoUIBridge {
 	}
 
 	private void onCursorMove() {
-		if (this.clickType != null && this.lastMouseEvent > 0L) {
-			super.mouseDragged(this.clickType, System.currentTimeMillis() - this.lastMouseEvent);
+		if (this.clickType != null) {
+			super.mouseDragged(this.clickType, System.currentTimeMillis() - this.pressTime);
 		}
 	}
 
@@ -163,10 +143,6 @@ public abstract class DemoWindow extends DemoUIBridge {
 
 		this.identity();
 		super.load();
-	}
-
-	private static boolean isTextKey(final int code) {
-		return code >= GLFW.GLFW_KEY_SPACE && code <= GLFW.GLFW_KEY_GRAVE_ACCENT || code >= GLFW.GLFW_KEY_KP_0 && code <= GLFW.GLFW_KEY_KP_ADD;
 	}
 
 }

@@ -83,22 +83,23 @@ Register the bridge after the backend, load JOID, then forward the events of you
 ```java
 public final class AppLoop {
 
-	private final long        window;
-	private final AppUIBridge bridge;
+	private final long               window;
+	private final AppUIBridge        bridge;
+	private final KeyCharacterMerger keyMerger;
 
-	private Key       pendingKey;
-	private ClickType pressed;
 	private long      pressTime;
+	private ClickType pressed;
 
 	public AppLoop(final long window, final @NonNull AppUIBridge bridge) {
 		this.window = window;
 		this.bridge = bridge;
+		this.keyMerger = KeyCharacterMerger.create(bridge::keyTyped);
 
 		GLFW.glfwSetMouseButtonCallback(window, (handle, button, action, mods) -> this.onMouseButton(button, action));
 		GLFW.glfwSetCursorPosCallback(window, (handle, x, y) -> this.onCursorMove());
 		GLFW.glfwSetScrollCallback(window, (handle, x, y) -> this.bridge.mouseScroll((int) (y * 120D)));
 		GLFW.glfwSetKeyCallback(window, (handle, key, scancode, action, mods) -> this.onKey(key, action, mods));
-		GLFW.glfwSetCharCallback(window, (handle, codepoint) -> this.onCharacter(codepoint));
+		GLFW.glfwSetCharCallback(window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetFramebufferSizeCallback(window, (handle, width, height) -> this.resize());
 		this.resize();
 	}
@@ -106,7 +107,7 @@ public final class AppLoop {
 	public void run() {
 		while (!GLFW.glfwWindowShouldClose(this.window)) {
 			GLFW.glfwPollEvents();
-			this.flushPendingKey();
+			this.keyMerger.flush();
 
 			this.bridge.update();
 			BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 1F);
@@ -149,31 +150,7 @@ public final class AppLoop {
 			return;
 		}
 
-		this.flushPendingKey();
-		final Key key = WindowBridge.getKey(code);
-		final boolean text = code >= GLFW.GLFW_KEY_SPACE && code <= GLFW.GLFW_KEY_GRAVE_ACCENT || code >= GLFW.GLFW_KEY_KP_0 && code <= GLFW.GLFW_KEY_KP_ADD;
-		if (text && (mods & (GLFW.GLFW_MOD_CONTROL | GLFW.GLFW_MOD_ALT)) == 0) {
-			this.pendingKey = key;
-			return;
-		}
-
-		this.bridge.keyTyped((char) 0, key);
-	}
-
-	private void onCharacter(final int codepoint) {
-		final Key key = this.pendingKey == null ? Key.UNKNOWN : this.pendingKey;
-		this.pendingKey = null;
-		this.bridge.keyTyped((char) codepoint, key);
-	}
-
-	private void flushPendingKey() {
-		if (this.pendingKey == null) {
-			return;
-		}
-
-		final Key key = this.pendingKey;
-		this.pendingKey = null;
-		this.bridge.keyTyped((char) 0, key);
+		this.keyMerger.keyPressed(WindowBridge.getKey(code), code, mods);
 	}
 
 }
@@ -190,7 +167,7 @@ JOID.open(new UIMainMenu());
 loop.run();
 ```
 
-`WindowBridge` here is `dev.joid.impl.glfw.WindowBridge`, whose static `getKey(int)` converts a GLFW key code into the key of the active keyboard layout. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
+`WindowBridge` here is `dev.joid.impl.glfw.WindowBridge`, whose static `getKey(int)` converts a GLFW key code into the key of the active keyboard layout. `KeyCharacterMerger` (`dev.joid.impl.glfw.input`) pairs each key with its character, flushed once per frame. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
 
 ## Feeding input events
 

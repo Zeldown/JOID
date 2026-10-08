@@ -170,26 +170,27 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
 import dev.joid.impl.glfw.WindowBridge;
+import dev.joid.impl.glfw.input.KeyCharacterMerger;
 import dev.joid.impl.lwjgl3.Backend;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.key.Key;
 
 public final class Main {
 
 	private final long window;
 	private final AppUIBridge bridge;
+	private final KeyCharacterMerger keyMerger;
 
-	private Key pendingKey;
-	private ClickType clickType;
 	private long pressTime;
+	private ClickType clickType;
 
 	private Main(final long window, final AppUIBridge bridge) {
 		this.window = window;
 		this.bridge = bridge;
+		this.keyMerger = KeyCharacterMerger.create(bridge::keyTyped);
 	}
 
 	public static void main(final String[] args) {
@@ -230,7 +231,7 @@ public final class Main {
 
 	private void listen() {
 		GLFW.glfwSetKeyCallback(this.window, (handle, code, scancode, action, mods) -> this.onKey(code, action, mods));
-		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.onCharacter(codepoint));
+		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetMouseButtonCallback(this.window, (handle, button, action, mods) -> this.onMouseButton(button, action));
 		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.onCursorMove());
 		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> this.bridge.mouseScroll((int) (y * 120D)));
@@ -245,7 +246,7 @@ public final class Main {
 			}
 
 			GLFW.glfwPollEvents();
-			this.flushPendingKey();
+			this.keyMerger.flush();
 
 			this.bridge.update();
 			BridgeHandler.RENDER.get().clear(0.1F, 0.1F, 0.1F, 1F);
@@ -274,31 +275,7 @@ public final class Main {
 			return;
 		}
 
-		this.flushPendingKey();
-		final Key key = WindowBridge.getKey(code);
-		final boolean text = code >= GLFW.GLFW_KEY_SPACE && code <= GLFW.GLFW_KEY_GRAVE_ACCENT || code >= GLFW.GLFW_KEY_KP_0 && code <= GLFW.GLFW_KEY_KP_ADD;
-		if (text && (mods & (GLFW.GLFW_MOD_CONTROL | GLFW.GLFW_MOD_ALT)) == 0) {
-			this.pendingKey = key;
-			return;
-		}
-
-		this.bridge.keyTyped((char) 0, key);
-	}
-
-	private void onCharacter(final int codepoint) {
-		final Key key = this.pendingKey == null ? Key.UNKNOWN : this.pendingKey;
-		this.pendingKey = null;
-		this.bridge.keyTyped((char) codepoint, key);
-	}
-
-	private void flushPendingKey() {
-		if (this.pendingKey == null) {
-			return;
-		}
-
-		final Key key = this.pendingKey;
-		this.pendingKey = null;
-		this.bridge.keyTyped((char) 0, key);
+		this.keyMerger.keyPressed(WindowBridge.getKey(code), code, mods);
 	}
 
 	private void onMouseButton(final int button, final int action) {
