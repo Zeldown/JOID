@@ -190,24 +190,22 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
 import dev.joid.backend.lwjgl3.Backend;
-import dev.joid.base.glfw.WindowBridge;
-import dev.joid.base.glfw.input.KeyCharacterMerger;
+import dev.joid.base.glfw.input.GlfwInputForwarder;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
-import dev.joid.lib.utils.click.ClickType;
 
 public final class Main {
 
 	private final long window;
 	private final AppUIBridge bridge;
-	private final KeyCharacterMerger keyMerger;
+	private final GlfwInputForwarder input;
 
 	private Main(final long window, final AppUIBridge bridge) {
 		this.window = window;
 		this.bridge = bridge;
-		this.keyMerger = KeyCharacterMerger.create(bridge::keyTyped);
+		this.input = GlfwInputForwarder.create(bridge);
 	}
 
 	public static void main(final String[] args) {
@@ -247,11 +245,7 @@ public final class Main {
 	}
 
 	private void listen() {
-		GLFW.glfwSetKeyCallback(this.window, (handle, code, scancode, action, mods) -> this.onKey(code, action, mods));
-		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
-		GLFW.glfwSetMouseButtonCallback(this.window, (handle, button, action, mods) -> this.onMouseButton(button, action));
-		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.bridge.mouseMoved());
-		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> this.bridge.mouseScroll(y));
+		this.input.attach(this.window);
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.resize());
 	}
 
@@ -263,7 +257,7 @@ public final class Main {
 			}
 
 			GLFW.glfwPollEvents();
-			this.keyMerger.flush();
+			this.input.flush();
 
 			this.bridge.update();
 			BridgeHandler.RENDER.get().clear(0.1F, 0.1F, 0.1F, 1F);
@@ -286,22 +280,6 @@ public final class Main {
 		this.bridge.load();
 	}
 
-	private void onKey(final int code, final int action, final int mods) {
-		if (action == GLFW.GLFW_RELEASE) {
-			return;
-		}
-
-		this.keyMerger.keyPressed(WindowBridge.getKey(code), code, mods);
-	}
-
-	private void onMouseButton(final int button, final int action) {
-		if (action == GLFW.GLFW_PRESS) {
-			this.bridge.mousePressed(ClickType.from(button));
-		} else {
-			this.bridge.mouseReleased(ClickType.from(button));
-		}
-	}
-
 }
 ```
 
@@ -314,7 +292,7 @@ The order of the startup calls matters:
 5. `resize()` sets a pixel projection and the viewport for the window, then `bridge.load()` resizes every open UI, keeping its zoom. It runs again whenever the framebuffer size changes.
 6. `JOID.open(ui)` hands the UI to its bridge, which loads it.
 
-`KeyCharacterMerger` (`dev.joid.base.glfw.input`) pairs each key press with the character GLFW reports right after it, so a text key reaches JOID once, with both its `Key` and its character; its `flush()`, once per frame, sends a key that produced no character. `WindowBridge.getKey` (`dev.joid.base.glfw`) maps GLFW key codes to `Key` values. The scroll offset is multiplied by 120 per notch.
+`GlfwInputForwarder` (`dev.joid.base.glfw.input`) sets the key, character, mouse button, cursor and scroll callbacks of the window and forwards them to the bridge: it pairs each key press with the character GLFW reports right after it, so a text key reaches JOID once, with both its `Key` and its character, and its `flush()`, once per frame, sends a key that produced no character. `GlfwKeys` maps GLFW key codes to `Key` values, and the scroll offset goes through in notches.
 
 ## Step 6: run it
 
@@ -373,7 +351,7 @@ render.endFrame();
 render.present();
 ```
 
-`Backend` is `dev.joid.backend.vulkan.Backend`, `RenderBridge` is `dev.joid.backend.vulkan.render.RenderBridge` and `Configuration` is `org.lwjgl.system.Configuration`. The rest of `Main` (GLFW callbacks, `WindowBridge.getKey`, resize) is unchanged.
+`Backend` is `dev.joid.backend.vulkan.Backend`, `RenderBridge` is `dev.joid.backend.vulkan.render.RenderBridge` and `Configuration` is `org.lwjgl.system.Configuration`. The rest of `Main` (`GlfwInputForwarder`, resize) is unchanged.
 
 The demo window of each backend (`dev.joid.backend.<backend>.demo.DemoWindow` in the `-dev` jars) is a complete reference of this setup; see [Backends](../integration/backends.md).
 

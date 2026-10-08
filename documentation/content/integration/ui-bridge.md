@@ -85,18 +85,13 @@ public final class AppLoop {
 
 	private final long               window;
 	private final AppUIBridge        bridge;
-	private final KeyCharacterMerger keyMerger;
+	private final GlfwInputForwarder input;
 
 	public AppLoop(final long window, final @NonNull AppUIBridge bridge) {
 		this.window = window;
 		this.bridge = bridge;
-		this.keyMerger = KeyCharacterMerger.create(bridge::keyTyped);
+		this.input  = GlfwInputForwarder.create(bridge).attach(window);
 
-		GLFW.glfwSetMouseButtonCallback(window, (handle, button, action, mods) -> this.onMouseButton(button, action));
-		GLFW.glfwSetCursorPosCallback(window, (handle, x, y) -> this.bridge.mouseMoved());
-		GLFW.glfwSetScrollCallback(window, (handle, x, y) -> this.bridge.mouseScroll(y));
-		GLFW.glfwSetKeyCallback(window, (handle, key, scancode, action, mods) -> this.onKey(key, action, mods));
-		GLFW.glfwSetCharCallback(window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetFramebufferSizeCallback(window, (handle, width, height) -> this.resize());
 		this.resize();
 	}
@@ -104,7 +99,7 @@ public final class AppLoop {
 	public void run() {
 		while (!GLFW.glfwWindowShouldClose(this.window)) {
 			GLFW.glfwPollEvents();
-			this.keyMerger.flush();
+			this.input.flush();
 
 			this.bridge.update();
 			BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 1F);
@@ -154,7 +149,7 @@ JOID.open(new UIMainMenu());
 loop.run();
 ```
 
-`WindowBridge` here is `dev.joid.base.glfw.WindowBridge`, whose static `getKey(int)` converts a GLFW key code into the key of the active keyboard layout. `KeyCharacterMerger` (`dev.joid.base.glfw.input`) pairs each key with its character, flushed once per frame. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
+`GlfwInputForwarder` (`dev.joid.base.glfw.input`) registers the GLFW input callbacks of the window and forwards them to the bridge: keys through `GlfwKeys.getKey(int)`, which gives the key of the active keyboard layout, each paired with its character by a `KeyCharacterMerger` flushed once per frame; buttons through `ClickType.from(int)`; the scroll offset in notches. A host that owns the GLFW callbacks, such as a game, calls its methods itself: `keyPressed(code, modifiers)`, `charTyped(codepoint)`, `mousePressed(button)`, `mouseReleased(button)`, `mouseMoved()`, `mouseScrolled(notches)` and `flush()`; the mouse methods return whether a UI consumed the event. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
 
 ## Feeding input events
 

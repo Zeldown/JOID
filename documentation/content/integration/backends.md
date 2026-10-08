@@ -232,13 +232,23 @@ The LWJGL 3 and Vulkan backends share two modules, also published as their own j
 |---|---|
 | `new WindowBridge(long window)` | A bridge reading the given window. |
 | `getWidth()` / `getHeight()` | The framebuffer size in pixels. |
-| `getMouseX()` / `getMouseY()` | The cursor position converted into framebuffer pixels, so the mouse matches the drawing on high-density screens. |
+| `getMouseX()` / `getMouseY()` | The cursor position converted into framebuffer pixels with `GlfwWindows.toFramebuffer(position, windowSize, framebufferSize)`, so the mouse matches the drawing on high-density screens. |
 | `isMouseGrabbed()` | `true` when the cursor mode is `GLFW_CURSOR_DISABLED`. |
 | `isKeyDown(Key)` | `glfwGetKey` of the GLFW keys that give `key` on the active keyboard layout. |
 | `isPhysicalKeyDown(Key)` | `glfwGetKey` of the GLFW key at the place of `key`. |
 | `getClipboard()` / `setClipboard(String)` | The GLFW clipboard. |
+
+`dev.joid.base.glfw.input.GlfwKeys` holds the table between GLFW key codes and `Key`, for every engine on GLFW:
+
+| Member | Description |
+|---|---|
 | `static getKey(int code)` | The `Key` of a GLFW key code on the active keyboard layout: a letter or punctuation key becomes the key of the character it types (`glfwGetKeyName`); `Key.UNKNOWN` when it has none. |
 | `static getPhysicalKey(int code)` | The `Key` at the place of a GLFW key code, whatever the layout. |
+| `static getCode(Key key)` | The GLFW key code at the place of `key`; `GLFW_KEY_UNKNOWN` when it has none. |
+| `static isKeyDown(Key key, IntPredicate down)` | Whether `key` is held on the active keyboard layout, `down` telling whether a GLFW key code is held (`glfwGetKey`, or the input state of the host). |
+| `static isPhysicalKeyDown(Key key, IntPredicate down)` | Whether the GLFW key at the place of `key` is held. |
+
+`dev.joid.base.glfw.input.GlfwInputForwarder` forwards the GLFW events to a `UIBridge`: `create(bridge)`, then `attach(window)` to set the callbacks of a window, or its event methods when the host owns the callbacks (see [UI Bridge](ui-bridge.md#driving-the-bridge-from-your-loop)). `dev.joid.base.glfw.GlfwWindows.toFramebuffer(position, windowSize, framebufferSize)` converts a cursor position from window coordinates to framebuffer pixels, `position` unchanged for a window of size 0.
 
 ### OpenAL audio bridge
 

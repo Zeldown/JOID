@@ -170,24 +170,22 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
 import dev.joid.backend.lwjgl3.Backend;
-import dev.joid.base.glfw.WindowBridge;
-import dev.joid.base.glfw.input.KeyCharacterMerger;
+import dev.joid.base.glfw.input.GlfwInputForwarder;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
-import dev.joid.lib.utils.click.ClickType;
 
 public final class Main {
 
 	private final long window;
 	private final AppUIBridge bridge;
-	private final KeyCharacterMerger keyMerger;
+	private final GlfwInputForwarder input;
 
 	private Main(final long window, final AppUIBridge bridge) {
 		this.window = window;
 		this.bridge = bridge;
-		this.keyMerger = KeyCharacterMerger.create(bridge::keyTyped);
+		this.input = GlfwInputForwarder.create(bridge);
 	}
 
 	public static void main(final String[] args) {
@@ -227,11 +225,7 @@ public final class Main {
 	}
 
 	private void listen() {
-		GLFW.glfwSetKeyCallback(this.window, (handle, code, scancode, action, mods) -> this.onKey(code, action, mods));
-		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
-		GLFW.glfwSetMouseButtonCallback(this.window, (handle, button, action, mods) -> this.onMouseButton(button, action));
-		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.bridge.mouseMoved());
-		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> this.bridge.mouseScroll(y));
+		this.input.attach(this.window);
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.resize());
 	}
 
@@ -243,7 +237,7 @@ public final class Main {
 			}
 
 			GLFW.glfwPollEvents();
-			this.keyMerger.flush();
+			this.input.flush();
 
 			this.bridge.update();
 			BridgeHandler.RENDER.get().clear(0.1F, 0.1F, 0.1F, 1F);
@@ -264,22 +258,6 @@ public final class Main {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.screen(window.getWidth(), window.getHeight());
 		this.bridge.load();
-	}
-
-	private void onKey(final int code, final int action, final int mods) {
-		if (action == GLFW.GLFW_RELEASE) {
-			return;
-		}
-
-		this.keyMerger.keyPressed(WindowBridge.getKey(code), code, mods);
-	}
-
-	private void onMouseButton(final int button, final int action) {
-		if (action == GLFW.GLFW_PRESS) {
-			this.bridge.mousePressed(ClickType.from(button));
-		} else {
-			this.bridge.mouseReleased(ClickType.from(button));
-		}
 	}
 
 }
