@@ -41,17 +41,17 @@ public final class App {
 }
 ```
 
-`Backend` is `dev.joid.impl.lwjgl3.Backend`. `AppUIBridge` and `AppLoop` are the bridge and the event loop of [UI Bridge](ui-bridge.md); the loop ends each frame with `GLFW.glfwSwapBuffers(window)`.
+`Backend` is `dev.joid.backend.lwjgl3.Backend`. `AppUIBridge` and `AppLoop` are the bridge and the event loop of [UI Bridge](ui-bridge.md); the loop ends each frame with `GLFW.glfwSwapBuffers(window)`.
 
-![Diagram of the backends: LWJGL 2 has its own window, render and audio bridges; LWJGL 3 and Vulkan each have a render bridge and share the window bridge of joid-glfw and the audio bridge of joid-openal; all build on joid-core](../images/diagram-backends.png "LWJGL 3 and Vulkan share the GLFW window bridge and the OpenAL audio bridge")
+![Diagram of the backends: LWJGL 2 has its own window, render and audio bridges; LWJGL 3 renders with the GlRenderBridge of joid-base-opengl and Vulkan with its own render bridge, and both share the window bridge of joid-base-glfw and the audio bridge of joid-base-openal; all build on joid-core](../images/diagram-backends.png "LWJGL 3 and Vulkan share the GLFW window bridge and the OpenAL audio bridge")
 
 The backend is the only part of a JOID application that knows the engine. Your UIs run unchanged on all three, and the snapshot tests compare the backends pixel by pixel so that they also look the same.
 
 | Module | Engine | Register with | Window bridge | Audio bridge | Generated shaders |
 |---|---|---|---|---|---|
-| `lwjgl2` | LWJGL 2.9.1: OpenGL state of the current context | `dev.joid.impl.lwjgl2.Backend.register()` | LWJGL 2 `Display`, `Mouse`, `Keyboard` | LWJGL 2 OpenAL | GLSL 1.20 |
-| `lwjgl3` | LWJGL 3.3.4: OpenGL 3.3 core, rendered by the `opengl` module | `dev.joid.impl.lwjgl3.Backend.register(window)` | `glfw` module | `openal` module | GLSL 3.30 |
-| `vulkan` | LWJGL 3.3.4: Vulkan 1.3, shaderc | `dev.joid.impl.vulkan.Backend.register(window)` | `glfw` module | `openal` module | GLSL 4.50 compiled to SPIR-V at runtime |
+| `backend-lwjgl2` | LWJGL 2.9.1: OpenGL state of the current context | `dev.joid.backend.lwjgl2.Backend.register()` | LWJGL 2 `Display`, `Mouse`, `Keyboard` | LWJGL 2 OpenAL | GLSL 1.20 |
+| `backend-lwjgl3` | LWJGL 3.3.4: OpenGL 3.3 core, rendered by the `base-opengl` module | `dev.joid.backend.lwjgl3.Backend.register(window)` | `base-glfw` module | `base-openal` module | GLSL 3.30 |
+| `backend-vulkan` | LWJGL 3.3.4: Vulkan 1.3, shaderc | `dev.joid.backend.vulkan.Backend.register(window)` | `base-glfw` module | `base-openal` module | GLSL 4.50 compiled to SPIR-V at runtime |
 
 Each `Backend.register` registers the audio, window and render bridges of its module; the clock bridge is already registered by JOID. The backend jars, their `prod` and `dev` flavors and the dependencies to declare are listed in [Installation](../getting-started/installation.md).
 
@@ -107,9 +107,9 @@ public final class App {
 }
 ```
 
-`Backend` is `dev.joid.impl.vulkan.Backend` and `RenderBridge` is `dev.joid.impl.vulkan.render.RenderBridge`. Register the input callbacks as in [UI Bridge](ui-bridge.md#driving-the-bridge-from-your-loop); when the window is resized, set `ortho` and `viewport` from the framebuffer size again and call `bridge.load()`.
+`Backend` is `dev.joid.backend.vulkan.Backend` and `RenderBridge` is `dev.joid.backend.vulkan.render.RenderBridge`. Register the input callbacks as in [UI Bridge](ui-bridge.md#driving-the-bridge-from-your-loop); when the window is resized, set `ortho` and `viewport` from the framebuffer size again and call `bridge.load()`.
 
-| Method of `dev.joid.impl.vulkan.render.RenderBridge` | Description |
+| Method of `dev.joid.backend.vulkan.render.RenderBridge` | Description |
 |---|---|
 | `beginFrame()` | Of `IRenderBridge`. Acquires the next swapchain image and starts recording. Recreates the swapchain first when the window size changed. Throws `IllegalStateException("The Vulkan frame has already begun")` when a frame is already open. |
 | `endFrame()` | Of `IRenderBridge`. Submits the frame and waits for the GPU to finish it. |
@@ -165,7 +165,7 @@ public final class App {
 }
 ```
 
-LWJGL 2 delivers the character and the key of a press in the same event, so the input loop is short. `WindowBridge` is `dev.joid.impl.lwjgl2.window.WindowBridge`, whose static `getKey(int)` converts an LWJGL 2 key code:
+LWJGL 2 delivers the character and the key of a press in the same event, so the input loop is short. `WindowBridge` is `dev.joid.backend.lwjgl2.window.WindowBridge`, whose static `getKey(int)` converts an LWJGL 2 key code:
 
 ```java
 @RequiredArgsConstructor
@@ -211,7 +211,7 @@ The jar does not contain the LWJGL 2.9.1 classes, which your application declare
 1. When the system property `org.lwjgl.librarypath` is set, or when one of the native libraries of the platform is found in a folder of `java.library.path`, nothing is extracted: the host provides them.
 2. Otherwise the natives are extracted into `<java.io.tmpdir>/joid-lwjgl-2.9.1/<platform>` (`windows`, `linux` or `osx`), rewritten only when their size differs, and `org.lwjgl.librarypath` points to that folder.
 
-`dev.joid.impl.lwjgl2.Natives.install()` performs this step alone; it runs once per JVM.
+`dev.joid.backend.lwjgl2.Natives.install()` performs this step alone; it runs once per JVM.
 
 ## Version check with JOID.checkVersion
 
@@ -223,13 +223,13 @@ Each official `Backend.register` first calls `JOID.checkVersion(JOID.VERSION)`. 
 
 The backend still registers: the message tells you to align the jar versions. A backend of your own makes the same call (see [Writing a Backend](writing-a-backend.md)).
 
-## The glfw and openal modules
+## The base-glfw and base-openal modules
 
-The LWJGL 3 and Vulkan backends share two modules, also published as their own jars, `joid-glfw` and `joid-openal`, for engines built on GLFW or OpenAL.
+The LWJGL 3 and Vulkan backends share two modules, also published as their own jars, `joid-base-glfw` and `joid-base-openal`, for engines built on GLFW or OpenAL.
 
 ### GLFW window bridge
 
-`dev.joid.impl.glfw.WindowBridge` implements `IWindowBridge` for a GLFW window:
+`dev.joid.base.glfw.WindowBridge` implements `IWindowBridge` for a GLFW window:
 
 | Member | Description |
 |---|---|
@@ -245,7 +245,7 @@ The LWJGL 3 and Vulkan backends share two modules, also published as their own j
 
 ### OpenAL audio bridge
 
-`dev.joid.impl.openal.AudioBridge` implements `IAudioBridge` with LWJGL 3's OpenAL:
+`dev.joid.base.openal.AudioBridge` implements `IAudioBridge` with LWJGL 3's OpenAL:
 
 - `createSource` uses the OpenAL context that is current, so a host that already plays sound shares its context; when none is current, it opens the default device, creates a context, makes it current and destroys it when the JVM exits.
 - `AudioSource` streams 16-bit samples through a queue of OpenAL buffers, in mono for one channel and in stereo otherwise: a track of 3 channels or more is mixed down with [`AudioDownmix`](bridges.md#stereo-output-with-audiodownmix) first. The source is placed at the listener, so OpenAL does not spatialize it; JOID applies the distance attenuation itself (see [Playback, Video and Audio](../resources/playback.md)).
@@ -300,18 +300,18 @@ BridgeHandler.WINDOW.register(new HostWindowBridge());
 BridgeHandler.RENDER.register(GlRenderBridge.create(Lwjgl3GlBinding.inst()));
 ```
 
-Here `AudioBridge` is `dev.joid.impl.openal.AudioBridge`, `GlRenderBridge` is `dev.joid.impl.opengl.render.GlRenderBridge`, `Lwjgl3GlBinding` is `dev.joid.impl.lwjgl3.binding.Lwjgl3GlBinding` and `HostWindowBridge` is your implementation of `IWindowBridge`. The `RenderBridge`, `WindowBridge` and `AudioBridge` of `dev.joid.impl.lwjgl2` also have public constructors; the Vulkan render bridge needs a GLFW window (`new RenderBridge(long window)`).
+Here `AudioBridge` is `dev.joid.base.openal.AudioBridge`, `GlRenderBridge` is `dev.joid.base.opengl.render.GlRenderBridge`, `Lwjgl3GlBinding` is `dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding` and `HostWindowBridge` is your implementation of `IWindowBridge`. The `RenderBridge`, `WindowBridge` and `AudioBridge` of `dev.joid.backend.lwjgl2` also have public constructors; the Vulkan render bridge needs a GLFW window (`new RenderBridge(long window)`).
 
-## The opengl module
+## The base-opengl module
 
-The LWJGL 3 backend renders with `joid-opengl`, a module in plain Java that holds the whole OpenGL renderer and calls OpenGL only through binding interfaces. The LWJGL 3 backend implements them with LWJGL 3 (`dev.joid.impl.lwjgl3.binding`); another engine on OpenGL implements them with its own functions and gets the same rendering.
+The LWJGL 3 backend renders with `joid-base-opengl`, a module in plain Java that holds the whole OpenGL renderer and calls OpenGL only through binding interfaces. The LWJGL 3 backend implements them with LWJGL 3 (`dev.joid.backend.lwjgl3.binding`); another engine on OpenGL implements them with its own functions and gets the same rendering.
 
-| Package `dev.joid.impl.opengl` | Content |
+| Package `dev.joid.base.opengl` | Content |
 |---|---|
 | `binding` | `IGlBinding` (`glEnable`, `glDisable`, `glIsEnabled`, `glGetInteger`, `glGetString`, `glGetStringi`, `glGetFloatv`, and the getters of the five domain bindings), `IGlStateBinding` (blending, depth, stencil, color mask, viewport, line width, clear color), `IGlBufferBinding` (buffers, vertex arrays, attributes, `glDrawArrays`), `IGlProgramBinding` (shaders, programs, uniforms, uniform blocks), `IGlTextureBinding` (textures, units, sampler objects), `IGlFrameBufferBinding` (framebuffers, renderbuffers, blits, clears, reading pixels), and `GlConstants`, the OpenGL values the module passes to them. |
 | `capability` | `GlCapabilities.read(IGlBinding)` reads the context once: version, GLSL version, `GlProfile` (`COMPATIBILITY`, `CORE`, `FORWARD_COMPATIBLE_CORE`), extensions, maximum texture size and line widths, and tells whether vertex arrays, uniform buffers, sampler objects and framebuffer objects are there. `GlStrategies.of(GlCapabilities)` is the one place that chooses how to render on that context: today GLSL 3.30 with the uniforms in a block, and it refuses a context without OpenGL 3.3 with an `IllegalStateException` naming what the context offers. |
 | `render` | `GlRenderBridge` (`create(IGlBinding)`), the render bridge; `GlEnums`, the OpenGL values of the blend, stencil, wrap, filter, vertex and primitive enums of JOID; `shader.GlShader`, `texture.GlTexture` and `framebuffer.GlFrameBuffer`, on the core `Shader`, `Texture` and `FrameBufferHandle`. |
-| `snapshot` | `GlSnapshotCapture.capture(binding, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL; left out of the `-prod` jars and of the released `joid-opengl` jar. |
+| `snapshot` | `GlSnapshotCapture.capture(binding, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL; left out of the `-prod` jars and of the released `joid-base-opengl` jar. |
 
 `GlRenderBridge.create(binding)` reads the capabilities and creates its vertex array, buffer and sampler objects: the context must be current. Every OpenGL call of JOID then goes through the bindings, so a binding that wraps another one sees all of them. On LWJGL 3, `GlContextRequest.CORE_33.apply()` sets the GLFW hints of the context JOID needs (OpenGL 3.3 core, forward compatible on macOS, 24 bits of depth, 8 of stencil).
 
@@ -321,25 +321,25 @@ Each backend module has a demo window that opens the JOID demo UIs in dev and de
 
 | Command | Main class |
 |---|---|
-| `./gradlew :lwjgl2:runDemo` | `dev.joid.impl.lwjgl2.demo.DemoWindow` |
-| `./gradlew :lwjgl3:runDemo` | `dev.joid.impl.lwjgl3.demo.DemoWindow` |
-| `./gradlew :vulkan:runDemo` | `dev.joid.impl.vulkan.demo.DemoWindow` |
+| `./gradlew :backend-lwjgl2:runDemo` | `dev.joid.backend.lwjgl2.demo.DemoWindow` |
+| `./gradlew :backend-lwjgl3:runDemo` | `dev.joid.backend.lwjgl3.demo.DemoWindow` |
+| `./gradlew :backend-vulkan:runDemo` | `dev.joid.backend.vulkan.demo.DemoWindow` |
 
-The LWJGL 3 and Vulkan demo windows extend `dev.joid.impl.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-glfw` jar. Its subclasses provide `getEngineName()`, `configureWindow()` (window hints), `registerBackend(long window)` and `present()`; the loop calls `beginFrame()` and `endFrame()` of the render bridge around each frame. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
+The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-base-glfw` jar. Its subclasses provide `getEngineName()`, `configureWindow()` (window hints), `registerBackend(long window)` and `present()`; the loop calls `beginFrame()` and `endFrame()` of the render bridge around each frame. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
 
 ## Reference
 
 | Class | Member | Description |
 |---|---|---|
-| `dev.joid.impl.lwjgl2.Backend` | `static register()` | Checks the version, installs the natives, registers the audio, window and render bridges of LWJGL 2. |
-| `dev.joid.impl.lwjgl3.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the OpenGL 3.3 render bridge and the GLFW window bridge of `window`. |
-| `dev.joid.impl.vulkan.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the GLFW window bridge and a Vulkan render bridge on `window`. |
-| `dev.joid.impl.lwjgl2.Natives` | `static install()` | Installs the LWJGL 2 natives once per JVM. |
+| `dev.joid.backend.lwjgl2.Backend` | `static register()` | Checks the version, installs the natives, registers the audio, window and render bridges of LWJGL 2. |
+| `dev.joid.backend.lwjgl3.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the OpenGL 3.3 render bridge and the GLFW window bridge of `window`. |
+| `dev.joid.backend.vulkan.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the GLFW window bridge and a Vulkan render bridge on `window`. |
+| `dev.joid.backend.lwjgl2.Natives` | `static install()` | Installs the LWJGL 2 natives once per JVM. |
 | `dev.joid.internal.JOID` | `static checkVersion(String version)` | `true` when the major version of `version` matches the loaded JOID; otherwise prints the warning and returns `false`. |
 
 ## Pitfalls
 
-- Create the OpenGL context, make it current and call `GL.createCapabilities()` before `dev.joid.impl.lwjgl3.Backend.register`.
+- Create the OpenGL context, make it current and call `GL.createCapabilities()` before `dev.joid.backend.lwjgl3.Backend.register`.
 - On Vulkan, a clear or a `draw()` outside `beginFrame()` / `endFrame()` throws.
 - Without a stencil buffer, the masks of the UIs do not clip.
 - The demo windows and `DemoUIBridge` are not in the `-prod` jars: never reference them from application code.

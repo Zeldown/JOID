@@ -198,14 +198,14 @@ A separate folder per run configuration keeps the stores of your tests and of yo
 
 ## The demos
 
-Each backend `-dev` jar contains a demo window: `dev.joid.impl.lwjgl2.demo.DemoWindow`, `dev.joid.impl.lwjgl3.demo.DemoWindow` or `dev.joid.impl.vulkan.demo.DemoWindow`. Its `main` opens a resizable 1920×1080 window titled `JOID - Demo (<engine>)`, registers the backend and a `DemoUIBridge`, turns the dev and demo modes on, and opens the `UIDemoChoice` menu.
+Each backend `-dev` jar contains a demo window: `dev.joid.backend.lwjgl2.demo.DemoWindow`, `dev.joid.backend.lwjgl3.demo.DemoWindow` or `dev.joid.backend.vulkan.demo.DemoWindow`. Its `main` opens a resizable 1920×1080 window titled `JOID - Demo (<engine>)`, registers the backend and a `DemoUIBridge`, turns the dev and demo modes on, and opens the `UIDemoChoice` menu.
 
 ![The demo menu: a grid of gray buttons, one per demo UI](../images/dev-demo-menu.png "UIDemoChoice: click a demo to open it, Escape goes back to the menu.")
 
-Run it from the repository with `./gradlew :lwjgl3:runDemo` (also `:lwjgl2:runDemo`, `:vulkan:runDemo`), or from a release jar with the libraries of [Installation](../getting-started/installation.md):
+Run it from the repository with `./gradlew :backend-lwjgl3:runDemo` (also `:backend-lwjgl2:runDemo`, `:backend-vulkan:runDemo`), or from a release jar with the libraries of [Installation](../getting-started/installation.md):
 
 ```
-java -cp "joid-lwjgl3-8.0.0-dev.jar:libs/*" dev.joid.impl.lwjgl3.demo.DemoWindow
+java -cp "joid-backend-lwjgl3-8.0.0-dev.jar:libs/*" dev.joid.backend.lwjgl3.demo.DemoWindow
 ```
 
 Use `;` as classpath separator on Windows, and add `-XstartOnFirstThread` on macOS for LWJGL 3 and Vulkan.

@@ -15,7 +15,7 @@ The application has four classes in the package `com.example`:
 
 ## Step 1: set up the project
 
-Use the Gradle build of [Installation](installation.md) with the `joid-lwjgl3-8.0.0-dev.jar` jar and the LWJGL 3 modules. JOID ships no font for your UIs, so put any TrueType or OpenType font file in your working directory as `fonts/Montserrat-Regular.ttf` (any `.ttf` or `.otf` works: adjust the path in `Theme`).
+Use the Gradle build of [Installation](installation.md) with the `joid-backend-lwjgl3-8.0.0-dev.jar` jar and the LWJGL 3 modules. JOID ships no font for your UIs, so put any TrueType or OpenType font file in your working directory as `fonts/Montserrat-Regular.ttf` (any `.ttf` or `.otf` works: adjust the path in `Theme`).
 
 To run it with Gradle, add the `application` plugin (Gradle 6.4 or later):
 
@@ -189,9 +189,9 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
-import dev.joid.impl.glfw.WindowBridge;
-import dev.joid.impl.glfw.input.KeyCharacterMerger;
-import dev.joid.impl.lwjgl3.Backend;
+import dev.joid.backend.lwjgl3.Backend;
+import dev.joid.base.glfw.WindowBridge;
+import dev.joid.base.glfw.input.KeyCharacterMerger;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
@@ -315,7 +315,7 @@ The order of the startup calls matters:
 5. `resize()` sets a pixel projection and the viewport for the window, then `bridge.load()` resizes every open UI, keeping its zoom. It runs again whenever the framebuffer size changes.
 6. `JOID.open(ui)` hands the UI to its bridge, which loads it.
 
-`KeyCharacterMerger` (`dev.joid.impl.glfw.input`) pairs each key press with the character GLFW reports right after it, so a text key reaches JOID once, with both its `Key` and its character; its `flush()`, once per frame, sends a key that produced no character. `WindowBridge.getKey` (`dev.joid.impl.glfw`) maps GLFW key codes to `Key` values. The scroll offset is multiplied by 120 per notch.
+`KeyCharacterMerger` (`dev.joid.base.glfw.input`) pairs each key press with the character GLFW reports right after it, so a text key reaches JOID once, with both its `Key` and its character; its `flush()`, once per frame, sends a key that produced no character. `WindowBridge.getKey` (`dev.joid.base.glfw`) maps GLFW key codes to `Key` values. The scroll offset is multiplied by 120 per notch.
 
 ## Step 6: run it
 
@@ -351,7 +351,7 @@ JOID.inst().load();
 Theme.load();
 ```
 
-`Backend` is `dev.joid.impl.lwjgl2.Backend`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.impl.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
+`Backend` is `dev.joid.backend.lwjgl2.Backend`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.backend.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
 
 ### Vulkan
 
@@ -374,9 +374,9 @@ render.endFrame();
 render.present();
 ```
 
-`Backend` is `dev.joid.impl.vulkan.Backend`, `RenderBridge` is `dev.joid.impl.vulkan.render.RenderBridge` and `Configuration` is `org.lwjgl.system.Configuration`. The rest of `Main` (GLFW callbacks, `WindowBridge.getKey`, resize) is unchanged.
+`Backend` is `dev.joid.backend.vulkan.Backend`, `RenderBridge` is `dev.joid.backend.vulkan.render.RenderBridge` and `Configuration` is `org.lwjgl.system.Configuration`. The rest of `Main` (GLFW callbacks, `WindowBridge.getKey`, resize) is unchanged.
 
-The demo window of each backend (`dev.joid.impl.<backend>.demo.DemoWindow` in the `-dev` jars) is a complete reference of this setup; see [Backends](../integration/backends.md).
+The demo window of each backend (`dev.joid.backend.<backend>.demo.DemoWindow` in the `-dev` jars) is a complete reference of this setup; see [Backends](../integration/backends.md).
 
 ## Next steps
 

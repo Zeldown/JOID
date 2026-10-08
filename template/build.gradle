@@ -48,10 +48,10 @@ dependencies {
 
     libraries "java3d:vecmath:1.3.1"
 
-    testCompile files("libs/joid-testkit-${joidVersion}.jar")
+    testCompile files("libs/joid-tool-testkit-${joidVersion}.jar")
     testCompile "junit:junit:4.13.2"
 
-    baseline files("libs/joid-lwjgl3-${joidVersion}-dev.jar")
+    baseline files("libs/joid-backend-lwjgl3-${joidVersion}-dev.jar")
     ['lwjgl', 'lwjgl-glfw', 'lwjgl-opengl', 'lwjgl-openal'].each { module ->
         baseline "org.lwjgl:$module:$lwjglVersion"
         baseline "org.lwjgl:$module:$lwjglVersion:$lwjglNatives"
@@ -140,10 +140,10 @@ task renderBaseline(type: JavaExec) {
     group = 'JOID'
     description = 'Renders the snapshot scenarios with the official LWJGL 3 backend.'
     main = 'dev.joid.test.snapshot.SnapshotBaseline'
-    classpath = configurations.baseline + files("libs/joid-testkit-${joidVersion}.jar") + configurations.libraries
+    classpath = configurations.baseline + files("libs/joid-tool-testkit-${joidVersion}.jar") + configurations.libraries
     workingDir = file("$buildDir/snapshot/lwjgl3")
     systemProperty 'joid.snapshot.cache', file('.snapshots/cache').absolutePath
-    args 'dev.joid.impl.lwjgl3.snapshot.SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
+    args 'dev.joid.backend.lwjgl3.snapshot.SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
     if (macOs) {
         jvmArgs '-XstartOnFirstThread'
     }
@@ -158,7 +158,7 @@ task crossBackendTest(type: JavaExec) {
     description = 'Compares the snapshots of this backend to the official LWJGL 3 rendering.'
     dependsOn test, renderBaseline
     main = 'dev.joid.test.snapshot.SnapshotComparison'
-    classpath = files("libs/joid-testkit-${joidVersion}.jar") + configurations.joidDev + configurations.libraries
+    classpath = files("libs/joid-tool-testkit-${joidVersion}.jar") + configurations.joidDev + configurations.libraries
     args file("$buildDir/snapshots/cross").absolutePath, file("$buildDir/snapshots/lwjgl3").absolutePath, file("$buildDir/snapshots/$archivesBaseName").absolutePath
 }
 

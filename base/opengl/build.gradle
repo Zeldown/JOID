@@ -1,0 +1,15 @@
+archivesBaseName = "joid-base-opengl"
+
+dependencies {
+    compile project(':core')
+
+    compileOnly project(':tool-testkit')
+}
+
+task releaseJar(type: Jar) {
+    group = 'build'
+    description = 'Builds the released jar of the OpenGL renderer, without its snapshot capture.'
+    destinationDir = file("$buildDir/release")
+    from sourceSets.main.output
+    exclude 'dev/joid/base/opengl/snapshot/**'
+}

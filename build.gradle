@@ -103,17 +103,17 @@ task backendTemplate(type: Zip) {
 task msdfGenerator(type: Zip) {
     group = 'JOID'
     description = 'Packages the MSDF generator with its charset and its launch scripts.'
-    baseName = 'joid-msdf-generator'
+    baseName = 'joid-tool-msdf-generator'
     destinationDir = file('build/distributions')
-    dependsOn ':msdf:jar'
+    dependsOn ':tool-msdf:jar'
 
-    from { project(':msdf').jar.archivePath }
-    from(project(':msdf').file('charset.txt'))
-    from(project(':msdf').file('dist')) {
+    from { project(':tool-msdf').jar.archivePath }
+    from(project(':tool-msdf').file('charset.txt'))
+    from(project(':tool-msdf').file('dist')) {
         include 'README.md', 'msdf.bat'
         filter { line -> line.replace('@JOID_VERSION@', project.version.toString()) }
     }
-    from(project(':msdf').file('dist')) {
+    from(project(':tool-msdf').file('dist')) {
         include 'msdf.sh'
         fileMode = 0755
         filter { line -> line.replace('@JOID_VERSION@', project.version.toString()) }
@@ -127,10 +127,10 @@ task msdfGenerator(type: Zip) {
 task collectArtifacts(type: Copy) {
     group = 'JOID'
     description = 'Copies every release artifact into build/libs.'
-    dependsOn ':core:releaseJar', ':glfw:releaseJar', ':opengl:releaseJar', ':testkit:jar', ':openal:jar', ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar', ':msdf:jar'
-    from { [':core', ':glfw', ':opengl'].collect { project(it).releaseJar.archivePath } }
-    from { [':lwjgl2', ':lwjgl3', ':vulkan'].collect { project(it).shadowJar.archivePath } }
-    from { [':testkit', ':openal'].collect { project(it).jar.archivePath } }
+    dependsOn ':core:releaseJar', ':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':base-openal:jar', ':backend-lwjgl2:shadowJar', ':backend-lwjgl3:shadowJar', ':backend-vulkan:shadowJar', ':tool-msdf:jar'
+    from { [':core', ':base-glfw', ':base-opengl'].collect { project(it).releaseJar.archivePath } }
+    from { [':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { project(it).shadowJar.archivePath } }
+    from { [':tool-testkit', ':base-openal'].collect { project(it).jar.archivePath } }
     from backendTemplate
     from msdfGenerator
     into file('build/libs')
@@ -142,17 +142,17 @@ assemble.dependsOn collectArtifacts
 task crossBackendTest(type: JavaExec) {
     group = 'JOID'
     description = 'Runs the snapshot tests of every backend, then compares the LWJGL 3 and Vulkan shots to LWJGL 2.'
-    dependsOn ':lwjgl2:test', ':lwjgl3:test', ':vulkan:test'
+    dependsOn ':backend-lwjgl2:test', ':backend-lwjgl3:test', ':backend-vulkan:test'
     main = "dev.joid.test.snapshot.SnapshotComparison"
-    classpath = project(':testkit').sourceSets.main.runtimeClasspath
-    args file('build/snapshots/cross').absolutePath, file('build/snapshots/lwjgl2').absolutePath, file('build/snapshots/lwjgl3').absolutePath, file('build/snapshots/vulkan').absolutePath
+    classpath = project(':tool-testkit').sourceSets.main.runtimeClasspath
+    args file('build/snapshots/cross').absolutePath, file('build/snapshots/backend-lwjgl2').absolutePath, file('build/snapshots/backend-lwjgl3').absolutePath, file('build/snapshots/backend-vulkan').absolutePath
 }
 
 task exportShaders(type: JavaExec) {
     group = 'JOID'
     description = 'Writes the core shaders translated into every GLSL dialect into build/shaders.'
     main = 'dev.joid.test.shader.GlslExport'
-    classpath = project(':testkit').sourceSets.main.runtimeClasspath
+    classpath = project(':tool-testkit').sourceSets.main.runtimeClasspath
     args file('build/shaders').absolutePath
 }
 

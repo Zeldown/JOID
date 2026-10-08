@@ -10,7 +10,7 @@ Put one backend jar in a `libs/` folder and declare the shared libraries and the
 
 ```groovy
 dependencies {
-	implementation files('libs/joid-lwjgl3-8.0.0-dev.jar')
+	implementation files('libs/joid-backend-lwjgl3-8.0.0-dev.jar')
 
 	implementation 'com.google.guava:guava:15.0'
 	implementation 'com.google.code.gson:gson:2.2.4'
@@ -46,16 +46,16 @@ Each release contains these files (`8.0.0` shown):
 
 | File | Content | Use it to |
 | --- | --- | --- |
-| `joid-lwjgl2-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, LWJGL 2 backend, LWJGL 2 and OpenAL natives, embedded libraries | Ship or develop an application on LWJGL 2 |
-| `joid-lwjgl3-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `glfw`, `openal` and `opengl` modules, LWJGL 3 backend, embedded libraries | Ship or develop an application on LWJGL 3 (OpenGL) |
-| `joid-vulkan-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `glfw` and `openal` modules, Vulkan backend, embedded libraries | Ship or develop an application on Vulkan |
+| `joid-backend-lwjgl2-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, LWJGL 2 backend, LWJGL 2 and OpenAL natives, embedded libraries | Ship or develop an application on LWJGL 2 |
+| `joid-backend-lwjgl3-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `base-glfw`, `base-openal` and `base-opengl` modules, LWJGL 3 backend, embedded libraries | Ship or develop an application on LWJGL 3 (OpenGL) |
+| `joid-backend-vulkan-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `base-glfw` and `base-openal` modules, Vulkan backend, embedded libraries | Ship or develop an application on Vulkan |
 | `joid-core-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, embedded libraries, no backend | Write your own backend |
-| `joid-glfw-8.0.0.jar` | The GLFW window bridge only | Reuse the GLFW bridge in your own backend |
-| `joid-openal-8.0.0.jar` | The OpenAL audio bridge only | Reuse the OpenAL bridge in your own backend |
-| `joid-opengl-8.0.0.jar` | The OpenGL renderer only, on binding interfaces | Render with OpenGL in your own backend, see [Backends](../integration/backends.md#the-opengl-module) |
-| `joid-testkit-8.0.0.jar` | The snapshot test framework | Test a backend, see [Testkit](../integration/testkit.md) |
-| `joid-msdf-8.0.0.jar` | The MSDF generator, runnable with `java -jar` | Generate font atlases, see [MSDF Generator](../fonts/msdf-generator.md) |
-| `joid-msdf-generator-8.0.0.zip` | `joid-msdf-8.0.0.jar`, `charset.txt`, `msdf.sh`, `msdf.bat`, a README, `LICENSE` and `NOTICE` | Run the generator from a terminal |
+| `joid-base-glfw-8.0.0.jar` | The GLFW window bridge only | Reuse the GLFW bridge in your own backend |
+| `joid-base-openal-8.0.0.jar` | The OpenAL audio bridge only | Reuse the OpenAL bridge in your own backend |
+| `joid-base-opengl-8.0.0.jar` | The OpenGL renderer only, on binding interfaces | Render with OpenGL in your own backend, see [Backends](../integration/backends.md#the-base-opengl-module) |
+| `joid-tool-testkit-8.0.0.jar` | The snapshot test framework | Test a backend, see [Testkit](../integration/testkit.md) |
+| `joid-tool-msdf-8.0.0.jar` | The MSDF generator, runnable with `java -jar` | Generate font atlases, see [MSDF Generator](../fonts/msdf-generator.md) |
+| `joid-tool-msdf-generator-8.0.0.zip` | `joid-tool-msdf-8.0.0.jar`, `charset.txt`, `msdf.sh`, `msdf.bat`, a README, `LICENSE` and `NOTICE` | Run the generator from a terminal |
 | `joid-backend-template-8.0.0.zip` | A Gradle project with bridge stubs, tests and a demo window | Start a backend in its own repository, see [Backend template](#backend-template) |
 
 A backend jar already contains the core: put one backend jar on the classpath, never a backend jar and `joid-core` together. Every jar carries `META-INF/LICENSE` and `META-INF/NOTICE`.
@@ -132,7 +132,7 @@ def os = System.getProperty('os.name').toLowerCase()
 def lwjglNatives = os.contains('win') ? 'natives-windows' : os.contains('mac') ? (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-macos-arm64' : 'natives-macos') : 'natives-linux'
 
 dependencies {
-	implementation files("libs/joid-lwjgl3-${joidVersion}-dev.jar")
+	implementation files("libs/joid-backend-lwjgl3-${joidVersion}-dev.jar")
 
 	implementation 'com.google.guava:guava:15.0'
 	implementation 'com.google.code.gson:gson:2.2.4'
@@ -147,9 +147,9 @@ dependencies {
 }
 ```
 
-Switch the file to `joid-lwjgl3-8.0.0-prod.jar` for the build you ship.
+Switch the file to `joid-backend-lwjgl3-8.0.0-prod.jar` for the build you ship.
 
-For the Vulkan backend, use `joid-vulkan-8.0.0-*.jar` and these LWJGL lines:
+For the Vulkan backend, use `joid-backend-vulkan-8.0.0-*.jar` and these LWJGL lines:
 
 ```groovy
 dependencies {
@@ -165,7 +165,7 @@ dependencies {
 }
 ```
 
-For the LWJGL 2 backend, use `joid-lwjgl2-8.0.0-*.jar` and a single LWJGL line:
+For the LWJGL 2 backend, use `joid-backend-lwjgl2-8.0.0-*.jar` and a single LWJGL line:
 
 ```groovy
 dependencies {
@@ -180,7 +180,7 @@ dependencies {
 Install the jar in your local repository once, with the coordinates of the JOID build (group `dev.joid`, the jar name as artifact id, the flavour as classifier):
 
 ```
-mvn install:install-file -Dfile=libs/joid-lwjgl3-8.0.0-dev.jar -DgroupId=dev.joid -DartifactId=joid-lwjgl3 -Dversion=8.0.0 -Dclassifier=dev -Dpackaging=jar
+mvn install:install-file -Dfile=libs/joid-backend-lwjgl3-8.0.0-dev.jar -DgroupId=dev.joid -DartifactId=joid-backend-lwjgl3 -Dversion=8.0.0 -Dclassifier=dev -Dpackaging=jar
 ```
 
 Then declare it with the shared libraries and the LWJGL modules of the backend (shown for LWJGL 3 on Windows):
@@ -194,7 +194,7 @@ Then declare it with the shared libraries and the LWJGL modules of the backend (
 <dependencies>
 	<dependency>
 		<groupId>dev.joid</groupId>
-		<artifactId>joid-lwjgl3</artifactId>
+		<artifactId>joid-backend-lwjgl3</artifactId>
 		<version>8.0.0</version>
 		<classifier>dev</classifier>
 	</dependency>
@@ -252,12 +252,12 @@ It prints `JOID 8.0.0`. Each official `Backend.register(...)` also compares its 
 
 | Part | Content |
 | --- | --- |
-| `libs/` | The JOID jars to download: `joid-core-8.0.0-dev.jar` and `-prod.jar`, `joid-testkit-8.0.0.jar`, `joid-lwjgl3-8.0.0-dev.jar` (the official rendering your shots are compared to), and optionally `joid-glfw` and `joid-openal`. |
+| `libs/` | The JOID jars to download: `joid-core-8.0.0-dev.jar` and `-prod.jar`, `joid-tool-testkit-8.0.0.jar`, `joid-backend-lwjgl3-8.0.0-dev.jar` (the official rendering your shots are compared to), and optionally `joid-base-glfw` and `joid-base-openal`. |
 | `src/main/java` | `Backend`, `RenderBridge`, `WindowBridge`, `AudioBridge` in `com.example.joid.engine`. |
 | `src/test/java` | `RenderBridgeContractTest` and `SnapshotTest`. |
 | `src/demo/java` | `DemoWindow`, which opens the demo UIs on your engine. Only the dev jar contains it. |
 | `libraries` configuration | The libraries listed in [Libraries to declare](#libraries-to-declare). No jar embeds them: the application that uses your backend declares them too. JavaCV, JavaCPP and FFmpeg need no declaration. |
-| `embed` configuration | `joid-glfw` and `joid-openal`, when your engine runs on GLFW or OpenAL, and `joid-opengl` on OpenGL. |
+| `embed` configuration | `joid-base-glfw` and `joid-base-openal`, when your engine runs on GLFW or OpenAL, and `joid-base-opengl` on OpenGL. |
 
 `./gradlew build` produces `joid-engine-1.0.0-dev.jar`, with the demo assets and `DemoWindow`, and `joid-engine-1.0.0-prod.jar`, without them. Both embed the JOID core with its embedded libraries and the `embed` jars, but none of the `libraries`. The tasks and the render contract are described in [Writing a Backend](../integration/writing-a-backend.md).
 
@@ -274,7 +274,7 @@ cd JOID
 | --- | --- |
 | `./gradlew build -x test` | Builds the `-prod` flavour and copies every release artifact into `build/libs` |
 | `./gradlew build -x test -Pdev` | Same with the `-dev` flavour; the jars of both flavours end up side by side in `build/libs` |
-| `./gradlew :lwjgl3:runDemo` | Opens the demo window on LWJGL 3 (also `:lwjgl2:runDemo` and `:vulkan:runDemo`) |
+| `./gradlew :backend-lwjgl3:runDemo` | Opens the demo window on LWJGL 3 (also `:backend-lwjgl2:runDemo` and `:backend-vulkan:runDemo`) |
 | `./gradlew test` | Runs the unit tests and the snapshot tests of every backend; the snapshot tests need a GPU |
 
 Use a JDK 8 to run the wrapper. `-x test` skips the tests, as the release workflow does. A `build` also installs the repository's pre-commit and pre-push git hooks into `.git/hooks`; they run the tests affected by the staged or pushed changes. The test tasks pass `-Djoid.config=<module>/build/config`, so the tests write their stores and properties under `build/`.

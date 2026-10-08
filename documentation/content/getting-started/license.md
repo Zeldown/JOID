@@ -37,7 +37,7 @@ The JOID jars include the following software:
 | LWJGL 2 natives | BSD 3-Clause License | Embedded in the LWJGL 2 backend jar. |
 | OpenAL Soft, as built for LWJGL 2 | GNU LGPL 2 or later | Embedded in the LWJGL 2 backend jar. |
 
-The libraries you declare yourself (Guava, Gson, Apache Commons, vecmath, LWJGL) come with their own licenses. The `msdf` module reimplements in Java the multi-channel signed distance field algorithm of msdfgen by Viktor Chlumský.
+The libraries you declare yourself (Guava, Gson, Apache Commons, vecmath, LWJGL) come with their own licenses. The `tool-msdf` module reimplements in Java the multi-channel signed distance field algorithm of msdfgen by Viktor Chlumský.
 
 ## See also
 

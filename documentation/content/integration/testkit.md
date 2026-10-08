@@ -1,6 +1,6 @@
 # Testkit
 
-The testkit (`joid-testkit` jar, module `testkit`, JUnit 4) checks that a backend renders JOID correctly, the official ones as well as the one you wrote on [Writing a Backend](writing-a-backend.md). It renders on a hidden or offscreen surface, never on your screen, and replaces the window, audio and clock [bridges](bridges.md) with virtual ones, so that every frame is the same on every run. `RenderBridgeContractSuite` checks the render bridge contract in a few seconds, without reference images; `SnapshotSuite` plays scripted scenarios of the demo UIs and compares every capture, pixel for pixel, to references recorded on the same machine. Command-line tools compare backends with each other and show the differences in an interactive report.
+The testkit (`joid-tool-testkit` jar, module `tool-testkit`, JUnit 4) checks that a backend renders JOID correctly, the official ones as well as the one you wrote on [Writing a Backend](writing-a-backend.md). It renders on a hidden or offscreen surface, never on your screen, and replaces the window, audio and clock [bridges](bridges.md) with virtual ones, so that every frame is the same on every run. `RenderBridgeContractSuite` checks the render bridge contract in a few seconds, without reference images; `SnapshotSuite` plays scripted scenarios of the demo UIs and compares every capture, pixel for pixel, to references recorded on the same machine. Command-line tools compare backends with each other and show the differences in an interactive report.
 
 ## Testing a backend in three classes
 
@@ -211,7 +211,7 @@ shot resource-paused
 | `unmask` | Removes the masks. |
 | `shot <name>` | Captures the window as `<name>.png`. |
 
-Scenarios belong to the testkit. To add one to JOID, create `testkit/src/main/resources/snapshot/<name>.txt`, add `<name>` to the scenario list of `SnapshotRunner` and a `matches<Name>Snapshots` test to `SnapshotSuite`: the shots of a scenario missing from the list are recorded, then deleted as orphans. Run the tests once to record the new references.
+Scenarios belong to the testkit. To add one to JOID, create `tool/testkit/src/main/resources/snapshot/<name>.txt`, add `<name>` to the scenario list of `SnapshotRunner` and a `matches<Name>Snapshots` test to `SnapshotSuite`: the shots of a scenario missing from the list are recorded, then deleted as orphans. Run the tests once to record the new references.
 
 ## Running commands with SnapshotRunner.execute
 
@@ -255,13 +255,13 @@ The folders come from system properties, with defaults relative to the working d
 
 ## Running the snapshots of JOID
 
-In the JOID repository, each backend module runs its suites with these settings: references in `.snapshots/<module>`, renders in `build/snapshots/<module>`, cache in `.snapshots/cache`, one JVM per test class. The test tasks point `joid.config` to the `build/config` folder of their module, so no test writes outside `build/`.
+In the JOID repository, each backend module runs its suites with these settings: references in `.snapshots/<module>`, renders in `build/snapshots/<module>` (`<module>` being `backend-lwjgl2`, `backend-lwjgl3` or `backend-vulkan`), cache in `.snapshots/cache`, one JVM per test class. The test tasks point `joid.config` to the `build/config` folder of their module, so no test writes outside `build/`.
 
 | Command | Result |
 |---|---|
 | `./gradlew test` | Every unit, contract and snapshot test. |
-| `./gradlew :vulkan:test` | The tests of one backend. |
-| `./gradlew updateSnapshots` | Runs the snapshot tests and replaces the references; `./gradlew :lwjgl3:updateSnapshots` updates one backend. |
+| `./gradlew :backend-vulkan:test` | The tests of one backend. |
+| `./gradlew updateSnapshots` | Runs the snapshot tests and replaces the references; `./gradlew :backend-lwjgl3:updateSnapshots` updates one backend. |
 | `./gradlew crossBackendTest` | Runs the tests of the three backends, then compares the LWJGL 3 and Vulkan renders to the LWJGL 2 ones within one level per channel. The report is written to `build/snapshots/cross/report.html`. |
 | `./gradlew installLocalGitHook` | Installs the `pre-commit` and `pre-push` hooks of `scripts/`. `./gradlew build` installs them too. |
 
@@ -271,14 +271,14 @@ When a test fails, the build prints the link of the report.
 
 Both hooks run `scripts/run-tests`, which tests only what the changes touch:
 
-- Nothing runs when no file of `core/`, `msdf/`, `impl/`, `testkit/`, `gradle/`, `build.gradle` or `settings.gradle` changed.
-- A change in `core/`, `msdf/`, `testkit/`, `gradle/` or the build files runs the checks of `msdf`, `core` and `testkit` and the tests of every backend; a change in `impl/<backend>/` tests that backend; a change in `impl/glfw/` or `impl/openal/` tests LWJGL 3 and Vulkan, and a change in `impl/opengl/` tests LWJGL 3. The checks of `glfw`, `openal` and `opengl` run with every change of the build or of their module.
+- Nothing runs when no file of `core/`, `base/`, `backend/`, `tool/`, `gradle/`, `build.gradle` or `settings.gradle` changed; a change in `sample/showcase/` only compiles the showcase.
+- A change in `core/`, `tool/`, `gradle/` or the build files runs the checks of `tool-msdf`, `core` and `tool-testkit` and the tests of every backend; a change in `backend/<name>/` tests that backend; a change in `base/glfw/` or `base/openal/` tests LWJGL 3 and Vulkan, and a change in `base/opengl/` tests LWJGL 3. The checks of `base-glfw`, `base-openal` and `base-opengl` run with every change of the build or of their module.
 - A backend that is not tested keeps its last renders when it has some, then `crossBackendTest` compares them all, offline.
 - The `pre-commit` hook tests the staged changes alone: it stashes the rest, including untracked files, and restores it afterward. The `pre-push` hook tests the pushed commits, unless the `pre-commit` hook already tested each of them.
 
 ## Comparing backends
 
-Two command-line tools, in `joid-testkit`, let any build tool render and compare backends:
+Two command-line tools, in `joid-tool-testkit`, let any build tool render and compare backends:
 
 | Main class | Arguments | Result |
 |---|---|---|

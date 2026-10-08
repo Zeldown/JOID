@@ -30,9 +30,9 @@ You rarely call the bridges yourself: nodes and `DrawUtils` use them for you. Th
 
 | Backend | `Backend` class | Renderer | Window and input |
 | --- | --- | --- | --- |
-| LWJGL 2 | `dev.joid.impl.lwjgl2.Backend` | OpenGL with GLSL 1.20 shaders | LWJGL 2 `Display`, `Mouse`, `Keyboard` |
-| LWJGL 3 | `dev.joid.impl.lwjgl3.Backend` | OpenGL 3.3 core profile | GLFW |
-| Vulkan | `dev.joid.impl.vulkan.Backend` | Vulkan 1.3 | GLFW |
+| LWJGL 2 | `dev.joid.backend.lwjgl2.Backend` | OpenGL with GLSL 1.20 shaders | LWJGL 2 `Display`, `Mouse`, `Keyboard` |
+| LWJGL 3 | `dev.joid.backend.lwjgl3.Backend` | OpenGL 3.3 core profile | GLFW |
+| Vulkan | `dev.joid.backend.vulkan.Backend` | Vulkan 1.3 | GLFW |
 
 Each backend ships in its own jar ([Installation](../getting-started/installation.md)) and draws the same pixels: the snapshot tests render the same scenes on all three and compare them. The [Quick Start](../getting-started/quick-start.md#other-backends) shows the setup of each one.
 

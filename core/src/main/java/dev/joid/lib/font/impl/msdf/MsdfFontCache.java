@@ -10,8 +10,8 @@ import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.utils.platform.Platform;
-import dev.joid.msdf.MsdfGenerator;
-import dev.joid.msdf.atlas.MsdfWriter;
+import dev.joid.tool.msdf.MsdfGenerator;
+import dev.joid.tool.msdf.atlas.MsdfWriter;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

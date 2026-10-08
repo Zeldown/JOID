@@ -16,7 +16,7 @@ import dev.joid.lib.font.impl.msdf.dto.MsdfBounds;
 import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.dto.MsdfGlyph;
 import dev.joid.lib.font.impl.msdf.dto.MsdfMetrics;
-import dev.joid.msdf.atlas.MsdfWriter;
+import dev.joid.tool.msdf.atlas.MsdfWriter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

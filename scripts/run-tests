@@ -4,11 +4,11 @@ mode=$1
 files=$(cat)
 
 sources=0
-if printf '%s\n' "$files" | grep -qE '^(core/|msdf/|impl/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
+if printf '%s\n' "$files" | grep -qE '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
     sources=1
 fi
 
-if [ $sources -eq 0 ] && ! printf '%s\n' "$files" | grep -qE '^showcase/(src/|build\.gradle$)'; then
+if [ $sources -eq 0 ] && ! printf '%s\n' "$files" | grep -qE '^sample/showcase/(src/|build\.gradle$)'; then
     echo "🔍 No source change, tests skipped"
     echo ""
     exit 0
@@ -44,40 +44,40 @@ fi
 trap restore EXIT
 
 all=0
-if printf '%s\n' "$files" | grep -qE '^(core/|msdf/|testkit/|gradle/|build\.gradle$|settings\.gradle$)'; then
+if printf '%s\n' "$files" | grep -qE '^(core/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
     all=1
 fi
 
 modules=""
 for module in lwjgl2 lwjgl3 vulkan; do
-    if [ $all -eq 1 ] || printf '%s\n' "$files" | grep -q "^impl/$module/"; then
+    if [ $all -eq 1 ] || printf '%s\n' "$files" | grep -q "^backend/$module/"; then
         modules="$modules $module"
-    elif [ "$module" != "lwjgl2" ] && printf '%s\n' "$files" | grep -qE '^impl/(glfw|openal)/'; then
+    elif [ "$module" != "lwjgl2" ] && printf '%s\n' "$files" | grep -qE '^base/(glfw|openal)/'; then
         modules="$modules $module"
-    elif [ "$module" = "lwjgl3" ] && printf '%s\n' "$files" | grep -qE '^impl/opengl/'; then
+    elif [ "$module" = "lwjgl3" ] && printf '%s\n' "$files" | grep -qE '^base/opengl/'; then
         modules="$modules $module"
     fi
 done
 
 tasks=""
 if [ $all -eq 1 ]; then
-    tasks=":msdf:check :core:check :testkit:check"
+    tasks=":tool-msdf:check :core:check :tool-testkit:check"
 fi
 
 for module in glfw openal opengl; do
-    if [ $all -eq 1 ] || printf '%s\n' "$files" | grep -q "^impl/$module/"; then
-        tasks="$tasks :$module:check"
+    if [ $all -eq 1 ] || printf '%s\n' "$files" | grep -q "^base/$module/"; then
+        tasks="$tasks :base-$module:check"
     fi
 done
 
 for module in lwjgl2 lwjgl3 vulkan; do
     case " $modules " in
         *" $module "*)
-            tasks="$tasks :$module:check"
+            tasks="$tasks :backend-$module:check"
             ;;
         *)
-            if [ -d "build/snapshots/$module" ]; then
-                tasks="$tasks -x :$module:test"
+            if [ -d "build/snapshots/backend-$module" ]; then
+                tasks="$tasks -x :backend-$module:test"
             fi
             ;;
     esac
@@ -86,18 +86,18 @@ done
 if [ $sources -eq 1 ]; then
     echo "🔍 Testing$modules, then comparing the backends"
     echo ""
-    ./gradlew $tasks :showcase:compileJava crossBackendTest --offline
+    ./gradlew $tasks :sample-showcase:compileJava crossBackendTest --offline
 else
     echo "🔍 Compiling the showcase"
     echo ""
-    ./gradlew :showcase:compileJava --offline
+    ./gradlew :sample-showcase:compileJava --offline
 fi
 status=$?
 
 echo ""
 if [ $status -ne 0 ]; then
     echo "❌ Tests failed"
-    echo "   Open build/snapshots/<module>/report.html or build/snapshots/cross/report.html to inspect the differences"
+    echo "   Open build/snapshots/backend-<name>/report.html or build/snapshots/cross/report.html to inspect the differences"
     echo "   Run ./gradlew updateSnapshots if the visual change is intended"
 else
     echo "✅ Done with tests"

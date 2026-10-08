@@ -703,7 +703,7 @@
 				{
 					"title": "MSDF Generator",
 					"path": "fonts/msdf-generator",
-					"source": "msdf/src/main/java/dev/joid/msdf/MsdfGenerator.java",
+					"source": "tool/msdf/src/main/java/dev/joid/tool/msdf/MsdfGenerator.java",
 					"refs": [
 						"MsdfGenerator"
 					]
@@ -847,7 +847,7 @@
 				{
 					"title": "Testkit",
 					"path": "integration/testkit",
-					"source": "testkit/src/main/java/dev/joid/test/snapshot/SnapshotSuite.java",
+					"source": "tool/testkit/src/main/java/dev/joid/test/snapshot/SnapshotSuite.java",
 					"refs": [
 						"SnapshotSuite",
 						"RenderBridgeContractSuite"

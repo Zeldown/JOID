@@ -1,6 +1,6 @@
 # MSDF Generator
 
-The `msdf` module turns a `.ttf`, `.otf` or `.ttc` font into the `font.msdf` atlas that `MsdfFontLoader` reads (see [How Fonts Work](how-fonts-work.md#the-atlas) for what an atlas holds). It is pure Java (Java 8 or later, no native binary) and ships as a runnable zip. Use it to ship ready-made atlases, so the first launch generates nothing, or to choose your own characters and atlas size.
+The `tool-msdf` module turns a `.ttf`, `.otf` or `.ttc` font into the `font.msdf` atlas that `MsdfFontLoader` reads (see [How Fonts Work](how-fonts-work.md#the-atlas) for what an atlas holds). It is pure Java (Java 8 or later, no native binary) and ships as a runnable zip. Use it to ship ready-made atlases, so the first launch generates nothing, or to choose your own characters and atlas size.
 
 ```sh
 ./msdf.sh --font Inter-Regular.ttf --output assets/fonts/Inter-Regular
@@ -24,13 +24,13 @@ The generator is the step between the font file and the atlas in the MSDF pipeli
 
 ## Running the release zip
 
-1. Download `joid-msdf-generator-8.0.0.zip` from the release and unzip it anywhere.
-2. Run the script of your system with your font (`.\msdf.bat` on Windows, `./msdf.sh` elsewhere), or `java -jar joid-msdf-8.0.0.jar` with the same options.
+1. Download `joid-tool-msdf-generator-8.0.0.zip` from the release and unzip it anywhere.
+2. Run the script of your system with your font (`.\msdf.bat` on Windows, `./msdf.sh` elsewhere), or `java -jar joid-tool-msdf-8.0.0.jar` with the same options.
 3. Put the output folder in your resources and load its `font.msdf` with `MsdfFontLoader.load(...)`.
 
 | File | Content |
 |---|---|
-| `joid-msdf-8.0.0.jar` | The generator, runnable with `java -jar` (main class `dev.joid.msdf.MsdfGenerator`). |
+| `joid-tool-msdf-8.0.0.jar` | The generator, runnable with `java -jar` (main class `dev.joid.tool.msdf.MsdfGenerator`). |
 | `msdf.sh`, `msdf.bat` | Run the jar with your arguments. |
 | `charset.txt` | The default charset, `[32, 563]`. |
 | `README.md`, `LICENSE`, `NOTICE` | Usage and licenses. |
@@ -92,10 +92,10 @@ Each atlas records the weight (`usWeightClass` of the `OS/2` table, 400 when abs
 
 ## Generating from Gradle
 
-In a clone of the repository, the `msdf` module has a `generateFont` task:
+In a clone of the repository, the `tool-msdf` module has a `generateFont` task:
 
 ```sh
-./gradlew :msdf:generateFont -Pfont=/path/to/Inter-Regular.ttf -Poutput=/path/to/assets/fonts/Inter-Regular
+./gradlew :tool-msdf:generateFont -Pfont=/path/to/Inter-Regular.ttf -Poutput=/path/to/assets/fonts/Inter-Regular
 ```
 
 | Property | Default |
@@ -106,11 +106,11 @@ In a clone of the repository, the `msdf` module has a `generateFont` task:
 | `-Prange` | `24` |
 | `-Pwidth`, `-Pheight` | `2048` |
 
-Relative paths resolve against the `msdf` module folder; the task has no size property (the em size is fitted).
+Relative paths resolve against the `tool/msdf` module folder; the task has no size property (the em size is fitted).
 
 ## Generating from code with MsdfGenerator
 
-`dev.joid.msdf.MsdfGenerator` is part of the JOID core jar, so your build or your application can generate atlases itself:
+`dev.joid.tool.msdf.MsdfGenerator` is part of the JOID core jar, so your build or your application can generate atlases itself:
 
 ```java
 final int[] codepoints = MsdfGenerator.codepoints("[32, 126], [160, 255], 8364");

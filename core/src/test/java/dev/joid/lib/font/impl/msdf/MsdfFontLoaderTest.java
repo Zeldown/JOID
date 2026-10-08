@@ -33,7 +33,7 @@ import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.dto.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.dto.source.MsdfBinarySource;
 import dev.joid.lib.font.impl.msdf.dto.source.MsdfOpenTypeSource;
-import dev.joid.msdf.atlas.MsdfWriter;
+import dev.joid.tool.msdf.atlas.MsdfWriter;
 import lombok.NonNull;
 
 public class MsdfFontLoaderTest {

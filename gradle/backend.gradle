@@ -23,7 +23,7 @@ shadowJar {
 
     if (!project.hasProperty('dev')) {
         rootProject.excludeDevelopment(it)
-        exclude 'dev/joid/impl/*/demo/**', 'dev/joid/impl/*/snapshot/**'
+        exclude 'dev/joid/base/*/demo/**', 'dev/joid/base/*/snapshot/**', 'dev/joid/backend/*/demo/**', 'dev/joid/backend/*/snapshot/**'
     }
 }
 
@@ -31,8 +31,8 @@ build.dependsOn shadowJar
 
 
 dependencies {
-    compileOnly project(':testkit')
-    testCompile project(':testkit')
+    compileOnly project(':tool-testkit')
+    testCompile project(':tool-testkit')
 }
 
 task updateSnapshots {

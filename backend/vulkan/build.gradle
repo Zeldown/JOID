@@ -1,0 +1,36 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
+archivesBaseName = "joid-backend-vulkan"
+
+dependencies {
+    compile project(':base-glfw')
+    compile project(':base-openal')
+
+    compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-shaderc:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl-shaderc:$lwjglVersion:$lwjglNatives"
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        runtime "org.lwjgl:lwjgl-vulkan:$lwjglVersion:$lwjglNatives"
+    }
+}
+
+apply from: rootProject.file('gradle/backend.gradle')
+
+/* Demo */
+task runDemo(type: JavaExec) {
+    group = 'JOID'
+    description = 'Launches the Vulkan demo window.'
+    main = "dev.joid.backend.vulkan.demo.DemoWindow"
+    classpath = sourceSets.main.runtimeClasspath
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+}
+
+
+test {
+    systemProperty 'org.lwjgl.system.stackSize', 1024
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+}

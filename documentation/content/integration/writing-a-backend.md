@@ -57,13 +57,13 @@ Each release publishes `joid-backend-template-<version>.zip` (built by the `back
 
 Setup:
 
-1. Put the jars listed in `libs/README.md` in `libs/`: `joid-core-<version>-dev.jar` and `-prod.jar`, `joid-testkit-<version>.jar`, `joid-lwjgl3-<version>-dev.jar` (the reference rendering), and optionally `joid-glfw-<version>.jar` and `joid-openal-<version>.jar`.
+1. Put the jars listed in `libs/README.md` in `libs/`: `joid-core-<version>-dev.jar` and `-prod.jar`, `joid-tool-testkit-<version>.jar`, `joid-backend-lwjgl3-<version>-dev.jar` (the reference rendering), and optionally `joid-base-glfw-<version>.jar` and `joid-base-openal-<version>.jar`.
 2. Rename the `com.example.joid.engine` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group` and `archivesBaseName` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
-3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, put `joid-glfw` and `joid-openal` (and `joid-opengl` on OpenGL, see [Two ways to implement IRenderBridge](#two-ways-to-implement-irenderbridge)) in the `embed` configuration and reuse their bridges instead of writing your own:
+3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, put `joid-base-glfw` and `joid-base-openal` (and `joid-base-opengl` on OpenGL, see [Two ways to implement IRenderBridge](#two-ways-to-implement-irenderbridge)) in the `embed` configuration and reuse their bridges instead of writing your own:
 
 ```groovy
 dependencies {
-    embed files("libs/joid-glfw-${joidVersion}.jar", "libs/joid-openal-${joidVersion}.jar")
+    embed files("libs/joid-base-glfw-${joidVersion}.jar", "libs/joid-base-openal-${joidVersion}.jar")
 }
 ```
 
@@ -87,9 +87,9 @@ When a test fails, the build prints the link of its interactive `report.html`.
 |---|---|---|
 | Native: implement `IRenderBridge` directly | The engine has a fixed pipeline with its own matrix stacks and state. Forward each call and read the state back from the engine. | LWJGL 2 |
 | Emulated: extend `RenderBridge` | The engine has no fixed pipeline (modern OpenGL, Vulkan, a game engine renderer). | LWJGL 3, Vulkan |
-| On OpenGL: implement the bindings of `joid-opengl` | The engine gives access to an OpenGL 3.3 context. `GlRenderBridge`, an emulated bridge, does the rendering; you only forward its OpenGL calls. | LWJGL 3 |
+| On OpenGL: implement the bindings of `joid-base-opengl` | The engine gives access to an OpenGL 3.3 context. `GlRenderBridge`, an emulated bridge, does the rendering; you only forward its OpenGL calls. | LWJGL 3 |
 
-On OpenGL, embed `joid-opengl` and implement its six binding interfaces (`dev.joid.impl.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, and the five others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding` and `IGlFrameBufferBinding`. Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-opengl-module).
+On OpenGL, embed `joid-base-opengl` and implement its six binding interfaces (`dev.joid.base.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, and the five others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding` and `IGlFrameBufferBinding`. Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-base-opengl-module).
 
 `RenderBridge` (`dev.joid.lib.bridge.render`) implements every matrix and state method in Java. Your subclass implements seven methods, and applies the current state each time one of them runs:
 
@@ -204,7 +204,7 @@ The core `FrameBufferHandle<T extends Texture>` (`dev.joid.lib.bridge.render.fra
 
 An API that bakes the state into pipeline objects (Vulkan, Blaze3D, WebGPU, Metal) caches them by `PipelineKey` (`dev.joid.lib.bridge.render.state`). `PipelineKey.create(IShader shader, RenderState state, Primitive primitive)` keeps the shader, the blend state, the color mask, the depth test and write, the culling and the primitive, normalized so that equal states give equal keys: a disabled blend is always `BlendState.DISABLED` (two `BlendState`s with the same equation and factors are equal), and there is no depth write without the depth test. A backend that sets some of this state dynamically (the Vulkan backend sets the depth and the culling per draw) still gets correct pipelines from the key.
 
-An API without stencil buffer can emulate it with shaders. A `GlslShaderTranslator` (see [GLSL dialects](#glsl-dialects)) with `stencil(StencilEmulation.Pass.TEST)` or `stencil(StencilEmulation.Pass.WRITE)` reads the stencil from an 8-bit texture `joid_Stencil` and adds six `int` uniforms (`joid_StencilTest`, `joid_StencilFunction`, `joid_StencilReference`, `joid_StencilMask`, `joid_StencilFail`, `joid_StencilPass`): the `TEST` pass discards the fragments that fail the test, the `WRITE` pass writes the new stencil value instead of the color. It needs GLSL 1.30 or ESSL 3.00 (`texelFetch`, `switch`, bitwise operators); `NONE`, the default, emulates nothing. At each draw, `StencilEmulation.create(RenderState state, boolean screen)` (`dev.joid.lib.bridge.render.state`) tells whether the stencil is tested (`isTest()`, only on the screen, as framebuffers have no stencil) and written (`isWrite()`, when the fail or pass operation changes it), and `write(UniformBlock)` sets the six uniforms; `PipelineKey.stencil(shader, state, primitive)` is the key of the pass that writes the stencil (no blend, no depth, color writes on). The JOID-MC backend draws its masks this way on Blaze3D.
+An API without stencil buffer can emulate it with shaders. A `GlslShaderTranslator` (see [GLSL dialects](#glsl-dialects)) with `stencil(StencilEmulation.Pass.TEST)` or `stencil(StencilEmulation.Pass.WRITE)` reads the stencil from an 8-bit texture `joid_Stencil` and adds six `int` uniforms (`joid_StencilTest`, `joid_StencilFunction`, `joid_StencilReference`, `joid_StencilMask`, `joid_StencilFail`, `joid_StencilPass`): the `TEST` pass discards the fragments that fail the test, the `WRITE` pass writes the new stencil value in place of the color. It needs GLSL 1.30 or ESSL 3.00 (`texelFetch`, `switch`, bitwise operators); `NONE`, the default, emulates nothing. At each draw, `StencilEmulation.create(RenderState state, boolean screen)` (`dev.joid.lib.bridge.render.state`) tells whether the stencil is tested (`isTest()`, only on the screen, as framebuffers have no stencil) and written (`isWrite()`, when the fail or pass operation changes it), and `write(UniformBlock)` sets the six uniforms; `PipelineKey.stencil(shader, state, primitive)` is the key of the pass that writes the stencil (no blend, no depth, color writes on). The JOID-MC backend draws its masks this way on Blaze3D.
 
 ## Shaders
 
@@ -264,14 +264,14 @@ The shaders of the core are listed by the `CoreShader` enum (`dev.joid.lib.bridg
 
 ### Uniforms in the core
 
-The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()`, `isBound()` and `isActive()` on the core `RenderBridge` and the blend state given to its constructor; its parent `UniformShader` implements `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, extends `UniformShader` and binds its shaders itself, as LWJGL 2 does until it moves to the `opengl` module):
+The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()`, `isBound()` and `isActive()` on the core `RenderBridge` and the blend state given to its constructor; its parent `UniformShader` implements `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, extends `UniformShader` and binds its shaders itself, as LWJGL 2 does until it moves to the `base-opengl` module):
 
 - a `UniformBlock` (`dev.joid.lib.bridge.render.shader.uniform`): the uniforms of both stages, each a `UniformMember` with its `UniformType`, its array length, its values and its `std140` offset and strides;
 - one `UniformSampler` per sampler of both stages, numbered from 1 in the order of the stages (`getUnit()`), with the texture, filter and wrap given to `sampler(...)`.
 
 A `GlslShaderTranslator` turns the two sources into the code of the backend and lists what the shader declares.
 
-The OpenGL shader (`GlShader` of `joid-opengl`) is created this way; its private constructor passes the bridge, the blend state, whether it linked, the block and the samplers to `super(bridge, blend, active, block, samplers)`:
+The OpenGL shader (`GlShader` of `joid-base-opengl`) is created this way; its private constructor passes the bridge, the blend state, whether it linked, the block and the samplers to `super(bridge, blend, active, block, samplers)`:
 
 ```java
 public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
@@ -317,7 +317,7 @@ A sampler that is never set samples the texture bound with `texture(...)`, as `r
 
 ## Window and audio bridges
 
-The window bridge reports the drawable size in pixels and the mouse in the same pixels, from the top-left corner; keys use the engine-neutral `Key` enum, letters following the active keyboard layout: a windowing library that reports key positions translates them with `KeyLayout` (see [Bridges](bridges.md#iwindowbridge)). The audio bridge creates sources that play queued buffers of interleaved signed 16-bit samples of `channels` channels, the count given to `createSource`; each buffer holds whole frames. A sound device limited to stereo mixes them down with [`AudioDownmix.stereo`](bridges.md#stereo-output-with-audiodownmix). `gain` receives `0.3 × volume × distance factor` from the video player. See [Bridges](bridges.md#iwindowbridge) for both interfaces, and the `glfw` and `openal` modules in [Backends](backends.md#the-glfw-and-openal-modules) for complete implementations.
+The window bridge reports the drawable size in pixels and the mouse in the same pixels, from the top-left corner; keys use the engine-neutral `Key` enum, letters following the active keyboard layout: a windowing library that reports key positions translates them with `KeyLayout` (see [Bridges](bridges.md#iwindowbridge)). The audio bridge creates sources that play queued buffers of interleaved signed 16-bit samples of `channels` channels, the count given to `createSource`; each buffer holds whole frames. A sound device limited to stereo mixes them down with [`AudioDownmix.stereo`](bridges.md#stereo-output-with-audiodownmix). `gain` receives `0.3 × volume × distance factor` from the video player. See [Bridges](bridges.md#iwindowbridge) for both interfaces, and the `base-glfw` and `base-openal` modules in [Backends](backends.md#the-base-glfw-and-base-openal-modules) for complete implementations.
 
 ## Validating with the contract tests
 
@@ -325,9 +325,9 @@ The window bridge reports the drawable size in pixels and the mouse in the same 
 
 ## Inside the JOID repository
 
-A backend can also be a module of the JOID build: put it under `impl/<name>`, include it in `settings.gradle` with its project directory, and apply `gradle/backend.gradle` from its `build.gradle`. That script:
+A backend can also be a module of the JOID build: put it under `backend/<name>`, include it in `settings.gradle` as `backend-<name>` (the project directory follows from the name), and apply `gradle/backend.gradle` from its `build.gradle`. That script:
 
-- builds a shadow jar that embeds the JOID modules the backend depends on and their media libraries, with the `prod` classifier, or `dev` with `-Pdev`; the `prod` jar leaves out the dev and demo code, and the `demo` and `snapshot` packages of every embedded module (`dev/joid/impl/*/demo/**`, `dev/joid/impl/*/snapshot/**`);
+- builds a shadow jar that embeds the JOID modules the backend depends on and their media libraries, with the `prod` classifier, or `dev` with `-Pdev`; the `prod` jar leaves out the dev and demo code, and the `demo` and `snapshot` packages of every embedded module (`dev/joid/base/*/demo/**`, `dev/joid/base/*/snapshot/**`, `dev/joid/backend/*/demo/**`, `dev/joid/backend/*/snapshot/**`);
 - adds the testkit to the test classpath, with an `updateSnapshots` task and the snapshot folders `.snapshots/<name>` and `build/snapshots/<name>`.
 
 Put `SnapshotBackend` in the `snapshot` package of the main sources, as the official backends do, so that its `dev` jar can render a baseline.

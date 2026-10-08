@@ -155,7 +155,7 @@ JOID.open(new UIMainMenu());
 loop.run();
 ```
 
-`WindowBridge` here is `dev.joid.impl.glfw.WindowBridge`, whose static `getKey(int)` converts a GLFW key code into the key of the active keyboard layout. `KeyCharacterMerger` (`dev.joid.impl.glfw.input`) pairs each key with its character, flushed once per frame. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
+`WindowBridge` here is `dev.joid.base.glfw.WindowBridge`, whose static `getKey(int)` converts a GLFW key code into the key of the active keyboard layout. `KeyCharacterMerger` (`dev.joid.base.glfw.input`) pairs each key with its character, flushed once per frame. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
 
 ## Feeding input events
 

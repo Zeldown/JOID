@@ -169,9 +169,9 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.Platform;
 
-import dev.joid.impl.glfw.WindowBridge;
-import dev.joid.impl.glfw.input.KeyCharacterMerger;
-import dev.joid.impl.lwjgl3.Backend;
+import dev.joid.backend.lwjgl3.Backend;
+import dev.joid.base.glfw.WindowBridge;
+import dev.joid.base.glfw.input.KeyCharacterMerger;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;

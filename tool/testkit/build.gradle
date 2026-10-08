@@ -1,0 +1,12 @@
+archivesBaseName = "joid-tool-testkit"
+
+dependencies {
+    compile project(':core')
+
+    compile "junit:junit:4.13.2"
+
+    compile "org.lwjgl:lwjgl:$lwjglVersion"
+    compile "org.lwjgl:lwjgl-shaderc:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtime "org.lwjgl:lwjgl-shaderc:$lwjglVersion:$lwjglNatives"
+}

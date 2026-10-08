@@ -1,12 +1,11 @@
 rootProject.name = 'JOID'
 
 include 'core'
-include 'glfw', 'openal', 'opengl'
-include 'lwjgl2', 'lwjgl3', 'vulkan'
-include 'testkit'
-include 'msdf'
-include 'showcase'
+include 'base-glfw', 'base-openal', 'base-opengl'
+include 'backend-lwjgl2', 'backend-lwjgl3', 'backend-vulkan'
+include 'tool-msdf', 'tool-testkit'
+include 'sample-showcase'
 
-['glfw', 'openal', 'opengl', 'lwjgl2', 'lwjgl3', 'vulkan'].each { name ->
-    project(":$name").projectDir = file("impl/$name")
+rootProject.children.each { module ->
+    module.projectDir = file(module.name.replaceFirst('-', '/'))
 }

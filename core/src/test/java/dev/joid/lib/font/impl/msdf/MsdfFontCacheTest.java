@@ -34,8 +34,8 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.dto.source.MsdfBinarySource;
 import dev.joid.lib.font.impl.msdf.dto.source.MsdfOpenTypeSource;
-import dev.joid.msdf.MsdfGenerator;
-import dev.joid.msdf.atlas.MsdfWriter;
+import dev.joid.tool.msdf.MsdfGenerator;
+import dev.joid.tool.msdf.atlas.MsdfWriter;
 
 public class MsdfFontCacheTest {
 
