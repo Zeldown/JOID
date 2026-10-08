@@ -6,21 +6,14 @@ import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
 import org.lwjgl.opengl.GL30C;
 
-import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class Texture implements ITexture {
+public final class Texture extends dev.joid.lib.bridge.render.texture.Texture {
 
 	private final int id;
-
-	private int     width;
-	private int     height;
-	private int     levels;
-	private boolean deleted;
-	private boolean mipmapped;
 
 	private Texture(final int id) {
 		this.id = id;
@@ -31,65 +24,37 @@ public final class Texture implements ITexture {
 	}
 
 	@Override
-	public @NonNull Texture mipmap(final boolean mipmap) {
-		if (this.mipmapped == mipmap) {
-			return this;
-		}
-
-		this.mipmapped = mipmap;
-
-		if (mipmap && this.width > 0 && this.height > 0) {
-			GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, this.id);
-			this.generateMipmaps();
-		}
-
-		return this;
-	}
-
-	@Override
-	public @NonNull Texture allocate(final int width, final int height) {
-		this.width = width;
-		this.height = height;
-
+	protected void onAllocate(final @NonNull MipmapChain chain) {
 		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, this.id);
 		GL11C.glTexParameteri(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MIN_FILTER, GL11C.GL_NEAREST);
 		GL11C.glTexParameteri(GL11C.GL_TEXTURE_2D, GL11C.GL_TEXTURE_MAG_FILTER, GL11C.GL_NEAREST);
-		GL11C.glTexImage2D(GL11C.GL_TEXTURE_2D, 0, GL11C.GL_RGBA8, width, height, 0, GL12C.GL_BGRA, GL12C.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer) null);
-		this.levels = 1;
-		return this;
+		Texture.allocateLevels(chain, 0);
 	}
 
 	@Override
-	public @NonNull Texture upload(final @NonNull int[] pixels, final int width, final int height) {
+	protected void onUpload(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
 		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, this.id);
-		GL11C.glTexSubImage2D(GL11C.GL_TEXTURE_2D, 0, 0, 0, width, height, GL12C.GL_BGRA, GL12C.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
-
-		if (this.mipmapped) {
-			this.generateMipmaps();
-		}
-
-		return this;
+		GL11C.glTexSubImage2D(GL11C.GL_TEXTURE_2D, 0, 0, 0, chain.getWidth(), chain.getHeight(), GL12C.GL_BGRA, GL12C.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
+		this.copyLevels(chain);
 	}
 
 	@Override
-	public void delete() {
-		if (this.deleted) {
-			return;
+	protected void onGenerateLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
+		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, this.id);
+		if (allocatedLevels != chain.getLevels()) {
+			Texture.allocateLevels(chain, 1);
 		}
-
-		GL11C.glDeleteTextures(this.id);
-		this.deleted = true;
+		this.copyLevels(chain);
 	}
 
-	private void generateMipmaps() {
-		final MipmapChain chain = MipmapChain.of(this.width, this.height, true);
-		if (this.levels != chain.getLevels()) {
-			for (int level = 1; level < chain.getLevels(); level++) {
-				GL11C.glTexImage2D(GL11C.GL_TEXTURE_2D, level, GL11C.GL_RGBA8, chain.getWidth(level), chain.getHeight(level), 0, GL12C.GL_BGRA, GL12C.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer) null);
-			}
+	@Override
+	protected void onDelete() {
+		GL11C.glDeleteTextures(this.id);
+	}
 
-			GL11C.glTexParameteri(GL11C.GL_TEXTURE_2D, GL12C.GL_TEXTURE_MAX_LEVEL, chain.getLevels() - 1);
-			this.levels = chain.getLevels();
+	private void copyLevels(final MipmapChain chain) {
+		if (chain.getLevels() == 1) {
+			return;
 		}
 
 		final int read = GL11C.glGetInteger(GL30C.GL_READ_FRAMEBUFFER_BINDING);
@@ -115,6 +80,13 @@ public final class Texture implements ITexture {
 				GL11C.glEnable(GL11C.GL_SCISSOR_TEST);
 			}
 		}
+	}
+
+	private static void allocateLevels(final MipmapChain chain, final int first) {
+		for (int level = first; level < chain.getLevels(); level++) {
+			GL11C.glTexImage2D(GL11C.GL_TEXTURE_2D, level, GL11C.GL_RGBA8, chain.getWidth(level), chain.getHeight(level), 0, GL12C.GL_BGRA, GL12C.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer) null);
+		}
+		GL11C.glTexParameteri(GL11C.GL_TEXTURE_2D, GL12C.GL_TEXTURE_MAX_LEVEL, chain.getLevels() - 1);
 	}
 
 }

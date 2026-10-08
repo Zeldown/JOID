@@ -36,6 +36,7 @@ import dev.joid.impl.vulkan.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.DepthRange;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.SamplerBinding;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -243,7 +244,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 			this.applyDynamicState(stack, state, target != null, lines ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 			final long vertexOffset = this.writeVertices(buffer, state);
 			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer.isColor());
-			final long descriptorSet = this.descriptorCache.get(shader, this.uniformStream.getBuffer().getBuffer(), this.getImages(state, shader));
+			final long descriptorSet = this.descriptorCache.get(shader, this.uniformStream.getBuffer().getBuffer(), this.getImages(shader));
 
 			VK10.vkCmdBindDescriptorSets(this.commandBuffer, VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, shader.getPipelineLayout(), 0, stack.longs(descriptorSet), dynamicOffsets);
 			VK10.vkCmdBindVertexBuffers(this.commandBuffer, 0, stack.longs(this.vertexStream.getBuffer().getBuffer()), stack.longs(vertexOffset));
@@ -279,10 +280,6 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 			this.stagingBuffer = Buffer.create(this.context, Math.max(size, 4L << 20), VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 		}
 		return this.stagingBuffer;
-	}
-
-	public long getSampler(final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap, final boolean mipmapped) {
-		return this.samplers[TextureSampling.of(filter, wrap, mipmapped).getIndex()];
 	}
 
 	private void requireFrame() {
@@ -400,22 +397,13 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		return stack.ints((int) offset);
 	}
 
-	private long[] getImages(final RenderState state, final Shader shader) {
+	private long[] getImages(final Shader shader) {
 		final long[] images = new long[shader.getSamplerMap().size() * 2];
 		int index = 0;
 		for (final UniformSampler sampler : shader.getSamplerMap().values()) {
-			final Texture texture = (Texture) sampler.getTexture();
-			final Texture stateTexture = (Texture) state.getTexture();
-			if (texture != null && texture.getView() != VK10.VK_NULL_HANDLE) {
-				images[index] = texture.getView();
-				images[index + 1] = this.getSampler(sampler.getFilter(), sampler.getWrap(), texture.isMipmapped());
-			} else if (stateTexture != null && stateTexture.getView() != VK10.VK_NULL_HANDLE) {
-				images[index] = stateTexture.getView();
-				images[index + 1] = this.getSampler(state.getTextureFilter(), state.getTextureWrap(), stateTexture.isMipmapped());
-			} else {
-				images[index] = ((Texture) super.getEmptyTexture()).getView();
-				images[index + 1] = this.getSampler(TextureFilter.NEAREST, TextureWrap.REPEAT, false);
-			}
+			final SamplerBinding binding = super.resolveSampler(sampler);
+			images[index] = ((Texture) binding.getTexture()).getView();
+			images[index + 1] = this.samplers[binding.getSampling().getIndex()];
 			index += 2;
 		}
 		return images;

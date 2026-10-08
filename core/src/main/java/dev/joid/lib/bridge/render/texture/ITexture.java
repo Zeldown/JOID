@@ -17,4 +17,8 @@ public interface ITexture {
 
 	public void delete();
 
+	public default boolean isAllocated() {
+		return this.getWidth() > 0;
+	}
+
 }

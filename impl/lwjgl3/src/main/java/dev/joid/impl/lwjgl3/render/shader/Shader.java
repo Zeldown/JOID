@@ -5,19 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.opengl.GL11C;
-import org.lwjgl.opengl.GL13C;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL31C;
-import org.lwjgl.opengl.GL33C;
 
 import dev.joid.impl.lwjgl3.render.RenderBridge;
-import dev.joid.impl.lwjgl3.render.texture.Texture;
 import dev.joid.lib.bridge.render.shader.source.BlockShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
-import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import lombok.Getter;
@@ -61,21 +57,10 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 		}
 
 		GL31C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, 0, this.uniformBuffer);
-		super.getSamplerMap().values().forEach(this::apply);
 	}
 
-	private void apply(final UniformSampler sampler) {
-		final int location = this.locationMap.computeIfAbsent(sampler.getName(), name -> GL20C.glGetUniformLocation(this.program, name));
-		if (sampler.getTexture() == null || location == -1) {
-			return;
-		}
-
-		final Texture texture = (Texture) sampler.getTexture();
-		GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + sampler.getUnit());
-		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
-		GL33C.glBindSampler(sampler.getUnit(), ((RenderBridge) super.getBridge()).getSampler(sampler.getFilter(), sampler.getWrap(), texture.isMipmapped()));
-		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
-		GL20C.glUniform1i(location, sampler.getUnit());
+	public int getLocation(final @NonNull String name) {
+		return this.locationMap.computeIfAbsent(name, key -> GL20C.glGetUniformLocation(this.program, key));
 	}
 
 	private static boolean link(final int program, final String vertexSource, final String fragmentSource) {

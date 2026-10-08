@@ -6,11 +6,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
+import dev.joid.lib.bridge.render.shader.SamplerBinding;
+import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
+import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.render.texture.TextureSampling;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 
 public class RenderBridgeTest {
@@ -231,6 +235,37 @@ public class RenderBridgeTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingBlendState() {
 		new RecordingRenderBridge().blend(null);
+	}
+
+	@Test
+	public void resolvesTheTextureOfASampler() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final ITexture texture = new RecordingTexture().allocate(4, 4).mipmap(true);
+		final UniformSampler sampler = UniformSampler.create("mask", 1).value(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
+		render.texture(new RecordingTexture().allocate(2, 2), TextureFilter.NEAREST, TextureWrap.REPEAT);
+		final SamplerBinding binding = render.resolveSampler(sampler);
+		Assert.assertSame(texture, binding.getTexture());
+		Assert.assertSame(TextureSampling.of(TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE, true), binding.getSampling());
+	}
+
+	@Test
+	public void resolvesAnUnsetSamplerToTheBoundTexture() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final ITexture texture = new RecordingTexture().allocate(2, 2);
+		render.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		final SamplerBinding binding = render.resolveSampler(UniformSampler.create("mask", 1));
+		Assert.assertSame(texture, binding.getTexture());
+		Assert.assertSame(TextureSampling.of(TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER, false), binding.getSampling());
+	}
+
+	@Test
+	public void resolvesTheEmptyTextureWithoutAnAllocatedTexture() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.texture(new RecordingTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		final SamplerBinding binding = render.resolveSampler(UniformSampler.create("mask", 1).value(new RecordingTexture(), TextureFilter.LINEAR, TextureWrap.REPEAT));
+		Assert.assertSame(render.getEmptyTexture(), binding.getTexture());
+		Assert.assertSame(TextureSampling.of(TextureFilter.NEAREST, TextureWrap.REPEAT, false), binding.getSampling());
+		Assert.assertSame(render.getEmptyTexture(), render.resolveTexture().getTexture());
 	}
 
 }

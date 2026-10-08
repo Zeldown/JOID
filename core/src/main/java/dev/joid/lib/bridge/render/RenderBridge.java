@@ -7,14 +7,17 @@ import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.SamplerBinding;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.render.texture.TextureSampling;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
@@ -246,6 +249,22 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	protected abstract void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader shader);
+
+	protected final @NonNull SamplerBinding resolveTexture() {
+		final ITexture texture = this.state.getTexture();
+		if (texture != null && texture.isAllocated()) {
+			return SamplerBinding.of(texture, TextureSampling.of(this.state.getTextureFilter(), this.state.getTextureWrap(), texture.isMipmapped()));
+		}
+		return SamplerBinding.of(this.getEmptyTexture(), TextureSampling.of(TextureFilter.NEAREST, TextureWrap.REPEAT, false));
+	}
+
+	protected final @NonNull SamplerBinding resolveSampler(final @NonNull UniformSampler sampler) {
+		final ITexture texture = sampler.getTexture();
+		if (texture != null && texture.isAllocated()) {
+			return SamplerBinding.of(texture, TextureSampling.of(sampler.getFilter(), sampler.getWrap(), texture.isMipmapped()));
+		}
+		return this.resolveTexture();
+	}
 
 	protected final @NonNull IShader getFixedShader() {
 		if (this.fixedShader == null) {

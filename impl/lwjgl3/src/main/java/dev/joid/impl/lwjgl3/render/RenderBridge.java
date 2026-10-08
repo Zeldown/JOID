@@ -14,7 +14,9 @@ import dev.joid.impl.lwjgl3.render.shader.Shader;
 import dev.joid.impl.lwjgl3.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.SamplerBinding;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
+import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
@@ -77,16 +79,21 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader shader) {
+	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader current) {
 		final RenderState state = super.getState();
 		this.applyTarget(state);
 		this.applyPipeline(state);
-		((Shader) shader).use(state);
-
-		final Texture texture = (Texture) (state.getTexture() == null ? super.getEmptyTexture() : state.getTexture());
+		final Shader shader = (Shader) current;
+		shader.use(state);
+		this.bindTexture(0, super.resolveTexture());
+		for (final UniformSampler sampler : shader.getSamplerMap().values()) {
+			final int location = shader.getLocation(sampler.getName());
+			if (location != -1) {
+				this.bindTexture(sampler.getUnit(), super.resolveSampler(sampler));
+				GL20C.glUniform1i(location, sampler.getUnit());
+			}
+		}
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
-		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
-		GL33C.glBindSampler(0, this.getSampler(state.getTextureFilter(), state.getTextureWrap(), texture.isMipmapped()));
 
 		GL30C.glBindVertexArray(this.vertexArray);
 		GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, this.vertexBuffer);
@@ -115,8 +122,10 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		return Shader.create(this, vertex, fragment, blend);
 	}
 
-	public int getSampler(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
-		return this.samplers[TextureSampling.of(filter, wrap, mipmapped).getIndex()];
+	private void bindTexture(final int unit, final SamplerBinding binding) {
+		GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + unit);
+		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, ((Texture) binding.getTexture()).getId());
+		GL33C.glBindSampler(unit, this.samplers[binding.getSampling().getIndex()]);
 	}
 
 	private void applyTarget(final RenderState state) {

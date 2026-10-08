@@ -107,6 +107,8 @@ When a test fails, the build prints the link of its interactive `report.html`.
 | `getStateStack()` | The states saved by `pushState()`. |
 | `getFixedShader()` | The `CoreShader.FIXED` shader, created once with your `createShader` and `BlendState.DISABLED`. |
 | `getEmptyTexture()` | A 1×1 opaque white texture, created once with your `createTexture()`. |
+| `resolveTexture()` | The `SamplerBinding` of the bound texture: the texture of `texture(...)` with its filter, wrap and mipmaps as a `TextureSampling`, or `getEmptyTexture()` (`NEAREST`, `REPEAT`) when none is bound or it is not allocated. |
+| `resolveSampler(UniformSampler sampler)` | The `SamplerBinding` of a sampler of a shader: its texture with its filter and wrap, or `resolveTexture()` when it was never set or its texture is not allocated. Every backend then samples the same texture. |
 
 `getPixelGrid()` and `quantize(...)` are computed from these matrices and the viewport.
 
@@ -157,16 +159,29 @@ A null normal gets no diffuse light. The light does not depend on the scale of t
 | Contract | Detail |
 |---|---|
 | Pixel format | `ITexture.upload(int[] pixels, int width, int height)` receives ARGB `int`s (`0xAARRGGBB`), row by row from the top row; texture coordinate `(0, 0)` is the first pixel. |
-| Allocation | `allocate(width, height)` (re)creates the storage; `upload` fills the whole texture. Both return the texture. |
+| Allocation | `allocate(width, height)` (re)creates the storage, and keeps it when the size and the levels do not change; `upload` fills the whole texture. Both return the texture. `isAllocated()` tells whether the texture has storage and is not deleted. |
 | Mipmaps | Off by default. `mipmap(true)` works before allocation or after an upload, regenerates the levels at each upload, and `isMipmapped()` reports it. Linear filtering then uses the mipmaps. Take the levels from `MipmapChain.of(width, height, true)`: `getLevels()`, `getWidth(level)` and `getHeight(level)` give the storage to allocate, and `forEachStep((level, sourceWidth, sourceHeight, targetWidth, targetHeight) -> ...)` calls you once per level, in order, to copy level `level - 1` into `level` with a linear filter. Every backend then has the same levels. |
 | Binding | `texture(ITexture, TextureFilter, TextureWrap)` binds a texture with a filter (`NEAREST`, `LINEAR`) and a wrap (`REPEAT`, `CLAMP_TO_EDGE`, `CLAMP_TO_BORDER`). `TextureSampling.of(filter, wrap, mipmapped)` (`dev.joid.lib.bridge.render.texture`) is one of the `TextureSampling.values()` combinations, numbered by `getIndex()` for a table of sampler objects; `isMipmapFiltered()` tells whether the mipmaps are sampled: only a mipmapped texture with the `LINEAR` filter uses them. |
 | Reset | `resetTexture()` binds an opaque white texture, so drawing without a texture shows the plain color. With `RenderBridge`, `getState().getTexture()` is then `null`: draw with `getEmptyTexture()`. |
 | Deletion | `delete()` can be called more than once. |
 | Size | `getWidth()` and `getHeight()` return the allocated size. |
 
+The core `Texture` (`dev.joid.lib.bridge.render.texture`) implements this contract once: `mipmap`, `allocate`, `upload` and `delete` are final, keep the size, the allocated levels (`getLevels()`), the mipmap state and the deletion, and call four hooks with the `MipmapChain` to apply:
+
+| Hook | What it must do |
+|---|---|
+| `onAllocate(MipmapChain chain)` | (Re)create the storage: `chain.getLevels()` levels of `chain.getWidth(level)` × `chain.getHeight(level)` pixels. Called only when the size or the level count changes. |
+| `onUpload(int[] pixels, MipmapChain chain)` | Write the ARGB pixels into level 0 (`chain.getWidth()` × `chain.getHeight()`), then copy each level into the next with `chain.forEachStep(...)`; the chain has one level when the texture is not mipmapped. |
+| `onGenerateLevels(MipmapChain chain, int allocatedLevels)` | `mipmap(true)` on an allocated texture: allocate the levels missing when `allocatedLevels` differs from `chain.getLevels()`, keeping level 0, then copy the levels down. |
+| `onDelete()` | Release the storage. Called once. |
+
+The LWJGL 3 and Vulkan textures extend it.
+
 ### Framebuffers
 
 `createFrameBuffer(width, height)` returns an `IFrameBuffer` with a color texture and a depth attachment of the same size (no stencil: the stencil test does not apply inside framebuffers), so the depth test of 3D models works inside effects as on the screen. `frameBuffer(IFrameBuffer)` makes it the target, `frameBuffer(null)` returns to the screen; its `getTexture()` can then be bound like any texture, with the filter and wrap given to `texture(...)`. `getWidth()`, `getHeight()` and `delete()` complete it.
+
+The core `FrameBufferHandle<T extends Texture>` (`dev.joid.lib.bridge.render.framebuffer`) is the base of a backend framebuffer: its constructor takes the allocated color texture, `getTexture()` returns it with its type, `getWidth()` and `getHeight()` are its size, and `delete()` calls the `onDelete()` hook once, to release the framebuffer and its depth, then deletes the texture. The name keeps it apart from the `FrameBuffer` of UIs (`dev.joid.lib.render.framebuffer`), which holds an `IFrameBuffer` as its `getHandle()`.
 
 ### State
 
@@ -278,7 +293,7 @@ The reference backends send the block this way: LWJGL 3 into a uniform buffer bo
 | `isActive()` | Whether it compiled and linked. The reference backends print the compiler or linker log of a shader that fails to `System.err`. |
 | `uniform(name, ...)`, `sampler(name, texture, filter, wrap)` | Implemented by the core `UniformShader`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw. |
 
-A sampler that is never set samples the texture bound with `texture(...)`: the reference backends bind it to texture unit 0 and give the set samplers their unit, from 1. The block-based backends also wrap the fragment `main` to apply the alpha test of the render state.
+A sampler that is never set samples the texture bound with `texture(...)`, as `resolveSampler(...)` gives it: the reference backends bind the bound texture to texture unit 0 and each sampler to its unit, from 1. The block-based backends also wrap the fragment `main` to apply the alpha test of the render state.
 
 ## Window and audio bridges
 
