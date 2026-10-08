@@ -21,11 +21,7 @@
 
 <br>
 
-JOID is a UI engine for Java 8. You build each screen from nodes, JOID draws it on the GPU of the engine you already use, and you decide how everything looks.
-
-<p align="center">
-  <img src="documentation/content/images/pixel-perfect.webp" alt="A design rebuilt in JOID by copying each layer's values, then overlaid on the design export" width="100%">
-</p>
+JOID is a Java UI engine: build your interface once, run it on any engine, and get your mockup pixel for pixel at any window size, in a look that is entirely yours.
 
 ## Why JOID
 
@@ -36,6 +32,10 @@ JOID is a UI engine for Java 8. You build each screen from nodes, JOID draws it 
 - **Looks great at any size.** Text and shapes stay razor-sharp at any size and any resolution, thanks to built-in MSDF text and anti-aliasing.
 - **Everything included.** Images, SVG, animated GIF and WebP, video, 3D models, shadows, blur, masks, shaders, animations, and whatever else you can imagine.
 - **Made to be pleasant to use.** A typed fluent API, sensible defaults, and a dev mode with an inspector, hot reload and warnings that point at your line of code.
+
+<p align="center">
+  <img src="documentation/content/images/pixel-perfect.webp" alt="A design rebuilt in JOID by copying each layer's values, then overlaid on the design export" width="100%">
+</p>
 
 ## Showcase
 
