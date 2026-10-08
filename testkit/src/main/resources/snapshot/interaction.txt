@@ -320,21 +320,21 @@ ui dev.joid.demo.ui.overflow.UIDemoOverflow
 wait 800
 move 300 160
 wait 100
-scroll -120
-scroll -120
-scroll -120
+scroll -1
+scroll -1
+scroll -1
 wait 300
 move 740 160
 wait 100
-scroll -120
-scroll -120
-scroll -120
+scroll -1
+scroll -1
+scroll -1
 wait 300
 move 1180 160
 wait 100
-scroll -120
-scroll -120
-scroll -120
+scroll -1
+scroll -1
+scroll -1
 wait 300
 move 1030 254
 wait 100
@@ -359,8 +359,8 @@ release LEFT
 wait 400
 move 1180 500
 wait 100
-scroll -120
-scroll -120
+scroll -1
+scroll -1
 wait 300
 move 1740 495
 wait 100
@@ -369,43 +369,43 @@ release LEFT
 wait 100
 move 300 820
 wait 100
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
 wait 300
 move 740 810
 wait 100
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
-scroll -120
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
+scroll -1
 wait 300
 move 1180 790
 wait 100
-scroll -120
-scroll -120
-scroll -120
+scroll -1
+scroll -1
+scroll -1
 wait 300
 wait 1200
 shot inter-overflow
 ui dev.joid.demo.ui.overflow.UIDemoOverflow
 move 1600 820
 wait 16
-scroll -120
-scroll -120
+scroll -1
+scroll -1
 wait 1200
 shot inter-overflow-loading
 ui dev.joid.demo.ui.draggable.UIDemoDraggable
@@ -460,7 +460,7 @@ moveto 1250 540 400
 wait 200
 release LEFT
 wait 600
-scroll -120
+scroll -1
 wait 600
 move 1610 500
 wait 100
@@ -841,9 +841,9 @@ press LEFT
 moveto 380 640 400
 wait 200
 release LEFT
-scroll -120
-scroll -120
-scroll -120
+scroll -1
+scroll -1
+scroll -1
 move 740 670
 wait 100
 press LEFT

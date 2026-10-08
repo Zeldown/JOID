@@ -74,7 +74,7 @@ RectNode
 | --- | --- |
 | `ui.zoom(double zoom)` | Sets the zoom and updates the signals. |
 | Ctrl or Alt + `+` / `-` (main keys or numpad) | Adds or removes 0.1, when the UI is `zoomable` (default). The key is consumed only when the zoom changed. |
-| Left Alt + wheel | Dev mode only: adds the wheel value divided by 10000, or by 1000 with Left Shift held. Works even when the UI is not `zoomable`. |
+| Left Alt + wheel | Dev mode only: adds 0.012 per wheel notch, or 0.12 with Left Shift held. Works even when the UI is not `zoomable`. |
 
 ```java
 this.zoom(0.8D);

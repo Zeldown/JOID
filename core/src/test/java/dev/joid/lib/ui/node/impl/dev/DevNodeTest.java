@@ -336,7 +336,7 @@ public class DevNodeTest {
 		Assert.assertSame(container, panel.getInspectedNode().get());
 		Assert.assertTrue(DevNodeTest.texts(panel).contains("children: 1"));
 		this.bridges.move(1600D, 900D).frame();
-		this.bridges.scroll(-120).frames(10).scroll(-120).frames(60);
+		this.bridges.scroll(-1D).frames(10).scroll(-1D).frames(60);
 		DevNodeTest.click(this.bridges, DevNodeTest.text(panel, "RectNode"));
 		Assert.assertSame(rect, panel.getInspectedNode().get());
 		Assert.assertTrue(panel.getInspectedNodeLocked().get());

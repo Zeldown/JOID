@@ -73,7 +73,7 @@ public class DemoWindow extends DemoUIBridge {
 				}
 
 				if (scroll != 0) {
-					super.mouseScroll(scroll);
+					super.mouseScroll(scroll / 120D);
 				}
 			}
 

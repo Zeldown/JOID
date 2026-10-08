@@ -61,8 +61,8 @@ public class NodeScrollUpdateCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollUpdateCallbackTest.box(1000D).onScrollUpdate((node, value) -> received.add(value));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		this.bridges.move(700D, 200D).frames(2).scroll(-120);
-		this.bridges.frame().scroll(-120);
+		this.bridges.move(700D, 200D).frames(2).scroll(-1D);
+		this.bridges.frame().scroll(-1D);
 		Assert.assertEquals(Arrays.asList(-30D, -60D), received);
 	}
 

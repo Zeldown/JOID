@@ -64,10 +64,10 @@ public class NodeScrollEndCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEndCallbackTest.box(360D).onScrollEnd((node, scrollX, scrollY) -> received.add(node));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		this.bridges.move(700D, 200D).frames(2).scroll(-120).frames(200);
+		this.bridges.move(700D, 200D).frames(2).scroll(-1D).frames(200);
 		Assert.assertTrue(received.isEmpty());
-		this.bridges.frame().scroll(-120);
-		this.bridges.frame().scroll(-120).frames(200);
+		this.bridges.frame().scroll(-1D);
+		this.bridges.frame().scroll(-1D).frames(200);
 		Assert.assertEquals(Collections.singletonList(box), received);
 	}
 

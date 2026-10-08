@@ -277,7 +277,7 @@ public class UITest {
 		Assert.assertFalse(ui.onMousePressed(ClickType.LEFT));
 		Assert.assertFalse(ui.onMouseReleased(ClickType.LEFT));
 		Assert.assertFalse(ui.onMouseDragged(ClickType.LEFT, 10L));
-		Assert.assertFalse(ui.onMouseScroll(120));
+		Assert.assertFalse(ui.onMouseScroll(1D));
 		Assert.assertFalse(ui.onKeyPressed('a', Key.A));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
@@ -333,7 +333,7 @@ public class UITest {
 		Assert.assertTrue(ui.onMousePressed(ClickType.LEFT));
 		Assert.assertTrue(ui.onMouseReleased(ClickType.LEFT));
 		Assert.assertTrue(ui.onMouseDragged(ClickType.LEFT, 10L));
-		Assert.assertTrue(ui.onMouseScroll(120));
+		Assert.assertTrue(ui.onMouseScroll(1D));
 		Assert.assertTrue(ui.onKeyPressed('a', Key.A));
 	}
 
@@ -342,11 +342,11 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui);
 		this.trace.clear();
-		ui.onMouseScroll(120);
+		ui.onMouseScroll(1D);
 		ui.onMouseDragged(ClickType.LEFT, 10L);
 		ui.onMouseReleased(ClickType.LEFT);
 		ui.onKeyPressed('a', Key.A);
-		Assert.assertEquals(Arrays.asList("scrolled node", "scrolled 120", "dragged node", "dragged LEFT 10", "released node", "released LEFT", "typed node", "typed a A"), this.trace);
+		Assert.assertEquals(Arrays.asList("scrolled node", "scrolled 1.0", "dragged node", "dragged LEFT 10", "released node", "released LEFT", "typed node", "typed a A"), this.trace);
 	}
 
 	@Test
@@ -693,14 +693,14 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.LEFT_ALT);
-		this.bridges.scroll(-120);
+		this.bridges.scroll(-1D);
 		Assert.assertEquals(0.988D, ui.getView().getZoom(), 0.0001D);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
-		this.bridges.scroll(-120);
+		this.bridges.scroll(-1D);
 		Assert.assertEquals(0.868D, ui.getView().getZoom(), 0.0001D);
 		Assert.assertTrue(this.trace.isEmpty());
-		Assert.assertFalse(ui.onMouseScroll(0));
-		Assert.assertEquals(Collections.singletonList("scrolled 0"), this.trace);
+		Assert.assertFalse(ui.onMouseScroll(0D));
+		Assert.assertEquals(Collections.singletonList("scrolled 0.0"), this.trace);
 	}
 
 	@Test
@@ -709,9 +709,9 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.LEFT_ALT);
-		this.bridges.scroll(-120);
+		this.bridges.scroll(-1D);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
-		Assert.assertEquals(Collections.singletonList("scrolled -120"), this.trace);
+		Assert.assertEquals(Collections.singletonList("scrolled -1.0"), this.trace);
 	}
 
 	@Test
@@ -1591,7 +1591,7 @@ public class UITest {
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double value, final @NonNull InternalContext context) {
 			this.trace.add("scrolled " + value);
 			this.cancel(context);
 		}
@@ -1830,7 +1830,7 @@ public class UITest {
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double value, final @NonNull InternalContext context) {
 			this.trace.add("scrolled " + this.name);
 		}
 

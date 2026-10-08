@@ -298,12 +298,12 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
-		if (context.isCancelled() || value == 0 || !super.isHovered(mouseX, mouseY) || !this.canStep()) {
+	public void mouseScroll(final double mouseX, final double mouseY, final double notches, final @NonNull InternalContext context) {
+		if (context.isCancelled() || notches == 0D || !super.isHovered(mouseX, mouseY) || !this.canStep()) {
 			return;
 		}
 
-		context.cancel(() -> this.stepValue(value > 0 ? 1 : -1));
+		context.cancel(() -> this.stepValue(notches > 0D ? 1 : -1));
 	}
 
 	@Override

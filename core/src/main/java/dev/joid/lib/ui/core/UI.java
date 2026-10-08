@@ -201,7 +201,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.refreshMonitor();
 	}
 
-	public final boolean onMouseScroll(final int value) {
+	public final boolean onMouseScroll(final double notches) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -209,15 +209,15 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && value != 0) {
-			this.zoom(this.view.getZoom() + value / (Key.LEFT_SHIFT.isDown() ? 1000D : 10000D));
+		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && notches != 0D) {
+			this.zoom(this.view.getZoom() + notches * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
 			return true;
 		}
 
 		final InternalContext context = InternalContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, value, context)));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, notches, context)));
 
-		this.traced(() -> this.mouseScroll(mx, my, value, context));
+		this.traced(() -> this.mouseScroll(mx, my, notches, context));
 		return context.isCancelled();
 	}
 

@@ -10,15 +10,15 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface NodeMouseScrollCallback<T extends Node> extends NodeCallback {
 
-	public void apply(final @NonNull T node, final double mouseX, final double mouseY, final int value);
+	public void apply(final @NonNull T node, final double mouseX, final double mouseY, final double notches);
 
 	@NodeCallbackMethod(Type.PRE)
-	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final int value) {}
+	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final double notches) {}
 
 	@NodeCallbackMethod(Type.POST)
-	public default void post(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final int value) {
+	public default void post(final @NonNull T node, final @NonNull InternalContext context, final double mouseX, final double mouseY, final double notches) {
 		if (!context.isCancelled()) {
-			this.apply(node, mouseX, mouseY, value);
+			this.apply(node, mouseX, mouseY, notches);
 		}
 	}
 

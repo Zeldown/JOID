@@ -231,7 +231,7 @@ public final class Main {
 		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetMouseButtonCallback(this.window, (handle, button, action, mods) -> this.onMouseButton(button, action));
 		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.bridge.mouseMoved());
-		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> this.bridge.mouseScroll((int) (y * 120D)));
+		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> this.bridge.mouseScroll(y));
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.resize());
 	}
 

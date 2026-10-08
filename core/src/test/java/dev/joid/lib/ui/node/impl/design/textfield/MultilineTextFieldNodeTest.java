@@ -622,16 +622,16 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void scrollsOneLinePerWheelTickWhileHovered() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		this.bridges.move(10D, 10D).frames(2).scroll(-1);
+		this.bridges.move(10D, 10D).frames(2).scroll(-1D);
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
 		for (int i = 0; i < 5; i++) {
-			this.bridges.scroll(-1);
+			this.bridges.scroll(-1D);
 		}
 		Assert.assertEquals(104D, field.getYOffset(), 0D);
-		this.bridges.scroll(1);
+		this.bridges.scroll(1D);
 		Assert.assertEquals(84D, field.getYOffset(), 0D);
 		for (int i = 0; i < 5; i++) {
-			this.bridges.scroll(1);
+			this.bridges.scroll(1D);
 		}
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
 	}
@@ -639,36 +639,36 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void ignoresTheWheelOutsideItself() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		this.bridges.move(600D, 100D).frames(2).scroll(-1);
+		this.bridges.move(600D, 100D).frames(2).scroll(-1D);
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
 	}
 
 	@Test
 	public void scrollsUnderTheMouseWhileUnfocused() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne").focused(false);
-		this.bridges.move(10D, 10D).frames(2).scroll(-1);
+		this.bridges.move(10D, 10D).frames(2).scroll(-1D);
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
 	}
 
 	@Test
 	public void leavesAWheelAlreadyTakenElsewhere() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		field.mouseScroll(10D, 10D, -1, InternalContext.create(true));
+		field.mouseScroll(10D, 10D, -1D, InternalContext.create(true));
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
 	}
 
 	@Test
 	public void ignoresAWheelThatDoesNotTurn() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		this.bridges.move(10D, 10D).frames(2).scroll(-1);
-		field.mouseScroll(10D, 10D, 0, InternalContext.create());
+		this.bridges.move(10D, 10D).frames(2).scroll(-1D);
+		field.mouseScroll(10D, 10D, 0D, InternalContext.create());
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
 	}
 
 	@Test
 	public void staysAtTheTopOfATextShorterThanItself() {
 		final MultilineTextFieldNode field = this.field("ab");
-		this.bridges.scroll(-1).frame();
+		this.bridges.scroll(-1D).frame();
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
 	}
 
@@ -676,11 +676,11 @@ public class MultilineTextFieldNodeTest {
 	public void consumesTheWheelWhileItScrolls() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
 		final InternalContext down = InternalContext.create();
-		field.mouseScroll(10D, 10D, -1, down);
+		field.mouseScroll(10D, 10D, -1D, down);
 		Assert.assertTrue(down.isCancelled());
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
 		final InternalContext up = InternalContext.create();
-		field.mouseScroll(10D, 10D, 1, up);
+		field.mouseScroll(10D, 10D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
 	}
@@ -689,7 +689,7 @@ public class MultilineTextFieldNodeTest {
 	public void leavesTheWheelToItsParentAtItsTop() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
 		final InternalContext context = InternalContext.create();
-		field.mouseScroll(10D, 10D, 1, context);
+		field.mouseScroll(10D, 10D, 1D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
 	}
@@ -698,15 +698,15 @@ public class MultilineTextFieldNodeTest {
 	public void leavesTheWheelToItsParentAtItsBottom() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
 		for (int i = 0; i < 6; i++) {
-			field.mouseScroll(10D, 10D, -1, InternalContext.create());
+			field.mouseScroll(10D, 10D, -1D, InternalContext.create());
 		}
 		Assert.assertEquals(104D, field.getYOffset(), 0D);
 		final InternalContext down = InternalContext.create();
-		field.mouseScroll(10D, 10D, -1, down);
+		field.mouseScroll(10D, 10D, -1D, down);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertEquals(104D, field.getYOffset(), 0D);
 		final InternalContext up = InternalContext.create();
-		field.mouseScroll(10D, 10D, 1, up);
+		field.mouseScroll(10D, 10D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(84D, field.getYOffset(), 0D);
 	}
@@ -716,8 +716,8 @@ public class MultilineTextFieldNodeTest {
 		final MultilineTextFieldNode field = this.field("ab");
 		final InternalContext down = InternalContext.create();
 		final InternalContext up = InternalContext.create();
-		field.mouseScroll(10D, 10D, -1, down);
-		field.mouseScroll(10D, 10D, 1, up);
+		field.mouseScroll(10D, 10D, -1D, down);
+		field.mouseScroll(10D, 10D, 1D, up);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertFalse(up.isCancelled());
 	}
@@ -728,10 +728,10 @@ public class MultilineTextFieldNodeTest {
 		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldNodeTest.INK)).text("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb").attach(box);
 		RectNode.create(0D, 200D, 100D, 1000D).attach(box);
 		this.bridges.open(new NodeUI(box)).frames(30);
-		this.bridges.move(10D, 10D).frames(2).scroll(-1).scroll(-1).scroll(-1);
+		this.bridges.move(10D, 10D).frames(2).scroll(-1D).scroll(-1D).scroll(-1D);
 		Assert.assertEquals(44D, field.getYOffset(), 0D);
 		Assert.assertEquals(0D, box.getTargetScrollY(), 0D);
-		this.bridges.scroll(-1);
+		this.bridges.scroll(-1D);
 		Assert.assertEquals(44D, field.getYOffset(), 0D);
 		Assert.assertTrue(box.getTargetScrollY() < 0D);
 	}
@@ -764,7 +764,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void scrollsBackToTheTopOnceItsTextShrinks() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		this.bridges.scroll(-1).scroll(-1).scroll(-1);
+		this.bridges.scroll(-1D).scroll(-1D).scroll(-1D);
 		field.text("ab");
 		final List<Drawn> drawn = this.draw();
 		Assert.assertEquals(0D, field.getYOffset(), 0D);

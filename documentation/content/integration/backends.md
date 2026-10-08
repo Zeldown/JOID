@@ -185,7 +185,7 @@ public final class AppInput {
 			}
 
 			if (Mouse.getEventDWheel() != 0) {
-				this.bridge.mouseScroll(Mouse.getEventDWheel());
+				this.bridge.mouseScroll(Mouse.getEventDWheel() / 120D);
 			}
 		}
 

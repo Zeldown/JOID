@@ -94,7 +94,7 @@ public final class AppLoop {
 
 		GLFW.glfwSetMouseButtonCallback(window, (handle, button, action, mods) -> this.onMouseButton(button, action));
 		GLFW.glfwSetCursorPosCallback(window, (handle, x, y) -> this.bridge.mouseMoved());
-		GLFW.glfwSetScrollCallback(window, (handle, x, y) -> this.bridge.mouseScroll((int) (y * 120D)));
+		GLFW.glfwSetScrollCallback(window, (handle, x, y) -> this.bridge.mouseScroll(y));
 		GLFW.glfwSetKeyCallback(window, (handle, key, scancode, action, mods) -> this.onKey(key, action, mods));
 		GLFW.glfwSetCharCallback(window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetFramebufferSizeCallback(window, (handle, width, height) -> this.resize());
@@ -166,7 +166,7 @@ loop.run();
 | `mousePressed(ClickType clickType)` | A mouse button goes down. | `ClickType.from(button)` maps 0 to `LEFT`, 1 to `RIGHT`, 2 to `MIDDLE`, 3 to `BACK`, 4 to `FORWARD`, anything else to `OTHER`. |
 | `mouseReleased(ClickType clickType)` | A mouse button goes up. | The button released. Releasing the button of the last `mousePressed` ends its drag. |
 | `mouseMoved()` | The mouse moves. | None. While a button is held, the bridge sends a drag with that button and the milliseconds since its press, read from the [clock bridge](bridges.md) (`BridgeHandler.CLOCK`), so a manual clock (testkit, replays) gives exact durations; without a held button it does nothing. |
-| `mouseScroll(int value)` | The wheel turns. | Positive when the wheel turns away from the user, 120 per notch. `0` is ignored. Scrolling uses the sign; the dev-mode zoom (Alt + wheel) uses the amount. |
+| `mouseScroll(double notches)` | The wheel turns. | The distance in notches: `1` for one notch away from the user, `-1` toward them, a fraction for a precise touchpad. GLFW and Minecraft give notches as they are; Windows and LWJGL 2 count `120` per notch, so divide by `120`. `0` is ignored. Scrolling uses the sign; the dev-mode zoom (Alt + wheel) and the model viewer use the amount. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats. | The character it types (`0` when none) and the engine-neutral `Key` (`Key.UNKNOWN` when unknown). |
 
 - The mouse position is not an event: each UI reads `getMouseX()` and `getMouseY()` from the [window bridge](bridges.md#iwindowbridge) when it is drawn, and input events use the position of the last frame.
@@ -322,7 +322,7 @@ JOID.open(new UISettings());
 | `draw()` | Draws every visible UI, bottom up. |
 | `mousePressed(ClickType)`, `mouseReleased(ClickType)` | A button goes down or up. |
 | `mouseMoved()` | The mouse moves; a drag when a button is held, timed on `BridgeHandler.CLOCK`. |
-| `mouseScroll(int value)` | The wheel turns, 120 per notch. |
+| `mouseScroll(double notches)` | The wheel turns, in notches. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |
 | `getUiList()` | The sorted `IndexedLinkedList<UI>`. |
 | `isOnTop(UI)`, `isOpened(UI)` | See [Methods you implement](#methods-you-implement). |

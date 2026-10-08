@@ -86,9 +86,9 @@ public class ModelViewerNodeTest {
 	public void zoomsWithTheWheelOverIt() {
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
-		this.bridges.move(200D, 200D).frames(2).scroll(120);
+		this.bridges.move(200D, 200D).frames(2).scroll(1D);
 		Assert.assertEquals(1.04D, viewer.getTargetSize(), 1E-9D);
-		this.bridges.move(1000D, 200D).frames(2).scroll(120);
+		this.bridges.move(1000D, 200D).frames(2).scroll(1D);
 		Assert.assertEquals(1.04D, viewer.getTargetSize(), 1E-9D);
 	}
 

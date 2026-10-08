@@ -103,7 +103,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 	private void registerCallbacks() {
 		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> super.mouseMoved());
-		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> super.mouseScroll((int) (y * 120D)));
+		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> super.mouseScroll(y));
 		GLFW.glfwSetKeyCallback(this.window, (handle, key, scancode, action, mods) -> this.onKey(key, action, mods));
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.onResize());
 		GLFW.glfwSetMouseButtonCallback(this.window, (handle, button, action, mods) -> this.onMouseButton(button, action));

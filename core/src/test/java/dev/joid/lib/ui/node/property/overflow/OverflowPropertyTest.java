@@ -45,7 +45,7 @@ public class OverflowPropertyTest {
 	@Test
 	public void scrollsWhatOverflows() {
 		this.bridges.open(new NodeUI(OverflowPropertyTest.parent().overflow(OverflowProperty.SCROLL))).frame();
-		this.bridges.move(200D, 150D).frames(2).scroll(-120);
+		this.bridges.move(200D, 150D).frames(2).scroll(-1D);
 		this.bridges.frames(100);
 		Assert.assertEquals(1, this.bridges.getRender().getDraws(1F, 0F, 0F).size());
 		Assert.assertTrue(this.bridges.getRender().getDraws(0.3F, 0.5F, 0.7F).get(0).getTop() < 150D);
@@ -54,7 +54,7 @@ public class OverflowPropertyTest {
 	@Test
 	public void staysInPlaceWhenOnlyHidden() {
 		this.bridges.open(new NodeUI(OverflowPropertyTest.parent().overflow(OverflowProperty.HIDDEN))).frame();
-		this.bridges.move(200D, 150D).frames(2).scroll(-120);
+		this.bridges.move(200D, 150D).frames(2).scroll(-1D);
 		this.bridges.frames(100);
 		Assert.assertEquals(150D, this.bridges.getRender().getDraws(0.3F, 0.5F, 0.7F).get(0).getTop(), 1E-3D);
 	}

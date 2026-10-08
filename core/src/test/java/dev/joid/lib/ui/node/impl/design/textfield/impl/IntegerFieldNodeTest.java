@@ -332,13 +332,13 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = IntegerFieldNode.create(100D, 100D, 100D, 30D).min(0).max(10).value(5).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
 		this.bridges.open(new NodeUI(field));
 		this.bridges.move(500D, 500D).frames(2);
-		this.bridges.scroll(120);
+		this.bridges.scroll(1D);
 		Assert.assertEquals("5", field.getText());
 		this.bridges.move(150D, 110D).frames(2);
-		this.bridges.scroll(120);
+		this.bridges.scroll(1D);
 		Assert.assertEquals("6", field.getText());
-		this.bridges.scroll(-120);
-		this.bridges.scroll(-120);
+		this.bridges.scroll(-1D);
+		this.bridges.scroll(-1D);
 		Assert.assertEquals("4", field.getText());
 		Assert.assertFalse(field.isFocused());
 	}
@@ -375,7 +375,7 @@ public class IntegerFieldNodeTest {
 		this.bridges.open(new NodeUI(field));
 		field.focused(true).cursorPosition(1);
 		this.bridges.move(150D, 110D).frames(2);
-		this.bridges.scroll(120);
+		this.bridges.scroll(1D);
 		Assert.assertEquals("100", field.getText());
 		Assert.assertEquals(2, field.getCursorPos());
 	}

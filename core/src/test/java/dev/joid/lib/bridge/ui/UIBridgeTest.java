@@ -174,17 +174,17 @@ public class UIBridgeTest {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hud);
 		this.trace.clear();
-		this.bridges.scroll(120);
+		this.bridges.scroll(1D);
 		hud.cancel = true;
-		this.bridges.scroll(-120);
-		Assert.assertEquals(Arrays.asList("scrolled hud 120", "scrolled menu 120", "scrolled hud -120"), this.trace);
+		this.bridges.scroll(-1D);
+		Assert.assertEquals(Arrays.asList("scrolled hud 1.0", "scrolled menu 1.0", "scrolled hud -1.0"), this.trace);
 	}
 
 	@Test
 	public void ignoresAnEmptyScroll() {
 		this.bridges.open(new TraceUI("menu", this.trace));
 		this.trace.clear();
-		this.bridges.scroll(0);
+		this.bridges.scroll(0D);
 		Assert.assertTrue(this.trace.isEmpty());
 	}
 
@@ -196,8 +196,8 @@ public class UIBridgeTest {
 		hidden.getData().setVisible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
 		this.trace.clear();
-		this.bridges.scroll(120);
-		Assert.assertEquals(Collections.singletonList("scrolled popup 120"), this.trace);
+		this.bridges.scroll(1D);
+		Assert.assertEquals(Collections.singletonList("scrolled popup 1.0"), this.trace);
 	}
 
 	@Test
@@ -559,7 +559,7 @@ public class UIBridgeTest {
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final int value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double value, final @NonNull InternalContext context) {
 			this.trace.add("scrolled " + this.name + " " + value);
 			this.cancel(context);
 		}

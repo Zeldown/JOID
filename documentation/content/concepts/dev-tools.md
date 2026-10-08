@@ -30,7 +30,7 @@ A key goes first to the nodes of the UI, then to its keybinds, then to the zoom 
 | `F3` | Dev | Shows or hides the `DevNode` panel. It starts hidden. |
 | `Ctrl+R` or `F5` | Dev | Reloads the UI: `init()` runs again on the same instance. See [Reload and renew](#reload-and-renew). |
 | `Ctrl+Shift+R` or `Shift+F5` | Dev | Renews the UI: a new instance replaces the open one. |
-| Left `Alt` + mouse wheel | Dev | Zooms by wheel value / 10000 (0.012 for a 120-unit notch); with left `Shift` held, wheel value / 1000. The scroll does not reach the nodes. |
+| Left `Alt` + mouse wheel | Dev | Zooms by 0.012 per wheel notch; with left `Shift` held, by 0.12 per notch. The scroll does not reach the nodes. |
 | `Ctrl` or `Alt` + `+` (character or numpad) | All | Zooms in by 0.1, when the UI is `zoomable`. |
 | `Ctrl` or `Alt` + `-` (character or numpad) | All | Zooms out by 0.1, when the UI is `zoomable`. |
 | `I`, `R`, `G`, `Enter` | Dev, panel shown | Inspect, Reload and Grid buttons of the panel; `Enter` selects the parent of the inspected node. |

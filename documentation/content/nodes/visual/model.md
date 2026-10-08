@@ -72,7 +72,7 @@ ModelViewerNode
 | Press the left mouse button over the node | Starts rotating. The press is consumed, so the nodes below do not receive it. The other buttons are left to the nodes below. |
 | Move the mouse while pressed | Each UI unit moves the target yaw by 1/5 degree (right increases it) and the target pitch by 1/5 degree (up increases it). Both are clamped to their ranges. |
 | Release the left button, anywhere | Stops rotating. |
-| Mouse wheel over the node | Changes the target size by `value / 3000` (a notch of `120` adds `0.04`), clamped to the size range. The wheel event is consumed. |
+| Mouse wheel over the node | Changes the target size by `0.04` per notch, clamped to the size range. The wheel event is consumed. |
 
 The displayed size and rotation ease toward their targets on every frame with `UI.lerpByFramerate`, so the speed does not depend on the frame rate. Without a model, the viewer draws nothing and ignores the drag.
 

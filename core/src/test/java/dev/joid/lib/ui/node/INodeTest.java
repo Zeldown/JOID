@@ -25,7 +25,7 @@ public class INodeTest {
 		node.mousePressed(0D, 0D, ClickType.LEFT, context);
 		node.mouseDragged(0D, 0D, ClickType.LEFT, 16L, context);
 		node.mouseReleased(0D, 0D, ClickType.LEFT, context);
-		node.mouseScroll(0D, 0D, 120, context);
+		node.mouseScroll(0D, 0D, 1D, context);
 		node.keyPressed('a', Key.A, context);
 		Assert.assertFalse(context.isCancelled());
 	}

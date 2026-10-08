@@ -251,7 +251,7 @@ public final class Main {
 		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetMouseButtonCallback(this.window, (handle, button, action, mods) -> this.onMouseButton(button, action));
 		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.bridge.mouseMoved());
-		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> this.bridge.mouseScroll((int) (y * 120D)));
+		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> this.bridge.mouseScroll(y));
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.resize());
 	}
 
@@ -351,7 +351,7 @@ JOID.inst().load();
 Theme.load();
 ```
 
-`Backend` is `dev.joid.impl.lwjgl2.Backend`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(Mouse.getEventDWheel())`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.impl.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
+`Backend` is `dev.joid.impl.lwjgl2.Backend`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.impl.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
 
 ### Vulkan
 

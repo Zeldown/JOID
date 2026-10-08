@@ -81,8 +81,8 @@ public abstract class UIBridge implements IUIBridge {
 		}
 	}
 
-	public final void mouseScroll(final int value) {
-		if (value == 0) {
+	public final void mouseScroll(final double notches) {
+		if (notches == 0D) {
 			return;
 		}
 
@@ -91,7 +91,7 @@ public abstract class UIBridge implements IUIBridge {
 				continue;
 			}
 
-			if (ui.onMouseScroll(value) || ui.getPopup().active()) {
+			if (ui.onMouseScroll(notches) || ui.getPopup().active()) {
 				break;
 			}
 		}
