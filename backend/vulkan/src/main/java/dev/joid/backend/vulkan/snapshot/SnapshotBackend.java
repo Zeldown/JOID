@@ -13,6 +13,7 @@ import dev.joid.backend.vulkan.render.Context;
 import dev.joid.backend.vulkan.render.RenderBridge;
 import dev.joid.backend.vulkan.render.Swapchain;
 import dev.joid.backend.vulkan.render.buffer.Buffer;
+import dev.joid.base.glfw.snapshot.GlfwSnapshotWindow;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.utils.image.PixelLayout;
 import dev.joid.test.snapshot.ISnapshotBackend;
@@ -21,30 +22,17 @@ import lombok.NonNull;
 
 public final class SnapshotBackend implements ISnapshotBackend {
 
-	private long window;
+	private GlfwSnapshotWindow window;
 
 	@Override
 	public void destroy() {
-		GLFW.glfwDestroyWindow(this.window);
-		GLFW.glfwTerminate();
+		this.window.destroy();
 	}
 
 	@Override
 	public void create(final int width, final int height) {
-		if (!GLFW.glfwInit()) {
-			throw new IllegalStateException("Unable to initialize GLFW");
-		}
-
-		GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
-		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
-
-		this.window = GLFW.glfwCreateWindow(width, height, "JOID snapshot", 0L, 0L);
-		if (this.window == 0L) {
-			throw new IllegalStateException("Unable to create the GLFW window");
-		}
-
-		Backend.register(this.window);
+		this.window = GlfwSnapshotWindow.create(width, height, () -> GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API));
+		Backend.register(this.window.getWindow());
 	}
 
 	@Override

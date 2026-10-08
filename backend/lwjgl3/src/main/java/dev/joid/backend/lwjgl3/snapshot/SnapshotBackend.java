@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL;
 import dev.joid.backend.lwjgl3.Backend;
 import dev.joid.backend.lwjgl3.GlContextRequest;
 import dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding;
+import dev.joid.base.glfw.snapshot.GlfwSnapshotWindow;
 import dev.joid.base.opengl.snapshot.GlSnapshotCapture;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
@@ -13,38 +14,25 @@ import lombok.NonNull;
 
 public final class SnapshotBackend implements ISnapshotBackend {
 
-	private long window;
+	private GlfwSnapshotWindow window;
 
 	@Override
 	public void destroy() {
-		GLFW.glfwDestroyWindow(this.window);
-		GLFW.glfwTerminate();
+		this.window.destroy();
 	}
 
 	@Override
 	public void create(final int width, final int height) {
-		if (!GLFW.glfwInit()) {
-			throw new IllegalStateException("Unable to initialize GLFW");
-		}
-
-		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
-		GlContextRequest.CORE_33.apply();
-
-		this.window = GLFW.glfwCreateWindow(width, height, "JOID snapshot", 0L, 0L);
-		if (this.window == 0L) {
-			throw new IllegalStateException("Unable to create the GLFW window");
-		}
-
-		GLFW.glfwMakeContextCurrent(this.window);
+		this.window = GlfwSnapshotWindow.create(width, height, GlContextRequest.CORE_33::apply);
+		GLFW.glfwMakeContextCurrent(this.window.getWindow());
 		GLFW.glfwSwapInterval(0);
 		GL.createCapabilities();
-		Backend.register(this.window);
+		Backend.register(this.window.getWindow());
 	}
 
 	@Override
 	public void present() {
-		GLFW.glfwSwapBuffers(this.window);
+		GLFW.glfwSwapBuffers(this.window.getWindow());
 	}
 
 	@Override

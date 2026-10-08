@@ -250,6 +250,8 @@ The LWJGL 3 and Vulkan backends share two modules, also published as their own j
 
 `dev.joid.base.glfw.input.GlfwInputForwarder` forwards the GLFW events to a `UIBridge`: `create(bridge)`, then `attach(window)` to set the callbacks of a window, or its event methods when the host owns the callbacks (see [UI Bridge](ui-bridge.md#driving-the-bridge-from-your-loop)). `dev.joid.base.glfw.GlfwWindows.toFramebuffer(position, windowSize, framebufferSize)` converts a cursor position from window coordinates to framebuffer pixels, `position` unchanged for a window of size 0.
 
+`dev.joid.base.glfw.snapshot.GlfwSnapshotWindow.create(width, height, hints)` initializes GLFW and creates the hidden, fixed-size window of a snapshot backend, after the window hints of `hints` (the context of your API); `getWindow()` gives its handle and `destroy()` destroys it and terminates GLFW. The LWJGL 3 and Vulkan snapshot backends use it; like the demo window, it is left out of the `-prod` jars and of the released `joid-base-glfw` jar.
+
 ### OpenAL audio bridge
 
 `dev.joid.base.openal.AudioBridge` implements `IAudioBridge` with LWJGL 3's OpenAL:

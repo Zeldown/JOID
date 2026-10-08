@@ -4,43 +4,30 @@ The testkit (`joid-tool-testkit` jar, module `tool-testkit`, JUnit 4) checks tha
 
 ## Testing a backend in three classes
 
-Implement `ISnapshotBackend` for your engine, then extend both suites in your tests. This is the snapshot backend of LWJGL 3:
+Implement `ISnapshotBackend` for your engine, then extend both suites in your tests. This is the snapshot backend of LWJGL 3, on the hidden window of `GlfwSnapshotWindow` (`dev.joid.base.glfw.snapshot`, in `joid-base-glfw` but not in its released jar):
 
 ```java
 public final class SnapshotBackend implements ISnapshotBackend {
 
-	private long window;
+	private GlfwSnapshotWindow window;
 
 	@Override
 	public void destroy() {
-		GLFW.glfwDestroyWindow(this.window);
-		GLFW.glfwTerminate();
+		this.window.destroy();
 	}
 
 	@Override
 	public void create(final int width, final int height) {
-		if (!GLFW.glfwInit()) {
-			throw new IllegalStateException("Unable to initialize GLFW");
-		}
-
-		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
-		GlContextRequest.CORE_33.apply();
-
-		this.window = GLFW.glfwCreateWindow(width, height, "JOID snapshot", 0L, 0L);
-		if (this.window == 0L) {
-			throw new IllegalStateException("Unable to create the GLFW window");
-		}
-
-		GLFW.glfwMakeContextCurrent(this.window);
+		this.window = GlfwSnapshotWindow.create(width, height, GlContextRequest.CORE_33::apply);
+		GLFW.glfwMakeContextCurrent(this.window.getWindow());
 		GLFW.glfwSwapInterval(0);
 		GL.createCapabilities();
-		Backend.register(this.window);
+		Backend.register(this.window.getWindow());
 	}
 
 	@Override
 	public void present() {
-		GLFW.glfwSwapBuffers(this.window);
+		GLFW.glfwSwapBuffers(this.window.getWindow());
 	}
 
 	@Override
