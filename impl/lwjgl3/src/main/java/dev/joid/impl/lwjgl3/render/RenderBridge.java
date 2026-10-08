@@ -23,6 +23,7 @@ import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.render.texture.TextureSampling;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
@@ -123,7 +124,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	public int getSampler(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
-		return this.samplers[RenderBridge.getSamplerIndex(filter, wrap, mipmapped)];
+		return this.samplers[TextureSampling.of(filter, wrap, mipmapped).getIndex()];
 	}
 
 	private void applyTarget(final RenderState state) {
@@ -154,22 +155,19 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	private static int[] createSamplers() {
-		final int[] samplers = new int[TextureFilter.values().length * TextureWrap.values().length * 2];
-		for (final TextureFilter filter : TextureFilter.values()) {
-			for (final TextureWrap wrap : TextureWrap.values()) {
-				samplers[RenderBridge.getSamplerIndex(filter, wrap, false)] = RenderBridge.createSampler(filter, wrap, false);
-				samplers[RenderBridge.getSamplerIndex(filter, wrap, true)] = RenderBridge.createSampler(filter, wrap, true);
-			}
+		final int[] samplers = new int[TextureSampling.values().size()];
+		for (final TextureSampling sampling : TextureSampling.values()) {
+			samplers[sampling.getIndex()] = RenderBridge.createSampler(sampling);
 		}
 		return samplers;
 	}
 
-	private static int createSampler(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
-		final boolean linear = filter == TextureFilter.LINEAR;
+	private static int createSampler(final TextureSampling sampling) {
+		final boolean linear = sampling.getFilter() == TextureFilter.LINEAR;
 		final int sampler = GL33C.glGenSamplers();
 		final int magFilter = linear ? GL11C.GL_LINEAR : GL11C.GL_NEAREST;
-		final int minFilter = linear ? mipmapped ? GL11C.GL_LINEAR_MIPMAP_LINEAR : GL11C.GL_LINEAR : GL11C.GL_NEAREST;
-		final int textureWrap = RenderBridge.wrap(wrap);
+		final int minFilter = sampling.isMipmapFiltered() ? GL11C.GL_LINEAR_MIPMAP_LINEAR : linear ? GL11C.GL_LINEAR : GL11C.GL_NEAREST;
+		final int textureWrap = RenderBridge.wrap(sampling.getWrap());
 		GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_MIN_FILTER, minFilter);
 		GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_MAG_FILTER, magFilter);
 		GL33C.glSamplerParameteri(sampler, GL11C.GL_TEXTURE_WRAP_S, textureWrap);
@@ -181,10 +179,6 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		final float[] values = new float[2];
 		GL11C.glGetFloatv(name, values);
 		return values;
-	}
-
-	private static int getSamplerIndex(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
-		return (mipmapped ? TextureFilter.values().length * TextureWrap.values().length : 0) + filter.ordinal() * TextureWrap.values().length + wrap.ordinal();
 	}
 
 	private static void toggle(final int capability, final boolean enabled) {

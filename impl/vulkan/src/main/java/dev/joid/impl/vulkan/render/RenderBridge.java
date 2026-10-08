@@ -35,6 +35,7 @@ import dev.joid.impl.vulkan.render.shader.Shader;
 import dev.joid.impl.vulkan.render.shader.ShaderTranslator;
 import dev.joid.impl.vulkan.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
+import dev.joid.lib.bridge.render.matrix.DepthRange;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
@@ -46,6 +47,7 @@ import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.render.texture.TextureSampling;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
@@ -288,7 +290,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	public long getSampler(final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap, final boolean mipmapped) {
-		return this.samplers[(mipmapped ? TextureFilter.values().length * TextureWrap.values().length : 0) + filter.ordinal() * TextureWrap.values().length + wrap.ordinal()];
+		return this.samplers[TextureSampling.of(filter, wrap, mipmapped).getIndex()];
 	}
 
 	private void requireFrame() {
@@ -400,12 +402,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final Shader shader, final boolean color) {
-		final float[] projection = super.getProjection().getMatrix().clone();
-		for (int column = 0; column < 4; column++) {
-			projection[column * 4 + 2] = 0.5F * projection[column * 4 + 2] + 0.5F * projection[column * 4 + 3];
-		}
-
-		shader.builtins(state, projection, super.getModelView())
+		shader.builtins(state, DepthRange.toZeroToOne(super.getProjection().getMatrix()), super.getModelView())
 		.value(ShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha())
 		.value(ShaderTranslator.VERTEX_COLOR, color)
 		.pack();
@@ -449,32 +446,27 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	private long[] createSamplers() {
-		final int count = TextureFilter.values().length * TextureWrap.values().length;
-		final long[] samplers = new long[count * 2];
+		final long[] samplers = new long[TextureSampling.values().size()];
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			for (final TextureFilter filter : TextureFilter.values()) {
-				for (final TextureWrap wrap : TextureWrap.values()) {
-					final int index = filter.ordinal() * TextureWrap.values().length + wrap.ordinal();
-					samplers[index] = this.createSampler(stack, filter, wrap, false);
-					samplers[count + index] = this.createSampler(stack, filter, wrap, true);
-				}
+			for (final TextureSampling sampling : TextureSampling.values()) {
+				samplers[sampling.getIndex()] = this.createSampler(stack, sampling);
 			}
 		}
 		return samplers;
 	}
 
-	private long createSampler(final MemoryStack stack, final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
-		final int addressMode = RenderBridge.addressMode(wrap);
-		final int filterMode = filter == TextureFilter.LINEAR ? VK10.VK_FILTER_LINEAR : VK10.VK_FILTER_NEAREST;
+	private long createSampler(final MemoryStack stack, final TextureSampling sampling) {
+		final int addressMode = RenderBridge.addressMode(sampling.getWrap());
+		final int filterMode = sampling.getFilter() == TextureFilter.LINEAR ? VK10.VK_FILTER_LINEAR : VK10.VK_FILTER_NEAREST;
 		final VkSamplerCreateInfo info = VkSamplerCreateInfo.calloc(stack)
 				.sType$Default()
 				.magFilter(filterMode)
 				.minFilter(filterMode)
-				.mipmapMode(mipmapped && filter == TextureFilter.LINEAR ? VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR : VK10.VK_SAMPLER_MIPMAP_MODE_NEAREST)
+				.mipmapMode(sampling.isMipmapFiltered() ? VK10.VK_SAMPLER_MIPMAP_MODE_LINEAR : VK10.VK_SAMPLER_MIPMAP_MODE_NEAREST)
 				.addressModeU(addressMode)
 				.addressModeV(addressMode)
 				.addressModeW(addressMode)
-				.maxLod(mipmapped && filter == TextureFilter.LINEAR ? VK10.VK_LOD_CLAMP_NONE : 0F)
+				.maxLod(sampling.isMipmapFiltered() ? VK10.VK_LOD_CLAMP_NONE : 0F)
 				.borderColor(VK10.VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK);
 
 		final LongBuffer sampler = stack.mallocLong(1);

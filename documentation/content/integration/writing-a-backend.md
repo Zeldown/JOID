@@ -140,7 +140,7 @@ A null normal gets no diffuse light. The light does not depend on the scale of t
 
 ### Coordinates
 
-- Projection matrices follow OpenGL conventions: clip-space depth from -1 to 1, Y up, viewport origin at the bottom-left corner. `ortho(left, right, bottom, top, near, far)` replaces the projection matrix. A backend with other conventions converts them, as the Vulkan backend does for depth and Y.
+- Projection matrices follow OpenGL conventions: clip-space depth from -1 to 1, Y up, viewport origin at the bottom-left corner. `ortho(left, right, bottom, top, near, far)` replaces the projection matrix. A backend with other conventions converts them, as the Vulkan backend does for depth and Y: `DepthRange.toZeroToOne(float[] projection)` (`dev.joid.lib.bridge.render.matrix`) returns a copy of the projection whose clip-space depth runs from 0 to 1, for the APIs that use that range (Vulkan, Direct3D, Metal, Blaze3D on such a device).
 - JOID calls `ortho(0, width, height, 0, ...)`: the drawing has its origin at the top-left corner of the target.
 - `viewport(x, y, width, height)` is in pixels; `getViewportWidth()` and `getViewportHeight()` return it.
 - `translate` stays exact. `quantize(motionX, motionY)` rounds a motion already applied to whole window pixels: it translates by `grid.quantizeX(motionX) - motionX` and `grid.quantizeY(motionY) - motionY`, where `grid` is `getPixelGrid()`.
@@ -153,7 +153,7 @@ A null normal gets no diffuse light. The light does not depend on the scale of t
 | Pixel format | `ITexture.upload(int[] pixels, int width, int height)` receives ARGB `int`s (`0xAARRGGBB`), row by row from the top row; texture coordinate `(0, 0)` is the first pixel. |
 | Allocation | `allocate(width, height)` (re)creates the storage; `upload` fills the whole texture. Both return the texture. |
 | Mipmaps | Off by default. `mipmap(true)` works before allocation or after an upload, regenerates the levels at each upload, and `isMipmapped()` reports it. Linear filtering then uses the mipmaps. Take the levels from `MipmapChain.of(width, height, true)`: `getLevels()`, `getWidth(level)` and `getHeight(level)` give the storage to allocate, and `forEachStep((level, sourceWidth, sourceHeight, targetWidth, targetHeight) -> ...)` calls you once per level, in order, to copy level `level - 1` into `level` with a linear filter. Every backend then has the same levels. |
-| Binding | `texture(ITexture, TextureFilter, TextureWrap)` binds a texture with a filter (`NEAREST`, `LINEAR`) and a wrap (`REPEAT`, `CLAMP_TO_EDGE`, `CLAMP_TO_BORDER`). |
+| Binding | `texture(ITexture, TextureFilter, TextureWrap)` binds a texture with a filter (`NEAREST`, `LINEAR`) and a wrap (`REPEAT`, `CLAMP_TO_EDGE`, `CLAMP_TO_BORDER`). `TextureSampling.of(filter, wrap, mipmapped)` (`dev.joid.lib.bridge.render.texture`) is one of the `TextureSampling.values()` combinations, numbered by `getIndex()` for a table of sampler objects; `isMipmapFiltered()` tells whether the mipmaps are sampled: only a mipmapped texture with the `LINEAR` filter uses them. |
 | Reset | `resetTexture()` binds an opaque white texture, so drawing without a texture shows the plain color. With `RenderBridge`, `getState().getTexture()` is then `null`: draw with a white texture of your own. |
 | Deletion | `delete()` can be called more than once. |
 | Size | `getWidth()` and `getHeight()` return the allocated size. |

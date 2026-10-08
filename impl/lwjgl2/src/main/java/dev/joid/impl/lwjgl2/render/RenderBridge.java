@@ -29,6 +29,7 @@ import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.render.texture.TextureSampling;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
@@ -384,7 +385,7 @@ public final class RenderBridge implements IRenderBridge {
 
 	public static void applyTextureParameters(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {
 		final boolean linear = filter == TextureFilter.LINEAR;
-		final int minFilter = linear ? (mipmapped ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_LINEAR) : GL11.GL_NEAREST;
+		final int minFilter = TextureSampling.of(filter, wrap, mipmapped).isMipmapFiltered() ? GL11.GL_LINEAR_MIPMAP_LINEAR : linear ? GL11.GL_LINEAR : GL11.GL_NEAREST;
 		final int magFilter = linear ? GL11.GL_LINEAR : GL11.GL_NEAREST;
 		final int textureWrap = RenderBridge.wrap(wrap);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, minFilter);
