@@ -33,14 +33,12 @@ import dev.joid.impl.vulkan.render.pipeline.PipelineCache;
 import dev.joid.impl.vulkan.render.pipeline.PipelineKey;
 import dev.joid.impl.vulkan.render.shader.Shader;
 import dev.joid.impl.vulkan.render.shader.ShaderTranslator;
-import dev.joid.impl.vulkan.render.shader.uniform.SamplerUniform;
-import dev.joid.impl.vulkan.render.shader.uniform.UniformBlock;
-import dev.joid.impl.vulkan.render.shader.uniform.UniformMember;
 import dev.joid.impl.vulkan.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
@@ -270,7 +268,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
-		return Shader.create(this, ShaderTranslator.translateVertex(vertex, fragment), ShaderTranslator.translateFragment(vertex, fragment), blend);
+		return Shader.create(this, vertex, fragment, blend);
 	}
 
 	public void releaseHandle(final long handle) {
@@ -401,75 +399,42 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final Shader shader, final boolean color) {
-		final UniformMember projection = shader.getMemberMap().get("uProjectionMatrix");
-		if (projection != null) {
-			final float[] matrix = super.getProjection().getMatrix().clone();
-			for (int column = 0; column < 4; column++) {
-				matrix[column * 4 + 2] = 0.5F * matrix[column * 4 + 2] + 0.5F * matrix[column * 4 + 3];
-			}
-			projection.putMatrix(matrix);
+		final float[] projection = super.getProjection().getMatrix().clone();
+		for (int column = 0; column < 4; column++) {
+			projection[column * 4 + 2] = 0.5F * projection[column * 4 + 2] + 0.5F * projection[column * 4 + 3];
 		}
 
-		final UniformMember modelView = shader.getMemberMap().get("uModelViewMatrix");
-		if (modelView != null) {
-			modelView.putMatrix(super.getModelView().getMatrix());
-		}
-
-		final UniformMember normal = shader.getMemberMap().get("uNormalMatrix");
-		if (normal != null) {
-			normal.putMatrix(super.getModelView().getNormalMatrix());
-		}
-
-		final UniformMember lighting = shader.getMemberMap().get("uLighting");
-		if (lighting != null) {
-			lighting.putInt(state.isLighting() ? 1 : 0);
-		}
-
-		final UniformMember currentColor = shader.getMemberMap().get("joid_CurrentColor");
-		final UniformMember vertexColor = shader.getMemberMap().get("joid_VertexColor");
-		if (currentColor != null && vertexColor != null) {
-			currentColor.putFloats(state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
-			vertexColor.putInt(color ? 1 : 0);
-		}
-
-		final UniformMember alphaTest = shader.getMemberMap().get("joid_AlphaTest");
-		final UniformMember alphaThreshold = shader.getMemberMap().get("joid_AlphaThreshold");
-		if (alphaTest != null && alphaThreshold != null) {
-			alphaTest.putInt(state.isAlphaTest() ? 1 : 0);
-			alphaThreshold.putFloats(state.getAlphaThreshold());
-		}
+		shader.builtins(state, projection, super.getModelView())
+		.value(ShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha())
+		.value(ShaderTranslator.VERTEX_COLOR, color)
+		.pack();
 
 		final long previousBuffer = this.uniformStream.getBuffer().getBuffer();
-		final IntBuffer offsets = this.uploadBlocks(stack, shader);
+		final IntBuffer offsets = this.uploadBlock(stack, shader);
 		if (this.uniformStream.getBuffer().getBuffer() == previousBuffer) {
 			return offsets;
 		}
 
 		this.descriptorCache.invalidate(previousBuffer, this::dispose);
-		return this.uploadBlocks(stack, shader);
+		return this.uploadBlock(stack, shader);
 	}
 
-	private IntBuffer uploadBlocks(final MemoryStack stack, final Shader shader) {
-		final IntBuffer offsets = stack.mallocInt(shader.getBlocks().size());
-		for (final UniformBlock block : shader.getBlocks()) {
-			final ByteBuffer data = block.getData();
-			final long offset = this.uniformStream.allocate(data.capacity());
-			MemoryUtil.memCopy(MemoryUtil.memAddress(data), this.uniformStream.getBuffer().getAddress() + offset, data.capacity());
-			offsets.put((int) offset);
-		}
-		offsets.flip();
-		return offsets;
+	private IntBuffer uploadBlock(final MemoryStack stack, final Shader shader) {
+		final ByteBuffer data = shader.getBlock().getData();
+		final long offset = this.uniformStream.allocate(data.capacity());
+		MemoryUtil.memCopy(MemoryUtil.memAddress(data), this.uniformStream.getBuffer().getAddress() + offset, data.capacity());
+		return stack.ints((int) offset);
 	}
 
 	private long[] getImages(final RenderState state, final Shader shader) {
-		final long[] images = new long[shader.getSamplerBindings().size() * 2];
+		final long[] images = new long[shader.getSamplerMap().size() * 2];
 		int index = 0;
-		for (final String name : shader.getSamplerBindings().keySet()) {
-			final SamplerUniform sampler = shader.getSamplerMap().get(name);
+		for (final UniformSampler sampler : shader.getSamplerMap().values()) {
+			final Texture texture = (Texture) sampler.getTexture();
 			final Texture stateTexture = (Texture) state.getTexture();
-			if (sampler != null && sampler.getTexture() != null && sampler.getTexture().getView() != VK10.VK_NULL_HANDLE) {
-				images[index] = sampler.getTexture().getView();
-				images[index + 1] = this.getSampler(sampler.getFilter(), sampler.getWrap(), sampler.getTexture().isMipmapped());
+			if (texture != null && texture.getView() != VK10.VK_NULL_HANDLE) {
+				images[index] = texture.getView();
+				images[index + 1] = this.getSampler(sampler.getFilter(), sampler.getWrap(), texture.isMipmapped());
 			} else if (stateTexture != null && stateTexture.getView() != VK10.VK_NULL_HANDLE) {
 				images[index] = stateTexture.getView();
 				images[index + 1] = this.getSampler(state.getTextureFilter(), state.getTextureWrap(), stateTexture.isMipmapped());

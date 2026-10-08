@@ -50,7 +50,7 @@ public class WaveShader extends ShaderImpl {
 
 	public void bind(final float time) {
 		super.bind();
-		super.getShader().getFloatUniform("u_Time").setValue(time);
+		super.getShader().uniform("u_Time", time);
 	}
 
 }
@@ -145,39 +145,39 @@ What the draw calls send to the shader:
 
 ## Setting uniforms
 
-Get a uniform handle by name from the `IShader`, then set its value. In a `ShaderImpl` subclass:
+Set a uniform by name on the `IShader` with `uniform(name, values...)`. Each call returns the shader, so the values of a draw chain. In a `ShaderImpl` subclass:
 
 ```java
 public void bind(final Color tint, final float[] transform) {
 	super.bind();
-	super.getShader().getFloat4Uniform("u_Tint").setValue(tint.r, tint.g, tint.b, tint.a);
-	super.getShader().getFloatMatrixUniform("u_Transform").setValue(transform);
+	super.getShader()
+	.uniform("u_Tint", tint.r, tint.g, tint.b, tint.a)
+	.uniform("u_Transform", transform);
 }
 ```
 
-| Getter | Handle | `setValue(...)` | GLSL type |
-|---|---|---|---|
-| `getIntUniform(String)` | `IntUniform` | `int` | `int` |
-| `getBooleanUniform(String)` | `BooleanUniform` | `boolean` | `bool` |
-| `getFloatUniform(String)` | `FloatUniform` | `float` | `float` |
-| `getFloat2Uniform(String)` | `Float2Uniform` | `float, float` | `vec2` |
-| `getFloat3Uniform(String)` | `Float3Uniform` | `float, float, float` | `vec3` |
-| `getFloat4Uniform(String)` | `Float4Uniform` | `float, float, float, float` | `vec4` |
-| `getFloatArrayUniform(String)` | `FloatArrayUniform` | `float[]` | `float[N]` |
-| `getFloat4ArrayUniform(String)` | `Float4ArrayUniform` | `float[]`, 4 values per element; another length throws `IllegalArgumentException("Invalid array size")` | `vec4[N]` |
-| `getFloatMatrixUniform(String)` | `FloatMatrixUniform` | `float[]` of 4, 9 or 16 values, column by column; another length throws `IllegalArgumentException("Invalid matrix size")` | `mat2`, `mat3`, `mat4` |
-| `getSamplerUniform(String)` | `SamplerUniform` | `ITexture, TextureFilter, TextureWrap` | `sampler2D` |
+The shader knows the type of each uniform from its declaration, so one method takes every type:
 
-The handle types are in `dev.joid.lib.bridge.render.shader.uniform` and all extend `ShaderUniform`.
+| Call | GLSL type |
+|---|---|
+| `uniform(String, int)` | `int`, `bool` |
+| `uniform(String, boolean)` | `bool`, `int` (1 or 0) |
+| `uniform(String, float)` | `float` |
+| `uniform(String, float, float)` | `vec2` |
+| `uniform(String, float, float, float)` | `vec3` |
+| `uniform(String, float, float, float, float)` | `vec4` |
+| `uniform(String, float[])` | `mat2`, `mat3`, `mat4` (4, 9 or 16 values, column by column) |
+| `uniform(String, float[])` | `float[N]`, `vec2[N]`, `vec3[N]`, `vec4[N]`, `mat4[N]`... (whole elements, from the first one, at most `N`) |
 
 - A value is kept by the shader and sent at its next draw, on every backend: set it before or after `bind()`, even while another shader is bound.
-- A value stays until you change it: set only what changes between draws.
-- A name that the shader does not declare, or that the compiler removed because it is unused, is ignored.
+- A value stays until you change it: set only what changes between draws. A value equal to the current one sends nothing.
+- A value that does not fit the declaration throws an `IllegalArgumentException` that names it, such as `The uniform vec3 u_Tint cannot take 4 floats` or `The uniform float u_Radius cannot take an int`. Write float literals with `F`: `uniform("u_Radius", 4)` passes an int.
+- A name that the shader does not declare throws `IllegalArgumentException: The shader declares no uniform <name>`.
 
 ## Textures and samplers
 
 - A sampler that you do not assign reads the texture of the draw call: the one bound with `IRenderBridge.texture(...)` (for example by the resource drawing helpers, or the previous result in a [shader pass](pipeline.md#writing-a-shaderpass)), or a 1×1 white texture when none is bound. Most shaders declare a single `uniform sampler2D tex;` used this way.
-- To read another texture, assign it: `shader.getSamplerUniform("u_Mask").setValue(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);`. The texture can come from a loaded `Resource` (`getTexture()`, `null` until loaded) or from a `FrameBuffer` (`getHandle().getTexture()`).
+- To read another texture, assign it: `shader.sampler("u_Mask", texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);`. A name that the shader does not declare as a sampler throws `IllegalArgumentException: The shader declares no sampler <name>`. The texture can come from a loaded `Resource` (`getTexture()`, `null` until loaded) or from a `FrameBuffer` (`getHandle().getTexture()`).
 - `TextureFilter` is `NEAREST` or `LINEAR`; `TextureWrap` is `REPEAT`, `CLAMP_TO_EDGE` or `CLAMP_TO_BORDER` (`dev.joid.lib.bridge.render.texture`).
 
 ## JOID GLSL
@@ -230,14 +230,14 @@ Your code is compiled as GLSL 1.20 on LWJGL 2, as GLSL 3.30 core on LWJGL 3 and 
 | Backend | Generated header |
 |---|---|
 | LWJGL 2 | `#version 120`; `#define texture texture2D`; built-in attributes, matrices and `fragColor` defined to `gl_Vertex.xyz`, `gl_MultiTexCoord0.xy`, `gl_Color`, `gl_ProjectionMatrix`, `gl_ModelViewMatrix`, `gl_NormalMatrix`, `gl_FragColor`; `aNormal` read from the attribute `joid_Normal` divided by 127; `uniform bool uLighting`; your uniforms and samplers; your varyings as `varying` (without `flat`). |
-| LWJGL 3 | `#version 330 core`; built-in uniforms; built-in attributes at fixed locations (vertex stage); `out vec4 fragColor` (fragment stage); your uniforms and samplers; your varyings as `in` / `out`, with `flat`. |
-| Vulkan | `#version 450`; built-in attributes at fixed locations (vertex stage); `layout(location = 0) out vec4 fragColor` (fragment stage); one `std140` uniform block holding the built-in uniforms and every uniform of both stages; one binding per sampler; varyings at locations matched by name. |
+| LWJGL 3 | `#version 330 core`; one `std140` uniform block `JoidUniforms` holding the built-in uniforms and every uniform of both stages; built-in attributes at fixed locations (vertex stage); `layout(location = 0) out vec4 fragColor` (fragment stage); your samplers; your varyings as `in` / `out`, with `flat`. |
+| Vulkan | `#version 450`; the same `JoidUniforms` block, at binding 0; built-in attributes at fixed locations (vertex stage); `layout(location = 0) out vec4 fragColor` (fragment stage); one binding per sampler, from 1; varyings at locations matched by name. |
 
-On Vulkan, a uniform declared in both stages is a single value: give it the same type in both. A sampler declared in both stages shares one binding as well.
+A uniform declared in both stages is a single value: give it the same type in both. A sampler declared in both stages is a single sampler as well.
 
 ### Reserved names
 
-- Identifiers starting with `joid_` and the block names `JoidUniforms` and `JoidAlphaTest` are generated by the backends (`joid_main`, `joid_AlphaTest`, `joid_Normal`...): do not use them.
+- Identifiers starting with `joid_` and the block name `JoidUniforms` are generated by the backends (`joid_main`, `joid_AlphaTest`, `joid_Normal`...): do not use them.
 - `texture` is a macro on LWJGL 2: do not use it as a variable name.
 - On LWJGL 3 and Vulkan, the fragment shader's `void main()` is renamed `joid_main()` and wrapped by a `main()` that applies the alpha test of the render state (`IRenderBridge.alphaTest(...)`).
 
@@ -289,7 +289,8 @@ In practice, prefer the higher-level APIs: `DrawUtils.SHAPE.drawRoundedRect(...)
 | `unbind()` | Returns to the default shader and restores the blending mode saved by `bind()`. |
 | `isBound()` | Bound by `bind()` and not unbound yet. |
 | `isActive()` | Compiled and linked successfully. |
-| `getIntUniform`, `getBooleanUniform`, `getFloatUniform`, `getFloat2Uniform`, `getFloat3Uniform`, `getFloat4Uniform`, `getFloatArrayUniform`, `getFloat4ArrayUniform`, `getFloatMatrixUniform`, `getSamplerUniform` (`String name`) | Uniform handles, see [Setting uniforms](#setting-uniforms). |
+| `uniform(String name, int value)`, `uniform(String name, boolean value)`, `uniform(String name, float... values)` | Sets a uniform and returns the shader, see [Setting uniforms](#setting-uniforms). |
+| `sampler(String name, ITexture texture, TextureFilter filter, TextureWrap wrap)` | Assigns a texture to a sampler and returns the shader, see [Textures and samplers](#textures-and-samplers). |
 
 ### ShaderSource
 
@@ -331,7 +332,8 @@ Enum of the [built-in variables](#built-in-variables): `POSITION`, `TEXTURE_COOR
 
 - Restore the previous shader after `unbind()` (`render.shader(previous)`): `unbind()` alone selects the default shader and breaks an enclosing pass or effect.
 - `getShader()` is `null` when the shader failed to load: check `canDraw()` or `isAvailable()` before setting uniforms.
-- A uniform that the compiler optimized away is ignored without error: a value that seems to have no effect may be unused in the code.
+- A declared uniform that the code does not use takes its value without error: a value that seems to have no effect may be unused in the code.
+- `uniform("u_Radius", 4)` passes an int and throws on a `float` uniform: write `4F`.
 - GLSL that works on one backend can fail on another: keep to the features of GLSL 1.20 and test on every backend you ship.
 
 ## See also

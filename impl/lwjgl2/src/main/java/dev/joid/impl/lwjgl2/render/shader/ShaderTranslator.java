@@ -9,9 +9,28 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShaderTranslator {
+public final class ShaderTranslator extends dev.joid.lib.bridge.render.shader.source.ShaderTranslator {
 
-	public static @NonNull String translate(final @NonNull ShaderSource source) {
+	public static @NonNull ShaderTranslator create() {
+		return new ShaderTranslator();
+	}
+
+	@Override
+	public @NonNull String translateVertex(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
+		return ShaderTranslator.translate(vertex);
+	}
+
+	@Override
+	public @NonNull String translateFragment(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
+		return ShaderTranslator.translate(fragment);
+	}
+
+	@Override
+	protected boolean isUniform(final @NonNull ShaderBuiltin builtin) {
+		return builtin == ShaderBuiltin.LIGHTING;
+	}
+
+	private static String translate(final ShaderSource source) {
 		final StringBuilder builder = new StringBuilder("#version 120\n\n#define texture texture2D\n");
 		for (final ShaderBuiltin builtin : source.getBuiltins()) {
 			if (builtin == ShaderBuiltin.LIGHTING) {

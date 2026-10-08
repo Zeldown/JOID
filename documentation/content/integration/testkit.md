@@ -119,6 +119,8 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 | `drawsWithTheCurrentColor` | Vertices without color take the current color. |
 | `compilesCoreShaders` | Every core shader of `/assets/shaders` compiles: `isActive()` is `true`. |
 | `appliesTheUniformsSetBeforeTheShaderIsBound` | A uniform set before `bind()` applies to the next draw of that shader. |
+| `appliesEveryUniformType` | `float`, `vec2`, `vec3`, `vec4`, `int`, `bool`, `mat3`, `float[3]` and `vec4[2]` uniforms reach the shader with their values. |
+| `samplesTheTextureOfASampler` | A texture assigned with `sampler(...)` is the one the shader samples. |
 | `readsTheLightingOfEachDraw` | `uLighting` follows a `lighting(...)` call made between two draws of a bound shader. |
 | `litsAFaceTheSameAtAnyScale` | A face turned to the light is lit above the ambient light, and gives the same pixel at scale 1 and 100. |
 | `disablesTheAlphaTestAtZero` | A fully transparent fragment is discarded under `alphaTest(0.5F)` and written again under `alphaTest(0F)`. |

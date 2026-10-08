@@ -1,8 +1,6 @@
 package dev.joid.lib.shader.impl;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.FloatUniform;
 import lombok.NonNull;
 
 public class BlurShader extends ShaderImpl {
@@ -20,14 +18,10 @@ public class BlurShader extends ShaderImpl {
 	public void bind(final float radius, final float dirX, final float dirY, final float texelW, final float texelH) {
 		BlurShader.INSTANCE.bind();
 
-		final FloatUniform radiusUniform = BlurShader.INSTANCE.shader.getFloatUniform("u_Radius");
-		radiusUniform.setValue(radius);
-
-		final Float2Uniform directionUniform = BlurShader.INSTANCE.shader.getFloat2Uniform("u_Direction");
-		directionUniform.setValue(dirX, dirY);
-
-		final Float2Uniform texelUniform = BlurShader.INSTANCE.shader.getFloat2Uniform("u_TexelSize");
-		texelUniform.setValue(texelW, texelH);
+		BlurShader.INSTANCE.shader
+		.uniform("u_Radius", radius)
+		.uniform("u_Direction", dirX, dirY)
+		.uniform("u_TexelSize", texelW, texelH);
 	}
 
 }

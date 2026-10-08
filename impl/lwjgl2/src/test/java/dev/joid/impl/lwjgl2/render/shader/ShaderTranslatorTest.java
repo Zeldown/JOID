@@ -1,10 +1,13 @@
 package dev.joid.impl.lwjgl2.render.shader;
 
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
 import dev.joid.test.shader.CoreShaders;
 
 public class ShaderTranslatorTest {
@@ -15,14 +18,14 @@ public class ShaderTranslatorTest {
 	@Test
 	public void translatesCoreShaders() {
 		for (final String name : CoreShaders.getNames()) {
-			Assert.assertTrue(name, ShaderTranslator.translate(CoreShaders.read(name, ShaderStage.VERTEX)).startsWith("#version 120\n"));
-			Assert.assertTrue(name, ShaderTranslator.translate(CoreShaders.read(name, ShaderStage.FRAGMENT)).startsWith("#version 120\n"));
+			Assert.assertTrue(name, ShaderTranslatorTest.translate(CoreShaders.read(name, ShaderStage.VERTEX)).startsWith("#version 120\n"));
+			Assert.assertTrue(name, ShaderTranslatorTest.translate(CoreShaders.read(name, ShaderStage.FRAGMENT)).startsWith("#version 120\n"));
 		}
 	}
 
 	@Test
 	public void declaresFragmentInputs() {
-		final String fragment = ShaderTranslator.translate(ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT));
+		final String fragment = ShaderTranslatorTest.translate(ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT));
 		Assert.assertTrue(fragment.contains("#define texture texture2D\n"));
 		Assert.assertTrue(fragment.contains("#define fragColor gl_FragColor\n"));
 		Assert.assertTrue(fragment.contains("uniform bool uLighting;\n"));
@@ -34,7 +37,7 @@ public class ShaderTranslatorTest {
 
 	@Test
 	public void mapsBuiltinsToFixedPipeline() {
-		final String vertex = ShaderTranslator.translate(ShaderSource.parse(ShaderStage.VERTEX, ShaderTranslatorTest.VERTEX));
+		final String vertex = ShaderTranslatorTest.translate(ShaderSource.parse(ShaderStage.VERTEX, ShaderTranslatorTest.VERTEX));
 		Assert.assertTrue(vertex.startsWith("#version 120\n"));
 		Assert.assertTrue(vertex.contains("#define aPosition gl_Vertex.xyz\n"));
 		Assert.assertTrue(vertex.contains("#define aTexCoord gl_MultiTexCoord0.xy\n"));
@@ -46,7 +49,7 @@ public class ShaderTranslatorTest {
 
 	@Test
 	public void readsTheExactByteNormalsLikeTheOtherBackends() {
-		final String vertex = ShaderTranslator.translate(CoreShaders.read("fixed", ShaderStage.VERTEX));
+		final String vertex = ShaderTranslatorTest.translate(CoreShaders.read("fixed", ShaderStage.VERTEX));
 		Assert.assertTrue(vertex.contains("attribute vec3 joid_Normal;\n#define aNormal (joid_Normal / 127.0)\n"));
 		Assert.assertEquals(6, Shader.NORMAL_LOCATION);
 	}
@@ -54,7 +57,20 @@ public class ShaderTranslatorTest {
 	@Test
 	public void keepsBodyAfterLineDirective() {
 		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT);
-		Assert.assertTrue(ShaderTranslator.translate(source).endsWith("#line 0\n" + source.getBody()));
+		Assert.assertTrue(ShaderTranslatorTest.translate(source).endsWith("#line 0\n" + source.getBody()));
+	}
+
+	@Test
+	public void declaresOnlyTheLightingAmongTheBuiltinUniforms() {
+		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, ShaderTranslatorTest.VERTEX);
+		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTranslatorTest.FRAGMENT);
+		Assert.assertEquals("uLighting u_Radius", ShaderTranslator.create().getUniforms(vertex, fragment).stream().map(ShaderVariable::getName).collect(Collectors.joining(" ")));
+	}
+
+	private static String translate(final ShaderSource source) {
+		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "");
+		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, "");
+		return source.getStage() == ShaderStage.VERTEX ? ShaderTranslator.create().translateVertex(source, fragment) : ShaderTranslator.create().translateFragment(vertex, source);
 	}
 
 }

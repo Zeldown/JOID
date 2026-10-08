@@ -10,8 +10,6 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
-import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.FloatUniform;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
@@ -293,8 +291,9 @@ public final class Tessellator {
 		Tessellator.byteBuffer.limit(segments * 6 * VertexBuffer.STRIDE);
 
 		LineShader.SHADER.bind();
-		LineShader.WIDTH.setValue(render.getLineWidth());
-		LineShader.VIEWPORT.setValue(render.getViewportWidth(), render.getViewportHeight());
+		LineShader.SHADER
+		.uniform("u_Width", render.getLineWidth())
+		.uniform("u_Viewport", render.getViewportWidth(), render.getViewportHeight());
 		render.draw(DrawMode.TRIANGLES, VertexBuffer.create(Tessellator.byteBuffer, segments * 6, true, this.hasColor, true));
 		LineShader.SHADER.unbind();
 	}
@@ -341,9 +340,7 @@ public final class Tessellator {
 
 	private static final class LineShader {
 
-		private static final IShader       SHADER   = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, Tessellator.class.getResourceAsStream("/assets/shaders/line/line.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, Tessellator.class.getResourceAsStream("/assets/shaders/line/line.fsh")), BlendState.NORMAL);
-		private static final FloatUniform  WIDTH    = LineShader.SHADER.getFloatUniform("u_Width");
-		private static final Float2Uniform VIEWPORT = LineShader.SHADER.getFloat2Uniform("u_Viewport");
+		private static final IShader SHADER = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, Tessellator.class.getResourceAsStream("/assets/shaders/line/line.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, Tessellator.class.getResourceAsStream("/assets/shaders/line/line.fsh")), BlendState.NORMAL);
 
 	}
 

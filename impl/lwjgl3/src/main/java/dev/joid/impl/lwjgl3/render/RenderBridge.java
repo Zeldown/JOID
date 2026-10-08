@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL33C;
 
 import dev.joid.impl.lwjgl3.render.framebuffer.FrameBuffer;
 import dev.joid.impl.lwjgl3.render.shader.Shader;
-import dev.joid.impl.lwjgl3.render.shader.ShaderTranslator;
 import dev.joid.impl.lwjgl3.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -123,7 +122,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
-		return Shader.create(this, ShaderTranslator.translate(vertex), ShaderTranslator.translate(fragment), blend);
+		return Shader.create(this, vertex, fragment, blend);
 	}
 
 	public int getSampler(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {

@@ -1,10 +1,6 @@
 package dev.joid.lib.shader.impl;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.Float4Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.FloatUniform;
-import dev.joid.lib.bridge.render.shader.uniform.IntUniform;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.color.ColorGradient;
 import lombok.NonNull;
@@ -24,47 +20,26 @@ public class BorderShader extends ShaderImpl {
 	public void bind(final float borderWidth, final @NonNull Color borderColor, final float texelW, final float texelH, final boolean fill, final int mode, final float rectX1, final float rectY1, final float rectX2, final float rectY2) {
 		BorderShader.INSTANCE.bind();
 
-		final FloatUniform widthUniform = BorderShader.INSTANCE.shader.getFloatUniform("u_BorderWidth");
-		widthUniform.setValue(borderWidth);
-
-		final Float4Uniform colorUniform = BorderShader.INSTANCE.shader.getFloat4Uniform("u_BorderColor");
-		colorUniform.setValue(borderColor.r, borderColor.g, borderColor.b, borderColor.a);
-
-		final Float2Uniform texelUniform = BorderShader.INSTANCE.shader.getFloat2Uniform("u_TexelSize");
-		texelUniform.setValue(texelW, texelH);
-
-		final IntUniform fillUniform = BorderShader.INSTANCE.shader.getIntUniform("u_Fill");
-		fillUniform.setValue(fill ? 1 : 0);
-
-		final IntUniform modeUniform = BorderShader.INSTANCE.shader.getIntUniform("u_Mode");
-		modeUniform.setValue(mode);
-
-		final Float4Uniform rectUniform = BorderShader.INSTANCE.shader.getFloat4Uniform("u_Rect");
-		rectUniform.setValue(rectX1, rectY1, rectX2, rectY2);
+		BorderShader.INSTANCE.shader
+		.uniform("u_BorderWidth", borderWidth)
+		.uniform("u_BorderColor", borderColor.r, borderColor.g, borderColor.b, borderColor.a)
+		.uniform("u_TexelSize", texelW, texelH)
+		.uniform("u_Fill", fill ? 1 : 0)
+		.uniform("u_Mode", mode)
+		.uniform("u_Rect", rectX1, rectY1, rectX2, rectY2);
 
 		if (borderColor.isGradient()) {
 			final ColorGradient gradient = borderColor.gradient;
 
-			final IntUniform hasGradientUniform = BorderShader.INSTANCE.shader.getIntUniform("u_HasGradient");
-			hasGradientUniform.setValue(1);
-
-			final Float4Uniform startUniform = BorderShader.INSTANCE.shader.getFloat4Uniform("u_GradientStart");
-			startUniform.setValue(gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a);
-
-			final Float4Uniform endUniform = BorderShader.INSTANCE.shader.getFloat4Uniform("u_GradientEnd");
-			endUniform.setValue(gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a);
-
-			final Float2Uniform startPosUniform = BorderShader.INSTANCE.shader.getFloat2Uniform("u_GradientStartPos");
-			startPosUniform.setValue(gradient.getDirection().x, gradient.getDirection().y);
-
-			final Float2Uniform endPosUniform = BorderShader.INSTANCE.shader.getFloat2Uniform("u_GradientEndPos");
-			endPosUniform.setValue(gradient.getDirection().z, gradient.getDirection().w);
-
-			final Float4Uniform canvasUniform = BorderShader.INSTANCE.shader.getFloat4Uniform("u_GradientCanvas");
-			canvasUniform.setValue(rectX1, rectY1, rectX2, rectY2);
+			BorderShader.INSTANCE.shader
+			.uniform("u_HasGradient", 1)
+			.uniform("u_GradientStart", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
+			.uniform("u_GradientEnd", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
+			.uniform("u_GradientStartPos", gradient.getDirection().x, gradient.getDirection().y)
+			.uniform("u_GradientEndPos", gradient.getDirection().z, gradient.getDirection().w)
+			.uniform("u_GradientCanvas", rectX1, rectY1, rectX2, rectY2);
 		} else {
-			final IntUniform hasGradientUniform = BorderShader.INSTANCE.shader.getIntUniform("u_HasGradient");
-			hasGradientUniform.setValue(0);
+			BorderShader.INSTANCE.shader.uniform("u_HasGradient", 0);
 		}
 	}
 

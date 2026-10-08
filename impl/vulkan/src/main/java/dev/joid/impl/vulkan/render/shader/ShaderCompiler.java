@@ -12,8 +12,6 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderCompiler {
 
-	private static final String ALPHA_TEST_MAIN = "\nlayout(std140, binding = 15) uniform JoidAlphaTest {\n\tint joid_AlphaTest;\n\tfloat joid_AlphaThreshold;\n};\n\nvoid main() {\n\tjoid_main();\n\tif (joid_AlphaTest != 0 && fragColor.a <= joid_AlphaThreshold) {\n\t\tdiscard;\n\t}\n}\n";
-
 	private static long compiler;
 
 	public static @NonNull ByteBuffer compileVertex(final @NonNull String source) {
@@ -21,8 +19,7 @@ public final class ShaderCompiler {
 	}
 
 	public static @NonNull ByteBuffer compileFragment(final @NonNull String source) {
-		final String alphaTestedSource = source.replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()") + ShaderCompiler.ALPHA_TEST_MAIN;
-		return ShaderCompiler.compile(alphaTestedSource, Shaderc.shaderc_fragment_shader, "fragment");
+		return ShaderCompiler.compile(source, Shaderc.shaderc_fragment_shader, "fragment");
 	}
 
 	private static ByteBuffer compile(final String source, final int kind, final String name) {

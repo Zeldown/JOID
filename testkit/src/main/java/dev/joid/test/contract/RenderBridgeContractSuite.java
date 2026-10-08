@@ -95,7 +95,47 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void appliesTheUniformsSetBeforeTheShaderIsBound() {
 		final IShader shader = RenderBridgeContractSuite.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
-		shader.getFloat4Uniform("tint").setValue(0F, 1F, 0F, 1F);
+		shader.uniform("tint", 0F, 1F, 0F, 1F);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			shader.bind();
+			try {
+				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			} finally {
+				shader.unbind();
+			}
+		});
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+	}
+
+	@Test
+	public void appliesEveryUniformType() {
+		final IShader shader = RenderBridgeContractSuite.shader("uniform float u_Float;\nuniform vec2 u_Vec2;\nuniform vec3 u_Vec3;\nuniform vec4 u_Vec4;\nuniform int u_Int;\nuniform bool u_Bool;\nuniform mat3 u_Matrix;\nuniform float u_Floats[3];\nuniform vec4 u_Colors[2];\n\nvoid main() {\n    bool valid = u_Float == 0.5 && u_Vec2 == vec2(1.0, 2.0) && u_Vec3 == vec3(3.0, 4.0, 5.0) && u_Vec4 == vec4(6.0, 7.0, 8.0, 9.0) && u_Int == 3 && u_Bool && u_Matrix[1][2] == 6.0 && u_Matrix[2][0] == 7.0 && u_Floats[2] == 12.0;\n    fragColor = valid ? u_Colors[1] : u_Colors[0];\n}");
+		shader
+		.uniform("u_Float", 0.5F)
+		.uniform("u_Vec2", 1F, 2F)
+		.uniform("u_Vec3", 3F, 4F, 5F)
+		.uniform("u_Vec4", 6F, 7F, 8F, 9F)
+		.uniform("u_Int", 3)
+		.uniform("u_Bool", true)
+		.uniform("u_Matrix", 1F, 2F, 3F, 4F, 5F, 6F, 7F, 8F, 9F)
+		.uniform("u_Floats", 10F, 11F, 12F)
+		.uniform("u_Colors", 1F, 0F, 0F, 1F, 0F, 1F, 0F, 1F);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			shader.bind();
+			try {
+				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			} finally {
+				shader.unbind();
+			}
+		});
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+	}
+
+	@Test
+	public void samplesTheTextureOfASampler() {
+		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.GREEN}, 1, 1);
+		final IShader shader = RenderBridgeContractSuite.shader("uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}");
+		shader.sampler("u_Mask", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			shader.bind();
 			try {

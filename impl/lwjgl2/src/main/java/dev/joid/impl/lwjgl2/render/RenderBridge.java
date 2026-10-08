@@ -15,7 +15,6 @@ import org.lwjgl.opengl.GL30;
 
 import dev.joid.impl.lwjgl2.render.framebuffer.FrameBuffer;
 import dev.joid.impl.lwjgl2.render.shader.Shader;
-import dev.joid.impl.lwjgl2.render.shader.ShaderTranslator;
 import dev.joid.impl.lwjgl2.render.state.StateSnapshot;
 import dev.joid.impl.lwjgl2.render.texture.Texture;
 import dev.joid.lib.bridge.render.IRenderBridge;
@@ -359,7 +358,7 @@ public final class RenderBridge implements IRenderBridge {
 
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
-		return Shader.create(ShaderTranslator.translate(vertex), ShaderTranslator.translate(fragment), blend);
+		return Shader.create(vertex, fragment, blend);
 	}
 
 	private @NonNull Shader getFixedShader() {

@@ -6,10 +6,6 @@ import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
-import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.Float4Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.FloatUniform;
-import dev.joid.lib.bridge.render.shader.uniform.IntUniform;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.DrawMode;
@@ -124,32 +120,34 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 	private void bindColor(final @NonNull Color color) {
 		this.color = color;
 		final Color current = color.update();
-		MsdfShader.COLOR.setValue(current.r, current.g, current.b, current.a);
+		MsdfShader.SHADER.uniform("color", current.r, current.g, current.b, current.a);
 		if (!current.isGradient()) {
-			MsdfShader.HAS_GRADIENT.setValue(0);
+			MsdfShader.SHADER.uniform("u_HasGradient", 0);
 			return;
 		}
 
 		final ColorGradient gradient = current.gradient;
-		MsdfShader.HAS_GRADIENT.setValue(1);
-		MsdfShader.GRADIENT_START.setValue(gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a);
-		MsdfShader.GRADIENT_END.setValue(gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a);
-		MsdfShader.GRADIENT_START_POS.setValue(gradient.getDirection().x, gradient.getDirection().y);
-		MsdfShader.GRADIENT_END_POS.setValue(gradient.getDirection().z, gradient.getDirection().w);
-		MsdfShader.GRADIENT_CANVAS.setValue((float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
+		MsdfShader.SHADER
+		.uniform("u_HasGradient", 1)
+		.uniform("u_GradientStart", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
+		.uniform("u_GradientEnd", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
+		.uniform("u_GradientStartPos", gradient.getDirection().x, gradient.getDirection().y)
+		.uniform("u_GradientEndPos", gradient.getDirection().z, gradient.getDirection().w)
+		.uniform("u_GradientCanvas", (float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
 	}
 
 	private void bindFace(final @NonNull MsdfFontFace face) {
 		this.face = face;
 		face.getTexture().bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
-		MsdfShader.TEXEL.setValue(1F / face.getAtlas().getWidth(), 1F / face.getAtlas().getHeight());
-		MsdfShader.PX_RANGE.setValue(face.getAtlas().getDistanceRange());
+		MsdfShader.SHADER
+		.uniform("texel", 1F / face.getAtlas().getWidth(), 1F / face.getAtlas().getHeight())
+		.uniform("pxRange", face.getAtlas().getDistanceRange());
 	}
 
 	private void bindPixel(final float pixelX, final float pixelY) {
 		this.pixelX = pixelX;
 		this.pixelY = pixelY;
-		MsdfShader.PIXEL.setValue(pixelX, pixelY);
+		MsdfShader.SHADER.uniform("pixel", pixelX, pixelY);
 	}
 
 	private double getVerticalSize(final @NonNull MsdfFontFace face, final double size) {
@@ -160,17 +158,6 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 	private static final class MsdfShader {
 
 		private static final IShader SHADER = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, JOID.class.getResourceAsStream("/assets/shaders/font/font.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, JOID.class.getResourceAsStream("/assets/shaders/font/font.fsh")), BlendState.NORMAL);
-
-		private static final Float2Uniform TEXEL              = MsdfShader.SHADER.getFloat2Uniform("texel");
-		private static final Float2Uniform PIXEL              = MsdfShader.SHADER.getFloat2Uniform("pixel");
-		private static final Float4Uniform COLOR              = MsdfShader.SHADER.getFloat4Uniform("color");
-		private static final FloatUniform  PX_RANGE           = MsdfShader.SHADER.getFloatUniform("pxRange");
-		private static final IntUniform    HAS_GRADIENT       = MsdfShader.SHADER.getIntUniform("u_HasGradient");
-		private static final Float4Uniform GRADIENT_END       = MsdfShader.SHADER.getFloat4Uniform("u_GradientEnd");
-		private static final Float4Uniform GRADIENT_START     = MsdfShader.SHADER.getFloat4Uniform("u_GradientStart");
-		private static final Float4Uniform GRADIENT_CANVAS    = MsdfShader.SHADER.getFloat4Uniform("u_GradientCanvas");
-		private static final Float2Uniform GRADIENT_END_POS   = MsdfShader.SHADER.getFloat2Uniform("u_GradientEndPos");
-		private static final Float2Uniform GRADIENT_START_POS = MsdfShader.SHADER.getFloat2Uniform("u_GradientStartPos");
 
 	}
 

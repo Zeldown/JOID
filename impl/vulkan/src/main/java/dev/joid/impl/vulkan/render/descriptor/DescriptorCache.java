@@ -20,7 +20,7 @@ import org.lwjgl.vulkan.VkWriteDescriptorSet;
 
 import dev.joid.impl.vulkan.render.Context;
 import dev.joid.impl.vulkan.render.shader.Shader;
-import dev.joid.impl.vulkan.render.shader.uniform.UniformBlock;
+import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import lombok.NonNull;
 
 public final class DescriptorCache {
@@ -102,23 +102,21 @@ public final class DescriptorCache {
 
 	private void write(final long set, final Shader shader, final long uniformBuffer, final long[] images) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkWriteDescriptorSet.Buffer writes = VkWriteDescriptorSet.calloc(shader.getBlocks().size() + shader.getSamplerBindings().size(), stack);
-			for (final UniformBlock block : shader.getBlocks()) {
-				writes.get()
-						.sType$Default()
-						.dstSet(set)
-						.dstBinding(block.getBinding())
-						.descriptorType(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC)
-						.pBufferInfo(VkDescriptorBufferInfo.calloc(1, stack).buffer(uniformBuffer).offset(0L).range(block.getData().capacity()))
-						.descriptorCount(1);
-			}
+			final VkWriteDescriptorSet.Buffer writes = VkWriteDescriptorSet.calloc(shader.getSamplerMap().size() + 1, stack);
+			writes.get()
+					.sType$Default()
+					.dstSet(set)
+					.dstBinding(0)
+					.descriptorType(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC)
+					.pBufferInfo(VkDescriptorBufferInfo.calloc(1, stack).buffer(uniformBuffer).offset(0L).range(shader.getBlock().getSize()))
+					.descriptorCount(1);
 
 			int index = 0;
-			for (final int binding : shader.getSamplerBindings().values()) {
+			for (final UniformSampler sampler : shader.getSamplerMap().values()) {
 				writes.get()
 						.sType$Default()
 						.dstSet(set)
-						.dstBinding(binding)
+						.dstBinding(sampler.getUnit())
 						.descriptorType(VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 						.pImageInfo(VkDescriptorImageInfo.calloc(1, stack).imageView(images[index]).sampler(images[index + 1]).imageLayout(VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL))
 						.descriptorCount(1);

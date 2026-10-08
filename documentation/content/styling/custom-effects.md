@@ -119,7 +119,7 @@ public final class GrayscaleShader extends ShaderImpl {
 
 	public void bind(final float amount) {
 		super.bind();
-		super.shader.getFloatUniform("u_Amount").setValue(amount);
+		super.shader.uniform("u_Amount", amount);
 	}
 
 }

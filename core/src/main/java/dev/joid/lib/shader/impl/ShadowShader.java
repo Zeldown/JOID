@@ -4,8 +4,6 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.bridge.render.shader.uniform.Float4Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.FloatUniform;
 import lombok.NonNull;
 
 public class ShadowShader extends ShaderImpl {
@@ -38,14 +36,10 @@ public class ShadowShader extends ShaderImpl {
 
 	public void bind(final float radius, final float blur, final float x1, final float y1, final float x2, final float y2) {
 		ShadowShader.INSTANCE.bind();
-		final FloatUniform radiusUniform = ShadowShader.INSTANCE.shader.getFloatUniform("u_Radius");
-		radiusUniform.setValue(radius);
-
-		final FloatUniform blurUniform = ShadowShader.INSTANCE.shader.getFloatUniform("u_Blur");
-		blurUniform.setValue(blur);
-
-		final Float4Uniform boxUniform = ShadowShader.INSTANCE.shader.getFloat4Uniform("u_Box");
-		boxUniform.setValue(x1, y1, x2, y2);
+		ShadowShader.INSTANCE.shader
+		.uniform("u_Radius", radius)
+		.uniform("u_Blur", blur)
+		.uniform("u_Box", x1, y1, x2, y2);
 	}
 
 }

@@ -205,10 +205,52 @@ The reference backends generate:
 | Backend | Language | Declarations |
 |---|---|---|
 | LWJGL 2 | GLSL 1.20 | `#define` of the built-ins onto `gl_Vertex.xyz`, `gl_MultiTexCoord0.xy`, `gl_Color`, `gl_ProjectionMatrix`, `gl_ModelViewMatrix`, `gl_NormalMatrix` and `gl_FragColor`; `aNormal` as `joid_Normal / 127.0` with `joid_Normal` an attribute at location 6; `#define texture texture2D`, `uniform bool uLighting`, varyings as `varying`. |
-| LWJGL 3 | GLSL 3.30 core | Attributes at locations 0 (position), 1 (texture coordinates), 2 (color), 3 (normal), built-in uniforms, `in`/`out` varyings keeping `flat`, `out vec4 fragColor`. |
-| Vulkan | GLSL 4.50 | The same attribute locations, every uniform of both stages in one `std140` block at binding 0, samplers from binding 1, varying locations shared by both stages, `layout(location = 0) out vec4 fragColor`; compiled to SPIR-V with shaderc. |
+| LWJGL 3 | GLSL 3.30 core | `BlockShaderTranslator` as is: attributes at locations 0 (position), 1 (texture coordinates), 2 (color), 3 (normal), every uniform of both stages in the `std140` block `JoidUniforms`, `in`/`out` varyings keeping `flat`, `layout(location = 0) out vec4 fragColor`. |
+| Vulkan | GLSL 4.50 | A `BlockShaderTranslator` with the block at binding 0, samplers from binding 1 and varying locations shared by both stages; compiled to SPIR-V with shaderc. |
 
 Each generated header ends with a `#line` directive, so compiler errors point to the lines of the original file.
+
+### Uniforms in the core
+
+The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`), which implements `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources:
+
+- a `UniformBlock` (`dev.joid.lib.bridge.render.shader.uniform`): the uniforms of both stages, each a `UniformMember` with its `UniformType`, its array length, its values and its `std140` offset and strides;
+- one `UniformSampler` per sampler of both stages, numbered from 1 in the order of the stages (`getUnit()`), with the texture, filter and wrap given to `sampler(...)`.
+
+A `ShaderTranslator` (`dev.joid.lib.bridge.render.shader.source`) turns the two sources into the code of the backend and lists what the shader declares; its subclass `BlockShaderTranslator` writes the uniforms as one `std140` block and wraps the fragment `main` with the alpha test.
+
+The LWJGL 3 shader is created this way; its private constructor passes the block and the samplers to `super(block, samplers)`:
+
+```java
+public static @NonNull Shader create(final RenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
+	final BlockShaderTranslator translator = BlockShaderTranslator.create();
+	final int program = GL20C.glCreateProgram();
+	final boolean active = Shader.link(program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
+	return new Shader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
+}
+```
+
+| Member | Use |
+|---|---|
+| `ShaderTranslator.translateVertex(vertex, fragment)`, `translateFragment(vertex, fragment)` | The code of each stage. |
+| `ShaderTranslator.createBlock(vertex, fragment)` | The `UniformBlock` of the declared uniforms: the built-in uniforms the code uses, the backend's own uniforms, then the uniforms of both stages, each once. |
+| `ShaderTranslator.getSamplers(vertex, fragment)` | The samplers of both stages, each once, for the `Shader` constructor. |
+| `ShaderTranslator.isUniform(ShaderBuiltin)`, `getInternals(vertex, fragment)` | Hooks: the built-ins the backend declares as uniforms (all by default), the backend's own uniforms (the alpha test in `BlockShaderTranslator`). |
+| `BlockShaderTranslator.getVersion()`, `getLayout()`, `getMain()`, `declareAttribute`, `declareSampler`, `declareVarying` | Hooks of the block translator: the `#version` line, the layout of the block (`std140`), the wrapping `main`, and one declaration line each. |
+| `Shader.builtins(RenderState state, float[] projection, MatrixStack modelView)` | Writes the built-in uniforms and the alpha test of a draw, and returns the block. |
+| `UniformBlock.value(name, ...)` | Writes a uniform the shader may not declare (ignored when absent), such as a backend uniform. |
+| `UniformBlock.pack()` | Copies the changed members into `getData()`, the `std140` image of the block, and returns whether anything changed. |
+| `UniformBlock.upload(Consumer<UniformMember>)` | Hands each changed member to the consumer, for APIs without uniform blocks. |
+
+At each draw, the backend writes the built-ins and sends what changed:
+
+```java
+if (super.builtins(state, projection, modelView).pack()) {
+	GL15C.glBufferSubData(GL31C.GL_UNIFORM_BUFFER, 0L, super.getBlock().getData());
+}
+```
+
+The reference backends send the block this way: LWJGL 3 into a uniform buffer bound at binding 0, Vulkan into its uniform stream at each draw. LWJGL 2 has no uniform blocks: it keeps its own GLSL 1.20 translator (`isUniform` keeps only `uLighting`) and sends each changed member with `glUniform*` through `upload(...)`, by its `UniformType`. A member's values are tightly packed in `getValues()` (column by column for a matrix), ready for these calls.
 
 ### IShader
 
@@ -218,9 +260,9 @@ Each generated header ends with a `#line` directive, so compiler errors point to
 | `unbind()` | Returns to no shader and restores the previous blend state. |
 | `isBound()` | Whether the shader is bound. |
 | `isActive()` | Whether it compiled and linked. The reference backends print the compiler or linker log of a shader that fails to `System.err`. |
-| `getIntUniform(name)`, `getFloatUniform`, `getFloat2Uniform`, `getFloat3Uniform`, `getFloat4Uniform`, `getBooleanUniform`, `getSamplerUniform`, `getFloatArrayUniform`, `getFloat4ArrayUniform`, `getFloatMatrixUniform` | Uniform handles (`dev.joid.lib.bridge.render.shader.uniform`), each with a `setValue(...)`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw; a name the shader does not use is ignored. |
+| `uniform(name, ...)`, `sampler(name, texture, filter, wrap)` | Implemented by the core `Shader`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw. |
 
-`SamplerUniform.setValue(ITexture, TextureFilter, TextureWrap)` binds a texture to a sampler. A sampler that is never set samples the texture bound with `texture(...)`: the reference backends bind it to texture unit 0 and give the set samplers the next units. The emulated backends also wrap the fragment `main` to apply the alpha test of the render state.
+A sampler that is never set samples the texture bound with `texture(...)`: the reference backends bind it to texture unit 0 and give the set samplers their unit, from 1. The block-based backends also wrap the fragment `main` to apply the alpha test of the render state.
 
 ## Window and audio bridges
 
@@ -244,6 +286,7 @@ Put `SnapshotBackend` in the `snapshot` package of the main sources, as the offi
 - `alphaTest(0F)` must turn the alpha test off, not keep fully transparent fragments out: UIs reset the state with it at every frame.
 - Read the normals as signed bytes divided by 127, and normalize the transformed normal before lighting, or the shading changes with the size of the model.
 - Apply uniforms at the draw, not at `bind()`: JOID sets values before binding a shader.
+- A `std140` block has the same layout everywhere: send `UniformBlock.getData()` as is, never a layout read back from the driver.
 - Keep the demo window in `src/demo/java`: a class of `src/main/java` that references `dev.joid.demo` fails in the `prod` jar.
 
 ## See also

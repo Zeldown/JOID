@@ -1,58 +1,65 @@
 package dev.joid.impl.lwjgl3.render.shader;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL13C;
+import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL20C;
+import org.lwjgl.opengl.GL31C;
+import org.lwjgl.opengl.GL33C;
 
 import dev.joid.impl.lwjgl3.render.RenderBridge;
-import dev.joid.impl.lwjgl3.render.shader.uniform.BooleanUniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.Float2Uniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.Float3Uniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.Float4ArrayUniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.Float4Uniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.FloatArrayUniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.FloatMatrixUniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.FloatUniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.IntUniform;
-import dev.joid.impl.lwjgl3.render.shader.uniform.SamplerUniform;
-import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.impl.lwjgl3.render.texture.Texture;
+import dev.joid.lib.bridge.render.shader.source.BlockShaderTranslator;
+import dev.joid.lib.bridge.render.shader.source.ShaderSource;
+import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
+import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
+import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class Shader implements IShader {
+public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 
-	private static final String ALPHA_TEST_MAIN = "\nuniform bool joid_AlphaTest;\nuniform float joid_AlphaThreshold;\n\nvoid main() {\n\tjoid_main();\n\tif (joid_AlphaTest && fragColor.a <= joid_AlphaThreshold) {\n\t\tdiscard;\n\t}\n}\n";
-
-	private final int                         program;
-	private final boolean                     active;
-	private final BlendState                  blend;
-	private final RenderBridge                bridge;
-	private final Map<String, Integer>        locationMap;
-	private final Map<Integer, Runnable>      uniformQueue;
-	private final Map<String, SamplerUniform> samplerMap;
+	private final int                  program;
+	private final boolean              active;
+	private final BlendState           blend;
+	private final int                  uniformBuffer;
+	private final RenderBridge         bridge;
+	private final Map<String, Integer> locationMap;
 
 	private boolean    bound;
 	private BlendState previousBlend;
 
-	private Shader(final RenderBridge bridge, final int program, final boolean active, final BlendState blend) {
-		this.bridge       = bridge;
-		this.program      = program;
-		this.active       = active;
-		this.blend        = blend;
-		this.locationMap  = new HashMap<>();
-		this.samplerMap   = new HashMap<>();
-		this.uniformQueue = new HashMap<>();
+	private Shader(final RenderBridge bridge, final int program, final boolean active, final BlendState blend, final UniformBlock block, final List<ShaderVariable> samplers) {
+		super(block, samplers);
+		this.bridge        = bridge;
+		this.program       = program;
+		this.active        = active;
+		this.blend         = blend;
+		this.locationMap   = new HashMap<>();
+		this.uniformBuffer = GL15C.glGenBuffers();
+
+		GL15C.glBindBuffer(GL31C.GL_UNIFORM_BUFFER, this.uniformBuffer);
+		GL15C.glBufferData(GL31C.GL_UNIFORM_BUFFER, block.getData(), GL15C.GL_DYNAMIC_DRAW);
+		GL15C.glBindBuffer(GL31C.GL_UNIFORM_BUFFER, 0);
+
+		final int index = GL31C.glGetUniformBlockIndex(program, BlockShaderTranslator.BLOCK);
+		if (active && index != GL31C.GL_INVALID_INDEX) {
+			GL31C.glUniformBlockBinding(program, index, 0);
+		}
 	}
 
-	public static @NonNull Shader create(final RenderBridge bridge, final String vertex, final String fragment, final BlendState blend) {
+	public static @NonNull Shader create(final RenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
+		final BlockShaderTranslator translator = BlockShaderTranslator.create();
 		final int program = GL20C.glCreateProgram();
-		final String alphaTestedFragment = fragment.replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()") + Shader.ALPHA_TEST_MAIN;
-		return new Shader(bridge, program, Shader.link(program, vertex, alphaTestedFragment), blend);
+		final boolean active = Shader.link(program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
+		return new Shader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
 	}
 
 	@Override
@@ -74,98 +81,29 @@ public final class Shader implements IShader {
 		this.bound = false;
 	}
 
-	@Override
-	public @NonNull IntUniform getIntUniform(final @NonNull String name) {
-		return new IntUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull FloatUniform getFloatUniform(final @NonNull String name) {
-		return new FloatUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull Float2Uniform getFloat2Uniform(final @NonNull String name) {
-		return new Float2Uniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull Float3Uniform getFloat3Uniform(final @NonNull String name) {
-		return new Float3Uniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull Float4Uniform getFloat4Uniform(final @NonNull String name) {
-		return new Float4Uniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull BooleanUniform getBooleanUniform(final @NonNull String name) {
-		return new BooleanUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull SamplerUniform getSamplerUniform(final @NonNull String name) {
-		return this.samplerMap.computeIfAbsent(name, key -> new SamplerUniform(this, this.getLocation(key), this.samplerMap.size() + 1));
-	}
-
-	@Override
-	public @NonNull FloatArrayUniform getFloatArrayUniform(final @NonNull String name) {
-		return new FloatArrayUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull Float4ArrayUniform getFloat4ArrayUniform(final @NonNull String name) {
-		return new Float4ArrayUniform(this, this.getLocation(name));
-	}
-
-	@Override
-	public @NonNull FloatMatrixUniform getFloatMatrixUniform(final @NonNull String name) {
-		return new FloatMatrixUniform(this, this.getLocation(name));
-	}
-
-	public void queueUniform(final int location, final Runnable upload) {
-		if (location != -1) {
-			this.uniformQueue.put(location, upload);
-		}
-	}
-
 	public void use(final RenderState state) {
 		GL20C.glUseProgram(this.program);
-		this.uniformQueue.values().forEach(Runnable::run);
-		this.uniformQueue.clear();
-
-		final int projection = this.getLocation("uProjectionMatrix");
-		if (projection != -1) {
-			GL20C.glUniformMatrix4fv(projection, false, this.bridge.getProjection().getMatrix());
+		if (super.builtins(state, this.bridge.getProjection().getMatrix(), this.bridge.getModelView()).pack()) {
+			GL15C.glBindBuffer(GL31C.GL_UNIFORM_BUFFER, this.uniformBuffer);
+			GL15C.glBufferSubData(GL31C.GL_UNIFORM_BUFFER, 0L, super.getBlock().getData());
 		}
 
-		final int modelView = this.getLocation("uModelViewMatrix");
-		if (modelView != -1) {
-			GL20C.glUniformMatrix4fv(modelView, false, this.bridge.getModelView().getMatrix());
-		}
-
-		final int normal = this.getLocation("uNormalMatrix");
-		if (normal != -1) {
-			GL20C.glUniformMatrix3fv(normal, false, this.bridge.getModelView().getNormalMatrix());
-		}
-
-		final int lighting = this.getLocation("uLighting");
-		if (lighting != -1) {
-			GL20C.glUniform1i(lighting, state.isLighting() ? 1 : 0);
-		}
-
-		final int alphaTest = this.getLocation("joid_AlphaTest");
-		if (alphaTest != -1) {
-			GL20C.glUniform1i(alphaTest, state.isAlphaTest() ? 1 : 0);
-			GL20C.glUniform1f(this.getLocation("joid_AlphaThreshold"), state.getAlphaThreshold());
-		}
-
-		this.samplerMap.values().forEach(sampler -> sampler.apply(this.bridge));
+		GL31C.glBindBufferBase(GL31C.GL_UNIFORM_BUFFER, 0, this.uniformBuffer);
+		super.getSamplerMap().values().forEach(this::apply);
 	}
 
-	private int getLocation(final String name) {
-		return this.locationMap.computeIfAbsent(name, key -> GL20C.glGetUniformLocation(this.program, key));
+	private void apply(final UniformSampler sampler) {
+		final int location = this.locationMap.computeIfAbsent(sampler.getName(), name -> GL20C.glGetUniformLocation(this.program, name));
+		if (sampler.getTexture() == null || location == -1) {
+			return;
+		}
+
+		final Texture texture = (Texture) sampler.getTexture();
+		GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + sampler.getUnit());
+		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
+		GL33C.glBindSampler(sampler.getUnit(), this.bridge.getSampler(sampler.getFilter(), sampler.getWrap(), texture.isMipmapped()));
+		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
+		GL20C.glUniform1i(location, sampler.getUnit());
 	}
 
 	private static boolean link(final int program, final String vertexSource, final String fragmentSource) {

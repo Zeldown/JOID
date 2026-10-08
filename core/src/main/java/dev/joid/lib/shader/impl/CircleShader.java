@@ -6,10 +6,6 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.Float4Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.FloatUniform;
-import dev.joid.lib.bridge.render.shader.uniform.IntUniform;
 import dev.joid.lib.color.ColorGradient;
 import lombok.NonNull;
 
@@ -49,37 +45,21 @@ public class CircleShader extends ShaderImpl {
 
 	public void bind(final float radius, final float centerX, final float centerY, final @NonNull RoundedShaderType type) {
 		CircleShader.INSTANCE.bind();
-		final FloatUniform radiusUniform = CircleShader.INSTANCE.shader.getFloatUniform("radius");
-		radiusUniform.setValue(radius);
-
-		final Float2Uniform centerUniform = CircleShader.INSTANCE.shader.getFloat2Uniform("center");
-		centerUniform.setValue(centerX, centerY);
-
-		final IntUniform typeUniform = CircleShader.INSTANCE.shader.getIntUniform("type");
-		typeUniform.setValue(type.ordinal());
-
-		final IntUniform gradientUniform = CircleShader.INSTANCE.shader.getIntUniform("gradient");
-		gradientUniform.setValue(0);
+		CircleShader.INSTANCE.shader
+		.uniform("radius", radius)
+		.uniform("center", centerX, centerY)
+		.uniform("type", type.ordinal())
+		.uniform("gradient", 0);
 	}
 
 	public void gradient(final @NonNull ColorGradient gradient, final @NonNull Vector4f canvas) {
-		final IntUniform gradientUniform = CircleShader.INSTANCE.shader.getIntUniform("gradient");
-		gradientUniform.setValue(1);
-
-		final Float2Uniform startPosUniform = CircleShader.INSTANCE.shader.getFloat2Uniform("startPos");
-		startPosUniform.setValue(gradient.getDirection().x, gradient.getDirection().y);
-
-		final Float2Uniform endPosUniform = CircleShader.INSTANCE.shader.getFloat2Uniform("endPos");
-		endPosUniform.setValue(gradient.getDirection().z, gradient.getDirection().w);
-
-		final Float4Uniform startColorUniform = CircleShader.INSTANCE.shader.getFloat4Uniform("startColor");
-		startColorUniform.setValue(gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a);
-
-		final Float4Uniform endColorUniform = CircleShader.INSTANCE.shader.getFloat4Uniform("endColor");
-		endColorUniform.setValue(gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a);
-
-		final Float4Uniform canvasUniform = CircleShader.INSTANCE.shader.getFloat4Uniform("canvas");
-		canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
+		CircleShader.INSTANCE.shader
+		.uniform("gradient", 1)
+		.uniform("startPos", gradient.getDirection().x, gradient.getDirection().y)
+		.uniform("endPos", gradient.getDirection().z, gradient.getDirection().w)
+		.uniform("startColor", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
+		.uniform("endColor", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
+		.uniform("canvas", canvas.x, canvas.y, canvas.z, canvas.w);
 	}
 
 }

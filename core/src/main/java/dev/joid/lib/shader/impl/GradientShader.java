@@ -7,9 +7,6 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.bridge.render.shader.uniform.Float2Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.Float4Uniform;
-import dev.joid.lib.bridge.render.shader.uniform.IntUniform;
 import dev.joid.lib.color.Color;
 import lombok.NonNull;
 
@@ -37,23 +34,13 @@ public class GradientShader extends ShaderImpl {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final IShader previousShader = render.getShader();
 		GradientShader.INSTANCE.bind();
-		final Float2Uniform startPosUniform = GradientShader.INSTANCE.shader.getFloat2Uniform("startPos");
-		startPosUniform.setValue(startPos.x, startPos.y);
-
-		final Float2Uniform endPosUniform = GradientShader.INSTANCE.shader.getFloat2Uniform("endPos");
-		endPosUniform.setValue(endPos.x, endPos.y);
-
-		final Float4Uniform startColorUniform = GradientShader.INSTANCE.shader.getFloat4Uniform("startColor");
-		startColorUniform.setValue(startColor.r, startColor.g, startColor.b, startColor.a);
-
-		final Float4Uniform endColorUniform = GradientShader.INSTANCE.shader.getFloat4Uniform("endColor");
-		endColorUniform.setValue(endColor.r, endColor.g, endColor.b, endColor.a);
-
-		final IntUniform hasTextureUniform = GradientShader.INSTANCE.shader.getIntUniform("hasTexture");
-		hasTextureUniform.setValue(hasTexture ? 1 : 0);
-
-		final Float4Uniform canvasUniform = GradientShader.INSTANCE.shader.getFloat4Uniform("canvas");
-		canvasUniform.setValue(canvas.x, canvas.y, canvas.z, canvas.w);
+		GradientShader.INSTANCE.shader
+		.uniform("startPos", startPos.x, startPos.y)
+		.uniform("endPos", endPos.x, endPos.y)
+		.uniform("startColor", startColor.r, startColor.g, startColor.b, startColor.a)
+		.uniform("endColor", endColor.r, endColor.g, endColor.b, endColor.a)
+		.uniform("hasTexture", hasTexture ? 1 : 0)
+		.uniform("canvas", canvas.x, canvas.y, canvas.z, canvas.w);
 
 		try {
 			if (runnable != null) {
