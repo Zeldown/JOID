@@ -21,6 +21,7 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -364,7 +365,7 @@ public final class RenderBridge implements IRenderBridge {
 
 	private @NonNull Shader getFixedShader() {
 		if (this.fixedShader == null) {
-			this.fixedShader = (Shader) this.createShader(ShaderSource.read(ShaderStage.VERTEX, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
+			this.fixedShader = (Shader) this.createShader(CoreShader.FIXED.read(ShaderStage.VERTEX), CoreShader.FIXED.read(ShaderStage.FRAGMENT), BlendState.DISABLED);
 		}
 		return this.fixedShader;
 	}

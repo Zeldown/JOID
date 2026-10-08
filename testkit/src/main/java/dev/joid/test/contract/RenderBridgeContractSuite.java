@@ -14,6 +14,7 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -26,7 +27,6 @@ import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import dev.joid.lib.render.modifier.Scale;
 import dev.joid.lib.render.modifier.Vector;
 import dev.joid.lib.render.transform.Transformation;
-import dev.joid.test.shader.CoreShaders;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;
@@ -87,9 +87,9 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void compilesCoreShaders() {
-		for (final String name : CoreShaders.getNames()) {
-			final IShader shader = BridgeHandler.RENDER.get().createShader(CoreShaders.read(name, ShaderStage.VERTEX), CoreShaders.read(name, ShaderStage.FRAGMENT), BlendState.NORMAL);
-			Assert.assertTrue("The " + name + " shader does not compile", shader.isActive());
+		for (final CoreShader coreShader : CoreShader.values()) {
+			final IShader shader = BridgeHandler.RENDER.get().createShader(coreShader.read(ShaderStage.VERTEX), coreShader.read(ShaderStage.FRAGMENT), BlendState.NORMAL);
+			Assert.assertTrue("The " + coreShader.name() + " shader does not compile", shader.isActive());
 		}
 	}
 
@@ -249,7 +249,7 @@ public abstract class RenderBridgeContractSuite {
 	public void restoresTheStateOnPop() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, TextureFilter.NEAREST);
-		final IShader shader = render.createShader(CoreShaders.read("line", ShaderStage.VERTEX), CoreShaders.read("line", ShaderStage.FRAGMENT), BlendState.NORMAL);
+		final IShader shader = render.createShader(CoreShader.LINE.read(ShaderStage.VERTEX), CoreShader.LINE.read(ShaderStage.FRAGMENT), BlendState.NORMAL);
 		render.pushState();
 		render.frameBuffer(frameBuffer);
 		render.shader(shader);

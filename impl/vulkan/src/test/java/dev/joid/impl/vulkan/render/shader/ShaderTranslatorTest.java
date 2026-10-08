@@ -6,11 +6,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.render.shader.source.BlockShaderTranslator;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
-import dev.joid.test.shader.CoreShaders;
 
 public class ShaderTranslatorTest {
 
@@ -21,30 +21,30 @@ public class ShaderTranslatorTest {
 
 	@Test
 	public void compilesCoreShaders() {
-		for (final String name : CoreShaders.getNames()) {
-			final ShaderSource vertex = CoreShaders.read(name, ShaderStage.VERTEX);
-			final ShaderSource fragment = CoreShaders.read(name, ShaderStage.FRAGMENT);
-			Assert.assertTrue(name, ShaderCompiler.compileVertex(ShaderTranslator.create().translateVertex(vertex, fragment)).remaining() > 0);
-			Assert.assertTrue(name, ShaderCompiler.compileFragment(ShaderTranslator.create().translateFragment(vertex, fragment)).remaining() > 0);
+		for (final CoreShader shader : CoreShader.values()) {
+			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
+			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
+			Assert.assertTrue(shader.name(), ShaderCompiler.compileVertex(ShaderTranslator.create().translateVertex(vertex, fragment)).remaining() > 0);
+			Assert.assertTrue(shader.name(), ShaderCompiler.compileFragment(ShaderTranslator.create().translateFragment(vertex, fragment)).remaining() > 0);
 		}
 	}
 
 	@Test
 	public void compilesCoreShadersWithTheDefaultBlockTranslator() {
-		for (final String name : CoreShaders.getNames()) {
-			final ShaderSource vertex = CoreShaders.read(name, ShaderStage.VERTEX);
-			final ShaderSource fragment = CoreShaders.read(name, ShaderStage.FRAGMENT);
-			Assert.assertTrue(name, GlslCompiler.compileOpenGl(BlockShaderTranslator.create().translateVertex(vertex, fragment), ShaderStage.VERTEX).remaining() > 0);
-			Assert.assertTrue(name, GlslCompiler.compileOpenGl(BlockShaderTranslator.create().translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
+		for (final CoreShader shader : CoreShader.values()) {
+			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
+			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(BlockShaderTranslator.create().translateVertex(vertex, fragment), ShaderStage.VERTEX).remaining() > 0);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(BlockShaderTranslator.create().translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
 		}
 	}
 
 	@Test
 	public void layoutsTheBlockOfEveryCoreShaderLikeTheCompiler() {
-		for (final String name : CoreShaders.getNames()) {
-			final ShaderSource vertex = CoreShaders.read(name, ShaderStage.VERTEX);
-			final ShaderSource fragment = CoreShaders.read(name, ShaderStage.FRAGMENT);
-			ShaderTranslatorTest.assertLayout(name, ShaderTranslator.create().createBlock(vertex, fragment), SpirvBlockLayout.read(ShaderCompiler.compileFragment(ShaderTranslator.create().translateFragment(vertex, fragment)), BlockShaderTranslator.BLOCK));
+		for (final CoreShader shader : CoreShader.values()) {
+			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
+			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
+			ShaderTranslatorTest.assertLayout(shader.name(), ShaderTranslator.create().createBlock(vertex, fragment), SpirvBlockLayout.read(ShaderCompiler.compileFragment(ShaderTranslator.create().translateFragment(vertex, fragment)), BlockShaderTranslator.BLOCK));
 		}
 	}
 

@@ -1,9 +1,10 @@
 package dev.joid.lib.shader.impl;
 
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import javax.vecmath.Vector2f;
 import javax.vecmath.Vector4f;
 
-import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -15,7 +16,7 @@ public class GradientShader extends ShaderImpl {
 	private static final GradientShader INSTANCE = new GradientShader();
 
 	private GradientShader() {
-		this.load(JOID.class.getResourceAsStream("/assets/shaders/gradient/gradient.vsh"), JOID.class.getResourceAsStream("/assets/shaders/gradient/gradient.fsh"));
+		this.load(CoreShader.GRADIENT.open(ShaderStage.VERTEX), CoreShader.GRADIENT.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull GradientShader inst() {

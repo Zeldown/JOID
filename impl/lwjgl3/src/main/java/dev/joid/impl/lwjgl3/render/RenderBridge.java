@@ -14,6 +14,7 @@ import dev.joid.impl.lwjgl3.render.shader.Shader;
 import dev.joid.impl.lwjgl3.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -46,7 +47,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		this.aliasedLineWidthRange = RenderBridge.getFloats(GL12C.GL_ALIASED_LINE_WIDTH_RANGE);
 		this.smoothLineWidthRange  = RenderBridge.getFloats(GL12C.GL_SMOOTH_LINE_WIDTH_RANGE);
 		this.emptyTexture          = Texture.create().allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
-		this.fixedShader           = (Shader) this.createShader(ShaderSource.read(ShaderStage.VERTEX, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
+		this.fixedShader           = (Shader) this.createShader(CoreShader.FIXED.read(ShaderStage.VERTEX), CoreShader.FIXED.read(ShaderStage.FRAGMENT), BlendState.DISABLED);
 
 		GL30C.glBindVertexArray(this.vertexArray);
 		GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, this.vertexBuffer);

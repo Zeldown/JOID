@@ -36,6 +36,7 @@ import dev.joid.impl.vulkan.render.shader.ShaderTranslator;
 import dev.joid.impl.vulkan.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
@@ -101,7 +102,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 
 		this.samplers     = this.createSamplers();
 		this.emptyTexture = new Texture(this).allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
-		this.fixedShader  = (Shader) this.createShader(ShaderSource.read(ShaderStage.VERTEX, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, RenderBridge.class.getResourceAsStream("/assets/shaders/fixed/fixed.fsh")), BlendState.DISABLED);
+		this.fixedShader  = (Shader) this.createShader(CoreShader.FIXED.read(ShaderStage.VERTEX), CoreShader.FIXED.read(ShaderStage.FRAGMENT), BlendState.DISABLED);
 	}
 
 	public void dispose(final @NonNull Runnable destroyer) {

@@ -1,8 +1,9 @@
 package dev.joid.lib.shader.impl;
 
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import javax.vecmath.Vector4f;
 
-import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -14,7 +15,7 @@ public class RoundedShader extends ShaderImpl {
 	private static final RoundedShader INSTANCE = new RoundedShader();
 
 	private RoundedShader() {
-		this.load(JOID.class.getResourceAsStream("/assets/shaders/rounded/rounded.vsh"), JOID.class.getResourceAsStream("/assets/shaders/rounded/rounded.fsh"));
+		this.load(CoreShader.ROUNDED.open(ShaderStage.VERTEX), CoreShader.ROUNDED.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull RoundedShader inst() {

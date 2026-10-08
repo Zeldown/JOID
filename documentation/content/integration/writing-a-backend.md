@@ -136,7 +136,7 @@ Without a bound shader, a draw outputs the bound texture sampled at the texture 
 rgb × (0.6 + max(normalize(normalMatrix × normal).z, 0)), clamped to 1
 ```
 
-A null normal gets no diffuse light. The light does not depend on the scale of the model: the testkit checks that a face is lit the same at scale 1 and 100. The core shader `/assets/shaders/fixed` (`fixed.vsh` and `fixed.fsh`) implements exactly this. The emulated backends draw every draw without a bound shader with it, and LWJGL 2 its lit draws; load it with `ShaderSource.read` and your own `createShader` to do the same.
+A null normal gets no diffuse light. The light does not depend on the scale of the model: the testkit checks that a face is lit the same at scale 1 and 100. The core shader `CoreShader.FIXED` implements exactly this. The emulated backends draw every draw without a bound shader with it, and LWJGL 2 its lit draws; read its stages with `CoreShader.FIXED.read(ShaderStage.VERTEX)` and `read(ShaderStage.FRAGMENT)` and pass them to your own `createShader` to do the same.
 
 ### Coordinates
 
@@ -211,6 +211,8 @@ The reference backends generate:
 | Vulkan | GLSL 4.50 | A `BlockShaderTranslator` with the block at binding 0, samplers from binding 1 and varying locations shared by both stages; compiled to SPIR-V with shaderc. |
 
 Each generated header ends with a `#line` directive, so compiler errors point to the lines of the original file.
+
+The shaders of the core are listed by the `CoreShader` enum (`dev.joid.lib.bridge.render.shader.source`): `BLUR`, `BORDER`, `CIRCLE`, `FIXED`, `FONT`, `GRADIENT`, `LINE`, `ROUNDED` and `SHADOW`. `open(ShaderStage)` opens the JOID GLSL file of a stage, `read(ShaderStage)` parses it into a `ShaderSource`, and `create(BlendState)` creates the shader through the registered render bridge. The files are always read through the class loader of the core jar, so a backend in another jar or class loader (a mod loader) reads them the same way. A missing file throws `IllegalStateException`.
 
 ### Uniforms in the core
 

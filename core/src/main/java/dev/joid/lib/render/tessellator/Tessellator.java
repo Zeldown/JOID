@@ -8,8 +8,7 @@ import java.util.Arrays;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.bridge.render.shader.source.ShaderSource;
-import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
@@ -339,7 +338,7 @@ public final class Tessellator {
 
 	private static final class LineShader {
 
-		private static final IShader SHADER = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, Tessellator.class.getResourceAsStream("/assets/shaders/line/line.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, Tessellator.class.getResourceAsStream("/assets/shaders/line/line.fsh")), BlendState.NORMAL);
+		private static final IShader SHADER = CoreShader.LINE.create(BlendState.NORMAL);
 
 	}
 

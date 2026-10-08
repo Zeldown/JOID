@@ -117,7 +117,7 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 |---|---|
 | `drawsVertexColors` | Vertex colors are drawn. |
 | `drawsWithTheCurrentColor` | Vertices without color take the current color. |
-| `compilesCoreShaders` | Every core shader of `/assets/shaders` compiles: `isActive()` is `true`. |
+| `compilesCoreShaders` | Every `CoreShader` compiles: `isActive()` is `true`. |
 | `appliesTheUniformsSetBeforeTheShaderIsBound` | A uniform set before `bind()` applies to the next draw of that shader. |
 | `appliesEveryUniformType` | `float`, `vec2`, `vec3`, `vec4`, `int`, `bool`, `mat3`, `float[3]` and `vec4[2]` uniforms reach the shader with their values. |
 | `samplesTheTextureOfASampler` | A texture assigned with `sampler(...)` is the one the shader samples. |
@@ -139,7 +139,7 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 | `quantizesAMotionToWholePixels` | `quantize` rounds a motion to whole pixels. |
 | `restoresTheMatrixAfterATransformation` | Applying and resetting a `Transformation` leaves the pixel grid unchanged. |
 
-`CoreShaders` (`dev.joid.test.shader`) gives your own tests the core shaders: `getNames()` lists the shader folders of `/assets/shaders`, and `read(String name, ShaderStage stage)` parses one stage into a `ShaderSource`.
+Your own tests reach the core shaders through the core enum `CoreShader` (`dev.joid.lib.bridge.render.shader.source`): loop over `CoreShader.values()` and parse a stage with `read(ShaderStage stage)`.
 
 ## SnapshotSuite
 

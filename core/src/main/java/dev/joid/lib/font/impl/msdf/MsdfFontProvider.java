@@ -1,11 +1,9 @@
 package dev.joid.lib.font.impl.msdf;
 
-import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.bridge.render.shader.source.ShaderSource;
-import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.color.Color;
@@ -157,7 +155,7 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 
 	private static final class MsdfShader {
 
-		private static final IShader SHADER = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, JOID.class.getResourceAsStream("/assets/shaders/font/font.vsh")), ShaderSource.read(ShaderStage.FRAGMENT, JOID.class.getResourceAsStream("/assets/shaders/font/font.fsh")), BlendState.NORMAL);
+		private static final IShader SHADER = CoreShader.FONT.create(BlendState.NORMAL);
 
 	}
 

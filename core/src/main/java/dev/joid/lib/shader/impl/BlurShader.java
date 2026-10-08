@@ -1,6 +1,7 @@
 package dev.joid.lib.shader.impl;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import lombok.NonNull;
 
 public class BlurShader extends ShaderImpl {
@@ -8,7 +9,7 @@ public class BlurShader extends ShaderImpl {
 	private static final BlurShader INSTANCE = new BlurShader();
 
 	private BlurShader() {
-		this.load(JOID.class.getResourceAsStream("/assets/shaders/blur/blur.vsh"), JOID.class.getResourceAsStream("/assets/shaders/blur/blur.fsh"));
+		this.load(CoreShader.BLUR.open(ShaderStage.VERTEX), CoreShader.BLUR.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull BlurShader inst() {

@@ -1,6 +1,7 @@
 package dev.joid.lib.shader.impl;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.color.ColorGradient;
 import lombok.NonNull;
@@ -10,7 +11,7 @@ public class BorderShader extends ShaderImpl {
 	private static final BorderShader INSTANCE = new BorderShader();
 
 	private BorderShader() {
-		this.load(JOID.class.getResourceAsStream("/assets/shaders/border/border.vsh"), JOID.class.getResourceAsStream("/assets/shaders/border/border.fsh"));
+		this.load(CoreShader.BORDER.open(ShaderStage.VERTEX), CoreShader.BORDER.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull BorderShader inst() {

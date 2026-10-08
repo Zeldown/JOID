@@ -5,10 +5,10 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
-import dev.joid.test.shader.CoreShaders;
 
 public class ShaderTranslatorTest {
 
@@ -17,9 +17,9 @@ public class ShaderTranslatorTest {
 
 	@Test
 	public void translatesCoreShaders() {
-		for (final String name : CoreShaders.getNames()) {
-			Assert.assertTrue(name, ShaderTranslatorTest.translate(CoreShaders.read(name, ShaderStage.VERTEX)).startsWith("#version 120\n"));
-			Assert.assertTrue(name, ShaderTranslatorTest.translate(CoreShaders.read(name, ShaderStage.FRAGMENT)).startsWith("#version 120\n"));
+		for (final CoreShader shader : CoreShader.values()) {
+			Assert.assertTrue(shader.name(), ShaderTranslatorTest.translate(shader.read(ShaderStage.VERTEX)).startsWith("#version 120\n"));
+			Assert.assertTrue(shader.name(), ShaderTranslatorTest.translate(shader.read(ShaderStage.FRAGMENT)).startsWith("#version 120\n"));
 		}
 	}
 
@@ -49,7 +49,7 @@ public class ShaderTranslatorTest {
 
 	@Test
 	public void readsTheExactByteNormalsLikeTheOtherBackends() {
-		final String vertex = ShaderTranslatorTest.translate(CoreShaders.read("fixed", ShaderStage.VERTEX));
+		final String vertex = ShaderTranslatorTest.translate(CoreShader.FIXED.read(ShaderStage.VERTEX));
 		Assert.assertTrue(vertex.contains("attribute vec3 joid_Normal;\n#define aNormal (joid_Normal / 127.0)\n"));
 		Assert.assertEquals(6, Shader.NORMAL_LOCATION);
 	}

@@ -1,8 +1,9 @@
 package dev.joid.lib.shader.impl;
 
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import javax.vecmath.Vector4f;
 
-import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -14,7 +15,7 @@ public class CircleShader extends ShaderImpl {
 	private static final CircleShader INSTANCE = new CircleShader();
 
 	private CircleShader() {
-		this.load(JOID.class.getResourceAsStream("/assets/shaders/circle/circle.vsh"), JOID.class.getResourceAsStream("/assets/shaders/circle/circle.fsh"));
+		this.load(CoreShader.CIRCLE.open(ShaderStage.VERTEX), CoreShader.CIRCLE.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull CircleShader inst() {

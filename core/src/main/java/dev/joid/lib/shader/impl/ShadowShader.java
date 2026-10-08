@@ -1,9 +1,10 @@
 package dev.joid.lib.shader.impl;
 
-import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import lombok.NonNull;
 
 public class ShadowShader extends ShaderImpl {
@@ -11,7 +12,7 @@ public class ShadowShader extends ShaderImpl {
 	private static final ShadowShader INSTANCE = new ShadowShader();
 
 	private ShadowShader() {
-		this.load(JOID.class.getResourceAsStream("/assets/shaders/shadow/shadow.vsh"), JOID.class.getResourceAsStream("/assets/shaders/shadow/shadow.fsh"));
+		this.load(CoreShader.SHADOW.open(ShaderStage.VERTEX), CoreShader.SHADOW.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull ShadowShader inst() {
