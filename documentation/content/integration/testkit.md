@@ -272,7 +272,7 @@ When a test fails, the build prints the link of the report.
 Both hooks run `scripts/run-tests`, which tests only what the changes touch:
 
 - Nothing runs when no file of `core/`, `msdf/`, `impl/`, `testkit/`, `gradle/`, `build.gradle` or `settings.gradle` changed.
-- A change in `core/`, `msdf/`, `testkit/`, `gradle/` or the build files runs the checks of `msdf`, `core` and `testkit` and the tests of every backend; a change in `impl/<backend>/` tests that backend; a change in `impl/glfw/` or `impl/openal/` tests LWJGL 3 and Vulkan.
+- A change in `core/`, `msdf/`, `testkit/`, `gradle/` or the build files runs the checks of `msdf`, `core` and `testkit` and the tests of every backend; a change in `impl/<backend>/` tests that backend; a change in `impl/glfw/` or `impl/openal/` tests LWJGL 3 and Vulkan, and a change in `impl/opengl/` tests LWJGL 3. The checks of `glfw`, `openal` and `opengl` run with every change of the build or of their module.
 - A backend that is not tested keeps its last renders when it has some, then `crossBackendTest` compares them all, offline.
 - The `pre-commit` hook tests the staged changes alone: it stashes the rest, including untracked files, and restores it afterward. The `pre-push` hook tests the pushed commits, unless the `pre-commit` hook already tested each of them.
 

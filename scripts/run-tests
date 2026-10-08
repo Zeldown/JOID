@@ -64,6 +64,12 @@ if [ $all -eq 1 ]; then
     tasks=":msdf:check :core:check :testkit:check"
 fi
 
+for module in glfw openal opengl; do
+    if [ $all -eq 1 ] || printf '%s\n' "$files" | grep -q "^impl/$module/"; then
+        tasks="$tasks :$module:check"
+    fi
+done
+
 for module in lwjgl2 lwjgl3 vulkan; do
     case " $modules " in
         *" $module "*)
