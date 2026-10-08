@@ -1,6 +1,6 @@
 # Reactive Properties
 
-Every property of every node follows signals the same way: you write the value as you would compute it once, and the node keeps it up to date when the signals it reads change. This page explains what each kind of argument does, how native expressions are followed, and the rules that keep it fast and predictable.
+[Signals and Reactivity](../concepts/signals.md) showed the four kinds of values a setter takes; [Signals](signals.md) covered the signals themselves. This page explains exactly what a setter does with each kind of argument: how JOID follows a native expression, what an expression may contain, when a followed value is applied, the dev warnings and their fixes, and what it costs.
 
 ## One setter, four kinds of values
 
@@ -93,8 +93,12 @@ RectNode.create(100, 120, 80, 80).color(Color.WHITE).visible(this.shown).attach(
 `map` and `Signal.from(() -> ...)` are the explicit forms. Use them where a native expression cannot be followed (a value that depends on a loop variable, code inside a library or a lambda), or when you want a named, reusable derived signal:
 
 ```java
+private final List<String> states = Arrays.asList("Idle", "Busy", "Away");
+private final Signal<String> selected = Signal.of("Idle");
+
+final FlexNode row = FlexNode.horizontal(100, 100, 40).margin(10D).attach(this);
 for (final String state : this.states) {
-	RectNode.create(0, 0, 120, 40).color(Signal.from(() -> this.selected.get().equals(state) ? Color.WHITE : Color.GRAY)).attach(this.row);
+	RectNode.create(0, 0, 120, 40).color(Signal.from(() -> this.selected.get().equals(state) ? Color.WHITE : Color.GRAY)).attach(row);
 }
 ```
 
@@ -126,23 +130,25 @@ The last setter called for a property replaces the previous source: `x(10D)` aft
 
 ## Controls: one-way values and two-way signal(...)
 
-Value setters of controls follow in one direction: the control shows the value, and never writes into the signal it reads.
+`SettingCheckboxNode` is the checkbox drawn in [Input Controls](../essentials/controls.md#controls-you-draw-yourself). Its value setters follow in one direction: the control shows the value, and never writes into the signal it reads.
 
 ```java
-MuteCheckbox.create(100, 100, 40, 40).checked(this.muted.get()).attach(this);
+private final BooleanSignal muted = BooleanSignal.of(false);
+
+SettingCheckboxNode.create(100, 100, 40).checked(this.muted.get()).attach(this);
 ```
 
 `signal(...)` binds a control in both directions: the control shows the signal and writes the user's changes into it.
 
 ```java
-private final IntegerSignal volume = IntegerSignal.of(5);
+private final BooleanSignal music = BooleanSignal.of(true);
 
-VolumeSlider.create(100, 100, 400, 40).values(0, 10, 5).signal(this.volume).attach(this);
+SettingCheckboxNode.create(100, 100, 40).signal(this.music).attach(this);
 
-ProgressNode.create(100, 160, 400, 20).background(Color.DARKGRAY).foreground(Color.WHITE).progress(this.volume.get() / 10F).attach(this);
+RectNode.create(100, 160, 400, 20).color(Color.WHITE).visible(this.music).attach(this);
 ```
 
-`MuteCheckbox` and `VolumeSlider` are a `CheckboxNode` and an `IntegerSliderNode` of your UI kit: controls draw nothing by themselves (see [CheckboxNode](../nodes/input/checkbox.md) and [SliderNode](../nodes/input/slider.md)). A control follows one signal at a time; `signal(...)` with a `ComputedSignal` throws `IllegalArgumentException` (it is read-only): pass it to a value setter instead. `onChange` is called on every real change, whether it comes from the user, a followed value or the bound signal.
+Every control with a value works the same way: text fields, checkboxes, toggles, switches, sliders and selectors (see [CheckboxNode](../nodes/input/checkbox.md) and [SliderNode](../nodes/input/slider.md)). A control follows one signal at a time; `signal(...)` with a `ComputedSignal` throws `IllegalArgumentException` (it is read-only): pass it to a value setter instead. `onChange` is called on every real change, whether it comes from the user, a followed value or the bound signal.
 
 ## Patterns
 
@@ -169,7 +175,7 @@ The names come from the bytecode (field, local variable or `method()` read befor
 | --- | --- |
 | `the bytecode of <class> cannot be read` | Use `map(...)` or a lambda. |
 | `<member> does not exist at runtime` | Configure the `ISignalReplayRemapper` of the bridge (see [Bridges](../integration/bridges.md)) or use `map(...)`. |
-| `no call to <setter>(...) is found on this line, the .class file on disk may no longer match the loaded class (recompiled since the launch)` | Restart the application, or use `map(...)` or a lambda. Typical with an IDE that recompiles while the application runs. |
+| `no call to <setter>(...) is found on this line, the .class file on disk may ...`: the class was recompiled after the launch | Restart the application, or use `map(...)` or a lambda. Typical with an IDE that recompiles while the application runs. |
 | `several calls to <setter>(...) on this line give the same value from the same signals` | Write one call per line. |
 | `the instruction <name> is not supported` | Use `map(...)` or a lambda. |
 | `the expression contains a lambda` | Move the lambda out of the expression or use `Signal.from(() -> ...)`. |
@@ -216,8 +222,8 @@ Custom nodes declare their own followed properties with `Node.follow(...)`: see 
 
 ## See also
 
-- [Signals](signals.md)
-- [Watching Signals](watch.md)
-- [State and Reactivity](../essentials/state.md)
-- [Custom Nodes](../nodes/custom-nodes.md)
-- [Developer Tools](../getting-started/dev-tools.md)
+- Next: [Watching Signals](watch.md)
+- [Signals and Reactivity](../concepts/signals.md): the basics this page builds on.
+- [Signals](signals.md): `map`, `Signal.from` and `ComputedSignal`.
+- [Developer Tools](../concepts/dev-tools.md): dev mode, where the warnings print.
+- [Custom Nodes](../nodes/custom-nodes.md): followed properties of your own nodes.

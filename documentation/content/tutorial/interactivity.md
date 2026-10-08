@@ -1,12 +1,12 @@
 # Tutorial 3: Interactivity and State
 
-In this part the settings screen comes alive: the language list reacts to clicks, the placeholders become real switches and a slider, the screen follows its state through signals, and the values are saved to disk so they survive a restart.
+In this part the settings screen comes alive: the language list reacts to clicks, the placeholders become real switches and a slider, the screen follows its state through signals, and the values are saved to disk so they survive a restart. It applies [Input and Callbacks](../concepts/input.md), [Signals and Reactivity](../concepts/signals.md), [Input Controls](../essentials/controls.md) and [Saving State](../essentials/saving-state.md) to the screen of part 2.
 
 You start from the code of [Tutorial 2](layout.md). By the end you add three classes (`ToggleSwitchNode`, `VolumeSliderNode`, `SettingsStore`) and one line to `Main`.
 
 ## Step 1: react to a click with onClick
 
-A node reacts to the user through callbacks: lambdas you register with `onXxx(...)` methods. `onClick` runs when a mouse button is pressed over the node. Add one to the language rows:
+Start with the language list: give each row an `onClick` callback, as in [Input and Callbacks](../concepts/input.md), that prints its language:
 
 ```java
 RectNode
@@ -19,19 +19,17 @@ RectNode
 .attach(list);
 ```
 
-Run the program and click the rows: the console prints the language you clicked. The lambda receives the node, the mouse position in canvas units and the `ClickType`; a click handled by `onClick` is consumed, so it does not reach the nodes below or the UIs behind.
-
-`color(...)` comes before `onClick(...)` in the chain: call the setters of the node type (`color` of `RectNode`) before the setters that every node shares (`onClick`, `body`, `anchor`...), which return a plain `Node`. See [Core Concepts](../getting-started/core-concepts.md).
+Run the program and click the rows: the console prints the language you clicked. Each lambda captures the `language` of its loop turn, so every row knows its own language. `color(...)` stays before `onClick(...)` in the chain, following the chaining rule of [Nodes and the Node Tree](../concepts/nodes.md): the setters of `RectNode` first, then the setters that every node shares.
 
 ## Step 2: keep the selection in a signal
 
-The selection has to live somewhere. JOID keeps state in **signals**: a `Signal<T>` holds a value, `get()` reads it and `set(...)` changes it. Add a field to `SettingsUI`:
+The selection is state, so it goes in a signal ([Signals and Reactivity](../concepts/signals.md)), a field of `SettingsUI`:
 
 ```java
 private final StringSignal language = StringSignal.of("English");
 ```
 
-`StringSignal` (`dev.joid.lib.utils.signal.impl.primitive`) is a signal of `String`; `"English"` is its default value. Write the click into the signal, and give each row a dot that shows while its language is the selected one:
+`"English"` is the default value of the `StringSignal` (`dev.joid.lib.utils.signal.impl.primitive`). Write the click into the signal, and give each row a dot that shows while its language is the selected one:
 
 ```java
 RectNode
@@ -46,7 +44,7 @@ RectNode
 ```
 
 - `CircleNode.create(x, y, diameter)` (`dev.joid.lib.ui.node.impl.design.shape`) draws a filled circle.
-- `this.language.map(...)` derives a new signal from `language`: `true` for the row of the selected language. A signal passed to a setter is **followed**: when `language` changes, `visible(...)` takes the new value.
+- `this.language.map(...)` derives a signal from `language`: `true` for the row of the selected language. `visible(...)` follows it, so the dot shows and hides when `language` changes.
 - `map` is the right tool here because the loop variable `language` decides the result. When the value depends only on signals and fields, you write the plain expression instead, as the next step does.
 
 Click "Deutsch": the click sets the signal, the dot of English hides and the dot of Deutsch shows. You never told a row to repaint, and no node is rebuilt: you changed the state, and the values that depend on it followed.
@@ -57,11 +55,11 @@ Click "Deutsch": the click sets the signal, the dot of English hides and the dot
 
 ## Step 3: input controls
 
-JOID ships the behavior of the usual controls and leaves their look to you: `CheckboxNode`, `ToggleNode`, `SliderNode` and the others handle the input and the value, and you only write the drawing. This keeps every control in the style of your application.
+The controls handle the input and the value, and you draw them, as [Input Controls](../essentials/controls.md) showed with a checkbox. The screen needs two of them: an on/off switch and a slider.
 
 ### An on/off switch with CheckboxNode
 
-`CheckboxNode` (`dev.joid.lib.ui.node.impl.structure.checkbox`) flips between checked and unchecked on each click. Draw it as a switch, a track and a knob that moves to the right when checked:
+`CheckboxNode` (`dev.joid.lib.ui.node.impl.structure.checkbox`) flips between checked and unchecked on each click. Here it is drawn as a switch: a track and a knob that moves to the right when checked:
 
 ```java
 package com.example.settings;
@@ -91,12 +89,12 @@ public class ToggleSwitchNode extends CheckboxNode {
 }
 ```
 
-- A custom node has a `protected` constructor and a static `create(...)` factory, like the built-in nodes; see [Custom Nodes](../nodes/custom-nodes.md).
-- `draw` runs every frame. It draws in the coordinate space of the parent, so the position of the node is `super.getX()`, `super.getY()`. `DrawUtils.SHAPE` (`dev.joid.lib.draw`) draws shapes; see [Shapes](../drawing/shapes.md).
+- Like the checkbox of Input Controls, the switch has a `protected` constructor and a static `create(...)` factory, like every node.
+- `draw` runs every frame. It draws in the coordinate space of the parent, so the position of the node is `super.getX()`, `super.getY()`. `DrawUtils.SHAPE` (`dev.joid.lib.draw`) draws the shapes; see [Shapes](../drawing/shapes.md) for the others.
 
 ### A slider with IntegerSliderNode
 
-`IntegerSliderNode` (`dev.joid.lib.ui.node.impl.structure.slider.impl`) picks an integer by dragging a cursor along a track. You draw the track in `drawSlider` and give it a `SliderCursorNode` that draws the cursor:
+A slider has two parts to draw. `IntegerSliderNode` (`dev.joid.lib.ui.node.impl.structure.slider.impl`) picks an integer by dragging a cursor along a track: you draw the track in `drawSlider`, and the cursor is a `SliderCursorNode` (`dev.joid.lib.ui.node.impl.structure.slider`) that draws itself in `drawCursor`, given to the slider with `cursor(...)`:
 
 ```java
 package com.example.settings;
@@ -166,7 +164,7 @@ ToggleSwitchNode.create(notifications.aw(-100), 18, 76, 36).signal(this.notifica
 
 | Code | What it does |
 | --- | --- |
-| `signal(this.music)` | Binds the switch to the signal both ways: the switch takes the value of the signal, each click writes the new state into it, and a value set elsewhere moves the switch. |
+| `signal(this.music)` | Binds the switch to the signal both ways, as in [Input Controls](../essentials/controls.md): the switch takes the value of the signal, each click writes the new state into it, and a value set elsewhere moves the switch. |
 | `values(0, 100, 80)` | Gives the slider the integers from 0 to 100. The last number is the initial value; the binding then applies the value of the signal. |
 | `signal(this.volume)` | Binds the slider the same way: each new value is written into the signal. |
 | `visible(this.music)` | A boolean signal goes as it is to `visible(...)`: the Volume row shows only while the music is on. |
@@ -175,14 +173,9 @@ ToggleSwitchNode.create(notifications.aw(-100), 18, 76, 36).signal(this.notifica
 Turn the music off: the Volume row disappears and the next sections move up, because a `FlexNode` gives no room to hidden children. Turn it on again and the row comes back with the slider where you left it.
 
 ![The Music switch is turned off and on, hiding then showing the Volume row, the slider is dragged from 80 % to 65 %, and the Notifications switch is turned on](../images/tutorial-controls.gif "Hidden rows give their room back; the value text follows the signal written by the slider")
-
-> NOTE: A plain value passed to a setter is fixed. An expression that reads signals with `get()` is followed. A lambda such as `() -> ...` is read again every frame, which suits animations and clocks. See [Reactive Properties](../state/reactive-properties.md).
-
 ## Step 4: persist the settings with a store
 
-Close the window and start the program again: every value is back to its default. The signals live in the UI, and the UI starts from scratch on each launch. To keep them, move them into a **store**.
-
-A store is a state object that outlives a node tree. Its `StoreContext` decides how long: `LOCAL` lives with one UI, `GLOBAL` is shared by every UI, and `PERMANENT` is shared and saved to a file between runs. Create `SettingsStore`:
+Close the window and start the program again: every value is back to its default. The signals live in the UI, and the UI starts from scratch on each launch. To keep them, move them into a `PERMANENT` store, the store context of [Saving State](../essentials/saving-state.md) that is saved to a file between runs. Create `SettingsStore`, with one signal per setting:
 
 ```java
 package com.example.settings;
@@ -286,7 +279,7 @@ private void loop() {
 
 The rest of `Main` is unchanged; add `import dev.joid.lib.ui.core.hook.store.UIStoreHook;`.
 
-> TIP: For a few plain fields of one UI class (the selected tab, a sort order), annotate them with `@UIProperty` instead: JOID saves them when the UI closes and restores them before `init()`. Stores fit state held in signals or shared between UIs, like these settings. See [Persistent UI Properties](../state/properties.md).
+> TIP: A store fits these settings because they are signals that other screens of the application could share. For a few plain fields of one UI class, such as the selected tab, `@UIProperty` of [Saving State](../essentials/saving-state.md) is simpler.
 
 ## The complete code
 
@@ -398,13 +391,11 @@ The rows hold working controls: two switches, a slider with its value on the rig
 - Input controls are abstract: you subclass `CheckboxNode`, `IntegerSliderNode` and the others, and only draw them. `signal(...)` binds a control to a signal both ways.
 - A `PERMANENT` store keeps signals between runs; `UIStoreHook.saveAll()` saves it when the application exits.
 
-Next, [Tutorial 4: Polish](polish.md) gives the screen its final look.
-
 ## See also
 
-- [Callbacks](../interactions/callbacks.md)
-- [Signals](../state/signals.md)
-- [Reactive Properties](../state/reactive-properties.md)
-- [CheckboxNode](../nodes/input/checkbox.md)
+- Next: [Tutorial 4: Polish](polish.md) gives the screen its final look.
+- [Signals and Reactivity](../concepts/signals.md)
+- [Input Controls](../essentials/controls.md)
+- [Saving State](../essentials/saving-state.md)
 - [SliderNode](../nodes/input/slider.md)
 - [Stores](../state/stores.md)

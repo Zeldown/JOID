@@ -1,6 +1,6 @@
 # View and Scaling
 
-You design every UI on a virtual canvas of 1920×1080 units, and its `UIView` (`dev.joid.lib.ui.core.view.UIView`) maps that canvas to the window: it fits the canvas without stretching, places it with the UI's anchors, and applies the interface scale of the bridge and the zoom. Read this page to pin a UI to a window edge, to follow the visible area, and to convert between window and canvas coordinates.
+You design every UI on a virtual canvas of 1920×1080 units, and its `UIView` (`dev.joid.lib.ui.core.view.UIView`) maps that canvas to the window: it fits the canvas without stretching, places it with the UI's anchors, and applies the interface scale of the bridge and the zoom. [The Virtual Canvas](../concepts/canvas.md) taught the model; this page is the detailed reference of `UIView`: the exact formulas, the zoom and interface scale rules, the conversions and the projection.
 
 ## Pinning a UI with anchorX and anchorY
 
@@ -16,13 +16,13 @@ public class MinimapUI extends UI {
 }
 ```
 
-![The window is resized to a wide and then a tall shape; the minimap stays in its top-right corner](../images/view-minimap.gif "Window sizes 1920×1080, 1920×760, 1300×1080: the design is pinned to the top-right corner and the extra space opens on the other sides (0.3× scale, black is outside the window).")
+![While the window is resized, the canvas stays pinned to the top-right corner and the minimap with it](../images/view-minimap.gif "anchorX END, anchorY START: the extra area (hatched) opens on the left and at the bottom.")
 
 The minimap stays in the top-right corner of the window whatever its ratio, and a zoom shrinks it towards that corner.
 
 ## How the canvas fits the window
 
-![Four windows: a 16:9 window filled by the design, a wider window with the design centered, a wider window with the design on the left, and a design shrunk by a zoom of 0.5](../images/diagram-ui-canvas.png "The 1920×1080 design is fitted without stretching, placed by the anchors and scaled around the anchor point.")
+![Three 21:9 windows with anchorX START, CENTER and END, and three tall windows with anchorY START, CENTER and END](../images/diagram-canvas-anchors.png "The fit keeps the anchor point of the canvas on the matching point of the window.")
 
 1. **Fit.** The canvas is scaled uniformly by `min(windowWidth / 1920, windowHeight / 1080)`. One canvas unit has the same size horizontally and vertically.
 2. **Extend.** When the window ratio is not 16:9, the visible area is larger than 1920×1080 in one direction: a 2560×1080 window shows 2560×1080 canvas units, a 1080×1080 window shows 1920×1920.
@@ -37,6 +37,8 @@ The minimap stays in the top-right corner of the window whatever its ratio, and 
 | 2560×1080 | `anchorX = START` | The design is pinned to the left; the extra space is on the right. |
 | 2560×1080 | `anchorX = END` | The design is pinned to the right. |
 | 1920×1200 | `anchorY = CENTER` | 60 extra units above and below the design. |
+
+In numbers: with `fit = min(w / 1920, h / 1080)`, the visible area at scale 1 is `w / fit` × `h / fit` units (`getViewportWidth()`, `getViewportHeight()`), and the design is offset inside it by `(viewportWidth - 1920) × anchorX / 1920` horizontally and `(viewportHeight - 1080) × anchorY / 1080` vertically (`getOffsetX()`, `getOffsetY()`), with the anchor point in canvas units.
 
 The view reads the anchors of `getData()` at the start of every frame: `getData().setAnchorX(Align.START)` moves the canvas, the zoom pivot and the mouse conversion from the next frame.
 
@@ -62,7 +64,7 @@ RectNode
 .attach(this);
 ```
 
-![The window is resized and the gray bar keeps spanning its whole top edge](../images/view-bar.gif "The bar follows the visible area at every window size (0.3× scale, black is outside the window).")
+![While the window is resized, a gray bar keeps spanning its whole top edge, over the canvas and the extra area](../images/view-bar.gif "The bar follows the visible area at every window size.")
 
 `x(...)` and `y(...)` receive native expressions that read the signals, `width(...)` receives the signal itself: all three are recomputed when the visible area changes. For other anchors, read the view in a lambda, recomputed every frame: `x(() -> this.getView().toUiX(0D))`.
 
@@ -78,6 +80,8 @@ RectNode
 this.zoom(0.8D);
 ```
 
+![A 16:9 window at zoom 1, 0.8 and 0.5: the canvas shrinks around the anchor dot and more extra area shows](../images/diagram-canvas-zoom.png "Zooming out shows more of the canvas around the anchor.")
+
 The zoom is clamped between 0.1 and `max(1, 1 / interfaceScale)`: at an interface scale of 1 you can zoom out but not past the fitted size, and a UI shrunk by its interface scale can be zoomed back to full size. A zoom below 1 shows more canvas: at 0.5, the visible area of a 16:9 window is 3840×2160 units.
 
 The zoom is kept by a window resize and by `reload()` (Ctrl + R). `renew()` (Ctrl + Shift + R) creates a new UI at zoom 1, and the first load of a UI starts at zoom 1.
@@ -86,12 +90,16 @@ The zoom is kept by a window resize and by `reload()` (Ctrl + R). `renew()` (Ctr
 
 A bridge scales a UI with `IUIBridge.getInterfaceScale(UI ui)` (default `1D`), for example to follow the GUI scale setting of its host. The UI reads it at every draw. The total scale is `interfaceScale × zoom`, applied around the anchor: with an interface scale of 0.5, the design takes half the size and the visible area is 3840×2160 canvas units. See [UI Bridge](../integration/ui-bridge.md).
 
+![Four 16:9 windows: interface 1 and zoom 1, interface 0.5 and zoom 1, interface 0.5 and zoom 2, interface 1 and zoom 0.5](../images/diagram-canvas-scale-zoom.png "Interface scale and zoom multiply, around the anchor point.")
+
 ## Window and canvas coordinates
 
 | Space | Unit | Where you meet it |
 | --- | --- | --- |
 | Canvas | Units of the 1920×1080 design | Node positions and sizes, mouse coordinates in node callbacks and UI hooks, `ui.getMouseX()`. |
 | Window | What the window bridge reports: framebuffer pixels for the GLFW backends | `IWindowBridge.getWidth()`, `UI.getWidth()`, `UI.draw(mouseX, mouseY)`, `drawBackground`. |
+
+![A 2560 by 1080 window with a ruler in window pixels above it and a ruler in canvas units below it; a pointer at pixel 1600 is at canvas x 1280](../images/diagram-canvas-coordinates.png "Pixel 0 of a centered 21:9 window is canvas x -320.")
 
 Convert with the view of a UI:
 
@@ -138,8 +146,9 @@ With `@UIData(projection = true)` (default), the UI draws with its own orthograp
 
 ## See also
 
+- Next: [Transitions](transitions.md)
+- [The Virtual Canvas](../concepts/canvas.md)
 - [The UI Class](ui-class.md)
 - [Opening and Closing UIs](managing-uis.md)
 - [Reactive Properties](../state/reactive-properties.md)
-- [Node Fundamentals](../nodes/node-fundamentals.md)
 - [UI Bridge](../integration/ui-bridge.md)

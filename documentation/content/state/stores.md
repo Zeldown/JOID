@@ -1,44 +1,36 @@
 # Stores
 
-A store is a state object you get with `useStore(...)`. Depending on its context there is one instance per UI, one instance shared by every UI, or one shared instance saved to disk between runs. Use a store for state that outlives a node tree: a cart, the settings of a menu, a session.
+[Saving State](../essentials/saving-state.md) showed a store, `@UIStoreData`, the three `StoreContext` values and a `PERMANENT` store with `load` and `save`. This page covers stores in full: how `useStore` finds or creates a store, constructor arguments, the lifecycle of a store, its file, and `UIStoreHook`. Use a store for state that outlives a node tree: a cart, the settings of a menu, a session.
 
 ## A first store
 
 ```java
-@UIStoreData(id = "cart", context = StoreContext.GLOBAL)
+@Getter
+@UIStoreData(context = StoreContext.GLOBAL)
 public class CartStore extends UIStore {
 
 	private final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
 
-	public ListSignal<String> getItems() {
-		return this.items;
-	}
-
 }
 ```
 
+In the `init()` of a shop UI:
+
 ```java
-public class ShopUI extends UI {
+final CartStore cart = super.useStore(CartStore.class);
 
-	@Override
-	public void init() {
-		final CartStore cart = super.useStore(CartStore.class);
+TextNode.create(100, 100).text(Text.create(cart.getItems().size() + " items", this.info)).attach(this);
 
-		TextNode.create(100, 100).text(Text.create(cart.getItems().size() + " items", this.info)).attach(this);
-
-		RectNode
-		.create(100, 160, 200, 60)
-		.color(Color.GRAY)
-		.onClick((node, mouseX, mouseY, clickType) -> cart.getItems().add("Sword"))
-		.attach(this);
-	}
-
-}
+RectNode
+.create(100, 160, 200, 60)
+.color(Color.GRAY)
+.onClick((node, mouseX, mouseY, clickType) -> cart.getItems().add("Sword"))
+.attach(this);
 ```
 
 ![Clicking a button adds items to a cart; closing and reopening the UI keeps the count](../images/store-cart.gif "A GLOBAL store outlives the UI that uses it")
 
-Every UI that calls `useStore(CartStore.class)` gets the same instance, so the cart survives when the shop closes and opens again. The text reads the `ListSignal` of the store with `size()`, a followed read: it updates on each `add` (see [Reactive Properties](reactive-properties.md)). `UIStore` is in `dev.joid.lib.ui.core.hook.store`, `UIStoreData` in `dev.joid.lib.ui.core.hook.store.data`, `StoreContext` in `dev.joid.lib.ui.core.hook.store.context`; `info` is a `TextInfo` (see [Text and TextInfo](../text/text-and-textinfo.md)).
+Every UI that calls `useStore(CartStore.class)` gets the same instance, so the cart survives when the shop closes and opens again. The text reads the `ListSignal` of the store with `size()`, a followed read: it updates on each `add` (see [Reactive Properties](reactive-properties.md)). `UIStore` is in `dev.joid.lib.ui.core.hook.store`, `UIStoreData` in `dev.joid.lib.ui.core.hook.store.data`, `StoreContext` in `dev.joid.lib.ui.core.hook.store.context`; `info` is a `TextInfo` (see [Text](../essentials/text.md)). `@Getter` is the Lombok annotation that writes `getItems()`.
 
 ## Store contexts with StoreContext
 
@@ -80,21 +72,17 @@ Give a `PERMANENT` store an explicit id: renaming or moving the class would othe
 The arguments are used only when the store is created.
 
 ```java
-@UIStoreData(id = "session")
+@Getter
+@RequiredArgsConstructor
+@UIStoreData
 public class SessionStore extends UIStore {
 
 	private final String player;
 
-	public SessionStore(final String player) {
-		this.player = player;
-	}
-
-	public String getPlayer() {
-		return this.player;
-	}
-
 }
 ```
+
+`@RequiredArgsConstructor` gives the store a public constructor `SessionStore(String player)`; `useStore` passes it its arguments:
 
 ```java
 @Override
@@ -128,6 +116,7 @@ When a UI closes, JOID saves every `PERMANENT` store in use, then destroys the `
 ## Saving a PERMANENT store
 
 ```java
+@Getter
 @UIStoreData(id = "settings", context = StoreContext.PERMANENT)
 public class SettingsStore extends UIStore {
 
@@ -143,10 +132,6 @@ public class SettingsStore extends UIStore {
 	@Override
 	public void save(final JsonObject json) {
 		json.addProperty("volume", this.volume.peek());
-	}
-
-	public FloatSignal getVolume() {
-		return this.volume;
 	}
 
 }
@@ -187,7 +172,8 @@ public class SettingsStore extends UIStore {
 
 ## See also
 
-- [Signals](signals.md)
-- [Persistent UI Properties](properties.md)
-- [Watching Signals](watch.md)
+- Next: [Persistent UI Properties](properties.md)
+- [Saving State](../essentials/saving-state.md): the basics this page builds on.
+- [Signals](signals.md): the signals a store holds.
+- [UIs and Their Lifecycle](../concepts/uis.md): when a UI opens and closes.
 - [The UI Class](../ui/ui-class.md)

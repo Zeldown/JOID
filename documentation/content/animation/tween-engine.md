@@ -1,6 +1,6 @@
 # Tween Engine
 
-The tween engine (`dev.joid.lib.animation.tweenengine`) animates any `float` attributes of any object: tweens interpolate up to three attributes at once, timelines chain and group them, and a `TweenManager` updates everything. [`TweenAnimator`](tween-animator.md) runs on it; use the engine directly to animate your own objects, several attributes together, or along a path. Its API follows the Universal Tween Engine (`Tween.getVersion()` returns `"6.3.3"`).
+The tween engine (`dev.joid.lib.animation.tweenengine`) animates any `float` attributes of any object: tweens interpolate up to three attributes at once, timelines chain and group them, and a `TweenManager` updates everything. [`TweenAnimator`](tween-animator.md) runs on it; use the engine directly to animate your own objects, several attributes together, or along a path. Its API follows the Universal Tween Engine (`Tween.getVersion()` returns `"6.3.3"`). It is the last Animation guide: it assumes the [TweenAnimator](tween-animator.md) and [Easing](easing.md) pages.
 
 ## A first tween
 
@@ -109,7 +109,7 @@ The next examples reuse this `card` and the UI's `manager`.
 - A target that implements `TweenAccessor` and has no accessor registered for its own class is its own accessor (`MutableFloat`, `MutableInteger`).
 - `cast(Class<?>)` forces the class used for the lookup. After the tween started, it throws `RuntimeException("You can't cast the target of a tween once it is started")`.
 - When nothing is found, starting the tween throws `RuntimeException("No TweenAccessor was found for the target")`.
-- The accessor of [`TweenAnimator`](tween-animator.md#tweening-an-animator-with-tweenanimatoraccessor) is registered automatically.
+- The accessor of `TweenAnimator` is registered automatically (see [Tweening an animator](#tweening-an-animator-with-tweenanimatoraccessor)).
 
 The registry is a plain static map: register the accessors at startup, before tweens run.
 
@@ -191,6 +191,24 @@ A `TweenManager` holds tweens and timelines and updates them together.
 - A finished (or killed) object is removed at the next `update(...)` and returned to its [pool](#pooling): another `Tween.to(...)` or `Timeline.create...()` can then reuse it. Do not keep using a tween or timeline once it finished, or disable its auto remove and call `free()` yourself.
 - `add`, `update`, the `kill...`, `contains...` and counting methods synchronize on a lock of the manager. The pools and the accessor registry are not synchronized: create and configure tweens on the thread that updates them.
 - Without a manager, call `start()` on the object and `update(delta)` on it yourself; nothing frees it.
+
+## Tweening an animator with TweenAnimatorAccessor
+
+`TweenAnimatorAccessor` (`dev.joid.lib.animation.animator`) is the [`TweenAccessor`](#tween-accessors) of the [`TweenAnimator`](tween-animator.md). Its only tween type, `TweenAnimatorAccessor.ANIMATION_VALUE` (`0`), reads and writes `getValue()` / `setValue(...)`. It is registered automatically, so an animator can be the target of a raw tween or timeline:
+
+```java
+final TweenManager manager = new TweenManager();
+final TweenAnimator progress = TweenAnimator.create(0F);
+
+Timeline
+.createSequence()
+.push(Tween.to(progress, TweenAnimatorAccessor.ANIMATION_VALUE, 300F).target(0.8F))
+.pushPause(500F)
+.push(Tween.to(progress, TweenAnimatorAccessor.ANIMATION_VALUE, 200F).target(1F))
+.start(manager);
+```
+
+These tweens run in `manager`, not in the animator's own manager: update `manager` yourself every frame (see [Running tweens with TweenManager](#running-tweens-with-tweenmanager)).
 
 ## Delays, repeat and yoyo
 
@@ -351,7 +369,7 @@ Common base of `Tween` and `Timeline`. The configuring methods return the object
 
 ## See also
 
+- Next: [The UI Class](../ui/ui-class.md), the UIs guides
 - [TweenAnimator](tween-animator.md)
 - [Easing](easing.md)
-- [The UI Class](../ui/ui-class.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md)

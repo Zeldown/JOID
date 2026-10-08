@@ -1,6 +1,6 @@
 # Easing
 
-An easing equation shapes the progress of an animation: it maps the elapsed fraction of the duration to the fraction of the distance covered, so a value can start slowly, stop softly, overshoot or bounce. Every equation is a `TweenEquation`, and the built-in ones are constants of `TweenEquations` (`dev.joid.lib.animation.tweenengine`).
+An easing equation shapes the progress of an animation: it maps the elapsed fraction of the duration to the fraction of the distance covered, so a value can start slowly, stop softly, overshoot or bounce. Every equation is a `TweenEquation`, and the built-in ones are constants of `TweenEquations` (`dev.joid.lib.animation.tweenengine`). [Animation](../essentials/animation.md) listed the usual ones; this page shows every curve, how to tune and write equations, and how they shape a [TweenAnimator](tween-animator.md).
 
 ## Using an equation
 
@@ -14,17 +14,13 @@ Pass the equation wherever an animation accepts one:
 
 ```java
 RectNode.create(0, 0, 200, 60).color(Color.WHITE).hoveredColor(Color.GRAY).hoverEquation(TweenEquations.SINE_INOUT).attach(this);
-
-final TweenManager manager = new TweenManager();
-final MutableFloat score = new MutableFloat(0F);
-Tween.to(score, 0, 800F).target(100F).ease(TweenEquations.BACK_OUT).start(manager);
 ```
 
 | Where | Method | Default |
 | --- | --- | --- |
 | [`TweenAnimator`](tween-animator.md) steps | `sequence(...)`, `parallel(...)`, `push(...)` with a `TweenEquation` argument | `TweenEquations.LINEAR` |
 | Node hover animation | `Node.hoverEquation(TweenEquation)` | `TweenEquations.LINEAR` |
-| [`Tween`](tween-engine.md) | `ease(TweenEquation)` | `TweenEquations.QUAD_INOUT` for `Tween.to`, `Tween.from` and `Tween.set` |
+| A tween of the [Tween Engine](tween-engine.md) (next page) | `ease(TweenEquation)` | `TweenEquations.QUAD_INOUT` for `Tween.to`, `Tween.from` and `Tween.set` |
 
 ## IN, OUT and INOUT
 
@@ -110,9 +106,9 @@ Override `toString()` to name the equation: `isValueOf(String)` compares a strin
 
 ## How the eased progress is used
 
-At each update, a tween computes `p = equation.compute(elapsed / duration)` and sets each value to `start + p · (target - start)`. With [waypoints](tween-engine.md#paths-and-waypoints), `p` is the position along the path instead.
+At each update, an animation step (a tween, see [Tween Engine](tween-engine.md)) computes `p = equation.compute(elapsed / duration)` and sets each value to `start + p · (target - start)`. With [waypoints](tween-engine.md#paths-and-waypoints), `p` is the position along the path instead.
 
-During the backward plays of a yoyo ([`repeatYoyo`](tween-engine.md#delays-repeat-and-yoyo)), the elapsed time runs backward: the value retraces the same curve in reverse. A `QUAD_OUT` forward play that arrives softly leaves softly on the way back.
+During the backward plays of a yoyo ([`repeatYoyo`](tween-animator.md#repeating-with-repeat-and-repeatyoyo)), the elapsed time runs backward: the value retraces the same curve in reverse. A `QUAD_OUT` forward play that arrives softly leaves softly on the way back.
 
 ## Parsing an equation by name with TweenUtils
 
@@ -160,7 +156,8 @@ The constants are the static fields of the family classes in `dev.joid.lib.anima
 
 ## See also
 
+- Next: [Tween Engine](tween-engine.md)
 - [TweenAnimator](tween-animator.md)
-- [Tween Engine](tween-engine.md)
+- [Animation](../essentials/animation.md)
 - [Hover and Tooltips](../interactions/hover.md)
 - [Transitions](../ui/transitions.md)

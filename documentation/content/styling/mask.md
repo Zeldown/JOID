@@ -88,7 +88,7 @@ Write suppliers that return a `double` (`0D`, not `0`): an `int` lambda does not
 - The mask only clips pixels. A clipped area still receives hover and clicks.
 - Its position in the effect order matters with a [TransformNodeEffect](transform.md): see [Effect order and priority](effects.md#effect-order-and-priority).
 
-To clip the children of a node to its own rectangle, an overflow setting is simpler (see [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md)). To clip your own drawing code, use `UI.mask(...)` or `UI.startMask(...)`/`UI.stopMask()` (see [The UI Class](../ui/ui-class.md)), which this effect calls.
+To clip the children of a node to its own rectangle, an overflow setting is simpler (see [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md)). To clip your own drawing code, use `UI.mask(...)` or `UI.startMask(...)`/`UI.stopMask()`, which this effect calls (see also [The UI Class](../ui/ui-class.md), later in the Guides).
 
 ## Reference
 
@@ -110,6 +110,7 @@ To clip the children of a node to its own rectangle, an overflow setting is simp
 
 ## See also
 
+- Next: [TransformNodeEffect](transform.md)
 - [Effects](effects.md)
 - [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md)
 - [The UI Class](../ui/ui-class.md)

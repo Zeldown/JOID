@@ -1,6 +1,6 @@
 # The UI Class
 
-`UI` (`dev.joid.lib.ui.core.UI`) is the root of a screen: it owns a tree of nodes, receives input from its bridge and draws itself on the 1920×1080 virtual canvas. Extend it once per screen, build the nodes in `init()` and configure the class with `@UIData`.
+`UI` (`dev.joid.lib.ui.core.UI`) is the root of a screen: it owns a tree of nodes, receives input from its bridge and draws itself on the 1920×1080 virtual canvas. Extend it once per screen, build the nodes in `init()` and configure the class with `@UIData`. This page opens the UIs guide: it takes the class that [UIs and Their Lifecycle](../concepts/uis.md) introduced and covers every hook, option and helper; the next pages open several UIs together, fit the canvas into the window and animate the opening.
 
 ## A minimal UI
 
@@ -37,7 +37,7 @@ public class MenuUI extends UI {
 | --- | --- | --- |
 | Construction | `new MyUI()` | Reads `@UIData`, `@UIDataDebug` and `@UIDataPopup` (each one on the class or its nearest annotated superclass), creates the view and, for a popup, its default transition. No node exists yet. |
 | First load | The bridge adds the UI and calls `load(width, height)` | Sizes the view to the window at zoom 1, restores the [`@UIProperty`](../state/properties.md) fields, clears what was added before, runs `init()`, then starts the In state of the [transition](transitions.md). In dev mode, also adds the DevNode and starts hot reload. |
-| Frames | The bridge | Input hooks, `update()`, then the draw. See [Core Concepts](../getting-started/core-concepts.md). |
+| Frames | The bridge | Input hooks, `update()`, then the draw. See [The Frame Loop](../concepts/frame-loop.md). |
 | Resize | `UIBridge.load()`, called by the backend when the window changes | `load(width, height, zoom)` resizes the view and keeps the current zoom. `init()` does not run again. |
 | Reload | `reload()`, Ctrl + R or F5, the DevNode button, hot reload | Saves then restores the `@UIProperty` fields, applies the annotation values changed since their last read, detaches every node, clears the keybinds and tasks, runs `init()` again and replays the In transition. Same instance: fields, signals and zoom are kept. |
 | Renew | `renew()`, Ctrl + Shift + R or Shift + F5 | Creates a new instance with the constructor without argument, releases the current instance with `properlyClose()`, then removes it from the bridge and adds the new one (no `close()`, no Out transition). New fields, new signals, zoom 1. Returns the new instance. |
@@ -50,7 +50,13 @@ During `init()`, `UI.getCurrent()` returns the UI being initialized; it returns 
 
 ## Overridable hooks
 
-`UI` implements `IUI` (`dev.joid.lib.ui.core.IUI`), whose methods all have empty defaults. Mouse coordinates are in canvas units.
+`UI` implements `IUI` (`dev.joid.lib.ui.core.IUI`), whose methods all have empty defaults.
+
+Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. The mouse coordinates the hooks receive are always in canvas units; only `drawBackground` draws outside the canvas, in the host's space.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+See [The Virtual Canvas](../concepts/canvas.md) for the fit rule and the conversions.
 
 | Hook | Called |
 | --- | --- |
@@ -65,6 +71,10 @@ During `init()`, `UI.getCurrent()` returns the UI being initialized; it returns 
 | `void mouseReleased(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | After the nodes received the release. |
 | `void mouseScroll(double mouseX, double mouseY, int value, InternalContext context)` | After the nodes received the scroll. |
 | `void keyPressed(char c, Key key, InternalContext context)` | Last, after the nodes, the keybinds, the zoom keys and the dev keys. |
+
+Each draw of a UI runs its steps in this order; the hooks find their place between the nodes by `zindex`:
+
+![Eleven steps from the scheduled tasks to the transition post: the background, drawBackground and the transition pre outside the view, then inside the view the nodes with a negative zindex, preDraw, the nodes from 0 to 99, postDraw, the nodes from 100 and the tooltips](../images/diagram-ui-draw-order.png "The draw of one UI: preDraw and postDraw sit between the zindex bands of the nodes.")
 
 The input hooks run even when a node already consumed the event: check `context.isCancelled()` before acting, and call `context.cancel()` to consume the event so the UIs below do not receive it. See [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
 
@@ -109,7 +119,7 @@ this.getData().setCloseable(false).setBackground(false);
 
 The getters use the annotation names (`active()`, `zlevel()`, `anchorX()`...); `getBackgroundColor()` returns the decoded `Color`, and `getAnchorPositionX()` / `getAnchorPositionY()` the anchor in canvas units (0, 960 or 1920; 0, 540 or 1080).
 
-A reload applies only the annotation values that changed since their last read: a value set at runtime survives Ctrl + R as long as you do not edit that attribute of the annotation. `getData()`, `getDebug()` and `getPopup()` keep the same object for the whole life of the UI. The other annotations are [`@UIDataPopup`](managing-uis.md#popups-with-uidatapopup) and [`@UIDataDebug`](../getting-started/dev-tools.md) (`profiler`, `hotreload`, both `true` by default).
+A reload applies only the annotation values that changed since their last read: a value set at runtime survives Ctrl + R as long as you do not edit that attribute of the annotation. `getData()`, `getDebug()` and `getPopup()` keep the same object for the whole life of the UI. The other annotations are [`@UIDataPopup`](managing-uis.md#popups-with-uidatapopup) and [`@UIDataDebug`](../concepts/dev-tools.md) (`profiler`, `hotreload`, both `true` by default).
 
 ## Adding nodes with add
 
@@ -159,11 +169,11 @@ Tasks run at the start of the draw, on the thread that draws the UI, timed with 
 | `reload()` | Ctrl + R, F5 | Same | Kept | Kept |
 | `renew()` | Ctrl + Shift + R, Shift + F5 | New, from the constructor without argument (a private one works) | New | 1 |
 
-`renew()` throws an `IllegalStateException` when the UI is not open, when its class has no constructor without argument (anonymous class, inner class that is not static) or when that constructor fails; from the keyboard, the message is printed as `[JOID] ...` and the UI stays open. Signals declared as locals in `init()` start from zero on every reload; signals held in fields keep their value until a renew. See [Developer Tools](../getting-started/dev-tools.md).
+`renew()` throws an `IllegalStateException` when the UI is not open, when its class has no constructor without argument (anonymous class, inner class that is not static) or when that constructor fails; from the keyboard, the message is printed as `[JOID] ...` and the UI stays open. Signals declared as locals in `init()` start from zero on every reload; signals held in fields keep their value until a renew. See [Developer Tools](../concepts/dev-tools.md).
 
 ## Masks with mask and startMask
 
-Masks clip drawing to a rectangle or to the opaque pixels of a resource, with the stencil buffer. Use them in draw hooks or custom nodes:
+Masks clip drawing to a rectangle or to the opaque pixels of a resource, with the stencil buffer. Use them in draw hooks or custom nodes; the `Drawing` argument is a lambda without parameters that draws, here with `DrawUtils.SHAPE`:
 
 ```java
 @Override
@@ -257,9 +267,9 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 
 ## See also
 
-- [Opening and Closing UIs](managing-uis.md)
+- Next: [Opening and Closing UIs](managing-uis.md)
+- [UIs and Their Lifecycle](../concepts/uis.md)
 - [View and Scaling](view-and-scaling.md)
 - [Transitions](transitions.md)
-- [Node Fundamentals](../nodes/node-fundamentals.md)
 - [Persistent UI Properties](../state/properties.md)
 - [UI Bridge](../integration/ui-bridge.md)

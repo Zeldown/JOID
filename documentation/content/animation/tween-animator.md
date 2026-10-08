@@ -1,6 +1,6 @@
 # TweenAnimator
 
-`TweenAnimator` (`dev.joid.lib.animation.animator`) animates a single `float` value over time: you describe the steps (duration, target value, easing), start it, and read the value while it moves. It is the simplest way to animate a node, and JOID itself uses it for hover fades and UI transitions. It runs on the [Tween Engine](tween-engine.md), which you only need for objects with several attributes or for advanced timelines.
+`TweenAnimator` (`dev.joid.lib.animation.animator`) animates a single `float` value over time: you describe the steps (duration, target value, easing), start it, and read the value while it moves. It is the simplest way to animate a node, and JOID itself uses it for hover fades and UI transitions. It runs on the [Tween Engine](tween-engine.md), which you only need for objects with several attributes or for advanced timelines. This page opens the Animation guides: it takes the animator of [Animation](../essentials/animation.md) through every method, its timelines, its callbacks and its tests.
 
 ## Animating a node
 
@@ -101,6 +101,12 @@ RectNode
 
 ![Clicking a gray button slides a light panel in from the left edge, a second click slides it out](../images/animator-slide.gif "Each click builds a new timeline toward the other side, eased with QUART_OUT (whole canvas at 0.3× scale).")
 
+Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. A panel parked at `x = -300` is therefore visible in the extra area on the left of a wide window: hide it while it is closed, for example with `.visible(() -> slide.getValue() > 0F)`.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+See [The Virtual Canvas](../concepts/canvas.md).
+
 `start()` records the clock time and starts the timeline in the animator's own `TweenManager`. Configure the timeline (repeats, delays, callbacks) between `sequence(...)` and `start()`.
 
 ## Repeating with repeat and repeatYoyo
@@ -123,7 +129,11 @@ pulse.start();
 
 ## Reacting to the end with setCallback
 
-`setCallback(Consumer<BaseTween<?>>)` runs when the timeline reaches its end. Here it counts the plays in a signal, and the text follows the signal:
+`setCallback(Consumer<BaseTween<?>>)` runs when the timeline reaches its end. Here it counts the plays in a signal field of the UI, and the text follows the signal:
+
+```java
+private final IntegerSignal plays = IntegerSignal.of(0);
+```
 
 ```java
 final TweenAnimator once = TweenAnimator.create(0F);
@@ -137,7 +147,7 @@ RectNode
 TextNode.create(900, 612).text(Text.create("Ends: " + this.plays.get(), info)).attach(this);
 ```
 
-`plays` is an `IntegerSignal` field of the UI and `info` a `TextInfo` (see [Text and TextInfo](../text/text-and-textinfo.md)).
+`info` is a `TextInfo` built from a loaded font (see [Text](../essentials/text.md)).
 
 - The callback goes on the current timeline (as a `TweenCallback.END` callback): add it after `sequence(...)` / `parallel(...)`. The next `sequence(...)` builds a timeline without it.
 - With `repeat(...)` or `repeatYoyo(...)`, it runs at the end of every play. Several calls add several callbacks, run in order.
@@ -230,24 +240,6 @@ BridgeHandler.CLOCK.register(new SystemClockBridge());
 
 This prints `2.5`: a quarter of the way to `10F` with `LINEAR` easing.
 
-## Tweening an animator with TweenAnimatorAccessor
-
-`TweenAnimatorAccessor` is the [`TweenAccessor`](tween-engine.md#tween-accessors) of `TweenAnimator`. Its only tween type, `TweenAnimatorAccessor.ANIMATION_VALUE` (`0`), reads and writes `getValue()` / `setValue(...)`. It is registered automatically, so an animator can be the target of a raw tween or timeline:
-
-```java
-final TweenManager manager = new TweenManager();
-final TweenAnimator progress = TweenAnimator.create(0F);
-
-Timeline
-.createSequence()
-.push(Tween.to(progress, TweenAnimatorAccessor.ANIMATION_VALUE, 300F).target(0.8F))
-.pushPause(500F)
-.push(Tween.to(progress, TweenAnimatorAccessor.ANIMATION_VALUE, 200F).target(1F))
-.start(manager);
-```
-
-These tweens run in `manager`, not in the animator's own manager: update `manager` yourself every frame (see [Running tweens with TweenManager](tween-engine.md#running-tweens-with-tweenmanager)).
-
 ## Reference
 
 ### TweenAnimator
@@ -289,8 +281,9 @@ The setters generated for the fields (`setValue`, `setSpeed`...) return `void`; 
 
 ## See also
 
-- [Easing](easing.md)
-- [Tween Engine](tween-engine.md)
+- Next: [Easing](easing.md)
+- [Animation](../essentials/animation.md)
+- [Tween Engine](tween-engine.md): animating your own objects, and an animator as the target of a tween
 - [Reactive Properties](../state/reactive-properties.md)
 - [Hover and Tooltips](../interactions/hover.md)
 - [Transitions](../ui/transitions.md)

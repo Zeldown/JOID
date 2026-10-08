@@ -1,23 +1,23 @@
 # Tutorial 4: Polish
 
-The settings screen works; in this last part you make it look finished. You give it a gradient background, round the card and outline it with an effect, animate the rows under the mouse, add tooltips, make the switch slide, and make the screen pop in when it opens.
+The settings screen works; in this last part you make it look finished. You give it a gradient background, round the card and outline it with an effect, animate the rows under the mouse, add tooltips, make the switch slide, and make the screen pop in when it opens, with what [Styling and Effects](../concepts/styling.md) and [Animation](../essentials/animation.md) taught.
 
 You start from the code of [Tutorial 3](interactivity.md). `Main`, `AppUIBridge` and `SettingsStore` do not change.
 
 ## Step 1: a gradient background
 
-Any `Color` in JOID can carry a linear gradient, and `@UIData` accepts a gradient string for the background:
+A `Color` can carry a linear gradient, as `toGradient` showed in [Styling and Effects](../concepts/styling.md). An annotation takes no code, so `@UIData` accepts the gradient as a string:
 
 ```java
 @UIData(backgroundColor = "gradient(#18181B, #52525B, 0, 0, 1, 1)")
 public final class SettingsUI extends UI {
 ```
 
-The two colors are the start and the end; the four numbers are the start and end points of the gradient as fractions of the area, here from the top-left corner `(0, 0)` to the bottom-right corner `(1, 1)`. In code, `start.toGradient(end)` builds a gradient from left to right. See [Colors and Gradients](../styling/colors.md).
+The two colors are the start and the end; the four numbers are the start and end points of the gradient as fractions of the area, here from the top-left corner `(0, 0)` to the bottom-right corner `(1, 1)`. Without the four numbers, the gradient goes from left to right, like `toGradient(end)`. `Color.decode` reads the same string anywhere a color is written as text.
 
 ## Step 2: rounded corners and a border
 
-An effect changes how a node is drawn without changing the node: `RoundedNodeEffect` rounds its corners, and other effects blur, mask, shadow or transform it. Effects work on any node, built-in or yours. `RectNode` also draws a border, set with one setter per property. Style the card:
+Round the card with `RoundedNodeEffect` and outline it with the border of `RectNode`, both seen in [Styling and Effects](../concepts/styling.md):
 
 ```java
 RectNode
@@ -28,13 +28,13 @@ RectNode
 .effect(RoundedNodeEffect.create(24F))
 ```
 
-The border is drawn outside the card and follows its rounded corners. The setters of `RectNode` (`color`, `borderColor`, `borderStroke`) come before `effect(...)`, a setter of every node. `RoundedNodeEffect` is in `dev.joid.lib.ui.node.effect.impl`; see [Effects](../styling/effects.md) and [RoundedNodeEffect](../styling/rounded.md).
+The border is drawn outside the card and follows its rounded corners, because the border pass runs after the shape pass. The setters of `RectNode` (`color`, `borderColor`, `borderStroke`) come before `effect(...)`, a setter of every node. `RoundedNodeEffect` is in `dev.joid.lib.ui.node.effect.impl`.
 
 ![The settings card with rounded corners and a thin white outline on a dark gradient](../images/tutorial-overview.png "Steps 1 and 2: a gradient background and a rounded, outlined card")
 
 ## Step 3: hover animation
 
-`hoveredColor(...)` gives a `RectNode` a second color that it blends to while the mouse is over it. The blend follows the hover animation of the node, 200 ms and linear by default; `hoverDuration` and `hoverEquation` change it. Add the hover color to `Theme`:
+The rows get the hover animation of [Animation](../essentials/animation.md): a `hoveredColor(...)` they blend to while the mouse is over them, a little faster than the default 200 ms and eased with `hoverDuration` and `hoverEquation`, and rounded corners like the card. Add the hover color to `Theme`:
 
 ```java
 public static final Color HOVER = Color.decode("#F0F0F0");
@@ -69,13 +69,13 @@ RectNode
 .onClick((node, mouseX, mouseY, clickType) -> this.settings.getLanguage().set(language))
 ```
 
-`TweenEquations` (`dev.joid.lib.animation.tweenengine`) lists the easing curves; `QUAD_OUT` starts fast and slows down. See [Hover and Tooltips](../interactions/hover.md) and [Easing](../animation/easing.md).
+`TweenEquations.QUAD_OUT` (`dev.joid.lib.animation.tweenengine`) starts fast and slows down, so a row reacts at once under the mouse. See [Easing](../animation/easing.md) for the other curves.
 
 ![The mouse moves up over the language rows and the Notifications row, each lightening while the mouse is over it](../images/tutorial-polish-hover.gif "Each row blends to its hover color")
 
 ## Step 4: tooltips
 
-`hover(...)` gives a node a tooltip line. It takes a lambda, read every frame while the tooltip shows, so the line of the Music switch follows the state of the music without any extra code:
+Give the switches the `hover(...)` tooltips of [Input and Callbacks](../concepts/input.md). The lambda is read while the tooltip shows, so the line of the Music switch follows the state of the music without any extra code:
 
 ```java
 ToggleSwitchNode
@@ -93,7 +93,7 @@ ToggleSwitchNode
 .attach(notifications);
 ```
 
-JOID collects the lines of the hovered node and asks the UI to draw them with `drawHover`, which by default hands them to the UI bridge. The `AppUIBridge` of part 1 draws nothing, so the settings screen draws its own tooltips. Override `drawHover` in `SettingsUI`:
+JOID collects the lines of the hovered node and asks the UI to draw them with `drawHover`, which by default hands them to the UI bridge. The `AppUIBridge` of the Quick Start draws nothing, so the settings screen draws its own tooltips. Override `drawHover` in `SettingsUI`:
 
 ```java
 @Override
@@ -117,7 +117,7 @@ The mouse position is in canvas units and the drawing happens on the canvas, abo
 
 ## Step 5: an animated switch
 
-The knob of the switch jumps from one side to the other. Make it slide with a `TweenAnimator` (`dev.joid.lib.animation.animator`), which animates a `float` over time. In `ToggleSwitchNode`, the animator goes from `0F` (off) to `1F` (on); the knob position and the track color follow its value. Add two fields and replace `draw`:
+The knob of the switch jumps from one side to the other. Make it slide with the `TweenAnimator` of [Animation](../essentials/animation.md) (`dev.joid.lib.animation.animator`). In `ToggleSwitchNode`, the animator goes from `0F` (off) to `1F` (on); the knob position and the track color follow its value. The switch draws itself, so its `draw` advances the animator too. Add two fields and replace `draw`:
 
 ```java
 private final TweenAnimator knob = TweenAnimator.create();
@@ -145,7 +145,7 @@ public void draw(final double mouseX, final double mouseY) {
 
 - `shown` is the state drawn on the previous frame, `null` before the first one. On the first frame the knob is placed at once (`setValue`), so a switch that opens checked does not slide.
 - When the state changes, `sequence(duration, value, equation).start()` slides to the other side in 180 ms; a new `sequence` replaces a slide still running.
-- `update()` advances the animation by the time elapsed since the last call, read from the clock of JOID.
+- `update()` advances the animation by the time elapsed since the last call, read from the clock of JOID. It does what `animate(...)` does for an animator passed to a node, here inside the drawing that reads the value.
 - `CARD.to(INK, progress)` blends the two colors; `drawRoundedRect` with a radius of half the height draws a pill and `drawCircle` the knob.
 
 The slider gets the same treatment: a rounded track, the part before the cursor filled with `Theme.INK`, and a round cursor. See the complete code below and [TweenAnimator](../animation/tween-animator.md).
@@ -154,7 +154,7 @@ The slider gets the same treatment: a rounded track, the part before the cursor 
 
 ## Step 6: an opening transition
 
-A transition animates a UI when it opens and when it closes. `PopTransition` (`dev.joid.lib.ui.core.transition.impl`) scales the UI from 75 % to 100 % in 130 ms when it opens, and back to 75 % when it closes. Set it in a constructor of `SettingsUI`:
+`PopTransition` (`dev.joid.lib.ui.core.transition.impl`), the transition of [Animation](../essentials/animation.md), scales the UI from 75 % to 100 % in 130 ms when it opens, and back to 75 % when it closes. Set it in a constructor of `SettingsUI`, so that every instance pops, wherever it is opened from:
 
 ```java
 public SettingsUI() {
@@ -440,23 +440,22 @@ The card pops in on a dark gradient, with rounded corners and a white outline. R
 
 ## Next steps
 
-You have used most of the everyday features of JOID. From here:
+You have used most of the everyday features of JOID in one application. From here:
 
 | To | Read |
 | --- | --- |
-| Understand the model behind what you wrote | [Core Concepts](../getting-started/core-concepts.md) |
-| Learn each topic step by step | [Essentials](../essentials/uis.md) |
 | Find the right node for a job | [Component Catalog](../components/overview.md) |
 | Draw every control of an application once | [Building a UI Kit](../components/ui-kit.md) |
-| Add a text field, a selector or a scrolling list | [TextFieldNode](../nodes/input/text-field.md), [SelectorNode](../nodes/input/selector.md), [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md) |
+| Add a dropdown list or a reorderable list | [SelectorNode](../nodes/input/selector.md), [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) |
+| Go deeper into one topic | The guides, from [Node Fundamentals](../nodes/node-fundamentals.md) on |
 | Load more fonts and style text | [Adding Your Own Fonts](../fonts/adding-fonts.md), [Styling Text](../text/styling-text.md) |
-| Open several screens and popups | [Opening and Closing UIs](../ui/managing-uis.md) |
-| Run inside your own engine | [Bridges](../integration/bridges.md) |
+| Run inside your own engine | [UI Bridge](../integration/ui-bridge.md), [Writing a Backend](../integration/writing-a-backend.md) |
 
 ## See also
 
-- [Effects](../styling/effects.md)
-- [Colors and Gradients](../styling/colors.md)
-- [Hover and Tooltips](../interactions/hover.md)
+- Next: [Component Catalog](../components/overview.md) lists every node of JOID.
+- [Styling and Effects](../concepts/styling.md)
+- [Animation](../essentials/animation.md)
+- [Building a UI Kit](../components/ui-kit.md)
 - [TweenAnimator](../animation/tween-animator.md)
 - [Transitions](../ui/transitions.md)

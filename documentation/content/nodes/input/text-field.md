@@ -1,8 +1,8 @@
 # TextFieldNode
 
-`TextFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield`) is a single-line editable text input: it owns its text, cursor and selection, and handles typing, the keyboard, the clipboard and the mouse. `IntegerFieldNode` (same package, `.impl`) is its sibling for whole numbers. Use them for search boxes, names, chat inputs, quantities; use [`MultilineTextFieldNode`](multiline-text-field.md) for several lines.
+`TextFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield`) is a single-line editable text input: it owns its text, cursor and selection, and handles typing, the keyboard, the clipboard and the mouse. `IntegerFieldNode` (same package, `.impl`) is its sibling for whole numbers. Use them for search boxes, names, chat inputs, quantities; use [`MultilineTextFieldNode`](multiline-text-field.md) for several lines. You met the field in [Input Controls](../../essentials/controls.md); this page covers all of it, then the other controls follow.
 
-In the examples, the code runs in `UI.init()` and `font` is an `IFont` you loaded (see [Adding Your Own Fonts](../../fonts/adding-fonts.md)).
+In the examples, the code runs in `UI.init()` and `font` is an `IFont` you loaded (see [Text](../../essentials/text.md)).
 
 ## Creating a text field
 
@@ -91,7 +91,7 @@ Call the `IntegerFieldNode` setters (`min`, `max`, `step`, `value`) before the s
 
 ## Binding a signal with signal
 
-`signal(Signal<V>)` keeps the value and a [signal](../../state/signals.md) in sync, both ways:
+`signal(Signal<V>)` keeps the value and a [signal](../../concepts/signals.md) in sync, both ways:
 
 ```java
 private final IntegerSignal amount = IntegerSignal.of(3);
@@ -117,7 +117,7 @@ TextNode.create(40, 120).text(Text.create("Doubled: " + this.amount.get() * 2, T
 | `focused(true)` / `focused(false)` | Focuses / leaves from code. |
 | Tab | Ignored: there is no keyboard navigation between fields. |
 
-`onFocus(field -> ...)` runs when the focus changes, both ways: read `field.isFocused()`. A focused field consumes every key, so the UI keybinds and shortcuts wait until it loses the focus (see [Mouse and Keyboard](../../interactions/mouse-and-keyboard.md)).
+`onFocus(field -> ...)` runs when the focus changes, both ways: read `field.isFocused()`. A focused field consumes every key, so the UI keybinds and shortcuts wait until it loses the focus (see [Input and Callbacks](../../concepts/input.md)).
 
 When the program rewrites the text of a focused field (a step, the bound signal, `text(...)`, a commit), the cursor and the selection keep their distance to the end of the text: `9` with the cursor at the end, Up gives `10` with the cursor still at the end.
 
@@ -151,7 +151,7 @@ Left, Right, Backspace and Delete repeat while held: 500 ms, then every 100 ms.
 
 ## Markup in a field
 
-By default the field shows its text raw: a typed `<b>` stays text. `markup(true)` turns the markups of the `TextInfo` on: tags take no width, the cursor and the selection stay exact around them, a click lands on the visible character, the arrows cross a tag one character at a time without visible movement, and Ctrl + arrows treat a tag as part of its word. Typing just after an opening tag writes in its style; editing inside a tag breaks it and it shows as text.
+By default the field shows its text raw: a typed `<b>` stays text. `markup(true)` turns on the markups of the `TextInfo`, registered as shown in [Text](../../essentials/text.md): tags take no width, the cursor and the selection stay exact around them, a click lands on the visible character, the arrows cross a tag one character at a time without visible movement, and Ctrl + arrows treat a tag as part of its word. Typing just after an opening tag writes in its style; editing inside a tag breaks it and it shows as text.
 
 ## Size, margins and alignment
 
@@ -219,7 +219,7 @@ public class SearchFieldNode extends TextFieldNode {
 
 ### Shared properties (FieldNode)
 
-Every setter has a value overload and a `Supplier` overload (followed, see [Reactive Properties](../../state/reactive-properties.md)), except `accept`.
+Every setter has a value overload and a `Supplier` overload (followed, see [Signals and Reactivity](../../concepts/signals.md)), except `accept`.
 
 | Method | Default | Description |
 | --- | --- | --- |
@@ -269,7 +269,8 @@ Extend `LineFieldNode<V>` (or `FieldNode<V>`) and implement the converter: `V pa
 
 ## See also
 
-- [MultilineTextFieldNode](multiline-text-field.md)
+- Next: [MultilineTextFieldNode](multiline-text-field.md)
+- [Input Controls](../../essentials/controls.md)
 - [Signals](../../state/signals.md)
 - [Mouse and Keyboard](../../interactions/mouse-and-keyboard.md)
 - [Markup and Text Effects](../../text/markup-and-effects.md)

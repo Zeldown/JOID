@@ -175,6 +175,7 @@ for (final Node node : super.getNodeList().recursive()) {
 
 ## See also
 
+- Next: [Changelog 8.0.0](../changelog/8.0.0.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md)
 - [Shapes](../drawing/shapes.md)
 - [Bridges](../integration/bridges.md)

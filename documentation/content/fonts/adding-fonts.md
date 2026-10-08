@@ -288,8 +288,8 @@ MsdfFontLoader.load(new File("fonts/Inter-Regular.ttf")).whenComplete((font, err
 
 ## See also
 
+- Next: [MSDF Generator](msdf-generator.md)
 - [How Fonts Work](how-fonts-work.md)
-- [MSDF Generator](msdf-generator.md)
 - [Custom Font Implementations](custom-fonts.md)
 - [Building a UI Kit](../components/ui-kit.md)
 - [Text and TextInfo](../text/text-and-textinfo.md)

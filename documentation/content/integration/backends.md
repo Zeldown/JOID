@@ -1,6 +1,6 @@
 # Backends
 
-A backend implements the window, render and audio [bridges](bridges.md) for one engine. JOID ships three: LWJGL 2, LWJGL 3 and Vulkan. Pick the one that matches your host, register it before loading JOID, and register your own [UI bridge](ui-bridge.md) next to it.
+[Bridges and Backends](../concepts/bridges.md) listed the official backends and the [Quick Start](../getting-started/quick-start.md) registered the LWJGL 3 one. This page covers each of them in detail. A backend implements the window, render and audio [bridges](bridges.md) for one engine. JOID ships three: LWJGL 2, LWJGL 3 and Vulkan. Pick the one that matches your host, register it before loading JOID, and register your own [UI bridge](ui-bridge.md) next to it.
 
 ## A first window with LWJGL 3
 
@@ -318,7 +318,7 @@ Each backend module has a demo window that opens the JOID demo UIs in dev and de
 | `./gradlew :lwjgl3:runDemo` | `dev.joid.impl.lwjgl3.demo.DemoWindow` |
 | `./gradlew :vulkan:runDemo` | `dev.joid.impl.vulkan.demo.DemoWindow` |
 
-The LWJGL 3 and Vulkan demo windows extend `dev.joid.impl.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-glfw` jar. Its subclasses provide `getEngineName()`, `configureWindow()` (window hints), `registerBackend(long window)`, `beginFrame()` and `endFrame()`. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../getting-started/dev-tools.md) for the demo UIs.
+The LWJGL 3 and Vulkan demo windows extend `dev.joid.impl.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-glfw` jar. Its subclasses provide `getEngineName()`, `configureWindow()` (window hints), `registerBackend(long window)`, `beginFrame()` and `endFrame()`. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
 
 ## Reference
 
@@ -339,8 +339,8 @@ The LWJGL 3 and Vulkan demo windows extend `dev.joid.impl.glfw.demo.DemoWindow`,
 
 ## See also
 
+- Next: [Writing a Backend](writing-a-backend.md)
 - [Bridges](bridges.md)
 - [UI Bridge](ui-bridge.md)
-- [Writing a Backend](writing-a-backend.md)
 - [Installation](../getting-started/installation.md)
 - [Testkit](testkit.md)

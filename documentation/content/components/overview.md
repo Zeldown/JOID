@@ -1,10 +1,20 @@
 # Component Catalog
 
-Every node JOID ships, grouped by purpose, with what to use it for. All of them share the [Node Fundamentals](../nodes/node-fundamentals.md): position and size on the 1920×1080 canvas, `attach`, `body`, callbacks, effects, and setters that take a value or follow a signal.
+Every node JOID ships, grouped by purpose, with what to use it for. You have used several of them in the Tutorial; this section describes each one in detail, starting with this catalog and with [Building a UI Kit](ui-kit.md), which draws the interactive ones in your own style.
 
 ![A grid of cards, one per component: rectangle, circle, text, image, progress bar, flex, grid, scroll area, chart, text field, checkbox, toggle, switch, slider and selector](../images/components-catalog.png "The components drawn with the neutral demo kit; your kit gives them your own look.")
 
 JOID is design-neutral: no component imposes a look. The display and layout nodes draw plain shapes, text and images that you color and style. The input and data components marked abstract handle the state, the input and the values, and leave the drawing to a small subclass you write once. Those subclasses are your UI kit: your screens use them with the same code whatever kit draws them, so another kit gives the same screens a different design. [Building a UI Kit](ui-kit.md) shows how; each component page starts with a subclass you can copy.
+
+## What every component shares
+
+Every component is a node, so everything [Nodes and the Node Tree](../concepts/nodes.md) teaches applies to it: a factory, `attach`, `body`, the chaining rule, `visible`, `zindex`, the `on...` callbacks of [Input and Callbacks](../concepts/input.md), the effects of [Styling and Effects](../concepts/styling.md), and setters that take a value or follow a signal ([Signals and Reactivity](../concepts/signals.md)). The component pages only describe what each node adds.
+
+Positions and sizes are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+See [The Virtual Canvas](../concepts/canvas.md).
 
 ## Layout
 
@@ -34,7 +44,7 @@ Nodes that draw something.
 
 ## Inputs
 
-Nodes the user edits. Each one keeps its value, calls `onChange` on every change, follows a value or a signal given to its value setter, and binds both ways to a [signal](../state/signals.md) with `signal(...)`.
+Nodes the user edits. Each one keeps its value, calls `onChange` on every change, follows a value or a signal given to its value setter, and binds both ways to a signal with `signal(...)`, as in [Input Controls](../essentials/controls.md).
 
 | Component | Abstract | Use it for |
 | --- | --- | --- |
@@ -56,13 +66,13 @@ Nodes the user edits. Each one keeps its value, calls `onChange` on every change
 ## Not finding what you need
 
 - Combine nodes: a button is a `RectNode` with a `TextNode` child and an `onClick` callback.
-- Change how any node looks with [effects](../styling/effects.md): rounded corners, borders, blur, shadows, masks, transforms.
+- Change how any node looks with [effects](../concepts/styling.md#effects): rounded corners, borders, blur, shadows, masks, transforms.
 - Draw anything yourself in a [custom node](../nodes/custom-nodes.md).
 
 ## See also
 
-- [Essentials: Nodes](../essentials/nodes.md)
-- [Node Fundamentals](../nodes/node-fundamentals.md)
-- [Building a UI Kit](ui-kit.md)
-- [Reactive Properties](../state/reactive-properties.md)
+- Next: [Building a UI Kit](ui-kit.md)
+- [Nodes and the Node Tree](../concepts/nodes.md)
+- [Input Controls](../essentials/controls.md)
+- [Node Fundamentals](../nodes/node-fundamentals.md): the complete node API, in the Guides.
 - [Custom Nodes](../nodes/custom-nodes.md)

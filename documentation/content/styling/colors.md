@@ -1,6 +1,6 @@
 # Colors and Gradients
 
-`Color` (`dev.joid.lib.color`) is the single color type of JOID: an immutable RGBA value with float components from `0F` to `1F`, which can also carry a linear gradient (`ColorGradient`) or an update function that animates it. The same type is used everywhere: node colors, text, borders, resource tints and drawing calls.
+`Color` (`dev.joid.lib.color`) is the single color type of JOID: an immutable RGBA value with float components from `0F` to `1F`, which can also carry a linear gradient (`ColorGradient`) or an update function that animates it. The same type is used everywhere: node colors, text, borders, resource tints and drawing calls. This page opens the Styling guides: it details every way to build, derive and animate the colors met in [Styling and Effects](../concepts/styling.md).
 
 ```java
 @Override
@@ -153,7 +153,7 @@ final Color paler = Color.RED.toGradient(Color.YELLOW).to(Color.WHITE, 0.5F);
 
 ![Five swatches going from red to blue](../images/colors-transition.png "Color.RED.to(Color.BLUE, progress) for 0F, 0.25F, 0.5F, 0.75F and 1F.")
 
-Nodes with a hovered color run this transition with their hover progress, as in `RectNode.color(normal, hovered)`. To drive it from your own value, pass a supplier:
+Nodes with a hovered color run this transition with their hover progress, as `RectNode` does between `color(...)` and `hoveredColor(...)`. To drive it from your own value, pass a lambda, read every frame:
 
 ```java
 final RectNode rect = RectNode.create(100, 100, 200, 120);
@@ -227,7 +227,7 @@ RectNode.create(100, 100, 200, 120).color(pulse).attach(this);
 
 ![A rectangle cycling between red and green](../images/colors-pulse.gif "The update function returns a new frame on every bind.")
 
-`BridgeHandler` is in `dev.joid.lib.bridge`; its clock is the time source of JOID (see [Bridges](../integration/bridges.md)).
+`BridgeHandler` is in `dev.joid.lib.bridge`; its clock is the time source of JOID, in milliseconds (see [The Frame Loop](../concepts/frame-loop.md)).
 
 Two animated colors are built in. Both read the clock bridge:
 
@@ -249,7 +249,7 @@ The update function survives `copy()`, `copyAlpha`, `copyRed`/`copyGreen`/`copyB
 
 ## Binding a color in custom drawing
 
-Inside a `draw` hook you can bind a color yourself (see [Drawing Overview](../drawing/draw-utils.md)):
+When you draw geometry yourself, in the `draw` of a [custom node](../nodes/custom-nodes.md) or in a layer, you can bind a color by hand. You need this only for low-level drawing, covered in the Advanced section (see [Drawing Overview](../drawing/draw-utils.md)):
 
 | Method | Description |
 | --- | --- |
@@ -266,8 +266,9 @@ Inside a `draw` hook you can bind a color yourself (see [Drawing Overview](../dr
 
 ## See also
 
-- [Effects](effects.md)
+- Next: [Effects](effects.md)
+- [Styling and Effects](../concepts/styling.md)
 - [BorderNodeEffect](border.md)
 - [RectNode](../nodes/visual/rect.md)
-- [Text Model](../text/text-and-textinfo.md)
+- [Text and TextInfo](../text/text-and-textinfo.md)
 - [Shapes](../drawing/shapes.md)

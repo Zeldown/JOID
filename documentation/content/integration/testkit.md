@@ -1,6 +1,6 @@
 # Testkit
 
-The testkit (`joid-testkit` jar, module `testkit`, JUnit 4) checks that a backend renders JOID correctly. `RenderBridgeContractSuite` checks the render bridge contract in a few seconds, without reference images; `SnapshotSuite` plays scripted scenarios of the demo UIs and compares every capture, pixel for pixel, to references recorded on the same machine. Command-line tools compare backends with each other and show the differences in an interactive report.
+The testkit (`joid-testkit` jar, module `testkit`, JUnit 4) checks that a backend renders JOID correctly, the official ones as well as the one you wrote on [Writing a Backend](writing-a-backend.md). It renders on a hidden or offscreen surface, never on your screen, and replaces the window, audio and clock [bridges](bridges.md) with virtual ones, so that every frame is the same on every run. `RenderBridgeContractSuite` checks the render bridge contract in a few seconds, without reference images; `SnapshotSuite` plays scripted scenarios of the demo UIs and compares every capture, pixel for pixel, to references recorded on the same machine. Command-line tools compare backends with each other and show the differences in an interactive report.
 
 ## Testing a backend in three classes
 
@@ -351,6 +351,7 @@ The wheel zooms around the cursor, dragging pans, `F` fits the image and `0` sho
 
 ## See also
 
+- Next: [Utilities](../reference/utilities.md)
 - [Writing a Backend](writing-a-backend.md)
 - [Backends](backends.md)
 - [Bridges](bridges.md)

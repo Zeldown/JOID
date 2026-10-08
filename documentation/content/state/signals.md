@@ -1,6 +1,6 @@
 # Signals
 
-A signal holds a value and tells whoever depends on it when the value changes. Signals are the state of a JOID UI: you write to a signal, and every node, computed value and subscriber that reads it follows the change. This page covers the signal model itself; [Reactive Properties](reactive-properties.md) shows how nodes follow signals.
+[Signals and Reactivity](../concepts/signals.md) showed the typed signals, `get`, `peek`, `set` and `reset`, the setters that follow them, `map`, `Signal.from`, `subscribe` and `Signal.batch`. This page opens the State guides with the signal model itself: every signal type and operation, default values, how a `ComputedSignal` computes, `silent`, futures, threads and memory. [Reactive Properties](reactive-properties.md), next, details how nodes follow signals.
 
 ## A first signal
 
@@ -118,6 +118,9 @@ final ComputedSignal<Integer> total = Signal.from(() -> this.price.get() * this.
 `Signal.from(value)` takes a native expression instead of a lambda: when the expression reads signals, JOID follows them and recomputes the expression when they change; when it reads none, the result is a constant (`isConstant()` is `true`).
 
 ```java
+private final IntegerSignal price = IntegerSignal.of(12);
+private final IntegerSignal quantity = IntegerSignal.of(3);
+
 final ComputedSignal<String> summary = Signal.from("Total: " + this.price.get() * this.quantity.get());
 ```
 
@@ -131,7 +134,7 @@ How a native expression is followed, and its limits, are explained in [Reactive 
 | --- | --- |
 | Lazy | A computed signal computes nothing before its first read, then returns its cached value. It recomputes only when a dependency changed since: reading it every frame costs a version check when nothing changed. |
 | Dynamic dependencies | Only the signals read during the last computation count: `flag.get() ? a.get() : b.get()` follows `flag` and the branch taken. |
-| Glitch-free | In a diamond (`a` → `b`, `a` → `c`, `d = b + c`), `d` is computed once per change of `a` and never sees an old `b` with a new `c`. |
+| Glitch-free | In a diamond (`a` → `b`, `a` → `c`, `d = b + c`), `d` is computed once per change of `a` and never sees a stale `b` with a fresh `c`. |
 | Equality cutoff | When a recomputation gives a value `equals` to the previous one, nothing downstream is recomputed or notified. |
 | Read-only | `set(...)` and `reset()` throw `UnsupportedOperationException`: write the signals it reads instead. |
 | No self-read | A computation that reads its own signal throws `IllegalStateException`. |
@@ -142,6 +145,8 @@ How a native expression is followed, and its limits, are explained in [Reactive 
 `subscribe(subscriber)` calls a `SignalSubscriber` each time the value changes. The subscriber returns `true` to stay subscribed, `false` to unsubscribe itself:
 
 ```java
+private final IntegerSignal score = IntegerSignal.of(0);
+
 this.score.subscribe(score -> {
 	System.out.println("[Game] score: " + score);
 	return true;
@@ -153,6 +158,9 @@ The subscriber receives the value `get()` would return (the default value when t
 A computed signal notifies its subscribers when its value changes, not each time a source changes:
 
 ```java
+private final IntegerSignal price = IntegerSignal.of(12);
+private final IntegerSignal quantity = IntegerSignal.of(3);
+
 Signal.from(() -> "Total: " + this.price.get() * this.quantity.get()).subscribe(text -> {
 	System.out.println("[Shop] " + text);
 	return true;
@@ -164,6 +172,9 @@ Subscriptions are for actions outside the node tree (saving, logging, sending). 
 ## Grouping writes with Signal.batch
 
 ```java
+private final IntegerSignal price = IntegerSignal.of(12);
+private final IntegerSignal quantity = IntegerSignal.of(3);
+
 Signal.batch(() -> {
 	this.price.set(15);
 	this.quantity.set(4);
@@ -175,6 +186,8 @@ Inside `batch`, subscribers and computed signals are notified once, at the end, 
 ## Writing without notifying with silent
 
 ```java
+private final IntegerSignal score = IntegerSignal.of(0);
+
 this.score.silent().set(0);
 ```
 
@@ -182,15 +195,15 @@ this.score.silent().set(0);
 
 ## Signals from futures
 
-`Signal.of(CompletionStage)` creates a signal without value that takes the result of the future when it completes:
+`Signal.of(CompletionStage)` creates a signal without value that takes the result of the future when it completes. Here the future stands for any loading done on another thread, such as a request to a server:
 
 ```java
-final Signal<String> profile = Signal.of(this.loadProfile());
+final Signal<String> profile = Signal.of(CompletableFuture.supplyAsync(() -> "Alex"));
 
 TextNode.create(100, 100).text(Text.create("Hello " + profile.get(), this.info)).wait(profile).attach(this);
 ```
 
-`wait(profile)` keeps the node unmounted until the signal has a value (see [Watching Signals](watch.md#waiting-before-mounting-with-wait)).
+`wait(profile)` keeps the node unmounted until the signal has a value (see [Waiting and skeletons](../nodes/node-fundamentals.md#waiting-and-skeletons)).
 
 ## Threads
 
@@ -271,8 +284,8 @@ public class CounterSignal extends Signal<Integer> {
 
 ## See also
 
-- [Reactive Properties](reactive-properties.md)
-- [Watching Signals](watch.md)
-- [Stores](stores.md)
-- [State and Reactivity](../essentials/state.md)
-- [Custom Nodes](../nodes/custom-nodes.md)
+- Next: [Reactive Properties](reactive-properties.md)
+- [Signals and Reactivity](../concepts/signals.md): the basics this page builds on.
+- [Watching Signals](watch.md): rebuilding nodes when a signal changes.
+- [Stores](stores.md): signals shared between UIs.
+- [Custom Nodes](../nodes/custom-nodes.md): nodes that subscribe to signals.

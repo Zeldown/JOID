@@ -1,10 +1,44 @@
 # Custom Nodes
 
-You write a custom node by extending `Node` (or an existing node) and overriding its hooks: `draw` for the visuals, `init` and `update` for state, the input hooks for interaction. This page covers the constructor and factory contract, reactive setters, the hooks, input handling with `InternalContext`, your own callbacks with `@NodeCallbackMethod`, and signal bindings.
+In [Building a UI Kit](../components/ui-kit.md) you gave a look to the controls of JOID by subclassing them. A custom node goes one step further: you extend `Node` itself (or any existing node) and override its hooks, `draw` for the visuals, `init` and `update` for state, the input hooks for interaction. This page covers the constructor and factory contract, reactive setters, the hooks, input handling with `InternalContext`, your own callbacks with `@NodeCallbackMethod`, and signal bindings.
+
+## A minimal node
+
+The smallest custom node has a `protected` constructor, a static `create` factory and a `draw` method:
+
+```java
+public class DotNode extends Node {
+
+	protected DotNode(final double x, final double y, final double width, final double height) {
+		super(x, y, width, height);
+	}
+
+	public static @NonNull DotNode create(final double x, final double y, final double size) {
+		return new DotNode(x, y, size, size);
+	}
+
+	@Override
+	public void draw(final double mouseX, final double mouseY) {
+		DrawUtils.SHAPE.drawCircle(super.getX() + super.dw(2D), super.getY() + super.dh(2D), Color.decode("#DDDDDD"), super.dw(2D));
+		DrawUtils.SHAPE.drawCircle(super.getX() + super.dw(2D), super.getY() + super.dh(2D), Color.decode("#999999"), super.dw(4D));
+	}
+
+}
+```
+
+```java
+DotNode.create(100, 100, 40).attach(this);
+DotNode.create(160, 100, 40).attach(this);
+DotNode.create(220, 100, 40).attach(this);
+```
+
+![Three light gray disks in a row, each with a smaller gray disk at its center](../images/custom-node-minimal.png "Each DotNode draws two circles inside its own bounds")
+
+The node attaches, nests and positions like any built-in node; `draw` runs every frame and paints at the node's own position with `DrawUtils.SHAPE`, which you met in [Input Controls](../essentials/controls.md). `dw(2D)` is half the width, as in [Layout](../essentials/layout.md). The [Drawing Overview](../drawing/draw-utils.md) covers everything `draw` can paint.
 
 ## A complete custom node
 
-A color swatch that the user selects with a click, with its own `onSelect` callback. First the callback interface:
+A color swatch that the user selects with a click, with its own `onSelect` callback. It adds what the next sections explain one by one: a setter pair that follows signals, an input hook, and a callback of its own. First the callback interface:
 
 ```java
 import dev.joid.lib.ui.node.callback.NodeCallback;
@@ -164,8 +198,14 @@ The hooks come from `INode` and do nothing by default, except `drawSkeleton`.
 
 ### Drawing in draw
 
+Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. The positions, sizes and mouse coordinates of a node are in these units, never in window pixels.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+See [The Virtual Canvas](../concepts/canvas.md).
+
 - The render matrix is at the parent's origin: draw at `getX()`, `getY()` with `getWidth()`, `getHeight()`. The [drawing API](../drawing/draw-utils.md) is `DrawUtils`.
-- `mouseX` and `mouseY` are UI coordinates: compare them with `getAbsoluteX()`/`getAbsoluteY()`, or use `isHovered(mouseX, mouseY)`.
+- `mouseX` and `mouseY` are canvas coordinates of the UI, already converted from the window: compare them with `getAbsoluteX()`/`getAbsoluteY()`, or use `isHovered(mouseX, mouseY)`.
 - `hoverValue(float max)` returns `max` × the hover animation progress: use it to blend colors or sizes on hover (see [Hover and Tooltips](../interactions/hover.md)).
 - `draw` is wrapped by the `onDraw` callbacks and by the node's effects. Override `drawSkeleton` to draw your own placeholder, or with an empty body to draw nothing while the node waits for data.
 
@@ -363,7 +403,7 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalC
 | `rebind(SignalSubscriber<?>, Signal<V>, Consumer<V>)` | Protected. Removes the previous subscription, then binds the signal. Returns the new subscription. |
 | `sync(Signal<V>, V)` | Protected. Sets the signal to the value when the signal is not `null` and holds another value. |
 | `writable(Signal<V>)` | Protected. Returns the signal, or throws `IllegalArgumentException` (`<Class>.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead`) for a `ComputedSignal`. `rebind` calls it. |
-| `follow(String property, Supplier<V> supplier, Consumer<V> consumer)` | Protected. Applies the value now, then on each change of the source (read at the start of each render). |
+| `follow(String property, Supplier<V> supplier, Consumer<V> consumer)` | Protected. Applies the value at once, then on each change of the source (read at the start of each render). |
 | `executeCallback`, `executePreCallback`, `executePostCallback` | Fire callbacks. |
 | `fireDrag(Runnable)`, `fireDragStart(Runnable)`, `fireDragEnd(Runnable)` | Run an action inside the drag callbacks. |
 | `hasCallback(int)`, `getCallbackList(int)`, `getCallbackMap()` | Registered callbacks. |
@@ -378,9 +418,9 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalC
 
 ## See also
 
+- Next: [Drawing Overview](../drawing/draw-utils.md)
 - [Reactive Properties](../state/reactive-properties.md)
 - [Node Fundamentals](node-fundamentals.md)
 - [Callbacks](../interactions/callbacks.md)
 - [Mouse and Keyboard](../interactions/mouse-and-keyboard.md)
-- [Drawing Overview](../drawing/draw-utils.md)
 - [Custom Effects](../styling/custom-effects.md)

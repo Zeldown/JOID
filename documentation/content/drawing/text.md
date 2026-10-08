@@ -14,7 +14,7 @@ public void postDraw(final double mouseX, final double mouseY) {
 
 ![The word Paused centered above a paragraph wrapped on three centered lines](../images/text-draw.png "A line centered on a point, then a paragraph wrapped in a box of 400 units")
 
-The first call centers "Paused" horizontally on x = 960 with its top at y = 100. The second wraps the sentence into lines of at most 400 units, each centered in the box. `info` is a `TextInfo` built from a loaded font; `Text`, `TextInfo`, `TextMode` and `TextOverflow` are described on [Text and TextInfo](../text/text-and-textinfo.md).
+Positions and sizes are units of the 1920×1080 virtual canvas (see [The Virtual Canvas](../concepts/canvas.md)): the first call centers "Paused" horizontally on x = 960, the middle of the canvas, with its top at y = 100. The second wraps the sentence into lines of at most 400 units, each centered in the box. `info` is a `TextInfo` built from a loaded font; `Text`, `TextInfo`, `TextMode` and `TextOverflow` are described on [Text and TextInfo](../text/text-and-textinfo.md).
 
 ## Drawing a Text at a point
 
@@ -133,6 +133,7 @@ Every `drawText` returns the `FontBounds` of what it drew (`getWidth()`, `getHei
 
 ## See also
 
+- Next: [Drawing Resources](resources.md)
 - [Text and TextInfo](../text/text-and-textinfo.md)
 - [Markup and Text Effects](../text/markup-and-effects.md)
 - [TextNode](../nodes/visual/text.md)

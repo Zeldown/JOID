@@ -126,12 +126,13 @@ Shader pass priority: 200 (after rounding, circle and blur). Expansion: `width +
 
 ## Pitfalls
 
-- The edge comes from the opaque pixels: a node that draws nothing (a transparent `RectNode`, a `ContainerNode`) gets no border. Use `DrawUtils.SHAPE.drawBorder` in a layer for an outline around an empty box.
+- The edge comes from the opaque pixels: a node that draws nothing (a transparent `RectNode`, a `ContainerNode`) gets no border. Draw the outline yourself with `DrawUtils.SHAPE.drawBorder` in a [layer](../nodes/node-fundamentals.md#layers-with-layer) (see [Shapes](../drawing/shapes.md#borders-with-drawborder)).
 - `fill(false)` leaves the outer corners open; it does not remove the fill of the node.
 - A node has one `BorderNodeEffect`: the border setters of `RectNode` and your own effect replace each other.
 
 ## See also
 
+- Next: [BlurNodeEffect](blur.md)
 - [Effects](effects.md)
 - [RoundedNodeEffect](rounded.md)
 - [CircleNodeEffect](circle.md)

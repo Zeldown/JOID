@@ -1,6 +1,6 @@
 # Persistent UI Properties
 
-`@UIProperty` marks a field of a UI to save when the UI closes and to restore when the UI opens again, even after a restart. Use it for small view state the user expects to find again: the selected tab, a sort order, a collapsed panel.
+[Saving State](../essentials/saving-state.md) introduced `@UIProperty`, which marks a field of a UI to save when the UI closes and to restore when the UI opens again, even after a restart. This page covers the keys, the supported types, the property file and exactly when it is read and written. Use it for small view state the user expects to find again: the selected tab, a sort order, a collapsed panel.
 
 ## A first property
 
@@ -83,7 +83,8 @@ A property field is a plain field: nodes do not follow it. To show it, read it w
 
 ## See also
 
-- [Stores](stores.md)
-- [The UI Class](../ui/ui-class.md)
-- [Opening and Closing UIs](../ui/managing-uis.md)
-- [Developer Tools](../getting-started/dev-tools.md)
+- Next: [Colors and Gradients](../styling/colors.md)
+- [Saving State](../essentials/saving-state.md): the basics this page builds on.
+- [Stores](stores.md): state shared between UIs.
+- [UIs and Their Lifecycle](../concepts/uis.md): opening, reloading and closing a UI.
+- [Developer Tools](../concepts/dev-tools.md): the reload shortcuts.

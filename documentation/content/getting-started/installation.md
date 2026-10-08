@@ -68,7 +68,7 @@ The core and the three backends come in two flavours, told apart by the classifi
 | `-prod` | Everything your application needs at runtime | The developer tools and the demos: `dev.joid.lib.ui.node.impl.dev` (the `DevNode`), `dev.joid.internal.font`, `dev.joid.demo` (demo UIs, `DemoFont`, `DemoUIBridge`), the `assets/dev` and `assets/demo` resources (bundled fonts, icons, demo images, models and videos), and the `demo` and `snapshot` packages of every embedded backend module, the GLFW demo window included |
 | `-dev` | The `-prod` content plus everything listed on the right | Nothing |
 
-On a `-prod` jar, `JOID.inst().setDevMode(true)` throws `IllegalStateException("The dev mode is not part of the prod jar of JOID, use the dev jar of your backend")`, and `setDemoMode(true)` throws the same message for the demo mode. See [Developer Tools](dev-tools.md).
+On a `-prod` jar, `JOID.inst().setDevMode(true)` throws `IllegalStateException("The dev mode is not part of the prod jar of JOID, use the dev jar of your backend")`, and `setDemoMode(true)` throws the same message for the demo mode. See [Developer Tools](../concepts/dev-tools.md).
 
 ## Embedded libraries
 
@@ -243,7 +243,7 @@ public final class Check {
 }
 ```
 
-It prints `JOID 8.0.0`. Each official `Backend.register(...)` also compares its version to the loaded core and prints `[JOID] This backend targets JOID <x> but JOID <y> is loaded` when the major versions differ. Continue with the [Quick Start](quick-start.md) for a minimal program, or with the [Tutorial](../tutorial/setup.md) to build a complete screen step by step.
+It prints `JOID 8.0.0`. Each official `Backend.register(...)` also compares its version to the loaded core and prints `[JOID] This backend targets JOID <x> but JOID <y> is loaded` when the major versions differ. Continue with the [Quick Start](quick-start.md) for a minimal program.
 
 ## Backend template
 
@@ -280,9 +280,8 @@ Use a JDK 8 to run the wrapper. `-x test` skips the tests, as the release workfl
 
 ## See also
 
-- [Quick Start](quick-start.md)
-- [Tutorial 1: Project Setup](../tutorial/setup.md)
-- [Developer Tools](dev-tools.md)
+- Next: [Quick Start](quick-start.md)
+- [Developer Tools](../concepts/dev-tools.md)
 - [Backends](../integration/backends.md)
 - [Writing a Backend](../integration/writing-a-backend.md)
 - [License](license.md)

@@ -51,7 +51,7 @@ ResourceNode
 | `CONTAIN` | The whole image fits inside the box, centered; the rest of the box stays empty. |
 | `COVER` | The image covers the whole box, centered; the parts outside the box are cropped. |
 
-`COVER` and a [`CircleNodeEffect`](styling.md#effects) make a round avatar from any picture.
+`COVER` and a [`CircleNodeEffect`](../concepts/styling.md#effects) make a round avatar from any picture.
 
 ## Tint and hover with color and hoveredResource
 

@@ -1,13 +1,14 @@
 # Hover and Tooltips
 
-Every node tracks whether the mouse is over it, animates a hover value between 0 and 1, fires hover callbacks and can show a tooltip. Use the hover value to fade colors or decorations, the callbacks to react to the mouse entering or leaving, and `hover(...)` to attach a text or custom tooltip.
+[Input and Callbacks](../concepts/input.md) showed the hover callbacks and `hover(...)` tooltips, and [Animation](../essentials/animation.md) the hover animation and `hoverValue`. This page goes further: when exactly a node is hovered, the settings of the hover animation, tooltips that read signals, the look of text tooltips, custom tooltips drawn by you or made of nodes, and which node shows its tooltip.
 
 ## A hover effect and a tooltip
 
 ```java
 RectNode
 .create(100, 100, 300, 80)
-.color(Color.DARKGRAY, Color.GRAY)
+.color(Color.DARKGRAY)
+.hoveredColor(Color.GRAY)
 .hoverDuration(300L)
 .hoverEquation(TweenEquations.QUAD_OUT)
 .hover(() -> "Opens the shop")
@@ -117,14 +118,14 @@ public void drawHover(final List<String> lines, final double mouseX, final doubl
 	final double height = lines.size() * 24D + 12D;
 	DrawUtils.SHAPE.drawRect(mouseX + 12D, mouseY + 12D, 260D, height, Color.BLACK);
 	for (int i = 0; i < lines.size(); i++) {
-		DrawUtils.TEXT.drawText(mouseX + 20D, mouseY + 18D + i * 24D, Text.create(lines.get(i), info));
+		DrawUtils.TEXT.drawText(mouseX + 20D, mouseY + 18D + i * 24D, Text.create(lines.get(i), this.info));
 	}
 }
 ```
 
 ![The same three-line tooltip drawn as white text on a plain black box](../images/hover-draw.gif "The lines of the previous example, drawn by this drawHover override.")
 
-`info` is a `TextInfo` (see [Text Model](../text/text-and-textinfo.md) and [Drawing Text](../drawing/text.md)).
+`info` is a `TextInfo` (see [Text](../essentials/text.md)); `DrawUtils.TEXT.drawText` draws a `Text` at a position, like `DrawUtils.SHAPE.drawRect` draws a rectangle (see also [Drawing Text](../drawing/text.md)).
 
 ## Custom tooltips with HoverElement
 
@@ -134,7 +135,7 @@ public void drawHover(final List<String> lines, final double mouseX, final doubl
 |---|---|---|
 | `render(Node node, double mouseX, double mouseY)` | Abstract | Draws the element; `node` is the hovered node. |
 | `getX()`, `getY()` | `0` | Offset of the element from its anchor. |
-| `getWidth()`, `getHeight()` | `0` | Size of the element, used to place and clamp it. |
+| `getWidth()`, `getHeight()` | `0` | Size of the element, read to place and clamp it. |
 
 An element given directly to `hover(HoverElement)` is drawn as is, in UI coordinates. Wrap it to position it:
 
@@ -198,8 +199,11 @@ RectNode.create(100, 100, 300, 80).color(Color.WHITE).hover(CustomHoverElement.f
 | `NodeHoverElement.fixed(Node node)` | The origin of the UI. |
 
 ```java
-final RectNode tooltip = RectNode.create(12, -8, 220, 60).color(Color.BLACK).body(card -> {
-	TextNode.create(10, 10).text(Text.create("Iron sword", info)).attach(card);
+final RectNode tooltip = RectNode
+.create(12, -8, 220, 60)
+.color(Color.BLACK)
+.body(card -> {
+	TextNode.create(10, 10).text(Text.create("Iron sword", this.info)).attach(card);
 });
 
 RectNode.create(100, 100, 300, 80).color(Color.WHITE).hover(NodeHoverElement.follow(tooltip)).attach(this);
@@ -248,8 +252,9 @@ The elements of a node are drawn in the order you added them, then its text tool
 
 ## See also
 
-- [Callbacks](callbacks.md)
-- [Mouse and Keyboard](mouse-and-keyboard.md)
-- [UI Bridge](../integration/ui-bridge.md)
-- [RectNode](../nodes/visual/rect.md)
-- [Easing](../animation/easing.md)
+- Next: [Drag and Drop](drag-drop.md)
+- [Input and Callbacks](../concepts/input.md) and [Animation](../essentials/animation.md): the basics this page builds on.
+- [Callbacks](callbacks.md): the order of the callbacks within a frame.
+- [Mouse and Keyboard](mouse-and-keyboard.md): hit testing with `isHovered`.
+- [Easing](../animation/easing.md): every `hoverEquation`.
+- [UI Bridge](../integration/ui-bridge.md): the default look of text tooltips.

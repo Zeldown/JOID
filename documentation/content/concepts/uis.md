@@ -1,6 +1,6 @@
-# UIs
+# UIs and Their Lifecycle
 
-Every screen you build with JOID is a UI: a menu, a settings panel, a HUD, a popup. This page shows what a UI is, how you fill it, open it and close it, and what happens during its life. It is the first of the Essentials pages: read them in order.
+Every screen you build with JOID is a UI: a menu, a settings panel, a HUD, a popup. This page shows what a UI is, how you fill it, open it and close it, and what happens during its life. The `CounterUI` of the [Quick Start](../getting-started/quick-start.md) was one; here you meet the rest of what a UI does.
 
 ## A UI is a class
 
@@ -19,7 +19,7 @@ public final class SettingsUI extends UI {
 
 ![The whole dark canvas with a light gray rectangle in its middle](../images/ess-uis-settings.png "The whole 1920 × 1080 canvas at 0.3× scale: the rectangle sits in the middle.")
 
-`UI` has a public no-argument constructor and no abstract method: you override only the hooks you need. Here `init()` creates one rectangle and attaches it to the UI. The numbers are units of the 1920×1080 virtual canvas: whatever the size of the window, the rectangle sits in the middle of the screen. [Layout](layout.md) explains the canvas.
+`UI` has a public no-argument constructor and no abstract method: you override only the hooks you need. Here `init()` creates one rectangle and attaches it to the UI. The numbers are units of the 1920×1080 virtual canvas of the previous page: whatever the size of the window, the rectangle sits in the middle of the canvas (see [The Virtual Canvas](canvas.md)).
 
 ## The life of a UI
 
@@ -28,7 +28,7 @@ public final class SettingsUI extends UI {
 | Moment | What happens |
 | --- | --- |
 | `new SettingsUI()` | Reads `@UIData`. No node exists yet. |
-| `JOID.open(ui)` | The UI bridge adds the UI, which restores its [`@UIProperty`](state.md#saving-state-with-stores-and-properties) fields, runs `init()` and plays its opening transition. |
+| `JOID.open(ui)` | The UI bridge adds the UI, which restores its saved fields (see [Saving State](../essentials/saving-state.md)), runs `init()` and plays its opening transition. |
 | Every frame | Input goes to the nodes, then to the UI hooks; the nodes update, then the UI draws. |
 | Window resized | The UI is resized and keeps its zoom; `init()` does not run again. |
 | `reload()` | Detaches every node, runs `init()` again on the same instance. |
@@ -85,13 +85,17 @@ The user can close a UI too: `Escape` closes the top UI when it is `closeable`, 
 To keep a UI open, for example while there are unsaved changes, override `close()` and return `false`:
 
 ```java
+private boolean dirty;
+```
+
+```java
 @Override
 public boolean close() {
 	return !this.dirty;
 }
 ```
 
-`dirty` is a `boolean` field of the UI. `close()` runs for `JOID.close(ui)` and for `Escape`.
+`dirty` is a field your UI sets while there are unsaved changes. `close()` runs for `JOID.close(ui)` and for `Escape`.
 
 ## Configuring a UI with @UIData
 
@@ -109,7 +113,7 @@ public final class MenuUI extends UI {}
 | `closeable` | `true` | Whether `Escape` closes the UI. `JOID.close` works either way. |
 | `zoomable` | `true` | Whether `Ctrl` or `Alt` with `+` and `-` zoom the UI. |
 | `zlevel` | `0D` | Order among the open UIs: a higher value is drawn on top. |
-| `anchorX`, `anchorY` | `Align.CENTER` | Where the canvas sits in a window that is not 16:9. |
+| `anchorX`, `anchorY` | `Align.CENTER` | Where the canvas sits in a window that is not 16:9, and the pivot of the zoom (see [The Virtual Canvas](canvas.md#pinning-a-ui-with-anchorx-and-anchory)). |
 
 `ui.getData()` changes these values while the UI runs (`getData().setZlevel(200D)`); the change applies at the next frame.
 
@@ -138,11 +142,11 @@ public final class ConfirmPopup extends UI {
 
 ![A white popup scales in over a settings screen and dims it, then scales out when Escape closes it](../images/ess-uis-popup.gif "ConfirmPopup opened over SettingsUI, then closed with Escape (whole canvas at 0.3× scale).")
 
-Besides `init()` and `close()`, a UI can override `update()` (every frame), `preDraw` and `postDraw` (to draw below or above the nodes) and input hooks such as `keyPressed`. You meet them in [Handling Input](input.md).
+Besides `init()` and `close()`, a UI can override `update()` (every frame), `preDraw` and `postDraw` (to draw below or above the nodes) and input hooks such as `keyPressed`. [Input and Callbacks](input.md) shows the input hooks; [The UI Class](../ui/ui-class.md) lists them all.
 
 ## Reloading while you work
 
-In dev mode, `Ctrl + R` (or `F5`) calls `reload()`: `init()` runs again on the same instance, so the fields and signals of the UI keep their values. `Ctrl + Shift + R` (or `Shift + F5`) replaces the UI with a new instance, built with its no-argument constructor, and starts from scratch. [Developer Tools](../getting-started/dev-tools.md) lists every shortcut.
+In dev mode, `Ctrl + R` (or `F5`) calls `reload()`: `init()` runs again on the same instance, so the fields and signals of the UI keep their values. `Ctrl + Shift + R` (or `Shift + F5`) replaces the UI with a new instance, built with its no-argument constructor, and starts from scratch. [Developer Tools](dev-tools.md) lists every shortcut.
 
 ## Pitfalls
 
@@ -152,9 +156,9 @@ In dev mode, `Ctrl + R` (or `F5`) calls `reload()`: `init()` runs again on the s
 
 ## See also
 
-- Next: [Nodes](nodes.md)
+- Next: [Nodes and the Node Tree](nodes.md)
 - [The UI Class](../ui/ui-class.md): every hook, every `@UIData` option, keybinds, scheduled tasks, masks.
 - [Opening and Closing UIs](../ui/managing-uis.md): the `force` variants, ordering, `Escape`, popups.
 - [View and Scaling](../ui/view-and-scaling.md): how the canvas fits the window, zoom, coordinate conversions.
 - [Transitions](../ui/transitions.md): opening and closing animations.
-- [Core Concepts](../getting-started/core-concepts.md): the frame lifecycle and the bridges.
+- [The Frame Loop](frame-loop.md): what happens in each frame.

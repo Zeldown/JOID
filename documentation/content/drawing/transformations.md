@@ -25,6 +25,7 @@ A `Transformation` is a list of operations applied to the matrix of the render b
 
 - The operations apply in the order you add them, each one in the space the previous ones produced: a translation followed by a scale scales around the translated origin.
 - `apply()` pushes the matrix and applies the operations; `reset()` pops it. `apply(Drawing)` does both around the drawing, even when it throws: prefer it.
+- Translations and pivots are units of the 1920×1080 virtual canvas (see [The Virtual Canvas](../concepts/canvas.md)); angles are degrees.
 - The values of the operations are read at every `apply`: build the transformation once with suppliers and it follows your state.
 - A translation is rounded to whole window pixels while the transform is axis-aligned, like any moving node (see [Pixel alignment](draw-utils.md#pixel-alignment)).
 
@@ -83,7 +84,7 @@ try {
 }
 ```
 
-Each call multiplies the current matrix on the right: the last call is the first one applied to the vertices, as in OpenGL. In the UI canvas, X goes right and Y goes down. The matrices are not part of the render state: `pushState()` does not save them.
+Each call multiplies the current matrix on the right: the last call is the first one applied to the vertices, as in OpenGL. On the canvas, X goes right and Y goes down. The matrices are not part of the render state: `pushState()` does not save them.
 
 ## Drawing into a FrameBuffer
 
@@ -298,8 +299,8 @@ A render bridge built on `RenderBridge` keeps its matrices in two `MatrixStack`s
 
 ## See also
 
+- Next: [Shader Pipeline](../shaders/pipeline.md)
 - [Drawing Overview](draw-utils.md)
 - [TransformNodeEffect](../styling/transform.md)
 - [3D Models](models.md)
-- [Shader Pipeline](../shaders/pipeline.md)
 - [Bridges](../integration/bridges.md)

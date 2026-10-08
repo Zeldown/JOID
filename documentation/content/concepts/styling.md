@@ -1,4 +1,4 @@
-# Styling
+# Styling and Effects
 
 JOID imposes no look: you style nodes with two tools. Colors can be plain, translucent, gradients or animated; effects change how any node is rendered (rounded corners, borders, circles, shadows, blur, masks). This page shows both, and how to make them react to the mouse and to your state.
 
@@ -54,7 +54,7 @@ RectNode
 
 ![The cursor hovers a dark gray rectangle: it lightens and its border turns white](../images/ess-styling-hover.gif "The fill and the border blend to their hovered colors in 200 ms.")
 
-The border is drawn outside the rectangle. The blend lasts 200 ms by default; [Animation](animation.md) shows how to tune it.
+The border is drawn outside the rectangle. The blend lasts 200 ms by default; [Animation](../essentials/animation.md) shows how to tune it.
 
 ## Colors that follow your state
 
@@ -74,7 +74,7 @@ RectNode
 
 ![Each click on a gray button turns it white, the next one gray again](../images/ess-styling-state.gif "The color expression reads the signal, so it is computed again on each change.")
 
-A lambda `() -> ...` is read every frame instead: keep it for colors that move on every frame, such as an animation. [State and Reactivity](state.md) explains both.
+A lambda `() -> ...` is read every frame instead: keep it for colors that move on every frame, such as an animation. [Signals and Reactivity](signals.md) explains both.
 
 ## Effects
 
@@ -107,7 +107,7 @@ The built-in effects are in `dev.joid.lib.ui.node.effect.impl`:
 | `MaskNodeEffect` | `MaskNodeEffect.create(300D, 50D)` | Shows only a rectangle of the node, or the shape of an image. |
 | `TransformNodeEffect` | `TransformNodeEffect.create(new RotateOperation(...))` | Moves, scales or rotates the rendering without changing the layout. |
 
-A round avatar with a white ring, from any image (`Resource` and `ResourceNode` are covered in [Images and Media](media.md)):
+A round avatar with a white ring, from any image (`ResourceNode` draws an image that `Resource.of(...)` loads from a file or a URL; [Images and Media](../essentials/media.md) covers both):
 
 ```java
 ResourceNode
@@ -162,7 +162,7 @@ A configured effect goes straight into `effect(...)`, setters included, as here 
 
 ## See also
 
-- Next: [Handling Input](input.md)
+- Next: [The Frame Loop](frame-loop.md)
 - [Colors and Gradients](../styling/colors.md): every constructor, `decode` format, gradient direction and animated colors.
 - [Effects](../styling/effects.md): order, priority, scope and how effects render.
 - [RoundedNodeEffect](../styling/rounded.md), [BorderNodeEffect](../styling/border.md), [ShadowNodeEffect](../styling/shadow.md): the most used effects in detail.

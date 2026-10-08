@@ -15,7 +15,7 @@ RectNode
 
 ![Player Settings in semi-bold italic, centered in a dark gray box](../images/text-styling-quick.png "A semi-bold italic title, centered both ways in a 500 × 80 node, with every word capitalized.")
 
-`font` is a loaded font family (see [Adding Your Own Fonts](../fonts/adding-fonts.md)). `FontWeight` is in `dev.joid.lib.font`, `TextModifier` and `ITextModifier` in `dev.joid.lib.draw.text.builder.modifier`, `TextOverflow` in `dev.joid.lib.draw.text.builder.utils`, `TextMode` in `dev.joid.lib.draw.text.utils`, `Align` in `dev.joid.lib.utils.align`.
+`font` is the family loaded with `MsdfFontLoader` in [Text](../essentials/text.md#loading-a-font-with-msdffontloader); the Fonts section ([Adding Your Own Fonts](../fonts/adding-fonts.md)) covers loading in detail. `FontWeight` is in `dev.joid.lib.font`, `TextModifier` and `ITextModifier` in `dev.joid.lib.draw.text.builder.modifier`, `TextOverflow` in `dev.joid.lib.draw.text.builder.utils`, `TextMode` in `dev.joid.lib.draw.text.utils`, `Align` in `dev.joid.lib.utils.align`.
 
 ## Weight with FontWeight
 
@@ -192,8 +192,8 @@ for (int i = 0; i < modifiers.length; i++) {
 
 ## See also
 
+- Next: [Markup and Text Effects](markup-and-effects.md)
 - [Text and TextInfo](text-and-textinfo.md)
-- [Markup and Text Effects](markup-and-effects.md)
 - [TextNode](../nodes/visual/text.md)
 - [Drawing Text](../drawing/text.md)
 - [How Fonts Work](../fonts/how-fonts-work.md)

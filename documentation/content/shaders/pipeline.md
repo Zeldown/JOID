@@ -1,6 +1,6 @@
 # Shader Pipeline
 
-`ShaderPipeline` (`dev.joid.lib.shader.pipeline`) renders a drawing through a chain of shader passes: the drawing is rendered offscreen, each `ShaderPass` processes the result in turn, and the last one composites it on the current target. The shader effects of nodes (`RoundedNodeEffect`, `CircleNodeEffect`, `BlurNodeEffect`, `BorderNodeEffect`) run through it; call it yourself to post-process your own drawing, and implement `ShaderPass` to add your own processing.
+In [Styling and Effects](../concepts/styling.md) you saw that a node with shader effects draws into an offscreen buffer, then runs one pass per effect in a fixed order. `ShaderPipeline` (`dev.joid.lib.shader.pipeline`) is that mechanism: it renders a drawing through a chain of shader passes. The drawing is rendered offscreen, each `ShaderPass` processes the result in turn, and the last one composites it on the current target. The shader effects of nodes (`RoundedNodeEffect`, `CircleNodeEffect`, `BlurNodeEffect`, `BorderNodeEffect`) run through it; call it yourself to post-process your own drawing, and implement `ShaderPass` to add your own processing.
 
 ## Rendering through passes
 
@@ -46,7 +46,7 @@ A shape is therefore cut first, then blurred, then outlined. Choose the priority
 
 ## Making room with expansion
 
-`expansion()` returns, in UI units, how far a pass needs to draw outside the rectangle: a blur spreads by its radius, an outer border by its width. The pipeline enlarges the region by the largest expansion of all its passes, so every pass of the render receives the same region (`ShaderPassContext.getExpansion()` is that largest value). Keep it as small as the effect allows: the framebuffers grow with it.
+`expansion()` returns, in canvas units, how far a pass needs to draw outside the rectangle: a blur spreads by its radius, an outer border by its width. The pipeline enlarges the region by the largest expansion of all its passes, so every pass of the render receives the same region (`ShaderPassContext.getExpansion()` is that largest value). Keep it as small as the effect allows: the framebuffers grow with it.
 
 ## Writing a ShaderPass
 
@@ -55,9 +55,9 @@ A pass binds a shader in `bindForTexture`, and releases it in `unbind`. The pipe
 - The texture is the previous result, with premultiplied alpha. Read it through a sampler you do not assign (see [Textures and samplers](custom-shaders.md#textures-and-samplers)).
 - The texture coordinates go from `0` to `1` across the region; `getTexelWidth()` / `getTexelHeight()` give the size of one pixel, for neighbor samples.
 - Write a premultiplied color to `fragColor`.
-- Distances in UI units become window pixels with `getGrid().getScaleX()` / `getScaleY()`.
+- Distances in canvas units become window pixels with `getGrid().getScaleX()` / `getScaleY()`.
 
-This pass turns the result to grayscale. The shader files:
+This pass turns the result to grayscale. A shader is a pair of GLSL files, a vertex shader and a fragment shader, loaded by a `ShaderImpl` subclass. JOID declares the inputs and the output for you: the vertex attributes `aPosition` and `aTexCoord`, the matrices `uProjectionMatrix` and `uModelViewMatrix`, and `fragColor`, the color the fragment shader writes. The next page, [Custom Shaders](custom-shaders.md), explains this format, the loading and the uniforms in full. The shader files:
 
 ```glsl
 out vec2 vTexCoord;
@@ -208,7 +208,7 @@ The node runs one pipeline render for its `SELF` passes and one for its `CHILDRE
 | Method | Description |
 |---|---|
 | `int priority()` | Order of the pass, lower first. |
-| `float expansion()` | Room needed outside the rectangle, in UI units. Default `0F`. |
+| `float expansion()` | Room needed outside the rectangle, in canvas units. Default `0F`. |
 | `void bindForTexture(ShaderPassContext context)` | Binds the shader that processes the previous result, drawn as a textured quad. |
 | `void unbind()` | Releases what `bindForTexture` set. Always called after the draw, even when it throws. |
 
@@ -218,10 +218,10 @@ The node runs one pipeline render for its `SELF` passes and one for its `CHILDRE
 
 | Method | Description |
 |---|---|
-| `getX()`, `getY()`, `getWidth()`, `getHeight()` | The rectangle given to the pipeline (UI units). |
+| `getX()`, `getY()`, `getWidth()`, `getHeight()` | The rectangle given to the pipeline (canvas units). |
 | `getExpansion()` | Largest expansion of the passes. |
-| `getGrid()` | The `PixelGrid` of the render bridge at render time: `getScaleX()` / `getScaleY()` convert UI units to window pixels. See [Drawing Overview](../drawing/draw-utils.md#pixelgrid). |
-| `getRegionX()`, `getRegionY()`, `getRegionWidth()`, `getRegionHeight()` | The rendered region (UI units): the rectangle plus the expansion, extended to whole window pixels when the transform is axis-aligned. |
+| `getGrid()` | The `PixelGrid` of the render bridge at render time: `getScaleX()` / `getScaleY()` convert canvas units to window pixels. See [Drawing Overview](../drawing/draw-utils.md#pixelgrid). |
+| `getRegionX()`, `getRegionY()`, `getRegionWidth()`, `getRegionHeight()` | The rendered region (canvas units): the rectangle plus the expansion, extended to whole window pixels when the transform is axis-aligned. |
 | `getTextureWidth()`, `getTextureHeight()` | Size of the framebuffers, in window pixels (at least `1`). |
 | `getTexelWidth()`, `getTexelHeight()` | `1 / getTextureWidth()` and `1 / getTextureHeight()`: one pixel of the framebuffer in texture coordinates. |
 | `static create(double x, double y, double width, double height, double expansion, PixelGrid grid)` | Computes a context. |
@@ -236,8 +236,8 @@ The built-in passes are in `dev.joid.lib.shader.pipeline.pass`. Each binds the m
 | `RoundedShaderPass(float radius, float x1, float y1, float x2, float y2)` | Rounds the box whose inner rectangle (the box minus the radius on each rounded side) is `x1, y1, x2, y2`. |
 | `CircleShaderPass(Node node)` | Cuts the largest circle that fits in the node: radius `min(width, height) / 2`, centered in the node. |
 | `CircleShaderPass(float radius, float centerX, float centerY)` | Cuts a circle of `radius` centered on `centerX, centerY`. |
-| `BlurShaderPass(float radius, boolean horizontal, int iteration)` | One-direction Gaussian blur of `radius` UI units (converted to window pixels). Pair a horizontal and a vertical pass for a 2D blur; `iteration` orders several pairs (`0`, `1`...) for a stronger blur. |
-| `BorderShaderPass(float borderWidth, Color borderColor)` | Border of `borderWidth` UI units around the opaque shape of the drawing, `fill` `true`, `BorderMode.OUT`. |
+| `BlurShaderPass(float radius, boolean horizontal, int iteration)` | One-direction Gaussian blur of `radius` canvas units (converted to window pixels). Pair a horizontal and a vertical pass for a 2D blur; `iteration` orders several pairs (`0`, `1`...) for a stronger blur. |
+| `BorderShaderPass(float borderWidth, Color borderColor)` | Border of `borderWidth` canvas units around the opaque shape of the drawing, `fill` `true`, `BorderMode.OUT`. |
 | `BorderShaderPass(float borderWidth, Color borderColor, boolean fill)` | Same with `fill`. |
 | `BorderShaderPass(float borderWidth, Color borderColor, boolean fill, BorderMode mode)` | `BorderMode.OUT` draws the border outside the shape's edge, `BorderMode.IN` inside it. With `fill` `false`, the pixels outside the rectangle on both axes (the corner areas) are left untouched. The color can be a gradient. |
 
@@ -251,7 +251,7 @@ The built-in passes are in `dev.joid.lib.shader.pipeline.pass`. Each binds the m
 
 ## See also
 
-- [Custom Shaders](custom-shaders.md)
+- Next: [Custom Shaders](custom-shaders.md)
 - [Effects](../styling/effects.md)
 - [Custom Effects](../styling/custom-effects.md)
 - [BlurNodeEffect](../styling/blur.md)

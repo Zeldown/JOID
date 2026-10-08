@@ -32,7 +32,7 @@ The node is drawn turned by 15 degrees around its center.
 | `transformation(Supplier<Transformation> transformation)` | Reads the transformation every frame. |
 | `getTransformationSupplier()` | The transformation supplier. |
 
-Before the node renders, the effect pushes the matrix stack and applies the operations of the transformation in order; after the node and its children have rendered, it pops the matrix.
+The renderer keeps a current matrix, the transformation applied to everything drawn, on a stack. Before the node renders, the effect pushes a copy of the matrix (saves it) and applies the operations of the transformation in order; after the node and its children have rendered, it pops the matrix (restores the saved one), so nothing drawn afterwards is affected.
 
 ## Coordinates and pivots
 
@@ -169,6 +169,7 @@ Suppliers in these types are read each time the operation is applied, every fram
 
 ## See also
 
+- Next: [Custom Effects](custom-effects.md)
 - [Effects](effects.md)
 - [Transformations and Framebuffers](../drawing/transformations.md)
 - [MaskNodeEffect](mask.md)

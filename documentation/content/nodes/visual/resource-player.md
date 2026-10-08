@@ -1,6 +1,6 @@
 # ResourcePlayerNode
 
-`ResourcePlayerNode` (`dev.joid.lib.ui.node.impl.design.resource`) plays a video or an animated image (GIF, APNG, animated WebP) with playback controls, looping, volume, positional audio and play, pause, stop, end and progress callbacks. Use [`ResourceNode`](resource.md) for still images.
+`ResourcePlayerNode` (`dev.joid.lib.ui.node.impl.design.resource`) plays a video or an animated image (GIF, APNG, animated WebP) with playback controls, looping, volume, positional audio and play, pause, stop, end and progress callbacks. Use [`ResourceNode`](resource.md) for still images. [Images and Media](../../essentials/media.md#videos-with-resourceplayernode) introduced it; this page describes the playback in detail.
 
 ## Creating a ResourcePlayerNode
 
@@ -11,7 +11,7 @@ final ResourcePlayerNode player = ResourcePlayerNode
 .loop(true)
 .attach(this);
 
-this.keybind(() -> {
+super.keybind(() -> {
 	if (player.isPlaying()) {
 		player.pause();
 	} else {
@@ -22,7 +22,7 @@ this.keybind(() -> {
 
 ![A looping placeholder video that freezes for a moment, then plays on](../../images/player-pause.gif "Space pauses the looping video, a second press resumes it (a short placeholder video stands in for intro.mp4).")
 
-`keybind` and `Key` (`dev.joid.lib.utils.key`) are described in [The UI Class](../../ui/ui-class.md) and [Mouse and Keyboard](../../interactions/mouse-and-keyboard.md).
+`keybind` and `Key` (`dev.joid.lib.utils.key`) are the keyboard shortcuts of [Input and Callbacks](../../concepts/input.md#keyboard-shortcuts-with-keybind).
 
 The resource is any [`Resource`](../../resources/resources.md) whose decoder provides an `IResourcePlayback`: videos and animated images (see [Supported Formats](../../resources/formats.md)). A still image is displayed, but the playback controls do nothing on it.
 
@@ -130,8 +130,8 @@ ResourcePlayerNode
 | `onEnd(NodeResourcePlayerEndCallback<T>)` | `(node) -> ...` | The resource reaches its end while `loop` is `false`. `stop()` does not fire it, and it never fires while looping. |
 | `onProgress(NodeResourcePlayerProgressCallback<T>)` | `(node, progress, currentTime) -> ...` | On each drawn frame where the progress changed: while playing, and after a `seek(...)`, also while paused. `progress` goes from `0` to `1`, `currentTime` is in seconds. |
 
-- `onPlay`, `onEnd`, `onProgress` and the `onStop` of the end of the resource are detected while the node draws: a node that is not drawn (hidden, or outside a closed UI) does not fire them. A playback stopped through `getPlayback()` instead of the node's `stop()` is seen the same way, as an end.
-- The callback interfaces live in `dev.joid.lib.ui.node.impl.design.resource.callback`. Each has an `apply(...)` method for the lambda and `pre(...)`/`post(...)` phases taking an `InternalContext`; the lambda runs in the POST phase. See [Callbacks](../../interactions/callbacks.md).
+- `onPlay`, `onEnd`, `onProgress` and the `onStop` of the end of the resource are detected while the node draws: a node that is not drawn (hidden, or outside a closed UI) does not fire them. A playback stopped through `getPlayback()` rather than the node's `stop()` is seen the same way, as an end.
+- The callback interfaces live in `dev.joid.lib.ui.node.impl.design.resource.callback`. Each has an `apply(...)` method for the lambda and `pre(...)`/`post(...)` phases taking an `InternalContext`; the lambda runs in the POST phase ([Input and Callbacks](../../concepts/input.md#how-events-travel)). See [Callbacks](../../interactions/callbacks.md) for the PRE phase.
 - You can register several callbacks of the same kind; they run in registration order.
 - The callback ids are the constants `ResourcePlayerNode.CALLBACK_PLAY`, `CALLBACK_PAUSE`, `CALLBACK_STOP`, `CALLBACK_END` and `CALLBACK_PROGRESS`, usable with `hasCallback(int)`.
 
@@ -161,7 +161,7 @@ The node releases its video decoder (decoding thread, audio source) when it is d
 | `referenceDistance(float)`, `referenceDistance(Supplier<Float>)` | none | Full-volume distance. |
 | `maxDistance(float)`, `maxDistance(Supplier<Float>)` | none | Silent distance. |
 
-Every setter takes a value, a native expression that reads signals, a signal or a lambda (see [Reactive Properties](../../state/reactive-properties.md)).
+Every setter takes a value, an expression that reads signals, a signal or a lambda (see [Signals and Reactivity](../../concepts/signals.md)).
 
 ### Getters
 
@@ -173,7 +173,7 @@ Every setter takes a value, a native expression that reads signals, a signal or 
 | `getLocation()` | The audio position as a `Vector3f`, or `null`. |
 | `getReferenceDistance()`, `getMaxDistance()` | The configured distances as `Float`, or `null` when not set on the node. |
 | `isResourceStarted()` | `true` once the playback of the current resource has started. |
-| `isWasPlaying()`, `getLastProgress()` | Playing state and progress seen on the previous frame, used to fire the callbacks. |
+| `isWasPlaying()`, `getLastProgress()` | Playing state and progress seen on the previous frame, from which the callbacks are fired. |
 | `isPlaying()`, `isPaused()`, `getDuration()`, `getProgress()`, `getPlayback()`, `getVideo()` | See [Reading the state](#reading-the-state). |
 
 ## Pitfalls
@@ -184,9 +184,9 @@ Every setter takes a value, a native expression that reads signals, a signal or 
 
 ## See also
 
+- Next: [ModelNode and ModelViewerNode](model.md)
 - [ResourceNode](resource.md)
 - [Playback, Video and Audio](../../resources/playback.md)
 - [Supported Formats](../../resources/formats.md)
-- [Resources](../../resources/resources.md)
 - [ProgressNode](progress.md)
 - [Callbacks](../../interactions/callbacks.md)

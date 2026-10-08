@@ -1,6 +1,6 @@
 # FlexNode
 
-`FlexNode` (`dev.joid.lib.ui.node.impl.structure.flex`) places its children one after the other in a column or a row, with a gap and an optional alignment across the line, and grows along that line to fit them. Use it for lists, toolbars and menus instead of computing positions by hand.
+`FlexNode` (`dev.joid.lib.ui.node.impl.structure.flex`) places its children one after the other in a column or a row, with a gap and an optional alignment across the line, and grows along that line to fit them. Use it for lists, toolbars and menus instead of computing positions by hand. [Layout](../../essentials/layout.md#lists-with-flexnode) introduced it; this page describes every rule and option.
 
 ```java
 FlexNode
@@ -96,11 +96,13 @@ RectNode
 
 ## Hiding a child with visible
 
-A child whose own visibility is false takes no room: the next children close the gap, and it gets its slot back as soon as it is visible again. A `BooleanSignal` goes as is to `visible(...)`.
+A child whose own visibility is false takes no room: the next children close the gap, and it gets its slot back as soon as it is visible again. A `BooleanSignal` goes as is to `visible(...)`. `info` is a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)).
 
 ```java
 private final BooleanSignal shown = BooleanSignal.of(true);
+```
 
+```java
 FlexNode
 .horizontal(100, 100, 60)
 .margin(10D)
@@ -117,22 +119,24 @@ RectNode
 .color(Color.GRAY)
 .onClick((node, mouseX, mouseY, clickType) -> this.shown.toggle())
 .body(button -> {
-	TextNode.create(80, 25).text(Text.create("Toggle", this.label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
+	TextNode.create(80, 25).text(Text.create("Toggle", this.info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
 })
 .attach(this);
 ```
 
 ![Clicking Toggle removes the white square and the squares after it slide left](../../images/flex-hidden.gif "A hidden child takes no room; it gets its slot back when it is shown.")
 
-Only the child's own visibility counts (`visible(...)`): a child clipped by an [overflow](overflow-and-scroll.md) area keeps its slot. `label` is a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)), and `info` below is built the same way.
+Only the child's own visibility counts (`visible(...)`): a child clipped by an [overflow](overflow-and-scroll.md) area keeps its slot.
 
 ## Switching direction with direction
 
-`direction(FlexDirection)` switches between `FlexDirection.COLUMN` and `FlexDirection.ROW` (`FlexNode.FlexDirection`). Like every setter, it follows a native expression that reads signals. When the direction changes, every child goes back to the position it was created at before the new layout runs; the new main size is computed, the new cross size keeps its current value.
+`direction(FlexDirection)` switches between `FlexDirection.COLUMN` and `FlexDirection.ROW` (`FlexNode.FlexDirection`). Like every setter, it follows an expression that reads signals. When the direction changes, every child goes back to the position it was created at before the new layout runs; the new main size is computed, the new cross size keeps its current value.
 
 ```java
 private final BooleanSignal row = BooleanSignal.of(false);
+```
 
+```java
 FlexNode
 .vertical(100, 100, 60)
 .margin(10D)
@@ -149,7 +153,7 @@ RectNode
 .color(Color.GRAY)
 .onClick((node, mouseX, mouseY, clickType) -> this.row.toggle())
 .body(button -> {
-	TextNode.create(80, 25).text(Text.create("Switch", this.label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
+	TextNode.create(80, 25).text(Text.create("Switch", this.info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
 })
 .attach(this);
 ```
@@ -168,7 +172,7 @@ RectNode
 .color(Color.GRAY)
 .onClick((node, mouseX, mouseY, clickType) -> RectNode.create(0, 0, 60, 60).color(Color.LIGHTGRAY).attach(row))
 .body(button -> {
-	TextNode.create(80, 25).text(Text.create("Add", this.label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
+	TextNode.create(80, 25).text(Text.create("Add", this.info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
 })
 .attach(this);
 ```
@@ -177,11 +181,13 @@ RectNode
 
 ## Lists built from a signal
 
-To rebuild the children from data, `watch` the signal with `WatchProperty.CLEAR_CHILDREN` and `WatchProperty.BODY`: the layout follows the new children (see [ContainerNode](container.md) for a live example and [Watching Signals](../../state/watch.md) for the rules).
+To rebuild the children from data, `watch` the signal with `WatchProperty.CLEAR_CHILDREN` and `WatchProperty.BODY`, as in [Layout](../../essentials/layout.md#rebuilding-a-list-with-watch): the layout follows the new children (see [ContainerNode](container.md) for a live example).
 
 ```java
 private final ListSignal<String> items = new ListSignal<>(Arrays.asList("Sword", "Shield"));
+```
 
+```java
 FlexNode
 .vertical(100, 100, 400)
 .margin(8D)
@@ -267,7 +273,7 @@ See [Overflow and Scrolling](overflow-and-scroll.md). For a list the user reorde
 | `COLUMN` | Children stacked from top to bottom. |
 | `ROW` | Children lined up from left to right. |
 
-The setters of `FlexNode` return `FlexNode`. A value is fixed, a native expression that reads signals, a signal or a `map(...)` is followed, a lambda is read every frame (see [Reactive Properties](../../state/reactive-properties.md)). Everything else is inherited from [Node](../node-fundamentals.md).
+The setters of `FlexNode` return `FlexNode`. A value is fixed, an expression that reads signals, a signal or a `map(...)` is followed, a lambda is read every frame (see [Signals and Reactivity](../../concepts/signals.md)). Everything else is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
 
 ## Pitfalls
 
@@ -278,9 +284,9 @@ The setters of `FlexNode` return `FlexNode`. A value is fixed, a native expressi
 
 ## See also
 
-- [Node Fundamentals](../node-fundamentals.md)
-- [GridNode](grid.md)
+- Next: [GridNode](grid.md)
+- [Layout](../../essentials/layout.md)
 - [ReorderableFlexNode](reorderable-flex.md)
 - [Overflow and Scrolling](overflow-and-scroll.md)
-- [Reactive Properties](../../state/reactive-properties.md)
 - [Watching Signals](../../state/watch.md)
+- [Node Fundamentals](../node-fundamentals.md)

@@ -1,6 +1,6 @@
 # Markup and Text Effects
 
-Markup and effects style a string from the inside. An `ITextMarkup` turns inline codes such as `<b>` into style changes; an `ITextEffect` transforms and decorates each glyph (an underline, a highlight, a wave). JOID has no markup syntax of its own: you write or pick the markup of your project, and it works with every [glyph font](../fonts/how-fonts-work.md#glyph-fonts-with-glyphfont), when text is drawn and when it is measured.
+Markup and effects style a string from the inside. An `ITextMarkup` turns inline codes such as `<b>` into style changes; an `ITextEffect` transforms and decorates each glyph (an underline, a highlight, a wave). JOID has no markup syntax of its own: you write or pick the markup of your project, and it works with the MSDF fonts and every font built on the same glyph framework ([How Fonts Work](../fonts/how-fonts-work.md#glyph-fonts-with-glyphfont), in the next section), when text is drawn and when it is measured.
 
 ```java
 TextMarkup.register(TagTextMarkup.inst());
@@ -10,7 +10,7 @@ TextNode.create(100, 100).text(Text.create("<b>Bold</b>, <i>italic</i>, <c=ff555
 
 ![Bold, italic, red and underlined drawn from one tagged string](../images/markup-quick.png "The tags are read while drawing: they take no room and are not drawn.")
 
-`TagTextMarkup` and its `UnderlineTextEffect` are the two classes below. `ITextMarkup` and `TextMarkup` are in `dev.joid.lib.font.dto.markup`, `ITextEffect` and `ITextGlyph` in `dev.joid.lib.font.dto.effect`, `TextStyle` in `dev.joid.lib.font.dto`; `font` is a loaded font family (see [Adding Your Own Fonts](../fonts/adding-fonts.md)).
+`TagTextMarkup` and its `UnderlineTextEffect` are the two classes below. `ITextMarkup` and `TextMarkup` are in `dev.joid.lib.font.dto.markup`, `ITextEffect` and `ITextGlyph` in `dev.joid.lib.font.dto.effect`, `TextStyle` in `dev.joid.lib.font.dto`; `font` is the family loaded with `MsdfFontLoader` in [Text](../essentials/text.md#loading-a-font-with-msdffontloader); the Fonts section ([Adding Your Own Fonts](../fonts/adding-fonts.md)) covers loading in detail.
 
 ## Writing markup with ITextMarkup
 
@@ -292,6 +292,7 @@ Positions and sizes are in UI units.
 
 ## See also
 
+- Next: [How Fonts Work](../fonts/how-fonts-work.md) — the Fonts section.
 - [Text and TextInfo](text-and-textinfo.md)
 - [Styling Text](styling-text.md)
 - [TextFieldNode](../nodes/input/text-field.md)

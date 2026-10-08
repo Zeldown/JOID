@@ -1,6 +1,6 @@
 # Developer Tools
 
-The dev mode adds an on-screen inspector, reload shortcuts, hot reload, a profiler and warnings that explain what JOID could not do; the demo mode runs the bundled demo UIs. Both exist only in the `-dev` jars: turn them on while you build your UIs, and ship the `-prod` jar.
+The dev mode adds an on-screen inspector, reload shortcuts, hot reload, a profiler and warnings that explain what JOID could not do; the demo mode runs the bundled demo UIs. Both exist only in the `-dev` jars: turn them on while you build your UIs, and ship the `-prod` jar. This page closes the Core Concepts: the reload shortcuts and the inspector make it quick to try every idea of the previous pages.
 
 ```java
 JOID.inst().setDevMode(true).setDemoMode(true).load();
@@ -144,7 +144,7 @@ The annotation is looked up on the class, then on its superclasses. `ui.getDebug
 
 ## Dev warnings
 
-In dev mode, JOID prints a warning on `System.err` when it cannot do what your code asks, once per case, then carries on.
+In dev mode, JOID prints a warning on `System.err` when it cannot do what your code asks, once per case, then carries on. Some warnings concern topics of later pages (shaders, resources, fonts): come back to this table when you meet them.
 
 | Message | When |
 | --- | --- |
@@ -202,7 +202,7 @@ Each backend `-dev` jar contains a demo window: `dev.joid.impl.lwjgl2.demo.DemoW
 
 ![The demo menu: a grid of gray buttons, one per demo UI](../images/dev-demo-menu.png "UIDemoChoice: click a demo to open it, Escape goes back to the menu.")
 
-Run it from the repository with `./gradlew :lwjgl3:runDemo` (also `:lwjgl2:runDemo`, `:vulkan:runDemo`), or from a release jar with the libraries of [Installation](installation.md):
+Run it from the repository with `./gradlew :lwjgl3:runDemo` (also `:lwjgl2:runDemo`, `:vulkan:runDemo`), or from a release jar with the libraries of [Installation](../getting-started/installation.md):
 
 ```
 java -cp "joid-lwjgl3-8.0.0-dev.jar:libs/*" dev.joid.impl.lwjgl3.demo.DemoWindow
@@ -241,8 +241,9 @@ Click a button of the menu to open its demo; it slides in, and `Escape` goes bac
 
 ## See also
 
-- [Installation](installation.md)
-- [Core Concepts](core-concepts.md)
+- Next: [Layout](../essentials/layout.md), the first of the Essentials.
+- [Installation](../getting-started/installation.md)
+- [The Frame Loop](frame-loop.md)
 - [The UI Class](../ui/ui-class.md)
 - [Reactive Properties](../state/reactive-properties.md)
 - [Resources](../resources/resources.md)

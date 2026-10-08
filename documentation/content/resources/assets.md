@@ -1,6 +1,6 @@
 # Assets
 
-An `Asset` (`dev.joid.lib.asset`) is a named source of bytes: it has a unique id and opens a stream on its content, nothing more. JOID turns every handle you pass to `Resource.of` (or to the font loader) into an asset, and you teach it new kinds of handles, such as a `Path`, an archive entry or the resource system of a game, by registering an `IAssetLocator`.
+An `Asset` (`dev.joid.lib.asset`) is a named source of bytes: it has a unique id and opens a stream on its content, nothing more. It is the step before the decoding of a [resource](resources.md): you need this page to load from a source JOID does not know, or to give a file of your jar a stable id. JOID turns every handle you pass to `Resource.of` (or to the font loader) into an asset, and you teach it new kinds of handles, such as a `Path`, an archive entry or the resource system of a game, by registering an `IAssetLocator`.
 
 ```java
 final Asset file = Asset.of(new File("images/logo.png"));
@@ -166,7 +166,7 @@ public boolean isRemote() {
 
 ## See also
 
+- Next: [Supported Formats](formats.md) — how the first bytes of an asset choose its decoder.
 - [Resources](resources.md) — loading, caching and releasing what an asset contains.
-- [Supported Formats](formats.md) — how the first bytes of an asset choose its decoder.
 - [Custom Formats and Decoders](custom-formats.md) — resolvers, formats and decoders.
 - [Adding Your Own Fonts](../fonts/adding-fonts.md) — font files load from the same handles.

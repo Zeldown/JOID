@@ -71,7 +71,7 @@ TextNode.create(20, 20).text(Text.create("Score: " + this.score.get(), this.body
 
 ![Five clicks count a text up to Clicks: 5](../images/ess-state-counter.gif "A text built from a signal follows it.")
 
-`score` is an `IntegerSignal` field; [State and Reactivity](state.md) explains what is followed. `Text.create(() -> ..., info)` reads a lambda every frame instead, for a clock or a frame counter.
+`score` is an `IntegerSignal` field; [Signals and Reactivity](../concepts/signals.md) explains what is followed. `Text.create(() -> ..., info)` reads a lambda every frame instead, for a clock or a frame counter.
 
 ## Several styles with TextElement
 
@@ -118,7 +118,7 @@ RectNode.create(100, 520, this.body.aw("Settings", 48D), this.body.ah(24D)).colo
 
 ## Effects on text
 
-Text is drawn by a node, so [node effects](styling.md#effects) apply to the glyphs. An outlined title:
+Text is drawn by a node, so [node effects](../concepts/styling.md#effects) apply to the glyphs. An outlined title:
 
 ```java
 TextNode.create(100, 600).text(Text.create("Outlined", this.title)).effect(BorderNodeEffect.create(Color.GRAY, 3F)).attach(this);
@@ -134,7 +134,7 @@ TextNode.create(100, 600).text(Text.create("Outlined", this.title)).effect(Borde
 
 ## See also
 
-- Next: [Images and Media](media.md)
+- Next: [Input Controls](controls.md)
 - [Text and TextInfo](../text/text-and-textinfo.md): the text model, every `TextInfo` setting, measuring.
 - [Styling Text](../text/styling-text.md): weights, italic, alignment, modes, overflow, modifiers.
 - [Markup and Text Effects](../text/markup-and-effects.md): inline markup, animated and decorated glyphs.

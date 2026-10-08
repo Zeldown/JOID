@@ -1,31 +1,30 @@
 # Mouse and Keyboard
 
-JOID receives mouse and key events from its UI bridge and dispatches them to the open UIs and their nodes. This page covers the mouse buttons (`ClickType`), the keys (`Key`), the modifier helpers, keybinds, mouse coordinates and the exact order in which an event travels.
+[Input and Callbacks](../concepts/input.md) showed `onClick` with its `ClickType`, `keybind` and `Key.isDown()`; [Callbacks](callbacks.md) listed every callback. This page goes into the details of the mouse and the keyboard: the buttons (`ClickType`), the mouse coordinates and hit testing, the keys (`Key`) and keyboard layouts, the modifier helpers, keybinds, the input hooks of a UI and the exact path of an event from the window to the nodes.
 
 ## Reacting to clicks and keys
 
 ```java
-public class EditorUI extends UI {
+private final Signal<String> status = Signal.of("Right-click the rectangle");
 
-	@Override
-	public void init() {
-		RectNode
-		.create(100, 100, 300, 80)
-		.color(Color.WHITE)
-		.onClick((node, mouseX, mouseY, clickType) -> {
-			if (clickType.isRight()) {
-				System.out.println("Context menu at " + mouseX + ", " + mouseY);
-			}
-		})
-		.attach(this);
-
-		super.keybind(() -> System.out.println("Saved"), Key.LEFT_CONTROL, Key.S);
+RectNode
+.create(100, 100, 300, 80)
+.color(Color.GRAY)
+.onClick((node, mouseX, mouseY, clickType) -> {
+	if (clickType.isRight()) {
+		this.status.set("Context menu at " + (int) mouseX + ", " + (int) mouseY);
 	}
+})
+.attach(this);
 
-}
+TextNode.create(100, 200).text(Text.create(this.status.get(), this.info)).attach(this);
+
+super.keybind(() -> this.status.set("Saved"), Key.LEFT_CONTROL, Key.S);
 ```
 
-`onClick` fires only for a press over the node. `keybind` runs its action when a key event reaches the UI while every listed key is down.
+![A right click on a gray rectangle writes Context menu at 250, 140 below it, then Ctrl + S writes Saved](../images/input-click-keybind.gif "onClick reads the button and the position; the keybind runs when Ctrl and S are down.")
+
+`onClick` fires only for a press over the node; `clickType` tells which button. `keybind` runs its action when a key event reaches the UI while every listed key is down. `info` is a `TextInfo` (see [Text](../essentials/text.md)).
 
 ## Mouse buttons with ClickType
 
@@ -62,9 +61,13 @@ public class EditorUI extends UI {
 
 ## Mouse coordinates
 
-- The `mouseX` and `mouseY` given to callbacks and hooks are UI units: the window position of the mouse at the last drawn frame, converted through the UI's view. `UI.getMouseX()` and `UI.getMouseY()` return the same values.
+Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. The mouse uses the same units as the nodes (see [The Virtual Canvas](../concepts/canvas.md)).
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+- The `mouseX` and `mouseY` given to callbacks and hooks are canvas units: the window position of the mouse at the last drawn frame, converted through the UI's view. Over the extra area of a wider or taller window, they fall outside `0`..`1920` and `0`..`1080`. `UI.getMouseX()` and `UI.getMouseY()` return the same values.
 - For coordinates relative to a node, subtract its absolute position: `mouseX - node.getAbsoluteX()`.
-- The window position in pixels is `BridgeHandler.WINDOW.get().getMouseX()` and `getMouseY()`; convert between window and UI units with `ui.getView().toUiX(...)`, `toUiY(...)`, `toScreenX(...)` and `toScreenY(...)` (see [View and Scaling](../ui/view-and-scaling.md)).
+- The window position in pixels is `BridgeHandler.WINDOW.get().getMouseX()` and `getMouseY()`; convert between window pixels and canvas units with `ui.getView().toUiX(...)`, `toUiY(...)`, `toScreenX(...)` and `toScreenY(...)` (see also [View and Scaling](../ui/view-and-scaling.md)).
 
 ### Hit testing with isHovered
 
@@ -105,11 +108,15 @@ public class EditorUI extends UI {
 `key.isDown()` returns the current state of the key, asked to the window bridge (`IWindowBridge.isKeyDown`). You can call it anywhere, for example in a click callback:
 
 ```java
+RectNode
+.create(100, 100, 300, 80)
+.color(Color.GRAY)
 .onClick((node, mouseX, mouseY, clickType) -> {
 	if (Key.LEFT_SHIFT.isDown()) {
 		System.out.println("Shift-click");
 	}
 })
+.attach(this);
 ```
 
 ### Keyboard layouts
@@ -125,11 +132,15 @@ Letter keys follow the active keyboard layout, like the shortcuts of the system 
 For controls tied to a place on the keyboard, such as moving with W, A, S and D, read the key by its position. `key.isPhysicalDown()` tells whether the key at the place of `key` on a US QWERTY keyboard is held: `Key.W.isPhysicalDown()` is the key above S, labelled Z on AZERTY.
 
 ```java
+RectNode
+.create(100, 100, 300, 80)
+.color(Color.GRAY)
 .onClick((node, mouseX, mouseY, clickType) -> {
 	if (Key.W.isPhysicalDown()) {
 		System.out.println("Click while the key above S is held");
 	}
 })
+.attach(this);
 ```
 
 | Backend | Letter keys | `isPhysicalDown()` |
@@ -154,7 +165,7 @@ The static helpers of `UI` test the left and the right key of a modifier at once
 ```java
 @Override
 public void init() {
-	super.keybind(() -> JOID.open(new SettingsUI()), Key.LEFT_CONTROL, Key.O);
+	super.keybind(() -> JOID.close(this), Key.LEFT_CONTROL, Key.W);
 	super.keybind(() -> System.out.println("Help"), Key.F1);
 }
 ```
@@ -200,7 +211,7 @@ The UI bridge receives the events from the backend through `UIBridge.mousePresse
 4. Key events only, when no node consumed the event:
    1. the keybinds (see above);
    2. when the UI is zoomable (`zoomable`, `true` by default) and the event is still not consumed: `+` or `NUMPAD_ADD` with Ctrl or Alt zooms in by `0.1`, `-` or `NUMPAD_SUBTRACT` with Ctrl or Alt zooms out by `0.1`; the event is consumed when the zoom changed;
-   3. in dev mode, when the event is still not consumed: Left Ctrl + R or F5 reloads the UI (`UI.reload()`: same instance, fields and signals kept); with Left Shift held (Ctrl + Shift + R, Shift + F5) the UI is replaced by a new instance (`UI.renew()`, zoom back to `1`); F3 shows or hides the developer panel (see [Developer Tools](../getting-started/dev-tools.md)).
+   3. in dev mode, when the event is still not consumed: Left Ctrl + R or F5 reloads the UI (`UI.reload()`: same instance, fields and signals kept); with Left Shift held (Ctrl + Shift + R, Shift + F5) the UI is replaced by a new instance (`UI.renew()`, zoom back to `1`); F3 shows or hides the developer panel (see [Developer Tools](../concepts/dev-tools.md)).
 5. The UI hook (`mousePressed`, `keyPressed`...) runs with the context.
 6. When the event is consumed, or the UI is a popup (`@UIDataPopup(active = true)`, see [Opening and Closing UIs](../ui/managing-uis.md)), the dispatch stops; otherwise the next UI below receives it.
 
@@ -268,8 +279,9 @@ Each node records the last events dispatched to its UI, whether or not they happ
 
 ## See also
 
-- [Callbacks](callbacks.md)
-- [Hover and Tooltips](hover.md)
-- [The UI Class](../ui/ui-class.md)
-- [Opening and Closing UIs](../ui/managing-uis.md)
-- [UI Bridge](../integration/ui-bridge.md)
+- Next: [Hover and Tooltips](hover.md)
+- [Input and Callbacks](../concepts/input.md): the basics this page builds on.
+- [Callbacks](callbacks.md): consuming an event, the order inside a node.
+- [The Virtual Canvas](../concepts/canvas.md): canvas units and window pixels.
+- [TextFieldNode](../nodes/input/text-field.md): the focus of a text field.
+- [UI Bridge](../integration/ui-bridge.md): forwarding the events of your window.

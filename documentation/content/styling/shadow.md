@@ -1,6 +1,6 @@
 # ShadowNodeEffect
 
-`ShadowNodeEffect` (`dev.joid.lib.ui.node.effect.impl`) draws a soft shadow under a node: a drop shadow when it is offset, a glow when it is not. Use it to lift cards, menus and buttons, or to make a badge shine.
+`ShadowNodeEffect` (`dev.joid.lib.ui.node.effect.impl`) draws a soft shadow under a node: a drop shadow when it is offset, a glow when it is not. Use it to lift cards, menus and buttons, or to make a badge shine. Unlike the shape effects of the previous pages, it is a render-state effect (see [Effects](effects.md#effect-order-and-priority)): it draws around the node, without framebuffer.
 
 ```java
 @Override
@@ -10,7 +10,7 @@ public void init() {
 }
 ```
 
-![A white rounded card with a soft shadow below it on a light background, a dark card with a violet glow and a cyan disc with a cyan glow](../images/shadow-basic.png "A drop shadow (shown on a light background), then two glows without offset.")
+![A white rounded card with a soft shadow below it on a light background, and a cyan disc with a cyan glow](../images/shadow-basic.png "A drop shadow (shown on a light background so the 30 % black stands out), then a glow without offset.")
 
 ## Creating with create
 
@@ -41,6 +41,8 @@ RectNode
 .self(node -> node.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.3F), 8F).blur(() -> 8F + node.hoverValue(16F)).offsetY(() -> 2D + node.hoverValue(8F))))
 .attach(this);
 ```
+
+![On a light background, the cursor hovers a white card and its shadow grows softer and lower](../images/shadow-hover.gif "The blur goes from 8 to 24 and the offset from 2 to 10 with the hover progress.")
 
 ## Shape of the shadow
 
@@ -78,6 +80,7 @@ The shadow is computed from this shape, not from the drawn pixels: a text or an 
 
 ## See also
 
+- Next: [MaskNodeEffect](mask.md)
 - [Effects](effects.md)
 - [RoundedNodeEffect](rounded.md)
 - [BlurNodeEffect](blur.md)

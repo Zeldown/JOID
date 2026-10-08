@@ -157,9 +157,9 @@ Popups (`@UIDataPopup(active = true)`) get a pop transition by default. The UI i
 
 ## See also
 
-- [Component Catalog](../components/overview.md): you have reached the end of the Essentials, every node you can use is listed there.
+- Next: [Tutorial 1: Project Setup](../tutorial/setup.md): the Essentials put together in a real settings screen.
+- [Component Catalog](../components/overview.md): every node you can use.
 - [TweenAnimator](../animation/tween-animator.md): every method, timelines, callbacks, testing with a manual clock.
 - [Easing](../animation/easing.md): every equation and its curve.
-- [Tween Engine](../animation/tween-engine.md): animating several attributes of your own objects, timelines, paths.
 - [Hover and Tooltips](../interactions/hover.md): the hover animation in detail.
 - [Transitions](../ui/transitions.md): how transitions run and how to write one.

@@ -1,6 +1,6 @@
 # Custom Effects
 
-A custom effect is a subclass of `NodeEffect<T extends Node>` (`dev.joid.lib.ui.node.effect`), where `T` is the node it applies to: `NodeEffect<Node>` for an effect that goes on any node, as the built-in effects, or a node class such as `NodeEffect<RectNode>` to read the getters of that node in the hooks. Write one when the [built-in effects](effects.md) do not cover a visual treatment you want to reuse on any node: a hard shadow, a hover lift, a color filter.
+A custom effect is a subclass of `NodeEffect<T extends Node>` (`dev.joid.lib.ui.node.effect`), where `T` is the node it applies to: `NodeEffect<Node>` for an effect that goes on any node, as the built-in effects, or a node class such as `NodeEffect<RectNode>` to read the getters of that node in the hooks. Write one when the [built-in effects](effects.md) do not cover a visual treatment you want to reuse on any node: a hard shadow, a hover lift, a color filter. This page closes the Styling guides: render-state effects only need the drawing calls you already know, while shader effects touch GPU programs, which the Advanced section covers in depth.
 
 There are two kinds of effects, and you pick one by overriding different hooks:
 
@@ -11,7 +11,7 @@ There are two kinds of effects, and you pick one by overriding different hooks:
 
 ## A render-state effect
 
-This effect draws a hard shadow under the node while it is hovered (for a soft shadow, use the built-in [ShadowNodeEffect](shadow.md)):
+This effect draws a hard shadow under the node while it is hovered (for a soft shadow, use the built-in [ShadowNodeEffect](shadow.md)). It draws with `DrawUtils.SHAPE`, met in [Input Controls](../essentials/controls.md), and follows the [factory pattern](../components/ui-kit.md) of the components: a `protected` constructor and a static `create(...)`:
 
 ```java
 import dev.joid.lib.color.Color;
@@ -24,7 +24,7 @@ public class HardShadowNodeEffect extends NodeEffect<Node> {
 	private final Color color;
 	private final double offset;
 
-	private HardShadowNodeEffect(final Color color, final double offset) {
+	protected HardShadowNodeEffect(final Color color, final double offset) {
 		this.color = color;
 		this.offset = offset;
 	}
@@ -57,7 +57,7 @@ When `pre` runs, the current matrix is the one the node draws with: draw at `nod
 
 ### Restoring the state in post
 
-Whatever `pre` changes, `post` restores. This effect lifts the node while it is hovered, by pushing a matrix in `pre` and popping it in `post`:
+Whatever `pre` changes, `post` restores. `BridgeHandler.RENDER.get()` returns the render bridge of the backend (see [The Frame Loop](../concepts/frame-loop.md)); it holds the current matrix, the transformation applied to everything drawn, on a stack: `pushMatrix()` saves it, `translate(...)` moves what is drawn next, `popMatrix()` restores the saved matrix. This effect lifts the node while it is hovered, by pushing a matrix in `pre` and popping it in `post`:
 
 ```java
 import dev.joid.lib.bridge.BridgeHandler;
@@ -69,7 +69,7 @@ public class LiftNodeEffect extends NodeEffect<Node> {
 
 	private final float height;
 
-	private LiftNodeEffect(final float height) {
+	protected LiftNodeEffect(final float height) {
 		this.height = height;
 	}
 
@@ -98,9 +98,9 @@ The node calls `post` in a `finally` block, so the matrix is popped even if the 
 
 ## A shader effect
 
-A shader effect returns shader passes; the node renders into a framebuffer and the [Shader Pipeline](../shaders/pipeline.md) runs the passes on the result. This example turns a node to grayscale. It needs three pieces: the shader, a pass and the effect.
+A shader effect returns shader passes. As in [Effects](effects.md#effects-and-the-shader-pipeline), the node renders into a framebuffer (an offscreen image), then each pass runs a shader (a small GPU program written in GLSL, run on every pixel) over that image. This example turns a node to grayscale. It needs three pieces: the shader, a pass and the effect. This section shows the minimum; the [Shader Pipeline](../shaders/pipeline.md) and [Custom Shaders](../shaders/custom-shaders.md) pages of the Advanced section explain the pipeline, the GLSL dialect and the uniforms in depth.
 
-The shader loads its GLSL from the classpath through `ShaderImpl` (`dev.joid.lib.shader.impl`), like the built-in shaders:
+The shader loads its GLSL from the classpath through `ShaderImpl` (`dev.joid.lib.shader.impl`), like the built-in shaders. A uniform is a value you hand to the GPU program before it runs, here `u_Amount`, the strength of the filter:
 
 ```java
 import dev.joid.lib.shader.impl.ShaderImpl;
@@ -198,7 +198,7 @@ public class GrayscaleNodeEffect extends NodeEffect<Node> {
 
 	private final float amount;
 
-	private GrayscaleNodeEffect(final float amount) {
+	protected GrayscaleNodeEffect(final float amount) {
 		this.amount = amount;
 	}
 
@@ -246,7 +246,7 @@ public class UnderlineNodeEffect extends NodeEffect<RectNode> {
 
 	private final double thickness;
 
-	private UnderlineNodeEffect(final double thickness) {
+	protected UnderlineNodeEffect(final double thickness) {
 		this.thickness = thickness;
 	}
 
@@ -280,10 +280,11 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 
 public class HoverBorderNodeEffect extends BorderNodeEffect {
 
-	private boolean hoverOnly = true;
+	private boolean hoverOnly;
 
-	private HoverBorderNodeEffect(final Color color, final float width) {
+	protected HoverBorderNodeEffect(final Color color, final float width) {
 		super(color, width, BorderMode.OUT);
+		this.hoverOnly = true;
 	}
 
 	public static HoverBorderNodeEffect create(final Color color, final float width) {
@@ -345,6 +346,7 @@ RectNode.create(100, 100, 300, 200).color(Color.WHITE).effect(border).attach(thi
 
 ## See also
 
+- Next: [TweenAnimator](../animation/tween-animator.md), the Animation guides
 - [Effects](effects.md)
 - [Shader Pipeline](../shaders/pipeline.md)
 - [Custom Shaders](../shaders/custom-shaders.md)

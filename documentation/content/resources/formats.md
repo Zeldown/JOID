@@ -1,6 +1,6 @@
 # Supported Formats
 
-JOID decodes still images, SVG, animated GIF, APNG and WebP, and videos with their audio. It recognizes a format from the first bytes of the content, so file names and extensions never matter. Use this page to know what each format supports and how the detection works.
+JOID decodes still images, SVG, animated GIF, APNG and WebP, and videos with their audio. It recognizes a format from the first bytes of the content, so file names and extensions never matter. Use this page, after [Assets](assets.md), to know what each format supports and how the detection works.
 
 ```java
 ResourceNode.create(100, 100, 160, 120).resource(Resource.of("https://placehold.co/120x120/DDDDDD/999999.png")).stretch(StretchType.CONTAIN).attach(this);
@@ -68,7 +68,7 @@ No embedded library decodes HEIF or AVIF images: neither ImageIO, nor TwelveMonk
 | Frame duration | As stored in the file; a frame shorter than 10 ms lasts 100 ms, as in web browsers. |
 | Loop count | GIF: the `NETSCAPE2.0` extension (0 loops forever, `n` plays `n + 1` times), one play without it. APNG: `num_plays` of `acTL` (0 loops forever). WebP: the loop count of `ANIM` (0 loops forever). `loop(boolean)` overrides it. |
 | Start | Plays as soon as it is uploaded, unless `autoplay(false)`. |
-| Timing | Follows the [clock bridge](../integration/bridges.md): a paused `ManualClockBridge` freezes the animation. |
+| Timing | Follows the clock bridge (see [The Frame Loop](../concepts/frame-loop.md)): a `ManualClockBridge`, the clock of the tests, freezes the animation until you advance it. |
 
 See [Playback, Video and Audio](playback.md) for the controls.
 
@@ -95,7 +95,7 @@ See [Playback, Video and Audio](playback.md) for the controls.
 | Size | `getWidth()` and `getHeight()` are the size of the video. |
 | Frame rate | Read from the file, 30 frames per second when the file does not tell. |
 | Streaming | A decoding thread named `joid-video-decode` keeps up to 5 frames ahead; two textures alternate on the GPU. |
-| Timing | A frame shows when the [clock bridge](../integration/bridges.md) reaches its time. |
+| Timing | A frame shows when the clock bridge (see [The Frame Loop](../concepts/frame-loop.md)) reaches its time. |
 | Audio | The audio track plays through the audio bridge, mixed down to stereo. See [Audio](playback.md#audio). |
 | Errors | A file FFmpeg cannot open makes the resource fail: it is drawn empty, with the dev warning and `onError`. |
 
@@ -115,7 +115,7 @@ Decoders give the fully transparent pixels of an image, an animation frame or an
 
 ## See also
 
+- Next: [Playback, Video and Audio](playback.md) — controlling animations and videos.
 - [Resources](resources.md) — loading, options and lifecycle.
-- [Playback, Video and Audio](playback.md) — controlling animations and videos.
 - [Custom Formats and Decoders](custom-formats.md) — adding a format or a decoder.
 - [ResourceNode](../nodes/visual/resource.md) and [ResourcePlayerNode](../nodes/visual/resource-player.md) — the nodes that display them.

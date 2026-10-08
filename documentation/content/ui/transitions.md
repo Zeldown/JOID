@@ -1,6 +1,6 @@
 # Transitions
 
-A transition animates a UI when it opens and when it closes. `Transition` (`dev.joid.lib.ui.core.transition`) holds an In state, played after each `init()`, and an Out state, played before the UI is removed. JOID ships `PopTransition`, the default of popups, and you write your own by extending `Transition`.
+A transition animates a UI when it opens and when it closes. `Transition` (`dev.joid.lib.ui.core.transition`) holds an In state, played after each `init()`, and an Out state, played before the UI is removed. JOID ships `PopTransition`, the default of popups, and you write your own by extending `Transition`. This page closes the UIs guide; a transition is driven by a [TweenAnimator](../animation/tween-animator.md), seen in the Animation guide.
 
 ## Applying a transition with setTransition
 
@@ -28,6 +28,12 @@ JOID.open(settings);
 A state stops running when the timeline of its animator ends (`getAnimator().getTimeline()` returns `null`). The `force` variants of `JOID.open` and `JOID.close` remove UIs without playing their Out state.
 
 `pre` and `post` wrap the view transform: their transformations apply in the host's coordinate space (window pixels with the projection of the [Quick Start](../getting-started/quick-start.md)), around the whole UI except its background and `drawBackground`.
+
+Inside the view, positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. A transition works outside that fit, so its offsets are window pixels.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+See [The Virtual Canvas](../concepts/canvas.md) for the fit and the conversions between window pixels and canvas units.
 
 ## PopTransition
 
@@ -73,7 +79,7 @@ Extend `Transition` and pass an `In` and an `Out` to its constructor. Each state
 | `void pre(UI ui, double mouseX, double mouseY)` | Applies the effect before the UI draws, typically by pushing a matrix. |
 | `void post(UI ui, double mouseX, double mouseY)` | Undoes what `pre` did. |
 
-This transition slides the UI up from 200 pixels below when it opens, and back down when it closes:
+`pre` and `post` move the whole UI through the render bridge of the backend, `BridgeHandler.RENDER.get()` (an `IRenderBridge`, see [Bridges and Backends](../concepts/bridges.md)): `pushMatrix()` saves the current transform, `translate(x, y, z)` moves everything drawn after it, and `popMatrix()` restores the saved transform. This transition slides the UI up from 200 pixels below when it opens, and back down when it closes:
 
 ```java
 public class SlideTransition extends Transition {
@@ -183,6 +189,7 @@ Base class of `Transition.In` (animator starts at `0F`) and `Transition.Out` (an
 
 ## See also
 
+- Next: [Resources](../resources/resources.md)
 - [The UI Class](ui-class.md)
 - [Opening and Closing UIs](managing-uis.md)
 - [TweenAnimator](../animation/tween-animator.md)

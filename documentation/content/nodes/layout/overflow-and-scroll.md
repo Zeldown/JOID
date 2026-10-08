@@ -1,6 +1,6 @@
 # Overflow and Scrolling
 
-The overflow of a node decides what happens to the children that go beyond its bounds: they spill out, they are clipped, or they scroll with the mouse wheel, from code or with a scrollbar. Every node has it; this page covers `OverflowProperty`, the scroll API every node inherits, nested scroll containers, `ScrollbarNode` and the scroll callbacks.
+The overflow of a node decides what happens to the children that go beyond its bounds: they spill out, they are clipped, or they scroll with the mouse wheel, from code or with a scrollbar. Every node has it; [Layout](../../essentials/layout.md#clipping-and-scrolling-with-overflow) introduced it, and this page covers `OverflowProperty`, the scroll API every node inherits, nested scroll containers, `ScrollbarNode` and the scroll callbacks.
 
 ```java
 RectNode
@@ -132,16 +132,18 @@ A [`MultilineTextFieldNode`](../input/multiline-text-field.md) chains the same w
 | `scrollX(double value, double speed)`, `scrollY(double value, double speed)` | Moves the target by `value × speed`: positive toward the start, negative toward the end. |
 | `updateScroll()`, `updateScrollX()`, `updateScrollY()` | Sets the offset to the target at once, without easing. |
 
+Two buttons that scroll a list, the white area of the first example kept in a variable (its `body` left out here):
+
 ```java
-list.scrollRatioY(1F).updateScroll();
-list.scrollY(-200D, 1D);
-list.scrollRatioY(0F);
-list.scrollOffsetY(-120D);
+final RectNode list = RectNode.create(100, 100, 400, 300).color(Color.WHITE).overflow(OverflowProperty.SCROLL).attach(this);
+
+RectNode.create(520, 100, 160, 50).color(Color.GRAY).onClick((node, mouseX, mouseY, clickType) -> list.scrollRatioY(1F).updateScroll()).attach(this);
+RectNode.create(520, 170, 160, 50).color(Color.GRAY).onClick((node, mouseX, mouseY, clickType) -> list.scrollRatioY(0F)).attach(this);
 ```
 
-The first line jumps to the end, the second eases 200 further down (clamped at the end), the third eases back to the top, the last eases to an offset of 120 from the start.
+The first button jumps to the end, the second eases back to the top. In the same way, `list.scrollY(-200D, 1D)` eases 200 further down (clamped at the end) and `list.scrollOffsetY(-120D)` eases to an offset of 120 from the start.
 
-The maximum is measured while the node renders: it is `0` before the first frame, and a scroll set before that is clamped to `0`. To open a list at a given position, scroll from `onMount`, which runs after the first measure:
+The maximum is measured while the node renders: it is `0` before the first frame, and a scroll set before that is clamped to `0`. To open a list at a given position, scroll from `onMount(node -> ...)`: this callback, which every node has, runs on the first frame where the node is drawn, right after the first measure:
 
 ```java
 RectNode
@@ -171,7 +173,11 @@ RectNode
 | `onScrollEnding(NodeScrollEndingCallback<T>)` | `(node, scrollX, scrollY)` | As soon as the target reaches the end, with the target offsets: the moment to load more content. Once per arrival: again only after the target has left the end. |
 | `onScrollEnd(NodeScrollEndCallback<T>)` | `(node, scrollX, scrollY)` | When the eased offset arrives at the end announced by `onScrollEnding`. Not fired when the target leaves the end first, or when the content grows before the offset gets there. |
 
-The interfaces are in `dev.joid.lib.ui.node.callback.impl.scroll`; the PRE and POST phases are described in [Callbacks](../../interactions/callbacks.md). Here `offset` is an `IntegerSignal` field and `info` a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)):
+The interfaces are in `dev.joid.lib.ui.node.callback.impl.scroll`; a lambda runs in the POST phase ([Input and Callbacks](../../concepts/input.md#how-events-travel)), and [Callbacks](../../interactions/callbacks.md) shows how to act in the PRE phase. Here `offset` is an `IntegerSignal` field and `info` a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)):
+
+```java
+private final IntegerSignal offset = IntegerSignal.of(0);
+```
 
 ```java
 RectNode
@@ -191,7 +197,9 @@ TextNode.create(100, 420).text(Text.create("Offset: " + this.offset.get(), this.
 
 ```java
 private final IntegerSignal items = IntegerSignal.of(6);
+```
 
+```java
 RectNode
 .create(100, 100, 400, 300)
 .color(Color.WHITE)
@@ -223,7 +231,7 @@ TextNode.create(100, 420).text(Text.create("Items: " + this.items.get(), this.in
 
 ## Scrollbars with ScrollbarNode
 
-`ScrollbarNode` (`dev.joid.lib.ui.node.impl.structure.scrollbar`) is an abstract node that shows and drives the scroll of a node. The node itself is the thumb; a `BoundingBox` (`dev.joid.lib.utils.box`) is the track it slides along. JOID draws neither: extend it and draw both in `drawScrollbar`, once, in your UI kit.
+`ScrollbarNode` (`dev.joid.lib.ui.node.impl.structure.scrollbar`) is an abstract node that shows and drives the scroll of a node. The node itself is the thumb; a `BoundingBox` (`dev.joid.lib.utils.box`) is the track it slides along. JOID draws neither: extend it and draw both in `drawScrollbar`, once, in your [UI kit](../../components/ui-kit.md).
 
 ```java
 public class SimpleScrollbarNode extends ScrollbarNode {
@@ -320,8 +328,8 @@ RectNode
 
 ## See also
 
-- [Node Fundamentals](../node-fundamentals.md)
-- [ContainerNode](container.md)
+- Next: [RectNode](../visual/rect.md)
+- [Layout](../../essentials/layout.md)
 - [FlexNode](flex.md)
 - [ReorderableFlexNode](reorderable-flex.md)
 - [Callbacks](../../interactions/callbacks.md)

@@ -133,11 +133,11 @@ public final class CounterUI extends UI {
 
 ### [**joid.dev-zeldown.workers.dev**](https://joid.dev-zeldown.workers.dev/)
 
-Getting started · Tutorial · Essentials · Components · Guides · Search (`Ctrl+K`)
+Getting started · Core concepts · Essentials · Tutorial · Components · Guides · Search (`Ctrl+K`)
 
 </div>
 
-Start with the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) for a first window in a few minutes, or follow the [Tutorial](https://joid.dev-zeldown.workers.dev/#/tutorial/setup) to build a complete screen. The site also lives in the [`documentation/`](documentation) folder: serve it with any static HTTP server (`cd documentation && npx serve .`).
+Start with the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) for a first window in a few minutes, then read the [Core Concepts](https://joid.dev-zeldown.workers.dev/#/concepts/canvas) in order, starting with the virtual canvas: the documentation is a learning path where each page relies only on the ones before it. The site also lives in the [`documentation/`](documentation) folder: serve it with any static HTTP server (`cd documentation && npx serve .`).
 
 ## Credits
 

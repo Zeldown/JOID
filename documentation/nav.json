@@ -18,25 +18,122 @@
 					"path": "getting-started/quick-start"
 				},
 				{
-					"title": "Core Concepts",
-					"path": "getting-started/core-concepts",
+					"title": "License",
+					"path": "getting-started/license"
+				}
+			]
+		},
+		{
+			"title": "Core Concepts",
+			"group": "concepts",
+			"items": [
+				{
+					"title": "The Virtual Canvas",
+					"path": "concepts/canvas",
+					"source": "core/src/main/java/dev/joid/lib/ui/core/view/UIView.java",
+					"refs": [
+						"UIView"
+					]
+				},
+				{
+					"title": "UIs and Their Lifecycle",
+					"path": "concepts/uis",
+					"source": "core/src/main/java/dev/joid/lib/ui/core/UI.java",
+					"refs": [
+						"UI",
+						"UIData"
+					]
+				},
+				{
+					"title": "Nodes and the Node Tree",
+					"path": "concepts/nodes",
+					"source": "core/src/main/java/dev/joid/lib/ui/node/Node.java",
+					"refs": [
+						"Node"
+					]
+				},
+				{
+					"title": "Input and Callbacks",
+					"path": "concepts/input",
+					"source": "core/src/main/java/dev/joid/lib/ui/node/callback/NodeCallback.java",
+					"refs": [
+						"ClickType",
+						"Key"
+					]
+				},
+				{
+					"title": "Signals and Reactivity",
+					"path": "concepts/signals",
+					"source": "core/src/main/java/dev/joid/lib/utils/signal/Signal.java",
+					"refs": [
+						"Signal",
+						"IntegerSignal",
+						"BooleanSignal"
+					]
+				},
+				{
+					"title": "Styling and Effects",
+					"path": "concepts/styling",
+					"source": "core/src/main/java/dev/joid/lib/ui/node/effect/NodeEffect.java",
+					"refs": [
+						"Color",
+						"NodeEffect"
+					]
+				},
+				{
+					"title": "The Frame Loop",
+					"path": "concepts/frame-loop",
 					"source": "core/src/main/java/dev/joid/internal/JOID.java",
 					"refs": [
 						"JOID"
 					]
 				},
 				{
+					"title": "Bridges and Backends",
+					"path": "concepts/bridges",
+					"source": "core/src/main/java/dev/joid/lib/bridge/BridgeHandler.java",
+					"refs": [
+						"BridgeHandler"
+					]
+				},
+				{
 					"title": "Developer Tools",
-					"path": "getting-started/dev-tools",
+					"path": "concepts/dev-tools",
 					"source": "core/src/main/java/dev/joid/lib/ui/node/impl/dev/DevNode.java",
 					"refs": [
 						"DevNode",
 						"UIDataDebug"
 					]
+				}
+			]
+		},
+		{
+			"title": "Essentials",
+			"group": "essentials",
+			"items": [
+				{
+					"title": "Layout",
+					"path": "essentials/layout"
 				},
 				{
-					"title": "License",
-					"path": "getting-started/license"
+					"title": "Text",
+					"path": "essentials/text"
+				},
+				{
+					"title": "Input Controls",
+					"path": "essentials/controls"
+				},
+				{
+					"title": "Saving State",
+					"path": "essentials/saving-state"
+				},
+				{
+					"title": "Images and Media",
+					"path": "essentials/media"
+				},
+				{
+					"title": "Animation",
+					"path": "essentials/animation"
 				}
 			]
 		},
@@ -59,48 +156,6 @@
 				{
 					"title": "Tutorial 4: Polish",
 					"path": "tutorial/polish"
-				}
-			]
-		},
-		{
-			"title": "Essentials",
-			"group": "essentials",
-			"items": [
-				{
-					"title": "UIs",
-					"path": "essentials/uis"
-				},
-				{
-					"title": "Nodes",
-					"path": "essentials/nodes"
-				},
-				{
-					"title": "Layout",
-					"path": "essentials/layout"
-				},
-				{
-					"title": "Styling",
-					"path": "essentials/styling"
-				},
-				{
-					"title": "Handling Input",
-					"path": "essentials/input"
-				},
-				{
-					"title": "State and Reactivity",
-					"path": "essentials/state"
-				},
-				{
-					"title": "Text",
-					"path": "essentials/text"
-				},
-				{
-					"title": "Images and Media",
-					"path": "essentials/media"
-				},
-				{
-					"title": "Animation",
-					"path": "essentials/animation"
 				}
 			]
 		},
@@ -292,6 +347,108 @@
 					]
 				},
 				{
+					"title": "Interactions",
+					"items": [
+						{
+							"title": "Callbacks",
+							"path": "interactions/callbacks",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/callback/NodeCallback.java",
+							"refs": [
+								"NodeCallback",
+								"InternalContext",
+								"NodeCallbackMethod"
+							]
+						},
+						{
+							"title": "Mouse and Keyboard",
+							"path": "interactions/mouse-and-keyboard",
+							"source": "core/src/main/java/dev/joid/lib/utils/key/Key.java",
+							"refs": [
+								"Key",
+								"ClickType"
+							]
+						},
+						{
+							"title": "Hover and Tooltips",
+							"path": "interactions/hover",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/hover/HoverElement.java",
+							"refs": [
+								"HoverElement",
+								"DefaultHoverElement",
+								"CustomHoverElement",
+								"NodeHoverElement"
+							]
+						},
+						{
+							"title": "Drag and Drop",
+							"path": "interactions/drag-drop",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/property/draggable/DraggableProperty.java",
+							"refs": [
+								"DraggableProperty"
+							]
+						}
+					]
+				},
+				{
+					"title": "State",
+					"items": [
+						{
+							"title": "Signals",
+							"path": "state/signals",
+							"source": "core/src/main/java/dev/joid/lib/utils/signal/Signal.java",
+							"refs": [
+								"Signal",
+								"ISignal",
+								"ComputedSignal",
+								"SignalSubscriber",
+								"BooleanSignal",
+								"DoubleSignal",
+								"FloatSignal",
+								"IntegerSignal",
+								"LongSignal",
+								"StringSignal",
+								"ListSignal",
+								"MapSignal",
+								"SetSignal"
+							]
+						},
+						{
+							"title": "Reactive Properties",
+							"path": "state/reactive-properties",
+							"source": "core/src/main/java/dev/joid/lib/utils/signal/replay/SignalReplay.java",
+							"refs": [
+								"SignalReplay"
+							]
+						},
+						{
+							"title": "Watching Signals",
+							"path": "state/watch",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/property/watch/WatchProperty.java",
+							"refs": [
+								"WatchProperty"
+							]
+						},
+						{
+							"title": "Stores",
+							"path": "state/stores",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/store/UIStore.java",
+							"refs": [
+								"UIStore",
+								"UIStoreData",
+								"StoreContext"
+							]
+						},
+						{
+							"title": "Persistent UI Properties",
+							"path": "state/properties",
+							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/property/UIProperty.java",
+							"refs": [
+								"UIProperty"
+							]
+						}
+					]
+				},
+				{
 					"title": "Styling",
 					"items": [
 						{
@@ -354,49 +511,6 @@
 					]
 				},
 				{
-					"title": "Interactions",
-					"items": [
-						{
-							"title": "Callbacks",
-							"path": "interactions/callbacks",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/callback/NodeCallback.java",
-							"refs": [
-								"NodeCallback",
-								"InternalContext",
-								"NodeCallbackMethod"
-							]
-						},
-						{
-							"title": "Mouse and Keyboard",
-							"path": "interactions/mouse-and-keyboard",
-							"source": "core/src/main/java/dev/joid/lib/utils/key/Key.java",
-							"refs": [
-								"Key",
-								"ClickType"
-							]
-						},
-						{
-							"title": "Hover and Tooltips",
-							"path": "interactions/hover",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/hover/HoverElement.java",
-							"refs": [
-								"HoverElement",
-								"DefaultHoverElement",
-								"CustomHoverElement",
-								"NodeHoverElement"
-							]
-						},
-						{
-							"title": "Drag and Drop",
-							"path": "interactions/drag-drop",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/property/draggable/DraggableProperty.java",
-							"refs": [
-								"DraggableProperty"
-							]
-						}
-					]
-				},
-				{
 					"title": "Animation",
 					"items": [
 						{
@@ -422,65 +536,6 @@
 								"Timeline",
 								"TweenManager",
 								"TweenAccessor"
-							]
-						}
-					]
-				},
-				{
-					"title": "State",
-					"items": [
-						{
-							"title": "Signals",
-							"path": "state/signals",
-							"source": "core/src/main/java/dev/joid/lib/utils/signal/Signal.java",
-							"refs": [
-								"Signal",
-								"ISignal",
-								"ComputedSignal",
-								"SignalSubscriber",
-								"BooleanSignal",
-								"DoubleSignal",
-								"FloatSignal",
-								"IntegerSignal",
-								"LongSignal",
-								"StringSignal",
-								"ListSignal",
-								"MapSignal",
-								"SetSignal"
-							]
-						},
-						{
-							"title": "Reactive Properties",
-							"path": "state/reactive-properties",
-							"source": "core/src/main/java/dev/joid/lib/utils/signal/replay/SignalReplay.java",
-							"refs": [
-								"SignalReplay"
-							]
-						},
-						{
-							"title": "Watching Signals",
-							"path": "state/watch",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/property/watch/WatchProperty.java",
-							"refs": [
-								"WatchProperty"
-							]
-						},
-						{
-							"title": "Stores",
-							"path": "state/stores",
-							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/store/UIStore.java",
-							"refs": [
-								"UIStore",
-								"UIStoreData",
-								"StoreContext"
-							]
-						},
-						{
-							"title": "Persistent UI Properties",
-							"path": "state/properties",
-							"source": "core/src/main/java/dev/joid/lib/ui/core/hook/property/UIProperty.java",
-							"refs": [
-								"UIProperty"
 							]
 						}
 					]

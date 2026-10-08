@@ -1,6 +1,6 @@
 # SliderNode
 
-`SliderNode<O>` (`dev.joid.lib.ui.node.impl.structure.slider`) picks one value from an ordered set of values by dragging a cursor along a track. It is abstract: you draw the track in a subclass and give it a `SliderCursorNode` that draws the cursor. `IntegerSliderNode`, `DoubleSliderNode` and `StringSliderNode` (`dev.joid.lib.ui.node.impl.structure.slider.impl`) add helpers to build the values.
+`SliderNode<O>` (`dev.joid.lib.ui.node.impl.structure.slider`) picks one value from an ordered set of values by dragging a cursor along a track. It is abstract: you draw the track in a subclass and give it a `SliderCursorNode` that draws the cursor. `IntegerSliderNode`, `DoubleSliderNode` and `StringSliderNode` (`dev.joid.lib.ui.node.impl.structure.slider.impl`) add helpers to build the values. It is the slider of [Building a UI Kit](../../components/ui-kit.md#slider), in detail.
 
 ## Creating a slider
 
@@ -14,7 +14,7 @@ public class VolumeSliderNode extends IntegerSliderNode {
 		super.cursor(new Thumb(height, height));
 	}
 
-	public static VolumeSliderNode create(final double x, final double y, final double width, final double height) {
+	public static @NonNull VolumeSliderNode create(final double x, final double y, final double width, final double height) {
 		return new VolumeSliderNode(x, y, width, height);
 	}
 
@@ -39,15 +39,15 @@ public class VolumeSliderNode extends IntegerSliderNode {
 }
 ```
 
-Then, in `UI.init()`:
+Then, in your UI:
 
 ```java
-final IntegerSignal volume = new IntegerSignal(50);
+private final IntegerSignal volume = IntegerSignal.of(50);
 
 VolumeSliderNode
 .create(760, 520, 400, 24)
 .values(0, 100, 50)
-.signal(volume)
+.signal(this.volume)
 .onChange((slider, value) -> System.out.println("Volume: " + value))
 .attach(this);
 ```
@@ -59,7 +59,7 @@ VolumeSliderNode
 - `signal(volume)` binds the slider both ways: setting `volume` moves the cursor.
 - `getValue()` returns the current value.
 
-See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
+The protected constructor and the `create` factory follow the same contract as the components of [Building a UI Kit](../../components/ui-kit.md).
 
 ## Values and steps
 
@@ -111,6 +111,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 | Release of any mouse button, anywhere | The cursor stops dragging; the value under it is read at once and the cursor snaps to the exact position of that value. |
 
 ![Dragging a slider cursor between steps: on release it snaps onto the nearest step](../../images/slider-snap.gif "The cursor snaps onto its step when released")
+
 - There is no keyboard or mouse wheel control.
 - The slider and its cursor ignore a press that another node already consumed, such as a node with an `onClick` drawn over the slider. A node over the slider that does not consume presses (a plain panel, for example) lets them through: hide the slider while something covers it, a hidden slider and its cursor ignore presses. Disabling only the slider is not enough, as the cursor keeps its own enabled state.
 - `getCursor().isDragging()` tells whether a drag is running; `getCursor().dragging(boolean)` starts or stops one from code.
@@ -124,13 +125,13 @@ Set the values before the slider is shown. If you replace them later, call `valu
 
 ## Binding a signal with signal
 
-`signal(Signal<O>)` keeps the slider and a [signal](../../state/signals.md) in sync, both ways:
+`signal(Signal<O>)` keeps the slider and a [signal](../../concepts/signals.md) in sync, both ways:
 
 - The slider starts on the signal's value, when it is one of the values.
 - Each value the user selects is written into the signal, before `onChange` runs.
 - Each value the signal publishes later goes through `value(...)`: the cursor moves to it and `onChange` runs when it changes, while the slider's UI is open. A value outside the values is ignored.
 - Call `signal(...)` after `values(...)` or `valueSet(...)`: the signal's value is applied once, when you bind it, and only an existing value can be selected.
-- The slider follows one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer moves the cursor nor receives the selected values.
+- The slider follows one signal at a time. Calling `signal(...)` again unbinds the previous signal, which then stops moving the cursor and receiving the selected values.
 
 ## onChange
 
@@ -138,13 +139,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 
 - The callback runs during the frame, at most once per frame. A fast drag can jump over values: you receive the value under the cursor at each frame, not every value in between.
 - `value(...)`, `valueSet(...)` and the bound signal call it too, outside of `draw`, when they change the value.
-- Cancelling the context in the `pre(...)` phase keeps the previous value: the slider stops the drag and puts the cursor back on the position of the current value, so the refused change is proposed once (see [Callbacks](../../interactions/callbacks.md)).
-
-## Pitfalls
-
-- `values(...)` with exactly the arity of a range overload picks the range (see the warning above): pass an array.
-- Set the values before `signal(...)`: the signal can only select an existing value.
-- A `ComputedSignal` cannot be bound with `signal(...)`: pass it to `value(...)`.
+- Cancelling the context in the `pre(...)` phase keeps the previous value (pass an implementation of `NodeSliderChangeCallback` that overrides `pre`, as [CheckboxNode](checkbox.md#reacting-with-onchange) shows): the slider stops the drag and puts the cursor back on the position of the current value, so the refused change is proposed once (see [Callbacks](../../interactions/callbacks.md)).
 
 ## Reference
 
@@ -157,8 +152,8 @@ Set the values before the slider is shown. If you replace them later, call `valu
 | `signal(Signal<O> signal)` | Binds a signal to the value, both ways. Default: none. |
 | `cursor(SliderCursorNode cursor)` | Attaches the cursor, replacing the previous one. Required. |
 | `onChange(NodeSliderChangeCallback<T, O> callback)` | Adds a callback `(node, value)` run after each user change. |
-| `drawSlider(double mouseX, double mouseY)` | Abstract. Draws the track. Called from the slider's `draw` (final), only once the slider has a value and a cursor. |
-| `init(UI ui)` | Places the cursor on the selected value. If you override it, call `super.init(ui)`. |
+| `drawSlider(double mouseX, double mouseY)` | Abstract. Draws the track. Called from the slider's `draw`, only once the slider has a value and a cursor. |
+| `init(UI ui)` | Places the cursor on the selected value when the slider loads. |
 | `getValue()` | Selected value, `null` until values are set. |
 | `getProgress()` | Position of the cursor on its travel, from `0F` to `1F`. |
 | `getValueSet()` | Values. |
@@ -190,8 +185,15 @@ All three are abstract, with a protected constructor `(double x, double y, doubl
 | `slider(SliderNode<?>)` | Links the cursor to its slider; `SliderNode.cursor(...)` calls it for you. |
 | `getSlider()` | The slider, or `null` before `cursor(...)`. |
 
+## Pitfalls
+
+- `values(...)` with exactly the arity of a range overload picks the range (see the warning above): pass an array.
+- Set the values before `signal(...)`: the signal can only select an existing value.
+- A `ComputedSignal` cannot be bound with `signal(...)`: pass it to `value(...)`.
+
 ## See also
 
+- Next: [CheckboxNode](checkbox.md)
 - [Signals](../../state/signals.md)
 - [Callbacks](../../interactions/callbacks.md)
 - [Custom Nodes](../custom-nodes.md)

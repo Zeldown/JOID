@@ -177,7 +177,7 @@ Variable-length integers store 7 bits per byte, low bits first, with the high bi
 
 ## See also
 
+- Next: [Custom Font Implementations](custom-fonts.md)
 - [How Fonts Work](how-fonts-work.md)
 - [Adding Your Own Fonts](adding-fonts.md)
-- [Custom Font Implementations](custom-fonts.md)
 - [Installation](../getting-started/installation.md)

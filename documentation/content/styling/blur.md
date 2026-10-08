@@ -105,7 +105,8 @@ Shader pass priorities: 150 (horizontal) and 151 (vertical). Expansion: `radius`
 
 ## See also
 
+- Next: [ShadowNodeEffect](shadow.md)
 - [Effects](effects.md)
-- [Shader Pipeline](../shaders/pipeline.md)
 - [RoundedNodeEffect](rounded.md)
 - [BorderNodeEffect](border.md)
+- [Shader Pipeline](../shaders/pipeline.md)

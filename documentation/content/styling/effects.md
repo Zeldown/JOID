@@ -1,6 +1,6 @@
 # Effects
 
-A node effect (`NodeEffect`, package `dev.joid.lib.ui.node.effect`) changes how a node is rendered without changing the node itself: rounded corners, circular cut, border, blur, shadow, mask, transform. Use effects to style any node, built-in or custom, with the same few lines.
+A node effect (`NodeEffect`, package `dev.joid.lib.ui.node.effect`) changes how a node is rendered without changing the node itself: rounded corners, circular cut, border, blur, shadow, mask, transform. Use effects to style any node, built-in or custom, with the same few lines. [Styling and Effects](../concepts/styling.md) showed how to add them; this page explains how a node stores, orders and renders its effects, and the next pages detail each built-in effect.
 
 ```java
 @Override
@@ -103,7 +103,7 @@ Effects come in two kinds, rendered differently:
 | Render state | `ShadowNodeEffect`, `MaskNodeEffect`, `TransformNodeEffect` | `pre(...)` runs before the node renders, in priority order, and `post(...)` after, in the reverse order, so the effects nest. They wrap the whole render of the node: its own drawing, its children and the shader effects. |
 | Shader | `RoundedNodeEffect`, `CircleNodeEffect`, `BorderNodeEffect`, `BlurNodeEffect` | Each effect produces shader passes. The node is drawn into an offscreen framebuffer, then the passes run one after the other on the result. |
 
-Between render-state effects, the order matters. A `TransformNodeEffect` that runs before a `MaskNodeEffect` transforms the mask with the node; a mask that runs first stays in place while the content moves under it:
+Between render-state effects, the order matters. The example below combines a mask, which shows only a rectangle of the node, with a `TransformNodeEffect`, which turns the rendering here by 10 degrees around the point `(250, 200)` (`RotateOperation`, `Rotation` and `Vector` are detailed in [TransformNodeEffect](transform.md)). A `TransformNodeEffect` that runs before a `MaskNodeEffect` transforms the mask with the node; a mask that runs first stays in place while the content moves under it:
 
 ```java
 final MaskNodeEffect mask = MaskNodeEffect.create(300D, 100D);
@@ -143,11 +143,19 @@ So the shape is cut first, then blurred, then outlined: a border always follows 
 `NodeEffectScope` is nested in `NodeEffect`: `import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;`.
 
 ```java
-final RectNode selfScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().scope(NodeEffectScope.SELF));
-final RectNode childrenScoped = RectNode.create(0, 0, 200, 120).color(Color.RED).effect(CircleNodeEffect.create().scope(NodeEffectScope.CHILDREN));
+RectNode
+.create(100, 100, 300, 200)
+.color(Color.WHITE)
+.effect(RoundedNodeEffect.create(16F).scope(NodeEffectScope.CHILDREN))
+.body(card -> {
+	ResourceNode.create(0, 0, card.getWidth(), 120).resource(Resource.of("https://placehold.co/300x120.png")).attach(card);
+})
+.attach(this);
 ```
 
-With `SELF`, a child that overflows the circle stays visible; with `CHILDREN`, the circle cuts the child too. Use `CHILDREN` to round a card together with its content.
+![Two cards with an image header: with SELF the header keeps square top corners, with CHILDREN it is rounded](../images/rounded-children.png "With SELF the child image is drawn over the rounded card; CHILDREN rounds the card and its content together.")
+
+With `SELF`, a child drawn over the edge of the shape stays whole; with `CHILDREN`, the shape cuts the child too. Use `CHILDREN` to round a card together with its content.
 
 `scope(...)` and `priority(...)` are declared by `NodeEffect`: in the middle of a chain they return a `NodeEffect`, so a setter of the effect after them needs a type witness: `RoundedNodeEffect.create(16F).<RoundedNodeEffect>scope(NodeEffectScope.CHILDREN).top(false)`. Render-state effects ignore the scope, they always wrap the whole render.
 
@@ -161,7 +169,7 @@ To toggle a built-in effect, add and remove it, or drive its value with a suppli
 
 ![Diagram: the node is drawn into a framebuffer, the passes run in priority order, and the last one draws into the screen; render-state effects wrap the drawing](../images/diagram-effect-pipeline.png "How a node with effects is rendered")
 
-Shader effects go through the [Shader Pipeline](../shaders/pipeline.md):
+A framebuffer is an offscreen image that receives the drawing of the node; a shader is a small GPU program run on every pixel of that image; a pass runs one shader over it. You need nothing more to use the built-in effects: the [Shader Pipeline](../shaders/pipeline.md) page of the Advanced section details the machinery. Shader effects work as follows:
 
 - The node (or the whole subtree with `CHILDREN`) is drawn into a framebuffer sized to its rectangle in screen pixels, enlarged on each side by the largest expansion of its passes: the blur radius for `BlurNodeEffect`, the border width plus 2 for `BorderNodeEffect`, nothing for the others. A blur or an outer border can therefore draw outside the node's rectangle, but anything drawn outside that enlarged area (a child overflowing the node with `CHILDREN`, for instance) is cut off.
 - Each pass but the last renders into a second framebuffer; the last pass draws the result into the current target (the screen, or the framebuffer of an enclosing effect).
@@ -219,10 +227,9 @@ The hooks are described in [Custom Effects](custom-effects.md).
 
 ## See also
 
-- [RoundedNodeEffect](rounded.md)
-- [BorderNodeEffect](border.md)
-- [ShadowNodeEffect](shadow.md)
+- Next: [RoundedNodeEffect](rounded.md)
+- [Styling and Effects](../concepts/styling.md)
 - [Custom Effects](custom-effects.md)
-- [Shader Pipeline](../shaders/pipeline.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md)
 - [Hover and Tooltips](../interactions/hover.md)
+- [Shader Pipeline](../shaders/pipeline.md)

@@ -1,6 +1,6 @@
 # Drag and Drop
 
-Any node becomes draggable with `draggable(DraggableProperty)`. JOID then moves the node (or a copy of it) with the mouse, keeps it inside an area, snaps it onto target nodes on release and fires drag callbacks along the way.
+[Input Controls](../essentials/controls.md) mentioned that any node can be dragged with `draggable(DraggableProperty.parent())`. This page covers dragging in full: any node becomes draggable with `draggable(DraggableProperty)`, and JOID then moves the node (or a copy of it) with the mouse, keeps it inside an area, snaps it onto target nodes on release and fires drag callbacks along the way. A drag starts from a press, so it follows the event rules of [Callbacks](callbacks.md).
 
 ## Making a node draggable
 
@@ -38,14 +38,18 @@ The square follows the mouse while you hold the left button on it, without leavi
 
 ## Areas with DraggableProperty factories
 
+The area keeps the dragged node inside a rectangle. Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it, which is why `ui()` and `screen()` differ (see [The Virtual Canvas](../concepts/canvas.md)).
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
 | Factory | Area | Bounds |
 |---|---|---|
 | `DraggableProperty.free()` | `FREE` | None. |
 | `DraggableProperty.parent()` | `PARENT` | The parent of the dragged node. A node at the top of its UI has no parent: its drag refuses to start with `IllegalStateException` (`The node <Class> is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()`). |
 | `DraggableProperty.node(Node node)` | `NODE` | Another node. |
-| `DraggableProperty.custom(double x, double y, double width, double height)` | `CUSTOM` | A rectangle in absolute UI units. |
-| `DraggableProperty.ui()` | `UI` | The virtual canvas, `(0, 0, 1920, 1080)`. |
-| `DraggableProperty.screen()` | `SCREEN` | The visible area of the window in UI units, which goes beyond the canvas when the window ratio differs from 16:9. |
+| `DraggableProperty.custom(double x, double y, double width, double height)` | `CUSTOM` | A rectangle in absolute canvas units. |
+| `DraggableProperty.ui()` | `UI` | The virtual canvas, `(0, 0, 1920, 1080)`: the node never enters the extra area. |
+| `DraggableProperty.screen()` | `SCREEN` | The whole visible area of the window in canvas units, extra area included when the window ratio differs from 16:9. |
 | `DraggableProperty.disabled()` | `FREE` | None; dragging is disabled. |
 
 Every factory starts with the type `MOVE`, the snap type `NEAREST`, no snap target and dragging enabled (except `disabled()`).
@@ -67,7 +71,7 @@ The area applies all the time: during the drag the target is kept inside it (the
 | `hasSnapping()` | `true` when at least one snap target is set. |
 | `getSnapping(Node node)` | The snap target chosen for the node at its current position, or `null`. |
 | `getBounds(Node node)` | The area as `{x, y, width, height}` in absolute UI units; throws an `IllegalArgumentException` for `FREE`, and the `IllegalStateException` above for `PARENT` on a top-level node. |
-| `lerp(double frameTime, double value, double target)` | The easing step used to follow the target. |
+| `lerp(double frameTime, double value, double target)` | The easing step that follows the target. |
 | `getType()`, `getEnabled()`, `getAreaType()`, `getAreaObject()`, `getSnapType()`, `getSnapNodes()` | Current settings. |
 
 The setters return the property, so you can chain them. A property holds no drag state: several nodes can share one.
@@ -126,17 +130,23 @@ When a target is chosen, `onSnap` fires and the drag target becomes the target's
 | `onDragEnd` | `(node)` | The drag ends. | Snaps the node or sends it back, stops the drag, removes the copy. The POST lambda sees `isDragging()` `false`. |
 | `onSnap` | `(node, snapNode)` | During the drag end, when a snap target is chosen. | Sets the drag target to the snap node. |
 
-`onSnap` runs inside the default action of `onDragEnd`, so an `onSnap` lambda runs before the `onDragEnd` lambda. In the board of the first example:
+`onSnap` runs inside the default action of `onDragEnd`, so an `onSnap` lambda runs before the `onDragEnd` lambda. The board of the first example, with its callbacks:
 
 ```java
 RectNode
-.create(50, 50, 100, 100)
-.color(Color.decode("#999999"))
-.draggable(DraggableProperty.parent())
-.onDragStart(node -> System.out.println("Start"))
-.onDrag(node -> System.out.println("Target " + node.getTargetDragX() + ", " + node.getTargetDragY()))
-.onDragEnd(node -> System.out.println("Dropped"))
-.attach(board);
+.create(200, 200, 800, 600)
+.color(Color.decode("#DDDDDD"))
+.body(board -> {
+	RectNode
+	.create(50, 50, 100, 100)
+	.color(Color.decode("#999999"))
+	.draggable(DraggableProperty.parent())
+	.onDragStart(node -> System.out.println("Start"))
+	.onDrag(node -> System.out.println("Target " + node.getTargetDragX() + ", " + node.getTargetDragY()))
+	.onDragEnd(node -> System.out.println("Dropped"))
+	.attach(board);
+})
+.attach(this);
 ```
 
 Cancelling the PRE phase vetoes the step: no drag for `onDragStart`, an unchanged target for `onDrag`, the dropped position kept for `onSnap`. Cancelling the PRE phase of `onDragEnd` refuses the drop: the drag still ends (`isDragging()` is `false`), a `MOVE` node goes back to where it started, the copy of a `COPY` drag is removed, and the `onDragEnd` lambdas do not run. See [Callbacks](callbacks.md#pre-and-post-phases).
@@ -179,7 +189,8 @@ Drag coordinates are absolute: a parent that is offset or scrolled changes nothi
 
 ## See also
 
-- [Callbacks](callbacks.md)
-- [Mouse and Keyboard](mouse-and-keyboard.md)
-- [ReorderableFlexNode](../nodes/layout/reorderable-flex.md)
-- [Node Fundamentals](../nodes/node-fundamentals.md)
+- Next: [Signals](../state/signals.md)
+- [Callbacks](callbacks.md): the PRE and POST phases, consumed presses.
+- [Mouse and Keyboard](mouse-and-keyboard.md): hit testing and the path of a press.
+- [ReorderableFlexNode](../nodes/layout/reorderable-flex.md): reordering a list by drag.
+- [Node Fundamentals](../nodes/node-fundamentals.md): `copy()` and the lifecycle.

@@ -1,6 +1,6 @@
 # Opening and Closing UIs
 
-You open, close and look up UIs through static methods of `JOID` (`dev.joid.internal.JOID`), which hand the work to the UI bridge that accepts the UI. This page covers those methods, how several UIs share the window, how Escape closes them, and popups.
+You open, close and look up UIs through static methods of `JOID` (`dev.joid.internal.JOID`), which hand the work to the UI bridge that accepts the UI. This page follows [The UI Class](ui-class.md): it covers those methods, how several UIs share the window, how Escape closes them, and popups.
 
 ## Opening and closing with JOID.open and JOID.close
 
@@ -91,6 +91,8 @@ menu.getData().setActive(false).setCloseable(false);
 
 When Escape is pressed, `UIBridge.keyTyped` goes through the active and visible UIs from the top:
 
+![Escape goes to the top active and visible UI; a closeable UI gets it as a key, then closes if nothing consumed it, and Escape stops; a UI that is not closeable gets it as a normal key, and Escape goes to the next UI below unless it was consumed or the UI is a popup](../images/diagram-ui-escape.png "The path of Escape: it stops at the first closeable UI, at a UI that consumes it, or at a popup.")
+
 1. A closeable UI first receives Escape as a key press: its nodes, keybinds, zoom and dev keys and `keyPressed`. If none of them consumes it, the bridge asks the UI to close (`onClose()`) and closes it when it agrees. In both cases Escape goes no further.
 2. A UI that is not closeable receives Escape as a normal key. If it consumes it, or if the UI is a popup, Escape stops; otherwise the next UI below gets the same treatment.
 
@@ -157,8 +159,8 @@ All of them throw a `NullPointerException` for a `null` argument.
 
 ## See also
 
+- Next: [View and Scaling](view-and-scaling.md)
 - [The UI Class](ui-class.md)
 - [Transitions](transitions.md)
-- [View and Scaling](view-and-scaling.md)
 - [UI Bridge](../integration/ui-bridge.md)
 - [Mouse and Keyboard](../interactions/mouse-and-keyboard.md)

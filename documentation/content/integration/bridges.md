@@ -1,6 +1,6 @@
 # Bridges
 
-JOID never talks to a window, a graphics API or a sound device directly: it goes through bridges, small interfaces that a backend implements for one engine. `BridgeHandler` (`dev.joid.lib.bridge`) holds one registry per kind of bridge, so the same UI code runs on every backend and every host. Read this page when you set up an application, embed JOID in a host, or write your own bridge.
+[Bridges and Backends](../concepts/bridges.md) introduced the registries of `BridgeHandler` (`dev.joid.lib.bridge`) and who fills them. This page opens the Integration section and goes one level deeper: how a registry picks its bridge, and the full contract of each bridge, the window, render, audio, clock and replay remapper ones. Read it when you set up an application, embed JOID in a host, or write your own bridge.
 
 ## Registering the bridges
 
@@ -74,7 +74,7 @@ The UI bridge hosts the UIs: it opens and closes them, dispatches input to them 
 
 ## IWindowBridge
 
-The window bridge answers questions about the window. Every coordinate is in window pixels, with the origin at the top-left corner.
+The window bridge answers questions about the window. Every coordinate is in window pixels, with the origin at the top-left corner: each UI converts them into units of its [virtual canvas](../concepts/canvas.md), so a bridge never deals with canvas units.
 
 | Method | Description |
 |---|---|
@@ -270,7 +270,7 @@ BridgeHandler.SIGNAL_REPLAY.register(new GameRemapper(fields, methods));
 
 ## See also
 
-- [UI Bridge](ui-bridge.md)
+- Next: [UI Bridge](ui-bridge.md)
 - [Backends](backends.md)
 - [Writing a Backend](writing-a-backend.md)
 - [Testkit](testkit.md)

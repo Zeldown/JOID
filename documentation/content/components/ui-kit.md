@@ -1,12 +1,12 @@
 # Building a UI Kit
 
-JOID is design-neutral: its interactive components own the behavior (state, input, values, callbacks, signals) and draw nothing. You draw each of them once, in a small subclass, and these subclasses form your UI kit. Your screens only use the kit, so the same screen code takes a completely different look when you switch to another kit.
+JOID is design-neutral: its interactive components own the behavior (state, input, values, callbacks, signals) and draw nothing. You draw each of them once, in a small subclass, and these subclasses form your UI kit. Your screens only use the kit, so the same screen code takes a completely different look when you switch to another kit. This page builds on the checkbox and the slider you drew in [Input Controls](../essentials/controls.md) and the [Tutorial](../tutorial/interactivity.md), and turns them into a complete kit.
 
 ![The same settings panel drawn by a flat light kit and by a rounded dark kit](../images/uikit-side-by-side.png "The same screen code and the same signals: only the import line selects the kit")
 
 ## What a component gives you and what you draw
 
-Every component follows the [custom node](../nodes/custom-nodes.md) contract: a `protected` constructor and a public static `create(...)` factory. The component class handles the input and keeps the state; your subclass reads that state and draws it.
+A kit class is written like the controls of [Input Controls](../essentials/controls.md): it extends a component, keeps a `protected` constructor and adds a public static `create(...)` factory, as the built-in nodes do. The component class handles the input and keeps the state; your subclass reads that state and draws it.
 
 | Component | It handles | You draw in |
 | --- | --- | --- |
@@ -18,12 +18,27 @@ Every component follows the [custom node](../nodes/custom-nodes.md) contract: a 
 | [ChartNode](../nodes/data/chart.md) | Labels, series, the scale (`getMin`, `getMax`), loading | `draw(mouseX, mouseY)` |
 | [RadarChartNode](../nodes/data/radar-chart.md) | Axes, values, the scale, loading | `draw(mouseX, mouseY)` |
 
-What every kit class uses while drawing:
+## Drawing a component
 
-- `super.getX()`, `super.getY()`, `super.getWidth()`, `super.getHeight()`, `super.dw(2)` (half the width) and `super.dh(2)`: draw relative to the node, never at fixed canvas positions.
-- `super.hoverValue(1F)`: the hover progress of the node, from `0F` to `1F`, animated over `hoverDuration` (200 ms by default). Blend colors with it: `Theme.LINE.to(Theme.INK, super.hoverValue(1F))`.
+A kit class draws in a method that JOID calls on every frame, such as `draw(mouseX, mouseY)`. Nothing is kept from one frame to the next: each frame draws the current state, so a change of state shows at once. What a drawing method uses:
+
+- The bounds of the node. A node draws in the coordinates of its parent, so the node starts at `super.getX()`, `super.getY()`; `super.getWidth()`, `super.getHeight()`, `super.dw(2)` (half the width) and `super.dh(2)` give its size. Draw relative to them, never at fixed canvas positions.
+- `super.hoverValue(1F)`: the hover progress of the node, from `0F` to `1F`, animated over `hoverDuration` (200 ms by default, see [Animation](../essentials/animation.md)). Blend colors with it: `Theme.LINE.to(Theme.INK, super.hoverValue(1F))`.
 - The state of the component: `isChecked()`, `getProgress()`, `isActive()`, `isSelected(node)`, `getState()`.
-- [DrawUtils](../drawing/draw-utils.md): `DrawUtils.SHAPE` (rectangles, rounded rectangles, circles, lines, gradients through `Color.toGradient`) and `DrawUtils.TEXT`.
+- `DrawUtils` (`dev.joid.lib.draw`): `DrawUtils.SHAPE` draws shapes and `DrawUtils.TEXT` draws text. Positions and sizes are canvas units; every color can be a gradient (`Color.toGradient`).
+
+| Call | Draws |
+| --- | --- |
+| `DrawUtils.SHAPE.drawRect(x, y, width, height, color)` | A filled rectangle. |
+| `DrawUtils.SHAPE.drawRoundedRect(x, y, width, height, color, radius)` | A filled rectangle with rounded corners; `radius` is a `float`. |
+| `DrawUtils.SHAPE.drawCircle(centerX, centerY, color, radius)` | A filled circle around its center. |
+| `DrawUtils.SHAPE.drawBorder(x, y, x2, y2, color)` | A 1-unit outline just outside the rectangle from the corner (x, y) to the corner (x2, y2); a last `stroke` argument sets its thickness. |
+| `DrawUtils.SHAPE.drawLine(color, stroke, points...)` | A line through `Vector2d` points (`javax.vecmath`), `stroke` units thick. |
+| `DrawUtils.TEXT.drawText(x, y, text)` | A `Text` placed at (x, y) by its alignment: its top-left corner with the default `START` alignment. |
+
+![A rectangle, a rounded rectangle, a circle, an outline, a line through three points and a text, each labeled with its call](../images/uikit-draw-calls.png "The six DrawUtils calls of this page.")
+
+The rest of `DrawUtils` (images, models, clipping, transforms) is described in [Drawing Overview](../drawing/draw-utils.md), in the Advanced section.
 
 ## Fonts and colors in a Theme
 
@@ -92,7 +107,7 @@ The flat kit is minimal and rectangular: a white surface, gray ink, hairline bor
 
 ### Panel and Label
 
-The card that holds a screen, with its title, and the text of a row:
+The card that holds a screen, with its title, and the text of a row. `Panel` extends `Node` itself, the base of every node, and draws everything in `draw`; `Label` extends `TextNode` and only sets its text:
 
 ```java
 package kit.flat;
@@ -235,7 +250,7 @@ public class Checkbox extends CheckboxNode {
 
 ### Switch
 
-`SwitchNode` builds its children in `init(UI)`, and again each time its list of states changes. Each segment is a `RectNode` whose color and text follow `getState()` through `Signal.from(() -> ...)`, so a segment changes without being rebuilt, and its click calls `state(...)`.
+A switch is drawn with child nodes rather than in `draw`. Every node has an `init(UI)` method, empty by default, that JOID runs when the node joins a UI, like the `init()` of a UI; `SwitchNode` runs it again each time its list of states changes. You build the children there. Each segment is a `RectNode` whose color and text follow `getState()` through `Signal.from(() -> ...)`, so a segment changes without being rebuilt, and its click calls `state(...)`.
 
 ```java
 package kit.flat;
@@ -289,7 +304,7 @@ public class Switch extends SwitchNode {
 
 ### Selector
 
-`Selector` extends `SelectorNode<String>`: its values are strings. `values(...)` calls `option(value)` once per value, and the selector sizes and places the nodes that `option` returns. Each option is a `RectNode` with a hover color, its text, and a layer that draws the arrow of the selected option. `drawBackground` outlines the selector, darker while the list is open.
+`Selector` extends `SelectorNode<String>`: its values are strings. `values(...)` calls `option(value)` once per value, and the selector sizes and places the nodes that `option` returns. Each option is a `RectNode` with a hover color, its text, and a layer that draws the arrow of the selected option: `layer((mouseX, mouseY) -> ...)` adds a drawing to any node, run on every frame after its children, in the same coordinates as `draw`. `drawBackground` outlines the selector, darker while the list is open.
 
 ```java
 package kit.flat;
@@ -679,9 +694,9 @@ Tips for a kit:
 
 ## See also
 
+- Next: [ContainerNode](../nodes/layout/container.md)
 - [Component Catalog](overview.md)
-- [Custom Nodes](../nodes/custom-nodes.md)
-- [SliderNode](../nodes/input/slider.md)
+- [Input Controls](../essentials/controls.md)
 - [SwitchNode](../nodes/input/switch.md)
 - [SelectorNode](../nodes/input/selector.md)
-- [Adding Your Own Fonts](../fonts/adding-fonts.md)
+- [Drawing Overview](../drawing/draw-utils.md) and [Custom Nodes](../nodes/custom-nodes.md): drawing and writing nodes in depth.

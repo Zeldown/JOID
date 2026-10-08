@@ -1,6 +1,6 @@
 # RoundedNodeEffect
 
-`RoundedNodeEffect` (`dev.joid.lib.ui.node.effect.impl`) rounds the corners of a node with a shader. It works on anything the node draws: a colored rectangle, an image, a gradient, or a whole card with its content.
+`RoundedNodeEffect` (`dev.joid.lib.ui.node.effect.impl`) rounds the corners of a node with a shader. It is the first of the built-in effects described after [Effects](effects.md). It works on anything the node draws: a colored rectangle, an image, a gradient, or a whole card with its content.
 
 ```java
 @Override
@@ -18,7 +18,7 @@ public void init() {
 | --- | --- |
 | `create(float radius)` | Rounds the four corners. |
 | `create(Supplier<Float> radius)` | Same, with a radius read every frame. |
-| `create(float radius, boolean left, boolean top, boolean right, boolean bottom)` | Rounds the corners of the enabled sides. The sides come in the order of `DrawShape.drawRoundedRect`. |
+| `create(float radius, boolean left, boolean top, boolean right, boolean bottom)` | Rounds the corners of the enabled sides, given in the order left, top, right, bottom. |
 | `create(Supplier<Float> radius, Supplier<Boolean> left, Supplier<Boolean> top, Supplier<Boolean> right, Supplier<Boolean> bottom)` | Same, every value read every frame. |
 
 The radius is in UI units. A corner is rounded only when both of its sides are enabled:
@@ -131,8 +131,8 @@ Shader pass priority: 100 (before blur and border).
 
 ## See also
 
+- Next: [CircleNodeEffect](circle.md)
 - [Effects](effects.md)
-- [CircleNodeEffect](circle.md)
 - [BorderNodeEffect](border.md)
 - [RectNode](../nodes/visual/rect.md)
 - [Shapes](../drawing/shapes.md)

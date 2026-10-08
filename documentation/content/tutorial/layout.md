@@ -1,12 +1,12 @@
 # Tutorial 2: Building the Layout
 
-In this part you build the static layout of the settings screen: a card centered on the canvas, a header with an icon and a title, and columns of rows laid out by `FlexNode`. Nothing reacts to the mouse yet; the values on the right of the rows are placeholders that part 3 replaces with real controls.
+In this part you build the static layout of the settings screen with what [Nodes and the Node Tree](../concepts/nodes.md), [Layout](../essentials/layout.md) and [Text](../essentials/text.md) taught: a card centered on the canvas, a header with an icon and a title, and columns of rows laid out by `FlexNode`. Nothing reacts to the mouse yet; the values on the right of the rows are placeholders that part 3 replaces with real controls.
 
 You start from the code of [Tutorial 1](setup.md). `Main` and `AppUIBridge` do not change in this part.
 
 ## Step 1: the card with RectNode
 
-Every visible element of a UI is a node. `RectNode` (`dev.joid.lib.ui.node.impl.design.shape`) draws a filled rectangle; it is the usual base for cards, rows and buttons. First give `Theme` the two colors of the screen, next to the font:
+The card is a `RectNode` (`dev.joid.lib.ui.node.impl.design.shape`), the filled rectangle of [Nodes and the Node Tree](../concepts/nodes.md). First give `Theme` the two colors of the screen, next to the font, so that every class of the application shares them:
 
 ```java
 public static final Color INK  = Color.decode("#999999");
@@ -25,17 +25,13 @@ public void init() {
 }
 ```
 
-- `create(x, y, width, height)` takes canvas units. A card 800 wide at x = 560 is horizontally centered ((1920 - 800) / 2), and 780 high at y = 150 is vertically centered ((1080 - 780) / 2).
-- `color(...)` sets the fill. `Color.decode` reads `#RRGGBB` and other formats; see [Colors and Gradients](../styling/colors.md).
-- `attach(this)` adds the card at the top level of the UI.
+Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; see [The Virtual Canvas](../concepts/canvas.md). A card 800 wide at x = 560 is horizontally centered ((1920 - 800) / 2), and 780 high at y = 150 is vertically centered ((1080 - 780) / 2), whatever the window. `Color.decode` reads the `#RRGGBB` colors of your design, as in [Styling and Effects](../concepts/styling.md).
 
 ![A light gray card centered on a near-black background](../images/tutorial-layout-card.png "Step 1: one RectNode, centered on the canvas")
 
 ## Step 2: children with body
 
-A node holds children. `body(...)` runs a lambda right away with the node, so you build its children inline, and `attach(card)` adds each child to the card. Children are placed relative to their parent: (40, 40) inside the card is 40 units from its top-left corner, wherever the card is.
-
-Create the text styles at the start of `init()`:
+The header is three children of the card, built in its `body(...)` and placed relative to it: (40, 40) inside the card is 40 units from its top-left corner, wherever the card is. Create the text styles once, at the start of `init()`, and reuse them:
 
 ```java
 final TextInfo title = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 40F, Theme.INK);
@@ -56,20 +52,17 @@ RectNode
 .attach(this);
 ```
 
-- A `TextInfo` (`dev.joid.lib.font.dto`) is the style of a text: font, weight, size, color, spacing. Create each style once and reuse it; see [Text and TextInfo](../text/text-and-textinfo.md).
-- `ResourceNode` (`dev.joid.lib.ui.node.impl.design.resource`) displays an image. `Resource.of(new File(...))` (`dev.joid.lib.resource`) loads it in the background; until it is ready, the node draws a pulsing placeholder. A URL, a stream or a file of your jar work too; see [Resources](../resources/resources.md).
-- `TextNode.create(x, y)` creates a text node without a size: it takes the size of its text.
-- **Anchors** decide which point of a node sits at its `x` and `y`; by default it is the top-left corner. `anchorY(Align.CENTER)` puts the vertical center of the title on y = 64, the center of the 48-unit icon (40 + 24), so both line up whatever the font size.
-- `TextNode.create(x, y, width, height)` gives the text a box, and `Text.create(text, info, horizontalAlign, verticalAlign)` aligns the text inside it: the hint ends at the right edge of a box 40 units narrower than the card.
-- `card.aw(-40)` is the width of the card plus -40, that is 760. The relative helpers (`aw`, `ah`, `dw`, `dh`, `mw`, `mh`) read the size of the node you call them on, so you never write a size twice; see [Node Fundamentals](../nodes/node-fundamentals.md).
+- The icon is a `ResourceNode` (`dev.joid.lib.ui.node.impl.design.resource`) showing `Resource.of(new File(...))`, loaded in the background as in [Images and Media](../essentials/media.md).
+- The title is a `TextNode` without a size, which takes the size of its text. `anchorY(Align.CENTER)` puts its vertical center on y = 64, the center of the 48-unit icon (40 + 24), so both line up whatever the font size.
+- The hint has a box: `TextNode.create(x, y, width, height)` with `Text.create(text, info, horizontalAlign, verticalAlign)` aligns the text inside it, so the hint ends at the right edge of a box 40 units narrower than the card. `card.aw(-40)` is the width of the card minus 40, that is 760: the size helpers of [Layout](../essentials/layout.md) read the size of the node, so you never write a size twice.
 
 ![The card with a gear icon, the bold title Settings and the hint Saved automatically on the right](../images/tutorial-layout-header.png "Step 2: three children placed relative to the card")
 
 ## Step 3: rows with FlexNode
 
-Placing every row by hand means computing each `y` yourself. `FlexNode` (`dev.joid.lib.ui.node.impl.structure.flex`) does it: `FlexNode.vertical(x, y, width)` stacks its children from top to bottom with a gap (`margin`) and grows to fit them. Each child is created at (0, 0); the flex moves it into its slot.
+The rows go in a `FlexNode.vertical(x, y, width)` column (`dev.joid.lib.ui.node.impl.structure.flex`), which stacks its children with a gap (`margin`) and grows to fit them: each child is created at (0, 0) and the flex moves it into its slot, as in [Layout](../essentials/layout.md).
 
-All the rows look the same, so a small method builds one and returns it, ready to receive the control on its right:
+All the rows look the same, so a small method of `SettingsUI` builds one and returns it, ready to receive the control on its right:
 
 ```java
 private RectNode row(final Node parent, final String name, final TextInfo info) {
@@ -83,7 +76,7 @@ private RectNode row(final Node parent, final String name, final TextInfo info) 
 }
 ```
 
-`row.dh(2)` is half the height of the row: with `anchorY(Align.CENTER)`, the label is vertically centered. `attach(...)` returns the node typed as what you assign it to, here a `RectNode`.
+`row.dh(2)` is half the height of the row: with `anchorY(Align.CENTER)`, the label is vertically centered. The method attaches the row to the column it receives and returns it: `attach(...)` returns the node typed as what you assign it to, here a `RectNode`, so the caller can add the value on the right of the row.
 
 Two more styles go next to `title` and `hint`, for the section titles and the labels:
 
@@ -113,7 +106,7 @@ FlexNode
 
 - A section title is a text node 36 units high whose text sits at the bottom of its box, which leaves some space above each section. A width of `0` follows the text.
 - The value of each row is a text node as large as the row minus 24 units, with its text aligned to the end.
-- The children are laid out in the order you attach them. A hidden child takes no room: the next ones move up to fill its place, which part 3 uses.
+- The children are laid out in the order you attach them. A hidden child takes no room: the next ones move up to fill its place, which part 3 uses to hide the Volume row.
 
 ![The card with its header, the AUDIO section with the Music and Volume rows and the GENERAL section with the Notifications row](../images/tutorial-layout-rows.png "Step 3: a FlexNode stacks the section titles and the rows")
 
@@ -276,7 +269,7 @@ The card has its header, then three sections: **AUDIO** with the Music and Volum
 
 ![A light gray card with a gear icon and the title Settings, AUDIO, GENERAL and LANGUAGE sections, white rows Music On, Volume 80 % and Notifications Off, and four white language rows](../images/tutorial-layout.png "The static layout: a card, a header and two nested FlexNode columns")
 
-> TIP: In dev mode, press `F3`, click Inspect and hover the rows: the inspector shows the class, the bounds and the place in the tree of each node. See [Developer Tools](../getting-started/dev-tools.md).
+> TIP: In dev mode, press `F3`, click Inspect and hover the rows: the inspector shows the class, the bounds and the place in the tree of each node. See [Developer Tools](../concepts/dev-tools.md).
 
 ## Recap
 
@@ -285,13 +278,13 @@ The card has its header, then three sections: **AUDIO** with the Music and Volum
 - Anchors (`anchor`, `anchorX`, `anchorY`) choose the point of a node that sits at its `x` and `y`; a text box with an alignment places a text inside a fixed area; `dw`, `aw` and their siblings compute positions from the size of a node.
 - `FlexNode` stacks its children with a gap and grows to fit them; flex nodes nest.
 - `TextNode` shows a `Text` styled by a `TextInfo`; `ResourceNode` shows an image loaded with `Resource.of(...)`.
-
-Next, [Tutorial 3: Interactivity and State](interactivity.md) turns the placeholders into switches, a slider and a clickable list, and saves the values.
+- A method that builds a node, attaches it and returns it removes the repetition of identical rows.
 
 ## See also
 
-- [Node Fundamentals](../nodes/node-fundamentals.md)
+- Next: [Tutorial 3: Interactivity and State](interactivity.md) turns the placeholders into switches, a slider and a clickable list, and saves the values.
+- [Layout](../essentials/layout.md)
+- [Nodes and the Node Tree](../concepts/nodes.md)
 - [FlexNode](../nodes/layout/flex.md)
 - [TextNode](../nodes/visual/text.md)
 - [ResourceNode](../nodes/visual/resource.md)
-- [Essentials: Layout](../essentials/layout.md)

@@ -1,6 +1,6 @@
 # GridNode
 
-`GridNode` (`dev.joid.lib.ui.node.impl.structure.grid`) places its children from left to right and starts a new row when the next cell would pass its width. Use it for tiles: inventories, galleries, icon pickers.
+`GridNode` (`dev.joid.lib.ui.node.impl.structure.grid`) places its children from left to right and starts a new row when the next cell would pass its width. Use it for tiles: inventories, galleries, icon pickers. [Layout](../../essentials/layout.md#grids-with-gridnode) introduced it; this page describes how cells wrap and every option.
 
 ```java
 GridNode
@@ -51,7 +51,11 @@ GridNode
 
 ![Cells of different widths in two rows, 20 apart horizontally and 4 apart vertically](../../images/grid-margins.png "The first row is as high as its tallest cell (70); the second row starts 4 below it.")
 
-Like every setter, the margins follow a native expression that reads signals: `margin(this.compact.get() ? 4D : 16D)` changes the spacing of the whole grid when `compact`, a `BooleanSignal` field of the UI, changes.
+Like every setter, the margins follow an expression that reads signals: `margin(this.compact.get() ? 4D : 16D)` changes the spacing of the whole grid when `compact`, a `BooleanSignal` field of the UI, changes.
+
+```java
+private final BooleanSignal compact = BooleanSignal.of(false);
+```
 
 ```java
 GridNode.create(100, 100, 500, 0).margin(this.compact.get() ? 4D : 16D).attach(this);
@@ -103,7 +107,7 @@ RectNode
 | `margin(double)`, `margin(Supplier<Double>)` | Sets both margins. |
 | `getHorizontalMargin()`, `getVerticalMargin()` | Current margins. |
 
-`GridNode` is `final`; its setters return `GridNode`. Everything else is inherited from [Node](../node-fundamentals.md).
+`GridNode` is `final`; its setters return `GridNode`. Everything else is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
 
 ## Pitfalls
 
@@ -113,7 +117,8 @@ RectNode
 
 ## See also
 
-- [Node Fundamentals](../node-fundamentals.md)
+- Next: [ReorderableFlexNode](reorderable-flex.md)
+- [Layout](../../essentials/layout.md)
 - [FlexNode](flex.md)
-- [ContainerNode](container.md)
 - [Overflow and Scrolling](overflow-and-scroll.md)
+- [Node Fundamentals](../node-fundamentals.md)

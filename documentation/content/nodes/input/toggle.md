@@ -44,7 +44,7 @@ public void init() {
 
 ![The cursor clicks a toggle twice: the gray knob jumps right and the text reads Quality: High, then it jumps back and reads Quality: Low](../../images/toggle-click.gif "Each click flips the toggle; onChange writes getValue() into quality, and the text follows.")
 
-`draw` reads `isToggle()` on every frame, so the knob follows the state. `this.info` is a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)). The protected constructor and the `create` factory follow the [custom node](../custom-nodes.md) contract.
+`draw` reads `isToggle()` on every frame, so the knob follows the state. `this.info` is a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)). The protected constructor and the `create` factory follow the [custom node](../custom-nodes.md) contract.
 
 ## Side values with state and getValue
 
@@ -77,7 +77,7 @@ Call `toggle(...)` and `state(...)` before the setters inherited from `Node` (`e
 
 ## Sharing the side with signal
 
-`signal(Signal<Boolean>)` binds the side to a [signal](../../state/signals.md) in both directions (`true` = toggled):
+`signal(Signal<Boolean>)` binds the side to a [signal](../../concepts/signals.md) in both directions (`true` = toggled):
 
 ```java
 private final BooleanSignal night = BooleanSignal.of(false);
@@ -100,9 +100,11 @@ public void init() {
 
 ## Following a value with toggle
 
-`toggle(...)` also takes an expression that reads signals, a signal, a `map(...)` or a `Supplier<Boolean>` (see [Reactive Properties](../../state/reactive-properties.md)). The toggle follows that value in one direction only: a click flips it, but never writes into the source.
+`toggle(...)` also takes an expression that reads signals, a signal, a `map(...)` or a `Supplier<Boolean>` (see [Signals and Reactivity](../../concepts/signals.md)). The toggle follows that value in one direction only: a click flips it, but never writes into the source.
 
 ```java
+private final IntegerSignal volume = IntegerSignal.of(80);
+
 QualityToggleNode.create(100, 100, 120, 60).toggle(this.volume.get() > 50).attach(this);
 ```
 
@@ -112,7 +114,7 @@ QualityToggleNode.create(100, 100, 120, 60).toggle(this.volume.get() > 50).attac
 
 ![Diagram: a click, a setter or a bound signal gives a new value; an equal value stops there; PRE callbacks can cancel; then the value is stored and the signal written; then the POST callbacks run onChange](../../images/diagram-control-change.png "How every control of this family applies a new value.")
 
-Cancel the context in the `pre(...)` phase to keep the current side. A refused click is still consumed.
+Cancel the context in the `pre(...)` phase to keep the current side, in an anonymous class of the callback interface as for [CheckboxNode](checkbox.md#reacting-with-onchange). A refused click is still consumed.
 
 ```java
 QualityToggleNode
@@ -174,8 +176,8 @@ The setters return the node itself, typed by the generic return of the fluent AP
 
 ## See also
 
+- Next: [SwitchNode](switch.md)
 - [CheckboxNode](checkbox.md)
-- [SwitchNode](switch.md)
 - [Signals](../../state/signals.md)
 - [Reactive Properties](../../state/reactive-properties.md)
 - [Callbacks](../../interactions/callbacks.md)

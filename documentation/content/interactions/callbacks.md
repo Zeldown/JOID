@@ -1,24 +1,26 @@
 # Callbacks
 
-Callbacks run your code when something happens to a node: a click, a key, a hover change, a lifecycle step, a signal change, a scroll or a drag. You register them with the `on...` methods of `Node` and of specific nodes, usually as lambdas, and each callback can act before (PRE) or after (POST) the node's own behavior.
+[Input and Callbacks](../concepts/input.md) showed `onClick`, the hover callbacks, how an event travels children first and the PRE and POST phases. This page goes further: every callback of `Node` and of the built-in nodes, how to act in the PRE phase, `InternalContext`, which events are consumed, and the exact order in which callbacks run.
 
 ## Registering a callback
 
 ```java
-public class ShopUI extends UI {
+private final Signal<String> status = Signal.of("Waiting");
 
-	@Override
-	public void init() {
-		RectNode
-		.create(100, 100, 300, 80)
-		.color(Color.WHITE)
-		.onHoverStart((node, mouseX, mouseY) -> System.out.println("Enter"))
-		.onClick((node, mouseX, mouseY, clickType) -> System.out.println("Clicked with " + clickType))
-		.attach(this);
-	}
+RectNode
+.create(100, 100, 300, 80)
+.color(Color.GRAY)
+.onHoverStart((node, mouseX, mouseY) -> this.status.set("Enter"))
+.onHoverEnd((node, mouseX, mouseY) -> this.status.set("Leave"))
+.onClick((node, mouseX, mouseY, clickType) -> this.status.set("Clicked with " + clickType))
+.attach(this);
 
-}
+TextNode.create(100, 200).text(Text.create(this.status.get(), this.info)).attach(this);
 ```
+
+![The cursor enters a gray rectangle, the text below reads Enter, a click turns it to Clicked with LEFT, leaving turns it to Leave](../images/callbacks-first.gif "Each callback writes the signal the text follows.")
+
+`info` is a `TextInfo` (see [Text](../essentials/text.md)).
 
 - Every `on...` method adds one callback and returns the node, so you can chain them. Calling the same method twice registers two callbacks: both run, in registration order.
 - A callback stays registered for the life of the node, across detachments; there is no method to remove one. Guard its body with a condition (a field or a [signal](../state/signals.md)) when it must stop reacting.
@@ -36,11 +38,11 @@ TextNode
 .attach(this);
 ```
 
-`info` is a `TextInfo` (see [Text and TextInfo](../text/text-and-textinfo.md)). An assignment gives the target type to the last call of the chain: `final RectNode button = RectNode.create(0, 0, 100, 40).onClick((node, mouseX, mouseY, clickType) -> node.color(Color.WHITE));` passes a `RectNode` to the lambda. Without a witness, call the setters of the concrete class (`color`, `text`...) before the callbacks.
+An assignment gives the target type to the last call of the chain: `final RectNode button = RectNode.create(0, 0, 100, 40).onClick((node, mouseX, mouseY, clickType) -> node.color(Color.WHITE));` passes a `RectNode` to the lambda. Without a witness, call the setters of the concrete class (`color`, `text`...) before the callbacks.
 
 ## Node callback reference
 
-The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mouse`, `key`, `hover`, `state`, `signal`, `animation`, `scroll` and `draggable`. Coordinates are UI units (see [View and Scaling](../ui/view-and-scaling.md)). The last column is what runs between the PRE and the POST phase; for `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` it always runs, for the others a PRE cancel skips it (see [PRE and POST phases](#pre-and-post-phases)).
+The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mouse`, `key`, `hover`, `state`, `signal`, `animation`, `scroll` and `draggable`. Mouse coordinates are units of the virtual canvas, like the positions of the nodes (see [The Virtual Canvas](../concepts/canvas.md)). The last column is what runs between the PRE and the POST phase; for `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` it always runs, for the others a PRE cancel skips it (see [PRE and POST phases](#pre-and-post-phases)).
 
 | Method | Interface | Lambda arguments | Fires | Between PRE and POST |
 |---|---|---|---|---|
@@ -146,7 +148,7 @@ Once the event is consumed, the input lambdas of the nodes reached afterwards do
 
 ### Consuming an event from a listener
 
-Override `post` and cancel the context to keep an event for your node. This field-like node takes Enter for itself, so the keybinds and the other nodes no longer see it:
+Override `post` and cancel the context to keep an event for your node. This field-like node takes Enter for itself, so neither the keybinds nor the other nodes see it:
 
 ```java
 RectNode
@@ -275,8 +277,9 @@ The `type` ids come from `NodeCallbackRegistry.next(Class)` and callbacks are st
 
 ## See also
 
-- [Mouse and Keyboard](mouse-and-keyboard.md)
+- Next: [Mouse and Keyboard](mouse-and-keyboard.md)
+- [Input and Callbacks](../concepts/input.md): the basics this page builds on.
 - [Hover and Tooltips](hover.md)
 - [Drag and Drop](drag-drop.md)
-- [Watching Signals](../state/watch.md)
-- [Custom Nodes](../nodes/custom-nodes.md)
+- [Watching Signals](../state/watch.md): `watch` and `onWatch`.
+- [Custom Nodes](../nodes/custom-nodes.md): declaring your own callback types.

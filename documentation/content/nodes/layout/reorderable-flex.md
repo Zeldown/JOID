@@ -15,7 +15,7 @@ ReorderableFlexNode
 		.color(Color.GRAY)
 		.hoveredColor(Color.DARKGRAY)
 		.body(item -> {
-			TextNode.create(16, 11).text(Text.create("Item " + (index + 1), this.label)).attach(item);
+			TextNode.create(16, 11).text(Text.create("Item " + (index + 1), this.info)).attach(item);
 		})
 		.attach(flex);
 	}
@@ -25,7 +25,7 @@ ReorderableFlexNode
 
 ![The cursor drags Item 1 down to the fourth slot; the other items slide up](../../images/reorder-drag.gif "The dragged item follows the mouse above the others, then glides to its new slot on release.")
 
-Dropping Item 1 on the fourth slot prints `0 -> 3`. `label` is a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)).
+Dropping Item 1 on the fourth slot prints `0 -> 3`. `info` is a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)).
 
 ## Creating a ReorderableFlexNode
 
@@ -63,7 +63,7 @@ for (int i = 1; i <= 5; i++) {
 			.color(locked ? Color.LIGHTGRAY : Color.GRAY)
 			.hoveredColor(locked ? Color.LIGHTGRAY : Color.DARKGRAY)
 			.attach(list);
-	TextNode.create(16, 11).text(Text.create((locked ? "Locked " : "Item ") + i, this.label)).attach(item);
+	TextNode.create(16, 11).text(Text.create((locked ? "Locked " : "Item ") + i, this.info)).attach(item);
 	if (locked) {
 		list.lock(item);
 	}
@@ -111,7 +111,7 @@ RectNode
 			.color(Color.GRAY)
 			.hoveredColor(Color.DARKGRAY)
 			.body(item -> {
-				TextNode.create(16, 11).text(Text.create("Item " + (index + 1), this.label)).attach(item);
+				TextNode.create(16, 11).text(Text.create("Item " + (index + 1), this.info)).attach(item);
 			})
 			.attach(flex);
 		}
@@ -131,9 +131,9 @@ RectNode
 | `onReorder(NodeReorderCallback)` | `(flex, child)` | Each time the dragged child moves to another slot. In the POST phase `flex.getCurrentIndex()` is the new slot. Cancelling the PRE phase keeps the child on its current slot. |
 | `onReorderEnd(NodeReorderEndCallback)` | `(flex, child, oldIndex, newIndex)` | Once the dropped child has settled and `getChildren()` holds the new order. `oldIndex` equals `newIndex` for a drop in place. The order is already applied: cancelling the PRE phase only skips the POST phase. |
 
-The callback interfaces are in `dev.joid.lib.ui.node.impl.structure.reorderable.callback`; `flex` is the `ReorderableFlexNode` and `child` the dragged `Node`. Their ids are public: `ReorderableFlexNode.CALLBACK_REORDER_START`, `CALLBACK_REORDER` and `CALLBACK_REORDER_END`. The PRE and POST phases are described in [Callbacks](../../interactions/callbacks.md).
+The callback interfaces are in `dev.joid.lib.ui.node.impl.structure.reorderable.callback`; `flex` is the `ReorderableFlexNode` and `child` the dragged `Node`. Their ids are public: `ReorderableFlexNode.CALLBACK_REORDER_START`, `CALLBACK_REORDER` and `CALLBACK_REORDER_END`.
 
-A PRE phase that freezes the order while a signal is true:
+As [Input and Callbacks](../../concepts/input.md#how-events-travel) shows, a lambda runs in the POST phase, after the behavior of the node. To act before it, implement the callback interface: `apply` is the method a lambda would fill, and `pre` runs first, with an `InternalContext` (`dev.joid.lib.utils.context`) whose `cancel()` refuses the move. A PRE phase that freezes the order while a signal is true:
 
 ```java
 final BooleanSignal frozen = BooleanSignal.of(true);
@@ -156,7 +156,7 @@ ReorderableFlexNode
 .attach(this);
 ```
 
-To keep a child in place for good, `lock` it rather than refusing its moves.
+`peek()` reads the signal without following it. To keep a child in place for good, `lock` it rather than refusing its moves. Every phase and the exact order are in [Callbacks](../../interactions/callbacks.md).
 
 ## Order during a drag
 
@@ -193,7 +193,7 @@ During a drag, the order shown on screen is the logical order (`getLogicalOrder(
 | `getMargin()`, `getAlign()`, `getDirection()`, `isAutoDrag()` | Current settings. |
 | `getChildIndex(Node)`, `getLogicalOrder()`, `getCurrentIndex()`, `getInitialIndex()`, `getReorderedNode()`, `isDragging(Node)`, `isReleasing()` | Drag state. |
 
-The setters return `ReorderableFlexNode`. Everything else is inherited from [Node](../node-fundamentals.md).
+The setters return `ReorderableFlexNode`. Everything else is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
 
 ## Pitfalls
 
@@ -204,7 +204,7 @@ The setters return `ReorderableFlexNode`. Everything else is inherited from [Nod
 
 ## See also
 
+- Next: [Overflow and Scrolling](overflow-and-scroll.md)
 - [FlexNode](flex.md)
-- [Overflow and Scrolling](overflow-and-scroll.md)
 - [Drag and Drop](../../interactions/drag-drop.md)
 - [Callbacks](../../interactions/callbacks.md)

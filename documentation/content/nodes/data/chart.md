@@ -65,7 +65,7 @@ public class LineChartNode extends ChartNode {
 }
 ```
 
-Then create it with its axes and a series (`this.info` is a `TextInfo` built from a loaded font, see [Text and TextInfo](../../text/text-and-textinfo.md)):
+Then create it with its axes and a series (`this.info` is a `TextInfo` built from a loaded font, see [Text](../../essentials/text.md)):
 
 ```java
 LineChartNode
@@ -78,15 +78,17 @@ LineChartNode
 
 ![A gray line with five points on a white card, Mon to Fri, between 2.0 and 8.0](../../images/chart-line.png "The Visits series drawn by LineChartNode, scaled from getMin() to getMax().")
 
-`ChartAxis` and `ChartData` are nested classes: `ChartNode.ChartAxis` (with `ChartAxis.XChartAxis` and `ChartAxis.YChartAxis`) and `ChartNode.ChartData`. `Vector2d` comes from `javax.vecmath`; the drawing calls are described in [Shapes](../../drawing/shapes.md) and [Drawing Text](../../drawing/text.md). The protected constructor and the `create` factory follow the [custom node](../custom-nodes.md) contract.
+`ChartAxis` and `ChartData` are nested classes: `ChartNode.ChartAxis` (with `ChartAxis.XChartAxis` and `ChartAxis.YChartAxis`) and `ChartNode.ChartData`. `Vector2d` comes from `javax.vecmath`; the drawing calls are the `DrawUtils` calls of [Building a UI Kit](../../components/ui-kit.md), all listed in [Shapes](../../drawing/shapes.md) and [Drawing Text](../../drawing/text.md). The protected constructor and the `create` factory follow the same contract as the components of the kit.
 
 ## Axes with xAxis and yAxis
 
 `ChartAxis.x(name, labels...)` creates the X axis with its labels, in order (a repeated label is kept once, at its first position); `ChartAxis.y(name)` creates the Y axis. Set them with `xAxis(...)` and `yAxis(...)`.
 
-The series live in the X axis: set the X axis before adding a series, and know that a new X axis comes with its own series. Like every node setter, `xAxis(...)` and `yAxis(...)` also take a `Supplier`: a `map(...)` that builds the axis and its series follows a [signal](../../state/signals.md).
+The series live in the X axis: set the X axis before adding a series, and know that a new X axis comes with its own series. Like every node setter, `xAxis(...)` and `yAxis(...)` also take a `Supplier`: a `map(...)` that builds the axis and its series follows a [signal](../../concepts/signals.md).
 
 ```java
+private final IntegerSignal visits = IntegerSignal.of(4);
+
 LineChartNode
 .create(100, 100, 480, 280, this.info)
 .yAxis(ChartAxis.y("visits"))
@@ -131,7 +133,7 @@ LineChartNode
 
 ## Updating the data
 
-The chart reads its series on every frame. Change a `ChartData` with `add(...)` or `remove(...)`, or call `data(...)` again on the node, and the next frame shows it:
+The chart reads its series on every frame. Change a `ChartData` with `add(...)` or `remove(...)`, or call `data(...)` again on the node, and the next frame shows it. Here `this.white` is a white `TextInfo` for the label of the button:
 
 ```java
 private int week;
@@ -178,7 +180,7 @@ public void init() {
 
 `isLoaded()` returns `true` once the node is mounted (no pending `wait(...)` condition), both axes are set, at least one series exists and no series is empty. Test it at the start of `draw` to draw a placeholder or nothing.
 
-While the node waits for a `wait(...)` condition, it draws the default pulsing skeleton over its bounds instead of `draw` (see [Node Fundamentals](../node-fundamentals.md)); override `drawSkeleton` to draw your own:
+`wait(...)` keeps a node unmounted until its condition holds: a delay, a signal that gets a value, or a predicate. While the node waits, it draws the default pulsing skeleton over its bounds instead of `draw` (see [Node Fundamentals](../node-fundamentals.md)); override `drawSkeleton` to draw your own. Here the chart appears after two seconds:
 
 ```java
 LineChartNode
@@ -255,7 +257,7 @@ The node setters return the node itself, typed by the generic return of the flue
 
 ## See also
 
-- [RadarChartNode](radar-chart.md)
+- Next: [RadarChartNode](radar-chart.md)
 - [Custom Nodes](../custom-nodes.md)
 - [Shapes](../../drawing/shapes.md)
 - [Drawing Text](../../drawing/text.md)

@@ -15,7 +15,7 @@ public void draw(final double mouseX, final double mouseY) {
 
 ![A light gray rounded card with a small gray disk in its top-left corner and a thin gray separator below it](../images/shapes-quick.png "A rounded rectangle, a one-unit separator and a circle")
 
-Positions and sizes are UI units. Points are `javax.vecmath.Vector2d`. Every method accepts a gradient `Color` (see [Colors and Gradients](../styling/colors.md)): the gradient spans the bounding box of each primitive drawn, that is the whole rectangle, disk, polygon, line or dashed line, but each side of an axis-aligned border and each segment of a curve on its own. A shadow uses the first color of the gradient.
+Positions and sizes are units of the 1920×1080 virtual canvas, as everywhere in JOID (see [The Virtual Canvas](../concepts/canvas.md)). Points are `javax.vecmath.Vector2d`. Every method accepts a gradient `Color` (see [Colors and Gradients](../styling/colors.md)): the gradient spans the bounding box of each primitive drawn, that is the whole rectangle, disk, polygon, line or dashed line, but each side of an axis-aligned border and each segment of a curve on its own. A shadow uses the first color of the gradient.
 
 ## Rectangles with drawRect
 
@@ -37,7 +37,7 @@ DrawUtils.SHAPE.drawRoundedRect(380D, 100D, 240D, 120D, Color.decode("#DDDDDD"),
 
 ![Two light gray rectangles: the first rounded on its four corners, the second only on its two top corners](../images/shapes-rounded.png "Four rounded corners, then the top corners only")
 
-- `radius` is in UI units. The edges snap like `drawRect` and the corners are antialiased inside them.
+- `radius` is in canvas units. The edges snap like `drawRect` and the corners are antialiased inside them.
 - A corner is rounded when both of its sides are flagged (`roundedLeft`, `roundedTop`, `roundedRight`, `roundedBottom`): `roundedLeft` and `roundedTop` round the top-left corner. The second line rounds the two top corners only, like a tab.
 - The corners are carved by the rounded shader, the same as [RoundedNodeEffect](../styling/rounded.md).
 
@@ -52,7 +52,7 @@ DrawUtils.SHAPE.drawRoundedBorder(380D, 100D, 240D, 120D, Color.decode("#999999"
 
 - The box and the corners are the same as `drawRoundedRect` with the four corners rounded: draw both with the same values to outline a rounded rectangle.
 - The stroke is drawn inside the box: its outer edge is the edge of the rounded rectangle, and its inner edge follows the corners with a radius reduced by `stroke`.
-- `stroke` is in UI units (1 by default). Its inner edge is antialiased over one unit.
+- `stroke` is in canvas units (1 by default). Its inner edge is antialiased over one unit.
 
 ## Shadows and glows with drawShadow
 
@@ -64,7 +64,7 @@ DrawUtils.SHAPE.drawRoundedRect(100D, 100D, 240D, 120D, Color.decode("#DDDDDD"),
 ![A light gray rounded card with a soft dark shadow below it](../images/shapes-shadow.png "The shadow box is moved 8 units down, then the card is drawn over it")
 
 - The box `(x, y, width, height)` with its corner `radius` casts the shadow; move the box to offset the shadow, as the first line does. A `radius` of half the smaller side gives the shadow of a circle.
-- `blur` is in UI units: the shadow fades out over about `blur` units on each side of the edge, like the `blur` of a CSS `box-shadow`. A `blur` of `0F` or less draws a sharp `drawRoundedRect`.
+- `blur` is in canvas units: the shadow fades out over about `blur` units on each side of the edge, like the `blur` of a CSS `box-shadow`. A `blur` of `0F` or less draws a sharp `drawRoundedRect`.
 - The shadow shader draws it in one pass, without framebuffer, over the box enlarged by `1.5 × blur` on each side. Draw it before the shape it lies under. [ShadowNodeEffect](../styling/shadow.md) does it for a node.
 
 ## Circles with drawCircle
@@ -76,7 +76,7 @@ DrawUtils.SHAPE.drawCircle(200D, 200D, Color.decode("#999999"), 30D);
 
 ![A light gray disk with a smaller gray disk at its center](../images/shapes-circle.png "Two disks on the same center")
 
-`(x, y)` is the center and `radius` is in UI units. The circle shader carves the disk inside its exact square, antialiased, without pixel snapping.
+`(x, y)` is the center and `radius` is in canvas units. The circle shader carves the disk inside its exact square, antialiased, without pixel snapping.
 
 ## Borders with drawBorder
 
@@ -89,7 +89,7 @@ DrawUtils.SHAPE.drawBorder(100D, 100D, 340D, 220D, Color.decode("#999999"), 6D);
 
 - The box goes from `(x, y)` to `(x2, y2)`: these are corners, not a size.
 - The outline is drawn outside the box, with its four corners filled: its inner edge lands on the snapped box edges, so a border drawn around a `drawRect` of the same box touches it exactly.
-- `stroke` is in UI units (1 by default), rounded to a whole number of pixels, the same on every side; below one pixel, it is one pixel with a proportional opacity.
+- `stroke` is in canvas units (1 by default), rounded to a whole number of pixels, the same on every side; below one pixel, it is one pixel with a proportional opacity.
 - Under a rotation or a skew, the border is one closed outline drawn by the rounded shader: sharp corners without seam or step, smoothed edges (see [Smoothed edges under a rotation](draw-utils.md#smoothed-edges-under-a-rotation)).
 - `drawFilledBorder` draws exactly the same outline as `drawBorder`, with the same arguments.
 
@@ -116,7 +116,7 @@ DrawUtils.SHAPE.drawDashedLine(Color.decode("#999999"), 10, 2F, new Vector2d(100
 
 - `drawLine` joins every consecutive pair of points with an antialiased line.
 - `stroke` is a width in window pixels: it does not grow with the UI scale. Without `stroke`, the current line width of the render bridge is used (`1F` by default).
-- `drawDashedLine` cuts each segment into dashes of `pattern` UI units separated by gaps of the same length, starting a new pattern at each point; the last dash of a segment is clipped at its end.
+- `drawDashedLine` cuts each segment into dashes of `pattern` canvas units separated by gaps of the same length, starting a new pattern at each point; the last dash of a segment is clipped at its end.
 - Every line method restores the line width and the smoothing set before the call, even when the draw throws.
 - Lines are drawn as antialiased quads. While a shader is bound (a gradient color, a shader of yours), they are drawn as plain lines.
 
@@ -131,7 +131,7 @@ DrawUtils.SHAPE.drawCurvedLine(Color.decode("#999999"), 3F, new Vector2d(360D, 1
 
 - The quadratic overloads take `start, end, control`: the control point comes last.
 - The cubic overloads take `start, startControl, end, endControl`.
-- The curve is drawn as line segments, about one per UI unit of the length of its control polygon, and ends exactly on `end`.
+- The curve is drawn as line segments, about one per canvas unit of the length of its control polygon, and ends exactly on `end`.
 - The points of a curve are computed with `Bezier.quadratic` and `Bezier.cubic` (`dev.joid.lib.utils.bezier`), which you can call for your own geometry (see [Utilities](../reference/utilities.md)).
 
 ## Any primitive with drawShape
@@ -198,12 +198,13 @@ try {
 ## Pitfalls
 
 - `drawBorder` takes two corners, `drawRect` and the rounded methods take a size: `drawBorder(x, y, x + width, y + height, ...)`.
-- The stroke of `drawLine` and `drawCurvedLine` is in window pixels, the stroke of the borders in UI units.
+- The stroke of `drawLine` and `drawCurvedLine` is in window pixels, the stroke of the borders in canvas units.
 - `drawRoundedRect`, `drawRoundedBorder`, `drawShadow` and `drawCircle` draw nothing when their shader is not available on the backend; in dev mode, `[JOID] The shader <Class> is unavailable, what it draws is skipped` is printed once per shader.
 - `drawShape` with a line mode keeps the line width and smoothing of the render bridge: set them yourself, inside `pushState()` / `popState()`.
 
 ## See also
 
+- Next: [Drawing Text](text.md)
 - [Drawing Overview](draw-utils.md)
 - [Colors and Gradients](../styling/colors.md)
 - [RectNode](../nodes/visual/rect.md)

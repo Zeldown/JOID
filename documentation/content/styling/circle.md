@@ -79,8 +79,8 @@ Shader pass priority: 100 (before blur and border).
 
 ## See also
 
+- Next: [BorderNodeEffect](border.md)
 - [Effects](effects.md)
 - [RoundedNodeEffect](rounded.md)
-- [BorderNodeEffect](border.md)
 - [CircleNode](../nodes/visual/circle.md)
 - [ResourceNode](../nodes/visual/resource.md)

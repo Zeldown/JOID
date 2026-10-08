@@ -2,6 +2,8 @@
 
 `CheckboxNode` (`dev.joid.lib.ui.node.impl.structure.checkbox`) is a boolean control that flips between checked and unchecked on each click. It is abstract and draws nothing: you subclass it once with your own look, then use it like any node. For a two-state control that carries a value per side, see [ToggleNode](toggle.md).
 
+The subclass below is the `SettingCheckboxNode` of [Input Controls](../../essentials/controls.md#controls-you-draw-yourself), with a free width and height and a dimmed look while disabled:
+
 ```java
 public class SettingCheckboxNode extends CheckboxNode {
 
@@ -65,7 +67,7 @@ Call `checked(...)` before the setters inherited from `Node` (`enabled`, `x`, `w
 
 ## Sharing the state with signal
 
-`signal(Signal<Boolean>)` binds the checkbox to a [signal](../../state/signals.md) in both directions: the checkbox takes the value of the signal, and each click writes the new state into it. Every node that reads the signal follows:
+`signal(Signal<Boolean>)` binds the checkbox to a [signal](../../concepts/signals.md) in both directions: the checkbox takes the value of the signal, and each click writes the new state into it. Every node that reads the signal follows:
 
 ```java
 private final BooleanSignal music = BooleanSignal.of(true);
@@ -88,13 +90,15 @@ public void init() {
 - A checkbox follows one signal at a time: calling `signal(...)` again unbinds the previous one.
 - A checkbox that is not attached yet follows the signal once attached; a detached checkbox takes the current value of the signal when it is attached again.
 
-`this.info` is a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)). `BooleanSignal` is in `dev.joid.lib.utils.signal.impl.primitive`.
+`this.info` is a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)). `BooleanSignal` is in `dev.joid.lib.utils.signal.impl.primitive`.
 
 ## Following a value with checked
 
-`checked(...)` also takes an expression that reads signals, a signal, a `map(...)` or a `Supplier<Boolean>`, like every node setter (see [Reactive Properties](../../state/reactive-properties.md)). The checkbox then follows that value in one direction only: a click changes the state, but never writes into the source.
+`checked(...)` also takes an expression that reads signals, a signal, a `map(...)` or a `Supplier<Boolean>`, like every node setter (see [Signals and Reactivity](../../concepts/signals.md)). The checkbox then follows that value in one direction only: a click changes the state, but never writes into the source.
 
 ```java
+private final IntegerSignal volume = IntegerSignal.of(0);
+
 SettingCheckboxNode.create(100, 100, 60, 60).checked(this.volume.get() > 0).attach(this);
 ```
 
@@ -106,7 +110,7 @@ Here the checkbox is checked again each time `volume` goes from `0` to a positiv
 
 ![Diagram: a click, a setter or a bound signal gives a new value; an equal value stops there; PRE callbacks can cancel; then the value is stored and the signal written; then the POST callbacks run onChange](../../images/diagram-control-change.png "How every control of this family applies a new value.")
 
-The callback has a `pre(...)` phase that runs before the change: cancel its context to keep the current state. A refused click is still consumed.
+The callback has a `pre(...)` phase that runs before the change: cancel its context to keep the current state. A lambda only fills `apply`; to write `pre`, pass an anonymous class of the callback interface, whose `apply` holds what the lambda would do. A refused click is still consumed.
 
 ```java
 SettingCheckboxNode
@@ -163,7 +167,7 @@ The setters return the node itself, typed by the generic return of the fluent AP
 
 ## See also
 
-- [ToggleNode](toggle.md)
+- Next: [ToggleNode](toggle.md)
 - [SwitchNode](switch.md)
 - [Signals](../../state/signals.md)
 - [Reactive Properties](../../state/reactive-properties.md)

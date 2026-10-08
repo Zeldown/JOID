@@ -34,11 +34,11 @@ ModelNode.create(100, 100, 300, 300).model(model).rotationYaw(30D).rotationPitch
 
 ### Rotation
 
-`rotationYaw(double)` turns the model around the vertical axis and `rotationPitch(double)` tilts it around the horizontal axis, both in degrees and around the node's center. Both default to `0D`. Like every setter, they take a value, a native expression that reads signals or a lambda: a turntable is a lambda driven by an animator.
+`rotationYaw(double)` turns the model around the vertical axis and `rotationPitch(double)` tilts it around the horizontal axis, both in degrees and around the node's center. Both default to `0D`. Like every setter, they take a value, an expression that reads signals or a lambda: a turntable is a lambda driven by a `TweenAnimator`, as in [Animation](../../essentials/animation.md).
 
 ```java
-final TweenAnimator spin = TweenAnimator.create().sequence(4000F, 1F);
-spin.getTimeline().repeat(-1, 0F);
+final TweenAnimator spin = TweenAnimator.create(0F).sequence(4000F, 1F);
+spin.getTimeline().repeat(Tween.INFINITY, 0F);
 spin.start();
 
 ModelNode.create(100, 100, 300, 300).model(model).rotationYaw(() -> spin.getValue() * 360D).animate(spin).attach(this);
@@ -121,7 +121,7 @@ Getters: `getModel()`, `getSize()`, `getRotationYaw()`, `getRotationPitch()`.
 | `getMinRotationYaw()`, `getMaxRotationYaw()` | Yaw range. |
 | `getMinRotationPitch()`, `getMaxRotationPitch()` | Pitch range. |
 | `isDragged()` | `true` while the mouse rotates the model. |
-| `getLastSize()`, `getLastRotationYaw()`, `getLastRotationPitch()` | Values the viewer drew on the previous frame, used to tell a value set from code from the eased one. |
+| `getLastSize()`, `getLastRotationYaw()`, `getLastRotationPitch()` | Values the viewer drew on the previous frame, which tell a value set from code from the eased one. |
 | `getDraggedMouseX()`, `getDraggedMouseY()` | Mouse position of the last drag step. |
 
 All setters are `final` and return the node itself, typed by the generic return of the fluent API: the `ModelNode` setters return a `ModelNode`, the `ModelViewerNode` setters a `ModelViewerNode`.
@@ -129,13 +129,14 @@ All setters are `final` and return the node itself, typed by the generic return 
 ## Pitfalls
 
 - A model taller than wide extends above and below its node: the fitting uses the width only.
-- Two arguments of a range method that give the same value from signals may be confused by the expression replay: prefer distinct values.
+- Two arguments of a range method that read signals and give the same value may be confused when JOID follows them: prefer distinct values.
 - The viewer consumes the left press and the wheel over it: a scrolling parent does not scroll under a viewer.
 
 ## See also
 
+- Next: [ProgressNode](progress.md)
 - [3D Models](../../drawing/models.md)
 - [Transformations and Framebuffers](../../drawing/transformations.md)
 - [Mouse and Keyboard](../../interactions/mouse-and-keyboard.md)
 - [The UI Class](../../ui/ui-class.md) for `lerpByFramerate`
-- [Node Fundamentals](../node-fundamentals.md)
+- [Animation](../../essentials/animation.md)

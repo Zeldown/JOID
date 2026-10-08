@@ -1,6 +1,6 @@
 # Watching Signals
 
-`watch` rebuilds part of the node tree when a signal changes, and `wait` delays a node until its data is ready. Use `watch` when the structure changes (a list that grows, a set of tabs); a text, a color, a size or a visibility that depends on a signal is a [reactive property](reactive-properties.md), not a watch.
+[Layout](../essentials/layout.md#rebuilding-a-list-with-watch) rebuilt a list with `watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)`. This page covers `watch` in full: every `WatchProperty`, `onWatch`, conditions, when a node subscribes, and `wait`, which delays a node until its data is ready. Use `watch` when the structure changes (a list that grows, a set of tabs); a text, a color, a size or a visibility that depends on a signal is a [reactive property](reactive-properties.md), not a watch.
 
 ## Rebuilding a list with watch
 
@@ -59,6 +59,8 @@ RectNode
 `watch(signal)` without property only fires the `onWatch` callbacks of the node:
 
 ```java
+private final IntegerSignal saves = IntegerSignal.of(0);
+
 TextNode
 .create(100, 100)
 .text(Text.create("Saved", this.info))
@@ -74,8 +76,22 @@ TextNode
 `watch(signal, condition, properties...)` applies a change only while `condition` returns `true`. The condition is checked before each change; when it is `false`, the change is ignored and the watch unsubscribes for good (it is not a pause). Without a condition, the watch lasts while the UI of the node is open.
 
 ```java
+private final ListSignal<String> squares = new ListSignal<>(new ArrayList<>());
+private final BooleanSignal live = BooleanSignal.of(true);
+
+FlexNode
+.horizontal(100, 300, 60)
+.margin(8D)
 .watch(this.squares, () -> this.live.peek(), WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+.body(flex -> {
+	for (int i = 0; i < this.squares.peek().size(); i++) {
+		RectNode.create(0, 0, 60, 60).color(Color.GRAY).attach(flex);
+	}
+})
+.attach(this);
 ```
+
+Once `live` is `false`, the next change of `squares` ends the watch: the row keeps its last squares.
 
 ## When a node subscribes
 
@@ -86,10 +102,10 @@ TextNode
 
 ## Waiting before mounting with wait
 
-`wait(...)` keeps a node unmounted (not drawn, its children not shown) until every condition is met. A skeleton is drawn in the meantime, and `onMount` runs when the node appears:
+`wait(...)`, met in [Node Fundamentals](../nodes/node-fundamentals.md#waiting-and-skeletons), keeps a node unmounted (not drawn, its children not shown) until every condition is met. A skeleton is drawn in the meantime, and `onMount` runs when the node appears. With a signal that a future fills ([Signals](signals.md#signals-from-futures)), the node waits for its data:
 
 ```java
-private final Signal<String> profile = Signal.of(this.loadProfile());
+private final Signal<String> profile = Signal.of(CompletableFuture.supplyAsync(() -> "Alex"));
 
 RectNode
 .create(100, 100, 400, 120)
@@ -137,8 +153,9 @@ Custom nodes subscribe to signals with `bind`, `unbind` and `rebind`: see [Custo
 
 ## See also
 
-- [Signals](signals.md)
-- [Reactive Properties](reactive-properties.md)
-- [Node Fundamentals](../nodes/node-fundamentals.md)
-- [Callbacks](../interactions/callbacks.md)
-- [Custom Nodes](../nodes/custom-nodes.md)
+- Next: [Stores](stores.md)
+- [Layout](../essentials/layout.md): the list rebuilt with `watch` this page builds on.
+- [Reactive Properties](reactive-properties.md): what a setter follows without a watch.
+- [Node Fundamentals](../nodes/node-fundamentals.md): the lifecycle, `wait` and skeletons.
+- [Callbacks](../interactions/callbacks.md): the PRE and POST phases of `onWatch`.
+- [Custom Nodes](../nodes/custom-nodes.md): `bind`, `unbind` and `rebind`.

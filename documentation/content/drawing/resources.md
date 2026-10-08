@@ -24,11 +24,11 @@ public class UIShowcase extends UI {
 
 ![The same placeholder drawn at its natural size, stretched to a wide box, a region cut from a larger image, and tinted at half opacity](../images/draw-resource-modes.png "Natural size, stretched, region, tinted")
 
-Keep the `Resource` in a field: creating it in the draw code would create a new resource every frame. How to create and configure a resource is on [Resources](../resources/resources.md).
+Positions and sizes are units of the 1920×1080 virtual canvas (see [The Virtual Canvas](../concepts/canvas.md)). Keep the `Resource` in a field: creating it in the draw code would create a new resource every frame. How to create and configure a resource is on [Resources](../resources/resources.md).
 
 ## Natural size and stretching
 
-`drawResource(x, y, resource)` draws the resource at its natural size: `resource.getWidth()` × `resource.getHeight()` UI units, the pixels of a bitmap image. `drawResource(x, y, width, height, resource)` stretches it over the box, without keeping its ratio. To keep the ratio, compute the box yourself, or use a `ResourceNode` with `StretchType.CONTAIN` or `COVER` (see [ResourceNode](../nodes/visual/resource.md)).
+`drawResource(x, y, resource)` draws the resource at its natural size: `resource.getWidth()` × `resource.getHeight()` canvas units, the pixels of a bitmap image. `drawResource(x, y, width, height, resource)` stretches it over the box, without keeping its ratio. To keep the ratio, compute the box yourself, or use a `ResourceNode` with `StretchType.CONTAIN` or `COVER` (see [ResourceNode](../nodes/visual/resource.md)).
 
 ## Drawing a region of the source
 
@@ -74,7 +74,7 @@ The quad is drawn with the current color of the render bridge, white by default,
 
 | Method | Description |
 |---|---|
-| `drawResource(double x, double y, Resource resource)` | Draws at the natural size: `resource.getWidth()` × `resource.getHeight()` UI units, or the size of its region when it has texture coordinates. |
+| `drawResource(double x, double y, Resource resource)` | Draws at the natural size: `resource.getWidth()` × `resource.getHeight()` canvas units, or the size of its region when it has texture coordinates. |
 | `drawResource(double x, double y, double width, double height, Resource resource)` | Stretches the texture, or its region, over the box. |
 | `drawResource(double x, double y, double width, double height, double u, double v, double regionWidth, double regionHeight, Resource resource)` | Stretches a region of the source over the box. |
 | `DrawResource.getInstance()` | The instance behind `DrawUtils.RESOURCE`. |
@@ -87,6 +87,7 @@ The quad is drawn with the current color of the render bridge, white by default,
 
 ## See also
 
+- Next: [3D Models](models.md)
 - [Resources](../resources/resources.md) — creating and configuring resources.
 - [ResourceNode](../nodes/visual/resource.md) — the node that draws a resource with stretch modes.
 - [Playback, Video and Audio](../resources/playback.md) — animations and videos.

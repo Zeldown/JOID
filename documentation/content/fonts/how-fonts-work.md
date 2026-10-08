@@ -1,12 +1,9 @@
 # How Fonts Work
 
-This page explains what a font is in JOID, how a family picks the face it draws, and how the MSDF fonts keep text sharp at any size. Read it before [Adding Your Own Fonts](adding-fonts.md) to choose how you ship your fonts; no font rendering background is needed.
+This page opens the Fonts section, after the Text section showed how to style and draw text. It explains what a font is in JOID, how a family picks the face it draws, and how the MSDF fonts keep text sharp at any size. Read it before [Adding Your Own Fonts](adding-fonts.md) to choose how you ship your fonts; no font rendering background is needed.
 
 ```java
-final MsdfFont inter = MsdfFontLoader.load(
-	Fonts.class.getResourceAsStream("/assets/fonts/Inter-Regular.ttf"),
-	Fonts.class.getResourceAsStream("/assets/fonts/Inter-Bold.ttf")
-).join();
+final MsdfFont inter = MsdfFontLoader.load(new File("fonts/Inter-Regular.ttf"), new File("fonts/Inter-Bold.ttf")).join();
 final TextInfo body = TextInfo.create(inter, 18F, Color.WHITE);
 final TextInfo title = TextInfo.create(inter, FontWeight.BOLD, 32F, Color.WHITE);
 ```
@@ -175,7 +172,7 @@ They are `.ttf` files: their atlases are generated into the [MSDF cache](adding-
 
 ## See also
 
-- [Adding Your Own Fonts](adding-fonts.md)
+- Next: [Adding Your Own Fonts](adding-fonts.md)
 - [MSDF Generator](msdf-generator.md)
 - [Custom Font Implementations](custom-fonts.md)
 - [Text and TextInfo](../text/text-and-textinfo.md)

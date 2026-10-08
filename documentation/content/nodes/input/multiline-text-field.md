@@ -2,7 +2,7 @@
 
 `MultilineTextFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield`) is an editable text area: the text wraps to the width of the field, Enter inserts line breaks, and the content scrolls vertically. It shares the input model of [`TextFieldNode`](text-field.md) (accept, format, `onChange`, commit, focus, selection, clipboard, `signal(...)`) through their common base, `FieldNode<String>`; this page details what differs.
 
-In the examples, the code runs in `UI.init()` and `font` is an `IFont` you loaded (see [Adding Your Own Fonts](../../fonts/adding-fonts.md)).
+In the examples, the code runs in `UI.init()` and `font` is an `IFont` you loaded (see [Text](../../essentials/text.md)).
 
 ## Creating a text area
 
@@ -58,7 +58,7 @@ The text is committed when the field loses the focus: `format(UnaryOperator<Stri
 
 ## Markup in a text area
 
-With `markup(true)`, the text area follows the markup rules of [Markup and Text Effects](../../text/markup-and-effects.md): a line never breaks inside a tag (a space inside `<c red>` is not a break point, a word too long is cut before the tag), and the style opened on a line continues on the next lines, wrapped or after a real line break. Tags take no width but keep their positions: the arrows cross them one character at a time, a click lands on the visible character, Up / Down keep the visible column. Typing just after an opening tag writes in its style, just before writes outside it; deleting a character of a tag breaks it and it shows as text.
+With `markup(true)` and a markup registered as shown in [Text](../../essentials/text.md), the text area keeps the styles across lines: a line never breaks inside a tag (a space inside `<c red>` is not a break point, a word too long is cut before the tag), and the style opened on a line continues on the next lines, wrapped or after a real line break. Tags take no width but keep their positions: the arrows cross them one character at a time, a click lands on the visible character, Up / Down keep the visible column. Typing just after an opening tag writes in its style, just before writes outside it; deleting a character of a tag breaks it and it shows as text.
 
 ![A text area with markup: bold and colored words keep their style across a wrapped line](../../images/multiline-markup.png "The opened style continues on the wrapped line")
 
@@ -79,7 +79,7 @@ The shortcuts of [`TextFieldNode`](text-field.md#keyboard-shortcuts) apply, with
 
 ## Binding a signal with signal
 
-`signal(Signal<String>)` keeps the text and a signal in sync, both ways, with the rules of [`TextFieldNode.signal(...)`](text-field.md#binding-a-signal-with-signal).
+`signal(Signal<String>)` keeps the text and a [signal](../../concepts/signals.md) in sync, both ways, with the rules of [`TextFieldNode.signal(...)`](text-field.md#binding-a-signal-with-signal).
 
 ```java
 private final Signal<String> notes = Signal.of("");
@@ -106,6 +106,7 @@ MultilineTextFieldNode.create(610, 340, 700, 400).info(TextInfo.create(font, 24F
 
 ## See also
 
+- Next: [SliderNode](slider.md)
 - [TextFieldNode](text-field.md)
 - [Markup and Text Effects](../../text/markup-and-effects.md)
 - [Overflow and Scrolling](../layout/overflow-and-scroll.md)

@@ -1,6 +1,6 @@
 # Node Fundamentals
 
-`Node` (`dev.joid.lib.ui.node`) is the base class of everything you place in a UI: a box with a position, a size, children, callbacks and effects. This page covers the API every node inherits: building the tree, placing and sizing nodes, visibility, drawing order, lifecycle and copies. Every property setter takes a plain value, a native expression that reads signals, a signal or a lambda (see [Reactive Properties](../state/reactive-properties.md)).
+[Nodes and the Node Tree](../concepts/nodes.md) showed how to create nodes, attach them, build a tree with `body`, chain their setters, hide them and order them. This first guide goes through the whole API that every node inherits from `Node` (`dev.joid.lib.ui.node`): the tree in detail, placement and sizing, visibility, drawing order and layers, the lifecycle, waiting and skeletons, and copies. Every property setter takes the four kinds of values of [Signals and Reactivity](../concepts/signals.md): a plain value, an expression that reads signals, a signal or a lambda.
 
 ## A first node tree
 
@@ -69,7 +69,7 @@ Each appended child fires the parent's `onAppend` callbacks; cancelling their PR
 | `body(Runnable runnable)` | Same without the node parameter. |
 | `getBodyConsumer()` | The stored consumer (`null` when `body` was never called). |
 
-`WatchProperty.BODY` runs the stored consumer again when a watched signal changes, which rebuilds the children from fresh data (see [Watching Signals](../state/watch.md) and [Signals](../state/signals.md)):
+`WatchProperty.BODY` runs the stored consumer again when a watched signal changes, which rebuilds the children from fresh data, as in [Layout](../essentials/layout.md#rebuilding-a-list-with-watch) ([Watching Signals](../state/watch.md) has every option):
 
 ```java
 final IntegerSignal count = IntegerSignal.of(3);
@@ -107,7 +107,7 @@ RectNode
 Most setters are declared as `<T extends Node> T method(...)`: the compiler infers `T` from where the result goes.
 
 - Assigned to a variable or passed as an argument, `T` is the expected type: `final RectNode card = RectNode.create(0, 0, 200, 100).anchor(Align.CENTER);`.
-- In the middle of a chain, a `Node` setter returns `Node`, so the setters of the concrete type are no longer visible after it. Call the type-specific setters first (`color` of `RectNode`, `margin` of `FlexNode`), then the `Node` ones, or give the type explicitly: `RectNode.create(0, 0, 200, 100).<RectNode>anchor(Align.CENTER).color(Color.WHITE)`.
+- In the middle of a chain, a `Node` setter returns `Node`, so the setters of the concrete type are out of reach after it. Call the type-specific setters first (`color` of `RectNode`, `margin` of `FlexNode`), then the `Node` ones, or give the type explicitly: `RectNode.create(0, 0, 200, 100).<RectNode>anchor(Align.CENTER).color(Color.WHITE)`.
 - Lambda parameters follow the same rule: in `RectNode.create(...).body(rect -> ...)`, `rect` is a `Node`. Type the parameter to get the concrete type: `.body((final RectNode rect) -> rect.color(Color.WHITE))`.
 
 ### Removing nodes
@@ -123,7 +123,11 @@ Layout nodes close the gap left by a removed child on the next frame.
 
 ## Position and size
 
-Positions and sizes are in UI units of the 1920×1080 virtual canvas. With the default `PositionProperty.RELATIVE`, `x` and `y` are relative to the parent's position; top-level nodes are relative to the UI origin.
+Positions and sizes are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it (see [The Virtual Canvas](../concepts/canvas.md)).
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+With the default `PositionProperty.RELATIVE`, `x` and `y` are relative to the parent's position; top-level nodes are relative to the UI origin.
 
 | Method | Description |
 | --- | --- |
@@ -341,6 +345,7 @@ The list is copy-on-write, so callbacks can append or remove children while the 
 Reading the rectangles of a `panel` node:
 
 ```java
+final ContainerNode panel = ContainerNode.create(100, 100, 600, 200).attach(this);
 final RectNode second = panel.getChild(1, RectNode.class);
 for (final RectNode tile : panel.getChildren(RectNode.class)) {
 	tile.color(Color.GRAY);
@@ -362,14 +367,14 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
 
 - Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, clickType, context)`...) are the entry points that run the stage, called by the framework.
 - `init` runs on every load, including a new attachment after a detach: keep it repeatable. Override the hooks in your own nodes (see [Custom Nodes](custom-nodes.md)).
-- A node follows the signals of its [`watch(...)`](../state/watch.md) calls and of the controls' `signal(...)` only while it is attached: `onDetach()` unsubscribes the whole subtree, so a detached node is no longer reloaded, rebuilt or updated by a signal. Loading it again (`append`, `attach`, reopening its UI) subscribes each of them again, once, and applies right away a value published while it was detached. `isSubscribed()` tells whether the node follows its signals.
-- A detached node is inert: it is no longer drawn, updated or reached by the input, and nothing global keeps it, so you can drop it. `onDetach()` also ends what was in progress, so that a node attached again behaves like a new one, without double registration:
+- A node follows the signals of its [`watch(...)`](../state/watch.md) calls and of the controls' `signal(...)` only while it is attached: `onDetach()` unsubscribes the whole subtree, so a signal neither reloads, rebuilds nor updates a detached node. Loading it again (`append`, `attach`, reopening its UI) subscribes each of them again, once, and applies right away a value published while it was detached. `isSubscribed()` tells whether the node follows its signals.
+- A detached node is inert: it is not drawn, updated or reached by the input, and nothing global keeps it, so you can drop it. `onDetach()` also ends what was in progress, so that a node attached again behaves like a new one, without double registration:
   - an ongoing drag ends with its `onDragEnd` callbacks; a `MOVE` node lands at once where the drag aimed, and the copy of a `COPY` drag is dropped;
   - a hovered node fires `onHoverEnd` and its hover progress (`hoverValue`) goes back to `0`;
-  - the node is no longer mounted: `onMount` runs again on its first frame once attached again, after its `wait(...)` conditions pass;
+  - the node is unmounted: `onMount` runs again on its first frame once attached again, after its `wait(...)` conditions pass;
   - the built-in nodes end their own interactions: a text field loses its focus (with its `onFocus` callbacks), a selector closes, a scrollbar, a slider cursor or a model viewer stops following the mouse, a `ReorderableFlexNode` drops the dragged child on its current slot, and a `ResourcePlayerNode` releases its video and starts its resource again from the beginning on its next draw.
 - The node keeps its configuration: position, size, scroll offsets, callbacks, effects, layers, wait conditions and the animators given to `animate(...)`, which it stops updating while detached.
-- `UI.reload()` and the dev reload shortcut rebuild the whole tree: the old nodes are detached and the UI's `init()` runs again.
+- `UI.reload()` and the dev reload shortcut rebuild the whole tree: the current nodes are detached and the UI's `init()` runs again.
 - `getUpdateCount()` counts the loads of the node (`0` before the first one), and `getRenderTime()` is the time (ns) of the last `render`, subtree included.
 
 ### Waiting and skeletons
@@ -504,7 +509,7 @@ These getters expose the node's internal bookkeeping. They are read-only views f
 | `getLastKey()`, `getLastCharacter()`, `getLastKeyTime()` | Last key event dispatched to the node and its clock time (ms). |
 | `getLastWidth()`, `getLastHeight()` | Size seen on the previous frame (anchor bookkeeping). |
 | `isMoving()`, `getRestX()`, `getRestY()`, `getDrawnX()`, `getDrawnY()` | Pixel-alignment bookkeeping of a moving node. |
-| `getOverflowArea()`, `overflowArea(Node)` | The ancestor whose overflow clips this node, set while drawing. `remove(...)`, `clearChildren()` and an `append` that moves the node set it back to `null`, on the node and on the descendants that inherited the same area, so the former container no longer clips or hides them. |
+| `getOverflowArea()`, `overflowArea(Node)` | The ancestor whose overflow clips this node, set while drawing. `remove(...)`, `clearChildren()` and an `append` that moves the node set it back to `null`, on the node and on the descendants that inherited the same area, so the former container stops clipping or hiding them. |
 | `getAnimatorMap()`, `getHoverAnimator()`, `getHoverElementList()`, `getHoverSupplierList()` | Registered animators and hover state. |
 | `getDragX()`, `getDragY()`, `getStartDragX()`, `getStartDragY()`, `getTargetDragX()`, `getTargetDragY()` | Drag bookkeeping. |
 
@@ -518,10 +523,9 @@ These getters expose the node's internal bookkeeping. They are read-only views f
 
 ## See also
 
-- [Reactive Properties](../state/reactive-properties.md)
-- [Callbacks](../interactions/callbacks.md)
-- [ContainerNode](layout/container.md)
-- [FlexNode](layout/flex.md)
+- Next: [Callbacks](../interactions/callbacks.md)
+- [Nodes and the Node Tree](../concepts/nodes.md): the basics this page builds on.
+- [Layout](../essentials/layout.md): the parent helpers, `FlexNode`, `GridNode` and `overflow` in practice.
+- [Reactive Properties](../state/reactive-properties.md): what a setter follows.
 - [Overflow and Scrolling](layout/overflow-and-scroll.md)
-- [Custom Nodes](custom-nodes.md)
-- [Core Concepts](../getting-started/core-concepts.md)
+- [Custom Nodes](custom-nodes.md): overriding the hooks of the lifecycle.

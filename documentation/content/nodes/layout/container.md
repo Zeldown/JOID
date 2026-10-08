@@ -1,6 +1,6 @@
 # ContainerNode
 
-`ContainerNode` (`dev.joid.lib.ui.node.impl.structure.container`) is an invisible node that groups children under a common origin. Use it to move, hide, clip, scroll, rebuild or load a section of a UI as one block, without drawing anything for the group itself.
+`ContainerNode` (`dev.joid.lib.ui.node.impl.structure.container`) is an invisible node that groups children under a common origin. Use it to move, hide, clip, scroll, rebuild or load a section of a UI as one block, without drawing anything for the group itself. It opens the layout nodes of the Components section; [Layout](../../essentials/layout.md) introduced it.
 
 ```java
 ContainerNode
@@ -18,11 +18,13 @@ The children are placed relative to the container: a child at (240, 0) sits at (
 
 ## Moving and hiding a group with x and visible
 
-Every [Node](../node-fundamentals.md) setter applied to the container applies to the whole group: `x(...)` and `y(...)` move it, `visible(...)` hides it, `enabled(...)` disables its children. Like every setter, they accept a native expression that reads [signals](../../state/signals.md) and follow it. Here `moved` is a `BooleanSignal` field of the UI and `label` a `TextInfo` built from a loaded font (see [Text and TextInfo](../../text/text-and-textinfo.md)).
+Every node setter applied to the container applies to the whole group, since children are placed relative to their parent ([Nodes and the Node Tree](../../concepts/nodes.md)): `x(...)` and `y(...)` move it, `visible(...)` hides it, `enabled(...)` disables its children. Like every setter, they accept an expression that reads signals and follow it ([Signals and Reactivity](../../concepts/signals.md)). Here `moved` is a `BooleanSignal` field of the UI and `info` a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)).
 
 ```java
 private final BooleanSignal moved = BooleanSignal.of(false);
+```
 
+```java
 ContainerNode
 .create(100, 100, 460, 200)
 .x(this.moved.get() ? 600D : 100D)
@@ -37,7 +39,7 @@ RectNode
 .color(Color.GRAY)
 .onClick((node, mouseX, mouseY, clickType) -> this.moved.toggle())
 .body(button -> {
-	TextNode.create(80, 25).text(Text.create("Move", this.label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
+	TextNode.create(80, 25).text(Text.create("Move", this.info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
 })
 .attach(this);
 ```
@@ -62,11 +64,13 @@ RectNode
 
 ## Rebuilding a section with watch
 
-A container is the natural root of a section rebuilt from data. `watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)` detaches the children and runs the `body` again each time the signal changes (`WatchProperty` is in `dev.joid.lib.ui.node.property.watch`, `ListSignal` in `dev.joid.lib.utils.signal.impl.iterable`). Use `watch` only when the structure changes; a text, color or position that depends on a signal goes through a setter (see [Watching Signals](../../state/watch.md)).
+A container is the natural root of a section rebuilt from data. As in [Layout](../../essentials/layout.md#rebuilding-a-list-with-watch), `watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)` detaches the children and runs the `body` again each time the signal changes (`WatchProperty` is in `dev.joid.lib.ui.node.property.watch`, `ListSignal` in `dev.joid.lib.utils.signal.impl.iterable`). Use `watch` only when the structure changes; a text, color or position that depends on a signal goes through a setter.
 
 ```java
 private final ListSignal<String> items = new ListSignal<>(Arrays.asList("Item 1", "Item 2"));
+```
 
+```java
 ContainerNode
 .create(100, 100, 400, 300)
 .watch(this.items, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
@@ -90,7 +94,7 @@ RectNode
 .color(Color.GRAY)
 .onClick((node, mouseX, mouseY, clickType) -> this.items.add("Item " + (this.items.size() + 1)))
 .body(button -> {
-	TextNode.create(80, 25).text(Text.create("Add", this.label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
+	TextNode.create(80, 25).text(Text.create("Add", this.info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
 })
 .attach(this);
 ```
@@ -101,7 +105,7 @@ To place the rows without computing `y`, build them in a [FlexNode](flex.md) ins
 
 ## Loading a section with wait and skeleton
 
-`wait(...)` keeps a node unmounted until its condition holds. With a `skeleton(...)` node, the skeleton is drawn in place of the children until then; without one, each child draws its own placeholder (`drawSkeleton`), while the container itself draws nothing (see [Watching Signals](../../state/watch.md) for `wait` and `onMount`).
+`wait(...)` holds a node back until a condition holds: a delay (`wait(2L, TimeUnit.SECONDS)`), a signal that holds a value (`wait(signal)`, for data that loads), or a predicate on the node. Until then the node and its children are not mounted: they are attached, but each draws a loading placeholder instead of itself. `skeleton(...)` gives the container one placeholder node of your own, drawn in place of the children while it waits; without one, each child draws its default placeholder, a rectangle pulsing in `Color.LOADING`, while the container itself draws nothing. [Watching Signals](../../state/watch.md) covers `wait` and `onMount` in depth.
 
 ```java
 ContainerNode
@@ -114,13 +118,15 @@ ContainerNode
 .attach(this);
 ```
 
+![A pulsing gray placeholder fills the area for two seconds, then the white content appears](../../images/container-skeleton.gif "The skeleton is drawn while the container waits, then the body appears.")
+
 ## Clipping and scrolling a group
 
 A container has bounds even though it draws nothing: they are used for hover, clipping and scrolling. `overflow(OverflowProperty.HIDDEN)` clips the children to them, `overflow(OverflowProperty.SCROLL)` makes them scroll with the wheel. See [Overflow and Scrolling](overflow-and-scroll.md).
 
 ## Extending ContainerNode
 
-`ContainerNode` is not final and its constructor is `protected`: extend it to build a composite node with its own factory. Its `draw` and `drawSkeleton` draw nothing and can be overridden.
+`ContainerNode` is not final and its constructor is `protected`: extend it to build a composite node with its own factory, as the kit classes of [Building a UI Kit](../../components/ui-kit.md) do. Its `draw` and `drawSkeleton` draw nothing and can be overridden.
 
 ```java
 public class CardNode extends ContainerNode {
@@ -152,7 +158,7 @@ See [Custom Nodes](../custom-nodes.md) for the full contract.
 | `ContainerNode(double x, double y, double width, double height)` | Protected constructor, for subclasses. |
 | `draw(double mouseX, double mouseY)`, `drawSkeleton(double mouseX, double mouseY)` | Draw nothing. Overridable. |
 
-Everything else is inherited from [Node](../node-fundamentals.md).
+Everything else is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
 
 ## Pitfalls
 
@@ -162,9 +168,9 @@ Everything else is inherited from [Node](../node-fundamentals.md).
 
 ## See also
 
-- [Node Fundamentals](../node-fundamentals.md)
-- [FlexNode](flex.md)
+- Next: [FlexNode](flex.md)
+- [Layout](../../essentials/layout.md)
 - [GridNode](grid.md)
 - [Overflow and Scrolling](overflow-and-scroll.md)
 - [Watching Signals](../../state/watch.md)
-- [Custom Nodes](../custom-nodes.md)
+- [Node Fundamentals](../node-fundamentals.md)

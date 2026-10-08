@@ -1,6 +1,6 @@
 # SwitchNode
 
-`SwitchNode` (`dev.joid.lib.ui.node.impl.structure.sw`) holds an ordered list of named states and the current one. It is abstract and has no input of its own: your subclass builds its children (segments, arrows, labels) in `init(UI)`, and these children select a state when clicked. Use it for segmented controls and "previous / next" pickers.
+`SwitchNode` (`dev.joid.lib.ui.node.impl.structure.sw`) holds an ordered list of named states and the current one. It is abstract and has no input of its own: your subclass builds its children (segments, arrows, labels) in `init(UI)`, and these children select a state when clicked. Use it for segmented controls and "previous / next" pickers. `init(UI)` is the hook a node runs when it loads, as in the switch of [Building a UI Kit](../../components/ui-kit.md#switch).
 
 ```java
 public class SegmentedSwitchNode extends SwitchNode {
@@ -41,7 +41,7 @@ public class SegmentedSwitchNode extends SwitchNode {
 }
 ```
 
-Then, in `init()` of your UI (`this.info` is a `TextInfo` built from a loaded font, see [Text and TextInfo](../../text/text-and-textinfo.md)):
+Then, in `init()` of your UI (`this.info` is a `TextInfo` built from a loaded font, see [Text](../../essentials/text.md)):
 
 ```java
 SegmentedSwitchNode
@@ -53,7 +53,7 @@ SegmentedSwitchNode
 
 ![The cursor clicks Medium, High, then Low in a three-segment switch: the white segment follows the clicks](../../images/switch-click.gif "Each click calls state(...) on the switch; the segment of the current state turns white.")
 
-Each segment selects its state with `super.state(state)` and picks its color from `getState()`. `getState()` reads the signals of the switch, so `Signal.from(() -> ...)` follows it and recolors the segments when the state changes. A native expression (`color(super.getState().equals(state) ? ... : ...)`) would stay fixed here: the loop variable `state` decides the condition (see [Reactive Properties](../../state/reactive-properties.md)).
+Each segment selects its state with `super.state(state)` and picks its color from `getState()`. `getState()` reads the signals of the switch, so `Signal.from(() -> ...)` follows it and recolors the segments when the state changes. A native expression (`color(super.getState().equals(state) ? ... : ...)`) would stay fixed here: the loop variable `state` decides the condition (see [Signals and Reactivity](../../concepts/signals.md)).
 
 ## Defining the states with states
 
@@ -63,7 +63,7 @@ Each segment selects its state with `super.state(state)` and picks its color fro
 - `onChange` runs when the name of the current state changes (from no state, or from another name).
 - A different list rebuilds the children (see [Building the children in init](#building-the-children-in-init)); a list equal to the current one keeps them, and the switch still goes back to its first state.
 
-`states(Supplier<List<String>>)` follows a list that changes, here with a [signal](../../state/signals.md):
+`states(Supplier<List<String>>)` follows a list that changes, here with a [signal](../../concepts/signals.md):
 
 ```java
 private final BooleanSignal expert = BooleanSignal.of(false);
@@ -130,7 +130,7 @@ public void init() {
 
 ![Diagram: a click, a setter or a bound signal gives a new value; an equal value stops there; PRE callbacks can cancel; then the value is stored and the signal written; then the POST callbacks run onChange](../../images/diagram-control-change.png "How every control of this family applies a new value.")
 
-Cancel the context in the `pre(...)` phase to keep the current state:
+Cancel the context in the `pre(...)` phase to keep the current state, in an anonymous class of the callback interface as for [CheckboxNode](checkbox.md#reacting-with-onchange):
 
 ```java
 SegmentedSwitchNode
@@ -158,7 +158,7 @@ A click on "High" changes nothing. Several `onChange` callbacks run in the order
 
 ## Building the children in init
 
-The switch builds its children through your `init(UI)`, once when it loads. It then [watches](../../state/watch.md) its list of states with `WatchProperty.CLEAR_CHILDREN` and `init(UI)`: each time the list changes, every child is removed and `init(UI)` runs again for the new states. A change of the current state rebuilds nothing.
+The switch builds its children through your `init(UI)`, once when it loads. It then [watches](../../essentials/layout.md#rebuilding-a-list-with-watch) its list of states with `WatchProperty.CLEAR_CHILDREN` and `init(UI)`: each time the list changes, every child is removed and `init(UI)` runs again for the new states. A change of the current state rebuilds nothing.
 
 ![Diagram: states(...) changes getStateList(), which removes the children and runs init(UI) again; index(...), state(...), a click or a bound signal change getStateIndex(), the children stay and their followed values read getState()](../../images/diagram-switch-rebuild.png "The list of states rebuilds the children; the current state only updates them.")
 
@@ -225,8 +225,8 @@ The setters return the node itself, typed by the generic return of the fluent AP
 
 ## See also
 
+- Next: [SelectorNode](selector.md)
 - [ToggleNode](toggle.md)
-- [SelectorNode](selector.md)
 - [CheckboxNode](checkbox.md)
 - [Watching Signals](../../state/watch.md)
 - [Reactive Properties](../../state/reactive-properties.md)

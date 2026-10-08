@@ -15,7 +15,9 @@ public class UIShop extends UI {
 }
 ```
 
-![The demo teapot with its neutral ornamented texture, seen from the side, lit from the viewer](../images/models-demo.png "The model is centered on (300, 200), one model unit is 120 UI units")
+![The demo teapot with its neutral ornamented texture, seen from the side, lit from the viewer](../images/models-demo.png "The model is centered on (300, 200), one model unit is 120 canvas units")
+
+`(x, y)` and the size are units of the 1920×1080 virtual canvas, like every drawing (see [The Virtual Canvas](../concepts/canvas.md)); the model keeps its own units, scaled by the size you give.
 
 The model used on this page is the demo model of JOID (`assets/demo/models/model.obj`): a teapot swept from the curves of the Utah teapot, 2 × 0.98 × 1.24 units centered on its origin, with a smooth normal and a texture coordinate on every vertex, and an ornamented texture.
 
@@ -40,7 +42,7 @@ Around `model.render()`, `drawModel(x, y, sizeX, sizeY, sizeZ, model)`:
 3. renders the model;
 4. clears the depth buffer again, then pops the render state and the matrix, even when `render()` throws.
 
-The depth test keeps, for every pixel, the face nearest to the viewer: a closed model shows its front faces whatever the order of its faces in the file, also inside the framebuffer of an effect. To turn a model, wrap the call in a rotation of the render bridge, or let a [ModelNode](../nodes/visual/model.md) do it with `rotationYaw` and `rotationPitch`.
+The depth test keeps, for every pixel, the face nearest to the viewer: a closed model shows its front faces whatever the order of its faces in the file, also inside the framebuffer of an effect. To turn a model, let a [ModelNode](../nodes/visual/model.md) do it with `rotationYaw` and `rotationPitch`, or wrap the call in a rotation (see [Transformations and Framebuffers](transformations.md)).
 
 ## Lighting and smooth shading
 
@@ -172,13 +174,13 @@ public class TriangleModel implements IDrawableModel {
 }
 ```
 
-With +Y up, the third vertex is the top of the triangle, and the normal +Z faces the viewer. The `Tessellator` is described on [Transformations and Framebuffers](transformations.md).
+`Tessellator` (`dev.joid.lib.render.tessellator`) collects vertices between `start(mode)` and `draw()`, then sends them to the render bridge in one draw call; `setColor` and `setNormal` apply to the vertices added after them. With +Y up, the third vertex is the top of the triangle, and the normal +Z faces the viewer. The next page, [Transformations and Framebuffers](transformations.md#building-geometry-with-tessellator), covers the tessellator in full.
 
 ## Reference
 
 | Method | Description |
 |---|---|
-| `drawModel(double x, double y, double size, IDrawableModel model)` | Draws the model with its origin on `(x, y)`; one model unit is `size` UI units on every axis. |
+| `drawModel(double x, double y, double size, IDrawableModel model)` | Draws the model with its origin on `(x, y)`; one model unit is `size` canvas units on every axis. |
 | `drawModel(double x, double y, double sizeX, double sizeY, double sizeZ, IDrawableModel model)` | Same, with a scale per axis. |
 | `DrawModel.getInstance()` | The instance behind `DrawUtils.MODEL`. |
 
@@ -190,7 +192,7 @@ With +Y up, the third vertex is the top of the triangle, and the normal +Z faces
 
 ## See also
 
+- Next: [Transformations and Framebuffers](transformations.md)
 - [ModelNode and ModelViewerNode](../nodes/visual/model.md) — models as nodes, rotation and zoom.
 - [Resources](../resources/resources.md) — the texture of a model.
-- [Transformations and Framebuffers](transformations.md) — the render bridge and the tessellator.
 - [Drawing Overview](draw-utils.md) — `DrawUtils` and the drawing context.

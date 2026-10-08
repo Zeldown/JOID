@@ -41,6 +41,7 @@ The libraries you declare yourself (Guava, Gson, Apache Commons, vecmath, LWJGL)
 
 ## See also
 
+- Next: [The Virtual Canvas](../concepts/canvas.md), the first of the Core Concepts
 - [Introduction](introduction.md)
 - [Installation](installation.md)
-- [Developer Tools](dev-tools.md)
+- [Developer Tools](../concepts/dev-tools.md)

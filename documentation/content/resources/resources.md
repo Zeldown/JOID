@@ -1,6 +1,6 @@
 # Resources
 
-A `Resource` (`dev.joid.lib.resource`) is an image, an animation, a vector graphic or a video that JOID decodes into textures and draws. You create one from a URL, a file, a stream or any other source with `Resource.of(...)`: JOID detects the format from the content, decodes it the first time it is drawn, and shares the decoded data between every `Resource` of the same source.
+A `Resource` (`dev.joid.lib.resource`) is an image, an animation, a vector graphic or a video that JOID decodes into textures and draws. You create one from a URL, a file, a stream or any other source with `Resource.of(...)`: JOID detects the format from the content, decodes it the first time it is drawn, and shares the decoded data between every `Resource` of the same source. This page opens the Resources and Media guide: it goes past what [Images and Media](../essentials/media.md) showed, with every input, option and stage of a resource.
 
 ```java
 public class UIGallery extends UI {
@@ -136,7 +136,7 @@ Resource.of("https://placehold.co/800x400/DDDDDD/999999.png", resource -> System
 
 ## Resources in error
 
-A source that cannot be read never throws: a missing file, a URL that does not answer, a corrupted file, a HEIF or AVIF image, a video FFmpeg cannot open. The resource fails instead: `isFailed()` turns `true`, `isLoaded()` stays `false`, and it is drawn empty (no skeleton, no texture). In [dev mode](../getting-started/dev-tools.md), `ResourceNode`, `ResourcePlayerNode` and `DrawUtils.RESOURCE` draw a magenta and black checkerboard over the whole box instead, so a missing image is easy to spot.
+A source that cannot be read never throws: a missing file, a URL that does not answer, a corrupted file, a HEIF or AVIF image, a video FFmpeg cannot open. The resource fails instead: `isFailed()` turns `true`, `isLoaded()` stays `false`, and it is drawn empty (no skeleton, no texture). In [dev mode](../concepts/dev-tools.md), `ResourceNode`, `ResourcePlayerNode` and `DrawUtils.RESOURCE` draw a magenta and black checkerboard over the whole box instead, so a missing image is easy to spot.
 
 ```java
 ResourceNode.create(100, 100, 200, 120).resource(Resource.of("https://placehold.co/200x120/DDDDDD/999999.png")).attach(this);
@@ -183,7 +183,7 @@ private static final ResourceBuilder BLOCKING_ICONS = Textures.ICONS.copy().bloc
 
 ## Cache and unique ids
 
-A builder keeps the decoded data (`ResourceData`) in a Guava `Cache<String, ResourceData>`, keyed by the unique id of the input. Two `of` calls with the same id return two `Resource` objects over the same data: the source is decoded and uploaded once, and each `Resource` keeps its own options.
+A builder keeps the decoded data (`ResourceData`) in a `Cache<String, ResourceData>` of Guava (`com.google.common.cache`, one of the libraries JOID depends on, see [Installation](../getting-started/installation.md)), keyed by the unique id of the input. Two `of` calls with the same id return two `Resource` objects over the same data: the source is decoded and uploaded once, and each `Resource` keeps its own options.
 
 ```java
 final Resource first = Resource.of(new File("images/logo.png"));
@@ -235,7 +235,7 @@ Without `clear()`, the data and its textures live as long as a `Resource` or a c
 
 ## Binding a resource in your own drawing
 
-These methods let your draw code, a shader or an effect sample a resource. `DrawUtils.RESOURCE` calls them for you.
+These methods let your draw code, a shader or an effect sample a resource. `DrawUtils.RESOURCE` calls them for you; you need them only for the drawing of the Advanced section ([Drawing Resources](../drawing/resources.md), [Custom Shaders](../shaders/custom-shaders.md)).
 
 | Method | Effect |
 |---|---|
@@ -313,8 +313,8 @@ These methods let your draw code, a shader or an effect sample a resource. `Draw
 
 ## See also
 
-- [Assets](assets.md) — where the bytes come from.
+- Next: [Assets](assets.md) — where the bytes come from.
+- [Images and Media](../essentials/media.md) — the first steps with resources.
 - [Supported Formats](formats.md) — what JOID decodes and how it detects it.
 - [Playback, Video and Audio](playback.md) — controlling animations and videos.
-- [Custom Formats and Decoders](custom-formats.md) — extending the pipeline.
 - [ResourceNode](../nodes/visual/resource.md) and [Drawing Resources](../drawing/resources.md) — displaying resources.

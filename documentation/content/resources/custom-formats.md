@@ -1,6 +1,6 @@
 # Custom Formats and Decoders
 
-Every step of the resource pipeline is open: you can add a format JOID does not detect, write a decoder for a new kind of content, build animations from your own frames, or accept a new kind of in-memory input. Use this page when [Supported Formats](formats.md) does not cover your content.
+Every step of the resource pipeline is open: you can add a format JOID does not detect, write a decoder for a new kind of content, build animations from your own frames, or accept a new kind of in-memory input. Use this page when [Supported Formats](formats.md) does not cover your content; it closes the Resources and Media guide.
 
 ```java
 ResourceFormat.register(new PpmResourceFormat());
@@ -64,7 +64,7 @@ An `IResourceDecoder` (`dev.joid.lib.resource.dto.decoder`) turns an asset into 
 | Method | When | Thread | What to do |
 |---|---|---|---|
 | `init(ResourceData)` | When the `ResourceData` gets this decoder. | the thread that creates the data | Nothing heavy: the content may never be drawn. |
-| `prepare(ResourceData)` | At the first draw, before `decode`. | render thread | Create the textures with `BridgeHandler.RENDER.get().createTexture()` and give the data a placeholder, usually a 1×1 transparent texture, with `resource.texture(...)`. |
+| `prepare(ResourceData)` | At the first draw, before `decode`. | render thread | Create the textures with `BridgeHandler.RENDER.get().createTexture()`, which asks the render bridge of the backend for an empty GPU texture (see [Bridges and Backends](../concepts/bridges.md)), and give the data a placeholder, usually a 1×1 transparent texture, with `resource.texture(...)`. |
 | `decode(ResourceData)` | Right after `prepare`. | `ResourceAsync/<n>` when the resource is asynchronous, render thread when it is blocking | Read the asset, call `resource.width(...)` and `resource.height(...)`, and store ARGB pixels with `resource.data(new int[][] {pixels})`. Never touch the GPU here. |
 | `upload(ResourceData)` | At the first draw after `decode`, when the data holds pixels. | render thread | Allocate the textures at the decoded size and upload the pixels. The data then drops its pixels and turns `isUploaded()` to `true`. |
 | `update(ResourceData)` | At every draw, after `prepare` and `upload`. | render thread | Advance an animation, swap the displayed texture with `resource.texture(...)`, upload work done in the background. |
@@ -342,6 +342,7 @@ A resolver creates its resource through `builder.compute`, so the cache and the 
 
 ## See also
 
+- Next: [Text and TextInfo](../text/text-and-textinfo.md) — the Text section.
 - [Supported Formats](formats.md) — the built-in formats and their detection.
 - [Resources](resources.md) — builders, cache and lifecycle.
 - [Assets](assets.md) — asset locators, the step before formats.

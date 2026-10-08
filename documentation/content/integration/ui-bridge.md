@@ -1,6 +1,6 @@
 # UI Bridge
 
-The UI bridge connects your application loop to JOID: it holds the opened UIs, receives the mouse and keyboard events of your window, and updates and draws the UIs every frame. You write one by extending `UIBridge` (`dev.joid.lib.bridge.ui`), which already dispatches the events, draws the UIs in order and decides which UI is on top; you decide how UIs open and close and how text tooltips look.
+You wrote a first UI bridge, `AppUIBridge`, in the [Quick Start](../getting-started/quick-start.md), and [Bridges and Backends](../concepts/bridges.md) explained its role. This page is its full contract. The UI bridge connects your application loop to JOID: it holds the opened UIs, receives the mouse and keyboard events of your window, and updates and draws the UIs every frame. You write one by extending `UIBridge` (`dev.joid.lib.bridge.ui`), which already dispatches the events, draws the UIs in order and decides which UI is on top; you decide how UIs open and close and how text tooltips look.
 
 ## A complete UI bridge
 
@@ -78,7 +78,7 @@ This bridge stacks the UIs: `JOID.open` puts a UI on top of the others, and `JOI
 
 ## Driving the bridge from your loop
 
-Register the bridge after the backend, load JOID, then forward the events of your window and call `update()` and `draw()` once per frame. This loop uses GLFW with the [LWJGL 3 backend](backends.md):
+Register the bridge after the backend, load JOID, then forward the events of your window and call `update()` and `draw()` once per frame. This loop uses GLFW with the [LWJGL 3 backend](backends.md); it is the loop of the `Main` class of the Quick Start, moved into a class of its own:
 
 ```java
 public final class AppLoop {
@@ -236,7 +236,11 @@ render.ortho(0D, width, height, 0D, 0D, 10000D);
 render.viewport(0, 0, width, height);
 ```
 
-Each UI then draws in its own projection, fitted to the [1920×1080 virtual canvas](../ui/view-and-scaling.md). `draw()` works in this order:
+Each UI then draws in its own projection: positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. The bridge only handles window pixels; every UI does the conversion.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+See [The Virtual Canvas](../concepts/canvas.md) and [View and Scaling](../ui/view-and-scaling.md). `draw()` works in this order:
 
 - it frees the textures and framebuffers that nothing uses;
 - it sorts the UI list again when a `zlevel` changed (`ui.getData().setZlevel(...)` applies at the next frame);
@@ -293,9 +297,9 @@ A UI with an out transition starts it and returns `false` from `onClose()`, so t
 
 A node with text tooltips calls `drawHover` of the bridge of its UI while it is hovered and its UI is on top. The call happens inside the drawing of the UI:
 
-- coordinates are in UI units, so `mouseX` and `mouseY` are the mouse position in the UI;
+- coordinates are in canvas units, so `mouseX` and `mouseY` are the mouse position on the canvas of the UI;
 - the depth test is disabled, and the render state is restored afterward;
-- `ui.getView().toUiX(...)` and `toUiY(...)` convert window pixels, for example `ui.getWidth()`, into UI units to keep the tooltip inside the window.
+- `ui.getView().toUiX(...)` and `toUiY(...)` convert window pixels, for example `ui.getWidth()`, into canvas units to keep the tooltip inside the window.
 
 Tooltips made of nodes (`NodeHoverElement`, `CustomHoverElement`) draw themselves and do not call `drawHover`. See [Hover and Tooltips](../interactions/hover.md).
 
@@ -367,8 +371,8 @@ JOID.open(new UISettings());
 
 ## See also
 
+- Next: [Backends](backends.md)
 - [Bridges](bridges.md)
-- [Backends](backends.md)
 - [Opening and Closing UIs](../ui/managing-uis.md)
 - [View and Scaling](../ui/view-and-scaling.md)
 - [Mouse and Keyboard](../interactions/mouse-and-keyboard.md)

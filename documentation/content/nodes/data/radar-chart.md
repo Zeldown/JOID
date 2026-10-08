@@ -50,7 +50,7 @@ public class StatsRadarNode extends RadarChartNode<RadarChartData> {
 }
 ```
 
-Then create it with its values (`this.info` is a `TextInfo` built from a loaded font, see [Text and TextInfo](../../text/text-and-textinfo.md)):
+Then create it with its values (`this.info` is a `TextInfo` built from a loaded font, see [Text](../../essentials/text.md)):
 
 ```java
 StatsRadarNode
@@ -65,13 +65,13 @@ StatsRadarNode
 
 ![A white pentagon with a gray polygon inside: Speed and Grip reach the edge, Power and Armor stop at 4/5, Range at 3/5](../../images/chart-radar.png "Each value is drawn as a fraction of getMax(): the largest values touch the frame.")
 
-The first spoke points up and the next ones turn clockwise. `drawPolygon` fills a fan from its first point, so the value polygon starts at the center (`values[0]`) and closes on its first spoke: any shape of values fills correctly. `RadarChartData` is the nested class `RadarChartNode.RadarChartData`; `Vector2d` comes from `javax.vecmath`. The drawing calls are described in [Shapes](../../drawing/shapes.md), the constructor and factory contract in [Custom Nodes](../custom-nodes.md).
+The first spoke points up and the next ones turn clockwise. `drawPolygon` fills a fan from its first point, so the value polygon starts at the center (`values[0]`) and closes on its first spoke: any shape of values fills correctly. `RadarChartData` is the nested class `RadarChartNode.RadarChartData`; `Vector2d` comes from `javax.vecmath`. `drawPolygon`, `drawText` and the other `DrawUtils` calls are all listed in [Shapes](../../drawing/shapes.md) and [Drawing Text](../../drawing/text.md); the constructor and the factory follow the contract of [Building a UI Kit](../../components/ui-kit.md).
 
 ## Values with RadarChartData
 
 `RadarChartData.create(label, value)` creates a value with its label; `RadarChartData.create(label)` creates a value still empty. `data(...)` appends a value to the node: the spokes follow the order of the calls.
 
-`value(...)` and `label(...)` set the value and the label later. Like node setters, they take a plain value, an expression that reads [signals](../../state/signals.md), a signal or a `Supplier`, and the chart reads them on every frame:
+`value(...)` and `label(...)` set the value and the label later. Like node setters, they take a plain value, an expression that reads [signals](../../concepts/signals.md), a signal or a `Supplier`, and the chart reads them on every frame. `this.white` is a white `TextInfo` for the label of the button:
 
 ```java
 private final IntegerSignal speed = IntegerSignal.of(2);
@@ -129,7 +129,7 @@ The list is read on every frame: the next frame draws the new spokes. `getDataLi
 
 ## Custom values
 
-`DATA` lets a radar carry more than a label and a number per spoke. Extend `RadarChartData` (its constructors are protected) and type your node with it:
+`DATA` lets a radar carry more than a label and a number per spoke. Extend `RadarChartData` (its constructors are protected) and type your node with it (`@Getter` is the Lombok annotation that generates `getColor()`):
 
 ```java
 @Getter
@@ -188,6 +188,7 @@ The setters return the object itself, typed by the generic return of the fluent 
 
 ## See also
 
+- Next: [Node Fundamentals](../node-fundamentals.md), the first of the Guides
 - [ChartNode](chart.md)
 - [Custom Nodes](../custom-nodes.md)
 - [Shapes](../../drawing/shapes.md)

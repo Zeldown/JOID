@@ -205,7 +205,7 @@ Use them without declaring them; JOID detects which ones your code uses (comment
 
 | Identifier | Type | Kind | Stages | Content |
 |---|---|---|---|---|
-| `aPosition` | `vec3` | attribute | vertex | Vertex position, in the coordinates given to the draw call (UI units of the current drawing space). |
+| `aPosition` | `vec3` | attribute | vertex | Vertex position, in the coordinates given to the draw call (canvas units of the current drawing space). |
 | `aTexCoord` | `vec2` | attribute | vertex | Vertex texture coordinates. |
 | `aColor` | `vec4` | attribute | vertex | Vertex color, or the current render color when the vertices have none. |
 | `aNormal` | `vec3` | attribute | vertex | Vertex normal (3D models). |
@@ -251,12 +251,12 @@ The built-in shaders are `ShaderImpl` singletons in `dev.joid.lib.shader.impl`, 
 
 | Shader | Methods | Purpose |
 |---|---|---|
-| `RoundedShader` | `inst()`; `static use(float radius, float x1, float y1, float x2, float y2, Runnable runnable)`; `bind(float radius, float x1, float y1, float x2, float y2)`; `bind(..., RoundedShaderType type)`; `stroke(float stroke)`; `aligned(boolean aligned)`; `gradient(ColorGradient gradient, Vector4f canvas)` | Rounded rectangle mask: `x1, y1, x2, y2` is the inner rectangle (the box minus the radius on each rounded side), in UI units. `stroke(...)` keeps only an outline of that width inside the edge; `aligned(false)` smooths the edges for a rotated grid. Each `bind` sets the stroke back to `0F` and `aligned` back to `true`. `gradient(...)`, called after `bind`, multiplies the color by a gradient spread over `canvas` (`x1, y1, x2, y2`). |
-| `CircleShader` | `inst()`; `static use(float radius, float centerX, float centerY, Runnable runnable)`; `bind(float radius, float centerX, float centerY)`; `bind(..., RoundedShaderType type)`; `gradient(ColorGradient gradient, Vector4f canvas)` | Circle mask in UI units. The `runnable` of `use` may be `null`. |
+| `RoundedShader` | `inst()`; `static use(float radius, float x1, float y1, float x2, float y2, Runnable runnable)`; `bind(float radius, float x1, float y1, float x2, float y2)`; `bind(..., RoundedShaderType type)`; `stroke(float stroke)`; `aligned(boolean aligned)`; `gradient(ColorGradient gradient, Vector4f canvas)` | Rounded rectangle mask: `x1, y1, x2, y2` is the inner rectangle (the box minus the radius on each rounded side), in canvas units. `stroke(...)` keeps only an outline of that width inside the edge; `aligned(false)` smooths the edges for a rotated grid. Each `bind` sets the stroke back to `0F` and `aligned` back to `true`. `gradient(...)`, called after `bind`, multiplies the color by a gradient spread over `canvas` (`x1, y1, x2, y2`). |
+| `CircleShader` | `inst()`; `static use(float radius, float centerX, float centerY, Runnable runnable)`; `bind(float radius, float centerX, float centerY)`; `bind(..., RoundedShaderType type)`; `gradient(ColorGradient gradient, Vector4f canvas)` | Circle mask in canvas units. The `runnable` of `use` may be `null`. |
 | `ShadowShader` | `inst()`; `static use(float radius, float blur, float x1, float y1, float x2, float y2, Runnable runnable)`; `bind(float radius, float blur, float x1, float y1, float x2, float y2)` | Soft shadow of the rounded box `x1, y1, x2, y2`, as drawn by `drawShadow`. |
 | `BlurShader` | `inst()`; `bind(float radius, float dirX, float dirY, float texelW, float texelH)` | One-direction Gaussian blur of a texture: radius in pixels, direction `(1, 0)` or `(0, 1)`, texel size of the texture. |
-| `BorderShader` | `inst()`; `bind(float borderWidth, Color borderColor, float texelW, float texelH, boolean fill, int mode, float rectX1, float rectY1, float rectX2, float rectY2)` | Border around the opaque shape of a texture: width in pixels, `mode` is `BorderShader.BorderMode.OUT.ordinal()` or `IN.ordinal()`, rectangle in UI units. Gradient colors are supported. |
-| `GradientShader` | `inst()`; `static use(Vector2f startPos, Vector2f endPos, Color startColor, Color endColor, Runnable runnable, Vector4f canvas)`; `static use(..., boolean hasTexture, Runnable runnable, Vector4f canvas)` | Linear gradient from `startColor` at `startPos` to `endColor` at `endPos`, positions as fractions of `canvas` (`x1, y1, x2, y2`; raw UI coordinates when the canvas is empty), multiplied by the vertex color and, with `hasTexture`, by the texture. |
+| `BorderShader` | `inst()`; `bind(float borderWidth, Color borderColor, float texelW, float texelH, boolean fill, int mode, float rectX1, float rectY1, float rectX2, float rectY2)` | Border around the opaque shape of a texture: width in pixels, `mode` is `BorderShader.BorderMode.OUT.ordinal()` or `IN.ordinal()`, rectangle in canvas units. Gradient colors are supported. |
+| `GradientShader` | `inst()`; `static use(Vector2f startPos, Vector2f endPos, Color startColor, Color endColor, Runnable runnable, Vector4f canvas)`; `static use(..., boolean hasTexture, Runnable runnable, Vector4f canvas)` | Linear gradient from `startColor` at `startPos` to `endColor` at `endPos`, positions as fractions of `canvas` (`x1, y1, x2, y2`; raw canvas coordinates when the canvas is empty), multiplied by the vertex color and, with `hasTexture`, by the texture. |
 
 `RoundedShaderType` (`dev.joid.lib.shader.impl`) chooses the source color of `RoundedShader` and `CircleShader`: `AUTO` (texture × vertex color, the default), `TEXTURE` (texture only, premultiplied output, used by the pipeline passes) or `COLOR` (vertex color only).
 
@@ -336,6 +336,7 @@ Enum of the [built-in variables](#built-in-variables): `POSITION`, `TEXTURE_COOR
 
 ## See also
 
+- Next: [Bridges](../integration/bridges.md)
 - [Shader Pipeline](pipeline.md)
 - [Custom Effects](../styling/custom-effects.md)
 - [Custom Nodes](../nodes/custom-nodes.md)

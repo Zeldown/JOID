@@ -1,6 +1,6 @@
 # Tutorial 1: Project Setup
 
-This four-part tutorial builds one real application with JOID: a settings screen. In this first part you create the project, open a window on the LWJGL 3 backend, connect JOID to it, load a font and show a first UI. Each later part starts from the code of the previous one.
+This four-part tutorial puts what [Core Concepts](../concepts/canvas.md) and the Essentials taught together in one real application: a settings screen. In this first part you turn the [Quick Start](../getting-started/quick-start.md) project into that application: a new package, a bold face in the font, and a first screen in place of the counter. Each later part starts from the code of the previous one.
 
 ## What you build
 
@@ -17,36 +17,29 @@ By the end of [Tutorial 4](polish.md), the application shows a settings card cen
 
 JOID draws nothing by itself: every color, size and shape of this screen is written in the tutorial code, in the neutral grays of the documentation. Change the constants and the same code draws your own design.
 
-| Part | You learn |
+| Part | You put into practice |
 | --- | --- |
-| 1. Project Setup (this page) | The build, the backend, the UI bridge, the frame loop, loading a font, a first `UI`. |
-| [2. Building the Layout](layout.md) | Nodes, `attach` and `body`, `FlexNode`, sizes, anchors, text and images. |
-| [3. Interactivity and State](interactivity.md) | Callbacks, signals, values that follow them, input controls, a persistent store. |
-| [4. Polish](polish.md) | Gradients, effects, hover animation, tooltips, a tween, a transition. |
+| 1. Project Setup (this page) | The Quick Start project as a base, a font family, a first screen configured with `@UIData`. |
+| [2. Building the Layout](layout.md) | Nodes and `body`, the size helpers, anchors, nested `FlexNode` columns, text and an image. |
+| [3. Interactivity and State](interactivity.md) | `onClick`, signals followed by the nodes, controls you draw (a switch, a slider), a permanent store. |
+| [4. Polish](polish.md) | A gradient background, effects, hover animation, tooltips drawn by the UI, a `TweenAnimator`, a transition. |
 
 The application has these classes, all in the package `com.example.settings`:
 
 | Class | Role | Written in |
 | --- | --- | --- |
-| `Main` | Creates the window, registers the backend and the bridge, loads JOID and the theme, runs the frame loop. | Part 1 |
-| `AppUIBridge` | Hosts the open UIs and feeds them the input. | Part 1 |
-| `Theme` | The font and the colors of the application. | Part 1, grows in parts 2 and 4 |
+| `Main` | Creates the window, registers the backend and the bridge, loads JOID and the theme, runs the frame loop. | Quick Start, adapted in parts 1 and 3 |
+| `AppUIBridge` | Hosts the open UIs and feeds them the input. | Quick Start, unchanged |
+| `Theme` | The font and the colors of the application. | Quick Start, grows in parts 1, 2 and 4 |
 | `SettingsUI` | The settings screen. | Part 1, grows in every part |
 | `ToggleSwitchNode`, `VolumeSliderNode` | The on/off switch and the slider. | Part 3 |
 | `SettingsStore` | The settings values, saved to disk. | Part 3 |
 
-## Step 1: create the project
+## Step 1: start from the Quick Start project
 
-Set up a Gradle project with the `joid-lwjgl3-8.0.0-dev.jar` jar, the shared libraries and the LWJGL 3 modules, as in [Installation](../getting-started/installation.md). The `-dev` jar contains the developer tools, which help while you build the screen; you switch to `-prod` when you ship.
-
-Add the `application` plugin so that `gradle run` starts the program (Gradle 6.4 or later):
+Make a copy of the project of the [Quick Start](../getting-started/quick-start.md), with its `-dev` jar: the developer tools help while you build the screen, and you switch to the `-prod` jar when you ship. Move `Main`, `AppUIBridge` and `Theme` to the package `com.example.settings`, and delete `CounterUI`: `SettingsUI` takes its place in step 3. Then point the `application` block of `build.gradle` to the new main class:
 
 ```groovy
-plugins {
-	id 'java'
-	id 'application'
-}
-
 application {
 	mainClass = 'com.example.settings.Main'
 	if (System.getProperty('os.name').toLowerCase().contains('mac')) {
@@ -55,77 +48,91 @@ application {
 }
 ```
 
-Then put two kinds of files in the working directory of the program (the project folder when you use `gradle run`):
+Finally, put these files in the working directory of the program (the project folder when you use `gradle run`):
 
 | File | Content |
 | --- | --- |
 | `fonts/Montserrat-Regular.ttf`, `fonts/Montserrat-Bold.ttf` | A regular and a bold face of any TrueType or OpenType family. The tutorial uses Montserrat; any family works if you adjust the file names in `Theme`. |
 | `icons/settings.png` | A 48×48 icon (PNG or SVG), shown in the header from part 2. |
 
-## Step 2: write the UI bridge
+`AppUIBridge` does not change in the whole tutorial: it keeps every open UI in a list, as in the Quick Start. If your Quick Start runs on LWJGL 2 or Vulkan, keep its `Main` too: the changes of this tutorial are the same on every backend.
 
-JOID never decides where a UI lives: a UI bridge does. `UIBridge` (`dev.joid.lib.bridge.ui`) already dispatches the input, updates and draws its UIs, and tells which UI is on top; you decide how UIs are opened, added and removed. This bridge keeps every open UI in a list:
+## Step 2: add the bold face to Theme
+
+The screen has bold titles, so the font needs a bold face. Passing several files to `MsdfFontLoader.load(...)` builds one family, as [Text](../essentials/text.md) showed. Replace `load()` in `Theme`:
+
+```java
+public static void load() {
+	Theme.font = MsdfFontLoader.load(new File("fonts/Montserrat-Regular.ttf"), new File("fonts/Montserrat-Bold.ttf")).join();
+}
+```
+
+A `TextInfo` that asks for `FontWeight.BOLD` draws the bold face; any other weight picks the closest loaded face. The first launch generates the atlas of the new file, which takes a few seconds; later launches read the cache. The UIs keep reading the font with `Theme.getFont()`, so they keep a constructor without arguments, which `Ctrl+Shift+R` needs to recreate a UI.
+
+## Step 3: write the settings screen
+
+Create `SettingsUI` in place of `CounterUI`. In this first part it shows only its title:
 
 ```java
 package com.example.settings;
 
-import java.util.List;
-
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.ui.UIBridge;
-import dev.joid.lib.bridge.window.IWindowBridge;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.font.FontWeight;
+import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.utils.align.Align;
 
-public final class AppUIBridge extends UIBridge {
+@UIData(backgroundColor = "#18181B")
+public final class SettingsUI extends UI {
 
 	@Override
-	public void open(final UI ui) {
-		this.add(ui);
+	public void init() {
+		final TextInfo title = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 40F, Color.WHITE);
+		TextNode.create(960, 540).text(Text.create("Settings", title)).anchor(Align.CENTER).attach(this);
 	}
-
-	@Override
-	public void close(final UI ui) {
-		this.remove(ui);
-	}
-
-	@Override
-	public void add(final UI ui) {
-		final IWindowBridge window = BridgeHandler.WINDOW.get();
-		super.getUiList().add(ui);
-		ui.load(window.getWidth(), window.getHeight());
-	}
-
-	@Override
-	public void remove(final UI ui) {
-		super.getUiList().remove(ui);
-	}
-
-	@Override
-	public boolean canHandle(final UI ui) {
-		return true;
-	}
-
-	@Override
-	public boolean canHandle(final Class<? extends UI> clazz) {
-		return true;
-	}
-
-	@Override
-	public void drawHover(final UI ui, final List<String> lines, final double mouseX, final double mouseY) {}
 
 }
 ```
 
-- `ui.load(width, height)` sizes the UI to the window and, the first time, runs its `init()`, where the UI builds its nodes.
-- `canHandle` accepts every UI: this bridge hosts them all.
-- `drawHover` draws the text tooltips of the UIs of the bridge. This one draws nothing; in [part 4](polish.md) the settings screen draws its own tooltips.
-- `UIBridge` already implements `isOnTop(ui)`: the top UI is the first active and visible one from the top of the list, so this bridge does not override it.
+- `@UIData(backgroundColor = "#18181B")` replaces the default translucent dark gray behind the UI with an opaque near-black. The other options of a UI class are in [UIs and Their Lifecycle](../concepts/uis.md).
+- `TextInfo.create(font, weight, size, color)` is the bold style of the title. (960, 540) is the center of the canvas, and `anchor(Align.CENTER)` puts the center of the text there.
 
-See [UI Bridge](../integration/ui-bridge.md) for every method of a bridge.
+## Step 4: open it from Main
 
-## Step 3: load the font in a Theme
+`Main` keeps the window, the startup order, the input forwarding and the frame loop of the Quick Start, which [The Frame Loop](../concepts/frame-loop.md) explains. Only two lines change. The window gets its title:
 
-Text needs a font. `MsdfFontLoader.load(...)` (`dev.joid.lib.font.impl.msdf`) reads font files and returns a `CompletableFuture<MsdfFont>`; passing two faces loads them as one family. Keep the loaded font in a small `Theme` class that `Main` loads once, after JOID itself:
+```java
+final long window = GLFW.glfwCreateWindow(1280, 720, "Settings", 0L, 0L);
+```
+
+and `JOID.open` receives the settings screen:
+
+```java
+JOID.open(new SettingsUI());
+```
+
+The complete `Main` is at the end of this page.
+
+## Step 5: run it
+
+Run `gradle run`, or the `Main` class from your IDE (with `-XstartOnFirstThread` on macOS). You see a window filled with near-black, with "Settings" in bold white at its center:
+
+![A near-black window with the word Settings in bold white at its center](../images/tutorial-setup-window.png "The first UI: one centered text node on the UI background")
+
+Resize the window: the title stays centered and scales with it. Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+See [The Virtual Canvas](../concepts/canvas.md). Press `Escape`: the screen closes, as a UI does by default (its `closeable` option is `true`), and only the gray clear color of the loop remains.
+
+> TIP: Start JOID with `JOID.inst().setDevMode(true).load()` instead of `JOID.inst().load()` while you follow the next parts: `Ctrl+R` or `F5` then reruns `init()` after each change, and `F3` shows the developer panel. See [Developer Tools](../concepts/dev-tools.md).
+
+## The complete code
+
+`SettingsUI` is complete above. `Theme`:
 
 ```java
 package com.example.settings;
@@ -152,46 +159,7 @@ public final class Theme {
 }
 ```
 
-- `load()` runs once, from `Main`, after `JOID.inst().load()`. `join()` waits for the font: the first load of a font file generates its atlas into a cache folder, which takes a few seconds; later launches read the cache. See [How Fonts Work](../fonts/how-fonts-work.md).
-- The UIs read the font with `Theme.getFont()`. They keep a constructor without arguments, which the developer tools need to recreate a UI.
-- A `TextInfo` that asks for `FontWeight.BOLD` draws the bold face; any other weight picks the closest loaded face.
-
-## Step 4: write a first UI
-
-A screen extends `UI` (`dev.joid.lib.ui.core`) and builds its nodes in `init()`. In this first part the settings screen shows only its title:
-
-```java
-package com.example.settings;
-
-import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.utils.align.Align;
-
-@UIData(backgroundColor = "#18181B")
-public final class SettingsUI extends UI {
-
-	@Override
-	public void init() {
-		final TextInfo title = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 40F, Color.WHITE);
-		TextNode.create(960, 540).text(Text.create("Settings", title)).anchor(Align.CENTER).attach(this);
-	}
-
-}
-```
-
-- `@UIData` (`dev.joid.lib.ui.core.data`) configures the UI class. `backgroundColor` fills the whole window under the UI; the default is a translucent dark gray.
-- Positions are in units of the 1920×1080 virtual canvas: (960, 540) is its center, whatever the size of the window.
-- `TextInfo.create(font, weight, size, color)` describes how a text looks; `Text.create(text, info)` is the text itself; `TextNode` displays it. `anchor(Align.CENTER)` puts the center of the text on (960, 540) instead of its top-left corner.
-- `attach(this)` adds the node to the UI.
-
-## Step 5: create the window and run the frame loop
-
-`Main` creates an OpenGL 3.3 core window with GLFW, registers the LWJGL 3 backend and your bridge, loads JOID and the theme, opens the settings screen and runs the loop. The GLFW callbacks forward the input to the bridge.
+`Main`:
 
 ```java
 package com.example.settings;
@@ -353,47 +321,68 @@ public final class Main {
 }
 ```
 
-The startup order matters:
+`AppUIBridge`, the bridge of the Quick Start in the new package:
 
-1. The OpenGL context is made current and `GL.createCapabilities()` is called before `Backend.register(window)`, because the LWJGL 3 render bridge creates GPU objects right away. `Backend.register` registers the window, render and audio bridges.
-2. `BridgeHandler.UI.register(bridge)` makes your bridge the host of the UIs.
-3. `JOID.inst().load()` runs once, after the bridges are registered and before any UI opens.
-4. `Theme.load()` loads the font, after JOID.
-5. `resize()` sets a pixel projection and the viewport, then `bridge.load()` resizes every open UI, keeping its zoom. It runs again when the window is resized.
-6. `JOID.open(ui)` hands the UI to the bridge, which loads it.
+```java
+package com.example.settings;
 
-Each frame, the loop polls the input (forwarded to the bridge by the callbacks), calls `bridge.update()`, clears the screen and calls `bridge.draw()`. The key handling pairs each key press with the character GLFW reports right after it, so a text key reaches JOID once, with both its `Key` and its character. The [Quick Start](../getting-started/quick-start.md#other-backends) shows the changes for the LWJGL 2 and Vulkan backends; the rest of the tutorial is identical on every backend.
+import java.util.List;
 
-## Step 6: run it
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.ui.UIBridge;
+import dev.joid.lib.bridge.window.IWindowBridge;
+import dev.joid.lib.ui.core.UI;
 
-Run `gradle run`, or the `Main` class from your IDE (with `-XstartOnFirstThread` on macOS). The first launch takes a few seconds while the font atlases are generated.
+public final class AppUIBridge extends UIBridge {
 
-You see a window filled with near-black, with "Settings" in bold white at its center:
+	@Override
+	public void open(final UI ui) {
+		this.add(ui);
+	}
 
-![A near-black window with the word Settings in bold white at its center](../images/tutorial-setup-window.png "The first UI: one centered text node on the UI background")
+	@Override
+	public void close(final UI ui) {
+		this.remove(ui);
+	}
 
-Resize the window: the title stays centered and scales with it, because JOID fits the 1920×1080 canvas into the window. When the window has another shape, the canvas keeps its proportions and the extra space goes to the sides or above and below.
+	@Override
+	public void add(final UI ui) {
+		final IWindowBridge window = BridgeHandler.WINDOW.get();
+		super.getUiList().add(ui);
+		ui.load(window.getWidth(), window.getHeight());
+	}
 
-![The 1920 by 1080 canvas drawn into a 16:9 window, a 4:3 window with extra space above and below, and a 21:9 window with extra space on the sides](../images/diagram-intro-canvas.png "One canvas, fitted into every window")
+	@Override
+	public void remove(final UI ui) {
+		super.getUiList().remove(ui);
+	}
 
-Press `Escape`: the screen closes, which is what a UI does by default (its `closeable` option is `true`), and only the gray clear color of the loop remains.
+	@Override
+	public boolean canHandle(final UI ui) {
+		return true;
+	}
 
-> TIP: With the `-dev` jar, start JOID with `JOID.inst().setDevMode(true).load()` instead of `JOID.inst().load()`. Then `F3` shows the developer panel, `Ctrl+R` or `F5` reruns `init()` on the same UI, and `Ctrl+Shift+R` or `Shift+F5` replaces it with a fresh instance, handy while you follow the next parts. See [Developer Tools](../getting-started/dev-tools.md).
+	@Override
+	public boolean canHandle(final Class<? extends UI> clazz) {
+		return true;
+	}
+
+	@Override
+	public void drawHover(final UI ui, final List<String> lines, final double mouseX, final double mouseY) {}
+
+}
+```
 
 ## Recap
 
-- A JOID application is a host (here `Main` and GLFW) plus a backend that registers the window, render and audio bridges.
-- You register a UI bridge, here `AppUIBridge`, that holds the open UIs; `JOID.open(ui)` goes through it.
-- `JOID.inst().load()` runs once at startup, then your `Theme` loads the fonts.
-- A screen is a subclass of `UI` that builds its nodes in `init()`, on a 1920×1080 canvas fitted into the window.
-
-Next, [Tutorial 2: Building the Layout](layout.md) fills the screen with the settings card.
+- The settings application is the Quick Start project in the package `com.example.settings`: the same `Main`, `AppUIBridge` and `Theme`, with a window title, a bold face and another screen.
+- Several font files passed to `MsdfFontLoader.load(...)` make one family; `FontWeight` picks the face.
+- `@UIData` configures the screen class, here its background.
 
 ## See also
 
-- [Installation](../getting-started/installation.md)
+- Next: [Tutorial 2: Building the Layout](layout.md) fills the screen with the settings card.
 - [Quick Start](../getting-started/quick-start.md)
-- [UI Bridge](../integration/ui-bridge.md)
-- [The UI Class](../ui/ui-class.md)
-- [Adding Your Own Fonts](../fonts/adding-fonts.md)
-- [Backends](../integration/backends.md)
+- [UIs and Their Lifecycle](../concepts/uis.md)
+- [The Frame Loop](../concepts/frame-loop.md)
+- [Text](../essentials/text.md)

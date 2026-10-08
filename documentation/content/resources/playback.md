@@ -1,6 +1,6 @@
 # Playback, Video and Audio
 
-Animated images (GIF, APNG, animated WebP) and videos play over time. Their decoders implement `IResourcePlayback` (`dev.joid.lib.resource.dto.playback`), which plays, pauses, seeks and loops them; videos add a volume and positional audio. Use this page to control playback from code; the ready-made player node is [ResourcePlayerNode](../nodes/visual/resource-player.md).
+Animated images (GIF, APNG, animated WebP) and videos play over time. Their decoders implement `IResourcePlayback` (`dev.joid.lib.resource.dto.playback`), which plays, pauses, seeks and loops them; videos add a volume and positional audio. Use this page to control playback from code, beyond the `ResourcePlayerNode` controls of [Images and Media](../essentials/media.md); the node itself is detailed on [ResourcePlayerNode](../nodes/visual/resource-player.md).
 
 ```java
 public class UITrailer extends UI {
@@ -75,7 +75,7 @@ Before the resource is decoded, durations, times and progress are `0`.
 
 ### Timing and drawing
 
-Playback follows the [clock bridge](../integration/bridges.md), not the wall clock: with a `ManualClockBridge`, animations and videos advance only when you advance the clock, which makes captures deterministic.
+Playback follows the clock bridge (see [The Frame Loop](../concepts/frame-loop.md)), not the wall clock: with a `ManualClockBridge`, animations and videos advance only when you advance the clock, which makes captures deterministic.
 
 The displayed frame is updated each time the resource is drawn. An animated image keeps time while it is not drawn and shows the right frame when it is drawn again. The decoding thread of a video waits while the video is not drawn, so the video catches up frame by frame when it is drawn again; its audio is fed from the same update and plays only while the video is drawn.
 
@@ -122,7 +122,7 @@ if (video != null) {
 
 ## Audio
 
-The audio track of a video plays through the audio bridge (`BridgeHandler.AUDIO`, see [Bridges](../integration/bridges.md)): the LWJGL 2, LWJGL 3 and Vulkan backends register an OpenAL one.
+The audio track of a video plays through the audio bridge (`BridgeHandler.AUDIO`, see [Bridges and Backends](../concepts/bridges.md)): the LWJGL 2, LWJGL 3 and Vulkan backends register an OpenAL one.
 
 - The audio player is created when the file is opened, if the file has an audio track and the volume is above `0`. A video whose volume is `0` when it opens never decodes its audio.
 - Playback starts once 16 blocks of decoded samples are buffered, then streams them to the audio source in blocks of up to 4096 interleaved 16-bit values, each block made of whole frames.
@@ -203,7 +203,8 @@ The playback of a GIF, APNG or animated WebP is an `AnimatedResourceDecoder`. Be
 
 ## See also
 
+- Next: [Custom Formats and Decoders](custom-formats.md) — formats, decoders and animations of your own.
 - [ResourcePlayerNode](../nodes/visual/resource-player.md) — the player node, its callbacks and stretch modes.
 - [Supported Formats](formats.md) — containers, codecs and animation formats.
 - [Resources](resources.md) — loading and releasing resources.
-- [Bridges](../integration/bridges.md) — the audio and clock bridges.
+- [Bridges and Backends](../concepts/bridges.md) — the audio and clock bridges.

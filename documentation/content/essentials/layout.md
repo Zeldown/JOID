@@ -1,28 +1,14 @@
 # Layout
 
-Layout is about where nodes go and how big they are. You place nodes on a fixed virtual canvas, size children from their parent with small helpers, and let layout nodes (`FlexNode`, `GridNode`) line up lists and grids for you. This page covers the canvas, positions and sizes, anchors, the layout nodes and scrolling.
+Layout is about where nodes go and how big they are. You place nodes on the virtual canvas, size children from their parent with small helpers, and let layout nodes (`FlexNode`, `GridNode`) line up lists and grids for you. This page covers positions and sizes, the anchors of a node, the layout nodes, lists that follow a signal and scrolling. It is the first of the Essentials pages, which apply the Core Concepts to everyday screens: read them in order.
 
-## The 1920×1080 canvas
+## Positions in canvas units
 
-You design every UI on a virtual canvas of 1920×1080 units. All positions and sizes, and the mouse coordinates your callbacks receive, are in those units. JOID fits the canvas into the window without stretching it: in a 1280×720 window the canvas is drawn at two thirds of its size, and the layout looks the same.
+Every position and size of this page is a unit of the 1920×1080 virtual canvas, fitted to the window without stretching; a wider or taller window shows extra canvas around it.
 
-![The 1920 × 1080 design is scaled into a 1280 × 720 window; in a wider window the canvas sits in the middle with anchorX CENTER, or on the right with anchorX END](../images/ess-diagram-canvas.png "The virtual canvas in windows of other sizes.")
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
 
-When the window is not 16:9, the visible area is wider or taller than the canvas, and the anchors of the UI decide where the canvas sits in it. A minimap pinned to the top-right corner of any window:
-
-```java
-@UIData(anchorX = Align.END, anchorY = Align.START, background = false)
-public final class MinimapUI extends UI {
-
-	@Override
-	public void init() {
-		RectNode.create(1620, 20, 280, 280).color(Color.DARKGRAY).attach(this);
-	}
-
-}
-```
-
-Design your screens on a 1920×1080 frame in your design tool: the X, Y, width, height, colors and font settings of each layer are the values you pass to the nodes. `Align` (`dev.joid.lib.utils.align`) has three values: `START`, `CENTER` and `END`.
+[The Virtual Canvas](../concepts/canvas.md) explains the fit, the extra area and the anchors of a UI. This page places nodes inside the canvas and inside each other. `Align` (`dev.joid.lib.utils.align`), used below, has three values: `START`, `CENTER` and `END`.
 
 ## Position and size
 
@@ -39,7 +25,7 @@ The factory takes the position and size; one setter per property changes them la
 node.x(40D).y(80D).width(300D).height(120D);
 ```
 
-Like every setter, they also take a signal or an expression that reads signals, and follow it: [State and Reactivity](state.md) shows how.
+Like every setter, they also take a signal or an expression that reads signals, and follow it: [Signals and Reactivity](../concepts/signals.md) shows how.
 
 ## Sizing from the parent
 
@@ -139,6 +125,37 @@ GridNode
 
 `margin` sets both gaps; `verticalMargin` and `horizontalMargin` set one each.
 
+## Rebuilding a list with watch
+
+A setter changes a property, as in [Signals and Reactivity](../concepts/signals.md). When the structure itself changes, such as a list with one row per item, rebuild the children with `watch(signal, properties...)` (`WatchProperty` is in `dev.joid.lib.ui.node.property.watch`):
+
+```java
+private final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
+```
+
+```java
+FlexNode
+.vertical(100, 100, 400)
+.margin(8D)
+.watch(this.items, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+.body(flex -> {
+	for (final String item : this.items.get()) {
+		TextNode.create(0, 0).text(Text.create(item, this.info)).attach(flex);
+	}
+})
+.attach(this);
+
+RectNode
+.create(600, 100, 200, 60)
+.color(Color.GRAY)
+.onClick((node, mouseX, mouseY, clickType) -> this.items.add("Item " + (this.items.size() + 1)))
+.attach(this);
+```
+
+![Each click on a gray button adds a line Item 1, Item 2... to a list](../images/ess-state-list.gif "Each add notifies the FlexNode, which clears its rows and runs body again.")
+
+On each change, `CLEAR_CHILDREN` removes the previous rows, then `BODY` runs the `body` lambda again. Only this `FlexNode` is rebuilt; the rest of the UI is untouched.
+
 ## Clipping and scrolling with overflow
 
 `overflow(...)` decides what happens to children that go beyond their parent. `OverflowProperty` (`dev.joid.lib.ui.node.property.overflow`) has three values: `NONE` (default, children spill out), `HIDDEN` (clipped) and `SCROLL` (clipped and scrolled with the mouse wheel). A scrolling list is a fixed-size node with `SCROLL` that holds a `FlexNode`:
@@ -169,14 +186,15 @@ Scroll from code with `scrollRatioY(1F)` (to the end) and `scrollRatioY(0F)` (ba
 ## Pitfalls
 
 - Set `SCROLL` on the fixed-size parent, not on the `FlexNode` or `GridNode`: they grow with their children, so they never overflow.
-- A layout node places its children itself: the `x` and `y` you give a child of a `FlexNode` or `GridNode` are replaced (create them at 0, 0).
+- A layout node places its children itself: the position a child of a `FlexNode` or `GridNode` gets at creation is added to its slot as an offset, so create them at 0, 0; a position set later with `x(...)` or `y(...)` is replaced at the next layout.
+- Use `watch` only when the structure changes: a text, a color or a visibility follows its signal through its setter.
 - A node that overflows on both axes scrolls vertically with the wheel; the horizontal axis goes through a scrollbar or `scrollRatioX(...)`.
 
 ## See also
 
-- Next: [Styling](styling.md)
+- Next: [Text](text.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md): default bounds, `PositionProperty.ABSOLUTE`, aspect ratio, every helper.
-- [View and Scaling](../ui/view-and-scaling.md): how the canvas fits the window, zoom, coordinate conversions.
+- [Watching Signals](../state/watch.md): `watch`, `WatchProperty.custom`, `onWatch`.
 - [FlexNode](../nodes/layout/flex.md), [GridNode](../nodes/layout/grid.md), [ContainerNode](../nodes/layout/container.md): the layout nodes in detail.
 - [ReorderableFlexNode](../nodes/layout/reorderable-flex.md): a list the user reorders by dragging.
 - [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md): the scroll API, scrollbars and scroll callbacks.

@@ -1,6 +1,6 @@
 # ResourceNode
 
-`ResourceNode` (`dev.joid.lib.ui.node.impl.design.resource`) displays a [`Resource`](../../resources/resources.md) (`dev.joid.lib.resource`): a raster image, an SVG, an animated image or a video frame. It sizes itself from the resource when you do not give a size, fits the resource with a `StretchType`, tints it, and can swap to another color or resource under the mouse.
+`ResourceNode` (`dev.joid.lib.ui.node.impl.design.resource`) displays a [`Resource`](../../resources/resources.md) (`dev.joid.lib.resource`): a raster image, an SVG, an animated image or a video frame. It sizes itself from the resource when you do not give a size, fits the resource with a `StretchType`, tints it, and can swap to another color or resource under the mouse. [Images and Media](../../essentials/media.md) introduced it; this page describes every option.
 
 ## Creating a ResourceNode
 
@@ -77,7 +77,7 @@ ResourceNode.create(0, 0, 64, 64).resource(Resource.of("https://placehold.co/64x
 
 ## Hover: hoveredColor and hoveredResource
 
-The node reacts to the mouse in two ways, both following the node's hover animation (see [Hover and Tooltips](../../interactions/hover.md)):
+The node reacts to the mouse in two ways, both following the node's hover animation (`hoverDuration`, `hoverEquation`, see [Animation](../../essentials/animation.md)):
 
 - **Hovered color only**: the tint blends from `color` to `hoveredColor`.
 - **Hovered resource**: the hovered resource fades in over the main one. The main resource keeps `color`; the hovered resource uses the color channels of `hoveredColor` (or of `color` when there is no hovered color) and an opacity equal to the hover progress, from `0` to `1`.
@@ -125,7 +125,7 @@ ResourceNode.create(0, 0, 160, 160).resource(Resource.of("https://placehold.co/1
 | `stretch(StretchType)`, `stretch(Supplier<StretchType>)` | `StretchType.STRETCH` | How the resource fills the box. |
 | `linear(boolean)`, `linear(Supplier<Boolean>)` | | Linear (`true`) or nearest (`false`) filtering of the resources already set. |
 
-Every setter takes a value, a native expression that reads signals (`resource(this.selected.get() ? on : off)`), a signal or a lambda (see [Reactive Properties](../../state/reactive-properties.md)).
+Every setter takes a value, an expression that reads signals (`resource(this.selected.get() ? on : off)`), a signal or a lambda (see [Signals and Reactivity](../../concepts/signals.md)).
 
 ### Getters
 
@@ -164,9 +164,9 @@ Animated images (GIF, APNG, animated WebP) play by themselves on a `ResourceNode
 
 ## See also
 
-- [ResourcePlayerNode](resource-player.md)
+- Next: [ResourcePlayerNode](resource-player.md)
+- [Images and Media](../../essentials/media.md)
 - [Resources](../../resources/resources.md)
 - [Supported Formats](../../resources/formats.md)
 - [Assets](../../resources/assets.md)
-- [Drawing Resources](../../drawing/resources.md) for drawing resources without a node
 - [Effects](../../styling/effects.md) for rounded and circular images

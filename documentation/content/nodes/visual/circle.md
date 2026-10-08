@@ -28,9 +28,9 @@ CircleNode.create(20, 20, 16).color(Color.DARKGRAY).hoveredColor(Color.WHITE).at
 | `hoveredColor(Color color)`, `hoveredColor(Supplier<Color> color)` | Sets, replaces or removes the hovered color. |
 
 - The default color is `Color.WHITE`, without hovered color.
-- With a hovered color, the drawn color blends from the fill color to the hovered color following the node's hover animation (see [Hover and Tooltips](../../interactions/hover.md)).
+- With a hovered color, the drawn color blends from the fill color to the hovered color following the node's hover animation, like the colors of a [RectNode](rect.md).
 - Both colors can be gradients built with `Color.toGradient(...)`; the gradient spans the circle's bounding square (see [Colors and Gradients](../../styling/colors.md)).
-- Like every setter, they take a plain value, a native expression that reads signals (`color(this.online.get() ? Color.WHITE : Color.GRAY)`), a signal, or a lambda read on every frame (see [Reactive Properties](../../state/reactive-properties.md)). The colors are read while drawing.
+- Like every setter, they take a plain value, an expression that reads signals (`color(this.online.get() ? Color.WHITE : Color.GRAY)`), a signal, or a lambda read on every frame (see [Signals and Reactivity](../../concepts/signals.md)). The colors are read while drawing.
 - A `null` hovered color, or a hovered supplier that returns `null`, removes the hover blend. Write `hoveredColor((Color) null)`: the cast picks the `Color` overload.
 
 ## Size and shape
@@ -65,7 +65,7 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 
 ### Loading skeleton
 
-While the node waits for a condition set with `wait(...)`, it draws a pulsing grey circle (`Color.LOADING()`) instead of the default rectangular placeholder (see [Node Fundamentals](../node-fundamentals.md)).
+While the node waits for a condition set with `wait(...)`, its placeholder is a pulsing gray circle (`Color.LOADING()`) rather than the default rectangle (see [ContainerNode](../layout/container.md#loading-a-section-with-wait-and-skeleton)).
 
 ## Pitfalls
 
@@ -74,6 +74,7 @@ While the node waits for a condition set with `wait(...)`, it draws a pulsing gr
 
 ## See also
 
+- Next: [TextNode](text.md)
 - [RectNode](rect.md)
 - [CircleNodeEffect](../../styling/circle.md)
 - [Colors and Gradients](../../styling/colors.md)

@@ -1,6 +1,6 @@
 # SelectorNode
 
-`SelectorNode<V>` (`dev.joid.lib.ui.node.impl.structure.selector`) is a dropdown that picks one value of type `V` from a list: it shows the selected option, a click opens the list of the others and a click on one selects it. It is abstract: your subclass builds the node of each option and draws the background; the selector creates, sizes and places the options and keeps the selected value.
+`SelectorNode<V>` (`dev.joid.lib.ui.node.impl.structure.selector`) is a dropdown that picks one value of type `V` from a list: it shows the selected option, a click opens the list of the others and a click on one selects it. It is abstract: your subclass builds the node of each option and draws the background; the selector creates, sizes and places the options and keeps the selected value. The `Selector` of [Building a UI Kit](../../components/ui-kit.md#selector) is one; this page starts from a smaller one.
 
 ## Creating a selector
 
@@ -16,7 +16,7 @@ public class DifficultySelectorNode extends SelectorNode<String> {
 		this.info = info;
 	}
 
-	public static DifficultySelectorNode create(final double x, final double y, final double width, final double height, final TextInfo info) {
+	public static @NonNull DifficultySelectorNode create(final double x, final double y, final double width, final double height, final @NonNull TextInfo info) {
 		return new DifficultySelectorNode(x, y, width, height, info);
 	}
 
@@ -27,30 +27,30 @@ public class DifficultySelectorNode extends SelectorNode<String> {
 
 	@Override
 	public void drawBackground(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.BLACK);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
 	}
 
 }
 ```
 
-Then, in `UI.init()` (`font` is an `IFont` you loaded):
+Then, in `UI.init()` (`font` is an `IFont` you loaded, see [Text](../../essentials/text.md)):
 
 ```java
 DifficultySelectorNode
-.create(810, 400, 300, 50, TextInfo.create(font, 20F, Color.WHITE))
+.create(810, 400, 300, 50, TextInfo.create(font, 20F, Color.decode("#999999")))
 .onChange((selector, difficulty) -> System.out.println("Difficulty: " + difficulty))
 .values("Easy", "Easy", "Normal", "Hard")
 .attach(this);
 ```
 
-![The cursor opens a black dropdown showing Easy, then picks Hard](../../images/selector-pick.gif "A click on the selected option opens the list; a click on another option selects it and closes the list.")
+![The cursor opens a white dropdown showing Easy, then picks Hard](../../images/selector-pick.gif "A click on the selected option opens the list; a click on another option selects it and closes the list.")
 
 - `values("Easy", "Easy", "Normal", "Hard")` creates the options "Easy", "Normal" and "Hard" and selects "Easy", its first argument.
 - A click on "Easy" opens the list below; a click on "Hard" selects it, calls `onChange` with `"Hard"` and closes the list.
 
-The value type is yours: a `String`, an enum, a `Color` (the demo `UIDemoSelector` uses a `SelectorNode<Color>` whose options are colored rectangles). `option(...)` decides how a value looks.
+The value type is yours: a `String`, an enum, a `Color` whose options are colored rectangles. `option(...)` decides how a value looks; the demo `UIDemoSelector` opens one selector down and one up.
 
-See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
+The protected constructor and the `create` factory follow the same contract as the components of [Building a UI Kit](../../components/ui-kit.md).
 
 ## Options with values
 
@@ -68,13 +68,13 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 
 - Values are compared with `equals`. Give each option a distinct value: `value(...)` selects the first option equal to the value.
 - `values(...)` and `value(...)` write the selected value into the signal and call `onChange` when the selected value changes. `values(...)` that keeps the current value selected calls nothing.
-- `values(...)` checks the selected value last: with a value that is not in the list, it creates the options, then throws an `IllegalArgumentException`.
+- `values(...)` with a selected value that is not in the list throws an `IllegalArgumentException` and keeps the current options.
 
 > WARNING: Let `values(...)` create the options. A child that you attach yourself has no value: on its next draw, the selector removes it and throws an `IllegalStateException` ("The node ... is not an option of the selector, add the options with values(...)"), which the UI bridge prints. Draw decorations in `drawBackground` or in the option nodes.
 
 ## Binding a signal with signal
 
-`signal(Signal<V>)` keeps the selector and a [signal](../../state/signals.md) in sync, both ways:
+`signal(Signal<V>)` keeps the selector and a [signal](../../concepts/signals.md) in sync, both ways:
 
 - the selector starts on the signal's value, when the signal holds one of the options;
 - each value the user picks is written into the signal;
@@ -82,18 +82,16 @@ See [Custom Nodes](../custom-nodes.md) for the constructor and factory contract.
 
 ```java
 private final Signal<String> difficulty = Signal.of("Normal");
-```
 
-```java
 DifficultySelectorNode
-.create(810, 400, 300, 50, TextInfo.create(font, 20F, Color.WHITE))
+.create(810, 400, 300, 50, TextInfo.create(font, 20F, Color.decode("#999999")))
 .values("Normal", "Easy", "Normal", "Hard")
 .signal(this.difficulty)
 .attach(this);
 ```
 
 - Call `signal(...)` after `values(...)`: the signal's value is applied once, when you bind it, and it can only select an existing option.
-- The selector follows the signal while its UI is open, and one signal at a time: calling `signal(...)` again unbinds the previous signal, which no longer selects an option nor receives the picked values.
+- The selector follows the signal while its UI is open, and one signal at a time: calling `signal(...)` again unbinds the previous signal, which then stops selecting options and receiving the picked values.
 - Any other node follows the selection by reading the signal in a setter: `text(Text.create("Difficulty: " + this.difficulty.get(), info))`.
 - `value(...)`, `direction(...)` and `active(...)` also take a `Supplier` (a native expression that reads signals, a signal or a lambda) and follow it one way.
 
@@ -107,6 +105,14 @@ On each frame, the selector lays its options out:
 - their visibility becomes "visible while the list is open, or when selected", replacing any `visible(...)` rule you gave them.
 
 The selector's own height follows: with `DOWN` it grows to cover the open list (so `drawBackground` covers it too) and goes back to the initial height when closed; with `UP` it keeps the initial height and the list opens outside it.
+
+```java
+DifficultySelectorNode.create(560, 500, 300, 50, this.info).values("Easy", "Easy", "Normal", "Hard").active(true).attach(this);
+
+DifficultySelectorNode.create(1060, 500, 300, 50, this.info).values("Easy", "Easy", "Normal", "Hard").direction(SelectorDirection.UP).active(true).attach(this);
+```
+
+![Two open selectors: on the left the list opens below Easy on a white background, on the right Normal and Hard are stacked above Easy with no background](../../images/selector-direction.png "With UP the background stays on the selected option: give the options their own background to cover the list.")
 
 `drawBackground(double mouseX, double mouseY)` is abstract and called on each draw, after the layout. The selector draws nothing and lays nothing out while it has no option. An option node can read `isActive()` and `isSelected(this)` of its selector to draw the open list or the selected option differently, as the selector of the [UI kit](../../components/ui-kit.md#selector) does.
 
@@ -129,7 +135,7 @@ The selector's own height follows: with `DOWN` it grows to cover the open list (
 
 ## onChange
 
-`onChange(NodeSelectorChangeCallback<T, V>)` takes `(node, value)`, where `value` is the newly selected value; `node.getValue()` already returns it and the signal already holds it. It runs on every change of the selected value: a click on an option, `value(...)`, `values(...)` or the bound signal. Cancelling the context in the `pre(...)` phase keeps the previous option selected, leaves the list open and does not write the signal (see [Callbacks](../../interactions/callbacks.md)). The callback interface is in `dev.joid.lib.ui.node.impl.structure.selector.callback`.
+`onChange(NodeSelectorChangeCallback<T, V>)` takes `(node, value)`, where `value` is the newly selected value; `node.getValue()` already returns it and the signal already holds it. It runs on every change of the selected value: a click on an option, `value(...)`, `values(...)` or the bound signal. Cancelling the context in the `pre(...)` phase, in an anonymous class of the callback interface as for [CheckboxNode](checkbox.md#reacting-with-onchange), keeps the previous option selected, leaves the list open and does not write the signal (see [Callbacks](../../interactions/callbacks.md)). The callback interface is in `dev.joid.lib.ui.node.impl.structure.selector.callback`.
 
 ## Reference
 
@@ -175,8 +181,8 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 
 ## See also
 
+- Next: [ChartNode](../data/chart.md)
 - [SwitchNode](switch.md)
-- [SliderNode](slider.md)
 - [Signals](../../state/signals.md)
 - [Callbacks](../../interactions/callbacks.md)
 - [Custom Nodes](../custom-nodes.md)

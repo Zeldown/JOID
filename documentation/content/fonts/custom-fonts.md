@@ -1,6 +1,6 @@
 # Custom Font Implementations
 
-When the MSDF fonts do not fit, for a pixel-art font drawn from sprites or a text engine of your own, you write your own font. Build on the glyph framework of JOID and only draw glyphs, implement the two font interfaces from scratch, or feed MSDF faces from your own source. Read [How Fonts Work](how-fonts-work.md) first for the concepts.
+When the MSDF fonts do not fit, for a pixel-art font drawn from sprites or a text engine of your own, you write your own font. Build on the glyph framework of JOID and only draw glyphs, implement the two font interfaces from scratch, or feed MSDF faces from your own source. This page closes the Fonts section and builds on the concepts of [How Fonts Work](how-fonts-work.md).
 
 ```java
 final BitmapFont pixel = BitmapFont.create(regular, bold);
@@ -233,6 +233,7 @@ final double width = FontUsage.trace(element.getOrigin(), () -> element.getInfo(
 
 ## See also
 
+- Next: [Custom Nodes](../nodes/custom-nodes.md) — the Advanced section.
 - [How Fonts Work](how-fonts-work.md)
 - [Adding Your Own Fonts](adding-fonts.md)
 - [Markup and Text Effects](../text/markup-and-effects.md)

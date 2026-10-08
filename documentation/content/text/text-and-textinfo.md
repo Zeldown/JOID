@@ -1,6 +1,6 @@
 # Text and TextInfo
 
-A `Text` is a line of text made of one or more runs (`TextElement`), and each run carries its style in a `TextInfo`: font, size, weight, color, spacing, shadow, markup and effects. The same objects feed `TextNode`, `DrawUtils.TEXT` and every measure, so you build a style once and reuse it everywhere.
+A `Text` is a line of text made of one or more runs (`TextElement`), and each run carries its style in a `TextInfo`: font, size, weight, color, spacing, shadow, markup and effects. The same objects feed `TextNode`, `DrawUtils.TEXT` and every measure, so you build a style once and reuse it everywhere. This page opens the Text section and goes deeper into the model that [Text](../essentials/text.md) introduced.
 
 ```java
 final TextInfo info = TextInfo.create(font, 32F, Color.WHITE);
@@ -9,7 +9,7 @@ TextNode.create(100, 100).text(Text.create("Hello JOID", info)).attach(this);
 
 ![The words Hello JOID in white](../images/text-quick.png "One run: a string and its TextInfo.")
 
-`font` is a loaded font family, usually an `MsdfFont` (see [Adding Your Own Fonts](../fonts/adding-fonts.md)); the examples of this page use the `font` of that page. `TextInfo` and `FontBounds` are in `dev.joid.lib.font.dto`, `Text` and `TextElement` in `dev.joid.lib.draw.text.builder`, `FontWeight` in `dev.joid.lib.font`.
+`font` is the family loaded with `MsdfFontLoader` in [Text](../essentials/text.md#loading-a-font-with-msdffontloader); the Fonts section ([Adding Your Own Fonts](../fonts/adding-fonts.md)) covers loading in detail. The examples of this page use that `font`. `TextInfo` and `FontBounds` are in `dev.joid.lib.font.dto`, `Text` and `TextElement` in `dev.joid.lib.draw.text.builder`, `FontWeight` in `dev.joid.lib.font`.
 
 ## Runs with TextElement
 
@@ -251,7 +251,7 @@ A `Text` starts aligned `START` / `START`, with `TextOverflow.NONE` and no modif
 
 ## See also
 
-- [Styling Text](styling-text.md)
+- Next: [Styling Text](styling-text.md)
 - [Markup and Text Effects](markup-and-effects.md)
 - [TextNode](../nodes/visual/text.md)
 - [Reactive Properties](../state/reactive-properties.md)

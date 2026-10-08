@@ -1,4 +1,4 @@
-# Nodes
+# Nodes and the Node Tree
 
 Everything you see in a UI is a node: a rectangle, a text, an image, a list, a text field. Nodes form a tree: each node can hold children, placed relative to it. This page shows how to create nodes, assemble them, chain their settings, hide them and order them.
 
@@ -74,11 +74,11 @@ final RectNode button = RectNode.create(100, 100, 300, 80).zindex(10);
 RectNode.create(100, 200, 300, 80).<RectNode>zindex(10).color(Color.GRAY).attach(this);
 ```
 
-`self(node -> ...)` runs a lambda with the node right away, like `body`, and is the place for a setting built from the node itself; [Styling](styling.md) uses it for effects that follow the hover.
+`self(node -> ...)` runs a lambda with the node right away, like `body`, and is the place for a setting built from the node itself; [Styling and Effects](styling.md) uses it for effects that follow the hover.
 
 ## Showing and hiding with visible
 
-`visible(false)` hides a node. A boolean signal passed as is makes the node follow it: here a button shows and hides a panel.
+`visible(false)` hides a node. A boolean signal passed as is makes the node follow it: here a button shows and hides a panel. A `BooleanSignal` holds `true` or `false` like the `IntegerSignal` counter of the Quick Start holds a number, and `toggle()` flips it.
 
 ```java
 private final BooleanSignal open = BooleanSignal.of(false);
@@ -96,7 +96,7 @@ RectNode.create(100, 200, 400, 300).color(Color.LIGHTGRAY).visible(this.open).at
 
 ![Each click on a gray button shows or hides a light gray panel](../images/ess-nodes-visible.gif "visible(this.open): the panel follows the signal the button toggles.")
 
-A hidden node is not drawn, nor are its children, and it receives no clicks or hover. `enabled(false)` is the softer version: the node is still drawn, but neither it nor its children react to the mouse. Signals are the subject of [State and Reactivity](state.md).
+A hidden node is not drawn, nor are its children, and it receives no clicks or hover. `enabled(false)` is the softer version: the node is still drawn, but neither it nor its children react to the mouse. Signals are the subject of [Signals and Reactivity](signals.md).
 
 ## Drawing order with zindex
 
@@ -122,7 +122,23 @@ A z-index only orders a node among its siblings; a child is drawn above its pare
 | `getChild(1, RectNode.class)` | The second `RectNode` child, or `null`. |
 | `getParent()`, `getUi()` | The parent (`null` at the top level) and the UI. |
 
-A detached node stops everything: its drag or hover ends, its subscriptions to signals stop, and it starts again if you attach it back. To change a part of the screen, you rarely remove nodes by hand: setters follow signals, and `watch` rebuilds a list, both shown in [State and Reactivity](state.md).
+A detached node stops everything: its drag or hover ends, its subscriptions to signals stop, and it starts again if you attach it back. To change a part of the screen, you rarely remove nodes by hand: setters follow signals, and `watch` rebuilds a list, shown in [Signals and Reactivity](signals.md) and [Layout](../essentials/layout.md#rebuilding-a-list-with-watch).
+
+## The conventions of the fluent API
+
+JOID builds trees with chained calls. Built-in nodes have no public constructor: a static factory creates them (`create(...)`, or named ones such as `FlexNode.vertical(...)`).
+
+| Convention | Meaning |
+| --- | --- |
+| `create(...)` | Static factory of nodes and effects, with the values the node needs. |
+| Setters named after one property | `color(...)`, `hoveredColor(...)`, `x(...)`, `width(...)`: each sets one property and returns the node. |
+| `attach(UI)` / `attach(Node)` | Adds the node to a UI or to a parent node; usually the last call of a chain. |
+| `append(Node...)` | Adds children to a node, the reverse of `attach`. |
+| `body(Consumer)` | Runs the code right away with the node, to create its children inline; the node keeps it, so `watch` can run it again (see [Layout](../essentials/layout.md#rebuilding-a-list-with-watch)). |
+| `self(Consumer)` | Runs the code right away with the node, without keeping it: for an effect built from the node. |
+| `onXxx(callback)` | Registers a callback: `onClick`, `onHoverStart`... See [Input and Callbacks](input.md). |
+
+Setters are generic (`public final <T extends Node> T x(double x)`): that is what lets a chain keep the type of the node, with the rule of [Chaining settings](#chaining-settings).
 
 ## Pitfalls
 
@@ -132,7 +148,7 @@ A detached node stops everything: its drag or hover ends, its subscriptions to s
 
 ## See also
 
-- Next: [Layout](layout.md)
+- Next: [Input and Callbacks](input.md)
 - [Node Fundamentals](../nodes/node-fundamentals.md): the complete node API, lifecycle, waiting and skeletons, layers, copies.
 - [Component Catalog](../components/overview.md): every node JOID ships.
 - [Callbacks](../interactions/callbacks.md): every `on...` method.

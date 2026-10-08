@@ -1,6 +1,6 @@
 # Writing a Backend
 
-A backend runs JOID on an engine it does not support yet: it implements `IRenderBridge`, `IWindowBridge` and `IAudioBridge` for that engine and registers them, without modifying the JOID core. Start from the backend template, implement the render contract described here, and validate it with the [testkit](testkit.md).
+The [previous page](backends.md) showed the three official backends; their bridges are the interfaces described in [Bridges](bridges.md). A backend of your own runs JOID on an engine it does not support yet: it implements `IRenderBridge`, `IWindowBridge` and `IAudioBridge` for that engine and registers them, without modifying the JOID core. Start from the backend template, implement the render contract described here, and validate it with the [testkit](testkit.md).
 
 ## The Backend class
 
@@ -248,7 +248,7 @@ Put `SnapshotBackend` in the `snapshot` package of the main sources, as the offi
 
 ## See also
 
-- [Testkit](testkit.md)
+- Next: [Testkit](testkit.md)
 - [Backends](backends.md)
 - [Bridges](bridges.md)
 - [Custom Shaders](../shaders/custom-shaders.md)

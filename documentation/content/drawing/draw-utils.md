@@ -1,6 +1,6 @@
 # Drawing Overview
 
-`DrawUtils` (`dev.joid.lib.draw`) draws shapes, text, resources and 3D models immediately, through the render bridge: it is what every built-in node draws with. Draw by hand in a custom node, a layer, an overlay of the UI or an effect; for anything that needs layout, hover, dragging or effects of its own, compose nodes instead.
+You already drew with `DrawUtils.SHAPE` in the `draw` of a control and of a [custom node](../nodes/custom-nodes.md). `DrawUtils` (`dev.joid.lib.draw`) draws shapes, text, resources and 3D models immediately, through the render bridge: it is what every built-in node draws with. Draw by hand in a custom node, a layer, an overlay of the UI or an effect; for anything that needs layout, hover, dragging or effects of its own, compose nodes instead. This page opens the Drawing pages: where you can draw, how drawings land on the window pixels, and how to keep the render state clean.
 
 ## Drawing in a layer
 
@@ -19,7 +19,11 @@ ContainerNode
 
 ![A light gray rounded card with a gray disk on the left and a white bar on the right](../images/drawing-layer.png "Three DrawUtils calls in one layer")
 
-Positions and sizes are UI units of the 1920×1080 virtual canvas. Inside a node hook, the matrix is already translated to the parent of the node: draw at `getX()`/`getY()` with the size of the node.
+Positions and sizes are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. Coordinates are never window pixels: JOID scales every drawing to the window. Only a few values are in window pixels, such as the width of lines, and the pages say so where they apply.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+See [The Virtual Canvas](../concepts/canvas.md). Inside a node hook, the matrix is already translated to the parent of the node: draw at `getX()`/`getY()` with the size of the node.
 
 ## Drawing in a custom node with draw
 
@@ -88,7 +92,7 @@ Draw only from the hooks JOID calls while it renders a frame: they run on the re
 
 ## Pixel alignment
 
-UI units rarely cover a whole number of window pixels: one unit is 0.7115 pixel in a 1366×768 window. JOID keeps what it draws on the window pixels, so edges stay sharp and nothing shimmers while a UI scrolls or slides. All of it applies while the transform is axis-aligned (no rotation, skew or perspective tilt).
+Canvas units rarely cover a whole number of window pixels: one unit is 0.7115 pixel in a 1366×768 window. JOID keeps what it draws on the window pixels, so edges stay sharp and nothing shimmers while a UI scrolls or slides. All of it applies while the transform is axis-aligned (no rotation, skew or perspective tilt).
 
 - **Rectangle edges snap.** `drawRect`, `drawRoundedRect`, `drawRoundedBorder`, `drawBorder`, `drawFilledBorder` and `drawResource` put each edge on the nearest window pixel. Two edges at the same position land on the same pixel, so a child that fills its parent never lets it show through, and a side never collapses below one pixel.
 - **Thin rectangles become lines.** On an axis where `drawRect` covers less than three pixels (an underline, a separator, a caret), it keeps a whole number of pixels centered on its exact position. Below one pixel it is drawn one pixel thick with a proportional opacity, so a hairline keeps the same weight everywhere and never vanishes. Borders keep the same whole thickness on every side.
@@ -212,11 +216,11 @@ Screen positions are viewport pixels, from the bottom-left corner, Y up.
 | Method | Description |
 |---|---|
 | `isAligned()` | `true` when the transform is axis-aligned; every snapping method returns its input unchanged otherwise. |
-| `getScaleX()`, `getScaleY()` | Window pixels per UI unit along each axis. |
-| `getUnitX()`, `getUnitY()` | Signed screen pixels per UI unit (`getUnitY()` is negative for the UI canvas, whose Y goes down). |
-| `getOriginX()`, `getOriginY()` | Screen position of the UI point (0, 0). |
-| `toScreenX(double x)`, `toScreenY(double y)` | UI position to screen pixels. |
-| `fromScreenX(double screenX)`, `fromScreenY(double screenY)` | Screen pixels to UI position. |
+| `getScaleX()`, `getScaleY()` | Window pixels per canvas unit along each axis. |
+| `getUnitX()`, `getUnitY()` | Signed screen pixels per canvas unit (`getUnitY()` is negative for the canvas, whose Y goes down). |
+| `getOriginX()`, `getOriginY()` | Screen position of the canvas point (0, 0). |
+| `toScreenX(double x)`, `toScreenY(double y)` | Canvas position to screen pixels. |
+| `fromScreenX(double screenX)`, `fromScreenY(double screenY)` | Screen pixels to canvas position. |
 | `snapX(double x)`, `snapY(double y)` | Position of the nearest pixel edge. |
 | `snapRight(double left, double right)`, `snapBottom(double top, double bottom)` | Snapped far edge, at least one pixel away from the snapped near edge. |
 | `snapWidth(double left, double width)`, `snapHeight(double top, double height)` | Far edge of a stroke growing from `left` (or `top`), a whole number of pixels thick, at least one. |
@@ -235,7 +239,7 @@ Screen positions are viewport pixels, from the bottom-left corner, Y up.
 
 ## See also
 
-- [Shapes](shapes.md)
+- Next: [Shapes](shapes.md)
 - [Drawing Text](text.md)
 - [Drawing Resources](resources.md)
 - [Transformations and Framebuffers](transformations.md)

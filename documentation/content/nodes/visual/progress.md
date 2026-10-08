@@ -12,7 +12,9 @@ A rounded health bar that follows a signal:
 
 ```java
 private final IntegerSignal health = IntegerSignal.of(72);
+```
 
+```java
 ProgressNode
 .create(20, 20, 300, 16)
 .background(Color.DARKGRAY)
@@ -24,11 +26,30 @@ ProgressNode
 
 ![A white bar filled to a quarter on black, and a rounded light gray bar filled to 72 %](../../images/progress-basic.png "The default colors at 0.25F, and the health bar at 72 of 100.")
 
-By default the bar is empty (`0F`), black with a white fill, and fills from left to right. The health bar reads `this.health.get()` in its expression: it follows the signal and redraws when the health changes (see [Reactive Properties](../../state/reactive-properties.md)).
+By default the bar is empty (`0F`), black with a white fill, and fills from left to right. The health bar reads `this.health.get()` in its expression: it follows the signal and redraws when the health changes (see [Signals and Reactivity](../../concepts/signals.md)).
 
 ## Setting the value with progress
 
-`progress(float)` sets the filled fraction: `0F` is empty, `0.5F` half, `1F` full. A value from another range is a native expression: `progress((value - min) / (max - min))`.
+`progress(float)` sets the filled fraction: `0F` is empty, `0.5F` half, `1F` full. A value from another range is an expression: `progress((value - min) / (max - min))`. A volume from 0 to 5 that a button raises:
+
+```java
+private final IntegerSignal volume = IntegerSignal.of(1);
+```
+
+```java
+ProgressNode.create(100, 100, 400, 20).background(Color.DARKGRAY).foreground(Color.WHITE).progress(Math.min(1F, this.volume.get() / 5F)).attach(this);
+
+RectNode
+.create(100, 150, 120, 50)
+.color(Color.GRAY)
+.onClick((node, mouseX, mouseY, clickType) -> this.volume.increment())
+.body(button -> {
+	TextNode.create(60, 25).text(Text.create("+1", this.info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(button);
+})
+.attach(this);
+```
+
+`info` is a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)).
 
 ![A volume signal changed by clicks: the bar grows by a fifth at each click](../../images/progress-signal.gif "progress follows the expression that reads the signal")
 
@@ -67,7 +88,7 @@ ProgressNode
 .attach(this);
 ```
 
-When both resources are set, the node draws them instead of the colors: the background resource stretched over the whole node, then the foreground resource also stretched over the whole node but masked to the filled part. The foreground image is revealed as the value grows, not squeezed. With only one resource set, the node keeps drawing the colors.
+When both resources are set, the node draws them in place of the colors: the background resource stretched over the whole node, then the foreground resource also stretched over the whole node but masked to the filled part. The foreground image is revealed as the value grows, not squeezed. With only one resource set, the node keeps drawing the colors.
 
 ## Reference
 
@@ -90,8 +111,9 @@ When both resources are set, the node draws them instead of the colors: the back
 
 ## See also
 
+- Next: [TextFieldNode](../input/text-field.md)
 - [SliderNode](../input/slider.md) for a value the user can drag
 - [RectNode](rect.md)
 - [Effects](../../styling/effects.md) for rounded bars
 - [ResourcePlayerNode](resource-player.md) to drive a timeline with `onProgress`
-- [Reactive Properties](../../state/reactive-properties.md)
+- [Signals and Reactivity](../../concepts/signals.md)

@@ -1,13 +1,13 @@
 # TextNode
 
-`TextNode` (`dev.joid.lib.ui.node.impl.design.text`) displays a [`Text`](../../text/text-and-textinfo.md) and sizes itself to it. A `TextMode` chooses between a single line, a truncated line, wrapped lines growing the node, or wrapped lines kept inside a fixed box.
+`TextNode` (`dev.joid.lib.ui.node.impl.design.text`) displays a [`Text`](../../text/text-and-textinfo.md) and sizes itself to it. A `TextMode` chooses between a single line, a truncated line, wrapped lines growing the node, or wrapped lines kept inside a fixed box. [Text](../../essentials/text.md) introduced it; this page describes its sizing and modes in detail.
 
-In the examples, `font` is an `IFont` loaded at startup (see [Fonts](../../fonts/adding-fonts.md)).
+In the examples, `font` is a font loaded once at startup with `MsdfFontLoader`, as in [Text](../../essentials/text.md#loading-a-font-with-msdffontloader).
 
 ## Creating a TextNode
 
 ```java
-TextNode.create(100, 100).text(Text.create("Hello JOID", TextInfo.create(font, 24, Color.WHITE))).attach(this);
+TextNode.create(100, 100).text(Text.create("Hello JOID", TextInfo.create(font, 24F, Color.WHITE))).attach(this);
 ```
 
 ![The words Hello JOID in white](../../images/text-hello.png "A TextNode sized by its text (Montserrat, 24).")
@@ -22,23 +22,25 @@ RectNode
 .create(100, 100, 300, 60)
 .color(Color.DARKGRAY)
 .body(rect -> {
-	TextNode.create(0, 0, rect.getWidth(), rect.getHeight()).text(Text.create("Play", TextInfo.create(font, 24, Color.WHITE), Align.CENTER, Align.CENTER)).attach(rect);
+	TextNode.create(0, 0, rect.getWidth(), rect.getHeight()).text(Text.create("Play", TextInfo.create(font, 24F, Color.WHITE), Align.CENTER, Align.CENTER)).attach(rect);
 })
 .attach(this);
 ```
 
 ![A gray button with the centered label Play](../../images/text-button.png "The TextNode covers the button and centers its text on both axes.")
 
-`Text` (`dev.joid.lib.draw.text.builder`), `TextInfo` (`dev.joid.lib.font.dto`), `Align` (`dev.joid.lib.utils.align`), overflow suffixes, modifiers and multi-style texts are described in [Text and TextInfo](../../text/text-and-textinfo.md).
+`Text` (`dev.joid.lib.draw.text.builder`), `TextInfo` (`dev.joid.lib.font.dto`), `Align` (`dev.joid.lib.utils.align`), overflow suffixes, modifiers and multi-style texts are introduced in [Text](../../essentials/text.md) and described in full in [Text and TextInfo](../../text/text-and-textinfo.md).
 
 ## Dynamic text
 
-Write the text as an expression that reads a [signal](../../state/signals.md): the text follows it, and the node resizes to the new text.
+Write the text as an expression that reads a signal ([Signals and Reactivity](../../concepts/signals.md)): the text follows it, and the node resizes to the new text.
 
 ```java
 private final IntegerSignal score = IntegerSignal.of(0);
+```
 
-TextNode.create(20, 20).text(Text.create("Score: " + this.score.get(), TextInfo.create(font, 20, Color.WHITE))).attach(this);
+```java
+TextNode.create(20, 20).text(Text.create("Score: " + this.score.get(), TextInfo.create(font, 20F, Color.WHITE))).attach(this);
 ```
 
 ![A score text counting up as the score signal changes](../../images/text-signal.gif "The text follows the signal read in its expression")
@@ -68,13 +70,13 @@ See [Reactive Properties](../../state/reactive-properties.md) for the rules.
 ```java
 TextNode
 .create(0, 0, 300, 0)
-.text(Text.create("A very long subtitle that does not fit", TextInfo.create(font, 20, Color.WHITE)).overflow(TextOverflow.ELLIPSIS))
+.text(Text.create("A very long subtitle that does not fit", TextInfo.create(font, 20F, Color.WHITE)).overflow(TextOverflow.ELLIPSIS))
 .mode(TextMode.OVERFLOW)
 .attach(this);
 
 TextNode
 .create(0, 40, 300, 0)
-.text(Text.create("A paragraph wrapped on as many lines as it needs.", TextInfo.create(font, 20, Color.WHITE)))
+.text(Text.create("A paragraph wrapped on as many lines as it needs.", TextInfo.create(font, 20F, Color.WHITE)))
 .mode(TextMode.SPLIT)
 .attach(this);
 ```
@@ -85,7 +87,7 @@ TextNode
 
 A dimension is automatic when it is `0` the first time the node is initialized, that is when it joins a UI (attached to the UI, or to a parent that is in a UI). Sizes you set before that moment count as given sizes. The node then:
 
-- measures the text when it is initialized and on every [reload](../node-fundamentals.md), and again after each draw, so a supplier-driven text resizes the node frame by frame;
+- measures the text each time it is initialized (when it joins a UI, and again when it is attached back after a removal), and again after each draw, so a supplier-driven text resizes the node frame by frame;
 - sizes itself on its first draw when the text is given after initialization;
 - keeps its size and draws nothing while the text is `null`, has no element, or is an empty string.
 
@@ -102,14 +104,14 @@ label.reset();
 
 ## Loading skeleton
 
-While the node waits for a condition set with `wait(...)`, it takes the size of its text (when it has one) for the dimensions that are still `0`, and draws the default pulsing grey placeholder over it (see [Node Fundamentals](../node-fundamentals.md)).
+While the node waits for a condition set with `wait(...)`, it takes the size of its text (when it has one) for the dimensions that are still `0`, and draws the default pulsing gray placeholder over it (see [ContainerNode](../layout/container.md#loading-a-section-with-wait-and-skeleton)).
 
 ## Effects on text
 
 Node effects apply to the drawn glyphs. For example, an outline:
 
 ```java
-TextNode.create(0, 0).text(Text.create("Outlined", TextInfo.create(font, 50, Color.WHITE))).effect(BorderNodeEffect.create(Color.BLACK, 2F)).attach(this);
+TextNode.create(0, 0).text(Text.create("Outlined", TextInfo.create(font, 50F, Color.WHITE))).effect(BorderNodeEffect.create(Color.BLACK, 2F)).attach(this);
 ```
 
 ![The word Outlined in white with a thin black outline, on a light background](../../images/text-outline.png "The BorderNodeEffect outlines the glyphs (shown on a light background so the black outline stands out).")
@@ -152,8 +154,8 @@ Every setter returns the node itself, typed by the generic return of the fluent 
 
 ## See also
 
+- Next: [ResourceNode](resource.md)
+- [Text](../../essentials/text.md)
 - [Text and TextInfo](../../text/text-and-textinfo.md)
-- [Fonts](../../fonts/adding-fonts.md)
 - [Markup and Text Effects](../../text/markup-and-effects.md)
-- [Drawing Text](../../drawing/text.md) for drawing text without a node
 - [TextFieldNode](../input/text-field.md) for editable text

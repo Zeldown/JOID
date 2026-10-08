@@ -1,6 +1,6 @@
 # Quick Start
 
-This page is the smallest complete JOID program: a window on the LWJGL 3 backend, a UI bridge, a font, and a first `UI` with a button that counts its clicks. Copy the four classes, run them, and you have a working base. It assumes your build is set up as in [Installation](installation.md); for a guided walk through a real screen, follow the [Tutorial](../tutorial/setup.md) afterwards.
+This page is the smallest complete JOID program: a window on the LWJGL 3 backend, a UI bridge, a font, and a first `UI` with a button that counts its clicks. Copy the four classes, run them, and you have a working base. It assumes your build is set up as in [Installation](installation.md); each part is explained in a few words here, and the [Core Concepts](../concepts/canvas.md) that follow explain them one by one.
 
 ![A dimmed window with a rounded gray button at its center reading Clicks: 2](../images/intro-quick-start.png "The program of this page after two clicks")
 
@@ -122,7 +122,11 @@ The first load of a font file generates its MSDF atlas into a cache folder, whic
 
 ## Step 4: write a first UI
 
-A screen extends `UI` (`dev.joid.lib.ui.core`) and builds its nodes in `init()`. Positions are in units of the 1920×1080 virtual canvas, whatever the size of the window.
+A screen extends `UI` (`dev.joid.lib.ui.core`) and builds its nodes in `init()`. Positions are in units of the 1920×1080 virtual canvas, fitted to the window without stretching; a wider or taller window shows extra canvas around it.
+
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
+
+[The Virtual Canvas](../concepts/canvas.md), the next page, explains it.
 
 ```java
 package com.example;
@@ -360,7 +364,7 @@ With the `-dev` jar, enable the developer tools before loading JOID:
 JOID.inst().setDevMode(true).load();
 ```
 
-Then press `F3` for the developer panel, `Ctrl+R` or `F5` to rerun `init()`, and `Ctrl+Shift+R` or `Shift+F5` to replace the UI with a fresh instance. See [Developer Tools](dev-tools.md).
+Then press `F3` for the developer panel, `Ctrl+R` or `F5` to rerun `init()`, and `Ctrl+Shift+R` or `Shift+F5` to replace the UI with a fresh instance. See [Developer Tools](../concepts/dev-tools.md).
 
 ## Other backends
 
@@ -411,15 +415,14 @@ The demo window of each backend (`dev.joid.impl.<backend>.demo.DemoWindow` in th
 
 ## Next steps
 
-- [Tutorial 1: Project Setup](../tutorial/setup.md) builds a complete settings screen in four parts: layout, input controls, persisted state and polish.
-- [Core Concepts](core-concepts.md) explains the frame lifecycle and the conventions of the fluent API.
-- [Developer Tools](dev-tools.md) shows the developer panel and hot reload.
+- [The Virtual Canvas](../concepts/canvas.md) starts the Core Concepts: one page per idea this program used, with examples you can paste in the `init()` of `CounterUI`.
+- [Developer Tools](../concepts/dev-tools.md), the last page of the Core Concepts, shows the developer panel and hot reload.
+- [Tutorial 1: Project Setup](../tutorial/setup.md) turns this project into a complete settings screen, once you have read the Essentials.
 
 ## See also
 
-- [Tutorial 1: Project Setup](../tutorial/setup.md)
-- [Core Concepts](core-concepts.md)
-- [The UI Class](../ui/ui-class.md)
-- [Node Fundamentals](../nodes/node-fundamentals.md)
-- [Signals](../state/signals.md)
+- Next: [The Virtual Canvas](../concepts/canvas.md)
+- [UIs and Their Lifecycle](../concepts/uis.md)
+- [The Frame Loop](../concepts/frame-loop.md)
+- [Bridges and Backends](../concepts/bridges.md)
 - [UI Bridge](../integration/ui-bridge.md)

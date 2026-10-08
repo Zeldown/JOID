@@ -48,7 +48,7 @@ The whole screen is Java: factories, chained setters and lambdas, checked by the
 | Bridges and backends | Bridges connect JOID to a window, a renderer and an audio device; a backend implements them for one engine. |
 | Design-neutral | JOID imposes no look: its components bring the behavior, and you draw them, or use a kit that draws them. |
 
-The [Core Concepts](core-concepts.md) page explains each idea once you have seen them at work in the tutorial.
+The [Core Concepts](../concepts/canvas.md) section gives each idea its own page, right after the [Quick Start](quick-start.md).
 
 ### Write once, render anywhere
 
@@ -62,9 +62,9 @@ Your UIs talk only to the API of JOID. JOID reaches the window, the GPU and the 
 
 ### One canvas, every window
 
-You design on a 1920×1080 frame, and every JOID UI is laid out on the same 1920×1080 canvas, which JOID fits into the window: positions and sizes are canvas units, whatever the resolution. A window of another shape keeps the proportions of the canvas and gives the extra space to the sides or above and below.
+You design on a 1920×1080 frame, and every JOID UI is laid out on the same 1920×1080 canvas, which JOID fits into the window: positions and sizes are canvas units, whatever the resolution. A window of another shape keeps the proportions of the canvas and shows extra canvas on the sides or above and below, which your UI can use.
 
-![The 1920 by 1080 canvas drawn into a 16:9 window, a 4:3 window with extra space above and below, and a 21:9 window with extra space on the sides](../images/diagram-intro-canvas.png "One canvas, fitted into every window")
+![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
 
 Positions, sizes, colors, corner radii, fonts, weights and font sizes therefore carry over from your design tool as they are: read them in the inspector, write them in your nodes, and the render lands on the design pixel for pixel.
 
@@ -88,7 +88,7 @@ A `Signal<T>` holds a value. A setter that receives an expression reading signal
 
 - **A fluent, typed API**: every node is created with a factory and configured with chained setters; your IDE completes it and the compiler checks it, down to the type of the signals you connect.
 - **Sensible defaults**: a node works with its factory alone, and every option has a default you can override in the chain.
-- **Dev mode**: an on-screen inspector, a grid, a profiler, hot reload, and warnings that point at the line of your code that caused them (see [Developer Tools](dev-tools.md)).
+- **Dev mode**: an on-screen inspector, a grid, a profiler, hot reload, and warnings that point at the line of your code that caused them (see [Developer Tools](../concepts/dev-tools.md)).
 - **Direct GPU rendering**: each node turns into draw calls and shader passes of the engine, with no intermediate rendering layer; text is drawn from MSDF atlases, effects run as shaders, and resources are uploaded once and cached.
 
 ## What you can build
@@ -105,13 +105,14 @@ Menus and settings screens of a game, the overlay of a tool, a launcher, a dashb
 
 ## How to read these docs
 
-The navigation is a learning path. Read the first sections in order, then jump to what you need.
+The navigation is a learning path: each page relies only on the pages before it. Read Getting Started, Core Concepts, Essentials and the Tutorial in order; the later sections go deeper on each topic, and you can read them in order or jump to what you need.
 
 | Section | What you find there | Start with |
 | --- | --- | --- |
-| **Getting Started** | This introduction, the installation, a minimal program, the core concepts and the developer tools. | [Installation](installation.md), [Quick Start](quick-start.md) |
-| **Tutorial** | Four parts that build a real settings screen, from the window to the polish. | [Tutorial 1: Project Setup](../tutorial/setup.md) |
-| **Essentials** | Short pages read in order, covering the everyday use of each topic: UIs, nodes, layout, styling, input, state, text, media, animation. | [UIs](../essentials/uis.md) |
+| **Getting Started** | This introduction, the installation and a minimal program you run. | [Installation](installation.md), [Quick Start](quick-start.md) |
+| **Core Concepts** | One short page per foundation: the virtual canvas, UIs, nodes, input, signals, styling, the frame loop, bridges, the developer tools. | [The Virtual Canvas](../concepts/canvas.md) |
+| **Essentials** | Short pages that apply the concepts to everyday screens: layout, text, input controls, saving state, images and media, animation. | [Layout](../essentials/layout.md) |
+| **Tutorial** | Four parts that build a real settings screen with everything above. | [Tutorial 1: Project Setup](../tutorial/setup.md) |
 | **Components** | A catalog with one page per node (layout, display, inputs, data), and how to build your UI kit. | [Component Catalog](../components/overview.md) |
 | **Guides** | Complete pages on every topic: nodes, styling, interactions, animation, state, UIs, resources. | [Node Fundamentals](../nodes/node-fundamentals.md), [Signals](../state/signals.md) |
 | **Text** and **Fonts** | The text model, styling, markup and text effects; how fonts work, adding fonts, the MSDF generator. | [Text and TextInfo](../text/text-and-textinfo.md) |
@@ -134,6 +135,6 @@ Every page starts with a minimal example and its result, then the common uses, t
 - [Installation](installation.md)
 - [Quick Start](quick-start.md)
 - [Tutorial 1: Project Setup](../tutorial/setup.md)
-- [Core Concepts](core-concepts.md)
+- [The Virtual Canvas](../concepts/canvas.md)
 - [Building a UI Kit](../components/ui-kit.md)
 - [License](license.md)
