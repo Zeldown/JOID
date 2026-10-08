@@ -130,7 +130,7 @@ task collectArtifacts(type: Copy) {
     dependsOn ':core:releaseJar', ':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':base-openal:jar', ':backend-lwjgl2:shadowJar', ':backend-lwjgl3:shadowJar', ':backend-vulkan:shadowJar', ':tool-msdf:jar'
     from { [':core', ':base-glfw', ':base-opengl'].collect { project(it).releaseJar.archivePath } }
     from { [':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { project(it).shadowJar.archivePath } }
-    from { [':tool-testkit', ':base-openal'].collect { project(it).jar.archivePath } }
+    from { [':tool-testkit', ':tool-msdf', ':base-openal'].collect { project(it).jar.archivePath } }
     from backendTemplate
     from msdfGenerator
     into file('build/libs')
