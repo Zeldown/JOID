@@ -30,7 +30,6 @@ import dev.joid.impl.vulkan.render.buffer.Stream;
 import dev.joid.impl.vulkan.render.descriptor.DescriptorCache;
 import dev.joid.impl.vulkan.render.framebuffer.FrameBuffer;
 import dev.joid.impl.vulkan.render.pipeline.PipelineCache;
-import dev.joid.impl.vulkan.render.pipeline.PipelineKey;
 import dev.joid.impl.vulkan.render.shader.Shader;
 import dev.joid.impl.vulkan.render.shader.ShaderTranslator;
 import dev.joid.impl.vulkan.render.texture.Texture;
@@ -40,6 +39,7 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.state.PipelineKey;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
@@ -233,7 +233,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		this.beginPass(target);
 
 		final boolean lines = primitive == Primitive.LINES;
-		final long pipeline = this.pipelineCache.get(new PipelineKey(shader, target != null, state.getBlend(), state.isColorMask(), lines, lines && state.isLineSmooth()), target == null ? this.swapchain.getClearRenderPass() : this.context.getOffscreenRenderPass());
+		final long pipeline = this.pipelineCache.get(PipelineKey.create(shader, state, primitive), target != null, lines && state.isLineSmooth(), target == null ? this.swapchain.getClearRenderPass() : this.context.getOffscreenRenderPass());
 		if (pipeline != this.boundPipeline) {
 			VK10.vkCmdBindPipeline(this.commandBuffer, VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 			this.boundPipeline = pipeline;

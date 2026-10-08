@@ -25,31 +25,40 @@ import org.lwjgl.vulkan.VkVertexInputAttributeDescription;
 import org.lwjgl.vulkan.VkVertexInputBindingDescription;
 
 import dev.joid.impl.vulkan.render.Context;
+import dev.joid.impl.vulkan.render.shader.Shader;
 import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.state.PipelineKey;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.NonNull;
 
 public final class PipelineCache {
 
-	private final Context                context;
-	private final Map<PipelineKey, Long> pipelineMap;
+	private final Context                  context;
+	private final Map<PipelineKey, long[]> pipelineMap;
 
 	public PipelineCache(final Context context) {
 		this.context     = context;
 		this.pipelineMap = new HashMap<>();
 	}
 
-	public long get(final @NonNull PipelineKey key, final long renderPass) {
-		return this.pipelineMap.computeIfAbsent(key, pipelineKey -> this.create(pipelineKey, renderPass));
+	public long get(final @NonNull PipelineKey key, final boolean offscreen, final boolean smooth, final long renderPass) {
+		final long[] variants = this.pipelineMap.computeIfAbsent(key, pipelineKey -> new long[4]);
+		final int index = (offscreen ? 2 : 0) + (smooth ? 1 : 0);
+		if (variants[index] == VK10.VK_NULL_HANDLE) {
+			variants[index] = this.create(key, smooth, renderPass);
+		}
+		return variants[index];
 	}
 
-	private long create(final PipelineKey key, final long renderPass) {
+	private long create(final PipelineKey key, final boolean smooth, final long renderPass) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final Shader shader = (Shader) key.getShader();
 			final ByteBuffer entryPoint = stack.UTF8("main");
 			final VkPipelineShaderStageCreateInfo.Buffer stages = VkPipelineShaderStageCreateInfo.calloc(2, stack);
-			stages.get(0).sType$Default().stage(VK10.VK_SHADER_STAGE_VERTEX_BIT).module(key.getShader().getVertexModule()).pName(entryPoint);
-			stages.get(1).sType$Default().stage(VK10.VK_SHADER_STAGE_FRAGMENT_BIT).module(key.getShader().getFragmentModule()).pName(entryPoint);
+			stages.get(0).sType$Default().stage(VK10.VK_SHADER_STAGE_VERTEX_BIT).module(shader.getVertexModule()).pName(entryPoint);
+			stages.get(1).sType$Default().stage(VK10.VK_SHADER_STAGE_FRAGMENT_BIT).module(shader.getFragmentModule()).pName(entryPoint);
 
 			final VkVertexInputAttributeDescription.Buffer attributes = VkVertexInputAttributeDescription.calloc(VertexAttribute.values().length, stack);
 			for (final VertexAttribute attribute : VertexAttribute.values()) {
@@ -67,7 +76,7 @@ public final class PipelineCache {
 					.lineWidth(1F)
 					.cullMode(VK10.VK_CULL_MODE_NONE)
 					.frontFace(VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE);
-			if (key.isSmooth() && this.context.isSmoothLines()) {
+			if (smooth && this.context.isSmoothLines()) {
 				rasterization.pNext(VkPipelineRasterizationLineStateCreateInfoEXT.calloc(stack).sType$Default().lineRasterizationMode(EXTLineRasterization.VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_EXT).address());
 			}
 
@@ -86,14 +95,14 @@ public final class PipelineCache {
 					.sType$Default()
 					.pStages(stages)
 					.pVertexInputState(vertexInput)
-					.pInputAssemblyState(VkPipelineInputAssemblyStateCreateInfo.calloc(stack).sType$Default().topology(key.isLines() ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST))
+					.pInputAssemblyState(VkPipelineInputAssemblyStateCreateInfo.calloc(stack).sType$Default().topology(key.getPrimitive() == Primitive.LINES ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST))
 					.pViewportState(VkPipelineViewportStateCreateInfo.calloc(stack).sType$Default().viewportCount(1).scissorCount(1))
 					.pRasterizationState(rasterization)
 					.pMultisampleState(VkPipelineMultisampleStateCreateInfo.calloc(stack).sType$Default().rasterizationSamples(VK10.VK_SAMPLE_COUNT_1_BIT))
 					.pDepthStencilState(VkPipelineDepthStencilStateCreateInfo.calloc(stack).sType$Default().depthCompareOp(VK10.VK_COMPARE_OP_LESS))
 					.pColorBlendState(VkPipelineColorBlendStateCreateInfo.calloc(stack).sType$Default().pAttachments(blendAttachment))
 					.pDynamicState(VkPipelineDynamicStateCreateInfo.calloc(stack).sType$Default().pDynamicStates(stack.ints(VK10.VK_DYNAMIC_STATE_VIEWPORT, VK10.VK_DYNAMIC_STATE_SCISSOR, VK10.VK_DYNAMIC_STATE_LINE_WIDTH, VK10.VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK, VK10.VK_DYNAMIC_STATE_STENCIL_WRITE_MASK, VK10.VK_DYNAMIC_STATE_STENCIL_REFERENCE, VK13.VK_DYNAMIC_STATE_CULL_MODE, VK13.VK_DYNAMIC_STATE_FRONT_FACE, VK13.VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY, VK13.VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE, VK13.VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE, VK13.VK_DYNAMIC_STATE_DEPTH_COMPARE_OP, VK13.VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE, VK13.VK_DYNAMIC_STATE_STENCIL_OP)))
-					.layout(key.getShader().getPipelineLayout())
+					.layout(shader.getPipelineLayout())
 					.renderPass(renderPass)
 					.subpass(0);
 

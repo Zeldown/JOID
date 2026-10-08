@@ -9,6 +9,7 @@ import dev.joid.lib.bridge.render.shader.source.BlockShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.shader.source.StencilShaderTranslator;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
 
@@ -36,6 +37,16 @@ public class ShaderTranslatorTest {
 			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
 			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(BlockShaderTranslator.create().translateVertex(vertex, fragment), ShaderStage.VERTEX).remaining() > 0);
 			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(BlockShaderTranslator.create().translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
+		}
+	}
+
+	@Test
+	public void compilesCoreShadersWithTheStencilEmulation() {
+		for (final CoreShader shader : CoreShader.values()) {
+			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
+			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(StencilShaderTranslator.create().translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(StencilShaderTranslator.write().translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
 		}
 	}
 

@@ -182,6 +182,12 @@ A null normal gets no diffuse light. The light does not depend on the scale of t
 | `lineWidth(float)` / `lineSmooth(boolean)` / `getLineWidth()` / `isLineSmooth()` | Line state. With `lineSmooth(true)` and no bound shader, the core expands each segment into triangles drawn with its `line` shader, so the backend only draws triangles. |
 | `shader(IShader)` / `getShader()` | The bound shader, `null` for none. |
 
+### Pipelines and stencil emulation
+
+An API that bakes the state into pipeline objects (Vulkan, Blaze3D, WebGPU, Metal) caches them by `PipelineKey` (`dev.joid.lib.bridge.render.state`). `PipelineKey.create(IShader shader, RenderState state, Primitive primitive)` keeps the shader, the blend state, the color mask, the depth test and write, the culling and the primitive, normalized so that equal states give equal keys: a disabled blend is always `BlendState.DISABLED` (two `BlendState`s with the same equation and factors are equal), and there is no depth write without the depth test. A backend that sets some of this state dynamically (the Vulkan backend sets the depth and the culling per draw) still gets correct pipelines from the key.
+
+An API without stencil buffer can emulate it with shaders. `StencilShaderTranslator` (`dev.joid.lib.bridge.render.shader.source`), a `BlockShaderTranslator`, reads the stencil from an 8-bit texture `joid_Stencil` and adds six `int` uniforms to the block (`joid_StencilTest`, `joid_StencilFunction`, `joid_StencilReference`, `joid_StencilMask`, `joid_StencilFail`, `joid_StencilPass`): `StencilShaderTranslator.create()` discards the fragments that fail the test, `StencilShaderTranslator.write()` writes the new stencil value instead of the color. At each draw, `StencilEmulation.create(RenderState state, boolean screen)` (`dev.joid.lib.bridge.render.state`) tells whether the stencil is tested (`isTest()`, only on the screen, as framebuffers have no stencil) and written (`isWrite()`, when the fail or pass operation changes it), and `write(UniformBlock)` sets the six uniforms; `PipelineKey.stencil(shader, state, primitive)` is the key of the pass that writes the stencil (no blend, no depth, color writes on). The JOID-MC backend draws its masks this way on Blaze3D.
+
 ## Shaders
 
 Shaders are written once, in JOID GLSL (see [Custom Shaders](../shaders/custom-shaders.md)). The core parses each stage into a `ShaderSource` (`dev.joid.lib.bridge.render.shader.source`) and passes both stages to `createShader`. The backend generates the declarations of its shading language in front of the body.
