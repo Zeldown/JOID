@@ -19,6 +19,9 @@ public abstract class UIBridge implements IUIBridge {
 	@NonNull
 	private final IndexedLinkedList<@NonNull UI> uiList;
 
+	private long      pressTime;
+	private ClickType pressed;
+
 	public UIBridge() {
 		this.uiList = new IndexedLinkedList<>();
 	}
@@ -31,6 +34,8 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void mousePressed(final @NonNull ClickType clickType) {
+		this.pressed   = clickType;
+		this.pressTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
 			if (!ui.getData().active() || !ui.getData().visible()) {
 				continue;
@@ -42,7 +47,13 @@ public abstract class UIBridge implements IUIBridge {
 		}
 	}
 
-	public final void mouseDragged(final @NonNull ClickType clickType, final long deltaTime) {
+	public final void mouseMoved() {
+		if (this.pressed == null) {
+			return;
+		}
+
+		final ClickType clickType = this.pressed;
+		final long deltaTime = BridgeHandler.CLOCK.get().currentTimeMillis() - this.pressTime;
 		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
 			if (!ui.getData().active() || !ui.getData().visible()) {
 				continue;
@@ -55,6 +66,10 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void mouseReleased(final @NonNull ClickType clickType) {
+		if (this.pressed == clickType) {
+			this.pressed = null;
+		}
+
 		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
 			if (!ui.getData().active() || !ui.getData().visible()) {
 				continue;

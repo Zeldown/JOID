@@ -20,9 +20,6 @@ import dev.joid.lib.utils.click.ClickType;
 
 public class DemoWindow extends DemoUIBridge {
 
-	private ClickType clickType = null;
-	private long lastMouseEvent = 0L;
-
 	public DemoWindow() throws LWJGLException {
 		Display.setDisplayMode(new DisplayMode(1920, 1080));
 		Display.setResizable(true);
@@ -68,14 +65,11 @@ public class DemoWindow extends DemoUIBridge {
 				final boolean state = Mouse.getEventButtonState();
 
 				if (state && button != -1) {
-					this.clickType = ClickType.from(button);
-					this.lastMouseEvent = System.currentTimeMillis();
-					super.mousePressed(this.clickType);
-				} else if (this.clickType != null && !state && button != -1) {
-					super.mouseReleased(this.clickType);
-					this.clickType = null;
-				} else if (this.clickType != null && this.lastMouseEvent > 0L && button == -1) {
-					super.mouseDragged(this.clickType, System.currentTimeMillis() - this.lastMouseEvent);
+					super.mousePressed(ClickType.from(button));
+				} else if (button != -1) {
+					super.mouseReleased(ClickType.from(button));
+				} else {
+					super.mouseMoved();
 				}
 
 				if (scroll != 0) {

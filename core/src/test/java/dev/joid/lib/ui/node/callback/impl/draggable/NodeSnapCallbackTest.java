@@ -58,7 +58,7 @@ public class NodeSnapCallbackTest {
 		this.bridges.move(150D, 150D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.move(450D, 350D).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		Assert.assertEquals(Arrays.asList(rect, near, 500D, 400D), received);
 	}
@@ -99,7 +99,7 @@ public class NodeSnapCallbackTest {
 		this.bridges.move(150D, 150D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.move(400D, 300D).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertEquals(350D, rect.getTargetDragX(), 0D);

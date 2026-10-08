@@ -47,10 +47,10 @@ public class NodeMouseDraggedCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onMouseDragged((node, mouseX, mouseY, clickType, deltaTime) -> received.addAll(Arrays.asList(node, mouseX, mouseY, clickType, deltaTime)));
 		this.bridges.open(new NodeUI(rect)).frames(30);
-		this.bridges.move(150D, 160D).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
-		this.bridges.move(400D, 300D).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.RIGHT, 32L);
+		this.bridges.move(150D, 160D).getUi().mousePressed(ClickType.LEFT);
+		this.bridges.frames(1).getUi().mouseMoved();
+		this.bridges.move(400D, 300D).getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.frames(2).getUi().mouseMoved();
 		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, ClickType.LEFT, 16L, rect, 400D, 300D, ClickType.RIGHT, 32L), received);
 	}
 

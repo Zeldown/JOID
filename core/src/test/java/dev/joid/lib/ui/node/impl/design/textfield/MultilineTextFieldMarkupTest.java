@@ -377,7 +377,7 @@ public class MultilineTextFieldMarkupTest {
 
 	private void drag(final double x, final double y) {
 		this.bridges.move(2D + x, 2D + y).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 40L);
+		this.bridges.getUi().mouseMoved();
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {

@@ -67,7 +67,7 @@ See [The Virtual Canvas](../concepts/canvas.md) for the fit rule and the convers
 | `void preDraw(double mouseX, double mouseY)` | Inside the view, after the nodes with a negative `zindex` and before the nodes with a `zindex` from 0 to 99. |
 | `void postDraw(double mouseX, double mouseY)` | Inside the view, after the nodes with a `zindex` from 0 to 99 and before the nodes with a `zindex` of 100 or more. |
 | `void mousePressed(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | After the nodes received the press (the nodes with a positive `zindex` first). |
-| `void mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | After the nodes received the drag. `deltaTime` comes from the host. |
+| `void mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | After the nodes received the drag. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge. |
 | `void mouseReleased(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | After the nodes received the release. |
 | `void mouseScroll(double mouseX, double mouseY, int value, InternalContext context)` | After the nodes received the scroll. |
 | `void keyPressed(char c, Key key, InternalContext context)` | Last, after the nodes, the keybinds, the zoom keys and the dev keys. |

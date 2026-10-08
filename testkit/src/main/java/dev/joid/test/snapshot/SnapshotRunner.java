@@ -45,9 +45,6 @@ public final class SnapshotRunner {
 	private final ISnapshotBackend     backend;
 	private final SnapshotWindowBridge window;
 
-	private long      pressTime;
-	private ClickType pressed;
-
 	private SnapshotRunner(final ISnapshotBackend backend) {
 		this.clock   = ManualClockBridge.create(1735689600000L);
 		this.masks   = new ArrayList<>();
@@ -127,13 +124,10 @@ public final class SnapshotRunner {
 				this.moveTo(Double.parseDouble(arguments[1]), Double.parseDouble(arguments[2]), Long.parseLong(arguments[3]));
 				break;
 			case "press":
-				this.pressed   = ClickType.valueOf(arguments[1]);
-				this.pressTime = this.clock.currentTimeMillis();
-				this.bridge.mousePressed(this.pressed);
+				this.bridge.mousePressed(ClickType.valueOf(arguments[1]));
 				break;
 			case "release":
-				this.bridge.mouseReleased(this.pressed);
-				this.pressed = null;
+				this.bridge.mouseReleased(ClickType.valueOf(arguments[1]));
 				break;
 			case "scroll":
 				this.bridge.mouseScroll(Integer.parseInt(arguments[1]));
@@ -259,9 +253,7 @@ public final class SnapshotRunner {
 			this.window.setMouseX(startX + (x - startX) * progress);
 			this.window.setMouseY(startY + (y - startY) * progress);
 			this.render(false);
-			if (this.pressed != null) {
-				this.bridge.mouseDragged(this.pressed, this.clock.currentTimeMillis() - this.pressTime);
-			}
+			this.bridge.mouseMoved();
 		}
 	}
 

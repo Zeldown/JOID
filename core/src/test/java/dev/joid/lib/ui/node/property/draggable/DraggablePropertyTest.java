@@ -251,7 +251,7 @@ public class DraggablePropertyTest {
 		this.bridges.move(110D, 110D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.move(210D, 160D).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertEquals(2, this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).size());
 	}
@@ -261,7 +261,7 @@ public class DraggablePropertyTest {
 		this.bridges.move(110D, 110D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.move(x, y).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 	}
 
 	@AllArgsConstructor

@@ -55,7 +55,7 @@ super.keybind(() -> this.status.set("Saved"), Key.LEFT_CONTROL, Key.S);
 | `onMouseScroll` | `(node, mouseX, mouseY, value)` | Every wheel event. |
 
 - `value` of a wheel event is the delta forwarded by the UI bridge: positive when the wheel rolls up, never `0` (the bridge drops still events). The demo window of the GLFW module sends 120 per notch.
-- `deltaTime` of a drag event is the time value forwarded by the UI bridge; the demo windows of the GLFW and LWJGL 2 modules send the milliseconds elapsed since the button was pressed.
+- `deltaTime` of a drag event is the number of milliseconds since the button was pressed, measured by the UI bridge on the clock bridge (`BridgeHandler.CLOCK`).
 - `onClick` consumes the press: the nodes behind and the UIs below do not receive it. `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` are listeners: they run for every event not consumed yet and leave it to the others; see [Consumed input events](callbacks.md#consumed-input-events).
 - Hidden and disabled nodes receive no mouse event: none of these callbacks, nor hover and drags, fire for a node whose `visible(...)` or `enabled(...)` returns `false`, or for the children of a hidden or disabled node.
 
@@ -203,7 +203,7 @@ public void keyPressed(final char c, final Key key, final InternalContext contex
 
 ![Diagram: an event goes from the backend to the UI bridge, to the top UI, its nodes, its keybinds and hooks, then to the UI below unless it was consumed](../images/diagram-event-path.png "The path of an input event from the window to the nodes")
 
-The UI bridge receives the events from the backend through `UIBridge.mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseDragged(ClickType, long)`, `mouseScroll(int)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
+The UI bridge receives the events from the backend through `UIBridge.mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseMoved()`, `mouseScroll(int)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
 
 1. The UI bridge walks its UIs from the top one down, skipping the UIs that are not active or not visible (`active` and `visible` of `@UIData`, readable and changeable through `ui.getData()`). A wheel event with a value of `0` is dropped.
 2. Key events only, on `Key.ESCAPE` in a closeable UI (`closeable`, `true` by default): the UI first receives the key like any other (steps 3 to 5: a focused text field cancels its edit and consumes it, a keybind on `ESCAPE` consumes it). When nobody consumed it, the UI is asked to close (`close()` may refuse, see [Opening and Closing UIs](../ui/managing-uis.md)). Either way the dispatch stops there: the UIs below never receive that Escape. A UI that is not closeable receives Escape as a normal key.

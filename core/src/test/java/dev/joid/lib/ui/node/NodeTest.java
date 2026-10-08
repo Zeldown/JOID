@@ -703,7 +703,7 @@ public class NodeTest {
 		this.bridges.move(150D, 150D).frames(2);
 		events.clear();
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		this.bridges.scroll(120);
 		this.bridges.getUi().keyTyped('a', Key.A);
@@ -883,7 +883,7 @@ public class NodeTest {
 		this.bridges.move(110D, 110D).frames(2);
 		events.clear();
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		this.bridges.scroll(120);
 		this.bridges.getUi().keyTyped('a', Key.A);
@@ -1294,7 +1294,8 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(NodeTest.row().scrollbar(bar)));
 		this.bridges.getUi().keyTyped('a', Key.A);
 		this.bridges.scroll(120);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		Assert.assertEquals(Arrays.asList("typed", "scrolled", "dragged", "released"), events);
 	}
@@ -1389,7 +1390,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, target)).onSnap((rect, snapNode) -> snaps.add(snapNode));
 		this.press(node, 110D, 110D);
 		this.bridges.move(430D, 430D).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		this.bridges.frames(100);
@@ -1405,7 +1406,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP, target)).onSnap((rect, snapNode) -> snaps.add(snapNode));
 		this.press(node, 110D, 110D);
 		this.bridges.move(430D, 430D).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertEquals(420D, node.getDraggedNode().getX(), 0D);
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
@@ -1420,7 +1421,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, target));
 		this.press(node, 110D, 110D);
 		this.bridges.move(310D, 110D).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertEquals(300D, node.getX(), 0D);
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
@@ -1434,7 +1435,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).draggable(DraggableProperty.free().type(DraggableType.COPY));
 		this.press(ContainerNode.create(300D, 200D, 500D, 500D).append(node), 320D, 220D);
 		this.bridges.move(520D, 420D).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
 		Assert.assertEquals(2, draws.size());
@@ -1449,9 +1450,9 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free()).onDragStart(rect -> events.add("start")).onDrag(rect -> events.add("drag")).onDragEnd(rect -> events.add("end"));
 		this.press(node, 110D, 110D);
 		this.bridges.move(150D, 110D).frames(5);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.move(200D, 110D).frames(5);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		Assert.assertEquals(Arrays.asList("start", "drag", "drag", "end"), events);
 	}
@@ -1462,8 +1463,9 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		Assert.assertSame(node, node.dragging(true, 110D, 110D));
 		Assert.assertTrue(node.isDragging());
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.move(210D, 160D).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertEquals(200D, node.getX(), 0D);
 		Assert.assertEquals(150D, node.getY(), 0D);
@@ -1543,7 +1545,7 @@ public class NodeTest {
 		});
 		this.press(node, 110D, 110D);
 		this.bridges.move(310D, 210D).frames(100);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertEquals(300D, node.getX(), 0D);
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
@@ -1580,7 +1582,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.custom(0D, 0D, 300D, 300D));
 		this.press(node, 110D, 110D);
 		this.bridges.move(410D, 510D).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertTrue(node.isDragging());
 		Assert.assertEquals(250D, node.getX(), 0D);
@@ -1595,7 +1597,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(draggable).onDragEnd(rect -> received.addAll(Arrays.asList(rect.getDraggedNode().getX(), rect.getDraggable().getSnapping(rect.getDraggedNode()))));
 		this.press(node, 110D, 110D);
 		this.bridges.move(430D, 430D).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		Assert.assertEquals(Arrays.asList(420D, target), received);
@@ -2620,7 +2622,7 @@ public class NodeTest {
 
 	private void drop(final double x, final double y) {
 		this.bridges.move(x, y).frame();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		this.bridges.frames(100);
 	}

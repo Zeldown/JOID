@@ -184,9 +184,6 @@ public final class Main {
 	private final AppUIBridge bridge;
 	private final KeyCharacterMerger keyMerger;
 
-	private long pressTime;
-	private ClickType clickType;
-
 	private Main(final long window, final AppUIBridge bridge) {
 		this.window = window;
 		this.bridge = bridge;
@@ -233,7 +230,7 @@ public final class Main {
 		GLFW.glfwSetKeyCallback(this.window, (handle, code, scancode, action, mods) -> this.onKey(code, action, mods));
 		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
 		GLFW.glfwSetMouseButtonCallback(this.window, (handle, button, action, mods) -> this.onMouseButton(button, action));
-		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.onCursorMove());
+		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.bridge.mouseMoved());
 		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> this.bridge.mouseScroll((int) (y * 120D)));
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.resize());
 	}
@@ -280,18 +277,9 @@ public final class Main {
 
 	private void onMouseButton(final int button, final int action) {
 		if (action == GLFW.GLFW_PRESS) {
-			this.clickType = ClickType.from(button);
-			this.pressTime = System.currentTimeMillis();
-			this.bridge.mousePressed(this.clickType);
-		} else if (this.clickType != null) {
-			this.bridge.mouseReleased(this.clickType);
-			this.clickType = null;
-		}
-	}
-
-	private void onCursorMove() {
-		if (this.clickType != null) {
-			this.bridge.mouseDragged(this.clickType, System.currentTimeMillis() - this.pressTime);
+			this.bridge.mousePressed(ClickType.from(button));
+		} else {
+			this.bridge.mouseReleased(ClickType.from(button));
 		}
 	}
 

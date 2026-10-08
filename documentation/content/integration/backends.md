@@ -173,21 +173,15 @@ public final class AppInput {
 
 	@NonNull private final AppUIBridge bridge;
 
-	private ClickType pressed;
-	private long      pressTime;
-
 	public void poll() {
 		while (Mouse.next()) {
 			final int button = Mouse.getEventButton();
 			if (button != -1 && Mouse.getEventButtonState()) {
-				this.pressed = ClickType.from(button);
-				this.pressTime = System.currentTimeMillis();
-				this.bridge.mousePressed(this.pressed);
-			} else if (button != -1 && this.pressed != null) {
-				this.bridge.mouseReleased(this.pressed);
-				this.pressed = null;
-			} else if (button == -1 && this.pressed != null) {
-				this.bridge.mouseDragged(this.pressed, System.currentTimeMillis() - this.pressTime);
+				this.bridge.mousePressed(ClickType.from(button));
+			} else if (button != -1) {
+				this.bridge.mouseReleased(ClickType.from(button));
+			} else {
+				this.bridge.mouseMoved();
 			}
 
 			if (Mouse.getEventDWheel() != 0) {

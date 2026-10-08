@@ -148,7 +148,7 @@ All of them throw a `NullPointerException` for a `null` argument.
 | `isOnTop(UI ui)` | Whether `ui` is the first active and visible UI from the top; `false` when no UI is open. |
 | `isOpened(UI ui)` | Whether `ui` is in the list. |
 | `load()` | Loads every UI again at the window size, keeping its zoom. Called by the backend on a resize. |
-| `draw()`, `update()`, `mousePressed(...)`, `mouseDragged(...)`, `mouseReleased(...)`, `mouseScroll(...)`, `keyTyped(...)` | Dispatch the frames and the input, as described above. |
+| `draw()`, `update()`, `mousePressed(...)`, `mouseMoved()`, `mouseReleased(...)`, `mouseScroll(...)`, `keyTyped(...)` | Dispatch the frames and the input, as described above. |
 
 ## Pitfalls
 

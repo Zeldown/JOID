@@ -77,9 +77,9 @@ public class NodeDragCallbackTest {
 		this.bridges.move(150D, 150D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.move(400D, 300D).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		this.bridges.move(500D, 350D).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		Assert.assertEquals(Arrays.asList(350D, 250D, 450D, 300D), received);
 	}
 
@@ -89,7 +89,7 @@ public class NodeDragCallbackTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).draggable(DraggableProperty.free()).onDrag(received::add);
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 150D).frames(2);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -147,7 +147,7 @@ public class NodeDragCallbackTest {
 		this.bridges.move(150D, 150D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.move(400D, 300D).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 16L);
+		this.bridges.getUi().mouseMoved();
 		Assert.assertEquals(100D, rect.getTargetDragX(), 0D);
 		Assert.assertEquals(100D, rect.getTargetDragY(), 0D);
 	}

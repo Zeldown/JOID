@@ -87,16 +87,13 @@ public final class AppLoop {
 	private final AppUIBridge        bridge;
 	private final KeyCharacterMerger keyMerger;
 
-	private long      pressTime;
-	private ClickType pressed;
-
 	public AppLoop(final long window, final @NonNull AppUIBridge bridge) {
 		this.window = window;
 		this.bridge = bridge;
 		this.keyMerger = KeyCharacterMerger.create(bridge::keyTyped);
 
 		GLFW.glfwSetMouseButtonCallback(window, (handle, button, action, mods) -> this.onMouseButton(button, action));
-		GLFW.glfwSetCursorPosCallback(window, (handle, x, y) -> this.onCursorMove());
+		GLFW.glfwSetCursorPosCallback(window, (handle, x, y) -> this.bridge.mouseMoved());
 		GLFW.glfwSetScrollCallback(window, (handle, x, y) -> this.bridge.mouseScroll((int) (y * 120D)));
 		GLFW.glfwSetKeyCallback(window, (handle, key, scancode, action, mods) -> this.onKey(key, action, mods));
 		GLFW.glfwSetCharCallback(window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
@@ -130,18 +127,9 @@ public final class AppLoop {
 
 	private void onMouseButton(final int button, final int action) {
 		if (action == GLFW.GLFW_PRESS) {
-			this.pressed = ClickType.from(button);
-			this.pressTime = System.currentTimeMillis();
-			this.bridge.mousePressed(this.pressed);
-		} else if (this.pressed != null) {
-			this.bridge.mouseReleased(this.pressed);
-			this.pressed = null;
-		}
-	}
-
-	private void onCursorMove() {
-		if (this.pressed != null) {
-			this.bridge.mouseDragged(this.pressed, System.currentTimeMillis() - this.pressTime);
+			this.bridge.mousePressed(ClickType.from(button));
+		} else {
+			this.bridge.mouseReleased(ClickType.from(button));
 		}
 	}
 
@@ -176,8 +164,8 @@ loop.run();
 | Method | When to call it | Argument |
 |---|---|---|
 | `mousePressed(ClickType clickType)` | A mouse button goes down. | `ClickType.from(button)` maps 0 to `LEFT`, 1 to `RIGHT`, 2 to `MIDDLE`, 3 to `BACK`, 4 to `FORWARD`, anything else to `OTHER`. |
-| `mouseReleased(ClickType clickType)` | The button goes up. | The button that was pressed. |
-| `mouseDragged(ClickType clickType, long deltaTime)` | The mouse moves while a button is held. | The held button, and the milliseconds since it was pressed. |
+| `mouseReleased(ClickType clickType)` | A mouse button goes up. | The button released. Releasing the button of the last `mousePressed` ends its drag. |
+| `mouseMoved()` | The mouse moves. | None. While a button is held, the bridge sends a drag with that button and the milliseconds since its press, read from the [clock bridge](bridges.md) (`BridgeHandler.CLOCK`), so a manual clock (testkit, replays) gives exact durations; without a held button it does nothing. |
 | `mouseScroll(int value)` | The wheel turns. | Positive when the wheel turns away from the user, 120 per notch. `0` is ignored. Scrolling uses the sign; the dev-mode zoom (Alt + wheel) uses the amount. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats. | The character it types (`0` when none) and the engine-neutral `Key` (`Key.UNKNOWN` when unknown). |
 
@@ -333,7 +321,7 @@ JOID.open(new UISettings());
 | `update()` | Updates every UI, bottom up. |
 | `draw()` | Draws every visible UI, bottom up. |
 | `mousePressed(ClickType)`, `mouseReleased(ClickType)` | A button goes down or up. |
-| `mouseDragged(ClickType, long deltaTime)` | The mouse moves with a button held. |
+| `mouseMoved()` | The mouse moves; a drag when a button is held, timed on `BridgeHandler.CLOCK`. |
 | `mouseScroll(int value)` | The wheel turns, 120 per notch. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |
 | `getUiList()` | The sorted `IndexedLinkedList<UI>`. |

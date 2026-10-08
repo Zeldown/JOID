@@ -348,7 +348,7 @@ public class TextFieldMarkupTest {
 
 	private void drag(final TextFieldNode field, final double x) {
 		this.bridges.move(2D + x, 20D).frames(1);
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 40L);
+		this.bridges.getUi().mouseMoved();
 	}
 
 	private void press(final TextFieldNode field, final Key key) {

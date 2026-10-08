@@ -192,7 +192,7 @@ The hooks come from `INode` and do nothing by default, except `drawSkeleton`.
 | `detach()` | When the node is detached, after its children. |
 | `mousePressed(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | Mouse button pressed. |
 | `mouseReleased(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | Mouse button released. |
-| `mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | Mouse moved with a button held. `deltaTime` comes from the UI bridge (the bundled windows give the milliseconds since the press). |
+| `mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | Mouse moved with a button held. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge on the clock bridge. |
 | `mouseScroll(double mouseX, double mouseY, int value, InternalContext context)` | Mouse wheel. A positive `value` is a wheel up. |
 | `keyPressed(char c, Key key, InternalContext context)` | Key typed. `c` is the typed character, as reported by the UI bridge (the bundled windows send `0` for keys without one). |
 

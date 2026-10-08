@@ -23,9 +23,6 @@ public abstract class DemoWindow extends DemoUIBridge {
 
 	private final KeyCharacterMerger keyMerger;
 
-	private long pressTime = 0L;
-	private ClickType clickType = null;
-
 	protected DemoWindow() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		if (!GLFW.glfwInit()) {
@@ -105,7 +102,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 
 	private void registerCallbacks() {
 		GLFW.glfwSetCharCallback(this.window, (handle, codepoint) -> this.keyMerger.charTyped(codepoint));
-		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> this.onCursorMove());
+		GLFW.glfwSetCursorPosCallback(this.window, (handle, x, y) -> super.mouseMoved());
 		GLFW.glfwSetScrollCallback(this.window, (handle, x, y) -> super.mouseScroll((int) (y * 120D)));
 		GLFW.glfwSetKeyCallback(this.window, (handle, key, scancode, action, mods) -> this.onKey(key, action, mods));
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.onResize());
@@ -122,18 +119,9 @@ public abstract class DemoWindow extends DemoUIBridge {
 
 	private void onMouseButton(final int button, final int action) {
 		if (action == GLFW.GLFW_PRESS) {
-			this.clickType = ClickType.from(button);
-			this.pressTime = System.currentTimeMillis();
-			super.mousePressed(this.clickType);
-		} else if (this.clickType != null) {
-			super.mouseReleased(this.clickType);
-			this.clickType = null;
-		}
-	}
-
-	private void onCursorMove() {
-		if (this.clickType != null) {
-			super.mouseDragged(this.clickType, System.currentTimeMillis() - this.pressTime);
+			super.mousePressed(ClickType.from(button));
+		} else {
+			super.mouseReleased(ClickType.from(button));
 		}
 	}
 

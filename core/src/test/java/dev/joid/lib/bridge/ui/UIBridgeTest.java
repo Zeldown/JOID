@@ -122,10 +122,13 @@ public class UIBridgeTest {
 	public void dragsTheTopUiFirst() {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hud);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.trace.clear();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 40L);
+		this.bridges.getClock().advance(40L);
+		this.bridges.getUi().mouseMoved();
 		hud.cancel = true;
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 80L);
+		this.bridges.getClock().advance(40L);
+		this.bridges.getUi().mouseMoved();
 		Assert.assertEquals(Arrays.asList("dragged hud LEFT 40", "dragged menu LEFT 40", "dragged hud LEFT 80"), this.trace);
 	}
 
@@ -136,8 +139,10 @@ public class UIBridgeTest {
 		inactive.getData().setActive(false);
 		hidden.getData().setVisible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.trace.clear();
-		this.bridges.getUi().mouseDragged(ClickType.LEFT, 40L);
+		this.bridges.getClock().advance(40L);
+		this.bridges.getUi().mouseMoved();
 		Assert.assertEquals(Collections.singletonList("dragged popup LEFT 40"), this.trace);
 	}
 
@@ -317,9 +322,44 @@ public class UIBridgeTest {
 		this.bridges.getUi().mousePressed(null);
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void refusesADragWithoutButton() {
-		this.bridges.getUi().mouseDragged(null, 40L);
+	@Test
+	public void dragsNothingWithoutAPress() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		this.bridges.getUi().mouseMoved();
+		Assert.assertTrue(this.trace.isEmpty());
+	}
+
+	@Test
+	public void stopsDraggingWhenThePressedButtonIsReleased() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.trace.clear();
+		this.bridges.getUi().mouseMoved();
+		Assert.assertTrue(this.trace.isEmpty());
+	}
+
+	@Test
+	public void keepsDraggingWhenAnotherButtonIsReleased() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(ClickType.RIGHT);
+		this.trace.clear();
+		this.bridges.getUi().mouseMoved();
+		Assert.assertEquals(Collections.singletonList("dragged menu LEFT 0"), this.trace);
+	}
+
+	@Test
+	public void timesTheDragFromTheLastPressOnTheClock() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getClock().advance(25L);
+		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.trace.clear();
+		this.bridges.getClock().advance(5L);
+		this.bridges.getUi().mouseMoved();
+		Assert.assertEquals(Collections.singletonList("dragged menu RIGHT 5"), this.trace);
 	}
 
 	@Test(expected = NullPointerException.class)
