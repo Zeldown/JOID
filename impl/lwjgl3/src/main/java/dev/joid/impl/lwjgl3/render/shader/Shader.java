@@ -27,21 +27,12 @@ import lombok.NonNull;
 public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 
 	private final int                  program;
-	private final boolean              active;
-	private final BlendState           blend;
 	private final int                  uniformBuffer;
-	private final RenderBridge         bridge;
 	private final Map<String, Integer> locationMap;
 
-	private boolean    bound;
-	private BlendState previousBlend;
-
 	private Shader(final RenderBridge bridge, final int program, final boolean active, final BlendState blend, final UniformBlock block, final List<ShaderVariable> samplers) {
-		super(block, samplers);
-		this.bridge        = bridge;
+		super(bridge, blend, active, block, samplers);
 		this.program       = program;
-		this.active        = active;
-		this.blend         = blend;
 		this.locationMap   = new HashMap<>();
 		this.uniformBuffer = GL15C.glGenBuffers();
 
@@ -62,28 +53,9 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 		return new Shader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
 	}
 
-	@Override
-	public void bind() {
-		this.previousBlend = this.bridge.getState().getBlend();
-		this.bridge.shader(this);
-		this.bridge.blend(this.blend);
-		this.bound = true;
-	}
-
-	@Override
-	public void unbind() {
-		this.bridge.shader(null);
-		if (this.previousBlend != null) {
-			this.bridge.blend(this.previousBlend);
-			this.previousBlend = null;
-		}
-
-		this.bound = false;
-	}
-
 	public void use(final RenderState state) {
 		GL20C.glUseProgram(this.program);
-		if (super.builtins(state, this.bridge.getProjection().getMatrix(), this.bridge.getModelView()).pack()) {
+		if (super.builtins(state, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).pack()) {
 			GL15C.glBindBuffer(GL31C.GL_UNIFORM_BUFFER, this.uniformBuffer);
 			GL15C.glBufferSubData(GL31C.GL_UNIFORM_BUFFER, 0L, super.getBlock().getData());
 		}
@@ -101,7 +73,7 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 		final Texture texture = (Texture) sampler.getTexture();
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0 + sampler.getUnit());
 		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
-		GL33C.glBindSampler(sampler.getUnit(), this.bridge.getSampler(sampler.getFilter(), sampler.getWrap(), texture.isMipmapped()));
+		GL33C.glBindSampler(sampler.getUnit(), ((RenderBridge) super.getBridge()).getSampler(sampler.getFilter(), sampler.getWrap(), texture.isMipmapped()));
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
 		GL20C.glUniform1i(location, sampler.getUnit());
 	}

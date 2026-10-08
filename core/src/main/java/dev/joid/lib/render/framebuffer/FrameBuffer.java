@@ -26,7 +26,7 @@ public class FrameBuffer {
 	}
 
 	public static @NonNull FrameBuffer create(final int width, final int height, final @NonNull TextureFilter filter) {
-		return new FrameBuffer(BridgeHandler.RENDER.get().createFrameBuffer(width, height, filter), filter);
+		return new FrameBuffer(BridgeHandler.RENDER.get().createFrameBuffer(width, height), filter);
 	}
 
 	public @NonNull FrameBuffer bind() {

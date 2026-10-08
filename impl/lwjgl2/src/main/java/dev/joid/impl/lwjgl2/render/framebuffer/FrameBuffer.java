@@ -4,11 +4,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GL30;
 
-import dev.joid.impl.lwjgl2.render.RenderBridge;
 import dev.joid.impl.lwjgl2.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
-import dev.joid.lib.bridge.render.texture.TextureFilter;
-import dev.joid.lib.bridge.render.texture.TextureWrap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,13 +19,8 @@ public final class FrameBuffer implements IFrameBuffer {
 	private final int     depth;
 	private final Texture texture;
 
-	public static @NonNull FrameBuffer create(final int width, final int height, final TextureFilter filter) {
+	public static @NonNull FrameBuffer create(final int width, final int height) {
 		final Texture texture = Texture.create().allocate(width, height);
-		final int previousTexture = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.getId());
-		RenderBridge.applyTextureParameters(filter, TextureWrap.CLAMP_TO_BORDER);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, previousTexture);
-
 		final int previousFrameBuffer = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
 		final int id = GL30.glGenFramebuffers();
 		GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, id);

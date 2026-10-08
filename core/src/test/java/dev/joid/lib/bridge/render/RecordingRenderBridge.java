@@ -11,7 +11,6 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
-import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
@@ -39,7 +38,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 	public void clear(final float red, final float green, final float blue, final float alpha) {}
 
 	@Override
-	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
+	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader shader) {
 		final PixelGrid grid = super.getPixelGrid();
 		final double[] xs = new double[buffer.getCount()];
 		final double[] ys = new double[buffer.getCount()];
@@ -58,7 +57,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter) {
+	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
 		return new RecordingFrameBuffer(width, height);
 	}
 

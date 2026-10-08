@@ -5,7 +5,6 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.ITexture;
-import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 
@@ -35,7 +34,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public void draw(final Primitive primitive, final VertexBuffer buffer) {
+	protected void drawPrimitive(final Primitive primitive, final VertexBuffer buffer, final IShader shader) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -45,7 +44,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public IFrameBuffer createFrameBuffer(final int width, final int height, final TextureFilter filter) {
+	public IFrameBuffer createFrameBuffer(final int width, final int height) {
 		throw new UnsupportedOperationException();
 	}
 

@@ -65,7 +65,7 @@ public interface IRenderBridge extends IBridge {
 	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer);
 
 	public @NonNull ITexture createTexture();
-	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter);
+	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height);
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend);
 
 }

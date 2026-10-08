@@ -14,9 +14,7 @@ import dev.joid.impl.lwjgl3.render.shader.Shader;
 import dev.joid.impl.lwjgl3.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
-import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
@@ -36,8 +34,6 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	private final int[]   samplers;
 	private final int     vertexArray;
 	private final int     vertexBuffer;
-	private final Shader  fixedShader;
-	private final Texture emptyTexture;
 	private final float[] smoothLineWidthRange;
 	private final float[] aliasedLineWidthRange;
 
@@ -47,8 +43,6 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		this.samplers              = RenderBridge.createSamplers();
 		this.aliasedLineWidthRange = RenderBridge.getFloats(GL12C.GL_ALIASED_LINE_WIDTH_RANGE);
 		this.smoothLineWidthRange  = RenderBridge.getFloats(GL12C.GL_SMOOTH_LINE_WIDTH_RANGE);
-		this.emptyTexture          = Texture.create().allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
-		this.fixedShader           = (Shader) this.createShader(CoreShader.FIXED.read(ShaderStage.VERTEX), CoreShader.FIXED.read(ShaderStage.FRAGMENT), BlendState.DISABLED);
 
 		GL30C.glBindVertexArray(this.vertexArray);
 		GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, this.vertexBuffer);
@@ -83,15 +77,13 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
+	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader shader) {
 		final RenderState state = super.getState();
 		this.applyTarget(state);
 		this.applyPipeline(state);
+		((Shader) shader).use(state);
 
-		final Shader shader = state.getShader() == null ? this.fixedShader : (Shader) state.getShader();
-		shader.use(state);
-
-		final Texture texture = state.getTexture() == null ? this.emptyTexture : (Texture) state.getTexture();
+		final Texture texture = (Texture) (state.getTexture() == null ? super.getEmptyTexture() : state.getTexture());
 		GL13C.glActiveTexture(GL13C.GL_TEXTURE0);
 		GL11C.glBindTexture(GL11C.GL_TEXTURE_2D, texture.getId());
 		GL33C.glBindSampler(0, this.getSampler(state.getTextureFilter(), state.getTextureWrap(), texture.isMipmapped()));
@@ -114,7 +106,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter) {
+	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
 		return FrameBuffer.create(width, height);
 	}
 

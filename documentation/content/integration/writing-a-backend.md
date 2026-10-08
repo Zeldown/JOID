@@ -45,7 +45,7 @@ Each release publishes `joid-backend-template-<version>.zip` (built by the `back
 | File | Role |
 |---|---|
 | `src/main/java/.../Backend.java` | Calls `JOID.checkVersion` and registers the three bridges. |
-| `src/main/java/.../render/RenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearDepth`, `clearStencil`, `draw`, `createTexture`, `createFrameBuffer` and `createShader`, plus `beginFrame` and `endFrame` when your engine needs them. |
+| `src/main/java/.../render/RenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearDepth`, `clearStencil`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, plus `beginFrame` and `endFrame` when your engine needs them. |
 | `src/main/java/.../window/WindowBridge.java` | Window size, mouse, keyboard and clipboard. |
 | `src/main/java/.../audio/AudioBridge.java` | Streaming audio sources for the sound of videos. |
 | `src/demo/java/.../demo/DemoWindow.java` | Opens the JOID demo UIs on your engine. It is a source set of its own: only the `dev` jar contains it. |
@@ -95,9 +95,9 @@ When a test fails, the build prints the link of its interactive `report.html`.
 | `clear(float red, float green, float blue, float alpha)` | Clear the color of the current target. |
 | `clearDepth()` | Clear the depth of the current target to the far plane (1), whatever the depth write state; the depth write state is kept. |
 | `clearStencil()` | Clear the stencil of the current target to 0. |
-| `draw(Primitive primitive, VertexBuffer buffer)` | Draw with the current state. |
+| `drawPrimitive(Primitive primitive, VertexBuffer buffer, IShader shader)` | Draw with the current state and `shader`. `RenderBridge.draw(...)` calls it with the bound shader, or with the fixed shader when none is bound, and only when that shader compiled (`isActive()`), the buffer holds vertices and the viewport is not empty, so every backend skips the same draws. |
 | `createTexture()` | Create an empty `ITexture`. |
-| `createFrameBuffer(int width, int height, TextureFilter filter)` | Create an `IFrameBuffer` with a color texture of that size. |
+| `createFrameBuffer(int width, int height)` | Create an `IFrameBuffer` with a color texture of that size. |
 | `createShader(ShaderSource vertex, ShaderSource fragment, BlendState blend)` | Translate, compile and link a shader. |
 
 | State read by your subclass | Content |
@@ -105,6 +105,8 @@ When a test fails, the build prints the link of its interactive `report.html`.
 | `getModelView()` / `getProjection()` | `MatrixStack`s; `getMatrix()` returns a column-major `float[16]`, `getNormalMatrix()` a `float[9]` for normals. |
 | `getState()` | The current `RenderState`: color, blend, depth, cull, lighting, color mask, alpha test and threshold, line width and smoothing, stencil, viewport, framebuffer, texture with its filter and wrap, shader. |
 | `getStateStack()` | The states saved by `pushState()`. |
+| `getFixedShader()` | The `CoreShader.FIXED` shader, created once with your `createShader` and `BlendState.DISABLED`. |
+| `getEmptyTexture()` | A 1×1 opaque white texture, created once with your `createTexture()`. |
 
 `getPixelGrid()` and `quantize(...)` are computed from these matrices and the viewport.
 
@@ -136,7 +138,7 @@ Without a bound shader, a draw outputs the bound texture sampled at the texture 
 rgb × (0.6 + max(normalize(normalMatrix × normal).z, 0)), clamped to 1
 ```
 
-A null normal gets no diffuse light. The light does not depend on the scale of the model: the testkit checks that a face is lit the same at scale 1 and 100. The core shader `CoreShader.FIXED` implements exactly this. The emulated backends draw every draw without a bound shader with it, and LWJGL 2 its lit draws; read its stages with `CoreShader.FIXED.read(ShaderStage.VERTEX)` and `read(ShaderStage.FRAGMENT)` and pass them to your own `createShader` to do the same.
+A null normal gets no diffuse light. The light does not depend on the scale of the model: the testkit checks that a face is lit the same at scale 1 and 100. The core shader `CoreShader.FIXED` implements exactly this. `RenderBridge` hands it to `drawPrimitive` for every draw without a bound shader (`getFixedShader()`), and LWJGL 2 draws its lit draws with it; a native bridge reads its stages with `CoreShader.FIXED.read(ShaderStage.VERTEX)` and `read(ShaderStage.FRAGMENT)` and pass them to your own `createShader` to do the same.
 
 ### Coordinates
 
@@ -154,13 +156,13 @@ A null normal gets no diffuse light. The light does not depend on the scale of t
 | Allocation | `allocate(width, height)` (re)creates the storage; `upload` fills the whole texture. Both return the texture. |
 | Mipmaps | Off by default. `mipmap(true)` works before allocation or after an upload, regenerates the levels at each upload, and `isMipmapped()` reports it. Linear filtering then uses the mipmaps. Take the levels from `MipmapChain.of(width, height, true)`: `getLevels()`, `getWidth(level)` and `getHeight(level)` give the storage to allocate, and `forEachStep((level, sourceWidth, sourceHeight, targetWidth, targetHeight) -> ...)` calls you once per level, in order, to copy level `level - 1` into `level` with a linear filter. Every backend then has the same levels. |
 | Binding | `texture(ITexture, TextureFilter, TextureWrap)` binds a texture with a filter (`NEAREST`, `LINEAR`) and a wrap (`REPEAT`, `CLAMP_TO_EDGE`, `CLAMP_TO_BORDER`). `TextureSampling.of(filter, wrap, mipmapped)` (`dev.joid.lib.bridge.render.texture`) is one of the `TextureSampling.values()` combinations, numbered by `getIndex()` for a table of sampler objects; `isMipmapFiltered()` tells whether the mipmaps are sampled: only a mipmapped texture with the `LINEAR` filter uses them. |
-| Reset | `resetTexture()` binds an opaque white texture, so drawing without a texture shows the plain color. With `RenderBridge`, `getState().getTexture()` is then `null`: draw with a white texture of your own. |
+| Reset | `resetTexture()` binds an opaque white texture, so drawing without a texture shows the plain color. With `RenderBridge`, `getState().getTexture()` is then `null`: draw with `getEmptyTexture()`. |
 | Deletion | `delete()` can be called more than once. |
 | Size | `getWidth()` and `getHeight()` return the allocated size. |
 
 ### Framebuffers
 
-`createFrameBuffer(width, height, filter)` returns an `IFrameBuffer` with a color texture and a depth attachment of the same size (no stencil: the stencil test does not apply inside framebuffers), so the depth test of 3D models works inside effects as on the screen. `frameBuffer(IFrameBuffer)` makes it the target, `frameBuffer(null)` returns to the screen; its `getTexture()` can then be bound like any texture. `getWidth()`, `getHeight()` and `delete()` complete it.
+`createFrameBuffer(width, height)` returns an `IFrameBuffer` with a color texture and a depth attachment of the same size (no stencil: the stencil test does not apply inside framebuffers), so the depth test of 3D models works inside effects as on the screen. `frameBuffer(IFrameBuffer)` makes it the target, `frameBuffer(null)` returns to the screen; its `getTexture()` can then be bound like any texture, with the filter and wrap given to `texture(...)`. `getWidth()`, `getHeight()` and `delete()` complete it.
 
 ### State
 
@@ -216,14 +218,14 @@ The shaders of the core are listed by the `CoreShader` enum (`dev.joid.lib.bridg
 
 ### Uniforms in the core
 
-The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`), which implements `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources:
+The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()`, `isBound()` and `isActive()` on the core `RenderBridge` and the blend state given to its constructor; its parent `UniformShader` implements `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, extends `UniformShader` and binds its shaders itself, as LWJGL 2 does):
 
 - a `UniformBlock` (`dev.joid.lib.bridge.render.shader.uniform`): the uniforms of both stages, each a `UniformMember` with its `UniformType`, its array length, its values and its `std140` offset and strides;
 - one `UniformSampler` per sampler of both stages, numbered from 1 in the order of the stages (`getUnit()`), with the texture, filter and wrap given to `sampler(...)`.
 
 A `ShaderTranslator` (`dev.joid.lib.bridge.render.shader.source`) turns the two sources into the code of the backend and lists what the shader declares; its subclass `BlockShaderTranslator` writes the uniforms as one `std140` block and wraps the fragment `main` with the alpha test.
 
-The LWJGL 3 shader is created this way; its private constructor passes the block and the samplers to `super(block, samplers)`:
+The LWJGL 3 shader is created this way; its private constructor passes the bridge, the blend state, whether it linked, the block and the samplers to `super(bridge, blend, active, block, samplers)`:
 
 ```java
 public static @NonNull Shader create(final RenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
@@ -260,11 +262,11 @@ The reference backends send the block this way: LWJGL 3 into a uniform buffer bo
 
 | Method | Contract |
 |---|---|
-| `bind()` | Makes the shader current (`shader(this)`) and switches to the blend state given to `createShader`, remembering the previous one. |
+| `bind()` | Makes the shader current (`shader(this)`) and switches to the blend state given to `createShader`, remembering the previous one. Implemented by the core `Shader`, as `unbind()`, `isBound()` and `isActive()`. |
 | `unbind()` | Returns to no shader and restores the previous blend state. |
 | `isBound()` | Whether the shader is bound. |
 | `isActive()` | Whether it compiled and linked. The reference backends print the compiler or linker log of a shader that fails to `System.err`. |
-| `uniform(name, ...)`, `sampler(name, texture, filter, wrap)` | Implemented by the core `Shader`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw. |
+| `uniform(name, ...)`, `sampler(name, texture, filter, wrap)` | Implemented by the core `UniformShader`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw. |
 
 A sampler that is never set samples the texture bound with `texture(...)`: the reference backends bind it to texture unit 0 and give the set samplers their unit, from 1. The block-based backends also wrap the fragment `main` to apply the alpha test of the render state.
 

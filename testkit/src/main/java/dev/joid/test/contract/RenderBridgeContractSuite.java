@@ -248,7 +248,7 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void restoresTheStateOnPop() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, TextureFilter.NEAREST);
+		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		final IShader shader = render.createShader(CoreShader.LINE.read(ShaderStage.VERTEX), CoreShader.LINE.read(ShaderStage.FRAGMENT), BlendState.NORMAL);
 		render.pushState();
 		render.frameBuffer(frameBuffer);
@@ -276,7 +276,7 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void rendersIntoFrameBuffers() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, TextureFilter.NEAREST);
+		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.frameBuffer(frameBuffer);
 			bridge.clear(0F, 1F, 0F, 1F);
@@ -308,7 +308,7 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void testsTheDepthInFrameBuffers() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, TextureFilter.NEAREST);
+		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.frameBuffer(frameBuffer);
 			bridge.clear(0F, 0F, 0F, 1F);

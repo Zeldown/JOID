@@ -37,9 +37,7 @@ import dev.joid.impl.vulkan.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.DepthRange;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
-import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
@@ -61,12 +59,10 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	private final Context         context;
 	private final long            frameFence;
 	private final long[]          samplers;
-	private final Shader          fixedShader;
 	private final Swapchain       swapchain;
 	private final Stream          vertexStream;
 	private final long            imageSemaphore;
 	private final Stream          uniformStream;
-	private final Texture         emptyTexture;
 	private final List<Runnable>  garbage;
 	private final PipelineCache   pipelineCache;
 	private final VkCommandBuffer commandBuffer;
@@ -102,9 +98,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 			this.frameFence = fence.get(0);
 		}
 
-		this.samplers     = this.createSamplers();
-		this.emptyTexture = new Texture(this).allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
-		this.fixedShader  = (Shader) this.createShader(CoreShader.FIXED.read(ShaderStage.VERTEX), CoreShader.FIXED.read(ShaderStage.FRAGMENT), BlendState.DISABLED);
+		this.samplers = this.createSamplers();
 	}
 
 	public void dispose(final @NonNull Runnable destroyer) {
@@ -229,14 +223,10 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
+	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader current) {
 		this.requireFrame();
 		final RenderState state = super.getState();
-		final Shader shader = state.getShader() == null ? this.fixedShader : (Shader) state.getShader();
-		if (!shader.isActive() || buffer.getCount() == 0 || state.getViewportWidth() <= 0 || state.getViewportHeight() <= 0) {
-			return;
-		}
-
+		final Shader shader = (Shader) current;
 		final FrameBuffer target = (FrameBuffer) state.getFrameBuffer();
 		this.beginPass(target);
 
@@ -265,7 +255,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter) {
+	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
 		return FrameBuffer.create(this, width, height);
 	}
 
@@ -437,7 +427,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 				images[index] = stateTexture.getView();
 				images[index + 1] = this.getSampler(state.getTextureFilter(), state.getTextureWrap(), stateTexture.isMipmapped());
 			} else {
-				images[index] = this.emptyTexture.getView();
+				images[index] = ((Texture) super.getEmptyTexture()).getView();
 				images[index + 1] = this.getSampler(TextureFilter.NEAREST, TextureWrap.REPEAT, false);
 			}
 			index += 2;

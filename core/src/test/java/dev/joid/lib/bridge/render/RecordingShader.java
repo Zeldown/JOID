@@ -10,6 +10,7 @@ import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 @Getter
 public final class RecordingShader implements IShader {
@@ -17,6 +18,9 @@ public final class RecordingShader implements IShader {
 	private final Map<String, Object> values = new HashMap<>();
 
 	private boolean bound;
+
+	@Setter
+	private boolean active = true;
 
 	@Override
 	public void bind() {
@@ -28,11 +32,6 @@ public final class RecordingShader implements IShader {
 	public void unbind() {
 		BridgeHandler.RENDER.get().shader(null);
 		this.bound = false;
-	}
-
-	@Override
-	public boolean isActive() {
-		return true;
 	}
 
 	@Override

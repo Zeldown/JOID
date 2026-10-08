@@ -15,6 +15,7 @@ import dev.joid.impl.lwjgl2.render.RenderBridge;
 import dev.joid.impl.lwjgl2.render.state.BlendSnapshot;
 import dev.joid.impl.lwjgl2.render.texture.Texture;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.shader.UniformShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderBuiltin;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
@@ -26,7 +27,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
+public final class Shader extends UniformShader {
 
 	public static final int NORMAL_LOCATION = 6;
 
@@ -129,7 +130,7 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + sampler.getUnit());
 		this.previousTextureMap.computeIfAbsent(sampler, key -> GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D));
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, ((Texture) sampler.getTexture()).getId());
-		RenderBridge.applyTextureParameters(sampler.getFilter(), sampler.getWrap());
+		RenderBridge.applyTextureParameters(sampler.getFilter(), sampler.getWrap(), false);
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL20.glUniform1i(this.getLocation(sampler.getName()), sampler.getUnit());
 	}

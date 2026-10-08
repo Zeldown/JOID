@@ -23,22 +23,13 @@ import lombok.NonNull;
 @Getter
 public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 
-	private final RenderBridge bridge;
-	private final BlendState   blend;
-	private final boolean      active;
-	private final long         vertexModule;
-	private final long         fragmentModule;
-	private final long         descriptorSetLayout;
-	private final long         pipelineLayout;
-
-	private boolean    bound;
-	private BlendState previousBlend;
+	private final long vertexModule;
+	private final long fragmentModule;
+	private final long descriptorSetLayout;
+	private final long pipelineLayout;
 
 	private Shader(final RenderBridge bridge, final BlendState blend, final boolean active, final UniformBlock block, final List<ShaderVariable> samplers, final long vertexModule, final long fragmentModule, final long descriptorSetLayout, final long pipelineLayout) {
-		super(block, samplers);
-		this.bridge              = bridge;
-		this.blend               = blend;
-		this.active              = active;
+		super(bridge, blend, active, block, samplers);
 		this.vertexModule        = vertexModule;
 		this.fragmentModule      = fragmentModule;
 		this.descriptorSetLayout = descriptorSetLayout;
@@ -77,25 +68,6 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 
 			return new Shader(bridge, blend, true, block, samplers, Shader.createModule(stack, context, vertex), Shader.createModule(stack, context, fragment), descriptorSetLayout.get(0), pipelineLayout.get(0));
 		}
-	}
-
-	@Override
-	public void bind() {
-		this.previousBlend = this.bridge.getState().getBlend();
-		this.bridge.shader(this);
-		this.bridge.blend(this.blend);
-		this.bound = true;
-	}
-
-	@Override
-	public void unbind() {
-		this.bridge.shader(null);
-		if (this.previousBlend != null) {
-			this.bridge.blend(this.previousBlend);
-			this.previousBlend = null;
-		}
-
-		this.bound = false;
 	}
 
 	private static long createModule(final MemoryStack stack, final Context context, final ByteBuffer code) {

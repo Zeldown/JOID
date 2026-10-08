@@ -17,7 +17,6 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
-import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.AccessLevel;
@@ -68,15 +67,15 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 	public void clear(final float red, final float green, final float blue, final float alpha) {}
 
 	@Override
-	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
+	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader shader) {
 		final int[] vertices = new int[buffer.getCount() * 8];
 		for (int i = 0; i < vertices.length; i++) {
 			vertices[i] = buffer.getBuffer().getInt(i * 4);
 		}
 
-		final IShader shader = super.getShader();
-		final Map<String, Object> uniforms = shader instanceof RecordingShader ? new HashMap<>(((RecordingShader) shader).getValues()) : Collections.emptyMap();
-		this.captures.add(new Capture(primitive, buffer.isTexture(), buffer.isColor(), buffer.isNormal(), vertices, super.getState().copy(), uniforms));
+		final IShader bound = super.getShader();
+		final Map<String, Object> uniforms = bound instanceof RecordingShader ? new HashMap<>(((RecordingShader) bound).getValues()) : Collections.emptyMap();
+		this.captures.add(new Capture(primitive, buffer.isTexture(), buffer.isColor(), buffer.isNormal(), vertices, super.getState().copy(), shader, uniforms));
 	}
 
 	@Override
@@ -85,7 +84,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 	}
 
 	@Override
-	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter) {
+	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
 		final IFrameBuffer frameBuffer = new RecordingFrameBuffer(width, height);
 		this.frameBuffers.add(frameBuffer);
 		return frameBuffer;
@@ -110,6 +109,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 		private final boolean             normal;
 		private final int[]               vertices;
 		private final RenderState         state;
+		private final IShader             shader;
 		private final Map<String, Object> uniforms;
 
 		public int getCount() {

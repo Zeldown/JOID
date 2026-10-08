@@ -355,8 +355,8 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter) {
-		return FrameBuffer.create(width, height, filter);
+	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
+		return FrameBuffer.create(width, height);
 	}
 
 	@Override
@@ -377,10 +377,6 @@ public final class RenderBridge implements IRenderBridge {
 		} else {
 			GL11.glDisable(capability);
 		}
-	}
-
-	public static void applyTextureParameters(final TextureFilter filter, final TextureWrap wrap) {
-		RenderBridge.applyTextureParameters(filter, wrap, false);
 	}
 
 	public static void applyTextureParameters(final TextureFilter filter, final TextureWrap wrap, final boolean mipmapped) {

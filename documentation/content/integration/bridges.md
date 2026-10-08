@@ -101,7 +101,7 @@ The render bridge draws: matrix stacks, render state, textures, framebuffers, sh
 | Target | `viewport(x, y, width, height)`, `getViewportWidth()`, `getViewportHeight()`, `getPixelGrid()`, `clear(r, g, b, a)`, `clearDepth()`, `frameBuffer(IFrameBuffer)` |
 | Textures and shaders | `texture(ITexture, TextureFilter, TextureWrap)`, `resetTexture()`, `shader(IShader)`, `getShader()` |
 | Drawing | `draw(Primitive, VertexBuffer)` |
-| Factories | `createTexture()`, `createFrameBuffer(width, height, TextureFilter)`, `createShader(ShaderSource vertex, ShaderSource fragment, BlendState)` |
+| Factories | `createTexture()`, `createFrameBuffer(width, height)`, `createShader(ShaderSource vertex, ShaderSource fragment, BlendState)` |
 
 `RenderBridge` (`dev.joid.lib.bridge.render`) is an abstract base that keeps the matrices and the state in Java, for engines without a fixed pipeline.
 
