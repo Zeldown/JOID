@@ -148,7 +148,7 @@ The total scale is `interfaceScale × zoom`. The zoom is clamped between 0.1 and
 
 ![Four 16:9 windows: interface 1 and zoom 1, interface 0.5 and zoom 1, interface 0.5 and zoom 2, interface 1 and zoom 0.5](../images/diagram-canvas-scale-zoom.png "Interface scale and zoom multiply, around the anchor point.")
 
-JOID never reads the scaling setting of the operating system: a high-density display only gives the window more pixels. To make a UI larger or smaller than its fitted size, the bridge returns an interface scale (see [Bridges and Backends](bridges.md)).
+JOID never reads the scaling setting of the operating system: a high-density display only gives the window more pixels. To make a UI larger or smaller than its fitted size, the bridge returns an interface scale (see [Bridges and Backends](bridges.md)). A UI turns it off or caps it with [`@UIDataScale`](../ui/view-and-scaling.md#interface-scale).
 
 ## Window pixels and canvas units
 

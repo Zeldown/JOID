@@ -33,6 +33,7 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.data.UIDataObject;
 import dev.joid.lib.ui.core.data.debug.UIDataDebugObject;
 import dev.joid.lib.ui.core.data.popup.UIDataPopupObject;
+import dev.joid.lib.ui.core.data.scale.UIDataScaleObject;
 import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
@@ -76,10 +77,12 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private final UIDataObject      data;
 	@NonNull private final UIDataDebugObject debug;
 	@NonNull private final UIDataPopupObject popup;
+	@NonNull private final UIDataScaleObject scale;
 
 	@NonNull private UIDataObject      annotatedData;
 	@NonNull private UIDataDebugObject annotatedDebug;
 	@NonNull private UIDataPopupObject annotatedPopup;
+	@NonNull private UIDataScaleObject annotatedScale;
 	@NonNull private UIDataPopupObject transitionPopup;
 
 	private transient Transition                             transition;
@@ -110,9 +113,11 @@ public abstract class UI implements IUI, IndexedElement {
 		this.annotatedData   = UIDataObject.getOrDefault(this.getClass());
 		this.annotatedDebug  = UIDataDebugObject.getOrDefault(this.getClass());
 		this.annotatedPopup  = UIDataPopupObject.getOrDefault(this.getClass());
+		this.annotatedScale  = UIDataScaleObject.getOrDefault(this.getClass());
 		this.data            = new UIDataObject(this.annotatedData);
 		this.debug           = new UIDataDebugObject(this.annotatedDebug);
 		this.popup           = new UIDataPopupObject(this.annotatedPopup);
+		this.scale           = new UIDataScaleObject(this.annotatedScale);
 		this.transitionPopup = new UIDataPopupObject(this.popup);
 
 		this.stencilStack = new Stack<>();
@@ -642,12 +647,15 @@ public abstract class UI implements IUI, IndexedElement {
 		final UIDataObject data = UIDataObject.getOrDefault(this.getClass());
 		final UIDataDebugObject debug = UIDataDebugObject.getOrDefault(this.getClass());
 		final UIDataPopupObject popup = UIDataPopupObject.getOrDefault(this.getClass());
+		final UIDataScaleObject scale = UIDataScaleObject.getOrDefault(this.getClass());
 		this.data.update(this.annotatedData, data);
 		this.debug.update(this.annotatedDebug, debug);
 		this.popup.update(this.annotatedPopup, popup);
+		this.scale.update(this.annotatedScale, scale);
 		this.annotatedData  = data;
 		this.annotatedDebug = debug;
 		this.annotatedPopup = popup;
+		this.annotatedScale = scale;
 	}
 
 	private void refreshView() {
@@ -814,7 +822,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.scheduledTaskList.removeAll(toRemove);
 
 		final IUIBridge bridge = this.getBridge();
-		final double interfaceScale = bridge == null ? 1D : bridge.getInterfaceScale(this);
+		final double interfaceScale = bridge == null || !this.scale.active() ? 1D : this.scale.apply(bridge.getInterfaceScale(this));
 		if (interfaceScale != this.view.getInterfaceScale()) {
 			this.view.interfaceScale(interfaceScale);
 			this.refreshView();

@@ -90,6 +90,21 @@ The zoom is kept by a window resize and by `reload()` (Ctrl + R). `renew()` (Ctr
 
 A bridge scales a UI with `IUIBridge.getInterfaceScale(UI ui)` (default `1D`), for example to follow the GUI scale setting of its host. The UI reads it at every draw. The total scale is `interfaceScale × zoom`, applied around the anchor: with an interface scale of 0.5, the design takes half the size and the visible area is 3840×2160 canvas units. See [UI Bridge](../integration/ui-bridge.md).
 
+Each UI decides whether it follows that scale with `@UIDataScale` (`dev.joid.lib.ui.core.data.scale`):
+
+```java
+@UIDataScale(limited = true, limit = 0.75D)
+public class InventoryUI extends UI {}
+```
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `active` | `true` | Whether the UI follows the interface scale of its bridge. When `false`, the interface scale is `1`: the canvas fits the window, and the bridge is not asked. |
+| `limited` | `false` | Whether the interface scale of the bridge is capped at `limit`. |
+| `limit` | `1D` | The highest interface scale, as a fraction of the fitted size: `0.75D` keeps the UI at 75 % of the fitted size or less, whatever the bridge returns. |
+
+The zoom and the fit to the window are not affected. `getScale()` returns the settings as a `UIDataScaleObject`, whose `setActive(boolean)`, `setLimited(boolean)` and `setLimit(double)` apply from the next frame, for example `this.getScale().setLimited(true).setLimit(0.75D)`; `apply(double)` gives the interface scale that a bridge value becomes.
+
 ![Four 16:9 windows: interface 1 and zoom 1, interface 0.5 and zoom 1, interface 0.5 and zoom 2, interface 1 and zoom 0.5](../images/diagram-canvas-scale-zoom.png "Interface scale and zoom multiply, around the anchor point.")
 
 ## Window and canvas coordinates

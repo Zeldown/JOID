@@ -279,7 +279,7 @@ public double getInterfaceScale(final @NonNull UI ui) {
 }
 ```
 
-Every UI asks at each frame and updates its view, its mouse conversion and its `scaledWidth` and `scaledHeight` signals when the value changes. The scale combines with the zoom of the UI, whose maximum becomes `1 / scale` when the scale is below 1. Keep passing the real window size and mouse position: never scale them yourself. See [View and Scaling](../ui/view-and-scaling.md).
+Every UI asks at each frame and updates its view, its mouse conversion and its `scaledWidth` and `scaledHeight` signals when the value changes. A UI can ignore that factor or cap it with [`@UIDataScale`](../ui/view-and-scaling.md#interface-scale): `@UIDataScale(active = false)` keeps it at `1` without calling `getInterfaceScale`, and `@UIDataScale(limited = true, limit = 0.75D)` never goes above `0.75`. The scale combines with the zoom of the UI, whose maximum becomes `1 / scale` when the scale is below 1. Keep passing the real window size and mouse position: never scale them yourself. See [View and Scaling](../ui/view-and-scaling.md).
 
 ## Several UI bridges
 

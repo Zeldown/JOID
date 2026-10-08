@@ -47,6 +47,7 @@ import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
+import dev.joid.lib.ui.core.data.scale.UIDataScale;
 import dev.joid.lib.ui.core.hook.property.UIProperty;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
@@ -1011,6 +1012,52 @@ public class UITest {
 	}
 
 	@Test
+	public void keepsTheFittedSizeWhenItsScaleIsInactive() {
+		final HoverBridge bridge = new HoverBridge();
+		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D));
+		bridge.interfaceScale = 0.5D;
+		ui.getScale().setActive(false);
+		BridgeHandler.UI.register(bridge);
+		try {
+			bridge.add(ui);
+			this.bridges.move(0D, 0D).frame();
+			bridge.draw();
+			Assert.assertEquals(1D, ui.getView().getInterfaceScale(), 0D);
+			Assert.assertEquals(1920D, ui.getScaledWidth().get(), 0D);
+			Assert.assertEquals(0, bridge.scaleQueries);
+			ui.getScale().setActive(true);
+			bridge.draw();
+			Assert.assertEquals(0.5D, ui.getView().getInterfaceScale(), 0D);
+			Assert.assertEquals(1, bridge.scaleQueries);
+		} finally {
+			BridgeHandler.UI.unregister(bridge);
+		}
+	}
+
+	@Test
+	public void capsTheInterfaceScaleAtItsLimit() {
+		final HoverBridge bridge = new HoverBridge();
+		final LimitedScaleUI ui = new LimitedScaleUI(this.trace);
+		bridge.interfaceScale = 2D;
+		BridgeHandler.UI.register(bridge);
+		try {
+			bridge.add(ui);
+			this.bridges.move(0D, 0D).frame();
+			bridge.draw();
+			Assert.assertEquals(0.75D, ui.getView().getInterfaceScale(), 0D);
+			bridge.interfaceScale = 0.5D;
+			bridge.draw();
+			Assert.assertEquals(0.5D, ui.getView().getInterfaceScale(), 0D);
+			ui.getScale().setLimited(false);
+			bridge.interfaceScale = 2D;
+			bridge.draw();
+			Assert.assertEquals(2D, ui.getView().getInterfaceScale(), 0D);
+		} finally {
+			BridgeHandler.UI.unregister(bridge);
+		}
+	}
+
+	@Test
 	public void drawsBelowEveryUiWithoutBridge() {
 		final TraceUI ui = new TraceUI(this.trace, RectNode.create(100D, 100D, 200D, 200D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).hover(() -> "Save"));
 		BridgeHandler.UI.unregister(this.bridges.getUi());
@@ -1689,6 +1736,15 @@ public class UITest {
 
 	}
 
+	@UIDataScale(limited = true, limit = 0.75D)
+	public static final class LimitedScaleUI extends TraceUI {
+
+		public LimitedScaleUI(final List<String> trace) {
+			super(trace);
+		}
+
+	}
+
 	@UIDataDebug(profiler = true, hotreload = false)
 	public static final class ProfiledUI extends TraceUI {
 
@@ -1942,10 +1998,12 @@ public class UITest {
 
 		private final List<String> hovers = new ArrayList<>();
 
+		private int    scaleQueries;
 		private double interfaceScale = 1D;
 
 		@Override
 		public double getInterfaceScale(final @NonNull UI ui) {
+			this.scaleQueries++;
 			return this.interfaceScale;
 		}
 
