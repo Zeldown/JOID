@@ -6,6 +6,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.transition.Transition;
+import dev.joid.lib.ui.core.view.UIView;
 import lombok.NonNull;
 
 public class PopTransition extends Transition {
@@ -29,11 +30,15 @@ public class PopTransition extends Transition {
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
 			final double scale = 0.75D + super.getAnimator().getValue() * 0.25D;
 
+			final UIView view = ui.getView();
+			final double pivotX = view.getOffsetX() + view.getAnchorX();
+			final double pivotY = view.getOffsetY() + view.getAnchorY();
+
 			final IRenderBridge render = BridgeHandler.RENDER.get();
 			render.pushMatrix();
-			render.translate(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
+			render.translate(pivotX, pivotY, 0);
 			render.scale(scale, scale, 1D);
-			render.translate(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0);
+			render.translate(-pivotX, -pivotY, 0);
 		}
 
 		@Override
@@ -58,11 +63,15 @@ public class PopTransition extends Transition {
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
 			final double scale = 0.75D + super.getAnimator().getValue() * 0.25D;
 
+			final UIView view = ui.getView();
+			final double pivotX = view.getOffsetX() + view.getAnchorX();
+			final double pivotY = view.getOffsetY() + view.getAnchorY();
+
 			final IRenderBridge render = BridgeHandler.RENDER.get();
 			render.pushMatrix();
-			render.translate(ui.getData().getAnchorPositionX(), ui.getData().getAnchorPositionY(), 0);
+			render.translate(pivotX, pivotY, 0);
 			render.scale(scale, scale, 1D);
-			render.translate(-ui.getData().getAnchorPositionX(), -ui.getData().getAnchorPositionY(), 0);
+			render.translate(-pivotX, -pivotY, 0);
 		}
 
 		@Override
