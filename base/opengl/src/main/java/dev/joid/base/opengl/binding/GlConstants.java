@@ -215,6 +215,8 @@ public final class GlConstants {
 	public static final int ALPHA_TEST_REF         = 0x0BC2;
 	public static final int CURRENT_NORMAL         = 0x0B02;
 	public static final int ALPHA_TEST_FUNC        = 0x0BC1;
+	public static final int MODELVIEW_MATRIX       = 0x0BA6;
+	public static final int PROJECTION_MATRIX      = 0x0BA7;
 	public static final int CLIENT_ACTIVE_TEXTURE  = 0x84E1;
 	public static final int CURRENT_TEXTURE_COORDS = 0x0B03;
 

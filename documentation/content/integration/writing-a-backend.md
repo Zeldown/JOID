@@ -85,9 +85,9 @@ When a test fails, the build prints the link of its interactive `report.html`.
 
 | Approach | When | Reference backend |
 |---|---|---|
-| Native: implement `IRenderBridge` directly | The engine has a fixed pipeline with its own matrix stacks and state. Forward each call and read the state back from the engine. | LWJGL 2 |
+| Native: implement `IRenderBridge` directly | The engine has a fixed pipeline with its own matrix stacks and state. Forward each call and read the state back from the engine. | None |
 | Emulated: extend `RenderBridge` | The engine has no fixed pipeline (modern OpenGL, Vulkan, a game engine renderer). | LWJGL 3, Vulkan |
-| On OpenGL: implement the bindings of `joid-base-opengl` | The engine gives access to an OpenGL context, from 2.0 to 4.6, compatibility or core. `GlRenderBridge`, an emulated bridge, does the rendering and adapts to the context; you only forward its OpenGL calls. | LWJGL 3 |
+| On OpenGL: implement the bindings of `joid-base-opengl` | The engine gives access to an OpenGL context, from 2.0 to 4.6, compatibility or core. `GlRenderBridge`, an emulated bridge, does the rendering and adapts to the context; you only forward its OpenGL calls. A host with fixed-function matrices hands them to the bridge with `HostMatrixImport`. | LWJGL 2, LWJGL 3 |
 
 On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.joid.base.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, clears, reading pixels, and the getters of the others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding`, and `IGlFrameBufferBinding` twice, once with the core and ARB functions and once with the `EXT` ones (a context that has only one family never calls the other). Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-base-opengl-module).
 
@@ -139,7 +139,7 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 | `NORMAL` | 3 | 24 | normal, 3 × normalized `BYTE` | `isNormal()` |
 
 - Missing attributes take these values: the current color (`color(...)`) for the color, `(0, 0)` for the texture coordinates, `(0, 0, 1)` for the normal. Vertex colors replace the current color. An API without constant vertex attributes (Vulkan, Blaze3D) copies the buffer with `VertexFill.complete(VertexBuffer buffer, ByteBuffer target, RenderState state)`, which writes these values into the missing attributes of the copy (the current color rounded to bytes) from the position of `target`.
-- A normal component is a signed byte divided by 127, so `127` is `1.0` and `-127` is `-1.0`, as `VK_FORMAT_R8G8B8A8_SNORM` reads it. The `aNormal` attribute of shaders receives that value: the LWJGL 2 backend declares it as `joid_Normal / 127.0`.
+- A normal component is a signed byte divided by 127, so `127` is `1.0` and `-127` is `-1.0`, as `VK_FORMAT_R8G8B8A8_SNORM` reads it. The `aNormal` attribute of shaders receives that value.
 
 ### Lighting
 
@@ -149,7 +149,7 @@ Without a bound shader, a draw outputs the bound texture sampled at the texture 
 rgb × (0.6 + max(normalize(normalMatrix × normal).z, 0)), clamped to 1
 ```
 
-A null normal gets no diffuse light. The light does not depend on the scale of the model: the testkit checks that a face is lit the same at scale 1 and 100. The core shader `CoreShader.FIXED` implements exactly this. `RenderBridge` hands it to `drawPrimitive` for every draw without a bound shader (`getFixedShader()`), and LWJGL 2 draws its lit draws with it; a native bridge reads its stages with `CoreShader.FIXED.read(ShaderStage.VERTEX)` and `read(ShaderStage.FRAGMENT)` and pass them to your own `createShader` to do the same.
+A null normal gets no diffuse light. The light does not depend on the scale of the model: the testkit checks that a face is lit the same at scale 1 and 100. The core shader `CoreShader.FIXED` implements exactly this. `RenderBridge` hands it to `drawPrimitive` for every draw without a bound shader (`getFixedShader()`); a native bridge reads its stages with `CoreShader.FIXED.read(ShaderStage.VERTEX)` and `read(ShaderStage.FRAGMENT)` and pass them to your own `createShader` to do the same.
 
 ### Coordinates
 
@@ -239,8 +239,7 @@ The reference backends generate:
 
 | Backend | Language | Declarations |
 |---|---|---|
-| LWJGL 2 | GLSL 1.20 | A `GlslShaderTranslator` in `GLSL_120` with `UniformLayout.LOOSE`, whose hooks map the built-ins of the fixed pipeline: `#define` of the built-ins onto `gl_Vertex.xyz`, `gl_MultiTexCoord0.xy`, `gl_Color`, `gl_ProjectionMatrix`, `gl_ModelViewMatrix` and `gl_NormalMatrix`; `aNormal` as `joid_Normal / 127.0` with `joid_Normal` an attribute at location 6; `uLighting` and the uniforms of both stages as plain `uniform`s. |
-| LWJGL 3 | GLSL 1.10 to 3.30 | `GlslShaderTranslator.create(dialect, UniformLayout.LOOSE)` as is, in the highest dialect the context compiles (`GLSL_330` on OpenGL 3.3 and later): every uniform of both stages as a plain `uniform`; from GLSL 1.30, `in`/`out` varyings keeping `flat`; in GLSL 3.30, attributes at the location of their `VertexAttribute` and `layout(location = 0) out vec4 fragColor`. Below 3.30, `GlShader` binds these locations before linking. |
+| LWJGL 2, LWJGL 3 | GLSL 1.10 to 3.30 | `GlslShaderTranslator.create(dialect, UniformLayout.LOOSE)` as is, in the highest dialect the context compiles (`GLSL_330` on OpenGL 3.3 and later): every uniform of both stages as a plain `uniform`; from GLSL 1.30, `in`/`out` varyings keeping `flat`; in GLSL 3.30, attributes at the location of their `VertexAttribute` and `layout(location = 0) out vec4 fragColor`. Below 3.30, `GlShader` binds these locations before linking. |
 | Vulkan | GLSL 4.50 | A `GlslShaderTranslator` in `GLSL_450` with the block at binding 0, samplers from binding 1 and varying locations shared by both stages; compiled to SPIR-V with shaderc. |
 
 Each generated header ends with a `#line` directive, so compiler errors point to the lines of the original file.
@@ -259,14 +258,14 @@ Each generated header ends with a `#line` directive, so compiler errors point to
 - `UniformLayout.BLOCK` declares the uniforms of both stages in the `std140` block `JoidUniforms` (from GLSL 1.40 or ESSL 3.00; a dialect without blocks throws `IllegalArgumentException`), `UniformLayout.LOOSE` as one `uniform` each, sent member by member with `UniformBlock.upload(...)`.
 - Every dialect wraps the fragment `main` with the alpha test and starts the body at line 1: the `#line` directive follows the numbering of the dialect (`#line 0` before GLSL 3.30 and in ESSL 1.00, `#line 1` after).
 - `ShaderFeature` lists what a shader uses beyond GLSL 1.10, as found in its code and declarations: `FLAT_VARYINGS`, `UNSIGNED_INTEGERS`, `BITWISE_OPERATORS` (`<<`, `>>`, `&`, `|`, `^`, `~`, `%`), `SWITCH`, `TEXEL_FETCH`, `TEXTURE_SIZE` (all from GLSL 1.30 or ESSL 3.00) and `DERIVATIVES` (GLSL 1.10, ESSL 3.00). `ShaderSource.getFeatures()` gives them and `GlslDialect.supports(ShaderFeature)` tells whether a dialect has one. A stage that uses a feature its dialect lacks is refused when it is translated, with an `UnsupportedOperationException` such as `The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20`.
-- A backend that declares something its own way subclasses the translator (protected constructor) and overrides its hooks: `isUniform(ShaderBuiltin)` and `declareBuiltin(ShaderBuiltin)` for the built-in uniforms it provides otherwise (LWJGL 2 maps them to the fixed pipeline), `getInternals(vertex, fragment)` for its own uniforms, `getLayout()` for the qualifier of the block, `getMain()` for the wrapping `main`, and `declareAttribute`, `declareSampler`, `declareVarying` for one declaration line each. The Vulkan and LWJGL 2 translators do so.
+- A backend that declares something its own way subclasses the translator (protected constructor) and overrides its hooks: `isUniform(ShaderBuiltin)` and `declareBuiltin(ShaderBuiltin)` for the built-in uniforms it provides otherwise, `getInternals(vertex, fragment)` for its own uniforms, `getLayout()` for the qualifier of the block, `getMain()` for the wrapping `main`, and `declareAttribute`, `declareSampler`, `declareVarying` for one declaration line each. The Vulkan translator does so.
 - In the JOID repository, `./gradlew validateShaders` writes every core shader in every dialect into `build/shaders/<dialect>/` (`exportShaders`, the testkit's `GlslExport`) and compiles each file with `glslangValidator`, or the command given with `-Pglslang=<command>`; it fails with the log of each shader that does not compile.
 
 The shaders of the core are listed by the `CoreShader` enum (`dev.joid.lib.bridge.render.shader.source`): `BLUR`, `BORDER`, `CIRCLE`, `FIXED`, `FONT`, `GRADIENT`, `LINE`, `ROUNDED` and `SHADOW`. `open(ShaderStage)` opens the JOID GLSL file of a stage, `read(ShaderStage)` parses it into a `ShaderSource`, and `create(BlendState)` creates the shader through the registered render bridge. The files are always read through the class loader of the core jar, so a backend in another jar or class loader (a mod loader) reads them the same way. A missing file throws `IllegalStateException`.
 
 ### Uniforms in the core
 
-The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()`, `isBound()` and `isActive()` on the core `RenderBridge` and the blend state given to its constructor; its parent `UniformShader` implements `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, extends `UniformShader` and binds its shaders itself, as LWJGL 2 does until it moves to the `base-opengl` module):
+The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()`, `isBound()` and `isActive()` on the core `RenderBridge` and the blend state given to its constructor; its parent `UniformShader` implements `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, extends `UniformShader` and binds its shaders itself):
 
 - a `UniformBlock` (`dev.joid.lib.bridge.render.shader.uniform`): the uniforms of both stages, each a `UniformMember` with its `UniformType`, its array length, its values and its `std140` offset and strides;
 - one `UniformSampler` per sampler of both stages, numbered from 1 in the order of the stages (`getUnit()`), with the texture, filter and wrap given to `sampler(...)`.
@@ -309,7 +308,7 @@ Vulkan sends the block this way, into its uniform stream at each draw. The OpenG
 super.builtins(state, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
 ```
 
-LWJGL 2 does the same with its GLSL 1.20 translator (`isUniform` keeps only `uLighting`). A member's values are tightly packed in `getValues()` (column by column for a matrix), ready for these calls.
+A member's values are tightly packed in `getValues()` (column by column for a matrix), ready for these calls.
 
 ### IShader
 

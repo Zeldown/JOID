@@ -291,7 +291,7 @@ In the JOID repository, each backend module runs its suites with these settings:
 | `./gradlew test` | Every unit, contract and snapshot test. |
 | `./gradlew :backend-vulkan:test` | The tests of one backend. |
 | `./gradlew updateSnapshots` | Runs the snapshot tests and replaces the references; `./gradlew :backend-lwjgl3:updateSnapshots` updates one backend. |
-| `./gradlew crossBackendTest` | Runs the tests of the three backends, then compares the LWJGL 3 and Vulkan renders to the LWJGL 2 ones within one level per channel. The report is written to `build/snapshots/cross/report.html`. |
+| `./gradlew crossBackendTest` | Runs the tests of the three backends, then compares the LWJGL 2 and Vulkan renders to the LWJGL 3 ones within one level per channel. The report is written to `build/snapshots/cross/report.html`. |
 | `./gradlew installLocalGitHook` | Installs the `pre-commit` and `pre-push` hooks of `scripts/`. `./gradlew build` installs them too. |
 | `./gradlew :backend-lwjgl3:test -PglProfile=GL_21` | Runs the LWJGL 3 tests on another OpenGL profile, see below. |
 

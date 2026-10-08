@@ -125,7 +125,7 @@ Every page starts with a minimal example and its result, then the common uses, t
 ## Requirements at a glance
 
 - Java 8 or later.
-- One backend: LWJGL 2 (OpenGL with GLSL 1.20 shaders), LWJGL 3 (OpenGL 2.0 to 4.6, compatibility or core) or Vulkan 1.3, or your own.
+- One backend: LWJGL 2 or LWJGL 3 (OpenGL 2.0 to 4.6, compatibility or core) or Vulkan 1.3, or your own.
 - A TrueType or OpenType font file for your text.
 
 [Installation](installation.md) lists the jars, the libraries to declare and the natives of each backend.

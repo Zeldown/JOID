@@ -8,6 +8,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
 import dev.joid.backend.lwjgl2.Backend;
+import dev.joid.backend.lwjgl2.Natives;
 import dev.joid.backend.lwjgl2.window.WindowBridge;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
@@ -17,16 +18,17 @@ import dev.joid.lib.utils.click.ClickType;
 public class DemoWindow extends DemoUIBridge {
 
 	public DemoWindow() throws LWJGLException {
+		Natives.install();
 		Display.setDisplayMode(new DisplayMode(1920, 1080));
 		Display.setResizable(true);
 		Display.setTitle("JOID - Demo (LWJGL 2)");
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
+		Backend.register();
 
 		super.resize(Display.getWidth(), Display.getHeight());
 	}
 
 	public static void main(final String[] args) throws LWJGLException {
-		Backend.register();
 		final DemoWindow window = new DemoWindow();
 		BridgeHandler.UI.register(window);
 		JOID.inst().setDevMode(true).setDemoMode(true).load();

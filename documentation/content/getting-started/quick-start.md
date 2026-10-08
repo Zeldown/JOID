@@ -314,13 +314,14 @@ The UI and the bridge stay the same; only the window setup in `Main` changes.
 
 ### LWJGL 2
 
-Register the backend before creating the `Display` (it extracts the LWJGL 2 natives), request depth and stencil bits, and read the input from `Mouse` and `Keyboard`:
+Install the natives before creating the `Display`, request depth and stencil bits, register the backend once the `Display` exists (its render bridge reads the OpenGL context), and read the input from `Mouse` and `Keyboard`:
 
 ```java
-Backend.register();
+Natives.install();
 Display.setDisplayMode(new DisplayMode(1280, 720));
 Display.setResizable(true);
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
+Backend.register();
 
 final AppUIBridge bridge = new AppUIBridge();
 BridgeHandler.UI.register(bridge);
@@ -328,7 +329,7 @@ JOID.inst().load();
 Theme.load();
 ```
 
-`Backend` is `dev.joid.backend.lwjgl2.Backend`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.backend.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
+`Natives` and `Backend` are in `dev.joid.backend.lwjgl2`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.backend.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
 
 ### Vulkan
 

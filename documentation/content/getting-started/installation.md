@@ -35,7 +35,7 @@ The full build files, with the natives picked for the machine, are in [Gradle se
 | --- | --- |
 | Java | Java 8 or later at runtime. JOID is compiled for Java 8 (`sourceCompatibility = 1.8`). |
 | JDK to build from source | JDK 8: the repository uses the Gradle 3.5 wrapper. |
-| LWJGL 2 backend | An OpenGL context with GLSL 1.20 shaders and framebuffer objects. |
+| LWJGL 2 backend | The same as the LWJGL 3 backend: an OpenGL 2.0 to 4.6 context with framebuffer objects. |
 | LWJGL 3 backend | An OpenGL 2.0 to 4.6 context, compatibility or core, with framebuffer objects (OpenGL 3.0, `GL_ARB_framebuffer_object` or `GL_EXT_framebuffer_object`). |
 | Vulkan backend | A Vulkan 1.3 device with swapchain support. |
 | Graphics context | A stencil buffer: masks and clipped overflow use it. The demo windows request 24-bit depth and 8-bit stencil. |
@@ -46,7 +46,7 @@ Each release contains these files (`8.0.0` shown):
 
 | File | Content | Use it to |
 | --- | --- | --- |
-| `joid-backend-lwjgl2-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, LWJGL 2 backend, LWJGL 2 and OpenAL natives, embedded libraries | Ship or develop an application on LWJGL 2 |
+| `joid-backend-lwjgl2-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `base-openal` and `base-opengl` modules, LWJGL 2 backend, LWJGL 2 and OpenAL natives, embedded libraries | Ship or develop an application on LWJGL 2 |
 | `joid-backend-lwjgl3-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `base-glfw`, `base-openal` and `base-opengl` modules, LWJGL 3 backend, embedded libraries | Ship or develop an application on LWJGL 3 (OpenGL) |
 | `joid-backend-vulkan-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `base-glfw` and `base-openal` modules, Vulkan backend, embedded libraries | Ship or develop an application on Vulkan |
 | `joid-core-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, embedded libraries, no backend | Write your own backend |
@@ -223,7 +223,7 @@ Install the `-prod` jar the same way (with `-Dclassifier=prod`) and switch the c
 
 | Backend | How natives are found |
 | --- | --- |
-| LWJGL 2 | The backend jar embeds the LWJGL 2 and OpenAL natives of Windows, Linux and macOS. `Backend.register()` extracts the ones of the running platform to `<java.io.tmpdir>/joid-lwjgl-2.9.1/<platform>` and sets the `org.lwjgl.librarypath` system property to that folder. It extracts nothing when `org.lwjgl.librarypath` is already set or when one of the natives is found in `java.library.path`, as in launchers that provide LWJGL 2 themselves. |
+| LWJGL 2 | The backend jar embeds the LWJGL 2 and OpenAL natives of Windows, Linux and macOS. `Natives.install()`, called before `Display.create()` (and by `Backend.register()`), extracts the ones of the running platform to `<java.io.tmpdir>/joid-lwjgl-2.9.1/<platform>` and sets the `org.lwjgl.librarypath` system property to that folder. It extracts nothing when `org.lwjgl.librarypath` is already set or when one of the natives is found in `java.library.path`, as in launchers that provide LWJGL 2 themselves. |
 | LWJGL 3 | LWJGL loads its natives from the `natives-*` classifier jars on the classpath. |
 | Vulkan | Same as LWJGL 3. Vulkan itself comes from the loader installed with the GPU driver; on macOS the `lwjgl-vulkan` natives provide it. |
 | Video (all backends) | The FFmpeg natives are inside the JOID jar; JavaCPP loads them at runtime. |

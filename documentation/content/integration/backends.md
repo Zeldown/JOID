@@ -43,13 +43,13 @@ public final class App {
 
 `Backend` is `dev.joid.backend.lwjgl3.Backend`. `AppUIBridge` and `AppLoop` are the bridge and the event loop of [UI Bridge](ui-bridge.md); the loop ends each frame with `GLFW.glfwSwapBuffers(window)`.
 
-![Diagram of the backends: LWJGL 2 has its own window, render and audio bridges; LWJGL 3 renders with the GlRenderBridge of joid-base-opengl and Vulkan with its own render bridge, and both share the window bridge of joid-base-glfw and the audio bridge of joid-base-openal; all build on joid-core](../images/diagram-backends.png "LWJGL 3 and Vulkan share the GLFW window bridge and the OpenAL audio bridge")
+![Diagram of the backends: LWJGL 2 has its own window bridge on Display, Mouse and Keyboard; LWJGL 3 and Vulkan share the window bridge of joid-base-glfw; LWJGL 2 and LWJGL 3 render with the GlRenderBridge of joid-base-opengl, Vulkan with its own render bridge; the three share the AlAudioBridge of joid-base-openal; all build on joid-core](../images/diagram-backends.png "LWJGL 2 and LWJGL 3 share the OpenGL renderer, the three backends share the OpenAL audio bridge")
 
 The backend is the only part of a JOID application that knows the engine. Your UIs run unchanged on all three, and the snapshot tests compare the backends pixel by pixel so that they also look the same.
 
 | Module | Engine | Register with | Window bridge | Audio bridge | Generated shaders |
 |---|---|---|---|---|---|
-| `backend-lwjgl2` | LWJGL 2.9.1: OpenGL state of the current context | `dev.joid.backend.lwjgl2.Backend.register()` | LWJGL 2 `Display`, `Mouse`, `Keyboard` | LWJGL 2 OpenAL | GLSL 1.20 |
+| `backend-lwjgl2` | LWJGL 2.9.1: OpenGL 2.0 to 4.6 of the current context, compatibility or core, rendered by the `base-opengl` module | `dev.joid.backend.lwjgl2.Backend.register()` | LWJGL 2 `Display`, `Mouse`, `Keyboard` | `base-openal` module | GLSL 1.10 to 3.30, chosen from the context |
 | `backend-lwjgl3` | LWJGL 3.3.4: OpenGL 2.0 to 4.6, compatibility, core or forward-compatible core, rendered by the `base-opengl` module | `dev.joid.backend.lwjgl3.Backend.register(window)` | `base-glfw` module | `base-openal` module | GLSL 1.10 to 3.30, chosen from the context |
 | `backend-vulkan` | LWJGL 3.3.4: Vulkan 1.3, shaderc | `dev.joid.backend.vulkan.Backend.register(window)` | `base-glfw` module | `base-openal` module | GLSL 4.50 compiled to SPIR-V at runtime |
 
@@ -124,16 +124,17 @@ public final class App {
 
 ## LWJGL 2
 
-Register the backend before creating the `Display`, so that its natives are in place when LWJGL loads them. Ask for a stencil buffer:
+Install the natives before creating the `Display`, so that they are in place when LWJGL loads them, and register the backend once the `Display` exists: its render bridge reads the OpenGL context. Ask for a stencil buffer:
 
 ```java
 public final class App {
 
 	public static void main(final String[] args) throws LWJGLException {
-		Backend.register();
+		Natives.install();
 		Display.setDisplayMode(new DisplayMode(1920, 1080));
 		Display.setResizable(true);
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
+		Backend.register();
 
 		final AppUIBridge bridge = new AppUIBridge();
 		BridgeHandler.UI.register(bridge);
@@ -197,19 +198,18 @@ public final class AppInput {
 }
 ```
 
-- The render bridge maps every call onto the OpenGL state of the current context: matrices go to the OpenGL matrix stacks, and `pushState()` / `popState()` save and restore the OpenGL state itself. It needs OpenGL 2.0 shaders and 3.0 framebuffer objects.
-- A lit draw without a bound shader goes through the `fixed` shader of the core, so 3D models are shaded exactly as on LWJGL 3 and Vulkan.
+- The render bridge is the `GlRenderBridge` of `base-opengl`, on LWJGL 2's OpenGL (`dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding`): the renderer of LWJGL 3, with the same choices for each context (see [OpenGL versions](#opengl-versions)) and the same pixels. It keeps the matrices and the state in Java, and gives the host its OpenGL state back (see [Giving the host its state back](#giving-the-host-its-state-back)). It uses its own vertex array as soon as the context has OpenGL 3.0 or `GL_ARB_vertex_array_object`, and calls OpenGL only through LWJGL 2, whose own checks of the bound buffers stay right.
 - The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, and the clipboard through AWT. LWJGL 2 key codes follow the keyboard layout on Windows and Linux and the place of the key on macOS; `isPhysicalKeyDown` answers like `isKeyDown`.
 - The audio bridge is the `AlAudioBridge` of `base-openal` on LWJGL 2's OpenAL (`dev.joid.backend.lwjgl2.binding.Lwjgl2AlBinding`). It creates the OpenAL context with `AL.create()` on the first video with sound, unless one already exists, and destroys it when the JVM exits; `AL.create()` loads the OpenAL native that `Backend.register()` installed.
 
 ### LWJGL 2 natives
 
-The jar does not contain the LWJGL 2.9.1 classes, which your application declares, but contains the LWJGL and OpenAL natives for Windows, Linux and macOS. `Backend.register()` installs them once:
+The jar does not contain the LWJGL 2.9.1 classes, which your application declares, but contains the LWJGL and OpenAL natives for Windows, Linux and macOS. `Natives.install()` installs them once, before `Display.create()`; `Backend.register()` calls it too:
 
 1. When the system property `org.lwjgl.librarypath` is set, or when one of the native libraries of the platform is found in a folder of `java.library.path`, nothing is extracted: the host provides them.
 2. Otherwise the natives are extracted into `<java.io.tmpdir>/joid-lwjgl-2.9.1/<platform>` (`windows`, `linux` or `osx`), rewritten only when their size differs, and `org.lwjgl.librarypath` points to that folder.
 
-`dev.joid.backend.lwjgl2.Natives.install()` performs this step alone; it runs once per JVM.
+`dev.joid.backend.lwjgl2.Natives.install()` runs once per JVM.
 
 ## Version check with JOID.checkVersion
 
@@ -289,26 +289,7 @@ Call `update()`, `draw()` and the input methods of your UI bridge from the threa
 
 ### Giving the host its state back
 
-The LWJGL 2 bridge works on the live OpenGL state. Wrap the JOID frame to restore what it changes:
-
-```java
-final IRenderBridge render = BridgeHandler.RENDER.get();
-render.pushState();
-render.pushProjection();
-render.pushMatrix();
-try {
-	render.screen(width, height);
-	uiBridge.draw();
-} finally {
-	render.popMatrix();
-	render.popProjection();
-	render.popState();
-}
-```
-
-![Diagram of an embedded frame: the host draws its frame, JOID pushes the state, projection and matrix, sets ortho and viewport, draws the UIs, then pops everything in a finally block](../images/diagram-backend-host.png "Push before the JOID frame, pop in a finally block: the host finds its state back")
-
-The LWJGL 3 bridge gives the host its OpenGL state back by itself, so call `beginFrame()` before the JOID frame and `endFrame()` after it:
+The OpenGL bridge of LWJGL 2 and LWJGL 3 gives the host its OpenGL state back by itself, so call `beginFrame()` before the JOID frame and `endFrame()` after it:
 
 ```java
 final IRenderBridge render = BridgeHandler.RENDER.get();
@@ -321,6 +302,8 @@ try {
 }
 ```
 
+![Diagram of an embedded frame: the host draws its frame, beginFrame() starts the journal, screen(width, height) sets the window pixels, the UIs draw, then endFrame() in a finally block puts back what JOID changed](../images/diagram-backend-host.png "beginFrame before the JOID frame, endFrame in a finally block: the host finds its state back")
+
 Every OpenGL call of the bridge goes through a journal. The first time the bridge changes a state during a frame, the journal reads its value with `glGet*`; `endFrame()` puts back exactly the values it read, and only those. Its own objects (textures, vertex array, framebuffers) are left out; the parameters of a texture of the host, the attributes of a vertex array of the host and the bindings of each texture unit are put back. A call outside a frame (creating a shader or a framebuffer, uploading a texture) is journaled on its own. At the start of each frame, the bridge also sets the state it needs whatever the host left: no scissor, logic operation, polygon offset, sRGB conversion, primitive restart, depth clamp or rasterizer discard, filled polygons, counter-clockwise front faces with back faces culled, depth function `LESS`, depth cleared to 1 and stencil to 0, stencil write mask `0xFF`, pixel store at its defaults (alignment 4) without pixel buffer, and, in a compatibility profile, no alpha test, lighting, fog or color material. Caches of the host that mirror the OpenGL state stay right, since the state comes back unchanged.
 
 When the host draws inside a JOID frame (an item or a model of the host shown in a UI), wrap its drawing in `host(...)`: the bridge puts the state of the host back before it, and journals again after it:
@@ -330,6 +313,25 @@ render.host(() -> hostRenderer.drawItem(stack, x, y));
 ```
 
 The Vulkan bridge keeps its state in Java and applies it at each draw call; its `host(...)` runs the drawing as is.
+
+### Matrices of a fixed-function host
+
+JOID keeps its matrices in Java and never reads the OpenGL matrix stacks. A host whose interface draws with the fixed-function matrices (`glOrtho`, `glTranslate`, as Minecraft up to 1.12 does) can hand them to JOID instead of calling `screen(width, height)`: `HostMatrixImport` (`dev.joid.base.opengl.render.host`) reads `GL_PROJECTION_MATRIX` and `GL_MODELVIEW_MATRIX` and loads them into the projection and model-view of the bridge, so the UIs draw in the coordinates of the host:
+
+```java
+final GlRenderBridge bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
+final HostMatrixImport matrices = HostMatrixImport.create(bridge);
+
+bridge.beginFrame();
+try {
+	matrices.apply();
+	uiBridge.draw();
+} finally {
+	bridge.endFrame();
+}
+```
+
+`HostMatrixImport.create(bridge)` throws an `IllegalStateException` on a core context, which has no fixed-function matrices.
 
 ### Natives, audio and interface size
 
@@ -347,18 +349,18 @@ BridgeHandler.WINDOW.register(new HostWindowBridge());
 BridgeHandler.RENDER.register(GlRenderBridge.create(Lwjgl3GlBinding.inst()));
 ```
 
-Here `AlAudioBridge` and `Lwjgl3AlBinding` come from `dev.joid.base.openal`, `GlRenderBridge` is `dev.joid.base.opengl.render.GlRenderBridge`, `Lwjgl3GlBinding` is `dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding` and `HostWindowBridge` is your implementation of `IWindowBridge`. The `RenderBridge` and `WindowBridge` of `dev.joid.backend.lwjgl2` also have public constructors, and its audio bridge is `AlAudioBridge.create(Lwjgl2AlBinding.inst())`; the Vulkan render bridge needs a GLFW window (`new RenderBridge(long window)`).
+Here `AlAudioBridge` and `Lwjgl3AlBinding` come from `dev.joid.base.openal`, `GlRenderBridge` is `dev.joid.base.opengl.render.GlRenderBridge`, `Lwjgl3GlBinding` is `dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding` and `HostWindowBridge` is your implementation of `IWindowBridge`. On LWJGL 2, the bridges are `GlRenderBridge.create(Lwjgl2GlBinding.inst())`, `AlAudioBridge.create(Lwjgl2AlBinding.inst())` (both bindings in `dev.joid.backend.lwjgl2.binding`) and `new WindowBridge()` (`dev.joid.backend.lwjgl2.window`); the Vulkan render bridge needs a GLFW window (`new RenderBridge(long window)`).
 
 ## The base-opengl module
 
-The LWJGL 3 backend renders with `joid-base-opengl`, a module in plain Java that holds the whole OpenGL renderer and calls OpenGL only through binding interfaces. The LWJGL 3 backend implements them with LWJGL 3 (`dev.joid.backend.lwjgl3.binding`); another engine on OpenGL implements them with its own functions and gets the same rendering.
+The LWJGL 2 and LWJGL 3 backends render with `joid-base-opengl`, a module in plain Java that holds the whole OpenGL renderer and calls OpenGL only through binding interfaces. The LWJGL 2 backend implements them with LWJGL 2 (`dev.joid.backend.lwjgl2.binding`, `Lwjgl2GlBinding.inst()`) and the LWJGL 3 backend with LWJGL 3 (`dev.joid.backend.lwjgl3.binding`, `Lwjgl3GlBinding.inst()`); another engine on OpenGL implements them with its own functions and gets the same rendering.
 
 | Package `dev.joid.base.opengl` | Content |
 |---|---|
 | `binding` | `IGlBinding` (`glEnable`, `glDisable`, `glIsEnabled`, `glGetInteger`, `glGetIntegerv`, `glGetString`, `glGetStringi`, `glGetFloatv`, `glGetTexParameteri`, `glGetVertexAttribi`, `glGetVertexAttribPointerv`, `glGetVertexAttribfv`, `glGetMaterialfv`, `glClear`, `glReadBuffer`, `glReadPixels`, and the getters of the domain bindings), `IGlStateBinding` (blending, depth, stencil, color mask, viewport, clear values, culling and front face, line width, polygon mode, pixel store), `IGlBufferBinding` (buffers, vertex arrays, attributes, `glDrawArrays`), `IGlProgramBinding` (shaders, programs, attribute and fragment output locations, uniforms), `IGlTextureBinding` (textures, units, `glBindSampler`), `IGlFrameBufferBinding` (framebuffers, renderbuffers, blits), returned by `getFrameBufferBinding(GlFrameBufferFamily)` for the core and ARB entry points (`CORE`) or the `EXT` ones, and `GlConstants`, the OpenGL values the module passes to them. |
 | `capability` | `GlCapabilities.read(IGlBinding)` reads the context once: version, GLSL version, `GlProfile` (`COMPATIBILITY`, `CORE`, `FORWARD_COMPATIBLE_CORE`), extensions, maximum texture size and line widths; `hasVertexArrays()`, `hasSamplerObjects()`, `hasFrameBufferBlit()` and `getFrameBufferFamily()` (`null` without framebuffer objects) tell what it can do. `GlStrategies.of(GlCapabilities)` is the one place that chooses how to render on that context, see [OpenGL versions](#opengl-versions). |
 | `render` | `GlRenderBridge` (`create(IGlBinding)`), the render bridge; `GlEnums`, the OpenGL values of the blend, stencil, wrap, filter, vertex and primitive enums of JOID; `shader.GlShader`, `texture.GlTexture` and `framebuffer.GlFrameBuffer`, on the core `Shader`, `Texture` and `FrameBufferHandle`; `vertex.GlVertexInput` (`ArrayObjectVertexInput`, `DefaultVertexInput`) and `texture.IGlMipmapBuilder` (`BlitMipmapBuilder`, `DrawMipmapBuilder`), the strategies of the bridge. |
-| `render.host` | `IGlHostGuard` (`enter()`, `exit()`, `host(Runnable)`), implemented by `JournalGlHostGuard`: a `GlStateJournal` of `GlStateKey` values, written by `Journal*Binding` decorators of each binding, and `GlPipelineReset`, the state JOID sets at the start of each frame. `GlRenderBridge.getBinding()` returns the journaled binding. |
+| `render.host` | `IGlHostGuard` (`enter()`, `exit()`, `host(Runnable)`), implemented by `JournalGlHostGuard`: a `GlStateJournal` of `GlStateKey` values, written by `Journal*Binding` decorators of each binding, and `GlPipelineReset`, the state JOID sets at the start of each frame. `GlRenderBridge.getBinding()` returns the journaled binding. `HostMatrixImport` (`create(GlRenderBridge)`, `apply()`) loads the fixed-function matrices of a host into the bridge, see [Matrices of a fixed-function host](#matrices-of-a-fixed-function-host). |
 | `snapshot` | `GlSnapshotCapture.capture(bridge, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL, and `GlStateSnapshot.read(binding, capabilities)`, the whole OpenGL state for [`HostStateContractSuite`](testkit.md#hoststatecontractsuite-tests); left out of the `-prod` jars and of the released `joid-base-opengl` jar. |
 
 `GlRenderBridge.create(binding)` reads the capabilities, chooses its strategies and creates its vertex buffer, and its vertex array when the context has them: the context must be current. Every OpenGL call of JOID then goes through the bindings, so a binding that wraps another one sees all of them (the bridge wraps them itself in its journal), and `dev.joid.backend.lwjgl3.Backend.register(window, binding)` registers the bridges with such a binding. On LWJGL 3, `GlContextRequest` sets the GLFW hints of a context: `CORE_33` (OpenGL 3.3 core, forward compatible on macOS), `CORE_32_FORWARD` (3.2 core, forward compatible) or `COMPATIBILITY` (no version hint: the highest compatibility context of the driver, 2.1 on macOS), each with 24 bits of depth and 8 of stencil.
@@ -393,16 +395,19 @@ The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`,
 
 | Class | Member | Description |
 |---|---|---|
-| `dev.joid.backend.lwjgl2.Backend` | `static register()` | Checks the version, installs the natives, registers the audio, window and render bridges of LWJGL 2. |
+| `dev.joid.backend.lwjgl2.Backend` | `static register()` | Checks the version, installs the natives, registers the OpenAL audio bridge, the LWJGL 2 window bridge and the OpenGL render bridge of the current context. |
 | `dev.joid.backend.lwjgl3.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the OpenGL render bridge and the GLFW window bridge of `window`. |
 | `dev.joid.backend.lwjgl3.Backend` | `static register(long window, IGlBinding binding)` | The same, with the render bridge on `binding`, a binding that wraps `Lwjgl3GlBinding.inst()`. |
 | `dev.joid.backend.vulkan.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the GLFW window bridge and a Vulkan render bridge on `window`. |
-| `dev.joid.backend.lwjgl2.Natives` | `static install()` | Installs the LWJGL 2 natives once per JVM. |
+| `dev.joid.backend.lwjgl2.Natives` | `static install()` | Installs the LWJGL 2 natives once per JVM; call it before `Display.create()`. |
+| `dev.joid.base.opengl.render.host.HostMatrixImport` | `static create(GlRenderBridge bridge)`, `apply()` | Loads the projection and model-view matrices of a fixed-function host into the bridge; refuses a core context. |
 | `dev.joid.internal.JOID` | `static checkVersion(String version)` | `true` when the major version of `version` matches the loaded JOID; otherwise prints the warning and returns `false`. |
 
 ## Pitfalls
 
 - Create the OpenGL context, make it current and call `GL.createCapabilities()` before `dev.joid.backend.lwjgl3.Backend.register`.
+- Create the `Display` (or let the host create its context) before `dev.joid.backend.lwjgl2.Backend.register`, and install the natives with `Natives.install()` before `Display.create()`.
+- On LWJGL 2 without vertex array objects (OpenGL 2.1 without `GL_ARB_vertex_array_object`), an attribute of the host that points into client memory instead of a buffer is not put back: LWJGL 2 only takes a buffer offset or a Java buffer.
 - On a context without `glBlitFramebuffer`, mipmapped textures may not be pixel-exact with the other backends.
 - A host draw inside a JOID frame without `host(...)` runs on the state JOID set, and JOID then puts back the state of the host as it was before the frame, over what the host draw changed.
 - Never draw JOID while the host records a display list (`glNewList`): its calls would be recorded in it.

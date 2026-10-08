@@ -30,7 +30,7 @@ You rarely call the bridges yourself: nodes and `DrawUtils` use them for you. Th
 
 | Backend | `Backend` class | Renderer | Window and input |
 | --- | --- | --- | --- |
-| LWJGL 2 | `dev.joid.backend.lwjgl2.Backend` | OpenGL with GLSL 1.20 shaders | LWJGL 2 `Display`, `Mouse`, `Keyboard` |
+| LWJGL 2 | `dev.joid.backend.lwjgl2.Backend` | OpenGL 2.0 to 4.6, compatibility or core | LWJGL 2 `Display`, `Mouse`, `Keyboard` |
 | LWJGL 3 | `dev.joid.backend.lwjgl3.Backend` | OpenGL 2.0 to 4.6, compatibility or core | GLFW |
 | Vulkan | `dev.joid.backend.vulkan.Backend` | Vulkan 1.3 | GLFW |
 

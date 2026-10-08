@@ -2,11 +2,14 @@ package dev.joid.backend.lwjgl3.render;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dev.joid.backend.lwjgl3.snapshot.SnapshotBackend;
+import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.render.GlRenderBridge;
+import dev.joid.base.opengl.render.host.HostMatrixImport;
 
 public class GlRenderBridgeTest {
 
@@ -41,6 +44,18 @@ public class GlRenderBridgeTest {
 		Assert.assertSame(bridge.getStrategies().getDialect(), bridge.getStrategies().createTranslator().getDialect());
 		Assert.assertSame(bridge.getFrameBufferBinding(), bridge.getBinding().getFrameBufferBinding(bridge.getStrategies().getFrameBufferFamily()));
 		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getStrategies().isOwnVertexArray());
+	}
+
+	@Test
+	public void refusesToImportMatricesFromACoreContext() {
+		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
+		Assume.assumeTrue(bridge.getCapabilities().getProfile() != GlProfile.COMPATIBILITY);
+		try {
+			HostMatrixImport.create(bridge);
+			Assert.fail();
+		} catch (final IllegalStateException e) {
+			Assert.assertTrue(e.getMessage().startsWith("Only a compatibility context has fixed-function matrices to import"));
+		}
 	}
 
 }

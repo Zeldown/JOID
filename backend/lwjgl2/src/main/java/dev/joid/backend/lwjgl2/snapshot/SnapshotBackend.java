@@ -1,23 +1,25 @@
 package dev.joid.backend.lwjgl2.snapshot;
 
-import java.nio.ByteBuffer;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 
 import dev.joid.backend.lwjgl2.Backend;
 import dev.joid.backend.lwjgl2.Natives;
-import dev.joid.lib.utils.image.PixelLayout;
+import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
+import dev.joid.base.opengl.render.GlRenderBridge;
+import dev.joid.base.opengl.snapshot.GlSnapshotCapture;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
+import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
 public final class SnapshotBackend implements ISnapshotBackend {
 
-	private Pbuffer buffer;
+	private Pbuffer        buffer;
+	private GlRenderBridge bridge;
 
 	@Override
 	public void destroy() {
@@ -35,23 +37,20 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		}
 
 		Backend.register();
+		this.bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
 	}
 
 	@Override
-	public void present() {
-		GL11.glFlush();
-	}
+	public void present() {}
 
 	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
-		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
-		GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);
-		return SnapshotImage.fromBytes(pixels, width, height, true, PixelLayout.RGBA8);
+		return GlSnapshotCapture.capture(this.bridge, width, height);
 	}
 
 	@Override
 	public @NonNull String getRenderer() {
-		return GL11.glGetString(GL11.GL_RENDERER);
+		return GlSnapshotCapture.getRenderer(Lwjgl2GlBinding.inst());
 	}
 
 }

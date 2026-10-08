@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 public final class MatrixStack {
 
@@ -27,6 +28,10 @@ public final class MatrixStack {
 
 	public void identity() {
 		this.matrix = MatrixStack.identityMatrix();
+	}
+
+	public void load(final @NonNull float[] matrix) {
+		this.matrix = matrix.clone();
 	}
 
 	public void translate(final double x, final double y, final double z) {

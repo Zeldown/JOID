@@ -38,6 +38,16 @@ public class MatrixStackTest {
 	}
 
 	@Test
+	public void loadsACopyOfTheGivenMatrix() {
+		final float[] matrix = {2F, 0F, 0F, 0F, 0F, 3F, 0F, 0F, 0F, 0F, 1F, 0F, 4F, 5F, 0F, 1F};
+		final MatrixStack stack = new MatrixStack();
+		stack.load(matrix);
+		matrix[12] = 9F;
+		stack.translate(1D, 1D, 0D);
+		Assert.assertArrayEquals(new float[] {2F, 0F, 0F, 0F, 0F, 3F, 0F, 0F, 0F, 0F, 1F, 0F, 6F, 8F, 0F, 1F}, stack.getMatrix(), 0F);
+	}
+
+	@Test
 	public void scalesEveryAxis() {
 		final MatrixStack stack = new MatrixStack();
 		stack.scale(2D, 3D, 4D);

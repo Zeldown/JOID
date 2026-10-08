@@ -7,8 +7,8 @@ configurations {
 }
 
 dependencies {
-    compile project(':core')
     compile project(':base-openal')
+    compile project(':base-opengl')
 
     compile "org.lwjgl.lwjgl:lwjgl:2.9.1"
 

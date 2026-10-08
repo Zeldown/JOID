@@ -141,11 +141,11 @@ assemble.dependsOn collectArtifacts
 /* Tests */
 task crossBackendTest(type: JavaExec) {
     group = 'JOID'
-    description = 'Runs the snapshot tests of every backend, then compares the LWJGL 3 and Vulkan shots to LWJGL 2.'
+    description = 'Runs the snapshot tests of every backend, then compares the LWJGL 2 and Vulkan shots to LWJGL 3.'
     dependsOn ':backend-lwjgl2:test', ':backend-lwjgl3:test', ':backend-vulkan:test'
     main = "dev.joid.test.snapshot.SnapshotComparison"
     classpath = project(':tool-testkit').sourceSets.main.runtimeClasspath
-    args file('build/snapshots/cross').absolutePath, file('build/snapshots/backend-lwjgl2').absolutePath, file('build/snapshots/backend-lwjgl3').absolutePath, file('build/snapshots/backend-vulkan').absolutePath
+    args file('build/snapshots/cross').absolutePath, file('build/snapshots/backend-lwjgl3').absolutePath, file('build/snapshots/backend-lwjgl2').absolutePath, file('build/snapshots/backend-vulkan').absolutePath
 }
 
 task exportShaders(type: JavaExec) {
