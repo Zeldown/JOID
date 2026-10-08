@@ -76,7 +76,7 @@ public class VideoAudioPlayerTest {
 		player.play();
 		player.update();
 		Assert.assertEquals(0, player.getQueueSize());
-		Assert.assertTrue(this.audio.source().queued.isEmpty());
+		Assert.assertTrue(this.audio.source().written.isEmpty());
 	}
 
 	@Test
@@ -85,12 +85,12 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 15, 1024);
 		player.update();
 		final RecordingAudioSource source = this.audio.source();
-		Assert.assertTrue(source.queued.isEmpty());
+		Assert.assertTrue(source.written.isEmpty());
 		Assert.assertFalse(source.playing);
 		VideoAudioPlayerTest.push(player, 1, 1024);
 		player.update();
-		Assert.assertEquals(4, source.queued.size());
-		Assert.assertEquals(4096, source.queued.get(0).length);
+		Assert.assertEquals(4, source.written.size());
+		Assert.assertEquals(4096, source.written.get(0).length);
 		Assert.assertEquals(Collections.singletonList(0.3F), source.gains);
 		Assert.assertTrue(source.playing);
 		Assert.assertEquals(0, player.getQueueSize());
@@ -102,13 +102,13 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 16, 3000);
 		player.update();
 		final RecordingAudioSource source = this.audio.source();
-		Assert.assertEquals(8, source.queued.size());
-		source.processed = 5;
+		Assert.assertEquals(8, source.written.size());
+		source.played += 5 * 4096;
 		player.update();
-		Assert.assertEquals(12, source.queued.size());
-		Assert.assertEquals(2944, source.queued.get(11).length);
+		Assert.assertEquals(12, source.written.size());
+		Assert.assertEquals(2944, source.written.get(11).length);
 		int expected = 0;
-		for (final short[] chunk : source.queued) {
+		for (final short[] chunk : source.written) {
 			for (final short sample : chunk) {
 				Assert.assertEquals((short) expected++, sample);
 			}
@@ -124,8 +124,8 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 16, 3000);
 		player.update();
 		final RecordingAudioSource source = this.audio.source();
-		Assert.assertEquals(8, source.queued.size());
-		for (final short[] chunk : source.queued) {
+		Assert.assertEquals(8, source.written.size());
+		for (final short[] chunk : source.written) {
 			Assert.assertEquals(4092, chunk.length);
 		}
 	}
@@ -136,12 +136,12 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 16, 100);
 		player.update();
 		final RecordingAudioSource source = this.audio.source();
-		Assert.assertEquals(1, source.queued.size());
-		Assert.assertEquals(1600, source.queued.get(0).length);
+		Assert.assertEquals(1, source.written.size());
+		Assert.assertEquals(1600, source.written.get(0).length);
 	}
 
 	@Test
-	public void restartsASourceThatRanDry() {
+	public void playsASourceThatStopped() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
 		final RecordingAudioSource source = this.audio.source();
 		source.playing = false;
@@ -208,14 +208,15 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 15, 1024);
 		player.flush();
 		Assert.assertEquals(0, player.getQueueSize());
-		Assert.assertTrue(source.calls.contains("clear"));
-		source.queued.clear();
+		Assert.assertTrue(source.calls.contains("stop"));
+		Assert.assertEquals(0, source.getBufferedSamples());
+		final int written = source.written.size();
 		VideoAudioPlayerTest.push(player, 15, 1024);
 		player.update();
-		Assert.assertTrue(source.queued.isEmpty());
+		Assert.assertEquals(written, source.written.size());
 		VideoAudioPlayerTest.push(player, 1, 1024);
 		player.update();
-		Assert.assertEquals(4, source.queued.size());
+		Assert.assertEquals(written + 4, source.written.size());
 	}
 
 	@Test
@@ -224,7 +225,7 @@ public class VideoAudioPlayerTest {
 		player.pushSamples(new Buffer[] {FloatBuffer.wrap(new float[] {1F, -1F, 0.5F}), FloatBuffer.wrap(new float[] {2F, -2F, 0F})});
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update();
-		final short[] chunk = this.audio.source().queued.get(0);
+		final short[] chunk = this.audio.source().written.get(0);
 		Assert.assertArrayEquals(new short[] {19660, 19660, -19660, -19660, 9830, 0}, Arrays.copyOf(chunk, 6));
 	}
 
@@ -234,7 +235,7 @@ public class VideoAudioPlayerTest {
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3}), ShortBuffer.wrap(new short[] {4, 5, 6})});
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update();
-		Assert.assertArrayEquals(new short[] {1, 4, 2, 5, 3, 6}, Arrays.copyOf(this.audio.source().queued.get(0), 6));
+		Assert.assertArrayEquals(new short[] {1, 4, 2, 5, 3, 6}, Arrays.copyOf(this.audio.source().written.get(0), 6));
 	}
 
 	@Test
@@ -243,7 +244,7 @@ public class VideoAudioPlayerTest {
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {7, 8, 9, 10})});
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update();
-		Assert.assertArrayEquals(new short[] {7, 8, 9, 10}, Arrays.copyOf(this.audio.source().queued.get(0), 4));
+		Assert.assertArrayEquals(new short[] {7, 8, 9, 10}, Arrays.copyOf(this.audio.source().written.get(0), 4));
 	}
 
 	@Test
@@ -391,12 +392,12 @@ public class VideoAudioPlayerTest {
 
 	private static final class RecordingAudioSource implements IAudioSource {
 
-		private final List<String>  calls  = new ArrayList<>();
-		private final List<Float>   gains  = new ArrayList<>();
-		private final List<short[]> queued = new ArrayList<>();
+		private final List<String>  calls   = new ArrayList<>();
+		private final List<Float>   gains   = new ArrayList<>();
+		private final List<short[]> written = new ArrayList<>();
 
+		private int     played;
 		private boolean playing;
-		private int     processed;
 
 		@Override
 		public void play() {
@@ -408,11 +409,7 @@ public class VideoAudioPlayerTest {
 		public void stop() {
 			this.calls.add("stop");
 			this.playing = false;
-		}
-
-		@Override
-		public void clear() {
-			this.calls.add("clear");
+			this.played = this.getWrittenSamples();
 		}
 
 		@Override
@@ -427,8 +424,8 @@ public class VideoAudioPlayerTest {
 		}
 
 		@Override
-		public void queue(final @NonNull short[] samples) {
-			this.queued.add(samples);
+		public void write(final @NonNull short[] samples) {
+			this.written.add(samples);
 		}
 
 		@Override
@@ -437,15 +434,8 @@ public class VideoAudioPlayerTest {
 		}
 
 		@Override
-		public int getQueuedBuffers() {
-			return this.queued.size();
-		}
-
-		@Override
-		public int getProcessedBuffers() {
-			final int processed = this.processed;
-			this.processed = 0;
-			return processed;
+		public int getBufferedSamples() {
+			return this.getWrittenSamples() - this.played;
 		}
 
 		@Override
@@ -455,6 +445,14 @@ public class VideoAudioPlayerTest {
 
 		private float lastGain() {
 			return this.gains.get(this.gains.size() - 1);
+		}
+
+		private int getWrittenSamples() {
+			int samples = 0;
+			for (final short[] chunk : this.written) {
+				samples += chunk.length;
+			}
+			return samples;
 		}
 
 	}

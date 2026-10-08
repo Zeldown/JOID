@@ -494,7 +494,7 @@ public class VideoResourceDecoderTest {
 		decoder.seek(0.2D);
 		decoder.stop();
 		decoder.release();
-		Assert.assertEquals(Arrays.asList("pause", "play", "clear", "stop", "stop", "delete"), this.audio.calls);
+		Assert.assertEquals(Arrays.asList("pause", "play", "stop", "stop", "stop", "delete"), this.audio.calls);
 		Assert.assertNull(decoder.getAudioPlayer());
 	}
 
@@ -731,11 +731,6 @@ public class VideoResourceDecoderTest {
 		}
 
 		@Override
-		public void clear() {
-			this.calls.add("clear");
-		}
-
-		@Override
 		public void pause() {
 			this.calls.add("pause");
 		}
@@ -744,8 +739,8 @@ public class VideoResourceDecoderTest {
 		public void gain(final float gain) {}
 
 		@Override
-		public void queue(final @NonNull short[] samples) {
-			this.calls.add("queue");
+		public void write(final @NonNull short[] samples) {
+			this.calls.add("write");
 		}
 
 		@Override
@@ -754,12 +749,7 @@ public class VideoResourceDecoderTest {
 		}
 
 		@Override
-		public int getQueuedBuffers() {
-			return 0;
-		}
-
-		@Override
-		public int getProcessedBuffers() {
+		public int getBufferedSamples() {
 			return 0;
 		}
 

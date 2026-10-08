@@ -15,13 +15,10 @@ public final class SnapshotAudioSource implements IAudioSource {
 	public void pause() {}
 
 	@Override
-	public void clear() {}
-
-	@Override
 	public void gain(final float gain) {}
 
 	@Override
-	public void queue(final @NonNull short[] samples) {}
+	public void write(final @NonNull short[] samples) {}
 
 	@Override
 	public boolean isPlaying() {
@@ -29,12 +26,7 @@ public final class SnapshotAudioSource implements IAudioSource {
 	}
 
 	@Override
-	public int getQueuedBuffers() {
-		return 0;
-	}
-
-	@Override
-	public int getProcessedBuffers() {
+	public int getBufferedSamples() {
 		return 0;
 	}
 

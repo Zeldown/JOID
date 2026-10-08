@@ -85,7 +85,7 @@ public final class VideoAudioPlayer {
 		this.pendingOffset = 0;
 		this.buffersQueued = false;
 		if (this.source != null) {
-			this.source.clear();
+			this.source.stop();
 		}
 	}
 
@@ -107,32 +107,14 @@ public final class VideoAudioPlayer {
 				return;
 			}
 
-			for (int i = 0; i < 8; i++) {
-				final short[] merged = this.mergeNextChunk();
-				if (merged != null) {
-					this.source.queue(merged);
-				}
-			}
-
+			this.fill();
 			this.buffersQueued = true;
 			this.source.gain(this.volume * 0.3F);
 			this.source.play();
 			return;
 		}
 
-		final int processed = this.source.getProcessedBuffers();
-		for (int i = 0; i < processed; i++) {
-			final short[] merged = this.mergeNextChunk();
-			if (merged == null) {
-				break;
-			}
-			this.source.queue(merged);
-		}
-
-		if (!this.source.isPlaying() && this.playing && this.source.getQueuedBuffers() > 0) {
-			this.source.play();
-		}
-
+		this.fill();
 		this.source.gain(this.volume * 0.3F);
 
 		if (this.positional) {
@@ -146,6 +128,10 @@ public final class VideoAudioPlayer {
 			}
 
 			this.source.gain(this.volume * 0.3F * distanceVolume);
+		}
+
+		if (!this.source.isPlaying()) {
+			this.source.play();
 		}
 	}
 
@@ -254,6 +240,17 @@ public final class VideoAudioPlayer {
 
 		final float t = (float) ((distance - this.referenceDistance) / (this.maxDistance - this.referenceDistance));
 		return (1F - t) * (1F - t);
+	}
+
+	private void fill() {
+		final int target = 8 * (4096 / this.channels * this.channels);
+		while (this.source.getBufferedSamples() < target) {
+			final short[] merged = this.mergeNextChunk();
+			if (merged == null) {
+				return;
+			}
+			this.source.write(merged);
+		}
 	}
 
 	private short[] mergeNextChunk() {

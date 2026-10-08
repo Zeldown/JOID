@@ -199,7 +199,7 @@ public final class AppInput {
 - The render bridge maps every call onto the OpenGL state of the current context: matrices go to the OpenGL matrix stacks, and `pushState()` / `popState()` save and restore the OpenGL state itself. It needs OpenGL 2.0 shaders and 3.0 framebuffer objects.
 - A lit draw without a bound shader goes through the `fixed` shader of the core, so 3D models are shaded exactly as on LWJGL 3 and Vulkan.
 - The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, and the clipboard through AWT. LWJGL 2 key codes follow the keyboard layout on Windows and Linux and the place of the key on macOS; `isPhysicalKeyDown` answers like `isKeyDown`.
-- The audio bridge uses LWJGL 2's OpenAL. It creates the OpenAL context on the first video with sound, unless one already exists, and destroys it when the JVM exits.
+- The audio bridge is the `AlAudioBridge` of `base-openal` on LWJGL 2's OpenAL (`dev.joid.backend.lwjgl2.binding.Lwjgl2AlBinding`). It creates the OpenAL context with `AL.create()` on the first video with sound, unless one already exists, and destroys it when the JVM exits; `AL.create()` loads the OpenAL native that `Backend.register()` installed.
 
 ### LWJGL 2 natives
 
@@ -254,10 +254,27 @@ The LWJGL 3 and Vulkan backends share two modules, also published as their own j
 
 ### OpenAL audio bridge
 
-`dev.joid.base.openal.AudioBridge` implements `IAudioBridge` with LWJGL 3's OpenAL:
+`dev.joid.base.openal.AlAudioBridge` implements `IAudioBridge` on OpenAL, in plain Java: every OpenAL call goes through an `IAlBinding` (`dev.joid.base.openal.binding`), so the same code runs on LWJGL 3 (`Lwjgl3AlBinding.inst()`, in the module), on LWJGL 2 (`Lwjgl2AlBinding.inst()`, in the LWJGL 2 backend) or on the OpenAL of a host.
 
-- `createSource` uses the OpenAL context that is current, so a host that already plays sound shares its context; when none is current, it opens the default device, creates a context, makes it current and destroys it when the JVM exits.
-- `AudioSource` streams 16-bit samples through a queue of OpenAL buffers, in mono for one channel and in stereo otherwise: a track of 3 channels or more is mixed down with [`AudioDownmix`](bridges.md#stereo-output-with-audiodownmix) first. The source is placed at the listener, so OpenAL does not spatialize it; JOID applies the distance attenuation itself (see [Playback, Video and Audio](../resources/playback.md)).
+```java
+BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()).hostGain(gain -> gain * this.settings.getVolume()));
+```
+
+- `createSource` uses the OpenAL context that is current, so a host that already plays sound shares its context; when none is current, it creates one through the binding (default device, context made current) and destroys it when the JVM exits.
+- `AlAudioSource` streams 16-bit samples through a pool of OpenAL buffers, in mono for one channel and in stereo otherwise: a track of 3 channels or more is mixed down with [`AudioDownmix`](bridges.md#stereo-output-with-audiodownmix) first. It counts the buffered samples, reuses the played buffers, and plays again when a playing source ran dry. The source is placed at the listener, so OpenAL does not spatialize it; JOID applies the distance attenuation itself (see [Playback, Video and Audio](../resources/playback.md)).
+- A source follows the context of the host: when the current context changes, as when a game reloads its sound engine, the source recreates its OpenAL source on the new context and drops the samples it had buffered; without a current context, it does nothing.
+- `hostGain(IAudioGain)` sets the volume of the host: each gain given to a source goes through `IAudioGain.apply(gain)` (by default the gain itself) at every `gain` call, so a volume read there, such as the master volume times a category volume of a game, follows its changes live.
+
+| `IAlBinding` method | OpenAL call |
+|---|---|
+| `createContext()`, `destroyContext()`, `getCurrentContext()` | Device and context; `getCurrentContext()` returns an object that identifies the current context (compared with `equals`), `null` when none. |
+| `genSource()`, `deleteSource(source)` | A source relative to the listener, at its position. |
+| `genBuffer()`, `deleteBuffer(buffer)`, `bufferData(buffer, channels, samples, sampleRate)` | Buffers of 16-bit samples, mono or stereo. |
+| `play(source)`, `pause(source)`, `stop(source)`, `gain(source, gain)` | Playback and `AL_GAIN`. |
+| `queueBuffer(source, buffer)`, `unqueueBuffer(source)` | The buffer queue of a source. |
+| `isPlaying(source)`, `getQueuedBuffers(source)`, `getProcessedBuffers(source)` | `AL_SOURCE_STATE`, `AL_BUFFERS_QUEUED`, `AL_BUFFERS_PROCESSED`. |
+
+`joid-base-openal` declares LWJGL 3 as a compile-only dependency: the backends and applications on LWJGL 3 provide `lwjgl-openal` themselves, and an engine on another binding never loads `Lwjgl3AlBinding`.
 
 The LWJGL 2 audio bridge mixes down the same way.
 
@@ -303,12 +320,12 @@ The LWJGL 3 and Vulkan bridges keep their state in Java and apply it at each dra
 `Backend.register` is a shortcut. With another windowing system, register your own `IWindowBridge` next to the render and audio bridges of a module:
 
 ```java
-BridgeHandler.AUDIO.register(new AudioBridge());
+BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()));
 BridgeHandler.WINDOW.register(new HostWindowBridge());
 BridgeHandler.RENDER.register(GlRenderBridge.create(Lwjgl3GlBinding.inst()));
 ```
 
-Here `AudioBridge` is `dev.joid.base.openal.AudioBridge`, `GlRenderBridge` is `dev.joid.base.opengl.render.GlRenderBridge`, `Lwjgl3GlBinding` is `dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding` and `HostWindowBridge` is your implementation of `IWindowBridge`. The `RenderBridge`, `WindowBridge` and `AudioBridge` of `dev.joid.backend.lwjgl2` also have public constructors; the Vulkan render bridge needs a GLFW window (`new RenderBridge(long window)`).
+Here `AlAudioBridge` and `Lwjgl3AlBinding` come from `dev.joid.base.openal`, `GlRenderBridge` is `dev.joid.base.opengl.render.GlRenderBridge`, `Lwjgl3GlBinding` is `dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding` and `HostWindowBridge` is your implementation of `IWindowBridge`. The `RenderBridge` and `WindowBridge` of `dev.joid.backend.lwjgl2` also have public constructors, and its audio bridge is `AlAudioBridge.create(Lwjgl2AlBinding.inst())`; the Vulkan render bridge needs a GLFW window (`new RenderBridge(long window)`).
 
 ## The base-opengl module
 

@@ -6,6 +6,9 @@ dependencies {
     compile project(':base-glfw')
     compile project(':base-openal')
 
+    compile "org.lwjgl:lwjgl-openal:$lwjglVersion"
+    runtime "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
+
     compile "org.lwjgl:lwjgl-vulkan:$lwjglVersion"
     compile "org.lwjgl:lwjgl-shaderc:$lwjglVersion"
     runtime "org.lwjgl:lwjgl-shaderc:$lwjglVersion:$lwjglNatives"

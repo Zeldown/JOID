@@ -6,15 +6,13 @@ public interface IAudioSource {
 
 	public void play();
 	public void stop();
-	public void clear();
 	public void pause();
 
 	public void gain(final float gain);
-	public void queue(final @NonNull short[] samples);
+	public void write(final @NonNull short[] samples);
 
 	public boolean isPlaying();
-	public int getQueuedBuffers();
-	public int getProcessedBuffers();
+	public int getBufferedSamples();
 
 	public void delete();
 

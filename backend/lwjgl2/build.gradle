@@ -8,6 +8,7 @@ configurations {
 
 dependencies {
     compile project(':core')
+    compile project(':base-openal')
 
     compile "org.lwjgl.lwjgl:lwjgl:2.9.1"
 
@@ -31,6 +32,10 @@ sourceSets.main.resources.srcDir "$buildDir/natives"
 processResources.dependsOn extractNatives
 
 apply from: rootProject.file('gradle/backend.gradle')
+
+shadowJar {
+    exclude 'dev/joid/base/openal/binding/Lwjgl3AlBinding*'
+}
 
 /* Demo */
 task runDemo(type: JavaExec) {

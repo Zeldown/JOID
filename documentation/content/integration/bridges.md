@@ -114,24 +114,27 @@ The audio bridge creates streaming sources, used by the [audio track of videos](
 |---|---|
 | `createSource(int sampleRate, int channels)` | A new source playing interleaved signed 16-bit samples of `channels` channels at `sampleRate` Hz. |
 
+A source is a stream: the player writes samples ahead of the playback and keeps a few chunks buffered, and the source plays them in order. How the samples reach the sound device (a queue of buffers, a ring buffer, a line) is up to the backend.
+
 | Method of `IAudioSource` | Description |
 |---|---|
-| `queue(short[] samples)` | Appends a buffer of interleaved samples to the playback queue. Each buffer holds whole frames: one sample per channel, in channel order. |
-| `play()` / `pause()` / `stop()` | Starts or resumes, pauses, stops the playback. |
-| `clear()` | Stops the source and removes every queued buffer. |
-| `gain(float gain)` | Linear volume, `0` for silence. The video player passes `0.3 × volume × distance factor`. |
-| `isPlaying()` | Whether the source is playing. |
-| `getQueuedBuffers()` / `getProcessedBuffers()` | Buffers queued, and buffers already played that can be reused. |
+| `write(short[] samples)` | Appends interleaved samples to the stream. Each array holds whole frames: one sample per channel, in channel order. |
+| `getBufferedSamples()` | The samples written and not played yet, counted like `write` (interleaved values). The video player writes until 8 chunks of about 4096 samples are buffered. |
+| `play()` | Starts or resumes the playback. Until `pause()` or `stop()`, a source that runs out of samples waits, and plays again as soon as samples are written. |
+| `pause()` | Pauses the playback and keeps the buffered samples. |
+| `stop()` | Stops the playback and drops the buffered samples. |
+| `gain(float gain)` | Linear volume, `0` for silence. The video player passes `0.3 × volume × distance factor` at every update. |
+| `isPlaying()` | Whether the source plays: `true` from `play()` to `pause()` or `stop()`, also while it waits for samples. |
 | `delete()` | Releases the source. |
 
 ### Stereo output with AudioDownmix
 
-A video can carry 3 to 8 channels (5.1, 7.1...). A sound device limited to stereo calls `AudioDownmix.stereo(short[] samples, int channels)` (`dev.joid.lib.bridge.audio`) in `queue`, with the channel count given to `createSource`. The official OpenAL sources do it.
+A video can carry 3 to 8 channels (5.1, 7.1...). A sound device limited to stereo calls `AudioDownmix.stereo(short[] samples, int channels)` (`dev.joid.lib.bridge.audio`) in `write`, with the channel count given to `createSource`. The OpenAL source of `joid-base-openal` does it.
 
 ```java
 @Override
-public void queue(final @NonNull short[] samples) {
-	this.pending.add(AudioDownmix.stereo(samples, this.channels));
+public void write(final @NonNull short[] samples) {
+	this.line.write(AudioDownmix.stereo(samples, this.channels));
 }
 ```
 

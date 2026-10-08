@@ -51,7 +51,7 @@ Each release contains these files (`8.0.0` shown):
 | `joid-backend-vulkan-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `base-glfw` and `base-openal` modules, Vulkan backend, embedded libraries | Ship or develop an application on Vulkan |
 | `joid-core-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, embedded libraries, no backend | Write your own backend |
 | `joid-base-glfw-8.0.0.jar` | The GLFW window bridge only | Reuse the GLFW bridge in your own backend |
-| `joid-base-openal-8.0.0.jar` | The OpenAL audio bridge only | Reuse the OpenAL bridge in your own backend |
+| `joid-base-openal-8.0.0.jar` | The OpenAL audio bridge only, on the `IAlBinding` interface, with its LWJGL 3 binding | Reuse the OpenAL bridge in your own backend, on LWJGL 3 or on a binding of your own |
 | `joid-base-opengl-8.0.0.jar` | The OpenGL renderer only, on binding interfaces | Render with OpenGL in your own backend, see [Backends](../integration/backends.md#the-base-opengl-module) |
 | `joid-tool-testkit-8.0.0.jar` | The snapshot test framework | Test a backend, see [Testkit](../integration/testkit.md) |
 | `joid-tool-msdf-8.0.0.jar` | The MSDF generator, runnable with `java -jar` | Generate font atlases, see [MSDF Generator](../fonts/msdf-generator.md) |

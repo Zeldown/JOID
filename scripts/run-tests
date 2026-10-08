@@ -54,6 +54,8 @@ for module in lwjgl2 lwjgl3 vulkan; do
         modules="$modules $module"
     elif [ "$module" != "lwjgl2" ] && printf '%s\n' "$files" | grep -qE '^base/(glfw|openal)/'; then
         modules="$modules $module"
+    elif [ "$module" = "lwjgl2" ] && printf '%s\n' "$files" | grep -q '^base/openal/'; then
+        modules="$modules $module"
     elif [ "$module" = "lwjgl3" ] && printf '%s\n' "$files" | grep -qE '^base/opengl/'; then
         modules="$modules $module"
     fi
