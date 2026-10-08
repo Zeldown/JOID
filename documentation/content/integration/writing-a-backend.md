@@ -59,7 +59,7 @@ Setup:
 
 1. Put the jars listed in `libs/README.md` in `libs/`: `joid-core-<version>-dev.jar` and `-prod.jar`, `joid-testkit-<version>.jar`, `joid-lwjgl3-<version>-dev.jar` (the reference rendering), and optionally `joid-glfw-<version>.jar` and `joid-openal-<version>.jar`.
 2. Rename the `com.example.joid.engine` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group` and `archivesBaseName` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
-3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, put `joid-glfw` and `joid-openal` in the `embed` configuration and reuse their bridges instead of writing your own:
+3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, put `joid-glfw` and `joid-openal` (and `joid-opengl` on OpenGL, see [Two ways to implement IRenderBridge](#two-ways-to-implement-irenderbridge)) in the `embed` configuration and reuse their bridges instead of writing your own:
 
 ```groovy
 dependencies {
@@ -87,6 +87,9 @@ When a test fails, the build prints the link of its interactive `report.html`.
 |---|---|---|
 | Native: implement `IRenderBridge` directly | The engine has a fixed pipeline with its own matrix stacks and state. Forward each call and read the state back from the engine. | LWJGL 2 |
 | Emulated: extend `RenderBridge` | The engine has no fixed pipeline (modern OpenGL, Vulkan, a game engine renderer). | LWJGL 3, Vulkan |
+| On OpenGL: implement the bindings of `joid-opengl` | The engine gives access to an OpenGL 3.3 context. `GlRenderBridge`, an emulated bridge, does the rendering; you only forward its OpenGL calls. | LWJGL 3 |
+
+On OpenGL, embed `joid-opengl` and implement its six binding interfaces (`dev.joid.impl.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, and the five others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding` and `IGlFrameBufferBinding`. Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-opengl-module).
 
 `RenderBridge` (`dev.joid.lib.bridge.render`) implements every matrix and state method in Java. Your subclass implements seven methods, and applies the current state each time one of them runs:
 
@@ -268,14 +271,15 @@ The core holds the uniforms of every backend; a backend only sends them to the G
 
 A `GlslShaderTranslator` turns the two sources into the code of the backend and lists what the shader declares.
 
-The LWJGL 3 shader is created this way; its private constructor passes the bridge, the blend state, whether it linked, the block and the samplers to `super(bridge, blend, active, block, samplers)`:
+The OpenGL shader (`GlShader` of `joid-opengl`) is created this way; its private constructor passes the bridge, the blend state, whether it linked, the block and the samplers to `super(bridge, blend, active, block, samplers)`:
 
 ```java
-public static @NonNull Shader create(final RenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
-	final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
-	final int program = GL20C.glCreateProgram();
-	final boolean active = Shader.link(program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
-	return new Shader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
+public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
+	final GlslShaderTranslator translator = bridge.getStrategies().createTranslator();
+	final IGlProgramBinding programs = bridge.getBinding().getProgramBinding();
+	final int program = programs.createProgram();
+	final boolean active = GlShader.link(programs, program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
+	return new GlShader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
 }
 ```
 

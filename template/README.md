@@ -8,7 +8,7 @@ A backend implements three bridges — `IRenderBridge`, `IWindowBridge` and `IAu
 
 1. Put the JOID jars listed in [`libs/README.md`](libs/README.md) in `libs/`.
 2. Rename the `com.example.joid.engine` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group` and `archivesBaseName` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
-3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, add `joid-glfw` and `joid-openal` to the `embed` configuration instead of writing those bridges:
+3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, add `joid-glfw` and `joid-openal` to the `embed` configuration instead of writing those bridges (on OpenGL, add `joid-opengl` too and implement its bindings instead of a render bridge):
 
 ```groovy
 dependencies {

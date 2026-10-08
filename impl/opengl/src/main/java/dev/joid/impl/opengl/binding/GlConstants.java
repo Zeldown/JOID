@@ -1,0 +1,118 @@
+package dev.joid.impl.opengl.binding;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class GlConstants {
+
+	public static final int ONE  = 1;
+	public static final int ZERO = 0;
+	public static final int TRUE = 1;
+
+	public static final int VERSION                  = 0x1F02;
+	public static final int RENDERER                 = 0x1F01;
+	public static final int EXTENSIONS               = 0x1F03;
+	public static final int CONTEXT_FLAGS            = 0x821E;
+	public static final int NUM_EXTENSIONS           = 0x821D;
+	public static final int MAX_TEXTURE_SIZE         = 0x0D33;
+	public static final int CONTEXT_PROFILE_MASK     = 0x9126;
+	public static final int SHADING_LANGUAGE_VERSION = 0x8B8C;
+
+	public static final int SMOOTH_LINE_WIDTH_RANGE             = 0x0B22;
+	public static final int CONTEXT_CORE_PROFILE_BIT            = 0x0001;
+	public static final int ALIASED_LINE_WIDTH_RANGE            = 0x846E;
+	public static final int CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT = 0x0001;
+
+	public static final int BLEND        = 0x0BE2;
+	public static final int CULL_FACE    = 0x0B44;
+	public static final int DEPTH_TEST   = 0x0B71;
+	public static final int LINE_SMOOTH  = 0x0B20;
+	public static final int STENCIL_TEST = 0x0B90;
+	public static final int SCISSOR_TEST = 0x0C11;
+
+	public static final int COLOR_BUFFER_BIT   = 0x4000;
+	public static final int DEPTH_BUFFER_BIT   = 0x0100;
+	public static final int STENCIL_BUFFER_BIT = 0x0400;
+
+	public static final int MIN                   = 0x8007;
+	public static final int MAX                   = 0x8008;
+	public static final int FUNC_ADD              = 0x8006;
+	public static final int FUNC_SUBTRACT         = 0x800A;
+	public static final int FUNC_REVERSE_SUBTRACT = 0x800B;
+
+	public static final int SRC_COLOR           = 0x0300;
+	public static final int DST_COLOR           = 0x0306;
+	public static final int SRC_ALPHA           = 0x0302;
+	public static final int DST_ALPHA           = 0x0304;
+	public static final int ONE_MINUS_SRC_COLOR = 0x0301;
+	public static final int ONE_MINUS_DST_COLOR = 0x0307;
+	public static final int ONE_MINUS_SRC_ALPHA = 0x0303;
+	public static final int ONE_MINUS_DST_ALPHA = 0x0305;
+
+	public static final int LESS     = 0x0201;
+	public static final int NEVER    = 0x0200;
+	public static final int EQUAL    = 0x0202;
+	public static final int LEQUAL   = 0x0203;
+	public static final int GEQUAL   = 0x0206;
+	public static final int ALWAYS   = 0x0207;
+	public static final int GREATER  = 0x0204;
+	public static final int NOTEQUAL = 0x0205;
+
+	public static final int KEEP    = 0x1E00;
+	public static final int INCR    = 0x1E02;
+	public static final int DECR    = 0x1E03;
+	public static final int INVERT  = 0x150A;
+	public static final int REPLACE = 0x1E01;
+
+	public static final int LINES     = 0x0001;
+	public static final int TRIANGLES = 0x0004;
+
+	public static final int BYTE          = 0x1400;
+	public static final int FLOAT         = 0x1406;
+	public static final int UNSIGNED_BYTE = 0x1401;
+
+	public static final int RGBA                     = 0x1908;
+	public static final int BGRA                     = 0x80E1;
+	public static final int RGBA8                    = 0x8058;
+	public static final int UNSIGNED_INT_8_8_8_8_REV = 0x8367;
+
+	public static final int TEXTURE0           = 0x84C0;
+	public static final int TEXTURE_2D         = 0x0DE1;
+	public static final int TEXTURE_WRAP_S     = 0x2802;
+	public static final int TEXTURE_WRAP_T     = 0x2803;
+	public static final int TEXTURE_MAX_LEVEL  = 0x813D;
+	public static final int TEXTURE_MIN_FILTER = 0x2801;
+	public static final int TEXTURE_MAG_FILTER = 0x2800;
+
+	public static final int LINEAR               = 0x2601;
+	public static final int NEAREST              = 0x2600;
+	public static final int LINEAR_MIPMAP_LINEAR = 0x2703;
+
+	public static final int REPEAT          = 0x2901;
+	public static final int CLAMP_TO_EDGE   = 0x812F;
+	public static final int CLAMP_TO_BORDER = 0x812D;
+
+	public static final int STREAM_DRAW    = 0x88E0;
+	public static final int DYNAMIC_DRAW   = 0x88E8;
+	public static final int ARRAY_BUFFER   = 0x8892;
+	public static final int UNIFORM_BUFFER = 0x8A11;
+
+	public static final int LINK_STATUS     = 0x8B82;
+	public static final int INVALID_INDEX   = 0xFFFFFFFF;
+	public static final int VERTEX_SHADER   = 0x8B31;
+	public static final int COMPILE_STATUS  = 0x8B81;
+	public static final int FRAGMENT_SHADER = 0x8B30;
+
+	public static final int BACK                     = 0x0405;
+	public static final int FRAMEBUFFER              = 0x8D40;
+	public static final int RENDERBUFFER             = 0x8D41;
+	public static final int READ_FRAMEBUFFER         = 0x8CA8;
+	public static final int DRAW_FRAMEBUFFER         = 0x8CA9;
+	public static final int DEPTH_ATTACHMENT         = 0x8D00;
+	public static final int COLOR_ATTACHMENT0        = 0x8CE0;
+	public static final int DEPTH_COMPONENT24        = 0x81A6;
+	public static final int READ_FRAMEBUFFER_BINDING = 0x8CAA;
+	public static final int DRAW_FRAMEBUFFER_BINDING = 0x8CA6;
+
+}

@@ -127,8 +127,8 @@ task msdfGenerator(type: Zip) {
 task collectArtifacts(type: Copy) {
     group = 'JOID'
     description = 'Copies every release artifact into build/libs.'
-    dependsOn ':core:releaseJar', ':glfw:releaseJar', ':testkit:jar', ':openal:jar', ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar', ':msdf:jar'
-    from { [':core', ':glfw'].collect { project(it).releaseJar.archivePath } }
+    dependsOn ':core:releaseJar', ':glfw:releaseJar', ':opengl:releaseJar', ':testkit:jar', ':openal:jar', ':lwjgl2:shadowJar', ':lwjgl3:shadowJar', ':vulkan:shadowJar', ':msdf:jar'
+    from { [':core', ':glfw', ':opengl'].collect { project(it).releaseJar.archivePath } }
     from { [':lwjgl2', ':lwjgl3', ':vulkan'].collect { project(it).shadowJar.archivePath } }
     from { [':testkit', ':openal'].collect { project(it).jar.archivePath } }
     from backendTemplate

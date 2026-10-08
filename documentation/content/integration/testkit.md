@@ -25,12 +25,7 @@ public final class SnapshotBackend implements ISnapshotBackend {
 
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
 		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
-		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, Platform.get() == Platform.MACOSX ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_DEPTH_BITS, 24);
-		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 8);
+		GlContextRequest.CORE_33.apply();
 
 		this.window = GLFW.glfwCreateWindow(width, height, "JOID snapshot", 0L, 0L);
 		if (this.window == 0L) {
@@ -50,16 +45,12 @@ public final class SnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
-		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
-		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
-		GL11C.glReadBuffer(GL11C.GL_BACK);
-		GL11C.glReadPixels(0, 0, width, height, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixels);
-		return SnapshotImage.fromBytes(pixels, width, height, true, PixelLayout.RGBA8);
+		return GlSnapshotCapture.capture(Lwjgl3GlBinding.inst(), width, height);
 	}
 
 	@Override
 	public @NonNull String getRenderer() {
-		return GL11C.glGetString(GL11C.GL_RENDERER);
+		return GlSnapshotCapture.getRenderer(Lwjgl3GlBinding.inst());
 	}
 
 }

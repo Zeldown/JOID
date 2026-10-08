@@ -50,7 +50,7 @@ The backend is the only part of a JOID application that knows the engine. Your U
 | Module | Engine | Register with | Window bridge | Audio bridge | Generated shaders |
 |---|---|---|---|---|---|
 | `lwjgl2` | LWJGL 2.9.1: OpenGL state of the current context | `dev.joid.impl.lwjgl2.Backend.register()` | LWJGL 2 `Display`, `Mouse`, `Keyboard` | LWJGL 2 OpenAL | GLSL 1.20 |
-| `lwjgl3` | LWJGL 3.3.4: OpenGL 3.3 core | `dev.joid.impl.lwjgl3.Backend.register(window)` | `glfw` module | `openal` module | GLSL 3.30 |
+| `lwjgl3` | LWJGL 3.3.4: OpenGL 3.3 core, rendered by the `opengl` module | `dev.joid.impl.lwjgl3.Backend.register(window)` | `glfw` module | `openal` module | GLSL 3.30 |
 | `vulkan` | LWJGL 3.3.4: Vulkan 1.3, shaderc | `dev.joid.impl.vulkan.Backend.register(window)` | `glfw` module | `openal` module | GLSL 4.50 compiled to SPIR-V at runtime |
 
 Each `Backend.register` registers the audio, window and render bridges of its module; the clock bridge is already registered by JOID. The backend jars, their `prod` and `dev` flavors and the dependencies to declare are listed in [Installation](../getting-started/installation.md).
@@ -297,10 +297,23 @@ The LWJGL 3 and Vulkan bridges keep their state in Java and apply it at each dra
 ```java
 BridgeHandler.AUDIO.register(new AudioBridge());
 BridgeHandler.WINDOW.register(new HostWindowBridge());
-BridgeHandler.RENDER.register(new RenderBridge());
+BridgeHandler.RENDER.register(GlRenderBridge.create(Lwjgl3GlBinding.inst()));
 ```
 
-Here `AudioBridge` is `dev.joid.impl.openal.AudioBridge`, `RenderBridge` is `dev.joid.impl.lwjgl3.render.RenderBridge` and `HostWindowBridge` is your implementation of `IWindowBridge`. The `RenderBridge`, `WindowBridge` and `AudioBridge` of `dev.joid.impl.lwjgl2` also have public constructors; the Vulkan render bridge needs a GLFW window (`new RenderBridge(long window)`).
+Here `AudioBridge` is `dev.joid.impl.openal.AudioBridge`, `GlRenderBridge` is `dev.joid.impl.opengl.render.GlRenderBridge`, `Lwjgl3GlBinding` is `dev.joid.impl.lwjgl3.binding.Lwjgl3GlBinding` and `HostWindowBridge` is your implementation of `IWindowBridge`. The `RenderBridge`, `WindowBridge` and `AudioBridge` of `dev.joid.impl.lwjgl2` also have public constructors; the Vulkan render bridge needs a GLFW window (`new RenderBridge(long window)`).
+
+## The opengl module
+
+The LWJGL 3 backend renders with `joid-opengl`, a module in plain Java that holds the whole OpenGL renderer and calls OpenGL only through binding interfaces. The LWJGL 3 backend implements them with LWJGL 3 (`dev.joid.impl.lwjgl3.binding`); another engine on OpenGL implements them with its own functions and gets the same rendering.
+
+| Package `dev.joid.impl.opengl` | Content |
+|---|---|
+| `binding` | `IGlBinding` (`glEnable`, `glDisable`, `glIsEnabled`, `glGetInteger`, `glGetString`, `glGetStringi`, `glGetFloatv`, and the getters of the five domain bindings), `IGlStateBinding` (blending, depth, stencil, color mask, viewport, line width, clear color), `IGlBufferBinding` (buffers, vertex arrays, attributes, `glDrawArrays`), `IGlProgramBinding` (shaders, programs, uniforms, uniform blocks), `IGlTextureBinding` (textures, units, sampler objects), `IGlFrameBufferBinding` (framebuffers, renderbuffers, blits, clears, reading pixels), and `GlConstants`, the OpenGL values the module passes to them. |
+| `capability` | `GlCapabilities.read(IGlBinding)` reads the context once: version, GLSL version, `GlProfile` (`COMPATIBILITY`, `CORE`, `FORWARD_COMPATIBLE_CORE`), extensions, maximum texture size and line widths, and tells whether vertex arrays, uniform buffers, sampler objects and framebuffer objects are there. `GlStrategies.of(GlCapabilities)` is the one place that chooses how to render on that context: today GLSL 3.30 with the uniforms in a block, and it refuses a context without OpenGL 3.3 with an `IllegalStateException` naming what the context offers. |
+| `render` | `GlRenderBridge` (`create(IGlBinding)`), the render bridge; `GlEnums`, the OpenGL values of the blend, stencil, wrap, filter, vertex and primitive enums of JOID; `shader.GlShader`, `texture.GlTexture` and `framebuffer.GlFrameBuffer`, on the core `Shader`, `Texture` and `FrameBufferHandle`. |
+| `snapshot` | `GlSnapshotCapture.capture(binding, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL; left out of the `-prod` jars and of the released `joid-opengl` jar. |
+
+`GlRenderBridge.create(binding)` reads the capabilities and creates its vertex array, buffer and sampler objects: the context must be current. Every OpenGL call of JOID then goes through the bindings, so a binding that wraps another one sees all of them. On LWJGL 3, `GlContextRequest.CORE_33.apply()` sets the GLFW hints of the context JOID needs (OpenGL 3.3 core, forward compatible on macOS, 24 bits of depth, 8 of stencil).
 
 ## Demo windows
 

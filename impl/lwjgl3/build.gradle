@@ -5,6 +5,7 @@ archivesBaseName = "joid-lwjgl3"
 dependencies {
     compile project(':glfw')
     compile project(':openal')
+    compile project(':opengl')
 
     compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
     runtime "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"

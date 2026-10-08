@@ -2,9 +2,9 @@ package dev.joid.impl.lwjgl3.demo;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.system.Platform;
 
 import dev.joid.impl.lwjgl3.Backend;
+import dev.joid.impl.lwjgl3.GlContextRequest;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 
@@ -24,12 +24,7 @@ public class DemoWindow extends dev.joid.impl.glfw.demo.DemoWindow {
 
 	@Override
 	protected void configureWindow() {
-		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
-		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, Platform.get() == Platform.MACOSX ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_DEPTH_BITS, 24);
-		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 8);
+		GlContextRequest.CORE_33.apply();
 	}
 
 	@Override

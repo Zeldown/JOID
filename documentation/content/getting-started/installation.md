@@ -47,11 +47,12 @@ Each release contains these files (`8.0.0` shown):
 | File | Content | Use it to |
 | --- | --- | --- |
 | `joid-lwjgl2-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, LWJGL 2 backend, LWJGL 2 and OpenAL natives, embedded libraries | Ship or develop an application on LWJGL 2 |
-| `joid-lwjgl3-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `glfw` and `openal` modules, LWJGL 3 backend, embedded libraries | Ship or develop an application on LWJGL 3 (OpenGL) |
+| `joid-lwjgl3-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `glfw`, `openal` and `opengl` modules, LWJGL 3 backend, embedded libraries | Ship or develop an application on LWJGL 3 (OpenGL) |
 | `joid-vulkan-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, `glfw` and `openal` modules, Vulkan backend, embedded libraries | Ship or develop an application on Vulkan |
 | `joid-core-8.0.0-prod.jar` / `-dev.jar` | Core, MSDF generator classes, embedded libraries, no backend | Write your own backend |
 | `joid-glfw-8.0.0.jar` | The GLFW window bridge only | Reuse the GLFW bridge in your own backend |
 | `joid-openal-8.0.0.jar` | The OpenAL audio bridge only | Reuse the OpenAL bridge in your own backend |
+| `joid-opengl-8.0.0.jar` | The OpenGL renderer only, on binding interfaces | Render with OpenGL in your own backend, see [Backends](../integration/backends.md#the-opengl-module) |
 | `joid-testkit-8.0.0.jar` | The snapshot test framework | Test a backend, see [Testkit](../integration/testkit.md) |
 | `joid-msdf-8.0.0.jar` | The MSDF generator, runnable with `java -jar` | Generate font atlases, see [MSDF Generator](../fonts/msdf-generator.md) |
 | `joid-msdf-generator-8.0.0.zip` | `joid-msdf-8.0.0.jar`, `charset.txt`, `msdf.sh`, `msdf.bat`, a README, `LICENSE` and `NOTICE` | Run the generator from a terminal |
@@ -256,7 +257,7 @@ It prints `JOID 8.0.0`. Each official `Backend.register(...)` also compares its 
 | `src/test/java` | `RenderBridgeContractTest` and `SnapshotTest`. |
 | `src/demo/java` | `DemoWindow`, which opens the demo UIs on your engine. Only the dev jar contains it. |
 | `libraries` configuration | The libraries listed in [Libraries to declare](#libraries-to-declare). No jar embeds them: the application that uses your backend declares them too. JavaCV, JavaCPP and FFmpeg need no declaration. |
-| `embed` configuration | `joid-glfw` and `joid-openal`, when your engine runs on GLFW or OpenAL. |
+| `embed` configuration | `joid-glfw` and `joid-openal`, when your engine runs on GLFW or OpenAL, and `joid-opengl` on OpenGL. |
 
 `./gradlew build` produces `joid-engine-1.0.0-dev.jar`, with the demo assets and `DemoWindow`, and `joid-engine-1.0.0-prod.jar`, without them. Both embed the JOID core with its embedded libraries and the `embed` jars, but none of the `libraries`. The tasks and the render contract are described in [Writing a Backend](../integration/writing-a-backend.md).
 
