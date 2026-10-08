@@ -9,7 +9,8 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
+import dev.joid.lib.render.tessellator.DrawMode;
 
 public class OBJGroupTest {
 
@@ -51,7 +52,7 @@ public class OBJGroupTest {
 		group.render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(1, draws.size());
-		Assert.assertSame(DrawMode.TRIANGLES, draws.get(0).getMode());
+		Assert.assertSame(Primitive.TRIANGLES, draws.get(0).getPrimitive());
 		Assert.assertEquals(6, draws.get(0).getXs().length);
 	}
 
@@ -61,7 +62,7 @@ public class OBJGroupTest {
 		group.getFaces().add(OBJGroupTest.face(new OBJVertex(0F, 0F), new OBJVertex(1F, 0F), new OBJVertex(1F, 1F), new OBJVertex(0F, 1F)));
 		group.render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
-		Assert.assertSame(DrawMode.TRIANGLES, draws.get(0).getMode());
+		Assert.assertSame(Primitive.TRIANGLES, draws.get(0).getPrimitive());
 		Assert.assertEquals(6, draws.get(0).getXs().length);
 	}
 

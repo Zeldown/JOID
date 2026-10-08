@@ -18,7 +18,7 @@ import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.FontWeight;
@@ -105,7 +105,7 @@ public class MsdfFontProviderTest {
 		final FontBounds bounds = MsdfFontProvider.inst().drawText(100D, 100D, "Ax", MsdfFontProviderTest.sampleInfo());
 		Assert.assertEquals(2, this.render.getCaptures().size());
 		for (final Capture capture : this.render.getCaptures()) {
-			Assert.assertSame(DrawMode.TRIANGLES, capture.getMode());
+			Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
 			Assert.assertEquals(6, capture.getCount());
 			Assert.assertTrue(capture.isTexture());
 		}

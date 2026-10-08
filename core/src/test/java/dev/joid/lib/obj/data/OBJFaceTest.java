@@ -3,7 +3,7 @@ package dev.joid.lib.obj.data;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 
 public class OBJFaceTest {

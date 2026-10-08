@@ -6,7 +6,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 
 public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge {
@@ -35,7 +35,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public void draw(final DrawMode mode, final VertexBuffer buffer) {
+	public void draw(final Primitive primitive, final VertexBuffer buffer) {
 		throw new UnsupportedOperationException();
 	}
 

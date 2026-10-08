@@ -26,6 +26,7 @@ import org.lwjgl.vulkan.VkVertexInputBindingDescription;
 
 import dev.joid.impl.vulkan.render.Context;
 import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.NonNull;
 
@@ -50,11 +51,10 @@ public final class PipelineCache {
 			stages.get(0).sType$Default().stage(VK10.VK_SHADER_STAGE_VERTEX_BIT).module(key.getShader().getVertexModule()).pName(entryPoint);
 			stages.get(1).sType$Default().stage(VK10.VK_SHADER_STAGE_FRAGMENT_BIT).module(key.getShader().getFragmentModule()).pName(entryPoint);
 
-			final VkVertexInputAttributeDescription.Buffer attributes = VkVertexInputAttributeDescription.calloc(4, stack);
-			attributes.get(0).location(0).binding(0).format(VK10.VK_FORMAT_R32G32B32_SFLOAT).offset(VertexBuffer.POSITION_OFFSET);
-			attributes.get(1).location(1).binding(0).format(VK10.VK_FORMAT_R32G32_SFLOAT).offset(VertexBuffer.TEXTURE_OFFSET);
-			attributes.get(2).location(2).binding(0).format(VK10.VK_FORMAT_R8G8B8A8_UNORM).offset(VertexBuffer.COLOR_OFFSET);
-			attributes.get(3).location(3).binding(0).format(VK10.VK_FORMAT_R8G8B8A8_SNORM).offset(VertexBuffer.NORMAL_OFFSET);
+			final VkVertexInputAttributeDescription.Buffer attributes = VkVertexInputAttributeDescription.calloc(VertexAttribute.values().length, stack);
+			for (final VertexAttribute attribute : VertexAttribute.values()) {
+				attributes.get(attribute.ordinal()).location(attribute.getLocation()).binding(0).format(PipelineCache.format(attribute)).offset(attribute.getOffset());
+			}
 
 			final VkPipelineVertexInputStateCreateInfo vertexInput = VkPipelineVertexInputStateCreateInfo.calloc(stack)
 					.sType$Default()
@@ -100,6 +100,19 @@ public final class PipelineCache {
 			final LongBuffer pipeline = stack.mallocLong(1);
 			Context.check(VK10.vkCreateGraphicsPipelines(this.context.getDevice(), VK10.VK_NULL_HANDLE, info, null, pipeline), "vkCreateGraphicsPipelines");
 			return pipeline.get(0);
+		}
+	}
+
+	private static int format(final VertexAttribute attribute) {
+		switch (attribute) {
+		case TEXTURE_COORDINATE:
+			return VK10.VK_FORMAT_R32G32_SFLOAT;
+		case COLOR:
+			return VK10.VK_FORMAT_R8G8B8A8_UNORM;
+		case NORMAL:
+			return VK10.VK_FORMAT_R8G8B8A8_SNORM;
+		default:
+			return VK10.VK_FORMAT_R32G32B32_SFLOAT;
 		}
 	}
 

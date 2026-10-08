@@ -2,7 +2,6 @@ package dev.joid.lib.render.tessellator;
 
 import javax.vecmath.Vector2d;
 
-import dev.joid.lib.bridge.render.vertex.DrawMode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

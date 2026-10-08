@@ -8,7 +8,7 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.EdgeSmoothing;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.Resource;

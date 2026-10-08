@@ -1,4 +1,4 @@
-package dev.joid.lib.bridge.render.vertex;
+package dev.joid.lib.render.tessellator;
 
 public enum DrawMode {
 

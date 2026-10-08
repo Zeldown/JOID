@@ -11,7 +11,7 @@ import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.NonNull;
 
@@ -62,7 +62,7 @@ public interface IRenderBridge extends IBridge {
 	public void frameBuffer(final IFrameBuffer frameBuffer);
 	public void texture(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap);
 
-	public void draw(final @NonNull DrawMode mode, final @NonNull VertexBuffer buffer);
+	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer);
 
 	public @NonNull ITexture createTexture();
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height, final @NonNull TextureFilter filter);

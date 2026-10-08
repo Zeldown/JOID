@@ -3,7 +3,7 @@ package dev.joid.lib.obj.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import lombok.Getter;
 import lombok.NonNull;

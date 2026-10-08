@@ -23,16 +23,13 @@ import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
+import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
+import dev.joid.lib.bridge.render.vertex.VertexComponent;
 import lombok.NonNull;
 
 public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge {
-
-	public static final int COLOR_LOCATION    = 2;
-	public static final int NORMAL_LOCATION   = 3;
-	public static final int TEXTURE_LOCATION  = 1;
-	public static final int POSITION_LOCATION = 0;
 
 	private final int[]   samplers;
 	private final int     vertexArray;
@@ -53,11 +50,10 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 
 		GL30C.glBindVertexArray(this.vertexArray);
 		GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, this.vertexBuffer);
-		GL20C.glVertexAttribPointer(RenderBridge.POSITION_LOCATION, 3, GL11C.GL_FLOAT, false, VertexBuffer.STRIDE, VertexBuffer.POSITION_OFFSET);
-		GL20C.glVertexAttribPointer(RenderBridge.TEXTURE_LOCATION, 2, GL11C.GL_FLOAT, false, VertexBuffer.STRIDE, VertexBuffer.TEXTURE_OFFSET);
-		GL20C.glVertexAttribPointer(RenderBridge.COLOR_LOCATION, 4, GL11C.GL_UNSIGNED_BYTE, true, VertexBuffer.STRIDE, VertexBuffer.COLOR_OFFSET);
-		GL20C.glVertexAttribPointer(RenderBridge.NORMAL_LOCATION, 3, GL11C.GL_BYTE, true, VertexBuffer.STRIDE, VertexBuffer.NORMAL_OFFSET);
-		GL20C.glEnableVertexAttribArray(RenderBridge.POSITION_LOCATION);
+		for (final VertexAttribute attribute : VertexAttribute.values()) {
+			GL20C.glVertexAttribPointer(attribute.getLocation(), attribute.getComponents(), RenderBridge.type(attribute.getComponent()), attribute.isNormalized(), VertexBuffer.STRIDE, attribute.getOffset());
+		}
+		GL20C.glEnableVertexAttribArray(VertexAttribute.POSITION.getLocation());
 	}
 
 	@Override
@@ -85,7 +81,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public void draw(final @NonNull DrawMode mode, final @NonNull VertexBuffer buffer) {
+	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
 		final RenderState state = super.getState();
 		this.applyTarget(state);
 		this.applyPipeline(state);
@@ -101,13 +97,13 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		GL30C.glBindVertexArray(this.vertexArray);
 		GL15C.glBindBuffer(GL15C.GL_ARRAY_BUFFER, this.vertexBuffer);
 		GL15C.glBufferData(GL15C.GL_ARRAY_BUFFER, buffer.getBuffer(), GL15C.GL_STREAM_DRAW);
-		RenderBridge.toggleAttribute(RenderBridge.TEXTURE_LOCATION, buffer.isTexture());
-		RenderBridge.toggleAttribute(RenderBridge.COLOR_LOCATION, buffer.isColor());
-		RenderBridge.toggleAttribute(RenderBridge.NORMAL_LOCATION, buffer.isNormal());
-		GL20C.glVertexAttrib2f(RenderBridge.TEXTURE_LOCATION, 0F, 0F);
-		GL20C.glVertexAttrib4f(RenderBridge.COLOR_LOCATION, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
-		GL20C.glVertexAttrib3f(RenderBridge.NORMAL_LOCATION, 0F, 0F, 1F);
-		GL11C.glDrawArrays(RenderBridge.mode(mode), 0, buffer.getCount());
+		RenderBridge.toggleAttribute(VertexAttribute.TEXTURE_COORDINATE.getLocation(), buffer.isTexture());
+		RenderBridge.toggleAttribute(VertexAttribute.COLOR.getLocation(), buffer.isColor());
+		RenderBridge.toggleAttribute(VertexAttribute.NORMAL.getLocation(), buffer.isNormal());
+		GL20C.glVertexAttrib2f(VertexAttribute.TEXTURE_COORDINATE.getLocation(), 0F, 0F);
+		GL20C.glVertexAttrib4f(VertexAttribute.COLOR.getLocation(), state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
+		GL20C.glVertexAttrib3f(VertexAttribute.NORMAL.getLocation(), 0F, 0F, 1F);
+		GL11C.glDrawArrays(primitive == Primitive.LINES ? GL11C.GL_LINES : GL11C.GL_TRIANGLES, 0, buffer.getCount());
 	}
 
 	@Override
@@ -217,20 +213,14 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		}
 	}
 
-	private static int mode(final DrawMode mode) {
-		switch (mode) {
-		case LINES:
-			return GL11C.GL_LINES;
-		case LINE_STRIP:
-			return GL11C.GL_LINE_STRIP;
-		case LINE_LOOP:
-			return GL11C.GL_LINE_LOOP;
-		case POLYGON:
-			return GL11C.GL_TRIANGLE_FAN;
-		case QUADS:
-			throw new IllegalArgumentException("QUADS are not supported by OpenGL core, triangulate them before drawing");
+	private static int type(final VertexComponent component) {
+		switch (component) {
+		case UNSIGNED_BYTE:
+			return GL11C.GL_UNSIGNED_BYTE;
+		case BYTE:
+			return GL11C.GL_BYTE;
 		default:
-			return GL11C.GL_TRIANGLES;
+			return GL11C.GL_FLOAT;
 		}
 	}
 

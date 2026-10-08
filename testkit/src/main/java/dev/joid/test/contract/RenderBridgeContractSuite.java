@@ -20,7 +20,8 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
+import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import dev.joid.lib.render.modifier.Scale;
 import dev.joid.lib.render.modifier.Vector;
@@ -80,7 +81,7 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void drawsVertexColors() {
-		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN)));
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN)));
 		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
 	}
 
@@ -99,7 +100,7 @@ public abstract class RenderBridgeContractSuite {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			shader.bind();
 			try {
-				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 			} finally {
 				shader.unbind();
 			}
@@ -123,7 +124,7 @@ public abstract class RenderBridgeContractSuite {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			shader.bind();
 			try {
-				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 			} finally {
 				shader.unbind();
 			}
@@ -139,7 +140,7 @@ public abstract class RenderBridgeContractSuite {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			shader.bind();
 			try {
-				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 			} finally {
 				shader.unbind();
 			}
@@ -154,9 +155,9 @@ public abstract class RenderBridgeContractSuite {
 			shader.bind();
 			try {
 				bridge.lighting(true);
-				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
 				bridge.lighting(false);
-				bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
 			} finally {
 				bridge.lighting(false);
 				shader.unbind();
@@ -180,9 +181,9 @@ public abstract class RenderBridgeContractSuite {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.blend(BlendState.PREMULTIPLIED);
 			bridge.alphaTest(0.5F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
 			bridge.alphaTest(0F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
 		});
 		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
 		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
@@ -203,7 +204,7 @@ public abstract class RenderBridgeContractSuite {
 		final ITexture texture = render.createTexture().allocate(2, 2).upload(new int[] {RenderBridgeContractSuite.RED, RenderBridgeContractSuite.GREEN, RenderBridgeContractSuite.BLUE, RenderBridgeContractSuite.WHITE}, 2, 2);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.texture(texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
 		});
 		texture.delete();
 
@@ -265,7 +266,7 @@ public abstract class RenderBridgeContractSuite {
 
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.color(1F, 0F, 0F, 1F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 		});
 		frameBuffer.delete();
 
@@ -280,11 +281,11 @@ public abstract class RenderBridgeContractSuite {
 			bridge.frameBuffer(frameBuffer);
 			bridge.clear(0F, 1F, 0F, 1F);
 			bridge.color(1F, 0F, 0F, 1F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
 			bridge.frameBuffer(null);
 			bridge.color(1F, 1F, 1F, 1F);
 			bridge.texture(frameBuffer.getTexture(), TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
 		});
 		frameBuffer.delete();
 
@@ -315,7 +316,7 @@ public abstract class RenderBridgeContractSuite {
 			bridge.frameBuffer(null);
 			bridge.color(1F, 1F, 1F, 1F);
 			bridge.texture(frameBuffer.getTexture(), TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
 		});
 		frameBuffer.delete();
 
@@ -326,7 +327,7 @@ public abstract class RenderBridgeContractSuite {
 	public void drawsWithTheCurrentColor() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.color(1F, 0F, 0F, 1F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 		});
 		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
 	}
@@ -335,7 +336,7 @@ public abstract class RenderBridgeContractSuite {
 	public void followsTheOpenGlProjection() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.color(1F, 0F, 0F, 1F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE / 2, false, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE / 2, false, 0));
 		});
 		RenderBridgeContractSuite.assertPixel(image, 8, 8, RenderBridgeContractSuite.RED);
 		RenderBridgeContractSuite.assertPixel(image, 56, 56, RenderBridgeContractSuite.BLACK);
@@ -349,7 +350,7 @@ public abstract class RenderBridgeContractSuite {
 			bridge.texture(texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
 			bridge.resetTexture();
 			bridge.color(0F, 0F, 1F, 1F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
 		});
 		texture.delete();
 
@@ -420,7 +421,7 @@ public abstract class RenderBridgeContractSuite {
 			bridge.translate(12D, 12D, -100D);
 			bridge.scale(scale, scale, scale);
 			bridge.lighting(true);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, (float) (40D / scale), (float) (40D / scale), false, 0xFF808080, true));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, (float) (40D / scale), (float) (40D / scale), false, 0xFF808080, true));
 		} finally {
 			bridge.lighting(false);
 			bridge.popMatrix();
@@ -434,14 +435,14 @@ public abstract class RenderBridgeContractSuite {
 			bridge.clearDepth();
 			bridge.translate(0D, 0D, -10D);
 			bridge.color(1F, 0F, 0F, 1F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 			if (clearBetween) {
 				bridge.clearDepth();
 			}
 
 			bridge.translate(0D, 0D, -10D);
 			bridge.color(0F, 0F, 1F, 1F);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 		} finally {
 			bridge.depth(false, false);
 			bridge.popMatrix();
@@ -461,7 +462,7 @@ public abstract class RenderBridgeContractSuite {
 	private static SnapshotImage minify(final ITexture texture) {
 		return RenderBridgeContractSuite.render(bridge -> {
 			bridge.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
-			bridge.draw(DrawMode.TRIANGLES, RenderBridgeContractSuite.quad(0.5F, 0.5F, 7, 7, true, 0));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0.5F, 0.5F, 7, 7, true, 0));
 		});
 	}
 
@@ -493,15 +494,15 @@ public abstract class RenderBridgeContractSuite {
 		final ByteBuffer buffer = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
 		for (int i = 0; i < corners.length; i++) {
 			final int offset = i * VertexBuffer.STRIDE;
-			buffer.putFloat(offset + VertexBuffer.POSITION_OFFSET, corners[i][0]);
-			buffer.putFloat(offset + VertexBuffer.POSITION_OFFSET + 4, corners[i][1]);
-			buffer.putFloat(offset + VertexBuffer.TEXTURE_OFFSET, corners[i][2]);
-			buffer.putFloat(offset + VertexBuffer.TEXTURE_OFFSET + 4, corners[i][3]);
-			buffer.put(offset + VertexBuffer.COLOR_OFFSET, (byte) (color >> 16));
-			buffer.put(offset + VertexBuffer.COLOR_OFFSET + 1, (byte) (color >> 8));
-			buffer.put(offset + VertexBuffer.COLOR_OFFSET + 2, (byte) color);
-			buffer.put(offset + VertexBuffer.COLOR_OFFSET + 3, (byte) (color >> 24));
-			buffer.put(offset + VertexBuffer.NORMAL_OFFSET + 2, (byte) 127);
+			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset(), corners[i][0]);
+			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 4, corners[i][1]);
+			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset(), corners[i][2]);
+			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, corners[i][3]);
+			buffer.put(offset + VertexAttribute.COLOR.getOffset(), (byte) (color >> 16));
+			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 1, (byte) (color >> 8));
+			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 2, (byte) color);
+			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 3, (byte) (color >> 24));
+			buffer.put(offset + VertexAttribute.NORMAL.getOffset() + 2, (byte) 127);
 		}
 		return VertexBuffer.create(buffer, corners.length, texture, color != 0, normal);
 	}

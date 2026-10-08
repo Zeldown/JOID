@@ -3,6 +3,8 @@ package dev.joid.lib.bridge.render.shader.source;
 import java.util.ArrayList;
 import java.util.List;
 
+import dev.joid.lib.bridge.render.vertex.VertexAttribute;
+
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -23,7 +25,7 @@ public class BlockShaderTranslator extends ShaderTranslator {
 		final StringBuilder builder = this.createHeader(vertex, fragment);
 		for (final ShaderBuiltin builtin : vertex.getBuiltins()) {
 			if (builtin.getKind() == ShaderBuiltin.Kind.ATTRIBUTE) {
-				builder.append(this.declareAttribute(builtin, BlockShaderTranslator.getLocation(builtin)));
+				builder.append(this.declareAttribute(builtin, VertexAttribute.of(builtin).getLocation()));
 			}
 		}
 
@@ -107,19 +109,6 @@ public class BlockShaderTranslator extends ShaderTranslator {
 			}
 		}
 		return varyingList;
-	}
-
-	private static int getLocation(final ShaderBuiltin builtin) {
-		switch (builtin) {
-		case TEXTURE_COORDINATE:
-			return 1;
-		case COLOR:
-			return 2;
-		case NORMAL:
-			return 3;
-		default:
-			return 0;
-		}
 	}
 
 }

@@ -29,7 +29,8 @@ import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
+import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.NonNull;
 
@@ -289,7 +290,7 @@ public final class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public void draw(final @NonNull DrawMode mode, final @NonNull VertexBuffer buffer) {
+	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
 		final Shader current = Shader.current();
 		final boolean lit = current == null && GL11.glIsEnabled(GL11.GL_LIGHTING);
 		final Shader shader = lit ? this.getFixedShader() : current;
@@ -303,29 +304,29 @@ public final class RenderBridge implements IRenderBridge {
 
 		final ByteBuffer data = buffer.getBuffer();
 		if (buffer.isTexture()) {
-			data.position(VertexBuffer.TEXTURE_OFFSET);
+			data.position(VertexAttribute.TEXTURE_COORDINATE.getOffset());
 			GL11.glTexCoordPointer(2, GL11.GL_FLOAT, VertexBuffer.STRIDE, data);
 			GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 		}
 
 		if (buffer.isColor()) {
-			data.position(VertexBuffer.COLOR_OFFSET);
+			data.position(VertexAttribute.COLOR.getOffset());
 			GL11.glColorPointer(4, GL11.GL_UNSIGNED_BYTE, VertexBuffer.STRIDE, data);
 			GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
 		}
 
 		if (buffer.isNormal()) {
-			data.position(VertexBuffer.NORMAL_OFFSET);
+			data.position(VertexAttribute.NORMAL.getOffset());
 			GL11.glNormalPointer(GL11.GL_BYTE, VertexBuffer.STRIDE, data);
 			GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
 			GL20.glVertexAttribPointer(Shader.NORMAL_LOCATION, 3, false, false, VertexBuffer.STRIDE, data);
 			GL20.glEnableVertexAttribArray(Shader.NORMAL_LOCATION);
 		}
 
-		data.position(VertexBuffer.POSITION_OFFSET);
+		data.position(VertexAttribute.POSITION.getOffset());
 		GL11.glVertexPointer(3, GL11.GL_FLOAT, VertexBuffer.STRIDE, data);
 		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-		GL11.glDrawArrays(RenderBridge.mode(mode), 0, buffer.getCount());
+		GL11.glDrawArrays(primitive == Primitive.LINES ? GL11.GL_LINES : GL11.GL_TRIANGLES, 0, buffer.getCount());
 		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
 
 		if (buffer.isTexture()) {
@@ -399,23 +400,6 @@ public final class RenderBridge implements IRenderBridge {
 			return GL11.GL_CLAMP;
 		default:
 			return GL11.GL_REPEAT;
-		}
-	}
-
-	private static int mode(final DrawMode mode) {
-		switch (mode) {
-		case LINES:
-			return GL11.GL_LINES;
-		case LINE_STRIP:
-			return GL11.GL_LINE_STRIP;
-		case LINE_LOOP:
-			return GL11.GL_LINE_LOOP;
-		case QUADS:
-			return GL11.GL_QUADS;
-		case POLYGON:
-			return GL11.GL_POLYGON;
-		default:
-			return GL11.GL_TRIANGLES;
 		}
 	}
 

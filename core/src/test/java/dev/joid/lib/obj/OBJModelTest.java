@@ -13,11 +13,12 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.texture.ITexture;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.obj.data.OBJFace;
 import dev.joid.lib.obj.data.OBJGroup;
 import dev.joid.lib.obj.data.OBJTextureCoordinate;
 import dev.joid.lib.obj.data.OBJVertex;
+import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.resource.Resource;
 
 import lombok.NonNull;
@@ -317,7 +318,7 @@ public class OBJModelTest {
 		OBJModelTest.cube().render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(1, draws.size());
-		Assert.assertSame(DrawMode.TRIANGLES, draws.get(0).getMode());
+		Assert.assertSame(Primitive.TRIANGLES, draws.get(0).getPrimitive());
 		Assert.assertEquals(36, draws.get(0).getXs().length);
 	}
 

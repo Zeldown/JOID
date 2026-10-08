@@ -10,12 +10,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
 import dev.joid.lib.draw.model.utils.IDrawableModel;
 import dev.joid.lib.obj.data.OBJFace;
 import dev.joid.lib.obj.data.OBJGroup;
 import dev.joid.lib.obj.data.OBJTextureCoordinate;
 import dev.joid.lib.obj.data.OBJVertex;
+import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.Resource;
 import lombok.AllArgsConstructor;

@@ -18,9 +18,10 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.GradientShader;
@@ -392,7 +393,7 @@ public class DrawShapeTest {
 	public void keepsAnAxisAlignedPolygonOnItsExactPoints() {
 		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), new Vector2d(10.3D, 20.6D), new Vector2d(110.3D, 20.6D), new Vector2d(110.3D, 70.6D), new Vector2d(10.3D, 70.6D));
 		final Draw draw = this.single(0F, 1F, 0F);
-		Assert.assertSame(DrawMode.TRIANGLES, draw.getMode());
+		Assert.assertSame(Primitive.TRIANGLES, draw.getPrimitive());
 		Assert.assertEquals(6, draw.getXs().length);
 		Assert.assertEquals(10.3D * 1366D / 1920D, draw.getLeft(), 1E-4D);
 		Assert.assertEquals(110.3D * 1366D / 1920D, draw.getRight(), 1E-4D);
@@ -404,7 +405,7 @@ public class DrawShapeTest {
 	public void smoothsTheSlantedEdgesOfAPolygon() {
 		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 0.8F), new Vector2d(10D, 20D), new Vector2d(110D, 20D), new Vector2d(60D, 70D));
 		final Draw draw = this.single(0F, 1F, 0F);
-		Assert.assertSame(DrawMode.TRIANGLES, draw.getMode());
+		Assert.assertSame(Primitive.TRIANGLES, draw.getPrimitive());
 		Assert.assertEquals(21, draw.getXs().length);
 		Assert.assertTrue(draw.getLeft() < 10D * 1366D / 1920D);
 		Assert.assertTrue(draw.getBottom() > 70D * 768D / 1080D);
@@ -439,7 +440,7 @@ public class DrawShapeTest {
 			DrawUtils.SHAPE.drawShape(mode, new Color(0.2F, 0.4F, 0.6F, 0.8F), points);
 			final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
 			final Draw draw = draws.get(draws.size() - 1);
-			Assert.assertSame(mode.ordinal() < DrawMode.TRIANGLES.ordinal() ? DrawMode.LINES : DrawMode.TRIANGLES, draw.getMode());
+			Assert.assertSame(mode.ordinal() < DrawMode.TRIANGLES.ordinal() ? Primitive.LINES : Primitive.TRIANGLES, draw.getPrimitive());
 			Assert.assertEquals(counts[mode.ordinal()], draw.getXs().length);
 			Assert.assertEquals(0.8F, draw.getAlpha(), 0F);
 		}
@@ -504,7 +505,7 @@ public class DrawShapeTest {
 	public void smoothsALineOnItsExactPoints() {
 		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), new Vector2d(10D, 20D), new Vector2d(110D, 20D), new Vector2d(110D, 80D));
 		final Draw draw = this.single(0F, 1F, 0F);
-		Assert.assertSame(DrawMode.TRIANGLES, draw.getMode());
+		Assert.assertSame(Primitive.TRIANGLES, draw.getPrimitive());
 		Assert.assertEquals(12, draw.getXs().length);
 		Assert.assertEquals(10D * 1366D / 1920D, draw.getLeft(), 1E-4D);
 		Assert.assertEquals(110D * 1366D / 1920D, draw.getRight(), 1E-4D);

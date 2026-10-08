@@ -46,7 +46,8 @@ import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
+import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.Getter;
 import lombok.NonNull;
@@ -225,11 +226,10 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 	}
 
 	@Override
-	public void draw(final @NonNull DrawMode mode, final @NonNull VertexBuffer buffer) {
+	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
 		this.requireFrame();
 		final RenderState state = super.getState();
 		final Shader shader = state.getShader() == null ? this.fixedShader : (Shader) state.getShader();
-		final int topology = RenderBridge.topology(mode);
 		if (!shader.isActive() || buffer.getCount() == 0 || state.getViewportWidth() <= 0 || state.getViewportHeight() <= 0) {
 			return;
 		}
@@ -237,7 +237,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		final FrameBuffer target = (FrameBuffer) state.getFrameBuffer();
 		this.beginPass(target);
 
-		final boolean lines = topology == VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST || topology == VK10.VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+		final boolean lines = primitive == Primitive.LINES;
 		final long pipeline = this.pipelineCache.get(new PipelineKey(shader, target != null, state.getBlend(), state.isColorMask(), lines, lines && state.isLineSmooth()), target == null ? this.swapchain.getClearRenderPass() : this.context.getOffscreenRenderPass());
 		if (pipeline != this.boundPipeline) {
 			VK10.vkCmdBindPipeline(this.commandBuffer, VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
@@ -245,7 +245,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		}
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			this.applyDynamicState(stack, state, target != null, topology);
+			this.applyDynamicState(stack, state, target != null, lines ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 			final long vertexOffset = this.writeVertices(buffer);
 			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer.isColor());
 			final long descriptorSet = this.descriptorCache.get(shader, this.uniformStream.getBuffer().getBuffer(), this.getImages(state, shader));
@@ -387,12 +387,12 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		for (int i = 0; i < buffer.getCount(); i++) {
 			final long vertex = address + (long) i * VertexBuffer.STRIDE;
 			if (!buffer.isTexture()) {
-				MemoryUtil.memPutFloat(vertex + VertexBuffer.TEXTURE_OFFSET, 0F);
-				MemoryUtil.memPutFloat(vertex + VertexBuffer.TEXTURE_OFFSET + 4, 0F);
+				MemoryUtil.memPutFloat(vertex + VertexAttribute.TEXTURE_COORDINATE.getOffset(), 0F);
+				MemoryUtil.memPutFloat(vertex + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, 0F);
 			}
 
 			if (!buffer.isNormal()) {
-				MemoryUtil.memPutInt(vertex + VertexBuffer.NORMAL_OFFSET, 127 << 16);
+				MemoryUtil.memPutInt(vertex + VertexAttribute.NORMAL.getOffset(), 127 << 16);
 			}
 		}
 		return offset;
@@ -479,21 +479,6 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		final LongBuffer sampler = stack.mallocLong(1);
 		Context.check(VK10.vkCreateSampler(this.context.getDevice(), info, null, sampler), "vkCreateSampler");
 		return sampler.get(0);
-	}
-
-	private static int topology(final DrawMode mode) {
-		switch (mode) {
-		case LINES:
-			return VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
-		case LINE_STRIP:
-			return VK10.VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
-		case POLYGON:
-			return VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
-		case TRIANGLES:
-			return VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		default:
-			throw new IllegalArgumentException(mode + " is not supported by Vulkan, convert it before drawing");
-		}
 	}
 
 	private static int addressMode(final TextureWrap wrap) {

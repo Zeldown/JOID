@@ -11,7 +11,7 @@ import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 
 public class FrameBufferTest {
 
@@ -110,7 +110,7 @@ public class FrameBufferTest {
 		final FrameBuffer frameBuffer = FrameBuffer.create(64, 32, TextureFilter.LINEAR).fill(() -> {});
 		Assert.assertSame(frameBuffer, frameBuffer.draw(10D, 20D, 100D, 50D));
 		final Capture capture = this.single();
-		Assert.assertSame(DrawMode.TRIANGLES, capture.getMode());
+		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
 		Assert.assertEquals(6, capture.getCount());
 		Assert.assertTrue(capture.isTexture());
 		Assert.assertSame(frameBuffer.getHandle().getTexture(), capture.getState().getTexture());

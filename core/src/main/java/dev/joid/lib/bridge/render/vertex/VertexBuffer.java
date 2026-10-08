@@ -11,11 +11,7 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VertexBuffer {
 
-	public static final int STRIDE          = 32;
-	public static final int POSITION_OFFSET = 0;
-	public static final int TEXTURE_OFFSET  = 12;
-	public static final int COLOR_OFFSET    = 20;
-	public static final int NORMAL_OFFSET   = 24;
+	public static final int STRIDE = 32;
 
 	private final ByteBuffer buffer;
 	private final int        count;

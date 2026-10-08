@@ -143,7 +143,7 @@ DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, Color.decode("#DDDDDD"), new Vecto
 
 ![A gray diamond outline and two light gray triangles side by side](../images/shapes-modes.png "LINE_LOOP and TRIANGLES")
 
-`DrawMode` (`dev.joid.lib.bridge.render.vertex`):
+`DrawMode` (`dev.joid.lib.render.tessellator`):
 
 | Mode | Points |
 |---|---|

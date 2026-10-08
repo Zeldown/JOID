@@ -18,7 +18,7 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -68,7 +68,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 	public void clear(final float red, final float green, final float blue, final float alpha) {}
 
 	@Override
-	public void draw(final @NonNull DrawMode mode, final @NonNull VertexBuffer buffer) {
+	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
 		final int[] vertices = new int[buffer.getCount() * 8];
 		for (int i = 0; i < vertices.length; i++) {
 			vertices[i] = buffer.getBuffer().getInt(i * 4);
@@ -76,7 +76,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 
 		final IShader shader = super.getShader();
 		final Map<String, Object> uniforms = shader instanceof RecordingShader ? new HashMap<>(((RecordingShader) shader).getValues()) : Collections.emptyMap();
-		this.captures.add(new Capture(mode, buffer.isTexture(), buffer.isColor(), buffer.isNormal(), vertices, super.getState().copy(), uniforms));
+		this.captures.add(new Capture(primitive, buffer.isTexture(), buffer.isColor(), buffer.isNormal(), vertices, super.getState().copy(), uniforms));
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class Capture {
 
-		private final DrawMode            mode;
+		private final Primitive           primitive;
 		private final boolean             texture;
 		private final boolean             color;
 		private final boolean             normal;

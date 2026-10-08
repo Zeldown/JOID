@@ -95,7 +95,7 @@ When a test fails, the build prints the link of its interactive `report.html`.
 | `clear(float red, float green, float blue, float alpha)` | Clear the color of the current target. |
 | `clearDepth()` | Clear the depth of the current target to the far plane (1), whatever the depth write state; the depth write state is kept. |
 | `clearStencil()` | Clear the stencil of the current target to 0. |
-| `draw(DrawMode mode, VertexBuffer buffer)` | Draw with the current state. |
+| `draw(Primitive primitive, VertexBuffer buffer)` | Draw with the current state. |
 | `createTexture()` | Create an empty `ITexture`. |
 | `createFrameBuffer(int width, int height, TextureFilter filter)` | Create an `IFrameBuffer` with a color texture of that size. |
 | `createShader(ShaderSource vertex, ShaderSource fragment, BlendState blend)` | Translate, compile and link a shader. |
@@ -112,16 +112,18 @@ When a test fails, the build prints the link of its interactive `report.html`.
 
 ### Draw calls and vertices
 
-`draw(DrawMode, VertexBuffer)` receives `DrawMode.TRIANGLES` or `DrawMode.LINES`: the core turns quads, polygons, strips and loops into them. A `VertexBuffer` (`dev.joid.lib.bridge.render.vertex`) holds `getCount()` vertices in a direct `ByteBuffer` (`getBuffer()`, native byte order), each `VertexBuffer.STRIDE` (32) bytes long:
+`draw(Primitive, VertexBuffer)` receives `Primitive.TRIANGLES` or `Primitive.LINES` (`dev.joid.lib.bridge.render.vertex`): the `Tessellator` turns the quads, polygons, strips and loops of its `DrawMode` into them, so a bridge never sees another primitive. A `VertexBuffer` (same package) holds `getCount()` vertices in a direct `ByteBuffer` (`getBuffer()`, native byte order), each `VertexBuffer.STRIDE` (32) bytes long:
 
 ![Diagram of a vertex: position on bytes 0 to 11, texture coordinates on 12 to 19, color on 20 to 23, normal on 24 to 26, bytes 27 to 31 unused](../images/diagram-vertex-layout.png "Every vertex takes 32 bytes, whatever attributes it carries")
 
-| Offset | Constant | Content | Present when |
-|---|---|---|---|
-| 0 | `POSITION_OFFSET` | position, 3 × `float` | always |
-| 12 | `TEXTURE_OFFSET` | texture coordinates, 2 × `float` | `isTexture()` |
-| 20 | `COLOR_OFFSET` | color, 4 × unsigned byte, RGBA | `isColor()` |
-| 24 | `NORMAL_OFFSET` | normal, 3 × signed byte | `isNormal()` |
+`VertexAttribute` describes this format once, for every backend: each value gives its `getBuiltin()` (the `ShaderBuiltin` it feeds), its shader `getLocation()`, its byte `getOffset()`, its `getComponents()`, the `VertexComponent` of each component (`FLOAT`, `UNSIGNED_BYTE`, `BYTE`, with its `getSize()` in bytes) and whether it `isNormalized()`. `VertexAttribute.of(ShaderBuiltin)` finds the attribute of a built-in, `null` for a built-in that is not an attribute. A backend only maps a `VertexComponent` (or an attribute) to the vertex format of its API.
+
+| `VertexAttribute` | Location | Offset | Content | Present when |
+|---|---|---|---|---|
+| `POSITION` | 0 | 0 | position, 3 × `FLOAT` | always |
+| `TEXTURE_COORDINATE` | 1 | 12 | texture coordinates, 2 × `FLOAT` | `isTexture()` |
+| `COLOR` | 2 | 20 | color, 4 × normalized `UNSIGNED_BYTE`, RGBA | `isColor()` |
+| `NORMAL` | 3 | 24 | normal, 3 × normalized `BYTE` | `isNormal()` |
 
 - Missing attributes take these values: the current color (`color(...)`) for the color, `(0, 0)` for the texture coordinates, `(0, 0, 1)` for the normal. Vertex colors replace the current color.
 - A normal component is a signed byte divided by 127, so `127` is `1.0` and `-127` is `-1.0`, as `VK_FORMAT_R8G8B8A8_SNORM` reads it. The `aNormal` attribute of shaders receives that value: the LWJGL 2 backend declares it as `joid_Normal / 127.0`.
@@ -205,7 +207,7 @@ The reference backends generate:
 | Backend | Language | Declarations |
 |---|---|---|
 | LWJGL 2 | GLSL 1.20 | `#define` of the built-ins onto `gl_Vertex.xyz`, `gl_MultiTexCoord0.xy`, `gl_Color`, `gl_ProjectionMatrix`, `gl_ModelViewMatrix`, `gl_NormalMatrix` and `gl_FragColor`; `aNormal` as `joid_Normal / 127.0` with `joid_Normal` an attribute at location 6; `#define texture texture2D`, `uniform bool uLighting`, varyings as `varying`. |
-| LWJGL 3 | GLSL 3.30 core | `BlockShaderTranslator` as is: attributes at locations 0 (position), 1 (texture coordinates), 2 (color), 3 (normal), every uniform of both stages in the `std140` block `JoidUniforms`, `in`/`out` varyings keeping `flat`, `layout(location = 0) out vec4 fragColor`. |
+| LWJGL 3 | GLSL 3.30 core | `BlockShaderTranslator` as is: attributes at the location of their `VertexAttribute`, every uniform of both stages in the `std140` block `JoidUniforms`, `in`/`out` varyings keeping `flat`, `layout(location = 0) out vec4 fragColor`. |
 | Vulkan | GLSL 4.50 | A `BlockShaderTranslator` with the block at binding 0, samplers from binding 1 and varying locations shared by both stages; compiled to SPIR-V with shaderc. |
 
 Each generated header ends with a `#line` directive, so compiler errors point to the lines of the original file.

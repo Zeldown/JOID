@@ -11,7 +11,7 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
-import dev.joid.lib.bridge.render.vertex.DrawMode;
+import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.Getter;
 import lombok.NonNull;
@@ -122,8 +122,7 @@ public final class Tessellator {
 			Tessellator.byteBuffer.position(0);
 			Tessellator.byteBuffer.limit(count * VertexBuffer.STRIDE);
 
-			final DrawMode mode = this.isLineMode() ? DrawMode.LINES : DrawMode.TRIANGLES;
-			render.draw(mode, VertexBuffer.create(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
+			render.draw(this.isLineMode() ? Primitive.LINES : Primitive.TRIANGLES, VertexBuffer.create(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
 		}
 
 		if (this.rawBufferSize > 0x20000 && this.rawBufferIndex < this.rawBufferSize << 3) {
@@ -294,7 +293,7 @@ public final class Tessellator {
 		LineShader.SHADER
 		.uniform("u_Width", render.getLineWidth())
 		.uniform("u_Viewport", render.getViewportWidth(), render.getViewportHeight());
-		render.draw(DrawMode.TRIANGLES, VertexBuffer.create(Tessellator.byteBuffer, segments * 6, true, this.hasColor, true));
+		render.draw(Primitive.TRIANGLES, VertexBuffer.create(Tessellator.byteBuffer, segments * 6, true, this.hasColor, true));
 		LineShader.SHADER.unbind();
 	}
 
