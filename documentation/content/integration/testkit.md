@@ -54,7 +54,7 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
 		GL11C.glReadBuffer(GL11C.GL_BACK);
 		GL11C.glReadPixels(0, 0, width, height, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixels);
-		return SnapshotImage.fromBytes(pixels, width, height, true, false);
+		return SnapshotImage.fromBytes(pixels, width, height, true, PixelLayout.RGBA8);
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class RenderBridgeContractTest extends RenderBridgeContractSuite {
 | `destroy()` | Release the surface. |
 | `getRenderer()` | The name of the GPU or renderer. It names the folder of the references. |
 
-`SnapshotImage.fromBytes(ByteBuffer buffer, int width, int height, boolean bottomUp, boolean bgra)` builds an image from 4-byte pixels read back from the GPU: `bottomUp` when the first row of the buffer is the bottom one (OpenGL), `bgra` when the bytes are in BGRA order. The alpha channel is ignored: snapshots are opaque.
+`SnapshotImage.fromBytes(ByteBuffer buffer, int width, int height, boolean bottomUp, PixelLayout layout)` builds an image from 4-byte pixels read back from the GPU, from the position of `buffer`: `bottomUp` when the first row of the buffer is the bottom one (OpenGL), `layout` the order of the bytes of a pixel (`PixelLayout.RGBA8` or `BGRA8`, see [Utilities](../reference/utilities.md#pixellayout)). The alpha channel is ignored: snapshots are opaque.
 
 ## RenderBridgeContractSuite tests
 
@@ -332,7 +332,7 @@ The wheel zooms around the cursor, dragging pans, `F` fits the image and `0` sho
 | Member | Description |
 |---|---|
 | `static read(File)` / `write(File)` | PNG input and output. |
-| `static fromBytes(ByteBuffer, int width, int height, boolean bottomUp, boolean bgra)` | An image from GPU read-back bytes. |
+| `static fromBytes(ByteBuffer, int width, int height, boolean bottomUp, PixelLayout layout)` | An image from GPU read-back bytes. |
 | `getWidth()` / `getHeight()` / `getPixels()` | Size and ARGB pixels. |
 | `compare(SnapshotImage reference, int tolerance)` | A `SnapshotDifference`: `getPixels()` counts the pixels whose largest channel difference is above `tolerance`, `getMaximum()` is the largest difference. Images of different sizes differ everywhere. |
 | `isSame(SnapshotImage)` | Exact equality. |

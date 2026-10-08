@@ -14,6 +14,7 @@ import dev.joid.impl.vulkan.render.RenderBridge;
 import dev.joid.impl.vulkan.render.Swapchain;
 import dev.joid.impl.vulkan.render.buffer.Buffer;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.utils.image.PixelLayout;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;
@@ -75,7 +76,7 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		});
 
 		final boolean bgra = swapchain.getFormat() == VK10.VK_FORMAT_B8G8R8A8_UNORM || swapchain.getFormat() == VK10.VK_FORMAT_B8G8R8A8_SRGB;
-		final SnapshotImage snapshot = SnapshotImage.fromBytes(MemoryUtil.memByteBuffer(buffer.getAddress(), width * height * 4), width, height, false, bgra);
+		final SnapshotImage snapshot = SnapshotImage.fromBytes(MemoryUtil.memByteBuffer(buffer.getAddress(), width * height * 4), width, height, false, bgra ? PixelLayout.BGRA8 : PixelLayout.RGBA8);
 		buffer.destroy();
 		return snapshot;
 	}

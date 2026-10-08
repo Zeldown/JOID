@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import dev.joid.lib.utils.image.PixelLayout;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -82,7 +83,7 @@ public class SnapshotComparisonTest {
 	}
 
 	private static SnapshotImage image(final int color) {
-		return SnapshotImage.fromBytes(ByteBuffer.wrap(new byte[] {(byte) (color >> 16), (byte) (color >> 8), (byte) color, (byte) 255}), 1, 1, false, false);
+		return SnapshotImage.fromBytes(ByteBuffer.wrap(new byte[] {(byte) (color >> 16), (byte) (color >> 8), (byte) color, (byte) 255}), 1, 1, false, PixelLayout.RGBA8);
 	}
 
 	private static String text(final File file) throws IOException {

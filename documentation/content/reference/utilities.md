@@ -108,6 +108,20 @@ ImageUtils.bleedAlpha(pixels, image.getWidth(), image.getHeight());
 | `static BufferedImage read(InputStream stream, ImageReaderSpi spi) throws IOException` | Reads the first image of `stream` with a reader created from `spi`, then disposes the reader. The stream is not closed. Throws `IOException` when the data cannot be read. |
 | `static void bleedAlpha(int[] pixels, int width, int height)` | In an ARGB pixel array, gives every fully transparent pixel the RGB color of the nearest visible pixel (searching through horizontal and vertical neighbors), keeping its alpha at 0. Visible pixels are untouched; an image that is fully transparent or fully visible is left as is. This avoids dark fringes around transparent areas when the image is drawn with linear filtering. |
 
+## PixelLayout
+
+`PixelLayout` (`dev.joid.lib.utils.image`) converts the ARGB `int` pixels of JOID (`0xAARRGGBB`, the format of `ITexture.upload`) to and from the 4-byte pixels of a graphics API: `RGBA8` (red first) or `BGRA8` (blue first), alpha last in both. A backend whose textures take bytes in another order writes them with it; the testkit reads the pixels of a capture with it.
+
+```java
+final ByteBuffer bytes = PixelLayout.RGBA8.write(pixels, ByteBuffer.allocateDirect(pixels.length * 4));
+final int[] argb = PixelLayout.RGBA8.read(bytes, width, height, false);
+```
+
+| Method | Description |
+| --- | --- |
+| `ByteBuffer write(int[] pixels, ByteBuffer target)` | Writes every pixel as 4 bytes in this layout from the position of `target`, which does not move, and returns `target`. |
+| `int[] read(ByteBuffer source, int width, int height, boolean bottomUp)` | Reads `width × height` pixels of this layout from the position of `source` into ARGB `int`s, top row first; `bottomUp` when the first row of `source` is the bottom one, as OpenGL reads them back. |
+
 ## ThreadUtils
 
 `ThreadUtils` (`dev.joid.lib.utils.thread`) creates daemon threads, which do not keep the JVM alive. JOID names its background threads with it (font loading, resource decoding, hot reload).

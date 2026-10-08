@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+import dev.joid.lib.utils.image.PixelLayout;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,17 +36,10 @@ public final class SnapshotImage {
 		}
 	}
 
-	public static @NonNull SnapshotImage fromBytes(final @NonNull ByteBuffer buffer, final int width, final int height, final boolean bottomUp, final boolean bgra) {
-		final int[] pixels = new int[width * height];
-		for (int y = 0; y < height; y++) {
-			final int row = bottomUp ? height - 1 - y : y;
-			for (int x = 0; x < width; x++) {
-				final int index = (x + row * width) * 4;
-				final int first = buffer.get(index) & 0xFF;
-				final int second = buffer.get(index + 1) & 0xFF;
-				final int third = buffer.get(index + 2) & 0xFF;
-				pixels[x + y * width] = 0xFF000000 | (bgra ? third << 16 | second << 8 | first : first << 16 | second << 8 | third);
-			}
+	public static @NonNull SnapshotImage fromBytes(final @NonNull ByteBuffer buffer, final int width, final int height, final boolean bottomUp, final @NonNull PixelLayout layout) {
+		final int[] pixels = layout.read(buffer, width, height, bottomUp);
+		for (int i = 0; i < pixels.length; i++) {
+			pixels[i] |= 0xFF000000;
 		}
 		return new SnapshotImage(width, height, pixels);
 	}

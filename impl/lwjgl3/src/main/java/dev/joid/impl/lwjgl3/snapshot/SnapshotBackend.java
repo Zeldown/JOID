@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL30C;
 import org.lwjgl.system.Platform;
 
 import dev.joid.impl.lwjgl3.Backend;
+import dev.joid.lib.utils.image.PixelLayout;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;
@@ -61,7 +62,7 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
 		GL11C.glReadBuffer(GL11C.GL_BACK);
 		GL11C.glReadPixels(0, 0, width, height, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixels);
-		return SnapshotImage.fromBytes(pixels, width, height, true, false);
+		return SnapshotImage.fromBytes(pixels, width, height, true, PixelLayout.RGBA8);
 	}
 
 	@Override

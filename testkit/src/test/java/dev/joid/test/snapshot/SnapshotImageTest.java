@@ -12,6 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import dev.joid.lib.utils.image.PixelLayout;
+
 public class SnapshotImageTest {
 
 	@Rule
@@ -35,19 +37,19 @@ public class SnapshotImageTest {
 	@Test
 	public void readsOpaqueRgbaRowsFromTheTop() {
 		final ByteBuffer buffer = ByteBuffer.wrap(new byte[] {0x10, 0x20, 0x30, 0, 0x40, 0x50, 0x60, 0});
-		Assert.assertArrayEquals(new int[] {0xFF102030, 0xFF405060}, SnapshotImage.fromBytes(buffer, 1, 2, false, false).getPixels());
+		Assert.assertArrayEquals(new int[] {0xFF102030, 0xFF405060}, SnapshotImage.fromBytes(buffer, 1, 2, false, PixelLayout.RGBA8).getPixels());
 	}
 
 	@Test
 	public void flipsTheRowsOfABottomUpCapture() {
 		final ByteBuffer buffer = ByteBuffer.wrap(new byte[] {0x10, 0x20, 0x30, 0, 0x40, 0x50, 0x60, 0});
-		Assert.assertArrayEquals(new int[] {0xFF405060, 0xFF102030}, SnapshotImage.fromBytes(buffer, 1, 2, true, false).getPixels());
+		Assert.assertArrayEquals(new int[] {0xFF405060, 0xFF102030}, SnapshotImage.fromBytes(buffer, 1, 2, true, PixelLayout.RGBA8).getPixels());
 	}
 
 	@Test
 	public void swapsTheRedAndBlueOfBgraBytes() {
 		final ByteBuffer buffer = ByteBuffer.wrap(new byte[] {0x10, 0x20, 0x30, 0, 0x40, 0x50, 0x60, 0});
-		Assert.assertArrayEquals(new int[] {0xFF302010, 0xFF605040}, SnapshotImage.fromBytes(buffer, 2, 1, false, true).getPixels());
+		Assert.assertArrayEquals(new int[] {0xFF302010, 0xFF605040}, SnapshotImage.fromBytes(buffer, 2, 1, false, PixelLayout.BGRA8).getPixels());
 	}
 
 	@Test
@@ -100,7 +102,8 @@ public class SnapshotImageTest {
 		for (final int color : colors) {
 			buffer.put((byte) (color >> 16)).put((byte) (color >> 8)).put((byte) color).put((byte) 255);
 		}
-		return SnapshotImage.fromBytes(buffer, width, height, false, false);
+		buffer.flip();
+		return SnapshotImage.fromBytes(buffer, width, height, false, PixelLayout.RGBA8);
 	}
 
 }
