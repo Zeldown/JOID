@@ -265,7 +265,7 @@ The shaders of the core are listed by the `CoreShader` enum (`dev.joid.lib.bridg
 
 ### Uniforms in the core
 
-The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()`, `isBound()` and `isActive()` on the core `RenderBridge` and the blend state given to its constructor; its parent `UniformShader` implements `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, extends `UniformShader` and binds its shaders itself):
+The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()`, `isBound()` and `isActive()` on the core `RenderBridge` and the blend state given to its constructor, and `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, implements `IShader` itself):
 
 - a `UniformBlock` (`dev.joid.lib.bridge.render.shader.uniform`): the uniforms of both stages, each a `UniformMember` with its `UniformType`, its array length, its values and its `std140` offset and strides;
 - one `UniformSampler` per sampler of both stages, numbered from 1 in the order of the stages (`getUnit()`), with the texture, filter and wrap given to `sampler(...)`.
@@ -318,7 +318,7 @@ A member's values are tightly packed in `getValues()` (column by column for a ma
 | `unbind()` | Returns to no shader and restores the previous blend state. |
 | `isBound()` | Whether the shader is bound. |
 | `isActive()` | Whether it compiled and linked. The reference backends print the compiler or linker log of a shader that fails to `System.err`. |
-| `uniform(name, ...)`, `sampler(name, texture, filter, wrap)` | Implemented by the core `UniformShader`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw. |
+| `uniform(name, ...)`, `sampler(name, texture, filter, wrap)` | Implemented by the core `Shader`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw. |
 
 A sampler that is never set samples the texture bound with `texture(...)`, as `resolveSampler(...)` gives it: the reference backends bind the bound texture to texture unit 0 and each sampler to its unit, from 1. The translator also wraps the fragment `main` to apply the alpha test of the render state.
 
