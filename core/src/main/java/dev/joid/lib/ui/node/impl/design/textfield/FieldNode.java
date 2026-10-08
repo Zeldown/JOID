@@ -2,7 +2,6 @@ package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -19,6 +18,7 @@ import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldFocusCal
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.platform.Platform;
 import dev.joid.lib.utils.signal.Signal;
 import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
@@ -837,7 +837,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private final boolean isMac() {
-		return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("mac");
+		return Platform.current() == Platform.MACOS;
 	}
 
 	private final boolean isWordKeyDown() {

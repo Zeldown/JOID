@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Locale;
 
 import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.utils.platform.Platform;
 import dev.joid.msdf.MsdfGenerator;
 import dev.joid.msdf.atlas.MsdfWriter;
 import lombok.AccessLevel;
@@ -65,14 +65,14 @@ public final class MsdfFontCache {
 	}
 
 	private static @NonNull File locateDirectory() {
-		final String system = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
+		final Platform platform = Platform.current();
 		final String home = System.getProperty("user.home");
-		if (system.contains("win")) {
+		if (platform == Platform.WINDOWS) {
 			final String local = System.getenv("LOCALAPPDATA");
 			return new File(local != null ? new File(local) : new File(home, "AppData/Local"), "joid/msdf");
 		}
 
-		if (system.contains("mac")) {
+		if (platform == Platform.MACOS) {
 			return new File(home, "Library/Caches/joid/msdf");
 		}
 

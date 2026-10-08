@@ -121,6 +121,19 @@ final ExecutorService executor = Executors.newFixedThreadPool(4, ThreadUtils.dae
 | `static ThreadFactory daemonFactory(String name)` | A factory of daemon threads named `name/1`, `name/2`, and so on; each factory counts on its own. |
 | `static Thread daemonThread(Runnable task, String name)` | A daemon thread running `task`, named `name`, not started. |
 
+## Platform
+
+`Platform` (`dev.joid.lib.utils.platform`) tells which operating system JOID runs on: `WINDOWS`, `MACOS` or `LINUX` (any other system). JOID reads it to pick the macOS shortcuts of the text fields, the folder of the font cache and the natives of the LWJGL 2 backend.
+
+```java
+final String copy = Platform.current() == Platform.MACOS ? "⌘ C" : "Ctrl+C";
+```
+
+| Method | Description |
+| --- | --- |
+| `static Platform current()` | The platform named by the `os.name` system property, read at each call: `MACOS` for a name containing `mac` or `darwin`, `WINDOWS` for one containing `win`, `LINUX` otherwise. |
+| `static boolean is64Bit()` | Whether the `os.arch` system property names a 64-bit architecture. |
+
 ## IndexedList family
 
 The lists of `dev.joid.lib.utils.list` keep their elements sorted by an integer index. You meet them as `UI.getNodeList()` and `Node.getChildren()` (sorted by `zindex`), `Node.getChildren(Class)`, `IUIBridge.getUiList()` (sorted by `zlevel`) and the bridge registries (sorted by `getIndex()`).

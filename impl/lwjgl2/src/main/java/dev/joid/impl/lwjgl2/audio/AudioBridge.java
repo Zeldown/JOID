@@ -5,6 +5,7 @@ import org.lwjgl.openal.AL;
 
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioSource;
+import dev.joid.lib.utils.platform.Platform;
 import lombok.NonNull;
 
 public final class AudioBridge implements IAudioBridge {
@@ -34,10 +35,8 @@ public final class AudioBridge implements IAudioBridge {
 	}
 
 	private static void loadLibrary() {
-		final String os = System.getProperty("os.name", "").toLowerCase();
-		final boolean is64 = System.getProperty("os.arch", "").contains("64");
 		try {
-			System.loadLibrary(os.contains("win") ? is64 ? "OpenAL64" : "OpenAL32" : "openal");
+			System.loadLibrary(Platform.current() == Platform.WINDOWS ? Platform.is64Bit() ? "OpenAL64" : "OpenAL32" : "openal");
 		} catch (final Throwable ignored) {}
 	}
 

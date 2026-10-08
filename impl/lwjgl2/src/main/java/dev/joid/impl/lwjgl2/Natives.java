@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 
+import dev.joid.lib.utils.platform.Platform;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -52,11 +52,14 @@ public final class Natives {
 	}
 
 	private static String getPlatform() {
-		final String name = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
-		if (name.contains("win")) {
+		switch (Platform.current()) {
+		case WINDOWS:
 			return "windows";
+		case MACOS:
+			return "osx";
+		default:
+			return "linux";
 		}
-		return name.contains("mac") || name.contains("darwin") ? "osx" : "linux";
 	}
 
 	private static String[] getLibraries(final String platform) {
