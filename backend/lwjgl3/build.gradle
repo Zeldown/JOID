@@ -29,6 +29,10 @@ task runDemo(type: JavaExec) {
 
 
 test {
+    def profile = project.hasProperty('glProfile') ? project.property('glProfile') : 'DEFAULT'
+    inputs.property 'glProfile', profile
+    systemProperty 'joid.snapshot.profile', profile
+
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmArgs "-XstartOnFirstThread"
     }

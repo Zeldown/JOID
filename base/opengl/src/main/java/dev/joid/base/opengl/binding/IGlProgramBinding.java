@@ -1,5 +1,8 @@
 package dev.joid.base.opengl.binding;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import lombok.NonNull;
 
 public interface IGlProgramBinding {
@@ -20,10 +23,14 @@ public interface IGlProgramBinding {
 	public void attachShader(final int program, final int shader);
 	public void detachShader(final int program, final int shader);
 
+	public void bindAttribLocation(final int program, final int index, final @NonNull String name);
+	public void bindFragDataLocation(final int program, final int color, final @NonNull String name);
+
 	public void uniform1i(final int location, final int value);
 	public int getUniformLocation(final int program, final @NonNull String name);
-
-	public int getUniformBlockIndex(final int program, final @NonNull String name);
-	public void uniformBlockBinding(final int program, final int index, final int binding);
+	public void uniformiv(final int location, final int components, final @NonNull IntBuffer values);
+	public void uniformuiv(final int location, final int components, final @NonNull IntBuffer values);
+	public void uniformfv(final int location, final int components, final @NonNull FloatBuffer values);
+	public void uniformMatrixfv(final int location, final int columns, final @NonNull FloatBuffer values);
 
 }

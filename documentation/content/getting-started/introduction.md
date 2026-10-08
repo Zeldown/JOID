@@ -56,7 +56,7 @@ Your UIs talk only to the API of JOID. JOID reaches the window, the GPU and the 
 
 ![Your UIs talk to JOID, JOID talks to the bridges, and one backend per engine implements the bridges: LWJGL 2, LWJGL 3, Vulkan or your engine](../images/diagram-intro-layers.png "One code base for every renderer")
 
-- **One code base for every renderer**: the same screens run on OpenGL 2, OpenGL 3.3 and Vulkan, in a standalone window or embedded in a game. The renderer is the backend you register at startup.
+- **One code base for every renderer**: the same screens run on every OpenGL from 2.0 to 4.6 and on Vulkan, in a standalone window or embedded in a game. The renderer is the backend you register at startup.
 - **The same pixels everywhere**: the snapshot tests render the same scenes on every official backend and compare them pixel by pixel (see [Testkit](../integration/testkit.md)).
 - **Your engine next**: a new renderer only needs a backend; the [template](../integration/writing-a-backend.md) and the render contract tests guide you to a complete one.
 
@@ -125,7 +125,7 @@ Every page starts with a minimal example and its result, then the common uses, t
 ## Requirements at a glance
 
 - Java 8 or later.
-- One backend: LWJGL 2 (OpenGL with GLSL 1.20 shaders), LWJGL 3 (OpenGL 3.3 core profile) or Vulkan 1.3, or your own.
+- One backend: LWJGL 2 (OpenGL with GLSL 1.20 shaders), LWJGL 3 (OpenGL 2.0 to 4.6, compatibility or core) or Vulkan 1.3, or your own.
 - A TrueType or OpenType font file for your text.
 
 [Installation](installation.md) lists the jars, the libraries to declare and the natives of each backend.

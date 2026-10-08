@@ -34,6 +34,11 @@ public final class Lwjgl3GlTextureBinding implements IGlTextureBinding {
 	}
 
 	@Override
+	public void bindSampler(final int unit, final int sampler) {
+		GL33C.glBindSampler(unit, sampler);
+	}
+
+	@Override
 	public void bindTexture(final int target, final int texture) {
 		GL11C.glBindTexture(target, texture);
 	}
@@ -51,21 +56,6 @@ public final class Lwjgl3GlTextureBinding implements IGlTextureBinding {
 	@Override
 	public void texSubImage2D(final int target, final int level, final int x, final int y, final int width, final int height, final int format, final int type, final @NonNull int[] pixels) {
 		GL11C.glTexSubImage2D(target, level, x, y, width, height, format, type, pixels);
-	}
-
-	@Override
-	public int genSampler() {
-		return GL33C.glGenSamplers();
-	}
-
-	@Override
-	public void bindSampler(final int unit, final int sampler) {
-		GL33C.glBindSampler(unit, sampler);
-	}
-
-	@Override
-	public void samplerParameteri(final int sampler, final int name, final int value) {
-		GL33C.glSamplerParameteri(sampler, name, value);
 	}
 
 }

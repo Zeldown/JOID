@@ -4,7 +4,7 @@
 
 ## A first window with LWJGL 3
 
-Create a GLFW window with an OpenGL 3.3 core context and an 8-bit stencil buffer, make its context current, then register the backend with the window handle:
+Create a GLFW window with an OpenGL context and an 8-bit stencil buffer, make its context current, then register the backend with the window handle. Any OpenGL context from 2.0 to 4.6 works, compatibility or core; this example asks for 3.3 core:
 
 ```java
 public final class App {
@@ -50,7 +50,7 @@ The backend is the only part of a JOID application that knows the engine. Your U
 | Module | Engine | Register with | Window bridge | Audio bridge | Generated shaders |
 |---|---|---|---|---|---|
 | `backend-lwjgl2` | LWJGL 2.9.1: OpenGL state of the current context | `dev.joid.backend.lwjgl2.Backend.register()` | LWJGL 2 `Display`, `Mouse`, `Keyboard` | LWJGL 2 OpenAL | GLSL 1.20 |
-| `backend-lwjgl3` | LWJGL 3.3.4: OpenGL 3.3 core, rendered by the `base-opengl` module | `dev.joid.backend.lwjgl3.Backend.register(window)` | `base-glfw` module | `base-openal` module | GLSL 3.30 |
+| `backend-lwjgl3` | LWJGL 3.3.4: OpenGL 2.0 to 4.6, compatibility, core or forward-compatible core, rendered by the `base-opengl` module | `dev.joid.backend.lwjgl3.Backend.register(window)` | `base-glfw` module | `base-openal` module | GLSL 1.10 to 3.30, chosen from the context |
 | `backend-vulkan` | LWJGL 3.3.4: Vulkan 1.3, shaderc | `dev.joid.backend.vulkan.Backend.register(window)` | `base-glfw` module | `base-openal` module | GLSL 4.50 compiled to SPIR-V at runtime |
 
 Each `Backend.register` registers the audio, window and render bridges of its module; the clock bridge is already registered by JOID. The backend jars, their `prod` and `dev` flavors and the dependencies to declare are listed in [Installation](../getting-started/installation.md).
@@ -58,6 +58,7 @@ Each `Backend.register` registers the audio, window and render bridges of its mo
 ## LWJGL 3
 
 - The render bridge creates its OpenGL objects in its constructor: the context must be current, with its capabilities created, before `Backend.register`. Every drawing call must then happen on that thread.
+- The bridge reads the version, the profile and the extensions of the context and adapts to them on its own, see [OpenGL versions](#opengl-versions). It refuses a context below OpenGL 2.0 or without framebuffer objects with an `IllegalStateException` that names what the context offers.
 - The stencil buffer is needed by the masks of a UI (see [The UI Class](../ui/ui-class.md)).
 - The jar does not contain LWJGL: your application declares `lwjgl`, `lwjgl-glfw`, `lwjgl-openal` and `lwjgl-opengl` 3.3.4, with the natives of each for its platforms.
 - On macOS, start the JVM with `-XstartOnFirstThread`, as GLFW requires.
@@ -307,7 +308,7 @@ try {
 
 ![Diagram of an embedded frame: the host draws its frame, JOID pushes the state, projection and matrix, sets ortho and viewport, draws the UIs, then pops everything in a finally block](../images/diagram-backend-host.png "Push before the JOID frame, pop in a finally block: the host finds its state back")
 
-The LWJGL 3 and Vulkan bridges keep their state in Java and apply it at each draw call. On OpenGL, the LWJGL 3 bridge binds its own vertex array, buffer, program, framebuffer, viewport, blending, depth, culling, stencil, line width, and a texture with a sampler object on texture unit 0, and leaves them bound: restore what your renderer needs after the JOID frame, including `glBindSampler(0, 0)` when your renderer relies on texture parameters.
+The LWJGL 3 and Vulkan bridges keep their state in Java and apply it at each draw call. On OpenGL, the LWJGL 3 bridge binds its own vertex array (the default one on a context without vertex arrays), buffer, program, framebuffer, viewport, blending, depth, culling, stencil, line width and textures, sets the filter and the wrap on its own textures, unbinds the sampler objects of the texture units it uses, and leaves all of it bound: restore what your renderer needs after the JOID frame.
 
 ### Natives, audio and interface size
 
@@ -333,12 +334,26 @@ The LWJGL 3 backend renders with `joid-base-opengl`, a module in plain Java that
 
 | Package `dev.joid.base.opengl` | Content |
 |---|---|
-| `binding` | `IGlBinding` (`glEnable`, `glDisable`, `glIsEnabled`, `glGetInteger`, `glGetString`, `glGetStringi`, `glGetFloatv`, and the getters of the five domain bindings), `IGlStateBinding` (blending, depth, stencil, color mask, viewport, line width, clear color), `IGlBufferBinding` (buffers, vertex arrays, attributes, `glDrawArrays`), `IGlProgramBinding` (shaders, programs, uniforms, uniform blocks), `IGlTextureBinding` (textures, units, sampler objects), `IGlFrameBufferBinding` (framebuffers, renderbuffers, blits, clears, reading pixels), and `GlConstants`, the OpenGL values the module passes to them. |
-| `capability` | `GlCapabilities.read(IGlBinding)` reads the context once: version, GLSL version, `GlProfile` (`COMPATIBILITY`, `CORE`, `FORWARD_COMPATIBLE_CORE`), extensions, maximum texture size and line widths, and tells whether vertex arrays, uniform buffers, sampler objects and framebuffer objects are there. `GlStrategies.of(GlCapabilities)` is the one place that chooses how to render on that context: today GLSL 3.30 with the uniforms in a block, and it refuses a context without OpenGL 3.3 with an `IllegalStateException` naming what the context offers. |
-| `render` | `GlRenderBridge` (`create(IGlBinding)`), the render bridge; `GlEnums`, the OpenGL values of the blend, stencil, wrap, filter, vertex and primitive enums of JOID; `shader.GlShader`, `texture.GlTexture` and `framebuffer.GlFrameBuffer`, on the core `Shader`, `Texture` and `FrameBufferHandle`. |
-| `snapshot` | `GlSnapshotCapture.capture(binding, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL; left out of the `-prod` jars and of the released `joid-base-opengl` jar. |
+| `binding` | `IGlBinding` (`glEnable`, `glDisable`, `glIsEnabled`, `glGetInteger`, `glGetIntegerv`, `glGetString`, `glGetStringi`, `glGetFloatv`, `glGetTexParameteri`, `glGetVertexAttribi`, `glGetVertexAttribPointerv`, `glClear`, `glReadBuffer`, `glReadPixels`, and the getters of the domain bindings), `IGlStateBinding` (blending, depth, stencil, color mask, viewport, line width, clear color), `IGlBufferBinding` (buffers, vertex arrays, attributes, `glDrawArrays`), `IGlProgramBinding` (shaders, programs, attribute and fragment output locations, uniforms), `IGlTextureBinding` (textures, units, `glBindSampler`), `IGlFrameBufferBinding` (framebuffers, renderbuffers, blits), returned by `getFrameBufferBinding(GlFrameBufferFamily)` for the core and ARB entry points (`CORE`) or the `EXT` ones, and `GlConstants`, the OpenGL values the module passes to them. |
+| `capability` | `GlCapabilities.read(IGlBinding)` reads the context once: version, GLSL version, `GlProfile` (`COMPATIBILITY`, `CORE`, `FORWARD_COMPATIBLE_CORE`), extensions, maximum texture size and line widths; `hasVertexArrays()`, `hasSamplerObjects()`, `hasFrameBufferBlit()` and `getFrameBufferFamily()` (`null` without framebuffer objects) tell what it can do. `GlStrategies.of(GlCapabilities)` is the one place that chooses how to render on that context, see [OpenGL versions](#opengl-versions). |
+| `render` | `GlRenderBridge` (`create(IGlBinding)`), the render bridge; `GlEnums`, the OpenGL values of the blend, stencil, wrap, filter, vertex and primitive enums of JOID; `shader.GlShader`, `texture.GlTexture` and `framebuffer.GlFrameBuffer`, on the core `Shader`, `Texture` and `FrameBufferHandle`; `vertex.GlVertexInput` (`ArrayObjectVertexInput`, `DefaultVertexInput`) and `texture.IGlMipmapBuilder` (`BlitMipmapBuilder`, `DrawMipmapBuilder`), the strategies of the bridge. |
+| `snapshot` | `GlSnapshotCapture.capture(bridge, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL; left out of the `-prod` jars and of the released `joid-base-opengl` jar. |
 
-`GlRenderBridge.create(binding)` reads the capabilities and creates its vertex array, buffer and sampler objects: the context must be current. Every OpenGL call of JOID then goes through the bindings, so a binding that wraps another one sees all of them. On LWJGL 3, `GlContextRequest.CORE_33.apply()` sets the GLFW hints of the context JOID needs (OpenGL 3.3 core, forward compatible on macOS, 24 bits of depth, 8 of stencil).
+`GlRenderBridge.create(binding)` reads the capabilities, chooses its strategies and creates its vertex buffer, and its vertex array when the context has them: the context must be current. Every OpenGL call of JOID then goes through the bindings, so a binding that wraps another one sees all of them, and `dev.joid.backend.lwjgl3.Backend.register(window, binding)` registers the bridges with such a binding. On LWJGL 3, `GlContextRequest` sets the GLFW hints of a context: `CORE_33` (OpenGL 3.3 core, forward compatible on macOS), `CORE_32_FORWARD` (3.2 core, forward compatible) or `COMPATIBILITY` (no version hint: the highest compatibility context of the driver, 2.1 on macOS), each with 24 bits of depth and 8 of stencil.
+
+### OpenGL versions
+
+The bridge renders the same pixels on every context from OpenGL 2.0 to 4.6. `GlStrategies` chooses once, from the capabilities:
+
+| Concern | Choice |
+|---|---|
+| Shaders | The highest of GLSL 1.10, 1.20, 1.30, 1.40, 1.50 and 3.30 that the context compiles, with the uniforms declared one by one (`UniformLayout.LOOSE`). Attribute locations are bound before linking, and `fragColor` to output 0 in GLSL 1.30 to 1.50. A shader that needs more than the dialect, such as `uint` in GLSL 1.20, is refused with an `UnsupportedOperationException` naming the feature and the dialect it needs. |
+| Uniforms | Sent member by member with `glUniform*` when they change, on every context. JOID uses no uniform buffer on OpenGL. |
+| Sampling | The filter and the wrap are texture parameters, set when they change for that texture. JOID uses no sampler object, and binds sampler 0 on the units it uses when the context has sampler objects. |
+| Vertex input | Its own vertex array object with OpenGL 3.0 or `GL_ARB_vertex_array_object`. Without them, the attributes of the default vertex array are pointed at the JOID buffer before each draw. |
+| Framebuffers | The OpenGL 3.0 and `GL_ARB_framebuffer_object` functions, else those of `GL_EXT_framebuffer_object`; a context without either is refused. |
+| Mipmaps | A chain of linear blits, level by level, as on Vulkan. Without `glBlitFramebuffer` (EXT framebuffers without `GL_EXT_framebuffer_blit`), each level is drawn from the previous one with a linear quad: the pixels differ slightly from the other backends, and dev mode prints `[JOID] This OpenGL context cannot blit framebuffers (...)` once. |
+| Texture size | `allocate` above `GL_MAX_TEXTURE_SIZE` throws an `IllegalArgumentException` with the size and the limit. |
 
 ## Demo windows
 
@@ -357,7 +372,8 @@ The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`,
 | Class | Member | Description |
 |---|---|---|
 | `dev.joid.backend.lwjgl2.Backend` | `static register()` | Checks the version, installs the natives, registers the audio, window and render bridges of LWJGL 2. |
-| `dev.joid.backend.lwjgl3.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the OpenGL 3.3 render bridge and the GLFW window bridge of `window`. |
+| `dev.joid.backend.lwjgl3.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the OpenGL render bridge and the GLFW window bridge of `window`. |
+| `dev.joid.backend.lwjgl3.Backend` | `static register(long window, IGlBinding binding)` | The same, with the render bridge on `binding`, a binding that wraps `Lwjgl3GlBinding.inst()`. |
 | `dev.joid.backend.vulkan.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the GLFW window bridge and a Vulkan render bridge on `window`. |
 | `dev.joid.backend.lwjgl2.Natives` | `static install()` | Installs the LWJGL 2 natives once per JVM. |
 | `dev.joid.internal.JOID` | `static checkVersion(String version)` | `true` when the major version of `version` matches the loaded JOID; otherwise prints the warning and returns `false`. |
@@ -365,6 +381,7 @@ The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`,
 ## Pitfalls
 
 - Create the OpenGL context, make it current and call `GL.createCapabilities()` before `dev.joid.backend.lwjgl3.Backend.register`.
+- On a context without `glBlitFramebuffer`, mipmapped textures are not pixel-exact with the other backends.
 - On Vulkan, a clear or a `draw()` outside `beginFrame()` / `endFrame()` throws.
 - Without a stencil buffer, the masks of the UIs do not clip.
 - The demo windows and `DemoUIBridge` are not in the `-prod` jars: never reference them from application code.

@@ -87,9 +87,9 @@ When a test fails, the build prints the link of its interactive `report.html`.
 |---|---|---|
 | Native: implement `IRenderBridge` directly | The engine has a fixed pipeline with its own matrix stacks and state. Forward each call and read the state back from the engine. | LWJGL 2 |
 | Emulated: extend `RenderBridge` | The engine has no fixed pipeline (modern OpenGL, Vulkan, a game engine renderer). | LWJGL 3, Vulkan |
-| On OpenGL: implement the bindings of `joid-base-opengl` | The engine gives access to an OpenGL 3.3 context. `GlRenderBridge`, an emulated bridge, does the rendering; you only forward its OpenGL calls. | LWJGL 3 |
+| On OpenGL: implement the bindings of `joid-base-opengl` | The engine gives access to an OpenGL context, from 2.0 to 4.6, compatibility or core. `GlRenderBridge`, an emulated bridge, does the rendering and adapts to the context; you only forward its OpenGL calls. | LWJGL 3 |
 
-On OpenGL, embed `joid-base-opengl` and implement its six binding interfaces (`dev.joid.base.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, and the five others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding` and `IGlFrameBufferBinding`. Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-base-opengl-module).
+On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.joid.base.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, clears, reading pixels, and the getters of the others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding`, and `IGlFrameBufferBinding` twice, once with the core and ARB functions and once with the `EXT` ones (a context that has only one family never calls the other). Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-base-opengl-module).
 
 `RenderBridge` (`dev.joid.lib.bridge.render`) implements every matrix and state method in Java. Your subclass implements seven methods, and applies the current state each time one of them runs:
 
@@ -238,7 +238,7 @@ The reference backends generate:
 | Backend | Language | Declarations |
 |---|---|---|
 | LWJGL 2 | GLSL 1.20 | A `GlslShaderTranslator` in `GLSL_120` with `UniformLayout.LOOSE`, whose hooks map the built-ins of the fixed pipeline: `#define` of the built-ins onto `gl_Vertex.xyz`, `gl_MultiTexCoord0.xy`, `gl_Color`, `gl_ProjectionMatrix`, `gl_ModelViewMatrix` and `gl_NormalMatrix`; `aNormal` as `joid_Normal / 127.0` with `joid_Normal` an attribute at location 6; `uLighting` and the uniforms of both stages as plain `uniform`s. |
-| LWJGL 3 | GLSL 3.30 core | `GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK)` as is: attributes at the location of their `VertexAttribute`, every uniform of both stages in the `std140` block `JoidUniforms`, `in`/`out` varyings keeping `flat`, `layout(location = 0) out vec4 fragColor`. |
+| LWJGL 3 | GLSL 1.10 to 3.30 | `GlslShaderTranslator.create(dialect, UniformLayout.LOOSE)` as is, in the highest dialect the context compiles (`GLSL_330` on OpenGL 3.3 and later): every uniform of both stages as a plain `uniform`; from GLSL 1.30, `in`/`out` varyings keeping `flat`; in GLSL 3.30, attributes at the location of their `VertexAttribute` and `layout(location = 0) out vec4 fragColor`. Below 3.30, `GlShader` binds these locations before linking. |
 | Vulkan | GLSL 4.50 | A `GlslShaderTranslator` in `GLSL_450` with the block at binding 0, samplers from binding 1 and varying locations shared by both stages; compiled to SPIR-V with shaderc. |
 
 Each generated header ends with a `#line` directive, so compiler errors point to the lines of the original file.
@@ -278,7 +278,7 @@ public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, fin
 	final GlslShaderTranslator translator = bridge.getStrategies().createTranslator();
 	final IGlProgramBinding programs = bridge.getBinding().getProgramBinding();
 	final int program = programs.createProgram();
-	final boolean active = GlShader.link(programs, program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
+	final boolean active = GlShader.link(programs, translator.getDialect(), program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
 	return new GlShader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
 }
 ```
@@ -293,7 +293,7 @@ public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, fin
 | `UniformBlock.pack()` | Copies the changed members into `getData()`, the `std140` image of the block, and returns whether anything changed. |
 | `UniformBlock.upload(Consumer<UniformMember>)` | Hands each changed member to the consumer, for APIs without uniform blocks. |
 
-At each draw, the backend writes the built-ins and sends what changed:
+At each draw, the backend writes the built-ins and sends what changed. With a uniform block:
 
 ```java
 if (super.builtins(state, projection, modelView).pack()) {
@@ -301,7 +301,13 @@ if (super.builtins(state, projection, modelView).pack()) {
 }
 ```
 
-The reference backends send the block this way: LWJGL 3 into a uniform buffer bound at binding 0, Vulkan into its uniform stream at each draw. LWJGL 2 has no uniform blocks: its GLSL 1.20 translator uses `UniformLayout.LOOSE` (`isUniform` keeps only `uLighting`) and it sends each changed member with `glUniform*` through `upload(...)`, by its `UniformType`. A member's values are tightly packed in `getValues()` (column by column for a matrix), ready for these calls.
+Vulkan sends the block this way, into its uniform stream at each draw. The OpenGL backends declare their uniforms with `UniformLayout.LOOSE` and send each changed member with `glUniform*` through `upload(...)`, by its `UniformType`; `GlShader` does it on every OpenGL context:
+
+```java
+super.builtins(state, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
+```
+
+LWJGL 2 does the same with its GLSL 1.20 translator (`isUniform` keeps only `uLighting`). A member's values are tightly packed in `getValues()` (column by column for a matrix), ready for these calls.
 
 ### IShader
 

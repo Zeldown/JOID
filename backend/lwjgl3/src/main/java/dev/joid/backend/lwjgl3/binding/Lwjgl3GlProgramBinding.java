@@ -1,7 +1,10 @@
 package dev.joid.backend.lwjgl3.binding;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 import org.lwjgl.opengl.GL20C;
-import org.lwjgl.opengl.GL31C;
+import org.lwjgl.opengl.GL30C;
 
 import dev.joid.base.opengl.binding.IGlProgramBinding;
 import lombok.AccessLevel;
@@ -81,6 +84,16 @@ public final class Lwjgl3GlProgramBinding implements IGlProgramBinding {
 	}
 
 	@Override
+	public void bindAttribLocation(final int program, final int index, final @NonNull String name) {
+		GL20C.glBindAttribLocation(program, index, name);
+	}
+
+	@Override
+	public void bindFragDataLocation(final int program, final int color, final @NonNull String name) {
+		GL30C.glBindFragDataLocation(program, color, name);
+	}
+
+	@Override
 	public void uniform1i(final int location, final int value) {
 		GL20C.glUniform1i(location, value);
 	}
@@ -91,13 +104,72 @@ public final class Lwjgl3GlProgramBinding implements IGlProgramBinding {
 	}
 
 	@Override
-	public int getUniformBlockIndex(final int program, final @NonNull String name) {
-		return GL31C.glGetUniformBlockIndex(program, name);
+	public void uniformiv(final int location, final int components, final @NonNull IntBuffer values) {
+		switch (components) {
+		case 2:
+			GL20C.glUniform2iv(location, values);
+			break;
+		case 3:
+			GL20C.glUniform3iv(location, values);
+			break;
+		case 4:
+			GL20C.glUniform4iv(location, values);
+			break;
+		default:
+			GL20C.glUniform1iv(location, values);
+			break;
+		}
 	}
 
 	@Override
-	public void uniformBlockBinding(final int program, final int index, final int binding) {
-		GL31C.glUniformBlockBinding(program, index, binding);
+	public void uniformuiv(final int location, final int components, final @NonNull IntBuffer values) {
+		switch (components) {
+		case 2:
+			GL30C.glUniform2uiv(location, values);
+			break;
+		case 3:
+			GL30C.glUniform3uiv(location, values);
+			break;
+		case 4:
+			GL30C.glUniform4uiv(location, values);
+			break;
+		default:
+			GL30C.glUniform1uiv(location, values);
+			break;
+		}
+	}
+
+	@Override
+	public void uniformfv(final int location, final int components, final @NonNull FloatBuffer values) {
+		switch (components) {
+		case 2:
+			GL20C.glUniform2fv(location, values);
+			break;
+		case 3:
+			GL20C.glUniform3fv(location, values);
+			break;
+		case 4:
+			GL20C.glUniform4fv(location, values);
+			break;
+		default:
+			GL20C.glUniform1fv(location, values);
+			break;
+		}
+	}
+
+	@Override
+	public void uniformMatrixfv(final int location, final int columns, final @NonNull FloatBuffer values) {
+		switch (columns) {
+		case 2:
+			GL20C.glUniformMatrix2fv(location, false, values);
+			break;
+		case 3:
+			GL20C.glUniformMatrix3fv(location, false, values);
+			break;
+		default:
+			GL20C.glUniformMatrix4fv(location, false, values);
+			break;
+		}
 	}
 
 }

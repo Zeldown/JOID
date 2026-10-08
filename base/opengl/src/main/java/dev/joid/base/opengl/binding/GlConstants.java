@@ -82,6 +82,7 @@ public final class GlConstants {
 	public static final int TEXTURE_WRAP_S     = 0x2802;
 	public static final int TEXTURE_WRAP_T     = 0x2803;
 	public static final int TEXTURE_MAX_LEVEL  = 0x813D;
+	public static final int TEXTURE_BASE_LEVEL = 0x813C;
 	public static final int TEXTURE_MIN_FILTER = 0x2801;
 	public static final int TEXTURE_MAG_FILTER = 0x2800;
 
@@ -93,13 +94,10 @@ public final class GlConstants {
 	public static final int CLAMP_TO_EDGE   = 0x812F;
 	public static final int CLAMP_TO_BORDER = 0x812D;
 
-	public static final int STREAM_DRAW    = 0x88E0;
-	public static final int DYNAMIC_DRAW   = 0x88E8;
-	public static final int ARRAY_BUFFER   = 0x8892;
-	public static final int UNIFORM_BUFFER = 0x8A11;
+	public static final int STREAM_DRAW  = 0x88E0;
+	public static final int ARRAY_BUFFER = 0x8892;
 
 	public static final int LINK_STATUS     = 0x8B82;
-	public static final int INVALID_INDEX   = 0xFFFFFFFF;
 	public static final int VERTEX_SHADER   = 0x8B31;
 	public static final int COMPILE_STATUS  = 0x8B81;
 	public static final int FRAGMENT_SHADER = 0x8B30;

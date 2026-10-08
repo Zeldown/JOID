@@ -1,6 +1,6 @@
 # Custom Shaders
 
-A JOID shader is written once, in JOID GLSL, and each backend translates it when it loads: GLSL 1.20 on LWJGL 2, GLSL 3.30 core on LWJGL 3, GLSL 4.50 compiled to SPIR-V on Vulkan. Write one when the drawing helpers and the effects cannot draw what you need; bind it around your draw calls in a draw hook, or use it in a pass of the [Shader Pipeline](pipeline.md) to post-process a node.
+A JOID shader is written once, in JOID GLSL, and each backend translates it when it loads: GLSL 1.20 on LWJGL 2, GLSL 1.10 to 3.30 on LWJGL 3 depending on the OpenGL context (3.30 from OpenGL 3.3), GLSL 4.50 compiled to SPIR-V on Vulkan. Write one when the drawing helpers and the effects cannot draw what you need; bind it around your draw calls in a draw hook, or use it in a pass of the [Shader Pipeline](pipeline.md) to post-process a node.
 
 ## A first shader
 
@@ -219,9 +219,10 @@ The backend fills the built-in uniforms. The standard vertex transformation is `
 
 ### Writing portable GLSL
 
-Your code is compiled as GLSL 1.20 on LWJGL 2, as GLSL 3.30 core on LWJGL 3 and as GLSL 4.50 on Vulkan. To run on every backend, keep the code within what these versions share:
+Your code is compiled as GLSL 1.20 on LWJGL 2, as the highest of GLSL 1.10, 1.20, 1.30, 1.40, 1.50 and 3.30 that the OpenGL context compiles on LWJGL 3, and as GLSL 4.50 on Vulkan. To run on every backend and every OpenGL context, keep the code within what these versions share:
 
-- GLSL 1.20 features only: no `%` or bitwise operators on integers, no `uint`, no `switch`, no `texelFetch` or `textureSize`, no `flat` varyings. LWJGL 2 refuses a shader that uses one of them, with a message naming the feature and the GLSL version it needs (`The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20`): `createShader` throws `UnsupportedOperationException` and `ShaderImpl.load` prints it.
+- GLSL 1.20 features only: no `%` or bitwise operators on integers, no `uint`, no `switch`, no `texelFetch` or `textureSize`, no `flat` varyings. LWJGL 2, and LWJGL 3 on a context below GLSL 1.30, refuse a shader that uses one of them, with a message naming the feature and the GLSL version it needs (`The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20`): `createShader` throws `UnsupportedOperationException` and `ShaderImpl.load` prints it.
+- On an OpenGL 2.0 context, LWJGL 3 compiles GLSL 1.10, which converts no integer to a float: write `1.0`, not `1`, where a float is expected.
 - `texture(...)` to sample (LWJGL 2 maps it to `texture2D`), never `texture2D`, `gl_FragColor`, `attribute` or `varying`.
 
 ### What the backends generate
@@ -229,7 +230,7 @@ Your code is compiled as GLSL 1.20 on LWJGL 2, as GLSL 3.30 core on LWJGL 3 and 
 | Backend | Generated header |
 |---|---|
 | LWJGL 2 | `#version 120`; `#define texture texture2D`; built-in attributes, matrices and `fragColor` defined to `gl_Vertex.xyz`, `gl_MultiTexCoord0.xy`, `gl_Color`, `gl_ProjectionMatrix`, `gl_ModelViewMatrix`, `gl_NormalMatrix`, `gl_FragColor`; `aNormal` read from the attribute `joid_Normal` divided by 127; `uniform bool uLighting`; every uniform of both stages and your samplers; your varyings as `varying`. |
-| LWJGL 3 | `#version 330 core`; one `std140` uniform block `JoidUniforms` holding the built-in uniforms and every uniform of both stages; built-in attributes at fixed locations (vertex stage); `layout(location = 0) out vec4 fragColor` (fragment stage); your samplers; your varyings as `in` / `out`, with `flat`. |
+| LWJGL 3 | The `#version` of the dialect of the context (`#version 330 core` from OpenGL 3.3); the built-in uniforms and every uniform of both stages as plain `uniform`s; the built-in attributes, at fixed locations; your samplers. From GLSL 1.30, `fragColor` as an `out vec4` (with `layout(location = 0)` in 3.30) and your varyings as `in` / `out`, with `flat`; below, `attribute` and `varying`, with `texture` and `fragColor` defined to `texture2D` and `gl_FragColor`. |
 | Vulkan | `#version 450`; the same `JoidUniforms` block, at binding 0; built-in attributes at fixed locations (vertex stage); `layout(location = 0) out vec4 fragColor` (fragment stage); one binding per sampler, from 1; varyings at locations matched by name. |
 
 A uniform declared in both stages is a single value: give it the same type in both. A sampler declared in both stages is a single sampler as well.

@@ -36,7 +36,7 @@ The full build files, with the natives picked for the machine, are in [Gradle se
 | Java | Java 8 or later at runtime. JOID is compiled for Java 8 (`sourceCompatibility = 1.8`). |
 | JDK to build from source | JDK 8: the repository uses the Gradle 3.5 wrapper. |
 | LWJGL 2 backend | An OpenGL context with GLSL 1.20 shaders and framebuffer objects. |
-| LWJGL 3 backend | An OpenGL 3.3 core profile context. |
+| LWJGL 3 backend | An OpenGL 2.0 to 4.6 context, compatibility or core, with framebuffer objects (OpenGL 3.0, `GL_ARB_framebuffer_object` or `GL_EXT_framebuffer_object`). |
 | Vulkan backend | A Vulkan 1.3 device with swapchain support. |
 | Graphics context | A stencil buffer: masks and clipped overflow use it. The demo windows request 24-bit depth and 8-bit stencil. |
 

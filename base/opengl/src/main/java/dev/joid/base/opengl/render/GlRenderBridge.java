@@ -3,6 +3,7 @@ package dev.joid.base.opengl.render;
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.binding.IGlBufferBinding;
+import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
 import dev.joid.base.opengl.binding.IGlStateBinding;
 import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
@@ -10,6 +11,8 @@ import dev.joid.base.opengl.capability.GlStrategies;
 import dev.joid.base.opengl.render.framebuffer.GlFrameBuffer;
 import dev.joid.base.opengl.render.shader.GlShader;
 import dev.joid.base.opengl.render.texture.GlTexture;
+import dev.joid.base.opengl.render.texture.IGlMipmapBuilder;
+import dev.joid.base.opengl.render.vertex.GlVertexInput;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -19,7 +22,6 @@ import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
-import dev.joid.lib.bridge.render.texture.TextureSampling;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
@@ -29,28 +31,20 @@ import lombok.NonNull;
 @Getter
 public class GlRenderBridge extends RenderBridge {
 
-	private final IGlBinding     binding;
-	private final int[]          samplers;
-	private final int            vertexArray;
-	private final int            vertexBuffer;
-	private final GlStrategies   strategies;
-	private final GlCapabilities capabilities;
+	private final IGlBinding            binding;
+	private final GlStrategies          strategies;
+	private final GlVertexInput         vertexInput;
+	private final GlCapabilities        capabilities;
+	private final IGlMipmapBuilder      mipmapBuilder;
+	private final IGlFrameBufferBinding frameBufferBinding;
 
 	protected GlRenderBridge(final @NonNull IGlBinding binding) {
-		this.binding      = binding;
-		this.capabilities = GlCapabilities.read(binding);
-		this.strategies   = GlStrategies.of(this.capabilities);
-		this.samplers     = this.createSamplers();
-
-		final IGlBufferBinding buffer = binding.getBufferBinding();
-		this.vertexArray  = buffer.genVertexArray();
-		this.vertexBuffer = buffer.genBuffer();
-		buffer.bindVertexArray(this.vertexArray);
-		buffer.bindBuffer(GlConstants.ARRAY_BUFFER, this.vertexBuffer);
-		for (final VertexAttribute attribute : VertexAttribute.values()) {
-			buffer.vertexAttribPointer(attribute.getLocation(), attribute.getComponents(), GlEnums.type(attribute.getComponent()), attribute.isNormalized(), VertexBuffer.STRIDE, attribute.getOffset());
-		}
-		buffer.enableVertexAttribArray(VertexAttribute.POSITION.getLocation());
+		this.binding            = binding;
+		this.capabilities       = GlCapabilities.read(binding);
+		this.strategies         = GlStrategies.of(this.capabilities);
+		this.mipmapBuilder      = this.strategies.createMipmapBuilder();
+		this.frameBufferBinding = binding.getFrameBufferBinding(this.strategies.getFrameBufferFamily());
+		this.vertexInput        = this.strategies.createVertexInput(binding);
 	}
 
 	public static @NonNull GlRenderBridge create(final @NonNull IGlBinding binding) {
@@ -63,14 +57,14 @@ public class GlRenderBridge extends RenderBridge {
 		this.applyTarget(state);
 		this.binding.getStateBinding().colorMask(state.isColorMask(), state.isColorMask(), state.isColorMask(), state.isColorMask());
 		this.binding.getStateBinding().clearColor(red, green, blue, alpha);
-		this.binding.getFrameBufferBinding().clear(GlConstants.COLOR_BUFFER_BIT);
+		this.binding.clear(GlConstants.COLOR_BUFFER_BIT);
 	}
 
 	@Override
 	public void clearDepth() {
 		this.applyTarget(super.getState());
 		this.binding.getStateBinding().depthMask(true);
-		this.binding.getFrameBufferBinding().clear(GlConstants.DEPTH_BUFFER_BIT);
+		this.binding.clear(GlConstants.DEPTH_BUFFER_BIT);
 		this.binding.getStateBinding().depthMask(super.getState().isDepthWrite());
 	}
 
@@ -78,7 +72,7 @@ public class GlRenderBridge extends RenderBridge {
 	public void clearStencil() {
 		this.applyTarget(super.getState());
 		this.binding.getStateBinding().stencilMask(0xFF);
-		this.binding.getFrameBufferBinding().clear(GlConstants.STENCIL_BUFFER_BIT);
+		this.binding.clear(GlConstants.STENCIL_BUFFER_BIT);
 	}
 
 	@Override
@@ -99,8 +93,7 @@ public class GlRenderBridge extends RenderBridge {
 		this.binding.getTextureBinding().activeTexture(GlConstants.TEXTURE0);
 
 		final IGlBufferBinding vertices = this.binding.getBufferBinding();
-		vertices.bindVertexArray(this.vertexArray);
-		vertices.bindBuffer(GlConstants.ARRAY_BUFFER, this.vertexBuffer);
+		this.vertexInput.bind();
 		vertices.bufferData(GlConstants.ARRAY_BUFFER, buffer.getBuffer(), GlConstants.STREAM_DRAW);
 		this.toggleAttribute(VertexAttribute.TEXTURE_COORDINATE.getLocation(), buffer.isTexture());
 		this.toggleAttribute(VertexAttribute.COLOR.getLocation(), buffer.isColor());
@@ -113,12 +106,12 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	public @NonNull ITexture createTexture() {
-		return GlTexture.create(this.binding);
+		return GlTexture.create(this);
 	}
 
 	@Override
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
-		return GlFrameBuffer.create(this.binding, width, height);
+		return GlFrameBuffer.create(this, width, height);
 	}
 
 	@Override
@@ -127,14 +120,18 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	private void bindTexture(final int unit, final SamplerBinding resolved) {
-		final IGlTextureBinding texture = this.binding.getTextureBinding();
-		texture.activeTexture(GlConstants.TEXTURE0 + unit);
-		texture.bindTexture(GlConstants.TEXTURE_2D, ((GlTexture) resolved.getTexture()).getId());
-		texture.bindSampler(unit, this.samplers[resolved.getSampling().getIndex()]);
+		final IGlTextureBinding textures = this.binding.getTextureBinding();
+		final GlTexture texture = (GlTexture) resolved.getTexture();
+		textures.activeTexture(GlConstants.TEXTURE0 + unit);
+		textures.bindTexture(GlConstants.TEXTURE_2D, texture.getId());
+		texture.sample(resolved.getSampling());
+		if (this.capabilities.hasSamplerObjects()) {
+			textures.bindSampler(unit, 0);
+		}
 	}
 
 	private void applyTarget(final RenderState state) {
-		this.binding.getFrameBufferBinding().bindFramebuffer(GlConstants.FRAMEBUFFER, state.getFrameBuffer() == null ? 0 : ((GlFrameBuffer) state.getFrameBuffer()).getId());
+		this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, state.getFrameBuffer() == null ? 0 : ((GlFrameBuffer) state.getFrameBuffer()).getId());
 		this.binding.getStateBinding().viewport(state.getViewportX(), state.getViewportY(), state.getViewportWidth(), state.getViewportHeight());
 	}
 
@@ -159,20 +156,6 @@ public class GlRenderBridge extends RenderBridge {
 		final float[] lineWidthRange = state.isLineSmooth() ? this.capabilities.getSmoothLineWidthRange() : this.capabilities.getAliasedLineWidthRange();
 		pipeline.lineWidth(Math.max(lineWidthRange[0], Math.min(lineWidthRange[1], state.getLineWidth())));
 		this.toggle(GlConstants.LINE_SMOOTH, state.isLineSmooth());
-	}
-
-	private int[] createSamplers() {
-		final IGlTextureBinding texture = this.binding.getTextureBinding();
-		final int[] samplers = new int[TextureSampling.values().size()];
-		for (final TextureSampling sampling : TextureSampling.values()) {
-			final int sampler = texture.genSampler();
-			texture.samplerParameteri(sampler, GlConstants.TEXTURE_MIN_FILTER, GlEnums.minFilter(sampling));
-			texture.samplerParameteri(sampler, GlConstants.TEXTURE_MAG_FILTER, GlEnums.magFilter(sampling));
-			texture.samplerParameteri(sampler, GlConstants.TEXTURE_WRAP_S, GlEnums.wrap(sampling.getWrap()));
-			texture.samplerParameteri(sampler, GlConstants.TEXTURE_WRAP_T, GlEnums.wrap(sampling.getWrap()));
-			samplers[sampling.getIndex()] = sampler;
-		}
-		return samplers;
 	}
 
 	private void toggle(final int capability, final boolean enabled) {

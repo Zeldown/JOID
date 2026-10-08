@@ -30,18 +30,8 @@ public final class Lwjgl3GlBufferBinding implements IGlBufferBinding {
 	}
 
 	@Override
-	public void bindBufferBase(final int target, final int index, final int buffer) {
-		GL30C.glBindBufferBase(target, index, buffer);
-	}
-
-	@Override
 	public void bufferData(final int target, final @NonNull ByteBuffer data, final int usage) {
 		GL15C.glBufferData(target, data, usage);
-	}
-
-	@Override
-	public void bufferSubData(final int target, final long offset, final @NonNull ByteBuffer data) {
-		GL15C.glBufferSubData(target, offset, data);
 	}
 
 	@Override

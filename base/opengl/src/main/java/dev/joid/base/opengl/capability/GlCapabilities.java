@@ -30,7 +30,12 @@ public final class GlCapabilities {
 	private final float[]     aliasedLineWidthRange;
 
 	public static @NonNull GlCapabilities read(final @NonNull IGlBinding binding) {
-		final int version = GlCapabilities.parseVersion(binding.getString(GlConstants.VERSION));
+		final String name = binding.getString(GlConstants.VERSION);
+		if (name == null) {
+			throw new IllegalStateException("No OpenGL context is current: create the context of JOID and make it current before registering the backend");
+		}
+
+		final int version = GlCapabilities.parseVersion(name);
 		final Set<String> extensionSet = new HashSet<>();
 		if (version >= 300) {
 			for (int i = 0; i < binding.getInteger(GlConstants.NUM_EXTENSIONS); i++) {
@@ -44,7 +49,7 @@ public final class GlCapabilities {
 		GlProfile profile = GlProfile.COMPATIBILITY;
 		if (version >= 300 && (binding.getInteger(GlConstants.CONTEXT_FLAGS) & GlConstants.CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT) != 0) {
 			profile = GlProfile.FORWARD_COMPATIBLE_CORE;
-		} else if (version >= 320 && (binding.getInteger(GlConstants.CONTEXT_PROFILE_MASK) & GlConstants.CONTEXT_CORE_PROFILE_BIT) != 0) {
+		} else if ((version >= 320 && (binding.getInteger(GlConstants.CONTEXT_PROFILE_MASK) & GlConstants.CONTEXT_CORE_PROFILE_BIT) != 0) || (version == 310 && !extensionSet.contains("GL_ARB_compatibility"))) {
 			profile = GlProfile.CORE;
 		}
 
@@ -63,20 +68,23 @@ public final class GlCapabilities {
 		return this.version >= 300 || this.hasExtension("GL_ARB_vertex_array_object");
 	}
 
-	public boolean hasUniformBuffers() {
-		return this.version >= 310 || this.hasExtension("GL_ARB_uniform_buffer_object");
-	}
-
 	public boolean hasSamplerObjects() {
 		return this.version >= 330 || this.hasExtension("GL_ARB_sampler_objects");
 	}
 
-	public boolean hasFrameBufferObjects() {
-		return this.version >= 300 || this.hasExtension("GL_ARB_framebuffer_object");
+	public boolean hasFrameBufferBlit() {
+		return this.getFrameBufferFamily() == GlFrameBufferFamily.CORE || this.hasExtension("GL_EXT_framebuffer_blit");
+	}
+
+	public GlFrameBufferFamily getFrameBufferFamily() {
+		if (this.version >= 300 || this.hasExtension("GL_ARB_framebuffer_object")) {
+			return GlFrameBufferFamily.CORE;
+		}
+		return this.hasExtension("GL_EXT_framebuffer_object") ? GlFrameBufferFamily.EXT : null;
 	}
 
 	public @NonNull String getName() {
-		return "OpenGL " + this.version / 100 + "." + this.version / 10 % 10;
+		return "OpenGL " + this.version / 100 + "." + this.version / 10 % 10 + " with GLSL " + this.glslVersion / 100 + "." + String.format("%02d", this.glslVersion % 100) + " (" + this.renderer + ")";
 	}
 
 	private static int parseVersion(final String version) {

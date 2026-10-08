@@ -5,71 +5,72 @@ import java.util.List;
 import java.util.Map;
 
 import dev.joid.base.opengl.binding.GlConstants;
-import dev.joid.base.opengl.binding.IGlBinding;
-import dev.joid.base.opengl.binding.IGlBufferBinding;
 import dev.joid.base.opengl.binding.IGlProgramBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.render.shader.Shader;
+import dev.joid.lib.bridge.render.shader.source.GlslDialect;
 import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
+import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
+import dev.joid.lib.bridge.render.shader.uniform.UniformType;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public final class GlShader extends Shader {
 
-	private final IGlBinding           binding;
 	private final int                  program;
-	private final int                  uniformBuffer;
+	private final IGlProgramBinding    programs;
 	private final Map<String, Integer> locationMap;
 
 	private GlShader(final GlRenderBridge bridge, final int program, final boolean active, final BlendState blend, final UniformBlock block, final List<ShaderVariable> samplers) {
 		super(bridge, blend, active, block, samplers);
-		this.binding       = bridge.getBinding();
-		this.program       = program;
-		this.locationMap   = new HashMap<>();
-		this.uniformBuffer = this.binding.getBufferBinding().genBuffer();
-
-		final IGlBufferBinding buffer = this.binding.getBufferBinding();
-		buffer.bindBuffer(GlConstants.UNIFORM_BUFFER, this.uniformBuffer);
-		buffer.bufferData(GlConstants.UNIFORM_BUFFER, block.getData(), GlConstants.DYNAMIC_DRAW);
-		buffer.bindBuffer(GlConstants.UNIFORM_BUFFER, 0);
-
-		final IGlProgramBinding programs = this.binding.getProgramBinding();
-		final int index = programs.getUniformBlockIndex(program, GlslShaderTranslator.BLOCK);
-		if (active && index != GlConstants.INVALID_INDEX) {
-			programs.uniformBlockBinding(program, index, 0);
-		}
+		this.programs    = bridge.getBinding().getProgramBinding();
+		this.program     = program;
+		this.locationMap = new HashMap<>();
 	}
 
 	public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
 		final GlslShaderTranslator translator = bridge.getStrategies().createTranslator();
 		final IGlProgramBinding programs = bridge.getBinding().getProgramBinding();
 		final int program = programs.createProgram();
-		final boolean active = GlShader.link(programs, program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
+		final boolean active = GlShader.link(programs, translator.getDialect(), program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
 		return new GlShader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
 	}
 
 	public void use(final @NonNull RenderState state) {
-		this.binding.getProgramBinding().useProgram(this.program);
-		final IGlBufferBinding buffer = this.binding.getBufferBinding();
-		if (super.builtins(state, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).pack()) {
-			buffer.bindBuffer(GlConstants.UNIFORM_BUFFER, this.uniformBuffer);
-			buffer.bufferSubData(GlConstants.UNIFORM_BUFFER, 0L, super.getBlock().getData());
-		}
-
-		buffer.bindBufferBase(GlConstants.UNIFORM_BUFFER, 0, this.uniformBuffer);
+		this.programs.useProgram(this.program);
+		super.builtins(state, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
 	}
 
 	public int getLocation(final @NonNull String name) {
-		return this.locationMap.computeIfAbsent(name, key -> this.binding.getProgramBinding().getUniformLocation(this.program, key));
+		return this.locationMap.computeIfAbsent(name, key -> this.programs.getUniformLocation(this.program, key));
 	}
 
-	private static boolean link(final IGlProgramBinding programs, final int program, final String vertexSource, final String fragmentSource) {
+	private void upload(final UniformMember member) {
+		final int location = this.getLocation(member.getName());
+		final UniformType type = member.getType();
+		if (location == -1) {
+			return;
+		}
+
+		if (type.isMatrix()) {
+			this.programs.uniformMatrixfv(location, type.getColumns(), member.getValues().asFloatBuffer());
+		} else if (type == UniformType.UINT || type == UniformType.UVEC2 || type == UniformType.UVEC3 || type == UniformType.UVEC4) {
+			this.programs.uniformuiv(location, type.getComponents(), member.getValues().asIntBuffer());
+		} else if (type.isInteger()) {
+			this.programs.uniformiv(location, type.getComponents(), member.getValues().asIntBuffer());
+		} else {
+			this.programs.uniformfv(location, type.getComponents(), member.getValues().asFloatBuffer());
+		}
+	}
+
+	private static boolean link(final IGlProgramBinding programs, final GlslDialect dialect, final int program, final String vertexSource, final String fragmentSource) {
 		final int vertex = GlShader.compile(programs, GlConstants.VERTEX_SHADER, vertexSource);
 		final int fragment = GlShader.compile(programs, GlConstants.FRAGMENT_SHADER, fragmentSource);
 		if (vertex == 0 || fragment == 0) {
@@ -80,6 +81,12 @@ public final class GlShader extends Shader {
 
 		programs.attachShader(program, vertex);
 		programs.attachShader(program, fragment);
+		for (final VertexAttribute attribute : VertexAttribute.values()) {
+			programs.bindAttribLocation(program, attribute.getLocation(), attribute.getBuiltin().getIdentifier());
+		}
+		if (dialect.hasInputOutputs() && !dialect.hasExplicitLocations()) {
+			programs.bindFragDataLocation(program, 0, "fragColor");
+		}
 		programs.linkProgram(program);
 
 		final boolean linked = programs.getProgrami(program, GlConstants.LINK_STATUS) == GlConstants.TRUE;

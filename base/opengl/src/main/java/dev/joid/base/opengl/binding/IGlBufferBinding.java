@@ -8,9 +8,7 @@ public interface IGlBufferBinding {
 
 	public int genBuffer();
 	public void bindBuffer(final int target, final int buffer);
-	public void bindBufferBase(final int target, final int index, final int buffer);
 	public void bufferData(final int target, final @NonNull ByteBuffer data, final int usage);
-	public void bufferSubData(final int target, final long offset, final @NonNull ByteBuffer data);
 
 	public int genVertexArray();
 	public void bindVertexArray(final int array);

@@ -251,8 +251,26 @@ In the JOID repository, each backend module runs its suites with these settings:
 | `./gradlew updateSnapshots` | Runs the snapshot tests and replaces the references; `./gradlew :backend-lwjgl3:updateSnapshots` updates one backend. |
 | `./gradlew crossBackendTest` | Runs the tests of the three backends, then compares the LWJGL 3 and Vulkan renders to the LWJGL 2 ones within one level per channel. The report is written to `build/snapshots/cross/report.html`. |
 | `./gradlew installLocalGitHook` | Installs the `pre-commit` and `pre-push` hooks of `scripts/`. `./gradlew build` installs them too. |
+| `./gradlew :backend-lwjgl3:test -PglProfile=GL_21` | Runs the LWJGL 3 tests on another OpenGL profile, see below. |
 
 When a test fails, the build prints the link of the report.
+
+### OpenGL profiles
+
+The LWJGL 3 snapshot backend creates the context of `SnapshotProfile.current()` (`dev.joid.backend.lwjgl3.snapshot`), named by the system property `joid.snapshot.profile` that `-PglProfile` sets; `DEFAULT` asks for OpenGL 3.3 core. Each other profile checks the version and the profile of the context it gets and throws when they differ, so the driver must give exactly that version: run them on Mesa with its overrides, for example under Xvfb on Linux.
+
+| `-PglProfile` | Context | Mesa overrides |
+|---|---|---|
+| `GL_20` | 2.0, compatibility, reporting GLSL 1.10 (Mesa refuses `MESA_GLSL_VERSION_OVERRIDE=110`: the profile reports 1.10 itself, and Mesa, limited to GLSL 1.20, compiles the `#version 110` shaders) | `MESA_GL_VERSION_OVERRIDE=2.0 MESA_GLSL_VERSION_OVERRIDE=120` |
+| `GL_21` | 2.1, GLSL 1.20, compatibility | `MESA_GL_VERSION_OVERRIDE=2.1 MESA_GLSL_VERSION_OVERRIDE=120` |
+| `GL_21_EXT` | As `GL_21`, with `GL_ARB_framebuffer_object` and `GL_ARB_vertex_array_object` hidden: EXT framebuffers and the default vertex array | as `GL_21` |
+| `GL_21_EXT_NO_BLIT` | As `GL_21_EXT`, with `GL_EXT_framebuffer_blit` hidden too: drawn mipmaps | as `GL_21` |
+| `GL_30` | 3.0, GLSL 1.30, compatibility | `MESA_GL_VERSION_OVERRIDE=3.0 MESA_GLSL_VERSION_OVERRIDE=130` |
+| `GL_32_FORWARD` | 3.2 core, forward compatible, GLSL 1.50 | `MESA_GL_VERSION_OVERRIDE=3.2 MESA_GLSL_VERSION_OVERRIDE=150` |
+| `GL_33` | 3.3 core, GLSL 3.30 | `MESA_GL_VERSION_OVERRIDE=3.3 MESA_GLSL_VERSION_OVERRIDE=330` |
+| `GL_45_COMPATIBILITY` | 4.5 compatibility | none on llvmpipe |
+
+The extensions are hidden, and the GLSL version of `GL_20` reported, by `ProfileGlBinding`, a binding that wraps `Lwjgl3GlBinding` and filters `GL_EXTENSIONS` and `GL_SHADING_LANGUAGE_VERSION`. The renders of every profile are compared with the same references, those of the renderer: they must match the `DEFAULT` ones, except where `GL_21_EXT_NO_BLIT` draws its mipmaps.
 
 ### Git hooks
 
