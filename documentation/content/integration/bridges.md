@@ -95,6 +95,7 @@ The render bridge draws: matrix stacks, render state, textures, framebuffers, sh
 |---|---|
 | Model-view matrix | `pushMatrix()`, `popMatrix()`, `loadIdentity()`, `translate(x, y, z)`, `scale(x, y, z)`, `rotate(angle, x, y, z)`, `quantize(motionX, motionY)` |
 | Projection | `pushProjection()`, `popProjection()`, `ortho(left, right, bottom, top, near, far)` |
+| Window | `screen(width, height)`: no framebuffer, a viewport covering the window and `ortho(0, width, height, 0, 0, 10000)`, before the first frame and after a resize |
 | State stack | `pushState()`, `popState()` |
 | State | `color(r, g, b, a)`, `blend(BlendState)`, `depth(test, write)`, `cull(boolean)`, `lighting(boolean)`, `colorMask(boolean)`, `alphaTest(threshold)`, `lineWidth(width)`, `lineSmooth(boolean)`, `getLineWidth()`, `isLineSmooth()` |
 | Stencil | `stencilTest(boolean)`, `stencilFunction(StencilFunction, reference, mask)`, `stencilOperation(fail, depthFail, pass)`, `clearStencil()` |

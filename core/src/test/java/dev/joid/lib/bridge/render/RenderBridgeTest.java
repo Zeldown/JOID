@@ -47,6 +47,22 @@ public class RenderBridgeTest {
 		Assert.assertTrue(render.getStateStack().isEmpty());
 	}
 
+	@Test
+	public void drawsToTheWholeWindowOnScreen() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final RecordingRenderBridge expected = new RecordingRenderBridge();
+		render.frameBuffer(render.createFrameBuffer(4, 4));
+		render.viewport(1, 2, 3, 4);
+		render.screen(1280, 720);
+		expected.ortho(0D, 1280D, 720D, 0D, 0D, 10000D);
+		Assert.assertNull(render.getState().getFrameBuffer());
+		Assert.assertEquals(0, render.getState().getViewportX());
+		Assert.assertEquals(0, render.getState().getViewportY());
+		Assert.assertEquals(1280, render.getViewportWidth());
+		Assert.assertEquals(720, render.getViewportHeight());
+		Assert.assertArrayEquals(expected.getProjection().getMatrix(), render.getProjection().getMatrix(), 0F);
+	}
+
 	@Test(expected = NoSuchElementException.class)
 	public void refusesToPopAnEmptyStateStack() {
 		new RecordingRenderBridge().popState();

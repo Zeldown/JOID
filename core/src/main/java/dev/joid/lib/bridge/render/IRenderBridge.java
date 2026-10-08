@@ -20,6 +20,12 @@ public interface IRenderBridge extends IBridge {
 	public default void endFrame() {}
 	public default void beginFrame() {}
 
+	public default void screen(final int width, final int height) {
+		this.frameBuffer(null);
+		this.viewport(0, 0, width, height);
+		this.ortho(0D, width, height, 0D, 0D, 10000D);
+	}
+
 	public void popMatrix();
 	public void pushMatrix();
 	public void loadIdentity();

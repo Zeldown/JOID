@@ -120,8 +120,7 @@ public final class AppLoop {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.ortho(0D, windowBridge.getWidth(), windowBridge.getHeight(), 0D, 0D, 10000D);
-		render.viewport(0, 0, windowBridge.getWidth(), windowBridge.getHeight());
+		render.screen(windowBridge.getWidth(), windowBridge.getHeight());
 		this.bridge.load();
 	}
 
@@ -209,15 +208,14 @@ Where and when the host draws its overlays (above its own interface, in a layer 
 
 | Method | Description |
 |---|---|
-| `load()` | Lays out every opened UI again at the size of the window bridge, keeping the zoom of each UI. Call it after a resize, once `ortho` and `viewport` match the new size. |
+| `load()` | Lays out every opened UI again at the size of the window bridge, keeping the zoom of each UI. Call it after a resize, once `screen(width, height)` matches the new size. |
 | `update()` | Calls the update of every opened UI, from the bottom one, including inactive and hidden UIs. |
 | `draw()` | Draws every visible UI from the bottom one up. |
 
-Before the first frame and after every resize, set an orthographic projection and a viewport covering the window, in pixels, with the origin at the top-left corner:
+Before the first frame and after every resize, call `screen(width, height)` of the render bridge: it draws to the window (no framebuffer), with a viewport covering it and an orthographic projection in pixels, the origin at the top-left corner:
 
 ```java
-render.ortho(0D, width, height, 0D, 0D, 10000D);
-render.viewport(0, 0, width, height);
+render.screen(width, height);
 ```
 
 Each UI then draws in its own projection: positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. The bridge only handles window pixels; every UI does the conversion.
@@ -258,24 +256,35 @@ The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), the
 
 `JOID.close(ui)` first calls `ui.onClose()`: the UI can refuse, and a UI with an out [transition](../ui/transitions.md) starts it and calls `close(ui)` of its bridge itself when it ends. Your `close` only takes the UI out of the list. `JOID.close(ui, true)` skips the checks.
 
-To replace the current UI instead of stacking, close the others in the `open` method of your bridge, unless the new UI is a popup:
+To replace the current UI instead of stacking, extend `StackUIBridge` (`dev.joid.lib.bridge.ui`) instead of `UIBridge`. It implements `open`, `close`, `add`, `remove` and `canHandle` (`true`), and leaves you `drawHover`:
+
+- `open(ui)` asks each open UI that is not an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) to close (`onClose()`) before it adds `ui`, unless `ui` is a popup or an overlay. When one of them refuses, `ui` is not opened; when one plays an out transition, `ui` opens when the transition ends.
+- `add(ui)` loads the UI at the window size; `close(ui)` removes it.
+- `closeAll()` releases every UI with `properlyClose()` and removes it, without asking.
+- `onFirstScreenOpen()` and `onLastScreenClose()` run when the first UI that is not an overlay is added and when the last one is removed: a host shows and hides its own screen there.
 
 ```java
-@Override
-public void open(final @NonNull UI ui) {
-	if (!ui.getPopup().active()) {
-		for (final UI opened : new ArrayList<>(super.getUiList().ordered())) {
-			if (!opened.onClose()) {
-				return;
-			}
-			super.close(opened);
-		}
+public class AppUIBridge extends StackUIBridge {
+
+	@Override
+	protected void onFirstScreenOpen() {
+		this.game.showCursor();
 	}
-	super.add(ui);
+
+	@Override
+	protected void onLastScreenClose() {
+		this.game.hideCursor();
+	}
+
+	@Override
+	public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
+		this.tooltip.draw(lines, mouseX, mouseY);
+	}
+
 }
 ```
 
-A UI with an out transition starts it and returns `false` from `onClose()`, so this `open` stops there; the UI closes itself when the transition ends. The demo bridge (`DemoUIBridge`) goes further and opens the new UI from the end callback of the transition.
+The demo bridge (`DemoUIBridge`) extends it, with `start()` (opens the demo menu), `resize(width, height)` (`screen(width, height)` then `load()`) and `frame()` (`update()`, then the gray background and `draw()` between `beginFrame()` and `endFrame()`), the whole loop of the demo windows.
 
 ## Tooltips with drawHover
 

@@ -10,12 +10,8 @@ import org.lwjgl.opengl.PixelFormat;
 import dev.joid.backend.lwjgl2.Backend;
 import dev.joid.backend.lwjgl2.window.WindowBridge;
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.demo.ui.UIDemoChoice;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.utils.click.ClickType;
 
 public class DemoWindow extends DemoUIBridge {
@@ -26,12 +22,7 @@ public class DemoWindow extends DemoUIBridge {
 		Display.setTitle("JOID - Demo (LWJGL 2)");
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 
-		this.identity();
-	}
-
-	public void init() {
-		JOID.open(new UIDemoChoice());
-		super.load();
+		super.resize(Display.getWidth(), Display.getHeight());
 	}
 
 	public static void main(final String[] args) throws LWJGLException {
@@ -43,7 +34,7 @@ public class DemoWindow extends DemoUIBridge {
 	}
 
 	public void run() {
-		this.init();
+		super.start();
 		this.loop();
 	}
 
@@ -83,33 +74,16 @@ public class DemoWindow extends DemoUIBridge {
 				}
 			}
 
-			super.update();
-			this.render();
+			super.frame();
 			Display.update();
 
 			if (Display.wasResized()) {
-				this.identity();
-				super.load();
+				super.resize(Display.getWidth(), Display.getHeight());
 			}
 		}
 
 		Display.destroy();
 		System.exit(0);
-	}
-
-	private void identity() {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.ortho(0D, Display.getWidth(), Display.getHeight(), 0D, 0D, 10000D);
-		render.viewport(0, 0, Display.getWidth(), Display.getHeight());
-	}
-
-	private void render() {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.beginFrame();
-		render.clear(0F, 0F, 0F, 0F);
-		DrawUtils.SHAPE.drawRect(0, 0, Display.getWidth(), Display.getHeight(), new Color(50, 50, 50));
-		super.draw();
-		render.endFrame();
 	}
 
 }

@@ -85,8 +85,7 @@ public final class App {
 
 		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
 		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
-		render.ortho(0D, windowBridge.getWidth(), windowBridge.getHeight(), 0D, 0D, 10000D);
-		render.viewport(0, 0, windowBridge.getWidth(), windowBridge.getHeight());
+		render.screen(windowBridge.getWidth(), windowBridge.getHeight());
 		JOID.open(new UIMainMenu());
 
 		while (!GLFW.glfwWindowShouldClose(window)) {
@@ -107,7 +106,7 @@ public final class App {
 }
 ```
 
-`Backend` is `dev.joid.backend.vulkan.Backend` and `RenderBridge` is `dev.joid.backend.vulkan.render.RenderBridge`. Register the input callbacks as in [UI Bridge](ui-bridge.md#driving-the-bridge-from-your-loop); when the window is resized, set `ortho` and `viewport` from the framebuffer size again and call `bridge.load()`.
+`Backend` is `dev.joid.backend.vulkan.Backend` and `RenderBridge` is `dev.joid.backend.vulkan.render.RenderBridge`. Register the input callbacks as in [UI Bridge](ui-bridge.md#driving-the-bridge-from-your-loop); when the window is resized, call `render.screen(width, height)` with the framebuffer size again and `bridge.load()`.
 
 | Method of `dev.joid.backend.vulkan.render.RenderBridge` | Description |
 |---|---|
@@ -140,8 +139,7 @@ public final class App {
 		JOID.inst().load();
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.ortho(0D, Display.getWidth(), Display.getHeight(), 0D, 0D, 10000D);
-		render.viewport(0, 0, Display.getWidth(), Display.getHeight());
+		render.screen(Display.getWidth(), Display.getHeight());
 		JOID.open(new UIMainMenu());
 
 		final AppInput input = new AppInput(bridge);
@@ -153,8 +151,7 @@ public final class App {
 			Display.update();
 
 			if (Display.wasResized()) {
-				render.ortho(0D, Display.getWidth(), Display.getHeight(), 0D, 0D, 10000D);
-				render.viewport(0, 0, Display.getWidth(), Display.getHeight());
+				render.screen(Display.getWidth(), Display.getHeight());
 				bridge.load();
 			}
 		}
@@ -258,7 +255,7 @@ JOID can draw inside an application that already owns the window, the graphics c
 
 ### Thread and projection
 
-Call `update()`, `draw()` and the input methods of your UI bridge from the thread that owns the graphics context, after the host drew its own frame. Each UI draws in its own projection, but the viewport and the base projection come from you: call `ortho(0, width, height, 0, 0, 10000)` and `viewport(0, 0, width, height)` before drawing, and `load()` on your UI bridge when the host window is resized.
+Call `update()`, `draw()` and the input methods of your UI bridge from the thread that owns the graphics context, after the host drew its own frame. Each UI draws in its own projection, but the target, the viewport and the base projection come from you: call `screen(width, height)` of the render bridge before drawing (it draws to the window, with a viewport covering it and `ortho(0, width, height, 0, 0, 10000)`), and `load()` on your UI bridge when the host window is resized.
 
 ### Giving the host its state back
 
@@ -270,8 +267,7 @@ render.pushState();
 render.pushProjection();
 render.pushMatrix();
 try {
-	render.ortho(0D, width, height, 0D, 0D, 10000D);
-	render.viewport(0, 0, width, height);
+	render.screen(width, height);
 	uiBridge.draw();
 } finally {
 	render.popMatrix();

@@ -18,9 +18,6 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.asset.dto.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
-import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.ui.core.UI;
@@ -29,8 +26,6 @@ import dev.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
 public final class SnapshotRunner {
-
-	private static final Color BACKGROUND = new Color(50, 50, 50);
 
 	private static final List<String> SCENARIOS = Arrays.asList("dev", "popup", "static", "window", "resource", "transition", "interaction");
 
@@ -218,10 +213,7 @@ public final class SnapshotRunner {
 		this.window.setWidth(width);
 		this.window.setHeight(height);
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.ortho(0D, width, height, 0D, 0D, 10000D);
-		render.viewport(0, 0, width, height);
-		this.bridge.load();
+		this.bridge.resize(width, height);
 	}
 
 	private void show(final String type, final boolean open) {
@@ -296,13 +288,7 @@ public final class SnapshotRunner {
 	}
 
 	private SnapshotImage render(final boolean capture) {
-		this.bridge.update();
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.beginFrame();
-		render.clear(0F, 0F, 0F, 0F);
-		DrawUtils.SHAPE.drawRect(0, 0, this.window.getWidth(), this.window.getHeight(), SnapshotRunner.BACKGROUND);
-		this.bridge.draw();
-		render.endFrame();
+		this.bridge.frame();
 
 		final SnapshotImage image = capture ? this.backend.capture(this.window.getWidth(), this.window.getHeight()) : null;
 		this.backend.present();

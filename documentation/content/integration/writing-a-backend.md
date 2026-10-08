@@ -152,7 +152,7 @@ A null normal gets no diffuse light. The light does not depend on the scale of t
 ### Coordinates
 
 - Projection matrices follow OpenGL conventions: clip-space depth from -1 to 1, Y up, viewport origin at the bottom-left corner. `ortho(left, right, bottom, top, near, far)` replaces the projection matrix. A backend with other conventions converts them, as the Vulkan backend does for depth and Y: `DepthRange.toZeroToOne(float[] projection)` (`dev.joid.lib.bridge.render.matrix`) returns a copy of the projection whose clip-space depth runs from 0 to 1, for the APIs that use that range (Vulkan, Direct3D, Metal, Blaze3D on such a device).
-- JOID calls `ortho(0, width, height, 0, ...)`: the drawing has its origin at the top-left corner of the target.
+- JOID calls `ortho(0, width, height, 0, ...)`: the drawing has its origin at the top-left corner of the target. `screen(width, height)`, a default method of `IRenderBridge`, sets the window as target with that projection and a full viewport; a backend has nothing to implement for it.
 - `viewport(x, y, width, height)` is in pixels; `getViewportWidth()` and `getViewportHeight()` return it.
 - `translate` stays exact. `quantize(motionX, motionY)` rounds a motion already applied to whole window pixels: it translates by `grid.quantizeX(motionX) - motionX` and `grid.quantizeY(motionY) - motionY`, where `grid` is `getPixelGrid()`.
 - `getPixelGrid()` maps the current transform to window pixels. A native bridge reads its projection and model-view matrices and returns `PixelGrid.of(projection, modelView, viewportWidth, viewportHeight)`. See [Drawing Overview](../drawing/draw-utils.md).

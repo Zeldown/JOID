@@ -39,7 +39,7 @@ The hook runs for `JOID.close(ui)`, Escape and bridges that call `ui.onClose()`.
 `JOID.open` and `JOID.close` only call the bridge's `open` and `close`; the bridge decides what they mean. `UIBridge` (`dev.joid.lib.bridge.ui`), the base class of UI bridges, leaves `open`, `close`, `add` and `remove` to you:
 
 - A simple bridge adds every opened UI on top of the others and removes the closed ones (the bridge of the [Quick Start](../getting-started/quick-start.md)).
-- `DemoUIBridge`, the bridge of the demo window, closes the open UIs (through `onClose()`) before it opens a UI that is neither a popup nor an [overlay](#overlays-with-uidataoverlay). If one of them refuses, the new UI is not opened; if one plays an Out transition, the new UI opens when the transition ends. A popup or an overlay opens without closing anything, and the overlays stay open when another UI opens.
+- `StackUIBridge` (`dev.joid.lib.bridge.ui`), and `DemoUIBridge`, the bridge of the demo window that extends it, close the open UIs (through `onClose()`) before it opens a UI that is neither a popup nor an [overlay](#overlays-with-uidataoverlay). If one of them refuses, the new UI is not opened; if one plays an Out transition, the new UI opens when the transition ends. A popup or an overlay opens without closing anything, and the overlays stay open when another UI opens.
 
 The bridge loads a UI it adds with `ui.load(width, height)`. See [UI Bridge](../integration/ui-bridge.md).
 
@@ -125,7 +125,7 @@ A popup:
 
 - is modal for input: the events that reach it never go to the UIs below, consumed or not;
 - gets a `PopTransition` unless `transition` is `NONE`; see [Transitions](transitions.md#poptransition);
-- is not closed by `DemoUIBridge` when another UI opens, and does not close the open UIs when it opens there;
+- is not closed by a `StackUIBridge` when another UI opens, and does not close the open UIs when it opens there;
 - dims the UIs below with its default `@UIData` background.
 
 `getPopup()` returns the options as a `UIDataPopupObject` with `setActive(boolean)` and `setTransition(PopupTransition)`. A change applies from the next frame: the UI creates or removes its pop transition. `PopupTransition` has `isIn()`, `isOut()` and `isActive()` (`true` unless `NONE`).

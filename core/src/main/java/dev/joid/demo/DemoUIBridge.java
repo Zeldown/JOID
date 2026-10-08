@@ -2,9 +2,12 @@ package dev.joid.demo;
 
 import java.util.List;
 
+import dev.joid.demo.ui.UIDemoChoice;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.ui.UIBridge;
+import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.ui.StackUIBridge;
+import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.dto.TextInfo;
@@ -12,38 +15,32 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.align.Align;
 import lombok.NonNull;
 
-public class DemoUIBridge extends UIBridge {
+public class DemoUIBridge extends StackUIBridge {
 
-	@Override
-	public void open(final @NonNull UI ui) {
-		if (!ui.getPopup().active() && !ui.getOverlay().active()) {
-			for (final UI currentUi : super.getUiList()) {
-				if (currentUi.getOverlay().active()) {
-					continue;
-				}
+	private static final Color BACKGROUND = new Color(50, 50, 50);
 
-				final boolean result = currentUi.onClose();
-				if (currentUi.getTransition() != null && currentUi.getTransition().getOut() != null && currentUi.getTransition().getOut().isRunning()) {
-					currentUi.getTransition().getOut().getAnimator().setCallback(tween -> {
-						JOID.open(ui);
-					});
-					return;
-				}
-
-				if (!result) {
-					return;
-				}
-
-				this.close(currentUi);
-			}
-		}
-
-		this.add(ui);
+	public void start() {
+		JOID.open(new UIDemoChoice());
+		super.load();
 	}
 
-	@Override
-	public void close(final @NonNull UI ui) {
-		this.remove(ui);
+	public void resize(final int width, final int height) {
+		BridgeHandler.RENDER.get().screen(width, height);
+		super.load();
+	}
+
+	public void frame() {
+		final IWindowBridge window = BridgeHandler.WINDOW.get();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		super.update();
+		render.beginFrame();
+		try {
+			render.clear(0F, 0F, 0F, 0F);
+			DrawUtils.SHAPE.drawRect(0, 0, window.getWidth(), window.getHeight(), DemoUIBridge.BACKGROUND);
+			super.draw();
+		} finally {
+			render.endFrame();
+		}
 	}
 
 	@Override
@@ -92,32 +89,6 @@ public class DemoUIBridge extends UIBridge {
 			DrawUtils.TEXT.drawText(x + paddingX, textY, line, info, Align.START, Align.START);
 			textY += lineHeight + lineGap;
 		}
-	}
-
-	@Override
-	public void add(final @NonNull UI ui) {
-		super.getUiList().add(ui);
-		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
-	}
-
-	@Override
-	public void remove(final @NonNull UI ui) {
-		super.getUiList().remove(ui);
-	}
-
-	@Override
-	public boolean canHandle(final @NonNull UI ui) {
-		return true;
-	}
-
-	@Override
-	public boolean canHandle(final @NonNull Class<? extends UI> ui) {
-		return true;
-	}
-
-	@Override
-	public int getIndex() {
-		return 0;
 	}
 
 }

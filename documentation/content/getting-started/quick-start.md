@@ -282,8 +282,7 @@ public final class Main {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.ortho(0D, window.getWidth(), window.getHeight(), 0D, 0D, 10000D);
-		render.viewport(0, 0, window.getWidth(), window.getHeight());
+		render.screen(window.getWidth(), window.getHeight());
 		this.bridge.load();
 	}
 
