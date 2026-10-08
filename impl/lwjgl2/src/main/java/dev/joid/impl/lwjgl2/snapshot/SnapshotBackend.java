@@ -42,11 +42,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void frame(final @NonNull Runnable draw) {
-		draw.run();
-	}
-
-	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
 		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
 		GL11.glReadPixels(0, 0, width, height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pixels);

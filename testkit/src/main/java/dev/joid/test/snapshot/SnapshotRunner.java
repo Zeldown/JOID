@@ -305,11 +305,12 @@ public final class SnapshotRunner {
 
 	private SnapshotImage render(final boolean capture) {
 		this.bridge.update();
-		this.backend.frame(() -> {
-			BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
-			DrawUtils.SHAPE.drawRect(0, 0, this.window.getWidth(), this.window.getHeight(), SnapshotRunner.BACKGROUND);
-			this.bridge.draw();
-		});
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.beginFrame();
+		render.clear(0F, 0F, 0F, 0F);
+		DrawUtils.SHAPE.drawRect(0, 0, this.window.getWidth(), this.window.getHeight(), SnapshotRunner.BACKGROUND);
+		this.bridge.draw();
+		render.endFrame();
 
 		final SnapshotImage image = capture ? this.backend.capture(this.window.getWidth(), this.window.getHeight()) : null;
 		this.backend.present();

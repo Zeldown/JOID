@@ -10,10 +10,12 @@ import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 
 public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge {
 
+	@Override
 	public void endFrame() {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void beginFrame() {
 		throw new UnsupportedOperationException();
 	}

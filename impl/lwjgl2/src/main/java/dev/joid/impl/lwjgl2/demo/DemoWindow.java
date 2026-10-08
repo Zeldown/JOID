@@ -110,9 +110,12 @@ public class DemoWindow extends DemoUIBridge {
 	}
 
 	private void render() {
-		BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.beginFrame();
+		render.clear(0F, 0F, 0F, 0F);
 		DrawUtils.SHAPE.drawRect(0, 0, Display.getWidth(), Display.getHeight(), new Color(50, 50, 50));
 		super.draw();
+		render.endFrame();
 	}
 
 }

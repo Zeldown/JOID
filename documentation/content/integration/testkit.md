@@ -49,11 +49,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void frame(final @NonNull Runnable draw) {
-		draw.run();
-	}
-
-	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
 		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
 		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
@@ -101,8 +96,7 @@ public class RenderBridgeContractTest extends RenderBridgeContractSuite {
 | Method | Contract |
 |---|---|
 | `create(int width, int height)` | Create an offscreen or hidden surface of that size, with an 8-bit stencil buffer, and register at least the render bridge of the backend. The snapshot runner registers its own window, audio and clock bridges afterward. |
-| `frame(Runnable draw)` | Run `draw` inside one frame of the engine, for example between `beginFrame()` and `endFrame()`. |
-| `capture(int width, int height)` | Read back the pixels of the area that `viewport(0, 0, width, height)` covers, top row first, as a `SnapshotImage`. |
+| `capture(int width, int height)` | Called after `endFrame()` of the render bridge, which the runner calls around each frame. Read back the pixels of the area that `viewport(0, 0, width, height)` covers, top row first, as a `SnapshotImage`. |
 | `present()` | Present or swap the surface after the capture. |
 | `destroy()` | Release the surface. |
 | `getRenderer()` | The name of the GPU or renderer. It names the folder of the references. |

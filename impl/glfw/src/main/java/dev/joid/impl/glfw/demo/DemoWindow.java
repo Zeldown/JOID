@@ -69,9 +69,8 @@ public abstract class DemoWindow extends DemoUIBridge {
 			this.keyMerger.flush();
 
 			super.update();
-			this.beginFrame();
 			this.render();
-			this.endFrame();
+			this.present();
 		}
 
 		GLFW.glfwDestroyWindow(this.window);
@@ -85,8 +84,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 
 	protected abstract void registerBackend(final long window);
 
-	protected abstract void endFrame();
-	protected abstract void beginFrame();
+	protected abstract void present();
 
 	private void identity() {
 		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
@@ -97,9 +95,12 @@ public abstract class DemoWindow extends DemoUIBridge {
 
 	private void render() {
 		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
-		BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 0F);
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.beginFrame();
+		render.clear(0F, 0F, 0F, 0F);
 		DrawUtils.SHAPE.drawRect(0, 0, windowBridge.getWidth(), windowBridge.getHeight(), new Color(50, 50, 50));
 		super.draw();
+		render.endFrame();
 	}
 
 	private void registerCallbacks() {

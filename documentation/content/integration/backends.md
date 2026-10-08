@@ -111,8 +111,8 @@ public final class App {
 
 | Method of `dev.joid.impl.vulkan.render.RenderBridge` | Description |
 |---|---|
-| `beginFrame()` | Acquires the next swapchain image and starts recording. Recreates the swapchain first when the window size changed. Throws `IllegalStateException("The Vulkan frame has already begun")` when a frame is already open. |
-| `endFrame()` | Submits the frame and waits for the GPU to finish it. |
+| `beginFrame()` | Of `IRenderBridge`. Acquires the next swapchain image and starts recording. Recreates the swapchain first when the window size changed. Throws `IllegalStateException("The Vulkan frame has already begun")` when a frame is already open. |
+| `endFrame()` | Of `IRenderBridge`. Submits the frame and waits for the GPU to finish it. |
 | `present()` | Shows the image on the window. |
 
 - Every `draw()` of your UI bridge, and every clear, happens between `beginFrame()` and `endFrame()`; outside, the bridge throws `Vulkan rendering must happen between beginFrame and endFrame`. `update()` and the input methods can run outside the frame.
@@ -318,7 +318,7 @@ Each backend module has a demo window that opens the JOID demo UIs in dev and de
 | `./gradlew :lwjgl3:runDemo` | `dev.joid.impl.lwjgl3.demo.DemoWindow` |
 | `./gradlew :vulkan:runDemo` | `dev.joid.impl.vulkan.demo.DemoWindow` |
 
-The LWJGL 3 and Vulkan demo windows extend `dev.joid.impl.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-glfw` jar. Its subclasses provide `getEngineName()`, `configureWindow()` (window hints), `registerBackend(long window)`, `beginFrame()` and `endFrame()`. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
+The LWJGL 3 and Vulkan demo windows extend `dev.joid.impl.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-glfw` jar. Its subclasses provide `getEngineName()`, `configureWindow()` (window hints), `registerBackend(long window)` and `present()`; the loop calls `beginFrame()` and `endFrame()` of the render bridge around each frame. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
 
 ## Reference
 

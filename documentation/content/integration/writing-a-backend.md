@@ -45,7 +45,7 @@ Each release publishes `joid-backend-template-<version>.zip` (built by the `back
 | File | Role |
 |---|---|
 | `src/main/java/.../Backend.java` | Calls `JOID.checkVersion` and registers the three bridges. |
-| `src/main/java/.../render/RenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearDepth`, `clearStencil`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, plus `beginFrame` and `endFrame` when your engine needs them. |
+| `src/main/java/.../render/RenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearDepth`, `clearStencil`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, and override `beginFrame` and `endFrame` when your engine needs them. |
 | `src/main/java/.../window/WindowBridge.java` | Window size, mouse, keyboard and clipboard. |
 | `src/main/java/.../audio/AudioBridge.java` | Streaming audio sources for the sound of videos. |
 | `src/demo/java/.../demo/DemoWindow.java` | Opens the JOID demo UIs on your engine. It is a source set of its own: only the `dev` jar contains it. |
@@ -111,6 +111,10 @@ When a test fails, the build prints the link of its interactive `report.html`.
 `getPixelGrid()` and `quantize(...)` are computed from these matrices and the viewport.
 
 ## The render contract
+
+### Frames
+
+`IRenderBridge.beginFrame()` and `endFrame()` wrap each frame; both do nothing by default. The demo windows, the testkit and the loops of the official backends call them around the clear and the `draw()` of the UI bridge, without knowing the class of your bridge. Override them when your engine records its commands per frame, as Vulkan does: `beginFrame()` acquires the image and starts recording, `endFrame()` submits. Showing the image on a window stays outside the contract (the Vulkan `present()`, a buffer swap).
 
 ### Draw calls and vertices
 

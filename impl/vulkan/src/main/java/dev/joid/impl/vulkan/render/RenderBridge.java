@@ -109,6 +109,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		}
 	}
 
+	@Override
 	public void endFrame() {
 		this.requireFrame();
 		if (!this.screenCleared) {
@@ -136,6 +137,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		this.garbage.clear();
 	}
 
+	@Override
 	public void beginFrame() {
 		if (this.frameActive) {
 			throw new IllegalStateException("The Vulkan frame has already begun");

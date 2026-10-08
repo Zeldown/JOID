@@ -52,14 +52,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void frame(final @NonNull Runnable draw) {
-		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
-		render.beginFrame();
-		draw.run();
-		render.endFrame();
-	}
-
-	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
 		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
 		final Context context = render.getContext();

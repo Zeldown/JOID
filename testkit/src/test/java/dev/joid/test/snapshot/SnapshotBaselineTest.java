@@ -58,9 +58,6 @@ public class SnapshotBaselineTest {
 		public void present() {}
 
 		@Override
-		public void frame(final @NonNull Runnable draw) {}
-
-		@Override
 		public @NonNull SnapshotImage capture(final int width, final int height) {
 			throw new IllegalStateException("No window");
 		}

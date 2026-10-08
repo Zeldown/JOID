@@ -400,10 +400,10 @@ public abstract class RenderBridgeContractSuite {
 
 	private static SnapshotImage render(final Consumer<IRenderBridge> draw) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		RenderBridgeContractSuite.backend.frame(() -> {
-			render.clear(0F, 0F, 0F, 1F);
-			draw.accept(render);
-		});
+		render.beginFrame();
+		render.clear(0F, 0F, 0F, 1F);
+		draw.accept(render);
+		render.endFrame();
 
 		final SnapshotImage image = RenderBridgeContractSuite.backend.capture(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		RenderBridgeContractSuite.backend.present();

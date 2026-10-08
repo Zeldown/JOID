@@ -56,11 +56,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void frame(final @NonNull Runnable draw) {
-		draw.run();
-	}
-
-	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
 		final ByteBuffer pixels = BufferUtils.createByteBuffer(width * height * 4);
 		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);

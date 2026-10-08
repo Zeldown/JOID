@@ -17,6 +17,9 @@ import lombok.NonNull;
 
 public interface IRenderBridge extends IBridge {
 
+	public default void endFrame() {}
+	public default void beginFrame() {}
+
 	public void popMatrix();
 	public void pushMatrix();
 	public void loadIdentity();

@@ -21,11 +21,6 @@ public final class SnapshotBackend implements ISnapshotBackend {
 	}
 
 	@Override
-	public void frame(final Runnable draw) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
 	public void create(final int width, final int height) {
 		throw new UnsupportedOperationException();
 	}

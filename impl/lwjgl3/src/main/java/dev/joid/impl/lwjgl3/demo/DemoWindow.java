@@ -40,11 +40,8 @@ public class DemoWindow extends dev.joid.impl.glfw.demo.DemoWindow {
 	}
 
 	@Override
-	protected void endFrame() {
+	protected void present() {
 		GLFW.glfwSwapBuffers(super.getWindow());
 	}
-
-	@Override
-	protected void beginFrame() {}
 
 }

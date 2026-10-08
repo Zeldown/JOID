@@ -34,15 +34,8 @@ public class DemoWindow extends dev.joid.impl.glfw.demo.DemoWindow {
 	}
 
 	@Override
-	protected void endFrame() {
-		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
-		render.endFrame();
-		render.present();
-	}
-
-	@Override
-	protected void beginFrame() {
-		((RenderBridge) BridgeHandler.RENDER.get()).beginFrame();
+	protected void present() {
+		((RenderBridge) BridgeHandler.RENDER.get()).present();
 	}
 
 }
