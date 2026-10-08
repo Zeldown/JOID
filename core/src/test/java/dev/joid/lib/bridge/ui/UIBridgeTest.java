@@ -11,11 +11,15 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
+import dev.joid.lib.ui.core.data.overlay.interaction.UIDataOverlayInteraction;
+import dev.joid.lib.ui.core.data.overlay.render.UIDataOverlayRender;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
@@ -504,6 +508,176 @@ public class UIBridgeTest {
 		Assert.assertFalse(this.bridges.getUi().isOnTop(new TraceUI("menu", this.trace)));
 	}
 
+	@Test
+	public void reportsWhetherAScreenConsumedAnEvent() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		Assert.assertFalse(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		menu.cancel = true;
+		Assert.assertTrue(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mouseMoved());
+		Assert.assertTrue(this.bridges.getUi().mouseReleased(ClickType.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mouseScroll(1D));
+		Assert.assertTrue(this.bridges.getUi().keyTyped('a', Key.A));
+		Assert.assertFalse(this.bridges.getUi().mouseScroll(0D));
+	}
+
+	@Test
+	public void consumesNothingWithoutUi() {
+		Assert.assertFalse(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
+	}
+
+	@Test
+	public void letsTheInputThroughAnOverlayWithoutInteraction() {
+		final PassiveOverlayUI overlay = new PassiveOverlayUI("overlay", this.trace);
+		overlay.getOverlay().render().setScreens(true);
+		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
+		this.trace.clear();
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().keyTyped('a', Key.A);
+		Assert.assertEquals(Arrays.asList("pressed menu LEFT", "typed menu a A"), this.trace);
+	}
+
+	@Test
+	public void pressesAnInteractiveOverlayBeforeTheScreens() {
+		this.bridges.open(new OverlayUI("overlay", this.trace)).open(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		Assert.assertEquals(Arrays.asList("pressed overlay LEFT", "pressed menu LEFT"), this.trace);
+	}
+
+	@Test
+	public void consumesTheEventsAnOverlayCancels() {
+		final TraceUI overlay = new OverlayUI("overlay", this.trace);
+		overlay.cancel = true;
+		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
+		this.trace.clear();
+		Assert.assertTrue(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mouseScroll(1D));
+		Assert.assertTrue(this.bridges.getUi().keyTyped('a', Key.A));
+		Assert.assertEquals(Arrays.asList("pressed overlay LEFT", "scrolled overlay 1.0", "typed overlay a A"), this.trace);
+	}
+
+	@Test
+	public void leavesToTheHostTheEventsAnOverlayDoesNotCancel() {
+		final TraceUI overlay = new OverlayUI("overlay", this.trace);
+		overlay.cancel = true;
+		overlay.getOverlay().interaction().setCancelClick(false).setCancelScroll(false).setCancelKeyboard(false);
+		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
+		this.trace.clear();
+		Assert.assertFalse(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertFalse(this.bridges.getUi().mouseMoved());
+		Assert.assertFalse(this.bridges.getUi().mouseReleased(ClickType.LEFT));
+		Assert.assertFalse(this.bridges.getUi().mouseScroll(1D));
+		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
+		Assert.assertFalse(this.trace.stream().anyMatch(line -> line.contains("menu")));
+	}
+
+	@Test
+	public void cancelsEachKindOfEventWithItsOwnFlag() {
+		final TraceUI overlay = new OverlayUI("overlay", this.trace);
+		overlay.cancel = true;
+		overlay.getOverlay().interaction().setCancelClick(false).setCancelKeyboard(false);
+		this.bridges.open(overlay);
+		Assert.assertFalse(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mouseScroll(-1D));
+		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
+	}
+
+	@Test
+	public void keepsEscapeForTheScreenBelowAnOverlay() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		this.bridges.open(menu).open(overlay);
+		this.trace.clear();
+		Assert.assertTrue(this.bridges.getUi().keyTyped('\0', Key.ESCAPE));
+		Assert.assertEquals(Arrays.asList("typed overlay \0 ESCAPE", "typed menu \0 ESCAPE", "close menu"), this.trace);
+		Assert.assertEquals(Collections.singletonList(overlay), this.bridges.getUi().getUiList().ordered());
+	}
+
+	@Test
+	public void drawsTheOverlaysAboveTheScreensByZindex() {
+		final OverlayUI high = new OverlayUI("high", this.trace);
+		final OverlayUI low = new OverlayUI("low", this.trace);
+		high.getOverlay().render().setZindex(2);
+		low.getOverlay().render().setZindex(1);
+		this.bridges.open(high).open(low).open(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		this.bridges.getUi().draw();
+		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw low -1990.0", "draw high -1980.0"), this.trace);
+		this.trace.clear();
+		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		Assert.assertEquals(Arrays.asList("pressed high LEFT", "pressed low LEFT", "pressed menu LEFT"), this.trace);
+	}
+
+	@Test
+	public void hidesAnOverlayWhileAScreenIsOpenUnlessItAllowsScreens() {
+		final PassiveOverlayUI overlay = new PassiveOverlayUI("overlay", this.trace);
+		this.bridges.open(overlay);
+		this.trace.clear();
+		this.bridges.getUi().draw();
+		Assert.assertEquals(Collections.singletonList("draw overlay -2000.0"), this.trace);
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		this.bridges.getUi().draw();
+		Assert.assertEquals(Collections.singletonList("draw menu -2000.0"), this.trace);
+		overlay.getOverlay().render().setScreens(true);
+		this.trace.clear();
+		this.bridges.getUi().draw();
+		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw overlay -1990.0"), this.trace);
+	}
+
+	@Test
+	public void hidesTheOverlaysTheHostHidesUnlessAlways() {
+		final HidingBridge bridge = new HidingBridge();
+		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		bridge.add(overlay);
+		bridge.hidden = true;
+		this.trace.clear();
+		bridge.draw();
+		bridge.mousePressed(ClickType.LEFT);
+		Assert.assertTrue(this.trace.isEmpty());
+		overlay.getOverlay().render().setAlways(true);
+		bridge.draw();
+		bridge.mousePressed(ClickType.LEFT);
+		Assert.assertEquals(Arrays.asList("draw overlay -2000.0", "pressed overlay LEFT"), this.trace);
+		bridge.getUiList().remove(overlay);
+		overlay.properlyClose();
+	}
+
+	@Test
+	public void keepsTheScreensAndTheOverlaysOnTopSeparately() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		final PassiveOverlayUI passive = new PassiveOverlayUI("passive", this.trace);
+		passive.getOverlay().render().setScreens(true);
+		this.bridges.open(menu).open(overlay).open(passive);
+		Assert.assertTrue(this.bridges.getUi().isOnTop(menu));
+		Assert.assertTrue(this.bridges.getUi().isOnTop(overlay));
+		Assert.assertFalse(this.bridges.getUi().isOnTop(passive));
+	}
+
+	@Test
+	public void opensAnOverlayWithoutClosingTheScreens() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		final TraceUI settings = new TraceUI("settings", this.trace);
+		this.bridges.getUi().open(menu);
+		this.bridges.getUi().open(overlay);
+		Assert.assertEquals(Arrays.asList(menu, overlay), this.bridges.getUi().getUiList().ordered());
+		this.bridges.getUi().open(settings);
+		Assert.assertEquals(Arrays.asList(overlay, settings), this.bridges.getUi().getUiList().ordered());
+		Assert.assertTrue(this.bridges.getUi().isScreenOpen());
+	}
+
+	@Test
+	public void opensNoScreenWithOnlyOverlays() {
+		this.bridges.open(new OverlayUI("overlay", this.trace));
+		Assert.assertFalse(this.bridges.getUi().isScreenOpen());
+		Assert.assertFalse(this.bridges.getUi().isOverlayHidden());
+	}
+
 	private static float depth() {
 		return ((RenderBridge) BridgeHandler.RENDER.get()).getModelView().getMatrix()[14];
 	}
@@ -593,6 +767,35 @@ public class UIBridgeTest {
 
 		public PopupUI(final String name, final List<String> trace) {
 			super(name, trace);
+		}
+
+	}
+
+	@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(screens = true))
+	public static final class OverlayUI extends TraceUI {
+
+		public OverlayUI(final String name, final List<String> trace) {
+			super(name, trace);
+		}
+
+	}
+
+	@UIDataOverlay(active = true)
+	public static final class PassiveOverlayUI extends TraceUI {
+
+		public PassiveOverlayUI(final String name, final List<String> trace) {
+			super(name, trace);
+		}
+
+	}
+
+	public static final class HidingBridge extends DemoUIBridge {
+
+		private boolean hidden;
+
+		@Override
+		public boolean isOverlayHidden() {
+			return this.hidden;
 		}
 
 	}

@@ -45,6 +45,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.data.scale.UIDataScale;
@@ -104,6 +105,11 @@ public class UITest {
 		Assert.assertFalse(ui.getDebug().hotreload());
 		Assert.assertFalse(ui.getPopup().active());
 		Assert.assertNull(ui.getTransition());
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesToBeAPopupAndAnOverlay() {
+		new PopupOverlayUI();
 	}
 
 	@Test
@@ -1735,6 +1741,10 @@ public class UITest {
 		}
 
 	}
+
+	@UIDataPopup(active = true)
+	@UIDataOverlay(active = true)
+	public static final class PopupOverlayUI extends UI {}
 
 	@UIDataScale(limited = true, limit = 0.75D)
 	public static final class LimitedScaleUI extends TraceUI {

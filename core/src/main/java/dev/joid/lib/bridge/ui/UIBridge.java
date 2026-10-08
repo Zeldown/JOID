@@ -1,6 +1,7 @@
 package dev.joid.lib.bridge.ui;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import dev.joid.lib.bridge.BridgeHandler;
@@ -9,6 +10,7 @@ import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.overlay.UIDataOverlayObject;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.list.IndexedLinkedList;
@@ -33,89 +35,72 @@ public abstract class UIBridge implements IUIBridge {
 		this.uiList.forEach(ui -> ui.load(width, height, ui.getView().getZoom()));
 	}
 
-	public final void mousePressed(final @NonNull ClickType clickType) {
+	public final boolean mousePressed(final @NonNull ClickType clickType) {
 		this.pressed   = clickType;
 		this.pressTime = BridgeHandler.CLOCK.get().currentTimeMillis();
-		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
-			if (!ui.getData().active() || !ui.getData().visible()) {
-				continue;
-			}
-
+		for (final UI ui : this.getInputList()) {
 			if (ui.onMousePressed(clickType) || ui.getPopup().active()) {
-				break;
+				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 			}
 		}
+		return false;
 	}
 
-	public final void mouseMoved() {
+	public final boolean mouseMoved() {
 		if (this.pressed == null) {
-			return;
+			return false;
 		}
 
 		final ClickType clickType = this.pressed;
 		final long deltaTime = BridgeHandler.CLOCK.get().currentTimeMillis() - this.pressTime;
-		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
-			if (!ui.getData().active() || !ui.getData().visible()) {
-				continue;
-			}
-
+		for (final UI ui : this.getInputList()) {
 			if (ui.onMouseDragged(clickType, deltaTime) || ui.getPopup().active()) {
-				break;
+				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 			}
 		}
+		return false;
 	}
 
-	public final void mouseReleased(final @NonNull ClickType clickType) {
+	public final boolean mouseReleased(final @NonNull ClickType clickType) {
 		if (this.pressed == clickType) {
 			this.pressed = null;
 		}
 
-		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
-			if (!ui.getData().active() || !ui.getData().visible()) {
-				continue;
-			}
-
+		for (final UI ui : this.getInputList()) {
 			if (ui.onMouseReleased(clickType) || ui.getPopup().active()) {
-				break;
+				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 			}
 		}
+		return false;
 	}
 
-	public final void mouseScroll(final double notches) {
+	public final boolean mouseScroll(final double notches) {
 		if (notches == 0D) {
-			return;
+			return false;
 		}
 
-		for (final UI ui : new ArrayList<>(this.uiList.reversed())) {
-			if (!ui.getData().active() || !ui.getData().visible()) {
-				continue;
-			}
-
+		for (final UI ui : this.getInputList()) {
 			if (ui.onMouseScroll(notches) || ui.getPopup().active()) {
-				break;
+				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelScroll());
 			}
 		}
+		return false;
 	}
 
-	public final void keyTyped(final char c, final @NonNull Key key) {
-		final List<UI> uiList = this.uiList.reversed();
-		for (int i = 0; i < uiList.size(); i++) {
-			final UI ui = uiList.get(i);
-			if (!ui.getData().active() || !ui.getData().visible()) {
-				continue;
-			}
-
-			if (key == Key.ESCAPE && ui.getData().closeable()) {
+	public final boolean keyTyped(final char c, final @NonNull Key key) {
+		for (final UI ui : this.getInputList()) {
+			if (key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active()) {
 				if (!ui.onKeyPressed(c, key) && ui.onClose()) {
 					this.close(ui);
 				}
-				return;
+				return true;
 			}
 
 			if (ui.onKeyPressed(c, key) || ui.getPopup().active()) {
-				break;
+				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
 			}
 		}
+		return false;
 	}
 
 	public final void update() {
@@ -132,7 +117,6 @@ public abstract class UIBridge implements IUIBridge {
 				return;
 			}
 
-			this.uiList.sort();
 			final IWindowBridge window = BridgeHandler.WINDOW.get();
 			final IRenderBridge render = BridgeHandler.RENDER.get();
 
@@ -140,8 +124,8 @@ public abstract class UIBridge implements IUIBridge {
 			render.pushMatrix();
 			try {
 				render.translate(0D, 0D, -2000D);
-				for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
-					if (!ui.getData().visible()) {
+				for (final UI ui : this.getLayerList()) {
+					if (!ui.getData().visible() || !this.isShown(ui)) {
 						continue;
 					}
 
@@ -166,18 +150,68 @@ public abstract class UIBridge implements IUIBridge {
 
 	@Override
 	public boolean isOnTop(final @NonNull UI ui) {
-		for (final UI current : this.uiList.reversed()) {
-			if (current.getData().active() && current.getData().visible()) {
+		for (final UI current : this.getInputList()) {
+			if (current.getOverlay().active() == ui.getOverlay().active()) {
 				return current == ui;
 			}
 		}
-
 		return false;
 	}
 
 	@Override
 	public boolean isOpened(final @NonNull UI ui) {
 		return this.uiList.contains(ui);
+	}
+
+	public boolean isScreenOpen() {
+		return this.hasScreen();
+	}
+
+	public boolean isOverlayHidden() {
+		return false;
+	}
+
+	protected final boolean hasScreen() {
+		for (final UI ui : this.uiList) {
+			if (!ui.getOverlay().active()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isShown(final UI ui) {
+		final UIDataOverlayObject overlay = ui.getOverlay();
+		return !overlay.active() || (overlay.render().always() || !this.isOverlayHidden()) && (overlay.render().screens() || !this.isScreenOpen());
+	}
+
+	private List<UI> getLayerList() {
+		this.uiList.sort();
+		final List<UI> layerList = new ArrayList<>();
+		final List<UI> overlayList = new ArrayList<>();
+		for (final UI ui : this.uiList.ordered()) {
+			(ui.getOverlay().active() ? overlayList : layerList).add(ui);
+		}
+
+		overlayList.sort(Comparator.comparingInt(ui -> ui.getOverlay().render().zindex()));
+		layerList.addAll(overlayList);
+		return layerList;
+	}
+
+	private List<UI> getInputList() {
+		final List<UI> inputList = new ArrayList<>();
+		final List<UI> layerList = this.getLayerList();
+		for (int i = layerList.size() - 1; i >= 0; i--) {
+			final UI ui = layerList.get(i);
+			if (ui.getData().active() && ui.getData().visible() && this.isShown(ui) && (!ui.getOverlay().active() || ui.getOverlay().interaction().active())) {
+				inputList.add(ui);
+			}
+		}
+		return inputList;
+	}
+
+	private static boolean isConsumed(final UI ui, final boolean cancel) {
+		return !ui.getOverlay().active() || cancel;
 	}
 
 }

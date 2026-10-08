@@ -159,7 +159,7 @@ loop.run();
 
 ## Feeding input events
 
-`UIBridge` provides the event methods; call them from the thread that draws.
+`UIBridge` provides the event methods; call them from the thread that draws. Each one returns `true` when a UI consumed the event, so the host can skip its own handling (see [Overlays and the host](#overlays-and-the-host)).
 
 | Method | When to call it | Argument |
 |---|---|---|
@@ -174,7 +174,7 @@ loop.run();
 
 ## Event dispatch and Escape
 
-Each event goes to the UIs from the top one down. Inactive or hidden UIs are skipped. The dispatch stops at the first UI that cancels the event, and at the first UI that is an active [popup](../ui/managing-uis.md), so the UIs below a popup receive nothing. See [Mouse and Keyboard](../interactions/mouse-and-keyboard.md) for what nodes do with these events.
+Each event goes to the UIs from the top one down, the [overlays](../ui/managing-uis.md#overlays-with-uidataoverlay) first. Inactive or hidden UIs are skipped, and so are the overlays without interaction and the overlays that are not drawn. The dispatch stops at the first UI that cancels the event, and at the first UI that is an active [popup](../ui/managing-uis.md), so the UIs below a popup receive nothing. See [Mouse and Keyboard](../interactions/mouse-and-keyboard.md) for what nodes do with these events.
 
 ![Diagram of the dispatch: events go from the top UI down, skip inactive UIs and stop at the first UI that cancels them; Escape goes to the top closeable UI first and closes it only when nothing consumed it and onClose accepts](../images/diagram-ui-bridge-dispatch.png "Events go down the UI list; Escape reaches the UI before it closes")
 
@@ -184,7 +184,26 @@ When `keyTyped` with `Key.ESCAPE` reaches an active, visible UI that is `closeab
 2. When one of them consumes it, the UI stays open. A focused text field does: it restores the text it had before the focus and loses the focus. A second Escape then reaches step 3.
 3. Otherwise `ui.onClose()` runs; when it accepts, the bridge calls `close(ui)`. When it refuses (`close()` returns `false`, or an out [transition](../ui/transitions.md) starts or runs), the key is consumed anyway.
 
-The key goes no further than that closeable UI. A UI that is not `closeable` receives Escape like any other key.
+The key goes no further than that closeable UI. A UI that is not `closeable`, or an overlay, receives Escape like any other key.
+
+## Overlays and the host
+
+An [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) is a UI drawn over the host application, which takes the input or lets it through. `UIBridge` handles them without any code from you: it draws them above the other UIs, by `zindex`, gives them the input first, and hides those that the host or the open screens hide. What the host provides:
+
+| Method | Default | Override it to |
+|---|---|---|
+| `isScreenOpen()` | `true` while the bridge holds a UI that is not an overlay (`hasScreen()`). | Also count the screens of the host, such as a game menu: an overlay without `render = @UIDataOverlayRender(screens = true)` is hidden while one is open. |
+| `isOverlayHidden()` | `false`. | Return `true` while the host hides its interface: only the overlays with `render = @UIDataOverlayRender(always = true)` stay. |
+
+Read the result of each input method: it is `true` when a UI consumed the event, `false` when no UI did, or when an overlay consumed it with the `cancelClick`, `cancelScroll` or `cancelKeyboard` of that kind of event turned off. Forward the event to the host only when it is `false`:
+
+```java
+if (!this.bridge.mousePressed(ClickType.from(button))) {
+	this.game.mousePressed(button);
+}
+```
+
+Where and when the host draws its overlays (above its own interface, in a layer of its own) belongs to the backend: draw them with `draw()` at that place, from a bridge that holds only overlays if your host draws its screens elsewhere.
 
 ## The frame: load, update and draw
 
@@ -229,7 +248,7 @@ The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), the
 
 | Method | Default |
 |---|---|
-| `isOnTop(UI ui)` | `true` for the first active and visible UI from the top of the sorted list (`zlevel`, then opening order); `false` when no UI is open. A hidden or inactive UI above, such as a notification layer with `active = false`, leaves hover and tooltips to the UI below. |
+| `isOnTop(UI ui)` | `true` for the first active and visible UI from the top of the sorted list (`zlevel`, then opening order); `false` when no UI is open. A hidden or inactive UI above, such as a notification layer with `active = false`, leaves hover and tooltips to the UI below. Overlays have their own top UI, among the overlays that take input. |
 | `isOpened(UI ui)` | Whether the UI is in `getUiList()`. |
 | `getUiList()` | The sorted list of UIs, an `IndexedLinkedList<UI>`. |
 | `getInterfaceScale(UI ui)` | `1`. See [Interface scale with getInterfaceScale](#interface-scale-with-getinterfacescale). |
@@ -275,7 +294,7 @@ A host that lets its users scale the interface (a game GUI scale, an accessibili
 ```java
 @Override
 public double getInterfaceScale(final @NonNull UI ui) {
-	return ui instanceof UIHud ? this.settings.getHudScale() : 1D;
+	return ui.getOverlay().active() ? this.settings.getOverlayScale() : 1D;
 }
 ```
 
@@ -320,12 +339,13 @@ JOID.open(new UISettings());
 | `load()` | Loads every UI again at the window size, keeping its zoom. |
 | `update()` | Updates every UI, bottom up. |
 | `draw()` | Draws every visible UI, bottom up. |
-| `mousePressed(ClickType)`, `mouseReleased(ClickType)` | A button goes down or up. |
+| `mousePressed(ClickType)`, `mouseReleased(ClickType)` | A button goes down or up. Like every input method, returns whether a UI consumed it. |
 | `mouseMoved()` | The mouse moves; a drag when a button is held, timed on `BridgeHandler.CLOCK`. |
 | `mouseScroll(double notches)` | The wheel turns, in notches. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |
 | `getUiList()` | The sorted `IndexedLinkedList<UI>`. |
 | `isOnTop(UI)`, `isOpened(UI)` | See [Methods you implement](#methods-you-implement). |
+| `isScreenOpen()`, `isOverlayHidden()`, `hasScreen()` | See [Overlays and the host](#overlays-and-the-host). |
 
 ## Pitfalls
 

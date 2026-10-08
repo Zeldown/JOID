@@ -6,3 +6,14 @@ shot popup-open
 key LEFT_CONTROL+K
 wait 500
 shot popup-stacked
+ui dev.joid.demo.ui.UIDemoChoice
+wait 1500
+key LEFT_CONTROL+O
+wait 500
+shot popup-overlay
+move 1520 520
+press LEFT
+moveto 1320 420 300
+release LEFT
+wait 300
+shot popup-overlay-dragged

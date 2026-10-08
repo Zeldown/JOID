@@ -32,6 +32,7 @@ import dev.joid.lib.render.context.Drawing;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.data.UIDataObject;
 import dev.joid.lib.ui.core.data.debug.UIDataDebugObject;
+import dev.joid.lib.ui.core.data.overlay.UIDataOverlayObject;
 import dev.joid.lib.ui.core.data.popup.UIDataPopupObject;
 import dev.joid.lib.ui.core.data.scale.UIDataScaleObject;
 import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
@@ -74,16 +75,18 @@ public abstract class UI implements IUI, IndexedElement {
 	private final DoubleSignal scaledWidth;
 	private final DoubleSignal scaledHeight;
 
-	@NonNull private final UIDataObject      data;
-	@NonNull private final UIDataDebugObject debug;
-	@NonNull private final UIDataPopupObject popup;
-	@NonNull private final UIDataScaleObject scale;
+	@NonNull private final UIDataObject        data;
+	@NonNull private final UIDataDebugObject   debug;
+	@NonNull private final UIDataPopupObject   popup;
+	@NonNull private final UIDataScaleObject   scale;
+	@NonNull private final UIDataOverlayObject overlay;
 
-	@NonNull private UIDataObject      annotatedData;
-	@NonNull private UIDataDebugObject annotatedDebug;
-	@NonNull private UIDataPopupObject annotatedPopup;
-	@NonNull private UIDataScaleObject annotatedScale;
-	@NonNull private UIDataPopupObject transitionPopup;
+	@NonNull private UIDataObject        annotatedData;
+	@NonNull private UIDataDebugObject   annotatedDebug;
+	@NonNull private UIDataPopupObject   annotatedPopup;
+	@NonNull private UIDataScaleObject   annotatedScale;
+	@NonNull private UIDataPopupObject   transitionPopup;
+	@NonNull private UIDataOverlayObject annotatedOverlay;
 
 	private transient Transition                             transition;
 	private transient FileAlterationMonitor                  fileMonitor;
@@ -110,15 +113,21 @@ public abstract class UI implements IUI, IndexedElement {
 	private Node devNode;
 
 	public UI() {
-		this.annotatedData   = UIDataObject.getOrDefault(this.getClass());
-		this.annotatedDebug  = UIDataDebugObject.getOrDefault(this.getClass());
-		this.annotatedPopup  = UIDataPopupObject.getOrDefault(this.getClass());
-		this.annotatedScale  = UIDataScaleObject.getOrDefault(this.getClass());
-		this.data            = new UIDataObject(this.annotatedData);
-		this.debug           = new UIDataDebugObject(this.annotatedDebug);
-		this.popup           = new UIDataPopupObject(this.annotatedPopup);
-		this.scale           = new UIDataScaleObject(this.annotatedScale);
-		this.transitionPopup = new UIDataPopupObject(this.popup);
+		this.annotatedData    = UIDataObject.getOrDefault(this.getClass());
+		this.annotatedDebug   = UIDataDebugObject.getOrDefault(this.getClass());
+		this.annotatedPopup   = UIDataPopupObject.getOrDefault(this.getClass());
+		this.annotatedScale   = UIDataScaleObject.getOrDefault(this.getClass());
+		this.annotatedOverlay = UIDataOverlayObject.getOrDefault(this.getClass());
+		this.data             = new UIDataObject(this.annotatedData);
+		this.debug            = new UIDataDebugObject(this.annotatedDebug);
+		this.popup            = new UIDataPopupObject(this.annotatedPopup);
+		this.scale            = new UIDataScaleObject(this.annotatedScale);
+		this.overlay          = new UIDataOverlayObject(this.annotatedOverlay);
+		this.transitionPopup  = new UIDataPopupObject(this.popup);
+
+		if (this.popup.active() && this.overlay.active()) {
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time");
+		}
 
 		this.stencilStack = new Stack<>();
 		this.keybindMap = new HashMap<>();
@@ -648,14 +657,17 @@ public abstract class UI implements IUI, IndexedElement {
 		final UIDataDebugObject debug = UIDataDebugObject.getOrDefault(this.getClass());
 		final UIDataPopupObject popup = UIDataPopupObject.getOrDefault(this.getClass());
 		final UIDataScaleObject scale = UIDataScaleObject.getOrDefault(this.getClass());
+		final UIDataOverlayObject overlay = UIDataOverlayObject.getOrDefault(this.getClass());
 		this.data.update(this.annotatedData, data);
 		this.debug.update(this.annotatedDebug, debug);
 		this.popup.update(this.annotatedPopup, popup);
 		this.scale.update(this.annotatedScale, scale);
-		this.annotatedData  = data;
-		this.annotatedDebug = debug;
-		this.annotatedPopup = popup;
-		this.annotatedScale = scale;
+		this.overlay.update(this.annotatedOverlay, overlay);
+		this.annotatedData    = data;
+		this.annotatedDebug   = debug;
+		this.annotatedPopup   = popup;
+		this.annotatedScale   = scale;
+		this.annotatedOverlay = overlay;
 	}
 
 	private void refreshView() {

@@ -39,7 +39,7 @@ The hook runs for `JOID.close(ui)`, Escape and bridges that call `ui.onClose()`.
 `JOID.open` and `JOID.close` only call the bridge's `open` and `close`; the bridge decides what they mean. `UIBridge` (`dev.joid.lib.bridge.ui`), the base class of UI bridges, leaves `open`, `close`, `add` and `remove` to you:
 
 - A simple bridge adds every opened UI on top of the others and removes the closed ones (the bridge of the [Quick Start](../getting-started/quick-start.md)).
-- `DemoUIBridge`, the bridge of the demo window, closes the open UIs (through `onClose()`) before it opens a UI that is not a popup. If one of them refuses, the new UI is not opened; if one plays an Out transition, the new UI opens when the transition ends. A popup opens on top without closing anything.
+- `DemoUIBridge`, the bridge of the demo window, closes the open UIs (through `onClose()`) before it opens a UI that is neither a popup nor an [overlay](#overlays-with-uidataoverlay). If one of them refuses, the new UI is not opened; if one plays an Out transition, the new UI opens when the transition ends. A popup or an overlay opens without closing anything, and the overlays stay open when another UI opens.
 
 The bridge loads a UI it adds with `ui.load(width, height)`. See [UI Bridge](../integration/ui-bridge.md).
 
@@ -55,6 +55,8 @@ A `UIBridge` keeps its UIs in `getUiList()`, an `IndexedLinkedList<UI>` sorted b
 | Update | Every UI, from the first to the last. |
 | Input | From the last UI to the first, skipping UIs that are not `active` or not `visible`. The event stops at the first UI that consumes it, or at a popup. |
 
+[Overlays](#overlays-with-uidataoverlay) come after every other UI in these orders: they are drawn above them and receive the input first.
+
 Give a UI a `zlevel` to keep it below or above the UIs opened later, for example a background below the menus and a notification layer above them:
 
 ```java
@@ -69,7 +71,7 @@ public class ToastUI extends UI {}
 
 ### The top UI with isOnTop
 
-`UIBridge.isOnTop(ui)` returns `true` for the first UI that is both active and visible, from the top of the list. A hidden or inactive layer above, such as the `ToastUI` above, does not take that place. Only the top UI draws node tooltips and shows the DevNode; `ui.isOnTop()` reads the answer of the last draw. A bridge overrides `isOnTop` only for a rule of its own.
+`UIBridge.isOnTop(ui)` returns `true` for the first UI that is both active and visible, from the top of the list. A hidden or inactive layer above, such as the `ToastUI` above, does not take that place. Overlays and the other UIs each have their own top UI: an overlay never takes the place of the UI below it, and an overlay that takes no input is never on top. Only the top UI draws node tooltips and shows the DevNode; `ui.isOnTop()` reads the answer of the last draw. A bridge overrides `isOnTop` only for a rule of its own.
 
 ### Active, visible and closeable at runtime
 
@@ -93,8 +95,8 @@ When Escape is pressed, `UIBridge.keyTyped` goes through the active and visible 
 
 ![Escape goes to the top active and visible UI; a closeable UI gets it as a key, then closes if nothing consumed it, and Escape stops; a UI that is not closeable gets it as a normal key, and Escape goes to the next UI below unless it was consumed or the UI is a popup](../images/diagram-ui-escape.png "The path of Escape: it stops at the first closeable UI, at a UI that consumes it, or at a popup.")
 
-1. A closeable UI first receives Escape as a key press: its nodes, keybinds, zoom and dev keys and `keyPressed`. If none of them consumes it, the bridge asks the UI to close (`onClose()`) and closes it when it agrees. In both cases Escape goes no further.
-2. A UI that is not closeable receives Escape as a normal key. If it consumes it, or if the UI is a popup, Escape stops; otherwise the next UI below gets the same treatment.
+1. A closeable UI that is not an overlay first receives Escape as a key press: its nodes, keybinds, zoom and dev keys and `keyPressed`. If none of them consumes it, the bridge asks the UI to close (`onClose()`) and closes it when it agrees. In both cases Escape goes no further.
+2. A UI that is not closeable, or an overlay, receives Escape as a normal key. If it consumes it, or if the UI is a popup, Escape stops; otherwise the next UI below gets the same treatment.
 
 So a focused text field cancels its edit on the first Escape and the UI closes on the second one, a keybind on `Key.ESCAPE` keeps a closeable UI open, and a popup always stops Escape from reaching the UIs below. A UI that refuses to close (its `close()` returns `false`, or its Out transition plays) still consumes Escape.
 
@@ -128,6 +130,63 @@ A popup:
 
 `getPopup()` returns the options as a `UIDataPopupObject` with `setActive(boolean)` and `setTransition(PopupTransition)`. A change applies from the next frame: the UI creates or removes its pop transition. `PopupTransition` has `isIn()`, `isOut()` and `isActive()` (`true` unless `NONE`).
 
+## Overlays with @UIDataOverlay
+
+An overlay is a UI drawn over the application that hosts JOID and over its other UIs: a minimap, a notification panel, a heads-up counter. It stays open while the other UIs open and close, and it takes the input or lets it through. `@UIDataOverlay` (`dev.joid.lib.ui.core.data.overlay`) marks it:
+
+```java
+@UIData(background = false)
+@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(screens = true))
+public class MinimapOverlay extends UI {
+
+	@Override
+	public void init() {
+		RectNode.create(1560, 40, 320, 260).color(Color.decode("#DDDDDD")).draggable(DraggableProperty.screen()).attach(this);
+	}
+
+}
+```
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `active` | `false` | Whether the UI is an overlay. |
+| `interaction` | `@UIDataOverlayInteraction` | Whether the overlay receives the input, and which events it keeps from the host. |
+| `render` | `@UIDataOverlayRender` | When the overlay is drawn, and its order among the overlays. |
+
+`@UIDataOverlayInteraction` (`.interaction`):
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `active` | `false` | Whether the overlay receives the input. When `false`, every event goes through it to the UIs below and to the host. |
+| `cancelClick` | `true` | Whether a press, a drag or a release that the overlay consumes is kept from the host. |
+| `cancelScroll` | `true` | The same for the wheel. |
+| `cancelKeyboard` | `true` | The same for the keys. |
+
+`@UIDataOverlayRender` (`.render`):
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `always` | `false` | Whether the overlay is drawn even while the host hides its overlays, for example when the player of a game hides the interface. |
+| `screens` | `false` | Whether the overlay is drawn while a screen is open: a UI of the bridge that is not an overlay, or a screen of the host. When `false`, the overlay is hidden and takes no input while a screen is open. |
+| `zindex` | `0` | The order among the overlays: the highest one is drawn on top and receives the input first. Overlays with the same `zindex` keep their opening order. |
+
+An overlay:
+
+- is drawn above the UIs that are not overlays, whatever their `zlevel`, and receives the input before them;
+- does not close on Escape: it receives Escape as a normal key, and the UI below closes as usual;
+- cannot be a popup: a UI with both `@UIDataPopup(active = true)` and `@UIDataOverlay(active = true)` throws an `IllegalStateException` when it is created.
+
+The bridge methods that receive the input return whether the event was consumed, so the host knows whether to handle it too: an event that an overlay consumes counts only when its `cancelClick`, `cancelScroll` or `cancelKeyboard` is `true`. See [UI Bridge](../integration/ui-bridge.md#overlays-and-the-host).
+
+`getOverlay()` returns the options as a `UIDataOverlayObject`: `setActive(boolean)`, and `interaction()` and `render()`, which return the `UIDataOverlayInteractionObject` (`setActive`, `setCancelClick`, `setCancelScroll`, `setCancelKeyboard`) and the `UIDataOverlayRenderObject` (`setAlways`, `setScreens`, `setZindex`). A change applies from the next event or frame:
+
+```java
+this.getOverlay().interaction().setActive(false);
+this.getOverlay().render().setZindex(10);
+```
+
+In the demo window, Ctrl + O on the demo menu opens and closes an overlay that you can drag over the demos.
+
 ## Reference
 
 | Method | Description |
@@ -156,6 +215,7 @@ All of them throw a `NullPointerException` for a `null` argument.
 - `zlevel` is rounded down for the order: `0.5D` and `0D` share the same index and keep their opening order.
 - A popup stops every event that reaches it, even one it does not use: keep popups small in number and close them.
 - A `ToastUI` with `active = false` gets no input at all: it cannot have clickable nodes.
+- An overlay without `interaction = @UIDataOverlayInteraction(active = true)` gets no input either, and one without `render = @UIDataOverlayRender(screens = true)` disappears as soon as another UI opens.
 
 ## See also
 

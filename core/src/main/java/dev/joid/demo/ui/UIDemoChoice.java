@@ -14,6 +14,7 @@ import dev.joid.demo.ui.font.UIDemoText;
 import dev.joid.demo.ui.layout.UIDemoLayout;
 import dev.joid.demo.ui.model.UIDemoModel;
 import dev.joid.demo.ui.overflow.UIDemoOverflow;
+import dev.joid.demo.ui.popup.UIDemoOverlay;
 import dev.joid.demo.ui.popup.UIDemoPopup;
 import dev.joid.demo.ui.reorderable.UIDemoReorderable;
 import dev.joid.demo.ui.resource.UIDemoPlayer;
@@ -112,6 +113,15 @@ public class UIDemoChoice extends UI {
 		this.keybind(() -> {
 			JOID.open(new UIDemoPopup());
 		}, Key.K, Key.LEFT_CONTROL);
+
+		this.keybind(() -> {
+			final UIDemoOverlay overlay = JOID.getUI(UIDemoOverlay.class);
+			if (overlay != null) {
+				JOID.close(overlay);
+			} else {
+				JOID.open(new UIDemoOverlay());
+			}
+		}, Key.O, Key.LEFT_CONTROL);
 	}
 
 }

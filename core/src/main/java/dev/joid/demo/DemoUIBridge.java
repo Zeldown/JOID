@@ -16,8 +16,12 @@ public class DemoUIBridge extends UIBridge {
 
 	@Override
 	public void open(final @NonNull UI ui) {
-		if (!ui.getPopup().active()) {
+		if (!ui.getPopup().active() && !ui.getOverlay().active()) {
 			for (final UI currentUi : super.getUiList()) {
+				if (currentUi.getOverlay().active()) {
+					continue;
+				}
+
 				final boolean result = currentUi.onClose();
 				if (currentUi.getTransition() != null && currentUi.getTransition().getOut() != null && currentUi.getTransition().getOut().isRunning()) {
 					currentUi.getTransition().getOut().getAnimator().setCallback(tween -> {

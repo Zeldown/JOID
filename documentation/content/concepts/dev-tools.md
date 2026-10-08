@@ -49,7 +49,7 @@ The dev shortcuts read the left `Ctrl` and the left `Shift`. The zoom stays betw
 | Fields and signals | Kept | New |
 | `@UIProperty` fields | Saved, then read again | Saved by the replaced UI, read by the new one |
 | Stores | Kept | The replaced UI closes properly: stores saved, `LOCAL` stores destroyed |
-| `@UIData`, `@UIDataDebug`, `@UIDataPopup`, `@UIDataScale` | Only the values whose annotation changed are applied; values set at runtime are kept | Read from the annotations |
+| `@UIData`, `@UIDataDebug`, `@UIDataPopup`, `@UIDataScale`, `@UIDataOverlay` | Only the values whose annotation changed are applied; values set at runtime are kept | Read from the annotations |
 | Nodes | Detached (drags, hovers and focus end), keybinds and scheduled tasks cleared, then `init()` and the In transition run again | Built by `init()` of the new instance |
 | Zoom | Kept | 1 |
 | In the bridge | Unchanged | `bridge.remove(ui)`, then `bridge.add(fresh)`, without transition or `close()` |

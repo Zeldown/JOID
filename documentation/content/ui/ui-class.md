@@ -35,7 +35,7 @@ public class MenuUI extends UI {
 
 | Stage | Trigger | What happens |
 | --- | --- | --- |
-| Construction | `new MyUI()` | Reads `@UIData`, `@UIDataDebug`, `@UIDataPopup` and `@UIDataScale` (each one on the class or its nearest annotated superclass), creates the view and, for a popup, its default transition. No node exists yet. |
+| Construction | `new MyUI()` | Reads `@UIData`, `@UIDataDebug`, `@UIDataPopup`, `@UIDataScale` and `@UIDataOverlay` (each one on the class or its nearest annotated superclass), creates the view and, for a popup, its default transition. No node exists yet. |
 | First load | The bridge adds the UI and calls `load(width, height)` | Sizes the view to the window at zoom 1, restores the [`@UIProperty`](../state/properties.md) fields, clears what was added before, runs `init()`, then starts the In state of the [transition](transitions.md). In dev mode, also adds the DevNode and starts hot reload. |
 | Frames | The bridge | Input hooks, `update()`, then the draw. See [The Frame Loop](../concepts/frame-loop.md). |
 | Resize | `UIBridge.load()`, called by the backend when the window changes | `load(width, height, zoom)` resizes the view and keeps the current zoom. `init()` does not run again. |

@@ -205,15 +205,15 @@ public void keyPressed(final char c, final Key key, final InternalContext contex
 
 The UI bridge receives the events from the backend through `UIBridge.mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseMoved()`, `mouseScroll(double)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
 
-1. The UI bridge walks its UIs from the top one down, skipping the UIs that are not active or not visible (`active` and `visible` of `@UIData`, readable and changeable through `ui.getData()`). A wheel event with a value of `0` is dropped.
-2. Key events only, on `Key.ESCAPE` in a closeable UI (`closeable`, `true` by default): the UI first receives the key like any other (steps 3 to 5: a focused text field cancels its edit and consumes it, a keybind on `ESCAPE` consumes it). When nobody consumed it, the UI is asked to close (`close()` may refuse, see [Opening and Closing UIs](../ui/managing-uis.md)). Either way the dispatch stops there: the UIs below never receive that Escape. A UI that is not closeable receives Escape as a normal key.
+1. The UI bridge walks its UIs from the top one down, the [overlays](../ui/managing-uis.md#overlays-with-uidataoverlay) first, skipping the UIs that are not active or not visible (`active` and `visible` of `@UIData`, readable and changeable through `ui.getData()`) and the overlays that take no input or are not drawn. A wheel event with a value of `0` is dropped.
+2. Key events only, on `Key.ESCAPE` in a closeable UI (`closeable`, `true` by default) that is not an overlay: the UI first receives the key like any other (steps 3 to 5: a focused text field cancels its edit and consumes it, a keybind on `ESCAPE` consumes it). When nobody consumed it, the UI is asked to close (`close()` may refuse, see [Opening and Closing UIs](../ui/managing-uis.md)). Either way the dispatch stops there: the UIs below never receive that Escape. A UI that is not closeable receives Escape as a normal key.
 3. The UI dispatches the event to its nodes, front to back (see [Callbacks](callbacks.md#input-events-across-nodes) for the order inside a node). Events that arrive before the UI finished its first initialization are ignored.
 4. Key events only, when no node consumed the event:
    1. the keybinds (see above);
    2. when the UI is zoomable (`zoomable`, `true` by default) and the event is still not consumed: `+` or `NUMPAD_ADD` with Ctrl or Alt zooms in by `0.1`, `-` or `NUMPAD_SUBTRACT` with Ctrl or Alt zooms out by `0.1`; the event is consumed when the zoom changed;
    3. in dev mode, when the event is still not consumed: Left Ctrl + R or F5 reloads the UI (`UI.reload()`: same instance, fields and signals kept); with Left Shift held (Ctrl + Shift + R, Shift + F5) the UI is replaced by a new instance (`UI.renew()`, zoom back to `1`); F3 shows or hides the developer panel (see [Developer Tools](../concepts/dev-tools.md)).
 5. The UI hook (`mousePressed`, `keyPressed`...) runs with the context.
-6. When the event is consumed, or the UI is a popup (`@UIDataPopup(active = true)`, see [Opening and Closing UIs](../ui/managing-uis.md)), the dispatch stops; otherwise the next UI below receives it.
+6. When the event is consumed, or the UI is a popup (`@UIDataPopup(active = true)`, see [Opening and Closing UIs](../ui/managing-uis.md)), the dispatch stops; otherwise the next UI below receives it. The bridge method returns whether the event was consumed, so the host can skip it; an event consumed by an overlay whose `cancelClick`, `cancelScroll` or `cancelKeyboard` is off still goes to the host.
 
 Wheel events in dev mode: with Left Alt held, the wheel zooms the UI (in larger steps with Left Shift) and the event goes no further.
 
