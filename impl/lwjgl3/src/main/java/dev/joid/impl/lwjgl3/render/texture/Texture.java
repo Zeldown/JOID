@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL12C;
 import org.lwjgl.opengl.GL30C;
 
 import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.bridge.render.texture.MipmapChain;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -81,18 +82,14 @@ public final class Texture implements ITexture {
 	}
 
 	private void generateMipmaps() {
-		final int levels = 32 - Integer.numberOfLeadingZeros(Math.max(this.width, this.height));
-		if (this.levels != levels) {
-			int levelWidth = this.width;
-			int levelHeight = this.height;
-			for (int level = 1; level < levels; level++) {
-				levelWidth = Math.max(1, levelWidth / 2);
-				levelHeight = Math.max(1, levelHeight / 2);
-				GL11C.glTexImage2D(GL11C.GL_TEXTURE_2D, level, GL11C.GL_RGBA8, levelWidth, levelHeight, 0, GL12C.GL_BGRA, GL12C.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer) null);
+		final MipmapChain chain = MipmapChain.of(this.width, this.height, true);
+		if (this.levels != chain.getLevels()) {
+			for (int level = 1; level < chain.getLevels(); level++) {
+				GL11C.glTexImage2D(GL11C.GL_TEXTURE_2D, level, GL11C.GL_RGBA8, chain.getWidth(level), chain.getHeight(level), 0, GL12C.GL_BGRA, GL12C.GL_UNSIGNED_INT_8_8_8_8_REV, (IntBuffer) null);
 			}
 
-			GL11C.glTexParameteri(GL11C.GL_TEXTURE_2D, GL12C.GL_TEXTURE_MAX_LEVEL, levels - 1);
-			this.levels = levels;
+			GL11C.glTexParameteri(GL11C.GL_TEXTURE_2D, GL12C.GL_TEXTURE_MAX_LEVEL, chain.getLevels() - 1);
+			this.levels = chain.getLevels();
 		}
 
 		final int read = GL11C.glGetInteger(GL30C.GL_READ_FRAMEBUFFER_BINDING);
@@ -104,17 +101,11 @@ public final class Texture implements ITexture {
 		try {
 			GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, source);
 			GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, target);
-			int levelWidth = this.width;
-			int levelHeight = this.height;
-			for (int level = 1; level < levels; level++) {
-				final int nextWidth = Math.max(1, levelWidth / 2);
-				final int nextHeight = Math.max(1, levelHeight / 2);
+			chain.forEachStep((level, sourceWidth, sourceHeight, targetWidth, targetHeight) -> {
 				GL30C.glFramebufferTexture2D(GL30C.GL_READ_FRAMEBUFFER, GL30C.GL_COLOR_ATTACHMENT0, GL11C.GL_TEXTURE_2D, this.id, level - 1);
 				GL30C.glFramebufferTexture2D(GL30C.GL_DRAW_FRAMEBUFFER, GL30C.GL_COLOR_ATTACHMENT0, GL11C.GL_TEXTURE_2D, this.id, level);
-				GL30C.glBlitFramebuffer(0, 0, levelWidth, levelHeight, 0, 0, nextWidth, nextHeight, GL11C.GL_COLOR_BUFFER_BIT, GL11C.GL_LINEAR);
-				levelWidth = nextWidth;
-				levelHeight = nextHeight;
-			}
+				GL30C.glBlitFramebuffer(0, 0, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight, GL11C.GL_COLOR_BUFFER_BIT, GL11C.GL_LINEAR);
+			});
 		} finally {
 			GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, read);
 			GL30C.glBindFramebuffer(GL30C.GL_DRAW_FRAMEBUFFER, draw);
