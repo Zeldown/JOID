@@ -30,8 +30,8 @@ import dev.joid.impl.vulkan.render.buffer.Stream;
 import dev.joid.impl.vulkan.render.descriptor.DescriptorCache;
 import dev.joid.impl.vulkan.render.framebuffer.FrameBuffer;
 import dev.joid.impl.vulkan.render.pipeline.PipelineCache;
+import dev.joid.impl.vulkan.render.shader.GlslShaderTranslator;
 import dev.joid.impl.vulkan.render.shader.Shader;
-import dev.joid.impl.vulkan.render.shader.ShaderTranslator;
 import dev.joid.impl.vulkan.render.texture.Texture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.DepthRange;
@@ -376,8 +376,8 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 
 	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final Shader shader, final boolean color) {
 		shader.builtins(state, DepthRange.toZeroToOne(super.getProjection().getMatrix()), super.getModelView())
-		.value(ShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha())
-		.value(ShaderTranslator.VERTEX_COLOR, color)
+		.value(GlslShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha())
+		.value(GlslShaderTranslator.VERTEX_COLOR, color)
 		.pack();
 
 		final long previousBuffer = this.uniformStream.getBuffer().getBuffer();

@@ -1,6 +1,6 @@
 package dev.joid.lib.bridge.render.state;
 
-import dev.joid.lib.bridge.render.shader.source.StencilShaderTranslator;
+import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,12 +29,20 @@ public final class StencilEmulation {
 
 	public void write(final @NonNull UniformBlock block) {
 		block
-		.value(StencilShaderTranslator.STENCIL_TEST, this.test)
-		.value(StencilShaderTranslator.STENCIL_FUNCTION, this.function.ordinal())
-		.value(StencilShaderTranslator.STENCIL_REFERENCE, this.reference)
-		.value(StencilShaderTranslator.STENCIL_MASK, this.mask)
-		.value(StencilShaderTranslator.STENCIL_FAIL, this.fail.ordinal())
-		.value(StencilShaderTranslator.STENCIL_PASS, this.pass.ordinal());
+		.value(GlslShaderTranslator.STENCIL_TEST, this.test)
+		.value(GlslShaderTranslator.STENCIL_FUNCTION, this.function.ordinal())
+		.value(GlslShaderTranslator.STENCIL_REFERENCE, this.reference)
+		.value(GlslShaderTranslator.STENCIL_MASK, this.mask)
+		.value(GlslShaderTranslator.STENCIL_FAIL, this.fail.ordinal())
+		.value(GlslShaderTranslator.STENCIL_PASS, this.pass.ordinal());
+	}
+
+	public enum Pass {
+
+		NONE,
+		TEST,
+		WRITE;
+
 	}
 
 }

@@ -37,7 +37,7 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 	}
 
 	public static @NonNull Shader create(final RenderBridge bridge, final ShaderSource vertexSource, final ShaderSource fragmentSource, final BlendState blend) {
-		final ShaderTranslator translator = ShaderTranslator.create();
+		final GlslShaderTranslator translator = GlslShaderTranslator.create();
 		final UniformBlock block = translator.createBlock(vertexSource, fragmentSource);
 		final List<ShaderVariable> samplers = translator.getSamplers(vertexSource, fragmentSource);
 

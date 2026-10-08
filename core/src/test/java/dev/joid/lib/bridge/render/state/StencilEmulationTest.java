@@ -5,9 +5,11 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.render.shader.source.GlslDialect;
+import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
-import dev.joid.lib.bridge.render.shader.source.StencilShaderTranslator;
+import dev.joid.lib.bridge.render.shader.source.UniformLayout;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 
 public class StencilEmulationTest {
@@ -53,18 +55,18 @@ public class StencilEmulationTest {
 	public void writesItsUniforms() {
 		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = vec4(aPosition, 1.0);\n}\n");
 		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n");
-		final UniformBlock block = StencilShaderTranslator.create().createBlock(vertex, fragment);
+		final UniformBlock block = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST).createBlock(vertex, fragment);
 		final RenderState state = StencilEmulationTest.createState(true, StencilOperation.INVERT);
 		state.setStencilFunction(StencilFunction.NOT_EQUAL);
 		state.setStencilReference(3);
 		StencilEmulation.create(state, true).write(block);
 		block.pack();
-		Assert.assertEquals(1, StencilEmulationTest.read(block, StencilShaderTranslator.STENCIL_TEST));
-		Assert.assertEquals(6, StencilEmulationTest.read(block, StencilShaderTranslator.STENCIL_FUNCTION));
-		Assert.assertEquals(3, StencilEmulationTest.read(block, StencilShaderTranslator.STENCIL_REFERENCE));
-		Assert.assertEquals(0xFF, StencilEmulationTest.read(block, StencilShaderTranslator.STENCIL_MASK));
-		Assert.assertEquals(0, StencilEmulationTest.read(block, StencilShaderTranslator.STENCIL_FAIL));
-		Assert.assertEquals(5, StencilEmulationTest.read(block, StencilShaderTranslator.STENCIL_PASS));
+		Assert.assertEquals(1, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_TEST));
+		Assert.assertEquals(6, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_FUNCTION));
+		Assert.assertEquals(3, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_REFERENCE));
+		Assert.assertEquals(0xFF, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_MASK));
+		Assert.assertEquals(0, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_FAIL));
+		Assert.assertEquals(5, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_PASS));
 	}
 
 	@Test

@@ -10,9 +10,11 @@ import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL31C;
 
 import dev.joid.impl.lwjgl3.render.RenderBridge;
-import dev.joid.lib.bridge.render.shader.source.BlockShaderTranslator;
+import dev.joid.lib.bridge.render.shader.source.GlslDialect;
+import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
+import dev.joid.lib.bridge.render.shader.source.UniformLayout;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
@@ -36,14 +38,14 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 		GL15C.glBufferData(GL31C.GL_UNIFORM_BUFFER, block.getData(), GL15C.GL_DYNAMIC_DRAW);
 		GL15C.glBindBuffer(GL31C.GL_UNIFORM_BUFFER, 0);
 
-		final int index = GL31C.glGetUniformBlockIndex(program, BlockShaderTranslator.BLOCK);
+		final int index = GL31C.glGetUniformBlockIndex(program, GlslShaderTranslator.BLOCK);
 		if (active && index != GL31C.GL_INVALID_INDEX) {
 			GL31C.glUniformBlockBinding(program, index, 0);
 		}
 	}
 
 	public static @NonNull Shader create(final RenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
-		final BlockShaderTranslator translator = BlockShaderTranslator.create();
+		final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
 		final int program = GL20C.glCreateProgram();
 		final boolean active = Shader.link(program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
 		return new Shader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +29,7 @@ public final class ShaderSource {
 	private final List<ShaderVariable> outputs;
 	private final List<ShaderVariable> uniforms;
 	private final List<ShaderVariable> samplers;
+	private final Set<ShaderFeature>   features;
 
 	private String body;
 
@@ -38,6 +40,7 @@ public final class ShaderSource {
 		this.uniforms = new ArrayList<>();
 		this.samplers = new ArrayList<>();
 		this.builtins = EnumSet.noneOf(ShaderBuiltin.class);
+		this.features = EnumSet.noneOf(ShaderFeature.class);
 	}
 
 	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull InputStream stream) {
@@ -76,6 +79,13 @@ public final class ShaderSource {
 			}
 		}
 
+		for (final List<ShaderVariable> variables : Arrays.asList(source.inputs, source.outputs, source.uniforms, source.samplers)) {
+			for (final ShaderVariable variable : variables) {
+				instructions.append(variable.isFlat() ? "flat " : "").append(variable.getDeclaration()).append(";\n");
+			}
+		}
+
+		source.features.addAll(ShaderFeature.find(instructions));
 		source.body = body.toString();
 		return source;
 	}

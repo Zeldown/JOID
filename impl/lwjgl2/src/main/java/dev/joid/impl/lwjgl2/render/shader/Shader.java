@@ -52,7 +52,7 @@ public final class Shader extends UniformShader {
 	}
 
 	public static @NonNull Shader create(final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
-		final ShaderTranslator translator = ShaderTranslator.create();
+		final GlslShaderTranslator translator = GlslShaderTranslator.create();
 		final int program = GL20.glCreateProgram();
 		final boolean active = Shader.link(program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
 		final Shader shader = new Shader(program, blend, active, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));

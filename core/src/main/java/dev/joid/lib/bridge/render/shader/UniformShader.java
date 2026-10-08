@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
-import dev.joid.lib.bridge.render.shader.source.BlockShaderTranslator;
+import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderBuiltin;
 import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
@@ -67,8 +67,8 @@ public abstract class UniformShader implements IShader {
 		.value(ShaderBuiltin.MODEL_VIEW_MATRIX.getIdentifier(), modelView.getMatrix())
 		.value(ShaderBuiltin.NORMAL_MATRIX.getIdentifier(), modelView.getNormalMatrix())
 		.value(ShaderBuiltin.LIGHTING.getIdentifier(), state.isLighting())
-		.value(BlockShaderTranslator.ALPHA_TEST, state.isAlphaTest())
-		.value(BlockShaderTranslator.ALPHA_THRESHOLD, state.getAlphaThreshold());
+		.value(GlslShaderTranslator.ALPHA_TEST, state.isAlphaTest())
+		.value(GlslShaderTranslator.ALPHA_THRESHOLD, state.getAlphaThreshold());
 	}
 
 	private UniformMember getMember(final String name) {

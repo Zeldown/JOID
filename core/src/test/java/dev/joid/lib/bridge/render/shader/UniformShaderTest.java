@@ -5,9 +5,11 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
-import dev.joid.lib.bridge.render.shader.source.BlockShaderTranslator;
+import dev.joid.lib.bridge.render.shader.source.GlslDialect;
+import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.shader.source.UniformLayout;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
@@ -74,12 +76,12 @@ public class UniformShaderTest {
 		state.setAlphaThreshold(0.5F);
 		shader.builtins(state, new float[16], modelView);
 		Assert.assertEquals(4F, shader.getBlock().getMember("uModelViewMatrix").getValues().getFloat(48), 0F);
-		Assert.assertEquals(1, shader.getBlock().getMember(BlockShaderTranslator.ALPHA_TEST).getValues().getInt(0));
-		Assert.assertEquals(0.5F, shader.getBlock().getMember(BlockShaderTranslator.ALPHA_THRESHOLD).getValues().getFloat(0), 0F);
+		Assert.assertEquals(1, shader.getBlock().getMember(GlslShaderTranslator.ALPHA_TEST).getValues().getInt(0));
+		Assert.assertEquals(0.5F, shader.getBlock().getMember(GlslShaderTranslator.ALPHA_THRESHOLD).getValues().getFloat(0), 0F);
 	}
 
 	private static TestShader create() {
-		final BlockShaderTranslator translator = BlockShaderTranslator.create();
+		final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
 		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, UniformShaderTest.VERTEX);
 		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, UniformShaderTest.FRAGMENT);
 		return new TestShader(translator, vertex, fragment);
@@ -87,7 +89,7 @@ public class UniformShaderTest {
 
 	private static final class TestShader extends UniformShader {
 
-		private TestShader(final BlockShaderTranslator translator, final ShaderSource vertex, final ShaderSource fragment) {
+		private TestShader(final GlslShaderTranslator translator, final ShaderSource vertex, final ShaderSource fragment) {
 			super(translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
 		}
 
