@@ -5,15 +5,19 @@ import java.lang.reflect.Modifier;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL12C;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL13C;
 import org.lwjgl.opengl.GL14C;
 import org.lwjgl.opengl.GL15C;
 import org.lwjgl.opengl.GL20C;
+import org.lwjgl.opengl.GL21C;
 import org.lwjgl.opengl.GL30C;
 import org.lwjgl.opengl.GL31C;
 import org.lwjgl.opengl.GL32C;
+import org.lwjgl.opengl.GL33C;
 
 import dev.joid.base.opengl.binding.GlConstants;
 
@@ -37,7 +41,7 @@ public class Lwjgl3GlBindingTest {
 	}
 
 	private static int find(final String name) throws ReflectiveOperationException {
-		for (final Class<?> type : new Class<?>[] {GL11C.class, GL12C.class, GL13C.class, GL14C.class, GL15C.class, GL20C.class, GL30C.class, GL31C.class, GL32C.class}) {
+		for (final Class<?> type : new Class<?>[] {GL11C.class, GL12C.class, GL13C.class, GL14C.class, GL15C.class, GL20C.class, GL21C.class, GL30C.class, GL31C.class, GL32C.class, GL33C.class, GL11.class, GL13.class}) {
 			for (final Field field : type.getFields()) {
 				if (field.getName().equals(name)) {
 					return field.getInt(null);

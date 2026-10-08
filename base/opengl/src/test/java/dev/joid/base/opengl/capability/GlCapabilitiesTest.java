@@ -206,6 +206,16 @@ public class GlCapabilitiesTest {
 		}
 
 		@Override
+		public void getMaterialFloats(final int face, final int name, final @NonNull float[] values) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void getVertexAttribFloats(final int index, final int name, final @NonNull float[] values) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
 		public void clear(final int mask) {
 			throw new UnsupportedOperationException();
 		}

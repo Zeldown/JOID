@@ -18,12 +18,8 @@ public final class BlitMipmapBuilder implements IGlMipmapBuilder {
 	@Override
 	public void build(final @NonNull GlRenderBridge bridge, final @NonNull GlTexture texture, final @NonNull MipmapChain chain) {
 		final IGlFrameBufferBinding frameBuffer = bridge.getFrameBufferBinding();
-		final int read = bridge.getBinding().getInteger(GlConstants.READ_FRAMEBUFFER_BINDING);
-		final int draw = bridge.getBinding().getInteger(GlConstants.DRAW_FRAMEBUFFER_BINDING);
-		final boolean scissor = bridge.getBinding().isEnabled(GlConstants.SCISSOR_TEST);
 		final int source = frameBuffer.genFramebuffer();
 		final int target = frameBuffer.genFramebuffer();
-		bridge.getBinding().disable(GlConstants.SCISSOR_TEST);
 		try {
 			frameBuffer.bindFramebuffer(GlConstants.READ_FRAMEBUFFER, source);
 			frameBuffer.bindFramebuffer(GlConstants.DRAW_FRAMEBUFFER, target);
@@ -33,13 +29,9 @@ public final class BlitMipmapBuilder implements IGlMipmapBuilder {
 				frameBuffer.blitFramebuffer(0, 0, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight, GlConstants.COLOR_BUFFER_BIT, GlConstants.LINEAR);
 			});
 		} finally {
-			frameBuffer.bindFramebuffer(GlConstants.READ_FRAMEBUFFER, read);
-			frameBuffer.bindFramebuffer(GlConstants.DRAW_FRAMEBUFFER, draw);
+			frameBuffer.bindFramebuffer(GlConstants.FRAMEBUFFER, 0);
 			frameBuffer.deleteFramebuffer(source);
 			frameBuffer.deleteFramebuffer(target);
-			if (scissor) {
-				bridge.getBinding().enable(GlConstants.SCISSOR_TEST);
-			}
 		}
 	}
 

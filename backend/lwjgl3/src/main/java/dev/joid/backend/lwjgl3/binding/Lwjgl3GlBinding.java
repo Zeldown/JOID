@@ -2,6 +2,7 @@ package dev.joid.backend.lwjgl3.binding;
 
 import java.nio.ByteBuffer;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30C;
@@ -88,6 +89,16 @@ public final class Lwjgl3GlBinding implements IGlBinding {
 	@Override
 	public long getVertexAttribPointer(final int index, final int name) {
 		return GL20C.glGetVertexAttribPointer(index, name);
+	}
+
+	@Override
+	public void getMaterialFloats(final int face, final int name, final @NonNull float[] values) {
+		GL11.glGetMaterialfv(face, name, values);
+	}
+
+	@Override
+	public void getVertexAttribFloats(final int index, final int name, final @NonNull float[] values) {
+		GL20C.glGetVertexAttribfv(index, name, values);
 	}
 
 	@Override

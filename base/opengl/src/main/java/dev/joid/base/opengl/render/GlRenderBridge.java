@@ -9,6 +9,8 @@ import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
 import dev.joid.base.opengl.capability.GlStrategies;
 import dev.joid.base.opengl.render.framebuffer.GlFrameBuffer;
+import dev.joid.base.opengl.render.host.IGlHostGuard;
+import dev.joid.base.opengl.render.host.JournalGlHostGuard;
 import dev.joid.base.opengl.render.shader.GlShader;
 import dev.joid.base.opengl.render.texture.GlTexture;
 import dev.joid.base.opengl.render.texture.IGlMipmapBuilder;
@@ -32,6 +34,7 @@ import lombok.NonNull;
 public class GlRenderBridge extends RenderBridge {
 
 	private final IGlBinding            binding;
+	private final IGlHostGuard          guard;
 	private final GlStrategies          strategies;
 	private final GlVertexInput         vertexInput;
 	private final GlCapabilities        capabilities;
@@ -39,12 +42,18 @@ public class GlRenderBridge extends RenderBridge {
 	private final IGlFrameBufferBinding frameBufferBinding;
 
 	protected GlRenderBridge(final @NonNull IGlBinding binding) {
-		this.binding            = binding;
 		this.capabilities       = GlCapabilities.read(binding);
 		this.strategies         = GlStrategies.of(this.capabilities);
+		this.guard              = JournalGlHostGuard.create(binding, this.capabilities, this.strategies.getFrameBufferFamily());
+		this.binding            = this.guard.getBinding();
 		this.mipmapBuilder      = this.strategies.createMipmapBuilder();
-		this.frameBufferBinding = binding.getFrameBufferBinding(this.strategies.getFrameBufferFamily());
-		this.vertexInput        = this.strategies.createVertexInput(binding);
+		this.frameBufferBinding = this.binding.getFrameBufferBinding(this.strategies.getFrameBufferFamily());
+		this.guard.enter();
+		try {
+			this.vertexInput = this.strategies.createVertexInput(this.binding);
+		} finally {
+			this.guard.exit();
+		}
 	}
 
 	public static @NonNull GlRenderBridge create(final @NonNull IGlBinding binding) {
@@ -52,56 +61,91 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	@Override
+	public void endFrame() {
+		this.guard.exit();
+	}
+
+	@Override
+	public void beginFrame() {
+		this.guard.enter();
+	}
+
+	@Override
+	public void host(final @NonNull Runnable host) {
+		this.guard.host(host);
+	}
+
+	@Override
 	public void clear(final float red, final float green, final float blue, final float alpha) {
-		final RenderState state = super.getState();
-		this.applyTarget(state);
-		this.binding.getStateBinding().colorMask(state.isColorMask(), state.isColorMask(), state.isColorMask(), state.isColorMask());
-		this.binding.getStateBinding().clearColor(red, green, blue, alpha);
-		this.binding.clear(GlConstants.COLOR_BUFFER_BIT);
+		this.guard.enter();
+		try {
+			final RenderState state = super.getState();
+			this.applyTarget(state);
+			this.binding.getStateBinding().colorMask(state.isColorMask(), state.isColorMask(), state.isColorMask(), state.isColorMask());
+			this.binding.getStateBinding().clearColor(red, green, blue, alpha);
+			this.binding.clear(GlConstants.COLOR_BUFFER_BIT);
+		} finally {
+			this.guard.exit();
+		}
 	}
 
 	@Override
 	public void clearDepth() {
-		this.applyTarget(super.getState());
-		this.binding.getStateBinding().depthMask(true);
-		this.binding.clear(GlConstants.DEPTH_BUFFER_BIT);
-		this.binding.getStateBinding().depthMask(super.getState().isDepthWrite());
+		this.guard.enter();
+		try {
+			this.applyTarget(super.getState());
+			this.binding.getStateBinding().depthMask(true);
+			this.binding.clear(GlConstants.DEPTH_BUFFER_BIT);
+			this.binding.getStateBinding().depthMask(super.getState().isDepthWrite());
+		} finally {
+			this.guard.exit();
+		}
 	}
 
 	@Override
 	public void clearStencil() {
-		this.applyTarget(super.getState());
-		this.binding.getStateBinding().stencilMask(0xFF);
-		this.binding.clear(GlConstants.STENCIL_BUFFER_BIT);
+		this.guard.enter();
+		try {
+			this.applyTarget(super.getState());
+			this.binding.getStateBinding().stencilMask(0xFF);
+			this.binding.clear(GlConstants.STENCIL_BUFFER_BIT);
+		} finally {
+			this.guard.exit();
+		}
 	}
 
 	@Override
 	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader current) {
-		final RenderState state = super.getState();
-		this.applyTarget(state);
-		this.applyPipeline(state);
-		final GlShader shader = (GlShader) current;
-		shader.use(state);
-		this.bindTexture(0, super.resolveTexture());
-		for (final UniformSampler sampler : shader.getSamplerMap().values()) {
-			final int location = shader.getLocation(sampler.getName());
-			if (location != -1) {
-				this.bindTexture(sampler.getUnit(), super.resolveSampler(sampler));
-				this.binding.getProgramBinding().uniform1i(location, sampler.getUnit());
+		this.guard.enter();
+		try {
+			final RenderState state = super.getState();
+			this.applyTarget(state);
+			this.applyPipeline(state);
+			final GlShader shader = (GlShader) current;
+			shader.use(state);
+			this.bindTexture(0, super.resolveTexture());
+			for (final UniformSampler sampler : shader.getSamplerMap().values()) {
+				final int location = shader.getLocation(sampler.getName());
+				if (location != -1) {
+					this.bindTexture(sampler.getUnit(), super.resolveSampler(sampler));
+					this.binding.getProgramBinding().uniform1i(location, sampler.getUnit());
+				}
 			}
-		}
-		this.binding.getTextureBinding().activeTexture(GlConstants.TEXTURE0);
+			this.binding.getTextureBinding().activeTexture(GlConstants.TEXTURE0);
 
-		final IGlBufferBinding vertices = this.binding.getBufferBinding();
-		this.vertexInput.bind();
-		vertices.bufferData(GlConstants.ARRAY_BUFFER, buffer.getBuffer(), GlConstants.STREAM_DRAW);
-		this.toggleAttribute(VertexAttribute.TEXTURE_COORDINATE.getLocation(), buffer.isTexture());
-		this.toggleAttribute(VertexAttribute.COLOR.getLocation(), buffer.isColor());
-		this.toggleAttribute(VertexAttribute.NORMAL.getLocation(), buffer.isNormal());
-		vertices.vertexAttrib2f(VertexAttribute.TEXTURE_COORDINATE.getLocation(), 0F, 0F);
-		vertices.vertexAttrib4f(VertexAttribute.COLOR.getLocation(), state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
-		vertices.vertexAttrib3f(VertexAttribute.NORMAL.getLocation(), 0F, 0F, 1F);
-		vertices.drawArrays(GlEnums.mode(primitive), 0, buffer.getCount());
+			final IGlBufferBinding vertices = this.binding.getBufferBinding();
+			this.vertexInput.bind();
+			vertices.bufferData(GlConstants.ARRAY_BUFFER, buffer.getBuffer(), GlConstants.STREAM_DRAW);
+			this.toggleAttribute(VertexAttribute.TEXTURE_COORDINATE.getLocation(), buffer.isTexture());
+			this.toggleAttribute(VertexAttribute.COLOR.getLocation(), buffer.isColor());
+			this.toggleAttribute(VertexAttribute.NORMAL.getLocation(), buffer.isNormal());
+			vertices.vertexAttrib2f(VertexAttribute.TEXTURE_COORDINATE.getLocation(), 0F, 0F);
+			vertices.vertexAttrib4f(VertexAttribute.COLOR.getLocation(), state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
+			vertices.vertexAttrib3f(VertexAttribute.NORMAL.getLocation(), 0F, 0F, 1F);
+			vertices.drawArrays(GlEnums.mode(primitive), 0, buffer.getCount());
+		} finally {
+			this.guard.exit();
+		}
 	}
 
 	@Override
@@ -111,12 +155,22 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
-		return GlFrameBuffer.create(this, width, height);
+		this.guard.enter();
+		try {
+			return GlFrameBuffer.create(this, width, height);
+		} finally {
+			this.guard.exit();
+		}
 	}
 
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
-		return GlShader.create(this, vertex, fragment, blend);
+		this.guard.enter();
+		try {
+			return GlShader.create(this, vertex, fragment, blend);
+		} finally {
+			this.guard.exit();
+		}
 	}
 
 	private void bindTexture(final int unit, final SamplerBinding resolved) {
@@ -140,7 +194,7 @@ public class GlRenderBridge extends RenderBridge {
 		final BlendState blend = state.getBlend();
 		this.toggle(GlConstants.BLEND, blend.isEnabled());
 		if (blend.isEnabled()) {
-			pipeline.blendEquation(GlEnums.equation(blend.getEquation()));
+			pipeline.blendEquationSeparate(GlEnums.equation(blend.getEquation()), GlEnums.equation(blend.getEquation()));
 			pipeline.blendFuncSeparate(GlEnums.factor(blend.getSourceColor()), GlEnums.factor(blend.getDestinationColor()), GlEnums.factor(blend.getSourceAlpha()), GlEnums.factor(blend.getDestinationAlpha()));
 		}
 

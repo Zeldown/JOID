@@ -1,11 +1,7 @@
-package dev.joid.backend.lwjgl3.snapshot;
+package dev.joid.base.opengl.render.host;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.binding.IGlBufferBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
@@ -13,27 +9,46 @@ import dev.joid.base.opengl.binding.IGlProgramBinding;
 import dev.joid.base.opengl.binding.IGlStateBinding;
 import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.capability.GlFrameBufferFamily;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NonNull;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProfileGlBinding implements IGlBinding {
+public final class JournalGlBinding implements IGlBinding {
 
-	private final IGlBinding      binding;
-	private final SnapshotProfile profile;
+	private final IGlBinding     binding;
+	private final GlStateJournal journal;
 
-	public static @NonNull ProfileGlBinding create(final @NonNull IGlBinding binding, final @NonNull SnapshotProfile profile) {
-		return new ProfileGlBinding(binding, profile);
+	@Getter private final IGlStateBinding   stateBinding;
+	@Getter private final IGlBufferBinding  bufferBinding;
+	@Getter private final IGlProgramBinding programBinding;
+	@Getter private final IGlTextureBinding textureBinding;
+
+	private final IGlFrameBufferBinding extFrameBufferBinding;
+	private final IGlFrameBufferBinding coreFrameBufferBinding;
+
+	private JournalGlBinding(final IGlBinding binding, final GlStateJournal journal) {
+		this.binding                = binding;
+		this.journal                = journal;
+		this.stateBinding           = JournalGlStateBinding.create(binding.getStateBinding(), journal);
+		this.bufferBinding          = JournalGlBufferBinding.create(binding.getBufferBinding(), journal);
+		this.programBinding         = JournalGlProgramBinding.create(binding.getProgramBinding(), journal);
+		this.textureBinding         = JournalGlTextureBinding.create(binding.getTextureBinding(), journal);
+		this.extFrameBufferBinding  = JournalGlFrameBufferBinding.create(binding.getFrameBufferBinding(GlFrameBufferFamily.EXT), journal);
+		this.coreFrameBufferBinding = JournalGlFrameBufferBinding.create(binding.getFrameBufferBinding(GlFrameBufferFamily.CORE), journal);
+	}
+
+	public static @NonNull JournalGlBinding create(final @NonNull IGlBinding binding, final @NonNull GlStateJournal journal) {
+		return new JournalGlBinding(binding, journal);
 	}
 
 	@Override
 	public void enable(final int capability) {
+		this.journal.touch(GlStateKey.CAPABILITY, capability);
 		this.binding.enable(capability);
 	}
 
 	@Override
 	public void disable(final int capability) {
+		this.journal.touch(GlStateKey.CAPABILITY, capability);
 		this.binding.disable(capability);
 	}
 
@@ -44,20 +59,17 @@ public final class ProfileGlBinding implements IGlBinding {
 
 	@Override
 	public int getInteger(final int name) {
-		return name == GlConstants.NUM_EXTENSIONS ? this.getExtensions().size() : this.binding.getInteger(name);
+		return this.binding.getInteger(name);
 	}
 
 	@Override
 	public String getString(final int name) {
-		if (name == GlConstants.SHADING_LANGUAGE_VERSION && this.profile.getShadingLanguageVersion() != null) {
-			return this.profile.getShadingLanguageVersion();
-		}
-		return name == GlConstants.EXTENSIONS ? String.join(" ", this.getExtensions()) : this.binding.getString(name);
+		return this.binding.getString(name);
 	}
 
 	@Override
 	public String getString(final int name, final int index) {
-		return name == GlConstants.EXTENSIONS ? this.getExtensions().get(index) : this.binding.getString(name, index);
+		return this.binding.getString(name, index);
 	}
 
 	@Override
@@ -102,6 +114,7 @@ public final class ProfileGlBinding implements IGlBinding {
 
 	@Override
 	public void readBuffer(final int buffer) {
+		this.journal.touchReadBuffer();
 		this.binding.readBuffer(buffer);
 	}
 
@@ -111,41 +124,8 @@ public final class ProfileGlBinding implements IGlBinding {
 	}
 
 	@Override
-	public @NonNull IGlStateBinding getStateBinding() {
-		return this.binding.getStateBinding();
-	}
-
-	@Override
-	public @NonNull IGlBufferBinding getBufferBinding() {
-		return this.binding.getBufferBinding();
-	}
-
-	@Override
-	public @NonNull IGlProgramBinding getProgramBinding() {
-		return this.binding.getProgramBinding();
-	}
-
-	@Override
-	public @NonNull IGlTextureBinding getTextureBinding() {
-		return this.binding.getTextureBinding();
-	}
-
-	@Override
 	public @NonNull IGlFrameBufferBinding getFrameBufferBinding(final @NonNull GlFrameBufferFamily family) {
-		return this.binding.getFrameBufferBinding(family);
-	}
-
-	private List<String> getExtensions() {
-		final List<String> extensionList = new ArrayList<>();
-		if (this.binding.getString(GlConstants.VERSION).matches("^[012]\\..*")) {
-			extensionList.addAll(Arrays.asList(this.binding.getString(GlConstants.EXTENSIONS).trim().split("\\s+")));
-		} else {
-			for (int i = 0; i < this.binding.getInteger(GlConstants.NUM_EXTENSIONS); i++) {
-				extensionList.add(this.binding.getString(GlConstants.EXTENSIONS, i));
-			}
-		}
-		extensionList.removeAll(this.profile.getHiddenExtensionList());
-		return extensionList;
+		return family == GlFrameBufferFamily.EXT ? this.extFrameBufferBinding : this.coreFrameBufferBinding;
 	}
 
 }

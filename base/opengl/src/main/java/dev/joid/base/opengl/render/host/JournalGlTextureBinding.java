@@ -1,0 +1,67 @@
+package dev.joid.base.opengl.render.host;
+
+import dev.joid.base.opengl.binding.IGlTextureBinding;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JournalGlTextureBinding implements IGlTextureBinding {
+
+	private final IGlTextureBinding binding;
+	private final GlStateJournal    journal;
+
+	public static @NonNull JournalGlTextureBinding create(final @NonNull IGlTextureBinding binding, final @NonNull GlStateJournal journal) {
+		return new JournalGlTextureBinding(binding, journal);
+	}
+
+	@Override
+	public int genTexture() {
+		final int texture = this.binding.genTexture();
+		this.journal.ownTexture(texture);
+		return texture;
+	}
+
+	@Override
+	public void activeTexture(final int unit) {
+		this.journal.touch(GlStateKey.ACTIVE_TEXTURE);
+		this.journal.trackActiveTexture(unit);
+		this.binding.activeTexture(unit);
+	}
+
+	@Override
+	public void deleteTexture(final int texture) {
+		this.journal.releaseTexture(texture);
+		this.binding.deleteTexture(texture);
+	}
+
+	@Override
+	public void bindSampler(final int unit, final int sampler) {
+		this.journal.touchSampler(unit);
+		this.binding.bindSampler(unit, sampler);
+	}
+
+	@Override
+	public void bindTexture(final int target, final int texture) {
+		this.journal.touchTexture();
+		this.journal.trackTexture(texture);
+		this.binding.bindTexture(target, texture);
+	}
+
+	@Override
+	public void texParameteri(final int target, final int name, final int value) {
+		this.journal.touchTextureParameter(name);
+		this.binding.texParameteri(target, name, value);
+	}
+
+	@Override
+	public void texImage2D(final int target, final int level, final int internalFormat, final int width, final int height, final int format, final int type) {
+		this.binding.texImage2D(target, level, internalFormat, width, height, format, type);
+	}
+
+	@Override
+	public void texSubImage2D(final int target, final int level, final int x, final int y, final int width, final int height, final int format, final int type, final @NonNull int[] pixels) {
+		this.binding.texSubImage2D(target, level, x, y, width, height, format, type, pixels);
+	}
+
+}

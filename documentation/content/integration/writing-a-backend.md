@@ -119,7 +119,9 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 
 ### Frames
 
-`IRenderBridge.beginFrame()` and `endFrame()` wrap each frame; both do nothing by default. The demo windows, the testkit and the loops of the official backends call them around the clear and the `draw()` of the UI bridge, without knowing the class of your bridge. Override them when your engine records its commands per frame, as Vulkan does: `beginFrame()` acquires the image and starts recording, `endFrame()` submits. Showing the image on a window stays outside the contract (the Vulkan `present()`, a buffer swap).
+`IRenderBridge.beginFrame()` and `endFrame()` wrap each frame; both do nothing by default. The demo windows, the testkit and the loops of the official backends call them around the clear and the `draw()` of the UI bridge, without knowing the class of your bridge. Override them when your engine records its commands per frame, as Vulkan does: `beginFrame()` acquires the image and starts recording, `endFrame()` submits, or when it shares its context with a host, as the OpenGL bridge does: `beginFrame()` starts its journal of the host state, `endFrame()` puts that state back. Showing the image on a window stays outside the contract (the Vulkan `present()`, a buffer swap).
+
+`IRenderBridge.host(Runnable host)` runs a drawing of the host inside a JOID frame (an item of a game in a UI); by default it runs it as is. A bridge that changes the state of a shared context overrides it to give the host its state before the runnable and to take its own back after it, as `GlRenderBridge` does.
 
 ### Draw calls and vertices
 

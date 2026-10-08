@@ -72,6 +72,26 @@ public final class GlCapabilities {
 		return this.version >= 330 || this.hasExtension("GL_ARB_sampler_objects");
 	}
 
+	public boolean hasDepthClamp() {
+		return this.version >= 320 || this.hasExtension("GL_ARB_depth_clamp");
+	}
+
+	public boolean hasPixelBuffers() {
+		return this.version >= 210 || this.hasExtension("GL_ARB_pixel_buffer_object") || this.hasExtension("GL_EXT_pixel_buffer_object");
+	}
+
+	public boolean hasPrimitiveRestart() {
+		return this.version >= 310;
+	}
+
+	public boolean hasFrameBufferSrgb() {
+		return this.version >= 300 || this.hasExtension("GL_ARB_framebuffer_sRGB") || this.hasExtension("GL_EXT_framebuffer_sRGB");
+	}
+
+	public boolean hasRasterizerDiscard() {
+		return this.version >= 300;
+	}
+
 	public boolean hasFrameBufferBlit() {
 		return this.getFrameBufferFamily() == GlFrameBufferFamily.CORE || this.hasExtension("GL_EXT_framebuffer_blit");
 	}

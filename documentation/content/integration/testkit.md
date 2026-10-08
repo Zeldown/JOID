@@ -4,11 +4,12 @@ The testkit (`joid-tool-testkit` jar, module `tool-testkit`, JUnit 4) checks tha
 
 ## Testing a backend in three classes
 
-Implement `ISnapshotBackend` for your engine, then extend both suites in your tests. This is the snapshot backend of LWJGL 3, on the hidden window of `GlfwSnapshotWindow` (`dev.joid.base.glfw.snapshot`, in `joid-base-glfw` but not in its released jar):
+Implement `ISnapshotBackend` for your engine, then extend both suites in your tests. This is a snapshot backend on LWJGL 3, on the hidden window of `GlfwSnapshotWindow` (`dev.joid.base.glfw.snapshot`, in `joid-base-glfw` but not in its released jar); the one of the LWJGL 3 module also chooses its [OpenGL profile](#opengl-profiles):
 
 ```java
 public final class SnapshotBackend implements ISnapshotBackend {
 
+	private GlRenderBridge     bridge;
 	private GlfwSnapshotWindow window;
 
 	@Override
@@ -23,6 +24,7 @@ public final class SnapshotBackend implements ISnapshotBackend {
 		GLFW.glfwSwapInterval(0);
 		GL.createCapabilities();
 		Backend.register(this.window.getWindow());
+		this.bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
 	}
 
 	@Override
@@ -32,7 +34,7 @@ public final class SnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
-		return GlSnapshotCapture.capture(Lwjgl3GlBinding.inst(), width, height);
+		return GlSnapshotCapture.capture(this.bridge, width, height);
 	}
 
 	@Override
@@ -112,6 +114,46 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 | `restoresTheMatrixAfterATransformation` | Applying and resetting a `Transformation` leaves the pixel grid unchanged. |
 
 Your own tests reach the core shaders through the core enum `CoreShader` (`dev.joid.lib.bridge.render.shader.source`): loop over `CoreShader.values()` and parse a stage with `read(ShaderStage stage)`.
+
+## HostStateContractSuite tests
+
+A backend embedded in a host that owns the graphics context (a game, an engine) shares its state with it. `HostStateContractSuite` (`dev.joid.test.contract`) checks that JOID draws correctly whatever state the host left, and gives the host its state back. Extend it with an `IHostStateBackend`, an `ISnapshotBackend` that also plays the host:
+
+| Method | Contract |
+|---|---|
+| `inject(HostTrap trap)` | Leaves the state of `trap` in the context, as a host would before calling JOID. |
+| `supports(HostTrap trap)` | Whether the context has that state (`ALPHA_TEST` only in a compatibility profile, `SAMPLER_OBJECTS` from OpenGL 3.3...); the tests of the others are skipped. |
+| `drawHost()` | Draws as the host, changing its state, from inside `IRenderBridge.host(...)`. |
+| `readState()` | The whole state of the context, by name: the oracle the suite compares. |
+
+Each test creates the backend on a 64×64 surface, renders a reference frame, injects its `HostTrap`, then renders the frame again. The frame uploads textures (one with mipmaps), blends, tests the depth, culls, writes and tests the stencil, draws into a framebuffer and through a shader with a sampler, and calls `render.host(...)` in the middle. The suite fails when:
+
+- the frame differs from the reference by a single pixel;
+- the state read inside `host(...)` differs from the state before the frame: JOID must give the host its state back before a nested host draw;
+- the state after the frame, then after `capture`, differs from the state the host draw left.
+
+| Test | `HostTrap` |
+|---|---|
+| `leavesACleanHostAsItWas` | none |
+| `restoresTheBlendingOfTheHost` | `BLEND`: blend functions, equations and color, color and depth masks, clear color, viewport |
+| `drawsThroughTheScissorOfTheHost` | `SCISSOR` |
+| `drawsThroughTheLogicOperationOfTheHost` | `LOGIC_OP` |
+| `cullsWhateverTheFrontFaceOfTheHost` | `FRONT_FACE`: clockwise front faces, front faces culled |
+| `drawsThroughTheAlphaTestOfTheHost` | `ALPHA_TEST` |
+| `uploadsWhateverThePixelStoreOfTheHost` | `PIXEL_STORE`: unpack and pack alignment, row length and skips |
+| `drawsWhateverTheFrameBufferOfTheHost` | `FRAMEBUFFER`: a framebuffer and a renderbuffer of the host bound |
+| `uploadsWhateverThePixelBufferOfTheHost` | `PIXEL_BUFFER`: pixel pack and unpack buffers bound |
+| `fillsWhateverThePolygonModeOfTheHost` | `POLYGON_MODE`: lines |
+| `masksWhateverTheStencilMaskOfTheHost` | `STENCIL_MASK`: stencil write mask 0, stencil clear value 5 |
+| `keepsTheVertexArrayOfTheHost` | `VERTEX_ARRAY`: a vertex array of the host with its attributes and buffers |
+| `keepsTheClientArraysOfTheHost` | `CLIENT_ARRAYS`: client arrays and generic attributes of the default vertex array |
+| `keepsTheMaterialOfTheHost` | `COLOR_MATERIAL`: lighting, color material, current color and normal |
+| `testsTheDepthWhateverTheDepthFunctionOfTheHost` | `DEPTH_FUNCTION`: `GREATER`, depth clear value 0.25 |
+| `samplesWhateverTheSamplerObjectsOfTheHost` | `SAMPLER_OBJECTS`: sampler objects bound on units 0 to 3 |
+| `keepsTheTextureParametersOfTheHost` | `TEXTURE_PARAMETERS`: textures of the host, with their own filter and wrap, bound on units 0 to 3 |
+| `survivesEveryTrapAtOnce` | `EVERYTHING`: every trap the context supports |
+
+On OpenGL, `GlStateSnapshot.read(binding, capabilities)` (`dev.joid.base.opengl.snapshot`) is the oracle: about 150 values read with `glGet*` through a binding (enabled capabilities, bindings, blend, depth, stencil, pixel store, viewport and scissor box, the textures, samplers and texture parameters of units 0 to 3, the attributes of the bound vertex array, and, in a compatibility profile, the fixed-function state, the client arrays and the material). The LWJGL 3 module implements the traps with LWJGL in `HostStateBackend` and runs the suite in `HostStateContractTest`, on every [OpenGL profile](#opengl-profiles).
 
 ## SnapshotSuite
 
@@ -270,7 +312,7 @@ The LWJGL 3 snapshot backend creates the context of `SnapshotProfile.current()` 
 | `GL_33` | 3.3 core, GLSL 3.30 | `MESA_GL_VERSION_OVERRIDE=3.3 MESA_GLSL_VERSION_OVERRIDE=330` |
 | `GL_45_COMPATIBILITY` | 4.5 compatibility | none on llvmpipe |
 
-The extensions are hidden, and the GLSL version of `GL_20` reported, by `ProfileGlBinding`, a binding that wraps `Lwjgl3GlBinding` and filters `GL_EXTENSIONS` and `GL_SHADING_LANGUAGE_VERSION`. The renders of every profile are compared with the same references, those of the renderer: they must match the `DEFAULT` ones, except where `GL_21_EXT_NO_BLIT` draws its mipmaps.
+The extensions are hidden, and the GLSL version of `GL_20` reported, by `ProfileGlBinding`, a binding that wraps `Lwjgl3GlBinding` and filters `GL_EXTENSIONS` and `GL_SHADING_LANGUAGE_VERSION`. The renders of every profile are compared with the same references, those of the renderer: they must match the `DEFAULT` ones, `GL_21_EXT_NO_BLIT` and its drawn mipmaps included.
 
 ### Git hooks
 

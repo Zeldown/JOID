@@ -20,6 +20,10 @@ public interface IRenderBridge extends IBridge {
 	public default void endFrame() {}
 	public default void beginFrame() {}
 
+	public default void host(final @NonNull Runnable host) {
+		host.run();
+	}
+
 	public default void screen(final int width, final int height) {
 		this.frameBuffer(null);
 		this.viewport(0, 0, width, height);
