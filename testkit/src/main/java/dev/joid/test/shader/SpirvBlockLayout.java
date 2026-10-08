@@ -1,4 +1,4 @@
-package dev.joid.impl.vulkan.render.shader;
+package dev.joid.test.shader;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;

@@ -296,6 +296,24 @@ Two command-line tools, in `joid-testkit`, let any build tool render and compare
 
 The [backend template](writing-a-backend.md#starting-from-the-template) uses them to compare your backend to the official LWJGL 3 rendering.
 
+## Compiling translated shaders
+
+The package `dev.joid.test.shader` checks in a unit test, without any window or GPU, that the GLSL a translator writes compiles, and that the `std140` offsets of the core `UniformBlock` are the ones of the compiler. It runs glslang through shaderc: the testkit depends on `org.lwjgl:lwjgl-shaderc` and on its natives for the running platform.
+
+```java
+final ShaderSource vertex = CoreShader.BLUR.read(ShaderStage.VERTEX);
+final ShaderSource fragment = CoreShader.BLUR.read(ShaderStage.FRAGMENT);
+final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
+final ByteBuffer spirv = GlslCompiler.compileOpenGl(translator.translateFragment(vertex, fragment), ShaderStage.FRAGMENT);
+final Map<String, int[]> layout = SpirvBlockLayout.read(spirv, GlslShaderTranslator.BLOCK);
+```
+
+| Member | Description |
+|---|---|
+| `GlslCompiler.compileOpenGl(String source, ShaderStage stage)` | Compiles GLSL 3.30 or later for OpenGL 4.5 into SPIR-V, binding the uniforms and locations automatically; throws `AssertionError` with the compiler log and the source when it fails. |
+| `GlslCompiler.compileVulkan(String source, ShaderStage stage)` | The same for Vulkan 1.2. |
+| `SpirvBlockLayout.read(ByteBuffer spirv, String block)` | The members of a uniform block in a SPIR-V module, by name: `{offset, array stride, matrix stride}`. Compare them with `getOffset()`, `getArrayStride()` and `getMatrixStride()` of each `UniformMember`. |
+
 ## The report
 
 `report.html` opens straight from the disk, without a server. It lists the shots with their status (different, recorded or updated, identical) and their number of different pixels, with filters and a search field, and shows the selected shot in eight modes:
@@ -343,6 +361,7 @@ The wheel zooms around the cursor, dragging pans, `F` fits the image and `0` sho
 - A scenario that changes the interface scale keeps it until the next `scale` of the same scenario: set `scale 1` again before a `ui` that needs the normal size.
 - Read the pixels of the surface `viewport(0, 0, width, height)` covers: a window larger than 1920×1080 reads outside the snapshot surface, so `resize` refuses it.
 - A shot that never becomes stable means something reads the system time: read `BridgeHandler.CLOCK.get()` instead.
+- `GlslCompiler` compiles GLSL 3.30 and later only (glslang refuses older versions for SPIR-V): the older dialects are checked by `validateShaders`, see [Writing a Backend](writing-a-backend.md#glsl-dialects).
 - References depend on the GPU and the driver: record them on each machine, never compare them across machines with `SnapshotSuite` (use `SnapshotComparison` and its tolerance for that).
 
 ## See also

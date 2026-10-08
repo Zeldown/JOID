@@ -148,6 +148,40 @@ task crossBackendTest(type: JavaExec) {
     args file('build/snapshots/cross').absolutePath, file('build/snapshots/lwjgl2').absolutePath, file('build/snapshots/lwjgl3').absolutePath, file('build/snapshots/vulkan').absolutePath
 }
 
+task exportShaders(type: JavaExec) {
+    group = 'JOID'
+    description = 'Writes the core shaders translated into every GLSL dialect into build/shaders.'
+    main = 'dev.joid.test.shader.GlslExport'
+    classpath = project(':testkit').sourceSets.main.runtimeClasspath
+    args file('build/shaders').absolutePath
+}
+
+task validateShaders {
+    group = 'JOID'
+    description = 'Checks the core shaders translated into every GLSL dialect with glslangValidator, or the command given by -Pglslang.'
+    dependsOn exportShaders
+    doLast {
+        def glslang = project.hasProperty('glslang') ? project.property('glslang') : 'glslangValidator'
+        def failures = []
+        fileTree('build/shaders').files.sort().each { shader ->
+            def output = new ByteArrayOutputStream()
+            def result = exec {
+                commandLine glslang, shader.absolutePath
+                standardOutput = output
+                errorOutput = output
+                ignoreExitValue = true
+            }
+            if (result.exitValue != 0) {
+                failures << "${shader.parentFile.name}/${shader.name}: ${output}"
+            }
+        }
+        if (!failures.isEmpty()) {
+            throw new GradleException("${failures.size()} translated shaders do not compile:\n" + failures.join('\n'))
+        }
+        println "${fileTree('build/shaders').files.size()} translated shaders compile"
+    }
+}
+
 gradle.buildFinished {
     def report = file('build/snapshots/cross/report.html')
     if (crossBackendTest.state.failure != null && report.exists()) {

@@ -13,6 +13,8 @@ import dev.joid.lib.bridge.render.shader.source.UniformLayout;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
 import dev.joid.lib.bridge.render.state.StencilEmulation;
+import dev.joid.test.shader.GlslCompiler;
+import dev.joid.test.shader.SpirvBlockLayout;
 
 public class GlslShaderTranslatorTest {
 
