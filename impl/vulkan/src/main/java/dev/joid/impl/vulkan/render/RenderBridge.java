@@ -48,8 +48,8 @@ import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureSampling;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
-import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
+import dev.joid.lib.bridge.render.vertex.VertexFill;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -241,7 +241,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			this.applyDynamicState(stack, state, target != null, lines ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-			final long vertexOffset = this.writeVertices(buffer);
+			final long vertexOffset = this.writeVertices(buffer, state);
 			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer.isColor());
 			final long descriptorSet = this.descriptorCache.get(shader, this.uniformStream.getBuffer().getBuffer(), this.getImages(state, shader));
 
@@ -370,26 +370,10 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		VK10.vkCmdSetStencilReference(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilReference());
 	}
 
-	private long writeVertices(final VertexBuffer buffer) {
+	private long writeVertices(final VertexBuffer buffer, final RenderState state) {
 		final int size = buffer.getCount() * VertexBuffer.STRIDE;
 		final long offset = this.vertexStream.allocate(size);
-		final long address = this.vertexStream.getBuffer().getAddress() + offset;
-		MemoryUtil.memCopy(MemoryUtil.memAddress(buffer.getBuffer()), address, size);
-		if (buffer.isTexture() && buffer.isNormal()) {
-			return offset;
-		}
-
-		for (int i = 0; i < buffer.getCount(); i++) {
-			final long vertex = address + (long) i * VertexBuffer.STRIDE;
-			if (!buffer.isTexture()) {
-				MemoryUtil.memPutFloat(vertex + VertexAttribute.TEXTURE_COORDINATE.getOffset(), 0F);
-				MemoryUtil.memPutFloat(vertex + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, 0F);
-			}
-
-			if (!buffer.isNormal()) {
-				MemoryUtil.memPutInt(vertex + VertexAttribute.NORMAL.getOffset(), 127 << 16);
-			}
-		}
+		VertexFill.complete(buffer, MemoryUtil.memByteBuffer(this.vertexStream.getBuffer().getAddress() + offset, size), state);
 		return offset;
 	}
 

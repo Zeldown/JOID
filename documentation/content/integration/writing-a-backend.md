@@ -131,7 +131,7 @@ When a test fails, the build prints the link of its interactive `report.html`.
 | `COLOR` | 2 | 20 | color, 4 × normalized `UNSIGNED_BYTE`, RGBA | `isColor()` |
 | `NORMAL` | 3 | 24 | normal, 3 × normalized `BYTE` | `isNormal()` |
 
-- Missing attributes take these values: the current color (`color(...)`) for the color, `(0, 0)` for the texture coordinates, `(0, 0, 1)` for the normal. Vertex colors replace the current color.
+- Missing attributes take these values: the current color (`color(...)`) for the color, `(0, 0)` for the texture coordinates, `(0, 0, 1)` for the normal. Vertex colors replace the current color. An API without constant vertex attributes (Vulkan, Blaze3D) copies the buffer with `VertexFill.complete(VertexBuffer buffer, ByteBuffer target, RenderState state)`, which writes these values into the missing attributes of the copy (the current color rounded to bytes) from the position of `target`.
 - A normal component is a signed byte divided by 127, so `127` is `1.0` and `-127` is `-1.0`, as `VK_FORMAT_R8G8B8A8_SNORM` reads it. The `aNormal` attribute of shaders receives that value: the LWJGL 2 backend declares it as `joid_Normal / 127.0`.
 
 ### Lighting
