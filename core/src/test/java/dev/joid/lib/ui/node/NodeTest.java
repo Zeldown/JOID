@@ -341,6 +341,48 @@ public class NodeTest {
 	}
 
 	@Test
+	public void keepsTheClickFromTheNodesBehindItsTarget() {
+		final List<String> clicks = new ArrayList<>();
+		final RectNode below = RectNode.create(100D, 100D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("below"));
+		final RectNode above = RectNode.create(150D, 150D, 100D, 100D);
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(below, above)));
+		this.bridges.move(175D, 175D).frames(2);
+		Assert.assertTrue(above.isHovered(175D, 175D));
+		Assert.assertFalse(below.isHovered(175D, 175D));
+		Assert.assertFalse(below.isHovered());
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertTrue(clicks.isEmpty());
+		this.bridges.move(125D, 125D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("below"), clicks);
+	}
+
+	@Test
+	public void bubblesTheClickUpToTheParentsOfItsTarget() {
+		final List<String> clicks = new ArrayList<>();
+		final RectNode child = RectNode.create(20D, 20D, 50D, 50D);
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("parent")).append(child);
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).onClick((rect, mouseX, mouseY, button) -> clicks.add("root")).append(parent)));
+		this.bridges.move(140D, 140D).frames(2);
+		Assert.assertTrue(child.isHovered());
+		Assert.assertTrue(parent.isHovered());
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("parent"), clicks);
+	}
+
+	@Test
+	public void hoversTheParentOfAChildThatSticksOutOfIt() {
+		final RectNode child = RectNode.create(80D, 0D, 100D, 50D);
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		this.bridges.move(250D, 120D).frames(2);
+		Assert.assertTrue(child.isHovered());
+		Assert.assertTrue(parent.isHovered());
+		Assert.assertTrue(parent.isHovered(250D, 120D));
+		Assert.assertFalse(parent.isHovered(350D, 120D));
+	}
+
+	@Test
 	public void followsABooleanSignalForItsInteractivity() {
 		final BooleanSignal interactive = new BooleanSignal(false);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).interactive(interactive);

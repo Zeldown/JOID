@@ -136,7 +136,7 @@ Every method except `isCancelled` returns the context.
 
 ## Consumed input events
 
-A mouse or key event travels through every node of the UI with a single context. A node consumes the event by cancelling that context. The following consume an event:
+A mouse or key event travels through every node of the UI with a single context. The mouse handling of a node (`onClick`, its hover, the built-in controls, the wheel scrolling, the start of a drag) only acts when the node is the mouse target or one of its parents (see [Mouse target and bubbling](mouse-and-keyboard.md#mouse-target-and-bubbling)). A node consumes the event by cancelling that context. The following consume an event:
 
 - `onClick`: a click on a node consumes the press;
 - built-in nodes that handle the event, such as a focused text field or a clicked checkbox;
@@ -212,7 +212,7 @@ Inside a UI, an input event reaches the top-level nodes from front to back: high
 1. The node's scrollbar, and its skeleton node while the node is not mounted.
 2. The node's PRE callbacks.
 3. The children with a z-index of 0 or more, front to back, each one recursively.
-4. For a press: `onClick` when the node is hovered and the press is not consumed; the click then consumes it. For a wheel event: the scrolling of the node when it is hovered and the event is not consumed.
+4. For a press: `onClick` when the node is hovered (the mouse target or one of its parents) and the press is not consumed; the click then consumes it. For a wheel event: the scrolling of the node when it is hovered and the event is not consumed. Since the children come first, the click goes to the target, then bubbles up to its parents.
 5. The node's own hook (`mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`, `charTyped`).
 6. The children with a negative z-index, front to back.
 7. For a mouse drag: the move of the node's drag target when it is being dragged.

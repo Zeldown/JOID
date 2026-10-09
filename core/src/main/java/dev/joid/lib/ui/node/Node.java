@@ -1447,11 +1447,15 @@ public abstract class Node implements INode {
 	}
 
 	public boolean isHovered(final double mouseX, final double mouseY, final boolean checkEnabled) {
-		if (this.ui == null) {
+		if (this.ui == null || !this.ui.isOnTop() || checkEnabled && !this.isEnabled()) {
 			return false;
 		}
 
-		return (!checkEnabled || this.isEnabled()) && this.isInteractive() && this.ui.isOnTop() && this.isAt(mouseX, mouseY);
+		Node target = mouseX == this.ui.getMouseX() && mouseY == this.ui.getMouseY() ? this.ui.getHoveredNode() : this.ui.getNodeAt(mouseX, mouseY);
+		while (target != null && target != this) {
+			target = target.parent;
+		}
+		return target != null;
 	}
 
 	public final @NonNull Cursor getResolvedCursor() {

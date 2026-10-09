@@ -24,7 +24,7 @@ super.keybind(() -> this.status.set("Saved"), Key.LEFT_CONTROL, Key.S);
 
 ![A right click on a gray rectangle writes Context menu at 250, 140 below it, then Ctrl + S writes Saved](../images/input-click-keybind.gif "onClick reads the button and the position; the keybind runs when Ctrl and S are down.")
 
-`onClick` fires only for a press over the node; `clickType` tells which button. `keybind` runs its action when a key event reaches the UI while every listed key is down. `info` is a `TextInfo` (see [Text](../essentials/text.md)).
+`onClick` fires only for a press on the node or on one of its children (see [Mouse target and bubbling](#mouse-target-and-bubbling)); `clickType` tells which button. `keybind` runs its action when a key event reaches the UI while every listed key is down. `info` is a `TextInfo` (see [Text](../essentials/text.md)).
 
 ## Mouse buttons with MouseButton
 
@@ -48,7 +48,7 @@ super.keybind(() -> this.status.set("Saved"), Key.LEFT_CONTROL, Key.S);
 
 | Method | Lambda arguments | Fires |
 |---|---|---|
-| `onClick` | `(node, mouseX, mouseY, clickType)` | A press while the node is hovered, unless a node reached before it consumed the press. |
+| `onClick` | `(node, mouseX, mouseY, clickType)` | A press whose target is the node or one of its children, unless a node reached before it consumed the press. |
 | `onMousePressed` | `(node, mouseX, mouseY, clickType)` | Every press, wherever the mouse is. |
 | `onMouseReleased` | `(node, mouseX, mouseY, clickType)` | Every release, wherever the mouse is. |
 | `onMouseDragged` | `(node, mouseX, mouseY, clickType, deltaTime)` | Every mouse move while a button is held; `clickType` is the held button. |
@@ -56,7 +56,7 @@ super.keybind(() -> this.status.set("Saved"), Key.LEFT_CONTROL, Key.S);
 
 - `notchesY` of a wheel event is a `double` in wheel notches: `1` for a notch up, `-1` for a notch down, a fraction for a precise touchpad. `notchesX` is the horizontal wheel (a tilted wheel or a touchpad): positive toward the left, negative toward the right, `0` on LWJGL 2. They are never both `0` (the bridge drops still events).
 - `deltaTime` of a drag event is the number of milliseconds since the button was pressed, measured by the UI bridge on the clock bridge (`BridgeHandler.CLOCK`).
-- `onClick` consumes the press: the nodes behind and the UIs below do not receive it. `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` are listeners: they run for every event not consumed yet and leave it to the others; see [Consumed input events](callbacks.md#consumed-input-events).
+- `onClick` consumes the press: the parents of the node and the UIs below do not receive it. `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` are listeners: they run for every event not consumed yet, wherever the mouse is, even outside the node, and leave it to the others; see [Consumed input events](callbacks.md#consumed-input-events). React to a press on the node with `onClick`; listen to every press with `onMousePressed`, for example to close a menu when the user clicks elsewhere.
 - Hidden and disabled nodes receive no mouse event: none of these callbacks, nor hover and drags, fire for a node whose `visible(...)` or `enabled(...)` returns `false`, or for the children of a hidden or disabled node. A node with `interactive(false)` receives none either, and lets the mouse through to the nodes behind it: see [Letting the mouse through with interactive](#letting-the-mouse-through-with-interactive).
 
 ## Mouse coordinates
@@ -69,19 +69,40 @@ Positions are units of the 1920×1080 virtual canvas, fitted to the window witho
 - For coordinates relative to a node, subtract its absolute position: `mouseX - node.getAbsoluteX()`. To draw at the mouse from `draw(mouseX, mouseY)`, convert it into the space the node draws in, where the node sits at `getX()`, `getY()`: `toDrawX(mouseX)` and `toDrawY(mouseY)`.
 - The window position in pixels is `BridgeHandler.WINDOW.get().getMouseX()` and `getMouseY()`; convert between window pixels and canvas units with `ui.getView().toUiX(...)`, `toUiY(...)`, `toScreenX(...)` and `toScreenY(...)` (see also [View and Scaling](../ui/view-and-scaling.md)).
 
-### Hit testing with isHovered
+### Mouse target and bubbling
 
-`node.isHovered(mouseX, mouseY)` is the test used for clicks, hover and drags. It returns `true` when all of these hold:
+A mouse event has one target, as in a browser: the front-most interactive node under the mouse, `UI.getNodeAt(x, y)`, which is the first interactive node of [`getNodeListAt`](#nodes-under-a-point-with-getnodelistat). The event goes to the target, then bubbles up to its parents until one of them consumes it. The nodes beside the target or behind it never get it, even when the target does nothing with it.
 
-- the node is in a UI, that UI is on top (`UI.isOnTop()`, as reported by its UI bridge), and the node is visible, enabled and interactive;
-- the mouse is inside the area of the parent that clips the node with an overflow, if any;
-- `getAbsoluteX() < mouseX <= getAbsoluteX() + getWidth()` and `getAbsoluteY() < mouseY <= getAbsoluteY() + getHeight()`.
+```java
+final IntegerSignal clicks = IntegerSignal.of(0);
 
-`isHovered(mouseX, mouseY, false)` skips the enabled check. `isHovered()` without arguments returns the hover state of the last drawn frame (see [Hover and Tooltips](hover.md)).
+RectNode
+.create(100, 100, 200, 120)
+.color(Color.GRAY)
+.cursor(Cursor.POINTER)
+.onClick((node, mouseX, mouseY, clickType) -> clicks.increment())
+.body(button -> {
+	RectNode.create(60, 30, 80, 60).color(Color.WHITE).attach(button);
+})
+.attach(this);
+
+RectNode.create(120, 120, 40, 40).color(Color.DARKGRAY).interactive(false).attach(this);
+```
+
+A press on the white child counts: the child has no `onClick`, so the click bubbles up to the gray button. The dark square is a sibling drawn over the button: without `interactive(false)`, it would be the target of the presses over it, and the button would get neither the click, nor the hover, nor its cursor there.
+
+- `onClick` runs on the target when it has one, otherwise on its closest parent with one, and consumes the press.
+- The hover follows the same chain: the target and its parents are hovered (`isHovered()`, `hoverValue`, `onHoverStart`, `onHover`, `onHoverEnd`), the nodes behind are not. A parent is hovered while the mouse is over a child that sticks out of it. The tooltip and the cursor come from the target, or from its closest parent with one.
+- The built-in nodes follow it too: a checkbox, a toggle, a slider, a selector or a text field reacts to a press only when it is the target or one of its parents, the wheel scrolls the first area of the chain whose content can move (see [Overflow and Scroll](../nodes/layout/overflow-and-scroll.md)), and a drag starts on the first draggable node of the chain.
+- A node in front that does nothing with the mouse, such as a label, an icon or a badge added as a sibling over a button, is still the target and keeps the mouse from the button. Give it `interactive(false)`, or attach it to the button as a child.
+- A disabled node stays the target: it hides the nodes behind it and does not react, and its parents still receive the event.
+- The listeners (`onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`) and the `mousePressed`, `mouseReleased`, `mouseDragged` and `mouseScroll` hooks of a node are not limited to the target: they hear every event not consumed yet. A release ends a drag, and a press outside a focused text field or an open selector closes it, wherever the mouse is.
+
+`node.isHovered(mouseX, mouseY)` is the test the nodes use: it returns `true` when the node is in a UI that is on top (`UI.isOnTop()`, as reported by its UI bridge), is enabled, and is the target at that point or one of its parents. `isHovered(mouseX, mouseY, false)` skips the enabled check. `isHovered()` without arguments returns the hover state of the last drawn frame (see [Hover and Tooltips](hover.md)). At the mouse position, the UI finds the target at the start of each frame, after drawing its nodes and at the start of each mouse event; at any other point, `isHovered` asks `getNodeAt` again.
 
 ### Letting the mouse through with interactive
 
-`interactive(false)` takes a node out of the mouse: the node is still drawn, but it is never hovered, receives no mouse event, shows no tooltip and no cursor, and the nodes behind it receive the mouse as if it were not there. Its children are not interactive either. `enabled(false)` is not enough for that: a disabled node still covers the nodes behind it for the tooltips and the cursor. Use it for a drawing that follows the mouse, a decoration over the content, or an item carried by the mouse:
+`interactive(false)` takes a node out of the mouse: the node is still drawn, but it is never hovered, receives no mouse event, shows no tooltip and no cursor, and the nodes behind it receive the mouse as if it were not there. Its children are not interactive either. `enabled(false)` is not enough for that: a disabled node still covers the nodes behind it for the tooltips and the cursor. Use it for a drawing that follows the mouse, a label or an icon drawn over a button as a sibling, a decoration over the content, or an item carried by the mouse:
 
 ```java
 ContainerNode
@@ -98,7 +119,7 @@ ContainerNode
 
 `UI.getNodeListAt(x, y)` returns every visible node of the UI under a point of the canvas, from the front to the back, in the order the UI draws them: the scroll bar of an area before its content, the [skeleton](../nodes/node-fundamentals.md) of a node that is not mounted instead of its children, the children with a `zindex` of 0 or more before their parent and the ones below 0 after it, and only the part of a child inside its [overflow area](../nodes/layout/overflow-and-scroll.md). Disabled nodes and nodes with `interactive(false)` are in the list: each use keeps the nodes it needs. `Node.getNodeListAt(x, y)` gives the same list for one node and its subtree.
 
-`UI.getHoveredNode()` is the first interactive node of that list at the mouse, or `null` when the UI is not on top. It decides the cursor and the tooltip, and the DevNode inspector picks its node from the same list. To find the first slot of an inventory under the mouse, whatever covers it:
+`UI.getNodeAt(x, y)` is the first interactive node of that list: the target of the mouse events at that point, or `null` over an empty area. `UI.getHoveredNode()` is that node at the mouse, or `null` when the UI is not on top. It decides the clicks, the hover, the cursor and the tooltip, and the DevNode inspector picks its node from the same list. To find the first slot of an inventory under the mouse, whatever covers it:
 
 ```java
 private SlotNode getSlotAt(final double x, final double y) {
@@ -393,7 +414,7 @@ Each node records the last events dispatched to its UI, whether or not they happ
 - Keybinds and UI hooks run only when no node consumed the event: a focused text field takes every key.
 - Node hooks receive every event of their UI, wherever the pointer is: test `isHovered(mouseX, mouseY)` before reacting to a click.
 - Only Left Ctrl, Left Shift and Left Alt drive the dev shortcuts and the dev zoom.
-- A label drawn over a button as a sibling hides the button from the cursor: attach the label to the button, so that it inherits the cursor of its parent.
+- A label or an icon drawn over a button as a sibling takes the clicks, the hover, the tooltip and the cursor of the button where it covers it: give it `interactive(false)`, or attach it to the button so that the events bubble up to the button.
 - `Key.W.isDown()` is the key labelled W on every layout: on AZERTY it sits where Z is on QWERTY. Use `isPhysicalDown()` for keys chosen for their place.
 
 ## See also

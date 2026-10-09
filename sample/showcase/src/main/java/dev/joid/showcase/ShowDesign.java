@@ -50,6 +50,7 @@ public class ShowDesign extends ShowUI {
 		.color(Color.WHITE)
 		.<RectNode>x(() -> this.front() - 3D)
 		.visible(() -> this.level > 0.001D && this.level < 0.999D)
+		.interactive(false)
 		.effect(ShadowNodeEffect.create(ShowUI.FUCHSIA, 40F).color(() -> ShowUI.FUCHSIA.to(ShowPaperKit.TOMATO, (float) this.level)))
 		.attach(this);
 	}

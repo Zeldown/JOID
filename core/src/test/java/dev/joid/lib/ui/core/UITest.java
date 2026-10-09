@@ -1025,6 +1025,19 @@ public class UITest {
 	}
 
 	@Test
+	public void findsTheTargetOfTheMouseAtAPoint() {
+		final RectNode below = RectNode.create(100D, 100D, 200D, 200D);
+		final RectNode disabled = RectNode.create(150D, 150D, 50D, 50D).zindex(1).enabled(false);
+		final RectNode above = RectNode.create(100D, 100D, 200D, 200D).zindex(2).interactive(false);
+		final TraceUI ui = new TraceUI(this.trace, below, disabled, above);
+		this.bridges.open(ui).move(120D, 120D).frames(2);
+		Assert.assertSame(below, ui.getNodeAt(120D, 120D));
+		Assert.assertSame(disabled, ui.getNodeAt(175D, 175D));
+		Assert.assertNull(ui.getNodeAt(50D, 50D));
+		Assert.assertSame(below, ui.getHoveredNode());
+	}
+
+	@Test
 	public void hoversNoNodeBelowAnotherUi() {
 		final TraceUI ui = new TraceUI(this.trace, RectNode.create(100D, 100D, 200D, 200D));
 		this.bridges.open(ui).open(new TraceUI(new ArrayList<>())).move(200D, 200D).frames(2);

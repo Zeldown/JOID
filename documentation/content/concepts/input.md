@@ -56,7 +56,7 @@ RectNode
 
 - `onHoverStart` and `onHoverEnd` fire on the frame the mouse enters and leaves the node; `onHover` fires on every frame in between.
 - `hover(...)` adds a tooltip. The supplier is read while the tooltip shows, so its text can change; return a `List<String>` for several lines. Your UI bridge draws the text tooltips.
-- `isHovered()` tells at any time whether the node is under the mouse.
+- `isHovered()` tells at any time whether the node is under the mouse: the front-most node there, or one of its parents.
 
 ## Keyboard shortcuts with keybind
 

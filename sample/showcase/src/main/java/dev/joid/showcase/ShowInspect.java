@@ -14,6 +14,7 @@ public class ShowInspect extends ShowLists {
 		.create(440, 80, 1040, 920)
 		.color(() -> ShowUI.vertical(this.veil(0D), this.veil(0.25D)))
 		.visible(() -> this.t() < 0.8D)
+		.interactive(false)
 		.effect(RoundedNodeEffect.create(34F))
 		.attach(this);
 	}

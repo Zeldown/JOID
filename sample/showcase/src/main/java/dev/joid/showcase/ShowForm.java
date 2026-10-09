@@ -51,6 +51,7 @@ public class ShowForm extends ShowUI {
 		.create(752, 488, 36)
 		.color(ShowUI.EMERALD)
 		.visible(() -> this.isValid())
+		.interactive(false)
 		.effect(ShadowNodeEffect.create(ShowUI.EMERALD, 14F))
 		.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(ShowUI.NIGHT, 3.5F, new Vector2d(762D, 506D), new Vector2d(768D, 512D), new Vector2d(779D, 499D)))
 		.attach(this);

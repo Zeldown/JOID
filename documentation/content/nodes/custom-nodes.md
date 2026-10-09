@@ -236,7 +236,7 @@ The UI sends each event to its top-level nodes, from the highest z-index, then t
 
 The other events follow the same order without `onClick` and without step 8. A release ends the node's own drag before step 2; a wheel event applies the node's [wheel scrolling](layout/overflow-and-scroll.md#wheel-scrolling) between steps 3 and 5.
 
-The hooks are called on every visible node of the UI, whatever the pointer position; a disabled node passes the event to its children but its own hooks and callbacks do not run. Check `isHovered(mouseX, mouseY)`, which tests visibility, enabled state, the overflow area and the bounds. Key events reach every node too: keep your own focus state.
+The hooks are called on every visible node of the UI, whatever the pointer position; a disabled node passes the event to its children but its own hooks and callbacks do not run. Check `isHovered(mouseX, mouseY)`, which tests the enabled state and whether the node is the mouse target, the front-most interactive node under the mouse, or one of its parents (see [Mouse target and bubbling](../interactions/mouse-and-keyboard.md#mouse-target-and-bubbling)). Key events reach every node too: keep your own focus state.
 
 ### Consuming events
 
