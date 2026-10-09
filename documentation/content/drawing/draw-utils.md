@@ -223,7 +223,7 @@ Each class is a singleton also reachable through its static `getInstance()` (`Dr
 | `shader(IShader shader)`, `getShader()` | Current shader, `null` for the default one (see [Custom Shaders](../shaders/custom-shaders.md)). |
 | `texture(ITexture texture, TextureFilter filter, TextureWrap wrap)`, `resetTexture()` | Binds a texture, or unbinds it. |
 | `viewport(int x, int y, int width, int height)`, `getViewportWidth()`, `getViewportHeight()` | Viewport, in window pixels. |
-| `clear(float red, float green, float blue, float alpha)`, `clearDepth()` | Clear the color or the depth of the current target. |
+| `clearColor(float red, float green, float blue, float alpha)`, `clearDepth()` | Clear the color (while it is written) or the depth of the current target. |
 | `getPixelGrid()` | The `PixelGrid` of the current transform. |
 
 The matrix methods (`pushMatrix`, `translate`, `rotate`, `scale`...) are on [Transformations and Framebuffers](transformations.md); the complete interface, stencil included, is on [Bridges](../integration/bridges.md).

@@ -29,7 +29,7 @@ public class DemoUIBridge extends StackUIBridge {
 		super.update();
 		render.beginFrame();
 		try {
-			render.clear(0F, 0F, 0F, 0F);
+			render.clearColor(0F, 0F, 0F, 0F);
 			DrawUtils.SHAPE.drawRect(0, 0, window.getWidth(), window.getHeight(), DemoUIBridge.BACKGROUND);
 			super.draw();
 		} finally {

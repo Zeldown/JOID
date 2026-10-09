@@ -71,7 +71,7 @@ public interface IRenderBridge extends IBridge {
 	public int getViewportHeight();
 	public @NonNull PixelGrid getPixelGrid();
 	public void viewport(final int x, final int y, final int width, final int height);
-	public void clear(final float red, final float green, final float blue, final float alpha);
+	public void clearColor(final float red, final float green, final float blue, final float alpha);
 
 	public IShader getShader();
 	public void resetTexture();

@@ -45,7 +45,7 @@ Each release publishes `joid-backend-template-<version>.zip` (built by the `back
 | File | Role |
 |---|---|
 | `src/main/java/.../Backend.java` | Calls `JOID.checkVersion` and registers the three bridges. |
-| `src/main/java/.../render/ExampleRenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearDepth`, `clearStencil`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, and override `beginFrame` and `endFrame` when your engine needs them. |
+| `src/main/java/.../render/ExampleRenderBridge.java` | Extends the core `RenderBridge`; implement `clearColorBuffer`, `clearDepthBuffer`, `clearStencilBuffer`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, and override `beginFrame` and `endFrame` when your engine needs them. |
 | `src/main/java/.../window/ExampleWindowBridge.java` | Window size, mouse, keyboard and clipboard. |
 | `src/main/java/.../audio/ExampleAudioBridge.java` | Streaming audio sources for the sound of videos. |
 | `src/demo/java/.../demo/DemoWindow.java` | Opens the JOID demo UIs on your engine. It is a source set of its own: only the `dev` jar contains it. |
@@ -91,13 +91,13 @@ When a test fails, the build prints the link of its interactive `report.html`.
 
 On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.joid.base.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, clears, reading pixels, and the getters of the others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding` (with `glIsTexture`, `glGetTexParameteri` and `glGetTexLevelParameteri` for the [borrowed textures](#borrowed-textures)), and `IGlFrameBufferBinding` twice, once with the core and ARB functions and once with the `EXT` ones (a context that has only one family never calls the other). Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-base-opengl-module).
 
-`RenderBridge` (`dev.joid.lib.bridge.render`) implements every matrix and state method in Java. Your subclass implements seven methods, and applies the current state each time one of them runs:
+`RenderBridge` (`dev.joid.lib.bridge.render`) implements every matrix and state method in Java, and the rules every backend shares: the frame, and the clears. Your subclass implements seven methods, and applies the current state each time one of them runs:
 
 | Abstract method | What it must do |
 |---|---|
-| `clear(float red, float green, float blue, float alpha)` | Clear the color of the current target. |
-| `clearDepth()` | Clear the depth of the current target to the far plane (1), whatever the depth write state; the depth write state is kept. |
-| `clearStencil()` | Clear the stencil of the current target to 0. |
+| `clearColorBuffer(float red, float green, float blue, float alpha)` | Clear the color of the current target. `clearColor(...)` calls it only while the color is written (`colorMask(true)`). |
+| `clearDepthBuffer()` | Clear the depth of the current target to the far plane (1), whatever the depth write state; the depth write state is kept. `clearDepth()` calls it. |
+| `clearStencilBuffer()` | Clear the stencil of the screen to 0. `clearStencil()` calls it only when no framebuffer is bound: the framebuffers of JOID have no stencil. |
 | `drawPrimitive(Primitive primitive, VertexBuffer buffer, IShader shader)` | Draw with the current state and `shader`. `RenderBridge.draw(...)` calls it with the bound shader, or with the default shader when none is bound, and only when that shader compiled (`isActive()`), the buffer holds vertices and the viewport is not empty, so every backend skips the same draws. |
 | `createTexture()` | Create an empty `ITexture`. |
 | `createFrameBuffer(int width, int height)` | Create an `IFrameBuffer` with a color texture of that size. |
@@ -119,7 +119,7 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 
 ### Frames
 
-`IRenderBridge.beginFrame()` and `endFrame()` wrap each frame; both do nothing by default. The demo windows, the testkit and the loops of the official backends call them around the clear and the `draw()` of the UI bridge, without knowing the class of your bridge. Override them when your engine records its commands per frame, as Vulkan does: `beginFrame()` acquires the image and starts recording, `endFrame()` submits, or when it shares its context with a host, as the OpenGL bridge does: `beginFrame()` starts its journal of the host state, `endFrame()` puts that state back. Showing the image on a window stays outside the contract (the Vulkan `present()`, a buffer swap).
+`IRenderBridge.beginFrame()` and `endFrame()` wrap each frame. The demo windows, the testkit and the loops of the official backends call them around the clear and the `draw()` of the UI bridge, without knowing the class of your bridge. `RenderBridge` makes them final: `beginFrame()` throws `IllegalStateException("The JOID frame has already begun, call endFrame() first")` inside a frame, `endFrame()` throws outside one, `isFrameActive()` tells whether a frame is open, and `requireFrame()` lets your methods refuse to run outside a frame. They call two hooks that do nothing by default. Override them when your engine records its commands per frame, as Vulkan does: `beginFrameCommands()` acquires the image and starts recording, `submitFrameCommands()` submits, or when it shares its context with a host, as the OpenGL bridge does: `beginFrameCommands()` starts its journal of the host state, `submitFrameCommands()` puts that state back. Showing the image on a window stays outside the contract (the Vulkan `present()`, a buffer swap).
 
 `IRenderBridge.suspend(Runnable draw)` runs a drawing of the host inside a JOID frame (an item of a game in a UI); by default it runs it as is. A bridge that changes the state of a shared context overrides it to give the host its state before the runnable and to take its own back after it, as `GlRenderBridge` does.
 

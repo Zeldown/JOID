@@ -127,7 +127,7 @@ public abstract class BitmapFontContractSuite {
 		final ITexture texture = render.createTexture().allocate(2 * atlas.texels, atlas.texels).upload(atlas.pixels(), 2 * atlas.texels, atlas.texels);
 		final Font font = new Font(new Renderer(atlas, texture));
 		render.beginFrame();
-		render.clear(0F, 0F, 0F, 1F);
+		render.clearColor(0F, 0F, 0F, 1F);
 		render.pushMatrix();
 		try {
 			render.scale(scale, scale, 1D);

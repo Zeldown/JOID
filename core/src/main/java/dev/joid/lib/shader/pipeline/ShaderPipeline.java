@@ -143,7 +143,7 @@ public final class ShaderPipeline {
 		try {
 			target.fill(() -> {
 				render.viewport(0, 0, context.getTextureWidth(), context.getTextureHeight());
-				render.clear(0F, 0F, 0F, 0F);
+				render.clearColor(0F, 0F, 0F, 0F);
 				render.ortho(context.getRegionX(), context.getRegionX() + context.getRegionWidth(), context.getRegionY() + context.getRegionHeight(), context.getRegionY(), -1000D, 1000D);
 				render.loadIdentity();
 				draw.run();

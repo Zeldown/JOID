@@ -49,7 +49,7 @@ public final class ExternalRaster {
 			render.viewport(0, 0, pixelWidth, pixelHeight);
 			render.ortho(0D, pixelWidth, pixelHeight, 0D, -1000D, 1000D);
 			render.loadIdentity();
-			render.clear(0F, 0F, 0F, 0F);
+			render.clearColor(0F, 0F, 0F, 0F);
 			render.clearDepth();
 			render.raster(target, pixelWidth, pixelHeight, () -> drawable.draw(pixelWidth, pixelHeight));
 		} finally {

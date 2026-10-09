@@ -23,7 +23,7 @@ The libraries of the JOID core are declared in the `libraries` configuration. No
 | Class | Role |
 |---|---|
 | `Backend` | Registers the bridges. It calls `JOID.checkVersion`, which warns when the loaded JOID has another major version than the one the backend targets. |
-| `render/ExampleRenderBridge` | Extends the core `RenderBridge`, which tracks matrices and state in Java. Implement `clear`, `clearStencil`, `draw`, `createTexture`, `createFrameBuffer` and `createShader`, applying the current state when they run. |
+| `render/ExampleRenderBridge` | Extends the core `RenderBridge`, which tracks matrices and state in Java. Implement `clearColorBuffer`, `clearDepthBuffer`, `clearStencilBuffer`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, applying the current state when they run. |
 | `window/ExampleWindowBridge` | Window size, mouse, keyboard and clipboard. |
 | `audio/ExampleAudioBridge` | Streaming audio sources used by the video player. |
 | `demo/DemoWindow` | Opens the JOID demo UIs on your engine. It lives in `src/demo/java`, so only the dev jar contains it. |

@@ -76,7 +76,6 @@ public final class VulkanRenderBridge extends RenderBridge {
 	private int               passHeight;
 	private boolean           passActive;
 	private long              boundPipeline;
-	private boolean           frameActive;
 	private Buffer            stagingBuffer;
 	private boolean           screenCleared;
 	private VulkanFrameBuffer passTarget;
@@ -105,7 +104,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	public void dispose(final @NonNull Runnable destroyer) {
-		if (this.frameActive) {
+		if (super.isFrameActive()) {
 			this.garbage.add(destroyer);
 		} else {
 			destroyer.run();
@@ -113,8 +112,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void endFrame() {
-		this.requireFrame();
+	protected void submitFrameCommands() {
 		if (!this.screenCleared) {
 			this.beginPass(null);
 		}
@@ -135,17 +133,13 @@ public final class VulkanRenderBridge extends RenderBridge {
 			VulkanContext.check(VK10.vkWaitForFences(this.context.getDevice(), this.frameFence, true, -1L), "vkWaitForFences");
 		}
 
-		this.frameActive = false;
-		this.garbage.forEach(Runnable::run);
+		final List<Runnable> released = new ArrayList<>(this.garbage);
 		this.garbage.clear();
+		released.forEach(Runnable::run);
 	}
 
 	@Override
-	public void beginFrame() {
-		if (this.frameActive) {
-			throw new IllegalStateException("The Vulkan frame has already begun");
-		}
-
+	protected void beginFrameCommands() {
 		if (this.swapchain.isOutdated()) {
 			this.swapchain.recreate();
 		}
@@ -169,7 +163,6 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 		this.vertexAllocator.reset();
 		this.uniformAllocator.reset();
-		this.frameActive   = true;
 		this.screenCleared = false;
 		this.passActive    = false;
 		this.passTarget    = null;
@@ -191,8 +184,8 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void clear(final float red, final float green, final float blue, final float alpha) {
-		this.requireFrame();
+	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
+		super.requireFrame();
 		this.beginPass((VulkanFrameBuffer) super.getState().getFrameBuffer());
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).colorAttachment(0);
@@ -202,8 +195,8 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void clearDepth() {
-		this.requireFrame();
+	protected void clearDepthBuffer() {
+		super.requireFrame();
 		this.beginPass((VulkanFrameBuffer) super.getState().getFrameBuffer());
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_DEPTH_BIT);
@@ -213,12 +206,8 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void clearStencil() {
-		this.requireFrame();
-		if (super.getState().getFrameBuffer() != null) {
-			return;
-		}
-
+	protected void clearStencilBuffer() {
+		super.requireFrame();
 		this.beginPass(null);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_STENCIL_BIT);
@@ -229,7 +218,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	@Override
 	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader current) {
-		this.requireFrame();
+		super.requireFrame();
 		final RenderState state = super.getState();
 		final VulkanShader shader = (VulkanShader) current;
 		final VulkanFrameBuffer target = (VulkanFrameBuffer) state.getFrameBuffer();
@@ -281,12 +270,6 @@ public final class VulkanRenderBridge extends RenderBridge {
 			this.stagingBuffer = Buffer.create(this.context, Math.max(size, 4L << 20), VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 		}
 		return this.stagingBuffer;
-	}
-
-	private void requireFrame() {
-		if (!this.frameActive) {
-			throw new IllegalStateException("Vulkan rendering must happen between beginFrame and endFrame");
-		}
 	}
 
 	private void endPass() {

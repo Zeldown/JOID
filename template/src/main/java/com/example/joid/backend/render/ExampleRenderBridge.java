@@ -12,22 +12,12 @@ import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 public final class ExampleRenderBridge extends RenderBridge {
 
 	@Override
-	public void endFrame() {
+	protected void clearDepthBuffer() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void beginFrame() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void clearDepth() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void clearStencil() {
+	protected void clearStencilBuffer() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -42,7 +32,7 @@ public final class ExampleRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void clear(final float red, final float green, final float blue, final float alpha) {
+	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
 		throw new UnsupportedOperationException();
 	}
 

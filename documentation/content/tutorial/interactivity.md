@@ -266,7 +266,7 @@ private void loop() {
 		this.flushPendingKey();
 
 		this.bridge.update();
-		BridgeHandler.RENDER.get().clear(0.1F, 0.1F, 0.1F, 1F);
+		BridgeHandler.RENDER.get().clearColor(0.1F, 0.1F, 0.1F, 1F);
 		this.bridge.draw();
 		GLFW.glfwSwapBuffers(this.window);
 	}

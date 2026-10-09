@@ -76,7 +76,7 @@ public final class AppLoop {
 			this.input.flush();
 
 			this.bridge.update();
-			BridgeHandler.RENDER.get().clear(0F, 0F, 0F, 1F);
+			BridgeHandler.RENDER.get().clearColor(0F, 0F, 0F, 1F);
 			this.bridge.draw();
 			GLFW.glfwSwapBuffers(this.window);
 		}

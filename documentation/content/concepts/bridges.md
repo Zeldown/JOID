@@ -24,7 +24,7 @@ These two lines of the Quick Start fill every registry JOID needs. Your UIs depe
 | `BridgeHandler.CLOCK` | `IClockBridge` | JOID registers `SystemClockBridge`; tests register a `ManualClockBridge` (see [The Frame Loop](frame-loop.md#time-comes-from-the-clock-bridge)). |
 | `BridgeHandler.SIGNAL_REPLAY` | `ISignalReplayRemapper` | JOID registers one that changes nothing; a host whose class names differ at runtime registers its own. |
 
-You rarely call the bridges yourself: nodes and `DrawUtils` use them for you. The calls you meet early are `BridgeHandler.RENDER.get().clear(...)` in your loop and `BridgeHandler.CLOCK.get().currentTimeMillis()` for time.
+You rarely call the bridges yourself: nodes and `DrawUtils` use them for you. The calls you meet early are `BridgeHandler.RENDER.get().clearColor(...)` in your loop and `BridgeHandler.CLOCK.get().currentTimeMillis()` for time.
 
 ## The official backends
 

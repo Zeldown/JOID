@@ -337,7 +337,7 @@ public abstract class RenderBridgeContractSuite {
 		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.frameBuffer(frameBuffer);
-			bridge.clear(0F, 1F, 0F, 1F);
+			bridge.clearColor(0F, 1F, 0F, 1F);
 			bridge.color(1F, 0F, 0F, 1F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0));
 			bridge.frameBuffer(null);
@@ -388,7 +388,7 @@ public abstract class RenderBridgeContractSuite {
 		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.frameBuffer(frameBuffer);
-			bridge.clear(0F, 0F, 0F, 1F);
+			bridge.clearColor(0F, 0F, 0F, 1F);
 			RenderBridgeContractSuite.drawInDepth(bridge, false);
 			bridge.frameBuffer(null);
 			bridge.color(1F, 1F, 1F, 1F);
@@ -478,7 +478,7 @@ public abstract class RenderBridgeContractSuite {
 	private static SnapshotImage render(final Consumer<IRenderBridge> draw) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.beginFrame();
-		render.clear(0F, 0F, 0F, 1F);
+		render.clearColor(0F, 0F, 0F, 1F);
 		draw.accept(render);
 		render.endFrame();
 

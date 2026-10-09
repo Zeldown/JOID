@@ -94,7 +94,7 @@ public final class App {
 			bridge.update();
 
 			render.beginFrame();
-			render.clear(0F, 0F, 0F, 1F);
+			render.clearColor(0F, 0F, 0F, 1F);
 			bridge.draw();
 			render.endFrame();
 			render.present();
@@ -111,11 +111,11 @@ public final class App {
 
 | Method of `dev.joid.backend.vulkan.render.VulkanRenderBridge` | Description |
 |---|---|
-| `beginFrame()` | Of `IRenderBridge`. Acquires the next swapchain image and starts recording. Recreates the swapchain first when the window size changed. Throws `IllegalStateException("The Vulkan frame has already begun")` when a frame is already open. |
+| `beginFrame()` | Of `IRenderBridge`. Acquires the next swapchain image and starts recording. Recreates the swapchain first when the window size changed. Throws `IllegalStateException("The JOID frame has already begun, call endFrame() first")` when a frame is already open. |
 | `endFrame()` | Of `IRenderBridge`. Submits the frame and waits for the GPU to finish it. |
 | `present()` | Shows the image on the window. |
 
-- Every `draw()` of your UI bridge, and every clear, happens between `beginFrame()` and `endFrame()`; outside, the bridge throws `Vulkan rendering must happen between beginFrame and endFrame`. `update()` and the input methods can run outside the frame.
+- Every `draw()` of your UI bridge, and every clear, happens between `beginFrame()` and `endFrame()`; outside, the bridge throws `The render bridge draws between beginFrame() and endFrame()`. `update()` and the input methods can run outside the frame.
 - A Vulkan 1.3 device able to present to the window is required; without one, `Backend.register` throws `No Vulkan 1.3 device able to present to the window was found`.
 - The swapchain presents without waiting for the vertical blank when the driver allows it (immediate mode, then mailbox, then FIFO).
 - The jar does not contain LWJGL: your application declares `lwjgl`, `lwjgl-glfw`, `lwjgl-openal`, `lwjgl-vulkan` and `lwjgl-shaderc` 3.3.4, with the natives of `lwjgl`, `lwjgl-glfw`, `lwjgl-openal` and `lwjgl-shaderc`, plus those of `lwjgl-vulkan` on macOS (MoltenVK).
@@ -157,7 +157,7 @@ public final class App {
 		while (!Display.isCloseRequested()) {
 			input.poll();
 			bridge.update();
-			render.clear(0F, 0F, 0F, 1F);
+			render.clearColor(0F, 0F, 0F, 1F);
 			bridge.draw();
 			Display.update();
 

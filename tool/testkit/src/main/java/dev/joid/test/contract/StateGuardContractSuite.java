@@ -150,7 +150,7 @@ public abstract class StateGuardContractSuite {
 			render.ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
 			render.viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
 			render.frameBuffer(null);
-			render.clear(0F, 0F, 0F, 1F);
+			render.clearColor(0F, 0F, 0F, 1F);
 			DrawUtils.RASTER.drawRaster(8D, 8D, 32D, 32D, (width, height) -> {
 				size[0] = width;
 				size[1] = height;
@@ -203,7 +203,7 @@ public abstract class StateGuardContractSuite {
 			render.cull(false);
 			render.color(1F, 1F, 1F, 1F);
 			render.alphaTest(0F);
-			render.clear(0F, 0F, 0F, 1F);
+			render.clearColor(0F, 0F, 0F, 1F);
 			StateGuardContractSuite.drawTexture(render);
 			StateGuardContractSuite.drawTranslucent(render);
 			StateGuardContractSuite.drawInDepth(render);
@@ -273,7 +273,7 @@ public abstract class StateGuardContractSuite {
 	private static void drawFrameBuffer(final IRenderBridge render) {
 		final IFrameBuffer frameBuffer = render.createFrameBuffer(StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
 		render.frameBuffer(frameBuffer);
-		render.clear(1F, 0F, 1F, 1F);
+		render.clearColor(1F, 0F, 1F, 1F);
 		render.frameBuffer(null);
 		render.texture(frameBuffer.getTexture(), TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(16F, 16F, 16F, 16F, -1F, true, 0));

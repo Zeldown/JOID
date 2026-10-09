@@ -270,13 +270,13 @@ public class ShaderTest {
 	private static final class LineRenderBridge extends RenderBridge {
 
 		@Override
-		public void clearDepth() {}
+		protected void clearDepthBuffer() {}
 
 		@Override
-		public void clearStencil() {}
+		protected void clearStencilBuffer() {}
 
 		@Override
-		public void clear(final float red, final float green, final float blue, final float alpha) {}
+		protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {}
 
 		@Override
 		protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader shader) {}

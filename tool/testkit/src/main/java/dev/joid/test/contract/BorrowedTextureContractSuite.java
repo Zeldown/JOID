@@ -140,7 +140,7 @@ public abstract class BorrowedTextureContractSuite {
 	private static SnapshotImage render(final Resource resource) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.beginFrame();
-		render.clear(0F, 0F, 0F, 1F);
+		render.clearColor(0F, 0F, 0F, 1F);
 		resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> render.draw(Primitive.TRIANGLES, BorrowedTextureContractSuite.quad()));
 		render.endFrame();
 

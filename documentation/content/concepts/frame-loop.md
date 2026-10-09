@@ -6,7 +6,7 @@ JOID has no loop of its own: your program (or the engine that hosts JOID) owns t
 while (!GLFW.glfwWindowShouldClose(this.window)) {
 	GLFW.glfwPollEvents();
 	this.bridge.update();
-	BridgeHandler.RENDER.get().clear(0.1F, 0.1F, 0.1F, 1F);
+	BridgeHandler.RENDER.get().clearColor(0.1F, 0.1F, 0.1F, 1F);
 	this.bridge.draw();
 	GLFW.glfwSwapBuffers(this.window);
 }

@@ -62,13 +62,13 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void endFrame() {
-		this.guard.exit();
+	protected void beginFrameCommands() {
+		this.guard.enter();
 	}
 
 	@Override
-	public void beginFrame() {
-		this.guard.enter();
+	protected void submitFrameCommands() {
+		this.guard.exit();
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void clear(final float red, final float green, final float blue, final float alpha) {
+	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
 		this.guard.enter();
 		try {
 			final RenderState state = super.getState();
@@ -108,7 +108,7 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void clearDepth() {
+	protected void clearDepthBuffer() {
 		this.guard.enter();
 		try {
 			this.applyTarget(super.getState());
@@ -121,7 +121,7 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void clearStencil() {
+	protected void clearStencilBuffer() {
 		this.guard.enter();
 		try {
 			this.applyTarget(super.getState());

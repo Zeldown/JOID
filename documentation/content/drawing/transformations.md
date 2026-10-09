@@ -103,7 +103,7 @@ public void draw(final double mouseX, final double mouseY) {
 		try {
 			this.buffer.fill(() -> {
 				render.viewport(0, 0, 256, 256);
-				render.clear(0F, 0F, 0F, 0F);
+				render.clearColor(0F, 0F, 0F, 0F);
 				render.ortho(0D, 256D, 256D, 0D, -1000D, 1000D);
 				render.loadIdentity();
 				DrawUtils.SHAPE.drawCircle(128D, 128D, Color.decode("#999999"), 120D);

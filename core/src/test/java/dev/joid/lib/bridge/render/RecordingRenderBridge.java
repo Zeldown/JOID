@@ -24,18 +24,35 @@ public final class RecordingRenderBridge extends RenderBridge {
 
 	private final List<Draw> draws = new ArrayList<>();
 
+	private int colorClears;
 	private int depthClears;
+	private int stencilClears;
+	private int frameCommands;
 
 	@Override
-	public void clearDepth() {
+	protected void beginFrameCommands() {
+		this.frameCommands++;
+	}
+
+	@Override
+	protected void submitFrameCommands() {
+		this.frameCommands--;
+	}
+
+	@Override
+	protected void clearDepthBuffer() {
 		this.depthClears++;
 	}
 
 	@Override
-	public void clearStencil() {}
+	protected void clearStencilBuffer() {
+		this.stencilClears++;
+	}
 
 	@Override
-	public void clear(final float red, final float green, final float blue, final float alpha) {}
+	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
+		this.colorClears++;
+	}
 
 	@Override
 	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader shader) {

@@ -32,6 +32,56 @@ public class RenderBridgeTest {
 	}
 
 	@Test
+	public void runsTheFrameCommandsOfTheBackendOnce() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.beginFrame();
+		Assert.assertTrue(render.isFrameActive());
+		Assert.assertEquals(1, render.getFrameCommands());
+		render.endFrame();
+		Assert.assertFalse(render.isFrameActive());
+		Assert.assertEquals(0, render.getFrameCommands());
+	}
+
+	@Test
+	public void refusesAFrameThatAlreadyBegan() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.beginFrame();
+		try {
+			render.beginFrame();
+			Assert.fail("A second beginFrame() must be refused");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The JOID frame has already begun, call endFrame() first", expected.getMessage());
+		}
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesToEndAFrameThatNeverBegan() {
+		new RecordingRenderBridge().endFrame();
+	}
+
+	@Test
+	public void clearsNoColorWhileTheColorIsMasked() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.colorMask(false);
+		render.clearColor(1F, 0F, 0F, 1F);
+		Assert.assertEquals(0, render.getColorClears());
+		render.colorMask(true);
+		render.clearColor(1F, 0F, 0F, 1F);
+		Assert.assertEquals(1, render.getColorClears());
+	}
+
+	@Test
+	public void clearsTheStencilOfTheScreenOnly() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.frameBuffer(render.createFrameBuffer(4, 4));
+		render.clearStencil();
+		Assert.assertEquals(0, render.getStencilClears());
+		render.frameBuffer(null);
+		render.clearStencil();
+		Assert.assertEquals(1, render.getStencilClears());
+	}
+
+	@Test
 	public void restoresThePushedStateOnPop() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.color(0.2F, 0.4F, 0.6F, 0.8F);

@@ -32,6 +32,7 @@ public abstract class RenderBridge implements IRenderBridge {
 	private final Deque<RenderState> stateStack;
 
 	private RenderState state;
+	private boolean     frameActive;
 	private IShader     defaultShader;
 	private ITexture    emptyTexture;
 
@@ -40,6 +41,26 @@ public abstract class RenderBridge implements IRenderBridge {
 		this.projection = new MatrixStack();
 		this.stateStack = new ArrayDeque<>();
 		this.state      = new RenderState();
+	}
+
+	@Override
+	public final void beginFrame() {
+		if (this.frameActive) {
+			throw new IllegalStateException("The JOID frame has already begun, call endFrame() first");
+		}
+
+		this.frameActive = true;
+		this.beginFrameCommands();
+	}
+
+	@Override
+	public final void endFrame() {
+		this.requireFrame();
+		try {
+			this.submitFrameCommands();
+		} finally {
+			this.frameActive = false;
+		}
 	}
 
 	@Override
@@ -239,6 +260,25 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public final void clearDepth() {
+		this.clearDepthBuffer();
+	}
+
+	@Override
+	public final void clearStencil() {
+		if (this.state.getFrameBuffer() == null) {
+			this.clearStencilBuffer();
+		}
+	}
+
+	@Override
+	public final void clearColor(final float red, final float green, final float blue, final float alpha) {
+		if (this.state.isColorMask()) {
+			this.clearColorBuffer(red, green, blue, alpha);
+		}
+	}
+
+	@Override
 	public final void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
 		final IShader shader = this.state.getShader() == null ? this.getDefaultShader() : this.state.getShader();
 		if (!shader.isActive() || buffer.getCount() == 0 || this.state.getViewportWidth() <= 0 || this.state.getViewportHeight() <= 0) {
@@ -248,7 +288,21 @@ public abstract class RenderBridge implements IRenderBridge {
 		this.drawPrimitive(primitive, buffer, shader);
 	}
 
+	protected void beginFrameCommands() {}
+
+	protected void submitFrameCommands() {}
+
+	protected abstract void clearDepthBuffer();
+	protected abstract void clearStencilBuffer();
+	protected abstract void clearColorBuffer(final float red, final float green, final float blue, final float alpha);
+
 	protected abstract void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader shader);
+
+	protected final void requireFrame() {
+		if (!this.frameActive) {
+			throw new IllegalStateException("The render bridge draws between beginFrame() and endFrame()");
+		}
+	}
 
 	protected final @NonNull SamplerBinding resolveTexture() {
 		final ITexture texture = this.state.getTexture();
