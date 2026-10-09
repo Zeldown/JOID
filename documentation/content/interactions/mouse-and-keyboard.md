@@ -195,7 +195,7 @@ The static helpers of `UI` test the left and the right key of a modifier at once
 
 ## Keybinds with UI.keybind
 
-`keybind(Runnable runnable, Key... keys)` registers a shortcut on a UI.
+`keybind(Runnable runnable, Object... bindings)` registers a shortcut on a UI. A binding is a `Key`, or any object a registered `IKeyResolver` turns into a key.
 
 ```java
 @Override
@@ -205,12 +205,49 @@ public void init() {
 }
 ```
 
-- A keybind is identified by the set of its keys: their order does not matter, and registering the same set again replaces the previous runnable (`keybind(r, CTRL, S)` then `keybind(r2, S, CTRL)` keeps `r2`).
+- A keybind is identified by the set of its bindings: their order does not matter, and registering the same set again replaces the previous runnable (`keybind(r, CTRL, S)` then `keybind(r2, S, CTRL)` keeps `r2`).
 - On each key event that no node consumed, a keybind runs when the pressed key is one of its keys and all its keys are down (`Key.isDown()`); the event is then consumed. Holding Ctrl and S then pressing A does not run Ctrl + S again.
-- Several keybinds can run for the same event; their order is unspecified. `getKeybindMap()` returns them as a `Map<Set<Key>, Runnable>`.
+- Several keybinds can run for the same event; their order is unspecified. `getKeybindMap()` returns them as a `Map<Set<Object>, Runnable>`.
 - The UI clears its keybinds every time it initializes (first open and every `UI.reload()`), so register them in `init()`.
 
 > WARNING: Keybinds run only when no node consumed the key. A focused text field consumes every key, so the keybinds of its UI wait until it loses the focus.
+
+### Key bindings of the engine with IKeyResolver
+
+An engine often lets its users choose their keys (the controls menu of a game). Pass its binding objects to `keybind` as they are: `KeyResolver` (`dev.joid.lib.utils.key.resolver`) turns each binding into a `Key` on every key event, so the shortcut follows a change of the user's settings at once. A `Key` resolves to itself; any other binding goes to the latest registered `IKeyResolver` that `supports` it. A binding resolved to `null` (a key left unbound) never runs its keybind. `keybind` throws an `IllegalArgumentException` for a binding that no resolver supports.
+
+```java
+public final class ActionKeyResolver implements IKeyResolver {
+
+	@Override
+	public boolean supports(final @NonNull Object binding) {
+		return binding instanceof Action;
+	}
+
+	@Override
+	public Key resolve(final @NonNull Object binding) {
+		return Controls.getKey((Action) binding);
+	}
+
+}
+```
+
+```java
+KeyResolver.register(new ActionKeyResolver());
+
+super.keybind(() -> JOID.close(this), Action.INVENTORY);
+```
+
+The backend of an engine registers the resolver of its own bindings (the key mappings of Minecraft, for example), so an interface only passes them.
+
+| Method | Description |
+|---|---|
+| `boolean supports(Object binding)` | `IKeyResolver`: whether it resolves this binding. |
+| `Key resolve(Object binding)` | `IKeyResolver`: the current key of the binding, or `null` when it has none. |
+| `KeyResolver.register(IKeyResolver resolver)` | Adds a resolver, tried first; registering it again moves it first. |
+| `KeyResolver.unregister(IKeyResolver resolver)` | Removes it. |
+| `KeyResolver.supports(Object binding)` | `true` for a `Key` or a binding a resolver supports. |
+| `KeyResolver.resolve(Object binding)` | The key of the binding, `null` when unbound; `IllegalArgumentException` when no resolver supports it. |
 
 ## UI input hooks
 

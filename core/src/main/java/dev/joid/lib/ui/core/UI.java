@@ -49,6 +49,7 @@ import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.key.resolver.KeyResolver;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedElement;
 import dev.joid.lib.utils.signal.SignalContext;
@@ -67,7 +68,7 @@ public abstract class UI implements IUI, IndexedElement {
 	@Getter
 	private static UI current;
 
-	@NonNull private final Map<Set<Key>, Runnable>              keybindMap;
+	@NonNull private final Map<Set<Object>, Runnable>           keybindMap;
 	@NonNull private final Stack<StencilState>                  stencilStack;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
@@ -294,16 +295,8 @@ public abstract class UI implements IUI, IndexedElement {
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context)));
 
 		if (!context.isCancelled()) {
-			for (final Map.Entry<Set<Key>, Runnable> entry : this.keybindMap.entrySet()) {
-				boolean match = entry.getKey().contains(key);
-				for (final Key bindKey : entry.getKey()) {
-					if (!bindKey.isDown()) {
-						match = false;
-						break;
-					}
-				}
-
-				if (match) {
+			for (final Map.Entry<Set<Object>, Runnable> entry : this.keybindMap.entrySet()) {
+				if (UI.isPressed(entry.getKey(), key)) {
 					this.traced(entry.getValue());
 					context.cancel();
 				}
@@ -549,8 +542,14 @@ public abstract class UI implements IUI, IndexedElement {
 		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
 	}
 
-	public final void keybind(final @NonNull Runnable runnable, final @NonNull Key... keys) {
-		this.keybindMap.put(new HashSet<>(Arrays.asList(keys)), runnable);
+	public final void keybind(final @NonNull Runnable runnable, final @NonNull Object @NonNull... bindings) {
+		for (final Object binding : bindings) {
+			if (!KeyResolver.supports(binding)) {
+				throw new IllegalArgumentException("No key resolver found for a binding of type " + binding.getClass().getName());
+			}
+		}
+
+		this.keybindMap.put(new HashSet<>(Arrays.asList(bindings)), runnable);
 	}
 
 	public final void reload() {
@@ -997,6 +996,19 @@ public abstract class UI implements IUI, IndexedElement {
 		} finally {
 			SignalContext.current().tracing(tracing);
 		}
+	}
+
+	private static boolean isPressed(final Set<Object> bindings, final Key key) {
+		boolean pressed = false;
+		for (final Object binding : bindings) {
+			final Key bound = KeyResolver.resolve(binding);
+			if (bound == null || !bound.isDown()) {
+				return false;
+			}
+
+			pressed |= bound == key;
+		}
+		return pressed;
 	}
 
 	@Getter

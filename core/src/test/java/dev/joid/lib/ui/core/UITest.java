@@ -65,6 +65,8 @@ import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
 import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.utils.key.resolver.IKeyResolver;
+import dev.joid.lib.utils.key.resolver.KeyResolver;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -214,7 +216,7 @@ public class UITest {
 	@Test
 	public void reloadsItsInitOnAFreshTree() {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
-		ui.keybind = new Key[] {Key.R};
+		ui.keybind = new Object[] {Key.R};
 		this.bridges.open(ui);
 		ui.reload();
 		Assert.assertEquals(2, ui.inits);
@@ -402,7 +404,7 @@ public class UITest {
 	@Test
 	public void runsAKeybindOnceAllItsKeysAreDown() {
 		final TraceUI ui = new TraceUI(this.trace);
-		ui.keybind = new Key[] {Key.R, Key.LEFT_CONTROL};
+		ui.keybind = new Object[] {Key.R, Key.LEFT_CONTROL};
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.R);
@@ -428,7 +430,7 @@ public class UITest {
 		final TraceNode node = new TraceNode("node", this.trace, 0);
 		final TraceUI ui = new TraceUI(this.trace, node);
 		node.cancel = true;
-		ui.keybind = new Key[] {Key.R};
+		ui.keybind = new Object[] {Key.R};
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.R);
@@ -439,7 +441,7 @@ public class UITest {
 	@Test
 	public void keepsOneKeybindAcrossItsReloads() {
 		final TraceUI ui = new TraceUI(this.trace);
-		ui.keybind = new Key[] {Key.R};
+		ui.keybind = new Object[] {Key.R};
 		this.bridges.open(ui);
 		ui.reload();
 		this.trace.clear();
@@ -1527,6 +1529,39 @@ public class UITest {
 		new TraceUI(this.trace).onKeyPressed('a', null);
 	}
 
+	@Test
+	public void resolvesTheBindingsOfAKeybindAtEachKey() {
+		final Binding binding = new Binding(Key.S);
+		final IKeyResolver resolver = new BindingKeyResolver();
+		KeyResolver.register(resolver);
+		try {
+			final TraceUI ui = new TraceUI(this.trace);
+			this.bridges.open(ui);
+			this.trace.clear();
+			ui.keybind(() -> this.trace.add("save"), Key.LEFT_CONTROL, binding);
+			this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S, Key.D));
+			this.bridges.getUi().keyTyped('s', Key.S);
+			binding.key = Key.D;
+			this.bridges.getUi().keyTyped('s', Key.S);
+			this.bridges.getUi().keyTyped('d', Key.D);
+			binding.key = null;
+			this.bridges.getUi().keyTyped('d', Key.D);
+			Assert.assertEquals(Arrays.asList("save", "typed s S cancelled", "typed s S", "save", "typed d D cancelled", "typed d D"), this.trace);
+		} finally {
+			KeyResolver.unregister(resolver);
+		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAKeybindWithoutResolverForItsBinding() {
+		new TraceUI(this.trace).keybind(() -> this.trace.add("save"), Key.LEFT_CONTROL, "S");
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesAKeybindWithANullBinding() {
+		new TraceUI(this.trace).keybind(() -> this.trace.add("save"), Key.LEFT_CONTROL, null);
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesAKeybindWithoutAction() {
 		new TraceUI(this.trace).keybind(null, Key.R);
@@ -1619,10 +1654,10 @@ public class UITest {
 		private final List<String> trace;
 		private final Node[]       nodes;
 
-		private int     inits;
-		private Key[]   keybind;
-		private boolean cancel;
-		private boolean closeable = true;
+		private int      inits;
+		private boolean  cancel;
+		private Object[] keybind;
+		private boolean  closeable = true;
 
 		private RuntimeException failure;
 
@@ -2081,6 +2116,30 @@ public class UITest {
 		@Override
 		public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {
 			this.hovers.add(content + " " + mouseX + " " + mouseY);
+		}
+
+	}
+
+	public static final class Binding {
+
+		private Key key;
+
+		public Binding(final Key key) {
+			this.key = key;
+		}
+
+	}
+
+	public static final class BindingKeyResolver implements IKeyResolver {
+
+		@Override
+		public boolean supports(final @NonNull Object binding) {
+			return binding instanceof Binding;
+		}
+
+		@Override
+		public Key resolve(final @NonNull Object binding) {
+			return ((Binding) binding).key;
 		}
 
 	}
