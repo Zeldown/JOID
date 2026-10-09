@@ -6,6 +6,8 @@ import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
 import dev.joid.lib.bridge.signal.IdentitySignalReplayRemapper;
+import dev.joid.lib.bridge.thread.DirectThreadBridge;
+import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.ui.UIBridgeRegistry;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import lombok.AccessLevel;
@@ -19,6 +21,7 @@ public final class BridgeHandler {
 	public static final BridgeRegistry<IClockBridge>          CLOCK;
 	public static final BridgeRegistry<IWindowBridge>         WINDOW;
 	public static final BridgeRegistry<IRenderBridge>         RENDER;
+	public static final BridgeRegistry<IThreadBridge>         THREAD;
 	public static final BridgeRegistry<ISignalReplayRemapper> SIGNAL_REPLAY;
 
 	static {
@@ -27,9 +30,11 @@ public final class BridgeHandler {
 		RENDER        = BridgeRegistry.create("RENDER");
 		AUDIO         = BridgeRegistry.create("AUDIO");
 		CLOCK         = BridgeRegistry.create("CLOCK");
+		THREAD        = BridgeRegistry.create("THREAD");
 		SIGNAL_REPLAY = BridgeRegistry.create("SIGNAL_REPLAY");
 
 		CLOCK.register(new SystemClockBridge());
+		THREAD.register(new DirectThreadBridge());
 		SIGNAL_REPLAY.register(new IdentitySignalReplayRemapper());
 	}
 

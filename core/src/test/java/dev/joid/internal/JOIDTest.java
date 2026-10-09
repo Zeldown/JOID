@@ -7,8 +7,10 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -22,11 +24,14 @@ import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.InternalFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.node.Node;
+
+import lombok.NonNull;
 
 public class JOIDTest {
 
@@ -318,6 +323,55 @@ public class JOIDTest {
 	}
 
 	@Test
+	public void opensAndClosesOnTheRenderThreadFromAnotherThread() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		final MenuUI menu = new MenuUI();
+		BridgeHandler.THREAD.register(thread);
+		try {
+			Assert.assertSame(this.bridges.getUi(), JOID.open(menu));
+			Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+			thread.run();
+			Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+			JOID.close(menu);
+			Assert.assertEquals(0, menu.closes);
+			thread.run();
+			Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+			Assert.assertEquals(1, menu.closes);
+			JOID.open(menu, true);
+			JOID.close(menu, true);
+			thread.run();
+			Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
+	public void opensAndClosesAtOnceOnTheRenderThread() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		thread.renderThread = true;
+		final MenuUI menu = new MenuUI();
+		BridgeHandler.THREAD.register(thread);
+		try {
+			JOID.open(menu);
+			Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+			JOID.close(menu);
+			Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+			Assert.assertTrue(thread.tasks.isEmpty());
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
+	public void runsOnTheCallingThreadByDefault() {
+		final List<String> trace = new ArrayList<>();
+		Assert.assertTrue(BridgeHandler.THREAD.get().isRenderThread());
+		BridgeHandler.THREAD.get().execute(() -> trace.add("run"));
+		Assert.assertEquals(Collections.singletonList("run"), trace);
+	}
+
+	@Test
 	public void closesNothingWithoutBridge() {
 		final MenuUI menu = new MenuUI();
 		JOID.open(menu);
@@ -450,6 +504,30 @@ public class JOIDTest {
 		} catch (final InvocationTargetException e) {
 			throw e.getCause();
 		}
+	}
+
+	public static final class QueueThreadBridge implements IThreadBridge {
+
+		private final List<Runnable> tasks = new ArrayList<>();
+
+		private boolean renderThread;
+
+		@Override
+		public boolean isRenderThread() {
+			return this.renderThread;
+		}
+
+		@Override
+		public void execute(final @NonNull Runnable runnable) {
+			this.tasks.add(runnable);
+		}
+
+		public void run() {
+			final List<Runnable> tasks = new ArrayList<>(this.tasks);
+			this.tasks.clear();
+			tasks.forEach(Runnable::run);
+		}
+
 	}
 
 	public static final class MenuUI extends UI {

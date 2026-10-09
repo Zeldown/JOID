@@ -15,7 +15,7 @@ if (JOID.isOpen(SettingsUI.class)) {
 
 ![A gray menu card; a popup card opens on top of it with a pop and dims the menu, then Escape closes the popup](../images/ui-open-popup.gif "JOID.open adds a popup on top of the open menu; Escape closes the top closeable UI.")
 
-`JOID.open` finds the bridge that accepts the UI (the registered bridge whose `canHandle(ui)` returns `true`, the highest index first, then the last registered) and calls its `open(ui)`. It returns that bridge, and throws an `IllegalStateException` ("No IUIBridge can open X: register one whose canHandle accepts it") when none accepts the UI. `JOID.close` asks the UI through `ui.onClose()`, then calls the bridge's `close(ui)`. Both work whatever the `closeable` option of the UI.
+`JOID.open` finds the bridge that accepts the UI (the registered bridge whose `canHandle(ui)` returns `true`, the highest index first, then the last registered) and calls its `open(ui)`. It returns that bridge, and throws an `IllegalStateException` ("No IUIBridge can open X: register one whose canHandle accepts it") when none accepts the UI. `JOID.close` asks the UI through `ui.onClose()`, then calls the bridge's `close(ui)`. Both work whatever the `closeable` option of the UI. Called from another thread than the render thread of the engine, they run on the render thread a moment later, through the [thread bridge](../integration/bridges.md#ithreadbridge).
 
 ## Refusing to close with close()
 

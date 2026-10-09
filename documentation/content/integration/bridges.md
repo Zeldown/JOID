@@ -23,6 +23,7 @@ JOID.inst().load();
 | `BridgeHandler.RENDER` | `BridgeRegistry<IRenderBridge>` | [`IRenderBridge`](#irenderbridge) | the backend |
 | `BridgeHandler.AUDIO` | `BridgeRegistry<IAudioBridge>` | [`IAudioBridge`](#iaudiobridge-and-iaudiosource) | the backend |
 | `BridgeHandler.CLOCK` | `BridgeRegistry<IClockBridge>` | [`IClockBridge`](#iclockbridge) | JOID, with a `SystemClockBridge` |
+| `BridgeHandler.THREAD` | `BridgeRegistry<IThreadBridge>` | [`IThreadBridge`](#ithreadbridge) | JOID, with a `DirectThreadBridge`; an engine with a render thread of its own registers one |
 | `BridgeHandler.SIGNAL_REPLAY` | `BridgeRegistry<ISignalReplayRemapper>` | [`ISignalReplayRemapper`](#mapping-names-with-isignalreplayremapper) | JOID, with an `IdentitySignalReplayRemapper` |
 
 ## Looking up a bridge with get
@@ -189,6 +190,39 @@ BridgeHandler.CLOCK.unregister(clock);
 ```
 
 Unregistering it gives the time back to the `SystemClockBridge`. The [testkit](testkit.md) drives its snapshots with a `ManualClockBridge`.
+
+## IThreadBridge
+
+The thread bridge tells JOID which thread draws, and runs a task on it. `JOID.open` and `JOID.close` (with or without `force`) post their work through it when they are called from another thread, for example from a network thread of the engine, so `init()`, the bridge and the graphics calls always run on the render thread.
+
+| Method | Description |
+|---|---|
+| `isRenderThread()` | Whether the calling thread is the render thread of the engine. |
+| `execute(Runnable runnable)` | Runs the task on the render thread, later when called from another thread. |
+
+`DirectThreadBridge` (`dev.joid.lib.bridge.thread`) is registered when `BridgeHandler` loads: every thread is the render thread and a task runs at once, which fits an application that opens its UIs from its own loop, like the demo windows. An engine registers its own:
+
+```java
+public final class GameThreadBridge implements IThreadBridge {
+
+	@Override
+	public boolean isRenderThread() {
+		return Game.inst().isRenderThread();
+	}
+
+	@Override
+	public void execute(final @NonNull Runnable runnable) {
+		Game.inst().runOnRenderThread(runnable);
+	}
+
+}
+```
+
+```java
+BridgeHandler.THREAD.register(new GameThreadBridge());
+```
+
+`JOID.open` still returns the bridge at once; the UI joins it when the task runs.
 
 ## Mapping names with ISignalReplayRemapper
 

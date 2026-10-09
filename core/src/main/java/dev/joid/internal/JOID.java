@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.InternalFont;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.ui.core.UI;
 import lombok.Getter;
@@ -120,9 +121,15 @@ public final class JOID {
 
 	public static void close(final @NonNull UI ui) {
 		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge != null && ui.onClose()) {
-			bridge.close(ui);
+		if (bridge == null) {
+			return;
 		}
+
+		JOID.execute(() -> {
+			if (ui.onClose()) {
+				bridge.close(ui);
+			}
+		});
 	}
 
 	public static void close(final @NonNull UI ui, final boolean force) {
@@ -136,13 +143,15 @@ public final class JOID {
 			return;
 		}
 
-		ui.properlyClose();
-		bridge.close(ui);
+		JOID.execute(() -> {
+			ui.properlyClose();
+			bridge.close(ui);
+		});
 	}
 
 	public static @NonNull IUIBridge open(final @NonNull UI ui) {
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
-		bridge.open(ui);
+		JOID.execute(() -> bridge.open(ui));
 		return bridge;
 	}
 
@@ -152,12 +161,14 @@ public final class JOID {
 		}
 
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
-		for (final UI currentUi : new ArrayList<>(bridge.getUiList().ordered())) {
-			currentUi.properlyClose();
-			bridge.close(currentUi);
-		}
+		JOID.execute(() -> {
+			for (final UI currentUi : new ArrayList<>(bridge.getUiList().ordered())) {
+				currentUi.properlyClose();
+				bridge.close(currentUi);
+			}
 
-		bridge.open(ui);
+			bridge.open(ui);
+		});
 		return bridge;
 	}
 
@@ -167,6 +178,15 @@ public final class JOID {
 			throw new IllegalStateException("No IUIBridge can open " + ui.getClass().getSimpleName() + ": register one whose canHandle accepts it");
 		}
 		return bridge;
+	}
+
+	private static void execute(final @NonNull Runnable runnable) {
+		final IThreadBridge thread = BridgeHandler.THREAD.get();
+		if (thread.isRenderThread()) {
+			runnable.run();
+		} else {
+			thread.execute(runnable);
+		}
 	}
 
 }
