@@ -976,6 +976,38 @@ public class UITest {
 	}
 
 	@Test
+	public void showsTheTooltipThroughANodeThatIsNotInteractive() {
+		final TraceUI ui = new TraceUI(this.trace, RectNode.create(100D, 100D, 200D, 200D).hover(() -> "below"), RectNode.create(150D, 150D, 200D, 200D).zindex(1).hover(() -> "above").interactive(false));
+		this.bridges.open(ui).move(200D, 200D).frames(2);
+		Assert.assertTrue(this.trace.contains("hover [below] 200.0 200.0"));
+		Assert.assertFalse(this.trace.contains("hover [above] 200.0 200.0"));
+	}
+
+	@Test
+	public void listsTheNodesAtAPointFromTheFrontToTheBack() {
+		final RectNode child = RectNode.create(20D, 20D, 50D, 50D);
+		final RectNode behind = RectNode.create(10D, 10D, 50D, 50D).zindex(-1);
+		final RectNode parent = RectNode.create(100D, 100D, 200D, 200D).append(child, behind);
+		final RectNode above = RectNode.create(150D, 150D, 200D, 200D).zindex(1).interactive(false);
+		final RectNode below = RectNode.create(0D, 0D, 400D, 400D).zindex(-5);
+		final RectNode hidden = RectNode.create(0D, 0D, 400D, 400D).zindex(2).visible(false);
+		final TraceUI ui = new TraceUI(this.trace, parent, above, below, hidden);
+		this.bridges.open(ui).move(155D, 155D).frames(2);
+		Assert.assertEquals(Arrays.asList(above, child, parent, behind, below), ui.getNodeListAt(155D, 155D));
+		Assert.assertEquals(Arrays.asList(parent, below), ui.getNodeListAt(105D, 105D));
+		Assert.assertEquals(Arrays.asList(child, parent, behind), parent.getNodeListAt(155D, 155D));
+		Assert.assertSame(child, ui.getHoveredNode());
+	}
+
+	@Test
+	public void hoversNoNodeBelowAnotherUi() {
+		final TraceUI ui = new TraceUI(this.trace, RectNode.create(100D, 100D, 200D, 200D));
+		this.bridges.open(ui).open(new TraceUI(new ArrayList<>())).move(200D, 200D).frames(2);
+		Assert.assertEquals(1, ui.getNodeListAt(200D, 200D).size());
+		Assert.assertNull(ui.getHoveredNode());
+	}
+
+	@Test
 	public void handsItsTooltipsToItsBridge() {
 		final HoverBridge bridge = new HoverBridge();
 		final NodeUI ui = new NodeUI(RectNode.create(100D, 100D, 200D, 200D).hover(() -> "Save"));

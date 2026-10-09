@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.dev;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -360,8 +361,13 @@ public final class DevNode extends Node {
 		if (this.inspectSignal.peek()) {
 			if (!this.inspectedNodeLocked.peek()) {
 				this.inspectedNode.set(null);
-				for (final Node node : UI.isCtrlKeyDown() ? super.getUi().getNodeList().recursive() : super.getUi().getNodeList().recursive().reversed()) {
-					if (!node.isHovered(mouseX, mouseY, false) || node instanceof DevNode || this.getChildren().recursive().contains(node)) {
+				final List<Node> nodeList = super.getUi().getNodeListAt(mouseX, mouseY);
+				if (UI.isCtrlKeyDown()) {
+					Collections.reverse(nodeList);
+				}
+
+				for (final Node node : nodeList) {
+					if (node instanceof DevNode || this.getChildren().recursive().contains(node)) {
 						continue;
 					}
 

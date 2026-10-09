@@ -321,6 +321,37 @@ public class NodeTest {
 	}
 
 	@Test
+	public void letsTheMouseThroughWhileNotInteractive() {
+		final List<String> clicks = new ArrayList<>();
+		final boolean[] interactive = {false};
+		final RectNode below = RectNode.create(100D, 100D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("below"));
+		final RectNode child = RectNode.create(0D, 0D, 50D, 50D);
+		final RectNode above = RectNode.create(100D, 100D, 100D, 100D).zindex(1).interactive(rect -> interactive[0]).onClick((rect, mouseX, mouseY, button) -> clicks.add("above")).append(child);
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(below, above)));
+		this.bridges.move(150D, 150D).frames(2);
+		Assert.assertFalse(above.isInteractive());
+		Assert.assertFalse(child.isInteractive());
+		Assert.assertFalse(above.isHovered(150D, 150D, false));
+		Assert.assertTrue(below.isHovered(150D, 150D));
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("below"), clicks);
+		interactive[0] = true;
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("below", "above"), clicks);
+	}
+
+	@Test
+	public void followsABooleanSignalForItsInteractivity() {
+		final BooleanSignal interactive = new BooleanSignal(false);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).interactive(interactive);
+		Assert.assertFalse(node.isInteractive());
+		interactive.set(true);
+		Assert.assertTrue(node.isInteractive());
+		Assert.assertFalse(RectNode.create(0D, 0D, 10D, 10D).interactive(false).isInteractive());
+		Assert.assertTrue(RectNode.create(0D, 0D, 10D, 10D).isInteractive());
+	}
+
+	@Test
 	public void hidesTheChildrenOutsideItsOverflowArea() {
 		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN);
 		final RectNode inside = RectNode.create(10D, 10D, 20D, 20D).attach(area);

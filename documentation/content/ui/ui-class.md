@@ -66,7 +66,7 @@ See [The Virtual Canvas](../concepts/canvas.md) for the fit rule and the convers
 | `void drawBackground(double mouseX, double mouseY)` | Every frame, after the `@UIData` background and before the transition and the view transform: it draws in the host's coordinate space (window pixels with the projection of the [Quick Start](../getting-started/quick-start.md)), not on the canvas. |
 | `void preDraw(double mouseX, double mouseY)` | Inside the view, after the nodes with a negative `zindex` and before the nodes with a `zindex` from 0 to 99. |
 | `void postDraw(double mouseX, double mouseY)` | Inside the view, after the nodes with a `zindex` from 0 to 99 and before the nodes with a `zindex` of 100 or more. |
-| `void mousePressed(double mouseX, double mouseY, MouseButton clickType, DispatchContext context)` | After the nodes received the press (the nodes with a positive `zindex` first). |
+| `void mousePressed(double mouseX, double mouseY, MouseButton clickType, DispatchContext context)` | After the nodes received the press, from the front to the back. |
 | `void mouseDragged(double mouseX, double mouseY, MouseButton clickType, long deltaTime, DispatchContext context)` | After the nodes received the drag. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge. |
 | `void mouseReleased(double mouseX, double mouseY, MouseButton clickType, DispatchContext context)` | After the nodes received the release. |
 | `void mouseScroll(double mouseX, double mouseY, double notchesX, double notchesY, DispatchContext context)` | After the nodes received the scroll, in wheel notches on each axis. |
@@ -237,6 +237,7 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 | `DoubleSignal getZoomLevel()`, `getScaledWidth()`, `getScaledHeight()` | The zoom and the visible size of the canvas, as signals. |
 | `double getWidth()`, `double getHeight()` | The window size, in window pixels. |
 | `double getMouseX()`, `double getMouseY()` | The mouse in canvas units, as sampled at the last draw. |
+| `List<Node> getNodeListAt(double x, double y)`, `Node getHoveredNode()` | The visible nodes under a point, from the front to the back, and the first interactive one at the mouse (`null` when the UI is not on top). See [Nodes under a point with getNodeListAt](../interactions/mouse-and-keyboard.md#nodes-under-a-point-with-getnodelistat). |
 | `double getFrameTime()` | Duration of the last frame in milliseconds (`1000 / 60` on the first frame). |
 | `double getFps()` | Frames per second, updated once per second (`0` during the first second). |
 | `long getRenderTime()`, `long getLastFrame()` | Duration of the last draw and clock time of the last frame, in nanoseconds. |

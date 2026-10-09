@@ -246,6 +246,7 @@ RectNode.create(0, 0, 320, 0).color(Color.GRAY).aspectRatio(16D / 9D).attach(thi
 | `visible(boolean visible)`, `visible(Supplier<Boolean> visible)` | A fixed value, a followed expression or signal (`visible(this.open)`), or a lambda. Default: visible. |
 | `visible(Predicate<T> visible)` | A predicate on the node, evaluated on each check. |
 | `enabled(boolean enabled)`, `enabled(Supplier<Boolean> enabled)`, `enabled(Predicate<T> enabled)` | Same for the enabled state. Default: enabled. |
+| `interactive(boolean interactive)`, `interactive(Supplier<Boolean> interactive)`, `interactive(Predicate<T> interactive)` | Same for the mouse: a node that is not interactive is drawn but lets the mouse through to the nodes behind it (see [Letting the mouse through with interactive](../interactions/mouse-and-keyboard.md#letting-the-mouse-through-with-interactive)). Default: interactive. |
 | `isVisible()` | `true` when the parent is visible, the node is not entirely outside its [overflow area](layout/overflow-and-scroll.md), and its own predicate passes. |
 | `isVisibleProperty()` | The node's own predicate only. Layout nodes use it to give no room to hidden children. |
 | `isEnabled()` | `true` when the parent is enabled and the node's own predicate passes. |
@@ -431,7 +432,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | --- | --- | --- |
 | Callbacks | `onInit`, `onDetach`, `onAppend`, `onMount`, `onUpdate`, `onRender`, `onDraw`, `onClick`, `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed`, `onHover`, `onHoverStart`, `onHoverEnd`, `onDrag`, `onDragStart`, `onDragEnd`, `onSnap`, `onWatch`, `onAnimate`, `onScrollUpdate`, `onScrollEnding`, `onScrollEnd` | [Callbacks](../interactions/callbacks.md) |
 | Hover and tooltips | `hover(...)`, `hoverLines(...)`, `hoverElements(...)`, `clearHover()`, `clearHoverLines()`, `clearHoverElements()`, `hoverDuration(long)`, `hoverEquation(TweenEquation)`, `hoverValue(float)`, `hovered(boolean)`, `isHovered()`, `isHovered(double, double)`, `isHovered(double, double, boolean)`, `renderHover(double, double)`, `getHoverDuration()`, `getHoverEquation()` | [Hover and Tooltips](../interactions/hover.md) |
-| Mouse cursor | `cursor(Cursor)`, `cursor(Supplier<Cursor>)`, `getCursor()`, `getResolvedCursor()`, `getHoveredNode(double, double)` | [Mouse and Keyboard](../interactions/mouse-and-keyboard.md#mouse-cursor) |
+| Mouse cursor | `cursor(Cursor)`, `cursor(Supplier<Cursor>)`, `getCursor()`, `getResolvedCursor()`, `getNodeListAt(double, double)` | [Mouse and Keyboard](../interactions/mouse-and-keyboard.md#mouse-cursor) |
 | Effects | `effect(NodeEffect)`, `removeEffect(Class)`, `clearEffects()`, `getEffect(Class)`, `hasEffect(Class)`, `getEffectMap()`, `shouldApplyEffect(NodeEffect)` | [Effects](../styling/effects.md) |
 | Drag and drop | `draggable(DraggableProperty)`, `startDragging(double, double)`, `stopDragging()`, `dragging(boolean, double, double)`, `isDragging()`, `isDragged()`, `getDraggable()`, `getDraggedNode()` | [Drag and Drop](../interactions/drag-drop.md) |
 | Signals | `watch(Signal)`, `watch(Signal, WatchProperty...)`, `watch(Signal, Supplier<Boolean>, WatchProperty...)`; every setter with its `Supplier` overload | [Watching Signals](../state/watch.md), [Reactive Properties](../state/reactive-properties.md) |
@@ -475,8 +476,8 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 
 | Method | Description |
 | --- | --- |
-| `visible(boolean)`, `visible(Supplier<Boolean>)`, `visible(Predicate<T>)`, and the same three `enabled(...)` | Visibility and enabled state. |
-| `isVisible()`, `isVisibleProperty()`, `isEnabled()`, `getVisible()`, `getEnabled()` | State. |
+| `visible(boolean)`, `visible(Supplier<Boolean>)`, `visible(Predicate<T>)`, and the same three `enabled(...)` and `interactive(...)` | Visibility, enabled state and mouse. |
+| `isVisible()`, `isVisibleProperty()`, `isEnabled()`, `isInteractive()`, `getVisible()`, `getEnabled()`, `getInteractive()` | State. |
 | `zindex(int)`, `zindex(Supplier<Integer>)`, `getZindex()`, `getIndex()` | Order among siblings. Default `0`. |
 | `zlevel(double)`, `zlevel(Supplier<Double>)`, `getZlevel()` | Depth translation. Default `0`. |
 | `layer(INodeLayer)`, `layer(int, INodeLayer)`, `clearLayers()`, `getLayerList()` | Layers. |

@@ -57,7 +57,7 @@ super.keybind(() -> this.status.set("Saved"), Key.LEFT_CONTROL, Key.S);
 - `notchesY` of a wheel event is a `double` in wheel notches: `1` for a notch up, `-1` for a notch down, a fraction for a precise touchpad. `notchesX` is the horizontal wheel (a tilted wheel or a touchpad): positive toward the left, negative toward the right, `0` on LWJGL 2. They are never both `0` (the bridge drops still events).
 - `deltaTime` of a drag event is the number of milliseconds since the button was pressed, measured by the UI bridge on the clock bridge (`BridgeHandler.CLOCK`).
 - `onClick` consumes the press: the nodes behind and the UIs below do not receive it. `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` are listeners: they run for every event not consumed yet and leave it to the others; see [Consumed input events](callbacks.md#consumed-input-events).
-- Hidden and disabled nodes receive no mouse event: none of these callbacks, nor hover and drags, fire for a node whose `visible(...)` or `enabled(...)` returns `false`, or for the children of a hidden or disabled node.
+- Hidden and disabled nodes receive no mouse event: none of these callbacks, nor hover and drags, fire for a node whose `visible(...)` or `enabled(...)` returns `false`, or for the children of a hidden or disabled node. A node with `interactive(false)` receives none either, and lets the mouse through to the nodes behind it: see [Letting the mouse through with interactive](#letting-the-mouse-through-with-interactive).
 
 ## Mouse coordinates
 
@@ -73,11 +73,43 @@ Positions are units of the 1920×1080 virtual canvas, fitted to the window witho
 
 `node.isHovered(mouseX, mouseY)` is the test used for clicks, hover and drags. It returns `true` when all of these hold:
 
-- the node is in a UI, that UI is on top (`UI.isOnTop()`, as reported by its UI bridge), and the node is visible and enabled;
+- the node is in a UI, that UI is on top (`UI.isOnTop()`, as reported by its UI bridge), and the node is visible, enabled and interactive;
 - the mouse is inside the area of the parent that clips the node with an overflow, if any;
 - `getAbsoluteX() < mouseX <= getAbsoluteX() + getWidth()` and `getAbsoluteY() < mouseY <= getAbsoluteY() + getHeight()`.
 
 `isHovered(mouseX, mouseY, false)` skips the enabled check. `isHovered()` without arguments returns the hover state of the last drawn frame (see [Hover and Tooltips](hover.md)).
+
+### Letting the mouse through with interactive
+
+`interactive(false)` takes a node out of the mouse: the node is still drawn, but it is never hovered, receives no mouse event, shows no tooltip and no cursor, and the nodes behind it receive the mouse as if it were not there. Its children are not interactive either. `enabled(false)` is not enough for that: a disabled node still covers the nodes behind it for the tooltips and the cursor. Use it for a drawing that follows the mouse, a decoration over the content, or an item carried by the mouse:
+
+```java
+ContainerNode
+.create(0, 0, 0, 0)
+.zindex(Integer.MAX_VALUE)
+.interactive(false)
+.onDraw((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.GRAY, 6D))
+.attach(this);
+```
+
+`interactive(Supplier<Boolean>)` follows a signal or an expression and `interactive(Predicate<T>)` tests the node on each check, as `enabled(...)` does. `isInteractive()` returns `false` when the node or one of its parents is not interactive. Keyboard events are not affected.
+
+### Nodes under a point with getNodeListAt
+
+`UI.getNodeListAt(x, y)` returns every visible node of the UI under a point of the canvas, from the front to the back, in the order the UI draws them: the scroll bar of an area before its content, the [skeleton](../nodes/node-fundamentals.md) of a node that is not mounted instead of its children, the children with a `zindex` of 0 or more before their parent and the ones below 0 after it, and only the part of a child inside its [overflow area](../nodes/layout/overflow-and-scroll.md). Disabled nodes and nodes with `interactive(false)` are in the list: each use keeps the nodes it needs. `Node.getNodeListAt(x, y)` gives the same list for one node and its subtree.
+
+`UI.getHoveredNode()` is the first interactive node of that list at the mouse, or `null` when the UI is not on top. It decides the cursor and the tooltip, and the DevNode inspector picks its node from the same list. To find the first slot of an inventory under the mouse, whatever covers it:
+
+```java
+private SlotNode getSlotAt(final double x, final double y) {
+	for (final Node node : super.getNodeListAt(x, y)) {
+		if (node instanceof SlotNode) {
+			return (SlotNode) node;
+		}
+	}
+	return null;
+}
+```
 
 ## Mouse cursor
 
@@ -102,7 +134,7 @@ RectNode
 
 At each frame, the UI bridge picks the cursor the way a browser does:
 
-- the node under the pointer is the topmost one that passes `isHovered(mouseX, mouseY, false)`: a disabled node keeps its cursor, a hidden node has none;
+- the node under the pointer is `UI.getHoveredNode()`, the first interactive node of [`getNodeListAt`](#nodes-under-a-point-with-getnodelistat) at the mouse: a disabled node keeps its cursor, a hidden node or a node with `interactive(false)` has none;
 - a node without a cursor takes the cursor of its parent, up to the root; a tree without any cursor shows `DEFAULT`;
 - while a mouse button is held, the cursor of the node pressed stays, wherever the pointer goes, until the button is released;
 - only the UIs that receive the mouse count, from the top: an interactive overlay comes before the screen below it, a popup hides the UIs under it, and a passive overlay is ignored;

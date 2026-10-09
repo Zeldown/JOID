@@ -96,7 +96,7 @@ RectNode.create(100, 200, 400, 300).color(Color.LIGHTGRAY).visible(this.open).at
 
 ![Each click on a gray button shows or hides a light gray panel](../images/ess-nodes-visible.gif "visible(this.open): the panel follows the signal the button toggles.")
 
-A hidden node is not drawn, nor are its children, and it receives no clicks or hover. `enabled(false)` is the softer version: the node is still drawn, but neither it nor its children react to the mouse. Signals are the subject of [Signals and Reactivity](signals.md).
+A hidden node is not drawn, nor are its children, and it receives no clicks or hover. `enabled(false)` is the softer version: the node is still drawn, but neither it nor its children react to the mouse. `interactive(false)` goes one step further and lets the mouse through the node to the nodes behind it, for a drawing that must not cover them. Signals are the subject of [Signals and Reactivity](signals.md).
 
 ## Drawing order with zindex
 

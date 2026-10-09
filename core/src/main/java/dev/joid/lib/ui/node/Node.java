@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -172,6 +171,7 @@ public abstract class Node implements INode {
 
 	private Predicate<Node> visible;
 	private Predicate<Node> enabled;
+	private Predicate<Node> interactive;
 
 	private Align            anchorX;
 	private Align            anchorY;
@@ -260,6 +260,7 @@ public abstract class Node implements INode {
 
 		this.visible = node -> true;
 		this.enabled = node -> true;
+		this.interactive = node -> true;
 
 		this.position = PositionProperty.RELATIVE;
 		this.overflow = OverflowProperty.NONE;
@@ -627,7 +628,20 @@ public abstract class Node implements INode {
 	}
 
 	public boolean renderHover(final double mouseX, final double mouseY) {
-		return this.renderHover(mouseX, mouseY, new AtomicBoolean(false));
+		final List<IHoverElement> hoverList = new LinkedList<>(this.hoverElementList);
+		if (!this.hoverSupplierList.isEmpty()) {
+			final List<String> lines = new LinkedList<>();
+			for (final Supplier<List<String>> hoverSupplier : this.hoverSupplierList) {
+				lines.addAll(hoverSupplier.get());
+			}
+
+			if (!lines.isEmpty()) {
+				hoverList.add(new TextHoverElement(lines));
+			}
+		}
+
+		hoverList.forEach(element -> element.render(this, mouseX, mouseY));
+		return !hoverList.isEmpty();
 	}
 
 	private double getContentWidth() {
@@ -662,48 +676,6 @@ public abstract class Node implements INode {
 		return this.hasOverflowY() && (notches > 0D ? this.targetScrollY < 0 : this.targetScrollY > -this.maxScrollY);
 	}
 
-	private boolean renderHover(final double mouseX, final double mouseY, final AtomicBoolean shown) {
-		final AtomicBoolean cancelled = new AtomicBoolean(false);
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> {
-			if (child.renderHover(mouseX, mouseY, shown)) {
-				cancelled.set(true);
-			}
-		});
-
-		if (this.isHovered(mouseX, mouseY, false)) {
-			if (shown.get()) {
-				return true;
-			}
-
-			final List<IHoverElement> hoverList = new LinkedList<>(this.hoverElementList);
-			if (!this.hoverSupplierList.isEmpty()) {
-				final List<String> lines = new LinkedList<>();
-				for (final Supplier<List<String>> hoverSupplier : this.hoverSupplierList) {
-					lines.addAll(hoverSupplier.get());
-				}
-
-				if (!lines.isEmpty()) {
-					hoverList.add(new TextHoverElement(lines));
-				}
-			}
-
-			if (!hoverList.isEmpty()) {
-				hoverList.forEach(element -> element.render(this, mouseX, mouseY));
-				shown.set(true);
-			}
-
-			return true;
-		}
-
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> {
-			if (child.renderHover(mouseX, mouseY, shown)) {
-				cancelled.set(true);
-			}
-		});
-
-		return cancelled.get();
-	}
-
 	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {
 		DrawUtils.SHAPE.drawRect(this.x,this.y, this.width, this.height, Color.LOADING());
@@ -725,7 +697,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
-		if (!this.isVisible()) {
+		if (!this.isVisible() || !this.isInteractive()) {
 			return;
 		}
 
@@ -776,9 +748,9 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
-		final boolean visible = this.isVisible();
-		final boolean enabled = visible && this.isEnabled();
-		if (visible) {
+		final boolean reached = this.isVisible() && this.isInteractive();
+		final boolean enabled = reached && this.isEnabled();
+		if (reached) {
 			if (this.scrollbar != null) {
 				this.scrollbar.fireMouseDragged(mouseX, mouseY, button, deltaTime, context);
 			}
@@ -815,7 +787,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (!this.isVisible()) {
+		if (!this.isVisible() || !this.isInteractive()) {
 			return;
 		}
 
@@ -877,7 +849,7 @@ public abstract class Node implements INode {
 			this.stopDragging();
 		}
 
-		if (!this.isVisible()) {
+		if (!this.isVisible() || !this.isInteractive()) {
 			return;
 		}
 
@@ -1389,6 +1361,14 @@ public abstract class Node implements INode {
 		return this.enabled.test(this);
 	}
 
+	public boolean isInteractive() {
+		if (this.parent != null && !this.parent.isInteractive()) {
+			return false;
+		}
+
+		return this.interactive.test(this);
+	}
+
 	public boolean isVisible() {
 		if (this.parent != null && !this.parent.isVisible()) {
 			return false;
@@ -1435,32 +1415,13 @@ public abstract class Node implements INode {
 			return false;
 		}
 
-		return this.isVisible() && (!checkEnabled || this.isEnabled()) && this.ui.isOnTop() && (this.overflowArea != null ? this.overflowArea.isHovered(mouseX, mouseY) : true) && mouseX > this.getAbsoluteX() && mouseX <= this.getAbsoluteX() + this.width && mouseY > this.getAbsoluteY() && mouseY <= this.getAbsoluteY() + this.height;
+		return (!checkEnabled || this.isEnabled()) && this.isInteractive() && this.ui.isOnTop() && this.isAt(mouseX, mouseY);
 	}
 
-	public final Node getHoveredNode(final double mouseX, final double mouseY) {
-		if (!this.isVisible()) {
-			return null;
-		}
-
-		if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
-			final Node hovered = this.scrollbar.getHoveredNode(mouseX, mouseY);
-			if (hovered != null) {
-				return hovered;
-			}
-		}
-
-		if (this.skeleton != null && !this.mounted) {
-			final Node hovered = this.skeleton.getHoveredNode(mouseX, mouseY);
-			return hovered != null || !this.isHovered(mouseX, mouseY, false) ? hovered : this;
-		}
-
-		final Node front = this.getHoveredChild(mouseX, mouseY, true);
-		if (front != null) {
-			return front;
-		}
-
-		return this.isHovered(mouseX, mouseY, false) ? this : this.getHoveredChild(mouseX, mouseY, false);
+	public final @NonNull List<@NonNull Node> getNodeListAt(final double x, final double y) {
+		final List<Node> nodeList = new ArrayList<>();
+		this.collectNodesAt(x, y, nodeList);
+		return nodeList;
 	}
 
 	public final @NonNull Cursor getResolvedCursor() {
@@ -1471,16 +1432,41 @@ public abstract class Node implements INode {
 		return this.parent != null ? this.parent.getResolvedCursor() : Cursor.DEFAULT;
 	}
 
-	private Node getHoveredChild(final double mouseX, final double mouseY, final boolean front) {
+	private boolean isAt(final double x, final double y) {
+		return this.isVisible() && (this.overflowArea == null || this.overflowArea.isAt(x, y)) && x > this.getAbsoluteX() && x <= this.getAbsoluteX() + this.width && y > this.getAbsoluteY() && y <= this.getAbsoluteY() + this.height;
+	}
+
+	private void collectNodesAt(final double x, final double y, final List<Node> nodeList) {
+		if (!this.isVisible()) {
+			return;
+		}
+
+		if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
+			nodeList.addAll(this.scrollbar.getNodeListAt(x, y));
+		}
+
+		final boolean skeleton = this.skeleton != null && !this.mounted;
+		if (skeleton) {
+			this.skeleton.collectNodesAt(x, y, nodeList);
+		} else {
+			this.collectChildrenAt(x, y, nodeList, true);
+		}
+
+		if (this.isAt(x, y)) {
+			nodeList.add(this);
+		}
+
+		if (!skeleton) {
+			this.collectChildrenAt(x, y, nodeList, false);
+		}
+	}
+
+	private void collectChildrenAt(final double x, final double y, final List<Node> nodeList, final boolean front) {
 		for (final Node child : this.children.reversed()) {
 			if (child.zindex >= 0 == front) {
-				final Node hovered = child.getHoveredNode(mouseX, mouseY);
-				if (hovered != null) {
-					return hovered;
-				}
+				child.collectNodesAt(x, y, nodeList);
 			}
 		}
-		return null;
 	}
 
 	public final float hoverValue(final float value) {
@@ -1558,6 +1544,7 @@ public abstract class Node implements INode {
 
 		copy.visible = this.visible;
 		copy.enabled = this.enabled;
+		copy.interactive = this.interactive;
 		copy.position = this.position;
 		copy.overflow = this.overflow;
 		copy.anchorX = this.anchorX;
@@ -2132,6 +2119,20 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
+	public final <T extends Node> @NonNull T interactive(final boolean interactive) {
+		return this.interactive(Signal.from(interactive));
+	}
+
+	public final <T extends Node> @NonNull T interactive(final @NonNull Supplier<Boolean> interactive) {
+		this.interactive = node -> Boolean.TRUE.equals(interactive.get());
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T interactive(final @NonNull Predicate<@NonNull T> interactive) {
+		this.interactive = (Predicate<Node>) interactive;
+		return (T) this;
+	}
+
 	public final <T extends Node> @NonNull T clearHover() {
 		this.hoverElementList.clear();
 		this.hoverSupplierList.clear();
@@ -2284,6 +2285,7 @@ public abstract class Node implements INode {
 
 			json.addProperty("visible", this.visible.test(this));
 			json.addProperty("enabled", this.enabled.test(this));
+			json.addProperty("interactive", this.interactive.test(this));
 			json.addProperty("hovered", this.hovered);
 
 			json.addProperty("isChild", this.parent != null);

@@ -248,10 +248,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final DispatchContext context = DispatchContext.create();
 
-		this.untraced(() -> {
-			this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.fireMousePressed(mx, my, button, context));
-			this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.fireMousePressed(mx, my, button, context));
-		});
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMousePressed(mx, my, button, context)));
 
 		this.traced(() -> this.mousePressed(mx, my, button, context));
 		return context.isCancelled();
@@ -413,13 +410,22 @@ public abstract class UI implements IUI, IndexedElement {
 		return this.view.toUiY(this.mouseY);
 	}
 
-	public final Node getHoveredNode() {
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
+	public final @NonNull List<@NonNull Node> getNodeListAt(final double x, final double y) {
+		final List<Node> nodeList = new ArrayList<>();
 		for (final Node node : this.nodeList.reversed()) {
-			final Node hovered = node.getHoveredNode(mx, my);
-			if (hovered != null) {
-				return hovered;
+			nodeList.addAll(node.getNodeListAt(x, y));
+		}
+		return nodeList;
+	}
+
+	public final Node getHoveredNode() {
+		if (!this.onTop) {
+			return null;
+		}
+
+		for (final Node node : this.getNodeListAt(this.getMouseX(), this.getMouseY())) {
+			if (node.isInteractive()) {
+				return node;
 			}
 		}
 		return null;
@@ -934,16 +940,15 @@ public abstract class UI implements IUI, IndexedElement {
 					node.render(mx, my);
 				});
 
-				if (this.onTop) {
+				Node hovered = this.getHoveredNode();
+				if (hovered != null) {
 					render.pushMatrix();
 					render.pushState();
 					try {
 						render.depthTest(false);
 						render.depthWrite(false);
-						for (final Node node : this.nodeList.reversed()) {
-							if (node.renderHover(mx, my)) {
-								break;
-							}
+						while (hovered != null && !hovered.renderHover(mx, my)) {
+							hovered = hovered.getParent();
 						}
 					} finally {
 						render.popState();
