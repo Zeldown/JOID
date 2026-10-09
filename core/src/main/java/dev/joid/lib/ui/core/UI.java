@@ -402,6 +402,22 @@ public abstract class UI implements IUI, IndexedElement {
 		return this.view.getHeight();
 	}
 
+	public final double getViewX() {
+		return this.view.toUiX(0D);
+	}
+
+	public final double getViewY() {
+		return this.view.toUiY(0D);
+	}
+
+	public final double getViewWidth() {
+		return this.view.getVisibleWidth();
+	}
+
+	public final double getViewHeight() {
+		return this.view.getVisibleHeight();
+	}
+
 	public final double getMouseX() {
 		return this.view.toUiX(this.mouseX);
 	}
@@ -882,8 +898,6 @@ public abstract class UI implements IUI, IndexedElement {
 			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().copyAlpha(opacity));
 		}
 
-		this.drawBackground(mx, my);
-
 		final boolean transitionIn = this.transition != null && this.transition.getIn() != null && this.transition.getIn().isRunning();
 		final boolean transitionOut = this.transition != null && this.transition.getOut() != null && this.transition.getOut().isRunning();
 		if (transitionIn) {
@@ -902,39 +916,7 @@ public abstract class UI implements IUI, IndexedElement {
 				this.depthLevel = 0;
 				final AtomicDouble lastDepthLevel = new AtomicDouble(this.depthLevel);
 
-				this.nodeList
-				.ordered()
-				.stream()
-				.filter(node -> node.getZindex() < 0)
-				.forEach(node -> {
-					render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
-					lastDepthLevel.set(this.depthLevel);
-					node.render(mx, my);
-				});
-
-				render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
-				lastDepthLevel.set(this.depthLevel);
-				this.preDraw(mx, my);
-
-				this.nodeList
-				.ordered()
-				.stream()
-				.filter(node -> node.getZindex() >= 0 && node.getZindex() < 100)
-				.forEach(node -> {
-					render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
-					lastDepthLevel.set(this.depthLevel);
-					node.render(mx, my);
-				});
-
-				render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
-				lastDepthLevel.set(this.depthLevel);
-				this.postDraw(mx, my);
-
-				this.nodeList
-				.ordered()
-				.stream()
-				.filter(node -> node.getZindex() >= 100)
-				.forEach(node -> {
+				this.nodeList.ordered().forEach(node -> {
 					render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
 					lastDepthLevel.set(this.depthLevel);
 					node.render(mx, my);

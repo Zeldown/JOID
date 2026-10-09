@@ -284,13 +284,7 @@ RectNode
 - A node draws its children with a negative z-index first, then itself (`draw`), then its other children in ascending order, then its [layers](#layers-with-layer).
 - Input events and tooltips go the other way: children with a z-index of 0 or more from the highest, then the node, then the children with a negative z-index. What is drawn on top receives the event first.
 
-For top-level nodes, the z-index also places the node relative to the UI's drawing hooks (see [The UI Class](../ui/ui-class.md)):
-
-| Top-level z-index | Drawn |
-| --- | --- |
-| Below 0 | Before `preDraw` |
-| 0 to 99 | Between `preDraw` and `postDraw` |
-| 100 and above | After `postDraw` |
+The top-level nodes of a UI follow the same order: the UI draws them by ascending z-index, any integer, after its background and before the tooltips, and sends them the mouse from the highest (see [The UI Class](../ui/ui-class.md#drawing-in-a-ui)).
 
 ### Layers with layer
 

@@ -27,7 +27,7 @@ JOID.open(settings);
 
 A state stops running when the timeline of its animator ends (`getAnimator().getTimeline()` returns `null`). The `force` variants of `JOID.open` and `JOID.close` remove UIs without playing their Out state.
 
-`pre` and `post` wrap the view transform: their transformations apply in the host's coordinate space (window pixels with the projection of the [Quick Start](../getting-started/quick-start.md)), around the whole UI except its background and `drawBackground`.
+`pre` and `post` wrap the view transform: their transformations apply in the host's coordinate space (window pixels with the projection of the [Quick Start](../getting-started/quick-start.md)), around the whole UI except its background.
 
 Inside the view, positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. A transition works outside that fit, so its offsets are window pixels.
 

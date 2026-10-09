@@ -52,7 +52,7 @@ During `init()`, `UI.getCurrent()` returns the UI being initialized; it returns 
 
 `UI` implements `IUI` (`dev.joid.lib.ui.core.IUI`), whose methods all have empty defaults.
 
-Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. The mouse coordinates the hooks receive are always in canvas units; only `drawBackground` draws outside the canvas, in the host's space.
+Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it. The mouse coordinates the hooks receive are always in canvas units.
 
 ![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
 
@@ -63,18 +63,15 @@ See [The Virtual Canvas](../concepts/canvas.md) for the fit rule and the convers
 | `void init()` | On the first load and on each reload. Build the nodes, keybinds and tasks here. |
 | `boolean close()` | When the UI is asked to close (`JOID.close`, Escape, a bridge). Return `false` to keep it open. Default `true`. Not called by the `force` variants of `JOID.open` and `JOID.close`. |
 | `void update()` | Every frame, after the nodes have updated. |
-| `void drawBackground(double mouseX, double mouseY)` | Every frame, after the `@UIData` background and before the transition and the view transform: it draws in the host's coordinate space (window pixels with the projection of the [Quick Start](../getting-started/quick-start.md)), not on the canvas. |
-| `void preDraw(double mouseX, double mouseY)` | Inside the view, after the nodes with a negative `zindex` and before the nodes with a `zindex` from 0 to 99. |
-| `void postDraw(double mouseX, double mouseY)` | Inside the view, after the nodes with a `zindex` from 0 to 99 and before the nodes with a `zindex` of 100 or more. |
 | `void mousePressed(double mouseX, double mouseY, MouseButton clickType, DispatchContext context)` | After the nodes received the press, from the front to the back. |
 | `void mouseDragged(double mouseX, double mouseY, MouseButton clickType, long deltaTime, DispatchContext context)` | After the nodes received the drag. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge. |
 | `void mouseReleased(double mouseX, double mouseY, MouseButton clickType, DispatchContext context)` | After the nodes received the release. |
 | `void mouseScroll(double mouseX, double mouseY, double notchesX, double notchesY, DispatchContext context)` | After the nodes received the scroll, in wheel notches on each axis. |
 | `void keyPressed(char c, Key key, DispatchContext context)` | Last, after the nodes, the keybinds, the zoom keys and the dev keys. |
 
-Each draw of a UI runs its steps in this order; the hooks find their place between the nodes by `zindex`:
+Each draw of a UI runs its steps in this order: the `@UIData` background over the whole window, then every node by ascending `zindex` (any integer, none has a special meaning), then the tooltips. A UI has no drawing hook of its own: see [Drawing in a UI](#drawing-in-a-ui).
 
-![Eleven steps from the scheduled tasks to the transition post: the background, drawBackground and the transition pre outside the view, then inside the view the nodes with a negative zindex, preDraw, the nodes from 0 to 99, postDraw, the nodes from 100 and the tooltips](../images/diagram-ui-draw-order.png "The draw of one UI: preDraw and postDraw sit between the zindex bands of the nodes.")
+![Six steps from the scheduled tasks to the transition post: the background and the transition pre outside the view, then inside the view the nodes by ascending zindex and the tooltips](../images/diagram-ui-draw-order.png "The draw of one UI: the background, the nodes by zindex, the tooltips.")
 
 The input hooks run even when a node already consumed the event: check `context.isCancelled()` before acting, and call `context.cancel()` to consume the event so the UIs below do not receive it. See [Mouse and Keyboard](../interactions/mouse-and-keyboard.md).
 
@@ -172,15 +169,44 @@ Tasks run at the start of the draw, on the thread that draws the UI, timed with 
 
 `renew()` throws an `IllegalStateException` when the UI is not open, when its class has no constructor without argument (anonymous class, inner class that is not static) or when that constructor fails; from the keyboard, the message is printed as `[JOID] ...` and the UI stays open. Signals declared as locals in `init()` start from zero on every reload; signals held in fields keep their value until a renew. See [Developer Tools](../concepts/dev-tools.md).
 
-## Masks with mask and startMask
+## Drawing in a UI
 
-Masks clip drawing to a rectangle or to the opaque pixels of a resource, with the stencil buffer. Use them in draw hooks or custom nodes; the `Drawing` argument is a lambda without parameters that draws, here with `DrawUtils.SHAPE`:
+Everything a UI draws is a node, placed among the others by its `zindex`. For a free drawing, give a node a callback with `onDraw`: a `ContainerNode` draws nothing by itself, and `interactive(false)` lets the mouse through it to the nodes behind (see [Letting the mouse through with interactive](../interactions/mouse-and-keyboard.md#letting-the-mouse-through-with-interactive)). This circle follows the mouse above every node:
 
 ```java
-@Override
-public void postDraw(final double mouseX, final double mouseY) {
-	this.mask(100, 100, 400, 200, () -> DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.GRAY, 80D));
-}
+ContainerNode
+.create(0, 0, 0, 0)
+.zindex(Integer.MAX_VALUE)
+.interactive(false)
+.onDraw((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.GRAY, 6D))
+.attach(this);
+```
+
+To cover the whole window, the extra area around the canvas included, read the edges of the window in canvas units with `getViewX()`, `getViewY()`, `getViewWidth()` and `getViewHeight()`. This veil dims everything below it, at any window size and zoom:
+
+```java
+RectNode
+.create(0, 0, 0, 0)
+.color(Color.BLACK.copyAlpha(0.5F))
+.zindex(-1)
+.x(this::getViewX)
+.y(this::getViewY)
+.width(this::getViewWidth)
+.height(this::getViewHeight)
+.attach(this);
+```
+
+`getViewX()` and `getViewY()` are negative when the window shows more than the canvas on the left or at the top; see [View and Scaling](view-and-scaling.md#following-the-visible-area-with-getscaledwidth).
+
+## Masks with mask and startMask
+
+Masks clip drawing to a rectangle or to the opaque pixels of a resource, with the stencil buffer. Use them in the draw of a node (`draw`, `onDraw`, a layer); the `Drawing` argument is a lambda without parameters that draws, here with `DrawUtils.SHAPE`:
+
+```java
+ContainerNode
+.create(0, 0, 0, 0)
+.onDraw((node, mouseX, mouseY) -> this.mask(100, 100, 400, 200, () -> DrawUtils.SHAPE.drawCircle(mouseX, mouseY, Color.GRAY, 80D)))
+.attach(this);
 ```
 
 Masks nest: an inner mask clips to the intersection with the outer ones. The `mask(...)` methods stop their mask even when the drawing throws. For a mask on a node, use [`MaskNodeEffect`](../styling/mask.md).
@@ -236,6 +262,7 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 | `UIView getView()` | The view that maps the canvas to the window. |
 | `DoubleSignal getZoomLevel()`, `getScaledWidth()`, `getScaledHeight()` | The zoom and the visible size of the canvas, as signals. |
 | `double getWidth()`, `double getHeight()` | The window size, in window pixels. |
+| `double getViewX()`, `getViewY()`, `getViewWidth()`, `getViewHeight()` | The edges of the window in canvas units: negative `x` and `y` when the window shows more than the canvas. See [Drawing in a UI](#drawing-in-a-ui). |
 | `double getMouseX()`, `double getMouseY()` | The mouse in canvas units, as sampled at the last draw. |
 | `List<Node> getNodeListAt(double x, double y)`, `Node getHoveredNode()` | The visible nodes under a point, from the front to the back, and the first interactive one at the mouse (`null` when the UI is not on top). See [Nodes under a point with getNodeListAt](../interactions/mouse-and-keyboard.md#nodes-under-a-point-with-getnodelistat). |
 | `double getFrameTime()` | Duration of the last frame in milliseconds (`1000 / 60` on the first frame). |
@@ -266,7 +293,7 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 - Build in `init()`, never in the constructor: the first load clears the nodes, keybinds and tasks added before.
 - Ctrl + R keeps the instance: a field initialized in the constructor or in its declaration keeps its value. Use Ctrl + Shift + R to start from a new instance.
 - A UI that `renew()` must recreate needs a constructor without argument; an anonymous UI can only be reloaded.
-- `drawBackground` draws in the host's space, not on the canvas: draw canvas content in `preDraw` / `postDraw` or with nodes.
+- A UI has no `preDraw`, `postDraw` or `drawBackground`: draw with a node and its `zindex`, as in [Drawing in a UI](#drawing-in-a-ui).
 
 ## See also
 

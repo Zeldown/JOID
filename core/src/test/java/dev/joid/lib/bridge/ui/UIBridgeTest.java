@@ -29,6 +29,7 @@ import dev.joid.lib.ui.core.data.overlay.render.UIDataOverlayRender;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
+import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
@@ -920,6 +921,14 @@ public class UIBridgeTest {
 		@Override
 		public void init() {
 			this.inits++;
+			super.add(new DrawingNode(() -> {
+				if (this.failure != null) {
+					throw this.failure;
+				}
+
+				this.trace.add("draw " + this.name + " " + UIBridgeTest.depth());
+				super.setDepthLevel(this.level);
+			}));
 		}
 
 		@Override
@@ -961,16 +970,6 @@ public class UIBridgeTest {
 		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 			this.trace.add("typed " + this.name + " " + c + " " + key);
 			this.cancel(context);
-		}
-
-		@Override
-		public void preDraw(final double mouseX, final double mouseY) {
-			if (this.failure != null) {
-				throw this.failure;
-			}
-
-			this.trace.add("draw " + this.name + " " + UIBridgeTest.depth());
-			super.setDepthLevel(this.level);
 		}
 
 		private void cancel(final DispatchContext context) {
@@ -1042,9 +1041,27 @@ public class UIBridgeTest {
 		}
 
 		@Override
-		public void preDraw(final double mouseX, final double mouseY) {
-			this.trace.add("draw " + this.name);
-			this.depth = ((RenderBridge) BridgeHandler.RENDER.get()).getModelView().getMatrix()[14];
+		public void init() {
+			super.add(new DrawingNode(() -> {
+				this.trace.add("draw " + this.name);
+				this.depth = ((RenderBridge) BridgeHandler.RENDER.get()).getModelView().getMatrix()[14];
+			}));
+		}
+
+	}
+
+	public static final class DrawingNode extends Node {
+
+		private final Runnable drawing;
+
+		private DrawingNode(final Runnable drawing) {
+			super(0D, 0D, 0D, 0D);
+			this.drawing = drawing;
+		}
+
+		@Override
+		public void draw(final double mouseX, final double mouseY) {
+			this.drawing.run();
 		}
 
 	}

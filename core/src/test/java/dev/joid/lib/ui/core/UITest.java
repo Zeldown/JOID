@@ -859,12 +859,28 @@ public class UITest {
 	}
 
 	@Test
-	public void drawsItsNodesAroundItsHooksByIndex() {
-		final TraceUI ui = new TraceUI(this.trace, new TraceNode("top", this.trace, 100), new TraceNode("middle", this.trace, 50), new TraceNode("base", this.trace, 0), new TraceNode("back", this.trace, -1));
+	public void drawsItsNodesByIndex() {
+		final TraceUI ui = new TraceUI(this.trace, new TraceNode("top", this.trace, Integer.MAX_VALUE), new TraceNode("middle", this.trace, 150), new TraceNode("base", this.trace, 0), new TraceNode("back", this.trace, -1), new TraceNode("bottom", this.trace, Integer.MIN_VALUE));
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("update back", "update base", "update middle", "update top", "update", "background", "draw back", "pre", "draw base", "draw middle", "post", "draw top"), this.trace);
+		Assert.assertEquals(Arrays.asList("update bottom", "update back", "update base", "update middle", "update top", "update", "draw bottom", "draw back", "draw base", "draw middle", "draw top"), this.trace);
+	}
+
+	@Test
+	public void givesTheEdgesOfTheWindowOnItsCanvas() {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.resize(2560, 1080);
+		this.bridges.open(ui).frame();
+		Assert.assertEquals(-320D, ui.getViewX(), 1E-9D);
+		Assert.assertEquals(0D, ui.getViewY(), 1E-9D);
+		Assert.assertEquals(2560D, ui.getViewWidth(), 1E-9D);
+		Assert.assertEquals(1080D, ui.getViewHeight(), 1E-9D);
+		ui.zoom(0.5D);
+		Assert.assertEquals(-1600D, ui.getViewX(), 1E-9D);
+		Assert.assertEquals(-540D, ui.getViewY(), 1E-9D);
+		Assert.assertEquals(5120D, ui.getViewWidth(), 1E-9D);
+		Assert.assertEquals(2160D, ui.getViewHeight(), 1E-9D);
 	}
 
 	@Test
@@ -874,7 +890,7 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("update", "background", "pre", "depth 0.0", "depth 30.0", "post"), this.trace);
+		Assert.assertEquals(Arrays.asList("update", "depth 0.0", "depth 30.0"), this.trace);
 		Assert.assertEquals(30D, ui.getDepthLevel(), 0D);
 		ui.setDepthLevel(5D);
 		Assert.assertEquals(5D, ui.getDepthLevel(), 0D);
@@ -885,11 +901,11 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
 		ui.setTransition(new RecordingTransition(this.trace));
 		this.bridges.open(ui);
-		Assert.assertEquals(Arrays.asList("in init", "in start", "out init", "update node", "update", "background", "in pre", "pre", "draw node", "post", "in post"), this.trace);
+		Assert.assertEquals(Arrays.asList("in init", "in start", "out init", "update node", "update", "in pre", "draw node", "in post"), this.trace);
 		this.trace.clear();
 		Assert.assertFalse(ui.fireClose());
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("close", "out start", "update node", "update", "background", "in pre", "out pre", "pre", "draw node", "post", "in post", "out post"), this.trace);
+		Assert.assertEquals(Arrays.asList("close", "out start", "update node", "update", "in pre", "out pre", "draw node", "in post", "out post"), this.trace);
 	}
 
 	@Test
@@ -900,7 +916,7 @@ public class UITest {
 		transition.getOut().disable();
 		ui.setTransition(transition);
 		this.bridges.open(ui);
-		Assert.assertEquals(Arrays.asList("update", "background", "pre", "post"), this.trace);
+		Assert.assertEquals(Collections.singletonList("update"), this.trace);
 		Assert.assertTrue(ui.fireClose());
 	}
 
@@ -909,7 +925,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.setTransition(new PartialTransition(new RecordingIn(this.trace), null));
 		this.bridges.open(ui);
-		Assert.assertEquals(Arrays.asList("in init", "in start", "update", "background", "in pre", "pre", "post", "in post"), this.trace);
+		Assert.assertEquals(Arrays.asList("in init", "in start", "update", "in pre", "in post"), this.trace);
 		this.trace.clear();
 		Assert.assertTrue(ui.fireClose());
 		Assert.assertEquals(Collections.singletonList("close"), this.trace);
@@ -920,11 +936,11 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.setTransition(new PartialTransition(null, new RecordingOut(this.trace)));
 		this.bridges.open(ui);
-		Assert.assertEquals(Arrays.asList("out init", "update", "background", "pre", "post"), this.trace);
+		Assert.assertEquals(Arrays.asList("out init", "update"), this.trace);
 		this.trace.clear();
 		Assert.assertFalse(ui.fireClose());
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("close", "out start", "update", "background", "out pre", "pre", "post", "out post"), this.trace);
+		Assert.assertEquals(Arrays.asList("close", "out start", "update", "out pre", "out post"), this.trace);
 		this.bridges.frames(10);
 		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
 	}
@@ -937,18 +953,23 @@ public class UITest {
 		this.trace.clear();
 		this.bridges.getClock().advance(200L);
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("update", "background", "in pre", "pre", "post", "in post"), this.trace);
+		Assert.assertEquals(Arrays.asList("update", "in pre", "in post"), this.trace);
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("update", "background", "pre", "post"), this.trace);
+		Assert.assertEquals(Collections.singletonList("update"), this.trace);
 	}
 
 	@Test
 	public void endsItsTransitionEvenWhenItsDrawFails() {
-		final TraceUI ui = new TraceUI(this.trace);
+		final boolean[] broken = {false};
+		final TraceUI ui = new TraceUI(this.trace, new DrawingNode(() -> {
+			if (broken[0]) {
+				throw new IllegalStateException("broken");
+			}
+		}));
 		ui.setTransition(new RecordingTransition(this.trace));
 		this.bridges.open(ui);
-		ui.failure = new IllegalStateException("broken");
+		broken[0] = true;
 		this.trace.clear();
 		try {
 			ui.draw(0D, 0D);
@@ -956,7 +977,7 @@ public class UITest {
 		} catch (final IllegalStateException e) {
 			Assert.assertEquals("broken", e.getMessage());
 		}
-		Assert.assertEquals(Arrays.asList("background", "in pre", "in post"), this.trace);
+		Assert.assertEquals(Arrays.asList("in pre", "in post"), this.trace);
 	}
 
 	@Test
@@ -1665,8 +1686,6 @@ public class UITest {
 		private Object[] keybind;
 		private boolean  closeable = true;
 
-		private RuntimeException failure;
-
 		public TraceUI(final List<String> trace, final Node... nodes) {
 			this.trace = trace;
 			this.nodes = nodes;
@@ -1720,25 +1739,6 @@ public class UITest {
 		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 			this.trace.add("typed " + c + " " + key + (context.isCancelled() ? " cancelled" : ""));
 			this.cancel(context);
-		}
-
-		@Override
-		public void drawBackground(final double mouseX, final double mouseY) {
-			this.trace.add("background");
-		}
-
-		@Override
-		public void preDraw(final double mouseX, final double mouseY) {
-			if (this.failure != null) {
-				throw this.failure;
-			}
-
-			this.trace.add("pre");
-		}
-
-		@Override
-		public void postDraw(final double mouseX, final double mouseY) {
-			this.trace.add("post");
 		}
 
 		@Override
@@ -1832,13 +1832,15 @@ public class UITest {
 		}
 
 		@Override
-		public void postDraw(final double mouseX, final double mouseY) {
-			super.postDraw(mouseX, mouseY);
-			try {
-				Thread.sleep(this.pause);
-			} catch (final InterruptedException e) {
-				Thread.currentThread().interrupt();
-			}
+		public void init() {
+			super.init();
+			super.add(new DrawingNode(() -> {
+				try {
+					Thread.sleep(this.pause);
+				} catch (final InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}
+			}));
 		}
 
 	}
@@ -1973,6 +1975,22 @@ public class UITest {
 			if (this.cancel) {
 				context.cancel();
 			}
+		}
+
+	}
+
+	public static final class DrawingNode extends Node {
+
+		private final Runnable drawing;
+
+		private DrawingNode(final Runnable drawing) {
+			super(0D, 0D, 0D, 0D);
+			this.drawing = drawing;
+		}
+
+		@Override
+		public void draw(final double mouseX, final double mouseY) {
+			this.drawing.run();
 		}
 
 	}

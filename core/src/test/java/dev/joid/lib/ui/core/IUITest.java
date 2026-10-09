@@ -29,10 +29,7 @@ public class IUITest {
 	}
 
 	@Test
-	public void drawsAndUpdatesNothingByDefault() {
-		this.ui.drawBackground(10D, 20D);
-		this.ui.preDraw(10D, 20D);
-		this.ui.postDraw(10D, 20D);
+	public void updatesNothingByDefault() {
 		this.ui.update();
 		Assert.assertTrue(this.ui.close());
 	}

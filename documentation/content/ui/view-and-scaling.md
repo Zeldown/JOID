@@ -66,7 +66,7 @@ RectNode
 
 ![While the window is resized, a gray bar keeps spanning its whole top edge, over the canvas and the extra area](../images/view-bar.gif "The bar follows the visible area at every window size.")
 
-`x(...)` and `y(...)` receive native expressions that read the signals, `width(...)` receives the signal itself: all three are recomputed when the visible area changes. For other anchors, read the view in a lambda, recomputed every frame: `x(() -> this.getView().toUiX(0D))`.
+`x(...)` and `y(...)` receive native expressions that read the signals, `width(...)` receives the signal itself: all three are recomputed when the visible area changes. For other anchors, read the edges of the window in a lambda, recomputed every frame: `x(this::getViewX)`, `y(this::getViewY)`, `width(this::getViewWidth)` and `height(this::getViewHeight)` cover the whole window at any anchor, size and zoom (`getViewX()` is `getView().toUiX(0D)`).
 
 ## Zoom
 

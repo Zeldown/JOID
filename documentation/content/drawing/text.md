@@ -5,11 +5,13 @@
 ## Drawing a string
 
 ```java
-@Override
-public void postDraw(final double mouseX, final double mouseY) {
+ContainerNode
+.create(0, 0, 0, 0)
+.onDraw((node, mouseX, mouseY) -> {
 	DrawUtils.TEXT.drawText(960D, 100D, "Paused", this.info, Align.CENTER, Align.START);
 	DrawUtils.TEXT.drawText(760D, 160D, 400D, 200D, "Press Escape to go back to the game, or open the settings to change the controls.", this.info, Align.CENTER, Align.START, TextOverflow.NONE, TextMode.SPLIT);
-}
+})
+.attach(this);
 ```
 
 ![The word Paused centered above a paragraph wrapped on three centered lines](../images/text-draw.png "A line centered on a point, then a paragraph wrapped in a box of 400 units")
@@ -32,10 +34,15 @@ private final Text center = Text.create("CENTER", this.info, Align.CENTER, Align
 private final Text end = Text.create("END", this.info, Align.END, Align.CENTER);
 
 @Override
-public void postDraw(final double mouseX, final double mouseY) {
-	DrawUtils.TEXT.drawText(400D, 100D, this.start);
-	DrawUtils.TEXT.drawText(400D, 160D, this.center);
-	DrawUtils.TEXT.drawText(400D, 220D, this.end);
+public void init() {
+	ContainerNode
+	.create(0, 0, 0, 0)
+	.onDraw((node, mouseX, mouseY) -> {
+		DrawUtils.TEXT.drawText(400D, 100D, this.start);
+		DrawUtils.TEXT.drawText(400D, 160D, this.center);
+		DrawUtils.TEXT.drawText(400D, 220D, this.end);
+	})
+	.attach(this);
 }
 ```
 

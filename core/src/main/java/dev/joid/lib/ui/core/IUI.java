@@ -23,12 +23,6 @@ public interface IUI {
 
 	default public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {}
 
-	default public void drawBackground(final double mouseX, final double mouseY) {}
-
-	default public void preDraw(final double mouseX, final double mouseY) {}
-
-	default public void postDraw(final double mouseX, final double mouseY) {}
-
 	default public void update() {}
 
 }

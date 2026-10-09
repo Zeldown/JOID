@@ -82,13 +82,11 @@ Draw only from the hooks JOID calls while it renders a frame: they run on the re
 | `Node.draw(double mouseX, double mouseY)` | Draws the node, after its children with a negative z-index and before the others, inside the shader effects of scope `SELF`. |
 | `Node.drawSkeleton(double mouseX, double mouseY)` | Replaces `draw` while the node is not mounted (see [Watching Signals](../state/watch.md)). |
 | `layer(INodeLayer)`, `layer(int index, INodeLayer)` | `INodeLayer.draw(double mouseX, double mouseY)`, after every child with a z-index of 0 or more. |
-| `UI.drawBackground(double mouseX, double mouseY)` | Before the view transform (offset and zoom of the UI) is applied and before any node. |
-| `UI.preDraw(double mouseX, double mouseY)` | After the root nodes with a negative z-index, before the root nodes with a z-index from 0 to 99. |
-| `UI.postDraw(double mouseX, double mouseY)` | After the root nodes with a z-index from 0 to 99, before the root nodes with a z-index of 100 or more. |
+| `onDraw(NodeDrawCallback)` | `apply(node, mouseX, mouseY)`, after the `draw` of the node: a free drawing of a UI is a node with `onDraw`, placed among the others by its z-index (see [Drawing in a UI](../ui/ui-class.md#drawing-in-a-ui)). |
 | `NodeEffect.pre` / `NodeEffect.post` | Around the render of a node (see [Custom Effects](../styling/custom-effects.md)). |
 | `ITextEffect.background` / `ITextEffect.decorate` | Behind and over a glyph (see [Markup and Text Effects](../text/markup-and-effects.md)). |
 
-![Two flows: the frame of a UI from drawBackground to the root nodes of z-index 100 and more, and the render of a node from the effects pre to the effects post](../images/diagram-draw-order.png "Where each hook runs in a frame and in the render of a node")
+![Two flows: the frame of a UI from the background to the root nodes by ascending z-index and the tooltips, and the render of a node from the effects pre to the effects post](../images/diagram-draw-order.png "Where each hook runs in a frame and in the render of a node")
 
 ## Pixel alignment
 

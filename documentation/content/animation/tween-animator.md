@@ -180,7 +180,7 @@ RectNode
 
 ## Updating an animator yourself
 
-An animator that no node registers only moves when you call `update()`. Call it once per frame, for example from `UI.preDraw(...)` or from the `draw(...)` of a custom node:
+An animator that no node registers only moves when you call `update()`. Call it once per frame, for example from `UI.update()` or from the `draw(...)` of a custom node:
 
 ```java
 public class BannerUI extends UI {
@@ -195,7 +195,7 @@ public class BannerUI extends UI {
 	}
 
 	@Override
-	public void preDraw(final double mouseX, final double mouseY) {
+	public void update() {
 		this.slide.update();
 	}
 

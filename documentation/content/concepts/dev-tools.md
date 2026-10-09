@@ -215,7 +215,7 @@ Click a button of the menu to open its demo; it slides in, and `Escape` goes bac
 | Demo UI | Shows | Read |
 | --- | --- | --- |
 | `UIDemoChoice` | The menu itself | [Opening and Closing UIs](../ui/managing-uis.md) |
-| `UIDemoSimple` | Colors and hovered colors, borders, layers, circles, tooltips, clicks, hover callbacks and easing, progress bars, a disabled node, `postDraw` | [Node Fundamentals](../nodes/node-fundamentals.md) |
+| `UIDemoSimple` | Colors and hovered colors, borders, layers, circles, tooltips, clicks, hover callbacks and easing, progress bars, a disabled node, a circle that follows the mouse with `interactive(false)` | [Node Fundamentals](../nodes/node-fundamentals.md) |
 | `UIDemoAnimation` | Easings, repeat and yoyo, sequences, speed, animated color, size and rotation, an animation started by a click | [TweenAnimator](../animation/tween-animator.md) |
 | `UIDemoLayout` | Flex and grid layouts, alignments, margins, a hidden child, children added at runtime, a reactive direction, z-index, aspect ratio, absolute position, anchors | [FlexNode](../nodes/layout/flex.md) |
 | `UIDemoOverflow` | Vertical, horizontal and two-axis scrolling, scrollbars, scroll speed and ratio, loading at the end, scroll callbacks, nested scrolling, skeletons | [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md) |

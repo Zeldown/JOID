@@ -16,6 +16,7 @@ import dev.joid.lib.ui.node.impl.design.progress.ProgressNode.ProgressDirection;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(anchorX = Align.END, anchorY = Align.START)
@@ -214,11 +215,13 @@ public class UIDemoSimple extends UIDemo {
 			TextNode.create(160, 275).text(Text.create("Disabled", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
-	}
 
-	@Override
-	public void postDraw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawCircle(mouseX, mouseY, UIDemoSimple.INK, 6D);
+		ContainerNode
+		.create(0, 0, 0, 0)
+		.zindex(Integer.MAX_VALUE)
+		.interactive(false)
+		.onDraw((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(mouseX, mouseY, UIDemoSimple.INK, 6D))
+		.attach(this);
 	}
 
 }

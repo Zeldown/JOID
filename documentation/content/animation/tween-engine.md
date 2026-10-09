@@ -20,7 +20,7 @@ public class WelcomeUI extends UI {
 	}
 
 	@Override
-	public void preDraw(final double mouseX, final double mouseY) {
+	public void update() {
 		this.manager.update((float) super.getFrameTime());
 	}
 
