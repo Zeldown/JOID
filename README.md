@@ -96,6 +96,34 @@ Real JOID renders, styled for this showcase: JOID ships with no design of its ow
   </tr>
 </table>
 
+## Quality
+
+The same scene twice: a plain renderer on the left, JOID on the right. Both are real renders, and the framed areas are enlarged pixel for pixel.
+
+<p align="center">
+  <img src="documentation/content/images/quality-text.webp" alt="The phrase Sharp at every size from 8 to 140 px, side by side: an atlas baked at 24 px breaks small letters and blurs large ones, JOID is sharp at every size" width="100%">
+</p>
+<p align="center"><sub><b>Text.</b> One font, sharp at every size.</sub></p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="documentation/content/images/quality-shapes.webp" alt="Circles and rounded rectangles: polygons show stair steps, JOID's edges are smooth"></td>
+    <td width="50%"><img src="documentation/content/images/quality-pixel-font.webp" alt="A pixel-art font at 10, 15, 20 and 24 px: the scaled atlas blurs and bleeds, JOID stays crisp"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Shapes.</b> Smooth curves.</sub></td>
+    <td align="center"><sub><b>Pixel fonts.</b> Crisp at any size.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="documentation/content/images/quality-downscale.webp" alt="A detailed image shrinking: the plain renderer flickers with moiré, JOID stays clean"></td>
+    <td width="50%"><img src="documentation/content/images/quality-svg.webp" alt="A compass icon growing to 216 px: the plain renderer blurs, JOID stays sharp"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Images.</b> Clean when scaled down.</sub></td>
+    <td align="center"><sub><b>Icons.</b> Sharp when scaled up.</sub></td>
+  </tr>
+</table>
+
 ## Documentation
 
 <div align="center">
