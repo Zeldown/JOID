@@ -14,8 +14,10 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
+import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
@@ -93,6 +95,20 @@ public class MsdfTextRendererTest {
 	public void sharesOneRenderer() {
 		Assert.assertSame(MsdfTextRenderer.inst(), MsdfTextRenderer.inst());
 		Assert.assertSame(MsdfTextRenderer.inst(), MsdfTextRendererTest.sample.getTextRenderer());
+	}
+
+	@Test
+	public void createsItsShaderOnTheCurrentRenderBridge() {
+		MsdfTextRenderer.inst().drawText(100D, 100D, "A", MsdfTextRendererTest.sampleInfo());
+		final IShader first = this.render.getLast().getShader();
+		final CapturingRenderBridge other = new CapturingRenderBridge(1920, 1080);
+		BridgeHandler.RENDER.register(other);
+		try {
+			MsdfTextRenderer.inst().drawText(100D, 100D, "A", MsdfTextRendererTest.sampleInfo());
+			Assert.assertNotSame(first, other.getLast().getShader());
+		} finally {
+			BridgeHandler.RENDER.unregister(other);
+		}
 	}
 
 	@Test

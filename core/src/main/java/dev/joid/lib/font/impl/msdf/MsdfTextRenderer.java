@@ -1,6 +1,7 @@
 package dev.joid.lib.font.impl.msdf;
 
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
@@ -20,11 +21,13 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 
 	private static final MsdfTextRenderer INSTANCE = new MsdfTextRenderer();
 
-	private Color        color;
-	private float        pixelX;
-	private float        pixelY;
-	private PixelGrid    grid;
-	private MsdfFontFace face;
+	private Color         color;
+	private float         pixelX;
+	private float         pixelY;
+	private PixelGrid     grid;
+	private IShader       shader;
+	private MsdfFontFace  face;
+	private IRenderBridge render;
 
 	public static @NonNull MsdfTextRenderer inst() {
 		return MsdfTextRenderer.INSTANCE;
@@ -32,22 +35,28 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 
 	@Override
 	protected void end() {
-		MsdfShader.SHADER.unbind();
+		this.shader.unbind();
 	}
 
 	@Override
 	protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
-		if (!MsdfShader.SHADER.isActive()) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (render != this.render) {
+			this.render = render;
+			this.shader = CoreShader.FONT.create(BlendState.NORMAL);
+		}
+
+		if (!this.shader.isActive()) {
 			throw new IllegalStateException("The msdf font shader is not usable");
 		}
 
 		this.face = null;
 		this.color = null;
 		this.pixelX = 0F;
-		this.grid = BridgeHandler.RENDER.get().getPixelGrid();
+		this.grid = render.getPixelGrid();
 
 		Color.reset();
-		MsdfShader.SHADER.bind();
+		this.shader.bind();
 	}
 
 	@Override
@@ -104,13 +113,13 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 
 	private void bindColor(final @NonNull Color color) {
 		this.color = color;
-		super.uniformColor(MsdfShader.SHADER, color);
+		super.uniformColor(this.shader, color);
 	}
 
 	private void bindFace(final @NonNull MsdfFontFace face) {
 		this.face = face;
 		face.getTexture().bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
-		MsdfShader.SHADER
+		this.shader
 		.uniform("texel", 1F / face.getAtlas().getWidth(), 1F / face.getAtlas().getHeight())
 		.uniform("pxRange", face.getAtlas().getDistanceRange());
 	}
@@ -118,18 +127,12 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 	private void bindPixel(final float pixelX, final float pixelY) {
 		this.pixelX = pixelX;
 		this.pixelY = pixelY;
-		MsdfShader.SHADER.uniform("pixel", pixelX, pixelY);
+		this.shader.uniform("pixel", pixelX, pixelY);
 	}
 
 	private double getVerticalSize(final @NonNull MsdfFontFace face, final double size) {
 		final double xHeight = face.getXHeight() * size * this.grid.getScaleY();
 		return this.grid.isAligned() && xHeight > 0D ? size * Math.max(1D, Math.round(xHeight)) / xHeight : size;
-	}
-
-	private static final class MsdfShader {
-
-		private static final IShader SHADER = CoreShader.FONT.create(BlendState.NORMAL);
-
 	}
 
 }
