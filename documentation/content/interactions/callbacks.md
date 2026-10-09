@@ -50,7 +50,7 @@ The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mo
 | `onMousePressed` | `NodeMousePressedCallback<T>` | `(node, mouseX, mouseY, clickType)` | Every mouse button press the UI receives, wherever the mouse is. | Dispatch to the children, `onClick`, the node's `mousePressed` hook. |
 | `onMouseReleased` | `NodeMouseReleasedCallback<T>` | `(node, mouseX, mouseY, clickType)` | Every mouse button release, wherever the mouse is. | Dispatch to the children and the node's `mouseReleased` hook. |
 | `onMouseDragged` | `NodeMouseDraggedCallback<T>` | `(node, mouseX, mouseY, clickType, deltaTime)` | Every mouse move while a button is held. | Dispatch to the children, the node's `mouseDragged` hook, the drag of the node. |
-| `onMouseScroll` | `NodeMouseScrollCallback<T>` | `(node, mouseX, mouseY, notches)` | Every mouse wheel event. | Dispatch to the children, scrolling of the hovered node, the node's `mouseScroll` hook. |
+| `onMouseScroll` | `NodeMouseScrollCallback<T>` | `(node, mouseX, mouseY, notchesX, notchesY)` | Every mouse wheel event. | Dispatch to the children, scrolling of the hovered node, the node's `mouseScroll` hook. |
 | `onKeyPressed` | `NodeKeyPressedCallback<T>` | `(node, c, key)` | Every key event the UI receives, wherever the mouse is. | Dispatch to the children and the node's `keyPressed` hook. |
 | `onHoverStart` | `NodeHoverStartCallback<T>` | `(node, mouseX, mouseY)` | The frame the node becomes hovered. | Nothing. |
 | `onHover` | `NodeHoverCallback<T>` | `(node, mouseX, mouseY)` | Every frame while the node is hovered. | Nothing. |

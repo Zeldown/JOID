@@ -101,13 +101,13 @@ public abstract class UIBridge implements IUIBridge {
 		return false;
 	}
 
-	public final boolean mouseScroll(final double notches) {
-		if (notches == 0D) {
+	public final boolean mouseScroll(final double notchesX, final double notchesY) {
+		if (notchesX == 0D && notchesY == 0D) {
 			return false;
 		}
 
 		for (final UI ui : this.getInputList()) {
-			if (ui.onMouseScroll(notches) || ui.getPopup().active()) {
+			if (ui.onMouseScroll(notchesX, notchesY) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelScroll());
 			}
 		}

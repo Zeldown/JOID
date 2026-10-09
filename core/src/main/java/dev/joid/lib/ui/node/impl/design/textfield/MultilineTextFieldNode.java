@@ -203,15 +203,15 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final double notches, final @NonNull InternalContext context) {
-		if (context.isCancelled() || notches == 0D || !super.isHovered(mouseX, mouseY)) {
+	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull InternalContext context) {
+		if (context.isCancelled() || notchesY == 0D || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
 		final double lineHeight = this.getLineHeight();
 		final double maxOffset = Math.max(0D, this.getLayout().getLines().size() * lineHeight - this.getRawHeight());
-		final double offset = notches > 0D ? Math.max(0D, this.yOffset - lineHeight) : Math.min(maxOffset, this.yOffset + lineHeight);
-		if (notches > 0D ? offset < this.yOffset : offset > this.yOffset) {
+		final double offset = notchesY > 0D ? Math.max(0D, this.yOffset - lineHeight) : Math.min(maxOffset, this.yOffset + lineHeight);
+		if (notchesY > 0D ? offset < this.yOffset : offset > this.yOffset) {
 			context.cancel(() -> {
 				this.yOffset = offset;
 			});

@@ -90,12 +90,12 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final double notches, final @NonNull InternalContext context) {
-		if (notches == 0D || !super.isHovered(mouseX, mouseY)) {
+	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull InternalContext context) {
+		if (notchesY == 0D || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
-		context.cancel(() -> this.zoom(this.getTargetSize() + notches / 25D));
+		context.cancel(() -> this.zoom(this.getTargetSize() + notchesY / 25D));
 	}
 
 	@Override

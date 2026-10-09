@@ -629,6 +629,10 @@ public abstract class Node implements INode {
 		return this.renderHover(mouseX, mouseY, new AtomicBoolean(false));
 	}
 
+	private boolean canScrollX(final double notches) {
+		return this.hasOverflowX() && (notches > 0D ? this.targetScrollX < 0 : this.targetScrollX > -this.maxScrollX);
+	}
+
 	private boolean renderHover(final double mouseX, final double mouseY, final AtomicBoolean shown) {
 		final AtomicBoolean cancelled = new AtomicBoolean(false);
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> {
@@ -691,45 +695,50 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_SCROLL, callback);
 	}
 
-	public final void onMouseScroll(final double mouseX, final double mouseY, final double notches, final @NonNull InternalContext context) {
+	public final void onMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull InternalContext context) {
 		if (!this.isVisible()) {
 			return;
 		}
 
 		final boolean enabled = this.isEnabled();
 		if (this.scrollbar != null) {
-			this.scrollbar.onMouseScroll(mouseX, mouseY, notches, context);
+			this.scrollbar.onMouseScroll(mouseX, mouseY, notchesX, notchesY, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.onMouseScroll(mouseX, mouseY, notches, context);
+			this.skeleton.onMouseScroll(mouseX, mouseY, notchesX, notchesY, context);
 		}
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_SCROLL)) {
-			this.executePreCallback(Node.CALLBACK_MOUSE_SCROLL, context, mouseX, mouseY, notches);
+			this.executePreCallback(Node.CALLBACK_MOUSE_SCROLL, context, mouseX, mouseY, notchesX, notchesY);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, notches, context));
-		if (!context.isCancelled() && this.isHovered(mouseX, mouseY) && notches != 0D) {
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
+		if (!context.isCancelled() && this.isHovered(mouseX, mouseY)) {
 			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
-			if (this.hasOverflowY()) {
-				if (notches > 0D ? this.targetScrollY < 0 : this.targetScrollY > -this.maxScrollY) {
-					this.scrollY(notches > 0D ? 30 : -30, mappedScrollSpeed);
+			if (notchesY != 0D && this.hasOverflowY()) {
+				if (notchesY > 0D ? this.targetScrollY < 0 : this.targetScrollY > -this.maxScrollY) {
+					this.scrollY(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
 					context.cancel();
 				}
-			} else if (this.hasOverflowX() && (notches > 0D ? this.targetScrollX < 0 : this.targetScrollX > -this.maxScrollX)) {
-				this.scrollX(notches > 0D ? 30 : -30, mappedScrollSpeed);
+			} else if (notchesY != 0D && this.canScrollX(notchesY)) {
+				this.scrollX(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
+				context.cancel();
+			}
+
+			if (notchesX != 0D && this.canScrollX(notchesX)) {
+				this.scrollX(notchesX > 0D ? 30 : -30, mappedScrollSpeed);
 				context.cancel();
 			}
 		}
 
 		if (enabled) {
-			this.mouseScroll(mouseX, mouseY, notches, context);
+			this.mouseScroll(mouseX, mouseY, notchesX, notchesY, context);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, notches, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_SCROLL)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_SCROLL, context, mouseX, mouseY, notches);
+			this.executePostCallback(Node.CALLBACK_MOUSE_SCROLL, context, mouseX, mouseY, notchesX, notchesY);
 		}
 	}
 

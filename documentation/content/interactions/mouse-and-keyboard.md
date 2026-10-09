@@ -52,9 +52,9 @@ super.keybind(() -> this.status.set("Saved"), Key.LEFT_CONTROL, Key.S);
 | `onMousePressed` | `(node, mouseX, mouseY, clickType)` | Every press, wherever the mouse is. |
 | `onMouseReleased` | `(node, mouseX, mouseY, clickType)` | Every release, wherever the mouse is. |
 | `onMouseDragged` | `(node, mouseX, mouseY, clickType, deltaTime)` | Every mouse move while a button is held; `clickType` is the held button. |
-| `onMouseScroll` | `(node, mouseX, mouseY, notches)` | Every wheel event. |
+| `onMouseScroll` | `(node, mouseX, mouseY, notchesX, notchesY)` | Every wheel event. |
 
-- `notches` of a wheel event is a `double` in wheel notches: `1` for a notch up, `-1` for a notch down, a fraction for a precise touchpad, never `0` (the bridge drops still events).
+- `notchesY` of a wheel event is a `double` in wheel notches: `1` for a notch up, `-1` for a notch down, a fraction for a precise touchpad. `notchesX` is the horizontal wheel (a tilted wheel or a touchpad): positive toward the left, negative toward the right, `0` on LWJGL 2. They are never both `0` (the bridge drops still events).
 - `deltaTime` of a drag event is the number of milliseconds since the button was pressed, measured by the UI bridge on the clock bridge (`BridgeHandler.CLOCK`).
 - `onClick` consumes the press: the nodes behind and the UIs below do not receive it. `onMousePressed`, `onMouseReleased`, `onMouseDragged` and `onMouseScroll` are listeners: they run for every event not consumed yet and leave it to the others; see [Consumed input events](callbacks.md#consumed-input-events).
 - Hidden and disabled nodes receive no mouse event: none of these callbacks, nor hover and drags, fire for a node whose `visible(...)` or `enabled(...)` returns `false`, or for the children of a hidden or disabled node.
@@ -258,7 +258,7 @@ A `UI` can override the input hooks of `IUI`. They run after all the nodes of th
 | `mousePressed` | `(mouseX, mouseY, clickType, context)` |
 | `mouseReleased` | `(mouseX, mouseY, clickType, context)` |
 | `mouseDragged` | `(mouseX, mouseY, clickType, deltaTime, context)` |
-| `mouseScroll` | `(mouseX, mouseY, notches, context)` |
+| `mouseScroll` | `(mouseX, mouseY, notchesX, notchesY, context)` |
 | `keyPressed` | `(c, key, context)` |
 
 ```java
@@ -275,7 +275,7 @@ public void keyPressed(final char c, final Key key, final InternalContext contex
 
 ![Diagram: an event goes from the backend to the UI bridge, to the top UI, its nodes, its keybinds and hooks, then to the UI below unless it was consumed](../images/diagram-event-path.png "The path of an input event from the window to the nodes")
 
-The UI bridge receives the events from the backend through `UIBridge.mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseMoved()`, `mouseScroll(double)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
+The UI bridge receives the events from the backend through `UIBridge.mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseMoved()`, `mouseScroll(double, double)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
 
 1. The UI bridge walks its UIs from the top one down, the [overlays](../ui/managing-uis.md#overlays-with-uidataoverlay) first, skipping the UIs that are not active or not visible (`active` and `visible` of `@UIData`, readable and changeable through `ui.getData()`) and the overlays that take no input or are not drawn. A wheel event with a value of `0` is dropped.
 2. Key events only, on `Key.ESCAPE` in a closeable UI (`closeable`, `true` by default) that is not an overlay: the UI first receives the key like any other (steps 3 to 5: a focused text field cancels its edit and consumes it, a keybind on `ESCAPE` consumes it). When nobody consumed it, the UI is asked to close (`close()` may refuse, see [Opening and Closing UIs](../ui/managing-uis.md)). Either way the dispatch stops there: the UIs below never receive that Escape. A UI that is not closeable receives Escape as a normal key.
@@ -289,7 +289,7 @@ The UI bridge receives the events from the backend through `UIBridge.mousePresse
 
 Wheel events in dev mode: with Left Alt held, the wheel zooms the UI (in larger steps with Left Shift) and the event goes no further.
 
-The entry points of a UI are public: `onMousePressed(ClickType)`, `onMouseReleased(ClickType)`, `onMouseDragged(ClickType, long)`, `onMouseScroll(double)` and `onKeyPressed(char, Key)` run steps 3 to 5 and return `true` when the event was consumed. Calling them simulates input on one UI.
+The entry points of a UI are public: `onMousePressed(ClickType)`, `onMouseReleased(ClickType)`, `onMouseDragged(ClickType, long)`, `onMouseScroll(double, double)` and `onKeyPressed(char, Key)` run steps 3 to 5 and return `true` when the event was consumed. Calling them simulates input on one UI.
 
 ## Keyboard focus
 

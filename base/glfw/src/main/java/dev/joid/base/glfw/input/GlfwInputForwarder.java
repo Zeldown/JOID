@@ -21,7 +21,7 @@ public final class GlfwInputForwarder {
 	public @NonNull GlfwInputForwarder attach(final long window) {
 		GLFW.glfwSetCharCallback(window, (handle, codepoint) -> this.charTyped(codepoint));
 		GLFW.glfwSetCursorPosCallback(window, (handle, x, y) -> this.mouseMoved());
-		GLFW.glfwSetScrollCallback(window, (handle, x, y) -> this.mouseScrolled(y));
+		GLFW.glfwSetScrollCallback(window, (handle, x, y) -> this.mouseScrolled(x, y));
 		GLFW.glfwSetKeyCallback(window, (handle, key, scancode, action, mods) -> {
 			if (action != GLFW.GLFW_RELEASE) {
 				this.keyPressed(key, mods);
@@ -58,8 +58,8 @@ public final class GlfwInputForwarder {
 		return this.bridge.mouseMoved();
 	}
 
-	public boolean mouseScrolled(final double notches) {
-		return this.bridge.mouseScroll(notches);
+	public boolean mouseScrolled(final double notchesX, final double notchesY) {
+		return this.bridge.mouseScroll(notchesX, notchesY);
 	}
 
 	public void flush() {

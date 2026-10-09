@@ -134,7 +134,7 @@ loop.run();
 | `mousePressed(ClickType clickType)` | A mouse button goes down. | `ClickType.from(button)` maps 0 to `LEFT`, 1 to `RIGHT`, 2 to `MIDDLE`, 3 to `BACK`, 4 to `FORWARD`, anything else to `OTHER`. |
 | `mouseReleased(ClickType clickType)` | A mouse button goes up. | The button released. Releasing the button of the last `mousePressed` ends its drag. |
 | `mouseMoved()` | The mouse moves. | None. While a button is held, the bridge sends a drag with that button and the milliseconds since its press, read from the [clock bridge](bridges.md) (`BridgeHandler.CLOCK`), so a manual clock (testkit, replays) gives exact durations; without a held button it does nothing. |
-| `mouseScroll(double notches)` | The wheel turns. | The distance in notches: `1` for one notch away from the user, `-1` toward them, a fraction for a precise touchpad. GLFW and Minecraft give notches as they are; Windows and LWJGL 2 count `120` per notch, so divide by `120`. `0` is ignored. Scrolling uses the sign; the dev-mode zoom (Alt + wheel) and the model viewer use the amount. |
+| `mouseScroll(double notchesX, double notchesY)` | The wheel turns or tilts, or a touchpad scrolls. | The distance in notches on each axis: `notchesY` is `1` for one notch away from the user, `-1` toward them; `notchesX` is positive toward the left, negative toward the right, as GLFW gives it; a fraction for a precise touchpad. GLFW and Minecraft give notches as they are; Windows and LWJGL 2 count `120` per notch, so divide by `120` (LWJGL 2 has no horizontal wheel: pass `0`). An event with both at `0` is ignored. Scrolling uses the sign; the dev-mode zoom (Alt + wheel) and the model viewer use the amount. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats. | The character it types (`0` when none) and the engine-neutral `Key` (`Key.UNKNOWN` when unknown). |
 
 - The mouse position is not an event: each UI reads `getMouseX()` and `getMouseY()` from the [window bridge](bridges.md#iwindowbridge) when it is drawn, and input events use the position of the last frame.
@@ -324,7 +324,7 @@ JOID.open(new UISettings());
 | `draw()` | Draws every visible UI, bottom up. |
 | `mousePressed(ClickType)`, `mouseReleased(ClickType)` | A button goes down or up. Like every input method, returns whether a UI consumed it. |
 | `mouseMoved()` | The mouse moves; a drag when a button is held, timed on `BridgeHandler.CLOCK`. |
-| `mouseScroll(double notches)` | The wheel turns, in notches. |
+| `mouseScroll(double notchesX, double notchesY)` | The wheel turns, in notches on each axis. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |
 | `getUiList()` | The sorted `IndexedLinkedList<UI>`. |
 | `drawHover(UI, Object, double, double)` | Draws a text tooltip, see [Tooltips with drawHover](#tooltips-with-drawhover). |

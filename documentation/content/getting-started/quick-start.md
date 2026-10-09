@@ -324,7 +324,7 @@ JOID.inst().load();
 Theme.load();
 ```
 
-`Natives` and `Backend` are in `dev.joid.backend.lwjgl2`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.backend.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
+`Natives` and `Backend` are in `dev.joid.backend.lwjgl2`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(0D, Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.backend.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
 
 ### Vulkan
 

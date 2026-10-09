@@ -22,39 +22,40 @@ public class NodeMouseScrollCallbackTest {
 	@Test
 	public void runsAfterTheNodeWithoutConsumingTheContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeMouseScrollCallback<RectNode> callback = (node, mouseX, mouseY, value) -> received.addAll(Arrays.asList(node, mouseX, mouseY, value));
+		final NodeMouseScrollCallback<RectNode> callback = (node, mouseX, mouseY, valueX, value) -> received.addAll(Arrays.asList(node, mouseX, mouseY, valueX, value));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final InternalContext context = InternalContext.create();
-		callback.pre(rect, context, 3D, 4D, -1D);
+		callback.pre(rect, context, 3D, 4D, 0.5D, -1D);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
-		callback.post(rect, context, 3D, 4D, -1D);
-		Assert.assertEquals(Arrays.asList(rect, 3D, 4D, -1D), received);
+		callback.post(rect, context, 3D, 4D, 0.5D, -1D);
+		Assert.assertEquals(Arrays.asList(rect, 3D, 4D, 0.5D, -1D), received);
 		Assert.assertFalse(context.isCancelled());
 	}
 
 	@Test
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeMouseScrollCallback<RectNode> callback = (node, mouseX, mouseY, value) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), 3D, 4D, -1D);
+		final NodeMouseScrollCallback<RectNode> callback = (node, mouseX, mouseY, valueX, value) -> received.add(node);
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), 3D, 4D, 0.5D, -1D);
 		Assert.assertTrue(received.isEmpty());
 	}
 
 	@Test
-	public void receivesTheWheelValueAndTheMouse() {
+	public void receivesTheWheelValuesAndTheMouse() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onMouseScroll((node, mouseX, mouseY, value) -> received.addAll(Arrays.asList(node, mouseX, mouseY, value)));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onMouseScroll((node, mouseX, mouseY, valueX, value) -> received.addAll(Arrays.asList(node, mouseX, mouseY, valueX, value)));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 160D).frames(2).scroll(1D);
 		this.bridges.move(900D, 700D).frames(2).scroll(-2D);
-		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, 1D, rect, 900D, 700D, -2D), received);
+		this.bridges.scroll(-1.5D, 0D);
+		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, 0D, 1D, rect, 900D, 700D, 0D, -2D, rect, 900D, 700D, -1.5D, 0D), received);
 	}
 
 	@Test
 	public void ignoresAStillWheel() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onMouseScroll((node, mouseX, mouseY, value) -> received.add(node));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onMouseScroll((node, mouseX, mouseY, valueX, value) -> received.add(node));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 160D).frames(2).scroll(0D);
 		Assert.assertTrue(received.isEmpty());

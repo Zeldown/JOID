@@ -193,7 +193,7 @@ The hooks come from `INode` and do nothing by default, except `drawSkeleton`.
 | `mousePressed(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | Mouse button pressed. |
 | `mouseReleased(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | Mouse button released. |
 | `mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | Mouse moved with a button held. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge on the clock bridge. |
-| `mouseScroll(double mouseX, double mouseY, double notches, InternalContext context)` | Mouse wheel, in notches. A positive `notches` is a wheel up. |
+| `mouseScroll(double mouseX, double mouseY, double notchesX, double notchesY, InternalContext context)` | Mouse wheel, in notches on each axis. A positive `notchesY` is a wheel up, a positive `notchesX` a scroll toward the left. |
 | `keyPressed(char c, Key key, InternalContext context)` | Key typed. `c` is the typed character, as reported by the UI bridge (the bundled windows send `0` for keys without one). |
 
 ### Drawing in draw
@@ -396,7 +396,7 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalC
 | --- | --- |
 | `Node(double x, double y)`, `Node(double x, double y, double width, double height)` | Constructors. |
 | `INode` hooks | `init`, `draw`, `drawSkeleton`, `update`, `detach`, `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`. |
-| `onMousePressed(double, double, ClickType, InternalContext)`, `onMouseReleased(...)`, `onMouseDragged(double, double, ClickType, long, InternalContext)`, `onMouseScroll(double, double, double, InternalContext)`, `onKeyPressed(char, Key, InternalContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
+| `onMousePressed(double, double, ClickType, InternalContext)`, `onMouseReleased(...)`, `onMouseDragged(double, double, ClickType, long, InternalContext)`, `onMouseScroll(double, double, double, double, InternalContext)`, `onKeyPressed(char, Key, InternalContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
 | `registerCallback(int, NodeCallback)` | Protected. Stores a callback. |
 | `bind(Signal<V>, Consumer<V>)` | Protected. Runs the consumer with the signal's current value, then with each published value while the UI is open. Returns the subscription; each call adds one. |
 | `unbind(SignalSubscriber<?>)` | Protected. Removes a subscription of the node. Does nothing with `null`. |

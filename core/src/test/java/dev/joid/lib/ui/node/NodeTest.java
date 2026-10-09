@@ -996,13 +996,52 @@ public class NodeTest {
 	}
 
 	@Test
+	public void scrollsHorizontallyWithTheHorizontalWheelWhenItOverflowsBothWays() {
+		final ContainerNode area = NodeTest.column();
+		RectNode.create(0D, 0D, 700D, 10D).attach(area);
+		this.bridges.open(new NodeUI(area));
+		this.bridges.move(300D, 150D).frames(2);
+		this.bridges.scroll(-1D, 0D);
+		Assert.assertEquals(-30D, area.getTargetScrollX(), 0D);
+		Assert.assertEquals(0D, area.getTargetScrollY(), 0D);
+		this.bridges.scroll(-1D, -1D);
+		Assert.assertEquals(-60D, area.getTargetScrollX(), 0D);
+		Assert.assertEquals(-30D, area.getTargetScrollY(), 0D);
+		this.bridges.scroll(2D, 0D);
+		Assert.assertEquals(-30D, area.getTargetScrollX(), 0D);
+	}
+
+	@Test
+	public void leavesTheHorizontalWheelWithoutHorizontalOverflow() {
+		final ContainerNode column = NodeTest.column();
+		this.bridges.open(new NodeUI(column));
+		this.bridges.move(300D, 150D).frames(2);
+		final InternalContext context = InternalContext.create();
+		column.onMouseScroll(300D, 150D, -1D, 0D, context);
+		Assert.assertFalse(context.isCancelled());
+		Assert.assertEquals(0D, column.getTargetScrollX(), 0D);
+		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void leavesTheHorizontalWheelAtItsHorizontalEnd() {
+		final ContainerNode row = NodeTest.row();
+		this.bridges.open(new NodeUI(row));
+		this.bridges.move(300D, 150D).frames(2);
+		final InternalContext context = InternalContext.create();
+		row.onMouseScroll(300D, 150D, 1D, 0D, context);
+		Assert.assertFalse(context.isCancelled());
+		Assert.assertEquals(0D, row.getTargetScrollX(), 0D);
+	}
+
+	@Test
 	public void leavesTheWheelToItsParentAtItsVerticalEndWhenItOverflowsBothWays() {
 		final ContainerNode area = NodeTest.column();
 		RectNode.create(0D, 0D, 700D, 10D).attach(area);
 		this.bridges.open(new NodeUI(area)).move(300D, 150D).frames(2);
 		area.scrollRatioY(1F);
 		final InternalContext context = InternalContext.create();
-		area.onMouseScroll(300D, 150D, -1D, context);
+		area.onMouseScroll(300D, 150D, 0D, -1D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(-200D, area.getTargetScrollY(), 0D);
 		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
@@ -1020,7 +1059,7 @@ public class NodeTest {
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 		Assert.assertEquals(100D, column.getChildren().get(1).getY(), 0D);
 		final InternalContext context = InternalContext.create();
-		column.onMouseScroll(300D, 150D, -1D, context);
+		column.onMouseScroll(300D, 150D, 0D, -1D, context);
 		Assert.assertFalse(context.isCancelled());
 	}
 
@@ -1038,11 +1077,11 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		final InternalContext down = InternalContext.create();
-		column.onMouseScroll(300D, 150D, -1D, down);
+		column.onMouseScroll(300D, 150D, 0D, -1D, down);
 		Assert.assertTrue(down.isCancelled());
 		Assert.assertEquals(-30D, column.getTargetScrollY(), 0D);
 		final InternalContext up = InternalContext.create();
-		column.onMouseScroll(300D, 150D, 1D, up);
+		column.onMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 	}
@@ -1052,11 +1091,11 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		final InternalContext up = InternalContext.create();
-		column.onMouseScroll(300D, 150D, 1D, up);
+		column.onMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertFalse(up.isCancelled());
 		column.scrollRatioY(1F);
 		final InternalContext down = InternalContext.create();
-		column.onMouseScroll(300D, 150D, -1D, down);
+		column.onMouseScroll(300D, 150D, 0D, -1D, down);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
 	}
@@ -1068,8 +1107,8 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(box)).move(300D, 150D).frames(2);
 		final InternalContext down = InternalContext.create();
 		final InternalContext up = InternalContext.create();
-		box.onMouseScroll(300D, 150D, -1D, down);
-		box.onMouseScroll(300D, 150D, 1D, up);
+		box.onMouseScroll(300D, 150D, 0D, -1D, down);
+		box.onMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertFalse(up.isCancelled());
 	}
@@ -1079,7 +1118,7 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		final InternalContext context = InternalContext.create();
-		column.onMouseScroll(300D, 150D, 0D, context);
+		column.onMouseScroll(300D, 150D, 0D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 	}
@@ -1291,7 +1330,7 @@ public class NodeTest {
 	@Test
 	public void forwardsTheMouseAndKeysToItsScrollbar() {
 		final List<String> events = new ArrayList<>();
-		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D)).onKeyPressed((scrollbar, c, key) -> events.add("typed")).onMouseScroll((scrollbar, mouseX, mouseY, value) -> events.add("scrolled")).onMouseDragged((scrollbar, mouseX, mouseY, clickType, deltaTime) -> events.add("dragged")).onMouseReleased((scrollbar, mouseX, mouseY, clickType) -> events.add("released"));
+		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D)).onKeyPressed((scrollbar, c, key) -> events.add("typed")).onMouseScroll((scrollbar, mouseX, mouseY, valueX, value) -> events.add("scrolled")).onMouseDragged((scrollbar, mouseX, mouseY, clickType, deltaTime) -> events.add("dragged")).onMouseReleased((scrollbar, mouseX, mouseY, clickType) -> events.add("released"));
 		this.bridges.open(new NodeUI(NodeTest.row().scrollbar(bar)));
 		this.bridges.getUi().keyTyped('a', Key.A);
 		this.bridges.scroll(1D);
@@ -2839,7 +2878,7 @@ public class NodeTest {
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull InternalContext context) {
 			this.events.add(this.name + " scrolled");
 		}
 

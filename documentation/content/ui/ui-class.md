@@ -69,7 +69,7 @@ See [The Virtual Canvas](../concepts/canvas.md) for the fit rule and the convers
 | `void mousePressed(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | After the nodes received the press (the nodes with a positive `zindex` first). |
 | `void mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | After the nodes received the drag. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge. |
 | `void mouseReleased(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | After the nodes received the release. |
-| `void mouseScroll(double mouseX, double mouseY, double notches, InternalContext context)` | After the nodes received the scroll, in wheel notches. |
+| `void mouseScroll(double mouseX, double mouseY, double notchesX, double notchesY, InternalContext context)` | After the nodes received the scroll, in wheel notches on each axis. |
 | `void keyPressed(char c, Key key, InternalContext context)` | Last, after the nodes, the keybinds, the zoom keys and the dev keys. |
 
 Each draw of a UI runs its steps in this order; the hooks find their place between the nodes by `zindex`:
@@ -254,7 +254,7 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 | `load(double width, double height)`, `load(double width, double height, double zoom)` | Sizes the UI to the window (zoom 1 for the first form) and initializes it on the first call. |
 | `draw(double mouseX, double mouseY)` | Draws the UI; the mouse is in window coordinates. Runs a pending hot reload first. |
 | `onUpdate()` | Updates the nodes, then calls `update()`. |
-| `onMousePressed(ClickType)`, `onMouseReleased(ClickType)`, `onMouseDragged(ClickType, long)`, `onMouseScroll(double)`, `onKeyPressed(char, Key)` | Dispatch an event to the nodes and the hooks; return `true` when it was consumed, `false` before the first load. |
+| `onMousePressed(ClickType)`, `onMouseReleased(ClickType)`, `onMouseDragged(ClickType, long)`, `onMouseScroll(double, double)`, `onKeyPressed(char, Key)` | Dispatch an event to the nodes and the hooks; return `true` when it was consumed, `false` before the first load. |
 | `boolean onClose()` | Asks `close()`, starts the Out transition, returns `true` when the bridge can remove the UI at once. |
 | `properlyClose()` | Releases the UI (see [Lifecycle](#lifecycle)). |
 

@@ -312,7 +312,7 @@ public class UITest {
 		Assert.assertFalse(ui.onMousePressed(ClickType.LEFT));
 		Assert.assertFalse(ui.onMouseReleased(ClickType.LEFT));
 		Assert.assertFalse(ui.onMouseDragged(ClickType.LEFT, 10L));
-		Assert.assertFalse(ui.onMouseScroll(1D));
+		Assert.assertFalse(ui.onMouseScroll(0D, 1D));
 		Assert.assertFalse(ui.onKeyPressed('a', Key.A));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
@@ -368,7 +368,7 @@ public class UITest {
 		Assert.assertTrue(ui.onMousePressed(ClickType.LEFT));
 		Assert.assertTrue(ui.onMouseReleased(ClickType.LEFT));
 		Assert.assertTrue(ui.onMouseDragged(ClickType.LEFT, 10L));
-		Assert.assertTrue(ui.onMouseScroll(1D));
+		Assert.assertTrue(ui.onMouseScroll(0D, 1D));
 		Assert.assertTrue(ui.onKeyPressed('a', Key.A));
 	}
 
@@ -377,7 +377,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui);
 		this.trace.clear();
-		ui.onMouseScroll(1D);
+		ui.onMouseScroll(0D, 1D);
 		ui.onMouseDragged(ClickType.LEFT, 10L);
 		ui.onMouseReleased(ClickType.LEFT);
 		ui.onKeyPressed('a', Key.A);
@@ -734,7 +734,7 @@ public class UITest {
 		this.bridges.scroll(-1D);
 		Assert.assertEquals(0.868D, ui.getView().getZoom(), 0.0001D);
 		Assert.assertTrue(this.trace.isEmpty());
-		Assert.assertFalse(ui.onMouseScroll(0D));
+		Assert.assertFalse(ui.onMouseScroll(0D, 0D));
 		Assert.assertEquals(Collections.singletonList("scrolled 0.0"), this.trace);
 	}
 
@@ -1705,7 +1705,7 @@ public class UITest {
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull InternalContext context) {
 			this.trace.add("scrolled " + value);
 			this.cancel(context);
 		}
@@ -1992,7 +1992,7 @@ public class UITest {
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull InternalContext context) {
 			this.trace.add("scrolled " + this.name);
 		}
 

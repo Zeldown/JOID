@@ -75,7 +75,7 @@ When the mouse is over a visible and enabled `SCROLL` node whose content overflo
 RectNode.create(100, 100, 400, 300).color(Color.WHITE).overflow(OverflowProperty.SCROLL).scrollSpeed(3D).attach(this);
 ```
 
-A node that overflows on both axes scrolls vertically with the wheel; its horizontal offset moves from code or with a horizontal [scrollbar](#scrollbars-with-scrollbarnode).
+The horizontal wheel (a tilted wheel, a touchpad, Shift + wheel on some systems) scrolls the horizontal axis. A node that overflows on both axes scrolls vertically with the vertical wheel and horizontally with the horizontal wheel; its horizontal offset also moves from code or with a horizontal [scrollbar](#scrollbars-with-scrollbarnode).
 
 ## Nested scroll containers
 
@@ -323,7 +323,7 @@ RectNode
 - `FlexNode`, `GridNode` and `ReorderableFlexNode` place their children on every frame, so `SCROLL` on them does not scroll: keep them at `NONE`, so that they grow, and wrap them in a fixed-size node with `SCROLL`.
 - A direct child of a scrolling node is moved on every frame: arrange the items inside one layout child.
 - The maximum is `0` before the first frame: scroll from `onMount`, not in `init()`.
-- With overflow on both axes, the wheel only scrolls vertically: give the horizontal axis a scrollbar or scroll it from code.
+- With overflow on both axes, the vertical wheel only scrolls vertically: a mouse without horizontal wheel needs a scrollbar or code for the horizontal axis.
 - `onScrollUpdate` does not tell the axis: on a node that scrolls both ways, read `getTargetScrollX()` and `getTargetScrollY()`.
 
 ## See also

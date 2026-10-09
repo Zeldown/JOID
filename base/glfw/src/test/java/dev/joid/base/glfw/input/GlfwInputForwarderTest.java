@@ -59,7 +59,7 @@ public class GlfwInputForwarderTest {
 
 	@Test
 	public void forwardsTheWheelInNotches() {
-		this.input.mouseScrolled(-0.5D);
+		this.input.mouseScrolled(0D, -0.5D);
 		Assert.assertEquals(Collections.singletonList("scrolled -0.5"), this.trace);
 	}
 
@@ -77,7 +77,7 @@ public class GlfwInputForwarderTest {
 		Assert.assertTrue(this.input.mousePressed(0));
 		Assert.assertTrue(this.input.mouseMoved());
 		Assert.assertTrue(this.input.mouseReleased(0));
-		Assert.assertTrue(this.input.mouseScrolled(1D));
+		Assert.assertTrue(this.input.mouseScrolled(0D, 1D));
 	}
 
 	public static final class TraceUI extends UI {
@@ -106,7 +106,7 @@ public class GlfwInputForwarderTest {
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double notches, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notches, final @NonNull InternalContext context) {
 			this.record("scrolled " + notches, context);
 		}
 

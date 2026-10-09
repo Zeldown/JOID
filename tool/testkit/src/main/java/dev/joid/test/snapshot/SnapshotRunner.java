@@ -126,7 +126,7 @@ public final class SnapshotRunner {
 				this.bridge.mouseReleased(ClickType.valueOf(arguments[1]));
 				break;
 			case "scroll":
-				this.bridge.mouseScroll(Double.parseDouble(arguments[1]));
+				this.bridge.mouseScroll(arguments.length > 2 ? Double.parseDouble(arguments[1]) : 0D, Double.parseDouble(arguments[arguments.length > 2 ? 2 : 1]));
 				break;
 			case "type":
 				this.type(command.substring(5));

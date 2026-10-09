@@ -188,7 +188,7 @@ Scroll from code with `scrollRatioY(1F)` (to the end) and `scrollRatioY(0F)` (ba
 - Set `SCROLL` on the fixed-size parent, not on the `FlexNode` or `GridNode`: they grow with their children, so they never overflow.
 - A layout node places its children itself: the position a child of a `FlexNode` or `GridNode` gets at creation is added to its slot as an offset, so create them at 0, 0; a position set later with `x(...)` or `y(...)` is replaced at the next layout.
 - Use `watch` only when the structure changes: a text, a color or a visibility follows its signal through its setter.
-- A node that overflows on both axes scrolls vertically with the wheel; the horizontal axis goes through a scrollbar or `scrollRatioX(...)`.
+- A node that overflows on both axes scrolls vertically with the wheel; the horizontal axis goes through the horizontal wheel of a touchpad, a scrollbar or `scrollRatioX(...)`.
 
 ## See also
 

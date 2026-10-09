@@ -23,7 +23,7 @@ public class IUITest {
 		this.ui.mousePressed(10D, 20D, ClickType.LEFT, context);
 		this.ui.mouseDragged(10D, 20D, ClickType.LEFT, 40L, context);
 		this.ui.mouseReleased(10D, 20D, ClickType.LEFT, context);
-		this.ui.mouseScroll(10D, 20D, 1D, context);
+		this.ui.mouseScroll(10D, 20D, 0D, 1D, context);
 		this.ui.keyPressed('a', Key.A, context);
 		Assert.assertFalse(context.isCancelled());
 	}
@@ -69,7 +69,7 @@ public class IUITest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAScrollWithoutContext() {
-		this.ui.mouseScroll(10D, 20D, 1D, null);
+		this.ui.mouseScroll(10D, 20D, 0D, 1D, null);
 	}
 
 	@Test(expected = NullPointerException.class)
