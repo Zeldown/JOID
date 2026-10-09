@@ -67,7 +67,7 @@ public class RenderBridgeContractTest extends RenderBridgeContractSuite {
 }
 ```
 
-`SnapshotSuite` and `ISnapshotBackend` are in `dev.joid.test.snapshot`, `RenderBridgeContractSuite` in `dev.joid.test.contract`. Snapshot tests need a GPU.
+`SnapshotSuite` and `ISnapshotBackend` are in `dev.joid.test.snapshot`, `RenderBridgeContractSuite` and `BitmapFontContractSuite` in `dev.joid.test.contract`. Snapshot tests need a GPU.
 
 ![Diagram of the snapshot pipeline: a scenario drives the SnapshotRunner, which renders through the ISnapshotBackend; each shot is compared to its reference or recorded as one, and every result goes to report.html](../images/diagram-snapshot-pipeline.png "Each shot of a scenario is compared to the reference of the same renderer, then listed in the report")
 
@@ -156,6 +156,16 @@ Each test creates the backend on a 64×64 surface, renders a reference frame, in
 | `survivesEveryTrapAtOnce` | `EVERYTHING`: every trap the context supports |
 
 On OpenGL, `GlStateSnapshot.read(binding, capabilities)` (`dev.joid.base.opengl.snapshot`) is the oracle: about 150 values read with `glGet*` through a binding (enabled capabilities, bindings, blend, depth, stencil, pixel store, viewport and scissor box, the textures, samplers and texture parameters of units 0 to 3, the attributes of the bound vertex array, and, in a compatibility profile, the fixed-function state, the client arrays and the material). The LWJGL 3 module implements the traps with LWJGL in `HostStateBackend` and runs the suite in `HostStateContractTest`, on every [OpenGL profile](#opengl-profiles).
+
+## BitmapFontContractSuite tests
+
+`BitmapFontContractSuite` (`dev.joid.test.contract`) checks that a backend draws [bitmap fonts](../fonts/custom-fonts.md#pixel-art-fonts-on-bitmapfont) as the core shader `CoreShader.BITMAP` means them. Extend it like `RenderBridgeContractSuite`, with an `ISnapshotBackend`. It creates the backend once, on a 128×64 surface, and draws one white glyph of a font of bitmap size 8 at size 16 on black, from four atlases: an ASCII sheet of 8 texels per glyph, Unifont at 16 texels in 8 font pixels, a high-definition pack of 32 texels and a one-channel atlas read with `grayscale(true)`. The glyph has three bars one texel wide, and the atlas has an opaque cell next to it, which must not bleed in.
+
+| Test | Checks |
+|---|---|
+| `drawsWholeTexelsAtAWholeNumberOfPixels` | At scales 1, 2 and 0.5 (2, 4 and 1 pixels per font pixel), no pixel is partly covered and the ink is the texels times the square of the pixels per texel. |
+| `givesEveryTexelColumnTheSameInkAtAFractionalScale` | At scales 1.2676 and 1.75, the ink is kept, and each bar carries the pixels per texel of ink on a row. |
+| `drawsTheSameGlyphFromEveryAtlas` | At scales 1, 1.2676 and 0.75, the four atlases give the same pixels, within 2 levels. |
 
 ## BorrowedTextureContractSuite tests
 

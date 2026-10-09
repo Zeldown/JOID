@@ -70,7 +70,8 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		final float spacing = info.getLetterSpacing() * size;
 
 		TextStyle snapshot = style.copy();
-		F face = this.getFace(font, style);
+		GlyphFont<F> current = this.getFont(font, style);
+		F face = current.getFace(style.getWeight(), style.isItalic());
 		double pen = 0D;
 		int previous = -1;
 		for (int index = 0; index < text.length();) {
@@ -78,7 +79,8 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 			if (consumed > 0) {
 				index += consumed;
 				snapshot = style.copy();
-				final F next = this.getFace(font, style);
+				current = this.getFont(font, style);
+				final F next = current.getFace(style.getWeight(), style.isItalic());
 				if (next != face) {
 					face = next;
 					previous = -1;
@@ -98,7 +100,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 				pen += face.getKerning(previous, codepoint) * size;
 			}
 
-			placements.add(new GlyphPlacement<>(start, codepoint, face, pen, snapshot));
+			placements.add(new GlyphPlacement<>(start, codepoint, current, face, pen, snapshot));
 			pen += (drawn ? face.getAdvance(codepoint) : GlyphFontProvider.space(face)) * size + spacing;
 			previous = codepoint;
 		}
@@ -110,6 +112,10 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 	protected abstract void begin(final double runX, final double runY, final double runWidth, final double runHeight);
 
 	protected abstract void drawGlyph(final @NonNull TextGlyph<F> glyph);
+
+	protected boolean isGridAligned() {
+		return false;
+	}
 
 	protected final void uniformColor(final @NonNull IShader shader, final @NonNull Color color) {
 		final Color current = color.update();
@@ -133,22 +139,6 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		return this.getFont(info).getFace(info.getWeight(), info.isItalic());
 	}
 
-	private @NonNull F getFace(final @NonNull GlyphFont<F> font, final @NonNull TextStyle style) {
-		final IFont styleFont = style.getFont();
-		if (styleFont == null || styleFont == font) {
-			return font.getFace(style.getWeight(), style.isItalic());
-		}
-
-		if (!(styleFont instanceof GlyphFont) || styleFont.getFontProvider().getClass() != this.getClass()) {
-			if (JOID.inst().isDevMode() && GlyphFontProvider.WARNED_FONTS.add(styleFont.getClass())) {
-				System.err.println("[JOID] The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font");
-			}
-			return font.getFace(style.getWeight(), style.isItalic());
-		}
-
-		return ((GlyphFont<F>) styleFont).getFace(style.getWeight(), style.isItalic());
-	}
-
 	private @NonNull GlyphFont<F> getFont(final @NonNull TextInfo info) {
 		final IFont font = info.getFont();
 		if (!(font instanceof GlyphFont) || font.getFontProvider().getClass() != this.getClass()) {
@@ -158,12 +148,28 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		return (GlyphFont<F>) font;
 	}
 
+	private @NonNull GlyphFont<F> getFont(final @NonNull GlyphFont<F> font, final @NonNull TextStyle style) {
+		final IFont styleFont = style.getFont();
+		if (styleFont == null || styleFont == font) {
+			return font;
+		}
+
+		if (!(styleFont instanceof GlyphFont) || styleFont.getFontProvider().getClass() != this.getClass()) {
+			if (JOID.inst().isDevMode() && GlyphFontProvider.WARNED_FONTS.add(styleFont.getClass())) {
+				System.err.println("[JOID] The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font");
+			}
+			return font;
+		}
+
+		return (GlyphFont<F>) styleFont;
+	}
+
 	private @NonNull FontBounds draw(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
 		if (layout.getPlacements().isEmpty()) {
 			return FontBounds.empty();
 		}
 
-		final PixelGrid grid = this.getFont(info).isBitmap() ? BridgeHandler.RENDER.get().getPixelGrid() : null;
+		final PixelGrid grid = this.isGridAligned() ? BridgeHandler.RENDER.get().getPixelGrid() : null;
 		final List<TextGlyph<F>> glyphs = this.glyphs(layout, x, y, info, grid);
 		for (final TextGlyph<F> glyph : glyphs) {
 			for (final ITextEffect effect : glyph.getStyle().getEffects()) {
@@ -198,7 +204,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		for (int i = 0; i < placements.size(); i++) {
 			final GlyphPlacement<F> placement = placements.get(i);
 			final double advance = (i + 1 < placements.size() ? placements.get(i + 1).getX() : layout.getWidth()) - placement.getX();
-			final TextGlyph<F> glyph = TextGlyph.create(placement.getFace(), placement.getIndex(), placement.getCodepoint(), placement.getStyle(), origin + placement.getX(), baseline, size, advance, GlyphFontProvider.color(placement.getStyle(), info));
+			final TextGlyph<F> glyph = TextGlyph.create(placement.getFont(), placement.getFace(), placement.getIndex(), placement.getCodepoint(), placement.getStyle(), origin + placement.getX(), baseline, size, advance, GlyphFontProvider.color(placement.getStyle(), info));
 			for (final ITextEffect effect : placement.getStyle().getEffects()) {
 				effect.apply(glyph);
 			}

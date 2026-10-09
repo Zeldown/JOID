@@ -42,7 +42,6 @@ public class DemoPixelFontTest {
 
 	@Test
 	public void isABitmapFontOfEightTexels() {
-		Assert.assertTrue(DemoPixelFontTest.font.isBitmap());
 		Assert.assertEquals(DemoPixelFont.SIZE, DemoPixelFontTest.font.getBitmapSize());
 		Assert.assertSame(DemoPixelFontProvider.inst(), DemoPixelFontTest.font.getFontProvider());
 	}

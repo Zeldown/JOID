@@ -38,7 +38,7 @@ Most fonts are made of glyphs: one shape per character, placed one after the oth
 
 `MsdfFont` is a `GlyphFont<MsdfFontFace>`, drawn by the shared `MsdfFontProvider`. A family refuses to be empty and refuses two faces of the same weight and style (`IllegalArgumentException`).
 
-A glyph font made of texels, a pixel-art font, declares its bitmap size: it keeps its size like any other font, starts its lines on the pixel grid, and its provider filters the texels so that each keeps the same width at any interface scale, zoom and window size (see [Pixel-art fonts](custom-fonts.md#pixel-art-fonts-with-the-bitmap-size)).
+A font made of texels, a pixel-art font, is a `BitmapFont` with its bitmap size: it keeps its size like any other font, starts its lines on the pixel grid, and its `BitmapFontProvider` filters the texels so that each keeps the same width at any interface scale, zoom and window size, whatever the number of texels per glyph in its atlas (see [Pixel-art fonts](custom-fonts.md#pixel-art-fonts-on-bitmapfont)).
 
 ### Choosing a face with FontFamily.resolve
 
@@ -153,7 +153,8 @@ The MSDF fonts are `.ttf` files: their atlases are generated into the [MSDF cach
 | To get started, with Latin text and a few faces | Load the `.ttf`, `.otf` or `.ttc` files at runtime with `MsdfFontLoader`; the first launch of each machine generates the atlases. | [Adding Your Own Fonts](adding-fonts.md) |
 | A fast first launch, a release build, other characters (Cyrillic, Greek, CJK, symbols) or another atlas size | Generate `font.msdf` atlases with the MSDF Generator, ship them and load them with `MsdfFontLoader.load(...)`. | [MSDF Generator](msdf-generator.md) |
 | A face whose weight or style metadata is wrong, or a family assembled from unrelated files | Wrap the handle in `MsdfOpenTypeSource` or `MsdfBinarySource` and set the weight or italic flag. | [Adding Your Own Fonts](adding-fonts.md#overriding-a-face-with-msdfsource) |
-| A pixel-art or sprite font, or glyphs drawn another way | Extend `GlyphFont` and `GlyphFontProvider`; families, kerning, markup and effects come with them. | [Custom Font Implementations](custom-fonts.md) |
+| A pixel-art font drawn from an atlas | Extend `BitmapFont` and `BitmapFontProvider` and say where each glyph lies in the atlas; the drawing, families, kerning, markup and effects come with them. | [Pixel-art fonts](custom-fonts.md#pixel-art-fonts-on-bitmapfont) |
+| A sprite font, or glyphs drawn another way | Extend `GlyphFont` and `GlyphFontProvider`; families, kerning, markup and effects come with them. | [Custom Font Implementations](custom-fonts.md) |
 | A completely different text engine | Implement `IFont` and `IFontProvider`. | [Custom Font Implementations](custom-fonts.md) |
 
 ## Reference

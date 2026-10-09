@@ -1,4 +1,4 @@
-package dev.joid.lib.font.impl.glyph;
+package dev.joid.lib.font.impl.bitmap;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -7,15 +7,17 @@ import dev.joid.demo.ui.font.effect.DemoFace;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.impl.glyph.dto.FontFamily;
 
-public class GlyphFontTest {
+public class BitmapFontTest {
 
 	@Test
-	public void isNotABitmapByDefault() {
-		final Font font = new Font(0);
-		Assert.assertFalse(font.isBitmap());
-		Assert.assertEquals(0, font.getBitmapSize());
-		Assert.assertTrue(new Font(8).isBitmap());
+	public void keepsItsBitmapSize() {
 		Assert.assertEquals(8, new Font(8).getBitmapSize());
+		Assert.assertEquals(16, new Font(16).getBitmapSize());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAnEmptyBitmapSize() {
+		new Font(0);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -23,7 +25,7 @@ public class GlyphFontTest {
 		new Font(-8);
 	}
 
-	private static final class Font extends GlyphFont<DemoFace> {
+	private static final class Font extends BitmapFont<DemoFace> {
 
 		private Font(final int bitmapSize) {
 			super(FontFamily.of(DemoFace.create(0.5F)), bitmapSize);

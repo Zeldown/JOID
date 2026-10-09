@@ -7,6 +7,7 @@ uniform vec4 color;
 uniform vec2 texel;
 uniform vec2 pixel;
 uniform vec4 bounds;
+uniform bool grayscale;
 
 uniform int u_HasGradient;
 uniform vec4 u_GradientStart;
@@ -25,6 +26,10 @@ vec4 texelAt(vec2 index) {
     }
 
     vec4 value = texture(tex, (index + 0.5) * texel);
+    if (grayscale) {
+        return vec4(value.r);
+    }
+
     return vec4(value.rgb * value.a, value.a);
 }
 

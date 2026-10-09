@@ -6,6 +6,7 @@ import org.junit.Test;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.impl.glyph.SingleFaceFont;
 import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
 
 public class DemoScrambleTextEffectTest {
@@ -32,7 +33,7 @@ public class DemoScrambleTextEffectTest {
 	}
 
 	private static TextGlyph<DemoFace> glyph(final int codepoint, final DemoFace face) {
-		return TextGlyph.create(face, 3, codepoint, TextStyle.create(FontWeight.REGULAR, false, Color.WHITE), 0D, 0D, 40D, 20D, Color.WHITE);
+		return TextGlyph.create(SingleFaceFont.of(face), face, 3, codepoint, TextStyle.create(FontWeight.REGULAR, false, Color.WHITE), 0D, 0D, 40D, 20D, Color.WHITE);
 	}
 
 }

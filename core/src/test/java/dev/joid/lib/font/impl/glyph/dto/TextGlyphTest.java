@@ -6,6 +6,7 @@ import org.junit.Test;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.impl.glyph.SingleFaceFont;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,9 +18,12 @@ public class TextGlyphTest {
 	private static final TextStyle PLAIN   = TextStyle.create(FontWeight.REGULAR, false, Color.WHITE);
 	private static final TextStyle SLANTED = TextStyle.create(FontWeight.REGULAR, true, Color.WHITE);
 
+	private static final SingleFaceFont<Face> FONT = SingleFaceFont.of(TextGlyphTest.UPRIGHT);
+
 	@Test
 	public void keepsItsPlacement() {
-		final TextGlyph<Face> glyph = TextGlyph.create(TextGlyphTest.UPRIGHT, 3, 'A', TextGlyphTest.PLAIN, 10D, 100D, 20D, 9D, Color.RED);
+		final TextGlyph<Face> glyph = TextGlyph.create(TextGlyphTest.FONT, TextGlyphTest.UPRIGHT, 3, 'A', TextGlyphTest.PLAIN, 10D, 100D, 20D, 9D, Color.RED);
+		Assert.assertSame(TextGlyphTest.FONT, glyph.getFont());
 		Assert.assertSame(TextGlyphTest.UPRIGHT, glyph.getFace());
 		Assert.assertSame(TextGlyphTest.PLAIN, glyph.getStyle());
 		Assert.assertEquals(3, glyph.getIndex());
@@ -34,7 +38,7 @@ public class TextGlyphTest {
 
 	@Test
 	public void changesWhatIsDrawn() {
-		final TextGlyph<Face> glyph = TextGlyph.create(TextGlyphTest.UPRIGHT, 0, 'A', TextGlyphTest.PLAIN, 0D, 0D, 20D, 9D, Color.WHITE);
+		final TextGlyph<Face> glyph = TextGlyph.create(TextGlyphTest.FONT, TextGlyphTest.UPRIGHT, 0, 'A', TextGlyphTest.PLAIN, 0D, 0D, 20D, 9D, Color.WHITE);
 		Assert.assertSame(glyph, glyph.codepoint('B').color(Color.BLUE).offset(1D, -2D));
 		Assert.assertEquals('B', glyph.getCodepoint());
 		Assert.assertSame(Color.BLUE, glyph.getColor());
@@ -44,7 +48,7 @@ public class TextGlyphTest {
 
 	@Test
 	public void scalesTheFaceMetrics() {
-		final TextGlyph<Face> glyph = TextGlyph.create(TextGlyphTest.UPRIGHT, 3, 'A', TextGlyphTest.PLAIN, 10D, 100D, 20D, 9D, Color.WHITE);
+		final TextGlyph<Face> glyph = TextGlyph.create(TextGlyphTest.FONT, TextGlyphTest.UPRIGHT, 3, 'A', TextGlyphTest.PLAIN, 10D, 100D, 20D, 9D, Color.WHITE);
 		Assert.assertEquals(16D, glyph.getAscender(), 1E-6D);
 		Assert.assertEquals(-4D, glyph.getDescender(), 1E-6D);
 		Assert.assertEquals(102D, glyph.getUnderlineY(), 1E-6D);
@@ -56,9 +60,10 @@ public class TextGlyphTest {
 
 	@Test
 	public void castsAShadowFromTheChangedGlyph() {
-		final TextGlyph<Face> glyph = TextGlyph.create(TextGlyphTest.UPRIGHT, 4, 'A', TextGlyphTest.PLAIN, 10D, 100D, 20D, 9D, Color.WHITE).codepoint('C').offset(1D, 2D);
+		final TextGlyph<Face> glyph = TextGlyph.create(TextGlyphTest.FONT, TextGlyphTest.UPRIGHT, 4, 'A', TextGlyphTest.PLAIN, 10D, 100D, 20D, 9D, Color.WHITE).codepoint('C').offset(1D, 2D);
 		final TextGlyph<Face> shadow = glyph.shadow(3D, 4D, Color.BLACK);
 		Assert.assertTrue(shadow.isShadow());
+		Assert.assertSame(TextGlyphTest.FONT, shadow.getFont());
 		Assert.assertEquals('C', shadow.getCodepoint());
 		Assert.assertEquals(4, shadow.getIndex());
 		Assert.assertEquals(13D, shadow.getX(), 0D);
@@ -71,10 +76,10 @@ public class TextGlyphTest {
 
 	@Test
 	public void slantsOnlyAnUprightFaceAskedInItalic() {
-		Assert.assertFalse(TextGlyph.create(TextGlyphTest.UPRIGHT, 0, 'A', TextGlyphTest.PLAIN, 0D, 0D, 1D, 1D, Color.WHITE).isSlanted());
-		Assert.assertTrue(TextGlyph.create(TextGlyphTest.UPRIGHT, 0, 'A', TextGlyphTest.SLANTED, 0D, 0D, 1D, 1D, Color.WHITE).isSlanted());
-		Assert.assertFalse(TextGlyph.create(TextGlyphTest.ITALIC, 0, 'A', TextGlyphTest.SLANTED, 0D, 0D, 1D, 1D, Color.WHITE).isSlanted());
-		Assert.assertFalse(TextGlyph.create(TextGlyphTest.ITALIC, 0, 'A', TextGlyphTest.PLAIN, 0D, 0D, 1D, 1D, Color.WHITE).isSlanted());
+		Assert.assertFalse(TextGlyph.create(TextGlyphTest.FONT, TextGlyphTest.UPRIGHT, 0, 'A', TextGlyphTest.PLAIN, 0D, 0D, 1D, 1D, Color.WHITE).isSlanted());
+		Assert.assertTrue(TextGlyph.create(TextGlyphTest.FONT, TextGlyphTest.UPRIGHT, 0, 'A', TextGlyphTest.SLANTED, 0D, 0D, 1D, 1D, Color.WHITE).isSlanted());
+		Assert.assertFalse(TextGlyph.create(SingleFaceFont.of(TextGlyphTest.ITALIC), TextGlyphTest.ITALIC, 0, 'A', TextGlyphTest.SLANTED, 0D, 0D, 1D, 1D, Color.WHITE).isSlanted());
+		Assert.assertFalse(TextGlyph.create(SingleFaceFont.of(TextGlyphTest.ITALIC), TextGlyphTest.ITALIC, 0, 'A', TextGlyphTest.PLAIN, 0D, 0D, 1D, 1D, Color.WHITE).isSlanted());
 	}
 
 	@Getter

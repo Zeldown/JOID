@@ -6,6 +6,7 @@ import org.junit.Test;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.impl.glyph.SingleFaceFont;
 import dev.joid.lib.font.impl.glyph.dto.IFontFace;
 import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
 import lombok.NonNull;
@@ -14,7 +15,8 @@ public class ITextEffectTest {
 
 	@Test
 	public void leavesTheGlyphUntouchedByDefault() {
-		final TextGlyph<IFontFace> glyph = TextGlyph.create(new Face(), 0, 'A', TextStyle.create(FontWeight.REGULAR, false, Color.WHITE), 1D, 2D, 10D, 5D, Color.WHITE);
+		final IFontFace face = new Face();
+		final TextGlyph<IFontFace> glyph = TextGlyph.create(SingleFaceFont.of(face), face, 0, 'A', TextStyle.create(FontWeight.REGULAR, false, Color.WHITE), 1D, 2D, 10D, 5D, Color.WHITE);
 		final ITextEffect effect = new ITextEffect() {};
 		effect.apply(glyph);
 		effect.background(glyph);

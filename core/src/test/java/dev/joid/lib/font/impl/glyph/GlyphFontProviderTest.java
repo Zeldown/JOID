@@ -28,6 +28,7 @@ import dev.joid.lib.font.impl.msdf.MsdfFontProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class GlyphFontProviderTest {
 
@@ -35,7 +36,8 @@ public class GlyphFontProviderTest {
 	private static final Face     ITALIC   = new Face(FontWeight.REGULAR, true, 1F, false);
 	private static final Face     SPACED   = new Face(FontWeight.REGULAR, false, 1F, true);
 	private static final Face     REGULAR  = new Face(FontWeight.REGULAR, false, 1F, false);
-	private static final Provider PROVIDER = new Provider();
+	private static final Provider ALIGNED  = new Provider(true);
+	private static final Provider PROVIDER = new Provider(false);
 
 	private static final Font OTHER = new Font(FontFamily.of(GlyphFontProviderTest.SPACED));
 
@@ -90,9 +92,11 @@ public class GlyphFontProviderTest {
 
 	@Before
 	public void reset() {
-		GlyphFontProviderTest.PROVIDER.events = this.events;
-		GlyphFontProviderTest.PROVIDER.drawn.clear();
-		GlyphFontProviderTest.PROVIDER.runs.clear();
+		for (final Provider provider : new Provider[] {GlyphFontProviderTest.PROVIDER, GlyphFontProviderTest.ALIGNED}) {
+			provider.events = this.events;
+			provider.drawn.clear();
+			provider.runs.clear();
+		}
 	}
 
 	@Test
@@ -196,6 +200,15 @@ public class GlyphFontProviderTest {
 		Assert.assertSame(GlyphFontProviderTest.REGULAR, layout.getPlacements().get(0).getFace());
 		Assert.assertSame(GlyphFontProviderTest.SPACED, layout.getPlacements().get(1).getFace());
 		Assert.assertSame(GlyphFontProviderTest.REGULAR, layout.getPlacements().get(2).getFace());
+		Assert.assertSame(GlyphFontProviderTest.OTHER, layout.getPlacements().get(1).getFont());
+	}
+
+	@Test
+	public void handsEachGlyphItsFont() {
+		final TextInfo info = GlyphFontProviderTest.info().markups(GlyphFontProviderTest.FONT);
+		GlyphFontProviderTest.draw("A^A", info);
+		Assert.assertSame(info.getFont(), GlyphFontProviderTest.PROVIDER.drawn.get(0).getFont());
+		Assert.assertSame(GlyphFontProviderTest.OTHER, GlyphFontProviderTest.PROVIDER.drawn.get(1).getFont());
 	}
 
 	@Test
@@ -358,31 +371,31 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
-	public void measuresABitmapFontAtItsSize() {
-		final TextInfo info = GlyphFontProviderTest.bitmap(12F);
+	public void measuresAGridAlignedFontAtItsSize() {
+		final TextInfo info = GlyphFontProviderTest.aligned(12F);
 		this.render.scale(1.2676D, 1.2676D, 1D);
 		Assert.assertArrayEquals(new double[] {12D, 14.4D}, new double[] {info.getWidth("AB"), info.getHeight()}, 1E-4D);
-		Assert.assertArrayEquals(new double[] {20D, 24D}, new double[] {GlyphFontProviderTest.bitmap(20F).getWidth("AB"), GlyphFontProviderTest.bitmap(20F).getHeight()}, 1E-4D);
+		Assert.assertArrayEquals(new double[] {20D, 24D}, new double[] {GlyphFontProviderTest.aligned(20F).getWidth("AB"), GlyphFontProviderTest.aligned(20F).getHeight()}, 1E-4D);
 	}
 
 	@Test
-	public void drawsABitmapFontAtTheSizeItMeasures() {
-		final TextInfo info = GlyphFontProviderTest.bitmap(10F).letterSpacing(0.25F);
+	public void drawsAGridAlignedFontAtTheSizeItMeasures() {
+		final TextInfo info = GlyphFontProviderTest.aligned(10F).letterSpacing(0.25F);
 		this.render.scale(0.75D, 0.75D, 1D);
-		final FontBounds bounds = GlyphFontProviderTest.PROVIDER.drawText(0D, 0D, "AVB", info);
+		final FontBounds bounds = GlyphFontProviderTest.ALIGNED.drawText(0D, 0D, "AVB", info);
 		Assert.assertEquals(info.getWidth("AVB"), bounds.getWidth(), 0D);
 		Assert.assertEquals(info.getHeight(), bounds.getHeight(), 0D);
-		for (final TextGlyph<Face> glyph : GlyphFontProviderTest.PROVIDER.drawn) {
+		for (final TextGlyph<Face> glyph : GlyphFontProviderTest.ALIGNED.drawn) {
 			Assert.assertEquals(10D, glyph.getSize(), 0D);
 		}
 	}
 
 	@Test
-	public void snapsTheOriginOfABitmapFontOnThePixelGrid() {
-		final TextInfo info = GlyphFontProviderTest.bitmap(8F).letterSpacing(0.3F);
-		GlyphFontProviderTest.PROVIDER.drawText(0.3D, 0.4D, "AVB", info);
-		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.PROVIDER.drawn;
-		final List<GlyphPlacement<Face>> placements = GlyphFontProviderTest.PROVIDER.layout("AVB", info).getPlacements();
+	public void snapsTheOriginOfAGridAlignedFontOnThePixelGrid() {
+		final TextInfo info = GlyphFontProviderTest.aligned(8F).letterSpacing(0.3F);
+		GlyphFontProviderTest.ALIGNED.drawText(0.3D, 0.4D, "AVB", info);
+		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.ALIGNED.drawn;
+		final List<GlyphPlacement<Face>> placements = GlyphFontProviderTest.ALIGNED.layout("AVB", info).getPlacements();
 		for (int i = 0; i < drawn.size(); i++) {
 			Assert.assertEquals(placements.get(i).getX(), drawn.get(i).getX(), 1E-6D);
 			Assert.assertEquals(8D, drawn.get(i).getBaseline(), 1E-6D);
@@ -390,10 +403,10 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
-	public void spacesTheGlyphsOfABitmapFontEvenlyAtAFractionalScale() {
+	public void spacesTheGlyphsOfAGridAlignedFontEvenlyAtAFractionalScale() {
 		this.render.scale(1.2676D, 1.2676D, 1D);
-		GlyphFontProviderTest.PROVIDER.drawText(10.3D, 0.4D, "AAAA", GlyphFontProviderTest.bitmap(16F));
-		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.PROVIDER.drawn;
+		GlyphFontProviderTest.ALIGNED.drawText(10.3D, 0.4D, "AAAA", GlyphFontProviderTest.aligned(16F));
+		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.ALIGNED.drawn;
 		final double origin = drawn.get(0).getX() * 1.2676D;
 		Assert.assertEquals(Math.rint(origin), origin, 1E-5D);
 		for (int i = 1; i < drawn.size(); i++) {
@@ -402,7 +415,7 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
-	public void keepsTheGlyphsOfAVectorFontWhereTheyAre() {
+	public void keepsTheGlyphsOfAFontOffTheGridByDefault() {
 		GlyphFontProviderTest.PROVIDER.drawText(0.3D, 0.4D, "AB", GlyphFontProviderTest.info());
 		Assert.assertEquals(0.3D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getX(), 1E-6D);
 		Assert.assertEquals(5.3D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getX(), 1E-6D);
@@ -410,7 +423,7 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
-	public void roundsTheEffectOffsetsOfABitmapFont() {
+	public void roundsTheEffectOffsetsOfAGridAlignedFont() {
 		final ITextEffect shake = new ITextEffect() {
 
 			@Override
@@ -419,19 +432,19 @@ public class GlyphFontProviderTest {
 			}
 
 		};
-		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.bitmap(8F).effects(shake));
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.aligned(8F).effects(shake));
 		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.info().effects(shake));
-		Assert.assertEquals(0D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getOffsetX(), 1E-6D);
-		Assert.assertEquals(-1D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getOffsetY(), 1E-6D);
-		Assert.assertEquals(0.4D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getOffsetX(), 1E-6D);
-		Assert.assertEquals(-0.6D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getOffsetY(), 1E-6D);
+		Assert.assertEquals(0D, GlyphFontProviderTest.ALIGNED.drawn.get(0).getOffsetX(), 1E-6D);
+		Assert.assertEquals(-1D, GlyphFontProviderTest.ALIGNED.drawn.get(0).getOffsetY(), 1E-6D);
+		Assert.assertEquals(0.4D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getOffsetX(), 1E-6D);
+		Assert.assertEquals(-0.6D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getOffsetY(), 1E-6D);
 	}
 
 	@Test
-	public void keepsTheShadowOfABitmapFontAtLeastOnePixelAway() {
-		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.bitmap(8F).shadow(Color.BLACK).shadow(0.2F, -0.3F));
-		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.bitmap(8F).shadow(Color.BLACK).shadow(2.6F, 0F));
-		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.PROVIDER.drawn;
+	public void keepsTheShadowOfAGridAlignedFontAtLeastOnePixelAway() {
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.aligned(8F).shadow(Color.BLACK).shadow(0.2F, -0.3F));
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.aligned(8F).shadow(Color.BLACK).shadow(2.6F, 0F));
+		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.ALIGNED.drawn;
 		Assert.assertEquals(drawn.get(1).getX() + 1D, drawn.get(0).getX(), 1E-6D);
 		Assert.assertEquals(drawn.get(1).getBaseline() - 1D, drawn.get(0).getBaseline(), 1E-6D);
 		Assert.assertEquals(drawn.get(3).getX() + 3D, drawn.get(2).getX(), 1E-6D);
@@ -439,10 +452,10 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
-	public void leavesABitmapFontOffTheGridUnderARotation() {
+	public void leavesAGridAlignedFontOffTheGridUnderARotation() {
 		this.render.rotate(30D, 0D, 0D, 1D);
-		GlyphFontProviderTest.PROVIDER.drawText(0.3D, 0.4D, "A", GlyphFontProviderTest.bitmap(8F).shadow(Color.BLACK).shadow(0.2F, 0.2F));
-		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.PROVIDER.drawn;
+		GlyphFontProviderTest.ALIGNED.drawText(0.3D, 0.4D, "A", GlyphFontProviderTest.aligned(8F).shadow(Color.BLACK).shadow(0.2F, 0.2F));
+		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.ALIGNED.drawn;
 		Assert.assertEquals(0.5D, drawn.get(0).getX(), 1E-6D);
 		Assert.assertEquals(0.3D, drawn.get(1).getX(), 1E-6D);
 		Assert.assertEquals(8.4D, drawn.get(1).getBaseline(), 1E-6D);
@@ -456,12 +469,12 @@ public class GlyphFontProviderTest {
 		return TextInfo.create(new Font(FontFamily.of(faces)), 10F).markups(GlyphFontProviderTest.MARKUP);
 	}
 
-	private static TextInfo bitmap(final float size) {
-		return TextInfo.create(new Font(FontFamily.of(GlyphFontProviderTest.REGULAR, GlyphFontProviderTest.BOLD, GlyphFontProviderTest.ITALIC), 8), size).markups(GlyphFontProviderTest.MARKUP);
+	private static TextInfo aligned(final float size) {
+		return TextInfo.create(new Font(FontFamily.of(GlyphFontProviderTest.REGULAR, GlyphFontProviderTest.BOLD, GlyphFontProviderTest.ITALIC), GlyphFontProviderTest.ALIGNED), size).markups(GlyphFontProviderTest.MARKUP);
 	}
 
 	private static void draw(final String text, final TextInfo info) {
-		GlyphFontProviderTest.PROVIDER.drawText(0D, 0D, text, info);
+		info.getFont().getFontProvider().drawText(0D, 0D, text, info);
 	}
 
 	private static GlyphLayout<Face> layout(final String text, final TextInfo info) {
@@ -526,23 +539,28 @@ public class GlyphFontProviderTest {
 
 	private static final class Font extends GlyphFont<Face> {
 
+		private final Provider provider;
+
 		private Font(final FontFamily<Face> family) {
-			super(family);
+			this(family, GlyphFontProviderTest.PROVIDER);
 		}
 
-		private Font(final FontFamily<Face> family, final int bitmapSize) {
-			super(family, bitmapSize);
+		private Font(final FontFamily<Face> family, final Provider provider) {
+			super(family);
+			this.provider = provider;
 		}
 
 		@Override
 		public IFontProvider getFontProvider() {
-			return GlyphFontProviderTest.PROVIDER;
+			return this.provider;
 		}
 
 	}
 
+	@RequiredArgsConstructor
 	private static final class Provider extends GlyphFontProvider<Face> {
 
+		private final boolean               aligned;
 		private final List<double[]>        runs  = new ArrayList<>();
 		private final List<TextGlyph<Face>> drawn = new ArrayList<>();
 
@@ -567,6 +585,11 @@ public class GlyphFontProviderTest {
 		protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
 			this.events.add("begin");
 			this.runs.add(new double[] {runX, runY, runWidth, runHeight});
+		}
+
+		@Override
+		protected boolean isGridAligned() {
+			return this.aligned;
 		}
 
 	}
