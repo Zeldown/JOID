@@ -78,12 +78,12 @@ public class CircleShaderTest {
 	@Test
 	public void skipsTheDrawWithoutShader() {
 		final boolean[] ran = {false};
-		CircleShader.inst().shader = null;
+		this.shader.setActive(false);
 		try {
 			Assert.assertFalse(CircleShader.inst().isAvailable());
 			CircleShader.use(8F, 1F, 2F, () -> ran[0] = true);
 		} finally {
-			CircleShader.inst().shader = this.shader;
+			this.shader.setActive(true);
 		}
 		Assert.assertFalse(ran[0]);
 	}

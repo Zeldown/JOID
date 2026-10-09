@@ -22,13 +22,15 @@ import lombok.NonNull;
 @Getter
 public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 
-	private final long vertexModule;
-	private final long fragmentModule;
-	private final long descriptorSetLayout;
-	private final long pipelineLayout;
+	private final boolean active;
+	private final long    vertexModule;
+	private final long    fragmentModule;
+	private final long    descriptorSetLayout;
+	private final long    pipelineLayout;
 
 	private Shader(final RenderBridge bridge, final GlslShaderTranslator translator, final ShaderSource vertexSource, final ShaderSource fragmentSource, final BlendState blend, final boolean active, final long vertexModule, final long fragmentModule, final long descriptorSetLayout, final long pipelineLayout) {
-		super(bridge, translator, vertexSource, fragmentSource, blend, active);
+		super(bridge, translator, vertexSource, fragmentSource, blend);
+		this.active              = active;
 		this.vertexModule        = vertexModule;
 		this.fragmentModule      = fragmentModule;
 		this.descriptorSetLayout = descriptorSetLayout;

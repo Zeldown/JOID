@@ -277,14 +277,14 @@ The shaders of the core are listed by the `CoreShader` enum (`dev.joid.lib.bridg
 
 ### Uniforms in the core
 
-The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()`, `isBound()` and `isActive()` on the core `RenderBridge` and the blend state given to its constructor, and `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, implements `IShader` itself):
+The core holds the uniforms of every backend; a backend only sends them to the GPU. Its shader extends the abstract `Shader` (`dev.joid.lib.bridge.render.shader`). `Shader` implements `bind()`, `unbind()` and `isBound()` on the core `RenderBridge` and the blend state given to its constructor, and `uniform(...)` and `sampler(...)` of `IShader` on two models built from the sources (a native bridge, which has no `RenderBridge`, implements `IShader` itself):
 
 - a `UniformBlock` (`dev.joid.lib.bridge.render.shader.uniform`): the uniforms of both stages, each a `UniformMember` with its `UniformType`, its array length, its values and its `std140` offset and strides;
 - one `UniformSampler` per sampler of both stages, numbered from 1 in the order of the stages (`getUnit()`), with the texture, filter and wrap given to `sampler(...)`.
 
 A `GlslShaderTranslator` turns the two sources into the code of the backend and lists what the shader declares.
 
-The OpenGL shader (`GlShader` of `joid-base-opengl`) is created this way; its private constructor passes the bridge, the blend state, whether it linked, the block and the samplers to `super(bridge, blend, active, block, samplers)`:
+The constructor `Shader(RenderBridge bridge, GlslShaderTranslator translator, ShaderSource vertex, ShaderSource fragment, BlendState blend)` builds both models from the sources. `isActive()` stays to the backend: it may answer from a result it already has, or work it out on the first call, once the instance exists (a backend that validates a whole pipeline built from the shader). The OpenGL shader (`GlShader` of `joid-base-opengl`) links its program first and keeps the result:
 
 ```java
 public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
@@ -292,7 +292,7 @@ public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, fin
 	final IGlProgramBinding programs = bridge.getBinding().getProgramBinding();
 	final int program = programs.createProgram();
 	final boolean active = GlShader.link(programs, translator.getDialect(), program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
-	return new GlShader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
+	return new GlShader(bridge, translator, vertex, fragment, program, active, blend);
 }
 ```
 
@@ -326,10 +326,10 @@ A member's values are tightly packed in `getValues()` (column by column for a ma
 
 | Method | Contract |
 |---|---|
-| `bind()` | Makes the shader current (`shader(this)`) and switches to the blend state given to `createShader`, remembering the previous one. Implemented by the core `Shader`, as `unbind()`, `isBound()` and `isActive()`. |
+| `bind()` | Makes the shader current (`shader(this)`) and switches to the blend state given to `createShader`, remembering the previous one. Implemented by the core `Shader`, as `unbind()` and `isBound()`. |
 | `unbind()` | Returns to no shader and restores the previous blend state. |
 | `isBound()` | Whether the shader is bound. |
-| `isActive()` | Whether it compiled and linked. The reference backends print the compiler or linker log of a shader that fails to `System.err`. |
+| `isActive()` | Whether it compiled and linked, implemented by the backend shader, which may work it out on the first call. The reference backends print the compiler or linker log of a shader that fails to `System.err`. |
 | `uniform(name, ...)`, `sampler(name, texture, filter, wrap)` | Implemented by the core `Shader`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw. |
 
 A sampler that is never set samples the texture bound with `texture(...)`, as `resolveSampler(...)` gives it: the reference backends bind the bound texture to texture unit 0 and each sampler to its unit, from 1. The translator also wraps the fragment `main` to apply the alpha test of the render state.

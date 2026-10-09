@@ -21,7 +21,7 @@ public class BorderShader extends ShaderImpl {
 	public void bind(final float borderWidth, final @NonNull Color borderColor, final float texelW, final float texelH, final boolean fill, final int mode, final float rectX1, final float rectY1, final float rectX2, final float rectY2) {
 		BorderShader.INSTANCE.bind();
 
-		BorderShader.INSTANCE.shader
+		BorderShader.INSTANCE.getShader()
 		.uniform("u_BorderWidth", borderWidth)
 		.uniform("u_BorderColor", borderColor.r, borderColor.g, borderColor.b, borderColor.a)
 		.uniform("u_TexelSize", texelW, texelH)
@@ -32,7 +32,7 @@ public class BorderShader extends ShaderImpl {
 		if (borderColor.isGradient()) {
 			final ColorGradient gradient = borderColor.gradient;
 
-			BorderShader.INSTANCE.shader
+			BorderShader.INSTANCE.getShader()
 			.uniform("u_HasGradient", 1)
 			.uniform("u_GradientStart", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
 			.uniform("u_GradientEnd", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
@@ -40,7 +40,7 @@ public class BorderShader extends ShaderImpl {
 			.uniform("u_GradientEndPos", gradient.getDirection().z, gradient.getDirection().w)
 			.uniform("u_GradientCanvas", rectX1, rectY1, rectX2, rectY2);
 		} else {
-			BorderShader.INSTANCE.shader.uniform("u_HasGradient", 0);
+			BorderShader.INSTANCE.getShader().uniform("u_HasGradient", 0);
 		}
 	}
 

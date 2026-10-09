@@ -44,7 +44,7 @@ public class RoundedShader extends ShaderImpl {
 
 	public void bind(final float radius, final float x1, final float y1, final float x2, final float y2, final @NonNull RoundedShaderType type) {
 		RoundedShader.INSTANCE.bind();
-		RoundedShader.INSTANCE.shader
+		RoundedShader.INSTANCE.getShader()
 		.uniform("u_Radius", radius)
 		.uniform("u_InnerRect", x1, y1, x2, y2)
 		.uniform("u_Type", type.ordinal())
@@ -54,15 +54,15 @@ public class RoundedShader extends ShaderImpl {
 	}
 
 	public void aligned(final boolean aligned) {
-		RoundedShader.INSTANCE.shader.uniform("u_Aligned", aligned ? 1 : 0);
+		RoundedShader.INSTANCE.getShader().uniform("u_Aligned", aligned ? 1 : 0);
 	}
 
 	public void stroke(final float stroke) {
-		RoundedShader.INSTANCE.shader.uniform("u_Stroke", stroke);
+		RoundedShader.INSTANCE.getShader().uniform("u_Stroke", stroke);
 	}
 
 	public void gradient(final @NonNull ColorGradient gradient, final @NonNull Vector4f canvas) {
-		RoundedShader.INSTANCE.shader
+		RoundedShader.INSTANCE.getShader()
 		.uniform("u_Gradient", 1)
 		.uniform("u_StartPos", gradient.getDirection().x, gradient.getDirection().y)
 		.uniform("u_EndPos", gradient.getDirection().z, gradient.getDirection().w)

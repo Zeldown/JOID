@@ -19,7 +19,7 @@ public class BlurShader extends ShaderImpl {
 	public void bind(final float radius, final float dirX, final float dirY, final float texelW, final float texelH) {
 		BlurShader.INSTANCE.bind();
 
-		BlurShader.INSTANCE.shader
+		BlurShader.INSTANCE.getShader()
 		.uniform("u_Radius", radius)
 		.uniform("u_Direction", dirX, dirY)
 		.uniform("u_TexelSize", texelW, texelH);

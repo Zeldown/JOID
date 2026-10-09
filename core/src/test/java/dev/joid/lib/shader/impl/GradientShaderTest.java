@@ -81,11 +81,11 @@ public class GradientShaderTest {
 	@Test
 	public void skipsTheDrawWithoutShader() {
 		final boolean[] ran = {false};
-		GradientShader.inst().shader = null;
+		this.shader.setActive(false);
 		try {
 			GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.BLUE, () -> ran[0] = true, new Vector4f(0F, 0F, 1F, 1F));
 		} finally {
-			GradientShader.inst().shader = this.shader;
+			this.shader.setActive(true);
 		}
 		Assert.assertFalse(ran[0]);
 		Assert.assertTrue(this.shader.getValues().isEmpty());

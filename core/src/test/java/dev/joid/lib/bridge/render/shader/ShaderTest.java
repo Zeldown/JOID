@@ -179,7 +179,12 @@ public class ShaderTest {
 		}
 
 		private TestShader(final RenderBridge render, final BlendState blend, final ShaderSource vertex, final ShaderSource fragment) {
-			super(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), vertex, fragment, blend, true);
+			super(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), vertex, fragment, blend);
+		}
+
+		@Override
+		public boolean isActive() {
+			return true;
 		}
 
 	}

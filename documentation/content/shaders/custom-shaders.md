@@ -103,13 +103,14 @@ WaveNode.create(100, 100, 600, 160).attach(this);
 
 ![A light gray rectangle crossed by soft vertical stripes of darker gray](../images/shader-wave.png "WaveShader on a quad, at one moment of its animation")
 
-The first call to `WaveShader.inst()` loads the class, which compiles the shader: make it from a draw hook (or any code running on the render thread once the backend is registered), as above.
+`load(...)` only reads the sources: the shader is compiled through the render bridge the first time it is used (`bind()`, `canDraw()`, `isAvailable()` or `getShader()`), on the render thread. A static instance such as `WaveShader.INSTANCE` can therefore be created anywhere, even before the backend is registered.
 
 ## Loading a shader with ShaderImpl
 
 `ShaderImpl` (`dev.joid.lib.shader.impl`) is the base class of the built-in shaders and the simplest way to write one, as in [A first shader](#a-first-shader).
 
-- `load(InputStream vertexShader, InputStream fragmentShader)` reads both streams as JOID GLSL (UTF-8), closes them, and creates the shader through the render bridge with `BlendState.NORMAL`. On any exception it prints `[JOID] Unable to load the shader <ClassName>: <message>` and the stack trace, and leaves the shader `null`.
+- `load(Object vertexShader, Object fragmentShader)` reads both sources as JOID GLSL (UTF-8) from any [asset handle](../resources/assets.md) (an `InputStream`, a `File`, a URL `String`, or the handle of a locator you registered, such as a resource of a game) and closes what it opened. On any exception it prints `[JOID] Unable to load the shader <ClassName>: <message>` and the stack trace, and the shader stays unavailable.
+- `getShader()` creates the shader through the render bridge with `BlendState.NORMAL` on its first call, then returns it; `null` when the sources could not be read or the creation threw (`[JOID] Unable to create the shader <ClassName>: <message>`, printed once).
 - `canDraw()` tells whether the shader can draw and, when it cannot, prints `[JOID] The shader <ClassName> is unavailable, what it draws is skipped` once in dev mode. Call it before drawing something that is skipped without the shader, as `WaveNode` does.
 - `isAvailable()` gives the same answer without any warning. Call it to choose a fallback (draw without the shader when it is unavailable).
 
@@ -128,9 +129,9 @@ if (!shader.isActive()) {
 ```
 
 - `createShader(ShaderSource vertex, ShaderSource fragment, BlendState blend)` translates, compiles and links the pair. `blend` is the blending mode applied while the shader is bound. Compile errors do not throw: the shader is returned inactive.
-- `ShaderSource.read(ShaderStage stage, InputStream stream)` reads a stream (UTF-8) and parses it, without closing it; an `IOException` is rethrown as `UncheckedIOException`. `ShaderSource.parse(ShaderStage stage, String code)` parses code.
+- `ShaderSource.read(ShaderStage stage, Object handle)` reads an asset handle (UTF-8), closes it and parses it; an `IOException` is rethrown as `UncheckedIOException`. `ShaderSource.parse(ShaderStage stage, String code)` parses code.
 - `BlendState` (`dev.joid.lib.bridge.render.state`) provides `NORMAL` (straight alpha), `PREMULTIPLIED`, `DISABLED`, and `create(...)` for custom equations and factors.
-- `IShader` has no release method: create each shader once and reuse it. Create it on the render thread, after the backend is registered: the OpenGL backends need their context.
+- `IShader` has no release method: create each shader once and reuse it. `createShader` runs on the render thread, after the backend is registered: the OpenGL backends need their context. A `ShaderImpl` has no such constraint, since it creates its shader on first use.
 
 ## Binding and drawing
 
@@ -281,12 +282,12 @@ In practice, prefer the higher-level APIs: `DrawUtils.SHAPE.drawRoundedRect(...)
 
 | Member | Description |
 |---|---|
-| `protected void load(InputStream vertexShader, InputStream fragmentShader)` | Reads and closes both streams, creates the shader with `BlendState.NORMAL`. On any exception, prints `[JOID] Unable to load the shader <ClassName>: <message>` and the stack trace, and leaves the shader `null`. A `null` stream throws a `NullPointerException`. |
-| `protected IShader shader`, `getShader()` | The loaded shader, `null` when loading failed. |
+| `protected void load(Object vertexShader, Object fragmentShader)` | Reads both sources from asset handles and closes them. On any exception, prints `[JOID] Unable to load the shader <ClassName>: <message>` and the stack trace. A `null` handle throws a `NullPointerException`. |
+| `IShader getShader()` | The shader, created with `BlendState.NORMAL` on the first call; `null` when the sources could not be read or the creation failed. |
 | `void bind()` | Binds the shader if it is available, otherwise does nothing. |
 | `void unbind()` | Unbinds the shader if it was created. |
 | `boolean canDraw()` | `true` when the shader can draw; otherwise `false` and, in dev mode, one warning per shader. |
-| `boolean isAvailable()` | `true` when the shader was created and compiled (`getShader() != null && getShader().isActive()`), without warning. |
+| `boolean isAvailable()` | `true` when the shader is created and compiled (`getShader() != null && getShader().isActive()`), without warning. |
 
 ### IShader
 

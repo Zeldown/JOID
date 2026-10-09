@@ -82,12 +82,12 @@ public class RoundedShaderTest {
 	@Test
 	public void skipsTheDrawWithoutShader() {
 		final boolean[] ran = {false};
-		RoundedShader.inst().shader = null;
+		this.shader.setActive(false);
 		try {
 			Assert.assertFalse(RoundedShader.inst().isAvailable());
 			RoundedShader.use(5F, 10F, 20F, 30F, 40F, () -> ran[0] = true);
 		} finally {
-			RoundedShader.inst().shader = this.shader;
+			this.shader.setActive(true);
 		}
 		Assert.assertFalse(ran[0]);
 	}

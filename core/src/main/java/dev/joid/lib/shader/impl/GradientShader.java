@@ -35,7 +35,7 @@ public class GradientShader extends ShaderImpl {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final IShader previousShader = render.getShader();
 		GradientShader.INSTANCE.bind();
-		GradientShader.INSTANCE.shader
+		GradientShader.INSTANCE.getShader()
 		.uniform("startPos", startPos.x, startPos.y)
 		.uniform("endPos", endPos.x, endPos.y)
 		.uniform("startColor", startColor.r, startColor.g, startColor.b, startColor.a)

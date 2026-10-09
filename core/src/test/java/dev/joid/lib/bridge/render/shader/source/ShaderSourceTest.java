@@ -1,11 +1,44 @@
 package dev.joid.lib.bridge.render.shader.source;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.EnumSet;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class ShaderSourceTest {
+
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
+
+	@Test
+	public void readsAnyAssetHandle() throws IOException {
+		final File file = this.folder.newFile("wave.fsh");
+		Files.write(file.toPath(), "uniform float u_Time;\n\nvoid main() {\n}\n".getBytes(StandardCharsets.UTF_8));
+		Assert.assertEquals("u_Time", ShaderSource.read(ShaderStage.FRAGMENT, file).getUniforms().get(0).getName());
+		Assert.assertEquals("u_Time", ShaderSource.read(ShaderStage.FRAGMENT, file.toURI().toString()).getUniforms().get(0).getName());
+	}
+
+	@Test
+	public void closesTheStreamItReads() {
+		final boolean[] closed = new boolean[1];
+		ShaderSource.read(ShaderStage.FRAGMENT, new ByteArrayInputStream("void main() {}".getBytes(StandardCharsets.UTF_8)) {
+
+			@Override
+			public void close() throws IOException {
+				closed[0] = true;
+				super.close();
+			}
+
+		});
+		Assert.assertTrue(closed[0]);
+	}
 
 	@Test
 	public void parsesVaryings() {

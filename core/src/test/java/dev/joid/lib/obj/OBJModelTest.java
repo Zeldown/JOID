@@ -1,14 +1,17 @@
 package dev.joid.lib.obj;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
@@ -29,6 +32,9 @@ public class OBJModelTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
+
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
 
 	@Test
 	public void readsATexturedCube() {
@@ -243,6 +249,14 @@ public class OBJModelTest {
 	}
 
 	@Test
+	public void readsAModelFromAnyAssetHandle() throws IOException {
+		final File file = this.folder.newFile("triangle.obj");
+		Files.write(file.toPath(), "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n".getBytes(StandardCharsets.UTF_8));
+		Assert.assertEquals(3, OBJModel.load("file", file, OBJModelTest.TEXTURE).getVertices().size());
+		Assert.assertEquals(3, OBJModel.load("url", file.toURI().toString(), OBJModelTest.TEXTURE).getVertices().size());
+	}
+
+	@Test
 	public void wrapsAReadFailure() {
 		final IOException failure = new IOException("unreadable");
 		try {
@@ -334,7 +348,7 @@ public class OBJModelTest {
 
 	@Test
 	public void drawsNothingWithoutGroup() {
-		new OBJModel("empty", OBJModelTest.TEXTURE, null).render();
+		new OBJModel("empty", OBJModelTest.TEXTURE, (OBJGroup) null).render();
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 		Assert.assertNull(this.bridges.getRender().getState().getTexture());
 	}

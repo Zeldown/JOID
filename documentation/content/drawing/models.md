@@ -84,7 +84,7 @@ You can put any number of models in a UI: each node after a model is drawn in fr
 
 | Member | Description |
 |---|---|
-| `static load(String name, InputStream stream, Resource texture)` | Reads the whole stream and closes it, even on failure. `name` appears in the error messages. |
+| `static load(String name, Object handle, Resource texture)` | Reads the whole file from any [asset handle](../resources/assets.md) (an `InputStream`, a `File`, a URL `String`, or the handle of a locator you registered) and closes it, even on failure. `name` appears in the error messages. |
 | `render()` | Binds the texture (repeated outside 0 to 1), draws every group, then unbinds it. |
 | `getWidth()`, `getHeight()`, `getDepth()` | Size of the bounding box of the vertices, in model units; `0` without vertex. |
 | `getVertices()`, `getVertexNormals()`, `getTextureCoordinates()`, `getGroups()` | The parsed data. |

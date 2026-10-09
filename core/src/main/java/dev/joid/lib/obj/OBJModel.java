@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.draw.model.utils.IDrawableModel;
 import dev.joid.lib.obj.data.OBJFace;
@@ -58,19 +59,21 @@ public final class OBJModel implements IDrawableModel {
 
 	private OBJGroup currentGroup;
 
-	protected OBJModel(final @NonNull String name, final @NonNull InputStream resource, final @NonNull Resource texture) {
+	protected OBJModel(final @NonNull String name, final @NonNull Object handle, final @NonNull Resource texture) {
 		this.name    = name;
 		this.texture = texture;
-		this.load(resource);
+		this.load(handle);
 	}
 
-	public static @NonNull OBJModel load(final @NonNull String name, final @NonNull InputStream resource, final @NonNull Resource texture) {
-		return new OBJModel(name, resource, texture);
+	public static @NonNull OBJModel load(final @NonNull String name, final @NonNull Object handle, final @NonNull Resource texture) {
+		return new OBJModel(name, handle, texture);
 	}
 
-	private void load(final @NonNull InputStream inputStream) throws RuntimeException {
+	private void load(final @NonNull Object handle) throws RuntimeException {
+		InputStream inputStream = null;
 		BufferedReader reader = null;
 		try {
+			inputStream = Asset.of(handle).open();
 			reader = new BufferedReader(new InputStreamReader(inputStream));
 
 			int lineCount = 0;
@@ -125,8 +128,13 @@ public final class OBJModel implements IDrawableModel {
 			throw new RuntimeException("IO Exception reading model format", e);
 		} finally {
 			try {
-				reader.close();
-				inputStream.close();
+				if (reader != null) {
+					reader.close();
+				}
+
+				if (inputStream != null) {
+					inputStream.close();
+				}
 			} catch (final IOException silent) {}
 		}
 	}

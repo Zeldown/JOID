@@ -1,8 +1,6 @@
 package dev.joid.lib.bridge.render.shader.source;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.util.Locale;
 
 import dev.joid.lib.bridge.BridgeHandler;
@@ -32,11 +30,7 @@ public enum CoreShader {
 	}
 
 	public @NonNull ShaderSource read(final @NonNull ShaderStage stage) {
-		try (InputStream stream = this.open(stage)) {
-			return ShaderSource.read(stage, stream);
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
-		}
+		return ShaderSource.read(stage, this.open(stage));
 	}
 
 	public @NonNull IShader create(final @NonNull BlendState blend) {

@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 
+import dev.joid.lib.asset.Asset;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -44,8 +45,8 @@ public final class ShaderSource {
 		this.features = EnumSet.noneOf(ShaderFeature.class);
 	}
 
-	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull InputStream stream) {
-		try {
+	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull Object handle) {
+		try (InputStream stream = Asset.of(handle).open()) {
 			return ShaderSource.parse(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);

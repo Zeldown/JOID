@@ -2,16 +2,20 @@ package dev.joid.lib.shader.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 
@@ -19,6 +23,9 @@ public class ShaderImplTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
+
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
 
 	@Test
 	public void loadsItsShaderFromTheRenderBridge() {
@@ -29,6 +36,30 @@ public class ShaderImplTest {
 		Assert.assertSame(shader.getShader(), this.bridges.getRender().getShader());
 		shader.unbind();
 		Assert.assertNull(this.bridges.getRender().getShader());
+	}
+
+	@Test
+	public void createsItsShaderOnFirstUse() {
+		BridgeHandler.RENDER.unregister(this.bridges.getRender());
+		final SourceShader shader;
+		try {
+			shader = new SourceShader(ShaderImplTest.source(), ShaderImplTest.source());
+		} finally {
+			BridgeHandler.RENDER.register(this.bridges.getRender());
+		}
+
+		Assert.assertTrue(shader.isAvailable());
+		Assert.assertTrue(shader.getShader() instanceof RecordingShader);
+		Assert.assertSame(shader.getShader(), shader.getShader());
+	}
+
+	@Test
+	public void loadsItsSourcesFromAnyAssetHandle() throws IOException {
+		final File vertex = this.folder.newFile("wave.vsh");
+		final File fragment = this.folder.newFile("wave.fsh");
+		Files.write(vertex.toPath(), "void main() {}".getBytes(StandardCharsets.UTF_8));
+		Files.write(fragment.toPath(), "void main() {}".getBytes(StandardCharsets.UTF_8));
+		Assert.assertTrue(new SourceShader(vertex, fragment.toURI().toString()).isAvailable());
 	}
 
 	@Test
@@ -135,7 +166,7 @@ public class ShaderImplTest {
 
 	private static final class SourceShader extends ShaderImpl {
 
-		private SourceShader(final InputStream vertex, final InputStream fragment) {
+		private SourceShader(final Object vertex, final Object fragment) {
 			super.load(vertex, fragment);
 		}
 

@@ -22,13 +22,15 @@ import lombok.NonNull;
 public final class GlShader extends Shader {
 
 	private final int                  program;
+	private final boolean              active;
 	private final IGlProgramBinding    programs;
 	private final Map<String, Integer> locationMap;
 
 	private GlShader(final GlRenderBridge bridge, final GlslShaderTranslator translator, final ShaderSource vertex, final ShaderSource fragment, final int program, final boolean active, final BlendState blend) {
-		super(bridge, translator, vertex, fragment, blend, active);
+		super(bridge, translator, vertex, fragment, blend);
 		this.programs    = bridge.getBinding().getProgramBinding();
 		this.program     = program;
+		this.active      = active;
 		this.locationMap = new HashMap<>();
 	}
 

@@ -25,7 +25,6 @@ public abstract class Shader implements IShader {
 
 	private final RenderBridge bridge;
 	private final BlendState   blend;
-	private final boolean      active;
 	private final ShaderSource vertex;
 	private final ShaderSource fragment;
 
@@ -36,10 +35,9 @@ public abstract class Shader implements IShader {
 	private Shader     lineShader;
 	private BlendState previousBlend;
 
-	protected Shader(final @NonNull RenderBridge bridge, final @NonNull GlslShaderTranslator translator, final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend, final boolean active) {
+	protected Shader(final @NonNull RenderBridge bridge, final @NonNull GlslShaderTranslator translator, final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
 		this.bridge     = bridge;
 		this.blend      = blend;
-		this.active     = active;
 		this.vertex     = vertex;
 		this.fragment   = fragment;
 		this.block      = translator.createBlock(vertex, fragment);

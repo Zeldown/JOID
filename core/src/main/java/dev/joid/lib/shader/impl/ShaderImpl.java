@@ -1,35 +1,51 @@
 package dev.joid.lib.shader.impl;
 
-import java.io.InputStream;
-
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
-import lombok.Getter;
 import lombok.NonNull;
 
 public abstract class ShaderImpl {
 
-	@Getter
-	protected IShader shader;
+	private IShader      shader;
+	private boolean      warned;
+	private ShaderSource vertex;
+	private ShaderSource fragment;
 
-	private boolean warned;
-
-	protected void load(final @NonNull InputStream vertexShader, final @NonNull InputStream fragmentShader) {
-		try (final InputStream vertex = vertexShader; final InputStream fragment = fragmentShader) {
-			this.shader = BridgeHandler.RENDER.get().createShader(ShaderSource.read(ShaderStage.VERTEX, vertex), ShaderSource.read(ShaderStage.FRAGMENT, fragment), BlendState.NORMAL);
+	protected void load(final @NonNull Object vertexShader, final @NonNull Object fragmentShader) {
+		try {
+			try {
+				this.vertex = ShaderSource.read(ShaderStage.VERTEX, vertexShader);
+			} finally {
+				this.fragment = ShaderSource.read(ShaderStage.FRAGMENT, fragmentShader);
+			}
 		} catch (final Exception e) {
+			this.vertex = null;
 			System.err.println("[JOID] Unable to load the shader " + this.getClass().getSimpleName() + ": " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
+	public IShader getShader() {
+		if (this.shader == null && this.vertex != null) {
+			try {
+				this.shader = BridgeHandler.RENDER.get().createShader(this.vertex, this.fragment, BlendState.NORMAL);
+			} catch (final Exception e) {
+				this.vertex = null;
+				System.err.println("[JOID] Unable to create the shader " + this.getClass().getSimpleName() + ": " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return this.shader;
+	}
+
 	public void bind() {
-		if (this.shader != null && this.shader.isActive()) {
-			this.shader.bind();
+		final IShader current = this.getShader();
+		if (current != null && current.isActive()) {
+			current.bind();
 		}
 	}
 
@@ -49,7 +65,8 @@ public abstract class ShaderImpl {
 	}
 
 	public boolean isAvailable() {
-		return this.shader != null && this.shader.isActive();
+		final IShader current = this.getShader();
+		return current != null && current.isActive();
 	}
 
 }

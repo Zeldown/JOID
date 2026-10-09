@@ -66,12 +66,12 @@ public class ShadowShaderTest {
 	@Test
 	public void skipsTheDrawWithoutShader() {
 		final boolean[] ran = {false};
-		ShadowShader.inst().shader = null;
+		this.shader.setActive(false);
 		try {
 			Assert.assertFalse(ShadowShader.inst().isAvailable());
 			ShadowShader.use(5F, 8F, 10F, 20F, 30F, 40F, () -> ran[0] = true);
 		} finally {
-			ShadowShader.inst().shader = this.shader;
+			this.shader.setActive(true);
 		}
 		Assert.assertFalse(ran[0]);
 	}

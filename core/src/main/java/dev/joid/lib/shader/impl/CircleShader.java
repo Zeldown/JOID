@@ -46,7 +46,7 @@ public class CircleShader extends ShaderImpl {
 
 	public void bind(final float radius, final float centerX, final float centerY, final @NonNull RoundedShaderType type) {
 		CircleShader.INSTANCE.bind();
-		CircleShader.INSTANCE.shader
+		CircleShader.INSTANCE.getShader()
 		.uniform("radius", radius)
 		.uniform("center", centerX, centerY)
 		.uniform("type", type.ordinal())
@@ -54,7 +54,7 @@ public class CircleShader extends ShaderImpl {
 	}
 
 	public void gradient(final @NonNull ColorGradient gradient, final @NonNull Vector4f canvas) {
-		CircleShader.INSTANCE.shader
+		CircleShader.INSTANCE.getShader()
 		.uniform("gradient", 1)
 		.uniform("startPos", gradient.getDirection().x, gradient.getDirection().y)
 		.uniform("endPos", gradient.getDirection().z, gradient.getDirection().w)

@@ -37,7 +37,7 @@ public class ShadowShader extends ShaderImpl {
 
 	public void bind(final float radius, final float blur, final float x1, final float y1, final float x2, final float y2) {
 		ShadowShader.INSTANCE.bind();
-		ShadowShader.INSTANCE.shader
+		ShadowShader.INSTANCE.getShader()
 		.uniform("u_Radius", radius)
 		.uniform("u_Blur", blur)
 		.uniform("u_Box", x1, y1, x2, y2);
