@@ -368,7 +368,7 @@ public class GlyphTextRendererTest {
 	@Test
 	public void measuresAGridAlignedFontAtItsSize() {
 		final TextInfo info = GlyphTextRendererTest.aligned(12F);
-		this.render.scale(1.2676D, 1.2676D, 1D);
+		this.render.getModelView().scale(1.2676D, 1.2676D, 1D);
 		Assert.assertArrayEquals(new double[] {12D, 14.4D}, new double[] {info.getWidth("AB"), info.getHeight()}, 1E-4D);
 		Assert.assertArrayEquals(new double[] {20D, 24D}, new double[] {GlyphTextRendererTest.aligned(20F).getWidth("AB"), GlyphTextRendererTest.aligned(20F).getHeight()}, 1E-4D);
 	}
@@ -376,7 +376,7 @@ public class GlyphTextRendererTest {
 	@Test
 	public void drawsAGridAlignedFontAtTheSizeItMeasures() {
 		final TextInfo info = GlyphTextRendererTest.aligned(10F).letterSpacing(0.25F);
-		this.render.scale(0.75D, 0.75D, 1D);
+		this.render.getModelView().scale(0.75D, 0.75D, 1D);
 		final FontBounds bounds = GlyphTextRendererTest.ALIGNED.drawText(0D, 0D, "AVB", info);
 		Assert.assertEquals(info.getWidth("AVB"), bounds.getWidth(), 0D);
 		Assert.assertEquals(info.getHeight(), bounds.getHeight(), 0D);
@@ -399,7 +399,7 @@ public class GlyphTextRendererTest {
 
 	@Test
 	public void spacesTheGlyphsOfAGridAlignedFontEvenlyAtAFractionalScale() {
-		this.render.scale(1.2676D, 1.2676D, 1D);
+		this.render.getModelView().scale(1.2676D, 1.2676D, 1D);
 		GlyphTextRendererTest.ALIGNED.drawText(10.3D, 0.4D, "AAAA", GlyphTextRendererTest.aligned(16F));
 		final List<TextGlyph<Face>> drawn = GlyphTextRendererTest.ALIGNED.drawn;
 		final double origin = drawn.get(0).getX() * 1.2676D;
@@ -448,7 +448,7 @@ public class GlyphTextRendererTest {
 
 	@Test
 	public void leavesAGridAlignedFontOffTheGridUnderARotation() {
-		this.render.rotate(30D, 0D, 0D, 1D);
+		this.render.getModelView().rotate(30D, 0D, 0D, 1D);
 		GlyphTextRendererTest.ALIGNED.drawText(0.3D, 0.4D, "A", GlyphTextRendererTest.aligned(8F).shadow(Color.BLACK).shadow(0.2F, 0.2F));
 		final List<TextGlyph<Face>> drawn = GlyphTextRendererTest.ALIGNED.drawn;
 		Assert.assertEquals(0.5D, drawn.get(0).getX(), 1E-6D);

@@ -65,7 +65,7 @@ public class ExternalRasterTest {
 	public void followsTheRealPixelsOfAScaledView() {
 		final List<String> calls = new ArrayList<>();
 		this.render.resize(1366, 768);
-		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		DrawUtils.RASTER.drawRaster(0D, 0D, 100D, 50D, (width, height) -> calls.add(width + "x" + height));
 		Assert.assertEquals("71x36", calls.get(0));
 	}

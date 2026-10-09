@@ -87,7 +87,7 @@ public final class DrawResource {
 		}
 
 		final double[] uv = failed || region == null || region.length != 4 ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getWidth(), region[1] / resource.getHeight(), (region[0] + region[2]) / resource.getWidth(), (region[1] + region[3]) / resource.getHeight()};
-		render.pushMatrix();
+		render.getModelView().push();
 		try {
 			render.blend(BlendState.NORMAL);
 			if (grid.isAligned()) {
@@ -102,7 +102,7 @@ public final class DrawResource {
 			}
 			render.blend(BlendState.DISABLED);
 		} finally {
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 	}
 

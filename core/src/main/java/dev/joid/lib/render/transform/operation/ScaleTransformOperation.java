@@ -21,9 +21,9 @@ public class ScaleTransformOperation implements ITransformOperation {
 		final double pivotY = this.pivot.getY();
 		final double pivotZ = this.pivot.getZ();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.translate(pivotX, pivotY, pivotZ);
-		render.scale(x, y, z);
-		render.translate(-pivotX, -pivotY, -pivotZ);
+		render.getModelView().translate(pivotX, pivotY, pivotZ);
+		render.getModelView().scale(x, y, z);
+		render.getModelView().translate(-pivotX, -pivotY, -pivotZ);
 	}
 
 }

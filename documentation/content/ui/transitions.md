@@ -79,7 +79,7 @@ Extend `Transition` and pass an `In` and an `Out` to its constructor. Each state
 | `void pre(UI ui, double mouseX, double mouseY)` | Applies the effect before the UI draws, typically by pushing a matrix. |
 | `void post(UI ui, double mouseX, double mouseY)` | Undoes what `pre` did. |
 
-`pre` and `post` move the whole UI through the render bridge of the backend, `BridgeHandler.RENDER.get()` (an `IRenderBridge`, see [Bridges and Backends](../concepts/bridges.md)): `pushMatrix()` saves the current transform, `translate(x, y, z)` moves everything drawn after it, and `popMatrix()` restores the saved transform. This transition slides the UI up from 200 pixels below when it opens, and back down when it closes:
+`pre` and `post` move the whole UI through the render bridge of the backend, `BridgeHandler.RENDER.get()` (an `IRenderBridge`, see [Bridges and Backends](../concepts/bridges.md)): on its model-view stack `getModelView()`, `push()` saves the current transform, `translate(x, y, z)` moves everything drawn after it, and `pop()` restores the saved transform. This transition slides the UI up from 200 pixels below when it opens, and back down when it closes:
 
 ```java
 public class SlideTransition extends Transition {
@@ -90,8 +90,8 @@ public class SlideTransition extends Transition {
 
 	private static void push(final double offset) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushMatrix();
-		render.translate(0D, offset, 0D);
+		render.getModelView().push();
+		render.getModelView().translate(0D, offset, 0D);
 	}
 
 	public static class SlideIn extends Transition.In {
@@ -111,7 +111,7 @@ public class SlideTransition extends Transition {
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			BridgeHandler.RENDER.get().popMatrix();
+			BridgeHandler.RENDER.get().getModelView().pop();
 		}
 
 	}
@@ -133,7 +133,7 @@ public class SlideTransition extends Transition {
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			BridgeHandler.RENDER.get().popMatrix();
+			BridgeHandler.RENDER.get().getModelView().pop();
 		}
 
 	}
@@ -183,7 +183,7 @@ Base class of `Transition.In` (animator starts at `0F`) and `Transition.Out` (an
 ## Pitfalls
 
 - An Out state whose timeline repeats forever never ends: the UI is never removed.
-- Every `pushMatrix` in `pre` needs its `popMatrix` in `post`; `post` runs even when the drawing throws.
+- Every `getModelView().push()` in `pre` needs its `getModelView().pop()` in `post`; `post` runs even when the drawing throws.
 - `pre` and `post` run outside the canvas transform: offsets are in the host's units (window pixels), not canvas units.
 - `JOID.close(ui, true)` skips the Out state: use it only when the UI must disappear at once.
 

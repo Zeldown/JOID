@@ -104,7 +104,7 @@ public class RenderBridgeTest {
 		render.frameBuffer(render.createFrameBuffer(4, 4));
 		render.viewport(1, 2, 3, 4);
 		render.screen(1280, 720);
-		expected.ortho(0D, 1280D, 720D, 0D, 0D, 10000D);
+		expected.getProjection().ortho(0D, 1280D, 720D, 0D, 0D, 10000D);
 		Assert.assertNull(render.getState().getFrameBuffer());
 		Assert.assertEquals(0, render.getState().getViewportX());
 		Assert.assertEquals(0, render.getState().getViewportY());
@@ -224,35 +224,35 @@ public class RenderBridgeTest {
 	@Test
 	public void transformsItsModelView() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.translate(10D, 20D, 30D);
-		render.pushMatrix();
-		render.scale(2D, 2D, 2D);
-		render.rotate(90D, 0D, 0D, 1D);
+		render.getModelView().translate(10D, 20D, 30D);
+		render.getModelView().push();
+		render.getModelView().scale(2D, 2D, 2D);
+		render.getModelView().rotate(90D, 0D, 0D, 1D);
 		Assert.assertEquals(2F, render.getModelView().getMatrix()[1], 1E-6F);
-		render.popMatrix();
+		render.getModelView().pop();
 		Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F, 0F, 10F, 20F, 30F, 1F}, render.getModelView().getMatrix(), 0F);
-		render.loadIdentity();
+		render.getModelView().identity();
 		Assert.assertEquals(0F, render.getModelView().getMatrix()[12], 0F);
 	}
 
 	@Test
 	public void restoresThePushedProjection() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final float[] canvas = render.getProjection().getMatrix().clone();
-		render.pushProjection();
-		render.ortho(0D, 100D, 100D, 0D, -1D, 1D);
+		render.getProjection().push();
+		render.getProjection().ortho(0D, 100D, 100D, 0D, -1D, 1D);
 		Assert.assertEquals(0.02F, render.getProjection().getMatrix()[0], 1E-6F);
-		render.popProjection();
+		render.getProjection().pop();
 		Assert.assertArrayEquals(canvas, render.getProjection().getMatrix(), 0F);
 	}
 
 	@Test
 	public void readsThePixelGridOfItsMatrices() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		render.viewport(0, 0, 3840, 2160);
-		render.translate(100D, 0D, 0D);
+		render.getModelView().translate(100D, 0D, 0D);
 		Assert.assertEquals(2D, render.getPixelGrid().getScaleX(), 1E-4D);
 		Assert.assertEquals(200D, render.getPixelGrid().toScreenX(0D), 1E-3D);
 	}
@@ -260,9 +260,9 @@ public class RenderBridgeTest {
 	@Test
 	public void leavesTheMatrixStillWithoutMotion() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		render.viewport(0, 0, 1366, 768);
-		render.translate(10.3D, 0D, 0D);
+		render.getModelView().translate(10.3D, 0D, 0D);
 		final float[] before = render.getModelView().getMatrix().clone();
 		render.quantize(0D, 0D);
 		Assert.assertArrayEquals(before, render.getModelView().getMatrix(), 0F);
@@ -271,11 +271,11 @@ public class RenderBridgeTest {
 	@Test
 	public void roundsAMotionToWholePixels() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		render.viewport(0, 0, 1366, 768);
-		render.translate(10.3D, 0D, 0D);
+		render.getModelView().translate(10.3D, 0D, 0D);
 		final PixelGrid rest = render.getPixelGrid();
-		render.translate(0.6D, 2.2D, 0D);
+		render.getModelView().translate(0.6D, 2.2D, 0D);
 		render.quantize(0.6D, 2.2D);
 		final double motionX = render.getPixelGrid().toScreenX(0D) - rest.toScreenX(0D);
 		final double motionY = render.getPixelGrid().toScreenY(0D) - rest.toScreenY(0D);
@@ -287,13 +287,13 @@ public class RenderBridgeTest {
 	@Test
 	public void forgetsItsRoundingOnceTheMatrixIsPopped() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		render.viewport(0, 0, 1366, 768);
 		final float[] before = render.getModelView().getMatrix().clone();
-		render.pushMatrix();
+		render.getModelView().push();
 		render.quantize(0.6D, 0D);
 		Assert.assertNotEquals(before[12], render.getModelView().getMatrix()[12], 0F);
-		render.popMatrix();
+		render.getModelView().pop();
 		Assert.assertArrayEquals(before, render.getModelView().getMatrix(), 0F);
 	}
 

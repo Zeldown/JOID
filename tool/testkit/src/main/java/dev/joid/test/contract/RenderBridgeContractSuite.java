@@ -60,8 +60,8 @@ public abstract class RenderBridgeContractSuite {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.loadIdentity();
-		render.ortho(0D, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, 0D, 0D, 10000D);
+		render.getModelView().identity();
+		render.getProjection().ortho(0D, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, 0D, 0D, 10000D);
 		render.viewport(0, 0, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		render.frameBuffer(null);
 		render.shader(null);
@@ -438,29 +438,29 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void keepsTranslationsExact() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushMatrix();
+		render.getModelView().push();
 		try {
-			render.scale(0.75D, 0.75D, 1D);
-			render.translate(10.3D, 0D, 0D);
+			render.getModelView().scale(0.75D, 0.75D, 1D);
+			render.getModelView().translate(10.3D, 0D, 0D);
 			Assert.assertEquals(7.725D, render.getPixelGrid().toScreenX(0D), 1E-4D);
 		} finally {
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 	}
 
 	@Test
 	public void quantizesAMotionToWholePixels() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushMatrix();
+		render.getModelView().push();
 		try {
-			render.scale(0.75D, 0.75D, 1D);
-			render.translate(10.3D, 0D, 0D);
+			render.getModelView().scale(0.75D, 0.75D, 1D);
+			render.getModelView().translate(10.3D, 0D, 0D);
 			render.quantize(10.3D, -4.1D);
 			final PixelGrid grid = render.getPixelGrid();
 			Assert.assertEquals(8D, grid.toScreenX(0D), 1E-4D);
 			Assert.assertEquals(Math.rint(grid.toScreenY(-4.1D)), grid.toScreenY(-4.1D), 1E-4D);
 		} finally {
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 	}
 
@@ -494,38 +494,38 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	private static void drawLitFace(final IRenderBridge bridge, final double scale) {
-		bridge.pushMatrix();
+		bridge.getModelView().push();
 		try {
-			bridge.translate(12D, 12D, -100D);
-			bridge.scale(scale, scale, scale);
+			bridge.getModelView().translate(12D, 12D, -100D);
+			bridge.getModelView().scale(scale, scale, scale);
 			bridge.lighting(true);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, (float) (40D / scale), (float) (40D / scale), false, 0xFF808080, true));
 		} finally {
 			bridge.lighting(false);
-			bridge.popMatrix();
+			bridge.getModelView().pop();
 		}
 	}
 
 	private static void drawInDepth(final IRenderBridge bridge, final boolean clearBetween) {
-		bridge.pushMatrix();
+		bridge.getModelView().push();
 		try {
 			bridge.depthTest(true);
 			bridge.depthWrite(true);
 			bridge.clearDepth();
-			bridge.translate(0D, 0D, -10D);
+			bridge.getModelView().translate(0D, 0D, -10D);
 			bridge.color(1F, 0F, 0F, 1F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 			if (clearBetween) {
 				bridge.clearDepth();
 			}
 
-			bridge.translate(0D, 0D, -10D);
+			bridge.getModelView().translate(0D, 0D, -10D);
 			bridge.color(0F, 0F, 1F, 1F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 		} finally {
 			bridge.depthTest(false);
 			bridge.depthWrite(false);
-			bridge.popMatrix();
+			bridge.getModelView().pop();
 		}
 	}
 

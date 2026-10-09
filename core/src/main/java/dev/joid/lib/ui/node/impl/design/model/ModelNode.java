@@ -48,16 +48,16 @@ public class ModelNode extends Node {
 		final double drawZ = modelDepth / 2D * scale;
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushMatrix();
+		render.getModelView().push();
 		try {
-			render.translate(drawX, drawY, drawZ);
-			render.rotate(this.rotationYaw, 0D, 1D, 0D);
-			render.rotate(this.rotationPitch, 1D, 0D, 0D);
-			render.translate(-drawX, -drawY, -drawZ);
-			render.translate(0D, 0D, drawZ);
+			render.getModelView().translate(drawX, drawY, drawZ);
+			render.getModelView().rotate(this.rotationYaw, 0D, 1D, 0D);
+			render.getModelView().rotate(this.rotationPitch, 1D, 0D, 0D);
+			render.getModelView().translate(-drawX, -drawY, -drawZ);
+			render.getModelView().translate(0D, 0D, drawZ);
 			DrawUtils.MODEL.drawModel(drawX, drawY, scale, this.model);
 		} finally {
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 	}
 

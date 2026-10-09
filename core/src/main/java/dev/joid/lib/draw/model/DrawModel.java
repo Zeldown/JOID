@@ -23,11 +23,11 @@ public final class DrawModel {
 
 	public void drawModel(final double x, final double y, final double sizeX, final double sizeY, final double sizeZ, final @NonNull IDrawableModel model) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushMatrix();
+		render.getModelView().push();
 		render.pushState();
 		try {
-			render.translate(x, y, 0D);
-			render.scale(sizeX, -sizeY, sizeZ);
+			render.getModelView().translate(x, y, 0D);
+			render.getModelView().scale(sizeX, -sizeY, sizeZ);
 
 			render.cull(false);
 			render.lighting(true);
@@ -39,7 +39,7 @@ public final class DrawModel {
 			render.clearDepth();
 		} finally {
 			render.popState();
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 	}
 

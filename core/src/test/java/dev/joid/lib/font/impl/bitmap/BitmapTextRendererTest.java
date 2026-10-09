@@ -125,12 +125,12 @@ public class BitmapTextRendererTest {
 		for (final Atlas atlas : Atlas.values()) {
 			final Font font = new Font(new Renderer(atlas, this.texture(atlas)));
 			this.render.getCaptures().clear();
-			this.render.pushMatrix();
+			this.render.getModelView().push();
 			try {
-				this.render.scale(1.2676D, 1.2676D, 1D);
+				this.render.getModelView().scale(1.2676D, 1.2676D, 1D);
 				font.getTextRenderer().drawText(100.3D, 100.6D, "AB", TextInfo.create(font, 16F, Color.WHITE));
 			} finally {
-				this.render.popMatrix();
+				this.render.getModelView().pop();
 			}
 			final Capture first = this.render.getCaptures().get(0);
 			Assert.assertEquals(atlas.name(), Math.rint(first.getLeft() * 1.2676D), first.getLeft() * 1.2676D, 1E-3D);
@@ -182,12 +182,12 @@ public class BitmapTextRendererTest {
 
 	private Capture draw(final Atlas atlas, final double scale, final String text, final float size, final boolean italic) {
 		final Font font = new Font(new Renderer(atlas, this.texture(atlas)));
-		this.render.pushMatrix();
+		this.render.getModelView().push();
 		try {
-			this.render.scale(scale, scale, 1D);
+			this.render.getModelView().scale(scale, scale, 1D);
 			font.getTextRenderer().drawText(100D, 100D, text, TextInfo.create(font, size, Color.WHITE).italic(italic));
 		} finally {
-			this.render.popMatrix();
+			this.render.getModelView().pop();
 		}
 		return this.render.getLast();
 	}

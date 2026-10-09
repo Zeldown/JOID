@@ -17,7 +17,7 @@ public class TranslateTransformOperation implements ITransformOperation {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final double x = this.vector.getX();
 		final double y = this.vector.getY();
-		render.translate(x, y, this.vector.getZ());
+		render.getModelView().translate(x, y, this.vector.getZ());
 		render.quantize(x, y);
 	}
 

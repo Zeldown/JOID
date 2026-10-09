@@ -311,18 +311,18 @@ public abstract class Node implements INode {
 	public final void render(final double mouseX, final double mouseY) {
 		final long now = System.nanoTime();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushMatrix();
+		render.getModelView().push();
 		try {
 			Color.reset();
 			this.pull();
 			if (this.parent != null) {
-				render.translate(this.parent.x, this.parent.y, 0D);
+				render.getModelView().translate(this.parent.x, this.parent.y, 0D);
 				if (this.position == PositionProperty.ABSOLUTE) {
-					render.translate(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
+					render.getModelView().translate(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
 				}
 			}
 
-			render.translate(0D, 0D, this.zlevel);
+			render.getModelView().translate(0D, 0D, this.zlevel);
 
 			if (this.isVisible()) {
 				if (this.aspectRatio > 0D) {
@@ -585,17 +585,17 @@ public abstract class Node implements INode {
 
 							if (this.draggedNode != null) {
 								render.pushState();
-								render.pushMatrix();
+								render.getModelView().push();
 								try {
 									render.stencil(StencilState.DISABLED);
 
 									if (this.parent != null) {
-										render.translate(-this.parent.x, -this.parent.y, 0D);
+										render.getModelView().translate(-this.parent.x, -this.parent.y, 0D);
 									}
 
 									this.draggedNode.render(mouseX, mouseY);
 								} finally {
-									render.popMatrix();
+									render.getModelView().pop();
 									render.popState();
 								}
 							}
@@ -624,7 +624,7 @@ public abstract class Node implements INode {
 			}
 		} finally {
 			Color.reset();
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 		this.renderTime = System.nanoTime() - now;
 	}

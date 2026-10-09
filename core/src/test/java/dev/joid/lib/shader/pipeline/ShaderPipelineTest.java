@@ -104,12 +104,12 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void spreadsARotatedCompositeByOneTexelToSmoothItsEdges() {
-		this.render.pushMatrix();
+		this.render.getModelView().push();
 		try {
-			this.render.rotate(30D, 0D, 0D, 1D);
+			this.render.getModelView().rotate(30D, 0D, 0D, 1D);
 			ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 100, 0F, this.log));
 		} finally {
-			this.render.popMatrix();
+			this.render.getModelView().pop();
 		}
 
 		final Capture composite = this.render.getLast();
@@ -179,7 +179,7 @@ public class ShaderPipelineTest {
 	@Test
 	public void sizesTheFrameBufferInWindowPixels() {
 		this.render.resize(1366, 768);
-		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final RecordingPass pass = new RecordingPass("mask", 100, 0F, this.log);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, pass);
 		Assert.assertEquals(72, this.render.getFrameBuffers().get(0).getWidth());

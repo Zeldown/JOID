@@ -951,14 +951,14 @@ public abstract class UI implements IUI, IndexedElement {
 				final AtomicDouble lastDepthLevel = new AtomicDouble(this.depthLevel);
 
 				this.nodeList.ordered().forEach(node -> {
-					render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
+					render.getModelView().translate(0, 0, this.depthLevel - lastDepthLevel.get());
 					lastDepthLevel.set(this.depthLevel);
 					node.render(mx, my);
 				});
 
 				Node hovered = this.getHoveredNode();
 				if (hovered != null) {
-					render.pushMatrix();
+					render.getModelView().push();
 					render.pushState();
 					try {
 						render.depthTest(false);
@@ -968,7 +968,7 @@ public abstract class UI implements IUI, IndexedElement {
 						}
 					} finally {
 						render.popState();
-						render.popMatrix();
+						render.getModelView().pop();
 					}
 				}
 			});

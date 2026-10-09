@@ -42,19 +42,19 @@ public final class ExternalRaster {
 		final IFrameBuffer target = this.allocate(render, pixelWidth, pixelHeight);
 
 		render.pushState();
-		render.pushProjection();
-		render.pushMatrix();
+		render.getProjection().push();
+		render.getModelView().push();
 		try {
 			render.frameBuffer(target);
 			render.viewport(0, 0, pixelWidth, pixelHeight);
-			render.ortho(0D, pixelWidth, pixelHeight, 0D, -1000D, 1000D);
-			render.loadIdentity();
+			render.getProjection().ortho(0D, pixelWidth, pixelHeight, 0D, -1000D, 1000D);
+			render.getModelView().identity();
 			render.clearColor(0F, 0F, 0F, 0F);
 			render.clearDepth();
 			render.raster(target, pixelWidth, pixelHeight, () -> drawable.draw(pixelWidth, pixelHeight));
 		} finally {
-			render.popMatrix();
-			render.popProjection();
+			render.getModelView().pop();
+			render.getProjection().pop();
 			render.popState();
 		}
 

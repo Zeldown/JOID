@@ -51,7 +51,7 @@ public class Transformation {
 	}
 
 	public void apply() {
-		BridgeHandler.RENDER.get().pushMatrix();
+		BridgeHandler.RENDER.get().getModelView().push();
 		this.operations.forEach(ITransformOperation::transform);
 	}
 
@@ -65,7 +65,7 @@ public class Transformation {
 	}
 
 	public void reset() {
-		BridgeHandler.RENDER.get().popMatrix();
+		BridgeHandler.RENDER.get().getModelView().pop();
 	}
 
 	public void clear() {

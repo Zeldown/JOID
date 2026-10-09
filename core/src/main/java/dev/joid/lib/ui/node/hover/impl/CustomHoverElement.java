@@ -75,12 +75,12 @@ public class CustomHoverElement implements IHoverElement {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushMatrix();
+		render.getModelView().push();
 		try {
-			render.translate(x, y, 0);
+			render.getModelView().translate(x, y, 0);
 			this.element.render(node, mouseX, mouseY);
 		} finally {
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 	}
 

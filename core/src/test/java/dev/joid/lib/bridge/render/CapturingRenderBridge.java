@@ -53,7 +53,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 
 	public @NonNull CapturingRenderBridge resize(final int width, final int height) {
 		super.viewport(0, 0, width, height);
-		super.ortho(0D, width, height, 0D, 0D, 10000D);
+		super.getProjection().ortho(0D, width, height, 0D, 0D, 10000D);
 		return this;
 	}
 

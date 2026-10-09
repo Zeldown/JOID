@@ -174,31 +174,13 @@ public class UIViewTest {
 	private static IRenderBridge bridge(final MatrixStack projection, final MatrixStack modelView) {
 		return (IRenderBridge) Proxy.newProxyInstance(UIViewTest.class.getClassLoader(), new Class<?>[] {IRenderBridge.class}, (proxy, method, arguments) -> {
 			switch (method.getName()) {
-			case "pushProjection":
-				projection.push();
-				break;
-			case "popProjection":
-				projection.pop();
-				break;
-			case "ortho":
-				projection.ortho((double) arguments[0], (double) arguments[1], (double) arguments[2], (double) arguments[3], (double) arguments[4], (double) arguments[5]);
-				break;
-			case "pushMatrix":
-				modelView.push();
-				break;
-			case "popMatrix":
-				modelView.pop();
-				break;
-			case "translate":
-				modelView.translate((double) arguments[0], (double) arguments[1], (double) arguments[2]);
-				break;
-			case "scale":
-				modelView.scale((double) arguments[0], (double) arguments[1], (double) arguments[2]);
-				break;
+			case "getProjection":
+				return projection;
+			case "getModelView":
+				return modelView;
 			default:
 				throw new UnsupportedOperationException(method.getName());
 			}
-			return null;
 		});
 	}
 

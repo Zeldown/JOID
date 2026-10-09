@@ -35,15 +35,15 @@ public class PopTransition extends Transition {
 			final double pivotY = view.getOffsetY() + view.getAnchorY();
 
 			final IRenderBridge render = BridgeHandler.RENDER.get();
-			render.pushMatrix();
-			render.translate(pivotX, pivotY, 0);
-			render.scale(scale, scale, 1D);
-			render.translate(-pivotX, -pivotY, 0);
+			render.getModelView().push();
+			render.getModelView().translate(pivotX, pivotY, 0);
+			render.getModelView().scale(scale, scale, 1D);
+			render.getModelView().translate(-pivotX, -pivotY, 0);
 		}
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			BridgeHandler.RENDER.get().popMatrix();
+			BridgeHandler.RENDER.get().getModelView().pop();
 		}
 
 	}
@@ -68,15 +68,15 @@ public class PopTransition extends Transition {
 			final double pivotY = view.getOffsetY() + view.getAnchorY();
 
 			final IRenderBridge render = BridgeHandler.RENDER.get();
-			render.pushMatrix();
-			render.translate(pivotX, pivotY, 0);
-			render.scale(scale, scale, 1D);
-			render.translate(-pivotX, -pivotY, 0);
+			render.getModelView().push();
+			render.getModelView().translate(pivotX, pivotY, 0);
+			render.getModelView().scale(scale, scale, 1D);
+			render.getModelView().translate(-pivotX, -pivotY, 0);
 		}
 
 		@Override
 		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			BridgeHandler.RENDER.get().popMatrix();
+			BridgeHandler.RENDER.get().getModelView().pop();
 		}
 
 	}

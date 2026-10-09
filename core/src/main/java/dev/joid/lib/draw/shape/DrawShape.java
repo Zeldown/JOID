@@ -225,7 +225,7 @@ public final class DrawShape {
 		final PixelGrid grid = render.getPixelGrid();
 		final Span horizontal = grid.spanX(x, width);
 		final Span vertical = grid.spanY(y, height);
-		render.pushMatrix();
+		render.getModelView().push();
 		render.pushState();
 		try {
 			render.blend(BlendState.NORMAL);
@@ -238,7 +238,7 @@ public final class DrawShape {
 			tessellator.draw();
 		} finally {
 			render.popState();
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 	}
 
@@ -321,7 +321,7 @@ public final class DrawShape {
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final Tessellator tessellator = Tessellator.inst();
-		render.pushMatrix();
+		render.getModelView().push();
 		render.pushState();
 		try {
 			render.blend(BlendState.NORMAL);
@@ -341,7 +341,7 @@ public final class DrawShape {
 			}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
 		} finally {
 			render.popState();
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 	}
 

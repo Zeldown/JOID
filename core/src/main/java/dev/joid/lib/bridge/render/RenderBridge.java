@@ -64,26 +64,6 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public final void popMatrix() {
-		this.modelView.pop();
-	}
-
-	@Override
-	public final void pushMatrix() {
-		this.modelView.push();
-	}
-
-	@Override
-	public final void loadIdentity() {
-		this.modelView.identity();
-	}
-
-	@Override
-	public final void translate(final double x, final double y, final double z) {
-		this.modelView.translate(x, y, z);
-	}
-
-	@Override
 	public final void quantize(final double motionX, final double motionY) {
 		if (motionX == 0D && motionY == 0D) {
 			return;
@@ -94,35 +74,10 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public final void scale(final double x, final double y, final double z) {
-		this.modelView.scale(x, y, z);
-	}
-
-	@Override
-	public final void rotate(final double angle, final double x, final double y, final double z) {
-		this.modelView.rotate(angle, x, y, z);
-	}
-
-	@Override
-	public final void popProjection() {
-		this.projection.pop();
-	}
-
-	@Override
-	public final void pushProjection() {
-		this.projection.push();
-	}
-
-	@Override
 	public final void screen(final int width, final int height) {
 		this.frameBuffer(null);
 		this.viewport(0, 0, width, height);
-		this.ortho(0D, width, height, 0D, 0D, 10000D);
-	}
-
-	@Override
-	public final void ortho(final double left, final double right, final double bottom, final double top, final double near, final double far) {
-		this.projection.ortho(left, right, bottom, top, near, far);
+		this.projection.ortho(0D, width, height, 0D, 0D, 10000D);
 	}
 
 	@Override

@@ -147,8 +147,8 @@ public abstract class StateGuardContractSuite {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.beginFrame();
 		try {
-			render.loadIdentity();
-			render.ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
+			render.getModelView().identity();
+			render.getProjection().ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
 			render.viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
 			render.frameBuffer(null);
 			render.clearColor(0F, 0F, 0F, 1F);
@@ -193,8 +193,8 @@ public abstract class StateGuardContractSuite {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.beginFrame();
 		try {
-			render.loadIdentity();
-			render.ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
+			render.getModelView().identity();
+			render.getProjection().ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
 			render.viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
 			render.frameBuffer(null);
 			render.shader(null);

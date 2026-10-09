@@ -1,6 +1,6 @@
 # Transformations and Framebuffers
 
-Below the drawing helpers, JOID exposes the tools they are built on: `Transformation` moves, rotates and scales what you draw, the matrix methods of the render bridge do the same by hand, `FrameBuffer` draws into a texture you draw later, and `Tessellator` builds your own geometry. Use them in draw hooks (see [Drawing Overview](draw-utils.md)) when the drawing helpers are not enough.
+Below the drawing helpers, JOID exposes the tools they are built on: `Transformation` moves, rotates and scales what you draw, the matrix stacks of the render bridge do the same by hand, `FrameBuffer` draws into a texture you draw later, and `Tessellator` builds your own geometry. Use them in draw hooks (see [Drawing Overview](draw-utils.md)) when the drawing helpers are not enough.
 
 ## Rotating a drawing with Transformation
 
@@ -69,18 +69,18 @@ public void draw(final double mouseX, final double mouseY) {
 
 ## The matrix stack of the render bridge
 
-`Transformation` is a shortcut for the matrix methods of `IRenderBridge` (`BridgeHandler.RENDER.get()`), which you can call directly:
+`Transformation` is a shortcut for the two `MatrixStack`s of `IRenderBridge` (`BridgeHandler.RENDER.get()`), `getModelView()` and `getProjection()`, which you can use directly:
 
 ```java
 final IRenderBridge render = BridgeHandler.RENDER.get();
-render.pushMatrix();
+render.getModelView().push();
 try {
-	render.translate(super.getX() + super.dw(2D), super.getY() + super.dh(2D), 0D);
-	render.scale(1.5D, 1.5D, 1D);
-	render.translate(-(super.getX() + super.dw(2D)), -(super.getY() + super.dh(2D)), 0D);
+	render.getModelView().translate(super.getX() + super.dw(2D), super.getY() + super.dh(2D), 0D);
+	render.getModelView().scale(1.5D, 1.5D, 1D);
+	render.getModelView().translate(-(super.getX() + super.dw(2D)), -(super.getY() + super.dh(2D)), 0D);
 	DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.decode("#DDDDDD"));
 } finally {
-	render.popMatrix();
+	render.getModelView().pop();
 }
 ```
 
@@ -98,20 +98,20 @@ public void draw(final double mouseX, final double mouseY) {
 	if (this.buffer == null) {
 		this.buffer = FrameBuffer.create(256, 256, TextureFilter.LINEAR);
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushProjection();
-		render.pushMatrix();
+		render.getProjection().push();
+		render.getModelView().push();
 		try {
 			this.buffer.fill(() -> {
 				render.viewport(0, 0, 256, 256);
 				render.clearColor(0F, 0F, 0F, 0F);
-				render.ortho(0D, 256D, 256D, 0D, -1000D, 1000D);
-				render.loadIdentity();
+				render.getProjection().ortho(0D, 256D, 256D, 0D, -1000D, 1000D);
+				render.getModelView().identity();
 				DrawUtils.SHAPE.drawCircle(128D, 128D, Color.decode("#999999"), 120D);
 				DrawUtils.SHAPE.drawCircle(128D, 128D, Color.decode("#DDDDDD"), 60D);
 			});
 		} finally {
-			render.popMatrix();
-			render.popProjection();
+			render.getModelView().pop();
+			render.getProjection().pop();
 		}
 	}
 
@@ -234,27 +234,27 @@ The operations are in `dev.joid.lib.render.transform.operation` and implement `I
 | `add(Supplier<Double> xSupplier, Supplier<Double> ySupplier, Supplier<Double> zSupplier)` | Adds a supplied offset; the vector keeps following both. |
 | `getX()`, `getY()`, `getZ()` | Current coordinates. |
 
-### Matrix methods of IRenderBridge
+### Matrices of IRenderBridge
 
 | Method | Description |
 |---|---|
-| `pushMatrix()`, `popMatrix()` | Save and restore the model-view matrix. Pop in a `finally` block, so an exception does not shift every following frame. |
-| `translate(double x, double y, double z)` | Translates. |
-| `rotate(double angle, double x, double y, double z)` | Rotates `angle` degrees around the axis `(x, y, z)`; an axis of length 0 is ignored. |
-| `scale(double x, double y, double z)` | Scales. |
-| `quantize(double motionX, double motionY)` | Rounds a motion to whole pixels (see [Moving a drawing inside its node with quantize](draw-utils.md#moving-a-drawing-inside-its-node-with-quantize)). |
-| `loadIdentity()` | Resets the model-view matrix. |
-| `pushProjection()`, `popProjection()` | Save and restore the projection matrix. |
-| `ortho(double left, double right, double bottom, double top, double near, double far)` | Replaces the projection with an orthographic one. |
+| `getModelView()` | The model-view `MatrixStack`, applied to everything drawn. |
+| `getProjection()` | The projection `MatrixStack`. |
+| `quantize(double motionX, double motionY)` | Rounds a motion to whole pixels on the model-view matrix (see [Moving a drawing inside its node with quantize](draw-utils.md#moving-a-drawing-inside-its-node-with-quantize)). |
 
 ### MatrixStack
 
-A render bridge built on `RenderBridge` keeps its matrices in two `MatrixStack`s (`dev.joid.lib.bridge.render.matrix`), `getModelView()` and `getProjection()`. You need them when you write a backend (see [Writing a Backend](../integration/writing-a-backend.md)).
+A `MatrixStack` (`dev.joid.lib.bridge.render.matrix`) is a 4×4 matrix with a stack to save it. The render bridge holds two, `getModelView()` and `getProjection()`; a backend reads them at each draw (see [Writing a Backend](../integration/writing-a-backend.md)).
 
 | Method | Description |
 |---|---|
-| `push()`, `pop()` | Save and restore the matrix; `pop()` on an empty stack throws `NoSuchElementException`. |
-| `identity()`, `translate(...)`, `scale(...)`, `rotate(...)`, `ortho(...)` | As on the render bridge. |
+| `push()`, `pop()` | Save and restore the matrix. Pop in a `finally` block, so an exception does not shift every following frame; `pop()` on an empty stack throws `NoSuchElementException`. |
+| `identity()` | Resets the matrix. |
+| `translate(double x, double y, double z)` | Translates. |
+| `scale(double x, double y, double z)` | Scales. |
+| `rotate(double angle, double x, double y, double z)` | Rotates `angle` degrees around the axis `(x, y, z)`; an axis of length 0 is ignored. |
+| `ortho(double left, double right, double bottom, double top, double near, double far)` | Replaces the matrix with an orthographic projection. |
+| `load(float[] matrix)` | Replaces the matrix with a copy of a column-major 4×4 matrix. |
 | `multiply(float[] other)` | Multiplies on the right by a column-major 4×4 matrix. |
 | `getMatrix()` | Current column-major 4×4 matrix. |
 | `getNormalMatrix()` | Inverse transpose of its 3×3 part, column-major, for normals. |

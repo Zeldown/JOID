@@ -2,6 +2,7 @@ package dev.joid.lib.bridge.render;
 
 import dev.joid.lib.bridge.IBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
+import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
@@ -27,18 +28,8 @@ public interface IRenderBridge extends IBridge {
 		this.suspend(draw);
 	}
 
-	public void popMatrix();
-	public void pushMatrix();
-	public void loadIdentity();
-	public void quantize(final double motionX, final double motionY);
-	public void scale(final double x, final double y, final double z);
-	public void translate(final double x, final double y, final double z);
-	public void rotate(final double angle, final double x, final double y, final double z);
-
-	public void popProjection();
-	public void pushProjection();
 	public void screen(final int width, final int height);
-	public void ortho(final double left, final double right, final double bottom, final double top, final double near, final double far);
+	public void quantize(final double motionX, final double motionY);
 
 	public void popState();
 	public void pushState();
@@ -81,5 +72,7 @@ public interface IRenderBridge extends IBridge {
 	public int getViewportWidth();
 	public int getViewportHeight();
 	public @NonNull PixelGrid getPixelGrid();
+	public @NonNull MatrixStack getModelView();
+	public @NonNull MatrixStack getProjection();
 
 }

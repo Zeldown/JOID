@@ -70,12 +70,12 @@ public class RoundedShaderPassTest {
 	public void rampsItsEdgesWithoutSnappingWhenRotated() {
 		new RoundedShaderPass(6F, 1F, 2F, 3F, 4F).bind(this.context());
 		Assert.assertEquals(1, this.shader.getValues().get("u_Aligned"));
-		this.bridges.getRender().pushMatrix();
+		this.bridges.getRender().getModelView().push();
 		try {
-			this.bridges.getRender().rotate(10D, 0D, 0D, 1D);
+			this.bridges.getRender().getModelView().rotate(10D, 0D, 0D, 1D);
 			new RoundedShaderPass(RoundedNodeEffect.create(5F), RectNode.create(10D, 20D, 100D, 60D)).bind(this.context());
 		} finally {
-			this.bridges.getRender().popMatrix();
+			this.bridges.getRender().getModelView().pop();
 		}
 		Assert.assertEquals(0, this.shader.getValues().get("u_Aligned"));
 	}

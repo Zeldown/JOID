@@ -208,8 +208,7 @@ The core `FrameBufferHandle<T extends Texture>` (`dev.joid.lib.bridge.render.fra
 | Method | Contract |
 |---|---|
 | `pushState()` / `popState()` | Save and restore everything set through the bridge: color, blend, depth, cull, lighting, color mask, alpha test, line state, stencil, viewport, framebuffer, texture and shader. |
-| `pushMatrix()` / `popMatrix()` / `loadIdentity()` / `translate` / `scale` / `rotate` | The model-view stack. `rotate` takes degrees around an axis. |
-| `pushProjection()` / `popProjection()` | The projection stack. |
+| `getModelView()` / `getProjection()` | The model-view and projection `MatrixStack`s, kept by the core and read by the backend at each draw. |
 | `blend(BlendState)` | Blending: `BlendState.NORMAL`, `PREMULTIPLIED`, `DISABLED`, or `BlendState.create(equation, source, destination)` and `create(equation, sourceColor, destinationColor, sourceAlpha, destinationAlpha)`. A `BlendState` exposes `isEnabled()`, `getEquation()` (`ADD`, `SUBTRACT`, `REVERSE_SUBTRACT`, `MIN`, `MAX`) and its four factors (`ZERO`, `ONE`, `SRC_COLOR`, `ONE_MINUS_SRC_COLOR`, `DST_COLOR`, `ONE_MINUS_DST_COLOR`, `SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`, `DST_ALPHA`, `ONE_MINUS_DST_ALPHA`). |
 | `depthTest(boolean)` / `depthWrite(boolean)` / `cull(boolean)` / `colorWrite(boolean)` | Depth test and write, face culling, color writes. |
 | `alphaCutoff(float cutoff)` | A cutoff above 0 discards the fragments whose alpha is at or below it; a cutoff of 0 or less turns the test off. UIs call `alphaCutoff(0F)` at the start of every frame to reset it; resource masks use `alphaCutoff(0.5F)`. The state holds only `getAlphaCutoff()`. |

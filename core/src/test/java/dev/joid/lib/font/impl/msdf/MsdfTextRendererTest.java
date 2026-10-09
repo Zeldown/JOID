@@ -211,7 +211,7 @@ public class MsdfTextRendererTest {
 		MsdfTextRenderer.inst().drawText(100D, 100D, "A", MsdfTextRendererTest.sampleInfo());
 		Assert.assertArrayEquals(new float[] {0.0125F, 0.0125F}, (float[]) this.render.getLast().getUniforms().get("pixel"), 1E-6F);
 		this.render.resize(1366, 768);
-		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		MsdfTextRenderer.inst().drawText(100D, 100D, "A", MsdfTextRendererTest.sampleInfo());
 		Assert.assertArrayEquals(new float[] {0.0125F * 1920F / 1366F, 1F / 56F}, (float[]) this.render.getLast().getUniforms().get("pixel"), 1E-6F);
 	}
@@ -219,7 +219,7 @@ public class MsdfTextRendererTest {
 	@Test
 	public void snapsTheBaselineAndTheXHeightToTheWindowPixels() {
 		this.render.resize(1366, 768);
-		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		MsdfTextRenderer.inst().drawText(100D, 100D, "x", MsdfTextRendererTest.sampleInfo());
 		final Capture capture = this.render.getLast();
 		Assert.assertEquals(100D, (capture.getBottom() + 0.015625D * 39.375D) * 768D / 1080D, 1E-3D);
@@ -229,12 +229,12 @@ public class MsdfTextRendererTest {
 
 	@Test
 	public void keepsTheExactSizeUnderARotation() {
-		this.render.pushMatrix();
+		this.render.getModelView().push();
 		try {
-			this.render.rotate(30D, 0D, 0D, 1D);
+			this.render.getModelView().rotate(30D, 0D, 0D, 1D);
 			MsdfTextRenderer.inst().drawText(100D, 100D, "x", MsdfTextRendererTest.sampleInfo());
 		} finally {
-			this.render.popMatrix();
+			this.render.getModelView().pop();
 		}
 
 		final Capture capture = this.render.getLast();

@@ -22,7 +22,7 @@ public class BlurShaderPassTest {
 	@Before
 	public void useAFractionalScale() {
 		this.bridges.resize(1366, 768);
-		this.bridges.getRender().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.bridges.getRender().getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		this.shader = (RecordingShader) BlurShader.inst().getShader();
 		this.shader.getValues().clear();
 	}

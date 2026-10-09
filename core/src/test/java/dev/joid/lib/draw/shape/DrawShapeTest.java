@@ -37,7 +37,7 @@ public class DrawShapeTest {
 	@Before
 	public void useAFractionalScale() {
 		this.bridges.resize(1366, 768);
-		this.bridges.getRender().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.bridges.getRender().getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 	}
 
 	@Test
@@ -106,12 +106,12 @@ public class DrawShapeTest {
 
 	@Test
 	public void leavesARotatedRectangleExact() {
-		this.bridges.getRender().pushMatrix();
+		this.bridges.getRender().getModelView().push();
 		try {
-			this.bridges.getRender().rotate(30D, 0D, 0D, 1D);
+			this.bridges.getRender().getModelView().rotate(30D, 0D, 0D, 1D);
 			DrawUtils.SHAPE.drawRect(10.3D, 20.6D, 100D, 50D, new Color(1F, 0F, 0F, 1F));
 		} finally {
-			this.bridges.getRender().popMatrix();
+			this.bridges.getRender().getModelView().pop();
 		}
 
 		final Draw draw = this.single(1F, 0F, 0F);
@@ -121,13 +121,13 @@ public class DrawShapeTest {
 	@Test
 	public void smoothsTheEdgesOfARotatedRectangle() {
 		this.bridges.resize(1920, 1080);
-		this.bridges.getRender().pushMatrix();
+		this.bridges.getRender().getModelView().push();
 		try {
-			this.bridges.getRender().translate(200D, 0D, 0D);
-			this.bridges.getRender().rotate(90D, 0D, 0D, 1D);
+			this.bridges.getRender().getModelView().translate(200D, 0D, 0D);
+			this.bridges.getRender().getModelView().rotate(90D, 0D, 0D, 1D);
 			DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, new Color(1F, 0F, 0F, 1F));
 		} finally {
-			this.bridges.getRender().popMatrix();
+			this.bridges.getRender().getModelView().pop();
 		}
 
 		final Draw draw = this.single(1F, 0F, 0F);
@@ -144,13 +144,13 @@ public class DrawShapeTest {
 	@Test
 	public void smoothsTheStraightEdgesOfARotatedRoundedRectangle() {
 		this.bridges.resize(1920, 1080);
-		this.bridges.getRender().pushMatrix();
+		this.bridges.getRender().getModelView().push();
 		try {
-			this.bridges.getRender().translate(200D, 0D, 0D);
-			this.bridges.getRender().rotate(90D, 0D, 0D, 1D);
+			this.bridges.getRender().getModelView().translate(200D, 0D, 0D);
+			this.bridges.getRender().getModelView().rotate(90D, 0D, 0D, 1D);
 			DrawUtils.SHAPE.drawRoundedRect(10D, 20D, 100D, 50D, new Color(0F, 1F, 0F, 1F), 8F);
 		} finally {
-			this.bridges.getRender().popMatrix();
+			this.bridges.getRender().getModelView().pop();
 		}
 
 		final Draw draw = this.single(0F, 1F, 0F);
@@ -167,13 +167,13 @@ public class DrawShapeTest {
 		this.bridges.resize(1920, 1080);
 		final RecordingShader shader = new RecordingShader();
 		shader.bind();
-		this.bridges.getRender().pushMatrix();
+		this.bridges.getRender().getModelView().push();
 		try {
-			this.bridges.getRender().translate(200D, 0D, 0D);
-			this.bridges.getRender().rotate(90D, 0D, 0D, 1D);
+			this.bridges.getRender().getModelView().translate(200D, 0D, 0D);
+			this.bridges.getRender().getModelView().rotate(90D, 0D, 0D, 1D);
 			DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, new Color(1F, 0F, 0F, 1F));
 		} finally {
-			this.bridges.getRender().popMatrix();
+			this.bridges.getRender().getModelView().pop();
 		}
 
 		final Draw draw = this.single(1F, 0F, 0F);
@@ -342,13 +342,13 @@ public class DrawShapeTest {
 	@Test
 	public void strokesARotatedBorderAsOneOutline() {
 		this.bridges.resize(1920, 1080);
-		this.bridges.getRender().pushMatrix();
+		this.bridges.getRender().getModelView().push();
 		try {
-			this.bridges.getRender().translate(200D, 0D, 0D);
-			this.bridges.getRender().rotate(90D, 0D, 0D, 1D);
+			this.bridges.getRender().getModelView().translate(200D, 0D, 0D);
+			this.bridges.getRender().getModelView().rotate(90D, 0D, 0D, 1D);
 			DrawUtils.SHAPE.drawBorder(10D, 20D, 110D, 70D, new Color(0F, 1F, 1F, 1F), 3D);
 		} finally {
-			this.bridges.getRender().popMatrix();
+			this.bridges.getRender().getModelView().pop();
 		}
 
 		final Draw draw = this.single(0F, 1F, 1F);
@@ -415,12 +415,12 @@ public class DrawShapeTest {
 	@Test
 	public void smoothsTheEdgesOfARotatedPolygon() {
 		this.bridges.resize(1920, 1080);
-		this.bridges.getRender().pushMatrix();
+		this.bridges.getRender().getModelView().push();
 		try {
-			this.bridges.getRender().rotate(10D, 0D, 0D, 1D);
+			this.bridges.getRender().getModelView().rotate(10D, 0D, 0D, 1D);
 			DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), new Vector2d(10D, 20D), new Vector2d(110D, 20D), new Vector2d(110D, 70D), new Vector2d(10D, 70D));
 		} finally {
-			this.bridges.getRender().popMatrix();
+			this.bridges.getRender().getModelView().pop();
 		}
 
 		Assert.assertEquals(30, this.single(0F, 1F, 0F).getXs().length);

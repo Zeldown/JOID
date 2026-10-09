@@ -109,24 +109,24 @@ public final class UIView {
 
 	public void render(final @NonNull IRenderBridge render, final boolean projection, final @NonNull Runnable draw) {
 		if (projection) {
-			render.pushProjection();
-			render.ortho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
+			render.getProjection().push();
+			render.getProjection().ortho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
 		}
 
-		render.pushMatrix();
+		render.getModelView().push();
 		try {
-			render.translate(this.getOffsetX(), this.getOffsetY(), 0D);
+			render.getModelView().translate(this.getOffsetX(), this.getOffsetY(), 0D);
 			if (this.getScale() != 1D) {
-				render.translate(this.anchorX, this.anchorY, 0D);
-				render.scale(this.getScale(), this.getScale(), 1D);
-				render.translate(-this.anchorX, -this.anchorY, 0D);
+				render.getModelView().translate(this.anchorX, this.anchorY, 0D);
+				render.getModelView().scale(this.getScale(), this.getScale(), 1D);
+				render.getModelView().translate(-this.anchorX, -this.anchorY, 0D);
 			}
 
 			draw.run();
 		} finally {
-			render.popMatrix();
+			render.getModelView().pop();
 			if (projection) {
-				render.popProjection();
+				render.getProjection().pop();
 			}
 		}
 	}

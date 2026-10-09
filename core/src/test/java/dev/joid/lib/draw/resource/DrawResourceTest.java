@@ -89,7 +89,7 @@ public class DrawResourceTest {
 	@Test
 	public void snapsTheCornersOfAnImage() {
 		this.render.resize(1366, 768);
-		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		DrawUtils.RESOURCE.drawResource(10.3D, 20.6D, 100D, 50D, DrawResourceTest.image(64, 32));
 		final Capture capture = this.single();
 		Assert.assertEquals(Math.rint(10.3D * 1366D / 1920D), capture.getLeft() * 1366D / 1920D, 1E-3D);
@@ -101,7 +101,7 @@ public class DrawResourceTest {
 	@Test
 	public void keepsAtLeastOnePixel() {
 		this.render.resize(1366, 768);
-		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		DrawUtils.RESOURCE.drawResource(10.3D, 20.6D, 0.2D, 0.2D, DrawResourceTest.image(64, 32));
 		final Capture capture = this.single();
 		Assert.assertEquals(1D, (capture.getRight() - capture.getLeft()) * 1366D / 1920D, 1E-3D);
@@ -110,12 +110,12 @@ public class DrawResourceTest {
 
 	@Test
 	public void smoothsTheEdgesOfARotatedImageWithTheRoundedShader() {
-		this.render.pushMatrix();
+		this.render.getModelView().push();
 		try {
-			this.render.rotate(30D, 0D, 0D, 1D);
+			this.render.getModelView().rotate(30D, 0D, 0D, 1D);
 			DrawUtils.RESOURCE.drawResource(10.3D, 20.6D, 100D, 50D, DrawResourceTest.image(64, 32));
 		} finally {
-			this.render.popMatrix();
+			this.render.getModelView().pop();
 		}
 
 		final Capture capture = this.single();
@@ -134,12 +134,12 @@ public class DrawResourceTest {
 	public void smoothsTheEdgesOfARotatedImageUnderTheBoundShader() {
 		final RecordingShader shader = new RecordingShader();
 		this.render.shader(shader);
-		this.render.pushMatrix();
+		this.render.getModelView().push();
 		try {
-			this.render.rotate(30D, 0D, 0D, 1D);
+			this.render.getModelView().rotate(30D, 0D, 0D, 1D);
 			DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 50D, DrawResourceTest.image(64, 32));
 		} finally {
-			this.render.popMatrix();
+			this.render.getModelView().pop();
 		}
 
 		final Capture capture = this.single();
@@ -184,7 +184,7 @@ public class DrawResourceTest {
 	public void requestsThePixelSizeOfTheDraw() {
 		final SizedDecoder decoder = new SizedDecoder(true);
 		this.render.resize(1366, 768);
-		this.render.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 100D, 50D, DrawResourceTest.decoded(decoder, TextureFilter.LINEAR));
 		Assert.assertEquals(71, decoder.getWidth());
 		Assert.assertEquals(36, decoder.getHeight());

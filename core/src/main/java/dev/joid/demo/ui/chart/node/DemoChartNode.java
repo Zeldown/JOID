@@ -71,9 +71,9 @@ public class DemoChartNode extends ChartNode {
 					}
 				}
 
-				BridgeHandler.RENDER.get().translate(0D, 0D, 1D);
+				BridgeHandler.RENDER.get().getModelView().translate(0D, 0D, 1D);
 				DrawUtils.SHAPE.drawCircle(ox, oy, color, 4D);
-				BridgeHandler.RENDER.get().translate(0D, 0D, -1D);
+				BridgeHandler.RENDER.get().getModelView().translate(0D, 0D, -1D);
 
 				last = point;
 				ox += offset;

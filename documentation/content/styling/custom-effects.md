@@ -57,7 +57,7 @@ When `pre` runs, the current matrix is the one the node draws with: draw at `nod
 
 ### Restoring the state in post
 
-Whatever `pre` changes, `post` restores. `BridgeHandler.RENDER.get()` returns the render bridge of the backend (see [The Frame Loop](../concepts/frame-loop.md)); it holds the current matrix, the transformation applied to everything drawn, on a stack: `pushMatrix()` saves it, `translate(...)` moves what is drawn next, `popMatrix()` restores the saved matrix. This effect lifts the node while it is hovered, by pushing a matrix in `pre` and popping it in `post`:
+Whatever `pre` changes, `post` restores. `BridgeHandler.RENDER.get()` returns the render bridge of the backend (see [The Frame Loop](../concepts/frame-loop.md)); its `getModelView()` holds the current matrix, the transformation applied to everything drawn, on a stack: `push()` saves it, `translate(...)` moves what is drawn next, `pop()` restores the saved matrix. This effect lifts the node while it is hovered, by pushing a matrix in `pre` and popping it in `post`:
 
 ```java
 import dev.joid.lib.bridge.BridgeHandler;
@@ -80,13 +80,13 @@ public class LiftNodeEffect extends NodeEffect<Node> {
 	@Override
 	public void pre(final Node node, final double mouseX, final double mouseY) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushMatrix();
-		render.translate(0D, -node.hoverValue(this.height), 0D);
+		render.getModelView().push();
+		render.getModelView().translate(0D, -node.hoverValue(this.height), 0D);
 	}
 
 	@Override
 	public void post(final Node node, final double mouseX, final double mouseY) {
-		BridgeHandler.RENDER.get().popMatrix();
+		BridgeHandler.RENDER.get().getModelView().pop();
 	}
 
 }

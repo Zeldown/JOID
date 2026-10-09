@@ -44,8 +44,8 @@ public abstract class BitmapFontContractSuite {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.loadIdentity();
-		render.ortho(0D, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, 0D, 0D, 10000D);
+		render.getModelView().identity();
+		render.getProjection().ortho(0D, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, 0D, 0D, 10000D);
 		render.viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT);
 		render.frameBuffer(null);
 		render.shader(null);
@@ -129,12 +129,12 @@ public abstract class BitmapFontContractSuite {
 		final Font font = new Font(new Renderer(atlas, texture));
 		render.beginFrame();
 		render.clearColor(0F, 0F, 0F, 1F);
-		render.pushMatrix();
+		render.getModelView().push();
 		try {
-			render.scale(scale, scale, 1D);
+			render.getModelView().scale(scale, scale, 1D);
 			font.getTextRenderer().drawText(8.3D, 4.6D, "A", TextInfo.create(font, 16F, Color.WHITE));
 		} finally {
-			render.popMatrix();
+			render.getModelView().pop();
 		}
 		render.endFrame();
 

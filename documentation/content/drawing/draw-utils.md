@@ -106,12 +106,12 @@ A drawing that follows its node moves with it. A drawing that moves on its own i
 ```java
 final IRenderBridge render = BridgeHandler.RENDER.get();
 final double offset = this.slide.getValue() * 300D;
-render.pushMatrix();
+render.getModelView().push();
 try {
 	render.quantize(offset, 0D);
 	DrawUtils.SHAPE.drawRect(super.getX() + offset, super.getY(), 40D, 40D, Color.WHITE);
 } finally {
-	render.popMatrix();
+	render.getModelView().pop();
 }
 ```
 
@@ -170,7 +170,7 @@ try {
 }
 ```
 
-The matrix is not part of the state: save it with `pushMatrix()` / `popMatrix()` (see [Transformations and Framebuffers](transformations.md)).
+The matrix is not part of the state: save it with `getModelView().push()` / `getModelView().pop()` (see [Transformations and Framebuffers](transformations.md)).
 
 ## Drawings made outside JOID with DrawUtils.RASTER
 
@@ -224,7 +224,7 @@ Each class is a singleton also reachable through its static `getInstance()` (`Dr
 | `clearColor(float red, float green, float blue, float alpha)`, `clearDepth()` | Clear the color (while it is written) or the depth of the current target. |
 | `getPixelGrid()` | The `PixelGrid` of the current transform. |
 
-The matrix methods (`pushMatrix`, `translate`, `rotate`, `scale`...) are on [Transformations and Framebuffers](transformations.md); the complete interface, stencil included, is on [Bridges](../integration/bridges.md).
+The matrix stacks (`getModelView()`, `getProjection()`) are on [Transformations and Framebuffers](transformations.md); the complete interface, stencil included, is on [Bridges](../integration/bridges.md).
 
 ### PixelGrid
 
@@ -250,7 +250,7 @@ Screen positions are viewport pixels, from the bottom-left corner, Y up.
 ## Pitfalls
 
 - Draw only from a hook of the frame: outside it, the matrix, the viewport and the target are not those of the UI.
-- Pop what you push in a `finally` block (`popMatrix`, `popState`, `Transformation.reset`): an exception between the two would shift every following frame.
+- Pop what you push in a `finally` block (`getModelView().pop()`, `popState`, `Transformation.reset`): an exception between the two would shift every following frame.
 - A drawing that moves inside a still node without `quantize` lands between pixels and shimmers while it moves.
 - Text unbinds the current shader: draw text outside your own shader binding.
 

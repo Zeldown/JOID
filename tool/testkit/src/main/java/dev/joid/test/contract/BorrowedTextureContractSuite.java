@@ -42,8 +42,8 @@ public abstract class BorrowedTextureContractSuite {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.loadIdentity();
-		render.ortho(0D, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE, 0D, 0D, 10000D);
+		render.getModelView().identity();
+		render.getProjection().ortho(0D, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE, 0D, 0D, 10000D);
 		render.viewport(0, 0, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE);
 		render.frameBuffer(null);
 		render.shader(null);

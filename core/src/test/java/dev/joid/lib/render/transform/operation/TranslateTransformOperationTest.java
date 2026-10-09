@@ -25,7 +25,7 @@ public class TranslateTransformOperationTest {
 	@Test
 	public void movesByWholePixels() {
 		this.bridges.resize(1366, 768);
-		this.bridges.getRender().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
+		this.bridges.getRender().getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final double before = this.bridges.getRender().getPixelGrid().toScreenX(0D);
 		new TranslateTransformOperation(Vector.create(10.3D, 0D)).transform();
 		final double after = this.bridges.getRender().getPixelGrid().toScreenX(0D);
