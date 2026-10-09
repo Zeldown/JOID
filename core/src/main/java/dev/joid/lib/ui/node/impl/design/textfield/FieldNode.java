@@ -17,6 +17,7 @@ import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCa
 import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldFocusCallback;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.utils.cursor.Cursor;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.platform.Platform;
 import dev.joid.lib.utils.signal.Signal;
@@ -80,6 +81,8 @@ public abstract class FieldNode<V> extends Node {
 		this.maxTextLength = -1;
 
 		this.selectionStart = -1;
+
+		super.cursor(Cursor.TEXT);
 	}
 
 	protected abstract void drawField();

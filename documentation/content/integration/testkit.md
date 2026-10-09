@@ -240,6 +240,7 @@ shot resource-paused
 | `dev <true\|false>` | Turns dev mode on or off. A UI creates its dev overlay when it loads, so open the UI after `dev true`. |
 | `mask <x> <y> <width> <height>` | Paints the rectangle in magenta in the following shots, to exclude content that cannot be deterministic. |
 | `unmask` | Removes the masks. |
+| `cursor <CURSOR>` | Fails the scenario unless the last cursor the window bridge received is that `Cursor` (`DEFAULT` before any), for example `cursor TEXT` after a `move` over a text field. |
 | `shot <name>` | Captures the window as `<name>.png`. |
 
 Scenarios belong to the testkit. To add one to JOID, create `tool/testkit/src/main/resources/snapshot/<name>.txt`, add `<name>` to the scenario list of `SnapshotRunner` and a `matches<Name>Snapshots` test to `SnapshotSuite`: the shots of a scenario missing from the list are recorded, then deleted as orphans. Run the tests once to record the new references.

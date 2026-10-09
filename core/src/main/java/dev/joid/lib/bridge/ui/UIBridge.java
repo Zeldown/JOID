@@ -11,18 +11,26 @@ import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlayObject;
+import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.utils.cursor.Cursor;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.list.IndexedLinkedList;
 import lombok.NonNull;
 
 public abstract class UIBridge implements IUIBridge {
 
+	private static Cursor        windowCursor;
+	private static IWindowBridge cursorWindow;
+
 	@NonNull
 	private final IndexedLinkedList<@NonNull UI> uiList;
 
 	private long      pressTime;
 	private ClickType pressed;
+
+	private Node   pressedNode;
+	private Cursor hoveredCursor;
 
 	public UIBridge() {
 		this.uiList = new IndexedLinkedList<>();
@@ -36,8 +44,9 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean mousePressed(final @NonNull ClickType clickType) {
-		this.pressed   = clickType;
-		this.pressTime = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.pressed     = clickType;
+		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.pressedNode = this.getHoveredNode();
 		for (final UI ui : this.getInputList()) {
 			if (ui.onMousePressed(clickType) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
@@ -63,7 +72,8 @@ public abstract class UIBridge implements IUIBridge {
 
 	public final boolean mouseReleased(final @NonNull ClickType clickType) {
 		if (this.pressed == clickType) {
-			this.pressed = null;
+			this.pressed     = null;
+			this.pressedNode = null;
 		}
 
 		for (final UI ui : this.getInputList()) {
@@ -113,31 +123,8 @@ public abstract class UIBridge implements IUIBridge {
 		try {
 			ResourceData.releaseCollected();
 			ShaderPipeline.releaseUnused();
-			if (this.uiList.isEmpty()) {
-				return;
-			}
-
-			final IWindowBridge window = BridgeHandler.WINDOW.get();
-			final IRenderBridge render = BridgeHandler.RENDER.get();
-
-			double renderPipeline = 0D;
-			render.pushMatrix();
-			try {
-				render.translate(0D, 0D, -2000D);
-				for (final UI ui : this.getLayerList()) {
-					if (!ui.getData().visible() || !this.isShown(ui)) {
-						continue;
-					}
-
-					renderPipeline += ui.getData().zlevel();
-					render.translate(0D, 0D, renderPipeline);
-					ui.draw(window.getMouseX(), window.getMouseY());
-					renderPipeline = ui.getRenderPipelineLevel() + 10D;
-				}
-				render.translate(0D, 0D, -renderPipeline);
-			} finally {
-				render.popMatrix();
-			}
+			this.drawLayers();
+			this.updateCursor();
 		} catch (final Exception throwable) {
 			throwable.printStackTrace();
 		}
@@ -183,6 +170,67 @@ public abstract class UIBridge implements IUIBridge {
 	private boolean isShown(final UI ui) {
 		final UIDataOverlayObject overlay = ui.getOverlay();
 		return !overlay.active() || (overlay.render().always() || !this.isOverlayHidden()) && (overlay.render().screens() || !this.isScreenOpen());
+	}
+
+	private void drawLayers() {
+		if (this.uiList.isEmpty()) {
+			return;
+		}
+
+		final IWindowBridge window = BridgeHandler.WINDOW.get();
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+
+		double renderPipeline = 0D;
+		render.pushMatrix();
+		try {
+			render.translate(0D, 0D, -2000D);
+			for (final UI ui : this.getLayerList()) {
+				if (!ui.getData().visible() || !this.isShown(ui)) {
+					continue;
+				}
+
+				renderPipeline += ui.getData().zlevel();
+				render.translate(0D, 0D, renderPipeline);
+				ui.draw(window.getMouseX(), window.getMouseY());
+				renderPipeline = ui.getRenderPipelineLevel() + 10D;
+			}
+			render.translate(0D, 0D, -renderPipeline);
+		} finally {
+			render.popMatrix();
+		}
+	}
+
+	private void updateCursor() {
+		final boolean pressed = this.pressedNode != null && this.pressedNode.hasUi() && this.uiList.contains(this.pressedNode.getUi());
+		final Node hovered = pressed ? this.pressedNode : this.getHoveredNode();
+		this.hoveredCursor = hovered != null ? hovered.getResolvedCursor() : null;
+
+		final IWindowBridge window = BridgeHandler.WINDOW.get();
+		if (window != UIBridge.cursorWindow) {
+			UIBridge.cursorWindow = window;
+			UIBridge.windowCursor = Cursor.DEFAULT;
+		}
+
+		if (window.isMouseGrabbed()) {
+			return;
+		}
+
+		final IUIBridge bridge = BridgeHandler.UI.find(current -> current instanceof UIBridge && ((UIBridge) current).hoveredCursor != null);
+		final Cursor cursor = bridge != null ? ((UIBridge) bridge).hoveredCursor : Cursor.DEFAULT;
+		if (cursor != UIBridge.windowCursor) {
+			UIBridge.windowCursor = cursor;
+			window.setCursor(cursor);
+		}
+	}
+
+	private Node getHoveredNode() {
+		for (final UI ui : this.getInputList()) {
+			final Node hovered = ui.getHoveredNode();
+			if (hovered != null || ui.getPopup().active()) {
+				return hovered;
+			}
+		}
+		return null;
 	}
 
 	private List<UI> getLayerList() {

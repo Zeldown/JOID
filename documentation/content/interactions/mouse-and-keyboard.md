@@ -79,6 +79,41 @@ Positions are units of the 1920×1080 virtual canvas, fitted to the window witho
 
 `isHovered(mouseX, mouseY, false)` skips the enabled check. `isHovered()` without arguments returns the hover state of the last drawn frame (see [Hover and Tooltips](hover.md)).
 
+## Mouse cursor
+
+`cursor(Cursor)` sets the mouse cursor shown while the pointer is over a node. `Cursor` (`dev.joid.lib.utils.cursor`) lists the system cursors every backend can show: `DEFAULT`, `POINTER`, `TEXT`, `CROSSHAIR`, `MOVE`, `NOT_ALLOWED`, `RESIZE_EW`, `RESIZE_NS`, `RESIZE_NWSE` and `RESIZE_NESW`.
+
+```java
+final BooleanSignal locked = BooleanSignal.of(false);
+
+RectNode
+.create(100, 100, 200, 60)
+.color(Color.GRAY)
+.cursor(Cursor.POINTER)
+.onClick((node, mouseX, mouseY, clickType) -> locked.set(!locked.get()))
+.attach(this);
+
+RectNode
+.create(100, 200, 200, 60)
+.color(Color.GRAY)
+.cursor(() -> locked.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER)
+.attach(this);
+```
+
+At each frame, the UI bridge picks the cursor the way a browser does:
+
+- the node under the pointer is the topmost one that passes `isHovered(mouseX, mouseY, false)`: a disabled node keeps its cursor, a hidden node has none;
+- a node without a cursor takes the cursor of its parent, up to the root; a tree without any cursor shows `DEFAULT`;
+- while a mouse button is held, the cursor of the node pressed stays, wherever the pointer goes, until the button is released;
+- only the UIs that receive the mouse count, from the top: an interactive overlay comes before the screen below it, a popup hides the UIs under it, and a passive overlay is ignored;
+- outside every node, the cursor is `DEFAULT`.
+
+![Each card of the cursor demo gives its square one of the ten cursors; the last row shows an inherited cursor, an overridden one, a dragged square, a reactive cursor and a text field](../images/cursor-demo.png "The cursor demo: one card per cursor, then inheritance, drag, a reactive cursor and the text cursor of a field")
+
+The bridge calls `IWindowBridge.setCursor(...)` only when that cursor changes, and never while the mouse is grabbed. `cursor(Supplier<Cursor>)` follows a signal or any expression; a supplier that gives `null` lets the node take the cursor of its parent. `getCursor()` returns the cursor set on the node (`null` when it has none), `getResolvedCursor()` the one it shows after inheritance, and `UI.getHoveredNode()` the node that decides.
+
+The text fields (`TextFieldNode`, `IntegerFieldNode`, `MultilineTextFieldNode`) show `TEXT` by default; no other built-in node sets a cursor, so a button shows `POINTER` only when you give it one. A window bridge that cannot change the cursor keeps the default one (see [Bridges](../integration/bridges.md#iwindowbridge)).
+
 ## Keyboard callbacks with onKeyPressed
 
 `onKeyPressed((node, c, key) -> ...)` fires for every key event the UI receives that is not consumed yet, wherever the mouse is, as long as the node is visible and enabled.
@@ -275,6 +310,7 @@ Each node records the last events dispatched to its UI, whether or not they happ
 - Keybinds and UI hooks run only when no node consumed the event: a focused text field takes every key.
 - Node hooks receive every event of their UI, wherever the pointer is: test `isHovered(mouseX, mouseY)` before reacting to a click.
 - Only Left Ctrl, Left Shift and Left Alt drive the dev shortcuts and the dev zoom.
+- A label drawn over a button as a sibling hides the button from the cursor: attach the label to the button, so that it inherits the cursor of its parent.
 - `Key.W.isDown()` is the key labelled W on every layout: on AZERTY it sits where Z is on QWERTY. Use `isPhysicalDown()` for keys chosen for their place.
 
 ## See also

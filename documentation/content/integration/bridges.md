@@ -84,6 +84,7 @@ The window bridge answers questions about the window. Every coordinate is in win
 | `isKeyDown(Key key)` | Whether a key is held, a letter being the key that types it on the active keyboard layout. `Key.isDown()` and the modifier helpers of `UI` call it. |
 | `isPhysicalKeyDown(Key key)` | Whether the key at the place of `key` on a US QWERTY keyboard is held. `Key.isPhysicalDown()` calls it. Default method: `isKeyDown(key)`, for a host that knows a single code per key. |
 | `getClipboard()` / `setClipboard(String text)` | Text clipboard, used by text fields. `getClipboard()` returns `""` when it holds no text. |
+| `setCursor(Cursor cursor)` | Shows a system cursor over the window (see [Mouse cursor](../interactions/mouse-and-keyboard.md#mouse-cursor)). The UI bridge calls it only when the cursor changes and never while the mouse is grabbed; `DEFAULT` gives the window its own cursor back. Default method: does nothing, for a host whose cursor JOID leaves alone. |
 
 The keys a window bridge sends and reads follow the keyboard layout (see [Keyboard layouts](../interactions/mouse-and-keyboard.md#keyboard-layouts)). A host that reports key positions, like GLFW, translates them with `KeyLayout` (`dev.joid.lib.utils.key`): `KeyLayout.create(key -> name)` takes the character the key at the place of `key` types on the active layout (`null` when it types none), `translate(Key)` gives the layout key of a position for the events, and `isDown(Key, physicalPredicate)` answers `isKeyDown` from the positions held.
 

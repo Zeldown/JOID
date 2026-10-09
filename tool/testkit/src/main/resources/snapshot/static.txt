@@ -72,3 +72,6 @@ shot static-UIDemoStore
 ui dev.joid.demo.ui.store.UIDemoOtherStore
 wait 3500
 shot static-UIDemoOtherStore
+ui dev.joid.demo.ui.cursor.UIDemoCursor
+wait 3500
+shot static-UIDemoCursor

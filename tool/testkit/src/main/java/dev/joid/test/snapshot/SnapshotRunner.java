@@ -22,6 +22,7 @@ import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.utils.cursor.Cursor;
 import dev.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
@@ -157,6 +158,9 @@ public final class SnapshotRunner {
 			case "unmask":
 				this.masks.clear();
 				break;
+			case "cursor":
+				this.checkCursor(Cursor.valueOf(arguments[1]));
+				break;
 			case "shot":
 				shots.put(arguments[1], this.settle(arguments[1]));
 				break;
@@ -174,6 +178,12 @@ public final class SnapshotRunner {
 			if (shift) {
 				this.window.getKeys().remove(Key.LEFT_SHIFT);
 			}
+		}
+	}
+
+	private void checkCursor(final Cursor expected) {
+		if (this.window.getCursor() != expected) {
+			throw new IllegalStateException("The window shows the " + this.window.getCursor() + " cursor instead of " + expected);
 		}
 	}
 

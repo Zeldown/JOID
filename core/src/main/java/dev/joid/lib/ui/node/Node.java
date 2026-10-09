@@ -80,6 +80,7 @@ import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.click.ClickType;
 import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.utils.cursor.Cursor;
 import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedLinkedList;
@@ -195,6 +196,7 @@ public abstract class Node implements INode {
 	private boolean mounted;
 	private boolean subscribed;
 
+	private Cursor        cursor;
 	private boolean       hovered;
 	private long          hoverDuration;
 	private TweenEquation hoverEquation;
@@ -1390,6 +1392,51 @@ public abstract class Node implements INode {
 		return this.isVisible() && (!checkEnabled || this.isEnabled()) && this.ui.isOnTop() && (this.overflowArea != null ? this.overflowArea.isHovered(mouseX, mouseY) : true) && mouseX > this.getAbsoluteX() && mouseX <= this.getAbsoluteX() + this.width && mouseY > this.getAbsoluteY() && mouseY <= this.getAbsoluteY() + this.height;
 	}
 
+	public final Node getHoveredNode(final double mouseX, final double mouseY) {
+		if (!this.isVisible()) {
+			return null;
+		}
+
+		if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
+			final Node hovered = this.scrollbar.getHoveredNode(mouseX, mouseY);
+			if (hovered != null) {
+				return hovered;
+			}
+		}
+
+		if (this.skeleton != null && !this.mounted) {
+			final Node hovered = this.skeleton.getHoveredNode(mouseX, mouseY);
+			return hovered != null || !this.isHovered(mouseX, mouseY, false) ? hovered : this;
+		}
+
+		final Node front = this.getHoveredChild(mouseX, mouseY, true);
+		if (front != null) {
+			return front;
+		}
+
+		return this.isHovered(mouseX, mouseY, false) ? this : this.getHoveredChild(mouseX, mouseY, false);
+	}
+
+	public final @NonNull Cursor getResolvedCursor() {
+		if (this.cursor != null) {
+			return this.cursor;
+		}
+
+		return this.parent != null ? this.parent.getResolvedCursor() : Cursor.DEFAULT;
+	}
+
+	private Node getHoveredChild(final double mouseX, final double mouseY, final boolean front) {
+		for (final Node child : this.children.reversed()) {
+			if (child.zindex >= 0 == front) {
+				final Node hovered = child.getHoveredNode(mouseX, mouseY);
+				if (hovered != null) {
+					return hovered;
+				}
+			}
+		}
+		return null;
+	}
+
 	public final float hoverValue(final float value) {
 		return value * this.hoverAnimator.getValue();
 	}
@@ -1476,6 +1523,7 @@ public abstract class Node implements INode {
 
 		copy.aspectRatio = this.aspectRatio;
 
+		copy.cursor = this.cursor;
 		copy.hoverDuration = this.hoverDuration;
 		copy.hoverEquation = this.hoverEquation;
 		copy.scrollSpeed = this.scrollSpeed;
@@ -1932,6 +1980,14 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T hovered(final boolean hovered) {
 		this.hovered = hovered;
 		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T cursor(final @NonNull Cursor cursor) {
+		return this.cursor(Signal.from(cursor));
+	}
+
+	public final <T extends Node> @NonNull T cursor(final @NonNull Supplier<Cursor> cursor) {
+		return this.follow("cursor", cursor, value -> this.cursor = value);
 	}
 
 	public final <T extends Node> @NonNull T hoverDuration(final long hoverDuration) {

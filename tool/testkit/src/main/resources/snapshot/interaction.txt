@@ -852,3 +852,50 @@ wait 200
 release LEFT
 wait 1500
 shot inter-model
+ui dev.joid.demo.ui.cursor.UIDemoCursor
+wait 100
+cursor DEFAULT
+move 600 150
+cursor POINTER
+move 960 150
+cursor TEXT
+move 1320 150
+cursor CROSSHAIR
+move 1680 150
+cursor MOVE
+move 240 490
+cursor NOT_ALLOWED
+move 600 490
+cursor RESIZE_EW
+move 960 490
+cursor RESIZE_NS
+move 1320 490
+cursor RESIZE_NWSE
+move 1680 490
+cursor RESIZE_NESW
+move 240 150
+cursor DEFAULT
+move 240 840
+cursor CROSSHAIR
+move 140 760
+cursor CROSSHAIR
+move 600 840
+cursor POINTER
+move 500 760
+cursor CROSSHAIR
+move 1680 785
+cursor TEXT
+move 960 830
+cursor MOVE
+press LEFT
+moveto 1680 785 200
+cursor MOVE
+release LEFT
+wait 50
+cursor TEXT
+move 1320 830
+cursor POINTER
+press LEFT
+release LEFT
+wait 50
+cursor NOT_ALLOWED

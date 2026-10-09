@@ -406,6 +406,18 @@ public abstract class UI implements IUI, IndexedElement {
 		return this.view.toUiY(this.mouseY);
 	}
 
+	public final Node getHoveredNode() {
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+		for (final Node node : this.nodeList.reversed()) {
+			final Node hovered = node.getHoveredNode(mx, my);
+			if (hovered != null) {
+				return hovered;
+			}
+		}
+		return null;
+	}
+
 	public final IUIBridge getBridge() {
 		return BridgeHandler.UI.get(this);
 	}

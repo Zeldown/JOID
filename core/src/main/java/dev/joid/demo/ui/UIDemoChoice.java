@@ -7,6 +7,7 @@ import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.animation.UIDemoAnimation;
 import dev.joid.demo.ui.chart.UIDemoChart;
 import dev.joid.demo.ui.control.UIDemoControl;
+import dev.joid.demo.ui.cursor.UIDemoCursor;
 import dev.joid.demo.ui.draggable.UIDemoDraggable;
 import dev.joid.demo.ui.font.UIDemoFont;
 import dev.joid.demo.ui.font.UIDemoMarkup;
@@ -57,6 +58,7 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(UIDemoLayout.class);
 		UIDemoChoice.LIST.add(UIDemoOverflow.class);
 		UIDemoChoice.LIST.add(UIDemoDraggable.class);
+		UIDemoChoice.LIST.add(UIDemoCursor.class);
 		UIDemoChoice.LIST.add(UIDemoReorderable.class);
 		UIDemoChoice.LIST.add(UIDemoFont.class);
 		UIDemoChoice.LIST.add(UIDemoText.class);
