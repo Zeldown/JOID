@@ -10,8 +10,8 @@ public class ShowDecodeTextEffect implements ITextEffect {
 	private static final String POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@";
 
 	private final long   start;
-	private final double stagger;
 	private final Color  accent;
+	private final double stagger;
 
 	public ShowDecodeTextEffect(final long start, final double stagger, final Color accent) {
 		this.start = start;

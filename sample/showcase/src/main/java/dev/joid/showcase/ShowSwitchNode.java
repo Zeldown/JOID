@@ -9,8 +9,8 @@ public class ShowSwitchNode extends CheckboxNode {
 
 	private final Color on;
 
-	private double knob;
 	private long   last;
+	private double knob;
 
 	protected ShowSwitchNode(final double x, final double y, final Color on) {
 		super(x, y, 76, 42);

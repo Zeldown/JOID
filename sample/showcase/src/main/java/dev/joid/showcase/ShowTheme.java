@@ -22,8 +22,8 @@ public class ShowTheme extends ShowUI {
 
 	private final BooleanSignal dark = BooleanSignal.of(false);
 
-	private double level;
 	private long   last;
+	private double level;
 
 	@Override
 	protected void scene() {

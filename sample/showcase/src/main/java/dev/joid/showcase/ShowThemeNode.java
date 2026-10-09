@@ -7,8 +7,8 @@ import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 
 public class ShowThemeNode extends CheckboxNode {
 
-	private double knob;
 	private long   last;
+	private double knob;
 
 	protected ShowThemeNode(final double x, final double y) {
 		super(x, y, 112, 56);

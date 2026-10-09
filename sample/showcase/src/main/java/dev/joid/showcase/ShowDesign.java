@@ -17,15 +17,15 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowDesign extends ShowUI {
 
+	private final StringSignal  name     = StringSignal.of("Ada Lovelace");
 	private final BooleanSignal paper    = BooleanSignal.of(false);
+	private final DoubleSignal  volume   = DoubleSignal.of(0.3D);
 	private final BooleanSignal notify   = BooleanSignal.of(false);
 	private final BooleanSignal autoplay = BooleanSignal.of(true);
-	private final DoubleSignal  volume   = DoubleSignal.of(0.3D);
-	private final StringSignal  name     = StringSignal.of("Ada Lovelace");
 
-	private double level;
 	private long   last;
 	private long   saved;
+	private double level;
 
 	@Override
 	protected void scene() {

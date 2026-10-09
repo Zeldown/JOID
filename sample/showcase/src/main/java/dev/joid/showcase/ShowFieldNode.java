@@ -9,8 +9,8 @@ public class ShowFieldNode extends TextFieldNode {
 
 	private final Color accent;
 
-	private double focus;
 	private long   last;
+	private double focus;
 
 	protected ShowFieldNode(final double x, final double y, final double width, final Color accent) {
 		super(x, y, width, 68);

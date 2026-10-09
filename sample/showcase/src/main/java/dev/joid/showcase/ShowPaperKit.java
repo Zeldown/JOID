@@ -21,13 +21,13 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowPaperKit implements IShowKit {
 
-	public static final Color PAPER  = Color.decode("#F2ECDF");
-	public static final Color CARD   = Color.decode("#FFFCF4");
 	public static final Color INK    = Color.decode("#151413");
-	public static final Color TOMATO = Color.decode("#FF5533");
-	public static final Color BUTTER = Color.decode("#FFD24D");
+	public static final Color CARD   = Color.decode("#FFFCF4");
 	public static final Color RULE   = Color.decode("#E2D9C6");
 	public static final Color MUTE   = Color.decode("#6F685C");
+	public static final Color PAPER  = Color.decode("#F2ECDF");
+	public static final Color TOMATO = Color.decode("#FF5533");
+	public static final Color BUTTER = Color.decode("#FFD24D");
 
 	@Override
 	public void backdrop(final Node layer) {
@@ -139,8 +139,8 @@ public class ShowPaperKit implements IShowKit {
 
 	public static class Toggle extends CheckboxNode {
 
-		private double knob;
 		private long   last;
+		private double knob;
 
 		protected Toggle(final double x, final double y) {
 			super(x, y, 76, 42);
@@ -201,8 +201,8 @@ public class ShowPaperKit implements IShowKit {
 
 	public static class Field extends TextFieldNode {
 
-		private double focus;
 		private long   last;
+		private double focus;
 
 		protected Field(final double x, final double y, final double width) {
 			super(x, y, width, 68);

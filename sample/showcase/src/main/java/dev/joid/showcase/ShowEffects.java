@@ -24,8 +24,8 @@ public class ShowEffects extends ShowUI {
 
 	private static final String[] NAMES = {"Rounded corners", "Gradient", "Inner border", "Drop shadow", "Glow", "Blur", "Tilt"};
 
-	private final BooleanSignal[] switches = new BooleanSignal[ShowEffects.NAMES.length];
 	private final double[]        levels   = new double[ShowEffects.NAMES.length];
+	private final BooleanSignal[] switches = new BooleanSignal[ShowEffects.NAMES.length];
 
 	private long last;
 

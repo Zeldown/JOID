@@ -7,8 +7,8 @@ import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
 
 public class ShowSliderNode extends DoubleSliderNode {
 
-	private final Color from;
 	private final Color to;
+	private final Color from;
 
 	protected ShowSliderNode(final double x, final double y, final double width, final Color from, final Color to) {
 		super(x, y, width, 36);

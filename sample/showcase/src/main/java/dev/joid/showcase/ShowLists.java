@@ -20,13 +20,13 @@ import dev.joid.lib.utils.box.BoundingBox;
 
 public class ShowLists extends ShowUI {
 
-	private static final String[] TITLES  = {"Golden Hour", "Neon Tide", "Velvet", "Aurora", "Midnight", "Paper Planes", "Low Tide", "Saffron", "Glasshouse", "Cinder", "Blue Hour", "Driftwood"};
-	private static final String[] ARTISTS = {"Amber Lane", "The Shallows", "Rosa Mendes", "North Lights", "Lo & Behold", "Kite Club", "The Shallows", "Amber Lane", "Mira Sol", "Ash & Oak", "North Lights", "Kite Club"};
 	private static final String[] TIMES   = {"3:42", "4:05", "2:58", "5:11", "3:27", "3:49", "4:33", "2:41", "3:56", "4:18", "3:34", "4:02"};
 	private static final Color[]  COLORS  = {ShowUI.AMBER, ShowUI.CYAN, ShowUI.PINK, ShowUI.EMERALD, ShowUI.VIOLET, ShowUI.SKY, ShowUI.CYAN, ShowUI.ORANGE, ShowUI.FUCHSIA, ShowUI.ORANGE, ShowUI.SKY, ShowUI.EMERALD};
+	private static final String[] TITLES  = {"Golden Hour", "Neon Tide", "Velvet", "Aurora", "Midnight", "Paper Planes", "Low Tide", "Saffron", "Glasshouse", "Cinder", "Blue Hour", "Driftwood"};
+	private static final String[] ARTISTS = {"Amber Lane", "The Shallows", "Rosa Mendes", "North Lights", "Lo & Behold", "Kite Club", "The Shallows", "Amber Lane", "Mira Sol", "Ash & Oak", "North Lights", "Kite Club"};
 
-	private final List<String> order = new ArrayList<>();
 	private final StringSignal next  = StringSignal.of(ShowLists.TITLES[0]);
+	private final List<String> order = new ArrayList<>();
 
 	@Override
 	protected void scene() {

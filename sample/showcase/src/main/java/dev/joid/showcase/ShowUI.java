@@ -22,19 +22,19 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 public abstract class ShowUI extends UI {
 
-	public static final Color NIGHT   = Color.decode("#07071A");
+	public static final Color SKY     = Color.decode("#38BDF8");
 	public static final Color DUSK    = Color.decode("#170A33");
-	public static final Color VIOLET  = Color.decode("#8B5CF6");
-	public static final Color FUCHSIA = Color.decode("#E879F9");
 	public static final Color PINK    = Color.decode("#F472B6");
 	public static final Color CYAN    = Color.decode("#22D3EE");
-	public static final Color SKY     = Color.decode("#38BDF8");
-	public static final Color AMBER   = Color.decode("#FBBF24");
-	public static final Color ORANGE  = Color.decode("#FB923C");
-	public static final Color EMERALD = Color.decode("#34D399");
 	public static final Color TEXT    = Color.decode("#F8FAFC");
+	public static final Color NIGHT   = Color.decode("#07071A");
+	public static final Color AMBER   = Color.decode("#FBBF24");
 	public static final Color MUTED   = Color.decode("#A1A1AA");
 	public static final Color FAINT   = Color.decode("#71717A");
+	public static final Color VIOLET  = Color.decode("#8B5CF6");
+	public static final Color ORANGE  = Color.decode("#FB923C");
+	public static final Color FUCHSIA = Color.decode("#E879F9");
+	public static final Color EMERALD = Color.decode("#34D399");
 
 	private long start;
 

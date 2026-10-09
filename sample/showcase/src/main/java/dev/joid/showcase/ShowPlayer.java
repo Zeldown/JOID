@@ -27,8 +27,8 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowPlayer extends ShowUI {
 
-	private final DoubleSignal  progress = DoubleSignal.of(0D);
 	private final DoubleSignal  scrub    = DoubleSignal.of(-1D);
+	private final DoubleSignal  progress = DoubleSignal.of(0D);
 	private final BooleanSignal playing  = BooleanSignal.of(true);
 
 	private ResourcePlayerNode player;

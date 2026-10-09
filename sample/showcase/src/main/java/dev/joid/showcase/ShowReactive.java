@@ -22,10 +22,10 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowReactive extends ShowUI {
 
-	private final DoubleSignal  energy = DoubleSignal.of(0.35D);
-	private final DoubleSignal  warmth = DoubleSignal.of(0.2D);
 	private final DoubleSignal  space  = DoubleSignal.of(0.3D);
 	private final BooleanSignal halo   = BooleanSignal.of(false);
+	private final DoubleSignal  energy = DoubleSignal.of(0.35D);
+	private final DoubleSignal  warmth = DoubleSignal.of(0.2D);
 
 	@Override
 	protected void scene() {
