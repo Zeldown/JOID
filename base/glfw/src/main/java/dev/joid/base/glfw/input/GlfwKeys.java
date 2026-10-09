@@ -7,8 +7,8 @@ import java.util.function.IntPredicate;
 
 import org.lwjgl.glfw.GLFW;
 
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.key.KeyLayout;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.key.KeyLayout;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

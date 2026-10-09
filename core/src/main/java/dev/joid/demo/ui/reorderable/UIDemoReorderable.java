@@ -4,17 +4,17 @@ import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderCallback;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
 import lombok.NonNull;
 
 public class UIDemoReorderable extends UIDemo {
@@ -86,7 +86,7 @@ public class UIDemoReorderable extends UIDemo {
 					RectNode
 					.create(0, 0, 40, 34)
 					.color(UIDemoReorderable.HANDLE)
-					.onClick((node, mouseX, mouseY, clickType) -> manual.startDrag(item))
+					.onClick((node, mouseX, mouseY, button) -> manual.startDrag(item))
 					.body(handle -> {
 						RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
 						RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
@@ -228,7 +228,7 @@ public class UIDemoReorderable extends UIDemo {
 							RectNode
 							.create(0, 0, 150, 40)
 							.color(UIDemoReorderable.HANDLE)
-							.onClick((node, mouseX, mouseY, clickType) -> manual.startDrag(item))
+							.onClick((node, mouseX, mouseY, button) -> manual.startDrag(item))
 							.body(handle -> {
 								RectNode.create(65, 13, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
 								RectNode.create(65, 19, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
@@ -314,7 +314,7 @@ public class UIDemoReorderable extends UIDemo {
 				public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child) {}
 
 				@Override
-				public void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
+				public void pre(final @NonNull ReorderableFlexNode node, final @NonNull DispatchContext context, final @NonNull Node child) {
 					refused.increment();
 					context.cancel();
 				}

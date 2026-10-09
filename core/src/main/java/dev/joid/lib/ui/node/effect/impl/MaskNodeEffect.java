@@ -3,9 +3,9 @@ package dev.joid.lib.ui.node.effect.impl;
 import java.util.function.Supplier;
 
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

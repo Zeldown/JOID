@@ -7,17 +7,17 @@ import dev.joid.demo.ui.sw.node.DemoSwitchNode;
 import dev.joid.demo.ui.toggle.node.DemoToggleNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.callback.NodeCheckboxChangeCallback;
 import dev.joid.lib.ui.node.impl.structure.sw.callback.NodeSwitchChangeCallback;
 import dev.joid.lib.ui.node.impl.structure.toggle.callback.NodeToggleChangeCallback;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
 import lombok.NonNull;
 
 public class UIDemoControl extends UIDemo {
@@ -86,7 +86,7 @@ public class UIDemoControl extends UIDemo {
 				public void apply(final @NonNull DemoCheckboxNode node, final boolean checked) {}
 
 				@Override
-				public void pre(final @NonNull DemoCheckboxNode node, final @NonNull InternalContext context, final boolean checked) {
+				public void pre(final @NonNull DemoCheckboxNode node, final @NonNull DispatchContext context, final boolean checked) {
 					refusedChecks.increment();
 					context.cancel();
 				}
@@ -156,7 +156,7 @@ public class UIDemoControl extends UIDemo {
 				public void apply(final @NonNull DemoToggleNode node, final boolean toggle) {}
 
 				@Override
-				public void pre(final @NonNull DemoToggleNode node, final @NonNull InternalContext context, final boolean toggle) {
+				public void pre(final @NonNull DemoToggleNode node, final @NonNull DispatchContext context, final boolean toggle) {
 					refusedToggles.increment();
 					context.cancel();
 				}
@@ -227,7 +227,7 @@ public class UIDemoControl extends UIDemo {
 				public void apply(final @NonNull DemoSwitchNode node, final @NonNull String value) {}
 
 				@Override
-				public void pre(final @NonNull DemoSwitchNode node, final @NonNull InternalContext context, final @NonNull String value) {
+				public void pre(final @NonNull DemoSwitchNode node, final @NonNull DispatchContext context, final @NonNull String value) {
 					if ("Three".equals(value)) {
 						refusedStates.increment();
 						context.cancel();

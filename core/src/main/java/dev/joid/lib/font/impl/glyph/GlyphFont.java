@@ -2,8 +2,6 @@ package dev.joid.lib.font.impl.glyph;
 
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.impl.glyph.dto.FontFamily;
-import dev.joid.lib.font.impl.glyph.dto.IFontFace;
 import lombok.Getter;
 import lombok.NonNull;
 

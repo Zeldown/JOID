@@ -12,20 +12,20 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.markup.ITextMarkup;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.markup.ITextMarkup;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.signal.Signal;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -72,7 +72,7 @@ public class MultilineTextFieldNodeTest {
 		this.bridges.open(ui);
 		this.bridges.getWindow().setClipboard("ab\r\ncd");
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		ui.field.keyPressed('v', Key.V, InternalContext.create());
+		ui.field.keyPressed('v', Key.V, DispatchContext.create());
 		Assert.assertEquals("ab\ncd", ui.field.getText());
 	}
 
@@ -82,7 +82,7 @@ public class MultilineTextFieldNodeTest {
 		this.bridges.open(ui);
 		Assert.assertEquals("ab\ncd\nef", ui.field.getText());
 		ui.field.cursorPosition(1);
-		ui.field.keyPressed(' ', Key.DOWN, InternalContext.create());
+		ui.field.keyPressed(' ', Key.DOWN, DispatchContext.create());
 		Assert.assertEquals(4, ui.field.getCursorPos());
 	}
 
@@ -521,7 +521,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void ignoresTheKeyboardWhileUnfocused() {
 		final MultilineTextFieldNode field = this.field("ab").focused(false);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		field.keyPressed('x', Key.X, context);
 		Assert.assertEquals("ab", field.getText());
 		Assert.assertFalse(context.isCancelled());
@@ -529,7 +529,7 @@ public class MultilineTextFieldNodeTest {
 
 	@Test
 	public void consumesTheKeysItReceives() {
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		this.field("ab").keyPressed('x', Key.X, context);
 		Assert.assertTrue(context.isCancelled());
 	}
@@ -537,7 +537,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void leavesAKeyAlreadyTakenElsewhere() {
 		final MultilineTextFieldNode field = this.field("ab");
-		field.keyPressed('x', Key.X, InternalContext.create(true));
+		field.keyPressed('x', Key.X, DispatchContext.create(true));
 		Assert.assertEquals("ab", field.getText());
 	}
 
@@ -615,7 +615,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void unfocusesWhenTheClickWasAlreadyTaken() {
 		final MultilineTextFieldNode field = this.field("ab\ncd");
-		field.mousePressed(14D, 30D, ClickType.LEFT, InternalContext.create(true));
+		field.mousePressed(14D, 30D, MouseButton.LEFT, DispatchContext.create(true));
 		Assert.assertFalse(field.isFocused());
 	}
 
@@ -653,7 +653,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void leavesAWheelAlreadyTakenElsewhere() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		field.mouseScroll(10D, 10D, 0D, -1D, InternalContext.create(true));
+		field.mouseScroll(10D, 10D, 0D, -1D, DispatchContext.create(true));
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
 	}
 
@@ -661,7 +661,7 @@ public class MultilineTextFieldNodeTest {
 	public void ignoresAWheelThatDoesNotTurn() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
 		this.bridges.move(10D, 10D).frames(2).scroll(-1D);
-		field.mouseScroll(10D, 10D, 0D, 0D, InternalContext.create());
+		field.mouseScroll(10D, 10D, 0D, 0D, DispatchContext.create());
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
 	}
 
@@ -675,11 +675,11 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void consumesTheWheelWhileItScrolls() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		final InternalContext down = InternalContext.create();
+		final DispatchContext down = DispatchContext.create();
 		field.mouseScroll(10D, 10D, 0D, -1D, down);
 		Assert.assertTrue(down.isCancelled());
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
-		final InternalContext up = InternalContext.create();
+		final DispatchContext up = DispatchContext.create();
 		field.mouseScroll(10D, 10D, 0D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
@@ -688,7 +688,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void leavesTheWheelToItsParentAtItsTop() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		field.mouseScroll(10D, 10D, 0D, 1D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
@@ -698,14 +698,14 @@ public class MultilineTextFieldNodeTest {
 	public void leavesTheWheelToItsParentAtItsBottom() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
 		for (int i = 0; i < 6; i++) {
-			field.mouseScroll(10D, 10D, 0D, -1D, InternalContext.create());
+			field.mouseScroll(10D, 10D, 0D, -1D, DispatchContext.create());
 		}
 		Assert.assertEquals(104D, field.getYOffset(), 0D);
-		final InternalContext down = InternalContext.create();
+		final DispatchContext down = DispatchContext.create();
 		field.mouseScroll(10D, 10D, 0D, -1D, down);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertEquals(104D, field.getYOffset(), 0D);
-		final InternalContext up = InternalContext.create();
+		final DispatchContext up = DispatchContext.create();
 		field.mouseScroll(10D, 10D, 0D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(84D, field.getYOffset(), 0D);
@@ -714,8 +714,8 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void leavesTheWheelToItsParentWithNothingToScroll() {
 		final MultilineTextFieldNode field = this.field("ab");
-		final InternalContext down = InternalContext.create();
-		final InternalContext up = InternalContext.create();
+		final DispatchContext down = DispatchContext.create();
+		final DispatchContext up = DispatchContext.create();
 		field.mouseScroll(10D, 10D, 0D, -1D, down);
 		field.mouseScroll(10D, 10D, 0D, 1D, up);
 		Assert.assertFalse(down.isCancelled());
@@ -1060,7 +1060,7 @@ public class MultilineTextFieldNodeTest {
 	public void selectsEverythingWithTheRightControlKey() {
 		final MultilineTextFieldNode field = this.field("ab\ncd").cursorPosition(2);
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_CONTROL);
-		field.keyPressed('a', Key.A, InternalContext.create());
+		field.keyPressed('a', Key.A, DispatchContext.create());
 		Assert.assertEquals("ab\ncd", field.getText());
 		Assert.assertEquals(0, field.getSelectionStart());
 		Assert.assertEquals(5, field.getCursorPos());
@@ -1083,7 +1083,7 @@ public class MultilineTextFieldNodeTest {
 		final List<String> changes = new ArrayList<>();
 		final MultilineTextFieldNode field = this.field("ab").<MultilineTextFieldNode>accept(text -> !text.isEmpty()).onChange((node, text, value, valid) -> changes.add(text));
 		this.control(field, Key.A);
-		field.keyPressed('c', Key.C, InternalContext.create());
+		field.keyPressed('c', Key.C, DispatchContext.create());
 		Assert.assertEquals("c", field.getText());
 		Assert.assertEquals(Collections.singletonList("c"), changes);
 	}
@@ -1091,7 +1091,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void refusesWhatIsTypedOnceFull() {
 		final MultilineTextFieldNode field = this.field("abc").maxTextLength(3).cursorPosition(1);
-		field.keyPressed('x', Key.X, InternalContext.create());
+		field.keyPressed('x', Key.X, DispatchContext.create());
 		Assert.assertEquals("abc", field.getText());
 	}
 
@@ -1253,7 +1253,7 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {
-		field.keyPressed(' ', key, InternalContext.create());
+		field.keyPressed(' ', key, DispatchContext.create());
 	}
 
 	private void control(final MultilineTextFieldNode field, final Key key) {
@@ -1264,13 +1264,13 @@ public class MultilineTextFieldNodeTest {
 
 	private void type(final MultilineTextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, InternalContext.create());
+			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
 		}
 	}
 
 	private void click(final double x, final double y) {
 		this.bridges.move(x, y).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 	}
 
 	private void elapse(final long milliseconds) {

@@ -128,13 +128,13 @@ package com.example;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 
 public final class CounterUI extends UI {
 
@@ -169,7 +169,7 @@ What each part does:
 - `onClick(...)` registers a click callback: it runs when the rectangle is pressed, and consumes the click.
 - `body(...)` builds the children of the rectangle right away. Children are positioned relative to their parent: `button.dw(2)` is half its width, `button.dh(2)` half its height. `anchor(Align.CENTER)` makes the position of the text node its center.
 - `attach(this)` adds a node to the UI; `attach(button)` adds it to another node.
-- `IntegerSignal` (`dev.joid.lib.utils.signal.impl.primitive`) holds the count; `increment()` changes it.
+- `IntegerSignal` (`dev.joid.lib.signal.impl.primitive`) holds the count; `increment()` changes it.
 - `Text.create("Clicks: " + this.clicks.get(), info)` reads the signal in a plain expression. JOID follows the signals an expression reads: each click recomputes the text, and the label shows the new count. See [Signals](../state/signals.md).
 
 ## Step 5: create the window and run the frame loop

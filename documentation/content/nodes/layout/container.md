@@ -64,7 +64,7 @@ RectNode
 
 ## Rebuilding a section with watch
 
-A container is the natural root of a section rebuilt from data. As in [Layout](../../essentials/layout.md#rebuilding-a-list-with-watch), `watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)` detaches the children and runs the `body` again each time the signal changes (`WatchProperty` is in `dev.joid.lib.ui.node.property.watch`, `ListSignal` in `dev.joid.lib.utils.signal.impl.iterable`). Use `watch` only when the structure changes; a text, color or position that depends on a signal goes through a setter.
+A container is the natural root of a section rebuilt from data. As in [Layout](../../essentials/layout.md#rebuilding-a-list-with-watch), `watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)` detaches the children and runs the `body` again each time the signal changes (`WatchProperty` is in `dev.joid.lib.ui.node.property.watch`, `ListSignal` in `dev.joid.lib.signal.impl.iterable`). Use `watch` only when the structure changes; a text, color or position that depends on a signal goes through a setter.
 
 ```java
 private final ListSignal<String> items = new ListSignal<>(Arrays.asList("Item 1", "Item 2"));

@@ -4,7 +4,7 @@
 
 ## Loading a model
 
-Both nodes draw an `IDrawableModel` (`dev.joid.lib.draw.model.utils`). JOID ships `ObjModel` (`dev.joid.lib.obj`), which reads a Wavefront OBJ file with a texture:
+Both nodes draw an `IDrawableModel` (`dev.joid.lib.draw.model`). JOID ships `ObjModel` (`dev.joid.lib.obj`), which reads a Wavefront OBJ file with a texture:
 
 ```java
 final Resource texture = Resource.of(MyUI.class.getResourceAsStream("/models/box.png"));

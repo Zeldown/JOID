@@ -3,9 +3,9 @@ package dev.joid.lib.ui.core;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 
 public class IUITest {
 
@@ -18,11 +18,11 @@ public class IUITest {
 
 	@Test
 	public void letsTheInputThroughByDefault() {
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		this.ui.init();
-		this.ui.mousePressed(10D, 20D, ClickType.LEFT, context);
-		this.ui.mouseDragged(10D, 20D, ClickType.LEFT, 40L, context);
-		this.ui.mouseReleased(10D, 20D, ClickType.LEFT, context);
+		this.ui.mousePressed(10D, 20D, MouseButton.LEFT, context);
+		this.ui.mouseDragged(10D, 20D, MouseButton.LEFT, 40L, context);
+		this.ui.mouseReleased(10D, 20D, MouseButton.LEFT, context);
 		this.ui.mouseScroll(10D, 20D, 0D, 1D, context);
 		this.ui.keyPressed('a', Key.A, context);
 		Assert.assertFalse(context.isCancelled());
@@ -39,32 +39,32 @@ public class IUITest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAPressWithoutButton() {
-		this.ui.mousePressed(10D, 20D, null, InternalContext.create());
+		this.ui.mousePressed(10D, 20D, null, DispatchContext.create());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAPressWithoutContext() {
-		this.ui.mousePressed(10D, 20D, ClickType.LEFT, null);
+		this.ui.mousePressed(10D, 20D, MouseButton.LEFT, null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesADragWithoutButton() {
-		this.ui.mouseDragged(10D, 20D, null, 40L, InternalContext.create());
+		this.ui.mouseDragged(10D, 20D, null, 40L, DispatchContext.create());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesADragWithoutContext() {
-		this.ui.mouseDragged(10D, 20D, ClickType.LEFT, 40L, null);
+		this.ui.mouseDragged(10D, 20D, MouseButton.LEFT, 40L, null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAReleaseWithoutButton() {
-		this.ui.mouseReleased(10D, 20D, null, InternalContext.create());
+		this.ui.mouseReleased(10D, 20D, null, DispatchContext.create());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAReleaseWithoutContext() {
-		this.ui.mouseReleased(10D, 20D, ClickType.LEFT, null);
+		this.ui.mouseReleased(10D, 20D, MouseButton.LEFT, null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -74,7 +74,7 @@ public class IUITest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAKeyWithoutKey() {
-		this.ui.keyPressed('a', null, InternalContext.create());
+		this.ui.keyPressed('a', null, DispatchContext.create());
 	}
 
 	@Test(expected = NullPointerException.class)

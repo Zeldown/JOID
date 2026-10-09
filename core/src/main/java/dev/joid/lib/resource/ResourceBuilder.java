@@ -16,10 +16,8 @@ import com.google.common.cache.CacheBuilder;
 
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
-import dev.joid.lib.resource.dto.ResourceData;
-import dev.joid.lib.resource.dto.ResourceProperties;
-import dev.joid.lib.resource.dto.format.ResourceFormat;
-import dev.joid.lib.resource.dto.resolver.ResourceResolver;
+import dev.joid.lib.resource.format.ResourceFormat;
+import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.Getter;
 import lombok.NonNull;
 

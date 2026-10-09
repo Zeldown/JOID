@@ -2,7 +2,7 @@ package dev.joid.lib.shader.pipeline.pass;
 
 import dev.joid.lib.shader.impl.BlurShader;
 import dev.joid.lib.shader.pipeline.IShaderPass;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import lombok.NonNull;
 
 public class BlurShaderPass implements IShaderPass {

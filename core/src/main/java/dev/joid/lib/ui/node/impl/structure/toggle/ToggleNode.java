@@ -2,13 +2,13 @@ package dev.joid.lib.ui.node.impl.structure.toggle;
 
 import java.util.function.Supplier;
 
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.toggle.callback.NodeToggleChangeCallback;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -28,7 +28,7 @@ public abstract class ToggleNode<F, S> extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
@@ -41,7 +41,7 @@ public abstract class ToggleNode<F, S> extends Node {
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final @NonNull Supplier<Boolean> toggle) {
-		return super.follow("toggle", toggle, value -> this.change(value, InternalContext.create()));
+		return super.follow("toggle", toggle, value -> this.change(value, DispatchContext.create()));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T state(final F toggle, final S back) {
@@ -55,7 +55,7 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	public final <T extends ToggleNode<F, S>> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
 		this.signal = super.writable(signal);
-		this.subscription = super.rebind(this.subscription, signal, value -> this.change(value, InternalContext.create()));
+		this.subscription = super.rebind(this.subscription, signal, value -> this.change(value, DispatchContext.create()));
 		return (T) this;
 	}
 
@@ -64,7 +64,7 @@ public abstract class ToggleNode<F, S> extends Node {
 		return (T) this;
 	}
 
-	private void change(final boolean toggle, final InternalContext context) {
+	private void change(final boolean toggle, final DispatchContext context) {
 		if (this.toggle == toggle) {
 			return;
 		}

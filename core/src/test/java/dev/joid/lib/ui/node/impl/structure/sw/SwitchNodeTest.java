@@ -9,9 +9,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.signal.Signal;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

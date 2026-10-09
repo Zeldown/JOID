@@ -24,7 +24,6 @@ import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 import lombok.Getter;

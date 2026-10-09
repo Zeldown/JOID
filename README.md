@@ -141,7 +141,7 @@ Start with the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-star
 
 ## Credits
 
-- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon**: tween animation engine (Apache-2.0, bundled in `lib/animation/tweenengine`)
+- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon**: tween animation engine (Apache-2.0, bundled in `lib/animation/tween`)
 - [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco**: video decoding (Apache-2.0; the FFmpeg builds carry their own terms)
 
 JOID is released under the [Apache License 2.0](LICENSE).

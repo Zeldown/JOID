@@ -7,7 +7,7 @@ import dev.joid.demo.ui.font.effect.DemoHighlightTextEffect;
 import dev.joid.demo.ui.font.effect.DemoUnderlineTextEffect;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.TextStyle;
 
 public class DemoTextMarkupTest {
 

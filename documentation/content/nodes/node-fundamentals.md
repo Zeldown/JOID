@@ -366,7 +366,7 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
 | Mount | The first rendered frame in which `isMounted()` is `true` | The `onMount` callbacks. Without [wait conditions](#waiting-and-skeletons), this is the node's first rendered frame. |
 | Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the scrollbar and the skeleton, then the node unsubscribes from its signals, ends its interactions (see below), runs the `detach` hook of its effects and its own `detach()` hook, all wrapped by the `onDetach` callbacks. When the node leaves its parent, it also forgets the overflow area of its former container (see `getOverflowArea()`). |
 
-- Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, clickType, context)`...) are the entry points that run the stage, called by the framework.
+- Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, button, context)`...) are the entry points that run the stage, called by the framework.
 - `init` runs on every load, including a new attachment after a detach: keep it repeatable. Override the hooks in your own nodes (see [Custom Nodes](custom-nodes.md)).
 - A node follows the signals of its [`watch(...)`](../state/watch.md) calls and of the controls' `signal(...)` only while it is attached: `onDetach()` unsubscribes the whole subtree, so a signal neither reloads, rebuilds nor updates a detached node. Loading it again (`append`, `attach`, reopening its UI) subscribes each of them again, once, and applies right away a value published while it was detached. `isSubscribed()` tells whether the node follows its signals.
 - A detached node is inert: it is not drawn, updated or reached by the input, and nothing global keeps it, so you can drop it. `onDetach()` also ends what was in progress, so that a node attached again behaves like a new one, without double registration:
@@ -508,7 +508,7 @@ These getters expose the node's internal bookkeeping. They are read-only views f
 
 | Method | Description |
 | --- | --- |
-| `getLastClickType()`, `getLastClickTime()` | Last mouse press dispatched to the node (wherever the pointer was) and its clock time (ms). |
+| `getLastClickButton()`, `getLastClickTime()` | Last mouse press dispatched to the node (wherever the pointer was) and its clock time (ms). |
 | `getLastKey()`, `getLastCharacter()`, `getLastKeyTime()` | Last key event dispatched to the node and its clock time (ms). |
 | `getLastWidth()`, `getLastHeight()` | Size seen on the previous frame (anchor bookkeeping). |
 | `isMoving()`, `getRestX()`, `getRestY()`, `getDrawnX()`, `getDrawnY()` | Pixel-alignment bookkeeping of a moving node. |

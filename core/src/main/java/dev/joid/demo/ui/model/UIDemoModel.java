@@ -6,7 +6,7 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.node.impl.design.model.ModelNode;

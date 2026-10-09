@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.utils.context.InternalContext;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -68,8 +68,8 @@ public class NodeCallbackRegistry {
 					throw new IllegalArgumentException(method.getDeclaringClass() + " " + type + " method first parameter must be a Node instance but is " + method.getParameterTypes()[0]);
 				}
 
-				if (InternalContext.class != method.getParameterTypes()[1]) {
-					throw new IllegalArgumentException(method.getDeclaringClass() + " " + type + " method second parameter must be an InternalContext instance but is " + method.getParameterTypes()[1]);
+				if (DispatchContext.class != method.getParameterTypes()[1]) {
+					throw new IllegalArgumentException(method.getDeclaringClass() + " " + type + " method second parameter must be an DispatchContext instance but is " + method.getParameterTypes()[1]);
 				}
 
 				return true;

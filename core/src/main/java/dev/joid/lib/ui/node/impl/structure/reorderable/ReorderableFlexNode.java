@@ -8,8 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
 import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderCallback;
@@ -17,9 +20,6 @@ import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderEndCa
 import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderStartCallback;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -90,8 +90,8 @@ public final class ReorderableFlexNode extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (!this.autoDrag || !clickType.isLeft() || context.isCancelled() || this.reorderedNode != null || !super.isEnabled()) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+		if (!this.autoDrag || !button.isLeft() || context.isCancelled() || this.reorderedNode != null || !super.isEnabled()) {
 			return;
 		}
 
@@ -111,7 +111,7 @@ public final class ReorderableFlexNode extends Node {
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (this.reorderedNode != null && !this.releasing) {
 			this.endDrag();
 		}
@@ -246,7 +246,7 @@ public final class ReorderableFlexNode extends Node {
 
 	private void startDragInternal(final @NonNull Node child, final double mouseX, final double mouseY) {
 		final int index = super.getChildren().ordered().indexOf(child);
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_START, InternalContext.create(), () -> {
+		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_START, DispatchContext.create(), () -> {
 			this.reorderedNode = child;
 			this.initialIndex = index;
 			this.currentIndex = index;
@@ -332,7 +332,7 @@ public final class ReorderableFlexNode extends Node {
 			return;
 		}
 
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER, InternalContext.create(), () -> {
+		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER, DispatchContext.create(), () -> {
 			this.move(dragged, index);
 			this.currentIndex = index;
 		}, dragged);
@@ -396,7 +396,7 @@ public final class ReorderableFlexNode extends Node {
 		this.logicalOrder.clear();
 		this.childCurrent.clear();
 
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_END, InternalContext.create(), node, oldIndex, newIndex);
+		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_END, DispatchContext.create(), node, oldIndex, newIndex);
 	}
 
 	private void abandonReorder() {
@@ -411,7 +411,7 @@ public final class ReorderableFlexNode extends Node {
 		this.logicalOrder.clear();
 		this.childCurrent.clear();
 
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_END, InternalContext.create(), node, oldIndex, -1);
+		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_END, DispatchContext.create(), node, oldIndex, -1);
 	}
 
 	private void layout() {

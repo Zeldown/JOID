@@ -5,15 +5,15 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.selector.node.DemoSelectorNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode.SelectorDirection;
 import dev.joid.lib.ui.node.impl.structure.selector.callback.NodeSelectorChangeCallback;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
 import lombok.NonNull;
 
 public class UIDemoSelector extends UIDemo {
@@ -92,7 +92,7 @@ public class UIDemoSelector extends UIDemo {
 				public void apply(final @NonNull DemoSelectorNode node, final @NonNull String value) {}
 
 				@Override
-				public void pre(final @NonNull DemoSelectorNode node, final @NonNull InternalContext context, final @NonNull String value) {
+				public void pre(final @NonNull DemoSelectorNode node, final @NonNull DispatchContext context, final @NonNull String value) {
 					if ("Third".equals(value)) {
 						refused.increment();
 						context.cancel();

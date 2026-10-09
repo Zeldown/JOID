@@ -4,9 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.replay.SignalReplay;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -37,7 +36,7 @@ public class NodeCallbackInvoker<T extends NodeCallback> {
 		}
 	}
 
-	public void post(final Node node, final @NonNull InternalContext context, final Object... args) {
+	public void post(final Node node, final @NonNull DispatchContext context, final Object... args) {
 		if (this.post == null) {
 			return;
 		}
@@ -45,7 +44,7 @@ public class NodeCallbackInvoker<T extends NodeCallback> {
 		this.invoke(this.post, "post", node, context, args);
 	}
 
-	public void pre(final @NonNull Node node, final @NonNull InternalContext context, final Object... args) {
+	public void pre(final @NonNull Node node, final @NonNull DispatchContext context, final Object... args) {
 		if (this.pre == null) {
 			return;
 		}
@@ -53,7 +52,7 @@ public class NodeCallbackInvoker<T extends NodeCallback> {
 		this.invoke(this.pre, "pre", node, context, args);
 	}
 
-	private void invoke(final Method method, final String phase, final Node node, final InternalContext context, final Object[] args) {
+	private void invoke(final Method method, final String phase, final Node node, final DispatchContext context, final Object[] args) {
 		final Object[] arguments = new Object[args.length + 2];
 		arguments[0] = node;
 		arguments[1] = context;

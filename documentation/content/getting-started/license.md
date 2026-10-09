@@ -27,7 +27,7 @@ The JOID jars include the following software:
 
 | Software | License | Where |
 | --- | --- | --- |
-| Universal Tween Engine, by Aurelien Ribon | Apache License 2.0 | The classes under `dev.joid.lib.animation.tweenengine` are derived from it. |
+| Universal Tween Engine, by Aurelien Ribon | Apache License 2.0 | The classes under `dev.joid.lib.animation.tween` are derived from it. |
 | JSVG | MIT License | Embedded in the core and backend jars, relocated under `dev.joid.shaded.jsvg`. |
 | TwelveMonkeys ImageIO | BSD 3-Clause License | Embedded in the core and backend jars, relocated under `dev.joid.shaded.twelvemonkeys`. |
 | ASM | BSD 3-Clause License | Embedded in the core and backend jars, relocated under `dev.joid.shaded.asm`. |

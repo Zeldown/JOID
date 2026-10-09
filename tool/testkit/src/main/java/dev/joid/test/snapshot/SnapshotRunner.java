@@ -15,15 +15,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.asset.dto.locator.AssetLocator;
+import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.ResourceBuilder;
-import dev.joid.lib.resource.dto.ResourceData;
+import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
 public final class SnapshotRunner {
@@ -120,10 +120,10 @@ public final class SnapshotRunner {
 				this.moveTo(Double.parseDouble(arguments[1]), Double.parseDouble(arguments[2]), Long.parseLong(arguments[3]));
 				break;
 			case "press":
-				this.bridge.mousePressed(ClickType.valueOf(arguments[1]));
+				this.bridge.mousePressed(MouseButton.valueOf(arguments[1]));
 				break;
 			case "release":
-				this.bridge.mouseReleased(ClickType.valueOf(arguments[1]));
+				this.bridge.mouseReleased(MouseButton.valueOf(arguments[1]));
 				break;
 			case "scroll":
 				this.bridge.mouseScroll(arguments.length > 2 ? Double.parseDouble(arguments[1]) : 0D, Double.parseDouble(arguments[arguments.length > 2 ? 2 : 1]));

@@ -133,7 +133,7 @@ RectNode
 
 The callback interfaces are in `dev.joid.lib.ui.node.impl.structure.reorderable.callback`; `flex` is the `ReorderableFlexNode` and `child` the dragged `Node`. Their ids are public: `ReorderableFlexNode.CALLBACK_REORDER_START`, `CALLBACK_REORDER` and `CALLBACK_REORDER_END`.
 
-As [Input and Callbacks](../../concepts/input.md#how-events-travel) shows, a lambda runs in the POST phase, after the behavior of the node. To act before it, implement the callback interface: `apply` is the method a lambda would fill, and `pre` runs first, with an `InternalContext` (`dev.joid.lib.utils.context`) whose `cancel()` refuses the move. A PRE phase that freezes the order while a signal is true:
+As [Input and Callbacks](../../concepts/input.md#how-events-travel) shows, a lambda runs in the POST phase, after the behavior of the node. To act before it, implement the callback interface: `apply` is the method a lambda would fill, and `pre` runs first, with an `DispatchContext` (`dev.joid.lib.ui.node.callback`) whose `cancel()` refuses the move. A PRE phase that freezes the order while a signal is true:
 
 ```java
 final BooleanSignal frozen = BooleanSignal.of(true);
@@ -146,7 +146,7 @@ ReorderableFlexNode
 	public void apply(final @NonNull ReorderableFlexNode flex, final @NonNull Node child) {}
 
 	@Override
-	public void pre(final @NonNull ReorderableFlexNode flex, final @NonNull InternalContext context, final @NonNull Node child) {
+	public void pre(final @NonNull ReorderableFlexNode flex, final @NonNull DispatchContext context, final @NonNull Node child) {
 		if (frozen.peek()) {
 			context.cancel();
 		}

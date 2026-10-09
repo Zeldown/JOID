@@ -1,8 +1,8 @@
 package dev.joid.lib.ui.node.impl.structure.slider;
 
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -30,7 +30,7 @@ public abstract class SliderThumbNode extends Node {
 	public abstract void drawThumb(final double mouseX, final double mouseY);
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
 			return;
 		}
@@ -39,7 +39,7 @@ public abstract class SliderThumbNode extends Node {
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (!this.dragging) {
 			return;
 		}

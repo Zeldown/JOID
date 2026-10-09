@@ -151,7 +151,7 @@ A `.msdf` atlas is read directly, without the cache. Use it when the first launc
 
 ## Overriding a face with MsdfSource
 
-Every handle is read through an `IMsdfSource` (`dev.joid.lib.font.impl.msdf.dto.source`). Build the source yourself to declare a face with another weight or style than its file says, for a font with wrong metadata or a family assembled from unrelated files:
+Every handle is read through an `IMsdfSource` (`dev.joid.lib.font.impl.msdf.source`). Build the source yourself to declare a face with another weight or style than its file says, for a font with wrong metadata or a family assembled from unrelated files:
 
 ```java
 final MsdfFont family = MsdfFontLoader.load(

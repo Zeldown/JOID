@@ -8,7 +8,6 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.draw.model.utils.IDrawableModel;
 import lombok.RequiredArgsConstructor;
 
 public class DrawModelTest {

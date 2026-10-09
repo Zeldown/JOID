@@ -12,20 +12,20 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.markup.ITextMarkup;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.markup.ITextMarkup;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.signal.Signal;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -292,7 +292,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void unfocusesWhenTheClickWasAlreadyTaken() {
 		final TextFieldNode field = this.field("hello");
-		field.mousePressed(124D, 120D, ClickType.LEFT, InternalContext.create(true));
+		field.mousePressed(124D, 120D, MouseButton.LEFT, DispatchContext.create(true));
 		Assert.assertFalse(field.isFocused());
 	}
 
@@ -319,7 +319,7 @@ public class TextFieldNodeTest {
 	public void ignoresTheKeyboardWhileUnfocused() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("abc");
 		this.bridges.open(new NodeUI(field));
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		field.keyPressed('x', Key.X, context);
 		Assert.assertEquals("abc", field.getText());
 		Assert.assertFalse(context.isCancelled());
@@ -328,13 +328,13 @@ public class TextFieldNodeTest {
 	@Test
 	public void leavesAKeyAlreadyTakenElsewhere() {
 		final TextFieldNode field = this.field("abc");
-		field.keyPressed('x', Key.X, InternalContext.create(true));
+		field.keyPressed('x', Key.X, DispatchContext.create(true));
 		Assert.assertEquals("abc", field.getText());
 	}
 
 	@Test
 	public void consumesTheKeysItReceives() {
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		this.field("abc").keyPressed('x', Key.X, context);
 		Assert.assertTrue(context.isCancelled());
 	}
@@ -970,7 +970,7 @@ public class TextFieldNodeTest {
 		final TextFieldNode field = TextFieldNode.create(8D, 0D, 384D).info(this.info()).text("hello").attach(wrapper);
 		this.bridges.open(new NodeUI(wrapper));
 		this.bridges.move(74D, 60D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(field.isFocused());
 		Assert.assertEquals(2, field.getCursorPos());
 	}
@@ -979,7 +979,7 @@ public class TextFieldNodeTest {
 	public void selectsEverythingWithTheRightControlKey() {
 		final TextFieldNode field = this.field("hello").cursorPosition(2);
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_CONTROL);
-		field.keyPressed('a', Key.A, InternalContext.create());
+		field.keyPressed('a', Key.A, DispatchContext.create());
 		Assert.assertEquals("hello", field.getText());
 		Assert.assertEquals(0, field.getSelectionStart());
 		Assert.assertEquals(5, field.getCursorPos());
@@ -1004,7 +1004,7 @@ public class TextFieldNodeTest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		this.press(field, Key.A);
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_CONTROL);
-		field.keyPressed('c', Key.C, InternalContext.create());
+		field.keyPressed('c', Key.C, DispatchContext.create());
 		Assert.assertEquals("c", field.getText());
 		Assert.assertEquals(Collections.singletonList("c"), changes);
 	}
@@ -1012,7 +1012,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void refusesWhatIsTypedOnceFull() {
 		final TextFieldNode field = this.field("abc").maxTextLength(3).cursorPosition(1);
-		field.keyPressed('x', Key.X, InternalContext.create());
+		field.keyPressed('x', Key.X, DispatchContext.create());
 		Assert.assertEquals("abc", field.getText());
 	}
 
@@ -1218,7 +1218,7 @@ public class TextFieldNodeTest {
 	}
 
 	private void press(final TextFieldNode field, final Key key) {
-		field.keyPressed(' ', key, InternalContext.create());
+		field.keyPressed(' ', key, DispatchContext.create());
 	}
 
 	private void control(final TextFieldNode field, final Key key) {
@@ -1229,13 +1229,13 @@ public class TextFieldNodeTest {
 
 	private void type(final TextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, InternalContext.create());
+			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
 		}
 	}
 
 	private void click(final double x, final double y) {
 		this.bridges.move(x, y).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 	}
 
 	private void elapse(final long milliseconds) {

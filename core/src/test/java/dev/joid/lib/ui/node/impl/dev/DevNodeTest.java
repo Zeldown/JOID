@@ -18,19 +18,19 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.font.dto.converter.TextConverter;
+import dev.joid.lib.font.converter.TextConverter;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
 import lombok.NonNull;
 
 public class DevNodeTest {
@@ -204,7 +204,7 @@ public class DevNodeTest {
 		final RectNode rect = RectNode.create(200D, 200D, 300D, 150D);
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(rect));
 		this.bridges.move(250D, 250D).frame();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frames(2);
 		Assert.assertTrue(panel.getInspectedNodeLocked().get());
 		Assert.assertEquals(1425D, panel.getX(), 0D);
@@ -253,7 +253,7 @@ public class DevNodeTest {
 	public void unlocksTheInspectionOnARightClick() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		this.bridges.frames(2);
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 		Assert.assertEquals(1625D, panel.getX(), 0D);
@@ -267,7 +267,7 @@ public class DevNodeTest {
 	public void keepsItsInspectionUnlockedOnARightClick() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 		Assert.assertNotNull(panel.getInspectedNode().get());
 	}
@@ -276,7 +276,7 @@ public class DevNodeTest {
 	public void keepsItsLockOnAnotherLeftClick() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(panel.getInspectedNodeLocked().get());
 	}
 
@@ -453,20 +453,20 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.getUi().keyTyped('g', Key.G);
 		this.bridges.move(400D, 300D).frame();
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		Assert.assertEquals(1, panel.getGridColorIndex());
 		this.bridges.frame();
 		Assert.assertEquals(4, DevNodeTest.draws(this.bridges, DevNodeTest.RED, 1F).stream().filter(draw -> draw.getShader() == null && draw.getTop() < 1000D).count());
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		Assert.assertEquals(0, panel.getGridColorIndex());
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(0, panel.getGridColorIndex());
 	}
 
 	@Test
 	public void keepsItsGridColorWithoutGrid() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		Assert.assertEquals(0, panel.getGridColorIndex());
 	}
 
@@ -483,7 +483,7 @@ public class DevNodeTest {
 	public void ignoresTheKeysBelowAnotherUi() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.open(new DevUI());
-		panel.onKeyPressed('g', Key.G, InternalContext.create());
+		panel.onKeyPressed('g', Key.G, DispatchContext.create());
 		Assert.assertFalse(panel.getGridSignal().get());
 	}
 
@@ -491,8 +491,8 @@ public class DevNodeTest {
 	public void ignoresACancelledInput() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
-		panel.onKeyPressed('g', Key.G, InternalContext.create(true));
-		panel.onMousePressed(250D, 250D, ClickType.LEFT, InternalContext.create(true));
+		panel.onKeyPressed('g', Key.G, DispatchContext.create(true));
+		panel.onMousePressed(250D, 250D, MouseButton.LEFT, DispatchContext.create(true));
 		Assert.assertFalse(panel.getGridSignal().get());
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 	}
@@ -502,13 +502,13 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
 		this.bridges.open(new DevUI());
-		panel.onMousePressed(250D, 250D, ClickType.LEFT, InternalContext.create());
+		panel.onMousePressed(250D, 250D, MouseButton.LEFT, DispatchContext.create());
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAClickWithoutButton() {
-		DevNode.create(0D, 0D).mousePressed(0D, 0D, null, InternalContext.create());
+		DevNode.create(0D, 0D).mousePressed(0D, 0D, null, DispatchContext.create());
 	}
 
 	private static DevNode open(final HeadlessBridges bridges, final DevUI ui) {
@@ -520,13 +520,13 @@ public class DevNodeTest {
 
 	private static void lock(final HeadlessBridges bridges, final double mouseX, final double mouseY) {
 		bridges.move(mouseX, mouseY).frame();
-		bridges.getUi().mousePressed(ClickType.LEFT);
+		bridges.getUi().mousePressed(MouseButton.LEFT);
 		bridges.frames(2);
 	}
 
 	private static void click(final HeadlessBridges bridges, final Node node) {
 		bridges.move(node.getAbsoluteX() + node.getWidth() / 2D, node.getAbsoluteY() + node.getHeight() / 2D).frame();
-		bridges.getUi().mousePressed(ClickType.LEFT);
+		bridges.getUi().mousePressed(MouseButton.LEFT);
 		bridges.frames(2);
 	}
 

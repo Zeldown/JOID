@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BorderShader;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import dev.joid.lib.shader.pipeline.ShaderPassContext;
 
 public class BorderShaderPassTest {
 

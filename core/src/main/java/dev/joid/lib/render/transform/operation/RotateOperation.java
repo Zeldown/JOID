@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.render.modifier.Rotation;
-import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.transform.Rotation;
+import dev.joid.lib.render.transform.Vector;
 import lombok.NonNull;
 
 public class RotateOperation implements TransformOperation {

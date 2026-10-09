@@ -5,11 +5,12 @@ import javax.vecmath.Vector4f;
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.DemoPushTransition;
 import dev.joid.internal.JOID;
-import dev.joid.lib.animation.tweenengine.TweenEquation;
+import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
@@ -18,7 +19,6 @@ import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.key.Key;
 
 public abstract class ShowUI extends UI {
 

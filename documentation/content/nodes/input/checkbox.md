@@ -90,7 +90,7 @@ public void init() {
 - A checkbox follows one signal at a time: calling `signal(...)` again unbinds the previous one.
 - A checkbox that is not attached yet follows the signal once attached; a detached checkbox takes the current value of the signal when it is attached again.
 
-`this.info` is a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)). `BooleanSignal` is in `dev.joid.lib.utils.signal.impl.primitive`.
+`this.info` is a `TextInfo` built from a loaded font (see [Text](../../essentials/text.md)). `BooleanSignal` is in `dev.joid.lib.signal.impl.primitive`.
 
 ## Following a value with checked
 
@@ -123,7 +123,7 @@ SettingCheckboxNode
 	}
 
 	@Override
-	public void pre(final @NonNull SettingCheckboxNode node, final @NonNull InternalContext context, final boolean checked) {
+	public void pre(final @NonNull SettingCheckboxNode node, final @NonNull DispatchContext context, final boolean checked) {
 		if (!checked) {
 			context.cancel();
 		}
@@ -146,7 +146,7 @@ Once checked, this checkbox stays checked. Several `onChange` callbacks run in t
 | `isChecked()` | Current state. |
 | `getSignal()` | Bound signal, or `null`. |
 | `getSubscription()` | Subscription of the bound signal, or `null`. |
-| `mousePressed(double, double, ClickType, InternalContext)` | Flips the state on a press over the checkbox. Override it to change what a press does. |
+| `mousePressed(double, double, MouseButton, DispatchContext)` | Flips the state on a press over the checkbox. Override it to change what a press does. |
 | `CheckboxNode.CALLBACK_CHANGE` | Callback id of `onChange`. |
 
 `NodeCheckboxChangeCallback<T extends CheckboxNode>` (`dev.joid.lib.ui.node.impl.structure.checkbox.callback`):
@@ -154,8 +154,8 @@ Once checked, this checkbox stays checked. Several `onChange` callbacks run in t
 | Method | Description |
 | --- | --- |
 | `apply(T node, boolean checked)` | Runs after the change (the lambda of `onChange`). |
-| `pre(T node, InternalContext context, boolean checked)` | Runs before the change; `context.cancel()` keeps the current state. |
-| `post(T node, InternalContext context, boolean checked)` | Runs after the change and calls `apply`. |
+| `pre(T node, DispatchContext context, boolean checked)` | Runs before the change; `context.cancel()` keeps the current state. |
+| `post(T node, DispatchContext context, boolean checked)` | Runs after the change and calls `apply`. |
 
 The setters return the node itself, typed by the generic return of the fluent API. The rest of the API is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
 

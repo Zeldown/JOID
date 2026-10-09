@@ -9,11 +9,11 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeMouseDraggedCallbackTest {
 
@@ -23,35 +23,35 @@ public class NodeMouseDraggedCallbackTest {
 	@Test
 	public void runsAfterTheNodeWithoutConsumingTheContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeMouseDraggedCallback<RectNode> callback = (node, mouseX, mouseY, clickType, deltaTime) -> received.addAll(Arrays.asList(node, mouseX, mouseY, clickType, deltaTime));
+		final NodeMouseDraggedCallback<RectNode> callback = (node, mouseX, mouseY, button, deltaTime) -> received.addAll(Arrays.asList(node, mouseX, mouseY, button, deltaTime));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
-		callback.pre(rect, context, 3D, 4D, ClickType.LEFT, 16L);
+		final DispatchContext context = DispatchContext.create();
+		callback.pre(rect, context, 3D, 4D, MouseButton.LEFT, 16L);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
-		callback.post(rect, context, 3D, 4D, ClickType.LEFT, 16L);
-		Assert.assertEquals(Arrays.asList(rect, 3D, 4D, ClickType.LEFT, 16L), received);
+		callback.post(rect, context, 3D, 4D, MouseButton.LEFT, 16L);
+		Assert.assertEquals(Arrays.asList(rect, 3D, 4D, MouseButton.LEFT, 16L), received);
 		Assert.assertFalse(context.isCancelled());
 	}
 
 	@Test
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeMouseDraggedCallback<RectNode> callback = (node, mouseX, mouseY, clickType, deltaTime) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), 3D, 4D, ClickType.LEFT, 16L);
+		final NodeMouseDraggedCallback<RectNode> callback = (node, mouseX, mouseY, button, deltaTime) -> received.add(node);
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), 3D, 4D, MouseButton.LEFT, 16L);
 		Assert.assertTrue(received.isEmpty());
 	}
 
 	@Test
 	public void receivesEachMoveWithItsButtonAndDelay() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onMouseDragged((node, mouseX, mouseY, clickType, deltaTime) -> received.addAll(Arrays.asList(node, mouseX, mouseY, clickType, deltaTime)));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onMouseDragged((node, mouseX, mouseY, button, deltaTime) -> received.addAll(Arrays.asList(node, mouseX, mouseY, button, deltaTime)));
 		this.bridges.open(new NodeUI(rect)).frames(30);
-		this.bridges.move(150D, 160D).getUi().mousePressed(ClickType.LEFT);
+		this.bridges.move(150D, 160D).getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frames(1).getUi().mouseMoved();
-		this.bridges.move(400D, 300D).getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.move(400D, 300D).getUi().mousePressed(MouseButton.RIGHT);
 		this.bridges.frames(2).getUi().mouseMoved();
-		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, ClickType.LEFT, 16L, rect, 400D, 300D, ClickType.RIGHT, 32L), received);
+		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, MouseButton.LEFT, 16L, rect, 400D, 300D, MouseButton.RIGHT, 32L), received);
 	}
 
 	public static final class NodeUI extends UI {

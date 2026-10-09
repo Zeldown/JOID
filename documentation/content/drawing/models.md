@@ -134,7 +134,7 @@ The vertex normals of the file are kept as read in `getVertexNormals()`, and nor
 
 ## Writing a model with IDrawableModel
 
-`IDrawableModel` (`dev.joid.lib.draw.model.utils`) is what `DrawModel` and `ModelNode` draw:
+`IDrawableModel` (`dev.joid.lib.draw.model`) is what `DrawModel` and `ModelNode` draw:
 
 | Method | Description |
 |---|---|

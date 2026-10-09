@@ -4,10 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
-import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeCallbackRegistryTest {
 
@@ -91,10 +91,10 @@ public class NodeCallbackRegistryTest {
 		public void apply();
 
 		@NodeCallbackMethod(Phase.PRE)
-		public default void pre(final Node node, final InternalContext context) {}
+		public default void pre(final Node node, final DispatchContext context) {}
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context) {}
+		public default void post(final Node node, final DispatchContext context) {}
 
 	}
 
@@ -104,10 +104,10 @@ public class NodeCallbackRegistryTest {
 		public void apply();
 
 		@NodeCallbackMethod(Phase.PRE)
-		public default void pre(final Node node, final InternalContext context, final int value) {}
+		public default void pre(final Node node, final DispatchContext context, final int value) {}
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context, final int value) {}
+		public default void post(final Node node, final DispatchContext context, final int value) {}
 
 	}
 
@@ -117,10 +117,10 @@ public class NodeCallbackRegistryTest {
 		public void apply();
 
 		@NodeCallbackMethod(Phase.PRE)
-		public default void pre(final Node node, final InternalContext context) {}
+		public default void pre(final Node node, final DispatchContext context) {}
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context) {}
+		public default void post(final Node node, final DispatchContext context) {}
 
 	}
 
@@ -129,10 +129,10 @@ public class NodeCallbackRegistryTest {
 		public void apply();
 
 		@NodeCallbackMethod(Phase.PRE)
-		public default void pre(final Node node, final InternalContext context) {}
+		public default void pre(final Node node, final DispatchContext context) {}
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context) {}
+		public default void post(final Node node, final DispatchContext context) {}
 
 	}
 
@@ -142,7 +142,7 @@ public class NodeCallbackRegistryTest {
 		public void apply();
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context) {}
+		public default void post(final Node node, final DispatchContext context) {}
 
 	}
 
@@ -152,7 +152,7 @@ public class NodeCallbackRegistryTest {
 		public void apply();
 
 		@NodeCallbackMethod(Phase.PRE)
-		public default void pre(final Node node, final InternalContext context) {}
+		public default void pre(final Node node, final DispatchContext context) {}
 
 	}
 
@@ -162,12 +162,12 @@ public class NodeCallbackRegistryTest {
 		public void apply();
 
 		@NodeCallbackMethod(Phase.PRE)
-		public default boolean pre(final Node node, final InternalContext context) {
+		public default boolean pre(final Node node, final DispatchContext context) {
 			return true;
 		}
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context) {}
+		public default void post(final Node node, final DispatchContext context) {}
 
 	}
 
@@ -180,7 +180,7 @@ public class NodeCallbackRegistryTest {
 		public default void pre(final Node node) {}
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context) {}
+		public default void post(final Node node, final DispatchContext context) {}
 
 	}
 
@@ -190,10 +190,10 @@ public class NodeCallbackRegistryTest {
 		public void apply();
 
 		@NodeCallbackMethod(Phase.PRE)
-		public default void pre(final String text, final InternalContext context) {}
+		public default void pre(final String text, final DispatchContext context) {}
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context) {}
+		public default void post(final Node node, final DispatchContext context) {}
 
 	}
 
@@ -206,7 +206,7 @@ public class NodeCallbackRegistryTest {
 		public default void pre(final Node node, final String text) {}
 
 		@NodeCallbackMethod(Phase.POST)
-		public default void post(final Node node, final InternalContext context) {}
+		public default void post(final Node node, final DispatchContext context) {}
 
 	}
 

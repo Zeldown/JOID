@@ -10,14 +10,14 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
 public class NodeReorderStartCallbackTest {
@@ -31,7 +31,7 @@ public class NodeReorderStartCallbackTest {
 		final NodeReorderStartCallback callback = (node, child) -> received.addAll(Arrays.asList(node, child));
 		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(0D, 0D, 200D);
 		final RectNode child = RectNode.create(0D, 0D, 200D, 50D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(flex, context, child);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -44,7 +44,7 @@ public class NodeReorderStartCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeReorderStartCallback callback = (node, child) -> received.add(child);
-		callback.post(ReorderableFlexNode.vertical(0D, 0D, 200D), InternalContext.create(true), RectNode.create(0D, 0D, 200D, 50D));
+		callback.post(ReorderableFlexNode.vertical(0D, 0D, 200D), DispatchContext.create(true), RectNode.create(0D, 0D, 200D, 50D));
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -55,10 +55,10 @@ public class NodeReorderStartCallbackTest {
 		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorderStart((node, child) -> received.addAll(Arrays.asList(node, child, node.isDragging(child), node.getInitialIndex())));
 		flex.append(RectNode.create(0D, 0D, 200D, 50D), second);
 		this.bridges.open(new NodeUI(flex)).move(150D, 180D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList(flex, second, true, 1), received);
 		this.bridges.move(150D, 300D).frames(10);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
 		Assert.assertEquals(4, received.size());
 	}
@@ -80,9 +80,9 @@ public class NodeReorderStartCallbackTest {
 		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).onReorderStart((node, child) -> received.add(child));
 		flex.append(RectNode.create(0D, 0D, 200D, 50D));
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		this.bridges.move(150D, 400D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -92,7 +92,7 @@ public class NodeReorderStartCallbackTest {
 		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).onReorderStart((node, child) -> received.add("first")).onReorderStart((node, child) -> received.add("second"));
 		flex.append(RectNode.create(0D, 0D, 200D, 50D));
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("first", "second"), received);
 	}
 
@@ -108,14 +108,14 @@ public class NodeReorderStartCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
+			public void pre(final @NonNull ReorderableFlexNode node, final @NonNull DispatchContext context, final @NonNull Node child) {
 				context.cancel();
 			}
 
 		});
 		flex.append(RectNode.create(0D, 0D, 200D, 50D));
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(received.isEmpty());
 	}
 

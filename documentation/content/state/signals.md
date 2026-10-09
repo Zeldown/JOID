@@ -23,7 +23,7 @@ public void init() {
 
 `IntegerSignal.of(0)` creates a signal that holds `0`. A click calls `increment()`, and the text, built from an expression that reads `this.clicks.get()`, is recomputed. `info` is a `TextInfo` (see [Text and TextInfo](../text/text-and-textinfo.md)).
 
-`Signal` is in `dev.joid.lib.utils.signal`, the typed signals in `dev.joid.lib.utils.signal.impl.primitive` (`BooleanSignal`, `IntegerSignal`, `LongSignal`, `FloatSignal`, `DoubleSignal`, `StringSignal`) and `dev.joid.lib.utils.signal.impl.iterable` (`ListSignal`, `SetSignal`, `MapSignal`).
+`Signal` is in `dev.joid.lib.signal`, the typed signals in `dev.joid.lib.signal.impl.primitive` (`BooleanSignal`, `IntegerSignal`, `LongSignal`, `FloatSignal`, `DoubleSignal`, `StringSignal`) and `dev.joid.lib.signal.impl.iterable` (`ListSignal`, `SetSignal`, `MapSignal`).
 
 ## Sources and derived signals
 

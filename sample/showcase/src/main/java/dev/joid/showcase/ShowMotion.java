@@ -6,8 +6,8 @@ import java.util.List;
 import javax.vecmath.Vector2d;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.animation.tweenengine.TweenEquation;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEquation;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;

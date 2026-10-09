@@ -14,12 +14,11 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.impl.bitmap.dto.BitmapCell;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.impl.glyph.FontFamily;
 import dev.joid.lib.font.impl.glyph.GlyphFont;
-import dev.joid.lib.font.impl.glyph.dto.FontFamily;
-import dev.joid.lib.font.impl.glyph.dto.IFontFace;
-import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
+import dev.joid.lib.font.impl.glyph.IFontFace;
+import dev.joid.lib.font.impl.glyph.TextGlyph;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 

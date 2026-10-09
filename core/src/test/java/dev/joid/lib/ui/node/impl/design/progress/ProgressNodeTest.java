@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
-import dev.joid.lib.resource.dto.ResourceData;
+import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode.ProgressDirection;

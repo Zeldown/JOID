@@ -9,18 +9,18 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.textfield.MultilineTextFieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
 public class NodeTextFieldChangeCallbackTest {
@@ -59,7 +59,7 @@ public class NodeTextFieldChangeCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeTextFieldChangeCallback<TextFieldNode, String> callback = (node, text, value, valid) -> received.addAll(Arrays.asList(node, text, value, valid));
 		final TextFieldNode field = TextFieldNode.create(0D, 0D, 100D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(field, context, "ab", "AB", false);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -72,14 +72,14 @@ public class NodeTextFieldChangeCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeTextFieldChangeCallback<TextFieldNode, String> callback = (node, text, value, valid) -> received.add(node);
-		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(true), "ab", "ab", true);
+		callback.post(TextFieldNode.create(0D, 0D, 100D), DispatchContext.create(true), "ab", "ab", true);
 		Assert.assertTrue(received.isEmpty());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingText() {
 		final NodeTextFieldChangeCallback<TextFieldNode, String> callback = (node, text, value, valid) -> {};
-		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(), null, "ab", true);
+		callback.post(TextFieldNode.create(0D, 0D, 100D), DispatchContext.create(), null, "ab", true);
 	}
 
 	@Test
@@ -88,8 +88,8 @@ public class NodeTextFieldChangeCallbackTest {
 		final TextFieldNode field = this.field().onChange((node, text, value, valid) -> received.addAll(Arrays.asList(node, text, value, valid)));
 		final MultilineTextFieldNode multiline = this.multiline().onChange((node, text, value, valid) -> received.addAll(Arrays.asList(node, text, value, valid)));
 		this.bridges.open(new NodeUI(field, multiline));
-		field.keyPressed('c', Key.C, InternalContext.create());
-		multiline.keyPressed('d', Key.D, InternalContext.create());
+		field.keyPressed('c', Key.C, DispatchContext.create());
+		multiline.keyPressed('d', Key.D, DispatchContext.create());
 		Assert.assertEquals(Arrays.asList(field, "abc", "abc", true, multiline, "abd", "abd", true), received);
 	}
 
@@ -102,13 +102,13 @@ public class NodeTextFieldChangeCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull TextFieldNode node, final @NonNull InternalContext context, final @NonNull String text, final String value, final boolean valid) {
+			public void pre(final @NonNull TextFieldNode node, final @NonNull DispatchContext context, final @NonNull String text, final String value, final boolean valid) {
 				context.cancel();
 			}
 
 		});
 		this.bridges.open(new NodeUI(field));
-		field.keyPressed('c', Key.C, InternalContext.create());
+		field.keyPressed('c', Key.C, DispatchContext.create());
 		field.text("xyz");
 		Assert.assertEquals("ab", field.getText());
 	}
@@ -122,13 +122,13 @@ public class NodeTextFieldChangeCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull MultilineTextFieldNode node, final @NonNull InternalContext context, final @NonNull String text, final String value, final boolean valid) {
+			public void pre(final @NonNull MultilineTextFieldNode node, final @NonNull DispatchContext context, final @NonNull String text, final String value, final boolean valid) {
 				context.cancel();
 			}
 
 		});
 		this.bridges.open(new NodeUI(field));
-		field.keyPressed(' ', Key.ENTER, InternalContext.create());
+		field.keyPressed(' ', Key.ENTER, DispatchContext.create());
 		Assert.assertEquals("ab", field.getText());
 	}
 

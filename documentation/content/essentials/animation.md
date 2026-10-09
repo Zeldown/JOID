@@ -19,7 +19,7 @@ RectNode
 ![The cursor enters a dark gray button, which fades to light gray, then leaves](../images/ess-anim-hover.gif "A 300 ms QUAD_OUT fade between the two colors.")
 
 - `hoverDuration(...)` sets the length of the animation in milliseconds (default `200L`).
-- `hoverEquation(...)` sets its easing (default `TweenEquations.LINEAR`). `TweenEquations` is in `dev.joid.lib.animation.tweenengine`.
+- `hoverEquation(...)` sets its easing (default `TweenEquations.LINEAR`). `TweenEquations` is in `dev.joid.lib.animation.tween`.
 
 ## Driving anything with hoverValue
 
@@ -38,7 +38,7 @@ RectNode
 
 ![The cursor hovers a white card that lifts slightly and rounds its corners](../images/ess-anim-lift.gif "The card lifts by 12 units and its radius grows from 8 to 16 while hovered.")
 
-`TranslateOperation` is in `dev.joid.lib.render.transform.operation` and `Vector` in `dev.joid.lib.render.modifier`.
+`TranslateOperation` is in `dev.joid.lib.render.transform.operation` and `Vector` in `dev.joid.lib.render.transform`.
 
 ## Animating a value with TweenAnimator
 
@@ -92,7 +92,7 @@ RectNode
 
 ![A light gray square sliding diagonally across the whole canvas and back](../images/ess-anim-move.gif "One second from corner to corner, back and forth forever (whole canvas at 0.25× scale).")
 
-`repeatYoyo(Tween.INFINITY, 0F)` plays the animation back and forth forever; `repeat(count, delay)` replays it from the start. Set the repeats on `getTimeline()` right after `sequence(...)`, before `start()`. `Tween` is in `dev.joid.lib.animation.tweenengine`.
+`repeatYoyo(Tween.INFINITY, 0F)` plays the animation back and forth forever; `repeat(count, delay)` replays it from the start. Set the repeats on `getTimeline()` right after `sequence(...)`, before `start()`. `Tween` is in `dev.joid.lib.animation.tween`.
 
 ## Animations started by the user
 

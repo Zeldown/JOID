@@ -5,9 +5,9 @@ import org.junit.Test;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextStyle;
+import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.impl.glyph.SingleFaceFont;
-import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
+import dev.joid.lib.font.impl.glyph.TextGlyph;
 
 public class DemoWaveTextEffectTest {
 

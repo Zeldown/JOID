@@ -53,7 +53,7 @@ public void init() {
 ![The whole dark canvas with a gray bar along its top edge and another along its bottom edge](../images/ess-uis-bars.png "The two bars of init(), on the whole canvas at 0.3× scale.")
 
 - `node.attach(this)` adds a node at the top level of the UI. `super.add(first, second)` does the same for several nodes.
-- `keybind(runnable, keys...)` runs the code when one of the keys is pressed while all of them are down: here `Ctrl + Q` closes the UI. `Key` is in `dev.joid.lib.utils.key`.
+- `keybind(runnable, keys...)` runs the code when one of the keys is pressed while all of them are down: here `Ctrl + Q` closes the UI. `Key` is in `dev.joid.lib.input.key`.
 - `schedule(runnable, delay)` runs the code once, at the first frame after `delay` milliseconds. `schedule(runnable)` runs it at the next frame: it is also the way to hand work from another thread to the UI.
 
 Each load starts from a clean UI: the nodes, keybinds and tasks of the previous `init()` are removed first.

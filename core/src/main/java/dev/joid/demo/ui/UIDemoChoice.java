@@ -33,14 +33,14 @@ import dev.joid.demo.ui.textfield.UIDemoTextField;
 import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.key.Key;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -98,7 +98,7 @@ public class UIDemoChoice extends UI {
 				.body(container -> {
 					TextNode.create(container.dw(2), container.dh(2)).text(Text.create(clazz.getSimpleName(), label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 				})
-				.onClick((node, mouseX, mouseY, clickType) -> {
+				.onClick((node, mouseX, mouseY, button) -> {
 					try {
 						final UI ui = clazz.newInstance();
 						ui.setTransition(new DemoPushTransition());
@@ -118,7 +118,7 @@ public class UIDemoChoice extends UI {
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create(() -> JOID.isOpen(UIDemoOverlay.class) ? "UIDemoOverlay: on" : "UIDemoOverlay: off", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
-			.onClick((node, mouseX, mouseY, clickType) -> {
+			.onClick((node, mouseX, mouseY, button) -> {
 				final UIDemoOverlay overlay = JOID.getUi(UIDemoOverlay.class);
 				if (overlay != null) {
 					JOID.close(overlay);

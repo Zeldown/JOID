@@ -1,8 +1,8 @@
 package dev.joid.lib.font.impl.bitmap;
 
+import dev.joid.lib.font.impl.glyph.FontFamily;
 import dev.joid.lib.font.impl.glyph.GlyphFont;
-import dev.joid.lib.font.impl.glyph.dto.FontFamily;
-import dev.joid.lib.font.impl.glyph.dto.IFontFace;
+import dev.joid.lib.font.impl.glyph.IFontFace;
 import lombok.Getter;
 import lombok.NonNull;
 

@@ -4,7 +4,8 @@ import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
@@ -12,7 +13,6 @@ import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 public class UIDemoLayout extends UIDemo {
 
@@ -220,7 +220,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(20, 150, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> shown.toggle())
+			.onClick((node, mouseX, mouseY, button) -> shown.toggle())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -237,7 +237,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(20, 150, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> {
+			.onClick((node, mouseX, mouseY, button) -> {
 				if (list.getChildren().size() < 6) {
 					RectNode.create(0, 0, 40, 50).color(UIDemoLayout.INK).attach(list);
 				}
@@ -249,7 +249,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(160, 150, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> list.clearChildren())
+			.onClick((node, mouseX, mouseY, button) -> list.clearChildren())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Clear", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -276,7 +276,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(180, 150, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> row.toggle())
+			.onClick((node, mouseX, mouseY, button) -> row.toggle())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Switch", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -421,7 +421,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(100, 195, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> grown.toggle())
+			.onClick((node, mouseX, mouseY, button) -> grown.toggle())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Grow", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

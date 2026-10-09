@@ -9,7 +9,7 @@ import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.resource.GlTextureResourceResolver;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.resource.dto.resolver.ResourceResolver;
+import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

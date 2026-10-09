@@ -1,6 +1,6 @@
 # Easing
 
-An easing equation shapes the progress of an animation: it maps the elapsed fraction of the duration to the fraction of the distance covered, so a value can start slowly, stop softly, overshoot or bounce. Every equation is a `TweenEquation`, and the built-in ones are constants of `TweenEquations` (`dev.joid.lib.animation.tweenengine`). [Animation](../essentials/animation.md) listed the usual ones; this page shows every curve, how to tune and write equations, and how they shape a [TweenAnimator](tween-animator.md).
+An easing equation shapes the progress of an animation: it maps the elapsed fraction of the duration to the fraction of the distance covered, so a value can start slowly, stop softly, overshoot or bounce. Every equation is a `TweenEquation`, and the built-in ones are constants of `TweenEquations` (`dev.joid.lib.animation.tween`). [Animation](../essentials/animation.md) listed the usual ones; this page shows every curve, how to tune and write equations, and how they shape a [TweenAnimator](tween-animator.md).
 
 ## Using an equation
 
@@ -136,7 +136,7 @@ final TweenEquation equation = TweenUtils.parseEasing("Cubic.OUT");
 | `ELASTIC_IN`, `ELASTIC_OUT`, `ELASTIC_INOUT` | `Elastic.IN`, `Elastic.OUT`, `Elastic.INOUT` |
 | `BOUNCE_IN`, `BOUNCE_OUT`, `BOUNCE_INOUT` | `Bounce.IN`, `Bounce.OUT`, `Bounce.INOUT` |
 
-The constants are the static fields of the family classes in `dev.joid.lib.animation.tweenengine.equation` (`Back`, `Bounce`, `Circ`, `Cubic`, `Elastic`, `Expo`, `Linear`, `Quad`, `Quart`, `Quint`, `Sine`): `TweenEquations.BACK_OUT == Back.OUT`.
+The constants are the static fields of the family classes in `dev.joid.lib.animation.tween.equation` (`Back`, `Bounce`, `Circ`, `Cubic`, `Elastic`, `Expo`, `Linear`, `Quad`, `Quart`, `Quint`, `Sine`): `TweenEquations.BACK_OUT == Back.OUT`.
 
 ### Methods
 

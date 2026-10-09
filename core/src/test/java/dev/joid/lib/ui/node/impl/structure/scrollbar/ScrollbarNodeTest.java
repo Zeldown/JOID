@@ -10,12 +10,12 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.click.ClickType;
 import lombok.AllArgsConstructor;
 
 public class ScrollbarNodeTest {
@@ -78,7 +78,7 @@ public class ScrollbarNodeTest {
 		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
 		final RectNode content = ScrollbarNodeTest.column(bar);
 		this.press(content, 515D, 110D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.move(515D, 150D).frame();
 		Assert.assertFalse(bar.isDragging());
 		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
@@ -100,10 +100,10 @@ public class ScrollbarNodeTest {
 		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
 		final RectNode content = ScrollbarNodeTest.column(bar);
 		this.press(content, 515D, 110D);
-		this.bridges.getUi().mouseReleased(ClickType.RIGHT);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
 		Assert.assertTrue(bar.isDragging());
-		Assert.assertSame(ClickType.LEFT, bar.getDragButton());
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		Assert.assertSame(MouseButton.LEFT, bar.getDragButton());
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertFalse(bar.isDragging());
 		Assert.assertNull(bar.getDragButton());
 	}
@@ -136,7 +136,7 @@ public class ScrollbarNodeTest {
 		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D)).scrollNode(content);
 		this.bridges.open(new NodeUI(bar)).frame();
 		this.bridges.move(415D, 10D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(415D, 60D).frame();
 		Assert.assertTrue(bar.isDragging());
 		Assert.assertEquals(0D, bar.getY(), 0D);
@@ -161,7 +161,7 @@ public class ScrollbarNodeTest {
 	private void press(final RectNode content, final double x, final double y) {
 		this.bridges.open(new NodeUI(content)).frame();
 		this.bridges.move(x, y).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 	}
 
 	private Draw thumb() {

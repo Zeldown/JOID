@@ -12,7 +12,7 @@ import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.EdgeSmoothing;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.Resource;
-import dev.joid.lib.resource.dto.ResourceProperties;
+import dev.joid.lib.resource.ResourceProperties;
 import dev.joid.lib.shader.impl.RoundedShader;
 import lombok.Getter;
 import lombok.NonNull;

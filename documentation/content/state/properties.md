@@ -18,7 +18,7 @@ public class InventoryUI extends UI {
 		RectNode
 		.create(100, 100, 200, 60)
 		.color(Color.GRAY)
-		.onClick((node, mouseX, mouseY, clickType) -> this.tab = (this.tab + 1) % 3)
+		.onClick((node, mouseX, mouseY, button) -> this.tab = (this.tab + 1) % 3)
 		.attach(this);
 	}
 

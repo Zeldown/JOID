@@ -3,18 +3,18 @@ package dev.joid.demo.ui.animation;
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.render.modifier.Rotation;
-import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.render.transform.Rotation;
+import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.render.transform.operation.RotateOperation;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class UIDemoAnimation extends UIDemo {
 
@@ -228,7 +228,7 @@ public class UIDemoAnimation extends UIDemo {
 			RectNode
 			.create(40, 150, 120, 50)
 			.color(UIDemoAnimation.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> once.sequence(1000F, once.getValue() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).setCallback(tween -> plays.increment()).start())
+			.onClick((node, mouseX, mouseY, button) -> once.sequence(1000F, once.getValue() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).setCallback(tween -> plays.increment()).start())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Play", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

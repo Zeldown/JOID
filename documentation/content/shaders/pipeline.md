@@ -214,7 +214,7 @@ The node runs one pipeline render for its `SELF` passes and one for its `CHILDRE
 
 ### ShaderPassContext
 
-`ShaderPassContext` (`dev.joid.lib.shader.pipeline.dto`) describes the area of a render. The pipeline creates one per render and passes it to `bind`.
+`ShaderPassContext` (`dev.joid.lib.shader.pipeline`) describes the area of a render. The pipeline creates one per render and passes it to `bind`.
 
 | Method | Description |
 |---|---|

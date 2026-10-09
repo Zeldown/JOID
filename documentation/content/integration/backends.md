@@ -185,9 +185,9 @@ public final class AppInput {
 		while (Mouse.next()) {
 			final int button = Mouse.getEventButton();
 			if (button != -1 && Mouse.getEventButtonState()) {
-				this.bridge.mousePressed(ClickType.from(button));
+				this.bridge.mousePressed(MouseButton.from(button));
 			} else if (button != -1) {
-				this.bridge.mouseReleased(ClickType.from(button));
+				this.bridge.mouseReleased(MouseButton.from(button));
 			} else {
 				this.bridge.mouseMoved();
 			}

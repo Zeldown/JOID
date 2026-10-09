@@ -1,6 +1,6 @@
 # Callbacks
 
-[Input and Callbacks](../concepts/input.md) showed `onClick`, the hover callbacks, how an event travels children first and the PRE and POST phases. This page goes further: every callback of `Node` and of the built-in nodes, how to act in the PRE phase, `InternalContext`, which events are consumed, and the exact order in which callbacks run.
+[Input and Callbacks](../concepts/input.md) showed `onClick`, the hover callbacks, how an event travels children first and the PRE and POST phases. This page goes further: every callback of `Node` and of the built-in nodes, how to act in the PRE phase, `DispatchContext`, which events are consumed, and the exact order in which callbacks run.
 
 ## Registering a callback
 
@@ -103,7 +103,7 @@ final NodeAppendCallback<FlexNode> limit = new NodeAppendCallback<FlexNode>() {
 	}
 
 	@Override
-	public void pre(final FlexNode node, final InternalContext context, final Node child) {
+	public void pre(final FlexNode node, final DispatchContext context, final Node child) {
 		if (node.getChildren().size() >= 5) {
 			context.cancel();
 		}
@@ -116,9 +116,9 @@ FlexNode.vertical(100, 100, 400).onAppend(limit).attach(this);
 
 `@NodeCallbackMethod` (`dev.joid.lib.ui.node.callback`) marks the phases on the interface methods; JOID finds it there, so an override does not need to repeat it.
 
-## InternalContext
+## DispatchContext
 
-`InternalContext` (`dev.joid.lib.utils.context`) carries the cancelled state of one dispatch. A mouse or key event uses one context for the whole UI, shared by the mouse and key callbacks (`onClick` included) of every node; every other callback of `Node` gets a new context for each dispatch.
+`DispatchContext` (`dev.joid.lib.ui.node.callback`) carries the cancelled state of one dispatch. A mouse or key event uses one context for the whole UI, shared by the mouse and key callbacks (`onClick` included) of every node; every other callback of `Node` gets a new context for each dispatch.
 
 | Method | Description |
 |---|---|
@@ -159,7 +159,7 @@ RectNode
 	public void apply(final RectNode node, final char c, final Key key) {}
 
 	@Override
-	public void post(final RectNode node, final InternalContext context, final char c, final Key key) {
+	public void post(final RectNode node, final DispatchContext context, final char c, final Key key) {
 		if (!context.isCancelled() && key == Key.ENTER) {
 			System.out.println("Submitted");
 			context.cancel();
@@ -182,17 +182,17 @@ ContainerNode
 .onMousePressed(new NodeMousePressedCallback<ContainerNode>() {
 
 	@Override
-	public void apply(final ContainerNode node, final double mouseX, final double mouseY, final ClickType clickType) {}
+	public void apply(final ContainerNode node, final double mouseX, final double mouseY, final MouseButton clickType) {}
 
 	@Override
-	public void pre(final ContainerNode node, final InternalContext context, final double mouseX, final double mouseY, final ClickType clickType) {
+	public void pre(final ContainerNode node, final DispatchContext context, final double mouseX, final double mouseY, final MouseButton clickType) {
 		if (loading.peek() && node.isHovered(mouseX, mouseY)) {
 			context.cancel();
 		}
 	}
 
 	@Override
-	public void post(final ContainerNode node, final InternalContext context, final double mouseX, final double mouseY, final ClickType clickType) {}
+	public void post(final ContainerNode node, final DispatchContext context, final double mouseX, final double mouseY, final MouseButton clickType) {}
 
 })
 .attach(this);
@@ -261,14 +261,14 @@ A custom node declares its own callback types and fires them with the public met
 
 | Method | Description |
 |---|---|
-| `executeCallback(int type, InternalContext context, Object... args)` | Runs the PRE then the POST phase of every callback registered under `type`. |
-| `executeCallback(int type, InternalContext context, Runnable runnable, Object... args)` | Runs the PRE phase, `runnable` (the default action) unless the context is cancelled, then the POST phase. With no callback registered, runs `runnable` only. |
-| `executePreCallback(int type, InternalContext context, Object... args)` | Runs the PRE phase only. |
-| `executePostCallback(int type, InternalContext context, Object... args)` | Runs the POST phase only. |
+| `executeCallback(int type, DispatchContext context, Object... args)` | Runs the PRE then the POST phase of every callback registered under `type`. |
+| `executeCallback(int type, DispatchContext context, Runnable runnable, Object... args)` | Runs the PRE phase, `runnable` (the default action) unless the context is cancelled, then the POST phase. With no callback registered, runs `runnable` only. |
+| `executePreCallback(int type, DispatchContext context, Object... args)` | Runs the PRE phase only. |
+| `executePostCallback(int type, DispatchContext context, Object... args)` | Runs the POST phase only. |
 | `hasCallback(int type)` | `true` when at least one callback is registered under `type`. |
 | `getCallbackList(int type)` | The registered callbacks, as `NodeCallbackInvoker` wrappers. |
 
-The `type` ids come from `NodeCallbackRegistry.next(Class)` and callbacks are stored with the protected `registerCallback(int type, NodeCallback callback)`. `next` rejects, with an `IllegalArgumentException`, an interface that is not annotated `@FunctionalInterface`, or that lacks a `@NodeCallbackMethod(Phase.PRE)` or `@NodeCallbackMethod(Phase.POST)` method returning `void` whose first parameter is a `Node` and second an `InternalContext`. `NodeEventCallback<T>` (`dev.joid.lib.ui.node.callback.impl`) is a ready-made callback whose lambda takes only `(node)`.
+The `type` ids come from `NodeCallbackRegistry.next(Class)` and callbacks are stored with the protected `registerCallback(int type, NodeCallback callback)`. `next` rejects, with an `IllegalArgumentException`, an interface that is not annotated `@FunctionalInterface`, or that lacks a `@NodeCallbackMethod(Phase.PRE)` or `@NodeCallbackMethod(Phase.POST)` method returning `void` whose first parameter is a `Node` and second an `DispatchContext`. `NodeEventCallback<T>` (`dev.joid.lib.ui.node.callback.impl`) is a ready-made callback whose lambda takes only `(node)`.
 
 ## Pitfalls
 

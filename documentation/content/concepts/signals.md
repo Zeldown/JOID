@@ -46,7 +46,7 @@ This prints `6`; `reset()` goes back to the default, `0`.
 | `StringSignal` | A `String` | `append(s)`, `toUpperCase()`... |
 | `ListSignal<E>`, `SetSignal<E>`, `MapSignal<K, V>` | A collection | `add`, `remove`, `put`, `clear`... |
 
-`Signal` is in `dev.joid.lib.utils.signal`, the typed signals in `dev.joid.lib.utils.signal.impl.primitive` and `dev.joid.lib.utils.signal.impl.iterable`. `get()` reads the value and is followed; `peek()` reads it without being followed. The collection signals notify after each change they make, so `items.add("Sword")` updates everything that reads `items`.
+`Signal` is in `dev.joid.lib.signal`, the typed signals in `dev.joid.lib.signal.impl.primitive` and `dev.joid.lib.signal.impl.iterable`. `get()` reads the value and is followed; `peek()` reads it without being followed. The collection signals notify after each change they make, so `items.add("Sword")` updates everything that reads `items`.
 
 ## Setters that follow signals
 

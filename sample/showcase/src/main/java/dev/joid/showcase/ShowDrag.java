@@ -4,8 +4,10 @@ import dev.joid.demo.DemoFont;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
@@ -18,8 +20,6 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
 
 public class ShowDrag extends ShowUI {
 

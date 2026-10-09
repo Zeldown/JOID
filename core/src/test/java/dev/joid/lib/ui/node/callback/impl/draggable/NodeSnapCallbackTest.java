@@ -9,15 +9,15 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapType;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
 public class NodeSnapCallbackTest {
@@ -31,7 +31,7 @@ public class NodeSnapCallbackTest {
 		final NodeSnapCallback<RectNode> callback = (node, snapNode) -> received.addAll(Arrays.asList(node, snapNode));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final RectNode target = RectNode.create(50D, 50D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context, target);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -44,7 +44,7 @@ public class NodeSnapCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeSnapCallback<RectNode> callback = (node, snapNode) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), RectNode.create(50D, 50D, 10D, 10D));
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), RectNode.create(50D, 50D, 10D, 10D));
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -56,10 +56,10 @@ public class NodeSnapCallbackTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).draggable(DraggableProperty.free().snap(near, far)).onSnap((node, snapNode) -> received.addAll(Arrays.asList(node, snapNode, node.getTargetDragX(), node.getTargetDragY())));
 		this.bridges.open(new NodeUI(near, far, rect)).frames(30);
 		this.bridges.move(150D, 150D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(450D, 350D).frames(1);
 		this.bridges.getUi().mouseMoved();
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList(rect, near, 500D, 400D), received);
 	}
 
@@ -70,8 +70,8 @@ public class NodeSnapCallbackTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).draggable(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, target)).onSnap((node, snapNode) -> received.add(snapNode));
 		this.bridges.open(new NodeUI(target, rect)).frames(30);
 		this.bridges.move(150D, 150D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertEquals(100D, rect.getTargetDragX(), 0D);
 		Assert.assertEquals(100D, rect.getTargetDragY(), 0D);
@@ -90,17 +90,17 @@ public class NodeSnapCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull RectNode node, final @NonNull InternalContext context, final @NonNull Node snapNode) {
+			public void pre(final @NonNull RectNode node, final @NonNull DispatchContext context, final @NonNull Node snapNode) {
 				context.cancel();
 			}
 
 		});
 		this.bridges.open(new NodeUI(target, rect)).frames(30);
 		this.bridges.move(150D, 150D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(400D, 300D).frames(1);
 		this.bridges.getUi().mouseMoved();
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertEquals(350D, rect.getTargetDragX(), 0D);
 		Assert.assertEquals(250D, rect.getTargetDragY(), 0D);

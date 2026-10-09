@@ -28,8 +28,14 @@ import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.render.context.Drawing;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.key.resolver.KeyResolver;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.render.Drawing;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.signal.SignalContext;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
+import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.ui.core.data.UIDataObject;
 import dev.joid.lib.ui.core.data.debug.UIDataDebugObject;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlayObject;
@@ -43,17 +49,11 @@ import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.key.resolver.KeyResolver;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedElement;
-import dev.joid.lib.utils.signal.SignalContext;
-import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
-import dev.joid.lib.utils.signal.replay.SignalReplay;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
@@ -229,14 +229,14 @@ public abstract class UI implements IUI, IndexedElement {
 			return true;
 		}
 
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, notchesX, notchesY, context)));
 
 		this.traced(() -> this.mouseScroll(mx, my, notchesX, notchesY, context));
 		return context.isCancelled();
 	}
 
-	public final boolean onMousePressed(final @NonNull ClickType clickType) {
+	public final boolean onMousePressed(final @NonNull MouseButton button) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -244,18 +244,18 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 
 		this.untraced(() -> {
-			this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
-			this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, clickType, context));
+			this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, button, context));
+			this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, button, context));
 		});
 
-		this.traced(() -> this.mousePressed(mx, my, clickType, context));
+		this.traced(() -> this.mousePressed(mx, my, button, context));
 		return context.isCancelled();
 	}
 
-	public final boolean onMouseReleased(final @NonNull ClickType clickType) {
+	public final boolean onMouseReleased(final @NonNull MouseButton button) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -263,14 +263,14 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final InternalContext context = InternalContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, clickType, context)));
+		final DispatchContext context = DispatchContext.create();
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, button, context)));
 
-		this.traced(() -> this.mouseReleased(mx, my, clickType, context));
+		this.traced(() -> this.mouseReleased(mx, my, button, context));
 		return context.isCancelled();
 	}
 
-	public final boolean onMouseDragged(final @NonNull ClickType clickType, final long deltaTime) {
+	public final boolean onMouseDragged(final @NonNull MouseButton button, final long deltaTime) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -278,10 +278,10 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final InternalContext context = InternalContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, clickType, deltaTime, context)));
+		final DispatchContext context = DispatchContext.create();
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, button, deltaTime, context)));
 
-		this.traced(() -> this.mouseDragged(mx, my, clickType, deltaTime, context));
+		this.traced(() -> this.mouseDragged(mx, my, button, deltaTime, context));
 		return context.isCancelled();
 	}
 
@@ -290,7 +290,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context)));
 
 		if (!context.isCancelled()) {

@@ -11,18 +11,14 @@ import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.color.ColorGradient;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.TextStyle;
-import dev.joid.lib.font.dto.effect.ITextEffect;
-import dev.joid.lib.font.dto.markup.ITextMarkup;
-import dev.joid.lib.font.dto.markup.TextMarkup;
-import dev.joid.lib.font.impl.glyph.dto.GlyphLayout;
-import dev.joid.lib.font.impl.glyph.dto.GlyphPlacement;
-import dev.joid.lib.font.impl.glyph.dto.IFontFace;
-import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.TextStyle;
+import dev.joid.lib.font.effect.ITextEffect;
+import dev.joid.lib.font.markup.ITextMarkup;
+import dev.joid.lib.font.markup.TextMarkup;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")

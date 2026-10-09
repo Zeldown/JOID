@@ -23,7 +23,7 @@ RectNode
 .hoveredBorderColor(Color.WHITE)
 .borderStroke(2D)
 .effect(RoundedNodeEffect.create(12F))
-.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
+.onClick((node, mouseX, mouseY, button) -> this.clicks.increment())
 .attach(this);
 ```
 
@@ -54,7 +54,7 @@ public void init() {
 	RectNode
 	.create(100, 100, 200, 120)
 	.color(this.clicks.get() >= 3 ? Color.WHITE : Color.GRAY)
-	.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
+	.onClick((node, mouseX, mouseY, button) -> this.clicks.increment())
 	.attach(this);
 }
 ```

@@ -4,14 +4,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.slider.callback.NodeSliderChangeCallback;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -52,7 +52,7 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (context.isCancelled() || !super.isHovered()) {
 			return;
 		}
@@ -135,7 +135,7 @@ public abstract class SliderNode<O> extends Node {
 			return;
 		}
 
-		super.executeCallback(SliderNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+		super.executeCallback(SliderNode.CALLBACK_CHANGE, DispatchContext.create(), () -> {
 			this.value = value;
 			super.sync(this.signal, value);
 			if (super.getUi() != null) {
@@ -150,7 +150,7 @@ public abstract class SliderNode<O> extends Node {
 			return;
 		}
 
-		super.executeCallback(SliderNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+		super.executeCallback(SliderNode.CALLBACK_CHANGE, DispatchContext.create(), () -> {
 			this.value = newValue;
 			super.sync(this.signal, newValue);
 		}, newValue);

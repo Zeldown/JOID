@@ -17,7 +17,11 @@ import dev.joid.demo.replay.SetterUI;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.utils.TextMode;
+import dev.joid.lib.draw.text.TextMode;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
@@ -28,10 +32,6 @@ import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class NodeSetterTest {
 

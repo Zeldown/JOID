@@ -6,9 +6,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
-
 public class IFontProviderTest {
 
 	@Test

@@ -1,8 +1,8 @@
 package dev.joid.demo.ui.font.pixel;
 
+import dev.joid.lib.font.impl.bitmap.BitmapCell;
 import dev.joid.lib.font.impl.bitmap.BitmapFontProvider;
-import dev.joid.lib.font.impl.bitmap.dto.BitmapCell;
-import dev.joid.lib.font.impl.glyph.dto.TextGlyph;
+import dev.joid.lib.font.impl.glyph.TextGlyph;
 import dev.joid.lib.resource.Resource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

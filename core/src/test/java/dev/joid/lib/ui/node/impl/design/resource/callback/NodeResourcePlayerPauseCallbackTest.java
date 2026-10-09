@@ -13,8 +13,8 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
-import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeResourcePlayerPauseCallbackTest {
 
@@ -26,7 +26,7 @@ public class NodeResourcePlayerPauseCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeResourcePlayerPauseCallback<ResourcePlayerNode> callback = received::add;
 		final ResourcePlayerNode player = ResourcePlayerNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(player, context);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -39,7 +39,7 @@ public class NodeResourcePlayerPauseCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeResourcePlayerPauseCallback<ResourcePlayerNode> callback = received::add;
-		callback.post(ResourcePlayerNode.create(0D, 0D, 10D, 10D), InternalContext.create(true));
+		callback.post(ResourcePlayerNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true));
 		Assert.assertTrue(received.isEmpty());
 	}
 

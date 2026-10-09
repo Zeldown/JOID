@@ -15,7 +15,7 @@ RectNode
 
 ![The cursor enters a dark gray rectangle, which lightens, and clicks it](../images/ess-input-click.gif "The hovered color shows the node under the mouse; the press fires onClick (the ring marks the pressed button).")
 
-`onClick` fires when a mouse button is pressed over the node. The lambda receives the node, the mouse position in canvas units and the button: a `ClickType` (`dev.joid.lib.utils.click`) with `LEFT`, `RIGHT`, `MIDDLE`, `BACK`, `FORWARD`, and helpers such as `clickType.isRight()`:
+`onClick` fires when a mouse button is pressed over the node. The lambda receives the node, the mouse position in canvas units and the button: a `MouseButton` (`dev.joid.lib.input.mouse`) with `LEFT`, `RIGHT`, `MIDDLE`, `BACK`, `FORWARD`, and helpers such as `clickType.isRight()`:
 
 ```java
 RectNode
@@ -60,7 +60,7 @@ RectNode
 
 ## Keyboard shortcuts with keybind
 
-For shortcuts, register a keybind on the UI in `init()`. `Key` is in `dev.joid.lib.utils.key`:
+For shortcuts, register a keybind on the UI in `init()`. `Key` is in `dev.joid.lib.input.key`:
 
 ```java
 super.keybind(() -> System.out.println("Saved"), Key.LEFT_CONTROL, Key.S);
@@ -77,8 +77,8 @@ A keybind runs when one of its keys is pressed while all of them are down; the o
 ## See also
 
 - Next: [Signals and Reactivity](signals.md)
-- [Callbacks](../interactions/callbacks.md): every callback, the PRE and POST phases, `InternalContext`, the exact order.
-- [Mouse and Keyboard](../interactions/mouse-and-keyboard.md): `ClickType`, every `Key`, keybinds, the input hooks of the UI.
+- [Callbacks](../interactions/callbacks.md): every callback, the PRE and POST phases, `DispatchContext`, the exact order.
+- [Mouse and Keyboard](../interactions/mouse-and-keyboard.md): `MouseButton`, every `Key`, keybinds, the input hooks of the UI.
 - [Hover and Tooltips](../interactions/hover.md): the hover animation, custom tooltips.
 - [Drag and Drop](../interactions/drag-drop.md): draggable nodes, areas, snapping.
 - [TextFieldNode](../nodes/input/text-field.md): accepting, formatting and validating input.

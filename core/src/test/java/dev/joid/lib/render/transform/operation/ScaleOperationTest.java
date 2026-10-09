@@ -6,8 +6,8 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
-import dev.joid.lib.render.modifier.Scale;
-import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.transform.Scale;
+import dev.joid.lib.render.transform.Vector;
 
 public class ScaleOperationTest {
 

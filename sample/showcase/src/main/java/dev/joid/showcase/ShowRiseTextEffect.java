@@ -1,9 +1,9 @@
 package dev.joid.showcase;
 
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.font.dto.effect.ITextEffect;
-import dev.joid.lib.font.dto.effect.ITextGlyph;
+import dev.joid.lib.font.effect.ITextEffect;
+import dev.joid.lib.font.effect.ITextGlyph;
 
 public class ShowRiseTextEffect implements ITextEffect {
 

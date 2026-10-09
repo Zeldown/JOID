@@ -2,7 +2,7 @@ package dev.joid.base.glfw.input;
 
 import org.lwjgl.glfw.GLFW;
 
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.input.key.Key;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;

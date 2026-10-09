@@ -13,8 +13,8 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
-import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeResourcePlayerProgressCallbackTest {
 
@@ -26,7 +26,7 @@ public class NodeResourcePlayerProgressCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeResourcePlayerProgressCallback<ResourcePlayerNode> callback = (node, progress, currentTime) -> received.addAll(Arrays.asList(node, progress, currentTime));
 		final ResourcePlayerNode player = ResourcePlayerNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(player, context, 0.5D, 0.12D);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -39,7 +39,7 @@ public class NodeResourcePlayerProgressCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeResourcePlayerProgressCallback<ResourcePlayerNode> callback = (node, progress, currentTime) -> received.add(node);
-		callback.post(ResourcePlayerNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), 0.5D, 0.12D);
+		callback.post(ResourcePlayerNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), 0.5D, 0.12D);
 		Assert.assertTrue(received.isEmpty());
 	}
 

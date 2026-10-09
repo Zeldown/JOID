@@ -10,21 +10,21 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCallback;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 import lombok.NonNull;
 
@@ -230,7 +230,7 @@ public class IntegerFieldNodeTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull IntegerFieldNode node, final @NonNull InternalContext context, final @NonNull String text, final Integer value, final boolean valid) {
+			public void pre(final @NonNull IntegerFieldNode node, final @NonNull DispatchContext context, final @NonNull String text, final Integer value, final boolean valid) {
 				if (value != null && value > 10) {
 					context.cancel();
 				}
@@ -423,7 +423,7 @@ public class IntegerFieldNodeTest {
 		final TextFieldNode second = TextFieldNode.create(0D, 100D, 100D, 30D).text("hello").info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
 		this.bridges.open(new NodeUI(first, second));
 		first.focused(true).cursorPosition(1);
-		first.keyPressed('\t', Key.TAB, InternalContext.create());
+		first.keyPressed('\t', Key.TAB, DispatchContext.create());
 		Assert.assertTrue(first.isFocused());
 		Assert.assertFalse(second.isFocused());
 		Assert.assertEquals("3", first.getText());
@@ -436,7 +436,7 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = IntegerFieldNode.create(100D, 100D, 200D, 30D).value(12345).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
 		this.bridges.open(new NodeUI(field));
 		this.bridges.move(124D, 110D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(field.isFocused());
 		Assert.assertEquals(2, field.getCursorPos());
 		Assert.assertEquals(-1, field.getSelectionStart());
@@ -467,7 +467,7 @@ public class IntegerFieldNodeTest {
 	}
 
 	private void press(final IntegerFieldNode field, final Key key) {
-		field.keyPressed(' ', key, InternalContext.create());
+		field.keyPressed(' ', key, DispatchContext.create());
 	}
 
 	private void control(final IntegerFieldNode field, final Key key) {
@@ -478,7 +478,7 @@ public class IntegerFieldNodeTest {
 
 	private void type(final IntegerFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, InternalContext.create());
+			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
 		}
 	}
 

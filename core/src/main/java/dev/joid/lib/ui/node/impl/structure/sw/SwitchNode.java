@@ -5,15 +5,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalSubscriber;
+import dev.joid.lib.signal.impl.iterable.ListSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.sw.callback.NodeSwitchChangeCallback;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.SignalSubscriber;
-import dev.joid.lib.utils.signal.impl.iterable.ListSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -114,7 +114,7 @@ public abstract class SwitchNode extends Node {
 			return;
 		}
 
-		super.executeCallback(SwitchNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+		super.executeCallback(SwitchNode.CALLBACK_CHANGE, DispatchContext.create(), () -> {
 			this.stateIndex.set(index);
 			this.stateList.set(stateList);
 			super.sync(this.signal, state);

@@ -32,7 +32,7 @@ Load each family once, after `JOID` is loaded, and share it with every UI, for e
 
 ## Styles with TextInfo
 
-`TextInfo` (`dev.joid.lib.font.dto`) is the style of a piece of text. The size is in canvas units; further settings chain:
+`TextInfo` (`dev.joid.lib.font`) is the style of a piece of text. The size is in canvas units; further settings chain:
 
 ```java
 final TextInfo body = TextInfo.create(font, 24F, Color.WHITE);
@@ -88,7 +88,7 @@ For inline tags such as `<b>bold</b>`, register a markup: JOID has no built-in s
 
 ## Long text with mode
 
-By default a `TextNode` draws its text on one line. `mode(TextMode)` (`dev.joid.lib.draw.text.utils`) changes that:
+By default a `TextNode` draws its text on one line. `mode(TextMode)` (`dev.joid.lib.draw.text`) changes that:
 
 ```java
 TextNode.create(100, 400, 300, 0).text(Text.create("A very long subtitle that does not fit", this.body, TextOverflow.ELLIPSIS)).mode(TextMode.OVERFLOW).attach(this);
@@ -104,7 +104,7 @@ TextNode.create(100, 450, 300, 0).text(Text.create("A paragraph wrapped on as ma
 | `SPLIT` | Wrapped to the width of the node; the height follows the lines. |
 | `BOX` | Wrapped inside a fixed box; the lines that do not fit are not drawn. |
 
-`TextOverflow` is in `dev.joid.lib.draw.text.builder.utils`.
+`TextOverflow` is in `dev.joid.lib.draw.text.builder`.
 
 ## Measuring text
 

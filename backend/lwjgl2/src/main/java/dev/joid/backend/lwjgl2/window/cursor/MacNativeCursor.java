@@ -4,7 +4,7 @@ import com.sun.jna.Function;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 
-import dev.joid.lib.utils.cursor.Cursor;
+import dev.joid.lib.input.cursor.Cursor;
 import lombok.NonNull;
 
 public final class MacNativeCursor extends NativeCursor {

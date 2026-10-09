@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import dev.joid.demo.ui.font.effect.DemoFace;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.impl.glyph.dto.FontFamily;
+import dev.joid.lib.font.impl.glyph.FontFamily;
 
 public class BitmapFontTest {
 

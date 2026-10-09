@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import dev.joid.lib.asset.dto.locator.AssetLocator;
+import dev.joid.lib.asset.locator.AssetLocator;
 import lombok.Getter;
 import lombok.NonNull;
 

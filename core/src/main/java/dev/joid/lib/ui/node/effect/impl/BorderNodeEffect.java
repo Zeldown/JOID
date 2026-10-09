@@ -6,9 +6,9 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.pass.BorderShaderPass;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 

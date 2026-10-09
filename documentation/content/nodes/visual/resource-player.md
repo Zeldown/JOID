@@ -22,7 +22,7 @@ super.keybind(() -> {
 
 ![A looping placeholder video that freezes for a moment, then plays on](../../images/player-pause.gif "Space pauses the looping video, a second press resumes it (a short placeholder video stands in for intro.mp4).")
 
-`keybind` and `Key` (`dev.joid.lib.utils.key`) are the keyboard shortcuts of [Input and Callbacks](../../concepts/input.md#keyboard-shortcuts-with-keybind).
+`keybind` and `Key` (`dev.joid.lib.input.key`) are the keyboard shortcuts of [Input and Callbacks](../../concepts/input.md#keyboard-shortcuts-with-keybind).
 
 The resource is any [`Resource`](../../resources/resources.md) whose decoder provides an `IResourcePlayback`: videos and animated images (see [Supported Formats](../../resources/formats.md)). A still image is displayed, but the playback controls do nothing on it.
 
@@ -64,8 +64,8 @@ These methods return the node (`ResourcePlayerNode`) and do nothing when the nod
 | `isPaused()` | `true` while paused. `false` without playback. |
 | `getDuration()` | Duration in seconds, `0` without playback. |
 | `getProgress()` | Position as a fraction of the duration, from `0` to `1`; `0` without playback. |
-| `getPlayback()` | `IResourcePlayback` (`dev.joid.lib.resource.dto.playback`) of the current resource, `null` without one. |
-| `getVideo()` | `VideoResourceDecoder` (`dev.joid.lib.resource.dto.decoder.impl`) of the current resource, `null` unless it is a video. |
+| `getPlayback()` | `IResourcePlayback` (`dev.joid.lib.resource.playback`) of the current resource, `null` without one. |
+| `getVideo()` | `VideoResourceDecoder` (`dev.joid.lib.resource.decoder.impl`) of the current resource, `null` unless it is a video. |
 
 The current time in seconds is given by `onProgress`, or read with `getPlayback().getCurrentTime()` once `getPlayback()` is not `null`. The full playback contract (`IResourcePlayback`, video decoding, looping and seeking semantics) is described in [Playback, Video and Audio](../../resources/playback.md).
 
@@ -132,7 +132,7 @@ ResourcePlayerNode
 | `onProgress(NodeResourcePlayerProgressCallback<T>)` | `(node, progress, currentTime) -> ...` | On each drawn frame where the progress changed: while playing, and after a `seek(...)`, also while paused. `progress` goes from `0` to `1`, `currentTime` is in seconds. |
 
 - `onPlay`, `onEnd`, `onProgress` and the `onStop` of the end of the resource are detected while the node draws: a node that is not drawn (hidden, or outside a closed UI) does not fire them. A playback stopped through `getPlayback()` rather than the node's `stop()` is seen the same way, as an end.
-- The callback interfaces live in `dev.joid.lib.ui.node.impl.design.resource.callback`. Each has an `apply(...)` method for the lambda and `pre(...)`/`post(...)` phases taking an `InternalContext`; the lambda runs in the POST phase ([Input and Callbacks](../../concepts/input.md#how-events-travel)). See [Callbacks](../../interactions/callbacks.md) for the PRE phase.
+- The callback interfaces live in `dev.joid.lib.ui.node.impl.design.resource.callback`. Each has an `apply(...)` method for the lambda and `pre(...)`/`post(...)` phases taking an `DispatchContext`; the lambda runs in the POST phase ([Input and Callbacks](../../concepts/input.md#how-events-travel)). See [Callbacks](../../interactions/callbacks.md) for the PRE phase.
 - You can register several callbacks of the same kind; they run in registration order.
 - The callback ids are the constants `ResourcePlayerNode.CALLBACK_PLAY`, `CALLBACK_PAUSE`, `CALLBACK_STOP`, `CALLBACK_END` and `CALLBACK_PROGRESS`, usable with `hasCallback(int)`.
 

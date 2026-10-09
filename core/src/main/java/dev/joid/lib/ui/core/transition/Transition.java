@@ -1,7 +1,7 @@
 package dev.joid.lib.ui.core.transition;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.animation.tweenengine.Timeline;
+import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.ui.core.UI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

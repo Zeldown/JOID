@@ -10,18 +10,18 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.textfield.MultilineTextFieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
 public class NodeTextFieldFocusCallbackTest {
@@ -60,7 +60,7 @@ public class NodeTextFieldFocusCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeTextFieldFocusCallback<TextFieldNode> callback = node -> received.add(node);
 		final TextFieldNode field = TextFieldNode.create(0D, 0D, 100D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(field, context);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -73,14 +73,14 @@ public class NodeTextFieldFocusCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeTextFieldFocusCallback<TextFieldNode> callback = node -> received.add(node);
-		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(true));
+		callback.post(TextFieldNode.create(0D, 0D, 100D), DispatchContext.create(true));
 		Assert.assertTrue(received.isEmpty());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingNode() {
 		final NodeTextFieldFocusCallback<TextFieldNode> callback = node -> {};
-		callback.post(null, InternalContext.create());
+		callback.post(null, DispatchContext.create());
 	}
 
 	@Test
@@ -113,14 +113,14 @@ public class NodeTextFieldFocusCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull TextFieldNode node, final @NonNull InternalContext context) {
+			public void pre(final @NonNull TextFieldNode node, final @NonNull DispatchContext context) {
 				context.cancel();
 			}
 
 		});
 		this.bridges.open(new NodeUI(field));
 		this.bridges.move(150D, 120D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertFalse(field.isFocused());
 		Assert.assertTrue(received.isEmpty());
 	}
@@ -134,7 +134,7 @@ public class NodeTextFieldFocusCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull MultilineTextFieldNode node, final @NonNull InternalContext context) {
+			public void pre(final @NonNull MultilineTextFieldNode node, final @NonNull DispatchContext context) {
 				context.cancel();
 			}
 

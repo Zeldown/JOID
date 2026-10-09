@@ -9,10 +9,10 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 public class ToggleNodeTest {
 
@@ -128,7 +128,7 @@ public class ToggleNodeTest {
 
 	private void click(final double x, final double y) {
 		this.bridges.move(x, y).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 	}
 
 	public static final class NodeUI extends UI {

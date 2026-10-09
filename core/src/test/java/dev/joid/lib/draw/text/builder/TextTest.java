@@ -11,12 +11,11 @@ import org.junit.Test;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.draw.text.builder.modifier.TextModifier;
-import dev.joid.lib.draw.text.builder.utils.TextOverflow;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.lib.utils.align.Align;

@@ -8,7 +8,7 @@ This product includes software developed by Aurelien Ribon:
   Copyright 2012 Aurelien Ribon
   Licensed under the Apache License, Version 2.0
 
-  The classes under dev.joid.lib.animation.tweenengine are derived
+  The classes under dev.joid.lib.animation.tween are derived
   from it.
 
 The release jars embed the following software:

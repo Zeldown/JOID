@@ -14,13 +14,20 @@ import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.draw.text.utils.TextMode;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.signal.ComputedSignal;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalContext;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackInvoker;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
@@ -32,13 +39,6 @@ import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.signal.ComputedSignal;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.SignalContext;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -107,7 +107,7 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
 				.color(this.inspectSignal.map(inspect -> inspect ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.inspectSignal.map(inspect -> (inspect ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
-				.onClick((node, mouseX, mouseY, clickType) -> {
+				.onClick((node, mouseX, mouseY, button) -> {
 					this.inspectSignal.set(!this.inspectSignal.peek());
 					this.inspectedNode.set(null);
 					this.inspectedNodeLocked.set(false);
@@ -120,7 +120,7 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
 				.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()))
 				.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()).darker(0.3F))
-				.onClick((node, mouseX, mouseY, clickType) -> {
+				.onClick((node, mouseX, mouseY, button) -> {
 					node.getUi().reload();
 				})
 				.hover(() -> "[R] Reload")
@@ -131,7 +131,7 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
 				.color(this.gridSignal.map(grid -> grid ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.gridSignal.map(grid -> (grid ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
-				.onClick((node, mouseX, mouseY, clickType) -> {
+				.onClick((node, mouseX, mouseY, button) -> {
 					this.gridSignal.set(!this.gridSignal.peek());
 				})
 				.hover(() -> "[G] Grid")
@@ -266,7 +266,7 @@ public final class DevNode extends Node {
 					TextNode
 					.create(10, 0)
 					.text(Text.create("hierarchy: ", labelInfo).add(Text.create(inspectedNode.getHierarchy(), valueInfo)))
-					.onClick((clickedNode, mouseX, mouseY, clickType) -> {
+					.onClick((clickedNode, mouseX, mouseY, button) -> {
 						if (inspectedNode.getParent() != null) {
 							this.inspectedNode.set(inspectedNode.getParent());
 							this.inspectedNodeLocked.set(true);
@@ -283,7 +283,7 @@ public final class DevNode extends Node {
 						TextNode
 						.create(20, 0)
 						.text(Text.create(child.getClass().getSimpleName(), valueInfo))
-						.onClick((clickedNode, mouseX, mouseY, clickType) -> {
+						.onClick((clickedNode, mouseX, mouseY, button) -> {
 							this.inspectedNode.set(child);
 							this.inspectedNodeLocked.set(true);
 						})
@@ -419,28 +419,28 @@ public final class DevNode extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final DispatchContext context) {
 		if (context.isCancelled() || !super.isEnabled()) {
 			return;
 		}
 
 		if (this.inspectSignal.peek() && this.inspectedNode.peek() != null) {
-			if (clickType.isLeft() && !this.inspectedNodeLocked.peek()) {
+			if (button.isLeft() && !this.inspectedNodeLocked.peek()) {
 				this.inspectedNodeLocked.set(true);
 				context.cancel();
-			} else if (clickType.isRight() && this.inspectedNodeLocked.peek()) {
+			} else if (button.isRight() && this.inspectedNodeLocked.peek()) {
 				this.inspectedNodeLocked.set(false);
 				context.cancel();
 			}
 		}
 
-		if (clickType.isRight() && this.gridSignal.peek()) {
+		if (button.isRight() && this.gridSignal.peek()) {
 			this.gridColorIndex = (this.gridColorIndex + 1) % DevNode.GRID_COLORS.length;
 		}
 	}
 
 	@Override
-	public void keyPressed(final char c, final Key key, final InternalContext context) {
+	public void keyPressed(final char c, final Key key, final DispatchContext context) {
 		if (context.isCancelled() || !super.isEnabled()) {
 			return;
 		}

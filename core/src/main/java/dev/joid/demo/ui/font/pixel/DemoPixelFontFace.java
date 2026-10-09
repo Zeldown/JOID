@@ -3,7 +3,7 @@ package dev.joid.demo.ui.font.pixel;
 import java.awt.image.BufferedImage;
 
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.impl.glyph.dto.IFontFace;
+import dev.joid.lib.font.impl.glyph.IFontFace;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import lombok.Getter;

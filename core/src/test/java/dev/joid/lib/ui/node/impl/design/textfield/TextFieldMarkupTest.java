@@ -10,14 +10,14 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.markup.ITextMarkup;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.markup.ITextMarkup;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.textfield.MultilineTextFieldMarkupTest.MarkupFont;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
 
 public class TextFieldMarkupTest {
 
@@ -293,7 +293,7 @@ public class TextFieldMarkupTest {
 		this.drag(field, 5D);
 		Assert.assertEquals(14, field.getSelectionStart());
 		Assert.assertEquals(0, field.getCursorPos());
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.drag(field, 92D);
 		Assert.assertEquals(0, field.getCursorPos());
 	}
@@ -341,8 +341,8 @@ public class TextFieldMarkupTest {
 	private void clicks(final TextFieldNode field, final double x, final int count) {
 		this.bridges.move(2D + x, 20D).frames(2);
 		for (int i = 0; i < count; i++) {
-			this.bridges.getUi().mouseReleased(ClickType.LEFT);
-			this.bridges.getUi().mousePressed(ClickType.LEFT);
+			this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+			this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		}
 	}
 
@@ -352,7 +352,7 @@ public class TextFieldMarkupTest {
 	}
 
 	private void press(final TextFieldNode field, final Key key) {
-		field.keyPressed(' ', key, InternalContext.create());
+		field.keyPressed(' ', key, DispatchContext.create());
 	}
 
 	private void control(final TextFieldNode field, final Key key) {
@@ -363,7 +363,7 @@ public class TextFieldMarkupTest {
 
 	private void type(final TextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, InternalContext.create());
+			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
 		}
 	}
 

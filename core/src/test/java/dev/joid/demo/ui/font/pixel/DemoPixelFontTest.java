@@ -19,12 +19,12 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.utils.click.ClickType;
 
 public class DemoPixelFontTest {
 
@@ -162,7 +162,7 @@ public class DemoPixelFontTest {
 
 	private void click(final double scale, final double x, final double y) {
 		this.bridges.move(x * scale, y * scale).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 	}
 
 	private static TextInfo info(final float size) {

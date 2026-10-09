@@ -11,10 +11,10 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
 public class NodeAppendCallbackTest {
@@ -28,7 +28,7 @@ public class NodeAppendCallbackTest {
 		final NodeAppendCallback<RectNode> callback = (node, child) -> received.addAll(Arrays.asList(node, child));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final RectNode child = RectNode.create(0D, 0D, 5D, 5D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context, child);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -41,7 +41,7 @@ public class NodeAppendCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeAppendCallback<RectNode> callback = (node, child) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), RectNode.create(0D, 0D, 5D, 5D));
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), RectNode.create(0D, 0D, 5D, 5D));
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -77,7 +77,7 @@ public class NodeAppendCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull RectNode node, final @NonNull InternalContext context, final @NonNull Node child) {
+			public void pre(final @NonNull RectNode node, final @NonNull DispatchContext context, final @NonNull Node child) {
 				context.cancel();
 			}
 

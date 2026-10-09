@@ -7,8 +7,9 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode;
@@ -17,7 +18,6 @@ import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 public class UIDemoResource extends UIDemo {
 
@@ -118,7 +118,7 @@ public class UIDemoResource extends UIDemo {
 		ResourceNode
 		.create(335, 740, 100, 100)
 		.resource(second.map(value -> value ? square : vector))
-		.onClick((node, mouseX, mouseY, clickType) -> second.toggle())
+		.onClick((node, mouseX, mouseY, button) -> second.toggle())
 		.attach(this);
 		TextNode.create(385, 865).text(Text.create("Switch on click", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 	}

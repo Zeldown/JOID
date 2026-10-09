@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import dev.joid.lib.animation.tweenengine.Timeline;
+import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.ui.core.UI;

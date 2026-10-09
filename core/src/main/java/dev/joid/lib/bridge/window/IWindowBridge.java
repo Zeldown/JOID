@@ -1,8 +1,8 @@
 package dev.joid.lib.bridge.window;
 
 import dev.joid.lib.bridge.IBridge;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.key.Key;
 import lombok.NonNull;
 
 public interface IWindowBridge extends IBridge {

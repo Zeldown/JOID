@@ -9,8 +9,10 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
@@ -22,8 +24,6 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
 
 public class ShowPlayer extends ShowUI {
 
@@ -74,7 +74,7 @@ public class ShowPlayer extends ShowUI {
 		.create(56, 690, 84)
 		.color(() -> Color.WHITE.copyAlpha(0.92F * card.hoverValue(1F) + 0.08F))
 		.effect(ShadowNodeEffect.create(ShowUI.AMBER, 26F).color(() -> ShowUI.AMBER.copyAlpha(0.8F * card.hoverValue(1F))))
-		.onClick((node, mouseX, mouseY, clickType) -> {
+		.onClick((node, mouseX, mouseY, button) -> {
 			if (this.player.isPlaying()) {
 				this.player.pause();
 			} else {
@@ -86,13 +86,13 @@ public class ShowPlayer extends ShowUI {
 		RectNode
 		.create(176, 712, 1060, 40)
 		.color(Color.TRANSPARENT)
-		.onClick((node, mouseX, mouseY, clickType) -> this.scrub.set(this.ratio(mouseX)))
-		.onMouseDragged((node, mouseX, mouseY, clickType, delta) -> {
+		.onClick((node, mouseX, mouseY, button) -> this.scrub.set(this.ratio(mouseX)))
+		.onMouseDragged((node, mouseX, mouseY, button, delta) -> {
 			if (this.scrub.get() >= 0D) {
 				this.scrub.set(this.ratio(mouseX));
 			}
 		})
-		.onMouseReleased((node, mouseX, mouseY, clickType) -> {
+		.onMouseReleased((node, mouseX, mouseY, button) -> {
 			if (this.scrub.get() >= 0D) {
 				this.player.seekTo(this.scrub.get() * this.player.getDuration());
 				this.scrub.set(-1D);

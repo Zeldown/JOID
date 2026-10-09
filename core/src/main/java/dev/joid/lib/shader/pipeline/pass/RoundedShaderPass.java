@@ -5,7 +5,7 @@ import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.IShaderPass;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import lombok.NonNull;

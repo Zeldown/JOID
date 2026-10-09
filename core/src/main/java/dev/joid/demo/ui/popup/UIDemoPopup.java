@@ -7,11 +7,11 @@ import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import lombok.NonNull;
 
 @UIDataPopup(active = true)
@@ -33,7 +33,7 @@ public class UIDemoPopup extends UI {
 	}
 
 	@Override
-	public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+	public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 		if (!context.isCancelled() && key == Key.K && Key.LEFT_CONTROL.isDown()) {
 			context.cancel(() -> JOID.open(new UIDemoPopup()));
 		}

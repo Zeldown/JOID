@@ -27,11 +27,11 @@ ResourcePlayerNode.create(700, 100, 160, 120).resource(Resource.of(new File("vid
 | AVI | `RIFF....AVI ` | `VideoResourceDecoder` | yes, with audio |
 | HEIF (HEIC) and AVIF | an `ftyp` box whose major brand is `avif`, `avis`, `heic`, `heim`, `heis`, `heix`, `hevc`, `hevm`, `hevs`, `hevx`, `mif1` or `msf1` | none: the resource [fails](resources.md#resources-in-error) | no |
 
-Decoders are in `dev.joid.lib.resource.dto.decoder.impl`, formats in `dev.joid.lib.resource.dto.format.impl`. Formats with playback expose an [`IResourcePlayback`](playback.md).
+Decoders are in `dev.joid.lib.resource.decoder.impl`, formats in `dev.joid.lib.resource.format.impl`. Formats with playback expose an [`IResourcePlayback`](playback.md).
 
 ## How a format is detected
 
-`ResourceFormat.decoder(asset)` (`dev.joid.lib.resource.dto.format`) reads the first 512 bytes of the asset without consuming it and asks each registered `IResourceFormat` in turn. The first one that matches chooses the decoder:
+`ResourceFormat.decoder(asset)` (`dev.joid.lib.resource.format`) reads the first 512 bytes of the asset without consuming it and asks each registered `IResourceFormat` in turn. The first one that matches chooses the decoder:
 
 ![The header of the asset goes through your formats, then SVG, WebP, HEIF and AVIF, video, PNG and APNG, GIF, and falls back to the raster decoder](../images/diagram-format-detection.png "Detection order: first match wins")
 

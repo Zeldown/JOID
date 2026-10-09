@@ -8,10 +8,8 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.resource.dto.ResourceData;
-import dev.joid.lib.resource.dto.ResourceProperties;
-import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
-import dev.joid.lib.resource.dto.playback.IResourcePlayback;
+import dev.joid.lib.resource.decoder.IResourceDecoder;
+import dev.joid.lib.resource.playback.IResourcePlayback;
 import lombok.Getter;
 import lombok.NonNull;
 

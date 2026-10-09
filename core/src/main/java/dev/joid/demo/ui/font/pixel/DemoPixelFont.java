@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.impl.bitmap.BitmapFont;
-import dev.joid.lib.font.impl.glyph.dto.FontFamily;
+import dev.joid.lib.font.impl.glyph.FontFamily;
 import lombok.NonNull;
 
 public final class DemoPixelFont extends BitmapFont<DemoPixelFontFace> {

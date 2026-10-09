@@ -11,17 +11,17 @@ import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.iterable.ListSignal;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.impl.iterable.ListSignal;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class UIDemoSignal extends UIDemo {
 
@@ -59,7 +59,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> clicks.increment())
+			.onClick((node, mouseX, mouseY, button) -> clicks.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -77,7 +77,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> mapped.increment())
+			.onClick((node, mouseX, mouseY, button) -> mapped.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -94,7 +94,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> left.increment())
+			.onClick((node, mouseX, mouseY, button) -> left.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("A +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -102,7 +102,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(180, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> right.increment())
+			.onClick((node, mouseX, mouseY, button) -> right.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("B +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -140,7 +140,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 160, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> volume.set(0))
+			.onClick((node, mouseX, mouseY, button) -> volume.set(0))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -176,7 +176,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> shown.toggle())
+			.onClick((node, mouseX, mouseY, button) -> shown.toggle())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -193,7 +193,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> heat.increment())
+			.onClick((node, mouseX, mouseY, button) -> heat.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -211,7 +211,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> {
+			.onClick((node, mouseX, mouseY, button) -> {
 				if (items.size() < 4) {
 					items.add("Item " + (items.size() + 1));
 				}
@@ -223,7 +223,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(180, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> items.remove(items.size() - 1))
+			.onClick((node, mouseX, mouseY, button) -> items.remove(items.size() - 1))
 			.visible(!items.isEmpty())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Remove", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
@@ -275,7 +275,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> sent.increment())
+			.onClick((node, mouseX, mouseY, button) -> sent.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

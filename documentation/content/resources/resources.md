@@ -232,7 +232,7 @@ Resources created from an `InputStream` never share data, since every stream has
 
 ## Options of one resource with ResourceProperties
 
-The options of a resource live in a `ResourceProperties` (`dev.joid.lib.resource.dto`). A new resource gets a copy of the options of its builder, so changing one resource never changes another.
+The options of a resource live in a `ResourceProperties` (`dev.joid.lib.resource`). A new resource gets a copy of the options of its builder, so changing one resource never changes another.
 
 | Method of `Resource` | Effect |
 |---|---|

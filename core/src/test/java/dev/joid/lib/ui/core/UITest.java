@@ -42,6 +42,10 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.key.resolver.IKeyResolver;
+import dev.joid.lib.input.key.resolver.KeyResolver;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
@@ -57,14 +61,10 @@ import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.key.resolver.IKeyResolver;
-import dev.joid.lib.utils.key.resolver.KeyResolver;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -283,9 +283,9 @@ public class UITest {
 	public void ignoresTheInputBeforeItsFirstLoad() {
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.cancel = true;
-		Assert.assertFalse(ui.onMousePressed(ClickType.LEFT));
-		Assert.assertFalse(ui.onMouseReleased(ClickType.LEFT));
-		Assert.assertFalse(ui.onMouseDragged(ClickType.LEFT, 10L));
+		Assert.assertFalse(ui.onMousePressed(MouseButton.LEFT));
+		Assert.assertFalse(ui.onMouseReleased(MouseButton.LEFT));
+		Assert.assertFalse(ui.onMouseDragged(MouseButton.LEFT, 10L));
 		Assert.assertFalse(ui.onMouseScroll(0D, 1D));
 		Assert.assertFalse(ui.onKeyPressed('a', Key.A));
 		Assert.assertTrue(this.trace.isEmpty());
@@ -297,7 +297,7 @@ public class UITest {
 		this.bridges.resize(1366, 768).open(ui);
 		this.bridges.move(683D, 384D).frame();
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(960D, ui.getMouseX(), 0D);
 		Assert.assertEquals(540D, ui.getMouseY(), 0D);
 		Assert.assertEquals(Collections.singletonList("pressed LEFT 960.0 540.0"), this.trace);
@@ -336,12 +336,12 @@ public class UITest {
 	public void tellsWhetherItsHooksCancelledTheInput() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		Assert.assertFalse(ui.onMousePressed(ClickType.LEFT));
+		Assert.assertFalse(ui.onMousePressed(MouseButton.LEFT));
 		Assert.assertFalse(ui.onKeyPressed('a', Key.A));
 		ui.cancel = true;
-		Assert.assertTrue(ui.onMousePressed(ClickType.LEFT));
-		Assert.assertTrue(ui.onMouseReleased(ClickType.LEFT));
-		Assert.assertTrue(ui.onMouseDragged(ClickType.LEFT, 10L));
+		Assert.assertTrue(ui.onMousePressed(MouseButton.LEFT));
+		Assert.assertTrue(ui.onMouseReleased(MouseButton.LEFT));
+		Assert.assertTrue(ui.onMouseDragged(MouseButton.LEFT, 10L));
 		Assert.assertTrue(ui.onMouseScroll(0D, 1D));
 		Assert.assertTrue(ui.onKeyPressed('a', Key.A));
 	}
@@ -352,8 +352,8 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		ui.onMouseScroll(0D, 1D);
-		ui.onMouseDragged(ClickType.LEFT, 10L);
-		ui.onMouseReleased(ClickType.LEFT);
+		ui.onMouseDragged(MouseButton.LEFT, 10L);
+		ui.onMouseReleased(MouseButton.LEFT);
 		ui.onKeyPressed('a', Key.A);
 		Assert.assertEquals(Arrays.asList("scrolled node", "scrolled 1.0", "dragged node", "dragged LEFT 10", "released node", "released LEFT", "typed node", "typed a A"), this.trace);
 	}
@@ -363,7 +363,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("below", this.trace, -5), new TraceNode("middle", this.trace, 0), new TraceNode("above", this.trace, 5));
 		this.bridges.open(ui);
 		this.trace.clear();
-		ui.onMousePressed(ClickType.RIGHT);
+		ui.onMousePressed(MouseButton.RIGHT);
 		Assert.assertEquals(Arrays.asList("pressed above", "pressed middle", "pressed below", "pressed RIGHT 0.0 0.0"), this.trace);
 	}
 
@@ -1661,31 +1661,31 @@ public class UITest {
 		}
 
 		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-			this.trace.add("pressed " + clickType + " " + mouseX + " " + mouseY);
+		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+			this.trace.add("pressed " + button + " " + mouseX + " " + mouseY);
 			this.cancel(context);
 		}
 
 		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
-			this.trace.add("dragged " + clickType + " " + deltaTime);
+		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
+			this.trace.add("dragged " + button + " " + deltaTime);
 			this.cancel(context);
 		}
 
 		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-			this.trace.add("released " + clickType);
+		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+			this.trace.add("released " + button);
 			this.cancel(context);
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull DispatchContext context) {
 			this.trace.add("scrolled " + value);
 			this.cancel(context);
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 			this.trace.add("typed " + c + " " + key + (context.isCancelled() ? " cancelled" : ""));
 			this.cancel(context);
 		}
@@ -1714,7 +1714,7 @@ public class UITest {
 			this.trace.add("hover " + content + " " + mouseX + " " + mouseY);
 		}
 
-		private void cancel(final InternalContext context) {
+		private void cancel(final DispatchContext context) {
 			if (this.cancel) {
 				context.cancel();
 			}
@@ -1916,27 +1916,27 @@ public class UITest {
 		}
 
 		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 			this.trace.add("pressed " + this.name);
 		}
 
 		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
+		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
 			this.trace.add("dragged " + this.name);
 		}
 
 		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 			this.trace.add("released " + this.name);
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull DispatchContext context) {
 			this.trace.add("scrolled " + this.name);
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 			this.trace.add("typed " + this.name);
 			if (this.cancel) {
 				context.cancel();

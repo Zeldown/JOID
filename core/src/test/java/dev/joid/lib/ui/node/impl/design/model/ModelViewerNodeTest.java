@@ -5,10 +5,10 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.draw.model.utils.IDrawableModel;
+import dev.joid.lib.draw.model.IDrawableModel;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.click.ClickType;
 import lombok.AllArgsConstructor;
 
 public class ModelViewerNodeTest {
@@ -128,7 +128,7 @@ public class ModelViewerNodeTest {
 	@Test
 	public void stopsTurningOnceReleased() {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.move(250D, 180D).frame();
 		Assert.assertFalse(viewer.isDragged());
 		Assert.assertEquals(0D, viewer.getTargetRotationYaw(), 0D);
@@ -139,7 +139,7 @@ public class ModelViewerNodeTest {
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
 		this.bridges.move(1000D, 200D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertFalse(viewer.isDragged());
 	}
 
@@ -148,10 +148,10 @@ public class ModelViewerNodeTest {
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
 		this.bridges.move(200D, 200D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		Assert.assertFalse(viewer.isDragged());
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		this.bridges.getUi().mouseReleased(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
 		Assert.assertTrue(viewer.isDragged());
 	}
 
@@ -165,7 +165,7 @@ public class ModelViewerNodeTest {
 	private ModelViewerNode drag(final ModelViewerNode viewer) {
 		this.bridges.open(new NodeUI(viewer)).frame();
 		this.bridges.move(200D, 200D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		return viewer;
 	}
 

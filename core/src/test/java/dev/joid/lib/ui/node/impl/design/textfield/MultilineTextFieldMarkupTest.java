@@ -11,19 +11,19 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.TextStyle;
-import dev.joid.lib.font.dto.markup.ITextMarkup;
-import dev.joid.lib.font.dto.markup.TextMarkup;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.TextStyle;
+import dev.joid.lib.font.markup.ITextMarkup;
+import dev.joid.lib.font.markup.TextMarkup;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 
 import lombok.Getter;
 
@@ -149,10 +149,10 @@ public class MultilineTextFieldMarkupTest {
 	public void placesTheCursorOnTheClickedWrappedLine() {
 		final MultilineTextFieldNode field = this.field("<b>aaaa bbbbb cc</b>", true);
 		this.bridges.move(2D + 20D, 2D + 25D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(9, field.getCursorPos());
 		this.bridges.move(2D + 40D, 2D + 45D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(16, field.getCursorPos());
 	}
 
@@ -343,7 +343,7 @@ public class MultilineTextFieldMarkupTest {
 		this.drag(20D, 5D);
 		Assert.assertEquals(-1, field.getSelectionStart());
 		Assert.assertEquals(4, field.getCursorPos());
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.drag(20D, 45D);
 		Assert.assertEquals(4, field.getCursorPos());
 	}
@@ -362,7 +362,7 @@ public class MultilineTextFieldMarkupTest {
 
 	private int click(final MultilineTextFieldNode field, final double x) {
 		this.bridges.move(2D + x, 5D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		return field.getCursorPos();
 	}
 
@@ -370,8 +370,8 @@ public class MultilineTextFieldMarkupTest {
 		this.bridges.getClock().advance(600L);
 		this.bridges.move(2D + x, 2D + y).frames(2);
 		for (int i = 0; i < count; i++) {
-			this.bridges.getUi().mouseReleased(ClickType.LEFT);
-			this.bridges.getUi().mousePressed(ClickType.LEFT);
+			this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+			this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		}
 	}
 
@@ -381,12 +381,12 @@ public class MultilineTextFieldMarkupTest {
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {
-		field.keyPressed(' ', key, InternalContext.create());
+		field.keyPressed(' ', key, DispatchContext.create());
 	}
 
 	private void type(final MultilineTextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, InternalContext.create());
+			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
 		}
 	}
 

@@ -4,10 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.render.context.Drawing;
-import dev.joid.lib.render.modifier.Rotation;
-import dev.joid.lib.render.modifier.Scale;
-import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.Drawing;
 import dev.joid.lib.render.transform.operation.RotateOperation;
 import dev.joid.lib.render.transform.operation.ScaleOperation;
 import dev.joid.lib.render.transform.operation.TransformOperation;

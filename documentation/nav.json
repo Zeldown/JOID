@@ -57,14 +57,14 @@
 					"path": "concepts/input",
 					"source": "core/src/main/java/dev/joid/lib/ui/node/callback/NodeCallback.java",
 					"refs": [
-						"ClickType",
+						"MouseButton",
 						"Key"
 					]
 				},
 				{
 					"title": "Signals and Reactivity",
 					"path": "concepts/signals",
-					"source": "core/src/main/java/dev/joid/lib/utils/signal/Signal.java",
+					"source": "core/src/main/java/dev/joid/lib/signal/Signal.java",
 					"refs": [
 						"Signal",
 						"IntegerSignal",
@@ -355,17 +355,17 @@
 							"source": "core/src/main/java/dev/joid/lib/ui/node/callback/NodeCallback.java",
 							"refs": [
 								"NodeCallback",
-								"InternalContext",
+								"DispatchContext",
 								"NodeCallbackMethod"
 							]
 						},
 						{
 							"title": "Mouse and Keyboard",
 							"path": "interactions/mouse-and-keyboard",
-							"source": "core/src/main/java/dev/joid/lib/utils/key/Key.java",
+							"source": "core/src/main/java/dev/joid/lib/input/key/Key.java",
 							"refs": [
 								"Key",
-								"ClickType"
+								"MouseButton"
 							]
 						},
 						{
@@ -395,7 +395,7 @@
 						{
 							"title": "Signals",
 							"path": "state/signals",
-							"source": "core/src/main/java/dev/joid/lib/utils/signal/Signal.java",
+							"source": "core/src/main/java/dev/joid/lib/signal/Signal.java",
 							"refs": [
 								"Signal",
 								"ISignal",
@@ -415,7 +415,7 @@
 						{
 							"title": "Reactive Properties",
 							"path": "state/reactive-properties",
-							"source": "core/src/main/java/dev/joid/lib/utils/signal/replay/SignalReplay.java",
+							"source": "core/src/main/java/dev/joid/lib/signal/replay/SignalReplay.java",
 							"refs": [
 								"SignalReplay"
 							]
@@ -521,7 +521,7 @@
 						{
 							"title": "Easing",
 							"path": "animation/easing",
-							"source": "core/src/main/java/dev/joid/lib/animation/tweenengine/TweenEquations.java",
+							"source": "core/src/main/java/dev/joid/lib/animation/tween/TweenEquations.java",
 							"refs": [
 								"TweenEquations",
 								"TweenEquation"
@@ -530,7 +530,7 @@
 						{
 							"title": "Tween Engine",
 							"path": "animation/tween-engine",
-							"source": "core/src/main/java/dev/joid/lib/animation/tweenengine/Timeline.java",
+							"source": "core/src/main/java/dev/joid/lib/animation/tween/Timeline.java",
 							"refs": [
 								"Tween",
 								"Timeline",
@@ -607,12 +607,12 @@
 						{
 							"title": "Supported Formats",
 							"path": "resources/formats",
-							"source": "core/src/main/java/dev/joid/lib/resource/dto/format/ResourceFormat.java"
+							"source": "core/src/main/java/dev/joid/lib/resource/format/ResourceFormat.java"
 						},
 						{
 							"title": "Playback, Video and Audio",
 							"path": "resources/playback",
-							"source": "core/src/main/java/dev/joid/lib/resource/dto/playback/IResourcePlayback.java",
+							"source": "core/src/main/java/dev/joid/lib/resource/playback/IResourcePlayback.java",
 							"refs": [
 								"IResourcePlayback",
 								"VideoAudioPlayer",
@@ -622,7 +622,7 @@
 						{
 							"title": "Custom Formats and Decoders",
 							"path": "resources/custom-formats",
-							"source": "core/src/main/java/dev/joid/lib/resource/dto/decoder/IResourceDecoder.java",
+							"source": "core/src/main/java/dev/joid/lib/resource/decoder/IResourceDecoder.java",
 							"refs": [
 								"IResourceFormat",
 								"ResourceFormat",
@@ -643,7 +643,7 @@
 				{
 					"title": "Text and TextInfo",
 					"path": "text/text-and-textinfo",
-					"source": "core/src/main/java/dev/joid/lib/font/dto/TextInfo.java",
+					"source": "core/src/main/java/dev/joid/lib/font/TextInfo.java",
 					"refs": [
 						"Text",
 						"TextElement",
@@ -654,7 +654,7 @@
 				{
 					"title": "Styling Text",
 					"path": "text/styling-text",
-					"source": "core/src/main/java/dev/joid/lib/font/dto/TextStyle.java",
+					"source": "core/src/main/java/dev/joid/lib/font/TextStyle.java",
 					"refs": [
 						"TextStyle",
 						"FontWeight",
@@ -666,7 +666,7 @@
 				{
 					"title": "Markup and Text Effects",
 					"path": "text/markup-and-effects",
-					"source": "core/src/main/java/dev/joid/lib/font/dto/markup/TextMarkup.java",
+					"source": "core/src/main/java/dev/joid/lib/font/markup/TextMarkup.java",
 					"refs": [
 						"TextMarkup",
 						"ITextMarkup",

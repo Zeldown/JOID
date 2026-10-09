@@ -51,7 +51,7 @@ import java.io.File;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 
@@ -263,7 +263,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.signal.Signal;
 
 public class Switch extends SwitchNode {
 
@@ -286,7 +286,7 @@ public class Switch extends SwitchNode {
 			.color(Signal.from(() -> super.getState().equals(state) ? Theme.INK : Theme.SURFACE))
 			.borderColor(Theme.LINE)
 			.borderStroke(1D)
-			.onClick((node, mouseX, mouseY, clickType) -> super.state(state))
+			.onClick((node, mouseX, mouseY, button) -> super.state(state))
 			.body(segment -> {
 				TextNode
 				.create(0, 0, width, super.getHeight())
@@ -368,9 +368,9 @@ A settings panel built only from the kit. The signals hold the values; the scree
 package app.flat;
 
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
 import kit.flat.*;
 
 public final class SettingsUI extends UI {
@@ -417,7 +417,7 @@ import java.io.File;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 
@@ -630,9 +630,9 @@ public final class FlatKit implements Kit {
 package app.factory;
 
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
 import kit.Kit;
 
 public final class SettingsUI extends UI {

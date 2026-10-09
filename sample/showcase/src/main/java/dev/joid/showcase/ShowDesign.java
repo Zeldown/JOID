@@ -5,15 +5,15 @@ import java.util.Locale;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
 
 public class ShowDesign extends ShowUI {
 

@@ -3,7 +3,7 @@ package dev.joid.showcase;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;

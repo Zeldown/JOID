@@ -7,7 +7,8 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.overflow.node.DemoScrollbarNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
@@ -15,7 +16,6 @@ import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class UIDemoOverflow extends UIDemo {
 
@@ -225,7 +225,7 @@ public class UIDemoOverflow extends UIDemo {
 			RectNode
 			.create(260, 20, 120, 50)
 			.color(UIDemoOverflow.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> area.scrollRatioY(0F))
+			.onClick((node, mouseX, mouseY, button) -> area.scrollRatioY(0F))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Top", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -233,7 +233,7 @@ public class UIDemoOverflow extends UIDemo {
 			RectNode
 			.create(260, 90, 120, 50)
 			.color(UIDemoOverflow.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> area.scrollRatioY(1F))
+			.onClick((node, mouseX, mouseY, button) -> area.scrollRatioY(1F))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Bottom", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

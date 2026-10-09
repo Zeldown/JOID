@@ -59,7 +59,7 @@ A format registered later is asked first, before every built-in format. `decoder
 
 ## Writing a decoder with IResourceDecoder
 
-An `IResourceDecoder` (`dev.joid.lib.resource.dto.decoder`) turns an asset into textures. JOID calls its methods in this order:
+An `IResourceDecoder` (`dev.joid.lib.resource.decoder`) turns an asset into textures. JOID calls its methods in this order:
 
 | Method | When | Thread | What to do |
 |---|---|---|---|
@@ -201,7 +201,7 @@ See [Supported Formats](formats.md) for their behavior and [Playback](playback.m
 
 ## Animations with IResourceAnimationReader
 
-`AnimatedResourceDecoder` plays any animation that an `IResourceAnimationReader` (`dev.joid.lib.resource.dto.animation`) can read. A reader returns the whole animation at once. This one plays a horizontal sprite strip, where every frame has the same width:
+`AnimatedResourceDecoder` plays any animation that an `IResourceAnimationReader` (`dev.joid.lib.resource.animation`) can read. A reader returns the whole animation at once. This one plays a horizontal sprite strip, where every frame has the same width:
 
 ```java
 public class StripAnimationReader implements IResourceAnimationReader {
@@ -253,11 +253,11 @@ ResourceNode.create(100, 100, 128, 128).resource(coin).attach(this);
 | `ResourceAnimationCanvas.Blend` | `SOURCE` replaces the canvas pixels, `OVER` blends the frame over them. |
 | `ResourceAnimationCanvas.Disposal` | What the canvas becomes before the next frame: `NONE` keeps the frame, `BACKGROUND` clears its area to transparent, `PREVIOUS` restores the canvas as it was before the frame. |
 
-The built-in readers are `GifResourceAnimationReader`, `ApngResourceAnimationReader` and `WebpResourceAnimationReader` (`dev.joid.lib.resource.dto.animation.impl`). Their static helpers tell formats apart from a header: `ApngResourceAnimationReader.isAnimated(byte[])` returns `Boolean.TRUE` or `Boolean.FALSE`, or `null` when the bytes end before the answer; `WebpResourceAnimationReader.isWebp(byte[])` and `isAnimated(byte[])` return booleans. `HeifResourceFormat.isHeif(byte[])` tells whether a header is a HEIF or AVIF image.
+The built-in readers are `GifResourceAnimationReader`, `ApngResourceAnimationReader` and `WebpResourceAnimationReader` (`dev.joid.lib.resource.animation.impl`). Their static helpers tell formats apart from a header: `ApngResourceAnimationReader.isAnimated(byte[])` returns `Boolean.TRUE` or `Boolean.FALSE`, or `null` when the bytes end before the answer; `WebpResourceAnimationReader.isWebp(byte[])` and `isAnimated(byte[])` return booleans. `HeifResourceFormat.isHeif(byte[])` tells whether a header is a HEIF or AVIF image.
 
 ## Resolvers for in-memory inputs
 
-An `IResourceResolver` (`dev.joid.lib.resource.dto.resolver`) handles inputs that need no asset, because they are already decoded. Resolvers are asked before asset locators.
+An `IResourceResolver` (`dev.joid.lib.resource.resolver`) handles inputs that need no asset, because they are already decoded. Resolvers are asked before asset locators.
 
 | Built-in resolver | Input | Result | Unique id |
 |---|---|---|---|
@@ -315,7 +315,7 @@ A resolver creates its resource through `builder.compute`, so the cache and the 
 
 ## ResourceData reference
 
-`ResourceData` (`dev.joid.lib.resource.dto`) is the state shared by every `Resource` of the same unique id. Decoders fill it; `Resource.getResourceData()` returns it.
+`ResourceData` (`dev.joid.lib.resource`) is the state shared by every `Resource` of the same unique id. Decoders fill it; `Resource.getResourceData()` returns it.
 
 | Method | Description |
 |---|---|

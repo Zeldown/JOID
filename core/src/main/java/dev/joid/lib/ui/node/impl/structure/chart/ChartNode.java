@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartAxis.XChartAxis;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartAxis.YChartAxis;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 

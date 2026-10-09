@@ -2,7 +2,7 @@ package dev.joid.demo.replay;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 
 public class ReplayCountedSignal extends IntegerSignal {
 

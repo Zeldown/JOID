@@ -14,14 +14,14 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.slider.callback.NodeSliderChangeCallback;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -97,7 +97,7 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb()).signal(signal).onChange((node, value) -> changes.add(value));
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frame();
 		Assert.assertTrue(slider.getThumb().isDragging());
 		Assert.assertEquals(7, slider.getValue().intValue());
@@ -171,7 +171,7 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(150D, 125D).frames(2);
 		Assert.assertEquals(25D, slider.getThumb().getX(), 1E-9D);
 		Assert.assertEquals(2, slider.getValue().intValue());
@@ -183,9 +183,9 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb()).onChange((node, value) -> changes.add(value));
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(150D, 125D).frames(2);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertFalse(slider.getThumb().isDragging());
 		Assert.assertEquals(43.75D, slider.getThumb().getX(), 1E-9D);
 		Assert.assertEquals(2, slider.getValue().intValue());
@@ -199,7 +199,7 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.getThumb().dragging(true).x(300D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(8, slider.getValue().intValue());
 		Assert.assertEquals(306.25D, slider.getThumb().getX(), 1E-9D);
 	}
@@ -209,7 +209,7 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(1000D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frame();
 		Assert.assertFalse(slider.getThumb().isDragging());
 		Assert.assertEquals(5, slider.getValue().intValue());
@@ -251,7 +251,7 @@ public class SliderNodeTest {
 			public void apply(final @NonNull Slider node, final @NonNull Integer value) {}
 
 			@Override
-			public void pre(final @NonNull Slider node, final @NonNull InternalContext context, final @NonNull Integer value) {
+			public void pre(final @NonNull Slider node, final @NonNull DispatchContext context, final @NonNull Integer value) {
 				proposals.add(value);
 				context.cancel();
 			}
@@ -259,7 +259,7 @@ public class SliderNodeTest {
 		});
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frames(3);
 		Assert.assertFalse(slider.getThumb().isDragging());
 		Assert.assertEquals(175D, slider.getThumb().getX(), 1E-9D);
@@ -272,9 +272,9 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
 		final NodeUI ui = new NodeUI(slider);
 		this.bridges.open(ui).frame();
-		RectNode.create(100D, 100D, 400D, 50D).onClick((node, mouseX, mouseY, clickType) -> {}).attach(ui);
+		RectNode.create(100D, 100D, 400D, 50D).onClick((node, mouseX, mouseY, button) -> {}).attach(ui);
 		this.bridges.move(400D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frame();
 		Assert.assertFalse(slider.getThumb().isDragging());
 		Assert.assertEquals(5, slider.getValue().intValue());

@@ -13,7 +13,7 @@ import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.input.mouse.MouseButton;
 
 public class DemoWindow extends DemoUIBridge {
 
@@ -58,9 +58,9 @@ public class DemoWindow extends DemoUIBridge {
 				final boolean state = Mouse.getEventButtonState();
 
 				if (state && button != -1) {
-					super.mousePressed(ClickType.from(button));
+					super.mousePressed(MouseButton.from(button));
 				} else if (button != -1) {
-					super.mouseReleased(ClickType.from(button));
+					super.mouseReleased(MouseButton.from(button));
 				} else {
 					super.mouseMoved();
 				}

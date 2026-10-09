@@ -4,10 +4,11 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.render.modifier.Rotation;
-import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.transform.Rotation;
+import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.render.transform.operation.RotateOperation;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
@@ -18,7 +19,6 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 public class ShowEffects extends ShowUI {
 

@@ -11,12 +11,12 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
-import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
 public class NodeScrollUpdateCallbackTest {
@@ -29,7 +29,7 @@ public class NodeScrollUpdateCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeScrollUpdateCallback<RectNode> callback = (node, value) -> received.addAll(Arrays.asList(node, value));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context, -30D);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -42,7 +42,7 @@ public class NodeScrollUpdateCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeScrollUpdateCallback<RectNode> callback = (node, value) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), -30D);
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), -30D);
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -78,7 +78,7 @@ public class NodeScrollUpdateCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull ContainerNode node, final @NonNull InternalContext context, final double value) {
+			public void pre(final @NonNull ContainerNode node, final @NonNull DispatchContext context, final double value) {
 				context.cancel();
 			}
 

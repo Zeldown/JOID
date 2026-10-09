@@ -1,6 +1,6 @@
 # Custom Nodes
 
-In [Building a UI Kit](../components/ui-kit.md) you gave a look to the controls of JOID by subclassing them. A custom node goes one step further: you extend `Node` itself (or any existing node) and override its hooks, `draw` for the visuals, `init` and `update` for state, the input hooks for interaction. This page covers the constructor and factory contract, reactive setters, the hooks, input handling with `InternalContext`, your own callbacks with `@NodeCallbackMethod`, and signal bindings.
+In [Building a UI Kit](../components/ui-kit.md) you gave a look to the controls of JOID by subclassing them. A custom node goes one step further: you extend `Node` itself (or any existing node) and override its hooks, `draw` for the visuals, `init` and `update` for state, the input hooks for interaction. This page covers the constructor and factory contract, reactive setters, the hooks, input handling with `DispatchContext`, your own callbacks with `@NodeCallbackMethod`, and signal bindings.
 
 ## A minimal node
 
@@ -44,7 +44,7 @@ A color swatch that the user selects with a click, with its own `onSelect` callb
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
-import dev.joid.lib.utils.context.InternalContext;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import lombok.NonNull;
 
 @FunctionalInterface
@@ -53,10 +53,10 @@ public interface NodeSwatchSelectCallback<T extends SwatchNode> extends NodeCall
 	public void apply(final @NonNull T node, final boolean selected);
 
 	@NodeCallbackMethod(Phase.PRE)
-	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final boolean selected) {}
+	public default void pre(final @NonNull T node, final @NonNull DispatchContext context, final boolean selected) {}
 
 	@NodeCallbackMethod(Phase.POST)
-	public default void post(final @NonNull T node, final @NonNull InternalContext context, final boolean selected) {
+	public default void post(final @NonNull T node, final @NonNull DispatchContext context, final boolean selected) {
 		context.cancel(() -> this.apply(node, selected));
 	}
 
@@ -72,9 +72,9 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.signal.Signal;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
@@ -104,12 +104,12 @@ public class SwatchNode extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final ClickType clickType, final InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final MouseButton clickType, final DispatchContext context) {
 		if (context.isCancelled() || !clickType.isLeft() || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
-		context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalContext.create(), () -> this.selected = !this.selected, !this.selected));
+		context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, DispatchContext.create(), () -> this.selected = !this.selected, !this.selected));
 	}
 
 	public final <T extends SwatchNode> @NonNull T color(final @NonNull Color color) {
@@ -190,11 +190,11 @@ The hooks come from `INode` and do nothing by default, except `drawSkeleton`.
 | `drawSkeleton(double mouseX, double mouseY)` | Every frame while the node is visible but not mounted, instead of `draw`. `Node` fills the bounds with `Color.LOADING()`. |
 | `update()` | On every update tick, after the children's `update`. Also called for hidden nodes. |
 | `detach()` | When the node is detached, after its children. |
-| `mousePressed(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | Mouse button pressed. |
-| `mouseReleased(double mouseX, double mouseY, ClickType clickType, InternalContext context)` | Mouse button released. |
-| `mouseDragged(double mouseX, double mouseY, ClickType clickType, long deltaTime, InternalContext context)` | Mouse moved with a button held. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge on the clock bridge. |
-| `mouseScroll(double mouseX, double mouseY, double notchesX, double notchesY, InternalContext context)` | Mouse wheel, in notches on each axis. A positive `notchesY` is a wheel up, a positive `notchesX` a scroll toward the left. |
-| `keyPressed(char c, Key key, InternalContext context)` | Key typed. `c` is the typed character, as reported by the UI bridge (the bundled windows send `0` for keys without one). |
+| `mousePressed(double mouseX, double mouseY, MouseButton clickType, DispatchContext context)` | Mouse button pressed. |
+| `mouseReleased(double mouseX, double mouseY, MouseButton clickType, DispatchContext context)` | Mouse button released. |
+| `mouseDragged(double mouseX, double mouseY, MouseButton clickType, long deltaTime, DispatchContext context)` | Mouse moved with a button held. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge on the clock bridge. |
+| `mouseScroll(double mouseX, double mouseY, double notchesX, double notchesY, DispatchContext context)` | Mouse wheel, in notches on each axis. A positive `notchesY` is a wheel up, a positive `notchesX` a scroll toward the left. |
+| `keyPressed(char c, Key key, DispatchContext context)` | Key typed. `c` is the typed character, as reported by the UI bridge (the bundled windows send `0` for keys without one). |
 
 ### Drawing in draw
 
@@ -215,7 +215,7 @@ See [The Virtual Canvas](../concepts/canvas.md).
 - `update` runs on the update ticks driven by the UI bridge, independently of the frames. The layout nodes lay out their children there and in `draw`.
 - Release what the node holds (threads, sockets, resources) in `detach`. It runs when the parent clears its children, when a watch clears them, and when the UI closes or reloads.
 
-## Handling input with InternalContext
+## Handling input with DispatchContext
 
 ### Dispatch order
 
@@ -239,7 +239,7 @@ The hooks are called on every visible node of the UI, whatever the pointer posit
 
 ### Consuming events
 
-One `InternalContext` (`dev.joid.lib.utils.context`) travels through the whole dispatch of an event. A node that handles the event cancels it; the nodes after it see `isCancelled()` and step aside.
+One `DispatchContext` (`dev.joid.lib.ui.node.callback`) travels through the whole dispatch of an event. A node that handles the event cancels it; the nodes after it see `isCancelled()` and step aside.
 
 | Method | Description |
 | --- | --- |
@@ -249,13 +249,13 @@ One `InternalContext` (`dev.joid.lib.utils.context`) travels through the whole d
 | `cancelIf(Supplier<Boolean> supplier)` | When not cancelled yet, cancels if `supplier` returns `true`. |
 | `execute(Runnable runnable)` | Runs `runnable` when not cancelled, without cancelling. |
 | `reset()` | Clears the cancellation. |
-| `InternalContext.create()`, `InternalContext.create(boolean cancelled)` | New contexts, for firing your own callbacks. |
+| `DispatchContext.create()`, `DispatchContext.create(boolean cancelled)` | New contexts, for firing your own callbacks. |
 
 All of them except `isCancelled()` return the context. Release hooks usually reset a state whatever the pointer position, since a release outside the node must still end a press:
 
 ```java
 @Override
-public void mouseReleased(final double mouseX, final double mouseY, final ClickType clickType, final InternalContext context) {
+public void mouseReleased(final double mouseX, final double mouseY, final MouseButton clickType, final DispatchContext context) {
 	this.pressed = false;
 }
 ```
@@ -268,13 +268,13 @@ A callback type is an interface that extends `NodeCallback` (`dev.joid.lib.ui.no
 
 - `@FunctionalInterface` and a single abstract method, by convention `apply(...)`, the method lambdas implement;
 - a default method annotated `@NodeCallbackMethod(Phase.PRE)` and a default method annotated `@NodeCallbackMethod(Phase.POST)`, declared in the interface itself;
-- for both phases: a `void` return, the node as first parameter (a `Node` type), an `InternalContext` as second parameter, then the event arguments in the order you pass them when firing.
+- for both phases: a `void` return, the node as first parameter (a `Node` type), an `DispatchContext` as second parameter, then the event arguments in the order you pass them when firing.
 
 The POST phase usually runs `apply` through `context.cancel(() -> this.apply(...))`, like every built-in callback. A user overrides `pre` to act, or veto, before the action (see [Callbacks](../interactions/callbacks.md)).
 
 ### 2. The callback id
 
-`NodeCallbackRegistry.next(Class<? extends NodeCallback> clazz)` (`dev.joid.lib.ui.node.callback.registry`) validates the interface and returns a new id. Store it in a `static final int` of your node. It throws `IllegalArgumentException` when the interface is not annotated `@FunctionalInterface`, when a phase is missing, or when a phase does not return `void`, has fewer than two parameters, or does not start with a node and an `InternalContext`. The same interface can be registered several times, one id per event: `Node` does so for `onDrag`, `onDragStart` and `onDragEnd`.
+`NodeCallbackRegistry.next(Class<? extends NodeCallback> clazz)` (`dev.joid.lib.ui.node.callback.registry`) validates the interface and returns a new id. Store it in a `static final int` of your node. It throws `IllegalArgumentException` when the interface is not annotated `@FunctionalInterface`, when a phase is missing, or when a phase does not return `void`, has fewer than two parameters, or does not start with a node and an `DispatchContext`. The same interface can be registered several times, one id per event: `Node` does so for `onDrag`, `onDragStart` and `onDragEnd`.
 
 | Method | Description |
 | --- | --- |
@@ -294,21 +294,21 @@ public final <T extends SwatchNode> @NonNull T onSelect(final @NonNull NodeSwatc
 
 ### 4. Firing with executeCallback
 
-`executeCallback(int type, InternalContext context, Runnable runnable, Object... args)` wraps an action with the callbacks:
+`executeCallback(int type, DispatchContext context, Runnable runnable, Object... args)` wraps an action with the callbacks:
 
 1. Without registered callbacks, `runnable` runs and nothing else happens.
 2. Every PRE phase runs, in registration order, with `(node, context, args...)`.
 3. When the context is cancelled after the PRE phases, `runnable` and the POST phases are skipped: the action is vetoed.
 4. Otherwise `runnable` runs, then every POST phase. The context is reset before each POST phase, so every callback's `apply` runs; when at least one of them cancels it, the context ends cancelled.
 
-Pass a fresh `InternalContext.create()` for an action of your own, as `SwatchNode` does. The `args` are evaluated before `runnable` runs: in `SwatchNode`, `!this.selected` is the new state.
+Pass a fresh `DispatchContext.create()` for an action of your own, as `SwatchNode` does. The `args` are evaluated before `runnable` runs: in `SwatchNode`, `!this.selected` is the new state.
 
 | Method | Description |
 | --- | --- |
-| `executeCallback(int type, InternalContext context, Runnable runnable, Object... args)` | PRE phases, action, POST phases. `runnable` can be `null`. |
-| `executeCallback(int type, InternalContext context, Object... args)` | Same without action. |
-| `executePreCallback(int type, InternalContext context, Object... args)` | PRE phases only. |
-| `executePostCallback(int type, InternalContext context, Object... args)` | POST phases only. With an already cancelled context, the POST phases see it cancelled and the default POST does not call `apply`. |
+| `executeCallback(int type, DispatchContext context, Runnable runnable, Object... args)` | PRE phases, action, POST phases. `runnable` can be `null`. |
+| `executeCallback(int type, DispatchContext context, Object... args)` | Same without action. |
+| `executePreCallback(int type, DispatchContext context, Object... args)` | PRE phases only. |
+| `executePostCallback(int type, DispatchContext context, Object... args)` | POST phases only. With an already cancelled context, the POST phases see it cancelled and the default POST does not call `apply`. |
 | `hasCallback(int type)` | `true` when callbacks were registered for `type`. |
 | `getCallbackList(int type)` | The registered callbacks, wrapped in `NodeCallbackInvoker`s. Empty when none. |
 | `getCallbackMap()` | Every registered callback, by id. |
@@ -329,7 +329,7 @@ public final <T extends DrawerNode> @NonNull T onOpen(final @NonNull NodeEventCa
 }
 
 public final <T extends DrawerNode> @NonNull T open() {
-	super.executeCallback(DrawerNode.CALLBACK_OPEN, InternalContext.create(), () -> this.opened = true);
+	super.executeCallback(DrawerNode.CALLBACK_OPEN, DispatchContext.create(), () -> this.opened = true);
 	return (T) this;
 }
 ```
@@ -373,7 +373,7 @@ public final <T extends SwatchNode> @NonNull T signal(final @NonNull Signal<Bool
 ```
 
 ```java
-context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalContext.create(), () -> {
+context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, DispatchContext.create(), () -> {
 	this.selected = !this.selected;
 	super.sync(this.signal, this.selected);
 }, !this.selected));
@@ -381,7 +381,7 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalC
 
 - A value published by the node itself comes back to the consumer: make the consumer harmless when the value is already the current one.
 - The consumer also receives `null` when the signal is set to `null`.
-- `Signal` and `SignalSubscriber` are in `dev.joid.lib.utils.signal`, `Consumer` in `java.util.function`.
+- `Signal` and `SignalSubscriber` are in `dev.joid.lib.signal`, `Consumer` in `java.util.function`.
 
 ## Building on existing nodes
 
@@ -396,7 +396,7 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalC
 | --- | --- |
 | `Node(double x, double y)`, `Node(double x, double y, double width, double height)` | Constructors. |
 | `INode` hooks | `init`, `draw`, `drawSkeleton`, `update`, `detach`, `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`. |
-| `onMousePressed(double, double, ClickType, InternalContext)`, `onMouseReleased(...)`, `onMouseDragged(double, double, ClickType, long, InternalContext)`, `onMouseScroll(double, double, double, double, InternalContext)`, `onKeyPressed(char, Key, InternalContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
+| `onMousePressed(double, double, MouseButton, DispatchContext)`, `onMouseReleased(...)`, `onMouseDragged(double, double, MouseButton, long, DispatchContext)`, `onMouseScroll(double, double, double, double, DispatchContext)`, `onKeyPressed(char, Key, DispatchContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
 | `registerCallback(int, NodeCallback)` | Protected. Stores a callback. |
 | `bind(Signal<V>, Consumer<V>)` | Protected. Runs the consumer with the signal's current value, then with each published value while the UI is open. Returns the subscription; each call adds one. |
 | `unbind(SignalSubscriber<?>)` | Protected. Removes a subscription of the node. Does nothing with `null`. |

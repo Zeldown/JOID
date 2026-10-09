@@ -12,8 +12,8 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeMountCallbackTest {
 
@@ -25,7 +25,7 @@ public class NodeMountCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeMountCallback<RectNode> callback = received::add;
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -38,7 +38,7 @@ public class NodeMountCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeMountCallback<RectNode> callback = received::add;
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true));
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true));
 		Assert.assertTrue(received.isEmpty());
 	}
 

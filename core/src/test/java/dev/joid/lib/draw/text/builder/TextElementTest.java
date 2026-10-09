@@ -9,9 +9,9 @@ import org.junit.Test;
 import dev.joid.internal.JOID;
 import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.font.FontUsage;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.converter.ITextConverter;
-import dev.joid.lib.font.dto.converter.TextConverter;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.converter.ITextConverter;
+import dev.joid.lib.font.converter.TextConverter;
 
 import lombok.NonNull;
 

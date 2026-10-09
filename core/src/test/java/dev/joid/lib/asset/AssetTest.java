@@ -11,11 +11,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dev.joid.lib.asset.dto.impl.FileAsset;
-import dev.joid.lib.asset.dto.impl.StreamAsset;
-import dev.joid.lib.asset.dto.impl.UrlAsset;
-import dev.joid.lib.asset.dto.locator.AssetLocator;
-import dev.joid.lib.asset.dto.locator.IAssetLocator;
+import dev.joid.lib.asset.impl.FileAsset;
+import dev.joid.lib.asset.impl.StreamAsset;
+import dev.joid.lib.asset.impl.UrlAsset;
+import dev.joid.lib.asset.locator.AssetLocator;
+import dev.joid.lib.asset.locator.IAssetLocator;
 import lombok.NonNull;
 
 public class AssetTest {

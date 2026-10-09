@@ -27,17 +27,27 @@ import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.animation.tweenengine.TweenEquation;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEquation;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
+import dev.joid.lib.signal.ComputedSignal;
+import dev.joid.lib.signal.ISignal;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalContext;
+import dev.joid.lib.signal.SignalSubscriber;
+import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackInvoker;
 import dev.joid.lib.ui.node.callback.impl.animation.NodeAnimationCallback;
@@ -78,18 +88,8 @@ import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedLinkedList;
-import dev.joid.lib.utils.signal.ComputedSignal;
-import dev.joid.lib.utils.signal.ISignal;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.SignalContext;
-import dev.joid.lib.utils.signal.SignalSubscriber;
-import dev.joid.lib.utils.signal.replay.SignalReplay;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -221,8 +221,8 @@ public abstract class Node implements INode {
 	private double  drawnY;
 	private boolean moving;
 
-	private long      lastClickTime;
-	private ClickType lastClickType;
+	private long        lastClickTime;
+	private MouseButton lastClickButton;
 
 	private Key  lastKey;
 	private long lastKeyTime;
@@ -275,7 +275,7 @@ public abstract class Node implements INode {
 		final SignalContext context = SignalContext.current();
 		final List<Signal<?>> readList = context.takeReads();
 		try {
-			this.executeCallback(Node.CALLBACK_INIT, InternalContext.create(), () -> {
+			this.executeCallback(Node.CALLBACK_INIT, DispatchContext.create(), () -> {
 				this.ui = ui;
 				this.children.forEach(child -> child.load(this.ui));
 
@@ -349,19 +349,19 @@ public abstract class Node implements INode {
 
 				if (!this.hovered && this.isHovered(mouseX, mouseY)) {
 					this.hoverAnimator.sequence(this.hoverDuration, 1F, this.hoverEquation).start();
-					this.executeCallback(Node.CALLBACK_HOVER_START, InternalContext.create(), mouseX, mouseY);
+					this.executeCallback(Node.CALLBACK_HOVER_START, DispatchContext.create(), mouseX, mouseY);
 				}
 
 				if (this.hovered && !this.isHovered(mouseX, mouseY)) {
 					this.hoverAnimator.sequence(this.hoverDuration, 0F, this.hoverEquation).start();
-					this.executeCallback(Node.CALLBACK_HOVER_END, InternalContext.create(), mouseX, mouseY);
+					this.executeCallback(Node.CALLBACK_HOVER_END, DispatchContext.create(), mouseX, mouseY);
 				}
 
 				this.hovered = this.isHovered(mouseX, mouseY);
 				this.hoverAnimator.update();
 
 				if (this.hovered) {
-					this.executeCallback(Node.CALLBACK_HOVER, InternalContext.create(), mouseX, mouseY);
+					this.executeCallback(Node.CALLBACK_HOVER, DispatchContext.create(), mouseX, mouseY);
 				}
 
 				this.updateAnimators();
@@ -419,12 +419,12 @@ public abstract class Node implements INode {
 
 				if (this.scrollEndX && this.scrollX == this.targetScrollX) {
 					this.scrollEndX = false;
-					this.executeCallback(Node.CALLBACK_SCROLL_END, InternalContext.create(), this.scrollX, this.scrollY);
+					this.executeCallback(Node.CALLBACK_SCROLL_END, DispatchContext.create(), this.scrollX, this.scrollY);
 				}
 
 				if (this.scrollEndY && this.scrollY == this.targetScrollY) {
 					this.scrollEndY = false;
-					this.executeCallback(Node.CALLBACK_SCROLL_END, InternalContext.create(), this.scrollX, this.scrollY);
+					this.executeCallback(Node.CALLBACK_SCROLL_END, DispatchContext.create(), this.scrollX, this.scrollY);
 				}
 
 				if (scrollsX || scrollsY) {
@@ -531,7 +531,7 @@ public abstract class Node implements INode {
 				this.mounted = this.isMounted();
 
 				if (!wasMounted && this.mounted) {
-					this.executeCallback(Node.CALLBACK_MOUNT, InternalContext.create());
+					this.executeCallback(Node.CALLBACK_MOUNT, DispatchContext.create());
 				}
 
 				final List<NodeEffect<Node>> effects = this.getAppliedEffects();
@@ -552,15 +552,15 @@ public abstract class Node implements INode {
 						}
 
 						if (this.skeleton != null && !this.mounted) {
-							this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+							this.executeCallback(Node.CALLBACK_RENDER, DispatchContext.create(), () -> {
 								this.skeleton.render(mouseX, mouseY);
 							}, mouseX, mouseY);
 							return;
 						}
 
-						this.executeCallback(Node.CALLBACK_RENDER, InternalContext.create(), () -> {
+						this.executeCallback(Node.CALLBACK_RENDER, DispatchContext.create(), () -> {
 							this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-							this.executeCallback(Node.CALLBACK_DRAW, InternalContext.create(), () -> {
+							this.executeCallback(Node.CALLBACK_DRAW, DispatchContext.create(), () -> {
 								final Runnable selfDraw = () -> {
 									if (this.mounted) {
 										this.draw(mouseX, mouseY);
@@ -709,7 +709,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void onUpdate() {
-		this.executeCallback(Node.CALLBACK_UPDATE, InternalContext.create(), () -> {
+		this.executeCallback(Node.CALLBACK_UPDATE, DispatchContext.create(), () -> {
 			this.children.ordered().stream().forEach(Node::onUpdate);
 			this.update();
 		});
@@ -723,7 +723,7 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_SCROLL, callback);
 	}
 
-	public final void onMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull InternalContext context) {
+	public final void onMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
 		if (!this.isVisible()) {
 			return;
 		}
@@ -774,27 +774,27 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_DRAGGED, callback);
 	}
 
-	public final void onMouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
+	public final void onMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
 		final boolean visible = this.isVisible();
 		final boolean enabled = visible && this.isEnabled();
 		if (visible) {
 			if (this.scrollbar != null) {
-				this.scrollbar.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context);
+				this.scrollbar.onMouseDragged(mouseX, mouseY, button, deltaTime, context);
 			}
 
 			if (this.skeleton != null && !this.mounted) {
-				this.skeleton.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context);
+				this.skeleton.onMouseDragged(mouseX, mouseY, button, deltaTime, context);
 			}
 
 			if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_DRAGGED)) {
-				this.executePreCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, clickType, deltaTime);
+				this.executePreCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, button, deltaTime);
 			}
 
-			this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context));
+			this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, button, deltaTime, context));
 			if (enabled) {
-				this.mouseDragged(mouseX, mouseY, clickType, deltaTime, context);
+				this.mouseDragged(mouseX, mouseY, button, deltaTime, context);
 			}
-			this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, clickType, deltaTime, context));
+			this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, button, deltaTime, context));
 		}
 
 		if (this.dragging) {
@@ -805,7 +805,7 @@ public abstract class Node implements INode {
 		}
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_DRAGGED)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, clickType, deltaTime);
+			this.executePostCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, button, deltaTime);
 		}
 	}
 
@@ -813,45 +813,45 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_PRESSED, callback);
 	}
 
-	public final void onMousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public final void onMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (!this.isVisible()) {
 			return;
 		}
 
 		final boolean enabled = this.isEnabled();
-		this.lastClickType = clickType;
+		this.lastClickButton = button;
 		this.lastClickTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		if (this.scrollbar != null) {
-			this.scrollbar.onMousePressed(mouseX, mouseY, clickType, context);
+			this.scrollbar.onMousePressed(mouseX, mouseY, button, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.onMousePressed(mouseX, mouseY, clickType, context);
+			this.skeleton.onMousePressed(mouseX, mouseY, button, context);
 		}
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_PRESSED)) {
-			this.executePreCallback(Node.CALLBACK_MOUSE_PRESSED, context, mouseX, mouseY, clickType);
+			this.executePreCallback(Node.CALLBACK_MOUSE_PRESSED, context, mouseX, mouseY, button);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMousePressed(mouseX, mouseY, clickType, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMousePressed(mouseX, mouseY, button, context));
 		final boolean pressed = context.isCancelled();
 		if (!pressed && this.isHovered(mouseX, mouseY) && this.hasCallback(Node.CALLBACK_CLICK)) {
-			this.executeCallback(Node.CALLBACK_CLICK, context, mouseX, mouseY, clickType);
+			this.executeCallback(Node.CALLBACK_CLICK, context, mouseX, mouseY, button);
 			context.cancel();
 		}
 		final boolean clicked = !pressed && context.isCancelled();
 
 		if (enabled) {
-			this.mousePressed(mouseX, mouseY, clickType, context);
+			this.mousePressed(mouseX, mouseY, button, context);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMousePressed(mouseX, mouseY, clickType, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMousePressed(mouseX, mouseY, button, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_PRESSED)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, clicked ? InternalContext.create() : context, mouseX, mouseY, clickType);
+			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, clicked ? DispatchContext.create() : context, mouseX, mouseY, button);
 		}
 
-		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && clickType.isLeft() && this.isHovered(mouseX, mouseY)) {
+		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && this.isHovered(mouseX, mouseY)) {
 			this.startDragging(mouseX, mouseY);
 			if (this.dragging) {
 				context.cancel();
@@ -863,13 +863,13 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_RELEASED, callback);
 	}
 
-	public final void onMouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public final void onMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (this.scrollbar != null) {
-			this.scrollbar.onMouseReleased(mouseX, mouseY, clickType, context);
+			this.scrollbar.onMouseReleased(mouseX, mouseY, button, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.onMouseReleased(mouseX, mouseY, clickType, context);
+			this.skeleton.onMouseReleased(mouseX, mouseY, button, context);
 		}
 
 		if (this.dragging) {
@@ -882,17 +882,17 @@ public abstract class Node implements INode {
 
 		final boolean enabled = this.isEnabled();
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_RELEASED)) {
-			this.executePreCallback(Node.CALLBACK_MOUSE_RELEASED, context, mouseX, mouseY, clickType);
+			this.executePreCallback(Node.CALLBACK_MOUSE_RELEASED, context, mouseX, mouseY, button);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseReleased(mouseX, mouseY, clickType, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseReleased(mouseX, mouseY, button, context));
 		if (enabled) {
-			this.mouseReleased(mouseX, mouseY, clickType, context);
+			this.mouseReleased(mouseX, mouseY, button, context);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseReleased(mouseX, mouseY, clickType, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseReleased(mouseX, mouseY, button, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_RELEASED)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_RELEASED, context, mouseX, mouseY, clickType);
+			this.executePostCallback(Node.CALLBACK_MOUSE_RELEASED, context, mouseX, mouseY, button);
 		}
 	}
 
@@ -900,7 +900,7 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_KEY_PRESSED, callback);
 	}
 
-	public final void onKeyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+	public final void onKeyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 		if (!this.isVisible()) {
 			return;
 		}
@@ -934,7 +934,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void onDetach() {
-		this.executeCallback(Node.CALLBACK_DETACH, InternalContext.create(), () -> {
+		this.executeCallback(Node.CALLBACK_DETACH, DispatchContext.create(), () -> {
 			this.children.forEach(Node::onDetach);
 
 			if (this.scrollbar != null) {
@@ -958,7 +958,7 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
-			this.executeCallback(Node.CALLBACK_APPEND, InternalContext.create(), () -> {
+			this.executeCallback(Node.CALLBACK_APPEND, DispatchContext.create(), () -> {
 				if (node.parent != null && node.parent != this) {
 					node.parent.remove(node);
 				} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
@@ -1040,14 +1040,14 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T scrollOffsetX(final double value) {
-		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, InternalContext.create(), () -> {
+		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, DispatchContext.create(), () -> {
 			final double oldValue = this.targetScrollX;
 			this.targetScrollX = Math.min(value, 0);
 			if (this.targetScrollX <= -this.maxScrollX) {
 				this.targetScrollX = -this.maxScrollX;
 				if (oldValue != this.targetScrollX) {
 					this.scrollEndX = true;
-					this.executeCallback(Node.CALLBACK_SCROLL_ENDING, InternalContext.create(), this.targetScrollX, this.targetScrollY);
+					this.executeCallback(Node.CALLBACK_SCROLL_ENDING, DispatchContext.create(), this.targetScrollX, this.targetScrollY);
 				}
 			} else {
 				this.scrollEndX = false;
@@ -1062,14 +1062,14 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T scrollOffsetY(final double value) {
-		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, InternalContext.create(), () -> {
+		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, DispatchContext.create(), () -> {
 			final double oldValue = this.targetScrollY;
 			this.targetScrollY = Math.min(value, 0);
 			if (this.targetScrollY <= -this.maxScrollY) {
 				this.targetScrollY = -this.maxScrollY;
 				if (oldValue != this.targetScrollY) {
 					this.scrollEndY = true;
-					this.executeCallback(Node.CALLBACK_SCROLL_ENDING, InternalContext.create(), this.targetScrollX, this.targetScrollY);
+					this.executeCallback(Node.CALLBACK_SCROLL_ENDING, DispatchContext.create(), this.targetScrollX, this.targetScrollY);
 				}
 			} else {
 				this.scrollEndY = false;
@@ -1100,7 +1100,7 @@ public abstract class Node implements INode {
 				if (this.draggable.hasSnapping()) {
 					final Node snapNode = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
 					if (snapNode != null) {
-						this.executeCallback(Node.CALLBACK_SNAP, InternalContext.create(), () -> {
+						this.executeCallback(Node.CALLBACK_SNAP, DispatchContext.create(), () -> {
 							this.targetDragX = snapNode.getAbsoluteX();
 							this.targetDragY = snapNode.getAbsoluteY();
 						}, snapNode);
@@ -1150,22 +1150,22 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireDrag(final Runnable runnable) {
-		this.executeCallback(Node.CALLBACK_DRAG, InternalContext.create(), runnable);
+		this.executeCallback(Node.CALLBACK_DRAG, DispatchContext.create(), runnable);
 	}
 
 	public final void fireDragEnd(final Runnable runnable) {
-		this.executeCallback(Node.CALLBACK_DRAG_END, InternalContext.create(), runnable);
+		this.executeCallback(Node.CALLBACK_DRAG_END, DispatchContext.create(), runnable);
 	}
 
 	public final void fireDragStart(final Runnable runnable) {
-		this.executeCallback(Node.CALLBACK_DRAG_START, InternalContext.create(), runnable);
+		this.executeCallback(Node.CALLBACK_DRAG_START, DispatchContext.create(), runnable);
 	}
 
-	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull InternalContext context, final Object... args) {
+	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull DispatchContext context, final Object... args) {
 		this.executeCallback(type, context, null, args);
 	}
 
-	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull InternalContext context, final Runnable runnable, final Object... args) {
+	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull DispatchContext context, final Runnable runnable, final Object... args) {
 		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
 		if (callbackList.isEmpty()) {
 			if (runnable != null) {
@@ -1189,7 +1189,7 @@ public abstract class Node implements INode {
 		this.post(callbackList, context, args);
 	}
 
-	public final <T extends NodeCallback> void executePreCallback(final int type, final @NonNull InternalContext context, final Object... args) {
+	public final <T extends NodeCallback> void executePreCallback(final int type, final @NonNull DispatchContext context, final Object... args) {
 		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
 		if (callbackList.isEmpty()) {
 			return;
@@ -1200,7 +1200,7 @@ public abstract class Node implements INode {
 		}
 	}
 
-	public final <T extends NodeCallback> void executePostCallback(final int type, final @NonNull InternalContext context, final Object... args) {
+	public final <T extends NodeCallback> void executePostCallback(final int type, final @NonNull DispatchContext context, final Object... args) {
 		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
 		if (callbackList.isEmpty()) {
 			return;
@@ -1209,7 +1209,7 @@ public abstract class Node implements INode {
 		this.post(callbackList, context, args);
 	}
 
-	private <T extends NodeCallback> void post(final List<NodeCallbackInvoker<T>> callbackList, final InternalContext context, final Object... args) {
+	private <T extends NodeCallback> void post(final List<NodeCallbackInvoker<T>> callbackList, final DispatchContext context, final Object... args) {
 		final boolean cancelled = context.isCancelled();
 		boolean handled = cancelled;
 		for (final NodeCallbackInvoker<T> callback : callbackList) {
@@ -1827,7 +1827,7 @@ public abstract class Node implements INode {
 			final float value = animator.update().getValue();
 			if (value != previous) {
 				this.animatorMap.put(animator, value);
-				this.executeCallback(Node.CALLBACK_ANIMATION, InternalContext.create(), animator, value);
+				this.executeCallback(Node.CALLBACK_ANIMATION, DispatchContext.create(), animator, value);
 			}
 		}
 	}
@@ -1852,7 +1852,7 @@ public abstract class Node implements INode {
 		final boolean wasHovered = this.hovered;
 		this.hovered = false;
 		if (wasHovered && this.ui != null) {
-			this.executeCallback(Node.CALLBACK_HOVER_END, InternalContext.create(), this.ui.getMouseX(), this.ui.getMouseY());
+			this.executeCallback(Node.CALLBACK_HOVER_END, DispatchContext.create(), this.ui.getMouseX(), this.ui.getMouseY());
 		}
 
 		this.hoverAnimator.clear();
@@ -1920,7 +1920,7 @@ public abstract class Node implements INode {
 				return;
 			}
 
-			this.executeCallback(Node.CALLBACK_WATCH, InternalContext.create(), () -> {
+			this.executeCallback(Node.CALLBACK_WATCH, DispatchContext.create(), () -> {
 				SignalReplay.enter(this, this.ui);
 				try {
 					for (final WatchProperty property : properties) {

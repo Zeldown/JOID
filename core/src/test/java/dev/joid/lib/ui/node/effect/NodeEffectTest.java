@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.pipeline.IShaderPass;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;

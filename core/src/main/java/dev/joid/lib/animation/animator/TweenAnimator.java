@@ -2,13 +2,13 @@ package dev.joid.lib.animation.animator;
 
 import java.util.function.Consumer;
 
-import dev.joid.lib.animation.tweenengine.BaseTween;
-import dev.joid.lib.animation.tweenengine.Timeline;
-import dev.joid.lib.animation.tweenengine.Tween;
-import dev.joid.lib.animation.tweenengine.TweenCallback;
-import dev.joid.lib.animation.tweenengine.TweenEquation;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
-import dev.joid.lib.animation.tweenengine.TweenManager;
+import dev.joid.lib.animation.tween.BaseTween;
+import dev.joid.lib.animation.tween.Timeline;
+import dev.joid.lib.animation.tween.Tween;
+import dev.joid.lib.animation.tween.TweenCallback;
+import dev.joid.lib.animation.tween.TweenEquation;
+import dev.joid.lib.animation.tween.TweenEquations;
+import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import lombok.Getter;
 import lombok.NonNull;

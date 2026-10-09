@@ -9,11 +9,11 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
 
 public class NodeKeyPressedCallbackTest {
 
@@ -25,7 +25,7 @@ public class NodeKeyPressedCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeKeyPressedCallback<RectNode> callback = (node, character, key) -> received.addAll(Arrays.asList(node, character, key));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context, 'z', Key.Z);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -38,7 +38,7 @@ public class NodeKeyPressedCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeKeyPressedCallback<RectNode> callback = (node, character, key) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), 'z', Key.Z);
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), 'z', Key.Z);
 		Assert.assertTrue(received.isEmpty());
 	}
 

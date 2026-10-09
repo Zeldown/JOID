@@ -21,18 +21,25 @@ import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.font.dto.converter.TextConverter;
+import dev.joid.lib.font.converter.TextConverter;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalSubscriber;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
 import dev.joid.lib.ui.node.callback.impl.signal.NodeWatchCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeDetachCallback;
@@ -56,13 +63,6 @@ import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.SignalSubscriber;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -307,16 +307,16 @@ public class NodeTest {
 	public void ignoresTheMouseWhileDisabled() {
 		final int[] clicks = {0};
 		final boolean[] enabled = {false};
-		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).enabled(rect -> enabled[0]).onClick((rect, mouseX, mouseY, clickType) -> clicks[0]++);
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).enabled(rect -> enabled[0]).onClick((rect, mouseX, mouseY, button) -> clicks[0]++);
 		this.bridges.open(new NodeUI(node));
 		this.bridges.move(150D, 150D).frames(2);
 		Assert.assertFalse(node.isEnabled());
 		Assert.assertFalse(node.isHovered(150D, 150D));
 		Assert.assertTrue(node.isHovered(150D, 150D, false));
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(0, clicks[0]);
 		enabled[0] = true;
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(1, clicks[0]);
 	}
 
@@ -704,9 +704,9 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(parent));
 		this.bridges.move(150D, 150D).frames(2);
 		events.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.getUi().mouseMoved();
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.scroll(1D);
 		this.bridges.getUi().keyTyped('a', Key.A);
 		Assert.assertEquals(Arrays.asList("above pressed", "parent pressed", "below pressed", "above dragged", "parent dragged", "below dragged", "above released", "parent released", "below released", "above scrolled", "parent scrolled", "below scrolled", "above typed", "parent typed", "below typed"), events);
@@ -716,8 +716,8 @@ public class NodeTest {
 	public void remembersItsLastClickAndKey() {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D);
 		this.bridges.open(new NodeUI(node));
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
-		Assert.assertSame(ClickType.RIGHT, node.getLastClickType());
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
+		Assert.assertSame(MouseButton.RIGHT, node.getLastClickButton());
 		Assert.assertEquals(this.bridges.getClock().currentTimeMillis(), node.getLastClickTime());
 		this.bridges.frame();
 		this.bridges.getUi().keyTyped('z', Key.Z);
@@ -729,9 +729,9 @@ public class NodeTest {
 	@Test
 	public void runsItsPressCallbacksBesideItsClick() {
 		final List<String> events = new ArrayList<>();
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).onClick((rect, mouseX, mouseY, clickType) -> events.add("click")).onMousePressed((rect, mouseX, mouseY, clickType) -> events.add("pressed " + clickType.name())).onMouseReleased((rect, mouseX, mouseY, clickType) -> events.add("released"));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).onClick((rect, mouseX, mouseY, button) -> events.add("click")).onMousePressed((rect, mouseX, mouseY, button) -> events.add("pressed " + button.name())).onMouseReleased((rect, mouseX, mouseY, button) -> events.add("released"));
 		this.press(node, 110D, 110D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("click", "pressed LEFT", "released"), events);
 	}
 
@@ -784,16 +784,16 @@ public class NodeTest {
 			}
 
 			@Override
-			public void pre(final @NonNull RectNode rect, final @NonNull InternalContext context) {
+			public void pre(final @NonNull RectNode rect, final @NonNull DispatchContext context) {
 				phases.add("pre");
 			}
 
 		});
-		node.executePreCallback(NodeCallbackRegistry.getId(NodeInitCallback.class), InternalContext.create());
+		node.executePreCallback(NodeCallbackRegistry.getId(NodeInitCallback.class), DispatchContext.create());
 		Assert.assertEquals(Arrays.asList("pre"), phases);
-		node.executePostCallback(NodeCallbackRegistry.getId(NodeInitCallback.class), InternalContext.create());
+		node.executePostCallback(NodeCallbackRegistry.getId(NodeInitCallback.class), DispatchContext.create());
 		Assert.assertEquals(Arrays.asList("pre", "apply"), phases);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		node.executePreCallback(NodeCallbackRegistry.getId(NodeDetachCallback.class), context);
 		node.executePostCallback(NodeCallbackRegistry.getId(NodeDetachCallback.class), context);
 		Assert.assertFalse(context.isCancelled());
@@ -824,7 +824,7 @@ public class NodeTest {
 			}
 
 			@Override
-			public void pre(final @NonNull RecordingNode target, final @NonNull InternalContext context) {
+			public void pre(final @NonNull RecordingNode target, final @NonNull DispatchContext context) {
 				context.cancel();
 			}
 
@@ -884,16 +884,16 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		this.bridges.move(110D, 110D).frames(2);
 		events.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.getUi().mouseMoved();
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.scroll(1D);
 		this.bridges.getUi().keyTyped('a', Key.A);
 		Assert.assertEquals(Arrays.asList("skeleton pressed", "skeleton dragged", "skeleton released", "skeleton scrolled", "skeleton typed"), events);
 		ready[0] = true;
 		this.bridges.frame();
 		events.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(events.isEmpty());
 	}
 
@@ -1041,7 +1041,7 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column));
 		this.bridges.move(300D, 150D).frames(2);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		column.onMouseScroll(300D, 150D, -1D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollX(), 0D);
@@ -1053,7 +1053,7 @@ public class NodeTest {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
 		this.bridges.move(300D, 150D).frames(2);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		row.onMouseScroll(300D, 150D, 1D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, row.getTargetScrollX(), 0D);
@@ -1065,7 +1065,7 @@ public class NodeTest {
 		RectNode.create(0D, 0D, 700D, 10D).attach(area);
 		this.bridges.open(new NodeUI(area)).move(300D, 150D).frames(2);
 		area.scrollRatioY(1F);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		area.onMouseScroll(300D, 150D, 0D, -1D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(-200D, area.getTargetScrollY(), 0D);
@@ -1083,7 +1083,7 @@ public class NodeTest {
 		Assert.assertEquals(0D, column.getScrollY(), 0D);
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 		Assert.assertEquals(100D, column.getChildren().get(1).getY(), 0D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		column.onMouseScroll(300D, 150D, 0D, -1D, context);
 		Assert.assertFalse(context.isCancelled());
 	}
@@ -1101,11 +1101,11 @@ public class NodeTest {
 	public void consumesTheWheelWhileItScrolls() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final InternalContext down = InternalContext.create();
+		final DispatchContext down = DispatchContext.create();
 		column.onMouseScroll(300D, 150D, 0D, -1D, down);
 		Assert.assertTrue(down.isCancelled());
 		Assert.assertEquals(-30D, column.getTargetScrollY(), 0D);
-		final InternalContext up = InternalContext.create();
+		final DispatchContext up = DispatchContext.create();
 		column.onMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
@@ -1115,11 +1115,11 @@ public class NodeTest {
 	public void leavesTheWheelToItsParentAtItsLimits() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final InternalContext up = InternalContext.create();
+		final DispatchContext up = DispatchContext.create();
 		column.onMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertFalse(up.isCancelled());
 		column.scrollRatioY(1F);
-		final InternalContext down = InternalContext.create();
+		final DispatchContext down = DispatchContext.create();
 		column.onMouseScroll(300D, 150D, 0D, -1D, down);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
@@ -1130,8 +1130,8 @@ public class NodeTest {
 		final ContainerNode box = ContainerNode.create(100D, 100D, 400D, 100D).overflow(OverflowProperty.SCROLL);
 		RectNode.create(0D, 0D, 400D, 100D).attach(box);
 		this.bridges.open(new NodeUI(box)).move(300D, 150D).frames(2);
-		final InternalContext down = InternalContext.create();
-		final InternalContext up = InternalContext.create();
+		final DispatchContext down = DispatchContext.create();
+		final DispatchContext up = DispatchContext.create();
 		box.onMouseScroll(300D, 150D, 0D, -1D, down);
 		box.onMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertFalse(down.isCancelled());
@@ -1142,7 +1142,7 @@ public class NodeTest {
 	public void leavesAStillWheelToItsParent() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		column.onMouseScroll(300D, 150D, 0D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
@@ -1355,13 +1355,13 @@ public class NodeTest {
 	@Test
 	public void forwardsTheMouseAndKeysToItsScrollbar() {
 		final List<String> events = new ArrayList<>();
-		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D)).onKeyPressed((scrollbar, c, key) -> events.add("typed")).onMouseScroll((scrollbar, mouseX, mouseY, valueX, value) -> events.add("scrolled")).onMouseDragged((scrollbar, mouseX, mouseY, clickType, deltaTime) -> events.add("dragged")).onMouseReleased((scrollbar, mouseX, mouseY, clickType) -> events.add("released"));
+		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D)).onKeyPressed((scrollbar, c, key) -> events.add("typed")).onMouseScroll((scrollbar, mouseX, mouseY, valueX, value) -> events.add("scrolled")).onMouseDragged((scrollbar, mouseX, mouseY, button, deltaTime) -> events.add("dragged")).onMouseReleased((scrollbar, mouseX, mouseY, button) -> events.add("released"));
 		this.bridges.open(new NodeUI(NodeTest.row().scrollbar(bar)));
 		this.bridges.getUi().keyTyped('a', Key.A);
 		this.bridges.scroll(1D);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.getUi().mouseMoved();
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("typed", "scrolled", "dragged", "released"), events);
 	}
 
@@ -1457,7 +1457,7 @@ public class NodeTest {
 		this.bridges.move(430D, 430D).frame();
 		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(100);
 		Assert.assertEquals(Arrays.asList(target), snaps);
 		Assert.assertEquals(400D, node.getX(), 0D);
@@ -1474,7 +1474,7 @@ public class NodeTest {
 		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertEquals(420D, node.getDraggedNode().getX(), 0D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList(target), snaps);
 		Assert.assertNull(node.getDraggedNode());
 		Assert.assertEquals(100D, node.getX(), 0D);
@@ -1489,7 +1489,7 @@ public class NodeTest {
 		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertEquals(300D, node.getX(), 0D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(100);
 		Assert.assertEquals(100D, node.getX(), 0D);
 		Assert.assertEquals(100D, node.getY(), 0D);
@@ -1518,7 +1518,7 @@ public class NodeTest {
 		this.bridges.getUi().mouseMoved();
 		this.bridges.move(200D, 110D).frames(5);
 		this.bridges.getUi().mouseMoved();
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("start", "drag", "drag", "end"), events);
 	}
 
@@ -1528,7 +1528,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		Assert.assertSame(node, node.dragging(true, 110D, 110D));
 		Assert.assertTrue(node.isDragging());
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(210D, 160D).frame();
 		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
@@ -1558,19 +1558,19 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free());
 		this.bridges.open(new NodeUI(node));
 		this.bridges.move(110D, 110D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		Assert.assertFalse(node.isDragging());
 	}
 
 	@Test
 	public void letsAChildKeepThePressFromItsDraggableParent() {
-		final RectNode child = RectNode.create(0D, 0D, 20D, 20D).onClick((rect, mouseX, mouseY, clickType) -> {});
+		final RectNode child = RectNode.create(0D, 0D, 20D, 20D).onClick((rect, mouseX, mouseY, button) -> {});
 		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).draggable(DraggableProperty.free()).append(child);
 		this.press(parent, 110D, 110D);
 		Assert.assertFalse(parent.isDragging());
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.move(150D, 150D).frame();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(parent.isDragging());
 	}
 
@@ -1603,7 +1603,7 @@ public class NodeTest {
 			}
 
 			@Override
-			public void pre(final @NonNull RectNode rect, final @NonNull InternalContext context) {
+			public void pre(final @NonNull RectNode rect, final @NonNull DispatchContext context) {
 				context.cancel();
 			}
 
@@ -1613,7 +1613,7 @@ public class NodeTest {
 		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
 		Assert.assertEquals(300D, node.getX(), 0D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertFalse(node.isDragging());
 		this.bridges.frames(100);
 		Assert.assertEquals(100D, node.getX(), 0D);
@@ -1629,7 +1629,7 @@ public class NodeTest {
 			public void apply(final @NonNull RectNode rect) {}
 
 			@Override
-			public void pre(final @NonNull RectNode rect, final @NonNull InternalContext context) {
+			public void pre(final @NonNull RectNode rect, final @NonNull DispatchContext context) {
 				context.cancel();
 			}
 
@@ -1664,7 +1664,7 @@ public class NodeTest {
 		this.bridges.move(430D, 430D).frame();
 		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList(420D, target), received);
 		Assert.assertNull(node.getDraggedNode());
 		Assert.assertFalse(node.isDragged());
@@ -1775,16 +1775,16 @@ public class NodeTest {
 	public void disablesItsWholeTree() {
 		final int[] clicks = {0};
 		final boolean[] enabled = {false};
-		final RectNode child = RectNode.create(0D, 0D, 50D, 50D).onClick((rect, mouseX, mouseY, clickType) -> clicks[0]++);
+		final RectNode child = RectNode.create(0D, 0D, 50D, 50D).onClick((rect, mouseX, mouseY, button) -> clicks[0]++);
 		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).enabled(rect -> enabled[0]).append(child);
 		this.bridges.open(new NodeUI(parent));
 		this.bridges.move(110D, 110D).frames(2);
 		Assert.assertFalse(child.isEnabled());
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(0, clicks[0]);
 		enabled[0] = true;
 		Assert.assertTrue(child.isEnabled());
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(1, clicks[0]);
 	}
 
@@ -2009,7 +2009,7 @@ public class NodeTest {
 	@Test
 	public void keepsTheCallbacksOfTheOriginalInItsCopy() {
 		final int[] clicks = {0};
-		final RectNode copy = RectNode.create(100D, 100D, 50D, 50D).onClick((rect, mouseX, mouseY, clickType) -> clicks[0]++).copy();
+		final RectNode copy = RectNode.create(100D, 100D, 50D, 50D).onClick((rect, mouseX, mouseY, button) -> clicks[0]++).copy();
 		this.press(copy, 110D, 110D);
 		Assert.assertEquals(1, clicks[0]);
 	}
@@ -2070,7 +2070,7 @@ public class NodeTest {
 			}
 
 			@Override
-			public void pre(final @NonNull RectNode rect, final @NonNull InternalContext context, final @NonNull Signal<?> source, final @NonNull WatchProperty @NonNull... properties) {
+			public void pre(final @NonNull RectNode rect, final @NonNull DispatchContext context, final @NonNull Signal<?> source, final @NonNull WatchProperty @NonNull... properties) {
 				context.cancel();
 			}
 
@@ -2330,7 +2330,7 @@ public class NodeTest {
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
 		this.bridges.open(new NodeUI(parent));
 		node.startDragging(110D, 110D);
-		node.onMouseDragged(160D, 110D, ClickType.LEFT, 0L, InternalContext.create());
+		node.onMouseDragged(160D, 110D, MouseButton.LEFT, 0L, DispatchContext.create());
 		parent.remove(node);
 		Assert.assertEquals(Arrays.asList("start", "end"), events);
 		Assert.assertFalse(node.isDragging());
@@ -2636,12 +2636,12 @@ public class NodeTest {
 	@Test
 	public void keepsTheCallbacksAddedToACopyAwayFromTheOriginal() {
 		final List<String> clicks = new ArrayList<>();
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).onClick((rect, mouseX, mouseY, clickType) -> clicks.add("original"));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).onClick((rect, mouseX, mouseY, button) -> clicks.add("original"));
 		final RectNode copy = node.copy();
-		copy.onClick((rect, mouseX, mouseY, clickType) -> clicks.add("copy"));
+		copy.onClick((rect, mouseX, mouseY, button) -> clicks.add("copy"));
 		this.bridges.open(new NodeUI(node));
 		this.bridges.move(110D, 110D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("original"), clicks);
 	}
 
@@ -2707,13 +2707,13 @@ public class NodeTest {
 	private void press(final Node node, final double x, final double y) {
 		this.bridges.open(new NodeUI(node)).frame();
 		this.bridges.move(x, y).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 	}
 
 	private void drop(final double x, final double y) {
 		this.bridges.move(x, y).frame();
 		this.bridges.getUi().mouseMoved();
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(100);
 	}
 
@@ -2913,27 +2913,27 @@ public class NodeTest {
 		}
 
 		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 			this.events.add(this.name + " pressed");
 		}
 
 		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
+		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
 			this.events.add(this.name + " dragged");
 		}
 
 		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 			this.events.add(this.name + " released");
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull DispatchContext context) {
 			this.events.add(this.name + " scrolled");
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 			this.events.add(this.name + " typed");
 		}
 

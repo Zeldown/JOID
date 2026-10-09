@@ -3,7 +3,7 @@ package dev.joid.base.glfw.input;
 import org.lwjgl.glfw.GLFW;
 
 import dev.joid.lib.bridge.ui.UIBridge;
-import dev.joid.lib.utils.click.ClickType;
+import dev.joid.lib.input.mouse.MouseButton;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -47,11 +47,11 @@ public final class GlfwInputForwarder {
 
 	public boolean mousePressed(final int button) {
 		this.merger.flush();
-		return this.bridge.mousePressed(ClickType.from(button));
+		return this.bridge.mousePressed(MouseButton.from(button));
 	}
 
 	public boolean mouseReleased(final int button) {
-		return this.bridge.mouseReleased(ClickType.from(button));
+		return this.bridge.mouseReleased(MouseButton.from(button));
 	}
 
 	public boolean mouseMoved() {

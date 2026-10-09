@@ -31,7 +31,7 @@ public class SegmentedSwitchNode extends SwitchNode {
 				.body(rect -> {
 					TextNode.create(0, 0, stateWidth, super.getHeight()).text(Text.create(state, this.info, Align.CENTER, Align.CENTER)).attach(rect);
 				})
-				.onClick((node, mouseX, mouseY, clickType) -> super.state(state))
+				.onClick((node, mouseX, mouseY, button) -> super.state(state))
 				.attach(flex);
 			}
 		})
@@ -144,7 +144,7 @@ SegmentedSwitchNode
 	}
 
 	@Override
-	public void pre(final @NonNull SegmentedSwitchNode node, final @NonNull InternalContext context, final @NonNull String state) {
+	public void pre(final @NonNull SegmentedSwitchNode node, final @NonNull DispatchContext context, final @NonNull String state) {
 		if ("High".equals(state)) {
 			context.cancel();
 		}
@@ -178,7 +178,7 @@ public void init(final @NonNull UI ui) {
 	.body(rect -> {
 		TextNode.create(0, 0, super.getWidth(), super.getHeight()).text(Signal.from(() -> Text.create(super.getState(), this.info, Align.CENTER, Align.CENTER))).attach(rect);
 	})
-	.onClick((node, mouseX, mouseY, clickType) -> super.index((super.getStateIndex().peek() + 1) % super.getStateList().size()))
+	.onClick((node, mouseX, mouseY, button) -> super.index((super.getStateIndex().peek() + 1) % super.getStateList().size()))
 	.attach(this);
 }
 ```
@@ -212,8 +212,8 @@ CycleSwitchNode.create(100, 100, 240, 60, this.info).states("Easy", "Normal", "H
 | Method | Description |
 | --- | --- |
 | `apply(T node, String state)` | Runs after the change (the lambda of `onChange`). |
-| `pre(T node, InternalContext context, String state)` | Runs before the change; `context.cancel()` keeps the current state. |
-| `post(T node, InternalContext context, String state)` | Runs after the change and calls `apply`. |
+| `pre(T node, DispatchContext context, String state)` | Runs before the change; `context.cancel()` keeps the current state. |
+| `post(T node, DispatchContext context, String state)` | Runs after the change and calls `apply`. |
 
 The setters return the node itself, typed by the generic return of the fluent API. The rest of the API is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
 

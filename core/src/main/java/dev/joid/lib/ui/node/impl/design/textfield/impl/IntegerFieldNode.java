@@ -3,8 +3,8 @@ package dev.joid.lib.ui.node.impl.design.textfield.impl;
 import java.math.BigInteger;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.impl.design.textfield.LineFieldNode;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.NonNull;
 
 public class IntegerFieldNode extends LineFieldNode<Integer> {

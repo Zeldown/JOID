@@ -17,8 +17,8 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
-import dev.joid.lib.resource.dto.ResourceData;
-import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
+import dev.joid.lib.resource.ResourceData;
+import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
 

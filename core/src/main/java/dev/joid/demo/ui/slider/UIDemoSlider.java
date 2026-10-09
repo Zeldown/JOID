@@ -7,15 +7,15 @@ import dev.joid.demo.ui.slider.node.DemoIntegerSliderNode;
 import dev.joid.demo.ui.slider.node.DemoStringSliderNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.slider.callback.NodeSliderChangeCallback;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
 import lombok.NonNull;
 
 public class UIDemoSlider extends UIDemo {
@@ -103,7 +103,7 @@ public class UIDemoSlider extends UIDemo {
 			RectNode
 			.create(40, 170, 80, 50)
 			.color(UIDemoSlider.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> volume.set(Math.max(0, volume.get() - 1)))
+			.onClick((node, mouseX, mouseY, button) -> volume.set(Math.max(0, volume.get() - 1)))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -111,7 +111,7 @@ public class UIDemoSlider extends UIDemo {
 			RectNode
 			.create(140, 170, 80, 50)
 			.color(UIDemoSlider.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> volume.set(Math.min(10, volume.get() + 1)))
+			.onClick((node, mouseX, mouseY, button) -> volume.set(Math.min(10, volume.get() + 1)))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -139,7 +139,7 @@ public class UIDemoSlider extends UIDemo {
 			RectNode
 			.create(40, 120, 120, 50)
 			.color(UIDemoSlider.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> target.set((target.get() + 5) % 15))
+			.onClick((node, mouseX, mouseY, button) -> target.set((target.get() + 5) % 15))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Next", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -161,7 +161,7 @@ public class UIDemoSlider extends UIDemo {
 				public void apply(final @NonNull DemoIntegerSliderNode node, final @NonNull Integer value) {}
 
 				@Override
-				public void pre(final @NonNull DemoIntegerSliderNode node, final @NonNull InternalContext context, final @NonNull Integer value) {
+				public void pre(final @NonNull DemoIntegerSliderNode node, final @NonNull DispatchContext context, final @NonNull Integer value) {
 					if (value > 5) {
 						refused.increment();
 						context.cancel();

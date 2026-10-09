@@ -10,7 +10,7 @@ TextNode.create(100, 100).text(Text.create("<b>Bold</b>, <i>italic</i>, <c=ff555
 
 ![Bold, italic, red and underlined drawn from one tagged string](../images/markup-quick.png "The tags are read while drawing: they take no room and are not drawn.")
 
-`TagTextMarkup` and its `UnderlineTextEffect` are the two classes below. `ITextMarkup` and `TextMarkup` are in `dev.joid.lib.font.dto.markup`, `ITextEffect` and `ITextGlyph` in `dev.joid.lib.font.dto.effect`, `TextStyle` in `dev.joid.lib.font.dto`; `font` is the family loaded with `MsdfFontLoader` in [Text](../essentials/text.md#loading-a-font-with-msdffontloader); the Fonts section ([Adding Your Own Fonts](../fonts/adding-fonts.md)) covers loading in detail.
+`TagTextMarkup` and its `UnderlineTextEffect` are the two classes below. `ITextMarkup` and `TextMarkup` are in `dev.joid.lib.font.markup`, `ITextEffect` and `ITextGlyph` in `dev.joid.lib.font.effect`, `TextStyle` in `dev.joid.lib.font`; `font` is the family loaded with `MsdfFontLoader` in [Text](../essentials/text.md#loading-a-font-with-msdffontloader); the Fonts section ([Adding Your Own Fonts](../fonts/adding-fonts.md)) covers loading in detail.
 
 ## Writing markup with ITextMarkup
 
@@ -81,7 +81,7 @@ public final class TagTextMarkup implements ITextMarkup {
 
 ## Objects as text with TextConverter
 
-A `Text` accepts any object as its text: `Text.create(object, info)`, `TextElement.create(object, info)` or a `Supplier` of objects. `TextConverter` (`dev.joid.lib.font.dto.converter`) turns the object into a string each time the text is measured or drawn: a `String` stays as is, the latest registered `ITextConverter` that `supports` the object converts it, and any other object gives its `toString()`. The result goes through the markups like any string, so a converter returns markup codes for its colors and styles.
+A `Text` accepts any object as its text: `Text.create(object, info)`, `TextElement.create(object, info)` or a `Supplier` of objects. `TextConverter` (`dev.joid.lib.font.converter`) turns the object into a string each time the text is measured or drawn: a `String` stays as is, the latest registered `ITextConverter` that `supports` the object converts it, and any other object gives its `toString()`. The result goes through the markups like any string, so a converter returns markup codes for its colors and styles.
 
 ```java
 public final class TranslationTextConverter implements ITextConverter {

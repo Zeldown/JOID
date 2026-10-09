@@ -16,7 +16,6 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.render.framebuffer.FrameBuffer;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.node.Node;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

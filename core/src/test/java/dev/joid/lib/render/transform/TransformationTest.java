@@ -6,9 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.render.modifier.Rotation;
-import dev.joid.lib.render.modifier.Scale;
-import dev.joid.lib.render.modifier.Vector;
 import dev.joid.lib.render.transform.operation.ScaleOperation;
 import dev.joid.lib.render.transform.operation.TranslateOperation;
 

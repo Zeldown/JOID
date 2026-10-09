@@ -16,13 +16,13 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BorderShader;
 import dev.joid.lib.shader.impl.GradientShader;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class RectNodeTest {
 

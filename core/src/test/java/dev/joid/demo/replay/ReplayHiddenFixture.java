@@ -1,7 +1,7 @@
 package dev.joid.demo.replay;
 
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.replay.SignalReplayNode;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.replay.SignalReplayNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

@@ -12,7 +12,7 @@ Start with the language list: give each row an `onClick` callback, as in [Input 
 RectNode
 .create(0, 0, 720, 52)
 .color(Color.WHITE)
-.onClick((node, mouseX, mouseY, clickType) -> System.out.println("Selected " + language))
+.onClick((node, mouseX, mouseY, button) -> System.out.println("Selected " + language))
 .body(item -> {
 	TextNode.create(24, item.dh(2)).text(Text.create(language, label)).anchorY(Align.CENTER).attach(item);
 })
@@ -29,13 +29,13 @@ The selection is state, so it goes in a signal ([Signals and Reactivity](../conc
 private final StringSignal language = StringSignal.of("English");
 ```
 
-`"English"` is the default value of the `StringSignal` (`dev.joid.lib.utils.signal.impl.primitive`). Write the click into the signal, and give each row a dot that shows while its language is the selected one:
+`"English"` is the default value of the `StringSignal` (`dev.joid.lib.signal.impl.primitive`). Write the click into the signal, and give each row a dot that shows while its language is the selected one:
 
 ```java
 RectNode
 .create(0, 0, 720, 52)
 .color(Color.WHITE)
-.onClick((node, mouseX, mouseY, clickType) -> this.language.set(language))
+.onClick((node, mouseX, mouseY, button) -> this.language.set(language))
 .body(item -> {
 	TextNode.create(24, item.dh(2)).text(Text.create(language, label)).anchorY(Align.CENTER).attach(item);
 	CircleNode.create(680, 18, 16).color(Theme.INK).visible(this.language.map(selected -> selected.equals(language))).attach(item);
@@ -185,9 +185,9 @@ import com.google.gson.JsonObject;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
 
 @UIStoreData(id = "settings", scope = StoreScope.PERMANENT)
 public class SettingsStore extends UIStore {
@@ -295,7 +295,7 @@ import java.util.List;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
@@ -350,7 +350,7 @@ public final class SettingsUI extends UI {
 						RectNode
 						.create(0, 0, 720, 52)
 						.color(Color.WHITE)
-						.onClick((node, mouseX, mouseY, clickType) -> this.settings.getLanguage().set(language))
+						.onClick((node, mouseX, mouseY, button) -> this.settings.getLanguage().set(language))
 						.body(item -> {
 							TextNode.create(24, item.dh(2)).text(Text.create(language, label)).anchorY(Align.CENTER).attach(item);
 							CircleNode.create(680, 18, 16).color(Theme.INK).visible(this.settings.getLanguage().map(selected -> selected.equals(language))).attach(item);

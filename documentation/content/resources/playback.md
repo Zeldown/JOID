@@ -1,6 +1,6 @@
 # Playback, Video and Audio
 
-Animated images (GIF, APNG, animated WebP) and videos play over time. Their decoders implement `IResourcePlayback` (`dev.joid.lib.resource.dto.playback`), which plays, pauses, seeks and loops them; videos add a volume and positional audio. Use this page to control playback from code, beyond the `ResourcePlayerNode` controls of [Images and Media](../essentials/media.md); the node itself is detailed on [ResourcePlayerNode](../nodes/visual/resource-player.md).
+Animated images (GIF, APNG, animated WebP) and videos play over time. Their decoders implement `IResourcePlayback` (`dev.joid.lib.resource.playback`), which plays, pauses, seeks and loops them; videos add a volume and positional audio. Use this page to control playback from code, beyond the `ResourcePlayerNode` controls of [Images and Media](../essentials/media.md); the node itself is detailed on [ResourcePlayerNode](../nodes/visual/resource-player.md).
 
 ```java
 public class UITrailer extends UI {
@@ -87,7 +87,7 @@ Every setter of the node takes a value or a `Supplier`: `volume(this.volume.map(
 
 ## Videos with VideoResourceDecoder
 
-The playback of a video is a `VideoResourceDecoder` (`dev.joid.lib.resource.dto.decoder.impl`), which adds the audio settings. Get it from the resource data or from a player node:
+The playback of a video is a `VideoResourceDecoder` (`dev.joid.lib.resource.decoder.impl`), which adds the audio settings. Get it from the resource data or from a player node:
 
 ```java
 final VideoResourceDecoder decoder = resource.getResourceData().getDecoder(VideoResourceDecoder.class);

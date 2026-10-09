@@ -1,9 +1,8 @@
 package dev.joid.lib.font.impl.msdf;
 
 import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.impl.glyph.FontFamily;
 import dev.joid.lib.font.impl.glyph.GlyphFont;
-import dev.joid.lib.font.impl.glyph.dto.FontFamily;
-import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
 import lombok.NonNull;
 
 public final class MsdfFont extends GlyphFont<MsdfFontFace> {

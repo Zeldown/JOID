@@ -3,7 +3,7 @@ package dev.joid.lib.shader.pipeline.pass;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.IShaderPass;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 

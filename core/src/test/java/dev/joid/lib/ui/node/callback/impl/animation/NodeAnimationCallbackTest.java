@@ -12,8 +12,8 @@ import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeAnimationCallbackTest {
 
@@ -26,7 +26,7 @@ public class NodeAnimationCallbackTest {
 		final NodeAnimationCallback<RectNode> callback = (node, animator, value) -> received.addAll(Arrays.asList(node, animator, value));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final TweenAnimator animator = TweenAnimator.create();
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context, animator, 0.5F);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -39,7 +39,7 @@ public class NodeAnimationCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeAnimationCallback<RectNode> callback = (node, animator, value) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), TweenAnimator.create(), 0.5F);
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), TweenAnimator.create(), 0.5F);
 		Assert.assertTrue(received.isEmpty());
 	}
 

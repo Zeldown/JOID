@@ -1,6 +1,6 @@
 # Mouse and Keyboard
 
-[Input and Callbacks](../concepts/input.md) showed `onClick` with its `ClickType`, `keybind` and `Key.isDown()`; [Callbacks](callbacks.md) listed every callback. This page goes into the details of the mouse and the keyboard: the buttons (`ClickType`), the mouse coordinates and hit testing, the keys (`Key`) and keyboard layouts, the modifier helpers, keybinds, the input hooks of a UI and the exact path of an event from the window to the nodes.
+[Input and Callbacks](../concepts/input.md) showed `onClick` with its `MouseButton`, `keybind` and `Key.isDown()`; [Callbacks](callbacks.md) listed every callback. This page goes into the details of the mouse and the keyboard: the buttons (`MouseButton`), the mouse coordinates and hit testing, the keys (`Key`) and keyboard layouts, the modifier helpers, keybinds, the input hooks of a UI and the exact path of an event from the window to the nodes.
 
 ## Reacting to clicks and keys
 
@@ -26,9 +26,9 @@ super.keybind(() -> this.status.set("Saved"), Key.LEFT_CONTROL, Key.S);
 
 `onClick` fires only for a press over the node; `clickType` tells which button. `keybind` runs its action when a key event reaches the UI while every listed key is down. `info` is a `TextInfo` (see [Text](../essentials/text.md)).
 
-## Mouse buttons with ClickType
+## Mouse buttons with MouseButton
 
-`ClickType` (`dev.joid.lib.utils.click`) is the button of a mouse event.
+`MouseButton` (`dev.joid.lib.input.mouse`) is the button of a mouse event.
 
 | Constant | Button index | Predicate |
 |---|---|---|
@@ -81,7 +81,7 @@ Positions are units of the 1920×1080 virtual canvas, fitted to the window witho
 
 ## Mouse cursor
 
-`cursor(Cursor)` sets the mouse cursor shown while the pointer is over a node. `Cursor` (`dev.joid.lib.utils.cursor`) lists the system cursors every backend can show: `DEFAULT`, `POINTER`, `TEXT`, `CROSSHAIR`, `MOVE`, `NOT_ALLOWED`, `RESIZE_EW`, `RESIZE_NS`, `RESIZE_NWSE` and `RESIZE_NESW`.
+`cursor(Cursor)` sets the mouse cursor shown while the pointer is over a node. `Cursor` (`dev.joid.lib.input.cursor`) lists the system cursors every backend can show: `DEFAULT`, `POINTER`, `TEXT`, `CROSSHAIR`, `MOVE`, `NOT_ALLOWED`, `RESIZE_EW`, `RESIZE_NS`, `RESIZE_NWSE` and `RESIZE_NESW`.
 
 ```java
 final BooleanSignal locked = BooleanSignal.of(false);
@@ -125,7 +125,7 @@ The text fields (`TextFieldNode`, `IntegerFieldNode`, `MultilineTextFieldNode`) 
 
 ## Keys with Key
 
-`Key` (`dev.joid.lib.utils.key`) lists the keys JOID knows.
+`Key` (`dev.joid.lib.input.key`) lists the keys JOID knows.
 
 | Group | Constants |
 |---|---|
@@ -214,7 +214,7 @@ public void init() {
 
 ### Key bindings of the engine with IKeyResolver
 
-An engine often lets its users choose their keys (the controls menu of a game). Pass its binding objects to `keybind` as they are: `KeyResolver` (`dev.joid.lib.utils.key.resolver`) turns each binding into a `Key` on every key event, so the shortcut follows a change of the user's settings at once. A `Key` resolves to itself; any other binding goes to the latest registered `IKeyResolver` that `supports` it. A binding resolved to `null` (a key left unbound) never runs its keybind. `keybind` throws an `IllegalArgumentException` for a binding that no resolver supports.
+An engine often lets its users choose their keys (the controls menu of a game). Pass its binding objects to `keybind` as they are: `KeyResolver` (`dev.joid.lib.input.key.resolver`) turns each binding into a `Key` on every key event, so the shortcut follows a change of the user's settings at once. A `Key` resolves to itself; any other binding goes to the latest registered `IKeyResolver` that `supports` it. A binding resolved to `null` (a key left unbound) never runs its keybind. `keybind` throws an `IllegalArgumentException` for a binding that no resolver supports.
 
 ```java
 public final class ActionKeyResolver implements IKeyResolver {
@@ -263,7 +263,7 @@ A `UI` can override the input hooks of `IUI`. They run after all the nodes of th
 
 ```java
 @Override
-public void keyPressed(final char c, final Key key, final InternalContext context) {
+public void keyPressed(final char c, final Key key, final DispatchContext context) {
 	if (!context.isCancelled() && key == Key.TAB) {
 		context.cancel();
 		System.out.println("Next tab");
@@ -275,7 +275,7 @@ public void keyPressed(final char c, final Key key, final InternalContext contex
 
 ![Diagram: an event goes from the backend to the UI bridge, to the top UI, its nodes, its keybinds and hooks, then to the UI below unless it was consumed](../images/diagram-event-path.png "The path of an input event from the window to the nodes")
 
-The UI bridge receives the events from the backend through `UIBridge.mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseMoved()`, `mouseScroll(double, double)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
+The UI bridge receives the events from the backend through `UIBridge.mousePressed(MouseButton)`, `mouseReleased(MouseButton)`, `mouseMoved()`, `mouseScroll(double, double)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
 
 1. The UI bridge walks its UIs from the top one down, the [overlays](../ui/managing-uis.md#overlays-with-uidataoverlay) first, skipping the UIs that are not active or not visible (`active` and `visible` of `@UIData`, readable and changeable through `ui.getData()`) and the overlays that take no input or are not drawn. A wheel event with a value of `0` is dropped.
 2. Key events only, on `Key.ESCAPE` in a closeable UI (`closeable`, `true` by default) that is not an overlay: the UI first receives the key like any other (steps 3 to 5: a focused text field cancels its edit and consumes it, a keybind on `ESCAPE` consumes it). When nobody consumed it, the UI is asked to close (`close()` may refuse, see [Opening and Closing UIs](../ui/managing-uis.md)). Either way the dispatch stops there: the UIs below never receive that Escape. A UI that is not closeable receives Escape as a normal key.
@@ -289,7 +289,7 @@ The UI bridge receives the events from the backend through `UIBridge.mousePresse
 
 Wheel events in dev mode: with Left Alt held, the wheel zooms the UI (in larger steps with Left Shift) and the event goes no further.
 
-The entry points of a UI are public: `onMousePressed(ClickType)`, `onMouseReleased(ClickType)`, `onMouseDragged(ClickType, long)`, `onMouseScroll(double, double)` and `onKeyPressed(char, Key)` run steps 3 to 5 and return `true` when the event was consumed. Calling them simulates input on one UI.
+The entry points of a UI are public: `onMousePressed(MouseButton)`, `onMouseReleased(MouseButton)`, `onMouseDragged(MouseButton, long)`, `onMouseScroll(double, double)` and `onKeyPressed(char, Key)` run steps 3 to 5 and return `true` when the event was consumed. Calling them simulates input on one UI.
 
 ## Keyboard focus
 
@@ -318,7 +318,7 @@ RectNode
 	}
 
 	@Override
-	public void post(final RectNode node, final InternalContext context, final char c, final Key key) {
+	public void post(final RectNode node, final DispatchContext context, final char c, final Key key) {
 		if (focused.peek()) {
 			context.cancel(() -> this.apply(node, c, key));
 		}
@@ -336,7 +336,7 @@ Each node records the last events dispatched to its UI, whether or not they happ
 
 | Getter | Description |
 |---|---|
-| `getLastClickType()` | Button of the last press; `null` before the first one. |
+| `getLastClickButton()` | Button of the last press; `null` before the first one. |
 | `getLastClickTime()` | Time of the last press, in milliseconds of the clock bridge. |
 | `getLastKey()` | Last key; `null` before the first one. |
 | `getLastCharacter()` | Character of the last key event. |

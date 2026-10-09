@@ -157,7 +157,7 @@ The pass binds the shader with its values:
 
 ```java
 import dev.joid.lib.shader.pipeline.IShaderPass;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import dev.joid.lib.shader.pipeline.ShaderPassContext;
 
 public final class GrayscaleShaderPass implements IShaderPass {
 

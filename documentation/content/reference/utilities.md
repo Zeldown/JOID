@@ -1,6 +1,6 @@
 # Utilities
 
-The `dev.joid.lib.utils` packages hold small helper types used across the JOID API: alignments, boxes, Bézier curves, pairs and tuples, number formatting, image helpers, daemon threads, and the index-sorted lists that store UIs, nodes and bridges. This page is their reference. Signals, keys, click types and `InternalContext` also live under `dev.joid.lib.utils`; they are documented in [Signals](../state/signals.md), [Mouse and Keyboard](../interactions/mouse-and-keyboard.md) and [Callbacks](../interactions/callbacks.md).
+The `dev.joid.lib.utils` packages hold small helper types used across the JOID API: alignments, boxes, Bézier curves, pairs and tuples, number formatting, image helpers, daemon threads, and the index-sorted lists that store UIs, nodes and bridges. This page is their reference. Signals, keys, click types and `DispatchContext` also live under `dev.joid.lib.utils`; they are documented in [Signals](../state/signals.md), [Mouse and Keyboard](../interactions/mouse-and-keyboard.md) and [Callbacks](../interactions/callbacks.md).
 
 ## Align
 

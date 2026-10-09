@@ -2,7 +2,7 @@ package dev.joid.lib.render.transform.operation;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.transform.Vector;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

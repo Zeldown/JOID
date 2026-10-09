@@ -2,8 +2,8 @@ package example.replay;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.replay.SignalReplayNode;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.replay.SignalReplayNode;
 import lombok.Getter;
 import lombok.NonNull;
 

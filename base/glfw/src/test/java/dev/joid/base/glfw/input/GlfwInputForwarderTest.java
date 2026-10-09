@@ -13,10 +13,10 @@ import org.junit.Test;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import lombok.NonNull;
 
 public class GlfwInputForwarderTest {
@@ -91,31 +91,31 @@ public class GlfwInputForwarderTest {
 		}
 
 		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-			this.record("pressed " + clickType, context);
+		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+			this.record("pressed " + button, context);
 		}
 
 		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
-			this.record("dragged " + clickType, context);
+		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
+			this.record("dragged " + button, context);
 		}
 
 		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-			this.record("released " + clickType, context);
+		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+			this.record("released " + button, context);
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notches, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notches, final @NonNull DispatchContext context) {
 			this.record("scrolled " + notches, context);
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 			this.record("typed " + c + " " + key, context);
 		}
 
-		private void record(final String event, final InternalContext context) {
+		private void record(final String event, final DispatchContext context) {
 			this.trace.add(event);
 			if (this.cancel) {
 				context.cancel();

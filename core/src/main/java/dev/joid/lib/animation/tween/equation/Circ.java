@@ -1,0 +1,57 @@
+package dev.joid.lib.animation.tween.equation;
+
+
+
+import dev.joid.lib.animation.tween.TweenEquation;
+
+public abstract class Circ extends TweenEquation {
+
+	public static final Circ IN = new Circ() {
+
+		@Override
+		public final float compute(final float t) {
+			return (float) -(Math.sqrt(1F - t * t) - 1F);
+		}
+
+		@Override
+		public String toString() {
+			return "Circ.IN";
+		}
+
+	};
+
+	public static final Circ OUT = new Circ() {
+
+		@Override
+		public final float compute(final float time) {
+			float t = time;
+			return (float) Math.sqrt(1F - (t -= 1F) * t);
+		}
+
+		@Override
+		public String toString() {
+			return "Circ.OUT";
+		}
+
+	};
+
+	public static final Circ INOUT = new Circ() {
+
+		@Override
+		public final float compute(final float time) {
+			float t = time;
+			if ((t *= 2F) < 1F) {
+				return -0.5F * ((float) Math.sqrt(1F - t * t) - 1F);
+			}
+
+			return 0.5F * ((float) Math.sqrt(1F - (t -= 2F) * t) + 1F);
+		}
+
+		@Override
+		public String toString() {
+			return "Circ.INOUT";
+		}
+
+	};
+
+}

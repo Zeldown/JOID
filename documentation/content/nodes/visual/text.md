@@ -29,7 +29,7 @@ RectNode
 
 ![A gray button with the centered label Play](../../images/text-button.png "The TextNode covers the button and centers its text on both axes.")
 
-`Text` (`dev.joid.lib.draw.text.builder`), `TextInfo` (`dev.joid.lib.font.dto`), `Align` (`dev.joid.lib.utils.align`), overflow suffixes, modifiers and multi-style texts are introduced in [Text](../../essentials/text.md) and described in full in [Text and TextInfo](../../text/text-and-textinfo.md).
+`Text` (`dev.joid.lib.draw.text.builder`), `TextInfo` (`dev.joid.lib.font`), `Align` (`dev.joid.lib.utils.align`), overflow suffixes, modifiers and multi-style texts are introduced in [Text](../../essentials/text.md) and described in full in [Text and TextInfo](../../text/text-and-textinfo.md).
 
 ## Dynamic text
 
@@ -56,7 +56,7 @@ See [Reactive Properties](../../state/reactive-properties.md) for the rules.
 
 ## Text modes with mode
 
-`mode(TextMode)` (`dev.joid.lib.draw.text.utils.TextMode`) decides how the text is laid out in the node and which dimensions follow the text.
+`mode(TextMode)` (`dev.joid.lib.draw.text.TextMode`) decides how the text is laid out in the node and which dimensions follow the text.
 
 | Mode | Layout | Size of the node |
 | --- | --- | --- |

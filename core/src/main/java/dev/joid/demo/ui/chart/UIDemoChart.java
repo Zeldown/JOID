@@ -6,14 +6,14 @@ import dev.joid.demo.ui.chart.node.DemoChartNode;
 import dev.joid.demo.ui.chart.node.DemoRadarChartNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartAxis;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartData;
 import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class UIDemoChart extends UIDemo {
 
@@ -138,7 +138,7 @@ public class UIDemoChart extends UIDemo {
 			RectNode
 			.create(290, 20, 90, 50)
 			.color(UIDemoChart.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> {
+			.onClick((node, mouseX, mouseY, button) -> {
 				week.increment();
 				chart.data("Week", ChartData.create().add("Mon", 1 + week.get() % 3).add("Tue", 3 - week.get() % 3).add("Wed", 2 + week.get() % 2).add("Thu", 4 - week.get() % 4));
 			})

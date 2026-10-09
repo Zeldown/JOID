@@ -1,9 +1,9 @@
 package dev.joid.demo.ui;
 
-import dev.joid.lib.animation.tweenengine.Timeline;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
-import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.animation.tween.Timeline;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.render.transform.Transformation;
+import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.transition.Transition;
 import lombok.NonNull;

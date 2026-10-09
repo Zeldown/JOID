@@ -2,9 +2,9 @@ package dev.joid.lib.ui.node.impl.design.model;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -90,7 +90,7 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull InternalContext context) {
+	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
 		if (notchesY == 0D || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
@@ -99,8 +99,8 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (!clickType.isLeft() || !super.isHovered(mouseX, mouseY)) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+		if (!button.isLeft() || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}
 
@@ -112,8 +112,8 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-		if (clickType.isLeft()) {
+	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+		if (button.isLeft()) {
 			this.dragged = false;
 		}
 	}

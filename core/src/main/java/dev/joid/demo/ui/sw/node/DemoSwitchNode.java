@@ -3,14 +3,14 @@ package dev.joid.demo.ui.sw.node;
 import dev.joid.demo.DemoFont;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.NonNull;
 
 public class DemoSwitchNode extends SwitchNode {
@@ -46,7 +46,7 @@ public class DemoSwitchNode extends SwitchNode {
 					.text(Signal.from(() -> Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, super.getState().equals(state) ? Color.WHITE : DemoSwitchNode.INK), Align.CENTER, Align.CENTER)))
 					.attach(rect);
 				})
-				.onClick((node, mouseX, mouseY, clickType) -> {
+				.onClick((node, mouseX, mouseY, button) -> {
 					super.state(state);
 				})
 				.attach(flex);

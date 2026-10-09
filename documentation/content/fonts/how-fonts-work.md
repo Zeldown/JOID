@@ -163,9 +163,9 @@ The MSDF fonts are `.ttf` files: their atlases are generated into the [MSDF cach
 |---|---|---|
 | `IFont`, `IFontProvider` | `dev.joid.lib.font` | Font abstraction. |
 | `GlyphFont<F>`, `GlyphFontProvider<F>` | `dev.joid.lib.font.impl.glyph` | Glyph framework. |
-| `IFontFace`, `FontFamily<F>`, `TextGlyph<F>` | `dev.joid.lib.font.impl.glyph.dto` | Faces, families, glyphs handed to a provider. |
+| `IFontFace`, `FontFamily<F>`, `TextGlyph<F>` | `dev.joid.lib.font.impl.glyph` | Faces, families, glyphs handed to a provider. |
 | `MsdfFont`, `MsdfFontLoader`, `MsdfFontCache`, `MsdfFontProvider` | `dev.joid.lib.font.impl.msdf` | MSDF fonts (see [Adding Your Own Fonts](adding-fonts.md#reference)). |
-| `MsdfFontFace`, `MsdfAtlas`, `MsdfGlyph`, `MsdfMetrics`, `MsdfBounds` | `dev.joid.lib.font.impl.msdf.dto` | MSDF data. |
+| `MsdfFontFace`, `MsdfAtlas`, `MsdfGlyph`, `MsdfMetrics`, `MsdfBounds` | `dev.joid.lib.font.impl.msdf` | MSDF data. |
 
 ## Pitfalls
 

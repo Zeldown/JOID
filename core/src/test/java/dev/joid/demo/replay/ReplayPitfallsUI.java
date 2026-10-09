@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import dev.joid.lib.color.Color;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.replay.SignalReplayNode;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.replay.SignalReplayNode;
 import lombok.Getter;
 import lombok.Setter;
 

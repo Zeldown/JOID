@@ -3,12 +3,12 @@ package dev.joid.lib.ui.node.impl.design.text;
 import java.util.function.Supplier;
 
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.draw.text.utils.TextMode;
-import dev.joid.lib.font.dto.FontBounds;
+import dev.joid.lib.font.FontBounds;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 

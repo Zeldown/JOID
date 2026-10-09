@@ -17,7 +17,7 @@ public void draw(final double mouseX, final double mouseY) {
 
 ![A light gray square turned 30 degrees clockwise around its center, with smooth edges](../images/transform-draw-rotate.png "The square turns around its center")
 
-`Transformation` is in `dev.joid.lib.render.transform`; `Rotation`, `Scale` and `Vector` in `dev.joid.lib.render.modifier`. The rotated rectangle keeps smooth edges (see [Smoothed edges under a rotation](draw-utils.md#smoothed-edges-under-a-rotation)). To transform a node and its children instead, use [TransformNodeEffect](../styling/transform.md).
+`Transformation` is in `dev.joid.lib.render.transform`; `Rotation`, `Scale` and `Vector` in `dev.joid.lib.render.transform`. The rotated rectangle keeps smooth edges (see [Smoothed edges under a rotation](draw-utils.md#smoothed-edges-under-a-rotation)). To transform a node and its children instead, use [TransformNodeEffect](../styling/transform.md).
 
 ## Building a Transformation
 
@@ -186,7 +186,7 @@ tessellator.draw();
 | `clear()` | Removes every operation. |
 | `getOperations()` | The list of operations. |
 
-`Drawing` (`dev.joid.lib.render.context`) is a functional interface with a single `draw()` method, so a lambda fits.
+`Drawing` (`dev.joid.lib.render`) is a functional interface with a single `draw()` method, so a lambda fits.
 
 ### Transform operations
 

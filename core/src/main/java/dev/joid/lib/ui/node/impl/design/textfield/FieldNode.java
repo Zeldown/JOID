@@ -6,22 +6,22 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.TextStyle;
-import dev.joid.lib.font.dto.markup.ITextMarkup;
-import dev.joid.lib.font.dto.markup.TextMarkup;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.TextStyle;
+import dev.joid.lib.font.markup.ITextMarkup;
+import dev.joid.lib.font.markup.TextMarkup;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCallback;
 import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldFocusCallback;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.platform.Platform;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -159,7 +159,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+	public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 		if (context.isCancelled() || !this.focused) {
 			return;
 		}
@@ -274,7 +274,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (context.isCancelled() || !super.isHovered(mouseX, mouseY)) {
 			this.focus(false);
 			this.selectionStart = -1;
@@ -283,25 +283,25 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		context.cancel(() -> {
-			this.press(mouseX, mouseY, clickType.isLeft());
+			this.press(mouseX, mouseY, button.isLeft());
 			this.focus(true);
 		});
 	}
 
 	@Override
-	public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
+	public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
 		if (this.selecting) {
 			this.select(this.getPositionAt(mouseX, mouseY));
 		}
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		this.selecting = false;
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull InternalContext context) {
+	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
 		if (context.isCancelled() || notchesY == 0D || !super.isHovered(mouseX, mouseY) || !this.canStep()) {
 			return;
 		}
@@ -587,7 +587,7 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		super.executeCallback(FieldNode.CALLBACK_FOCUS, InternalContext.create(), () -> {
+		super.executeCallback(FieldNode.CALLBACK_FOCUS, DispatchContext.create(), () -> {
 			if (!focused) {
 				this.commit();
 			}
@@ -626,7 +626,7 @@ public abstract class FieldNode<V> extends Node {
 		final boolean valid = this.isValid();
 		this.text = previous;
 
-		super.executeCallback(FieldNode.CALLBACK_CHANGE, InternalContext.create(), () -> {
+		super.executeCallback(FieldNode.CALLBACK_CHANGE, DispatchContext.create(), () -> {
 			this.text = newText;
 			this.sync();
 		}, newText, value, valid);

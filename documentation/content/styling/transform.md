@@ -42,7 +42,7 @@ To pivot on the node's center and keep following it when it moves or resizes, bu
 
 ## Operations
 
-The operations are in `dev.joid.lib.render.transform.operation`, the value types in `dev.joid.lib.render.modifier`.
+The operations are in `dev.joid.lib.render.transform.operation`, the value types in `dev.joid.lib.render.transform`.
 
 ### TranslateOperation
 

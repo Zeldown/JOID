@@ -1,6 +1,6 @@
 package dev.joid.base.glfw.input;
 
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.input.key.Key;
 import lombok.NonNull;
 
 @FunctionalInterface

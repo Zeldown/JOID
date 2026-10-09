@@ -7,9 +7,11 @@ import javax.vecmath.Vector3f;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
-import dev.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
-import dev.joid.lib.resource.dto.playback.IResourcePlayback;
+import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
+import dev.joid.lib.resource.playback.IResourcePlayback;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerEndCallback;
@@ -17,8 +19,6 @@ import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPaus
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPlayCallback;
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerProgressCallback;
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerStopCallback;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -65,7 +65,7 @@ public class ResourcePlayerNode extends Node {
 		if (playback != null) {
 			playback.stop();
 			this.wasPlaying = false;
-			super.executeCallback(ResourcePlayerNode.CALLBACK_STOP, InternalContext.create());
+			super.executeCallback(ResourcePlayerNode.CALLBACK_STOP, DispatchContext.create());
 		}
 		return this;
 	}
@@ -141,17 +141,17 @@ public class ResourcePlayerNode extends Node {
 		if (playback != null) {
 			final boolean playing = playback.isPlaying();
 			if (playing && !this.wasPlaying) {
-				super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, InternalContext.create());
+				super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, DispatchContext.create());
 			} else if (!playing && this.wasPlaying && !playback.isPaused() && !this.loop) {
-				super.executeCallback(ResourcePlayerNode.CALLBACK_END, InternalContext.create());
-				super.executeCallback(ResourcePlayerNode.CALLBACK_STOP, InternalContext.create());
+				super.executeCallback(ResourcePlayerNode.CALLBACK_END, DispatchContext.create());
+				super.executeCallback(ResourcePlayerNode.CALLBACK_STOP, DispatchContext.create());
 			}
 
 			this.wasPlaying = playing;
 			final double progress = playback.getProgress();
 			if (progress != this.lastProgress) {
 				this.lastProgress = progress;
-				super.executeCallback(ResourcePlayerNode.CALLBACK_PROGRESS, InternalContext.create(), progress, playback.getCurrentTime());
+				super.executeCallback(ResourcePlayerNode.CALLBACK_PROGRESS, DispatchContext.create(), progress, playback.getCurrentTime());
 			}
 		}
 
@@ -171,7 +171,7 @@ public class ResourcePlayerNode extends Node {
 		final IResourcePlayback playback = this.getPlayback();
 		if (playback != null && playback.isPlaying()) {
 			playback.pause();
-			super.executeCallback(ResourcePlayerNode.CALLBACK_PAUSE, InternalContext.create());
+			super.executeCallback(ResourcePlayerNode.CALLBACK_PAUSE, DispatchContext.create());
 		}
 		return this;
 	}
@@ -200,7 +200,7 @@ public class ResourcePlayerNode extends Node {
 		final IResourcePlayback playback = this.getPlayback();
 		if (playback != null && playback.restart().isPlaying()) {
 			this.wasPlaying = true;
-			super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, InternalContext.create());
+			super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, DispatchContext.create());
 		}
 		return this;
 	}

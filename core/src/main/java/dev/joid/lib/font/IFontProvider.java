@@ -1,7 +1,5 @@
 package dev.joid.lib.font;
 
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
 import lombok.NonNull;
 
 public interface IFontProvider {

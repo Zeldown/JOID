@@ -11,8 +11,8 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeHoverStartCallbackTest {
 
@@ -24,7 +24,7 @@ public class NodeHoverStartCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeHoverStartCallback<RectNode> callback = (node, mouseX, mouseY) -> received.addAll(Arrays.asList(node, mouseX, mouseY));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context, 3D, 4D);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -37,7 +37,7 @@ public class NodeHoverStartCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeHoverStartCallback<RectNode> callback = (node, mouseX, mouseY) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), 3D, 4D);
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), 3D, 4D);
 		Assert.assertTrue(received.isEmpty());
 	}
 

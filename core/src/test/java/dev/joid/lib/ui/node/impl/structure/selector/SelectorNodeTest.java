@@ -15,12 +15,12 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode.SelectorDirection;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -276,7 +276,7 @@ public class SelectorNodeTest {
 
 	private void click(final double x, final double y) {
 		this.bridges.move(x, y).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frame();
 	}
 
@@ -309,7 +309,7 @@ public class SelectorNodeTest {
 
 		@Override
 		public void init() {
-			RectNode.create(0D, 0D, 1920D, 1080D).onClick((node, mouseX, mouseY, clickType) -> this.clicks.add("background")).attach(this);
+			RectNode.create(0D, 0D, 1920D, 1080D).onClick((node, mouseX, mouseY, button) -> this.clicks.add("background")).attach(this);
 			super.add(this.node);
 		}
 

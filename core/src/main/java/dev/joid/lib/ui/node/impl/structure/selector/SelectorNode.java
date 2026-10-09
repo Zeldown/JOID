@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.selector.callback.NodeSelectorChangeCallback;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.SignalSubscriber;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -84,7 +84,7 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (this.selected == null) {
 			return;
 		}
@@ -154,7 +154,7 @@ public abstract class SelectorNode<V> extends Node {
 		if (value.equals(previous)) {
 			this.selected = this.find(value);
 		} else {
-			this.select(this.find(value), InternalContext.create());
+			this.select(this.find(value), DispatchContext.create());
 		}
 		return (T) this;
 	}
@@ -164,14 +164,14 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Supplier<@NonNull V> value) {
-		return super.follow("value", value, option -> this.select(this.find(option), InternalContext.create()));
+		return super.follow("value", value, option -> this.select(this.find(option), DispatchContext.create()));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = super.writable(signal);
 		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (this.optionMap.containsValue(value)) {
-				this.select(this.find(value), InternalContext.create());
+				this.select(this.find(value), DispatchContext.create());
 			}
 		});
 		return (T) this;
@@ -207,7 +207,7 @@ public abstract class SelectorNode<V> extends Node {
 		throw new IllegalArgumentException("The value " + value + " is not an option of the selector");
 	}
 
-	private void select(final Node option, final InternalContext context) {
+	private void select(final Node option, final DispatchContext context) {
 		if (option == this.selected) {
 			return;
 		}

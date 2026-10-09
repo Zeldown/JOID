@@ -4,10 +4,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.replay.SignalReplayNode;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.signal.Signal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.replay.SignalReplayNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -15,7 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import dev.joid.lib.asset.Asset;
-import dev.joid.lib.asset.dto.locator.IAssetLocator;
+import dev.joid.lib.asset.locator.IAssetLocator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

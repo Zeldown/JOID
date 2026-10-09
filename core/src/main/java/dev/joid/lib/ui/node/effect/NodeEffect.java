@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import dev.joid.lib.shader.pipeline.IShaderPass;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")

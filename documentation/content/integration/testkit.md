@@ -259,7 +259,7 @@ shot resource-paused
 | `wait <ms>` | Advances the clock by exactly that time, in frames of 16 ms (the last one shorter), rendering each one. |
 | `move <x> <y>` | Moves the mouse, in window pixels, and renders a frame without moving the clock, so the next command sees the new position. |
 | `moveto <x> <y> <ms>` | Moves the mouse progressively over that time: each step advances the clock, moves the mouse, renders the frame, then drags with that position while a button is pressed. The last step lands on the target; `moveto x y 0` jumps there in one frame without moving the clock. |
-| `press <button>` / `release` | Presses a `ClickType` (`LEFT`, `RIGHT`...), releases it. |
+| `press <button>` / `release` | Presses a `MouseButton` (`LEFT`, `RIGHT`...), releases it. |
 | `scroll <notches>` | Scrolls vertically by that many notches (`1` per notch, fractions allowed), negative downward. |
 | `scroll <notchesX> <notchesY>` | Scrolls on both axes; a positive `notchesX` scrolls toward the left. |
 | `type <text>` | Types the text, holding `LEFT_SHIFT` for capital letters and shifted symbols. |

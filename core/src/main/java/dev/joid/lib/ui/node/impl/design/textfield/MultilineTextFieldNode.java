@@ -7,12 +7,12 @@ import java.util.function.UnaryOperator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.draw.text.builder.utils.TextOverflow;
-import dev.joid.lib.draw.text.utils.TextMode;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.draw.text.TextMode;
+import dev.joid.lib.draw.text.builder.TextOverflow;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -203,7 +203,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull InternalContext context) {
+	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
 		if (context.isCancelled() || notchesY == 0D || !super.isHovered(mouseX, mouseY)) {
 			return;
 		}

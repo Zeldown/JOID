@@ -95,9 +95,9 @@ public final class AppLoop {
 
 	private void onMouseButton(final int button, final int action) {
 		if (action == GLFW.GLFW_PRESS) {
-			this.bridge.mousePressed(ClickType.from(button));
+			this.bridge.mousePressed(MouseButton.from(button));
 		} else {
-			this.bridge.mouseReleased(ClickType.from(button));
+			this.bridge.mouseReleased(MouseButton.from(button));
 		}
 	}
 
@@ -123,7 +123,7 @@ JOID.open(new UIMainMenu());
 loop.run();
 ```
 
-`GlfwInputForwarder` (`dev.joid.base.glfw.input`) registers the GLFW input callbacks of the window and forwards them to the bridge: keys through `GlfwKeys.getKey(int)`, which gives the key of the active keyboard layout, each paired with its character by a `KeyCharacterMerger` flushed once per frame; buttons through `ClickType.from(int)`; the scroll offset in notches. A host that owns the GLFW callbacks, such as a game, calls its methods itself: `keyPressed(code, modifiers)`, `charTyped(codepoint)`, `mousePressed(button)`, `mouseReleased(button)`, `mouseMoved()`, `mouseScrolled(notches)` and `flush()`; the mouse methods return whether a UI consumed the event. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
+`GlfwInputForwarder` (`dev.joid.base.glfw.input`) registers the GLFW input callbacks of the window and forwards them to the bridge: keys through `GlfwKeys.getKey(int)`, which gives the key of the active keyboard layout, each paired with its character by a `KeyCharacterMerger` flushed once per frame; buttons through `MouseButton.from(int)`; the scroll offset in notches. A host that owns the GLFW callbacks, such as a game, calls its methods itself: `keyPressed(code, modifiers)`, `charTyped(codepoint)`, `mousePressed(button)`, `mouseReleased(button)`, `mouseMoved()`, `mouseScrolled(notches)` and `flush()`; the mouse methods return whether a UI consumed the event. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
 
 ## Feeding input events
 
@@ -131,8 +131,8 @@ loop.run();
 
 | Method | When to call it | Argument |
 |---|---|---|
-| `mousePressed(ClickType clickType)` | A mouse button goes down. | `ClickType.from(button)` maps 0 to `LEFT`, 1 to `RIGHT`, 2 to `MIDDLE`, 3 to `BACK`, 4 to `FORWARD`, anything else to `OTHER`. |
-| `mouseReleased(ClickType clickType)` | A mouse button goes up. | The button released. Releasing the button of the last `mousePressed` ends its drag. |
+| `mousePressed(MouseButton clickType)` | A mouse button goes down. | `MouseButton.from(button)` maps 0 to `LEFT`, 1 to `RIGHT`, 2 to `MIDDLE`, 3 to `BACK`, 4 to `FORWARD`, anything else to `OTHER`. |
+| `mouseReleased(MouseButton clickType)` | A mouse button goes up. | The button released. Releasing the button of the last `mousePressed` ends its drag. |
 | `mouseMoved()` | The mouse moves. | None. While a button is held, the bridge sends a drag with that button and the milliseconds since its press, read from the [clock bridge](bridges.md) (`BridgeHandler.CLOCK`), so a manual clock (testkit, replays) gives exact durations; without a held button it does nothing. |
 | `mouseScroll(double notchesX, double notchesY)` | The wheel turns or tilts, or a touchpad scrolls. | The distance in notches on each axis: `notchesY` is `1` for one notch away from the user, `-1` toward them; `notchesX` is positive toward the left, negative toward the right, as GLFW gives it; a fraction for a precise touchpad. GLFW and Minecraft give notches as they are; Windows and LWJGL 2 count `120` per notch, so divide by `120` (LWJGL 2 has no horizontal wheel: pass `0`). An event with both at `0` is ignored. Scrolling uses the sign; the dev-mode zoom (Alt + wheel) and the model viewer use the amount. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats. | The character it types (`0` when none) and the engine-neutral `Key` (`Key.UNKNOWN` when unknown). |
@@ -166,7 +166,7 @@ An [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) is a UI drawn ov
 Read the result of each input method: it is `true` when a UI consumed the event, `false` when no UI did, or when an overlay consumed it with the `cancelClick`, `cancelScroll` or `cancelKeyboard` of that kind of event turned off. Forward the event to the host only when it is `false`:
 
 ```java
-if (!this.bridge.mousePressed(ClickType.from(button))) {
+if (!this.bridge.mousePressed(MouseButton.from(button))) {
 	this.game.mousePressed(button);
 }
 ```
@@ -322,7 +322,7 @@ JOID.open(new UISettings());
 | `load()` | Loads every UI again at the window size, keeping its zoom. |
 | `update()` | Updates every UI, bottom up. |
 | `draw()` | Draws every visible UI, bottom up. |
-| `mousePressed(ClickType)`, `mouseReleased(ClickType)` | A button goes down or up. Like every input method, returns whether a UI consumed it. |
+| `mousePressed(MouseButton)`, `mouseReleased(MouseButton)` | A button goes down or up. Like every input method, returns whether a UI consumed it. |
 | `mouseMoved()` | The mouse moves; a drag when a button is held, timed on `BridgeHandler.CLOCK`. |
 | `mouseScroll(double notchesX, double notchesY)` | The wheel turns, in notches on each axis. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |

@@ -23,7 +23,7 @@ public void init() {
 	RectNode
 	.create(560, 100, 160, 50)
 	.color(Color.GRAY)
-	.onClick((node, mouseX, mouseY, clickType) -> this.items.add("Item " + (this.items.size() + 1)))
+	.onClick((node, mouseX, mouseY, button) -> this.items.add("Item " + (this.items.size() + 1)))
 	.attach(this);
 }
 ```

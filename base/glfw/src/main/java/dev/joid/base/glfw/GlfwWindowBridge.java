@@ -7,8 +7,8 @@ import org.lwjgl.glfw.GLFW;
 
 import dev.joid.base.glfw.input.GlfwKeys;
 import dev.joid.lib.bridge.window.IWindowBridge;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.key.Key;
 import lombok.Getter;
 import lombok.NonNull;
 

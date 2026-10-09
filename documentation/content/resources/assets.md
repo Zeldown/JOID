@@ -112,7 +112,7 @@ AssetLocator.register(new PathAssetLocator());
 final Resource logo = Resource.of(Paths.get("images", "logo.png"));
 ```
 
-`AssetLocator` (`dev.joid.lib.asset.dto.locator`) asks the latest registered locator first, so yours wins over a built-in one for a handle both support. The built-in locators come last, asked in this order: `StreamAssetLocator` (`InputStream`), `FileAssetLocator` (`File`), `UrlAssetLocator` (`String`).
+`AssetLocator` (`dev.joid.lib.asset.locator`) asks the latest registered locator first, so yours wins over a built-in one for a handle both support. The built-in locators come last, asked in this order: `StreamAssetLocator` (`InputStream`), `FileAssetLocator` (`File`), `UrlAssetLocator` (`String`).
 
 ## Remote assets and isRemote
 
@@ -142,7 +142,7 @@ public boolean isRemote() {
 
 ### Built-in assets
 
-| Class (`dev.joid.lib.asset.dto.impl`) | Factory | Getter |
+| Class (`dev.joid.lib.asset.impl`) | Factory | Getter |
 |---|---|---|
 | `FileAsset` | `create(File file)` | `getFile()` |
 | `StreamAsset` | `create(InputStream stream)` | none |

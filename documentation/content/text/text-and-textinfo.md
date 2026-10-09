@@ -9,7 +9,7 @@ TextNode.create(100, 100).text(Text.create("Hello JOID", info)).attach(this);
 
 ![The words Hello JOID in white](../images/text-quick.png "One run: a string and its TextInfo.")
 
-`font` is the family loaded with `MsdfFontLoader` in [Text](../essentials/text.md#loading-a-font-with-msdffontloader); the Fonts section ([Adding Your Own Fonts](../fonts/adding-fonts.md)) covers loading in detail. The examples of this page use that `font`. `TextInfo` and `FontBounds` are in `dev.joid.lib.font.dto`, `Text` and `TextElement` in `dev.joid.lib.draw.text.builder`, `FontWeight` in `dev.joid.lib.font`.
+`font` is the family loaded with `MsdfFontLoader` in [Text](../essentials/text.md#loading-a-font-with-msdffontloader); the Fonts section ([Adding Your Own Fonts](../fonts/adding-fonts.md)) covers loading in detail. The examples of this page use that `font`. `TextInfo` and `FontBounds` are in `dev.joid.lib.font`, `Text` and `TextElement` in `dev.joid.lib.draw.text.builder`, `FontWeight` in `dev.joid.lib.font`.
 
 ## Runs with TextElement
 

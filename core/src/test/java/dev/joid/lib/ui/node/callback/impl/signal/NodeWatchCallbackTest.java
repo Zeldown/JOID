@@ -11,14 +11,14 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.NonNull;
 
 public class NodeWatchCallbackTest {
@@ -32,7 +32,7 @@ public class NodeWatchCallbackTest {
 		final NodeWatchCallback<RectNode> callback = (node, signal, properties) -> received.addAll(Arrays.asList(node, signal, Arrays.asList(properties)));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final Signal<Integer> signal = Signal.of(1);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context, signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -45,7 +45,7 @@ public class NodeWatchCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeWatchCallback<RectNode> callback = (node, signal, properties) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true), Signal.of(1), WatchProperty.BODY);
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), Signal.of(1), WatchProperty.BODY);
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -94,7 +94,7 @@ public class NodeWatchCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull RectNode node, final @NonNull InternalContext context, final @NonNull Signal<?> watched, final @NonNull WatchProperty @NonNull... properties) {
+			public void pre(final @NonNull RectNode node, final @NonNull DispatchContext context, final @NonNull Signal<?> watched, final @NonNull WatchProperty @NonNull... properties) {
 				context.cancel();
 			}
 

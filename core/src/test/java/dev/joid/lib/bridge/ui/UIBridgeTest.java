@@ -17,10 +17,12 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.overlay.interaction.UIDataOverlayInteraction;
@@ -28,9 +30,7 @@ import dev.joid.lib.ui.core.data.overlay.render.UIDataOverlayRender;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 
 import lombok.NonNull;
 
@@ -93,7 +93,7 @@ public class UIBridgeTest {
 	public void pressesTheTopUiFirst() {
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new TraceUI("hud", this.trace));
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("pressed hud LEFT", "pressed menu LEFT"), this.trace);
 	}
 
@@ -103,7 +103,7 @@ public class UIBridgeTest {
 		hud.cancel = true;
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hud);
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		Assert.assertEquals(Collections.singletonList("pressed hud RIGHT"), this.trace);
 	}
 
@@ -115,7 +115,7 @@ public class UIBridgeTest {
 		hidden.getData().setVisible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(inactive).open(hidden);
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Collections.singletonList("pressed menu LEFT"), this.trace);
 	}
 
@@ -123,7 +123,7 @@ public class UIBridgeTest {
 	public void keepsThePressInsideAPopup() {
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace));
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Collections.singletonList("pressed popup LEFT"), this.trace);
 	}
 
@@ -131,7 +131,7 @@ public class UIBridgeTest {
 	public void dragsTheTopUiFirst() {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hud);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.trace.clear();
 		this.bridges.getClock().advance(40L);
 		this.bridges.getUi().mouseMoved();
@@ -148,7 +148,7 @@ public class UIBridgeTest {
 		inactive.getData().setActive(false);
 		hidden.getData().setVisible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.trace.clear();
 		this.bridges.getClock().advance(40L);
 		this.bridges.getUi().mouseMoved();
@@ -160,9 +160,9 @@ public class UIBridgeTest {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hud);
 		this.trace.clear();
-		this.bridges.getUi().mouseReleased(ClickType.MIDDLE);
+		this.bridges.getUi().mouseReleased(MouseButton.MIDDLE);
 		hud.cancel = true;
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("released hud MIDDLE", "released menu MIDDLE", "released hud LEFT"), this.trace);
 	}
 
@@ -174,7 +174,7 @@ public class UIBridgeTest {
 		hidden.getData().setVisible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
 		this.trace.clear();
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(Collections.singletonList("released popup LEFT"), this.trace);
 	}
 
@@ -374,8 +374,8 @@ public class UIBridgeTest {
 	@Test
 	public void stopsDraggingWhenThePressedButtonIsReleased() {
 		this.bridges.open(new TraceUI("menu", this.trace));
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.trace.clear();
 		this.bridges.getUi().mouseMoved();
 		Assert.assertTrue(this.trace.isEmpty());
@@ -384,8 +384,8 @@ public class UIBridgeTest {
 	@Test
 	public void keepsDraggingWhenAnotherButtonIsReleased() {
 		this.bridges.open(new TraceUI("menu", this.trace));
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		this.bridges.getUi().mouseReleased(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
 		this.trace.clear();
 		this.bridges.getUi().mouseMoved();
 		Assert.assertEquals(Collections.singletonList("dragged menu LEFT 0"), this.trace);
@@ -394,9 +394,9 @@ public class UIBridgeTest {
 	@Test
 	public void timesTheDragFromTheLastPressOnTheClock() {
 		this.bridges.open(new TraceUI("menu", this.trace));
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.getClock().advance(25L);
-		this.bridges.getUi().mousePressed(ClickType.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		this.trace.clear();
 		this.bridges.getClock().advance(5L);
 		this.bridges.getUi().mouseMoved();
@@ -430,7 +430,7 @@ public class UIBridgeTest {
 		menu.getData().setActive(false);
 		this.trace.clear();
 		this.bridges.frame();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("update menu", "draw menu"), this.trace);
 	}
 
@@ -440,7 +440,7 @@ public class UIBridgeTest {
 		this.bridges.open(new DepthUI("menu", this.trace)).open(popup);
 		popup.getData().setActive(false);
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Collections.singletonList("pressed menu"), this.trace);
 	}
 
@@ -549,11 +549,11 @@ public class UIBridgeTest {
 	public void reportsWhetherAScreenConsumedAnEvent() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
-		Assert.assertFalse(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		menu.cancel = true;
-		Assert.assertTrue(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseMoved());
-		Assert.assertTrue(this.bridges.getUi().mouseReleased(ClickType.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseScroll(0D, 1D));
 		Assert.assertTrue(this.bridges.getUi().keyTyped('a', Key.A));
 		Assert.assertFalse(this.bridges.getUi().mouseScroll(0D, 0D));
@@ -561,7 +561,7 @@ public class UIBridgeTest {
 
 	@Test
 	public void consumesNothingWithoutUi() {
-		Assert.assertFalse(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
 	}
 
@@ -571,7 +571,7 @@ public class UIBridgeTest {
 		overlay.getOverlay().render().setScreens(true);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.getUi().keyTyped('a', Key.A);
 		Assert.assertEquals(Arrays.asList("pressed menu LEFT", "typed menu a A"), this.trace);
 	}
@@ -580,7 +580,7 @@ public class UIBridgeTest {
 	public void pressesAnInteractiveOverlayBeforeTheScreens() {
 		this.bridges.open(new OverlayUI("overlay", this.trace)).open(new TraceUI("menu", this.trace));
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("pressed overlay LEFT", "pressed menu LEFT"), this.trace);
 	}
 
@@ -590,7 +590,7 @@ public class UIBridgeTest {
 		overlay.cancel = true;
 		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
 		this.trace.clear();
-		Assert.assertTrue(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseScroll(0D, 1D));
 		Assert.assertTrue(this.bridges.getUi().keyTyped('a', Key.A));
 		Assert.assertEquals(Arrays.asList("pressed overlay LEFT", "scrolled overlay 1.0", "typed overlay a A"), this.trace);
@@ -603,9 +603,9 @@ public class UIBridgeTest {
 		overlay.getOverlay().interaction().setCancelClick(false).setCancelScroll(false).setCancelKeyboard(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
 		this.trace.clear();
-		Assert.assertFalse(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertFalse(this.bridges.getUi().mouseMoved());
-		Assert.assertFalse(this.bridges.getUi().mouseReleased(ClickType.LEFT));
+		Assert.assertFalse(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
 		Assert.assertFalse(this.bridges.getUi().mouseScroll(0D, 1D));
 		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
 		Assert.assertFalse(this.trace.stream().anyMatch(line -> line.contains("menu")));
@@ -617,7 +617,7 @@ public class UIBridgeTest {
 		overlay.cancel = true;
 		overlay.getOverlay().interaction().setCancelClick(false).setCancelKeyboard(false);
 		this.bridges.open(overlay);
-		Assert.assertFalse(this.bridges.getUi().mousePressed(ClickType.LEFT));
+		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseScroll(0D, -1D));
 		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
 	}
@@ -644,7 +644,7 @@ public class UIBridgeTest {
 		this.bridges.getUi().draw();
 		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw low -1990.0", "draw high -1980.0"), this.trace);
 		this.trace.clear();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("pressed high LEFT", "pressed low LEFT", "pressed menu LEFT"), this.trace);
 	}
 
@@ -673,11 +673,11 @@ public class UIBridgeTest {
 		bridge.hidden = true;
 		this.trace.clear();
 		bridge.draw();
-		bridge.mousePressed(ClickType.LEFT);
+		bridge.mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(this.trace.isEmpty());
 		overlay.getOverlay().render().setAlways(true);
 		bridge.draw();
-		bridge.mousePressed(ClickType.LEFT);
+		bridge.mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("draw overlay -2000.0", "pressed overlay LEFT"), this.trace);
 		bridge.getUiList().remove(overlay);
 		overlay.dispose();
@@ -836,31 +836,31 @@ public class UIBridgeTest {
 		}
 
 		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-			this.trace.add("pressed " + this.name + " " + clickType);
+		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+			this.trace.add("pressed " + this.name + " " + button);
 			this.cancel(context);
 		}
 
 		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {
-			this.trace.add("dragged " + this.name + " " + clickType + " " + deltaTime);
+		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
+			this.trace.add("dragged " + this.name + " " + button + " " + deltaTime);
 			this.cancel(context);
 		}
 
 		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-			this.trace.add("released " + this.name + " " + clickType);
+		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+			this.trace.add("released " + this.name + " " + button);
 			this.cancel(context);
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull InternalContext context) {
+		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull DispatchContext context) {
 			this.trace.add("scrolled " + this.name + " " + value);
 			this.cancel(context);
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
+		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 			this.trace.add("typed " + this.name + " " + c + " " + key);
 			this.cancel(context);
 		}
@@ -875,7 +875,7 @@ public class UIBridgeTest {
 			super.setDepthLevel(this.level);
 		}
 
-		private void cancel(final InternalContext context) {
+		private void cancel(final DispatchContext context) {
 			if (this.cancel) {
 				context.cancel();
 			}
@@ -939,7 +939,7 @@ public class UIBridgeTest {
 		}
 
 		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
+		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 			this.trace.add("pressed " + this.name);
 		}
 

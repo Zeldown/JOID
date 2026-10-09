@@ -11,9 +11,9 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.click.ClickType;
 import lombok.AllArgsConstructor;
 
 public class SliderThumbNodeTest {
@@ -56,7 +56,7 @@ public class SliderThumbNodeTest {
 	@Test
 	public void grabsThePressedThumb() {
 		this.bridges.move(110D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(this.thumb.isDragging());
 		Assert.assertEquals(0D, this.thumb.getX(), 1E-9D);
 	}
@@ -64,8 +64,8 @@ public class SliderThumbNodeTest {
 	@Test
 	public void letsGoOnRelease() {
 		this.bridges.move(110D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.move(400D, 125D).frame();
 		Assert.assertFalse(this.thumb.isDragging());
 		Assert.assertEquals(0D, this.thumb.getX(), 1E-9D);
@@ -74,10 +74,10 @@ public class SliderThumbNodeTest {
 	@Test
 	public void staysHoveredWhileDragged() {
 		this.bridges.move(110D, 125D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(400D, 600D).frames(2);
 		Assert.assertTrue(this.thumb.isHovered());
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(2);
 		Assert.assertFalse(this.thumb.isHovered());
 	}
@@ -85,7 +85,7 @@ public class SliderThumbNodeTest {
 	@Test
 	public void ignoresAPressBesideIt() {
 		this.bridges.move(1000D, 1000D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertFalse(this.thumb.isDragging());
 	}
 

@@ -7,8 +7,10 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
@@ -18,8 +20,6 @@ import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapTy
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableType;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 import lombok.NonNull;
 
 public class UIDemoDraggable extends UIDemo {
@@ -206,7 +206,7 @@ public class UIDemoDraggable extends UIDemo {
 				public void apply(final @NonNull Node node) {}
 
 				@Override
-				public void pre(final @NonNull Node node, final @NonNull InternalContext context) {
+				public void pre(final @NonNull Node node, final @NonNull DispatchContext context) {
 					context.cancel();
 				}
 
@@ -231,7 +231,7 @@ public class UIDemoDraggable extends UIDemo {
 				public void apply(final @NonNull Node node) {}
 
 				@Override
-				public void pre(final @NonNull Node node, final @NonNull InternalContext context) {
+				public void pre(final @NonNull Node node, final @NonNull DispatchContext context) {
 					context.cancel();
 				}
 

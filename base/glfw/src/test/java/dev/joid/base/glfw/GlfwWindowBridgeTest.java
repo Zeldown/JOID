@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
-import dev.joid.lib.utils.cursor.Cursor;
+import dev.joid.lib.input.cursor.Cursor;
 
 public class GlfwWindowBridgeTest {
 

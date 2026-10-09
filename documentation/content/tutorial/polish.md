@@ -66,10 +66,10 @@ RectNode
 .color(Color.WHITE)
 .hoveredColor(Theme.HOVER)
 .effect(RoundedNodeEffect.create(12F))
-.onClick((node, mouseX, mouseY, clickType) -> this.settings.getLanguage().set(language))
+.onClick((node, mouseX, mouseY, button) -> this.settings.getLanguage().set(language))
 ```
 
-`TweenEquations.QUAD_OUT` (`dev.joid.lib.animation.tweenengine`) starts fast and slows down, so a row reacts at once under the mouse. See [Easing](../animation/easing.md) for the other curves.
+`TweenEquations.QUAD_OUT` (`dev.joid.lib.animation.tween`) starts fast and slows down, so a row reacts at once under the mouse. See [Easing](../animation/easing.md) for the other curves.
 
 ![The mouse moves up over the language rows and the Notifications row, each lightening while the mouse is over it](../images/tutorial-polish-hover.gif "Each row blends to its hover color")
 
@@ -210,13 +210,13 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.converter.TextConverter;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
@@ -290,7 +290,7 @@ public final class SettingsUI extends UI {
 						.color(Color.WHITE)
 						.hoveredColor(Theme.HOVER)
 						.effect(RoundedNodeEffect.create(12F))
-						.onClick((node, mouseX, mouseY, clickType) -> this.settings.getLanguage().set(language))
+						.onClick((node, mouseX, mouseY, button) -> this.settings.getLanguage().set(language))
 						.body(item -> {
 							TextNode.create(24, item.dh(2)).text(Text.create(language, label)).anchorY(Align.CENTER).attach(item);
 							CircleNode.create(680, 18, 16).color(Theme.INK).visible(this.settings.getLanguage().map(selected -> selected.equals(language))).attach(item);
@@ -343,7 +343,7 @@ public final class SettingsUI extends UI {
 package com.example.settings;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;

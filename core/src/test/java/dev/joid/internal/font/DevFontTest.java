@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
+import dev.joid.lib.font.impl.msdf.MsdfFontFace;
 
 public class DevFontTest {
 

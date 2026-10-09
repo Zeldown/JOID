@@ -23,11 +23,9 @@ import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.resource.dto.ResourceData;
-import dev.joid.lib.resource.dto.ResourceProperties;
-import dev.joid.lib.resource.dto.animation.impl.GifResourceAnimationReader;
-import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
-import dev.joid.lib.resource.dto.decoder.impl.AnimatedResourceDecoder;
+import dev.joid.lib.resource.animation.impl.GifResourceAnimationReader;
+import dev.joid.lib.resource.decoder.IResourceDecoder;
+import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import lombok.NonNull;
 
 public class ResourceTest {

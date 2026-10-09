@@ -9,17 +9,17 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
 public class NodeTextFieldEnterCallbackTest {
@@ -58,7 +58,7 @@ public class NodeTextFieldEnterCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeTextFieldEnterCallback<TextFieldNode> callback = (node, text) -> received.addAll(Arrays.asList(node, text));
 		final TextFieldNode field = TextFieldNode.create(0D, 0D, 100D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(field, context, "hello");
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -71,14 +71,14 @@ public class NodeTextFieldEnterCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeTextFieldEnterCallback<TextFieldNode> callback = (node, text) -> received.add(node);
-		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(true), "hello");
+		callback.post(TextFieldNode.create(0D, 0D, 100D), DispatchContext.create(true), "hello");
 		Assert.assertTrue(received.isEmpty());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingText() {
 		final NodeTextFieldEnterCallback<TextFieldNode> callback = (node, text) -> {};
-		callback.post(TextFieldNode.create(0D, 0D, 100D), InternalContext.create(), null);
+		callback.post(TextFieldNode.create(0D, 0D, 100D), DispatchContext.create(), null);
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class NodeTextFieldEnterCallbackTest {
 
 			@Override
 			@NodeCallbackMethod(Phase.PRE)
-			public void pre(final @NonNull TextFieldNode node, final @NonNull InternalContext context, final @NonNull String text) {
+			public void pre(final @NonNull TextFieldNode node, final @NonNull DispatchContext context, final @NonNull String text) {
 				context.cancel();
 			}
 

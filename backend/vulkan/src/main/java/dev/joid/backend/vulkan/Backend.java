@@ -7,7 +7,7 @@ import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.openal.binding.Lwjgl3AlBinding;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.resource.dto.resolver.ResourceResolver;
+import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

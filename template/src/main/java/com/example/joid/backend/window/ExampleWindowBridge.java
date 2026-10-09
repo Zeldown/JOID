@@ -1,7 +1,7 @@
 package com.example.joid.backend.window;
 
 import dev.joid.lib.bridge.window.IWindowBridge;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.input.key.Key;
 
 public final class ExampleWindowBridge implements IWindowBridge {
 

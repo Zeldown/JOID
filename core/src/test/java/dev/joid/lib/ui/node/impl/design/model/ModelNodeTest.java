@@ -12,10 +12,10 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.texture.ITexture;
-import dev.joid.lib.draw.model.utils.IDrawableModel;
+import dev.joid.lib.draw.model.IDrawableModel;
 import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.ResourceBuilder;
-import dev.joid.lib.resource.dto.ResourceData;
+import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 

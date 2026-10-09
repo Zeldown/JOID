@@ -1,6 +1,6 @@
 package dev.joid.lib.animation.animator;
 
-import dev.joid.lib.animation.tweenengine.TweenAccessor;
+import dev.joid.lib.animation.tween.TweenAccessor;
 
 public class TweenAnimatorAccessor implements TweenAccessor<TweenAnimator> {
 

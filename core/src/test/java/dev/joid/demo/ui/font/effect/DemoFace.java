@@ -1,7 +1,7 @@
 package dev.joid.demo.ui.font.effect;
 
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.impl.glyph.dto.IFontFace;
+import dev.joid.lib.font.impl.glyph.IFontFace;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

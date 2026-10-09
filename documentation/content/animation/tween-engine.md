@@ -1,10 +1,10 @@
 # Tween Engine
 
-The tween engine (`dev.joid.lib.animation.tweenengine`) animates any `float` attributes of any object: tweens interpolate up to three attributes at once, timelines chain and group them, and a `TweenManager` updates everything. [`TweenAnimator`](tween-animator.md) runs on it; use the engine directly to animate your own objects, several attributes together, or along a path. Its API follows the Universal Tween Engine (`Tween.getVersion()` returns `"6.3.3"`). It is the last Animation guide: it assumes the [TweenAnimator](tween-animator.md) and [Easing](easing.md) pages.
+The tween engine (`dev.joid.lib.animation.tween`) animates any `float` attributes of any object: tweens interpolate up to three attributes at once, timelines chain and group them, and a `TweenManager` updates everything. [`TweenAnimator`](tween-animator.md) runs on it; use the engine directly to animate your own objects, several attributes together, or along a path. Its API follows the Universal Tween Engine (`Tween.getVersion()` returns `"6.3.3"`). It is the last Animation guide: it assumes the [TweenAnimator](tween-animator.md) and [Easing](easing.md) pages.
 
 ## A first tween
 
-A tween needs a target object, a way to read and write its attributes (a [`TweenAccessor`](#tween-accessors)) and a manager that you update every frame. `MutableFloat` (`dev.joid.lib.animation.tweenengine.primitive`) is a `float` holder that is its own accessor:
+A tween needs a target object, a way to read and write its attributes (a [`TweenAccessor`](#tween-accessors)) and a manager that you update every frame. `MutableFloat` (`dev.joid.lib.animation.tween.primitive`) is a `float` holder that is its own accessor:
 
 ```java
 public class WelcomeUI extends UI {

@@ -9,7 +9,7 @@ import org.junit.Assume;
 import org.junit.Test;
 
 import dev.joid.backend.lwjgl2.Natives;
-import dev.joid.lib.utils.cursor.Cursor;
+import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.utils.platform.Platform;
 
 public class NativeCursorTest {

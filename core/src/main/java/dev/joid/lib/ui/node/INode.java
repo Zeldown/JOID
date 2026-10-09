@@ -1,9 +1,9 @@
 package dev.joid.lib.ui.node;
 
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.utils.list.RecursiveIndexedElement;
 import lombok.NonNull;
 
@@ -19,14 +19,14 @@ public interface INode extends RecursiveIndexedElement, Cloneable {
 
 	default public void detach() {}
 
-	default public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {}
+	default public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {}
 
-	default public void mouseDragged(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final long deltaTime, final @NonNull InternalContext context) {}
+	default public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {}
 
-	default public void mouseReleased(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {}
+	default public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {}
 
-	default public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull InternalContext context) {}
+	default public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {}
 
-	default public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {}
+	default public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {}
 
 }

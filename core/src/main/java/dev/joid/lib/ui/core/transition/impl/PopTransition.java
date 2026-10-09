@@ -1,7 +1,7 @@
 package dev.joid.lib.ui.core.transition.impl;
 
-import dev.joid.lib.animation.tweenengine.Timeline;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.Timeline;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.ui.core.UI;

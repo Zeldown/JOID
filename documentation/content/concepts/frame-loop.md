@@ -51,7 +51,7 @@ JOID.inst().setConfigDir(new File("run/config")).setDevMode(true).load();
 
 Each frame runs three phases through the UI bridge:
 
-1. **Input.** The host forwards each event as it arrives: `keyTyped(char, Key)`, `mousePressed(ClickType)`, `mouseReleased(ClickType)`, `mouseMoved()`, `mouseScroll(double, double)`; the bridge turns a move with a held button into a drag. The bridge offers it to its active, visible UIs from the top down. Inside a UI, the nodes see it first, the front-most first, then the hooks of the UI; a callback that consumes it stops it there ([Input and Callbacks](input.md) shows the path of an event).
+1. **Input.** The host forwards each event as it arrives: `keyTyped(char, Key)`, `mousePressed(MouseButton)`, `mouseReleased(MouseButton)`, `mouseMoved()`, `mouseScroll(double, double)`; the bridge turns a move with a held button into a drag. The bridge offers it to its active, visible UIs from the top down. Inside a UI, the nodes see it first, the front-most first, then the hooks of the UI; a callback that consumes it stops it there ([Input and Callbacks](input.md) shows the path of an event).
 2. **Update.** `bridge.update()` calls, for each UI, `update()` on its nodes, then the `update()` hook of the UI.
 3. **Draw.** `bridge.draw()` draws each visible UI from the lowest `zlevel` up. A UI runs its due scheduled tasks, draws its background, then its nodes inside its view (the fit of [The Virtual Canvas](canvas.md)). At the start of its render, each node reads the values it follows: a setter that follows a signal shows the new value at the next frame after the change.
 

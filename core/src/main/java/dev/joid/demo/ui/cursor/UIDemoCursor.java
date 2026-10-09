@@ -5,13 +5,13 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 
 public class UIDemoCursor extends UIDemo {
 
@@ -86,7 +86,7 @@ public class UIDemoCursor extends UIDemo {
 			.create(100, 50, 120, 120)
 			.color(() -> locked.get() ? UIDemoCursor.INK.copyAlpha(0.4F) : UIDemoCursor.INK)
 			.cursor(() -> locked.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER)
-			.onClick((node, mouseX, mouseY, clickType) -> locked.set(!locked.get()))
+			.onClick((node, mouseX, mouseY, button) -> locked.set(!locked.get()))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Reactive", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

@@ -11,6 +11,9 @@ import dev.joid.demo.ui.textfield.node.DemoIntegerFieldNode;
 import dev.joid.demo.ui.textfield.node.DemoMultilineTextFieldNode;
 import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.overlay.interaction.UIDataOverlayInteraction;
@@ -19,9 +22,6 @@ import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.signal.Signal;
 
 public class UIBridgeCursorTest {
 
@@ -83,10 +83,10 @@ public class UIBridgeCursorTest {
 	public void keepsTheCursorOfThePressedNodeDuringADrag() {
 		this.bridges.open(new NodeUI(RectNode.create(100, 100, 200, 200).cursor(Cursor.MOVE), RectNode.create(400, 100, 200, 200).cursor(Cursor.TEXT)));
 		this.bridges.move(150D, 150D).frame();
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(450D, 150D).frames(2).move(1000D, 1000D).frames(2);
 		Assert.assertEquals(Collections.singletonList(Cursor.MOVE), this.bridges.getWindow().getCursors());
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frame().move(450D, 150D).frame();
 		Assert.assertEquals(Arrays.asList(Cursor.MOVE, Cursor.DEFAULT, Cursor.TEXT), this.bridges.getWindow().getCursors());
 	}

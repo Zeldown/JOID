@@ -11,7 +11,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
+import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 public class CircleShaderPassTest {

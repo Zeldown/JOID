@@ -31,7 +31,7 @@ This font draws each character from a sprite `Resource` (see [Resources](../reso
 
 ### The face with IFontFace
 
-`IFontFace` (`dev.joid.lib.font.impl.glyph.dto`) describes one weight and style. Every metric is a fraction of the em, measured upward from the baseline: the descender and an underline below the baseline are negative.
+`IFontFace` (`dev.joid.lib.font.impl.glyph`) describes one weight and style. Every metric is a fraction of the em, measured upward from the baseline: the descender and an underline below the baseline are negative.
 
 ```java
 @Getter
@@ -292,7 +292,7 @@ Implement the two interfaces when the text is not made of glyphs on a baseline. 
 
 ## Producing MSDF faces with IMsdfSource
 
-To keep the MSDF rendering but produce the atlas your own way (another generator, a packed archive, a network service), implement `IMsdfSource` (`dev.joid.lib.font.impl.msdf.dto.source`) and pass it to `MsdfFontLoader.load(...)`. Extend `MsdfSource` instead to get the `weight(...)` and `italic(...)` overrides: implement its `protected MsdfFontFace parse()`.
+To keep the MSDF rendering but produce the atlas your own way (another generator, a packed archive, a network service), implement `IMsdfSource` (`dev.joid.lib.font.impl.msdf.source`) and pass it to `MsdfFontLoader.load(...)`. Extend `MsdfSource` instead to get the `weight(...)` and `italic(...)` overrides: implement its `protected MsdfFontFace parse()`.
 
 | Method | Description |
 |---|---|

@@ -2,8 +2,8 @@ package dev.joid.demo.ui.font.effect;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.font.dto.effect.ITextEffect;
-import dev.joid.lib.font.dto.effect.ITextGlyph;
+import dev.joid.lib.font.effect.ITextEffect;
+import dev.joid.lib.font.effect.ITextGlyph;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

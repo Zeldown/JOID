@@ -2,7 +2,6 @@ package dev.joid.lib.draw.model;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.draw.model.utils.IDrawableModel;
 import lombok.Getter;
 import lombok.NonNull;
 

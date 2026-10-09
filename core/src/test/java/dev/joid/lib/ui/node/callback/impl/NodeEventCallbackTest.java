@@ -7,9 +7,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackInvoker;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeEventCallbackTest {
 
@@ -18,7 +18,7 @@ public class NodeEventCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final NodeEventCallback<RectNode> callback = received::add;
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		callback.pre(rect, context);
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertFalse(context.isCancelled());
@@ -31,7 +31,7 @@ public class NodeEventCallbackTest {
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeEventCallback<RectNode> callback = received::add;
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true));
+		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true));
 		Assert.assertTrue(received.isEmpty());
 	}
 
@@ -39,7 +39,7 @@ public class NodeEventCallbackTest {
 	public void runsThroughItsCallbackObject() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
-		final InternalContext context = InternalContext.create();
+		final DispatchContext context = DispatchContext.create();
 		final NodeCallbackInvoker<NodeEventCallback<RectNode>> object = new NodeCallbackInvoker<>(received::add);
 		object.pre(rect, context);
 		Assert.assertTrue(received.isEmpty());

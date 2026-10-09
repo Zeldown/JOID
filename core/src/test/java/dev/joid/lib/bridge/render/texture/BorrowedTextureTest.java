@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
-import dev.joid.lib.resource.dto.ResourceData;
-import dev.joid.lib.resource.dto.resolver.ResourceResolver;
+import dev.joid.lib.resource.ResourceData;
+import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.NonNull;
 
 public class BorrowedTextureTest {

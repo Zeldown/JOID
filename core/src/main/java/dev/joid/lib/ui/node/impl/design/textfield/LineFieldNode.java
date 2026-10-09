@@ -5,13 +5,13 @@ import java.util.function.Supplier;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldEnterCallback;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.context.InternalContext;
-import dev.joid.lib.utils.key.Key;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -108,7 +108,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		super.focus(false);
-		super.executeCallback(LineFieldNode.CALLBACK_ENTER, InternalContext.create(), super.getText());
+		super.executeCallback(LineFieldNode.CALLBACK_ENTER, DispatchContext.create(), super.getText());
 		return true;
 	}
 

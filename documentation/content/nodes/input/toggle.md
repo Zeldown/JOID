@@ -128,7 +128,7 @@ QualityToggleNode
 	}
 
 	@Override
-	public void pre(final @NonNull QualityToggleNode node, final @NonNull InternalContext context, final boolean toggle) {
+	public void pre(final @NonNull QualityToggleNode node, final @NonNull DispatchContext context, final boolean toggle) {
 		if (!toggle) {
 			context.cancel();
 		}
@@ -153,7 +153,7 @@ Once on "High", this toggle stays there. Several `onChange` callbacks run in the
 | `getValue()` | Value of the current side, from `state(...)`. |
 | `getState()` | The `ToggleState<F, S>` set by `state(...)` (`getToggle()`, `getBack()`), or `null`. |
 | `getSignal()`, `getSubscription()` | Bound signal and its subscription, or `null`. |
-| `mousePressed(double, double, ClickType, InternalContext)` | Flips the toggle on a press over it. Override it to change what a press does. |
+| `mousePressed(double, double, MouseButton, DispatchContext)` | Flips the toggle on a press over it. Override it to change what a press does. |
 | `ToggleNode.CALLBACK_CHANGE` | Callback id of `onChange`. |
 
 `NodeToggleChangeCallback<T extends ToggleNode<F, S>, F, S>` (`dev.joid.lib.ui.node.impl.structure.toggle.callback`):
@@ -161,8 +161,8 @@ Once on "High", this toggle stays there. Several `onChange` callbacks run in the
 | Method | Description |
 | --- | --- |
 | `apply(T node, boolean toggle)` | Runs after the change (the lambda of `onChange`). |
-| `pre(T node, InternalContext context, boolean toggle)` | Runs before the change; `context.cancel()` keeps the current side. |
-| `post(T node, InternalContext context, boolean toggle)` | Runs after the change and calls `apply`. |
+| `pre(T node, DispatchContext context, boolean toggle)` | Runs before the change; `context.cancel()` keeps the current side. |
+| `post(T node, DispatchContext context, boolean toggle)` | Runs after the change and calls `apply`. |
 
 The setters return the node itself, typed by the generic return of the fluent API. The rest of the API is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
 

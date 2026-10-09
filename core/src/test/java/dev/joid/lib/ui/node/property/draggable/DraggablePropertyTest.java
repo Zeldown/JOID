@@ -10,6 +10,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -17,7 +18,6 @@ import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableAreaType;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableType;
-import dev.joid.lib.utils.click.ClickType;
 
 import lombok.AllArgsConstructor;
 
@@ -175,7 +175,7 @@ public class DraggablePropertyTest {
 		this.bridges.frames(100);
 		Assert.assertEquals(200D, node.getX(), 0D);
 		Assert.assertEquals(150D, node.getY(), 0D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertFalse(node.isDragging());
 	}
 
@@ -183,7 +183,7 @@ public class DraggablePropertyTest {
 	public void bringsADroppedNodeBackInsideItsArea() {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.custom(0D, 0D, 300D, 300D));
 		this.drag(node, 410D, 160D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(100);
 		Assert.assertEquals(250D, node.getX(), 0D);
 		Assert.assertEquals(150D, node.getY(), 0D);
@@ -194,7 +194,7 @@ public class DraggablePropertyTest {
 		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snap(target));
 		this.drag(node, 310D, 310D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(100);
 		Assert.assertEquals(400D, node.getX(), 0D);
 		Assert.assertEquals(400D, node.getY(), 0D);
@@ -205,7 +205,7 @@ public class DraggablePropertyTest {
 		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, target));
 		this.drag(node, 310D, 310D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(100);
 		Assert.assertEquals(100D, node.getX(), 0D);
 		Assert.assertEquals(100D, node.getY(), 0D);
@@ -226,7 +226,7 @@ public class DraggablePropertyTest {
 		Assert.assertEquals(100D, draws.get(0).getLeft(), 1E-3D);
 		Assert.assertEquals(200D, draws.get(1).getLeft(), 1E-3D);
 		Assert.assertEquals(150D, draws.get(1).getTop(), 1E-3D);
-		this.bridges.getUi().mouseReleased(ClickType.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertNull(node.getDraggedNode());
 	}
 
@@ -249,7 +249,7 @@ public class DraggablePropertyTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).draggable(DraggableProperty.free().type(DraggableType.COPY));
 		this.bridges.open(new NodeUI(node)).frame();
 		this.bridges.move(110D, 110D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(210D, 160D).frame();
 		this.bridges.getUi().mouseMoved();
 		this.bridges.frames(100);
@@ -259,7 +259,7 @@ public class DraggablePropertyTest {
 	private void drag(final Node node, final double x, final double y) {
 		this.bridges.open(new NodeUI(node)).frame();
 		this.bridges.move(110D, 110D).frames(2);
-		this.bridges.getUi().mousePressed(ClickType.LEFT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(x, y).frame();
 		this.bridges.getUi().mouseMoved();
 	}

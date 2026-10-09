@@ -2,8 +2,8 @@ package dev.joid.showcase;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.font.dto.effect.ITextEffect;
-import dev.joid.lib.font.dto.effect.ITextGlyph;
+import dev.joid.lib.font.effect.ITextEffect;
+import dev.joid.lib.font.effect.ITextGlyph;
 
 public class ShowDecodeTextEffect implements ITextEffect {
 

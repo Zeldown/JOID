@@ -1,6 +1,5 @@
 package dev.joid.lib.shader.pipeline;
 
-import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import lombok.NonNull;
 
 public interface IShaderPass {

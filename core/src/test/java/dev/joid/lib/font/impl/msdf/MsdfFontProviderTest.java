@@ -21,17 +21,12 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.effect.ITextEffect;
-import dev.joid.lib.font.dto.effect.ITextGlyph;
-import dev.joid.lib.font.dto.markup.ITextMarkup;
-import dev.joid.lib.font.impl.msdf.dto.MsdfAtlas;
-import dev.joid.lib.font.impl.msdf.dto.MsdfBounds;
-import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
-import dev.joid.lib.font.impl.msdf.dto.MsdfGlyph;
-import dev.joid.lib.font.impl.msdf.dto.MsdfMetrics;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.effect.ITextEffect;
+import dev.joid.lib.font.effect.ITextGlyph;
+import dev.joid.lib.font.markup.ITextMarkup;
 
 public class MsdfFontProviderTest {
 

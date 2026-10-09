@@ -15,8 +15,8 @@ import org.lwjgl.opengl.Display;
 import dev.joid.backend.lwjgl2.window.cursor.NativeCursor;
 import dev.joid.backend.lwjgl2.window.cursor.NativeCursors;
 import dev.joid.lib.bridge.window.IWindowBridge;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.key.Key;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.key.Key;
 import lombok.NonNull;
 
 public final class Lwjgl2WindowBridge implements IWindowBridge {

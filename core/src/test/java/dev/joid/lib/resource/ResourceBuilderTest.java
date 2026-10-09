@@ -25,11 +25,10 @@ import com.google.common.cache.CacheBuilder;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
-import dev.joid.lib.resource.dto.ResourceData;
-import dev.joid.lib.resource.dto.decoder.impl.AnimatedResourceDecoder;
-import dev.joid.lib.resource.dto.decoder.impl.RasterResourceDecoder;
-import dev.joid.lib.resource.dto.decoder.impl.VectorResourceDecoder;
-import dev.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
+import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
+import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
+import dev.joid.lib.resource.decoder.impl.VectorResourceDecoder;
+import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 
 import lombok.NonNull;
 
@@ -125,7 +124,7 @@ public class ResourceBuilderTest {
 		Assert.assertTrue(builder.of(ResourceBuilderTest.stream("/animation/still.png")).getDecoder() instanceof RasterResourceDecoder);
 		Assert.assertTrue(builder.of(ResourceBuilderTest.stream("/animation/blink.gif")).getDecoder() instanceof AnimatedResourceDecoder);
 		Assert.assertTrue(builder.of(ResourceBuilderTest.stream("/vector/icon.svg")).getDecoder() instanceof VectorResourceDecoder);
-		Assert.assertTrue(builder.of(ResourceBuilderTest.stream("/dev/joid/lib/resource/dto/decoder/impl/frames.mkv")).getDecoder() instanceof VideoResourceDecoder);
+		Assert.assertTrue(builder.of(ResourceBuilderTest.stream("/dev/joid/lib/resource/decoder/impl/frames.mkv")).getDecoder() instanceof VideoResourceDecoder);
 	}
 
 	@Test

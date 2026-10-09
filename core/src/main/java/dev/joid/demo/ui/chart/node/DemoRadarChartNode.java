@@ -7,7 +7,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode;
 import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;

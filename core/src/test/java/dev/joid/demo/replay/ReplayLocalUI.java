@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import dev.joid.lib.signal.ComputedSignal;
+import dev.joid.lib.signal.impl.iterable.ListSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.replay.SignalReplayCaption;
+import dev.joid.lib.signal.replay.SignalReplayNode;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.signal.ComputedSignal;
-import dev.joid.lib.utils.signal.impl.iterable.ListSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.utils.signal.replay.SignalReplayCaption;
-import dev.joid.lib.utils.signal.replay.SignalReplayNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

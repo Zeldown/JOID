@@ -11,17 +11,17 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.font.dto.converter.TextConverter;
-import dev.joid.lib.resource.dto.ResourceData;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.converter.TextConverter;
+import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlayObject;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.click.ClickType;
-import dev.joid.lib.utils.cursor.Cursor;
-import dev.joid.lib.utils.key.Key;
 import dev.joid.lib.utils.list.IndexedLinkedList;
 import lombok.Getter;
 import lombok.NonNull;
@@ -35,8 +35,8 @@ public abstract class UIBridge implements IUIBridge {
 	@NonNull
 	private final IndexedLinkedList<@NonNull UI> uiList;
 
-	private long      pressTime;
-	private ClickType pressed;
+	private long        pressTime;
+	private MouseButton pressed;
 
 	private Node   pressedNode;
 	private Cursor hoveredCursor;
@@ -60,12 +60,12 @@ public abstract class UIBridge implements IUIBridge {
 		this.uiList.forEach(ui -> ui.load(width, height, ui.getView().getZoom()));
 	}
 
-	public final boolean mousePressed(final @NonNull ClickType clickType) {
-		this.pressed     = clickType;
+	public final boolean mousePressed(final @NonNull MouseButton button) {
+		this.pressed     = button;
 		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.pressedNode = this.getHoveredNode();
 		for (final UI ui : this.getInputList()) {
-			if (ui.onMousePressed(clickType) || ui.getPopup().active()) {
+			if (ui.onMousePressed(button) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 			}
 		}
@@ -77,24 +77,24 @@ public abstract class UIBridge implements IUIBridge {
 			return false;
 		}
 
-		final ClickType clickType = this.pressed;
+		final MouseButton button = this.pressed;
 		final long deltaTime = BridgeHandler.CLOCK.get().currentTimeMillis() - this.pressTime;
 		for (final UI ui : this.getInputList()) {
-			if (ui.onMouseDragged(clickType, deltaTime) || ui.getPopup().active()) {
+			if (ui.onMouseDragged(button, deltaTime) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 			}
 		}
 		return false;
 	}
 
-	public final boolean mouseReleased(final @NonNull ClickType clickType) {
-		if (this.pressed == clickType) {
+	public final boolean mouseReleased(final @NonNull MouseButton button) {
+		if (this.pressed == button) {
 			this.pressed     = null;
 			this.pressedNode = null;
 		}
 
 		for (final UI ui : this.getInputList()) {
-			if (ui.onMouseReleased(clickType) || ui.getPopup().active()) {
+			if (ui.onMouseReleased(button) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 			}
 		}

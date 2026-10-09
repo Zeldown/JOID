@@ -2,8 +2,8 @@ package dev.joid.lib.ui.node.property.watch;
 
 import java.util.function.BiConsumer;
 
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

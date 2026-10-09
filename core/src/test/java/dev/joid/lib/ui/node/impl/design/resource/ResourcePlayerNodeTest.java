@@ -15,12 +15,12 @@ import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
-import dev.joid.lib.resource.dto.decoder.impl.AnimatedResourceDecoder;
-import dev.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
+import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
+import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
-import dev.joid.lib.utils.signal.Signal;
 
 public class ResourcePlayerNodeTest {
 
@@ -376,7 +376,7 @@ public class ResourcePlayerNodeTest {
 
 	@Test
 	public void placesTheAudioOfAVideoGivenAfterwards() {
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(new Vector3f(1F, 2F, 3F)).referenceDistance(2F).maxDistance(9F).resource(ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/dto/decoder/impl/frames.mkv")));
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(new Vector3f(1F, 2F, 3F)).referenceDistance(2F).maxDistance(9F).resource(ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv")));
 		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertTrue(video.isHasLocation());
@@ -420,7 +420,7 @@ public class ResourcePlayerNodeTest {
 	}
 
 	private static Resource video() {
-		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/dto/decoder/impl/frames.mkv"));
+		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv"));
 	}
 
 	public static final class NodeUI extends UI {

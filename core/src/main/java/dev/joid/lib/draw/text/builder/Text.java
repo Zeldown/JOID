@@ -7,12 +7,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
-import dev.joid.lib.draw.text.builder.utils.TextOverflow;
+import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontUsage;
-import dev.joid.lib.font.dto.FontBounds;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
 

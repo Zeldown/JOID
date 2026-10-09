@@ -10,10 +10,9 @@ import java.util.concurrent.Executors;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
-import dev.joid.lib.font.impl.msdf.dto.MsdfFontFace;
-import dev.joid.lib.font.impl.msdf.dto.source.IMsdfSource;
-import dev.joid.lib.font.impl.msdf.dto.source.MsdfBinarySource;
-import dev.joid.lib.font.impl.msdf.dto.source.MsdfOpenTypeSource;
+import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
+import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
+import dev.joid.lib.font.impl.msdf.source.MsdfOpenTypeSource;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

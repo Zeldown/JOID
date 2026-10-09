@@ -10,15 +10,17 @@ import javax.vecmath.Vector4f;
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.font.markup.DemoTextMarkup;
 import dev.joid.internal.JOID;
-import dev.joid.lib.animation.tweenengine.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
@@ -31,8 +33,6 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.signal.impl.primitive.DoubleSignal;
-import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 
 public class ShowHero extends ShowUI {
 

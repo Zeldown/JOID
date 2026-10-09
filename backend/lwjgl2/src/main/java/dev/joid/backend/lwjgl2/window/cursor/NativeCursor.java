@@ -7,7 +7,7 @@ import java.util.Map;
 import org.lwjgl.opengl.Display;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.utils.cursor.Cursor;
+import dev.joid.lib.input.cursor.Cursor;
 import lombok.NonNull;
 
 public abstract class NativeCursor {
