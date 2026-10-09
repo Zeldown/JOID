@@ -96,37 +96,6 @@ Every frame below is a real JOID render on the 1920×1080 canvas, with only the 
   </tr>
 </table>
 
-The code stays short. This button counts its clicks, and its label updates by itself:
-
-```java
-public final class CounterUI extends UI {
-
-	private static final Color VIOLET = Color.decode("#8B5CF6");
-	private static final Color CYAN   = Color.decode("#22D3EE");
-
-	private final IntegerSignal clicks = IntegerSignal.of(0);
-
-	@Override
-	public void init() {
-		final TextInfo info = TextInfo.create(Theme.getFont(), 40F, Color.WHITE);
-
-		RectNode
-		.create(760, 440, 400, 120)
-		.color(CounterUI.VIOLET.toGradient(CounterUI.CYAN))
-		.effect(RoundedNodeEffect.create(24F))
-		.effect(ShadowNodeEffect.create(CounterUI.VIOLET, 32F))
-		.onClick((node, mouseX, mouseY, clickType) -> this.clicks.increment())
-		.body(button -> {
-			TextNode.create(button.dw(2), button.dh(2)).text(Text.create("Clicks: " + this.clicks.get(), info)).anchor(Align.CENTER).attach(button);
-		})
-		.attach(this);
-	}
-
-}
-```
-
-`Theme` loads your font once at startup: the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) shows the whole program, window included.
-
 ## Documentation
 
 <div align="center">
