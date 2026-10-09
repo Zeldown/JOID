@@ -84,6 +84,16 @@ The core and backend jars embed the libraries that decode media and read bytecod
 | JavaCPP | 1.5.9 | `org.bytedeco` (not relocated) | Video playback |
 | FFmpeg (JavaCPP Presets) | 6.0-1.5.9, natives for `windows-x86_64`, `linux-x86_64`, `macosx-x86_64`, `macosx-arm64` | `org.bytedeco` (not relocated) | Video playback |
 
+The LWJGL 2 backend jar also embeds JNA 5.17.0 (`net.java.dev.jna:jna`, with its natives), not relocated, under `com.sun.jna`, for its [mouse cursors](../integration/backends.md#mouse-cursors). The cursors work with any JNA from 3.4.0 to 5.17.0, so an application or a host that already ships JNA keeps a single copy by leaving the embedded one out when it repackages the JOID jar, for example with the Gradle Shadow plugin:
+
+```groovy
+shadowJar {
+    exclude 'com/sun/jna/**'
+}
+```
+
+Without repackaging, put its own `jna` jar before the JOID jar on the classpath. Without a working JNA, the cursor stays the default one.
+
 The relocated copies never clash with the copies your application or its host ships: the ASM of a Forge or Minecraft environment stays separate. The `org.bytedeco` packages keep their names, so avoid adding another version of JavaCV, JavaCPP or FFmpeg to the same classpath.
 
 ## Libraries to declare

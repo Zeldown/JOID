@@ -59,3 +59,9 @@ The LWJGL 2 backend jar also embeds:
   OpenAL Soft, as built for LWJGL 2
   https://openal-soft.org
   Licensed under the GNU Library General Public License, version 2 or later
+
+  JNA (Java Native Access) 5.17.0, with its natives
+  https://github.com/java-native-access/jna
+  Copyright Java Native Access contributors
+  Licensed under the Apache License, Version 2.0
+  Not relocated: it stays under com.sun.jna.

@@ -12,7 +12,10 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
+import dev.joid.backend.lwjgl2.window.cursor.NativeCursor;
+import dev.joid.backend.lwjgl2.window.cursor.NativeCursors;
 import dev.joid.lib.bridge.window.IWindowBridge;
+import dev.joid.lib.utils.cursor.Cursor;
 import dev.joid.lib.utils.key.Key;
 import lombok.NonNull;
 
@@ -182,6 +185,14 @@ public final class WindowBridge implements IWindowBridge {
 	public boolean isKeyDown(final @NonNull Key key) {
 		final Integer code = WindowBridge.CODE_MAP.get(key);
 		return code != null && Keyboard.isKeyDown(code);
+	}
+
+	@Override
+	public void setCursor(final @NonNull Cursor cursor) {
+		final NativeCursor nativeCursor = NativeCursors.get();
+		if (nativeCursor != null && !Mouse.isGrabbed()) {
+			nativeCursor.apply(cursor);
+		}
 	}
 
 	@Override

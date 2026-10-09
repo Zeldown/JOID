@@ -198,7 +198,7 @@ public final class AppInput {
 ```
 
 - The render bridge is the `GlRenderBridge` of `base-opengl`, on LWJGL 2's OpenGL (`dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding`): the renderer of LWJGL 3, with the same choices for each context (see [OpenGL versions](#opengl-versions)) and the same pixels. It keeps the matrices and the state in Java, and gives the host its OpenGL state back (see [Giving the host its state back](#giving-the-host-its-state-back)). It uses its own vertex array as soon as the context has OpenGL 3.0 or `GL_ARB_vertex_array_object`, and calls OpenGL only through LWJGL 2, whose own checks of the bound buffers stay right.
-- The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, and the clipboard through AWT. LWJGL 2 key codes follow the keyboard layout on Windows and Linux and the place of the key on macOS; `isPhysicalKeyDown` answers like `isKeyDown`.
+- The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, the clipboard through AWT, and sets the [mouse cursors](#mouse-cursors) through JNA. LWJGL 2 key codes follow the keyboard layout on Windows and Linux and the place of the key on macOS; `isPhysicalKeyDown` answers like `isKeyDown`.
 - The audio bridge is the `AlAudioBridge` of `base-openal` on LWJGL 2's OpenAL (`dev.joid.backend.lwjgl2.binding.Lwjgl2AlBinding`). It creates the OpenAL context with `AL.create()` on the first video with sound, unless one already exists, and destroys it when the JVM exits; `AL.create()` loads the OpenAL native that `Backend.register()` installed.
 
 ### LWJGL 2 natives
@@ -287,6 +287,7 @@ Each backend shows the [cursor of the node under the pointer](../interactions/mo
 | Backend | Cursors |
 |---|---|
 | LWJGL 3, Vulkan | The standard cursors of GLFW 3.4 through `dev.joid.base.glfw.WindowBridge`: `POINTER` is the pointing hand, `MOVE` the four-way arrow (`GLFW_RESIZE_ALL_CURSOR`), the resize cursors the double arrows. A shape the system or its cursor theme lacks falls back to the default cursor. |
+| LWJGL 2 | The system cursors of each OS, without images, through JNA (embedded in the jar, see [Installation](../getting-started/installation.md#embedded-libraries)): `LoadCursorW` on Windows, the cursor theme (`XcursorLibraryLoadCursor`) then the cursor font on X11, `NSCursor` on macOS. The handle goes to the `Display` of LWJGL 2, which keeps it for its window and hides it while the mouse is grabbed; nothing is applied while the mouse is grabbed. A shape the system lacks, or a JNA that cannot load, keeps the default cursor (with one warning in dev mode). The classes live in `dev.joid.backend.lwjgl2.window.cursor`: `NativeCursors.get()` picks the `NativeCursor` of the OS (`WindowsNativeCursor`, `X11NativeCursor`, `MacNativeCursor`). |
 | Your engine | `IWindowBridge.setCursor(Cursor)` does nothing by default, so the cursor stays the one of your window until you implement it (see [Writing a Backend](writing-a-backend.md#window-and-audio-bridges)). |
 
 ## Embedding JOID in an existing host
