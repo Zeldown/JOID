@@ -20,6 +20,7 @@ import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
 import dev.joid.lib.shader.impl.RoundedShader;
+import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -234,6 +235,78 @@ public class DrawResourceTest {
 		Assert.assertEquals(84D, capture.getBottom(), 1E-3D);
 	}
 
+	@Test
+	public void drawsATextureWithItsBlendAndFilter() {
+		final RecordingTexture texture = new RecordingTexture();
+		texture.allocate(64, 32);
+		DrawUtils.RESOURCE.drawTexture(10D, 20D, 100D, 50D, texture, 0.25D, 0.5D, 0.75D, 1D, TextureFilter.NEAREST, BlendState.PREMULTIPLIED);
+		final Capture capture = this.single();
+		Assert.assertSame(texture, capture.getState().getTexture());
+		Assert.assertSame(TextureFilter.NEAREST, capture.getState().getTextureFilter());
+		Assert.assertSame(BlendState.PREMULTIPLIED, capture.getState().getBlend());
+		Assert.assertEquals(10D, capture.getLeft(), 1E-3D);
+		Assert.assertEquals(70D, capture.getBottom(), 1E-3D);
+		Assert.assertEquals(0.25F, capture.getU(0), 0F);
+		Assert.assertEquals(1F, capture.getV(0), 0F);
+		Assert.assertEquals(0.75F, capture.getU(2), 0F);
+		Assert.assertEquals(0.5F, capture.getV(2), 0F);
+		Assert.assertNull(this.render.getState().getTexture());
+		Assert.assertSame(BlendState.DISABLED, this.render.getState().getBlend());
+	}
+
+	@Test
+	public void takesTheSizeOfItsTextureRegion() {
+		final Resource resource = DrawResourceTest.atlas(16, 8, 32, 16);
+		Assert.assertEquals(32, resource.getWidth());
+		Assert.assertEquals(16, resource.getHeight());
+		DrawUtils.RESOURCE.drawResource(10D, 20D, resource);
+		final Capture capture = this.single();
+		Assert.assertEquals(42D, capture.getRight(), 1E-3D);
+		Assert.assertEquals(36D, capture.getBottom(), 1E-3D);
+		Assert.assertEquals(0.25F, capture.getU(0), 0F);
+		Assert.assertEquals(0.75F, capture.getV(0), 0F);
+		Assert.assertEquals(0.75F, capture.getU(2), 0F);
+		Assert.assertEquals(0.25F, capture.getV(2), 0F);
+	}
+
+	@Test
+	public void stretchesItsTextureRegionOverTheNode() {
+		DrawUtils.RESOURCE.drawResource(0D, 0D, 128D, 128D, DrawResourceTest.atlas(16, 8, 32, 16));
+		final Capture capture = this.single();
+		Assert.assertEquals(0.25F, capture.getU(0), 0F);
+		Assert.assertEquals(0.75F, capture.getV(0), 0F);
+		Assert.assertEquals(128D, capture.getRight(), 1E-3D);
+	}
+
+	@Test
+	public void coversWithinItsTextureRegion() {
+		StretchType.COVER.draw(0D, 0D, 16D, 16D, DrawResourceTest.atlas(16, 8, 32, 16));
+		final Capture capture = this.single();
+		Assert.assertEquals(0.375F, capture.getU(0), 1E-6F);
+		Assert.assertEquals(0.625F, capture.getU(2), 1E-6F);
+		Assert.assertEquals(0.75F, capture.getV(0), 1E-6F);
+		Assert.assertEquals(0.25F, capture.getV(2), 1E-6F);
+	}
+
+	@Test
+	public void cropsTheSpriteOfATextureRegion() {
+		DrawUtils.RESOURCE.drawResource(0D, 0D, 16D, 8D, 0D, 0D, 16D, 8D, DrawResourceTest.atlas(16, 8, 32, 16));
+		final Capture capture = this.single();
+		Assert.assertEquals(0.25F, capture.getU(0), 0F);
+		Assert.assertEquals(0.5F, capture.getU(2), 0F);
+		Assert.assertEquals(0.5F, capture.getV(0), 0F);
+		Assert.assertEquals(0.25F, capture.getV(2), 0F);
+	}
+
+	@Test
+	public void mipmapsATextureRegionOnlyBelowItsOwnSize() {
+		final Resource resource = DrawResourceTest.atlas(16, 8, 32, 16);
+		DrawUtils.RESOURCE.drawResource(0D, 0D, 32D, 16D, resource);
+		Assert.assertNull(resource.getProperties().getMipmap());
+		DrawUtils.RESOURCE.drawResource(0D, 0D, 16D, 8D, resource);
+		Assert.assertEquals(Boolean.TRUE, resource.getProperties().getMipmap());
+	}
+
 	private Capture single() {
 		Assert.assertEquals(1, this.render.getCaptures().size());
 		return this.render.getCaptures().get(0);
@@ -241,6 +314,14 @@ public class DrawResourceTest {
 
 	private static Resource image(final int width, final int height) {
 		final Resource resource = ResourceBuilder.create().cache(null).blocking().linear().of(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
+		resource.prepareBind();
+		return resource;
+	}
+
+	private static Resource atlas(final int x, final int y, final int width, final int height) {
+		final RecordingTexture texture = new RecordingTexture();
+		texture.allocate(64, 32);
+		final Resource resource = ResourceBuilder.create().cache(null).blocking().linear().compute("atlas", () -> new ResourceData("atlas", null).texture(texture).region(x, y, width, height));
 		resource.prepareBind();
 		return resource;
 	}

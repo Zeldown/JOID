@@ -174,6 +174,24 @@ try {
 
 The matrix is not part of the state: save it with `pushMatrix()` / `popMatrix()` (see [Transformations and Framebuffers](transformations.md)).
 
+## Drawings made outside JOID with DrawUtils.RASTER
+
+A program that embeds JOID often has its own renderer for some content, such as the items, blocks or characters of a game. `DrawUtils.RASTER.drawRaster(x, y, width, height, drawable)` (`ExternalRaster`, `dev.joid.lib.draw.raster`) shows that content in a node as sharp as the rest of the UI:
+
+1. it snaps the box to the [pixel grid](#pixel-alignment) and measures it in real pixels (at most 4096 per side);
+2. it clears a region of that size in a framebuffer it keeps (grown when a larger box comes, reused otherwise) to transparent, depth included;
+3. it calls `drawable.draw(width, height)` (`IRasterDrawable`) with the size in pixels, through `IRenderBridge.raster(...)`, with the framebuffer bound and the viewport set to the region: the drawing fills `width` × `height` pixels, with its own state and its own projection, as on a screen of that size;
+4. it draws the region over the box with `BlendState.PREMULTIPLIED`, in `NEAREST` when the grid is aligned (pixel for pixel) and `LINEAR` under a rotation or a non-integer scale.
+
+```java
+@Override
+public void draw(final double mouseX, final double mouseY) {
+	DrawUtils.RASTER.drawRaster(super.getX(), super.getY(), super.getWidth(), super.getHeight(), (width, height) -> this.renderer.drawItem(this.item, width, height));
+}
+```
+
+A drawing made with the JOID drawing calls works too: inside the drawable, the projection is `ortho(0, width, height, 0)`, so `(0, 0)` is the top-left corner of the region. On an OpenGL backend the drawable runs with the OpenGL state of the program that embeds JOID, which then draws with its own calls into the bound framebuffer (see [Backends](../integration/backends.md#giving-the-host-its-state-back)). The color it writes is taken as premultiplied by its alpha, as a renderer blending onto a transparent target gives it.
+
 ## Reference
 
 ### DrawUtils
@@ -184,6 +202,7 @@ The matrix is not part of the state: save it with `pushMatrix()` / `popMatrix()`
 | `DrawUtils.TEXT` | `DrawText` | Strings and `Text`, aligned, cut or wrapped. See [Drawing Text](text.md). |
 | `DrawUtils.RESOURCE` | `DrawResource` | Images, animations and videos of a `Resource`, whole or a region. See [Drawing Resources](resources.md). |
 | `DrawUtils.MODEL` | `DrawModel` | 3D models. See [3D Models](models.md). |
+| `DrawUtils.RASTER` | `ExternalRaster` | Drawings made outside JOID, such as an item rendered by a game, at the pixel size of the box. See [Drawings made outside JOID](#drawings-made-outside-joid-with-drawutilsraster). |
 
 Each class is a singleton also reachable through its static `getInstance()` (`DrawShape.getInstance()`...). Creating a second instance throws a `RuntimeException`.
 

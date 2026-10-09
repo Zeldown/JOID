@@ -40,8 +40,9 @@ public final class ResourceData {
 	private boolean uploaded;
 	private boolean generated;
 
-	private int width;
-	private int height;
+	private int   width;
+	private int   height;
+	private int[] region;
 
 	public ResourceData(final @NonNull String uniqueId, final IResourceDecoder decoder) {
 		this.uniqueId = uniqueId;
@@ -104,6 +105,11 @@ public final class ResourceData {
 		return this;
 	}
 
+	public final @NonNull ResourceData region(final int x, final int y, final int width, final int height) {
+		this.region = new int[] {x, y, width, height};
+		return this;
+	}
+
 	public final @NonNull ResourceData reload(final IResourceDecoder decoder) {
 		this.await();
 		if (this.decoder != null) {
@@ -125,6 +131,7 @@ public final class ResourceData {
 		this.data      = null;
 		this.width     = 0;
 		this.height    = 0;
+		this.region    = null;
 		this.loaded    = false;
 		this.uploaded  = false;
 		this.generated = false;
@@ -255,10 +262,16 @@ public final class ResourceData {
 	}
 
 	public final int getWidth() {
+		if (this.region != null) {
+			return this.region[2];
+		}
 		return this.isBorrowed() ? this.textures[0].getWidth() : this.width;
 	}
 
 	public final int getHeight() {
+		if (this.region != null) {
+			return this.region[3];
+		}
 		return this.isBorrowed() ? this.textures[0].getHeight() : this.height;
 	}
 

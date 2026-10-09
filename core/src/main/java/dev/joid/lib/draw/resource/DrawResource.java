@@ -48,6 +48,18 @@ public final class DrawResource {
 		this.drawRegion(x, y, width, height, new double[] {u, v, regionWidth, regionHeight}, resource);
 	}
 
+	public void drawTexture(final double x, final double y, final double width, final double height, final @NonNull ITexture texture, final double u0, final double v0, final double u1, final double v1, final @NonNull TextureFilter filter, final @NonNull BlendState blend) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.blend(blend);
+		render.texture(texture, filter, TextureWrap.CLAMP_TO_EDGE);
+		try {
+			DrawResource.drawQuad(x, y, x + width, y + height, new double[] {u0, v0, u1, v1}, 0D);
+		} finally {
+			render.resetTexture();
+			render.blend(BlendState.DISABLED);
+		}
+	}
+
 	private void drawRegion(final double x, final double y, final double width, final double height, final double[] region, final Resource resource) {
 		final boolean failed = resource.isFailed();
 		if (failed && !JOID.inst().isDevMode()) {
@@ -68,7 +80,8 @@ public final class DrawResource {
 			resource.request(pixelWidth, pixelHeight);
 
 			final ITexture texture = resource.getTexture();
-			if (properties.getMipmap() == null && resource.isMipmappable() && properties.getInterpolation() == TextureFilter.LINEAR && texture != null && (pixelWidth < texture.getWidth() || pixelHeight < texture.getHeight())) {
+			final int[] textureRegion = resource.getResourceData().getRegion();
+			if (properties.getMipmap() == null && resource.isMipmappable() && properties.getInterpolation() == TextureFilter.LINEAR && texture != null && (pixelWidth < (textureRegion == null ? texture.getWidth() : textureRegion[2]) || pixelHeight < (textureRegion == null ? texture.getHeight() : textureRegion[3]))) {
 				properties.mipmap(true);
 			}
 		}
@@ -78,19 +91,31 @@ public final class DrawResource {
 		try {
 			render.blend(BlendState.NORMAL);
 			if (grid.isAligned()) {
-				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> DrawResource.drawQuad(left, top, right, bottom, uv, 0D));
+				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 0D));
 			} else if (render.getShader() == null && RoundedShader.inst().isAvailable()) {
 				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> RoundedShader.use(0F, (float) (left + 0.5D), (float) (top + 0.5D), (float) (right - 0.5D), (float) (bottom - 0.5D), () -> {
 					RoundedShader.inst().aligned(false);
-					DrawResource.drawQuad(left, top, right, bottom, uv, 1D);
+					DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 1D);
 				}));
 			} else {
-				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> EdgeSmoothing.rect(left, top, right, bottom, uv, 1F, 1F, 1F, 1F));
+				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> EdgeSmoothing.rect(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 1F, 1F, 1F, 1F));
 			}
 			render.blend(BlendState.DISABLED);
 		} finally {
 			render.popMatrix();
 		}
+	}
+
+	private static double[] toTexture(final double[] uv, final Resource resource, final boolean failed) {
+		final int[] region = resource.getResourceData().getRegion();
+		final ITexture texture = resource.getTexture();
+		if (failed || region == null || texture == null || texture.getWidth() <= 0 || texture.getHeight() <= 0) {
+			return uv;
+		}
+
+		final double width = texture.getWidth();
+		final double height = texture.getHeight();
+		return new double[] {(region[0] + uv[0] * region[2]) / width, (region[1] + uv[1] * region[3]) / height, (region[0] + uv[2] * region[2]) / width, (region[1] + uv[3] * region[3]) / height};
 	}
 
 	private static void drawQuad(final double left, final double top, final double right, final double bottom, final double[] uv, final double grow) {

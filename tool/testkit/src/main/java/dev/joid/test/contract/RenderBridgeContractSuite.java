@@ -330,6 +330,25 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void rastersADrawingUprightAtItsPixelSize() {
+		final int[] size = new int[2];
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> DrawUtils.RASTER.drawRaster(8D, 8D, 32D, 32D, (width, height) -> {
+			size[0] = width;
+			size[1] = height;
+			bridge.color(1F, 0F, 0F, 1F);
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, width, height / 2F, false, 0));
+			bridge.color(0F, 1F, 0F, 1F);
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, height / 2F, width, height / 2F, false, 0));
+		}));
+		Assert.assertEquals(32, size[0]);
+		Assert.assertEquals(32, size[1]);
+		RenderBridgeContractSuite.assertPixel(image, 24, 12, RenderBridgeContractSuite.RED);
+		RenderBridgeContractSuite.assertPixel(image, 24, 36, RenderBridgeContractSuite.GREEN);
+		RenderBridgeContractSuite.assertPixel(image, 4, 4, RenderBridgeContractSuite.BLACK);
+		RenderBridgeContractSuite.assertPixel(image, 50, 50, RenderBridgeContractSuite.BLACK);
+	}
+
+	@Test
 	public void hidesFarFacesBehindNearOnes() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> RenderBridgeContractSuite.drawInDepth(bridge, false));
 		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);

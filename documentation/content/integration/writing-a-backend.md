@@ -123,6 +123,8 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 
 `IRenderBridge.host(Runnable host)` runs a drawing of the host inside a JOID frame (an item of a game in a UI); by default it runs it as is. A bridge that changes the state of a shared context overrides it to give the host its state before the runnable and to take its own back after it, as `GlRenderBridge` does.
 
+`IRenderBridge.raster(IFrameBuffer target, int width, int height, Runnable draw)` runs a drawing made outside JOID into `target`, for [`DrawUtils.RASTER`](../drawing/draw-utils.md#drawings-made-outside-joid-with-drawutilsraster). When it is called, the render state already targets `target` with a `width` × `height` viewport at its origin, an `ortho(0, width, height, 0)` projection and a transparent clear; by default it runs `draw` through `host(...)`, which suits a bridge that keeps its state in Java. A bridge whose `host(...)` gives a shared context back to the program that embeds JOID makes `target` current inside it: `GlRenderBridge` binds the framebuffer and sets the viewport with the OpenGL state of that program, then puts its framebuffer and viewport back. A bridge whose engine draws into its own kind of target (another texture format, a depth texture) points that engine at the color of `target` there.
+
 ### Draw calls and vertices
 
 `draw(Primitive, VertexBuffer)` receives `Primitive.TRIANGLES` or `Primitive.LINES` (`dev.joid.lib.bridge.render.vertex`): the `Tessellator` turns the quads, polygons, strips and loops of its `DrawMode` into them, so a bridge never sees another primitive. A `VertexBuffer` (same package) holds `getCount()` vertices in a direct `ByteBuffer` (`getBuffer()`, native byte order), each `VertexBuffer.STRIDE` (32) bytes long:

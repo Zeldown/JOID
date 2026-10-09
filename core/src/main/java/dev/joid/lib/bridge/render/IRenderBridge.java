@@ -24,6 +24,10 @@ public interface IRenderBridge extends IBridge {
 		host.run();
 	}
 
+	public default void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+		this.host(draw);
+	}
+
 	public default void screen(final int width, final int height) {
 		this.frameBuffer(null);
 		this.viewport(0, 0, width, height);

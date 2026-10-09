@@ -54,6 +54,15 @@ public final class HostStateBackend implements IHostStateBackend {
 	}
 
 	@Override
+	public void fill(final int x, final int y, final int width, final int height, final int color) {
+		GL11C.glEnable(GL11C.GL_SCISSOR_TEST);
+		GL11C.glScissor(x, y, width, height);
+		GL11C.glClearColor((color >> 16 & 255) / 255F, (color >> 8 & 255) / 255F, (color & 255) / 255F, (color >>> 24) / 255F);
+		GL11C.glClear(GL11C.GL_COLOR_BUFFER_BIT);
+		GL11C.glDisable(GL11C.GL_SCISSOR_TEST);
+	}
+
+	@Override
 	public void drawHost() {
 		GL11C.glEnable(GL11C.GL_BLEND);
 		GL11C.glBlendFunc(GL11C.GL_ONE, GL11C.GL_ONE);

@@ -27,6 +27,7 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
+import dev.joid.lib.draw.DrawUtils;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;
 
@@ -137,6 +138,37 @@ public abstract class HostStateContractSuite {
 	@Test
 	public void survivesEveryTrapAtOnce() {
 		this.check(HostTrap.EVERYTHING);
+	}
+
+	@Test
+	public void rastersANativeDrawingUprightAtItsPixelSize() {
+		final int[] size = new int[2];
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.beginFrame();
+		try {
+			render.loadIdentity();
+			render.ortho(0D, HostStateContractSuite.SIZE, HostStateContractSuite.SIZE, 0D, 0D, 10000D);
+			render.viewport(0, 0, HostStateContractSuite.SIZE, HostStateContractSuite.SIZE);
+			render.frameBuffer(null);
+			render.clear(0F, 0F, 0F, 1F);
+			DrawUtils.RASTER.drawRaster(8D, 8D, 32D, 32D, (width, height) -> {
+				size[0] = width;
+				size[1] = height;
+				this.backend.fill(0, height / 2, width, height / 2, 0xFFFF0000);
+				this.backend.fill(0, 0, width, height / 2, 0xFF00FF00);
+			});
+		} finally {
+			render.endFrame();
+		}
+
+		final SnapshotImage image = this.backend.capture(HostStateContractSuite.SIZE, HostStateContractSuite.SIZE);
+		this.backend.present();
+		Assert.assertEquals(32, size[0]);
+		Assert.assertEquals(32, size[1]);
+		HostStateContractSuite.assertPixel(image, 24, 12, 0xFFFF0000);
+		HostStateContractSuite.assertPixel(image, 24, 36, 0xFF00FF00);
+		HostStateContractSuite.assertPixel(image, 4, 4, 0xFF000000);
+		HostStateContractSuite.assertPixel(image, 50, 50, 0xFF000000);
 	}
 
 	private void check(final HostTrap trap) {
@@ -286,6 +318,11 @@ public abstract class HostStateContractSuite {
 		if (differences.length() > 0) {
 			Assert.fail(message + ":" + differences);
 		}
+	}
+
+	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {
+		final int actual = image.getPixels()[x + y * image.getWidth()];
+		Assert.assertEquals("Pixel " + x + "," + y, String.format("#%08X", expected), String.format("#%08X", actual));
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final float z, final boolean texture, final int color) {

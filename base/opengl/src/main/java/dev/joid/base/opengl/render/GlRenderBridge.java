@@ -77,6 +77,23 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	@Override
+	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+		this.guard.host(() -> {
+			final int[] viewport = new int[4];
+			final int previous = this.binding.getInteger(GlConstants.DRAW_FRAMEBUFFER_BINDING);
+			this.binding.getIntegers(GlConstants.VIEWPORT, viewport);
+			this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, ((GlFrameBuffer) target).getId());
+			this.binding.getStateBinding().viewport(0, 0, width, height);
+			try {
+				draw.run();
+			} finally {
+				this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, previous);
+				this.binding.getStateBinding().viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+			}
+		});
+	}
+
+	@Override
 	public void clear(final float red, final float green, final float blue, final float alpha) {
 		this.guard.enter();
 		try {

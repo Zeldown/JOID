@@ -77,6 +77,7 @@ The quad is drawn with the current color of the render bridge, white by default,
 | `drawResource(double x, double y, Resource resource)` | Draws at the natural size: `resource.getWidth()` × `resource.getHeight()` canvas units, or the size of its region when it has texture coordinates. |
 | `drawResource(double x, double y, double width, double height, Resource resource)` | Stretches the texture, or its region, over the box. |
 | `drawResource(double x, double y, double width, double height, double u, double v, double regionWidth, double regionHeight, Resource resource)` | Stretches a region of the source over the box. |
+| `drawTexture(double x, double y, double width, double height, ITexture texture, double u0, double v0, double u1, double v1, TextureFilter filter, BlendState blend)` | Draws the region `(u0, v0)`–`(u1, v1)` of a texture (fractions of its size, `(u0, v0)` at the top-left corner of the box) over the box, with a filter and a blend state, then unbinds the texture and disables the blending. It does not snap the box to the pixels: snap it first with the [`PixelGrid`](draw-utils.md#snapping-your-own-geometry-with-pixelgrid) when it must be sharp. `DrawUtils.RASTER` draws its target this way, premultiplied. |
 | `DrawResource.getInstance()` | The instance behind `DrawUtils.RESOURCE`. |
 
 ## Pitfalls

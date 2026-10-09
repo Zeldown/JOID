@@ -273,6 +273,16 @@ On the Vulkan backend, `Resource.of(VulkanImage.create(image, view, width, heigh
 
 On every backend, `Resource.of(texture)` also takes a borrowed texture built by hand, such as `GlBorrowedTexture.create(bridge, id)` (`dev.joid.base.opengl.render.texture`). A backend that lends its own kind of texture extends `BorrowedTexture` (see [Writing a Backend](../integration/writing-a-backend.md#borrowed-textures)).
 
+### Regions of a texture
+
+A texture can hold several images, as the atlas of a game holds its sprites. `ResourceData.region(x, y, width, height)` makes a resource of the rectangle of its texture at `(x, y)`, in pixels of the texture, without copying it: the resource measures `width` × `height`, and drawing it, stretching it, fitting it with `CONTAIN` or `COVER` or cropping it with `textureCoords` all happen inside that rectangle. A resolver that lends the sprites of an atlas builds one this way:
+
+```java
+final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(atlas).region(x, y, width, height));
+```
+
+A decoder can also set the region at each `update`, when the content moves in its texture. With `LINEAR` interpolation or mipmaps, the pixels next to the rectangle may blend in at its edges: draw atlas regions in `NEAREST`, or keep a margin between the images.
+
 ## Binding a resource in your own drawing
 
 These methods let your draw code, a shader or an effect sample a resource. `DrawUtils.RESOURCE` calls them for you; you need them only for the drawing of the Advanced section ([Drawing Resources](../drawing/resources.md), [Custom Shaders](../shaders/custom-shaders.md)).

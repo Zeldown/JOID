@@ -275,6 +275,17 @@ public class ResourceDataTest {
 	}
 
 	@Test
+	public void takesTheSizeOfItsRegion() {
+		final ResourceData data = new ResourceData("atlas", null).texture(new Texture(64, 32)).region(16, 8, 32, 16);
+		data.generate(false);
+		Assert.assertArrayEquals(new int[] {16, 8, 32, 16}, data.getRegion());
+		Assert.assertEquals(32, data.getWidth());
+		Assert.assertEquals(16, data.getHeight());
+		data.reload(null);
+		Assert.assertNull(data.getRegion());
+	}
+
+	@Test
 	public void clearsWithoutTextureNorDecoder() {
 		final ResourceData data = new ResourceData("image", null).data(new int[][] {{1}});
 		data.clear();
