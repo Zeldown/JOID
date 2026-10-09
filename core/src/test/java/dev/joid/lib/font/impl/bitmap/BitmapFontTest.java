@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.demo.ui.font.effect.DemoFace;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.impl.glyph.FontFamily;
 
 public class BitmapFontTest {
@@ -32,7 +32,7 @@ public class BitmapFontTest {
 		}
 
 		@Override
-		public IFontProvider getFontProvider() {
+		public ITextRenderer getTextRenderer() {
 			return null;
 		}
 

@@ -13,7 +13,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.color.ColorGradient;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.effect.ITextEffect;
@@ -22,7 +22,7 @@ import dev.joid.lib.font.markup.TextMarkup;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
-public abstract class GlyphFontProvider<F extends IFontFace> implements IFontProvider {
+public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRenderer {
 
 	private static final Set<Class<?>> WARNED_FONTS = ConcurrentHashMap.newKeySet();
 
@@ -97,7 +97,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 			}
 
 			placements.add(new GlyphPlacement<>(start, codepoint, current, face, pen, snapshot));
-			pen += (drawn ? face.getAdvance(codepoint) : GlyphFontProvider.space(face)) * size + spacing;
+			pen += (drawn ? face.getAdvance(codepoint) : GlyphTextRenderer.space(face)) * size + spacing;
 			previous = codepoint;
 		}
 
@@ -137,8 +137,8 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 
 	private @NonNull GlyphFont<F> getFont(final @NonNull TextInfo info) {
 		final IFont font = info.getFont();
-		if (!(font instanceof GlyphFont) || font.getFontProvider().getClass() != this.getClass()) {
-			throw new IllegalArgumentException(this.getClass().getName() + " cannot draw the font " + font.getClass().getName() + ", it is drawn by " + font.getFontProvider().getClass().getName() + ": draw it with info.getFont().getFontProvider()");
+		if (!(font instanceof GlyphFont) || font.getTextRenderer().getClass() != this.getClass()) {
+			throw new IllegalArgumentException(this.getClass().getName() + " cannot draw the font " + font.getClass().getName() + ", it is drawn by " + font.getTextRenderer().getClass().getName() + ": draw it with info.getFont().getTextRenderer()");
 		}
 
 		return (GlyphFont<F>) font;
@@ -150,8 +150,8 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 			return font;
 		}
 
-		if (!(styleFont instanceof GlyphFont) || styleFont.getFontProvider().getClass() != this.getClass()) {
-			if (JOID.inst().isDevMode() && GlyphFontProvider.WARNED_FONTS.add(styleFont.getClass())) {
+		if (!(styleFont instanceof GlyphFont) || styleFont.getTextRenderer().getClass() != this.getClass()) {
+			if (JOID.inst().isDevMode() && GlyphTextRenderer.WARNED_FONTS.add(styleFont.getClass())) {
 				System.err.println("[JOID] The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font");
 			}
 			return font;
@@ -176,11 +176,11 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		final Color shadow = info.getShadowColor();
 		final Float tint = info.getShadowTint();
 		if (shadow != null || tint != null) {
-			final double shadowX = grid == null ? info.getShadowX() : GlyphFontProvider.shadow(info.getShadowX(), grid.getUnitX(), grid.isAligned());
-			final double shadowY = grid == null ? info.getShadowY() : GlyphFontProvider.shadow(info.getShadowY(), grid.getUnitY(), grid.isAligned());
+			final double shadowX = grid == null ? info.getShadowX() : GlyphTextRenderer.shadow(info.getShadowX(), grid.getUnitX(), grid.isAligned());
+			final double shadowY = grid == null ? info.getShadowY() : GlyphTextRenderer.shadow(info.getShadowY(), grid.getUnitY(), grid.isAligned());
 			final List<TextGlyph<F>> shadows = new ArrayList<>(glyphs.size());
 			for (final TextGlyph<F> glyph : glyphs) {
-				shadows.add(glyph.shadow(shadowX, shadowY, tint != null ? GlyphFontProvider.tint(glyph.getColor(), tint) : shadow));
+				shadows.add(glyph.shadow(shadowX, shadowY, tint != null ? GlyphTextRenderer.tint(glyph.getColor(), tint) : shadow));
 			}
 			this.render(shadows, runX + shadowX, runY + shadowY, runWidth, runHeight);
 		}
@@ -200,7 +200,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		for (int i = 0; i < placements.size(); i++) {
 			final GlyphPlacement<F> placement = placements.get(i);
 			final double advance = (i + 1 < placements.size() ? placements.get(i + 1).getX() : layout.getWidth()) - placement.getX();
-			final TextGlyph<F> glyph = TextGlyph.create(placement.getFont(), placement.getFace(), placement.getIndex(), placement.getCodepoint(), placement.getStyle(), origin + placement.getX(), baseline, size, advance, GlyphFontProvider.color(placement.getStyle(), info));
+			final TextGlyph<F> glyph = TextGlyph.create(placement.getFont(), placement.getFace(), placement.getIndex(), placement.getCodepoint(), placement.getStyle(), origin + placement.getX(), baseline, size, advance, GlyphTextRenderer.color(placement.getStyle(), info));
 			for (final ITextEffect effect : placement.getStyle().getEffects()) {
 				effect.apply(glyph);
 			}

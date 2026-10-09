@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 
 import lombok.NonNull;
 
-public class IndexedConcurrentList<E extends IndexedElement> implements IndexedList<E> {
+public class IndexedConcurrentList<E extends IndexedElement> implements IIndexedList<E> {
 
 	private final List<E> orderedList;
 	private final List<E> reversedList;

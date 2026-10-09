@@ -4,12 +4,12 @@ import java.util.List;
 
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.hover.HoverElement;
+import dev.joid.lib.ui.node.hover.IHoverElement;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DefaultHoverElement implements HoverElement {
+public class TextHoverElement implements IHoverElement {
 
 	private final List<String> lines;
 

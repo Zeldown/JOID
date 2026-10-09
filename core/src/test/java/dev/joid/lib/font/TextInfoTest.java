@@ -12,11 +12,11 @@ import dev.joid.lib.font.markup.TextMarkup;
 
 public class TextInfoTest {
 
-	private static final IFont       FONT   = () -> TextInfoTest.PROVIDER;
+	private static final IFont       FONT   = () -> TextInfoTest.RENDERER;
 	private static final ITextEffect EFFECT = new ITextEffect() {};
 	private static final ITextMarkup MARKUP = (text, index, style) -> 0;
 
-	private static final IFontProvider PROVIDER = new IFontProvider() {
+	private static final ITextRenderer RENDERER = new ITextRenderer() {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
@@ -105,7 +105,7 @@ public class TextInfoTest {
 
 	@Test
 	public void changesEveryProperty() {
-		final IFont other = () -> TextInfoTest.PROVIDER;
+		final IFont other = () -> TextInfoTest.RENDERER;
 		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).font(other).fontSize(32F).letterSpacing(0.02F).lineHeight(1.2F).color(Color.RED).colored(false).italic(true);
 		Assert.assertSame(other, info.getFont());
 		Assert.assertEquals(32F, info.getFontSize(), 0F);
@@ -137,7 +137,7 @@ public class TextInfoTest {
 	}
 
 	@Test
-	public void measuresThroughItsProvider() {
+	public void measuresThroughItsRenderer() {
 		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F);
 		Assert.assertEquals(40D, info.getWidth("abcd"), 0D);
 		Assert.assertEquals(20D, info.getHeight("abcd"), 0D);

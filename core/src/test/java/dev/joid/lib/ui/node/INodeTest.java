@@ -9,8 +9,8 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.utils.list.IIndexedList;
 import dev.joid.lib.utils.list.IndexedLinkedList;
-import dev.joid.lib.utils.list.IndexedList;
 import dev.joid.lib.utils.list.RecursiveIndexedElement;
 
 public class INodeTest {
@@ -49,7 +49,7 @@ public class INodeTest {
 		}
 
 		@Override
-		public IndexedList<? extends RecursiveIndexedElement> getChildren() {
+		public IIndexedList<? extends RecursiveIndexedElement> getChildren() {
 			return new IndexedLinkedList<>();
 		}
 

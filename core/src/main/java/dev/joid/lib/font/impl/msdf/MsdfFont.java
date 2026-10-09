@@ -1,6 +1,6 @@
 package dev.joid.lib.font.impl.msdf;
 
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.impl.glyph.FontFamily;
 import dev.joid.lib.font.impl.glyph.GlyphFont;
 import lombok.NonNull;
@@ -16,8 +16,8 @@ public final class MsdfFont extends GlyphFont<MsdfFontFace> {
 	}
 
 	@Override
-	public @NonNull IFontProvider getFontProvider() {
-		return MsdfFontProvider.inst();
+	public @NonNull ITextRenderer getTextRenderer() {
+		return MsdfTextRenderer.inst();
 	}
 
 }

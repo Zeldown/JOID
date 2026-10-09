@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.hover.HoverElement;
+import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.CustomHoverElement.HoverElementPosition;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
@@ -25,7 +25,7 @@ public class NodeHoverElementTest {
 	@Test
 	public void takesItsBoundsFromTheNode() {
 		final RectNode tooltip = RectNode.create(10D, -5D, 40D, 20D);
-		final HoverElement element = NodeHoverElement.fixed(tooltip).getElement();
+		final IHoverElement element = NodeHoverElement.fixed(tooltip).getElement();
 		Assert.assertEquals(10D, element.getX(), 0D);
 		Assert.assertEquals(-5D, element.getY(), 0D);
 		Assert.assertEquals(40D, element.getWidth(), 0D);

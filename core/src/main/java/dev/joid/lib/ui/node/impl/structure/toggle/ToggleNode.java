@@ -3,8 +3,8 @@ package dev.joid.lib.ui.node.impl.structure.toggle;
 import java.util.function.Supplier;
 
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
@@ -18,10 +18,10 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	public static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeToggleChangeCallback.class);
 
-	private boolean                   toggle;
-	private ToggleState<F, S>         state;
-	private Signal<Boolean>           signal;
-	private SignalSubscriber<Boolean> subscription;
+	private boolean                    toggle;
+	private ToggleState<F, S>          state;
+	private Signal<Boolean>            signal;
+	private ISignalSubscriber<Boolean> subscription;
 
 	protected ToggleNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

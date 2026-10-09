@@ -122,7 +122,7 @@ Turn markup off for text typed by users, so it shows exactly as entered; the tex
 
 ### Switching the font with TextStyle.font
 
-A markup can change the font in the middle of a text with `style.font(...)`, as a converted text of the engine does when one of its parts uses another font. The new font must be drawn by the same provider as the font of the `TextInfo` (two MSDF fonts, or two fonts of the same glyph provider); measuring, wrapping and drawing follow it, and the line keeps the line height of the `TextInfo` font. A font of another provider is ignored (with one warning in dev mode).
+A markup can change the font in the middle of a text with `style.font(...)`, as a converted text of the engine does when one of its parts uses another font. The new font must be drawn by the same renderer as the font of the `TextInfo` (two MSDF fonts, or two fonts of the same glyph renderer); measuring, wrapping and drawing follow it, and the line keeps the line height of the `TextInfo` font. A font of another renderer is ignored (with one warning in dev mode).
 
 ```java
 case "f":
@@ -315,7 +315,7 @@ TextNode.create(100, 220).text(Text.create("ScrambleTextEffect swaps each glyph"
 | `copy()` | Snapshot with the same base. |
 | `getBase()` | The base style, this style at the root; while a run is laid out, the style of its `TextInfo`. |
 | `getWeight()`, `isItalic()`, `getColor()`, `getEffects()` | Current values; the effect list is read-only. |
-| `font(IFont font)` | Draws the following glyphs with another font drawn by the same provider (another MSDF font for an MSDF text); `null` keeps the font of the `TextInfo`. `reset()` restores the font of the base. |
+| `font(IFont font)` | Draws the following glyphs with another font drawn by the same renderer (another MSDF font for an MSDF text); `null` keeps the font of the `TextInfo`. `reset()` restores the font of the base. |
 
 ### ITextGlyph
 

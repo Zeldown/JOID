@@ -1,6 +1,6 @@
 package dev.joid.lib.font.impl.glyph;
 
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import lombok.NonNull;
 
 public final class SingleFaceFont<F extends IFontFace> extends GlyphFont<F> {
@@ -14,8 +14,8 @@ public final class SingleFaceFont<F extends IFontFace> extends GlyphFont<F> {
 	}
 
 	@Override
-	public @NonNull IFontProvider getFontProvider() {
-		throw new UnsupportedOperationException("A single face font of a test has no provider");
+	public @NonNull ITextRenderer getTextRenderer() {
+		throw new UnsupportedOperationException("A single face font of a test has no renderer");
 	}
 
 }

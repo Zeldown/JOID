@@ -14,7 +14,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.render.transform.operation.RotateOperation;
+import dev.joid.lib.render.transform.operation.RotateTransformOperation;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
@@ -157,28 +157,28 @@ public class UIDemoShader extends UIDemo {
 		RectNode
 		.create(75, 660, 160, 80)
 		.color(Color.RED)
-		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(10D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateTransformOperation(10D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(155, 775).text(Text.create("Rotated", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
 		.create(305, 660, 160, 80)
 		.color(Color.ORANGE.toGradient(Color.PINK))
-		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(-8D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateTransformOperation(-8D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(385, 775).text(Text.create("Rotated gradient", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(535, 660, 160, 80)
 		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE, 20F)))
-		.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(10D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
+		.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(10D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(615, 775).text(Text.create("Rotated rounded", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(765, 660, 160, 80)
 		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.CYAN, 20F, 3D)))
-		.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(-10D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
+		.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(-10D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(845, 775).text(Text.create("Rotated stroke", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
@@ -186,28 +186,28 @@ public class UIDemoShader extends UIDemo {
 		.create(995, 660, 160, 80)
 		.color(Color.BLUE)
 		.self(rect -> rect.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(rect.getX(), rect.getY(), rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight(), Color.WHITE, 3D)))
-		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(6D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateTransformOperation(6D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(1075, 775).text(Text.create("Rotated border", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1225, 660, 160, 80)
 		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, new Vector2d(node.getX(), node.getY() + 80D), new Vector2d(node.getX() + 160D, node.getY() + 80D), new Vector2d(node.getX() + 110D, node.getY()), new Vector2d(node.getX() + 30D, node.getY()))))
-		.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(12D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
+		.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(12D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(1305, 775).text(Text.create("Rotated polygon", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode
 		.create(1475, 640, 120, 120)
 		.resource(image)
-		.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(10D, Rotation.ROLL, Vector.create(() -> node.getX() + 60D, () -> node.getY() + 60D)))))
+		.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(10D, Rotation.ROLL, Vector.create(() -> node.getX() + 60D, () -> node.getY() + 60D)))))
 		.attach(this);
 		TextNode.create(1535, 775).text(Text.create("Rotated image", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1685, 660, 160, 80)
 		.self(node -> node.layer((mouseX, mouseY) -> GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE), new Vector4f((float) node.getX(), (float) node.getY(), (float) (node.getX() + node.getWidth()), (float) (node.getY() + node.getHeight())))))
-		.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(8D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
+		.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(8D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(1765, 775).text(Text.create("Rotated shader", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 

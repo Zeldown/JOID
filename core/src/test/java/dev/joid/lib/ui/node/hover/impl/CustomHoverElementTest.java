@@ -10,7 +10,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.hover.HoverElement;
+import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.CustomHoverElement.HoverElementPosition;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import lombok.AllArgsConstructor;
@@ -24,7 +24,7 @@ public class CustomHoverElementTest {
 
 	@Test
 	public void keepsItsElementAndPosition() {
-		final HoverElement element = new BoxElement(0D, 0D, 40D, 20D);
+		final IHoverElement element = new BoxElement(0D, 0D, 40D, 20D);
 		Assert.assertSame(element, CustomHoverElement.follow(element).getElement());
 		Assert.assertSame(HoverElementPosition.FOLLOW, CustomHoverElement.follow(element).getPosition());
 		Assert.assertSame(HoverElementPosition.FIXED, CustomHoverElement.fixed(element).getPosition());
@@ -130,7 +130,7 @@ public class CustomHoverElementTest {
 
 	@Getter
 	@AllArgsConstructor
-	private static final class BoxElement implements HoverElement {
+	private static final class BoxElement implements IHoverElement {
 
 		private final double x;
 		private final double y;

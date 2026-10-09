@@ -11,7 +11,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
@@ -24,9 +24,9 @@ import lombok.NonNull;
 
 public class NodeTextFieldEnterCallbackTest {
 
-	private static final IFont FONT = () -> NodeTextFieldEnterCallbackTest.PROVIDER;
+	private static final IFont FONT = () -> NodeTextFieldEnterCallbackTest.RENDERER;
 
-	private static final IFontProvider PROVIDER = new IFontProvider() {
+	private static final ITextRenderer RENDERER = new ITextRenderer() {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {

@@ -14,7 +14,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.input.key.Key;
@@ -1081,7 +1081,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void drawsItsTextWithoutMarkupUnlessAllowed() {
 		final List<TextInfo> infos = new ArrayList<>();
-		final IFontProvider provider = new IFontProvider() {
+		final ITextRenderer renderer = new ITextRenderer() {
 
 			@Override
 			public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
@@ -1105,7 +1105,7 @@ public class TextFieldNodeTest {
 			}
 
 		};
-		final IFont font = () -> provider;
+		final IFont font = () -> renderer;
 		final ITextMarkup markup = (text, index, style) -> 0;
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(font, 10F).markups(markup)).text("ab");
 		this.bridges.open(new NodeUI(field));
@@ -1284,12 +1284,12 @@ public class TextFieldNodeTest {
 
 	}
 
-	public static final class FieldFont implements IFont, IFontProvider {
+	public static final class FieldFont implements IFont, ITextRenderer {
 
 		private final List<Drawn> drawn = new ArrayList<>();
 
 		@Override
-		public IFontProvider getFontProvider() {
+		public ITextRenderer getTextRenderer() {
 			return this;
 		}
 

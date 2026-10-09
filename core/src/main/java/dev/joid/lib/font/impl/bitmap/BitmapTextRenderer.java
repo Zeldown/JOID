@@ -11,14 +11,14 @@ import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.impl.glyph.GlyphFont;
-import dev.joid.lib.font.impl.glyph.GlyphFontProvider;
+import dev.joid.lib.font.impl.glyph.GlyphTextRenderer;
 import dev.joid.lib.font.impl.glyph.IFontFace;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import lombok.NonNull;
 
-public abstract class BitmapFontProvider<F extends IFontFace> extends GlyphFontProvider<F> {
+public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextRenderer<F> {
 
 	private Color         color;
 	private float         pixelX;
@@ -75,7 +75,7 @@ public abstract class BitmapFontProvider<F extends IFontFace> extends GlyphFontP
 			this.bindColor(glyph.getColor());
 		}
 
-		final double unit = glyph.getSize() / BitmapFontProvider.getBitmapSize(glyph);
+		final double unit = glyph.getSize() / BitmapTextRenderer.getBitmapSize(glyph);
 		final double width = cell.getWidth() * unit;
 		final double height = cell.getHeight() * unit;
 		final float pixelX = (float) (cell.getTexelWidth() / (width * this.grid.getScaleX()));
@@ -146,7 +146,7 @@ public abstract class BitmapFontProvider<F extends IFontFace> extends GlyphFontP
 	private static int getBitmapSize(final @NonNull TextGlyph<?> glyph) {
 		final GlyphFont<?> font = glyph.getFont();
 		if (!(font instanceof BitmapFont)) {
-			throw new IllegalStateException("The font " + font.getClass().getName() + " is drawn by a BitmapFontProvider but is not a BitmapFont");
+			throw new IllegalStateException("The font " + font.getClass().getName() + " is drawn by a BitmapTextRenderer but is not a BitmapFont");
 		}
 
 		return ((BitmapFont<?>) font).getBitmapSize();

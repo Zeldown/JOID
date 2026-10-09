@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.glyph.FontFamily;
 import dev.joid.lib.font.impl.glyph.GlyphFont;
@@ -22,7 +22,7 @@ import dev.joid.lib.font.impl.glyph.TextGlyph;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
-public class BitmapFontProviderTest {
+public class BitmapTextRendererTest {
 
 	private static final Face FACE = new Face();
 
@@ -123,12 +123,12 @@ public class BitmapFontProviderTest {
 	@Test
 	public void startsEachLineOnThePixelGrid() {
 		for (final Atlas atlas : Atlas.values()) {
-			final Font font = new Font(new Provider(atlas, this.texture(atlas)));
+			final Font font = new Font(new Renderer(atlas, this.texture(atlas)));
 			this.render.getCaptures().clear();
 			this.render.pushMatrix();
 			try {
 				this.render.scale(1.2676D, 1.2676D, 1D);
-				font.getFontProvider().drawText(100.3D, 100.6D, "AB", TextInfo.create(font, 16F, Color.WHITE));
+				font.getTextRenderer().drawText(100.3D, 100.6D, "AB", TextInfo.create(font, 16F, Color.WHITE));
 			} finally {
 				this.render.popMatrix();
 			}
@@ -149,31 +149,31 @@ public class BitmapFontProviderTest {
 	@Test
 	public void bindsTheAtlasOfTheCell() {
 		final ITexture texture = this.texture(Atlas.HD);
-		final Font font = new Font(new Provider(Atlas.HD, texture));
-		font.getFontProvider().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
+		final Font font = new Font(new Renderer(Atlas.HD, texture));
+		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
 		Assert.assertSame(texture, this.render.getLast().getState().getTexture());
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void refusesAFontThatIsNotABitmapFont() {
-		final Provider provider = new Provider(Atlas.ASCII, this.texture(Atlas.ASCII));
-		final GlyphFont<Face> font = new GlyphFont<Face>(FontFamily.of(BitmapFontProviderTest.FACE)) {
+		final Renderer renderer = new Renderer(Atlas.ASCII, this.texture(Atlas.ASCII));
+		final GlyphFont<Face> font = new GlyphFont<Face>(FontFamily.of(BitmapTextRendererTest.FACE)) {
 
 			@Override
-			public @NonNull IFontProvider getFontProvider() {
-				return provider;
+			public @NonNull ITextRenderer getTextRenderer() {
+				return renderer;
 			}
 
 		};
-		provider.drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
+		renderer.drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void refusesAnUnusableShader() {
-		final Font font = new Font(new Provider(Atlas.ASCII, this.texture(Atlas.ASCII)));
-		font.getFontProvider().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
+		final Font font = new Font(new Renderer(Atlas.ASCII, this.texture(Atlas.ASCII)));
+		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
 		((RecordingShader) this.render.getLast().getShader()).setActive(false);
-		font.getFontProvider().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
+		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
 	}
 
 	private Capture draw(final Atlas atlas, final double scale, final String text, final float size) {
@@ -181,11 +181,11 @@ public class BitmapFontProviderTest {
 	}
 
 	private Capture draw(final Atlas atlas, final double scale, final String text, final float size, final boolean italic) {
-		final Font font = new Font(new Provider(atlas, this.texture(atlas)));
+		final Font font = new Font(new Renderer(atlas, this.texture(atlas)));
 		this.render.pushMatrix();
 		try {
 			this.render.scale(scale, scale, 1D);
-			font.getFontProvider().drawText(100D, 100D, text, TextInfo.create(font, size, Color.WHITE).italic(italic));
+			font.getTextRenderer().drawText(100D, 100D, text, TextInfo.create(font, size, Color.WHITE).italic(italic));
 		} finally {
 			this.render.popMatrix();
 		}
@@ -270,22 +270,22 @@ public class BitmapFontProviderTest {
 
 	private static final class Font extends BitmapFont<Face> {
 
-		private final Provider provider;
+		private final Renderer renderer;
 
-		private Font(final Provider provider) {
-			super(FontFamily.of(BitmapFontProviderTest.FACE), 8);
-			this.provider = provider;
+		private Font(final Renderer renderer) {
+			super(FontFamily.of(BitmapTextRendererTest.FACE), 8);
+			this.renderer = renderer;
 		}
 
 		@Override
-		public @NonNull IFontProvider getFontProvider() {
-			return this.provider;
+		public @NonNull ITextRenderer getTextRenderer() {
+			return this.renderer;
 		}
 
 	}
 
 	@AllArgsConstructor
-	private static final class Provider extends BitmapFontProvider<Face> {
+	private static final class Renderer extends BitmapTextRenderer<Face> {
 
 		private final Atlas    atlas;
 		private final ITexture texture;

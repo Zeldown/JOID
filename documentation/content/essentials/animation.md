@@ -32,13 +32,13 @@ RectNode
 .hoverDuration(250L)
 .hoverEquation(TweenEquations.CUBIC_OUT)
 .self(node -> node.effect(RoundedNodeEffect.create(() -> 8F + node.hoverValue(8F))))
-.self(node -> node.effect(TransformNodeEffect.create(new TranslateOperation(Vector.Y(() -> (double) -node.hoverValue(12F))))))
+.self(node -> node.effect(TransformNodeEffect.create(new TranslateTransformOperation(Vector.Y(() -> (double) -node.hoverValue(12F))))))
 .attach(this);
 ```
 
 ![The cursor hovers a white card that lifts slightly and rounds its corners](../images/ess-anim-lift.gif "The card lifts by 12 units and its radius grows from 8 to 16 while hovered.")
 
-`TranslateOperation` is in `dev.joid.lib.render.transform.operation` and `Vector` in `dev.joid.lib.render.transform`.
+`TranslateTransformOperation` is in `dev.joid.lib.render.transform.operation` and `Vector` in `dev.joid.lib.render.transform`.
 
 ## Animating a value with TweenAnimator
 

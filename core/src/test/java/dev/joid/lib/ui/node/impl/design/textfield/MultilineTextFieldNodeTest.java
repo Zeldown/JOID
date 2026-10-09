@@ -14,7 +14,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.input.key.Key;
@@ -35,9 +35,9 @@ public class MultilineTextFieldNodeTest {
 
 	private static final Color INK = new Color(0.2F, 0.4F, 0.6F, 1F);
 
-	private static final IFont FONT = () -> MultilineTextFieldNodeTest.PROVIDER;
+	private static final IFont FONT = () -> MultilineTextFieldNodeTest.RENDERER;
 
-	private static final IFontProvider PROVIDER = new IFontProvider() {
+	private static final ITextRenderer RENDERER = new ITextRenderer() {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
@@ -1145,7 +1145,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void drawsItsTextWithoutMarkupUnlessAllowed() {
 		final List<TextInfo> infos = new ArrayList<>();
-		final IFontProvider provider = new IFontProvider() {
+		final ITextRenderer renderer = new ITextRenderer() {
 
 			@Override
 			public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
@@ -1169,7 +1169,7 @@ public class MultilineTextFieldNodeTest {
 			}
 
 		};
-		final IFont font = () -> provider;
+		final IFont font = () -> renderer;
 		final ITextMarkup markup = (text, index, style) -> 0;
 		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(font, 10F).markups(markup)).text("ab");
 		this.bridges.open(new NodeUI(field));
@@ -1327,13 +1327,13 @@ public class MultilineTextFieldNodeTest {
 
 	}
 
-	public static final class FieldFont implements IFont, IFontProvider {
+	public static final class FieldFont implements IFont, ITextRenderer {
 
 		@Getter
 		private final List<Drawn> drawn = new ArrayList<>();
 
 		@Override
-		public IFontProvider getFontProvider() {
+		public ITextRenderer getTextRenderer() {
 			return this;
 		}
 

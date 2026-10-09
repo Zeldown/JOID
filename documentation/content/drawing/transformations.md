@@ -47,12 +47,12 @@ Transformation
 
 ### Following a value with suppliers
 
-`RotateOperation`, `Vector`, `Scale` and `Rotation` take suppliers, read at each use. A transformation built once in a field follows the node and an angle that changes every frame:
+`RotateTransformOperation`, `Vector`, `Scale` and `Rotation` take suppliers, read at each use. A transformation built once in a field follows the node and an angle that changes every frame:
 
 ```java
 private double angle;
 
-private final Transformation spin = Transformation.create(new RotateOperation(
+private final Transformation spin = Transformation.create(new RotateTransformOperation(
 	() -> this.angle,
 	Rotation.ROLL,
 	Vector.create(() -> super.getX() + super.dw(2D), () -> super.getY() + super.dh(2D))
@@ -175,8 +175,8 @@ tessellator.draw();
 | Method | Description |
 |---|---|
 | `Transformation.create()` | Empty transformation. |
-| `Transformation.create(TransformOperation operation)` | Transformation with one operation. |
-| `add(TransformOperation operation)` | Appends an operation. |
+| `Transformation.create(ITransformOperation operation)` | Transformation with one operation. |
+| `add(ITransformOperation operation)` | Appends an operation. |
 | `translate(Vector vector)` | Appends a translation. |
 | `rotate(double angle, Rotation rotation, Vector pivot)` | Appends a rotation of `angle` degrees around the axis of `rotation`, through `pivot`. |
 | `scale(Scale scale, Vector pivot)` | Appends a scale around `pivot`. |
@@ -190,13 +190,13 @@ tessellator.draw();
 
 ### Transform operations
 
-The operations are in `dev.joid.lib.render.transform.operation` and implement `TransformOperation`, whose `transform()` applies them to the current matrix.
+The operations are in `dev.joid.lib.render.transform.operation` and implement `ITransformOperation`, whose `transform()` applies them to the current matrix.
 
 | Operation | Constructor | Effect |
 |---|---|---|
-| `TranslateOperation` | `new TranslateOperation(Vector vector)` | Translates by the vector, then rounds the translation to whole pixels. `getVector()` returns it. |
-| `RotateOperation` | `new RotateOperation(double angle, Rotation rotation, Vector pivot)`, `new RotateOperation(Supplier<Double> angleSupplier, Rotation rotation, Vector pivot)` | Rotates around the pivot; the supplier is read at every `transform()`. |
-| `ScaleOperation` | `new ScaleOperation(Scale scale, Vector pivot)` | Scales around the pivot, which stays in place. |
+| `TranslateTransformOperation` | `new TranslateTransformOperation(Vector vector)` | Translates by the vector, then rounds the translation to whole pixels. `getVector()` returns it. |
+| `RotateTransformOperation` | `new RotateTransformOperation(double angle, Rotation rotation, Vector pivot)`, `new RotateTransformOperation(Supplier<Double> angleSupplier, Rotation rotation, Vector pivot)` | Rotates around the pivot; the supplier is read at every `transform()`. |
+| `ScaleTransformOperation` | `new ScaleTransformOperation(Scale scale, Vector pivot)` | Scales around the pivot, which stays in place. |
 
 ### Rotation
 

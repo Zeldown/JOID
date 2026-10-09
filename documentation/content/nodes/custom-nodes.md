@@ -350,20 +350,20 @@ Declare setters as `public final <T extends YourNode> T name(...)` and end them 
 
 ## Binding a signal with bind
 
-`bind(Signal<V> signal, Consumer<V> consumer)` is `protected final`: it runs `consumer` at once with the signal's current value (when it is not `null`), then with each value the signal publishes, while the node's UI is open. It returns the subscription it creates, a `SignalSubscriber<V>`. Each call adds an independent subscription, so a node can bind several signals at once:
+`bind(Signal<V> signal, Consumer<V> consumer)` is `protected final`: it runs `consumer` at once with the signal's current value (when it is not `null`), then with each value the signal publishes, while the node's UI is open. It returns the subscription it creates, a `ISignalSubscriber<V>`. Each call adds an independent subscription, so a node can bind several signals at once:
 
 ```java
 super.bind(title, value -> this.title = value);
 super.bind(count, value -> this.count = value);
 ```
 
-`unbind(SignalSubscriber<?> subscriber)` unsubscribes the node from the signal of that subscription and forgets it; it does nothing with `null` or with a subscription that is not the node's. `rebind(SignalSubscriber<?> previous, Signal<V> signal, Consumer<V> consumer)` unbinds `previous`, then binds `signal` and returns the new subscription. All three follow the detach of the node: a binding made while the node is detached follows its signal once the node is loaded again, with a single subscription.
+`unbind(ISignalSubscriber<?> subscriber)` unsubscribes the node from the signal of that subscription and forgets it; it does nothing with `null` or with a subscription that is not the node's. `rebind(ISignalSubscriber<?> previous, Signal<V> signal, Consumer<V> consumer)` unbinds `previous`, then binds `signal` and returns the new subscription. All three follow the detach of the node: a binding made while the node is detached follows its signal once the node is loaded again, with a single subscription.
 
 The input controls build their `signal(...)` method on `rebind`, so that a second `signal(...)` replaces the first one, and write the signal with `sync(Signal<V> signal, V value)`, also `protected final`, which sets the signal only when it is bound and holds another value. A two-way binding for `SwatchNode` stores the signal and its subscription, follows the signal with `rebind`, and writes it in the click action:
 
 ```java
 private Signal<Boolean>           signal;
-private SignalSubscriber<Boolean> subscription;
+private ISignalSubscriber<Boolean> subscription;
 
 public final <T extends SwatchNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
 	this.signal = signal;
@@ -381,7 +381,7 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, DispatchC
 
 - A value published by the node itself comes back to the consumer: make the consumer harmless when the value is already the current one.
 - The consumer also receives `null` when the signal is set to `null`.
-- `Signal` and `SignalSubscriber` are in `dev.joid.lib.signal`, `Consumer` in `java.util.function`.
+- `Signal` and `ISignalSubscriber` are in `dev.joid.lib.signal`, `Consumer` in `java.util.function`.
 
 ## Building on existing nodes
 
@@ -399,8 +399,8 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, DispatchC
 | `onMousePressed(double, double, MouseButton, DispatchContext)`, `onMouseReleased(...)`, `onMouseDragged(double, double, MouseButton, long, DispatchContext)`, `onMouseScroll(double, double, double, double, DispatchContext)`, `onKeyPressed(char, Key, DispatchContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
 | `registerCallback(int, NodeCallback)` | Protected. Stores a callback. |
 | `bind(Signal<V>, Consumer<V>)` | Protected. Runs the consumer with the signal's current value, then with each published value while the UI is open. Returns the subscription; each call adds one. |
-| `unbind(SignalSubscriber<?>)` | Protected. Removes a subscription of the node. Does nothing with `null`. |
-| `rebind(SignalSubscriber<?>, Signal<V>, Consumer<V>)` | Protected. Removes the previous subscription, then binds the signal. Returns the new subscription. |
+| `unbind(ISignalSubscriber<?>)` | Protected. Removes a subscription of the node. Does nothing with `null`. |
+| `rebind(ISignalSubscriber<?>, Signal<V>, Consumer<V>)` | Protected. Removes the previous subscription, then binds the signal. Returns the new subscription. |
 | `sync(Signal<V>, V)` | Protected. Sets the signal to the value when the signal is not `null` and holds another value. |
 | `writable(Signal<V>)` | Protected. Returns the signal, or throws `IllegalArgumentException` (`<Class>.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead`) for a `ComputedSignal`. `rebind` calls it. |
 | `follow(String property, Supplier<V> supplier, Consumer<V> consumer)` | Protected. Applies the value at once, then on each change of the source (read at the start of each render). |

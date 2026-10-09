@@ -16,8 +16,8 @@ import lombok.NonNull;
 
 public class Signal<T> implements ISignal<T> {
 
-	private final transient List<@NonNull ComputedSignal<?>>  observerList;
-	private final transient Set<@NonNull SignalSubscriber<T>> eventSet;
+	private final transient List<@NonNull ComputedSignal<?>>   observerList;
+	private final transient Set<@NonNull ISignalSubscriber<T>> eventSet;
 
 	private volatile T value;
 	private volatile T defaultValue;
@@ -87,13 +87,13 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	@Override
-	public @NonNull Signal<T> subscribe(final @NonNull SignalSubscriber<T> subscriber) {
+	public @NonNull Signal<T> subscribe(final @NonNull ISignalSubscriber<T> subscriber) {
 		this.eventSet.add(subscriber);
 		return this;
 	}
 
 	@Override
-	public @NonNull Signal<T> unsubscribe(final @NonNull SignalSubscriber<T> subscriber) {
+	public @NonNull Signal<T> unsubscribe(final @NonNull ISignalSubscriber<T> subscriber) {
 		this.eventSet.remove(subscriber);
 		return this;
 	}
@@ -134,7 +134,7 @@ public class Signal<T> implements ISignal<T> {
 		return this.value != null ? this.value : this.defaultValue;
 	}
 
-	public @NonNull Set<@NonNull SignalSubscriber<T>> getEventSet() {
+	public @NonNull Set<@NonNull ISignalSubscriber<T>> getEventSet() {
 		return this.eventSet;
 	}
 
@@ -209,15 +209,15 @@ public class Signal<T> implements ISignal<T> {
 			return;
 		}
 
-		final Set<SignalSubscriber<T>> outdatedSet = new HashSet<>();
-		final Set<SignalSubscriber<T>> copiedSet = new HashSet<>(this.eventSet);
-		for (final SignalSubscriber<T> subscriber : copiedSet) {
+		final Set<ISignalSubscriber<T>> outdatedSet = new HashSet<>();
+		final Set<ISignalSubscriber<T>> copiedSet = new HashSet<>(this.eventSet);
+		for (final ISignalSubscriber<T> subscriber : copiedSet) {
 			if (!subscriber.update(value)) {
 				outdatedSet.add(subscriber);
 			}
 		}
 
-		for (final SignalSubscriber<T> subscriber : outdatedSet) {
+		for (final ISignalSubscriber<T> subscriber : outdatedSet) {
 			this.unsubscribe(subscriber);
 		}
 	}

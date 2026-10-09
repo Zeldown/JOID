@@ -10,9 +10,9 @@ import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Scale;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.render.transform.operation.RotateOperation;
-import dev.joid.lib.render.transform.operation.ScaleOperation;
-import dev.joid.lib.render.transform.operation.TranslateOperation;
+import dev.joid.lib.render.transform.operation.RotateTransformOperation;
+import dev.joid.lib.render.transform.operation.ScaleTransformOperation;
+import dev.joid.lib.render.transform.operation.TranslateTransformOperation;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
@@ -195,18 +195,18 @@ public class UIDemoEffect extends UIDemo {
 		RectNode
 		.create(995, 660, 160, 80)
 		.color(Color.RED)
-		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(15D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
+		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateTransformOperation(15D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(1075, 775).text(Text.create("Rotate", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
 		.create(1245, 660, 120, 80)
 		.color(Color.RED)
-		.self(rect -> rect.effect(TransformNodeEffect.create(new ScaleOperation(Scale.create(1.5D, 0.7D, 1D), Vector.create(() -> rect.getX() + 60D, () -> rect.getY() + 40D)))))
+		.self(rect -> rect.effect(TransformNodeEffect.create(new ScaleTransformOperation(Scale.create(1.5D, 0.7D, 1D), Vector.create(() -> rect.getX() + 60D, () -> rect.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(1305, 775).text(Text.create("Scale", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(1435, 640, 120, 80).color(Color.RED).effect(TransformNodeEffect.create(new TranslateOperation(Vector.create(60D, 30D)))).attach(this);
+		RectNode.create(1435, 640, 120, 80).color(Color.RED).effect(TransformNodeEffect.create(new TranslateTransformOperation(Vector.create(60D, 30D)))).attach(this);
 		TextNode.create(1535, 775).text(Text.create("Translate", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
@@ -240,14 +240,14 @@ public class UIDemoEffect extends UIDemo {
 		.create(535, 860, 160, 80)
 		.color(Color.RED.toGradient(Color.BLUE))
 		.self(rect -> rect.effect(MaskNodeEffect.create(rect).priority(0)))
-		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(20D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D))).priority(1)))
+		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateTransformOperation(20D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D))).priority(1)))
 		.attach(this);
 		TextNode.create(615, 975).text(Text.create("Mask first", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
 		.create(765, 860, 160, 80)
 		.color(Color.RED.toGradient(Color.BLUE))
-		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateOperation(20D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D))).priority(0)))
+		.self(rect -> rect.effect(TransformNodeEffect.create(new RotateTransformOperation(20D, Rotation.ROLL, Vector.create(() -> rect.getX() + 80D, () -> rect.getY() + 40D))).priority(0)))
 		.self(rect -> rect.effect(MaskNodeEffect.create(rect).priority(1)))
 		.attach(this);
 		TextNode.create(845, 975).text(Text.create("Rotation first", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);

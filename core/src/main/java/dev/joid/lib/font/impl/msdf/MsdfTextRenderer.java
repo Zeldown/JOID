@@ -7,7 +7,7 @@ import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.font.impl.glyph.GlyphFontProvider;
+import dev.joid.lib.font.impl.glyph.GlyphTextRenderer;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
+public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 
-	private static final MsdfFontProvider INSTANCE = new MsdfFontProvider();
+	private static final MsdfTextRenderer INSTANCE = new MsdfTextRenderer();
 
 	private Color        color;
 	private float        pixelX;
@@ -26,8 +26,8 @@ public final class MsdfFontProvider extends GlyphFontProvider<MsdfFontFace> {
 	private PixelGrid    grid;
 	private MsdfFontFace face;
 
-	public static @NonNull MsdfFontProvider inst() {
-		return MsdfFontProvider.INSTANCE;
+	public static @NonNull MsdfTextRenderer inst() {
+		return MsdfTextRenderer.INSTANCE;
 	}
 
 	@Override

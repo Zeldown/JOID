@@ -9,7 +9,7 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.render.transform.operation.RotateOperation;
+import dev.joid.lib.render.transform.operation.RotateTransformOperation;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -207,7 +207,7 @@ public class UIDemoAnimation extends UIDemo {
 			RectNode
 			.create(150, 80, 100, 100)
 			.color(UIDemoAnimation.INK)
-			.self(square -> square.effect(TransformNodeEffect.create(new RotateOperation(() -> rotation.getValue() * 360D, Rotation.ROLL, Vector.create(() -> square.getX() + 50D, () -> square.getY() + 50D)))))
+			.self(square -> square.effect(TransformNodeEffect.create(new RotateTransformOperation(() -> rotation.getValue() * 360D, Rotation.ROLL, Vector.create(() -> square.getX() + 50D, () -> square.getY() + 50D)))))
 			.animate(rotation)
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Rotation", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);

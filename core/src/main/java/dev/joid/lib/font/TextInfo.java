@@ -54,11 +54,11 @@ public final class TextInfo {
 	}
 
 	public final double getHeight() {
-		return this.font.getFontProvider().getLineHeight(this);
+		return this.font.getTextRenderer().getLineHeight(this);
 	}
 
 	public final double getHeight(final @NonNull String text) {
-		return this.font.getFontProvider().getHeight(text, this);
+		return this.font.getTextRenderer().getHeight(text, this);
 	}
 
 	public final @NonNull TextStyle getStyle() {
@@ -82,7 +82,7 @@ public final class TextInfo {
 	}
 
 	public final double getWidth(final @NonNull String text) {
-		return this.font.getFontProvider().getWidth(text, this);
+		return this.font.getTextRenderer().getWidth(text, this);
 	}
 
 	public final @NonNull FontBounds getBounds(final @NonNull String text) {

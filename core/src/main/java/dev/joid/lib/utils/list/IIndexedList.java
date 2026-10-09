@@ -4,7 +4,7 @@ import java.util.List;
 
 import lombok.NonNull;
 
-public interface IndexedList<E extends IndexedElement> extends Iterable<E> {
+public interface IIndexedList<E extends IndexedElement> extends Iterable<E> {
 
 	public void add(final E element);
 	public void remove(final E element);
@@ -12,7 +12,7 @@ public interface IndexedList<E extends IndexedElement> extends Iterable<E> {
 	public void sort();
 	public void clear();
 
-	public @NonNull IndexedList<E> copy();
+	public @NonNull IIndexedList<E> copy();
 
 	public int size();
 	public boolean isEmpty();
@@ -25,6 +25,6 @@ public interface IndexedList<E extends IndexedElement> extends Iterable<E> {
 	public @NonNull List<E> ordered();
 	public @NonNull List<E> reversed();
 
-	public @NonNull IndexedList<E> recursive();
+	public @NonNull IIndexedList<E> recursive();
 
 }

@@ -14,11 +14,11 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.bitmap.BitmapCell;
 import dev.joid.lib.font.impl.bitmap.BitmapFont;
-import dev.joid.lib.font.impl.bitmap.BitmapFontProvider;
+import dev.joid.lib.font.impl.bitmap.BitmapTextRenderer;
 import dev.joid.lib.font.impl.glyph.FontFamily;
 import dev.joid.lib.font.impl.glyph.IFontFace;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
@@ -125,13 +125,13 @@ public abstract class BitmapFontContractSuite {
 	private static SnapshotImage render(final Atlas atlas, final double scale) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final ITexture texture = render.createTexture().allocate(2 * atlas.texels, atlas.texels).upload(atlas.pixels(), 2 * atlas.texels, atlas.texels);
-		final Font font = new Font(new Provider(atlas, texture));
+		final Font font = new Font(new Renderer(atlas, texture));
 		render.beginFrame();
 		render.clear(0F, 0F, 0F, 1F);
 		render.pushMatrix();
 		try {
 			render.scale(scale, scale, 1D);
-			font.getFontProvider().drawText(8.3D, 4.6D, "A", TextInfo.create(font, 16F, Color.WHITE));
+			font.getTextRenderer().drawText(8.3D, 4.6D, "A", TextInfo.create(font, 16F, Color.WHITE));
 		} finally {
 			render.popMatrix();
 		}
@@ -268,22 +268,22 @@ public abstract class BitmapFontContractSuite {
 
 	private static final class Font extends BitmapFont<Face> {
 
-		private final Provider provider;
+		private final Renderer renderer;
 
-		private Font(final Provider provider) {
+		private Font(final Renderer renderer) {
 			super(FontFamily.of(new Face()), 8);
-			this.provider = provider;
+			this.renderer = renderer;
 		}
 
 		@Override
-		public @NonNull IFontProvider getFontProvider() {
-			return this.provider;
+		public @NonNull ITextRenderer getTextRenderer() {
+			return this.renderer;
 		}
 
 	}
 
 	@AllArgsConstructor
-	private static final class Provider extends BitmapFontProvider<Face> {
+	private static final class Renderer extends BitmapTextRenderer<Face> {
 
 		private final Atlas    atlas;
 		private final ITexture texture;

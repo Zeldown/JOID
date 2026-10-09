@@ -30,7 +30,7 @@ public void init() {
 
 The second run follows the signal `name`: when it changes, the run shows the new name and the line is measured again. How the pieces fit together:
 
-![A Text box holding two TextElement boxes, each with its TextInfo, an arrow to the IFontProvider, then to the drawn line](../images/diagram-text-model.png "A Text holds its runs; the provider of the font of each TextInfo measures and draws each run, side by side.")
+![A Text box holding two TextElement boxes, each with its TextInfo, an arrow to the ITextRenderer, then to the drawn line](../images/diagram-text-model.png "A Text holds its runs; the renderer of the font of each TextInfo measures and draws each run, side by side.")
 
 | Object | Role |
 |---|---|

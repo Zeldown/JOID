@@ -7,7 +7,7 @@ import dev.joid.lib.render.transform.Vector;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ScaleOperation implements TransformOperation {
+public class ScaleTransformOperation implements ITransformOperation {
 
 	private final Scale  scale;
 	private final Vector pivot;

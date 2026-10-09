@@ -54,7 +54,7 @@ public final class DrawText {
 					oy += text.getHeight() - info.getHeight();
 				}
 
-				return info.getFont().getFontProvider().drawText(pen, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
+				return info.getFont().getTextRenderer().drawText(pen, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
 			});
 		}
 

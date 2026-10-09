@@ -1,7 +1,7 @@
 package dev.joid.demo.ui.font.pixel;
 
 import dev.joid.lib.font.impl.bitmap.BitmapCell;
-import dev.joid.lib.font.impl.bitmap.BitmapFontProvider;
+import dev.joid.lib.font.impl.bitmap.BitmapTextRenderer;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
 import dev.joid.lib.resource.Resource;
 import lombok.AccessLevel;
@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DemoPixelFontProvider extends BitmapFontProvider<DemoPixelFontFace> {
+public final class DemoPixelTextRenderer extends BitmapTextRenderer<DemoPixelFontFace> {
 
-	private static final DemoPixelFontProvider INSTANCE = new DemoPixelFontProvider();
+	private static final DemoPixelTextRenderer INSTANCE = new DemoPixelTextRenderer();
 
-	public static @NonNull DemoPixelFontProvider inst() {
-		return DemoPixelFontProvider.INSTANCE;
+	public static @NonNull DemoPixelTextRenderer inst() {
+		return DemoPixelTextRenderer.INSTANCE;
 	}
 
 	@Override

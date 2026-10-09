@@ -19,7 +19,7 @@ import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
@@ -771,12 +771,12 @@ public class UIBridgeTest {
 		return ((RenderBridge) BridgeHandler.RENDER.get()).getModelView().getMatrix()[14];
 	}
 
-	public static final class TraceFont implements IFont, IFontProvider {
+	public static final class TraceFont implements IFont, ITextRenderer {
 
 		private final List<String> drawn = new ArrayList<>();
 
 		@Override
-		public @NonNull IFontProvider getFontProvider() {
+		public @NonNull ITextRenderer getTextRenderer() {
 			return this;
 		}
 

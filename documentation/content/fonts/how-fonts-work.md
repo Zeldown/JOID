@@ -14,16 +14,16 @@ final TextInfo title = TextInfo.create(inter, FontWeight.BOLD, 32F, Color.WHITE)
 - A [`TextInfo`](../text/text-and-textinfo.md) holds the family and asks for a weight and an italic flag; the family picks the face that draws it.
 - The first load of a `.ttf` file turns it into an MSDF atlas, a texture of distance fields, and caches it; later loads read the cache.
 
-## The font abstraction: IFont and IFontProvider
+## The font abstraction: IFont and ITextRenderer
 
 Everything that draws or measures text (`TextNode`, `DrawUtils.TEXT`, `TextInfo.getWidth`, the text fields) knows only two interfaces of `dev.joid.lib.font`:
 
 | Interface | Role |
 |---|---|
-| `IFont` | What a `TextInfo` holds. Its only method, `getFontProvider()`, returns the provider that draws it. |
-| `IFontProvider` | Draws one line of text (`drawText`) and measures it (`getWidth`, `getHeight`, `getLineHeight`). |
+| `IFont` | What a `TextInfo` holds. Its only method, `getTextRenderer()`, returns the renderer that draws it. |
+| `ITextRenderer` | Draws one line of text (`drawText`) and measures it (`getWidth`, `getHeight`, `getLineHeight`). |
 
-A font is any object that hands over a provider. JOID ships one font type, the MSDF font, built on a glyph framework you can reuse for your own fonts (see [Custom Font Implementations](custom-fonts.md)).
+A font is any object that hands over a renderer. JOID ships one font type, the MSDF font, built on a glyph framework you can reuse for your own fonts (see [Custom Font Implementations](custom-fonts.md)).
 
 ## Glyph fonts with GlyphFont
 
@@ -34,17 +34,17 @@ Most fonts are made of glyphs: one shape per character, placed one after the oth
 | Face | `IFontFace` | One weight and style of a font, usually one file: Inter Bold, Inter Italic. It knows its characters, advances, kerning and metrics. |
 | Family | `FontFamily<F>` | The faces of one font, like a CSS `font-family` made of `@font-face` rules. |
 | Font | `GlyphFont<F>` | The `IFont` built on a family: `getFace(weight, italic)` and `getFamily()`. |
-| Provider | `GlyphFontProvider<F>` | Lays out the glyphs (advances, kerning, letter spacing, markup, effects, shadow) and calls the implementation for each glyph. |
+| Renderer | `GlyphTextRenderer<F>` | Lays out the glyphs (advances, kerning, letter spacing, markup, effects, shadow) and calls the implementation for each glyph. |
 
-`MsdfFont` is a `GlyphFont<MsdfFontFace>`, drawn by the shared `MsdfFontProvider`. A family refuses to be empty and refuses two faces of the same weight and style (`IllegalArgumentException`).
+`MsdfFont` is a `GlyphFont<MsdfFontFace>`, drawn by the shared `MsdfTextRenderer`. A family refuses to be empty and refuses two faces of the same weight and style (`IllegalArgumentException`).
 
-A font made of texels, a pixel-art font, is a `BitmapFont` with its bitmap size: it keeps its size like any other font, starts its lines on the pixel grid, and its `BitmapFontProvider` filters the texels so that each keeps the same width at any interface scale, zoom and window size, whatever the number of texels per glyph in its atlas (see [Pixel-art fonts](custom-fonts.md#pixel-art-fonts-on-bitmapfont)).
+A font made of texels, a pixel-art font, is a `BitmapFont` with its bitmap size: it keeps its size like any other font, starts its lines on the pixel grid, and its `BitmapTextRenderer` filters the texels so that each keeps the same width at any interface scale, zoom and window size, whatever the number of texels per glyph in its atlas (see [Pixel-art fonts](custom-fonts.md#pixel-art-fonts-on-bitmapfont)).
 
 ### Choosing a face with FontFamily.resolve
 
 A `TextInfo`, or markup, asks for a weight and an italic flag; the family resolves the face to draw:
 
-![TextInfo asks SEMI_BOLD upright, MsdfFont hands the request to FontFamily.resolve, which picks 700 Bold among 300 Light, 700 Bold and 400 Italic, then the provider draws it](../images/diagram-font-family.png "A request for 600 upright: the upright faces are the candidates, and 700 is the closest weight.")
+![TextInfo asks SEMI_BOLD upright, MsdfFont hands the request to FontFamily.resolve, which picks 700 Bold among 300 Light, 700 Bold and 400 Italic, then the renderer draws it](../images/diagram-font-family.png "A request for 600 upright: the upright faces are the candidates, and 700 is the closest weight.")
 
 1. The faces of the requested style (italic or upright) are the candidates. When the family has no face of that style, every face is a candidate.
 2. Among the candidates, the closest weight wins.
@@ -101,7 +101,7 @@ All the glyphs of a face are packed into one texture, the atlas, with the data t
 
 ### How a glyph is drawn
 
-1. The provider lays out the line: advance of each character, kerning, letter spacing, markup, effects.
+1. The renderer lays out the line: advance of each character, kerning, letter spacing, markup, effects.
 2. Each glyph is one textured quad that samples its rectangle of the atlas (linear filtering, no mipmaps).
 3. The MSDF shader converts the distance range into screen pixels for the current scale, samples the field on a 2×2 footprint per pixel, and turns the median distance into coverage. Colors and gradients are applied in the same shader.
 4. When the transform is axis-aligned, the baseline and the x-height land on whole window pixels, which keeps small text sharp; rotated or skewed text keeps its exact geometry.
@@ -153,18 +153,18 @@ The MSDF fonts are `.ttf` files: their atlases are generated into the [MSDF cach
 | To get started, with Latin text and a few faces | Load the `.ttf`, `.otf` or `.ttc` files at runtime with `MsdfFontLoader`; the first launch of each machine generates the atlases. | [Adding Your Own Fonts](adding-fonts.md) |
 | A fast first launch, a release build, other characters (Cyrillic, Greek, CJK, symbols) or another atlas size | Generate `font.msdf` atlases with the MSDF Generator, ship them and load them with `MsdfFontLoader.load(...)`. | [MSDF Generator](msdf-generator.md) |
 | A face whose weight or style metadata is wrong, or a family assembled from unrelated files | Wrap the handle in `MsdfOpenTypeSource` or `MsdfBinarySource` and set the weight or italic flag. | [Adding Your Own Fonts](adding-fonts.md#overriding-a-face-with-msdfsource) |
-| A pixel-art font drawn from an atlas | Extend `BitmapFont` and `BitmapFontProvider` and say where each glyph lies in the atlas; the drawing, families, kerning, markup and effects come with them. | [Pixel-art fonts](custom-fonts.md#pixel-art-fonts-on-bitmapfont) |
-| A sprite font, or glyphs drawn another way | Extend `GlyphFont` and `GlyphFontProvider`; families, kerning, markup and effects come with them. | [Custom Font Implementations](custom-fonts.md) |
-| A completely different text engine | Implement `IFont` and `IFontProvider`. | [Custom Font Implementations](custom-fonts.md) |
+| A pixel-art font drawn from an atlas | Extend `BitmapFont` and `BitmapTextRenderer` and say where each glyph lies in the atlas; the drawing, families, kerning, markup and effects come with them. | [Pixel-art fonts](custom-fonts.md#pixel-art-fonts-on-bitmapfont) |
+| A sprite font, or glyphs drawn another way | Extend `GlyphFont` and `GlyphTextRenderer`; families, kerning, markup and effects come with them. | [Custom Font Implementations](custom-fonts.md) |
+| A completely different text engine | Implement `IFont` and `ITextRenderer`. | [Custom Font Implementations](custom-fonts.md) |
 
 ## Reference
 
 | Type | Package | Role |
 |---|---|---|
-| `IFont`, `IFontProvider` | `dev.joid.lib.font` | Font abstraction. |
-| `GlyphFont<F>`, `GlyphFontProvider<F>` | `dev.joid.lib.font.impl.glyph` | Glyph framework. |
-| `IFontFace`, `FontFamily<F>`, `TextGlyph<F>` | `dev.joid.lib.font.impl.glyph` | Faces, families, glyphs handed to a provider. |
-| `MsdfFont`, `MsdfFontLoader`, `MsdfFontCache`, `MsdfFontProvider` | `dev.joid.lib.font.impl.msdf` | MSDF fonts (see [Adding Your Own Fonts](adding-fonts.md#reference)). |
+| `IFont`, `ITextRenderer` | `dev.joid.lib.font` | Font abstraction. |
+| `GlyphFont<F>`, `GlyphTextRenderer<F>` | `dev.joid.lib.font.impl.glyph` | Glyph framework. |
+| `IFontFace`, `FontFamily<F>`, `TextGlyph<F>` | `dev.joid.lib.font.impl.glyph` | Faces, families, glyphs handed to a renderer. |
+| `MsdfFont`, `MsdfFontLoader`, `MsdfFontCache`, `MsdfTextRenderer` | `dev.joid.lib.font.impl.msdf` | MSDF fonts (see [Adding Your Own Fonts](adding-fonts.md#reference)). |
 | `MsdfFontFace`, `MsdfAtlas`, `MsdfGlyph`, `MsdfMetrics`, `MsdfBounds` | `dev.joid.lib.font.impl.msdf` | MSDF data. |
 
 ## Pitfalls

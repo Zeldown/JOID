@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
@@ -25,9 +25,9 @@ public abstract class SelectorNode<V> extends Node {
 
 	private final Map<Node, V> optionMap;
 
-	private SelectorDirection   direction;
-	private Signal<V>           signal;
-	private SignalSubscriber<V> subscription;
+	private SelectorDirection    direction;
+	private Signal<V>            signal;
+	private ISignalSubscriber<V> subscription;
 
 	private Node    selected;
 	private boolean active;

@@ -14,7 +14,7 @@ import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
@@ -22,9 +22,9 @@ import dev.joid.lib.utils.align.Align;
 
 public class TextTest {
 
-	private static final IFont FONT = () -> TextTest.PROVIDER;
+	private static final IFont FONT = () -> TextTest.RENDERER;
 
-	private static final IFontProvider PROVIDER = new IFontProvider() {
+	private static final ITextRenderer RENDERER = new ITextRenderer() {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {

@@ -142,7 +142,7 @@ How a native expression is followed, and its limits, are explained in [Reactive 
 
 ## Acting on changes with subscribe
 
-`subscribe(subscriber)` calls a `SignalSubscriber` each time the value changes. The subscriber returns `true` to stay subscribed, `false` to unsubscribe itself:
+`subscribe(subscriber)` calls a `ISignalSubscriber` each time the value changes. The subscriber returns `true` to stay subscribed, `false` to unsubscribe itself:
 
 ```java
 private final IntegerSignal score = IntegerSignal.of(0);
@@ -258,7 +258,7 @@ public class CounterSignal extends Signal<Integer> {
 | `publish()` | Notifies without changing the value. |
 | `silent()` | Mutes the next write for the direct subscribers. |
 | `map(Function<T, R> function)` | A `ComputedSignal<R>` derived from this signal. |
-| `subscribe(SignalSubscriber<T> subscriber)`, `unsubscribe(...)` | Adds or removes a subscriber. |
+| `subscribe(ISignalSubscriber<T> subscriber)`, `unsubscribe(...)` | Adds or removes a subscriber. |
 | `getEventSet()` | The direct subscribers. |
 
 ### ComputedSignal
@@ -269,7 +269,7 @@ public class CounterSignal extends Signal<Integer> {
 | `isConstant()` | `true` for a `Signal.from(value)` that follows nothing. |
 | `set(...)`, `reset()` | Throw `UnsupportedOperationException`. |
 
-### SignalSubscriber
+### ISignalSubscriber
 
 `boolean update(T value)`: called with the new value; return `false` to unsubscribe.
 

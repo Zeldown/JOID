@@ -4,10 +4,10 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.render.transform.Transformation;
-import dev.joid.lib.render.transform.operation.RotateOperation;
-import dev.joid.lib.render.transform.operation.ScaleOperation;
-import dev.joid.lib.render.transform.operation.TransformOperation;
-import dev.joid.lib.render.transform.operation.TranslateOperation;
+import dev.joid.lib.render.transform.operation.ITransformOperation;
+import dev.joid.lib.render.transform.operation.RotateTransformOperation;
+import dev.joid.lib.render.transform.operation.ScaleTransformOperation;
+import dev.joid.lib.render.transform.operation.TranslateTransformOperation;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
@@ -27,15 +27,15 @@ public class TransformNodeEffect extends NodeEffect<Node> {
 		this.transformationSupplier = () -> transformation;
 	}
 
-	public static TransformNodeEffect create(final @NonNull ScaleOperation scale) {
+	public static TransformNodeEffect create(final @NonNull ScaleTransformOperation scale) {
 		return new TransformNodeEffect(Transformation.create(scale));
 	}
 
-	public static TransformNodeEffect create(final @NonNull RotateOperation rotation) {
+	public static TransformNodeEffect create(final @NonNull RotateTransformOperation rotation) {
 		return new TransformNodeEffect(Transformation.create(rotation));
 	}
 
-	public static TransformNodeEffect create(final @NonNull TranslateOperation translate) {
+	public static TransformNodeEffect create(final @NonNull TranslateTransformOperation translate) {
 		return new TransformNodeEffect(Transformation.create(translate));
 	}
 
@@ -46,7 +46,7 @@ public class TransformNodeEffect extends NodeEffect<Node> {
 	@Override
 	public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
 		BridgeHandler.RENDER.get().pushMatrix();
-		for (final TransformOperation operation : this.transformationSupplier.get().getOperations()) {
+		for (final ITransformOperation operation : this.transformationSupplier.get().getOperations()) {
 			operation.transform();
 		}
 	}

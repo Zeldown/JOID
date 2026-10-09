@@ -128,8 +128,8 @@ Every `drawText` returns the `FontBounds` of what it drew (`getWidth()`, `getHei
 ## Pitfalls
 
 - A string overload builds a new `Text` and measures it at every call: in a hook that runs every frame, prefer a `Text` built once.
-- Text is drawn with the shader of its font provider, which unbinds the current shader: draw text outside your own shader binding.
-- Measure and draw through `info` and `DrawUtils.TEXT`: a font provider called directly with a font it does not draw throws an `IllegalArgumentException` (see [Custom Font Implementations](../fonts/custom-fonts.md)).
+- Text is drawn with the shader of its text renderer, which unbinds the current shader: draw text outside your own shader binding.
+- Measure and draw through `info` and `DrawUtils.TEXT`: a text renderer called directly with a font it does not draw throws an `IllegalArgumentException` (see [Custom Font Implementations](../fonts/custom-fonts.md)).
 
 ## See also
 

@@ -128,9 +128,9 @@ public void drawHover(final Object content, final double mouseX, final double mo
 
 `info` is a `TextInfo` (see [Text](../essentials/text.md)); `DrawUtils.TEXT.drawText` draws a `Text` at a position, like `DrawUtils.SHAPE.drawRect` draws a rectangle (see also [Drawing Text](../drawing/text.md)).
 
-## Custom tooltips with HoverElement
+## Custom tooltips with IHoverElement
 
-`HoverElement` (`dev.joid.lib.ui.node.hover`) draws anything as a tooltip.
+`IHoverElement` (`dev.joid.lib.ui.node.hover`) draws anything as a tooltip.
 
 | Method | Default | Description |
 |---|---|---|
@@ -138,7 +138,7 @@ public void drawHover(final Object content, final double mouseX, final double mo
 | `getX()`, `getY()` | `0` | Offset of the element from its anchor. |
 | `getWidth()`, `getHeight()` | `0` | Size of the element, read to place and clamp it. |
 
-An element given directly to `hover(HoverElement)` is drawn as is, in UI coordinates. Wrap it to position it:
+An element given directly to `hover(IHoverElement)` is drawn as is, in UI coordinates. Wrap it to position it:
 
 ### Positioning with CustomHoverElement
 
@@ -146,14 +146,14 @@ An element given directly to `hover(HoverElement)` is drawn as is, in UI coordin
 
 | Factory | Anchor |
 |---|---|
-| `CustomHoverElement.follow(HoverElement element)` | The mouse position. |
-| `CustomHoverElement.relative(HoverElement element)` | The top-left corner of the hovered node (absolute position). |
-| `CustomHoverElement.fixed(HoverElement element)` | The origin of the UI, `(0, 0)`. |
+| `CustomHoverElement.follow(IHoverElement element)` | The mouse position. |
+| `CustomHoverElement.relative(IHoverElement element)` | The top-left corner of the hovered node (absolute position). |
+| `CustomHoverElement.fixed(IHoverElement element)` | The origin of the UI, `(0, 0)`. |
 
 The element is drawn with its top-left corner at `anchorX + getX()`, `anchorY + getY() - getHeight()`: its bottom edge sits `getY()` units below the anchor, so a negative `getY()` lifts it. When the element has a positive width and height, it is moved left to stay within the right edge of the visible area and down to stay below its top edge. `render` is then called with the origin moved to that corner, so the element draws from `(0, 0)`.
 
 ```java
-final HoverElement badge = new HoverElement() {
+final IHoverElement badge = new IHoverElement() {
 
 	@Override
 	public void render(final Node node, final double mouseX, final double mouseY) {
@@ -218,13 +218,13 @@ The tooltip node is not part of the node tree: it is loaded into the UI of the h
 
 | Method | Description |
 |---|---|
-| `hover(HoverElement element)` | Adds an element. |
-| `removeHover(HoverElement element)` | Removes this element; the others and the text lines stay. |
-| `hoverElements(HoverElement element)` | Removes every element, then adds this one. |
+| `hover(IHoverElement element)` | Adds an element. |
+| `removeHover(IHoverElement element)` | Removes this element; the others and the text lines stay. |
+| `hoverElements(IHoverElement element)` | Removes every element, then adds this one. |
 | `clearHoverElements()` | Removes every element. |
 | `clearHover()` | Removes every element and every line supplier. |
 
-A node with an element shows a tooltip even when the element draws nothing, so its parent shows none: remove an element you turn off with `removeHover(element)` rather than leaving it empty. The elements of a node are drawn in the order you added them, then its text tooltip. `DefaultHoverElement` (`new DefaultHoverElement(List<String> lines)`) is the element JOID builds for the text lines; adding one yourself shows fixed lines through `drawHover`.
+A node with an element shows a tooltip even when the element draws nothing, so its parent shows none: remove an element you turn off with `removeHover(element)` rather than leaving it empty. The elements of a node are drawn in the order you added them, then its text tooltip. `TextHoverElement` (`new TextHoverElement(List<String> lines)`) is the element JOID builds for the text lines; adding one yourself shows fixed lines through `drawHover`.
 
 ## Which tooltip shows
 

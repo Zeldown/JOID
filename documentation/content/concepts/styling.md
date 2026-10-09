@@ -105,7 +105,7 @@ The built-in effects are in `dev.joid.lib.ui.node.effect.impl`:
 | `ShadowNodeEffect` | `ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.4F), 16F)` | Draws a shadow or a glow around the node. |
 | `BlurNodeEffect` | `BlurNodeEffect.create(8F)` | Blurs the rendering of the node. |
 | `MaskNodeEffect` | `MaskNodeEffect.create(300D, 50D)` | Shows only a rectangle of the node, or the shape of an image. |
-| `TransformNodeEffect` | `TransformNodeEffect.create(new RotateOperation(...))` | Moves, scales or rotates the rendering without changing the layout. |
+| `TransformNodeEffect` | `TransformNodeEffect.create(new RotateTransformOperation(...))` | Moves, scales or rotates the rendering without changing the layout. |
 
 A round avatar with a white ring, from any image (`ResourceNode` draws an image that `Resource.of(...)` loads from a file or a URL; [Images and Media](../essentials/media.md) covers both):
 

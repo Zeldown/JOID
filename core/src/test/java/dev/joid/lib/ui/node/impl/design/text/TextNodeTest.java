@@ -16,7 +16,7 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.draw.text.builder.TextOverflow;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -271,13 +271,13 @@ public class TextNodeTest {
 
 	}
 
-	public static final class TextFont implements IFont, IFontProvider {
+	public static final class TextFont implements IFont, ITextRenderer {
 
 		@Getter
 		private final List<Drawn> drawn = new ArrayList<>();
 
 		@Override
-		public IFontProvider getFontProvider() {
+		public ITextRenderer getTextRenderer() {
 			return this;
 		}
 

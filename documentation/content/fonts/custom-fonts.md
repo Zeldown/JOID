@@ -16,18 +16,18 @@ TextNode.create(100, 140).text(Text.create("Game over", TextInfo.create(pixel, 2
 
 | Level | You write | You get |
 |---|---|---|
-| Glyph font: extend `GlyphFont` and `GlyphFontProvider` (`dev.joid.lib.font.impl.glyph`) | A face (`IFontFace`), the font class and how one glyph is drawn. | Families and weight resolution, slanted italic, advances, kerning, letter spacing, line height, markup, effects, shadows, measuring. |
-| Bitmap font: extend `BitmapFont` and `BitmapFontProvider` (`dev.joid.lib.font.impl.bitmap`) | A face, the font class with its bitmap size, and where each glyph lies in its atlas. | Everything a glyph font gets, plus the drawing: texels filtered by area at any scale, lines on the pixel grid, color, gradient, italic, synthetic bold, one-channel atlases. |
-| Raw font: implement `IFont` and `IFontProvider` (`dev.joid.lib.font`) | Layout, drawing and measuring of a whole line. | Use everywhere a `TextInfo` goes. |
+| Glyph font: extend `GlyphFont` and `GlyphTextRenderer` (`dev.joid.lib.font.impl.glyph`) | A face (`IFontFace`), the font class and how one glyph is drawn. | Families and weight resolution, slanted italic, advances, kerning, letter spacing, line height, markup, effects, shadows, measuring. |
+| Bitmap font: extend `BitmapFont` and `BitmapTextRenderer` (`dev.joid.lib.font.impl.bitmap`) | A face, the font class with its bitmap size, and where each glyph lies in its atlas. | Everything a glyph font gets, plus the drawing: texels filtered by area at any scale, lines on the pixel grid, color, gradient, italic, synthetic bold, one-channel atlases. |
+| Raw font: implement `IFont` and `ITextRenderer` (`dev.joid.lib.font`) | Layout, drawing and measuring of a whole line. | Use everywhere a `TextInfo` goes. |
 | MSDF faces from another source: implement `IMsdfSource` | Building an `MsdfFontFace` from your data. | Everything the MSDF fonts do. |
 
 The glyph framework sits between the `TextInfo` and your drawing code like the MSDF font does:
 
-![TextInfo asks a weight, the font hands it to FontFamily.resolve, which picks a face, and the provider draws its glyphs](../images/diagram-font-family.png "A glyph font: the family resolves the face, GlyphFontProvider lays the glyphs out, your drawGlyph draws each one.")
+![TextInfo asks a weight, the font hands it to FontFamily.resolve, which picks a face, and the renderer draws its glyphs](../images/diagram-font-family.png "A glyph font: the family resolves the face, GlyphTextRenderer lays the glyphs out, your drawGlyph draws each one.")
 
 ## A sprite font on GlyphFont
 
-This font draws each character from a sprite `Resource` (see [Resources](../resources/resources.md)) in three classes: the face, the provider and the font.
+This font draws each character from a sprite `Resource` (see [Resources](../resources/resources.md)) in three classes: the face, the renderer and the font.
 
 ### The face with IFontFace
 
@@ -98,18 +98,18 @@ public final class SpriteFontFace implements IFontFace {
 
 `hasGlyph` decides which characters exist. A character for which it returns `false` is skipped, neither drawn nor measured, except the space (U+0020) and the no-break space (U+00A0), which advance by the space of the face or by 0.25 em. That is why `hasGlyph` reads the advances here, not the sprites: the space has an advance but no sprite.
 
-### The provider with GlyphFontProvider
+### The renderer with GlyphTextRenderer
 
-`GlyphFontProvider<F>` implements the whole `IFontProvider`; you implement `begin`, `drawGlyph` and `end`:
+`GlyphTextRenderer<F>` implements the whole `ITextRenderer`; you implement `begin`, `drawGlyph` and `end`:
 
 ```java
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SpriteFontProvider extends GlyphFontProvider<SpriteFontFace> {
+public final class SpriteTextRenderer extends GlyphTextRenderer<SpriteFontFace> {
 
-	private static final SpriteFontProvider INSTANCE = new SpriteFontProvider();
+	private static final SpriteTextRenderer INSTANCE = new SpriteTextRenderer();
 
-	public static @NonNull SpriteFontProvider inst() {
-		return SpriteFontProvider.INSTANCE;
+	public static @NonNull SpriteTextRenderer inst() {
+		return SpriteTextRenderer.INSTANCE;
 	}
 
 	@Override
@@ -141,14 +141,14 @@ public final class SpriteFontProvider extends GlyphFontProvider<SpriteFontFace> 
 | `drawGlyph(TextGlyph<F> glyph)` | For every glyph of the pass. |
 | `end()` | After the glyphs of a pass. |
 
-For each line, the provider runs the `apply` and `background` hooks of the effects, then one pass for the shadow (when the `TextInfo` has a shadow color or a shadow tint) and one for the text, each `begin`, `drawGlyph` for every glyph, `end`, then `decorate` (see [Markup and Text Effects](../text/markup-and-effects.md#text-effects-with-itexteffect)).
+For each line, the renderer runs the `apply` and `background` hooks of the effects, then one pass for the shadow (when the `TextInfo` has a shadow color or a shadow tint) and one for the text, each `begin`, `drawGlyph` for every glyph, `end`, then `decorate` (see [Markup and Text Effects](../text/markup-and-effects.md#text-effects-with-itexteffect)).
 
 - Read `getCodepoint()`, `getOffsetX()`, `getOffsetY()` and `getColor()` at draw time: effects can change the character, the offset and the color. `getColor()` is the shadow color in the shadow pass.
-- `isSlanted()` is `true` when italic is requested and the face drawn is upright: shear the glyph (the MSDF provider shears by 0.2 of the height above the baseline) or ignore it.
+- `isSlanted()` is `true` when italic is requested and the face drawn is upright: shear the glyph (the MSDF renderer shears by 0.2 of the height above the baseline) or ignore it.
 - `Vector4f` is `javax.vecmath.Vector4f`; `Color.bind(Runnable, Vector4f, boolean)` runs the drawing with the color, a gradient spanning the canvas.
-- A provider that draws its glyphs with its own shader calls `uniformColor(IShader shader, Color color)`: it writes the uniforms `color`, `u_HasGradient` and, for a gradient, `u_GradientStart`, `u_GradientEnd`, `u_GradientStartPos`, `u_GradientEndPos` and `u_GradientCanvas` (the bounds of the line given to `begin`), as the MSDF provider does, so a gradient spans the whole line.
+- A renderer that draws its glyphs with its own shader calls `uniformColor(IShader shader, Color color)`: it writes the uniforms `color`, `u_HasGradient` and, for a gradient, `u_GradientStart`, `u_GradientEnd`, `u_GradientStartPos`, `u_GradientEndPos` and `u_GradientCanvas` (the bounds of the line given to `begin`), as the MSDF renderer does, so a gradient spans the whole line.
 - The space reaches `drawGlyph` even when the face has no glyph for it: return without drawing.
-- `isGridAligned()` returns `false` by default. Override it to return `true` and each line starts on the [pixel grid](../drawing/draw-utils.md#snapping-your-own-geometry-with-pixelgrid): its x and its baseline are snapped, the glyphs follow at their exact advances, the offsets of the effects are rounded to whole pixels, and the shadow offset to whole pixels, at least one. Nothing is snapped under a rotation or a skew. `BitmapFontProvider` returns `true`.
+- `isGridAligned()` returns `false` by default. Override it to return `true` and each line starts on the [pixel grid](../drawing/draw-utils.md#snapping-your-own-geometry-with-pixelgrid): its x and its baseline are snapped, the glyphs follow at their exact advances, the offsets of the effects are rounded to whole pixels, and the shadow offset to whole pixels, at least one. Nothing is snapped under a rotation or a skew. `BitmapTextRenderer` returns `true`.
 
 ### The font with GlyphFont
 
@@ -164,18 +164,18 @@ public final class SpriteFont extends GlyphFont<SpriteFontFace> {
 	}
 
 	@Override
-	public @NonNull IFontProvider getFontProvider() {
-		return SpriteFontProvider.inst();
+	public @NonNull ITextRenderer getTextRenderer() {
+		return SpriteTextRenderer.inst();
 	}
 
 }
 ```
 
-The text resolves its faces, kerning, markup and effects like an MSDF text. `GlyphFontProvider` reads the faces from `TextInfo.getFont()`: a provider called with a font it does not draw (not a `GlyphFont`, or a font whose `getFontProvider()` is of another class) throws `IllegalArgumentException("<provider> cannot draw the font <font>, it is drawn by <its provider>: draw it with info.getFont().getFontProvider()")`. Measure through `info.getWidth(text)` or `DrawUtils.TEXT`, which always pick the right provider.
+The text resolves its faces, kerning, markup and effects like an MSDF text. `GlyphTextRenderer` reads the faces from `TextInfo.getFont()`: a renderer called with a font it does not draw (not a `GlyphFont`, or a font whose `getTextRenderer()` is of another class) throws `IllegalArgumentException("<renderer> cannot draw the font <font>, it is drawn by <its renderer>: draw it with info.getFont().getTextRenderer()")`. Measure through `info.getWidth(text)` or `DrawUtils.TEXT`, which always pick the right renderer.
 
 ## Pixel-art fonts on BitmapFont
 
-A pixel-art font is drawn from a grid of texels in an atlas. Sprites drawn as plain `nearest()` quads have texels of uneven widths at a fractional scale and drop rows and columns below one pixel per texel. The bitmap framework (`dev.joid.lib.font.impl.bitmap`) draws them right: extend `BitmapFont` with the size of the em in font pixels, and `BitmapFontProvider` with one method that tells where each glyph lies in its atlas. The face is an `IFontFace` like any other.
+A pixel-art font is drawn from a grid of texels in an atlas. Sprites drawn as plain `nearest()` quads have texels of uneven widths at a fractional scale and drop rows and columns below one pixel per texel. The bitmap framework (`dev.joid.lib.font.impl.bitmap`) draws them right: extend `BitmapFont` with the size of the em in font pixels, and `BitmapTextRenderer` with one method that tells where each glyph lies in its atlas. The face is an `IFontFace` like any other.
 
 ### The font with BitmapFont
 
@@ -191,8 +191,8 @@ public final class PixelFont extends BitmapFont<PixelFontFace> {
 	}
 
 	@Override
-	public @NonNull IFontProvider getFontProvider() {
-		return PixelFontProvider.inst();
+	public @NonNull ITextRenderer getTextRenderer() {
+		return PixelTextRenderer.inst();
 	}
 
 }
@@ -200,16 +200,16 @@ public final class PixelFont extends BitmapFont<PixelFontFace> {
 
 The second argument is the bitmap size, the font pixels per em: here a glyph 5 font pixels wide advances by `6F / 8F` and an ascender of 7 font pixels is `7F / 8F`. A size of 0 or less throws `IllegalArgumentException("The bitmap size of a font must be positive: <size>")`.
 
-### The provider with BitmapFontProvider
+### The renderer with BitmapTextRenderer
 
 ```java
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PixelFontProvider extends BitmapFontProvider<PixelFontFace> {
+public final class PixelTextRenderer extends BitmapTextRenderer<PixelFontFace> {
 
-	private static final PixelFontProvider INSTANCE = new PixelFontProvider();
+	private static final PixelTextRenderer INSTANCE = new PixelTextRenderer();
 
-	public static @NonNull PixelFontProvider inst() {
-		return PixelFontProvider.INSTANCE;
+	public static @NonNull PixelTextRenderer inst() {
+		return PixelTextRenderer.INSTANCE;
 	}
 
 	@Override
@@ -227,7 +227,7 @@ public final class PixelFontProvider extends BitmapFontProvider<PixelFontFace> {
 }
 ```
 
-`getCell` is called for every glyph of every pass and returns the `BitmapCell` to draw, or `null` to draw nothing (the space, a missing glyph, an atlas not loaded yet). `getAtlas()` is a method of your face that returns the atlas as an `ITexture`: create it on the render thread with `BridgeHandler.RENDER.get().createTexture().allocate(width, height).upload(pixels, width, height)`, or keep a `Resource` and return `resource.getTexture()` after `resource.prepareBind()`, as `DemoPixelFontProvider` (`dev.joid.demo.ui.font.pixel`), the provider of `DemoFont.PIXEL`, does. The provider implements `begin`, `drawGlyph` and `end` as `final` methods and does the rest.
+`getCell` is called for every glyph of every pass and returns the `BitmapCell` to draw, or `null` to draw nothing (the space, a missing glyph, an atlas not loaded yet). `getAtlas()` is a method of your face that returns the atlas as an `ITexture`: create it on the render thread with `BridgeHandler.RENDER.get().createTexture().allocate(width, height).upload(pixels, width, height)`, or keep a `Resource` and return `resource.getTexture()` after `resource.prepareBind()`, as `DemoPixelTextRenderer` (`dev.joid.demo.ui.font.pixel`), the renderer of `DemoFont.PIXEL`, does. The renderer implements `begin`, `drawGlyph` and `end` as `final` methods and does the rest.
 
 ### The cell with BitmapCell
 
@@ -265,7 +265,7 @@ With a bitmap size of 8, an atlas of one texel per font pixel and a font size of
 | 1.2676 (a 2560×1369 window) | 3.8 | Every texel 3.8 pixels wide, one soft pixel between two texels |
 | 2 | 6 | Crisp, 6 × 6 pixels per texel |
 
-An atlas of 2 or 4 texels per font pixel has 2 or 4 times fewer pixels per texel, at the same size. For each glyph, `BitmapFontProvider`:
+An atlas of 2 or 4 texels per font pixel has 2 or 4 times fewer pixels per texel, at the same size. For each glyph, `BitmapTextRenderer`:
 
 - creates the `CoreShader.BITMAP` shader the first time it draws on a render bridge, and throws `IllegalStateException("The bitmap font shader is not usable")` when the backend cannot compile it;
 - binds the atlas of the cell with `TextureWrap.CLAMP_TO_EDGE` (the shader reads the centers of the texels, so the filter of the atlas does not matter, and it reads no mipmap) and sets the uniforms `texel` (`1 / width` and `1 / height` of the atlas), `pixel` (the texels of the cell per window pixel on each axis, from the texels of the cell and the size of its bounds on the window), `bounds` (the texels of the cell), `grayscale`, `color` and the gradient uniforms (see `uniformColor` above);
@@ -275,20 +275,20 @@ An atlas of 2 or 4 texels per font pixel has 2 or 4 times fewer pixels per texel
 
 > NOTE: Under a rotation or a skew, nothing is snapped and the glyphs keep their exact position; `pixel` follows the length of each axis of the transform, so the texels stay filtered.
 
-## A raw font on IFont and IFontProvider
+## A raw font on IFont and ITextRenderer
 
-Implement the two interfaces when the text is not made of glyphs on a baseline. Your provider draws and measures one line of one run:
+Implement the two interfaces when the text is not made of glyphs on a baseline. Your renderer draws and measures one line of one run:
 
 | Interface | Method | Contract |
 |---|---|---|
-| `IFont` | `getFontProvider()` | The provider that draws this font. |
-| `IFontProvider` | `drawText(double x, double y, String text, TextInfo info)` | Draws one line with its top-left corner at `x`, `y` and returns its `FontBounds`; the returned width places the next run of the `Text`. |
+| `IFont` | `getTextRenderer()` | The renderer that draws this font. |
+| `ITextRenderer` | `drawText(double x, double y, String text, TextInfo info)` | Draws one line with its top-left corner at `x`, `y` and returns its `FontBounds`; the returned width places the next run of the `Text`. |
 | | `drawText(x, y, text, info, double runX, double runY, double runWidth, double runHeight)` | Same, with the bounds of the whole line (a gradient spans them); calls the first one by default. |
 | | `getLineHeight(TextInfo info)` | Line height of the style. |
 | | `getWidth(String text, TextInfo info)` | Width of the line; must match what `drawText` draws. |
 | | `getHeight(String text, TextInfo info)` | Height of the line. |
 
-`TextInfo.getWidth`, `getHeight` and every measure of `Text` call these methods. With a raw provider, markup, effects, shadows, letter spacing and weights are yours to implement.
+`TextInfo.getWidth`, `getHeight` and every measure of `Text` call these methods. With a raw renderer, markup, effects, shadows, letter spacing and weights are yours to implement.
 
 ## Producing MSDF faces with IMsdfSource
 
@@ -325,19 +325,19 @@ final double width = FontUsage.trace(element.getOrigin(), () -> element.getInfo(
 | `IFontFace` | `getName()`, `getWeight()`, `isItalic()`, `hasGlyph(codepoint)`, `getAdvance(codepoint)`, `getKerning(previous, current)`, and the metrics `getAscender()`, `getDescender()`, `getLineHeight()`, `getUnderlineY()`, `getUnderlineThickness()`, all as fractions of the em measured upward from the baseline. |
 | `FontFamily<F>` | `FontFamily.of(F... faces)` sorts the faces by weight and refuses an empty family (`"A font family needs at least one face"`) or two faces of the same weight and style; `resolve(weight, italic)` picks the face and prints the dev warning; `getFaces()` lists them. |
 | `GlyphFont<F>` | `protected` constructor taking the `FontFamily`, `getFace(weight, italic)`, `getFamily()`. |
-| `GlyphFontProvider<F>` | Implements `IFontProvider`; you implement `begin`, `drawGlyph`, `end`, and override `isGridAligned()` (`false` by default) to start the lines on the pixel grid. `layout(text, info)` returns the `GlyphLayout<F>` it measures and draws: `getWidth()` and `getPlacements()`, one `GlyphPlacement<F>` per glyph with `getIndex()`, `getCodepoint()`, `getFont()` (the font of the glyph, another one after a font markup), `getFace()`, `getX()` and `getStyle()`. |
+| `GlyphTextRenderer<F>` | Implements `ITextRenderer`; you implement `begin`, `drawGlyph`, `end`, and override `isGridAligned()` (`false` by default) to start the lines on the pixel grid. `layout(text, info)` returns the `GlyphLayout<F>` it measures and draws: `getWidth()` and `getPlacements()`, one `GlyphPlacement<F>` per glyph with `getIndex()`, `getCodepoint()`, `getFont()` (the font of the glyph, another one after a font markup), `getFace()`, `getX()` and `getStyle()`. |
 | `TextGlyph<F>` | The glyph handed to `drawGlyph`: the [`ITextGlyph`](../text/markup-and-effects.md#itextglyph) values plus `getFont()`, `getFace()` and `isSlanted()`. |
 | `BitmapFont<F>` | A `GlyphFont` with a `protected` constructor taking the `FontFamily` and the bitmap size in font pixels per em (positive), and `getBitmapSize()`. |
-| `BitmapFontProvider<F>` | A `GlyphFontProvider` whose `begin`, `drawGlyph`, `end` and `isGridAligned()` are `final`; you implement `getCell(TextGlyph<F> glyph)`. |
+| `BitmapTextRenderer<F>` | A `GlyphTextRenderer` whose `begin`, `drawGlyph`, `end` and `isGridAligned()` are `final`; you implement `getCell(TextGlyph<F> glyph)`. |
 | `BitmapCell` | `BitmapCell.create(texture, texelLeft, texelTop, texelRight, texelBottom)`, `bounds(left, top, right, bottom)`, `grayscale(boolean)`, `bold(boolean)`, their getters, `getWidth()`, `getHeight()`, `getTexelWidth()`, `getTexelHeight()`. |
 | `FontUsage` | `FontUsage.trace(StackTraceElement[] origin, DoubleSupplier usage)` runs the usage with this origin and returns its result (a `null` origin, outside dev mode, runs it as is); `FontUsage.getOrigin()` is the origin of the usage in progress, `null` outside `trace`. |
 
 ## Pitfalls
 
 - `getWidth` must match what `drawText` draws, or alignment, wrapping and boxes are off.
-- Return your provider only from a `GlyphFont` of the same face type: the provider casts the font of the `TextInfo`.
-- Do not call a provider directly with another font: go through `info.getFont().getFontProvider()`, `info.getWidth(text)` or `DrawUtils.TEXT`.
-- A pixel font drawn as plain `nearest()` quads has texels of uneven widths at a fractional scale and drops rows and columns below one pixel per texel: extend `BitmapFont` and `BitmapFontProvider`.
+- Return your renderer only from a `GlyphFont` of the same face type: the renderer casts the font of the `TextInfo`.
+- Do not call a renderer directly with another font: go through `info.getFont().getTextRenderer()`, `info.getWidth(text)` or `DrawUtils.TEXT`.
+- A pixel font drawn as plain `nearest()` quads has texels of uneven widths at a fractional scale and drops rows and columns below one pixel per texel: extend `BitmapFont` and `BitmapTextRenderer`.
 - Give `bounds` to a cell whose atlas has more than one texel per font pixel (Unifont, high-definition packs): with the default bounds, its glyphs are drawn 2 or 4 times too large.
 
 ## See also

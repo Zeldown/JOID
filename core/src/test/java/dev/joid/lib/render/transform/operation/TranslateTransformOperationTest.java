@@ -8,14 +8,14 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.render.transform.Vector;
 
-public class TranslateOperationTest {
+public class TranslateTransformOperationTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
 	public void movesTheMatrixByItsVector() {
-		new TranslateOperation(Vector.create(30D, 40D, 5D)).transform();
+		new TranslateTransformOperation(Vector.create(30D, 40D, 5D)).transform();
 		final float[] matrix = this.bridges.getRender().getModelView().getMatrix();
 		Assert.assertEquals(30F, matrix[12], 1E-4F);
 		Assert.assertEquals(40F, matrix[13], 1E-4F);
@@ -27,7 +27,7 @@ public class TranslateOperationTest {
 		this.bridges.resize(1366, 768);
 		this.bridges.getRender().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final double before = this.bridges.getRender().getPixelGrid().toScreenX(0D);
-		new TranslateOperation(Vector.create(10.3D, 0D)).transform();
+		new TranslateTransformOperation(Vector.create(10.3D, 0D)).transform();
 		final double after = this.bridges.getRender().getPixelGrid().toScreenX(0D);
 		Assert.assertEquals(Math.rint(10.3D * 1366D / 1920D), after - before, 1E-4D);
 	}
@@ -35,7 +35,7 @@ public class TranslateOperationTest {
 	@Test
 	public void readsItsVectorOnEveryTransform() {
 		final double[] offset = {10D};
-		final TranslateOperation operation = new TranslateOperation(Vector.create(() -> offset[0], () -> 0D));
+		final TranslateTransformOperation operation = new TranslateTransformOperation(Vector.create(() -> offset[0], () -> 0D));
 		operation.transform();
 		offset[0] = 25D;
 		operation.transform();
@@ -46,7 +46,7 @@ public class TranslateOperationTest {
 	@Test
 	public void keepsItsVector() {
 		final Vector vector = Vector.create(1D, 2D);
-		Assert.assertSame(vector, new TranslateOperation(vector).getVector());
+		Assert.assertSame(vector, new TranslateTransformOperation(vector).getVector());
 	}
 
 }

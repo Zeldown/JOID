@@ -2,7 +2,7 @@ package dev.joid.lib.font;
 
 import lombok.NonNull;
 
-public interface IFontProvider {
+public interface ITextRenderer {
 
 	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info);
 

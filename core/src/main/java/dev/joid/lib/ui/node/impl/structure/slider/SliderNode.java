@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
@@ -24,9 +24,9 @@ public abstract class SliderNode<O> extends Node {
 	private O      value;
 	private Set<O> valueSet;
 
-	private Signal<O>           signal;
-	private SliderThumbNode     thumb;
-	private SignalSubscriber<O> subscription;
+	private Signal<O>            signal;
+	private SliderThumbNode      thumb;
+	private ISignalSubscriber<O> subscription;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

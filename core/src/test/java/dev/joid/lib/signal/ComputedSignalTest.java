@@ -145,7 +145,7 @@ public class ComputedSignalTest {
 	@Test
 	public void stopsNotifyingOnceUnsubscribed() {
 		final List<Integer> received = new ArrayList<>();
-		final SignalSubscriber<Integer> subscriber = received::add;
+		final ISignalSubscriber<Integer> subscriber = received::add;
 		final IntegerSignal count = IntegerSignal.of(1);
 		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10).subscribe(subscriber);
 		count.increment();

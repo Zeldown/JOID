@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class TranslateOperation implements TransformOperation {
+public class TranslateTransformOperation implements ITransformOperation {
 
 	private final Vector vector;
 

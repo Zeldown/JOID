@@ -10,8 +10,8 @@ public interface ISignal<T> extends Supplier<T> {
 	public ISignal<T> reset();
 	public ISignal<T> set(final T value);
 
-	public ISignal<T> subscribe(final @NonNull SignalSubscriber<T> subscriber);
-	public ISignal<T> unsubscribe(final @NonNull SignalSubscriber<T> subscriber);
+	public ISignal<T> subscribe(final @NonNull ISignalSubscriber<T> subscriber);
+	public ISignal<T> unsubscribe(final @NonNull ISignalSubscriber<T> subscriber);
 
 	public ISignal<T> silent();
 	public ISignal<T> publish();

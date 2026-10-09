@@ -341,7 +341,7 @@
 								"Node",
 								"INode",
 								"PositionProperty",
-								"NodeLayer"
+								"INodeLayer"
 							]
 						}
 					]
@@ -371,10 +371,10 @@
 						{
 							"title": "Hover and Tooltips",
 							"path": "interactions/hover",
-							"source": "core/src/main/java/dev/joid/lib/ui/node/hover/HoverElement.java",
+							"source": "core/src/main/java/dev/joid/lib/ui/node/hover/IHoverElement.java",
 							"refs": [
-								"HoverElement",
-								"DefaultHoverElement",
+								"IHoverElement",
+								"TextHoverElement",
 								"CustomHoverElement",
 								"NodeHoverElement"
 							]
@@ -400,7 +400,7 @@
 								"Signal",
 								"ISignal",
 								"ComputedSignal",
-								"SignalSubscriber",
+								"ISignalSubscriber",
 								"BooleanSignal",
 								"DoubleSignal",
 								"FloatSignal",
@@ -686,7 +686,7 @@
 					"source": "core/src/main/java/dev/joid/lib/font/IFont.java",
 					"refs": [
 						"IFont",
-						"IFontProvider",
+						"ITextRenderer",
 						"FontFamily",
 						"MsdfFont"
 					]
@@ -714,7 +714,7 @@
 					"source": "core/src/main/java/dev/joid/lib/font/impl/glyph/GlyphFont.java",
 					"refs": [
 						"GlyphFont",
-						"GlyphFontProvider"
+						"GlyphTextRenderer"
 					]
 				}
 			]

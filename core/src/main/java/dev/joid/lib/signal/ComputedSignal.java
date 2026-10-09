@@ -59,7 +59,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public @NonNull ComputedSignal<T> subscribe(final @NonNull SignalSubscriber<T> subscriber) {
+	public @NonNull ComputedSignal<T> subscribe(final @NonNull ISignalSubscriber<T> subscriber) {
 		final boolean subscribed = !super.getEventSet().isEmpty();
 		super.subscribe(subscriber);
 		this.follow();
@@ -71,7 +71,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public @NonNull ComputedSignal<T> unsubscribe(final @NonNull SignalSubscriber<T> subscriber) {
+	public @NonNull ComputedSignal<T> unsubscribe(final @NonNull ISignalSubscriber<T> subscriber) {
 		super.unsubscribe(subscriber);
 		this.follow();
 		return this;

@@ -293,12 +293,12 @@ For top-level nodes, the z-index also places the node relative to the UI's drawi
 
 ### Layers with layer
 
-A `NodeLayer` (`dev.joid.lib.ui.node.layer`) is a functional interface, `draw(double mouseX, double mouseY)`, drawn after the node's children. Use it for overlays drawn above the children, such as a badge or a selection frame.
+A `INodeLayer` (`dev.joid.lib.ui.node.layer`) is a functional interface, `draw(double mouseX, double mouseY)`, drawn after the node's children. Use it for overlays drawn above the children, such as a badge or a selection frame.
 
 | Method | Description |
 | --- | --- |
-| `layer(NodeLayer layer)` | Adds a layer after the existing ones. |
-| `layer(int index, NodeLayer layer)` | Inserts a layer at `index` in the list. |
+| `layer(INodeLayer layer)` | Adds a layer after the existing ones. |
+| `layer(int index, INodeLayer layer)` | Inserts a layer at `index` in the list. |
 | `clearLayers()` | Removes every layer. |
 | `getLayerList()` | The layers, in drawing order. |
 
@@ -479,7 +479,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | `isVisible()`, `isVisibleProperty()`, `isEnabled()`, `getVisible()`, `getEnabled()` | State. |
 | `zindex(int)`, `zindex(Supplier<Integer>)`, `getZindex()`, `getIndex()` | Order among siblings. Default `0`. |
 | `zlevel(double)`, `zlevel(Supplier<Double>)`, `getZlevel()` | Depth translation. Default `0`. |
-| `layer(NodeLayer)`, `layer(int, NodeLayer)`, `clearLayers()`, `getLayerList()` | Layers. |
+| `layer(INodeLayer)`, `layer(int, INodeLayer)`, `clearLayers()`, `getLayerList()` | Layers. |
 
 ### Lifecycle
 

@@ -204,7 +204,7 @@ Call `directory(...)` before loading the fonts that should use it.
 | `MsdfFont.create(MsdfFontFace... faces)` | New family; `IllegalArgumentException` when empty or when two faces share a weight and a style. |
 | `getFace(FontWeight weight, boolean italic)` | The face the family draws for this request. |
 | `getFamily()` | The `FontFamily`: `getFaces()` lists the faces by weight, `resolve(weight, italic)` is what `getFace` calls. |
-| `getFontProvider()` | The shared `MsdfFontProvider` (`MsdfFontProvider.inst()`). |
+| `getTextRenderer()` | The shared `MsdfTextRenderer` (`MsdfTextRenderer.inst()`). |
 
 | `MsdfFontFace` method | Description |
 |---|---|
@@ -283,7 +283,7 @@ MsdfFontLoader.load(new File("fonts/Inter-Regular.ttf")).whenComplete((font, err
 | Some characters do not show and take no room | The atlas does not hold them: generate an atlas with a charset that does (see [Charsets](msdf-generator.md#charsets)). |
 | Italic text looks slanted rather than cursive | The family has no italic face: load the italic file. |
 | The first launch is slow | The atlases are generated (see the dev mode log): ship [pre-generated atlases](#shipping-pre-generated-msdf-atlases). |
-| `IllegalArgumentException` "... cannot draw the font ..." | A provider was called directly with a font of another provider: measure with `info.getWidth(text)` or `info.getFont().getFontProvider()`. |
+| `IllegalArgumentException` "... cannot draw the font ..." | A renderer was called directly with a font of another renderer: measure with `info.getWidth(text)` or `info.getFont().getTextRenderer()`. |
 | `IllegalStateException` "The msdf font shader is not usable" when drawing | The MSDF font shader did not compile on the backend. |
 
 ## See also

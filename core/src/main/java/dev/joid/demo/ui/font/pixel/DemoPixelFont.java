@@ -2,7 +2,7 @@ package dev.joid.demo.ui.font.pixel;
 
 import java.awt.image.BufferedImage;
 
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.impl.bitmap.BitmapFont;
 import dev.joid.lib.font.impl.glyph.FontFamily;
 import lombok.NonNull;
@@ -20,8 +20,8 @@ public final class DemoPixelFont extends BitmapFont<DemoPixelFontFace> {
 	}
 
 	@Override
-	public @NonNull IFontProvider getFontProvider() {
-		return DemoPixelFontProvider.inst();
+	public @NonNull ITextRenderer getTextRenderer() {
+		return DemoPixelTextRenderer.inst();
 	}
 
 }

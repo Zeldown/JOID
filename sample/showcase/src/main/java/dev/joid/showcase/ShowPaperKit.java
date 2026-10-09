@@ -19,7 +19,7 @@ import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
 import dev.joid.lib.utils.align.Align;
 
-public class ShowPaperKit implements ShowKit {
+public class ShowPaperKit implements IShowKit {
 
 	public static final Color PAPER  = Color.decode("#F2ECDF");
 	public static final Color CARD   = Color.decode("#FFFCF4");

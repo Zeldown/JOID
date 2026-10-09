@@ -10,7 +10,7 @@ import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
 
-public interface ShowKit {
+public interface IShowKit {
 
 	public void backdrop(final Node layer);
 

@@ -8,7 +8,7 @@ public void init() {
 	RectNode
 	.create(100, 100, 200, 120)
 	.color(Color.LIGHTGRAY)
-	.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(15D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))))))
+	.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(15D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))))))
 	.attach(this);
 }
 ```
@@ -21,9 +21,9 @@ The node is drawn turned by 15 degrees around its center.
 
 | Factory | Description |
 | --- | --- |
-| `create(TranslateOperation translate)` | A single translation. |
-| `create(ScaleOperation scale)` | A single scaling. |
-| `create(RotateOperation rotation)` | A single rotation. |
+| `create(TranslateTransformOperation translate)` | A single translation. |
+| `create(ScaleTransformOperation scale)` | A single scaling. |
+| `create(RotateTransformOperation rotation)` | A single rotation. |
 | `create(Transformation transformation)` | Any sequence of operations. |
 
 | Method | Description |
@@ -44,15 +44,15 @@ To pivot on the node's center and keep following it when it moves or resizes, bu
 
 The operations are in `dev.joid.lib.render.transform.operation`, the value types in `dev.joid.lib.render.transform`.
 
-### TranslateOperation
+### TranslateTransformOperation
 
-`new TranslateOperation(Vector vector)` moves the rendering by `vector`. The offset is snapped to the pixel grid, so the node stays sharp while it moves.
+`new TranslateTransformOperation(Vector vector)` moves the rendering by `vector`. The offset is snapped to the pixel grid, so the node stays sharp while it moves.
 
 ```java
 RectNode
 .create(100, 100, 200, 120)
 .color(Color.WHITE)
-.self(node -> node.effect(TransformNodeEffect.create(new TranslateOperation(Vector.Y(() -> (double) -node.hoverValue(6F))))))
+.self(node -> node.effect(TransformNodeEffect.create(new TranslateTransformOperation(Vector.Y(() -> (double) -node.hoverValue(6F))))))
 .attach(this);
 ```
 
@@ -60,9 +60,9 @@ RectNode
 
 The node lifts by 6 units while hovered.
 
-### ScaleOperation
+### ScaleTransformOperation
 
-`new ScaleOperation(Scale scale, Vector pivot)` scales the rendering around `pivot`. `Scale.create(x, y, z)` takes factors (`1D` keeps the size; pass `1D` for `z`).
+`new ScaleTransformOperation(Scale scale, Vector pivot)` scales the rendering around `pivot`. `Scale.create(x, y, z)` takes factors (`1D` keeps the size; pass `1D` for `z`).
 
 ```java
 RectNode
@@ -71,7 +71,7 @@ RectNode
 .self(node -> {
 	final Vector center = Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)));
 	final Scale scale = Scale.create(() -> 1D + node.hoverValue(0.05F), () -> 1D + node.hoverValue(0.05F), () -> 1D);
-	node.effect(TransformNodeEffect.create(new ScaleOperation(scale, center)));
+	node.effect(TransformNodeEffect.create(new ScaleTransformOperation(scale, center)));
 })
 .attach(this);
 ```
@@ -80,9 +80,9 @@ RectNode
 
 The node grows by 5 % around its center while hovered.
 
-### RotateOperation
+### RotateTransformOperation
 
-`new RotateOperation(double angle, Rotation axis, Vector pivot)` or `new RotateOperation(Supplier<Double> angle, Rotation axis, Vector pivot)` rotates the rendering by `angle` degrees around `axis`, through `pivot`.
+`new RotateTransformOperation(double angle, Rotation axis, Vector pivot)` or `new RotateTransformOperation(Supplier<Double> angle, Rotation axis, Vector pivot)` rotates the rendering by `angle` degrees around `axis`, through `pivot`.
 
 | Axis | Rotation |
 | --- | --- |
@@ -98,7 +98,7 @@ An angle supplier makes a continuous rotation, here one turn per second driven b
 RectNode
 .create(100, 100, 64, 64)
 .color(Color.WHITE)
-.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(() -> BridgeHandler.CLOCK.get().currentTimeMillis() % 1000L * 0.36D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))))))
+.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(() -> BridgeHandler.CLOCK.get().currentTimeMillis() % 1000L * 0.36D, Rotation.ROLL, Vector.create(() -> node.ax(node.dw(2D)), () -> node.ay(node.dh(2D)))))))
 .attach(this);
 ```
 
@@ -122,11 +122,11 @@ RectNode.create(100, 100, 200, 120).color(Color.WHITE).effect(TransformNodeEffec
 | Method | Description |
 | --- | --- |
 | `Transformation.create()` | Empty transformation. |
-| `Transformation.create(TransformOperation operation)` | Transformation with one operation. |
-| `add(TransformOperation operation)` | Appends an operation. |
-| `translate(Vector vector)` | Appends a `TranslateOperation`. |
-| `rotate(double angle, Rotation rotation, Vector pivot)` | Appends a `RotateOperation`. |
-| `scale(Scale scale, Vector pivot)` | Appends a `ScaleOperation`. |
+| `Transformation.create(ITransformOperation operation)` | Transformation with one operation. |
+| `add(ITransformOperation operation)` | Appends an operation. |
+| `translate(Vector vector)` | Appends a `TranslateTransformOperation`. |
+| `rotate(double angle, Rotation rotation, Vector pivot)` | Appends a `RotateTransformOperation`. |
+| `scale(Scale scale, Vector pivot)` | Appends a `ScaleTransformOperation`. |
 | `clear()` | Removes every operation. |
 | `getOperations()` | The operations, in order. |
 
@@ -144,7 +144,7 @@ Suppliers in these types are read each time the operation is applied, every fram
 
 ### Writing an operation
 
-`TransformOperation` is an interface with a single method, `transform()`, called while the node's matrix is pushed. An implementation (a lambda works) modifies the current matrix through `BridgeHandler.RENDER.get()`: `translate(x, y, z)`, `scale(x, y, z)`, `rotate(angle, x, y, z)`. The built-in operations translate to their pivot, apply their change, then translate back. Add your operation to a `Transformation` with `add(...)`.
+`ITransformOperation` is an interface with a single method, `transform()`, called while the node's matrix is pushed. An implementation (a lambda works) modifies the current matrix through `BridgeHandler.RENDER.get()`: `translate(x, y, z)`, `scale(x, y, z)`, `rotate(angle, x, y, z)`. The built-in operations translate to their pivot, apply their change, then translate back. Add your operation to a `Transformation` with `add(...)`.
 
 ## What the transform affects
 
@@ -156,7 +156,7 @@ Suppliers in these types are read each time the operation is applied, every fram
 
 | Method | Description |
 | --- | --- |
-| `create(TranslateOperation)`, `create(ScaleOperation)`, `create(RotateOperation)`, `create(Transformation)` | Factories. |
+| `create(TranslateTransformOperation)`, `create(ScaleTransformOperation)`, `create(RotateTransformOperation)`, `create(Transformation)` | Factories. |
 | `transformation(Transformation)`, `transformation(Supplier<Transformation>)` | Replaces the transformation. |
 | `getTransformationSupplier()` | The transformation supplier. |
 | `priority(int)` | Inherited, see [Effects](effects.md). |

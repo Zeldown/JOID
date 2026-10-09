@@ -6,8 +6,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.render.transform.operation.ScaleOperation;
-import dev.joid.lib.render.transform.operation.TranslateOperation;
+import dev.joid.lib.render.transform.operation.ScaleTransformOperation;
+import dev.joid.lib.render.transform.operation.TranslateTransformOperation;
 
 public class TransformationTest {
 
@@ -60,7 +60,7 @@ public class TransformationTest {
 
 	@Test
 	public void appliesItsOperationsInOrder() {
-		final Transformation transformation = Transformation.create(new TranslateOperation(Vector.create(10D, 0D))).add(new ScaleOperation(Scale.create(2D, 2D, 1D), Vector.create()));
+		final Transformation transformation = Transformation.create(new TranslateTransformOperation(Vector.create(10D, 0D))).add(new ScaleTransformOperation(Scale.create(2D, 2D, 1D), Vector.create()));
 		Assert.assertEquals(2, transformation.getOperations().size());
 		transformation.apply();
 		try {

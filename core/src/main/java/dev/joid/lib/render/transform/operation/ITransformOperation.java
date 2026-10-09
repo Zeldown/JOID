@@ -1,6 +1,6 @@
 package dev.joid.lib.render.transform.operation;
 
-public interface TransformOperation {
+public interface ITransformOperation {
 
 	public abstract void transform();
 

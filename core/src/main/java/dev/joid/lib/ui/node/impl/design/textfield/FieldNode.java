@@ -13,8 +13,8 @@ import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
@@ -44,9 +44,9 @@ public abstract class FieldNode<V> extends Node {
 	private boolean           allowEmpty;
 	private V                 fallback;
 
-	private boolean             markup;
-	private Signal<V>           signal;
-	private SignalSubscriber<V> subscription;
+	private boolean              markup;
+	private Signal<V>            signal;
+	private ISignalSubscriber<V> subscription;
 
 	private int cursorPos;
 	private int selectionStart;

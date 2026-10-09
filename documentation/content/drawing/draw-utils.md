@@ -81,7 +81,7 @@ Draw only from the hooks JOID calls while it renders a frame: they run on the re
 |---|---|
 | `Node.draw(double mouseX, double mouseY)` | Draws the node, after its children with a negative z-index and before the others, inside the shader effects of scope `SELF`. |
 | `Node.drawSkeleton(double mouseX, double mouseY)` | Replaces `draw` while the node is not mounted (see [Watching Signals](../state/watch.md)). |
-| `layer(NodeLayer)`, `layer(int index, NodeLayer)` | `NodeLayer.draw(double mouseX, double mouseY)`, after every child with a z-index of 0 or more. |
+| `layer(INodeLayer)`, `layer(int index, INodeLayer)` | `INodeLayer.draw(double mouseX, double mouseY)`, after every child with a z-index of 0 or more. |
 | `UI.drawBackground(double mouseX, double mouseY)` | Before the view transform (offset and zoom of the UI) is applied and before any node. |
 | `UI.preDraw(double mouseX, double mouseY)` | After the root nodes with a negative z-index, before the root nodes with a z-index from 0 to 99. |
 | `UI.postDraw(double mouseX, double mouseY)` | After the root nodes with a z-index from 0 to 99, before the root nodes with a z-index of 100 or more. |
@@ -146,7 +146,7 @@ ContainerNode
 	DrawUtils.SHAPE.drawRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.decode("#DDDDDD"));
 	DrawUtils.SHAPE.drawBorder(node.getX(), node.getY(), node.getX() + node.getWidth(), node.getY() + node.getHeight(), Color.decode("#999999"), 4D);
 }))
-.self(node -> node.effect(TransformNodeEffect.create(new RotateOperation(8D, Rotation.ROLL, Vector.create(() -> node.getX() + 100D, () -> node.getY() + 60D)))))
+.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(8D, Rotation.ROLL, Vector.create(() -> node.getX() + 100D, () -> node.getY() + 60D)))))
 .attach(this);
 ```
 
@@ -156,7 +156,7 @@ A concave polygon and the modes `TRIANGLES`, `QUADS` and the line modes are draw
 
 ## Saving the render state with pushState and popState
 
-The drawing helpers leave the render state as they found it: every shape (`drawRect`, `drawPolygon`, the borders...) and `drawRawRect` restore the blending, the texture with its filter and wrap, the current color and the shader of the caller; the lines restore the line width and the smoothing, even when the draw throws. Text is drawn with the shader of its font provider: the MSDF provider resets the current color to white and unbinds its shader at the end.
+The drawing helpers leave the render state as they found it: every shape (`drawRect`, `drawPolygon`, the borders...) and `drawRawRect` restore the blending, the texture with its filter and wrap, the current color and the shader of the caller; the lines restore the line width and the smoothing, even when the draw throws. Text is drawn with the shader of its text renderer: the MSDF renderer resets the current color to white and unbinds its shader at the end.
 
 When you change the state yourself, save it with `pushState()` and restore it with `popState()` in a `finally` block:
 

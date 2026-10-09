@@ -20,7 +20,7 @@ import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
@@ -397,7 +397,7 @@ public class DrawTextTest {
 		return DrawUtils.TEXT;
 	}
 
-	private static final class FixedFont implements IFont, IFontProvider {
+	private static final class FixedFont implements IFont, ITextRenderer {
 
 		private final List<String> runs  = new ArrayList<>();
 		private final List<String> drawn = new ArrayList<>();
@@ -405,7 +405,7 @@ public class DrawTextTest {
 		private StackTraceElement[] origin;
 
 		@Override
-		public IFontProvider getFontProvider() {
+		public ITextRenderer getTextRenderer() {
 			return this;
 		}
 
@@ -419,7 +419,7 @@ public class DrawTextTest {
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
 			this.runs.add(runX + "," + runY + " " + runWidth + "x" + runHeight);
-			return IFontProvider.super.drawText(x, y, text, info, runX, runY, runWidth, runHeight);
+			return ITextRenderer.super.drawText(x, y, text, info, runX, runY, runWidth, runHeight);
 		}
 
 		@Override

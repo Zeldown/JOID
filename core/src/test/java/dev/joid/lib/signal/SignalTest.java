@@ -107,14 +107,14 @@ public class SignalTest {
 
 	@Test
 	public void exposesItsSubscribers() {
-		final SignalSubscriber<String> subscriber = value -> true;
+		final ISignalSubscriber<String> subscriber = value -> true;
 		Assert.assertEquals(Collections.singleton(subscriber), new Signal<String>().subscribe(subscriber).getEventSet());
 	}
 
 	@Test
 	public void notifiesASubscriberOnceWhenSubscribedTwice() {
 		final List<String> received = new ArrayList<>();
-		final SignalSubscriber<String> subscriber = received::add;
+		final ISignalSubscriber<String> subscriber = received::add;
 		new Signal<String>().subscribe(subscriber).subscribe(subscriber).set("a");
 		Assert.assertEquals(Collections.singletonList("a"), received);
 	}
@@ -122,7 +122,7 @@ public class SignalTest {
 	@Test
 	public void stopsNotifyingAnUnsubscribedSubscriber() {
 		final List<String> received = new ArrayList<>();
-		final SignalSubscriber<String> subscriber = received::add;
+		final ISignalSubscriber<String> subscriber = received::add;
 		final Signal<String> signal = new Signal<String>().subscribe(subscriber).set("a").unsubscribe(subscriber).set("b");
 		Assert.assertEquals(Collections.singletonList("a"), received);
 		Assert.assertTrue(signal.getEventSet().isEmpty());

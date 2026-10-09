@@ -22,7 +22,7 @@ import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
 import dev.joid.lib.utils.align.Align;
 
-public class ShowNeonKit implements ShowKit {
+public class ShowNeonKit implements IShowKit {
 
 	@Override
 	public void backdrop(final Node layer) {

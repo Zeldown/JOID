@@ -41,9 +41,9 @@ import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.ISignal;
+import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
-import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
@@ -75,11 +75,11 @@ import dev.joid.lib.ui.node.callback.impl.state.NodeUpdateCallback;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
-import dev.joid.lib.ui.node.hover.HoverElement;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
-import dev.joid.lib.ui.node.hover.impl.DefaultHoverElement;
+import dev.joid.lib.ui.node.hover.IHoverElement;
+import dev.joid.lib.ui.node.hover.impl.TextHoverElement;
 import dev.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode;
-import dev.joid.lib.ui.node.layer.NodeLayer;
+import dev.joid.lib.ui.node.layer.INodeLayer;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableAreaType;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableType;
@@ -137,17 +137,17 @@ public abstract class Node implements INode {
 
 	private final transient List<Predicate<Node>>                      waitingList;
 	private final transient Map<String, NodeSource<?>>                 sourceMap;
-	private final transient List<SignalSubscriber<?>>                  subscriptionList;
+	private final transient List<ISignalSubscriber<?>>                 subscriptionList;
 	private final transient Map<Integer, List<NodeCallbackInvoker<?>>> callbackMap;
 
 	private final transient TweenAnimator             hoverAnimator;
 	private final transient Map<TweenAnimator, Float> animatorMap;
 
-	private final LinkedList<NodeLayer>           layerList;
+	private final LinkedList<INodeLayer>          layerList;
 	private final IndexedConcurrentList<Node>     children;
 	private final Map<Class<?>, NodeEffect<Node>> effectMap;
 
-	private final List<HoverElement>           hoverElementList;
+	private final List<IHoverElement>          hoverElementList;
 	private final List<Supplier<List<String>>> hoverSupplierList;
 
 	private final double defaultWidth;
@@ -674,7 +674,7 @@ public abstract class Node implements INode {
 				return true;
 			}
 
-			final List<HoverElement> hoverList = new LinkedList<>(this.hoverElementList);
+			final List<IHoverElement> hoverList = new LinkedList<>(this.hoverElementList);
 			if (!this.hoverSupplierList.isEmpty()) {
 				final List<String> lines = new LinkedList<>();
 				for (final Supplier<List<String>> hoverSupplier : this.hoverSupplierList) {
@@ -682,7 +682,7 @@ public abstract class Node implements INode {
 				}
 
 				if (!lines.isEmpty()) {
-					hoverList.add(new DefaultHoverElement(lines));
+					hoverList.add(new TextHoverElement(lines));
 				}
 			}
 
@@ -1611,12 +1611,12 @@ public abstract class Node implements INode {
 		return this.getUi().useStore(clazz);
 	}
 
-	public final <T extends Node> @NonNull T layer(final @NonNull NodeLayer layer) {
+	public final <T extends Node> @NonNull T layer(final @NonNull INodeLayer layer) {
 		this.layerList.add(layer);
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T layer(final int index, final @NonNull NodeLayer layer) {
+	public final <T extends Node> @NonNull T layer(final int index, final @NonNull INodeLayer layer) {
 		this.layerList.add(index, layer);
 		return (T) this;
 	}
@@ -1938,7 +1938,7 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	protected final <V> @NonNull SignalSubscriber<V> bind(final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
+	protected final <V> @NonNull ISignalSubscriber<V> bind(final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
 		final V current = signal.peek();
 		if (current != null) {
 			consumer.accept(current);
@@ -1951,13 +1951,13 @@ public abstract class Node implements INode {
 		});
 	}
 
-	protected final void unbind(final SignalSubscriber<?> subscriber) {
+	protected final void unbind(final ISignalSubscriber<?> subscriber) {
 		if (subscriber != null && this.subscriptionList.contains(subscriber)) {
 			((NodeSubscription<?>) subscriber).cancel();
 		}
 	}
 
-	protected final <V> @NonNull SignalSubscriber<V> rebind(final SignalSubscriber<?> previous, final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
+	protected final <V> @NonNull ISignalSubscriber<V> rebind(final ISignalSubscriber<?> previous, final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> consumer) {
 		this.writable(signal);
 		this.unbind(previous);
 		return this.bind(signal, consumer);
@@ -2006,7 +2006,7 @@ public abstract class Node implements INode {
 
 		this.subscribed = true;
 		final boolean loaded = this.updateCount > 0;
-		for (final SignalSubscriber<?> subscriber : new ArrayList<>(this.subscriptionList)) {
+		for (final ISignalSubscriber<?> subscriber : new ArrayList<>(this.subscriptionList)) {
 			((NodeSubscription<?>) subscriber).subscribe(loaded);
 		}
 	}
@@ -2017,7 +2017,7 @@ public abstract class Node implements INode {
 		}
 
 		this.subscribed = false;
-		for (final SignalSubscriber<?> subscriber : this.subscriptionList) {
+		for (final ISignalSubscriber<?> subscriber : this.subscriptionList) {
 			((NodeSubscription<?>) subscriber).unsubscribe();
 		}
 	}
@@ -2159,12 +2159,12 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T hover(final @NonNull HoverElement element) {
+	public final <T extends Node> @NonNull T hover(final @NonNull IHoverElement element) {
 		this.hoverElementList.add(element);
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T removeHover(final @NonNull HoverElement element) {
+	public final <T extends Node> @NonNull T removeHover(final @NonNull IHoverElement element) {
 		this.hoverElementList.remove(element);
 		return (T) this;
 	}
@@ -2182,7 +2182,7 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T hoverElements(final @NonNull HoverElement element) {
+	public final <T extends Node> @NonNull T hoverElements(final @NonNull IHoverElement element) {
 		this.hoverElementList.clear();
 		this.hover(element);
 		return (T) this;
@@ -2355,7 +2355,7 @@ public abstract class Node implements INode {
 	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-	private final class NodeSubscription<V> implements SignalSubscriber<V> {
+	private final class NodeSubscription<V> implements ISignalSubscriber<V> {
 
 		private final Signal<V>         signal;
 		private final Supplier<Boolean> condition;

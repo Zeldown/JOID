@@ -14,7 +14,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
-import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.markup.ITextMarkup;
@@ -416,13 +416,13 @@ public class MultilineTextFieldMarkupTest {
 
 	}
 
-	public static final class MarkupFont implements IFont, IFontProvider {
+	public static final class MarkupFont implements IFont, ITextRenderer {
 
 		@Getter
 		private final List<String> drawn = new ArrayList<>();
 
 		@Override
-		public IFontProvider getFontProvider() {
+		public ITextRenderer getTextRenderer() {
 			return this;
 		}
 

@@ -4,7 +4,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.hover.HoverElement;
+import dev.joid.lib.ui.node.hover.IHoverElement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -12,20 +12,20 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class CustomHoverElement implements HoverElement {
+public class CustomHoverElement implements IHoverElement {
 
-	private final HoverElement element;
+	private final IHoverElement element;
 	private final HoverElementPosition position;
 
-	public static @NonNull CustomHoverElement follow(final @NonNull HoverElement element) {
+	public static @NonNull CustomHoverElement follow(final @NonNull IHoverElement element) {
 		return new CustomHoverElement(element, HoverElementPosition.FOLLOW);
 	}
 
-	public static @NonNull CustomHoverElement fixed(final @NonNull HoverElement element) {
+	public static @NonNull CustomHoverElement fixed(final @NonNull IHoverElement element) {
 		return new CustomHoverElement(element, HoverElementPosition.FIXED);
 	}
 
-	public static @NonNull CustomHoverElement relative(final @NonNull HoverElement element) {
+	public static @NonNull CustomHoverElement relative(final @NonNull IHoverElement element) {
 		return new CustomHoverElement(element, HoverElementPosition.RELATIVE);
 	}
 

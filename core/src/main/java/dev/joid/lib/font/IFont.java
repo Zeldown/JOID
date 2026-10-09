@@ -4,6 +4,6 @@ import lombok.NonNull;
 
 public interface IFont {
 
-	public @NonNull IFontProvider getFontProvider();
+	public @NonNull ITextRenderer getTextRenderer();
 
 }

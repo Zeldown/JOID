@@ -32,8 +32,8 @@ import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
@@ -50,8 +50,8 @@ import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
-import dev.joid.lib.ui.node.hover.HoverElement;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
+import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode;
@@ -2176,9 +2176,9 @@ public class NodeTest {
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch((rect, source, properties) -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
-		final List<SignalSubscriber<Integer>> pending = new ArrayList<>(signal.getEventSet());
+		final List<ISignalSubscriber<Integer>> pending = new ArrayList<>(signal.getEventSet());
 		parent.remove(child);
-		for (final SignalSubscriber<Integer> subscriber : pending) {
+		for (final ISignalSubscriber<Integer> subscriber : pending) {
 			Assert.assertTrue(subscriber.update(1));
 		}
 		Assert.assertEquals(0, reloads[0]);
@@ -2238,8 +2238,8 @@ public class NodeTest {
 		final Signal<Integer> count = new Signal<>(1);
 		final List<Object> values = new ArrayList<>();
 		final BindingNode node = new BindingNode();
-		final SignalSubscriber<String> titleSubscription = node.follow(title, values::add);
-		final SignalSubscriber<Integer> countSubscription = node.follow(count, values::add);
+		final ISignalSubscriber<String> titleSubscription = node.follow(title, values::add);
+		final ISignalSubscriber<Integer> countSubscription = node.follow(count, values::add);
 		this.bridges.open(new NodeUI(node));
 		title.set("second");
 		count.set(2);
@@ -2274,7 +2274,7 @@ public class NodeTest {
 		final Signal<Integer> second = new Signal<>(10);
 		final List<Integer> values = new ArrayList<>();
 		final BindingNode node = new BindingNode();
-		final SignalSubscriber<Integer> previous = node.follow(first, values::add);
+		final ISignalSubscriber<Integer> previous = node.follow(first, values::add);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
 		this.bridges.open(new NodeUI(parent));
 		parent.remove(node);
@@ -2602,7 +2602,7 @@ public class NodeTest {
 
 	@Test
 	public void removesAHoverElementToShowTheTooltipOfItsParent() {
-		final HoverElement silent = (rect, mouseX, mouseY) -> {};
+		final IHoverElement silent = (rect, mouseX, mouseY) -> {};
 		final RectNode child = RectNode.create(50D, 50D, 50D, 50D).hover(silent);
 		final HoverUI ui = new HoverUI(RectNode.create(100D, 100D, 200D, 200D).hover(() -> "Parent").append(child));
 		this.bridges.open(ui);
@@ -2856,15 +2856,15 @@ public class NodeTest {
 			super(0D, 0D, 10D, 10D);
 		}
 
-		public <V> SignalSubscriber<V> follow(final Signal<V> signal, final Consumer<V> consumer) {
+		public <V> ISignalSubscriber<V> follow(final Signal<V> signal, final Consumer<V> consumer) {
 			return super.bind(signal, consumer);
 		}
 
-		public void forget(final SignalSubscriber<?> subscriber) {
+		public void forget(final ISignalSubscriber<?> subscriber) {
 			super.unbind(subscriber);
 		}
 
-		public <V> SignalSubscriber<V> refollow(final SignalSubscriber<?> previous, final Signal<V> signal, final Consumer<V> consumer) {
+		public <V> ISignalSubscriber<V> refollow(final ISignalSubscriber<?> previous, final Signal<V> signal, final Consumer<V> consumer) {
 			return super.rebind(previous, signal, consumer);
 		}
 

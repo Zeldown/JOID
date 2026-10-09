@@ -17,7 +17,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 import lombok.NonNull;
 
-public class DefaultHoverElementTest {
+public class TextHoverElementTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
@@ -27,7 +27,7 @@ public class DefaultHoverElementTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D);
 		final HoverUI ui = new HoverUI(rect);
 		this.bridges.open(ui).frames(30);
-		new DefaultHoverElement(Arrays.asList("Save", "Ctrl+S")).render(rect, 150D, 160D);
+		new TextHoverElement(Arrays.asList("Save", "Ctrl+S")).render(rect, 150D, 160D);
 		Assert.assertEquals(Collections.singletonList(Arrays.asList(Arrays.asList("Save", "Ctrl+S"), 150D, 160D)), ui.hovers);
 	}
 
@@ -43,7 +43,7 @@ public class DefaultHoverElementTest {
 
 	@Test
 	public void ignoresANodeOutsideAUi() {
-		new DefaultHoverElement(Arrays.asList("Save", "Ctrl+S")).render(RectNode.create(0D, 0D, 10D, 10D), 150D, 160D);
+		new TextHoverElement(Arrays.asList("Save", "Ctrl+S")).render(RectNode.create(0D, 0D, 10D, 10D), 150D, 160D);
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 

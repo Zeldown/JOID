@@ -148,17 +148,17 @@ final String copy = Platform.current() == Platform.MACOS ? "⌘ C" : "Ctrl+C";
 | `static Platform current()` | The platform named by the `os.name` system property, read at each call: `MACOS` for a name containing `mac` or `darwin`, `WINDOWS` for one containing `win`, `LINUX` otherwise. |
 | `static boolean is64Bit()` | Whether the `os.arch` system property names a 64-bit architecture. |
 
-## IndexedList family
+## IIndexedList family
 
 The lists of `dev.joid.lib.utils.list` keep their elements sorted by an integer index. You meet them as `UI.getNodeList()` and `Node.getChildren()` (sorted by `zindex`), `Node.getChildren(Class)`, `IUIBridge.getUiList()` (sorted by `zlevel`) and the bridge registries (sorted by `getIndex()`).
 
-![Diagram of an IndexedList: elements sorted by index; a new element goes after the elements of its index; an element added again keeps its place while it is in order, and moves when its index changed](../images/diagram-indexed-list.png "add inserts after the elements of the same index; adding again moves an element only when it is out of order")
+![Diagram of an IIndexedList: elements sorted by index; a new element goes after the elements of its index; an element added again keeps its place while it is in order, and moves when its index changed](../images/diagram-indexed-list.png "add inserts after the elements of the same index; adding again moves an element only when it is out of order")
 
 | Type | Description |
 | --- | --- |
 | `IndexedElement` | Interface of the elements: `int getIndex()`. |
-| `RecursiveIndexedElement` | An `IndexedElement` with children: `IndexedList<? extends RecursiveIndexedElement> getChildren()`. `Node` is one. |
-| `IndexedList<E extends IndexedElement>` | The list interface, `Iterable<E>` in index order. |
+| `RecursiveIndexedElement` | An `IndexedElement` with children: `IIndexedList<? extends RecursiveIndexedElement> getChildren()`. `Node` is one. |
+| `IIndexedList<E extends IndexedElement>` | The list interface, `Iterable<E>` in index order. |
 | `IndexedLinkedList<E>` | Backed by a `LinkedList`. Not thread-safe; `ordered()` returns the `LinkedList` itself. |
 | `IndexedConcurrentList<E>` | Backed by a `CopyOnWriteArrayList`: iteration works on a snapshot, so the list can change while you iterate. |
 
@@ -172,7 +172,7 @@ Both implementations have a no-argument constructor and a constructor that copie
 - The index is read when the element is added. `Node.zindex(...)` adds the node again for you, and the UI bridge calls `sort()` on its UI list at every frame, so a `zlevel` changed with `ui.getData().setZlevel(...)` applies at the next frame.
 - `ordered()` and `reversed()` are live views. Changing the list through them bypasses the sorting: use `add` and `remove`.
 
-### IndexedList methods
+### IIndexedList methods
 
 | Method | Description |
 | --- | --- |
@@ -180,13 +180,13 @@ Both implementations have a no-argument constructor and a constructor that copie
 | `void remove(E element)` | Removes `element`. |
 | `void sort()` | Sorts the elements by index again, keeping the order of equal indexes; does nothing when the order is right. |
 | `void clear()` | Removes every element. |
-| `IndexedList<E> copy()` | An independent list with the same elements, of the same type. |
+| `IIndexedList<E> copy()` | An independent list with the same elements, of the same type. |
 | `int size()`, `boolean isEmpty()`, `boolean contains(E element)` | Size and membership. |
 | `E getFirst()`, `E getLast()` | The lowest or highest element; `null` when the list is empty. |
 | `E get(int index)` | The element at a position (not an index value). |
 | `List<E> ordered()` | Live view in ascending index order. |
 | `List<E> reversed()` | Live view in descending order. |
-| `IndexedList<E> recursive()` | When the elements are `RecursiveIndexedElement`s, a new flat list of every element and its descendants, depth first (each element followed by its children, in their order). Otherwise this list itself. |
+| `IIndexedList<E> recursive()` | When the elements are `RecursiveIndexedElement`s, a new flat list of every element and its descendants, depth first (each element followed by its children, in their order). Otherwise this list itself. |
 
 ```java
 for (final Node node : super.getNodeList().recursive()) {

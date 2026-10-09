@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.signal.SignalSubscriber;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.node.Node;
@@ -26,8 +26,8 @@ public abstract class SwitchNode extends Node {
 	private final IntegerSignal      stateIndex;
 	private final ListSignal<String> stateList;
 
-	private Signal<String>           signal;
-	private SignalSubscriber<String> subscription;
+	private Signal<String>            signal;
+	private ISignalSubscriber<String> subscription;
 
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

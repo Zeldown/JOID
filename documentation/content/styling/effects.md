@@ -103,7 +103,7 @@ Effects come in two kinds, rendered differently:
 | Render state | `ShadowNodeEffect`, `MaskNodeEffect`, `TransformNodeEffect` | `pre(...)` runs before the node renders, in priority order, and `post(...)` after, in the reverse order, so the effects nest. They wrap the whole render of the node: its own drawing, its children and the shader effects. |
 | Shader | `RoundedNodeEffect`, `CircleNodeEffect`, `BorderNodeEffect`, `BlurNodeEffect` | Each effect produces shader passes. The node is drawn into an offscreen framebuffer, then the passes run one after the other on the result. |
 
-Between render-state effects, the order matters. The example below combines a mask, which shows only a rectangle of the node, with a `TransformNodeEffect`, which turns the rendering here by 10 degrees around the point `(250, 200)` (`RotateOperation`, `Rotation` and `Vector` are detailed in [TransformNodeEffect](transform.md)). A `TransformNodeEffect` that runs before a `MaskNodeEffect` transforms the mask with the node; a mask that runs first stays in place while the content moves under it:
+Between render-state effects, the order matters. The example below combines a mask, which shows only a rectangle of the node, with a `TransformNodeEffect`, which turns the rendering here by 10 degrees around the point `(250, 200)` (`RotateTransformOperation`, `Rotation` and `Vector` are detailed in [TransformNodeEffect](transform.md)). A `TransformNodeEffect` that runs before a `MaskNodeEffect` transforms the mask with the node; a mask that runs first stays in place while the content moves under it:
 
 ```java
 final MaskNodeEffect mask = MaskNodeEffect.create(300D, 100D);
@@ -113,7 +113,7 @@ RectNode
 .create(100, 100, 300, 200)
 .color(Color.WHITE)
 .effect(mask)
-.effect(TransformNodeEffect.create(new RotateOperation(10D, Rotation.ROLL, Vector.create(250D, 200D))))
+.effect(TransformNodeEffect.create(new RotateTransformOperation(10D, Rotation.ROLL, Vector.create(250D, 200D))))
 .attach(this);
 ```
 

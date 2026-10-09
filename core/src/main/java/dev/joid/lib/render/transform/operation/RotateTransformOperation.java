@@ -8,17 +8,17 @@ import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Vector;
 import lombok.NonNull;
 
-public class RotateOperation implements TransformOperation {
+public class RotateTransformOperation implements ITransformOperation {
 
 	private final Vector           pivot;
 	private final Rotation         rotation;
 	private final Supplier<Double> angleSupplier;
 
-	public RotateOperation(final double angle, final @NonNull Rotation rotation, final @NonNull Vector pivot) {
+	public RotateTransformOperation(final double angle, final @NonNull Rotation rotation, final @NonNull Vector pivot) {
 		this(() -> angle, rotation, pivot);
 	}
 
-	public RotateOperation(final @NonNull Supplier<Double> angleSupplier, final @NonNull Rotation rotation, final @NonNull Vector pivot) {
+	public RotateTransformOperation(final @NonNull Supplier<Double> angleSupplier, final @NonNull Rotation rotation, final @NonNull Vector pivot) {
 		this.angleSupplier = angleSupplier;
 		this.rotation = rotation;
 		this.pivot = pivot;
