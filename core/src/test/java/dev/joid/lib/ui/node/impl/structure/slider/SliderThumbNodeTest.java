@@ -16,49 +16,49 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.click.ClickType;
 import lombok.AllArgsConstructor;
 
-public class SliderCursorNodeTest {
+public class SliderThumbNodeTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	private Slider slider;
-	private Cursor cursor;
+	private Thumb thumb;
 
 	@Before
 	public void openASlider() {
-		this.cursor = new Cursor();
-		this.slider = new Slider().valueSet(new LinkedHashSet<>(Arrays.asList(1, 2, 3)), 1).cursor(this.cursor);
+		this.thumb = new Thumb();
+		this.slider = new Slider().valueSet(new LinkedHashSet<>(Arrays.asList(1, 2, 3)), 1).thumb(this.thumb);
 		this.bridges.open(new NodeUI(this.slider)).frame();
 	}
 
 	@Test
 	public void knowsItsSlider() {
-		Assert.assertSame(this.slider, this.cursor.getSlider());
-		Assert.assertSame(this.cursor, this.cursor.slider(this.slider));
+		Assert.assertSame(this.slider, this.thumb.getSlider());
+		Assert.assertSame(this.thumb, this.thumb.slider(this.slider));
 	}
 
 	@Test
 	public void followsTheMouseWhileDragged() {
-		Assert.assertSame(this.cursor, this.cursor.dragging(true));
+		Assert.assertSame(this.thumb, this.thumb.dragging(true));
 		this.bridges.move(300D, 125D).frame();
-		Assert.assertEquals(175D, this.cursor.getX(), 1E-9D);
+		Assert.assertEquals(175D, this.thumb.getX(), 1E-9D);
 	}
 
 	@Test
 	public void staysOnItsTrack() {
-		this.cursor.dragging(true);
+		this.thumb.dragging(true);
 		this.bridges.move(0D, 125D).frame();
-		Assert.assertEquals(0D, this.cursor.getX(), 1E-9D);
+		Assert.assertEquals(0D, this.thumb.getX(), 1E-9D);
 		this.bridges.move(1900D, 125D).frame();
-		Assert.assertEquals(350D, this.cursor.getX(), 1E-9D);
+		Assert.assertEquals(350D, this.thumb.getX(), 1E-9D);
 	}
 
 	@Test
-	public void grabsThePressedCursor() {
+	public void grabsThePressedThumb() {
 		this.bridges.move(110D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		Assert.assertTrue(this.cursor.isDragging());
-		Assert.assertEquals(0D, this.cursor.getX(), 1E-9D);
+		Assert.assertTrue(this.thumb.isDragging());
+		Assert.assertEquals(0D, this.thumb.getX(), 1E-9D);
 	}
 
 	@Test
@@ -67,8 +67,8 @@ public class SliderCursorNodeTest {
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		this.bridges.move(400D, 125D).frame();
-		Assert.assertFalse(this.cursor.isDragging());
-		Assert.assertEquals(0D, this.cursor.getX(), 1E-9D);
+		Assert.assertFalse(this.thumb.isDragging());
+		Assert.assertEquals(0D, this.thumb.getX(), 1E-9D);
 	}
 
 	@Test
@@ -76,17 +76,17 @@ public class SliderCursorNodeTest {
 		this.bridges.move(110D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 		this.bridges.move(400D, 600D).frames(2);
-		Assert.assertTrue(this.cursor.isHovered());
+		Assert.assertTrue(this.thumb.isHovered());
 		this.bridges.getUi().mouseReleased(ClickType.LEFT);
 		this.bridges.frames(2);
-		Assert.assertFalse(this.cursor.isHovered());
+		Assert.assertFalse(this.thumb.isHovered());
 	}
 
 	@Test
 	public void ignoresAPressBesideIt() {
 		this.bridges.move(1000D, 1000D).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
-		Assert.assertFalse(this.cursor.isDragging());
+		Assert.assertFalse(this.thumb.isDragging());
 	}
 
 	@AllArgsConstructor
@@ -114,14 +114,14 @@ public class SliderCursorNodeTest {
 
 	}
 
-	public static final class Cursor extends SliderCursorNode {
+	public static final class Thumb extends SliderThumbNode {
 
-		public Cursor() {
+		public Thumb() {
 			super(50D, 50D);
 		}
 
 		@Override
-		public void drawCursor(final double mouseX, final double mouseY) {
+		public void drawThumb(final double mouseX, final double mouseY) {
 			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), new Color(0.6F, 0.4F, 0.2F, 1F));
 		}
 

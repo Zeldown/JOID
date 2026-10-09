@@ -25,7 +25,7 @@ public abstract class SliderNode<O> extends Node {
 	private Set<O> valueSet;
 
 	private Signal<O>           signal;
-	private SliderCursorNode    cursor;
+	private SliderThumbNode     thumb;
 	private SignalSubscriber<O> subscription;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {
@@ -41,11 +41,11 @@ public abstract class SliderNode<O> extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.value == null || this.valueSet.isEmpty() || this.cursor == null) {
+		if (this.value == null || this.valueSet.isEmpty() || this.thumb == null) {
 			return;
 		}
 
-		this.cursor.y((super.getHeight() - this.cursor.getHeight()) / 2D);
+		this.thumb.y((super.getHeight() - this.thumb.getHeight()) / 2D);
 		this.pick();
 
 		this.drawSlider(mouseX, mouseY);
@@ -58,27 +58,27 @@ public abstract class SliderNode<O> extends Node {
 		}
 
 		context.cancel(() -> {
-			this.cursor.x(mouseX - super.getAbsoluteX() - this.cursor.getWidth() / 2);
-			this.cursor.dragging(true);
+			this.thumb.x(mouseX - super.getAbsoluteX() - this.thumb.getWidth() / 2);
+			this.thumb.dragging(true);
 		});
 	}
 
 	public abstract void drawSlider(final double mouseX, final double mouseY);
 
 	public final float getProgress() {
-		if (this.cursor == null || super.getWidth() <= this.cursor.getWidth()) {
+		if (this.thumb == null || super.getWidth() <= this.thumb.getWidth()) {
 			return 0F;
 		}
 
-		return Math.min(1F, Math.max(0F, (float) this.cursor.getX() / (float) (super.getWidth() - this.cursor.getWidth())));
+		return Math.min(1F, Math.max(0F, (float) this.thumb.getX() / (float) (super.getWidth() - this.thumb.getWidth())));
 	}
 
-	public final <T extends SliderNode<O>> @NonNull T cursor(final @NonNull SliderCursorNode cursor) {
-		if (this.cursor != null) {
-			this.getChildren().remove(this.cursor);
+	public final <T extends SliderNode<O>> @NonNull T thumb(final @NonNull SliderThumbNode thumb) {
+		if (this.thumb != null) {
+			this.getChildren().remove(this.thumb);
 		}
 
-		this.cursor = cursor.slider(this).attach(this);
+		this.thumb = thumb.slider(this).attach(this);
 		return (T) this;
 	}
 
@@ -122,7 +122,7 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	protected final void release() {
-		if (this.value == null || this.valueSet.isEmpty() || this.cursor == null) {
+		if (this.value == null || this.valueSet.isEmpty() || this.thumb == null) {
 			return;
 		}
 
@@ -156,18 +156,18 @@ public abstract class SliderNode<O> extends Node {
 		}, newValue);
 
 		if (!this.value.equals(newValue)) {
-			this.cursor.dragging(false);
+			this.thumb.dragging(false);
 			this.place();
 		}
 	}
 
 	private void place() {
-		if (this.value == null || this.valueSet.isEmpty() || this.cursor == null) {
+		if (this.value == null || this.valueSet.isEmpty() || this.thumb == null) {
 			return;
 		}
 
 		if (this.valueSet.size() == 1) {
-			this.cursor.x(0);
+			this.thumb.x(0);
 			return;
 		}
 
@@ -180,7 +180,7 @@ public abstract class SliderNode<O> extends Node {
 			index++;
 		}
 
-		this.cursor.x((super.getWidth() - this.cursor.getWidth()) * ((double) index / (double) (this.valueSet.size() - 1)));
+		this.thumb.x((super.getWidth() - this.thumb.getWidth()) * ((double) index / (double) (this.valueSet.size() - 1)));
 	}
 
 }

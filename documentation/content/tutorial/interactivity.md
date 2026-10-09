@@ -94,20 +94,20 @@ public class ToggleSwitchNode extends CheckboxNode {
 
 ### A slider with IntegerSliderNode
 
-A slider has two parts to draw. `IntegerSliderNode` (`dev.joid.lib.ui.node.impl.structure.slider.impl`) picks an integer by dragging a cursor along a track: you draw the track in `drawSlider`, and the cursor is a `SliderCursorNode` (`dev.joid.lib.ui.node.impl.structure.slider`) that draws itself in `drawCursor`, given to the slider with `cursor(...)`:
+A slider has two parts to draw. `IntegerSliderNode` (`dev.joid.lib.ui.node.impl.structure.slider.impl`) picks an integer by dragging a thumb along a track: you draw the track in `drawSlider`, and the thumb is a `SliderThumbNode` (`dev.joid.lib.ui.node.impl.structure.slider`) that draws itself in `drawThumb`, given to the slider with `thumb(...)`:
 
 ```java
 package com.example.settings;
 
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderCursorNode;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
 
 public class VolumeSliderNode extends IntegerSliderNode {
 
 	protected VolumeSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.cursor(new Knob(height));
+		super.thumb(new Knob(height));
 	}
 
 	public static VolumeSliderNode create(final double x, final double y, final double width, final double height) {
@@ -119,14 +119,14 @@ public class VolumeSliderNode extends IntegerSliderNode {
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY() + super.dh(2) - 3D, super.getWidth(), 6D, Theme.CARD);
 	}
 
-	private static final class Knob extends SliderCursorNode {
+	private static final class Knob extends SliderThumbNode {
 
 		private Knob(final double size) {
 			super(size, size);
 		}
 
 		@Override
-		public void drawCursor(final double mouseX, final double mouseY) {
+		public void drawThumb(final double mouseX, final double mouseY) {
 			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Theme.INK);
 		}
 
@@ -135,7 +135,7 @@ public class VolumeSliderNode extends IntegerSliderNode {
 }
 ```
 
-The cursor is a child of the slider: the slider centers it vertically and moves it along the track. Pressing anywhere on the track jumps the cursor under the mouse and starts dragging it; on release, the cursor snaps onto the position of the chosen value.
+The thumb is a child of the slider: the slider centers it vertically and moves it along the track. Pressing anywhere on the track jumps the cursor under the mouse and starts dragging it; on release, the cursor snaps onto the position of the chosen value.
 
 ### Connecting the controls to signals
 

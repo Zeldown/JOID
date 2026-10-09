@@ -148,7 +148,7 @@ public void draw(final double mouseX, final double mouseY) {
 - `update()` advances the animation by the time elapsed since the last call, read from the clock of JOID. It does what `animate(...)` does for an animator passed to a node, here inside the drawing that reads the value.
 - `CARD.to(INK, progress)` blends the two colors; `drawRoundedRect` with a radius of half the height draws a pill and `drawCircle` the knob.
 
-The slider gets the same treatment: a rounded track, the part before the cursor filled with `Theme.INK`, and a round cursor. See the complete code below and [TweenAnimator](../animation/tween-animator.md).
+The slider gets the same treatment: a rounded track, the part before the thumb filled with `Theme.INK`, and a round thumb. See the complete code below and [TweenAnimator](../animation/tween-animator.md).
 
 ![The Music switch is clicked twice: its knob slides off and back on, the track fades, the Volume row hides and comes back, and the tooltip changes between Music is playing and Music is muted](../images/tutorial-polish-switch.gif "A TweenAnimator slides the knob; the tooltip follows the state")
 
@@ -384,14 +384,14 @@ public class ToggleSwitchNode extends CheckboxNode {
 package com.example.settings;
 
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderCursorNode;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
 
 public class VolumeSliderNode extends IntegerSliderNode {
 
 	protected VolumeSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.cursor(new Knob(height));
+		super.thumb(new Knob(height));
 	}
 
 	public static VolumeSliderNode create(final double x, final double y, final double width, final double height) {
@@ -401,19 +401,19 @@ public class VolumeSliderNode extends IntegerSliderNode {
 	@Override
 	public void drawSlider(final double mouseX, final double mouseY) {
 		final double y = super.getY() + super.dh(2) - 3D;
-		final double filled = super.getCursor().getX() + super.getCursor().dw(2);
+		final double filled = super.getThumb().getX() + super.getThumb().dw(2);
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), y, super.getWidth(), 6D, Theme.CARD, 3F);
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), y, filled, 6D, Theme.INK, 3F);
 	}
 
-	private static final class Knob extends SliderCursorNode {
+	private static final class Knob extends SliderThumbNode {
 
 		private Knob(final double size) {
 			super(size, size);
 		}
 
 		@Override
-		public void drawCursor(final double mouseX, final double mouseY) {
+		public void drawThumb(final double mouseX, final double mouseY) {
 			DrawUtils.SHAPE.drawCircle(super.getX() + super.dw(2), super.getY() + super.dh(2), Theme.INK, super.dw(2));
 		}
 
@@ -422,7 +422,7 @@ public class VolumeSliderNode extends IntegerSliderNode {
 }
 ```
 
-`getCursor()` returns the cursor, whose `x` is relative to the slider: its `x` plus half its width is the length of the filled part of the track.
+`getThumb()` returns the thumb, whose `x` is relative to the slider: its `x` plus half its width is the length of the filled part of the track.
 
 ## What you should see
 

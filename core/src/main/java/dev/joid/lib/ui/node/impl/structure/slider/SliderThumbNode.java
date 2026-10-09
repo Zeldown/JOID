@@ -8,12 +8,12 @@ import lombok.NonNull;
 
 @Getter
 @SuppressWarnings("unchecked")
-public abstract class SliderCursorNode extends Node {
+public abstract class SliderThumbNode extends Node {
 
 	private boolean dragging;
 	private SliderNode<?> slider;
 
-	protected SliderCursorNode(final double width, final double height) {
+	protected SliderThumbNode(final double width, final double height) {
 		super(0, 0, width, height);
 	}
 
@@ -24,10 +24,10 @@ public abstract class SliderCursorNode extends Node {
 			super.x(newX);
 		}
 
-		this.drawCursor(mouseX, mouseY);
+		this.drawThumb(mouseX, mouseY);
 	}
 
-	public abstract void drawCursor(final double mouseX, final double mouseY);
+	public abstract void drawThumb(final double mouseX, final double mouseY);
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
@@ -58,12 +58,12 @@ public abstract class SliderCursorNode extends Node {
 		return this.dragging || super.isHovered(mouseX, mouseY, checkEnabled);
 	}
 
-	public final <T extends SliderCursorNode> @NonNull T dragging(final boolean dragging) {
+	public final <T extends SliderThumbNode> @NonNull T dragging(final boolean dragging) {
 		this.dragging = dragging;
 		return (T) this;
 	}
 
-	public final <T extends SliderCursorNode> @NonNull T slider(final @NonNull SliderNode<?> slider) {
+	public final <T extends SliderThumbNode> @NonNull T slider(final @NonNull SliderNode<?> slider) {
 		this.slider = slider;
 		return (T) this;
 	}

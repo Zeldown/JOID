@@ -22,7 +22,7 @@ import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNodeTest.Selector;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.Cursor;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.Thumb;
 import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.IntegerSlider;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNodeTest.Toggle;
@@ -121,7 +121,7 @@ public class SetterUI extends UI {
 		.value(this.step.get() > 0 ? "second" : "first")
 		.active(this.step.get() > 1)
 		.attach(this);
-		this.slider = new IntegerSlider().values(1, 9, 1).cursor(new Cursor()).value(1 + this.step.get()).attach(this);
+		this.slider = new IntegerSlider().values(1, 9, 1).thumb(new Thumb()).value(1 + this.step.get()).attach(this);
 		this.flex = FlexNode
 		.vertical(0D, 0D, 100D)
 		.margin(this.step.get() * 5D)

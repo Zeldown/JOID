@@ -10,7 +10,7 @@ A kit class is written like the controls of [Input Controls](../essentials/contr
 
 | Component | It handles | You draw in |
 | --- | --- | --- |
-| [SliderNode](../nodes/input/slider.md) (`IntegerSliderNode`, `DoubleSliderNode`, `StringSliderNode`) | Values, dragging, the selected value, `signal`, `onChange` | `drawSlider(mouseX, mouseY)` for the track, and `drawCursor(mouseX, mouseY)` in a `SliderCursorNode` subclass installed with `cursor(...)` |
+| [SliderNode](../nodes/input/slider.md) (`IntegerSliderNode`, `DoubleSliderNode`, `StringSliderNode`) | Values, dragging, the selected value, `signal`, `onChange` | `drawSlider(mouseX, mouseY)` for the track, and `drawThumb(mouseX, mouseY)` in a `SliderThumbNode` subclass installed with `thumb(...)` |
 | [CheckboxNode](../nodes/input/checkbox.md) | The checked state, clicks, `signal`, `onChange` | `draw(mouseX, mouseY)`, reading `isChecked()` |
 | [ToggleNode](../nodes/input/toggle.md) | The side, the value of each side, clicks, `signal`, `onChange` | `draw(mouseX, mouseY)`, reading `isToggle()` |
 | [SwitchNode](../nodes/input/switch.md) | The list of states, the current one, `signal`, `onChange`, rebuilding when the states change | `init(UI)`: one child per state that follows `getState()` and calls `state(...)` on click |
@@ -163,20 +163,20 @@ public class Label extends TextNode {
 
 ### Slider
 
-`drawSlider` draws the track and fills it up to `getProgress()`, the position of the cursor on its travel from `0F` to `1F`. The cursor is a `SliderCursorNode`: the slider centers it vertically, moves it along the track and snaps it onto the chosen value on release. The cursor counts as hovered during the whole drag, so its halo stays even when the pointer leaves it.
+`drawSlider` draws the track and fills it up to `getProgress()`, the position of the thumb on its travel from `0F` to `1F`. The thumb is a `SliderThumbNode`: the slider centers it vertically, moves it along the track and snaps it onto the chosen value on release. The cursor counts as hovered during the whole drag, so its halo stays even when the pointer leaves it.
 
 ```java
 package kit.flat;
 
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderCursorNode;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
 
 public class Slider extends IntegerSliderNode {
 
 	protected Slider(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.cursor(new Knob(16D));
+		super.thumb(new Knob(16D));
 	}
 
 	public static Slider create(final double x, final double y, final double width, final double height) {
@@ -190,14 +190,14 @@ public class Slider extends IntegerSliderNode {
 		DrawUtils.SHAPE.drawRect(super.getX(), centerY - 1D, super.getWidth() * super.getProgress(), 2D, Theme.INK);
 	}
 
-	private static final class Knob extends SliderCursorNode {
+	private static final class Knob extends SliderThumbNode {
 
 		private Knob(final double size) {
 			super(size, size);
 		}
 
 		@Override
-		public void drawCursor(final double mouseX, final double mouseY) {
+		public void drawThumb(final double mouseX, final double mouseY) {
 			final double halo = super.hoverValue(6F);
 			DrawUtils.SHAPE.drawRect(super.getX() - halo, super.getY() - halo, super.getWidth() + halo * 2D, super.getHeight() + halo * 2D, Theme.LINE);
 			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Theme.INK);
@@ -463,20 +463,20 @@ public final class Theme {
 }
 ```
 
-Its slider draws a rounded track filled with the accent and a round cursor whose glow grows on hover:
+Its slider draws a rounded track filled with the accent and a round thumb whose glow grows on hover:
 
 ```java
 package kit.round;
 
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderCursorNode;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
 
 public class Slider extends IntegerSliderNode {
 
 	protected Slider(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.cursor(new Knob(24D));
+		super.thumb(new Knob(24D));
 	}
 
 	public static Slider create(final double x, final double y, final double width, final double height) {
@@ -490,14 +490,14 @@ public class Slider extends IntegerSliderNode {
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), trackY, super.getWidth() * super.getProgress(), 8D, Theme.INK, 4F);
 	}
 
-	private static final class Knob extends SliderCursorNode {
+	private static final class Knob extends SliderThumbNode {
 
 		private Knob(final double size) {
 			super(size, size);
 		}
 
 		@Override
-		public void drawCursor(final double mouseX, final double mouseY) {
+		public void drawThumb(final double mouseX, final double mouseY) {
 			final float focus = super.hoverValue(1F);
 			final double centerX = super.getX() + super.dw(2);
 			final double centerY = super.getY() + super.dh(2);
@@ -667,7 +667,7 @@ What a kit class reads and overrides, per component:
 
 | Component | Override | Read while drawing |
 | --- | --- | --- |
-| `SliderNode<O>` | `drawSlider(double, double)`; `SliderCursorNode.drawCursor(double, double)` | `getProgress()` (`0F` to `1F`), `getValue()`, `getCursor()`, `hoverValue(float)` of the cursor |
+| `SliderNode<O>` | `drawSlider(double, double)`; `SliderThumbNode.drawThumb(double, double)` | `getProgress()` (`0F` to `1F`), `getValue()`, `getThumb()`, `hoverValue(float)` of the thumb |
 | `CheckboxNode` | `draw(double, double)` | `isChecked()`, `hoverValue(float)` |
 | `ToggleNode<F, S>` | `draw(double, double)` | `isToggle()`, `getValue()` |
 | `SwitchNode` | `init(UI)` | `getStateList()`, `getState()`; `state(String)` or `index(int)` on click |

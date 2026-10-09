@@ -387,7 +387,7 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, InternalC
 
 - Extend a concrete node to add behavior: `RectNode` subclasses keep the fill, border and hover colors; `ContainerNode` draws nothing by itself. Every lifecycle and event method of the built-in nodes can be overridden; their fluent setters are `final`.
 - Extend the abstract structure nodes and implement their drawing method: `ScrollbarNode.drawScrollbar` (see [Overflow and Scrolling](layout/overflow-and-scroll.md#scrollbarnode)), and the input controls such as `CheckboxNode`, `SwitchNode` or `SliderNode` (see [CheckboxNode](input/checkbox.md)).
-- A node that owns child nodes attaches them to itself (`child.attach(this)`) and keeps a field to update them, as `SliderNode` does with its cursor.
+- A node that owns child nodes attaches them to itself (`child.attach(this)`) and keeps a field to update them, as `SliderNode` does with its thumb.
 - Other overridable `Node` methods: `isVisible()`, `isVisibleProperty()`, `isEnabled()`, `isHovered(double mouseX, double mouseY, boolean checkEnabled)` (for a custom hit area), `getIndex()` (the sorting key, the z-index by default), `shouldApplyEffect(NodeEffect)` and `toJson()`.
 
 ## Reference

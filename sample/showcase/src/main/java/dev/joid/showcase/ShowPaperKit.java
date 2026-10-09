@@ -15,7 +15,7 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderCursorNode;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
 import dev.joid.lib.utils.align.Align;
 
@@ -166,7 +166,7 @@ public class ShowPaperKit implements ShowKit {
 
 		protected Slider(final double x, final double y, final double width) {
 			super(x, y, width, 36);
-			super.cursor(new Knob());
+			super.thumb(new Knob());
 		}
 
 		public static Slider create(final double x, final double y, final double width) {
@@ -183,14 +183,14 @@ public class ShowPaperKit implements ShowKit {
 			}
 		}
 
-		private final class Knob extends SliderCursorNode {
+		private final class Knob extends SliderThumbNode {
 
 			protected Knob() {
 				super(36, 36);
 			}
 
 			@Override
-			public void drawCursor(final double mouseX, final double mouseY) {
+			public void drawThumb(final double mouseX, final double mouseY) {
 				DrawUtils.SHAPE.drawRect(super.getX() + 5D, super.getY() + 5D, 36D, 36D, ShowPaperKit.INK);
 				ShowPaperKit.box(super.getX(), super.getY(), 36D, 36D, ShowPaperKit.BUTTER, 3D);
 			}

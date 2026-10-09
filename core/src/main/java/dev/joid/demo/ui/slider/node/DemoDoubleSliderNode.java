@@ -2,7 +2,7 @@ package dev.joid.demo.ui.slider.node;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderCursorNode;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
 import lombok.NonNull;
 
@@ -12,7 +12,7 @@ public class DemoDoubleSliderNode extends DoubleSliderNode {
 
 	protected DemoDoubleSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.cursor(new Cursor(height, height));
+		super.thumb(new Thumb(height, height));
 	}
 
 	public static @NonNull DemoDoubleSliderNode create(final double x, final double y, final double width, final double height) {
@@ -24,14 +24,14 @@ public class DemoDoubleSliderNode extends DoubleSliderNode {
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.copyAlpha(super.isEnabled() ? 1F : 0.4F));
 	}
 
-	private final class Cursor extends SliderCursorNode {
+	private final class Thumb extends SliderThumbNode {
 
-		protected Cursor(final double width, final double height) {
+		protected Thumb(final double width, final double height) {
 			super(width, height);
 		}
 
 		@Override
-		public void drawCursor(final double mouseX, final double mouseY) {
+		public void drawThumb(final double mouseX, final double mouseY) {
 			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DemoDoubleSliderNode.INK.copyAlpha(super.isEnabled() ? 1F : 0.4F));
 		}
 

@@ -372,7 +372,7 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
   - an ongoing drag ends with its `onDragEnd` callbacks; a `MOVE` node lands at once where the drag aimed, and the copy of a `COPY` drag is dropped;
   - a hovered node fires `onHoverEnd` and its hover progress (`hoverValue`) goes back to `0`;
   - the node is unmounted: `onMount` runs again on its first frame once attached again, after its `wait(...)` conditions pass;
-  - the built-in nodes end their own interactions: a text field loses its focus (with its `onFocus` callbacks), a selector closes, a scrollbar, a slider cursor or a model viewer stops following the mouse, a `ReorderableFlexNode` drops the dragged child on its current slot, and a `ResourcePlayerNode` releases its video and starts its resource again from the beginning on its next draw.
+  - the built-in nodes end their own interactions: a text field loses its focus (with its `onFocus` callbacks), a selector closes, a scrollbar, a slider thumb or a model viewer stops following the mouse, a `ReorderableFlexNode` drops the dragged child on its current slot, and a `ResourcePlayerNode` releases its video and starts its resource again from the beginning on its next draw.
 - The node keeps its configuration: position, size, scroll offsets, callbacks, effects, layers, wait conditions and the animators given to `animate(...)`, which it stops updating while detached.
 - `UI.reload()` and the dev reload shortcut rebuild the whole tree: the current nodes are detached and the UI's `init()` runs again.
 - `getUpdateCount()` counts the loads of the node (`0` before the first one), and `getRenderTime()` is the time (ns) of the last `render`, subtree included.
