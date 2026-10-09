@@ -84,7 +84,7 @@ public final class PipelineCache {
 					.srcAlphaBlendFactor(PipelineCache.factor(blend.getSourceAlpha()))
 					.dstAlphaBlendFactor(PipelineCache.factor(blend.getDestinationAlpha()))
 					.alphaBlendOp(PipelineCache.operation(blend.getEquation()))
-					.colorWriteMask(key.isColorMask() ? VK10.VK_COLOR_COMPONENT_R_BIT | VK10.VK_COLOR_COMPONENT_G_BIT | VK10.VK_COLOR_COMPONENT_B_BIT | VK10.VK_COLOR_COMPONENT_A_BIT : 0);
+					.colorWriteMask(key.isColorWrite() ? VK10.VK_COLOR_COMPONENT_R_BIT | VK10.VK_COLOR_COMPONENT_G_BIT | VK10.VK_COLOR_COMPONENT_B_BIT | VK10.VK_COLOR_COMPONENT_A_BIT : 0);
 
 			final VkGraphicsPipelineCreateInfo.Buffer info = VkGraphicsPipelineCreateInfo.calloc(1, stack)
 					.sType$Default()

@@ -21,6 +21,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
@@ -199,10 +200,11 @@ public abstract class StateGuardContractSuite {
 			render.shader(null);
 			render.resetTexture();
 			render.blend(BlendState.NORMAL);
-			render.depth(false, false);
+			render.depthTest(false);
+			render.depthWrite(false);
 			render.cull(false);
 			render.color(1F, 1F, 1F, 1F);
-			render.alphaTest(0F);
+			render.alphaCutoff(0F);
 			render.clearColor(0F, 0F, 0F, 1F);
 			StateGuardContractSuite.drawTexture(render);
 			StateGuardContractSuite.drawTranslucent(render);
@@ -243,11 +245,13 @@ public abstract class StateGuardContractSuite {
 	}
 
 	private static void drawInDepth(final IRenderBridge render) {
-		render.depth(true, true);
+		render.depthTest(true);
+		render.depthWrite(true);
 		render.clearDepth();
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(32F, 0F, 16F, 16F, -10F, false, 0xFFFF0000));
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(32F, 0F, 16F, 16F, -20F, false, 0xFF0000FF));
-		render.depth(false, false);
+		render.depthTest(false);
+		render.depthWrite(false);
 	}
 
 	private static void drawCulled(final IRenderBridge render) {
@@ -258,16 +262,13 @@ public abstract class StateGuardContractSuite {
 
 	private static void drawMasked(final IRenderBridge render) {
 		render.clearStencil();
-		render.stencilTest(true);
-		render.colorMask(false);
-		render.stencilFunction(StencilFunction.ALWAYS, 1, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE);
+		render.colorWrite(false);
+		render.stencil(StencilState.create(StencilFunction.ALWAYS, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE));
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(0F, 16F, 8F, 16F, -1F, false, 0xFFFFFFFF));
-		render.colorMask(true);
-		render.stencilFunction(StencilFunction.EQUAL, 1, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+		render.colorWrite(true);
+		render.stencil(StencilState.create(StencilFunction.EQUAL, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(0F, 16F, 16F, 16F, -1F, false, 0xFF00FFFF));
-		render.stencilTest(false);
+		render.stencil(StencilState.DISABLED);
 	}
 
 	private static void drawFrameBuffer(final IRenderBridge render) {

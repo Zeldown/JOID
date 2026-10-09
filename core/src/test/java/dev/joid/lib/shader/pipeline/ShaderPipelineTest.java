@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -131,7 +132,7 @@ public class ShaderPipelineTest {
 		Assert.assertEquals(1080, this.render.getViewportHeight());
 		Assert.assertSame(BlendState.DISABLED, this.render.getState().getBlend());
 		Assert.assertEquals(1D, this.render.getPixelGrid().getScaleX(), 1E-6D);
-		Assert.assertTrue(this.render.getStateStack().isEmpty());
+		ShaderPipelineTest.assertNoPushedState(this.render);
 	}
 
 	@Test
@@ -290,7 +291,7 @@ public class ShaderPipelineTest {
 		}
 		Assert.assertTrue(this.log.isEmpty());
 		Assert.assertNull(this.render.getState().getFrameBuffer());
-		Assert.assertTrue(this.render.getStateStack().isEmpty());
+		ShaderPipelineTest.assertNoPushedState(this.render);
 	}
 
 	@Test
@@ -302,6 +303,15 @@ public class ShaderPipelineTest {
 
 	private void drawBox() {
 		DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, new Color(0.2F, 0.4F, 0.6F, 1F));
+	}
+
+	private static void assertNoPushedState(final CapturingRenderBridge render) {
+		try {
+			render.popState();
+			Assert.fail("Every pushed state must be popped");
+		} catch (final NoSuchElementException expected) {
+			Assert.assertNotNull(expected);
+		}
 	}
 
 	@Getter

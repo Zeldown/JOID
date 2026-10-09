@@ -32,6 +32,7 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.cursor.Cursor;
@@ -583,7 +584,7 @@ public abstract class Node implements INode {
 								render.pushState();
 								render.pushMatrix();
 								try {
-									render.stencilTest(false);
+									render.stencil(StencilState.DISABLED);
 
 									if (this.parent != null) {
 										render.translate(-this.parent.x, -this.parent.y, 0D);

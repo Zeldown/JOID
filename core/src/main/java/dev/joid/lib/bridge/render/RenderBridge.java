@@ -13,8 +13,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
-import dev.joid.lib.bridge.render.state.StencilFunction;
-import dev.joid.lib.bridge.render.state.StencilOperation;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureSampling;
@@ -24,17 +23,18 @@ import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class RenderBridge implements IRenderBridge {
 
-	private final MatrixStack        modelView;
-	private final MatrixStack        projection;
+	@Getter private final MatrixStack modelView;
+	@Getter private final MatrixStack projection;
+
 	private final Deque<RenderState> stateStack;
 
-	private RenderState state;
-	private boolean     frameActive;
-	private IShader     defaultShader;
-	private ITexture    emptyTexture;
+	@Getter private RenderState state;
+	@Getter private boolean     frameActive;
+
+	private IShader  defaultShader;
+	private ITexture emptyTexture;
 
 	protected RenderBridge() {
 		this.modelView  = new MatrixStack();
@@ -114,6 +114,13 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public final void screen(final int width, final int height) {
+		this.frameBuffer(null);
+		this.viewport(0, 0, width, height);
+		this.ortho(0D, width, height, 0D, 0D, 10000D);
+	}
+
+	@Override
 	public final void ortho(final double left, final double right, final double bottom, final double top, final double near, final double far) {
 		this.projection.ortho(left, right, bottom, top, near, far);
 	}
@@ -142,8 +149,12 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public final void depth(final boolean test, final boolean write) {
+	public final void depthTest(final boolean test) {
 		this.state.setDepthTest(test);
+	}
+
+	@Override
+	public final void depthWrite(final boolean write) {
 		this.state.setDepthWrite(write);
 	}
 
@@ -158,14 +169,13 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public final void colorMask(final boolean write) {
-		this.state.setColorMask(write);
+	public final void colorWrite(final boolean write) {
+		this.state.setColorWrite(write);
 	}
 
 	@Override
-	public final void alphaTest(final float threshold) {
-		this.state.setAlphaTest(threshold > 0F);
-		this.state.setAlphaThreshold(threshold);
+	public final void alphaCutoff(final float cutoff) {
+		this.state.setAlphaCutoff(cutoff);
 	}
 
 	@Override
@@ -209,22 +219,8 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public final void stencilTest(final boolean test) {
-		this.state.setStencilTest(test);
-	}
-
-	@Override
-	public final void stencilFunction(final @NonNull StencilFunction function, final int reference, final int mask) {
-		this.state.setStencilFunction(function);
-		this.state.setStencilReference(reference);
-		this.state.setStencilMask(mask);
-	}
-
-	@Override
-	public final void stencilOperation(final @NonNull StencilOperation fail, final @NonNull StencilOperation depthFail, final @NonNull StencilOperation pass) {
-		this.state.setStencilFail(fail);
-		this.state.setStencilDepthFail(depthFail);
-		this.state.setStencilPass(pass);
+	public final void stencil(final @NonNull StencilState stencil) {
+		this.state.setStencil(stencil);
 	}
 
 	@Override
@@ -273,7 +269,7 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	@Override
 	public final void clearColor(final float red, final float green, final float blue, final float alpha) {
-		if (this.state.isColorMask()) {
+		if (this.state.isColorWrite()) {
 			this.clearColorBuffer(red, green, blue, alpha);
 		}
 	}

@@ -129,7 +129,7 @@ public class MaskNodeEffectTest {
 		Assert.assertEquals(160D, masks.get(0).getRight(), 1E-3D);
 		Assert.assertEquals(125D, masks.get(0).getBottom(), 1E-3D);
 		Assert.assertTrue(draws.indexOf(masks.get(0)) < draws.indexOf(this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).get(0)));
-		Assert.assertFalse(this.bridges.getRender().getState().isStencilTest());
+		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
 	}
 
 	@Test
@@ -143,7 +143,7 @@ public class MaskNodeEffectTest {
 		Assert.assertEquals(105D, mask.getTop(), 1E-3D);
 		Assert.assertEquals(160D, mask.getRight(), 1E-3D);
 		Assert.assertEquals(125D, mask.getBottom(), 1E-3D);
-		Assert.assertFalse(this.bridges.getRender().getState().isStencilTest());
+		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
 	}
 
 	private static double[] bounds(final MaskNodeEffect effect) {

@@ -97,7 +97,7 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 | `samplesTheTextureOfASampler` | A texture assigned with `sampler(...)` is the one the shader samples. |
 | `readsTheLightingOfEachDraw` | `uLighting` follows a `lighting(...)` call made between two draws of a bound shader. |
 | `litsAFaceTheSameAtAnyScale` | A face turned to the light is lit above the ambient light, and gives the same pixel at scale 1 and 100. |
-| `disablesTheAlphaTestAtZero` | A fully transparent fragment is discarded under `alphaTest(0.5F)` and written again under `alphaTest(0F)`. |
+| `disablesTheAlphaTestAtZero` | A fully transparent fragment is discarded under `alphaCutoff(0.5F)` and written again under `alphaCutoff(0F)`. |
 | `exposesTheLineState` | `getLineWidth()` and `isLineSmooth()` return what was set. |
 | `drawsAWideLineAsWideAsItsWidth` | A hard line of 6 pixels covers 6 rows of pixels: the core draws it as triangles, the backend needs no wide lines. |
 | `drawsAWideLineWithTheBoundShader` | The same line, drawn while a shader is bound, is as wide and takes the color of that shader. |

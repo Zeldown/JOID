@@ -215,11 +215,11 @@ Each class is a singleton also reachable through its static `getInstance()` (`Dr
 | `blend(BlendState state)` | `BlendState.NORMAL`, `BlendState.PREMULTIPLIED`, `BlendState.DISABLED` or `BlendState.create(...)`. `DISABLED` by default. |
 | `lineWidth(float width)`, `getLineWidth()` | Width of lines, in window pixels. `1F` by default. A line of another width is antialiased, whatever `lineSmooth`. |
 | `lineSmooth(boolean smooth)`, `isLineSmooth()` | Antialiased lines, for a width of `1F`. |
-| `depth(boolean test, boolean write)` | Depth test and depth writes. |
+| `depthTest(boolean test)`, `depthWrite(boolean write)` | Depth test, depth writes. |
 | `cull(boolean cull)` | Back-face culling. |
 | `lighting(boolean lighting)` | Lighting of 3D models (see [3D Models](models.md)). |
-| `colorMask(boolean write)` | Whether the color is written. |
-| `alphaTest(float threshold)` | Above `0F`, discards the fragments whose alpha is at or below the threshold; `0F` or less turns the alpha test off. Every UI calls `alphaTest(0F)` before drawing its nodes. |
+| `colorWrite(boolean write)` | Whether the color is written. |
+| `alphaCutoff(float cutoff)` | Above `0F`, discards the fragments whose alpha is at or below the cutoff; `0F` or less draws every fragment. Every UI calls `alphaCutoff(0F)` before drawing its nodes. |
 | `shader(IShader shader)`, `getShader()` | Current shader, `null` for the default one (see [Custom Shaders](../shaders/custom-shaders.md)). |
 | `texture(ITexture texture, TextureFilter filter, TextureWrap wrap)`, `resetTexture()` | Binds a texture, or unbinds it. |
 | `viewport(int x, int y, int width, int height)`, `getViewportWidth()`, `getViewportHeight()` | Viewport, in window pixels. |

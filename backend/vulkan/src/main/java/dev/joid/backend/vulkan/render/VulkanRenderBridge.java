@@ -46,6 +46,7 @@ import dev.joid.lib.bridge.render.state.PipelineKey;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureSampling;
@@ -343,11 +344,12 @@ public final class VulkanRenderBridge extends RenderBridge {
 		VK13.vkCmdSetDepthTestEnable(this.commandBuffer, state.isDepthTest());
 		VK13.vkCmdSetDepthWriteEnable(this.commandBuffer, state.isDepthWrite());
 		VK13.vkCmdSetDepthCompareOp(this.commandBuffer, VK10.VK_COMPARE_OP_LESS);
-		VK13.vkCmdSetStencilTestEnable(this.commandBuffer, state.isStencilTest() && !offscreen);
-		VK13.vkCmdSetStencilOp(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, VulkanRenderBridge.operation(state.getStencilFail()), VulkanRenderBridge.operation(state.getStencilPass()), VulkanRenderBridge.operation(state.getStencilDepthFail()), VulkanRenderBridge.compare(state.getStencilFunction()));
-		VK10.vkCmdSetStencilCompareMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilMask());
+		final StencilState stencil = state.getStencil();
+		VK13.vkCmdSetStencilTestEnable(this.commandBuffer, stencil.isEnabled() && !offscreen);
+		VK13.vkCmdSetStencilOp(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, VulkanRenderBridge.operation(stencil.getFail()), VulkanRenderBridge.operation(stencil.getPass()), VulkanRenderBridge.operation(stencil.getDepthFail()), VulkanRenderBridge.compare(stencil.getFunction()));
+		VK10.vkCmdSetStencilCompareMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, stencil.getMask());
 		VK10.vkCmdSetStencilWriteMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, 0xFF);
-		VK10.vkCmdSetStencilReference(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, state.getStencilReference());
+		VK10.vkCmdSetStencilReference(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, stencil.getReference());
 	}
 
 	private long writeVertices(final VertexBuffer buffer, final RenderState state) {

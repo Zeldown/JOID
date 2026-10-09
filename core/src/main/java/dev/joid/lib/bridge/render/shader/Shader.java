@@ -142,8 +142,8 @@ public abstract class Shader implements IShader {
 		.value(ShaderBuiltin.MODEL_VIEW_MATRIX.getIdentifier(), modelView.getMatrix())
 		.value(ShaderBuiltin.NORMAL_MATRIX.getIdentifier(), modelView.getNormalMatrix())
 		.value(ShaderBuiltin.LIGHTING.getIdentifier(), state.isLighting())
-		.value(GlslShaderTranslator.ALPHA_TEST, state.isAlphaTest())
-		.value(GlslShaderTranslator.ALPHA_THRESHOLD, state.getAlphaThreshold())
+		.value(GlslShaderTranslator.ALPHA_TEST, state.getAlphaCutoff() > 0F)
+		.value(GlslShaderTranslator.ALPHA_THRESHOLD, state.getAlphaCutoff())
 		.value(GlslShaderTranslator.LINE_WIDTH, state.getLineWidth())
 		.value(GlslShaderTranslator.LINE_VIEWPORT, state.getViewportWidth(), state.getViewportHeight());
 	}

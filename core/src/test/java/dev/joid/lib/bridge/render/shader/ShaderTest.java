@@ -123,8 +123,7 @@ public class ShaderTest {
 		final MatrixStack modelView = new MatrixStack();
 		modelView.translate(4D, 0D, 0D);
 		final RenderState state = new RenderState();
-		state.setAlphaTest(true);
-		state.setAlphaThreshold(0.5F);
+		state.setAlphaCutoff(0.5F);
 		shader.builtins(state, new float[16], modelView);
 		Assert.assertEquals(4F, shader.getBlock().getMember("uModelViewMatrix").getValues().getFloat(48), 0F);
 		Assert.assertEquals(1, shader.getBlock().getMember(GlslShaderTranslator.ALPHA_TEST).getValues().getInt(0));

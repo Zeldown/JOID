@@ -36,16 +36,13 @@ public class StencilEmulationTest {
 
 	@Test
 	public void writesWhenOnlyTheFailOperationChangesTheStencil() {
-		final RenderState state = StencilEmulationTest.createState(true, StencilOperation.KEEP);
-		state.setStencilFail(StencilOperation.ZERO);
+		final RenderState state = StencilEmulationTest.createState(StencilFunction.ALWAYS, 0, 0xFF, StencilOperation.ZERO, StencilOperation.KEEP);
 		Assert.assertTrue(StencilEmulation.create(state, true).isWrite());
 	}
 
 	@Test
 	public void keepsEightBitsOfTheReferenceAndTheMask() {
-		final RenderState state = StencilEmulationTest.createState(true, StencilOperation.KEEP);
-		state.setStencilReference(0x1FF);
-		state.setStencilMask(0xFFFFFFFF);
+		final RenderState state = StencilEmulationTest.createState(StencilFunction.ALWAYS, 0x1FF, 0xFFFFFFFF, StencilOperation.KEEP, StencilOperation.KEEP);
 		final StencilEmulation emulation = StencilEmulation.create(state, true);
 		Assert.assertEquals(0xFF, emulation.getReference());
 		Assert.assertEquals(0xFF, emulation.getMask());
@@ -56,9 +53,7 @@ public class StencilEmulationTest {
 		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = vec4(aPosition, 1.0);\n}\n");
 		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n");
 		final UniformBlock block = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST).createBlock(vertex, fragment);
-		final RenderState state = StencilEmulationTest.createState(true, StencilOperation.INVERT);
-		state.setStencilFunction(StencilFunction.NOT_EQUAL);
-		state.setStencilReference(3);
+		final RenderState state = StencilEmulationTest.createState(StencilFunction.NOT_EQUAL, 3, 0xFF, StencilOperation.KEEP, StencilOperation.INVERT);
 		StencilEmulation.create(state, true).write(block);
 		block.pack();
 		Assert.assertEquals(1, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_TEST));
@@ -81,8 +76,13 @@ public class StencilEmulationTest {
 
 	private static RenderState createState(final boolean test, final StencilOperation pass) {
 		final RenderState state = new RenderState();
-		state.setStencilTest(test);
-		state.setStencilPass(pass);
+		state.setStencil(test ? StencilState.create(StencilFunction.ALWAYS, 0, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, pass) : StencilState.DISABLED);
+		return state;
+	}
+
+	private static RenderState createState(final StencilFunction function, final int reference, final int mask, final StencilOperation fail, final StencilOperation pass) {
+		final RenderState state = new RenderState();
+		state.setStencil(StencilState.create(function, reference, mask, fail, StencilOperation.KEEP, pass));
 		return state;
 	}
 

@@ -18,24 +18,16 @@ public final class RenderState {
 	private float green;
 	private float alpha;
 
-	private boolean    cull;
-	private float      lineWidth;
-	private BlendState blend;
-	private boolean    lighting;
-	private boolean    depthTest;
-	private boolean    colorMask;
-	private boolean    alphaTest;
-	private boolean    depthWrite;
-	private boolean    lineSmooth;
-	private float      alphaThreshold;
-
-	private int              stencilMask;
-	private boolean          stencilTest;
-	private int              stencilReference;
-	private StencilOperation stencilFail;
-	private StencilOperation stencilPass;
-	private StencilFunction  stencilFunction;
-	private StencilOperation stencilDepthFail;
+	private boolean      cull;
+	private float        lineWidth;
+	private BlendState   blend;
+	private boolean      lighting;
+	private boolean      depthTest;
+	private boolean      colorWrite;
+	private boolean      depthWrite;
+	private boolean      lineSmooth;
+	private float        alphaCutoff;
+	private StencilState stencil;
 
 	private int viewportX;
 	private int viewportY;
@@ -56,14 +48,9 @@ public final class RenderState {
 
 		this.blend      = BlendState.DISABLED;
 		this.depthWrite = true;
-		this.colorMask  = true;
+		this.colorWrite = true;
 		this.lineWidth  = 1F;
-
-		this.stencilFunction  = StencilFunction.ALWAYS;
-		this.stencilMask      = 0xFF;
-		this.stencilFail      = StencilOperation.KEEP;
-		this.stencilDepthFail = StencilOperation.KEEP;
-		this.stencilPass      = StencilOperation.KEEP;
+		this.stencil    = StencilState.DISABLED;
 
 		this.textureFilter = TextureFilter.NEAREST;
 		this.textureWrap   = TextureWrap.REPEAT;
@@ -71,36 +58,29 @@ public final class RenderState {
 
 	public @NonNull RenderState copy() {
 		final RenderState copy = new RenderState();
-		copy.red              = this.red;
-		copy.green            = this.green;
-		copy.blue             = this.blue;
-		copy.alpha            = this.alpha;
-		copy.blend            = this.blend;
-		copy.depthTest        = this.depthTest;
-		copy.depthWrite       = this.depthWrite;
-		copy.cull             = this.cull;
-		copy.lighting         = this.lighting;
-		copy.colorMask        = this.colorMask;
-		copy.alphaTest        = this.alphaTest;
-		copy.alphaThreshold   = this.alphaThreshold;
-		copy.lineWidth        = this.lineWidth;
-		copy.lineSmooth       = this.lineSmooth;
-		copy.stencilTest      = this.stencilTest;
-		copy.stencilFunction  = this.stencilFunction;
-		copy.stencilReference = this.stencilReference;
-		copy.stencilMask      = this.stencilMask;
-		copy.stencilFail      = this.stencilFail;
-		copy.stencilDepthFail = this.stencilDepthFail;
-		copy.stencilPass      = this.stencilPass;
-		copy.viewportX        = this.viewportX;
-		copy.viewportY        = this.viewportY;
-		copy.viewportWidth    = this.viewportWidth;
-		copy.viewportHeight   = this.viewportHeight;
-		copy.frameBuffer      = this.frameBuffer;
-		copy.texture          = this.texture;
-		copy.textureFilter    = this.textureFilter;
-		copy.textureWrap      = this.textureWrap;
-		copy.shader           = this.shader;
+		copy.red            = this.red;
+		copy.green          = this.green;
+		copy.blue           = this.blue;
+		copy.alpha          = this.alpha;
+		copy.blend          = this.blend;
+		copy.depthTest      = this.depthTest;
+		copy.depthWrite     = this.depthWrite;
+		copy.cull           = this.cull;
+		copy.lighting       = this.lighting;
+		copy.colorWrite     = this.colorWrite;
+		copy.alphaCutoff    = this.alphaCutoff;
+		copy.lineWidth      = this.lineWidth;
+		copy.lineSmooth     = this.lineSmooth;
+		copy.stencil        = this.stencil;
+		copy.viewportX      = this.viewportX;
+		copy.viewportY      = this.viewportY;
+		copy.viewportWidth  = this.viewportWidth;
+		copy.viewportHeight = this.viewportHeight;
+		copy.frameBuffer    = this.frameBuffer;
+		copy.texture        = this.texture;
+		copy.textureFilter  = this.textureFilter;
+		copy.textureWrap    = this.textureWrap;
+		copy.shader         = this.shader;
 		return copy;
 	}
 

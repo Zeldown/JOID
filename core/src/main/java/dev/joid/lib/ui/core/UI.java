@@ -25,6 +25,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -68,7 +69,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private static UI current;
 
 	@NonNull private final Map<Set<Object>, Runnable>           keybindMap;
-	@NonNull private final Stack<StencilState>                  stencilStack;
+	@NonNull private final Stack<MaskRegion>                    stencilStack;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
 	private final UIView       view;
@@ -488,57 +489,50 @@ public abstract class UI implements IUI, IndexedElement {
 		final int stencilValue = this.stencilStack.size();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (stencilValue == 0) {
-			render.stencilTest(false);
+			render.stencil(StencilState.DISABLED);
 			render.clearStencil();
 		} else {
-			render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
-			render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+			render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 		}
 	}
 
 	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
 		final int stencilValue = this.stencilStack.size() + 1;
-		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
+		this.stencilStack.push(new MaskRegion(stencilValue, maskX, maskY, maskWidth, maskHeight));
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (stencilValue == 1) {
 			render.clearStencil();
-			render.stencilTest(true);
 		}
 
-		render.stencilFunction(StencilFunction.EQUAL, stencilValue - 1, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
+		render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
 
-		render.colorMask(false);
+		render.colorWrite(false);
 		DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED);
-		render.colorMask(true);
+		render.colorWrite(true);
 
-		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+		render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
 
 	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
 		final int stencilValue = this.stencilStack.size() + 1;
-		this.stencilStack.push(new StencilState(stencilValue, maskX, maskY, maskWidth, maskHeight));
+		this.stencilStack.push(new MaskRegion(stencilValue, maskX, maskY, maskWidth, maskHeight));
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (stencilValue == 1) {
 			render.clearStencil();
-			render.stencilTest(true);
 		}
 
-		render.stencilFunction(StencilFunction.EQUAL, stencilValue - 1, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT);
+		render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
 
 		render.pushState();
 		try {
-			render.colorMask(false);
-			render.alphaTest(0.5F);
+			render.colorWrite(false);
+			render.alphaCutoff(0.5F);
 			DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
 		} finally {
 			render.popState();
 		}
 
-		render.stencilFunction(StencilFunction.EQUAL, stencilValue, 0xFF);
-		render.stencilOperation(StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP);
+		render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
 
 	public final void keybind(final @NonNull Runnable runnable, final @NonNull Object @NonNull... bindings) {
@@ -882,7 +876,7 @@ public abstract class UI implements IUI, IndexedElement {
 			this.transition.getOut().pre(this, mx, my);
 		}
 
-		render.alphaTest(0F);
+		render.alphaCutoff(0F);
 		try {
 			this.view.render(render, this.data.projection(), () -> {
 				this.depthLevel = 0;
@@ -930,7 +924,8 @@ public abstract class UI implements IUI, IndexedElement {
 					render.pushMatrix();
 					render.pushState();
 					try {
-						render.depth(false, false);
+						render.depthTest(false);
+						render.depthWrite(false);
 						for (final Node node : this.nodeList.reversed()) {
 							if (node.renderHover(mx, my)) {
 								break;
@@ -1011,7 +1006,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	@Getter
-	private class StencilState {
+	private class MaskRegion {
 
 		public final double x;
 		public final double y;
@@ -1019,7 +1014,7 @@ public abstract class UI implements IUI, IndexedElement {
 		public final double width;
 		public final double height;
 
-		public StencilState(final int value, final double x, final double y, final double width, final double height) {
+		public MaskRegion(final int value, final double x, final double y, final double width, final double height) {
 			this.value = value;
 			this.x = x;
 			this.y = y;

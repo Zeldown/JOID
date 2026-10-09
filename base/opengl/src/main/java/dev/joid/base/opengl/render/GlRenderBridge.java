@@ -24,6 +24,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
@@ -99,7 +100,7 @@ public class GlRenderBridge extends RenderBridge {
 		try {
 			final RenderState state = super.getState();
 			this.applyTarget(state);
-			this.binding.getStateBinding().colorMask(state.isColorMask(), state.isColorMask(), state.isColorMask(), state.isColorMask());
+			this.binding.getStateBinding().colorMask(true, true, true, true);
 			this.binding.getStateBinding().clearColor(red, green, blue, alpha);
 			this.binding.clear(GlConstants.COLOR_BUFFER_BIT);
 		} finally {
@@ -219,11 +220,12 @@ public class GlRenderBridge extends RenderBridge {
 		this.toggle(GlConstants.DEPTH_TEST, state.isDepthTest());
 		pipeline.depthMask(state.isDepthWrite());
 		this.toggle(GlConstants.CULL_FACE, state.isCull());
-		pipeline.colorMask(state.isColorMask(), state.isColorMask(), state.isColorMask(), state.isColorMask());
+		pipeline.colorMask(state.isColorWrite(), state.isColorWrite(), state.isColorWrite(), state.isColorWrite());
 
-		this.toggle(GlConstants.STENCIL_TEST, state.isStencilTest());
-		pipeline.stencilFunc(GlEnums.function(state.getStencilFunction()), state.getStencilReference(), state.getStencilMask());
-		pipeline.stencilOp(GlEnums.operation(state.getStencilFail()), GlEnums.operation(state.getStencilDepthFail()), GlEnums.operation(state.getStencilPass()));
+		final StencilState stencil = state.getStencil();
+		this.toggle(GlConstants.STENCIL_TEST, stencil.isEnabled());
+		pipeline.stencilFunc(GlEnums.function(stencil.getFunction()), stencil.getReference(), stencil.getMask());
+		pipeline.stencilOp(GlEnums.operation(stencil.getFail()), GlEnums.operation(stencil.getDepthFail()), GlEnums.operation(stencil.getPass()));
 	}
 
 	private void toggle(final int capability, final boolean enabled) {

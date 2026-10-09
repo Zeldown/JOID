@@ -1091,7 +1091,7 @@ public class UITest {
 		final List<String> stencils = new ArrayList<>();
 		ui.mask(10D, 20D, 30D, 40D, () -> stencils.add(UITest.stencil(this.bridges)));
 		Assert.assertEquals(Collections.singletonList("EQUAL 1"), stencils);
-		Assert.assertFalse(this.bridges.getRender().getState().isStencilTest());
+		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
 		Assert.assertTrue(ui.getStencilStack().isEmpty());
 		final Draw mask = this.bridges.getRender().getDraws(1F, 0F, 0F).get(0);
 		Assert.assertEquals(10D, mask.getLeft(), 0.001D);
@@ -1123,7 +1123,7 @@ public class UITest {
 		ui.stopMask();
 		Assert.assertEquals("EQUAL 1", UITest.stencil(this.bridges));
 		ui.stopMask();
-		Assert.assertFalse(this.bridges.getRender().getState().isStencilTest());
+		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
 		Assert.assertEquals(2, this.bridges.getRender().getDraws(1F, 0F, 0F).size());
 	}
 
@@ -1154,7 +1154,7 @@ public class UITest {
 			Assert.assertEquals("broken", e.getMessage());
 		}
 		Assert.assertTrue(ui.getStencilStack().isEmpty());
-		Assert.assertFalse(this.bridges.getRender().getState().isStencilTest());
+		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
 	}
 
 	@Test
@@ -1162,12 +1162,12 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		final Resource resource = Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png"));
 		this.bridges.open(ui);
-		this.bridges.getRender().alphaTest(0.25F);
+		this.bridges.getRender().alphaCutoff(0.25F);
 		final List<String> stencils = new ArrayList<>();
 		ui.mask(resource, 10D, 20D, 30D, 40D, () -> stencils.add(UITest.stencil(this.bridges)));
 		ui.mask(resource, 10D, 20D, 30D, 40D, () -> stencils.add(UITest.stencil(this.bridges)), false);
 		Assert.assertEquals(Arrays.asList("EQUAL 1", "off"), stencils);
-		Assert.assertEquals(0.25F, this.bridges.getRender().getState().getAlphaThreshold(), 0F);
+		Assert.assertEquals(0.25F, this.bridges.getRender().getState().getAlphaCutoff(), 0F);
 		Assert.assertTrue(ui.getStencilStack().isEmpty());
 	}
 
@@ -1185,7 +1185,7 @@ public class UITest {
 			Assert.assertEquals("broken", e.getMessage());
 		}
 		Assert.assertTrue(ui.getStencilStack().isEmpty());
-		Assert.assertFalse(this.bridges.getRender().getState().isStencilTest());
+		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
 	}
 
 	@Test(expected = EmptyStackException.class)
@@ -1584,7 +1584,7 @@ public class UITest {
 
 	private static String stencil(final HeadlessBridges bridges) {
 		final RenderState state = bridges.getRender().getState();
-		return state.isStencilTest() ? state.getStencilFunction() + " " + state.getStencilReference() : "off";
+		return state.getStencil().isEnabled() ? state.getStencil().getFunction() + " " + state.getStencil().getReference() : "off";
 	}
 
 	private static String out(final Runnable runnable) {

@@ -67,12 +67,13 @@ public abstract class RenderBridgeContractSuite {
 		render.shader(null);
 		render.resetTexture();
 		render.blend(BlendState.NORMAL);
-		render.depth(false, false);
+		render.depthTest(false);
+		render.depthWrite(false);
 		render.cull(false);
 		render.color(1F, 1F, 1F, 1F);
 		render.lineWidth(1F);
 		render.lineSmooth(false);
-		render.alphaTest(0F);
+		render.alphaCutoff(0F);
 	}
 
 	@AfterClass
@@ -186,9 +187,9 @@ public abstract class RenderBridgeContractSuite {
 	public void disablesTheAlphaTestAtZero() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.blend(BlendState.PREMULTIPLIED);
-			bridge.alphaTest(0.5F);
+			bridge.alphaCutoff(0.5F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
-			bridge.alphaTest(0F);
+			bridge.alphaCutoff(0F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
 		});
 		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
@@ -508,7 +509,8 @@ public abstract class RenderBridgeContractSuite {
 	private static void drawInDepth(final IRenderBridge bridge, final boolean clearBetween) {
 		bridge.pushMatrix();
 		try {
-			bridge.depth(true, true);
+			bridge.depthTest(true);
+			bridge.depthWrite(true);
 			bridge.clearDepth();
 			bridge.translate(0D, 0D, -10D);
 			bridge.color(1F, 0F, 0F, 1F);
@@ -521,7 +523,8 @@ public abstract class RenderBridgeContractSuite {
 			bridge.color(0F, 0F, 1F, 1F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 		} finally {
-			bridge.depth(false, false);
+			bridge.depthTest(false);
+			bridge.depthWrite(false);
 			bridge.popMatrix();
 		}
 	}

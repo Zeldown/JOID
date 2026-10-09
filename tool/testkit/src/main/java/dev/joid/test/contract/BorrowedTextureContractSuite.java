@@ -49,10 +49,11 @@ public abstract class BorrowedTextureContractSuite {
 		render.shader(null);
 		render.resetTexture();
 		render.blend(BlendState.NORMAL);
-		render.depth(false, false);
+		render.depthTest(false);
+		render.depthWrite(false);
 		render.cull(false);
 		render.color(1F, 1F, 1F, 1F);
-		render.alphaTest(0F);
+		render.alphaCutoff(0F);
 	}
 
 	@AfterClass

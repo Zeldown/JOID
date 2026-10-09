@@ -63,13 +63,13 @@ public class PipelineKeyTest {
 	public void writesTheStencilWithoutBlendNorDepth() {
 		final RenderState state = new RenderState();
 		state.setBlend(BlendState.NORMAL);
-		state.setColorMask(false);
+		state.setColorWrite(false);
 		state.setDepthTest(true);
 		state.setCull(true);
 		final PipelineKey key = PipelineKey.stencil(PipelineKeyTest.SHADER, state, Primitive.TRIANGLES);
 		Assert.assertTrue(key.isStencil());
 		Assert.assertSame(BlendState.DISABLED, key.getBlend());
-		Assert.assertTrue(key.isColorMask());
+		Assert.assertTrue(key.isColorWrite());
 		Assert.assertFalse(key.isDepthTest());
 		Assert.assertFalse(key.isDepthWrite());
 		Assert.assertTrue(key.isCull());

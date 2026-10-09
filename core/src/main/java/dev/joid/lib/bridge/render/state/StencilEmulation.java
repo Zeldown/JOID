@@ -22,9 +22,10 @@ public final class StencilEmulation {
 	private final StencilOperation pass;
 
 	public static @NonNull StencilEmulation create(final @NonNull RenderState state, final boolean screen) {
-		final boolean test = screen && state.isStencilTest();
-		final boolean write = test && (state.getStencilFail() != StencilOperation.KEEP || state.getStencilPass() != StencilOperation.KEEP);
-		return new StencilEmulation(test, write, state.getStencilMask() & 0xFF, state.getStencilReference() & 0xFF, state.getStencilFunction(), state.getStencilFail(), state.getStencilPass());
+		final StencilState stencil = state.getStencil();
+		final boolean test = screen && stencil.isEnabled();
+		final boolean write = test && (stencil.getFail() != StencilOperation.KEEP || stencil.getPass() != StencilOperation.KEEP);
+		return new StencilEmulation(test, write, stencil.getMask() & 0xFF, stencil.getReference() & 0xFF, stencil.getFunction(), stencil.getFail(), stencil.getPass());
 	}
 
 	public void write(final @NonNull UniformBlock block) {

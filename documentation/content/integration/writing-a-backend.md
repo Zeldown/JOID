@@ -107,7 +107,6 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 |---|---|
 | `getModelView()` / `getProjection()` | `MatrixStack`s; `getMatrix()` returns a column-major `float[16]`, `getNormalMatrix()` a `float[9]` for normals. |
 | `getState()` | The current `RenderState`: color, blend, depth, cull, lighting, color mask, alpha test and threshold, line width and smoothing, stencil, viewport, framebuffer, texture with its filter and wrap, shader. |
-| `getStateStack()` | The states saved by `pushState()`. |
 | `getDefaultShader()` | The `CoreShader.DEFAULT` shader, created once with your `createShader` and `BlendState.DISABLED`. |
 | `getEmptyTexture()` | A 1×1 opaque white texture, created once with your `createTexture()`. |
 | `resolveTexture()` | The `SamplerBinding` of the bound texture: the texture of `texture(...)` with its filter, wrap and mipmaps as a `TextureSampling`, or `getEmptyTexture()` (`NEAREST`, `REPEAT`) when none is bound or it is not allocated. |
@@ -212,9 +211,9 @@ The core `FrameBufferHandle<T extends Texture>` (`dev.joid.lib.bridge.render.fra
 | `pushMatrix()` / `popMatrix()` / `loadIdentity()` / `translate` / `scale` / `rotate` | The model-view stack. `rotate` takes degrees around an axis. |
 | `pushProjection()` / `popProjection()` | The projection stack. |
 | `blend(BlendState)` | Blending: `BlendState.NORMAL`, `PREMULTIPLIED`, `DISABLED`, or `BlendState.create(equation, source, destination)` and `create(equation, sourceColor, destinationColor, sourceAlpha, destinationAlpha)`. A `BlendState` exposes `isEnabled()`, `getEquation()` (`ADD`, `SUBTRACT`, `REVERSE_SUBTRACT`, `MIN`, `MAX`) and its four factors (`ZERO`, `ONE`, `SRC_COLOR`, `ONE_MINUS_SRC_COLOR`, `DST_COLOR`, `ONE_MINUS_DST_COLOR`, `SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`, `DST_ALPHA`, `ONE_MINUS_DST_ALPHA`). |
-| `depth(boolean test, boolean write)` / `cull(boolean)` / `colorMask(boolean)` | Depth test and write, face culling, color writes. |
-| `alphaTest(float threshold)` | A threshold above 0 turns the alpha test on and discards the fragments whose alpha is at or below it; a threshold of 0 or less turns it off. UIs call `alphaTest(0F)` at the start of every frame to reset it; resource masks use `alphaTest(0.5F)`. |
-| `stencilTest`, `stencilFunction(StencilFunction, reference, mask)`, `stencilOperation(fail, depthFail, pass)`, `clearStencil()` | Stencil, used by the masks of a UI. `StencilFunction`: `NEVER`, `LESS`, `LESS_EQUAL`, `GREATER`, `GREATER_EQUAL`, `EQUAL`, `NOT_EQUAL`, `ALWAYS`; `StencilOperation`: `KEEP`, `ZERO`, `REPLACE`, `INCREMENT`, `DECREMENT`, `INVERT`. The screen needs an 8-bit stencil buffer. |
+| `depthTest(boolean)` / `depthWrite(boolean)` / `cull(boolean)` / `colorWrite(boolean)` | Depth test and write, face culling, color writes. |
+| `alphaCutoff(float cutoff)` | A cutoff above 0 discards the fragments whose alpha is at or below it; a cutoff of 0 or less turns the test off. UIs call `alphaCutoff(0F)` at the start of every frame to reset it; resource masks use `alphaCutoff(0.5F)`. The state holds only `getAlphaCutoff()`. |
+| `stencil(StencilState)`, `clearStencil()` | Stencil, used by the masks of a UI. A `StencilState` is an immutable value, as `BlendState`: `StencilState.DISABLED`, or `StencilState.create(function, reference, mask, fail, depthFail, pass)`, read with `isEnabled()`, `getFunction()`, `getReference()`, `getMask()`, `getFail()`, `getDepthFail()` and `getPass()`. `StencilFunction`: `NEVER`, `LESS`, `LESS_EQUAL`, `GREATER`, `GREATER_EQUAL`, `EQUAL`, `NOT_EQUAL`, `ALWAYS`; `StencilOperation`: `KEEP`, `ZERO`, `REPLACE`, `INCREMENT`, `DECREMENT`, `INVERT`. The screen needs an 8-bit stencil buffer. |
 | `lineWidth(float)` / `lineSmooth(boolean)` / `getLineWidth()` / `isLineSmooth()` | Line state, kept by the core. When a line is smooth or its width is not `1F`, the `Tessellator` expands each segment into triangles drawn with the line shader of the bound shader (`IShader.getLineShader()`), or of the core `line` shader without one: a backend only ever draws `LINES` of 1 pixel without smoothing, and needs neither wide nor smooth lines from its API. |
 | `shader(IShader)` / `getShader()` | The bound shader, `null` for none. |
 
@@ -367,7 +366,7 @@ Put your `ISnapshotBackend` in the `snapshot` package of the main sources, as th
 
 ## Pitfalls
 
-- `alphaTest(0F)` must turn the alpha test off, not keep fully transparent fragments out: UIs reset the state with it at every frame.
+- `alphaCutoff(0F)` must turn the alpha test off, not keep fully transparent fragments out: UIs reset the state with it at every frame.
 - Read the normals as signed bytes divided by 127, and normalize the transformed normal before lighting, or the shading changes with the size of the model.
 - Apply uniforms at the draw, not at `bind()`: JOID sets values before binding a shader.
 - A `std140` block has the same layout everywhere: send `UniformBlock.getData()` as is, never a layout read back from the driver.

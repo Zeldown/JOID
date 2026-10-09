@@ -31,7 +31,8 @@ public final class DrawModel {
 
 			render.cull(false);
 			render.lighting(true);
-			render.depth(true, true);
+			render.depthTest(true);
+			render.depthWrite(true);
 			render.clearDepth();
 
 			model.render();

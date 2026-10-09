@@ -12,6 +12,7 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureSampling;
@@ -62,10 +63,10 @@ public class RenderBridgeTest {
 	@Test
 	public void clearsNoColorWhileTheColorIsMasked() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.colorMask(false);
+		render.colorWrite(false);
 		render.clearColor(1F, 0F, 0F, 1F);
 		Assert.assertEquals(0, render.getColorClears());
-		render.colorMask(true);
+		render.colorWrite(true);
 		render.clearColor(1F, 0F, 0F, 1F);
 		Assert.assertEquals(1, render.getColorClears());
 	}
@@ -94,7 +95,6 @@ public class RenderBridgeTest {
 		Assert.assertEquals(0.6F, render.getState().getBlue(), 0F);
 		Assert.assertEquals(0.8F, render.getState().getAlpha(), 0F);
 		Assert.assertEquals(1F, render.getLineWidth(), 0F);
-		Assert.assertTrue(render.getStateStack().isEmpty());
 	}
 
 	@Test
@@ -119,36 +119,35 @@ public class RenderBridgeTest {
 	}
 
 	@Test
-	public void storesItsDepthCullingLightingAndColorMask() {
+	public void storesItsDepthCullingLightingAndColorWrite() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.depth(true, false);
+		render.depthTest(true);
+		render.depthWrite(false);
 		render.cull(true);
 		render.lighting(true);
-		render.colorMask(false);
+		render.colorWrite(false);
 		final RenderState state = render.getState();
 		Assert.assertTrue(state.isDepthTest());
 		Assert.assertFalse(state.isDepthWrite());
 		Assert.assertTrue(state.isCull());
 		Assert.assertTrue(state.isLighting());
-		Assert.assertFalse(state.isColorMask());
+		Assert.assertFalse(state.isColorWrite());
 	}
 
 	@Test
-	public void enablesTheAlphaTestWithItsThreshold() {
+	public void storesItsAlphaCutoff() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		Assert.assertFalse(render.getState().isAlphaTest());
-		render.alphaTest(0.5F);
-		Assert.assertTrue(render.getState().isAlphaTest());
-		Assert.assertEquals(0.5F, render.getState().getAlphaThreshold(), 0F);
+		Assert.assertEquals(0F, render.getState().getAlphaCutoff(), 0F);
+		render.alphaCutoff(0.5F);
+		Assert.assertEquals(0.5F, render.getState().getAlphaCutoff(), 0F);
 	}
 
 	@Test
 	public void disablesTheAlphaTestAtZero() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.alphaTest(0.5F);
-		render.alphaTest(0F);
-		Assert.assertFalse(render.getState().isAlphaTest());
-		Assert.assertEquals(0F, render.getState().getAlphaThreshold(), 0F);
+		render.alphaCutoff(0.5F);
+		render.alphaCutoff(0F);
+		Assert.assertEquals(0F, render.getState().getAlphaCutoff(), 0F);
 	}
 
 	@Test
@@ -170,17 +169,17 @@ public class RenderBridgeTest {
 	@Test
 	public void storesItsStencil() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.stencilTest(true);
-		render.stencilFunction(StencilFunction.EQUAL, 2, 0x0F);
-		render.stencilOperation(StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT);
-		final RenderState state = render.getState();
-		Assert.assertTrue(state.isStencilTest());
-		Assert.assertSame(StencilFunction.EQUAL, state.getStencilFunction());
-		Assert.assertEquals(2, state.getStencilReference());
-		Assert.assertEquals(0x0F, state.getStencilMask());
-		Assert.assertSame(StencilOperation.ZERO, state.getStencilFail());
-		Assert.assertSame(StencilOperation.REPLACE, state.getStencilDepthFail());
-		Assert.assertSame(StencilOperation.INCREMENT, state.getStencilPass());
+		Assert.assertSame(StencilState.DISABLED, render.getState().getStencil());
+		render.stencil(StencilState.create(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT));
+		final StencilState stencil = render.getState().getStencil();
+		Assert.assertTrue(stencil.isEnabled());
+		Assert.assertSame(StencilFunction.EQUAL, stencil.getFunction());
+		Assert.assertEquals(2, stencil.getReference());
+		Assert.assertEquals(0x0F, stencil.getMask());
+		Assert.assertSame(StencilOperation.ZERO, stencil.getFail());
+		Assert.assertSame(StencilOperation.REPLACE, stencil.getDepthFail());
+		Assert.assertSame(StencilOperation.INCREMENT, stencil.getPass());
+		Assert.assertEquals(StencilState.create(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT), stencil);
 	}
 
 	@Test
