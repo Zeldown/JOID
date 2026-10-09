@@ -237,6 +237,8 @@ The LWJGL 3 and Vulkan backends share two modules, also published as their own j
 | `isKeyDown(Key)` | `glfwGetKey` of the GLFW keys that give `key` on the active keyboard layout. |
 | `isPhysicalKeyDown(Key)` | `glfwGetKey` of the GLFW key at the place of `key`. |
 | `getClipboard()` / `setClipboard(String)` | The GLFW clipboard. |
+| `setCursor(Cursor)` / `getCursor()` | Shows a standard GLFW cursor (`glfwCreateStandardCursor`, the shapes of GLFW 3.4), created on first use and kept for the next ones; `DEFAULT`, or a shape the system lacks, gives the window its default cursor. `getCursor()` returns the last `Cursor` set. |
+| `destroy()` | Destroys the cursors the bridge created; call it before `glfwDestroyWindow`. The demo window does. |
 
 `dev.joid.base.glfw.input.GlfwKeys` holds the table between GLFW key codes and `Key`, for every engine on GLFW:
 
@@ -277,6 +279,15 @@ BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()).hostGa
 `joid-base-openal` declares LWJGL 3 as a compile-only dependency: the backends and applications on LWJGL 3 provide `lwjgl-openal` themselves, and an engine on another binding never loads `Lwjgl3AlBinding`.
 
 The LWJGL 2 audio bridge mixes down the same way.
+
+## Mouse cursors
+
+Each backend shows the [cursor of the node under the pointer](../interactions/mouse-and-keyboard.md#mouse-cursor) with the system cursors of its window:
+
+| Backend | Cursors |
+|---|---|
+| LWJGL 3, Vulkan | The standard cursors of GLFW 3.4 through `dev.joid.base.glfw.WindowBridge`: `POINTER` is the pointing hand, `MOVE` the four-way arrow (`GLFW_RESIZE_ALL_CURSOR`), the resize cursors the double arrows. A shape the system or its cursor theme lacks falls back to the default cursor. |
+| Your engine | `IWindowBridge.setCursor(Cursor)` does nothing by default, so the cursor stays the one of your window until you implement it (see [Writing a Backend](writing-a-backend.md#window-and-audio-bridges)). |
 
 ## Embedding JOID in an existing host
 

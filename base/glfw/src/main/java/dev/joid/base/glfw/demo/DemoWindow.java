@@ -3,6 +3,7 @@ package dev.joid.base.glfw.demo;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
+import dev.joid.base.glfw.WindowBridge;
 import dev.joid.base.glfw.input.GlfwInputForwarder;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -56,6 +57,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 			this.present();
 		}
 
+		BridgeHandler.WINDOW.getBridge(WindowBridge.class).destroy();
 		GLFW.glfwDestroyWindow(this.window);
 		GLFW.glfwTerminate();
 		System.exit(0);

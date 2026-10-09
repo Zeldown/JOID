@@ -112,7 +112,7 @@ At each frame, the UI bridge picks the cursor the way a browser does:
 
 The bridge calls `IWindowBridge.setCursor(...)` only when that cursor changes, and never while the mouse is grabbed. `cursor(Supplier<Cursor>)` follows a signal or any expression; a supplier that gives `null` lets the node take the cursor of its parent. `getCursor()` returns the cursor set on the node (`null` when it has none), `getResolvedCursor()` the one it shows after inheritance, and `UI.getHoveredNode()` the node that decides.
 
-The text fields (`TextFieldNode`, `IntegerFieldNode`, `MultilineTextFieldNode`) show `TEXT` by default; no other built-in node sets a cursor, so a button shows `POINTER` only when you give it one. A window bridge that cannot change the cursor keeps the default one (see [Bridges](../integration/bridges.md#iwindowbridge)).
+The text fields (`TextFieldNode`, `IntegerFieldNode`, `MultilineTextFieldNode`) show `TEXT` by default; no other built-in node sets a cursor, so a button shows `POINTER` only when you give it one. A window bridge that cannot change the cursor keeps the default one: see [Backends](../integration/backends.md#mouse-cursors) for each backend.
 
 ## Keyboard callbacks with onKeyPressed
 
