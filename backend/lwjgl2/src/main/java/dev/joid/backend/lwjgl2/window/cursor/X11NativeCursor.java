@@ -60,6 +60,27 @@ public final class X11NativeCursor extends NativeCursor {
 		}
 	}
 
+	private static int getShape(final Cursor cursor) {
+		switch (cursor) {
+		case POINTER:
+			return 60;
+		case TEXT:
+			return 152;
+		case CROSSHAIR:
+			return 34;
+		case MOVE:
+			return 52;
+		case RESIZE_EW:
+			return 108;
+		case RESIZE_NS:
+			return 116;
+		case DEFAULT:
+			return 68;
+		default:
+			return -1;
+		}
+	}
+
 	private static String[] getNames(final Cursor cursor) {
 		switch (cursor) {
 		case POINTER:
@@ -82,27 +103,6 @@ public final class X11NativeCursor extends NativeCursor {
 			return new String[] {"nesw-resize", "fd_double_arrow", "size_bdiag"};
 		default:
 			return new String[] {"default", "left_ptr"};
-		}
-	}
-
-	private static int getShape(final Cursor cursor) {
-		switch (cursor) {
-		case POINTER:
-			return 60;
-		case TEXT:
-			return 152;
-		case CROSSHAIR:
-			return 34;
-		case MOVE:
-			return 52;
-		case RESIZE_EW:
-			return 108;
-		case RESIZE_NS:
-			return 116;
-		case DEFAULT:
-			return 68;
-		default:
-			return -1;
 		}
 	}
 

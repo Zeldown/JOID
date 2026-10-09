@@ -21,9 +21,9 @@ public final class Swapchain {
 	private final int           format;
 	private final long          window;
 	private final int           colorSpace;
-	private final VulkanContext context;
 	private final long          loadRenderPass;
 	private final long          clearRenderPass;
+	private final VulkanContext context;
 
 	private int    width;
 	private int    height;

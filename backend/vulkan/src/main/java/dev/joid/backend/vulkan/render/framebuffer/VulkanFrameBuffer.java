@@ -16,11 +16,11 @@ import lombok.NonNull;
 @Getter
 public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 
-	private final VulkanRenderBridge bridge;
-	private final long               framebuffer;
-	private final long               depthImage;
-	private final long               depthMemory;
 	private final long               depthView;
+	private final long               depthImage;
+	private final long               framebuffer;
+	private final long               depthMemory;
+	private final VulkanRenderBridge bridge;
 
 	private VulkanFrameBuffer(final VulkanRenderBridge bridge, final VulkanTexture texture, final long framebuffer, final long depthImage, final long depthMemory, final long depthView) {
 		super(texture);

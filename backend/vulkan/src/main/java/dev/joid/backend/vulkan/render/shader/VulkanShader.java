@@ -26,8 +26,8 @@ public final class VulkanShader extends Shader {
 	private final boolean active;
 	private final long    vertexModule;
 	private final long    fragmentModule;
-	private final long    descriptorSetLayout;
 	private final long    pipelineLayout;
+	private final long    descriptorSetLayout;
 
 	private VulkanShader(final VulkanRenderBridge bridge, final VulkanShaderTranslator translator, final ShaderSource vertexSource, final ShaderSource fragmentSource, final BlendState blend, final boolean active, final long vertexModule, final long fragmentModule, final long descriptorSetLayout, final long pipelineLayout) {
 		super(bridge, translator, vertexSource, fragmentSource, blend);

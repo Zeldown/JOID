@@ -24,6 +24,11 @@ public final class VulkanShaderTranslator extends GlslShaderTranslator {
 	}
 
 	@Override
+	protected @NonNull String getLayout() {
+		return "std140, binding = 0";
+	}
+
+	@Override
 	protected @NonNull List<@NonNull ShaderVariable> getInternals(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
 		final List<ShaderVariable> internalList = super.getInternals(vertex, fragment);
 		if (vertex.getBuiltins().contains(ShaderBuiltin.COLOR)) {
@@ -31,11 +36,6 @@ public final class VulkanShaderTranslator extends GlslShaderTranslator {
 			internalList.add(ShaderVariable.create("int", VulkanShaderTranslator.VERTEX_COLOR, "", false));
 		}
 		return internalList;
-	}
-
-	@Override
-	protected @NonNull String getLayout() {
-		return "std140, binding = 0";
 	}
 
 	@Override

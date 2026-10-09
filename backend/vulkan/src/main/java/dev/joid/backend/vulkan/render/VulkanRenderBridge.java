@@ -60,16 +60,16 @@ import lombok.NonNull;
 @Getter
 public final class VulkanRenderBridge extends RenderBridge {
 
-	private final VulkanContext   context;
 	private final long            frameFence;
 	private final long[]          samplers;
 	private final Swapchain       swapchain;
-	private final FrameAllocator  vertexAllocator;
 	private final long            imageSemaphore;
-	private final FrameAllocator  uniformAllocator;
+	private final VulkanContext   context;
 	private final List<Runnable>  garbage;
 	private final PipelineCache   pipelineCache;
 	private final VkCommandBuffer commandBuffer;
+	private final FrameAllocator  vertexAllocator;
+	private final FrameAllocator  uniformAllocator;
 	private final DescriptorCache descriptorCache;
 
 	private int               passWidth;

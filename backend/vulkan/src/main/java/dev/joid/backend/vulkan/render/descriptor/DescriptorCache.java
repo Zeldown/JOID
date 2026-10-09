@@ -25,8 +25,8 @@ import lombok.NonNull;
 
 public final class DescriptorCache {
 
-	private final VulkanContext           context;
 	private final List<Long>              poolList;
+	private final VulkanContext           context;
 	private final Map<List<Long>, long[]> setMap;
 
 	public DescriptorCache(final VulkanContext context) {
