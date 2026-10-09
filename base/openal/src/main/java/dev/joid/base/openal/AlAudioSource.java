@@ -22,8 +22,10 @@ public final class AlAudioSource implements IAudioSource {
 
 	private int     source;
 	private float   gain;
+	private Object  group;
 	private Object  context;
 	private boolean playing;
+	private float   appliedGain;
 	private int     bufferedSamples;
 
 	private AlAudioSource(final IAlBinding binding, final IAudioGain hostGain, final int sampleRate, final int channels) {
@@ -77,9 +79,13 @@ public final class AlAudioSource implements IAudioSource {
 	@Override
 	public void gain(final float gain) {
 		this.gain = gain;
-		if (this.isAvailable()) {
-			this.binding.gain(this.source, this.hostGain.apply(gain));
-		}
+		this.isAvailable();
+	}
+
+	@Override
+	public void group(final Object group) {
+		this.group = group;
+		this.isAvailable();
 	}
 
 	@Override
@@ -146,7 +152,13 @@ public final class AlAudioSource implements IAudioSource {
 			this.sampleCountQueue.clear();
 			this.bufferedSamples = 0;
 			this.source = this.binding.genSource();
-			this.binding.gain(this.source, this.hostGain.apply(this.gain));
+			this.appliedGain = Float.NaN;
+		}
+
+		final float applied = this.hostGain.apply(this.gain, this.group);
+		if (Float.compare(applied, this.appliedGain) != 0) {
+			this.appliedGain = applied;
+			this.binding.gain(this.source, applied);
 		}
 		return true;
 	}

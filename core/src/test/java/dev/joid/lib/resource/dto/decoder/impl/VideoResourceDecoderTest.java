@@ -499,6 +499,18 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void givesItsAudioGroupToItsSource() {
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/dto/decoder/impl/voiced.mkv"));
+		Assert.assertNull(decoder.getAudioGroup());
+		Assert.assertSame(decoder, decoder.audioGroup("music"));
+		VideoResourceDecoderTest.load(decoder);
+		Assert.assertEquals(Arrays.asList("create 8000x1", "group music"), this.audio.calls.subList(0, 2));
+		decoder.audioGroup(null);
+		Assert.assertEquals("group null", this.audio.calls.get(this.audio.calls.size() - 1));
+		Assert.assertNull(decoder.getAudioGroup());
+	}
+
+	@Test
 	public void placesItsAudioInSpace() {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/dto/decoder/impl/voiced.mkv"));
 		Assert.assertEquals(50F, decoder.getMaxDistance(), 0F);
@@ -737,6 +749,11 @@ public class VideoResourceDecoderTest {
 
 		@Override
 		public void gain(final float gain) {}
+
+		@Override
+		public void group(final Object group) {
+			this.calls.add("group " + group);
+		}
 
 		@Override
 		public void write(final @NonNull short[] samples) {

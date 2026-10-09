@@ -106,6 +106,7 @@ if (video != null) {
 | `new VideoResourceDecoder(Asset asset)` | The decoder chosen by the format detection: a `FileAsset` is read in place, any other asset is first copied into a temporary file. |
 | `new VideoResourceDecoder(File file)` | Reads the file in place. |
 | `volume(float volume)` | Volume of the audio track, from `0F` to `1F`. Default: `1F`. |
+| `audioGroup(Object audioGroup)` | Audio group of the engine the track plays in, `null` for the default group of the engine. See [Audio](#audio). Default: `null`. |
 | `location(float x, float y, float z)` | Places the audio in space. See [3D audio](#3d-audio-with-location-and-audiolistener). |
 | `referenceDistance(float distance)` | Distance under which the audio plays at full volume. Default: `5F`. |
 | `maxDistance(float distance)` | Distance beyond which the audio is silent. Default: `50F`. |
@@ -113,7 +114,7 @@ if (video != null) {
 | `getDuration()`, `getFrameRate()`, `getTotalFrames()` | Duration in seconds, frames per second (30 when the file does not tell), frame count. |
 | `getDisplayedFrameIndex()` | Index of the frame on screen. |
 | `isEnded()` | `true` once a video that does not loop has delivered its last frame. |
-| `getVolume()`, `getReferenceDistance()`, `getMaxDistance()` | The audio settings. |
+| `getVolume()`, `getAudioGroup()`, `getReferenceDistance()`, `getMaxDistance()` | The audio settings. |
 | `getFile()` | The file read by FFmpeg: the file of a `FileAsset`, the temporary copy, or the file given to the constructor. |
 | `getCodec()` | The decoder forced for a transparent WebM (`libvpx` or `libvpx-vp9`), `null` otherwise. |
 | `getAudioPlayer()` | The `VideoAudioPlayer` of the audio track, `null` when there is none. |
@@ -128,6 +129,7 @@ The audio track of a video plays through the audio bridge (`BridgeHandler.AUDIO`
 - Playback starts once 16 blocks of decoded samples are buffered, then streams them to the audio source in blocks of up to 4096 interleaved 16-bit values, each block made of whole frames.
 - Tracks with more than two channels (4.0, 5.1, 7.1...) are mixed down to stereo by the OpenAL backends (`AudioDownmix.stereo`, without clipping), so a surround video sounds right on any output.
 - `volume` applies at every update; `pause`, `resume`, `stop` and `seek` follow the video.
+- `audioGroup` places the track in an audio group of the engine, such as a sound category of a game: the engine applies the volume of that group, live, and `null` (the default) plays in its default group. The group goes to the audio source (`IAudioSource.group`) when it is created and whenever it changes; an engine without groups ignores it.
 - Without a registered audio bridge, the video plays silently and the error (`No audio bridge registered, ...`) is printed with its stack trace.
 
 ### 3D audio with location and AudioListener

@@ -20,6 +20,7 @@ import dev.joid.lib.resource.dto.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
+import dev.joid.lib.utils.signal.Signal;
 
 public class ResourcePlayerNodeTest {
 
@@ -285,6 +286,22 @@ public class ResourcePlayerNodeTest {
 		Assert.assertEquals(0.25F, video.getVolume(), 0F);
 		Assert.assertSame(player, player.volume(0.5F));
 		Assert.assertEquals(0.5F, video.getVolume(), 0F);
+	}
+
+	@Test
+	public void givesItsAudioGroupToItsVideo() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).audioGroup("music").resource(ResourcePlayerNodeTest.video());
+		final VideoResourceDecoder video = player.getVideo();
+		Assert.assertNull(video.getAudioGroup());
+		this.bridges.open(new NodeUI(player));
+		Assert.assertEquals("music", player.getAudioGroup());
+		Assert.assertEquals("music", video.getAudioGroup());
+		final Signal<String> group = Signal.of("voice");
+		Assert.assertSame(player, player.audioGroup(group));
+		Assert.assertEquals("voice", video.getAudioGroup());
+		group.set("ambient");
+		this.bridges.frame();
+		Assert.assertEquals("ambient", video.getAudioGroup());
 	}
 
 	@Test

@@ -125,6 +125,7 @@ A source is a stream: the player writes samples ahead of the playback and keeps 
 | `pause()` | Pauses the playback and keeps the buffered samples. |
 | `stop()` | Stops the playback and drops the buffered samples. |
 | `gain(float gain)` | Linear volume, `0` for silence. The video player passes `0.3 × volume × distance factor` at every update. |
+| `group(Object group)` | The audio group of the engine the source belongs to, such as a sound category of a game, `null` for the default group of the engine. The video player passes the [`audioGroup`](../resources/playback.md#audio) of the video before it plays and whenever it changes. A backend without groups ignores it. |
 | `isPlaying()` | Whether the source plays: `true` from `play()` to `pause()` or `stop()`, also while it waits for samples. |
 | `delete()` | Releases the source. |
 

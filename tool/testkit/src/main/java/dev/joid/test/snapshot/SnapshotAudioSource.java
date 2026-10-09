@@ -18,6 +18,9 @@ public final class SnapshotAudioSource implements IAudioSource {
 	public void gain(final float gain) {}
 
 	@Override
+	public void group(final Object group) {}
+
+	@Override
 	public void write(final @NonNull short[] samples) {}
 
 	@Override

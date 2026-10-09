@@ -20,6 +20,7 @@ public final class VideoAudioPlayer {
 	private final ArrayBlockingQueue<short[]> sampleQueue = new ArrayBlockingQueue<>(128);
 
 	private volatile float volume = 1F;
+	private volatile Object group;
 
 	private boolean playing;
 	private IAudioSource source;
@@ -53,6 +54,7 @@ public final class VideoAudioPlayer {
 		if (!this.initialized) {
 			try {
 				this.source = BridgeHandler.AUDIO.get().createSource(this.sampleRate, this.channels);
+				this.source.group(this.group);
 				this.initialized = true;
 			} catch (final Exception e) {
 				e.printStackTrace();
@@ -182,6 +184,13 @@ public final class VideoAudioPlayer {
 
 	public static AudioListener getAudioListener() {
 		return VideoAudioPlayer.audioListener;
+	}
+
+	public void setGroup(final Object group) {
+		this.group = group;
+		if (this.source != null) {
+			this.source.group(group);
+		}
 	}
 
 	public void setVolume(final float volume) {

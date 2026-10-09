@@ -71,6 +71,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private boolean loop;
 	private float volume = 1F;
 	private boolean autoplay = true;
+	private Object audioGroup;
 
 	private float locationX;
 	private float locationY;
@@ -143,6 +144,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
 					this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+					this.audioPlayer.setGroup(this.audioGroup);
 					if (this.hasLocation) {
 						this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
 						this.audioPlayer.setReferenceDistance(this.referenceDistance);
@@ -329,6 +331,14 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		return this;
 	}
 
+	public @NonNull VideoResourceDecoder audioGroup(final Object audioGroup) {
+		this.audioGroup = audioGroup;
+		if (this.audioPlayer != null) {
+			this.audioPlayer.setGroup(audioGroup);
+		}
+		return this;
+	}
+
 	@Override
 	public @NonNull VideoResourceDecoder loop(final boolean loop) {
 		this.loop = loop;
@@ -426,6 +436,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
 					this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+					this.audioPlayer.setGroup(this.audioGroup);
 					if (this.hasLocation) {
 						this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
 						this.audioPlayer.setReferenceDistance(this.referenceDistance);

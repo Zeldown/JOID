@@ -78,6 +78,7 @@ The current time in seconds is given by `onProgress`, or read with `getPlayback(
 | `loop(boolean loop)` | `false` | Loops the playback. Applies to the current playback right away and again when it starts. |
 | `autoplay(boolean autoplay)` | `true` | Plays as soon as the playback starts. Read when the playback starts. |
 | `volume(float volume)` | `1F` | Volume of a video's audio, `1F` = 100 %. Applies to the current video right away and again when it starts. Animated images have no audio. |
+| `audioGroup(Object audioGroup)` | `null` | Audio group of the engine for a video's audio (see [Audio](../../resources/playback.md#audio)). Applies to the current video right away and again when it starts. |
 
 ## Positional audio
 
@@ -157,6 +158,7 @@ The node releases its video decoder (decoding thread, audio source) when it is d
 | `autoplay(boolean)`, `autoplay(Supplier<Boolean>)` | `true` | Plays when the playback starts. |
 | `loop(boolean)`, `loop(Supplier<Boolean>)` | `false` | Loops the playback. |
 | `volume(float)`, `volume(Supplier<Float>)` | `1F` | Video audio volume. |
+| `audioGroup(Object)`, `audioGroup(Supplier<?>)` | `null` | Audio group of the engine for the video's audio, such as a sound category of a game; `null` plays in the default group of the engine. |
 | `location(Vector3f)`, `location(Supplier<Vector3f>)` | none | Position of the video's audio source. |
 | `referenceDistance(float)`, `referenceDistance(Supplier<Float>)` | none | Full-volume distance. |
 | `maxDistance(float)`, `maxDistance(Supplier<Float>)` | none | Silent distance. |

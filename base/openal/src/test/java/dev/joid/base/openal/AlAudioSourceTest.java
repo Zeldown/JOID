@@ -25,7 +25,7 @@ public class AlAudioSourceTest {
 		final IAudioSource source = this.create(2);
 		Assert.assertTrue(this.binding.calls.isEmpty());
 		source.gain(0.5F);
-		Assert.assertEquals(Arrays.asList("gen source 1", "gain 1 0.5", "gain 1 0.5"), this.binding.calls);
+		Assert.assertEquals(Arrays.asList("gen source 1", "gain 1 0.5"), this.binding.calls);
 	}
 
 	@Test
@@ -100,9 +100,42 @@ public class AlAudioSourceTest {
 
 	@Test
 	public void appliesTheGainOfTheHost() {
-		final IAudioSource source = AlAudioSource.create(this.binding, gain -> gain * 0.5F, 8000, 1);
+		final IAudioSource source = AlAudioSource.create(this.binding, (gain, group) -> gain * 0.5F, 8000, 1);
 		source.gain(0.8F);
 		Assert.assertEquals("gain 1 0.4", this.binding.calls.get(this.binding.calls.size() - 1));
+	}
+
+	@Test
+	public void followsTheGainFunctionWithoutGainCalls() {
+		final float[] volume = {1F};
+		final IAudioSource source = AlAudioSource.create(this.binding, (gain, group) -> gain * volume[0], 8000, 1);
+		source.gain(0.5F);
+		volume[0] = 0.5F;
+		source.write(new short[] {1});
+		Assert.assertTrue(this.binding.calls.contains("gain 1 0.25"));
+		volume[0] = 0F;
+		source.getBufferedSamples();
+		Assert.assertEquals("gain 1 0.0", this.binding.calls.get(this.binding.calls.size() - 1));
+	}
+
+	@Test
+	public void appliesTheGainFunctionOnlyWhenItChanges() {
+		final IAudioSource source = this.create(1);
+		source.gain(0.5F);
+		source.write(new short[] {1});
+		source.getBufferedSamples();
+		source.gain(0.5F);
+		Assert.assertEquals(1, this.binding.calls.stream().filter(call -> call.startsWith("gain")).count());
+	}
+
+	@Test
+	public void givesItsGroupToTheGainFunction() {
+		final IAudioSource source = AlAudioSource.create(this.binding, (gain, group) -> "music".equals(group) ? gain * 0.25F : gain, 8000, 1);
+		source.gain(1F);
+		source.group("music");
+		Assert.assertEquals("gain 1 0.25", this.binding.calls.get(this.binding.calls.size() - 1));
+		source.group(null);
+		Assert.assertEquals("gain 1 1.0", this.binding.calls.get(this.binding.calls.size() - 1));
 	}
 
 	@Test
@@ -160,13 +193,26 @@ public class AlAudioSourceTest {
 	}
 
 	@Test
+	public void neverCreatesAContextItDoesNotOwn() {
+		this.binding.context = null;
+		final AlAudioBridge bridge = AlAudioBridge.create(this.binding).ownContext(false);
+		final IAudioSource source = bridge.createSource(8000, 1);
+		source.write(new short[] {1});
+		Assert.assertFalse(bridge.isOwnContext());
+		Assert.assertTrue(this.binding.calls.isEmpty());
+		this.binding.context = "shared";
+		source.write(new short[] {2});
+		Assert.assertEquals("gen source 1", this.binding.calls.get(0));
+	}
+
+	@Test
 	public void givesTheGainOfTheHostToItsSources() {
-		AlAudioBridge.create(this.binding).hostGain(gain -> 0F).createSource(8000, 1).gain(1F);
+		AlAudioBridge.create(this.binding).gain((gain, group) -> 0F).createSource(8000, 1).gain(1F);
 		Assert.assertEquals("gain 1 0.0", this.binding.calls.get(this.binding.calls.size() - 1));
 	}
 
 	private IAudioSource create(final int channels) {
-		return AlAudioSource.create(this.binding, gain -> gain, 8000, channels);
+		return AlAudioSource.create(this.binding, (gain, group) -> gain, 8000, channels);
 	}
 
 	private static final class RecordingAlBinding implements IAlBinding {

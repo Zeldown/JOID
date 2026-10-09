@@ -40,6 +40,7 @@ public class ResourcePlayerNode extends Node {
 	private boolean loop;
 	private float volume = 1F;
 	private boolean autoplay = true;
+	private Object audioGroup;
 
 	private Vector3f location;
 	private Float    maxDistance;
@@ -113,7 +114,7 @@ public class ResourcePlayerNode extends Node {
 			this.resourceStarted = true;
 			final VideoResourceDecoder video = this.getVideo();
 			if (video != null) {
-				video.volume(this.volume);
+				video.volume(this.volume).audioGroup(this.audioGroup);
 				if (this.location != null) {
 					video.location(this.location.x, this.location.y, this.location.z);
 				}
@@ -289,6 +290,20 @@ public class ResourcePlayerNode extends Node {
 			final VideoResourceDecoder video = this.getVideo();
 			if (video != null) {
 				video.volume(value);
+			}
+		});
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T audioGroup(final @NonNull Object audioGroup) {
+		return this.audioGroup(Signal.from(audioGroup));
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T audioGroup(final @NonNull Supplier<?> audioGroup) {
+		return super.follow("audioGroup", audioGroup, value -> {
+			this.audioGroup = value;
+			final VideoResourceDecoder video = this.getVideo();
+			if (video != null) {
+				video.audioGroup(value);
 			}
 		});
 	}

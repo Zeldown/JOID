@@ -9,6 +9,7 @@ public interface IAudioSource {
 	public void pause();
 
 	public void gain(final float gain);
+	public void group(final Object group);
 	public void write(final @NonNull short[] samples);
 
 	public boolean isPlaying();

@@ -269,13 +269,14 @@ The LWJGL 3 and Vulkan backends share two modules, also published as their own j
 `dev.joid.base.openal.AlAudioBridge` implements `IAudioBridge` on OpenAL, in plain Java: every OpenAL call goes through an `IAlBinding` (`dev.joid.base.openal.binding`), so the same code runs on LWJGL 3 (`Lwjgl3AlBinding.inst()`, in the module), on LWJGL 2 (`Lwjgl2AlBinding.inst()`, in the LWJGL 2 backend) or on the OpenAL of a host.
 
 ```java
-BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()).hostGain(gain -> gain * this.settings.getVolume()));
+BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()).gain((gain, group) -> gain * this.settings.getVolume(group)));
 ```
 
 - `createSource` uses the OpenAL context that is current, so a host that already plays sound shares its context; when none is current, it creates one through the binding (default device, context made current) and destroys it when the JVM exits.
+- `ownContext(false)` leaves the OpenAL context to the program that embeds JOID, as a game that owns its sound engine: the bridge never creates one, and its sources stay silent while no context is current (no sound device, sound engine reloading), then start on the context of the game. By default (`true`), the bridge creates its own context when none is current.
 - `AlAudioSource` streams 16-bit samples through a pool of OpenAL buffers, in mono for one channel and in stereo otherwise: a track of 3 channels or more is mixed down with [`AudioDownmix`](bridges.md#stereo-output-with-audiodownmix) first. It counts the buffered samples, reuses the played buffers, and plays again when a playing source ran dry. The source is placed at the listener, so OpenAL does not spatialize it; JOID applies the distance attenuation itself (see [Playback, Video and Audio](../resources/playback.md)).
 - A source follows the context of the host: when the current context changes, as when a game reloads its sound engine, the source recreates its OpenAL source on the new context and drops the samples it had buffered; without a current context, it does nothing.
-- `hostGain(IAudioGain)` sets the volume of the host: each gain given to a source goes through `IAudioGain.apply(gain)` (by default the gain itself) at every `gain` call, so a volume read there, such as the master volume times a category volume of a game, follows its changes live.
+- `gain(IAudioGain)` sets the volume applied by the program that embeds JOID: the gain of a source goes through `IAudioGain.apply(gain, group)` (by default the gain itself), with the group given to the source (`null` for its default group). The source reads it again at every call (`write`, `getBufferedSamples`, `gain`, `play`...) and sends it to OpenAL when it changed, so a volume read there, such as the master volume times the volume of the category of the group in a game, follows its changes live.
 
 | `IAlBinding` method | OpenAL call |
 |---|---|

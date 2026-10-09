@@ -161,6 +161,16 @@ public class VideoAudioPlayerTest {
 	}
 
 	@Test
+	public void givesItsGroupToItsSource() {
+		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		player.setGroup("music");
+		player.play();
+		Assert.assertEquals("music", this.audio.source().group);
+		player.setGroup(null);
+		Assert.assertNull(this.audio.source().group);
+	}
+
+	@Test
 	public void pausesAndResumesItsSource() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
 		final RecordingAudioSource source = this.audio.source();
@@ -397,6 +407,7 @@ public class VideoAudioPlayerTest {
 		private final List<short[]> written = new ArrayList<>();
 
 		private int     played;
+		private Object  group;
 		private boolean playing;
 
 		@Override
@@ -421,6 +432,11 @@ public class VideoAudioPlayerTest {
 		@Override
 		public void gain(final float gain) {
 			this.gains.add(gain);
+		}
+
+		@Override
+		public void group(final Object group) {
+			this.group = group;
 		}
 
 		@Override
