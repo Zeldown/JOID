@@ -199,7 +199,7 @@ The core `FrameBufferHandle<T extends Texture>` (`dev.joid.lib.bridge.render.fra
 | `depth(boolean test, boolean write)` / `cull(boolean)` / `colorMask(boolean)` | Depth test and write, face culling, color writes. |
 | `alphaTest(float threshold)` | A threshold above 0 turns the alpha test on and discards the fragments whose alpha is at or below it; a threshold of 0 or less turns it off. UIs call `alphaTest(0F)` at the start of every frame to reset it; resource masks use `alphaTest(0.5F)`. |
 | `stencilTest`, `stencilFunction(StencilFunction, reference, mask)`, `stencilOperation(fail, depthFail, pass)`, `clearStencil()` | Stencil, used by the masks of a UI. `StencilFunction`: `NEVER`, `LESS`, `LESS_EQUAL`, `GREATER`, `GREATER_EQUAL`, `EQUAL`, `NOT_EQUAL`, `ALWAYS`; `StencilOperation`: `KEEP`, `ZERO`, `REPLACE`, `INCREMENT`, `DECREMENT`, `INVERT`. The screen needs an 8-bit stencil buffer. |
-| `lineWidth(float)` / `lineSmooth(boolean)` / `getLineWidth()` / `isLineSmooth()` | Line state. With `lineSmooth(true)` and no bound shader, the core expands each segment into triangles drawn with its `line` shader, so the backend only draws triangles. |
+| `lineWidth(float)` / `lineSmooth(boolean)` / `getLineWidth()` / `isLineSmooth()` | Line state, kept by the core. When a line is smooth or its width is not `1F`, the `Tessellator` expands each segment into triangles drawn with the line shader of the bound shader (`IShader.getLineShader()`), or of the core `line` shader without one: a backend only ever draws `LINES` of 1 pixel without smoothing, and needs neither wide nor smooth lines from its API. |
 | `shader(IShader)` / `getShader()` | The bound shader, `null` for none. |
 
 ### Pipelines and stencil emulation

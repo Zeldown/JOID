@@ -196,6 +196,50 @@ public class GlslShaderTranslatorTest {
 		}
 	}
 
+	@Test
+	public void callsTheVertexMainOnBothEndsOfALine() {
+		final String vertex = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateVertex(GlslShaderTranslatorTest.vertex().toLine(), GlslShaderTranslatorTest.fragment());
+		Assert.assertTrue(vertex.contains("layout(location = 1) in vec2 aTexCoord;\n"));
+		Assert.assertTrue(vertex.contains("layout(location = 3) in vec3 aNormal;\n"));
+		Assert.assertTrue(vertex.contains("out float joid_LineAcross;\nout float joid_LineAlong;\nout float joid_LineLength;\nvec3 joid_Position;\nvec2 joid_TexCoord;\nvec3 joid_Normal;\n#line 1\n"));
+		Assert.assertTrue(vertex.contains("\nvoid joid_body() {\n    vTexCoord = joid_TexCoord * u_Scale;\n"));
+		Assert.assertTrue(vertex.contains("vec4(joid_Position, 1.0);"));
+		Assert.assertTrue(vertex.contains("\tjoid_Position = vec3(aTexCoord, aPosition.z);\n\tjoid_body();\n\tvec4 joid_other = gl_Position;\n\tjoid_Position = aPosition;\n\tjoid_body();\n"));
+		Assert.assertEquals(1, GlslShaderTranslatorTest.count(vertex, "void\\s+main\\s*\\(\\s*\\)"));
+	}
+
+	@Test
+	public void coversTheFragmentsOfALine() {
+		final String fragment = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateFragment(GlslShaderTranslatorTest.vertex().toLine(), GlslShaderTranslatorTest.fragment());
+		Assert.assertTrue(fragment.contains("in float joid_LineAcross;\nin float joid_LineAlong;\nin float joid_LineLength;\n"));
+		Assert.assertTrue(fragment.contains("\nvoid joid_body() {\n"));
+		Assert.assertTrue(fragment.contains("\nvoid joid_main() {\n\tjoid_body();\n"));
+		Assert.assertTrue(fragment.contains("\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n\nvoid main() {\n\tjoid_main();\n"));
+		Assert.assertTrue(fragment.contains("\tfloat u_Scale;\n") && fragment.contains("\tfloat joid_LineWidth;\n\tvec2 joid_LineViewport;\n"));
+	}
+
+	@Test
+	public void keepsTheVaryingLocationsOfALineInBothStages() {
+		final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
+		final ShaderSource vertex = GlslShaderTranslatorTest.vertex().toLine();
+		Assert.assertEquals(translator.getUniforms(vertex, GlslShaderTranslatorTest.fragment()).size(), translator.getUniforms(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()).size() + 2);
+		Assert.assertTrue(translator.translateVertex(vertex, GlslShaderTranslatorTest.fragment()).contains("flat out vec4 vColor;\nout float joid_LineAcross;"));
+		Assert.assertTrue(translator.translateFragment(vertex, GlslShaderTranslatorTest.fragment()).contains("flat in vec4 vColor;\nin float joid_LineAcross;"));
+	}
+
+	@Test
+	public void translatesEveryCoreShaderAsALineInEveryDialect() {
+		for (final CoreShader shader : CoreShader.values()) {
+			final ShaderSource vertex = shader.read(ShaderStage.VERTEX).toLine();
+			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
+			for (final GlslDialect dialect : GlslDialect.values()) {
+				final GlslShaderTranslator translator = GlslShaderTranslator.create(dialect, dialect.hasUniformBlocks() ? UniformLayout.BLOCK : UniformLayout.LOOSE);
+				Assert.assertTrue(shader + " " + dialect, translator.translateVertex(vertex, fragment).contains("\nvoid joid_body() {\n"));
+				Assert.assertEquals(shader + " " + dialect, 1, GlslShaderTranslatorTest.count(translator.translateFragment(vertex, fragment), "void\\s+main\\s*\\(\\s*\\)"));
+			}
+		}
+	}
+
 	private static String translateVertex(final GlslDialect dialect) {
 		return GlslShaderTranslatorTest.translate(dialect, UniformLayout.BLOCK, GlslShaderTranslatorTest.VERTEX, GlslShaderTranslatorTest.FRAGMENT, true);
 	}

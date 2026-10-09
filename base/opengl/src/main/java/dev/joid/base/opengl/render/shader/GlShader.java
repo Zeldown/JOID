@@ -1,7 +1,6 @@
 package dev.joid.base.opengl.render.shader;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import dev.joid.base.opengl.binding.GlConstants;
@@ -11,8 +10,6 @@ import dev.joid.lib.bridge.render.shader.Shader;
 import dev.joid.lib.bridge.render.shader.source.GlslDialect;
 import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
-import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
-import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
 import dev.joid.lib.bridge.render.shader.uniform.UniformType;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -28,8 +25,8 @@ public final class GlShader extends Shader {
 	private final IGlProgramBinding    programs;
 	private final Map<String, Integer> locationMap;
 
-	private GlShader(final GlRenderBridge bridge, final int program, final boolean active, final BlendState blend, final UniformBlock block, final List<ShaderVariable> samplers) {
-		super(bridge, blend, active, block, samplers);
+	private GlShader(final GlRenderBridge bridge, final GlslShaderTranslator translator, final ShaderSource vertex, final ShaderSource fragment, final int program, final boolean active, final BlendState blend) {
+		super(bridge, translator, vertex, fragment, blend, active);
 		this.programs    = bridge.getBinding().getProgramBinding();
 		this.program     = program;
 		this.locationMap = new HashMap<>();
@@ -40,7 +37,7 @@ public final class GlShader extends Shader {
 		final IGlProgramBinding programs = bridge.getBinding().getProgramBinding();
 		final int program = programs.createProgram();
 		final boolean active = GlShader.link(programs, translator.getDialect(), program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
-		return new GlShader(bridge, program, active, blend, translator.createBlock(vertex, fragment), translator.getSamplers(vertex, fragment));
+		return new GlShader(bridge, translator, vertex, fragment, program, active, blend);
 	}
 
 	public void use(final @NonNull RenderState state) {

@@ -48,7 +48,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 		}
 
 		final RenderState state = super.getState();
-		this.draws.add(new Draw(primitive, xs, ys, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha(), state.getShader()));
+		this.draws.add(new Draw(primitive, xs, ys, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha(), state.getLineWidth(), state.getShader()));
 	}
 
 	@Override
@@ -81,6 +81,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 		private final float     green;
 		private final float     blue;
 		private final float     alpha;
+		private final float     lineWidth;
 		private final IShader   shader;
 
 		public double getLeft() {

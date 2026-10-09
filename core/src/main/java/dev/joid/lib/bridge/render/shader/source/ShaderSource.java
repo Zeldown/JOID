@@ -31,7 +31,8 @@ public final class ShaderSource {
 	private final List<ShaderVariable> samplers;
 	private final Set<ShaderFeature>   features;
 
-	private String body;
+	private String  body;
+	private boolean line;
 
 	private ShaderSource(final ShaderStage stage) {
 		this.stage    = stage;
@@ -87,6 +88,24 @@ public final class ShaderSource {
 
 		source.features.addAll(ShaderFeature.find(instructions));
 		source.body = body.toString();
+		return source;
+	}
+
+	public @NonNull ShaderSource toLine() {
+		if (this.stage != ShaderStage.VERTEX) {
+			throw new IllegalStateException("Only a vertex shader draws lines");
+		}
+
+		final ShaderSource source = new ShaderSource(this.stage);
+		source.inputs.addAll(this.inputs);
+		source.outputs.addAll(this.outputs);
+		source.uniforms.addAll(this.uniforms);
+		source.samplers.addAll(this.samplers);
+		source.builtins.addAll(this.builtins);
+		source.builtins.addAll(EnumSet.of(ShaderBuiltin.POSITION, ShaderBuiltin.TEXTURE_COORDINATE, ShaderBuiltin.NORMAL));
+		source.features.addAll(this.features);
+		source.body = this.body;
+		source.line = true;
 		return source;
 	}
 

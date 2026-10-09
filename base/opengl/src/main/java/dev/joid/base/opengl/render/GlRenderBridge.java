@@ -206,10 +206,6 @@ public class GlRenderBridge extends RenderBridge {
 		this.toggle(GlConstants.STENCIL_TEST, state.isStencilTest());
 		pipeline.stencilFunc(GlEnums.function(state.getStencilFunction()), state.getStencilReference(), state.getStencilMask());
 		pipeline.stencilOp(GlEnums.operation(state.getStencilFail()), GlEnums.operation(state.getStencilDepthFail()), GlEnums.operation(state.getStencilPass()));
-
-		final float[] lineWidthRange = state.isLineSmooth() ? this.capabilities.getSmoothLineWidthRange() : this.capabilities.getAliasedLineWidthRange();
-		pipeline.lineWidth(Math.max(lineWidthRange[0], Math.min(lineWidthRange[1], state.getLineWidth())));
-		this.toggle(GlConstants.LINE_SMOOTH, state.isLineSmooth());
 	}
 
 	private void toggle(final int capability, final boolean enabled) {

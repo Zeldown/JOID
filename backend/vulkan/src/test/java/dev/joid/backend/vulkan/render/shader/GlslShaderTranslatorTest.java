@@ -44,6 +44,18 @@ public class GlslShaderTranslatorTest {
 	}
 
 	@Test
+	public void compilesCoreShadersAsLines() {
+		for (final CoreShader shader : CoreShader.values()) {
+			final ShaderSource vertex = shader.read(ShaderStage.VERTEX).toLine();
+			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
+			Assert.assertTrue(shader.name(), ShaderCompiler.compileVertex(GlslShaderTranslator.create().translateVertex(vertex, fragment)).remaining() > 0);
+			Assert.assertTrue(shader.name(), ShaderCompiler.compileFragment(GlslShaderTranslator.create().translateFragment(vertex, fragment)).remaining() > 0);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateVertex(vertex, fragment), ShaderStage.VERTEX).remaining() > 0);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
+		}
+	}
+
+	@Test
 	public void compilesCoreShadersWithTheStencilEmulation() {
 		for (final CoreShader shader : CoreShader.values()) {
 			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);

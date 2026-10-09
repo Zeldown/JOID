@@ -20,6 +20,7 @@ public final class GlPipelineReset {
 	}
 
 	public void apply() {
+		this.binding.disable(GlConstants.LINE_SMOOTH);
 		this.binding.disable(GlConstants.SCISSOR_TEST);
 		this.binding.disable(GlConstants.COLOR_LOGIC_OP);
 		this.binding.disable(GlConstants.POLYGON_OFFSET_FILL);
@@ -49,6 +50,7 @@ public final class GlPipelineReset {
 		state.stencilMask(0xFF);
 		state.cullFace(GlConstants.BACK);
 		state.frontFace(GlConstants.CCW);
+		state.lineWidth(1F);
 		state.polygonMode(GlConstants.FRONT_AND_BACK, GlConstants.FILL);
 
 		state.pixelStorei(GlConstants.PACK_ALIGNMENT, 4);

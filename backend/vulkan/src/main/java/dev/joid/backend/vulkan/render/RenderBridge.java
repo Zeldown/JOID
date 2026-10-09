@@ -233,15 +233,14 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		final FrameBuffer target = (FrameBuffer) state.getFrameBuffer();
 		this.beginPass(target);
 
-		final boolean lines = primitive == Primitive.LINES;
-		final long pipeline = this.pipelineCache.get(PipelineKey.create(shader, state, primitive), target != null, lines && state.isLineSmooth(), target == null ? this.swapchain.getClearRenderPass() : this.context.getOffscreenRenderPass());
+		final long pipeline = this.pipelineCache.get(PipelineKey.create(shader, state, primitive), target != null, target == null ? this.swapchain.getClearRenderPass() : this.context.getOffscreenRenderPass());
 		if (pipeline != this.boundPipeline) {
 			VK10.vkCmdBindPipeline(this.commandBuffer, VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 			this.boundPipeline = pipeline;
 		}
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			this.applyDynamicState(stack, state, target != null, lines ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+			this.applyDynamicState(stack, state, target != null, primitive == Primitive.LINES ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 			final long vertexOffset = this.writeVertices(buffer, state);
 			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer.isColor());
 			final long descriptorSet = this.descriptorCache.get(shader, this.uniformStream.getBuffer().getBuffer(), this.getImages(shader));
@@ -353,7 +352,6 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		scissor.extent().set(this.passWidth, this.passHeight);
 		VK10.vkCmdSetScissor(this.commandBuffer, 0, scissor);
 
-		VK10.vkCmdSetLineWidth(this.commandBuffer, this.context.isWideLines() ? state.getLineWidth() : 1F);
 		VK13.vkCmdSetPrimitiveTopology(this.commandBuffer, topology);
 		VK13.vkCmdSetCullMode(this.commandBuffer, state.isCull() ? VK10.VK_CULL_MODE_BACK_BIT : VK10.VK_CULL_MODE_NONE);
 		VK13.vkCmdSetFrontFace(this.commandBuffer, offscreen ? VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE : VK10.VK_FRONT_FACE_CLOCKWISE);

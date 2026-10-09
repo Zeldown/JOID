@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.function.Consumer;
 
+import javax.vecmath.Vector2d;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,8 +26,11 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.render.modifier.Scale;
 import dev.joid.lib.render.modifier.Vector;
+import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
@@ -196,6 +201,37 @@ public abstract class RenderBridgeContractSuite {
 		render.lineSmooth(true);
 		Assert.assertEquals(3F, render.getLineWidth(), 0F);
 		Assert.assertTrue(render.isLineSmooth());
+	}
+
+	@Test
+	public void drawsAWideLineAsWideAsItsWidth() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.lineWidth(6F);
+			DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, new Vector2d(8D, 32D), new Vector2d(56D, 32D));
+		});
+		RenderBridgeContractSuite.assertPixel(image, 32, 27, RenderBridgeContractSuite.BLACK);
+		RenderBridgeContractSuite.assertPixel(image, 32, 30, RenderBridgeContractSuite.WHITE);
+		RenderBridgeContractSuite.assertPixel(image, 32, 33, RenderBridgeContractSuite.WHITE);
+		RenderBridgeContractSuite.assertPixel(image, 32, 36, RenderBridgeContractSuite.BLACK);
+	}
+
+	@Test
+	public void drawsAWideLineWithTheBoundShader() {
+		final IShader shader = RenderBridgeContractSuite.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
+		shader.uniform("tint", 0F, 1F, 0F, 1F);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.lineWidth(6F);
+			shader.bind();
+			try {
+				DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, new Vector2d(8D, 32D), new Vector2d(56D, 32D));
+			} finally {
+				shader.unbind();
+			}
+		});
+		RenderBridgeContractSuite.assertPixel(image, 32, 27, RenderBridgeContractSuite.BLACK);
+		RenderBridgeContractSuite.assertPixel(image, 32, 30, RenderBridgeContractSuite.GREEN);
+		RenderBridgeContractSuite.assertPixel(image, 32, 33, RenderBridgeContractSuite.GREEN);
+		RenderBridgeContractSuite.assertPixel(image, 32, 36, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test

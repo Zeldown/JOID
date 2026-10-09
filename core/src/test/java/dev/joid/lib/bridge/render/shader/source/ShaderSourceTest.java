@@ -30,6 +30,24 @@ public class ShaderSourceTest {
 		Assert.assertEquals(EnumSet.of(ShaderBuiltin.POSITION, ShaderBuiltin.PROJECTION_MATRIX, ShaderBuiltin.MODEL_VIEW_MATRIX), source.getBuiltins());
 	}
 
+	@Test
+	public void turnsAVertexShaderIntoALineShader() {
+		final ShaderSource source = ShaderSource.parse(ShaderStage.VERTEX, "out vec4 vColor;\nuniform float u_Wave;\n\nvoid main() {\n    vColor = aColor;\n    gl_Position = vec4(aPosition, u_Wave);\n}\n");
+		final ShaderSource line = source.toLine();
+		Assert.assertFalse(source.isLine());
+		Assert.assertTrue(line.isLine());
+		Assert.assertEquals(EnumSet.of(ShaderBuiltin.POSITION, ShaderBuiltin.COLOR), source.getBuiltins());
+		Assert.assertEquals(EnumSet.of(ShaderBuiltin.POSITION, ShaderBuiltin.TEXTURE_COORDINATE, ShaderBuiltin.COLOR, ShaderBuiltin.NORMAL), line.getBuiltins());
+		Assert.assertEquals(source.getBody(), line.getBody());
+		Assert.assertEquals(source.getOutputs(), line.getOutputs());
+		Assert.assertEquals(source.getUniforms(), line.getUniforms());
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void refusesALineFragmentShader() {
+		ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n").toLine();
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsVertexInputs() {
 		ShaderSource.parse(ShaderStage.VERTEX, "in vec3 aCustom;\n");

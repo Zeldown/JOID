@@ -38,9 +38,11 @@ public class GlslExportTest {
 		GlslExport.export(this.folder.getRoot());
 		for (final GlslDialect dialect : new GlslDialect[] {GlslDialect.GLSL_330, GlslDialect.GLSL_450}) {
 			for (final CoreShader shader : CoreShader.values()) {
-				final File output = new File(this.folder.getRoot(), dialect.name());
-				Assert.assertTrue(GlslCompiler.compileOpenGl(new String(Files.readAllBytes(new File(output, shader.name().toLowerCase(Locale.ROOT) + ".vert").toPath()), StandardCharsets.UTF_8), ShaderStage.VERTEX).remaining() > 0);
-				Assert.assertTrue(GlslCompiler.compileOpenGl(new String(Files.readAllBytes(new File(output, shader.name().toLowerCase(Locale.ROOT) + ".frag").toPath()), StandardCharsets.UTF_8), ShaderStage.FRAGMENT).remaining() > 0);
+				for (final String name : new String[] {shader.name().toLowerCase(Locale.ROOT), shader.name().toLowerCase(Locale.ROOT) + "-line"}) {
+					final File output = new File(this.folder.getRoot(), dialect.name());
+					Assert.assertTrue(name, GlslCompiler.compileOpenGl(new String(Files.readAllBytes(new File(output, name + ".vert").toPath()), StandardCharsets.UTF_8), ShaderStage.VERTEX).remaining() > 0);
+					Assert.assertTrue(name, GlslCompiler.compileOpenGl(new String(Files.readAllBytes(new File(output, name + ".frag").toPath()), StandardCharsets.UTF_8), ShaderStage.FRAGMENT).remaining() > 0);
+				}
 			}
 		}
 	}

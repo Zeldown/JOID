@@ -39,10 +39,15 @@ public final class GlslExport {
 			for (final CoreShader shader : CoreShader.values()) {
 				final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
 				final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
-				Files.write(new File(folder, shader.name().toLowerCase(Locale.ROOT) + ".vert").toPath(), translator.translateVertex(vertex, fragment).getBytes(StandardCharsets.UTF_8));
-				Files.write(new File(folder, shader.name().toLowerCase(Locale.ROOT) + ".frag").toPath(), translator.translateFragment(vertex, fragment).getBytes(StandardCharsets.UTF_8));
+				GlslExport.write(folder, shader.name().toLowerCase(Locale.ROOT), translator, vertex, fragment);
+				GlslExport.write(folder, shader.name().toLowerCase(Locale.ROOT) + "-line", translator, vertex.toLine(), fragment);
 			}
 		}
+	}
+
+	private static void write(final File folder, final String name, final GlslShaderTranslator translator, final ShaderSource vertex, final ShaderSource fragment) throws IOException {
+		Files.write(new File(folder, name + ".vert").toPath(), translator.translateVertex(vertex, fragment).getBytes(StandardCharsets.UTF_8));
+		Files.write(new File(folder, name + ".frag").toPath(), translator.translateFragment(vertex, fragment).getBytes(StandardCharsets.UTF_8));
 	}
 
 }

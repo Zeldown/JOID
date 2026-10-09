@@ -69,6 +69,17 @@ public final class UniformMember {
 		return this;
 	}
 
+	public @NonNull UniformMember value(final @NonNull UniformMember source) {
+		if (source.getType() != this.type || source.getLength() != this.length) {
+			throw this.refuse("the values of " + source.getDeclaration());
+		}
+
+		for (int i = 0; i < this.values.capacity() / 4; i++) {
+			this.put(i, source.getValues().getInt(i * 4));
+		}
+		return this;
+	}
+
 	public @NonNull UniformMember clean() {
 		this.dirty = false;
 		return this;

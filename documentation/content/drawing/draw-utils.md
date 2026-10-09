@@ -194,8 +194,8 @@ Each class is a singleton also reachable through its static `getInstance()` (`Dr
 | `pushState()`, `popState()` | Save and restore the whole state: color, blending, depth, culling, lighting, color mask, alpha test, lines, stencil, viewport, shader, texture and framebuffer. |
 | `color(float red, float green, float blue, float alpha)` | Current color; vertices without their own color take it. `Color.bind()` sets it from a `Color`, `Color.reset()` sets it back to white (see [Colors and Gradients](../styling/colors.md)). White by default. |
 | `blend(BlendState state)` | `BlendState.NORMAL`, `BlendState.PREMULTIPLIED`, `BlendState.DISABLED` or `BlendState.create(...)`. `DISABLED` by default. |
-| `lineWidth(float width)`, `getLineWidth()` | Width of lines, in window pixels. `1F` by default. |
-| `lineSmooth(boolean smooth)`, `isLineSmooth()` | Antialiased lines. |
+| `lineWidth(float width)`, `getLineWidth()` | Width of lines, in window pixels. `1F` by default. A line of another width is antialiased, whatever `lineSmooth`. |
+| `lineSmooth(boolean smooth)`, `isLineSmooth()` | Antialiased lines, for a width of `1F`. |
 | `depth(boolean test, boolean write)` | Depth test and depth writes. |
 | `cull(boolean cull)` | Back-face culling. |
 | `lighting(boolean lighting)` | Lighting of 3D models (see [3D Models](models.md)). |

@@ -15,7 +15,6 @@ import dev.joid.backend.vulkan.render.Context;
 import dev.joid.backend.vulkan.render.RenderBridge;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
-import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import dev.joid.lib.bridge.render.state.BlendState;
 import lombok.Getter;
 import lombok.NonNull;
@@ -28,8 +27,8 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 	private final long descriptorSetLayout;
 	private final long pipelineLayout;
 
-	private Shader(final RenderBridge bridge, final BlendState blend, final boolean active, final UniformBlock block, final List<ShaderVariable> samplers, final long vertexModule, final long fragmentModule, final long descriptorSetLayout, final long pipelineLayout) {
-		super(bridge, blend, active, block, samplers);
+	private Shader(final RenderBridge bridge, final GlslShaderTranslator translator, final ShaderSource vertexSource, final ShaderSource fragmentSource, final BlendState blend, final boolean active, final long vertexModule, final long fragmentModule, final long descriptorSetLayout, final long pipelineLayout) {
+		super(bridge, translator, vertexSource, fragmentSource, blend, active);
 		this.vertexModule        = vertexModule;
 		this.fragmentModule      = fragmentModule;
 		this.descriptorSetLayout = descriptorSetLayout;
@@ -38,7 +37,6 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 
 	public static @NonNull Shader create(final RenderBridge bridge, final ShaderSource vertexSource, final ShaderSource fragmentSource, final BlendState blend) {
 		final GlslShaderTranslator translator = GlslShaderTranslator.create();
-		final UniformBlock block = translator.createBlock(vertexSource, fragmentSource);
 		final List<ShaderVariable> samplers = translator.getSamplers(vertexSource, fragmentSource);
 
 		final ByteBuffer vertex;
@@ -48,7 +46,7 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 			fragment = ShaderCompiler.compileFragment(translator.translateFragment(vertexSource, fragmentSource));
 		} catch (final IllegalStateException e) {
 			System.err.println(e.getMessage());
-			return new Shader(bridge, blend, false, block, samplers, 0L, 0L, 0L, 0L);
+			return new Shader(bridge, translator, vertexSource, fragmentSource, blend, false, 0L, 0L, 0L, 0L);
 		}
 
 		final Context context = bridge.getContext();
@@ -66,7 +64,7 @@ public final class Shader extends dev.joid.lib.bridge.render.shader.Shader {
 			final LongBuffer pipelineLayout = stack.mallocLong(1);
 			Context.check(VK10.vkCreatePipelineLayout(context.getDevice(), VkPipelineLayoutCreateInfo.calloc(stack).sType$Default().pSetLayouts(descriptorSetLayout), null, pipelineLayout), "vkCreatePipelineLayout");
 
-			return new Shader(bridge, blend, true, block, samplers, Shader.createModule(stack, context, vertex), Shader.createModule(stack, context, fragment), descriptorSetLayout.get(0), pipelineLayout.get(0));
+			return new Shader(bridge, translator, vertexSource, fragmentSource, blend, true, Shader.createModule(stack, context, vertex), Shader.createModule(stack, context, fragment), descriptorSetLayout.get(0), pipelineLayout.get(0));
 		}
 	}
 

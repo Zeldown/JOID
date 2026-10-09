@@ -99,6 +99,8 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 | `litsAFaceTheSameAtAnyScale` | A face turned to the light is lit above the ambient light, and gives the same pixel at scale 1 and 100. |
 | `disablesTheAlphaTestAtZero` | A fully transparent fragment is discarded under `alphaTest(0.5F)` and written again under `alphaTest(0F)`. |
 | `exposesTheLineState` | `getLineWidth()` and `isLineSmooth()` return what was set. |
+| `drawsAWideLineAsWideAsItsWidth` | A hard line of 6 pixels covers 6 rows of pixels: the core draws it as triangles, the backend needs no wide lines. |
+| `drawsAWideLineWithTheBoundShader` | The same line, drawn while a shader is bound, is as wide and takes the color of that shader. |
 | `uploadsArgbTextures` | A 2×2 ARGB texture shows its first texel at the top-left corner. |
 | `minifiesThroughMipmaps` | Textures are not mipmapped by default; `mipmap(true)`, before or after the upload, makes a minified checkerboard average to gray. |
 | `deletesTexturesTwice` | `ITexture.delete()` can be called twice. |

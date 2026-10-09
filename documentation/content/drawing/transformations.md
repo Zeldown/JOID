@@ -163,7 +163,7 @@ tessellator.draw();
 ![A triangle whose corners are red, green and blue, the colors blending across its surface](../images/tessellator-triangle.png "One color per vertex, interpolated")
 
 - Call `setColor`, `setTextureUV` and `setNormal` after `start`, before the vertices they apply to. Vertices without color take the current color of the render bridge, and vertices without texture coordinates use `(0, 0)`.
-- `QUADS` and `POLYGON` are turned into triangles (a polygon as a fan from its first vertex), `LINE_STRIP` and `LINE_LOOP` into segments. While line smoothing is on and no shader is bound, lines are drawn as antialiased quads `getLineWidth()` window pixels wide.
+- `QUADS` and `POLYGON` are turned into triangles (a polygon as a fan from its first vertex), `LINE_STRIP` and `LINE_LOOP` into segments. Lines are drawn as antialiased quads `getLineWidth()` window pixels wide while line smoothing is on or the width is not `1F`, with the bound shader or the `line` shader of the core; otherwise the backend draws 1-pixel lines.
 - `start` resets the color, the texture coordinates, the normal and the `translate` offset of the previous draw: call `translate` after `start`, it shifts every following vertex until `draw()`.
 - The tessellator does not touch the render state: set the blending, texture and shader yourself, inside `pushState()` / `popState()`.
 - To draw while the shared instance is started (inside your own `render()` of a model, for example), use a `copy()`.

@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.vulkan.EXTLineRasterization;
 import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VK13;
 import org.lwjgl.vulkan.VkGraphicsPipelineCreateInfo;
@@ -16,7 +15,6 @@ import org.lwjgl.vulkan.VkPipelineDepthStencilStateCreateInfo;
 import org.lwjgl.vulkan.VkPipelineDynamicStateCreateInfo;
 import org.lwjgl.vulkan.VkPipelineInputAssemblyStateCreateInfo;
 import org.lwjgl.vulkan.VkPipelineMultisampleStateCreateInfo;
-import org.lwjgl.vulkan.VkPipelineRasterizationLineStateCreateInfoEXT;
 import org.lwjgl.vulkan.VkPipelineRasterizationStateCreateInfo;
 import org.lwjgl.vulkan.VkPipelineShaderStageCreateInfo;
 import org.lwjgl.vulkan.VkPipelineVertexInputStateCreateInfo;
@@ -43,16 +41,16 @@ public final class PipelineCache {
 		this.pipelineMap = new HashMap<>();
 	}
 
-	public long get(final @NonNull PipelineKey key, final boolean offscreen, final boolean smooth, final long renderPass) {
-		final long[] variants = this.pipelineMap.computeIfAbsent(key, pipelineKey -> new long[4]);
-		final int index = (offscreen ? 2 : 0) + (smooth ? 1 : 0);
+	public long get(final @NonNull PipelineKey key, final boolean offscreen, final long renderPass) {
+		final long[] variants = this.pipelineMap.computeIfAbsent(key, pipelineKey -> new long[2]);
+		final int index = offscreen ? 1 : 0;
 		if (variants[index] == VK10.VK_NULL_HANDLE) {
-			variants[index] = this.create(key, smooth, renderPass);
+			variants[index] = this.create(key, renderPass);
 		}
 		return variants[index];
 	}
 
-	private long create(final PipelineKey key, final boolean smooth, final long renderPass) {
+	private long create(final PipelineKey key, final long renderPass) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final Shader shader = (Shader) key.getShader();
 			final ByteBuffer entryPoint = stack.UTF8("main");
@@ -76,9 +74,6 @@ public final class PipelineCache {
 					.lineWidth(1F)
 					.cullMode(VK10.VK_CULL_MODE_NONE)
 					.frontFace(VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE);
-			if (smooth && this.context.isSmoothLines()) {
-				rasterization.pNext(VkPipelineRasterizationLineStateCreateInfoEXT.calloc(stack).sType$Default().lineRasterizationMode(EXTLineRasterization.VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH_EXT).address());
-			}
 
 			final BlendState blend = key.getBlend();
 			final VkPipelineColorBlendAttachmentState.Buffer blendAttachment = VkPipelineColorBlendAttachmentState.calloc(1, stack)
@@ -101,7 +96,7 @@ public final class PipelineCache {
 					.pMultisampleState(VkPipelineMultisampleStateCreateInfo.calloc(stack).sType$Default().rasterizationSamples(VK10.VK_SAMPLE_COUNT_1_BIT))
 					.pDepthStencilState(VkPipelineDepthStencilStateCreateInfo.calloc(stack).sType$Default().depthCompareOp(VK10.VK_COMPARE_OP_LESS))
 					.pColorBlendState(VkPipelineColorBlendStateCreateInfo.calloc(stack).sType$Default().pAttachments(blendAttachment))
-					.pDynamicState(VkPipelineDynamicStateCreateInfo.calloc(stack).sType$Default().pDynamicStates(stack.ints(VK10.VK_DYNAMIC_STATE_VIEWPORT, VK10.VK_DYNAMIC_STATE_SCISSOR, VK10.VK_DYNAMIC_STATE_LINE_WIDTH, VK10.VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK, VK10.VK_DYNAMIC_STATE_STENCIL_WRITE_MASK, VK10.VK_DYNAMIC_STATE_STENCIL_REFERENCE, VK13.VK_DYNAMIC_STATE_CULL_MODE, VK13.VK_DYNAMIC_STATE_FRONT_FACE, VK13.VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY, VK13.VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE, VK13.VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE, VK13.VK_DYNAMIC_STATE_DEPTH_COMPARE_OP, VK13.VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE, VK13.VK_DYNAMIC_STATE_STENCIL_OP)))
+					.pDynamicState(VkPipelineDynamicStateCreateInfo.calloc(stack).sType$Default().pDynamicStates(stack.ints(VK10.VK_DYNAMIC_STATE_VIEWPORT, VK10.VK_DYNAMIC_STATE_SCISSOR, VK10.VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK, VK10.VK_DYNAMIC_STATE_STENCIL_WRITE_MASK, VK10.VK_DYNAMIC_STATE_STENCIL_REFERENCE, VK13.VK_DYNAMIC_STATE_CULL_MODE, VK13.VK_DYNAMIC_STATE_FRONT_FACE, VK13.VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY, VK13.VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE, VK13.VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE, VK13.VK_DYNAMIC_STATE_DEPTH_COMPARE_OP, VK13.VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE, VK13.VK_DYNAMIC_STATE_STENCIL_OP)))
 					.layout(shader.getPipelineLayout())
 					.renderPass(renderPass)
 					.subpass(0);

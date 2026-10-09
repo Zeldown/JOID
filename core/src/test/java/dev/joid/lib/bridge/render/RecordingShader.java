@@ -17,7 +17,8 @@ public final class RecordingShader implements IShader {
 
 	private final Map<String, Object> values = new HashMap<>();
 
-	private boolean bound;
+	private boolean         bound;
+	private RecordingShader lineShader;
 
 	@Setter
 	private boolean active = true;
@@ -32,6 +33,14 @@ public final class RecordingShader implements IShader {
 	public void unbind() {
 		BridgeHandler.RENDER.get().shader(null);
 		this.bound = false;
+	}
+
+	@Override
+	public @NonNull IShader getLineShader() {
+		if (this.lineShader == null) {
+			this.lineShader = new RecordingShader();
+		}
+		return this.lineShader;
 	}
 
 	@Override

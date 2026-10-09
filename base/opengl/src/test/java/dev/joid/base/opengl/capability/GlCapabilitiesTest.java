@@ -32,8 +32,6 @@ public class GlCapabilitiesTest {
 		Assert.assertTrue(capabilities.hasVertexArrays() && capabilities.hasSamplerObjects() && capabilities.hasFrameBufferBlit());
 		Assert.assertSame(GlFrameBufferFamily.CORE, capabilities.getFrameBufferFamily());
 		Assert.assertEquals(16384, capabilities.getMaxTextureSize());
-		Assert.assertArrayEquals(new float[] {1F, 10F}, capabilities.getAliasedLineWidthRange(), 0F);
-		Assert.assertArrayEquals(new float[] {0.5F, 8F}, capabilities.getSmoothLineWidthRange(), 0F);
 	}
 
 	@Test
@@ -181,8 +179,7 @@ public class GlCapabilitiesTest {
 
 		@Override
 		public void getFloats(final int name, final @NonNull float[] values) {
-			values[0] = name == GlConstants.ALIASED_LINE_WIDTH_RANGE ? 1F : 0.5F;
-			values[1] = name == GlConstants.ALIASED_LINE_WIDTH_RANGE ? 10F : 8F;
+			throw new UnsupportedOperationException();
 		}
 
 		@Override

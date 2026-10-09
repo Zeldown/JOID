@@ -158,9 +158,24 @@ public class TessellatorTest {
 		this.render.lineWidth(3F);
 		final Capture capture = this.lines(DrawMode.LINES, 2);
 		Assert.assertTrue(capture.getState().getShader() instanceof RecordingShader);
-		Assert.assertEquals(3F, (Float) capture.getUniforms().get("u_Width"), 0F);
-		Assert.assertArrayEquals(new float[] {1920F, 1080F}, (float[]) capture.getUniforms().get("u_Viewport"), 0F);
+		Assert.assertEquals(3F, capture.getState().getLineWidth(), 0F);
 		Assert.assertNull(this.render.getShader());
+	}
+
+	@Test
+	public void widensAHardLineOtherThanOnePixel() {
+		this.render.lineWidth(3F);
+		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
+		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
+		Assert.assertEquals(12, capture.getCount());
+		Assert.assertEquals(3F, capture.getState().getLineWidth(), 0F);
+	}
+
+	@Test
+	public void leavesAHardLineOfOnePixelToTheBridge() {
+		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
+		Assert.assertSame(Primitive.LINES, capture.getPrimitive());
+		Assert.assertEquals(4, capture.getCount());
 	}
 
 	@Test
@@ -182,13 +197,14 @@ public class TessellatorTest {
 	}
 
 	@Test
-	public void keepsHardLinesUnderAnotherShader() {
+	public void widensLinesWithTheLineShaderOfTheBoundShader() {
 		final RecordingShader shader = new RecordingShader();
-		this.render.lineSmooth(true);
+		this.render.lineWidth(4F);
 		this.render.shader(shader);
 		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
-		Assert.assertSame(Primitive.LINES, capture.getPrimitive());
-		Assert.assertEquals(4, capture.getCount());
+		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
+		Assert.assertEquals(12, capture.getCount());
+		Assert.assertSame(shader.getLineShader(), capture.getState().getShader());
 		Assert.assertSame(shader, this.render.getShader());
 	}
 

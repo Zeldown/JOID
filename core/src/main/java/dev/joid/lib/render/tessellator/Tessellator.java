@@ -77,8 +77,8 @@ public final class Tessellator {
 
 		final int count = Tessellator.getOutputCount(this.drawMode, this.vertexCount);
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (count > 0 && this.isLineMode() && render.isLineSmooth() && render.getShader() == null) {
-			this.drawSmoothLines(render, count / 2);
+		if (count > 0 && this.isLineMode() && (render.isLineSmooth() || render.getLineWidth() != 1F)) {
+			this.drawWideLines(render, count / 2);
 		} else if (count > 0) {
 			Tessellator.ensureCapacity(count);
 			Tessellator.intBuffer.clear();
@@ -271,7 +271,7 @@ public final class Tessellator {
 		}
 	}
 
-	private void drawSmoothLines(final IRenderBridge render, final int segments) {
+	private void drawWideLines(final IRenderBridge render, final int segments) {
 		Tessellator.ensureCapacity(segments * 6);
 		Tessellator.intBuffer.clear();
 		for (int segment = 0; segment < segments; segment++) {
@@ -288,12 +288,24 @@ public final class Tessellator {
 		Tessellator.byteBuffer.position(0);
 		Tessellator.byteBuffer.limit(segments * 6 * VertexBuffer.STRIDE);
 
-		LineShader.SHADER.bind();
-		LineShader.SHADER
-		.uniform("u_Width", render.getLineWidth())
-		.uniform("u_Viewport", render.getViewportWidth(), render.getViewportHeight());
-		render.draw(Primitive.TRIANGLES, VertexBuffer.create(Tessellator.byteBuffer, segments * 6, true, this.hasColor, true));
-		LineShader.SHADER.unbind();
+		final VertexBuffer buffer = VertexBuffer.create(Tessellator.byteBuffer, segments * 6, true, this.hasColor, true);
+		final IShader shader = render.getShader();
+		if (shader == null) {
+			LineShader.SHADER.bind();
+			try {
+				render.draw(Primitive.TRIANGLES, buffer);
+			} finally {
+				LineShader.SHADER.unbind();
+			}
+			return;
+		}
+
+		render.shader(shader.getLineShader());
+		try {
+			render.draw(Primitive.TRIANGLES, buffer);
+		} finally {
+			render.shader(shader);
+		}
 	}
 
 	private void putLineVertex(final int vertex, final int other, final int side, final int end) {
@@ -338,7 +350,7 @@ public final class Tessellator {
 
 	private static final class LineShader {
 
-		private static final IShader SHADER = CoreShader.LINE.create(BlendState.NORMAL);
+		private static final IShader SHADER = CoreShader.LINE.create(BlendState.NORMAL).getLineShader();
 
 	}
 

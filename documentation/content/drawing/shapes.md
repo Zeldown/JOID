@@ -118,7 +118,7 @@ DrawUtils.SHAPE.drawDashedLine(Color.decode("#999999"), 10, 2F, new Vector2d(100
 - `stroke` is a width in window pixels: it does not grow with the UI scale. Without `stroke`, the current line width of the render bridge is used (`1F` by default).
 - `drawDashedLine` cuts each segment into dashes of `pattern` canvas units separated by gaps of the same length, starting a new pattern at each point; the last dash of a segment is clipped at its end.
 - Every line method restores the line width and the smoothing set before the call, even when the draw throws.
-- Lines are drawn as antialiased quads. While a shader is bound (a gradient color, a shader of yours), they are drawn as plain lines.
+- Lines are drawn as antialiased quads, also while a shader is bound (a gradient color, a shader of yours): the shader colors the quads, see [Custom Shaders](../shaders/custom-shaders.md#lines-under-a-shader).
 
 ## Curves with drawCurvedLine
 

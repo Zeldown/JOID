@@ -8,11 +8,9 @@ import java.util.function.Consumer;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.GLFWVulkan;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.vulkan.EXTLineRasterization;
 import org.lwjgl.vulkan.KHRSurface;
 import org.lwjgl.vulkan.KHRSwapchain;
 import org.lwjgl.vulkan.VK10;
-import org.lwjgl.vulkan.VK11;
 import org.lwjgl.vulkan.VK13;
 import org.lwjgl.vulkan.VkApplicationInfo;
 import org.lwjgl.vulkan.VkAttachmentDescription;
@@ -35,9 +33,6 @@ import org.lwjgl.vulkan.VkInstanceCreateInfo;
 import org.lwjgl.vulkan.VkMemoryAllocateInfo;
 import org.lwjgl.vulkan.VkMemoryRequirements;
 import org.lwjgl.vulkan.VkPhysicalDevice;
-import org.lwjgl.vulkan.VkPhysicalDeviceFeatures;
-import org.lwjgl.vulkan.VkPhysicalDeviceFeatures2;
-import org.lwjgl.vulkan.VkPhysicalDeviceLineRasterizationFeaturesEXT;
 import org.lwjgl.vulkan.VkPhysicalDeviceMemoryProperties;
 import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 import org.lwjgl.vulkan.VkQueue;
@@ -59,9 +54,7 @@ public final class Context {
 	private final int                              queueFamily;
 	private final VkDevice                         device;
 	private final long                             commandPool;
-	private final boolean                          wideLines;
 	private final VkInstance                       instance;
-	private final boolean                          smoothLines;
 	private final long                             uniformAlignment;
 	private final int                              depthStencilFormat;
 	private final long                             offscreenRenderPass;
@@ -74,9 +67,7 @@ public final class Context {
 			this.surface        = Context.createSurface(stack, this.instance, window);
 			this.physicalDevice = Context.selectPhysicalDevice(stack, this.instance, this.surface);
 			this.queueFamily    = Context.findQueueFamily(stack, this.physicalDevice, this.surface);
-			this.wideLines      = Context.supportsWideLines(stack, this.physicalDevice);
-			this.smoothLines    = Context.supportsSmoothLines(stack, this.physicalDevice);
-			this.device         = Context.createDevice(stack, this.physicalDevice, this.queueFamily, this.wideLines, this.smoothLines);
+			this.device         = Context.createDevice(stack, this.physicalDevice, this.queueFamily);
 
 			final PointerBuffer queue = stack.mallocPointer(1);
 			VK10.vkGetDeviceQueue(this.device, this.queueFamily, 0, queue);
@@ -364,22 +355,6 @@ public final class Context {
 		return false;
 	}
 
-	private static boolean supportsWideLines(final MemoryStack stack, final VkPhysicalDevice device) {
-		final VkPhysicalDeviceFeatures features = VkPhysicalDeviceFeatures.malloc(stack);
-		VK10.vkGetPhysicalDeviceFeatures(device, features);
-		return features.wideLines();
-	}
-
-	private static boolean supportsSmoothLines(final MemoryStack stack, final VkPhysicalDevice device) {
-		if (!Context.hasExtension(device, EXTLineRasterization.VK_EXT_LINE_RASTERIZATION_EXTENSION_NAME)) {
-			return false;
-		}
-
-		final VkPhysicalDeviceLineRasterizationFeaturesEXT lineRasterization = VkPhysicalDeviceLineRasterizationFeaturesEXT.calloc(stack).sType$Default();
-		VK11.vkGetPhysicalDeviceFeatures2(device, VkPhysicalDeviceFeatures2.calloc(stack).sType$Default().pNext(lineRasterization.address()));
-		return lineRasterization.smoothLines();
-	}
-
 	private static int selectDepthStencilFormat(final MemoryStack stack, final VkPhysicalDevice device) {
 		final VkFormatProperties properties = VkFormatProperties.malloc(stack);
 		for (final int format : new int[] {VK10.VK_FORMAT_D24_UNORM_S8_UINT, VK10.VK_FORMAT_D32_SFLOAT_S8_UINT}) {
@@ -391,25 +366,14 @@ public final class Context {
 		throw new IllegalStateException("No depth stencil format is supported by the Vulkan device");
 	}
 
-	private static VkDevice createDevice(final MemoryStack stack, final VkPhysicalDevice physicalDevice, final int queueFamily, final boolean wideLines, final boolean smoothLines) {
+	private static VkDevice createDevice(final MemoryStack stack, final VkPhysicalDevice physicalDevice, final int queueFamily) {
 		final VkDeviceQueueCreateInfo.Buffer queues = VkDeviceQueueCreateInfo.calloc(1, stack);
 		queues.get(0).sType$Default().queueFamilyIndex(queueFamily).pQueuePriorities(stack.floats(1F));
-
-		final PointerBuffer extensions = stack.mallocPointer(smoothLines ? 2 : 1);
-		extensions.put(stack.UTF8(KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME));
-		if (smoothLines) {
-			extensions.put(stack.UTF8(EXTLineRasterization.VK_EXT_LINE_RASTERIZATION_EXTENSION_NAME));
-		}
-		extensions.flip();
 
 		final VkDeviceCreateInfo info = VkDeviceCreateInfo.calloc(stack)
 				.sType$Default()
 				.pQueueCreateInfos(queues)
-				.pEnabledFeatures(VkPhysicalDeviceFeatures.calloc(stack).wideLines(wideLines))
-				.ppEnabledExtensionNames(extensions);
-		if (smoothLines) {
-			info.pNext(VkPhysicalDeviceLineRasterizationFeaturesEXT.calloc(stack).sType$Default().smoothLines(true).address());
-		}
+				.ppEnabledExtensionNames(stack.pointers(stack.UTF8(KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)));
 
 		final PointerBuffer device = stack.mallocPointer(1);
 		Context.check(VK10.vkCreateDevice(physicalDevice, info, null, device), "vkCreateDevice");

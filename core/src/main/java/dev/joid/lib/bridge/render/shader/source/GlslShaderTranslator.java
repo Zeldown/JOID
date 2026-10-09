@@ -26,6 +26,11 @@ public class GlslShaderTranslator {
 	public static final String STENCIL_FUNCTION  = "joid_StencilFunction";
 	public static final String STENCIL_REFERENCE = "joid_StencilReference";
 
+	public static final String LINE_WIDTH    = "joid_LineWidth";
+	public static final String LINE_VIEWPORT = "joid_LineViewport";
+
+	private static final String[] LINE_VARYINGS = {"joid_LineAcross", "joid_LineAlong", "joid_LineLength"};
+
 	private final GlslDialect   dialect;
 	private final UniformLayout layout;
 
@@ -65,7 +70,15 @@ public class GlslShaderTranslator {
 		for (final ShaderVariable output : vertex.getOutputs()) {
 			builder.append(this.declareVarying(output, varyings.indexOf(output.getName()), true));
 		}
-		return builder.append(this.dialect.getLineDirective()).append(vertex.getBody()).toString();
+
+		if (!vertex.isLine()) {
+			return builder.append(this.dialect.getLineDirective()).append(vertex.getBody()).toString();
+		}
+
+		this.appendLineVaryings(builder, varyings.size(), true);
+		builder.append("vec3 joid_Position;\nvec2 joid_TexCoord;\nvec3 joid_Normal;\n").append(this.dialect.getLineDirective());
+		final String body = vertex.getBody().replaceAll("\\baPosition\\b", "joid_Position").replaceAll("\\baTexCoord\\b", "joid_TexCoord").replaceAll("\\baNormal\\b", "joid_Normal");
+		return builder.append(body.replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()")).append(GlslShaderTranslator.getLineMain()).toString();
 	}
 
 	public final @NonNull String translateFragment(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
@@ -82,7 +95,14 @@ public class GlslShaderTranslator {
 		for (final ShaderVariable input : fragment.getInputs()) {
 			builder.append(this.declareVarying(input, varyings.indexOf(input.getName()), false));
 		}
-		return builder.append(this.dialect.getLineDirective()).append(fragment.getBody().replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain()).toString();
+
+		if (!vertex.isLine()) {
+			return builder.append(this.dialect.getLineDirective()).append(fragment.getBody().replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain()).toString();
+		}
+
+		this.appendLineVaryings(builder, varyings.size(), false);
+		builder.append(this.dialect.getLineDirective()).append(fragment.getBody().replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
+		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(min(joid_LineAlong, joid_LineLength - joid_LineAlong) + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain()).toString();
 	}
 
 	public final @NonNull UniformBlock createBlock(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
@@ -128,6 +148,10 @@ public class GlslShaderTranslator {
 		final List<ShaderVariable> internalList = new ArrayList<>();
 		internalList.add(ShaderVariable.create("int", GlslShaderTranslator.ALPHA_TEST, "", false));
 		internalList.add(ShaderVariable.create("float", GlslShaderTranslator.ALPHA_THRESHOLD, "", false));
+		if (vertex.isLine()) {
+			internalList.add(ShaderVariable.create("float", GlslShaderTranslator.LINE_WIDTH, "", false));
+			internalList.add(ShaderVariable.create("vec2", GlslShaderTranslator.LINE_VIEWPORT, "", false));
+		}
 		if (this.stencil != StencilEmulation.Pass.NONE) {
 			for (final String name : new String[] {GlslShaderTranslator.STENCIL_TEST, GlslShaderTranslator.STENCIL_FUNCTION, GlslShaderTranslator.STENCIL_REFERENCE, GlslShaderTranslator.STENCIL_MASK, GlslShaderTranslator.STENCIL_FAIL, GlslShaderTranslator.STENCIL_PASS}) {
 				internalList.add(ShaderVariable.create("int", name, "", false));
@@ -218,12 +242,38 @@ public class GlslShaderTranslator {
 		}
 	}
 
+	private void appendLineVaryings(final StringBuilder builder, final int location, final boolean output) {
+		for (int i = 0; i < GlslShaderTranslator.LINE_VARYINGS.length; i++) {
+			builder.append(this.declareVarying(ShaderVariable.create("float", GlslShaderTranslator.LINE_VARYINGS[i], "", false), location + i, output));
+		}
+	}
+
 	private void require(final Set<ShaderFeature> features) {
 		for (final ShaderFeature feature : features) {
 			if (!this.dialect.supports(feature)) {
 				throw new UnsupportedOperationException("The shader uses " + feature.getDescription() + ", which needs " + (this.dialect.isEs() ? feature.getEssl() : feature.getGlsl()).getName() + ", but the dialect is " + this.dialect.getName());
 			}
 		}
+	}
+
+	private static String getLineMain() {
+		return "\nvoid main() {\n"
+		+ "\tjoid_TexCoord = vec2(0.0);\n\tjoid_Normal = vec3(0.0, 0.0, 1.0);\n"
+		+ "\tjoid_Position = vec3(aTexCoord, aPosition.z);\n\tjoid_body();\n\tvec4 joid_other = gl_Position;\n"
+		+ "\tjoid_Position = aPosition;\n\tjoid_body();\n\n"
+		+ "\tvec2 joid_halfViewport = joid_LineViewport * 0.5;\n"
+		+ "\tvec2 joid_screen = gl_Position.xy / gl_Position.w * joid_halfViewport;\n"
+		+ "\tvec2 joid_otherScreen = joid_other.xy / joid_other.w * joid_halfViewport;\n"
+		+ "\tfloat joid_length = max(distance(joid_screen, joid_otherScreen), 0.0001);\n"
+		+ "\tfloat joid_side = sign(aNormal.x);\n\tfloat joid_end = sign(aNormal.y);\n"
+		+ "\tvec2 joid_direction = (joid_otherScreen - joid_screen) / joid_length * -joid_end;\n"
+		+ "\tvec2 joid_normal = vec2(-joid_direction.y, joid_direction.x);\n"
+		+ "\tfloat joid_halfWidth = joid_LineWidth * 0.5 + 1.0;\n"
+		+ "\tvec2 joid_offset = joid_normal * joid_side * joid_halfWidth + joid_direction * joid_end;\n"
+		+ "\tgl_Position = vec4(gl_Position.xy + joid_offset / joid_halfViewport * gl_Position.w, gl_Position.zw);\n\n"
+		+ "\tjoid_LineAcross = joid_side * joid_halfWidth;\n"
+		+ "\tjoid_LineAlong = joid_end < 0.0 ? -1.0 : joid_length + 1.0;\n"
+		+ "\tjoid_LineLength = joid_length;\n}\n";
 	}
 
 	private static List<String> getVaryings(final ShaderSource vertex, final ShaderSource fragment) {

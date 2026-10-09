@@ -13,6 +13,8 @@ public interface IShader {
 	public boolean isBound();
 	public boolean isActive();
 
+	public @NonNull IShader getLineShader();
+
 	public @NonNull IShader uniform(final @NonNull String name, final int value);
 	public @NonNull IShader uniform(final @NonNull String name, final boolean value);
 	public @NonNull IShader uniform(final @NonNull String name, final @NonNull float... values);

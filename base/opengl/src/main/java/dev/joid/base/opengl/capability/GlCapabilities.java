@@ -26,8 +26,6 @@ public final class GlCapabilities {
 	private final String      renderer;
 	private final Set<String> extensionSet;
 	private final int         maxTextureSize;
-	private final float[]     smoothLineWidthRange;
-	private final float[]     aliasedLineWidthRange;
 
 	public static @NonNull GlCapabilities read(final @NonNull IGlBinding binding) {
 		final String name = binding.getString(GlConstants.VERSION);
@@ -53,11 +51,7 @@ public final class GlCapabilities {
 			profile = GlProfile.CORE;
 		}
 
-		final float[] smoothLineWidthRange = new float[2];
-		final float[] aliasedLineWidthRange = new float[2];
-		binding.getFloats(GlConstants.SMOOTH_LINE_WIDTH_RANGE, smoothLineWidthRange);
-		binding.getFloats(GlConstants.ALIASED_LINE_WIDTH_RANGE, aliasedLineWidthRange);
-		return new GlCapabilities(version, GlCapabilities.parseVersion(binding.getString(GlConstants.SHADING_LANGUAGE_VERSION)), profile, binding.getString(GlConstants.RENDERER), Collections.unmodifiableSet(extensionSet), binding.getInteger(GlConstants.MAX_TEXTURE_SIZE), smoothLineWidthRange, aliasedLineWidthRange);
+		return new GlCapabilities(version, GlCapabilities.parseVersion(binding.getString(GlConstants.SHADING_LANGUAGE_VERSION)), profile, binding.getString(GlConstants.RENDERER), Collections.unmodifiableSet(extensionSet), binding.getInteger(GlConstants.MAX_TEXTURE_SIZE));
 	}
 
 	public boolean hasExtension(final @NonNull String name) {

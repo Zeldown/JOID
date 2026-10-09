@@ -19,9 +19,7 @@ public final class GlConstants {
 	public static final int CONTEXT_PROFILE_MASK     = 0x9126;
 	public static final int SHADING_LANGUAGE_VERSION = 0x8B8C;
 
-	public static final int SMOOTH_LINE_WIDTH_RANGE             = 0x0B22;
 	public static final int CONTEXT_CORE_PROFILE_BIT            = 0x0001;
-	public static final int ALIASED_LINE_WIDTH_RANGE            = 0x846E;
 	public static final int CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT = 0x0001;
 
 	public static final int BLEND        = 0x0BE2;
