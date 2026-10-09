@@ -7,13 +7,6 @@ You wrote a first UI bridge, `AppUIBridge`, in the [Quick Start](../getting-star
 ```java
 public class AppUIBridge extends UIBridge {
 
-	private TextInfo tooltip;
-
-	public @NonNull AppUIBridge tooltip(final @NonNull TextInfo tooltip) {
-		this.tooltip = tooltip;
-		return this;
-	}
-
 	@Override
 	public void open(final @NonNull UI ui) {
 		this.add(ui);
@@ -46,33 +39,14 @@ public class AppUIBridge extends UIBridge {
 		return true;
 	}
 
-	@Override
-	public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
-		if (this.tooltip == null || lines.isEmpty()) {
-			return;
-		}
-
-		double width = 0D;
-		for (final String line : lines) {
-			width = Math.max(width, this.tooltip.getWidth(line));
-		}
-		width += 20D;
-
-		final double lineHeight = this.tooltip.getHeight();
-		final double height = 12D + lines.size() * lineHeight;
-		final double x = Math.min(mouseX + 14D, ui.getView().toUiX(ui.getWidth()) - width - 4D);
-		final double y = Math.min(mouseY + 14D, ui.getView().toUiY(ui.getHeight()) - height - 4D);
-
-		DrawUtils.SHAPE.drawRoundedRect(x, y, width, height, Color.decode("#999999"), 6F);
-		for (int i = 0; i < lines.size(); i++) {
-			DrawUtils.TEXT.drawText(x + 10D, y + 6D + i * lineHeight, lines.get(i), this.tooltip, Align.START, Align.START);
-		}
-	}
-
 }
 ```
 
-This bridge stacks the UIs: `JOID.open` puts a UI on top of the others, and `JOID.close` or Escape removes it. `tooltip` takes a `TextInfo` built from a loaded font (see [Text and TextInfo](../text/text-and-textinfo.md)).
+This bridge stacks the UIs: `JOID.open` puts a UI on top of the others, and `JOID.close` or Escape removes it. Give it the style of the text tooltips once, with a `TextInfo` built from a loaded font (see [Text and TextInfo](../text/text-and-textinfo.md)):
+
+```java
+final AppUIBridge bridge = new AppUIBridge().hoverInfo(TextInfo.create(font, 20F, Color.WHITE));
+```
 
 ![Diagram of the frame loop: poll window events, call the input methods, update(), clear and draw(), swap or present, and on resize set ortho, viewport and call load()](../images/diagram-ui-bridge-loop.png "Your loop forwards the events, then updates and draws every frame on the thread of the graphics context")
 
@@ -235,7 +209,6 @@ The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), the
 | `add(UI ui)` | your `open`, and tools such as the [testkit](testkit.md) | Add the UI to `getUiList()` and call `ui.load(width, height)` with the window size: a UI that was never loaded ignores every event. |
 | `remove(UI ui)` | your `close` | Remove the UI from `getUiList()`. |
 | `canHandle(UI ui)` / `canHandle(Class<? extends UI> clazz)` | `BridgeHandler.UI.get(...)` | `true` for the UIs this bridge hosts. |
-| `drawHover(UI ui, List<String> lines, double mouseX, double mouseY)` | a hovered node with a text tooltip | Draw the lines next to the mouse. |
 
 `UIBridge` implements the rest; override these methods only for a rule of your own:
 
@@ -246,12 +219,13 @@ The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), the
 | `getUiList()` | The sorted list of UIs, an `IndexedLinkedList<UI>`. |
 | `getInterfaceScale(UI ui)` | `1`. See [Interface scale with getInterfaceScale](#interface-scale-with-getinterfacescale). |
 | `getIndex()` | `0`. See [Several UI bridges](#several-ui-bridges). |
+| `drawHover(UI ui, Object content, double mouseX, double mouseY)` | Draws text tooltips. See [Tooltips with drawHover](#tooltips-with-drawhover). |
 
 ### Opening and closing
 
 `JOID.close(ui)` first calls `ui.onClose()`: the UI can refuse, and a UI with an out [transition](../ui/transitions.md) starts it and calls `close(ui)` of its bridge itself when it ends. Your `close` only takes the UI out of the list. `JOID.close(ui, true)` skips the checks.
 
-To replace the current UI instead of stacking, extend `StackUIBridge` (`dev.joid.lib.bridge.ui`) instead of `UIBridge`. It implements `open`, `close`, `add`, `remove` and `canHandle` (`true`), and leaves you `drawHover`:
+To replace the current UI instead of stacking, extend `StackUIBridge` (`dev.joid.lib.bridge.ui`) instead of `UIBridge`. It implements `open`, `close`, `add`, `remove` and `canHandle` (`true`):
 
 - `open(ui)` asks each open UI that is not an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) to close (`onClose()`) before it adds `ui`, unless `ui` is a popup or an overlay. When one of them refuses, `ui` is not opened; when one plays an out transition, `ui` opens when the transition ends.
 - `add(ui)` loads the UI at the window size; `close(ui)` removes it.
@@ -271,11 +245,6 @@ public class AppUIBridge extends StackUIBridge {
 		this.game.hideCursor();
 	}
 
-	@Override
-	public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
-		this.tooltip.draw(lines, mouseX, mouseY);
-	}
-
 }
 ```
 
@@ -283,7 +252,17 @@ The demo bridge (`DemoUIBridge`) extends it, with `start()` (opens the demo menu
 
 ## Tooltips with drawHover
 
-A node with text tooltips calls `drawHover` of the bridge of its UI while it is hovered and its UI is on top. The call happens inside the drawing of the UI:
+A node with text tooltips calls `drawHover(ui, content, mouseX, mouseY)` of the bridge of its UI while it is hovered and its UI is on top; `content` is the list of its lines. `UIBridge` draws it as a dark rounded box next to the mouse, kept inside the window, with one line per element converted by `TextConverter` (see [Objects as text with TextConverter](../text/markup-and-effects.md#objects-as-text-with-textconverter)):
+
+| Method | Default | Description |
+|---|---|---|
+| `hoverInfo(TextInfo)` | `null` | The style of the lines. Without one, the dev and demo modes use the internal Montserrat 20 in white; otherwise the bridge draws nothing and prints `[JOID] <bridge> has no text info for its tooltips, set one with hoverInfo(TextInfo)` once. |
+| `hoverColor(Color)` | `#18181B` | The fill of the box. |
+| `hoverBorderColor(Color)` | `#27272A` | The border of the box. |
+
+`content` is an `Object`, so an engine with tooltips of its own passes them through the same call: `ui.drawHover(object, mouseX, mouseY)` from a node of the engine, and an override of `drawHover` in the bridge that draws the objects it knows and leaves the rest to `super.drawHover(...)`.
+
+The call happens inside the drawing of the UI:
 
 - coordinates are in canvas units, so `mouseX` and `mouseY` are the mouse position on the canvas of the UI;
 - the depth test is disabled, and the render state is restored afterward;
@@ -348,6 +327,8 @@ JOID.open(new UISettings());
 | `mouseScroll(double notches)` | The wheel turns, in notches. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |
 | `getUiList()` | The sorted `IndexedLinkedList<UI>`. |
+| `drawHover(UI, Object, double, double)` | Draws a text tooltip, see [Tooltips with drawHover](#tooltips-with-drawhover). |
+| `hoverInfo(TextInfo)`, `hoverColor(Color)`, `hoverBorderColor(Color)` | The style of the text tooltips; `getHoverInfo()` (nullable), `getHoverColor()`, `getHoverBorderColor()` read it. |
 | `isOnTop(UI)`, `isOpened(UI)` | See [Methods you implement](#methods-you-implement). |
 | `isScreenOpen()`, `isOverlayHidden()`, `hasScreen()` | See [Overlays and the host](#overlays-and-the-host). |
 

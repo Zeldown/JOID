@@ -28,6 +28,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.font.dto.converter.TextConverter;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
@@ -2704,8 +2705,8 @@ public class NodeTest {
 		}
 
 		@Override
-		public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
-			this.tooltips.add(lines);
+		public void drawHover(final @NonNull Object content, final double mouseX, final double mouseY) {
+			this.tooltips.add(TextConverter.convertLines(content));
 		}
 
 	}

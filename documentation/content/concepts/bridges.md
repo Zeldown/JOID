@@ -46,7 +46,7 @@ Each backend ships in its own jar ([Installation](../getting-started/installatio
 | `add(ui)`, `remove(ui)` | Put a UI in the list of the bridge and load it with `ui.load(width, height)`, or take it out. |
 | `canHandle(ui)`, `canHandle(Class)` | Whether this bridge hosts a UI: one bridge can host your menus, another the overlays of a host. |
 | `getInterfaceScale(ui)` | An extra scale for a UI, default `1`: for example the GUI scale of a host (see [The Virtual Canvas](canvas.md#zoom-and-interface-scale)). |
-| `drawHover(ui, lines, mouseX, mouseY)` | Draws the text tooltips of the nodes; the `AppUIBridge` of the Quick Start draws none. |
+| `drawHover(ui, content, mouseX, mouseY)` | Draws the tooltip of a node: `UIBridge` draws text lines with the `TextInfo` given to `hoverInfo(...)`, the engine can draw its own tooltip objects. |
 
 ```java
 @Override

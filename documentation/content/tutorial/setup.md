@@ -268,8 +268,6 @@ public final class Main {
 ```java
 package com.example.settings;
 
-import java.util.List;
-
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
@@ -308,9 +306,6 @@ public final class AppUIBridge extends UIBridge {
 	public boolean canHandle(final Class<? extends UI> clazz) {
 		return true;
 	}
-
-	@Override
-	public void drawHover(final UI ui, final List<String> lines, final double mouseX, final double mouseY) {}
 
 }
 ```

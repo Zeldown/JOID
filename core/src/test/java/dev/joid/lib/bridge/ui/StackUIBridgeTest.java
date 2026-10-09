@@ -16,8 +16,6 @@ import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 
-import lombok.NonNull;
-
 public class StackUIBridgeTest {
 
 	@Rule
@@ -137,9 +135,6 @@ public class StackUIBridgeTest {
 		public ScreenBridge(final List<String> trace) {
 			this.trace = trace;
 		}
-
-		@Override
-		public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {}
 
 		@Override
 		protected void onFirstScreenOpen() {

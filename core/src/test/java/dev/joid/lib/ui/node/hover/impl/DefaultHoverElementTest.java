@@ -72,8 +72,8 @@ public class DefaultHoverElementTest {
 		}
 
 		@Override
-		public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
-			this.hovers.add(Arrays.asList(lines, mouseX, mouseY));
+		public void drawHover(final @NonNull Object content, final double mouseX, final double mouseY) {
+			this.hovers.add(Arrays.asList(content, mouseX, mouseY));
 		}
 
 	}

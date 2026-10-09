@@ -219,7 +219,7 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 | `startMask(double x, double y, double width, double height)`, `startMask(Resource resource, double x, double y, double width, double height)` | Starts a mask; everything drawn until `stopMask()` is clipped. |
 | `stopMask()` | Ends the last started mask. Throws `EmptyStackException` when no mask is active. |
 | `double lerpByFramerate(double value, double target, double speed, double snapDiff, boolean snap)` | See [Smoothing values](#smoothing-values-with-lerpbyframerate). |
-| `drawHover(List<String> lines, double mouseX, double mouseY)` | Draws a text tooltip through the bridge. Override it to draw the tooltips of this UI yourself. See [Hover and Tooltips](../interactions/hover.md). |
+| `drawHover(Object content, double mouseX, double mouseY)` | Draws a tooltip through the bridge; the content of a text tooltip is its list of lines (`TextConverter.convertLines(content)`). Override it to draw the tooltips of this UI yourself. See [Hover and Tooltips](../interactions/hover.md). |
 | `static isCtrlKeyDown()`, `isShiftKeyDown()`, `isAltKeyDown()` | Whether the left or right modifier is down. |
 
 ### Getters

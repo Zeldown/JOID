@@ -1,7 +1,5 @@
 package dev.joid.lib.bridge.ui;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -130,7 +128,7 @@ public class UIBridgeRegistryTest {
 		}
 
 		@Override
-		public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {}
+		public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {}
 
 	}
 

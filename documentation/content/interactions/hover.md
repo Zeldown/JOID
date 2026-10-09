@@ -110,11 +110,12 @@ The text is built only while the tooltip is visible. `hoverLines(...)` replaces 
 
 ### Drawing text tooltips with drawHover
 
-JOID hands the lines to `UI.drawHover(List<String> lines, double mouseX, double mouseY)`, which calls `IUIBridge.drawHover(UI ui, List<String> lines, double mouseX, double mouseY)` of the UI's bridge. The UI bridge decides the look of text tooltips (see [UI Bridge](../integration/ui-bridge.md)); the mouse position is in UI units and the drawing happens in the UI's coordinate space. Override `drawHover` in a UI to give its tooltips another look:
+JOID hands the lines to `UI.drawHover(Object content, double mouseX, double mouseY)`, which calls `IUIBridge.drawHover(UI ui, Object content, double mouseX, double mouseY)` of the UI's bridge. `UIBridge` draws them with the `TextInfo` given to its `hoverInfo(...)` (see [UI Bridge](../integration/ui-bridge.md#tooltips-with-drawhover)); the mouse position is in UI units and the drawing happens in the UI's coordinate space. Override `drawHover` in a UI to give its tooltips another look; `TextConverter.convertLines(content)` gives the lines:
 
 ```java
 @Override
-public void drawHover(final List<String> lines, final double mouseX, final double mouseY) {
+public void drawHover(final Object content, final double mouseX, final double mouseY) {
+	final List<String> lines = TextConverter.convertLines(content);
 	final double height = lines.size() * 24D + 12D;
 	DrawUtils.SHAPE.drawRect(mouseX + 12D, mouseY + 12D, 260D, height, Color.BLACK);
 	for (int i = 0; i < lines.size(); i++) {

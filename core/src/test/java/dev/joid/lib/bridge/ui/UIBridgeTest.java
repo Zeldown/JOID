@@ -16,6 +16,11 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.font.IFont;
+import dev.joid.lib.font.IFontProvider;
+import dev.joid.lib.font.dto.FontBounds;
+import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.overlay.interaction.UIDataOverlayInteraction;
@@ -699,8 +704,92 @@ public class UIBridgeTest {
 		Assert.assertFalse(this.bridges.getUi().isOverlayHidden());
 	}
 
+	@Test
+	public void drawsTheTooltipLinesWithItsHoverInfo() {
+		final TraceFont font = new TraceFont();
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		Assert.assertSame(this.bridges.getUi(), this.bridges.getUi().hoverInfo(TextInfo.create(font, 20F)));
+		this.bridges.getUi().drawHover(menu, Arrays.asList("Play", 42), 100D, 100D);
+		Assert.assertEquals(Arrays.asList("Play", "42"), font.drawn);
+	}
+
+	@Test
+	public void drawsTheTooltipBackgroundWithItsColors() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		this.bridges.getRender().getDraws().clear();
+		this.bridges.getUi().hoverInfo(TextInfo.create(new TraceFont(), 20F)).hoverColor(Color.RED).<DemoUIBridge>hoverBorderColor(Color.BLUE).drawHover(menu, "Play", 100D, 100D);
+		Assert.assertTrue(this.bridges.getRender().getDraws().stream().anyMatch(draw -> draw.getRed() == 1F && draw.getBlue() == 0F));
+		Assert.assertTrue(this.bridges.getRender().getDraws().stream().anyMatch(draw -> draw.getBlue() == 1F && draw.getRed() == 0F));
+	}
+
+	@Test
+	public void warnsOnceWhenATooltipHasNoHoverInfo() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			this.bridges.getUi().drawHover(menu, "Play", 100D, 100D);
+			this.bridges.getUi().drawHover(menu, "Play", 100D, 100D);
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertEquals("[JOID] DemoUIBridge has no text info for its tooltips, set one with hoverInfo(TextInfo)" + System.lineSeparator(), output.toString());
+	}
+
+	@Test
+	public void drawsNothingForAnEmptyTooltip() {
+		final TraceFont font = new TraceFont();
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		this.bridges.getRender().getDraws().clear();
+		this.bridges.getUi().hoverInfo(TextInfo.create(font, 20F)).drawHover(menu, Collections.emptyList(), 100D, 100D);
+		Assert.assertTrue(font.drawn.isEmpty());
+		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesATooltipWithoutContent() {
+		this.bridges.getUi().drawHover(new TraceUI("menu", this.trace), null, 0D, 0D);
+	}
+
 	private static float depth() {
 		return ((RenderBridge) BridgeHandler.RENDER.get()).getModelView().getMatrix()[14];
+	}
+
+	public static final class TraceFont implements IFont, IFontProvider {
+
+		private final List<String> drawn = new ArrayList<>();
+
+		@Override
+		public @NonNull IFontProvider getFontProvider() {
+			return this;
+		}
+
+		@Override
+		public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
+			this.drawn.add(text);
+			return new FontBounds(this.getWidth(text, info), this.getHeight(text, info));
+		}
+
+		@Override
+		public double getLineHeight(final @NonNull TextInfo info) {
+			return info.getFontSize();
+		}
+
+		@Override
+		public double getWidth(final @NonNull String text, final @NonNull TextInfo info) {
+			return text.length() * 10D;
+		}
+
+		@Override
+		public double getHeight(final @NonNull String text, final @NonNull TextInfo info) {
+			return info.getFontSize();
+		}
+
 	}
 
 	public static class TraceUI extends UI {

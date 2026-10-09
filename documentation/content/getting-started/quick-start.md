@@ -40,8 +40,6 @@ JOID does not decide where a UI lives: a UI bridge does. `UIBridge` (`dev.joid.l
 ```java
 package com.example;
 
-import java.util.List;
-
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
@@ -81,13 +79,10 @@ public final class AppUIBridge extends UIBridge {
 		return true;
 	}
 
-	@Override
-	public void drawHover(final UI ui, final List<String> lines, final double mouseX, final double mouseY) {}
-
 }
 ```
 
-`ui.load(width, height)` sizes the UI to the window and, the first time, runs its `init()`. `drawHover` draws text tooltips; this bridge draws none. See [UI Bridge](../integration/ui-bridge.md) for every method.
+`ui.load(width, height)` sizes the UI to the window and, the first time, runs its `init()`. `UIBridge` also draws the text tooltips of the nodes once you give it a `TextInfo` with `hoverInfo(...)`. See [UI Bridge](../integration/ui-bridge.md) for every method.
 
 ## Step 3: load the font
 

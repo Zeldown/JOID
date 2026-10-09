@@ -93,11 +93,12 @@ ToggleSwitchNode
 .attach(notifications);
 ```
 
-JOID collects the lines of the hovered node and asks the UI to draw them with `drawHover`, which by default hands them to the UI bridge. The `AppUIBridge` of the Quick Start draws nothing, so the settings screen draws its own tooltips. Override `drawHover` in `SettingsUI`:
+JOID collects the lines of the hovered node and asks the UI to draw them with `drawHover`, which by default hands them to the UI bridge. The `AppUIBridge` of the Quick Start has no `hoverInfo`, so the settings screen draws its own tooltips, in the colors of the app. Override `drawHover` in `SettingsUI`; `TextConverter.convertLines(content)` gives the lines:
 
 ```java
 @Override
-public void drawHover(final List<String> lines, final double mouseX, final double mouseY) {
+public void drawHover(final Object content, final double mouseX, final double mouseY) {
+	final List<String> lines = TextConverter.convertLines(content);
 	final TextInfo info = TextInfo.create(Theme.getFont(), 18F, Color.WHITE);
 	double width = 0D;
 	for (final String line : lines) {
@@ -215,6 +216,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.converter.TextConverter;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
@@ -304,7 +306,8 @@ public final class SettingsUI extends UI {
 	}
 
 	@Override
-	public void drawHover(final List<String> lines, final double mouseX, final double mouseY) {
+	public void drawHover(final Object content, final double mouseX, final double mouseY) {
+		final List<String> lines = TextConverter.convertLines(content);
 		final TextInfo info = TextInfo.create(Theme.getFont(), 18F, Color.WHITE);
 		double width = 0D;
 		for (final String line : lines) {

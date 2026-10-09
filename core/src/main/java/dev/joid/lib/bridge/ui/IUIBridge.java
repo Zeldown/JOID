@@ -1,7 +1,5 @@
 package dev.joid.lib.bridge.ui;
 
-import java.util.List;
-
 import dev.joid.lib.bridge.IBridge;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.list.IndexedList;
@@ -27,6 +25,6 @@ public interface IUIBridge extends IBridge {
 		return 1D;
 	}
 
-	public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY);
+	public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY);
 
 }

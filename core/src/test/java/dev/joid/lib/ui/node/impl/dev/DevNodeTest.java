@@ -18,6 +18,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.font.dto.converter.TextConverter;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
@@ -585,8 +586,8 @@ public class DevNodeTest {
 		}
 
 		@Override
-		public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
-			this.hovers.addAll(lines);
+		public void drawHover(final @NonNull Object content, final double mouseX, final double mouseY) {
+			this.hovers.addAll(TextConverter.convertLines(content));
 		}
 
 	}

@@ -1701,8 +1701,8 @@ public class UITest {
 		}
 
 		@Override
-		public void drawHover(final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
-			this.trace.add("hover " + lines + " " + mouseX + " " + mouseY);
+		public void drawHover(final @NonNull Object content, final double mouseX, final double mouseY) {
+			this.trace.add("hover " + content + " " + mouseX + " " + mouseY);
 		}
 
 		private void cancel(final InternalContext context) {
@@ -2079,8 +2079,8 @@ public class UITest {
 		}
 
 		@Override
-		public void drawHover(final @NonNull UI ui, final @NonNull List<@NonNull String> lines, final double mouseX, final double mouseY) {
-			this.hovers.add(lines + " " + mouseX + " " + mouseY);
+		public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {
+			this.hovers.add(content + " " + mouseX + " " + mouseY);
 		}
 
 	}
