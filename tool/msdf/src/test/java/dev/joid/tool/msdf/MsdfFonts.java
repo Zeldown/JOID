@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfFonts {
 
+	public static final String CUBIC       = "JoidTest-Cubic.otf";
 	public static final String REGULAR     = "JoidTest-Regular.ttf";
+	public static final String QUADRATIC   = "JoidTest-Quadratic.ttf";
 	public static final String COLLECTION  = "JoidTest.ttc";
 	public static final String BOLD_ITALIC = "JoidTest-BoldItalic.otf";
-	public static final String QUADRATIC   = "JoidTest-Quadratic.ttf";
-	public static final String CUBIC       = "JoidTest-Cubic.otf";
 
 	public static byte[] read(final String name) throws IOException {
 		return Files.readAllBytes(MsdfFonts.copy(name).toPath());

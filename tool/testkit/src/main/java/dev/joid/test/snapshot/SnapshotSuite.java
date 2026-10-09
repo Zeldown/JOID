@@ -203,7 +203,8 @@ public abstract class SnapshotSuite {
 
 	public static final class FailedResourceUI extends UI {
 
-		@Getter private final Resource resource = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3}));
+		@Getter
+		private final Resource resource = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3}));
 
 		@Override
 		public void init() {

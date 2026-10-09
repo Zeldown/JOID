@@ -14,9 +14,9 @@ import lombok.NonNull;
 public final class SpirvBlockLayout {
 
 	private static final int OP_NAME            = 5;
+	private static final int OP_DECORATE        = 71;
 	private static final int OP_MEMBER_NAME     = 6;
 	private static final int OP_TYPE_STRUCT     = 30;
-	private static final int OP_DECORATE        = 71;
 	private static final int OP_MEMBER_DECORATE = 72;
 
 	private static final int DECORATION_OFFSET        = 35;
