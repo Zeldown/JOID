@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
+import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFontProvider;
@@ -211,6 +212,22 @@ public class GlyphFontProviderTest {
 		Assert.assertSame(GlyphFontProviderTest.REGULAR, layout.getPlacements().get(0).getFace());
 	}
 
+	@Test
+	public void writesTheColorUniformsOfAGlyph() {
+		final RecordingShader shader = new RecordingShader();
+		GlyphFontProviderTest.PROVIDER.shader = shader;
+		try {
+			GlyphFontProviderTest.PROVIDER.drawText(5D, 6D, "A", GlyphFontProviderTest.info().color(Color.RED), 1D, 2D, 300D, 40D);
+			Assert.assertEquals(0, shader.getValues().get("u_HasGradient"));
+			Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 1F}, (float[]) shader.getValues().get("color"), 0F);
+			GlyphFontProviderTest.PROVIDER.drawText(5D, 6D, "A", GlyphFontProviderTest.info().color(Color.RED.toGradient(Color.BLUE)), 1D, 2D, 300D, 40D);
+			Assert.assertEquals(1, shader.getValues().get("u_HasGradient"));
+			Assert.assertArrayEquals(new float[] {0F, 0F, 1F, 1F}, (float[]) shader.getValues().get("u_GradientEnd"), 0F);
+			Assert.assertArrayEquals(new float[] {1F, 2F, 301F, 42F}, (float[]) shader.getValues().get("u_GradientCanvas"), 0F);
+		} finally {
+			GlyphFontProviderTest.PROVIDER.shader = null;
+		}
+	}
 	@Test
 	public void switchesTheFaceThroughMarkup() {
 		final GlyphLayout<Face> layout = GlyphFontProviderTest.layout("*A*A", GlyphFontProviderTest.info());
@@ -529,7 +546,8 @@ public class GlyphFontProviderTest {
 		private final List<double[]>        runs  = new ArrayList<>();
 		private final List<TextGlyph<Face>> drawn = new ArrayList<>();
 
-		private List<String> events = new ArrayList<>();
+		private List<String>    events = new ArrayList<>();
+		private RecordingShader shader;
 
 		@Override
 		protected void end() {
@@ -540,6 +558,9 @@ public class GlyphFontProviderTest {
 		protected void drawGlyph(final TextGlyph<Face> glyph) {
 			this.drawn.add(glyph);
 			this.events.add("draw " + (char) glyph.getCodepoint() + (glyph.isShadow() ? " shadow" : ""));
+			if (this.shader != null) {
+				super.uniformColor(this.shader, glyph.getColor());
+			}
 		}
 
 		@Override

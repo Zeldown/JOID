@@ -140,11 +140,12 @@ public final class BitmapFontProvider extends GlyphFontProvider<BitmapFontFace> 
 | `drawGlyph(TextGlyph<F> glyph)` | For every glyph of the pass. |
 | `end()` | After the glyphs of a pass. |
 
-For each line, the provider runs the `apply` and `background` hooks of the effects, then one pass for the shadow (when the `TextInfo` has a shadow color) and one for the text, each `begin`, `drawGlyph` for every glyph, `end`, then `decorate` (see [Markup and Text Effects](../text/markup-and-effects.md#text-effects-with-itexteffect)).
+For each line, the provider runs the `apply` and `background` hooks of the effects, then one pass for the shadow (when the `TextInfo` has a shadow color or a shadow tint) and one for the text, each `begin`, `drawGlyph` for every glyph, `end`, then `decorate` (see [Markup and Text Effects](../text/markup-and-effects.md#text-effects-with-itexteffect)).
 
 - Read `getCodepoint()`, `getOffsetX()`, `getOffsetY()` and `getColor()` at draw time: effects can change the character, the offset and the color. `getColor()` is the shadow color in the shadow pass.
 - `isSlanted()` is `true` when italic is requested and the face drawn is upright: shear the glyph (the MSDF provider shears by 0.2 of the height above the baseline) or ignore it.
 - `Vector4f` is `javax.vecmath.Vector4f`; `Color.bind(Runnable, Vector4f, boolean)` runs the drawing with the color, a gradient spanning the canvas.
+- A provider that draws its glyphs with its own shader calls `uniformColor(IShader shader, Color color)`: it writes the uniforms `color`, `u_HasGradient` and, for a gradient, `u_GradientStart`, `u_GradientEnd`, `u_GradientStartPos`, `u_GradientEndPos` and `u_GradientCanvas` (the bounds of the line given to `begin`), as the MSDF provider does, so a gradient spans the whole line.
 - The space reaches `drawGlyph` even when the face has no glyph for it: return without drawing.
 
 ### The font with GlyphFont

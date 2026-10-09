@@ -8,7 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
+import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.color.ColorGradient;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.dto.FontBounds;
@@ -27,6 +29,11 @@ import lombok.NonNull;
 public abstract class GlyphFontProvider<F extends IFontFace> implements IFontProvider {
 
 	private static final Set<Class<?>> WARNED_FONTS = ConcurrentHashMap.newKeySet();
+
+	private double runX;
+	private double runY;
+	private double runWidth;
+	private double runHeight;
 
 	@Override
 	public final @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
@@ -103,6 +110,24 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 	protected abstract void begin(final double runX, final double runY, final double runWidth, final double runHeight);
 
 	protected abstract void drawGlyph(final @NonNull TextGlyph<F> glyph);
+
+	protected final void uniformColor(final @NonNull IShader shader, final @NonNull Color color) {
+		final Color current = color.update();
+		shader.uniform("color", current.r, current.g, current.b, current.a);
+		if (!current.isGradient()) {
+			shader.uniform("u_HasGradient", 0);
+			return;
+		}
+
+		final ColorGradient gradient = current.gradient;
+		shader
+		.uniform("u_HasGradient", 1)
+		.uniform("u_GradientStart", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
+		.uniform("u_GradientEnd", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
+		.uniform("u_GradientStartPos", gradient.getDirection().x, gradient.getDirection().y)
+		.uniform("u_GradientEndPos", gradient.getDirection().z, gradient.getDirection().w)
+		.uniform("u_GradientCanvas", (float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
+	}
 
 	private @NonNull F getFace(final @NonNull TextInfo info) {
 		return this.getFont(info).getFace(info.getWeight(), info.isItalic());
@@ -187,6 +212,10 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 	}
 
 	private void render(final @NonNull List<TextGlyph<F>> glyphs, final double runX, final double runY, final double runWidth, final double runHeight) {
+		this.runX = runX;
+		this.runY = runY;
+		this.runWidth = runWidth;
+		this.runHeight = runHeight;
 		this.begin(runX, runY, runWidth, runHeight);
 		for (final TextGlyph<F> glyph : glyphs) {
 			this.drawGlyph(glyph);
