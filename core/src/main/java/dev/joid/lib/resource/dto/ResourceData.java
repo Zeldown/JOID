@@ -104,6 +104,33 @@ public final class ResourceData {
 		return this;
 	}
 
+	public final @NonNull ResourceData reload(final IResourceDecoder decoder) {
+		this.await();
+		if (this.decoder != null) {
+			if (this.textures != null) {
+				for (final ITexture texture : this.textures) {
+					texture.delete();
+				}
+				this.textures = null;
+			}
+			this.decoder.clear(this);
+		}
+
+		if (this.missingTexture != null) {
+			this.missingTexture.delete();
+			this.missingTexture = null;
+		}
+
+		this.error     = null;
+		this.data      = null;
+		this.width     = 0;
+		this.height    = 0;
+		this.loaded    = false;
+		this.uploaded  = false;
+		this.generated = false;
+		return this.decoder(decoder);
+	}
+
 	public final void dispatch(final @NonNull Runnable task, final boolean async) {
 		if (async) {
 			final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
@@ -141,14 +168,17 @@ public final class ResourceData {
 				return;
 			}
 
+			final IResourceDecoder decoder = this.decoder;
 			final Runnable task = () -> {
 				try {
-					this.decoder.decode(this);
+					decoder.decode(this);
 				} catch (final RuntimeException exception) {
-					this.fail(exception);
+					if (this.decoder == decoder) {
+						this.fail(exception);
+					}
 				}
 
-				if (this.error == null) {
+				if (this.decoder == decoder && this.error == null) {
 					this.loaded = true;
 					this.uploaded = false;
 				}

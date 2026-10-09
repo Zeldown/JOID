@@ -50,6 +50,22 @@ public class MipmapChainTest {
 	}
 
 	@Test
+	public void limitsItsLevels() {
+		final MipmapChain chain = MipmapChain.of(256, 16, true).limit(5);
+		Assert.assertEquals(5, chain.getLevels());
+		Assert.assertEquals(16, chain.getWidth(4));
+		Assert.assertEquals(1, chain.getHeight(4));
+		Assert.assertEquals(1, MipmapChain.of(256, 16, true).limit(0).getLevels());
+	}
+
+	@Test
+	public void keepsItsLevelsUnderAHigherLimit() {
+		final MipmapChain chain = MipmapChain.of(256, 16, true);
+		Assert.assertSame(chain, chain.limit(9));
+		Assert.assertSame(chain, chain.limit(Integer.MAX_VALUE));
+	}
+
+	@Test
 	public void copiesNothingWithoutMipmaps() {
 		final List<Integer> levels = new ArrayList<>();
 		MipmapChain.of(64, 64, false).forEachStep((level, sourceWidth, sourceHeight, targetWidth, targetHeight) -> levels.add(level));

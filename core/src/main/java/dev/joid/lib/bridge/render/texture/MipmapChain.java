@@ -17,6 +17,10 @@ public final class MipmapChain {
 		return new MipmapChain(width, height, mipmapped ? 32 - Integer.numberOfLeadingZeros(Math.max(1, Math.max(width, height))) : 1);
 	}
 
+	public @NonNull MipmapChain limit(final int levels) {
+		return levels >= this.levels ? this : new MipmapChain(this.width, this.height, Math.max(1, levels));
+	}
+
 	public int getWidth(final int level) {
 		return Math.max(1, this.width >> level);
 	}

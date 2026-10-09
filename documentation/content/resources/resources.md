@@ -157,6 +157,22 @@ In dev mode, JOID also prints one warning per resource, with the reason and an a
 
 The advice is `check that the file or the URL exists and can be read` when the cause is an `IOException`, `convert it to PNG, JPEG or WebP` otherwise. Only a misuse throws: an input of a type that no locator or resolver supports throws an `IllegalArgumentException` (`No asset locator found for input of type ...`), and `null` throws a `NullPointerException`.
 
+### Reloading a resource with ResourceData.reload
+
+A program that can change its files while it runs, such as a game that reloads its resource packs, gives a resource its new content in place with `ResourceData.reload(IResourceDecoder decoder)`, on the render thread: every `Resource` sharing that data, those already in nodes included, shows the new content at its next draw. `reload` waits for the tasks of the resource, deletes the textures its previous decoder made and calls that decoder's `clear`, forgets the error, the size and the decoded data, then takes `decoder`, which decodes again at the next draw. A failed resource can thus be read again once its file exists. With a `null` decoder, a resource made of a given texture keeps that texture and only checks it again. A decoding still running for the previous decoder is ignored when it ends.
+
+```java
+for (final ResourceBuilder builder : ResourceBuilder.getBuilders()) {
+	if (builder.getCache() != null) {
+		for (final ResourceData data : builder.getCache().asMap().values()) {
+			if (data.isFailed() && data.getUniqueId().startsWith("pack:")) {
+				data.reload(new PackResourceDecoder(data.getUniqueId()));
+			}
+		}
+	}
+}
+```
+
 ## Custom loaders with ResourceBuilder
 
 A `ResourceBuilder` holds default options and a cache, and creates resources with them. Create one per kind of resource and keep it in a constant:

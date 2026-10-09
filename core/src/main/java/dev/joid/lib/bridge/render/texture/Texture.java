@@ -20,7 +20,7 @@ public abstract class Texture implements ITexture {
 
 		this.mipmapped = mipmap;
 		if (mipmap && this.isAllocated()) {
-			final MipmapChain chain = MipmapChain.of(this.width, this.height, true);
+			final MipmapChain chain = MipmapChain.of(this.width, this.height, true).limit(this.getMaxLevels(this.width, this.height));
 			this.onGenerateLevels(chain, this.levels);
 			this.levels = chain.getLevels();
 		}
@@ -29,7 +29,7 @@ public abstract class Texture implements ITexture {
 
 	@Override
 	public final @NonNull Texture allocate(final int width, final int height) {
-		final MipmapChain chain = MipmapChain.of(width, height, this.mipmapped);
+		final MipmapChain chain = MipmapChain.of(width, height, this.mipmapped).limit(this.getMaxLevels(width, height));
 		if (this.isAllocated() && this.width == width && this.height == height && this.levels == chain.getLevels()) {
 			return this;
 		}
@@ -43,7 +43,7 @@ public abstract class Texture implements ITexture {
 
 	@Override
 	public final @NonNull Texture upload(final @NonNull int[] pixels, final int width, final int height) {
-		this.onUpload(pixels, MipmapChain.of(width, height, this.mipmapped));
+		this.onUpload(pixels, MipmapChain.of(width, height, this.mipmapped).limit(this.getMaxLevels(width, height)));
 		return this;
 	}
 
@@ -60,6 +60,10 @@ public abstract class Texture implements ITexture {
 	@Override
 	public boolean isAllocated() {
 		return this.width > 0 && !this.deleted;
+	}
+
+	protected int getMaxLevels(final int width, final int height) {
+		return Integer.MAX_VALUE;
 	}
 
 	protected abstract void onAllocate(final @NonNull MipmapChain chain);

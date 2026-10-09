@@ -180,6 +180,8 @@ The core `Texture` (`dev.joid.lib.bridge.render.texture`) implements this contra
 | `onGenerateLevels(MipmapChain chain, int allocatedLevels)` | `mipmap(true)` on an allocated texture: allocate the levels missing when `allocatedLevels` differs from `chain.getLevels()`, keeping level 0, then copy the levels down. |
 | `onDelete()` | Release the storage. Called once. |
 
+`getMaxLevels(int width, int height)` caps the level count of every chain (`MipmapChain.limit(levels)`, at least one level); by default it allows the whole chain, down to 1×1. An API that sizes each level `size >> level` without keeping at least one pixel, so that a level with one side at 0 is incomplete, returns `32 - Integer.numberOfLeadingZeros(Math.min(width, height))` to stop at the level where the shorter side reaches one pixel; `getLevels()` then reports the levels really allocated.
+
 The LWJGL 3 and Vulkan textures extend it.
 
 ### Borrowed textures

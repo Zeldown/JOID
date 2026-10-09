@@ -207,6 +207,74 @@ public class ResourceDataTest {
 	}
 
 	@Test
+	public void reloadsAFailedResourceWithANewDecoder() {
+		final ResourceData data = new ResourceData("image", null);
+		data.fail(new IllegalStateException("missing"));
+		final Decoder decoder = new Decoder();
+		Assert.assertSame(data, data.reload(decoder));
+		Assert.assertFalse(data.isFailed());
+		Assert.assertFalse(data.isGenerated());
+		Assert.assertSame(decoder, data.getDecoder());
+		data.generate(false);
+		Assert.assertTrue(data.isLoaded());
+		Assert.assertEquals(Arrays.asList("init", "prepare", "decode"), decoder.calls);
+	}
+
+	@Test
+	public void releasesWhatItsDecoderMadeOnReload() {
+		final Decoder previous = new Decoder();
+		final Texture texture = new Texture(4, 2);
+		final ResourceData data = new ResourceData("image", previous).texture(texture).width(4).height(2).loaded(true).uploaded(true).generated(true);
+		data.reload(new Decoder());
+		Assert.assertTrue(texture.isDeleted());
+		Assert.assertNull(data.getTextures());
+		Assert.assertEquals(Arrays.asList("init", "clear"), previous.calls);
+		Assert.assertEquals(0, data.getWidth());
+		Assert.assertFalse(data.isLoaded());
+		Assert.assertFalse(data.isUploaded());
+	}
+
+	@Test
+	public void keepsAGivenTextureOnReload() {
+		final Texture texture = new Texture(4, 2);
+		final ResourceData data = new ResourceData("image", null).texture(texture);
+		data.generate(false);
+		data.reload(null);
+		Assert.assertFalse(texture.isDeleted());
+		Assert.assertFalse(data.isGenerated());
+		data.generate(false);
+		Assert.assertTrue(data.isLoaded());
+		Assert.assertEquals(4, data.getWidth());
+	}
+
+	@Test
+	public void ignoresTheDecodeOfAReplacedDecoder() throws InterruptedException {
+		final CountDownLatch release = new CountDownLatch(1);
+		final CountDownLatch finished = new CountDownLatch(1);
+		final ResourceData data = new ResourceData("image", new Decoder() {
+
+			@Override
+			public void decode(final @NonNull ResourceData resource) {
+				try {
+					release.await(5L, TimeUnit.SECONDS);
+				} catch (final InterruptedException exception) {
+					Thread.currentThread().interrupt();
+				}
+				finished.countDown();
+				throw new IllegalStateException("late");
+			}
+
+		});
+		data.generate(true);
+		data.reload(new Decoder());
+		release.countDown();
+		Assert.assertTrue(finished.await(5L, TimeUnit.SECONDS));
+		Thread.sleep(50L);
+		Assert.assertFalse(data.isFailed());
+		Assert.assertFalse(data.isLoaded());
+	}
+
+	@Test
 	public void clearsWithoutTextureNorDecoder() {
 		final ResourceData data = new ResourceData("image", null).data(new int[][] {{1}});
 		data.clear();
@@ -237,7 +305,7 @@ public class ResourceDataTest {
 		new ResourceData(null, null);
 	}
 
-	private static final class Decoder implements IResourceDecoder {
+	private static class Decoder implements IResourceDecoder {
 
 		private final List<String>   calls   = new CopyOnWriteArrayList<>();
 		private final CountDownLatch decoded = new CountDownLatch(1);
