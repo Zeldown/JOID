@@ -372,7 +372,7 @@ public abstract class Node implements INode {
 					this.maxScrollX = 0;
 					double scrollOffsetX = Double.MIN_VALUE;
 					for (final Node child : this.children) {
-						this.maxScrollX = Math.max(this.maxScrollX, child.defaultX + child.width - this.width);
+						this.maxScrollX = Math.max(this.maxScrollX, child.defaultX + child.getContentWidth() - this.width);
 						if (scrollOffsetX == Double.MIN_VALUE) {
 							scrollOffsetX = child.defaultX;
 						} else {
@@ -388,7 +388,7 @@ public abstract class Node implements INode {
 					this.maxScrollY = 0;
 					double scrollOffsetY = Double.MIN_VALUE;
 					for (final Node child : this.children) {
-						this.maxScrollY = Math.max(this.maxScrollY, child.defaultY + child.height - this.height);
+						this.maxScrollY = Math.max(this.maxScrollY, child.defaultY + child.getContentHeight() - this.height);
 						if (scrollOffsetY == Double.MIN_VALUE) {
 							scrollOffsetY = child.defaultY;
 						} else {
@@ -629,8 +629,36 @@ public abstract class Node implements INode {
 		return this.renderHover(mouseX, mouseY, new AtomicBoolean(false));
 	}
 
+	private double getContentWidth() {
+		double width = this.width;
+		if (this.overflow == OverflowProperty.NONE) {
+			for (final Node child : this.children) {
+				if (child.position != PositionProperty.ABSOLUTE) {
+					width = Math.max(width, child.x + child.getContentWidth());
+				}
+			}
+		}
+		return width;
+	}
+
+	private double getContentHeight() {
+		double height = this.height;
+		if (this.overflow == OverflowProperty.NONE) {
+			for (final Node child : this.children) {
+				if (child.position != PositionProperty.ABSOLUTE) {
+					height = Math.max(height, child.y + child.getContentHeight());
+				}
+			}
+		}
+		return height;
+	}
+
 	private boolean canScrollX(final double notches) {
 		return this.hasOverflowX() && (notches > 0D ? this.targetScrollX < 0 : this.targetScrollX > -this.maxScrollX);
+	}
+
+	private boolean canScrollY(final double notches) {
+		return this.hasOverflowY() && (notches > 0D ? this.targetScrollY < 0 : this.targetScrollY > -this.maxScrollY);
 	}
 
 	private boolean renderHover(final double mouseX, final double mouseY, final AtomicBoolean shown) {
@@ -717,7 +745,7 @@ public abstract class Node implements INode {
 		if (!context.isCancelled() && this.isHovered(mouseX, mouseY)) {
 			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
 			if (notchesY != 0D && this.hasOverflowY()) {
-				if (notchesY > 0D ? this.targetScrollY < 0 : this.targetScrollY > -this.maxScrollY) {
+				if (this.canScrollY(notchesY)) {
 					this.scrollY(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
 					context.cancel();
 				}

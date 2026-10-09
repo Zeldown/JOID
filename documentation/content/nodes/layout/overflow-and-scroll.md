@@ -69,7 +69,7 @@ A `SCROLL` node scrolls on each axis where its content overflows. The content is
 
 ## Scrolling with the wheel and scrollSpeed
 
-When the mouse is over a visible and enabled `SCROLL` node whose content overflows, each wheel step moves the target by 30 × `scrollSpeed`, twice as much while Left Control is held. Wheel up scrolls toward the start, wheel down toward the end. The wheel scrolls the vertical axis when the content overflows vertically, the horizontal axis otherwise: a horizontal list scrolls with the wheel.
+The content of a `SCROLL` node spans its children and, inside them, the descendants that go beyond them (a caption hanging below a card, for example), down to the nodes that clip their own children (`HIDDEN` or `SCROLL`); `ABSOLUTE` nodes do not count. When the mouse is over a visible and enabled `SCROLL` node whose content overflows, each wheel step moves the target by 30 × `scrollSpeed`, twice as much while Left Control is held. Wheel up scrolls toward the start, wheel down toward the end. The wheel scrolls the vertical axis when the content overflows vertically, the horizontal axis otherwise: a horizontal list scrolls with the wheel.
 
 ```java
 RectNode.create(100, 100, 400, 300).color(Color.WHITE).overflow(OverflowProperty.SCROLL).scrollSpeed(3D).attach(this);

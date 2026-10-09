@@ -957,6 +957,30 @@ public class NodeTest {
 	}
 
 	@Test
+	public void scrollsToTheEndOfWhatItsChildrenHold() {
+		final ContainerNode area = ContainerNode.create(100D, 100D, 400D, 300D).overflow(OverflowProperty.SCROLL);
+		final RectNode card = RectNode.create(0D, 0D, 200D, 250D);
+		RectNode.create(0D, 260D, 500D, 90D).attach(card);
+		card.attach(area);
+		this.bridges.open(new NodeUI(area));
+		this.bridges.frames(2);
+		Assert.assertEquals(50D, area.getMaxScrollY(), 0D);
+		Assert.assertEquals(100D, area.getMaxScrollX(), 0D);
+	}
+
+	@Test
+	public void stopsItsScrollExtentAtAChildThatClipsItsChildren() {
+		final ContainerNode area = ContainerNode.create(100D, 100D, 400D, 300D).overflow(OverflowProperty.SCROLL);
+		final RectNode card = RectNode.create(0D, 0D, 200D, 250D).overflow(OverflowProperty.HIDDEN);
+		RectNode.create(0D, 260D, 500D, 90D).attach(card);
+		card.attach(area);
+		this.bridges.open(new NodeUI(area));
+		this.bridges.frames(2);
+		Assert.assertEquals(0D, area.getMaxScrollY(), 0D);
+		Assert.assertEquals(0D, area.getMaxScrollX(), 0D);
+	}
+
+	@Test
 	public void scrollsHorizontallyWithTheWheel() {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
