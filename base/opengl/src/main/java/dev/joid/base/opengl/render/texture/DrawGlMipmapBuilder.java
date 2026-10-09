@@ -19,14 +19,14 @@ import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.NonNull;
 
-public final class DrawMipmapBuilder implements IGlMipmapBuilder {
+public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 
 	private final ByteBuffer quad;
 
 	private GlShader shader;
 	private boolean  warned;
 
-	private DrawMipmapBuilder() {
+	private DrawGlMipmapBuilder() {
 		final float[][] corners = {{-1F, -1F, 0F, 0F}, {1F, -1F, 1F, 0F}, {1F, 1F, 1F, 1F}, {-1F, -1F, 0F, 0F}, {1F, 1F, 1F, 1F}, {-1F, 1F, 0F, 1F}};
 		this.quad = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
 		for (int i = 0; i < corners.length; i++) {
@@ -37,8 +37,8 @@ public final class DrawMipmapBuilder implements IGlMipmapBuilder {
 		}
 	}
 
-	public static @NonNull DrawMipmapBuilder create() {
-		return new DrawMipmapBuilder();
+	public static @NonNull DrawGlMipmapBuilder create() {
+		return new DrawGlMipmapBuilder();
 	}
 
 	@Override

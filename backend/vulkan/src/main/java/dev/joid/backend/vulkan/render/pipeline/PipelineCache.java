@@ -22,8 +22,8 @@ import org.lwjgl.vulkan.VkPipelineViewportStateCreateInfo;
 import org.lwjgl.vulkan.VkVertexInputAttributeDescription;
 import org.lwjgl.vulkan.VkVertexInputBindingDescription;
 
-import dev.joid.backend.vulkan.render.Context;
-import dev.joid.backend.vulkan.render.shader.Shader;
+import dev.joid.backend.vulkan.render.VulkanContext;
+import dev.joid.backend.vulkan.render.shader.VulkanShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.PipelineKey;
 import dev.joid.lib.bridge.render.vertex.Primitive;
@@ -33,10 +33,10 @@ import lombok.NonNull;
 
 public final class PipelineCache {
 
-	private final Context                  context;
+	private final VulkanContext            context;
 	private final Map<PipelineKey, long[]> pipelineMap;
 
-	public PipelineCache(final Context context) {
+	public PipelineCache(final VulkanContext context) {
 		this.context     = context;
 		this.pipelineMap = new HashMap<>();
 	}
@@ -52,7 +52,7 @@ public final class PipelineCache {
 
 	private long create(final PipelineKey key, final long renderPass) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final Shader shader = (Shader) key.getShader();
+			final VulkanShader shader = (VulkanShader) key.getShader();
 			final ByteBuffer entryPoint = stack.UTF8("main");
 			final VkPipelineShaderStageCreateInfo.Buffer stages = VkPipelineShaderStageCreateInfo.calloc(2, stack);
 			stages.get(0).sType$Default().stage(VK10.VK_SHADER_STAGE_VERTEX_BIT).module(shader.getVertexModule()).pName(entryPoint);
@@ -102,7 +102,7 @@ public final class PipelineCache {
 					.subpass(0);
 
 			final LongBuffer pipeline = stack.mallocLong(1);
-			Context.check(VK10.vkCreateGraphicsPipelines(this.context.getDevice(), VK10.VK_NULL_HANDLE, info, null, pipeline), "vkCreateGraphicsPipelines");
+			VulkanContext.check(VK10.vkCreateGraphicsPipelines(this.context.getDevice(), VK10.VK_NULL_HANDLE, info, null, pipeline), "vkCreateGraphicsPipelines");
 			return pipeline.get(0);
 		}
 	}

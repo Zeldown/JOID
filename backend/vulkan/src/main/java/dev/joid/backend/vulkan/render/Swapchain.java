@@ -18,12 +18,12 @@ import lombok.Getter;
 @Getter
 public final class Swapchain {
 
-	private final int     format;
-	private final long    window;
-	private final int     colorSpace;
-	private final Context context;
-	private final long    loadRenderPass;
-	private final long    clearRenderPass;
+	private final int           format;
+	private final long          window;
+	private final int           colorSpace;
+	private final VulkanContext context;
+	private final long          loadRenderPass;
+	private final long          clearRenderPass;
 
 	private int    width;
 	private int    height;
@@ -35,7 +35,7 @@ public final class Swapchain {
 	private long   depthMemory;
 	private long[] framebuffers;
 
-	public Swapchain(final Context context, final long window) {
+	public Swapchain(final VulkanContext context, final long window) {
 		this.context = context;
 		this.window  = window;
 
@@ -77,7 +77,7 @@ public final class Swapchain {
 	private void create() {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkSurfaceCapabilitiesKHR capabilities = VkSurfaceCapabilitiesKHR.malloc(stack);
-			Context.check(KHRSurface.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(this.context.getPhysicalDevice(), this.context.getSurface(), capabilities), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
+			VulkanContext.check(KHRSurface.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(this.context.getPhysicalDevice(), this.context.getSurface(), capabilities), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
 
 			final int[] framebufferWidth = new int[1];
 			final int[] framebufferHeight = new int[1];
@@ -107,7 +107,7 @@ public final class Swapchain {
 			info.imageExtent().set(this.width, this.height);
 
 			final LongBuffer swapchain = stack.mallocLong(1);
-			Context.check(KHRSwapchain.vkCreateSwapchainKHR(this.context.getDevice(), info, null, swapchain), "vkCreateSwapchainKHR");
+			VulkanContext.check(KHRSwapchain.vkCreateSwapchainKHR(this.context.getDevice(), info, null, swapchain), "vkCreateSwapchainKHR");
 			if (this.swapchain != VK10.VK_NULL_HANDLE) {
 				KHRSwapchain.vkDestroySwapchainKHR(this.context.getDevice(), this.swapchain, null);
 			}
@@ -131,7 +131,7 @@ public final class Swapchain {
 				this.views[i] = this.context.createImageView(this.images[i], this.format, VK10.VK_IMAGE_ASPECT_COLOR_BIT);
 
 				final LongBuffer framebuffer = stack.mallocLong(1);
-				Context.check(VK10.vkCreateFramebuffer(this.context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(this.clearRenderPass).pAttachments(stack.longs(this.views[i], this.depthView)).width(this.width).height(this.height).layers(1), null, framebuffer), "vkCreateFramebuffer");
+				VulkanContext.check(VK10.vkCreateFramebuffer(this.context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(this.clearRenderPass).pAttachments(stack.longs(this.views[i], this.depthView)).width(this.width).height(this.height).layers(1), null, framebuffer), "vkCreateFramebuffer");
 				this.framebuffers[i] = framebuffer.get(0);
 			}
 		}

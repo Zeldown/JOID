@@ -84,7 +84,7 @@ public final class App {
 		BridgeHandler.UI.register(bridge);
 		JOID.inst().load();
 
-		final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
+		final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.RENDER.get();
 		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
 		render.screen(windowBridge.getWidth(), windowBridge.getHeight());
 		JOID.open(new UIMainMenu());
@@ -107,9 +107,9 @@ public final class App {
 }
 ```
 
-`Backend` is `dev.joid.backend.vulkan.Backend` and `RenderBridge` is `dev.joid.backend.vulkan.render.RenderBridge`. Register the input callbacks as in [UI Bridge](ui-bridge.md#driving-the-bridge-from-your-loop); when the window is resized, call `render.screen(width, height)` with the framebuffer size again and `bridge.load()`.
+`Backend` is `dev.joid.backend.vulkan.Backend` and `VulkanRenderBridge` is in `dev.joid.backend.vulkan.render`. Register the input callbacks as in [UI Bridge](ui-bridge.md#driving-the-bridge-from-your-loop); when the window is resized, call `render.screen(width, height)` with the framebuffer size again and `bridge.load()`.
 
-| Method of `dev.joid.backend.vulkan.render.RenderBridge` | Description |
+| Method of `dev.joid.backend.vulkan.render.VulkanRenderBridge` | Description |
 |---|---|
 | `beginFrame()` | Of `IRenderBridge`. Acquires the next swapchain image and starts recording. Recreates the swapchain first when the window size changed. Throws `IllegalStateException("The Vulkan frame has already begun")` when a frame is already open. |
 | `endFrame()` | Of `IRenderBridge`. Submits the frame and waits for the GPU to finish it. |
@@ -123,7 +123,7 @@ public final class App {
 
 ### Images of the host on Vulkan
 
-A host that renders with Vulkan lends its images to JOID with `Resource.of(VulkanImage.create(image, view, width, height, levels))` or a `VulkanImageSupplier` (`dev.joid.backend.vulkan.render.texture`), wrapped in a `VulkanBorrowedTexture` by the `VulkanImageResourceResolver` that `Backend.register` registers. JOID samples the image through its view and never writes, transitions or destroys it, so the image must:
+A host that renders with Vulkan lends its images to JOID with `Resource.of(VulkanImage.create(image, view, width, height, levels))` or a `IVulkanImageSupplier` (`dev.joid.backend.vulkan.render.texture`), wrapped in a `VulkanBorrowedTexture` by the `VulkanImageResourceResolver` that `Backend.register` registers. JOID samples the image through its view and never writes, transitions or destroys it, so the image must:
 
 - belong to the `VkDevice` of JOID: create it with `getContext().getDevice()` of the render bridge, or with `getContext().createImage(...)` and `createImageView(...)`;
 - be created with `VK_IMAGE_USAGE_SAMPLED_BIT`, in a color format JOID can sample, with `levels` mip levels in its view (more than 1 to sample mipmaps);
@@ -173,7 +173,7 @@ public final class App {
 }
 ```
 
-LWJGL 2 delivers the character and the key of a press in the same event, so the input loop is short. `WindowBridge` is `dev.joid.backend.lwjgl2.window.WindowBridge`, whose static `getKey(int)` converts an LWJGL 2 key code:
+LWJGL 2 delivers the character and the key of a press in the same event, so the input loop is short. `Lwjgl2WindowBridge` (`dev.joid.backend.lwjgl2.window`), whose static `getKey(int)` converts an LWJGL 2 key code:
 
 ```java
 @RequiredArgsConstructor
@@ -199,7 +199,7 @@ public final class AppInput {
 
 		while (Keyboard.next()) {
 			if (Keyboard.getEventKeyState()) {
-				this.bridge.keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()));
+				this.bridge.keyTyped(Keyboard.getEventCharacter(), Lwjgl2Lwjgl2WindowBridge.getKey(Keyboard.getEventKey()));
 			}
 		}
 	}
@@ -236,11 +236,11 @@ The LWJGL 3 and Vulkan backends share two modules, also published as their own j
 
 ### GLFW window bridge
 
-`dev.joid.base.glfw.WindowBridge` implements `IWindowBridge` for a GLFW window:
+`dev.joid.base.glfw.GlfwWindowBridge` implements `IWindowBridge` for a GLFW window:
 
 | Member | Description |
 |---|---|
-| `new WindowBridge(long window)` | A bridge reading the given window. |
+| `new GlfwWindowBridge(long window)` | A bridge reading the given window. |
 | `getWidth()` / `getHeight()` | The framebuffer size in pixels. |
 | `getMouseX()` / `getMouseY()` | The cursor position converted into framebuffer pixels with `GlfwWindows.toFramebuffer(position, windowSize, framebufferSize)`, so the mouse matches the drawing on high-density screens. |
 | `isMouseGrabbed()` | `true` when the cursor mode is `GLFW_CURSOR_DISABLED`. |
@@ -297,7 +297,7 @@ Each backend shows the [cursor of the node under the pointer](../interactions/mo
 
 | Backend | Cursors |
 |---|---|
-| LWJGL 3, Vulkan | The standard cursors of GLFW 3.4 through `dev.joid.base.glfw.WindowBridge`: `POINTER` is the pointing hand, `MOVE` the four-way arrow (`GLFW_RESIZE_ALL_CURSOR`), the resize cursors the double arrows. A shape the system or its cursor theme lacks falls back to the default cursor. |
+| LWJGL 3, Vulkan | The standard cursors of GLFW 3.4 through `dev.joid.base.glfw.GlfwWindowBridge`: `POINTER` is the pointing hand, `MOVE` the four-way arrow (`GLFW_RESIZE_ALL_CURSOR`), the resize cursors the double arrows. A shape the system or its cursor theme lacks falls back to the default cursor. |
 | LWJGL 2 | The system cursors of each OS, without images, through JNA (embedded in the jar, see [Installation](../getting-started/installation.md#embedded-libraries)): `LoadCursorW` on Windows, the cursor theme (`XcursorLibraryLoadCursor`) then the cursor font on X11, `NSCursor` on macOS. The handle goes to the `Display` of LWJGL 2, which keeps it for its window and hides it while the mouse is grabbed; nothing is applied while the mouse is grabbed. A shape the system lacks, or a JNA that cannot load, keeps the default cursor (with one warning in dev mode). The classes live in `dev.joid.backend.lwjgl2.window.cursor`: `NativeCursors.get()` picks the `NativeCursor` of the OS (`WindowsNativeCursor`, `X11NativeCursor`, `MacNativeCursor`). |
 | Your engine | `IWindowBridge.setCursor(Cursor)` does nothing by default, so the cursor stays the one of your window until you implement it (see [Writing a Backend](writing-a-backend.md#window-and-audio-bridges)). |
 
@@ -380,13 +380,13 @@ The LWJGL 2 and LWJGL 3 backends render with `joid-base-opengl`, a module in pla
 | Package `dev.joid.base.opengl` | Content |
 |---|---|
 | `binding` | `IGlBinding` (`glEnable`, `glDisable`, `glIsEnabled`, `glGetInteger`, `glGetIntegerv`, `glGetString`, `glGetStringi`, `glGetFloatv`, `glGetTexParameteri`, `glGetVertexAttribi`, `glGetVertexAttribPointerv`, `glGetVertexAttribfv`, `glGetMaterialfv`, `glClear`, `glReadBuffer`, `glReadPixels`, and the getters of the domain bindings), `IGlStateBinding` (blending, depth, stencil, color mask, viewport, clear values, culling and front face, line width, polygon mode, pixel store), `IGlBufferBinding` (buffers, vertex arrays, attributes, `glDrawArrays`), `IGlProgramBinding` (shaders, programs, attribute and fragment output locations, uniforms), `IGlTextureBinding` (textures, units, `glBindSampler`), `IGlFrameBufferBinding` (framebuffers, renderbuffers, blits), returned by `getFrameBufferBinding(GlFrameBufferFamily)` for the core and ARB entry points (`CORE`) or the `EXT` ones, and `GlConstants`, the OpenGL values the module passes to them. |
-| `capability` | `GlCapabilities.read(IGlBinding)` reads the context once: version, GLSL version, `GlProfile` (`COMPATIBILITY`, `CORE`, `FORWARD_COMPATIBLE_CORE`), extensions and maximum texture size; `hasVertexArrays()`, `hasSamplerObjects()`, `hasFrameBufferBlit()` and `getFrameBufferFamily()` (`null` without framebuffer objects) tell what it can do. `GlStrategies.of(GlCapabilities)` is the one place that chooses how to render on that context, see [OpenGL versions](#opengl-versions). |
-| `render` | `GlRenderBridge` (`create(IGlBinding)`), the render bridge; `GlEnums`, the OpenGL values of the blend, stencil, wrap, filter, vertex and primitive enums of JOID; `shader.GlShader`, `texture.GlTexture` and `framebuffer.GlFrameBuffer`, on the core `Shader`, `Texture` and `FrameBufferHandle`; `texture.GlBorrowedTexture`, a texture of the host on the core `BorrowedTexture`, and `texture.IGlTexture` (`getId()`, `sample(TextureSampling)`), what the bridge binds; `vertex.GlVertexInput` (`ArrayObjectVertexInput`, `DefaultVertexInput`) and `texture.IGlMipmapBuilder` (`BlitMipmapBuilder`, `DrawMipmapBuilder`), the strategies of the bridge. |
+| `capability` | `GlCapabilities.read(IGlBinding)` reads the context once: version, GLSL version, `GlProfile` (`COMPATIBILITY`, `CORE`, `CORE_FORWARD_COMPATIBLE`), extensions and maximum texture size; `hasVertexArrays()`, `hasSamplerObjects()`, `hasFrameBufferBlit()` and `getFrameBufferFamily()` (`null` without framebuffer objects) tell what it can do. `GlStrategies.of(GlCapabilities)` is the one place that chooses how to render on that context, see [OpenGL versions](#opengl-versions). |
+| `render` | `GlRenderBridge` (`create(IGlBinding)`), the render bridge; `GlEnums`, the OpenGL values of the blend, stencil, wrap, filter, vertex and primitive enums of JOID; `shader.GlShader`, `texture.GlTexture` and `framebuffer.GlFrameBuffer`, on the core `Shader`, `Texture` and `FrameBufferHandle`; `texture.GlBorrowedTexture`, a texture of the host on the core `BorrowedTexture`, and `texture.IGlTexture` (`getId()`, `sample(TextureSampling)`), what the bridge binds; `vertex.GlVertexInput` (`ArrayObjectVertexInput`, `DefaultVertexInput`) and `texture.IGlMipmapBuilder` (`BlitGlMipmapBuilder`, `DrawGlMipmapBuilder`), the strategies of the bridge. |
 | `render.state` | `IGlStateGuard` (`enter()`, `exit()`, `suspend(Runnable)`), implemented by `JournalGlStateGuard`: a `GlStateJournal` of `GlStateKey` values, written by `Journal*Binding` decorators of each binding, and `GlPipelineReset`, the state JOID sets at the start of each frame. `GlRenderBridge.getBinding()` returns the journaled binding. `FixedMatrixImport` (`create(GlRenderBridge)`, `apply()`) loads the fixed-function matrices of a host into the bridge, see [Matrices of a fixed-function host](#matrices-of-a-fixed-function-host). |
 | `resource` | `GlTextureResourceResolver.inst()`, which turns an `Integer` or an `IntSupplier` into a [texture of the host](../resources/resources.md#textures-of-the-host); `Backend.register` of LWJGL 2 and LWJGL 3 registers it. |
 | `snapshot` | `GlSnapshotCapture.capture(bridge, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL, and `GlStateSnapshot.read(binding, capabilities)`, the whole OpenGL state for [`StateGuardContractSuite`](testkit.md#stateguardcontractsuite-tests); left out of the `-prod` jars and of the released `joid-base-opengl` jar. |
 
-`GlRenderBridge.create(binding)` reads the capabilities, chooses its strategies and creates its vertex buffer, and its vertex array when the context has them: the context must be current. Every OpenGL call of JOID then goes through the bindings, so a binding that wraps another one sees all of them (the bridge wraps them itself in its journal), and `dev.joid.backend.lwjgl3.Backend.register(window, binding)` registers the bridges with such a binding. On LWJGL 3, `GlContextRequest` sets the GLFW hints of a context: `CORE_33` (OpenGL 3.3 core, forward compatible on macOS), `CORE_32_FORWARD` (3.2 core, forward compatible) or `COMPATIBILITY` (no version hint: the highest compatibility context of the driver, 2.1 on macOS), each with 24 bits of depth and 8 of stencil.
+`GlRenderBridge.create(binding)` reads the capabilities, chooses its strategies and creates its vertex buffer, and its vertex array when the context has them: the context must be current. Every OpenGL call of JOID then goes through the bindings, so a binding that wraps another one sees all of them (the bridge wraps them itself in its journal), and `dev.joid.backend.lwjgl3.Backend.register(window, binding)` registers the bridges with such a binding. On LWJGL 3, `GlContextRequest` sets the GLFW hints of a context: `CORE_33` (OpenGL 3.3 core, forward compatible on macOS), `CORE_32_FORWARD_COMPATIBLE` (3.2 core, forward compatible) or `COMPATIBILITY` (no version hint: the highest compatibility context of the driver, 2.1 on macOS), each with 24 bits of depth and 8 of stencil.
 
 ### OpenGL versions
 
@@ -412,7 +412,7 @@ Each backend module has a demo window that opens the JOID demo UIs in dev and de
 | `./gradlew :backend-lwjgl3:runDemo` | `dev.joid.backend.lwjgl3.demo.DemoWindow` |
 | `./gradlew :backend-vulkan:runDemo` | `dev.joid.backend.vulkan.demo.DemoWindow` |
 
-The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-base-glfw` jar. Its subclasses provide `getBackendName()`, `configureWindow()` (window hints), `registerBackend(long window)` and `present()`; the loop calls `beginFrame()` and `endFrame()` of the render bridge around each frame. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
+The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.GlfwDemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-base-glfw` jar. Its subclasses provide `getBackendName()`, `configureWindow()` (window hints), `registerBackend(long window)` and `present()`; the loop calls `beginFrame()` and `endFrame()` of the render bridge around each frame. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
 
 ## Reference
 

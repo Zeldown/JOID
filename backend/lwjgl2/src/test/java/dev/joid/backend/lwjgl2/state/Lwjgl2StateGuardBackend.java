@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL33;
 
 import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
-import dev.joid.backend.lwjgl2.snapshot.SnapshotBackend;
+import dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend;
 import dev.joid.base.opengl.capability.GlCapabilities;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.snapshot.GlStateSnapshot;
@@ -27,7 +27,7 @@ import lombok.NonNull;
 
 public final class Lwjgl2StateGuardBackend implements IStateGuardBackend {
 
-	private final SnapshotBackend backend = new SnapshotBackend();
+	private final Lwjgl2SnapshotBackend backend = new Lwjgl2SnapshotBackend();
 
 	@Override
 	public void destroy() {

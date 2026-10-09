@@ -6,20 +6,20 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import dev.joid.backend.vulkan.render.texture.Texture;
 import dev.joid.backend.vulkan.render.texture.VulkanBorrowedTexture;
 import dev.joid.backend.vulkan.render.texture.VulkanImage;
-import dev.joid.backend.vulkan.snapshot.SnapshotBackend;
+import dev.joid.backend.vulkan.render.texture.VulkanTexture;
+import dev.joid.backend.vulkan.snapshot.VulkanSnapshotBackend;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.test.contract.IBorrowedTextureBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;
 
-public final class BorrowedTextureBackend implements IBorrowedTextureBackend {
+public final class VulkanBorrowedTextureBackend implements IBorrowedTextureBackend {
 
-	private final SnapshotBackend      backend  = new SnapshotBackend();
-	private final Map<Object, Texture> textures = new IdentityHashMap<>();
+	private final VulkanSnapshotBackend      backend  = new VulkanSnapshotBackend();
+	private final Map<Object, VulkanTexture> textures = new IdentityHashMap<>();
 
 	@Override
 	public void destroy() {
@@ -53,7 +53,7 @@ public final class BorrowedTextureBackend implements IBorrowedTextureBackend {
 
 	@Override
 	public boolean isBorrowableTexture(final @NonNull Object texture) {
-		final Texture borrowable = this.textures.get(texture);
+		final VulkanTexture borrowable = this.textures.get(texture);
 		return borrowable != null && !borrowable.isDeleted() && borrowable.getImage() == ((VulkanImage) texture).getImage();
 	}
 
@@ -61,7 +61,7 @@ public final class BorrowedTextureBackend implements IBorrowedTextureBackend {
 	public @NonNull Object createBorrowableTexture(final int width, final int height, final int color, final boolean mipmapped) {
 		final int[] pixels = new int[width * height];
 		Arrays.fill(pixels, color);
-		final Texture texture = (Texture) BridgeHandler.RENDER.get().createTexture();
+		final VulkanTexture texture = (VulkanTexture) BridgeHandler.RENDER.get().createTexture();
 		texture.mipmap(mipmapped).allocate(width, height).upload(pixels, width, height);
 		final VulkanImage image = VulkanImage.create(texture.getImage(), texture.getView(), width, height, texture.getLevels());
 		this.textures.put(image, texture);

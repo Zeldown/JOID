@@ -12,7 +12,7 @@ import dev.joid.lib.utils.key.Key;
 import lombok.Getter;
 import lombok.NonNull;
 
-public final class WindowBridge implements IWindowBridge {
+public final class GlfwWindowBridge implements IWindowBridge {
 
 	private final long              window;
 	private final Map<Cursor, Long> cursorMap;
@@ -20,7 +20,7 @@ public final class WindowBridge implements IWindowBridge {
 	@Getter
 	private Cursor cursor;
 
-	public WindowBridge(final long window) {
+	public GlfwWindowBridge(final long window) {
 		this.window    = window;
 		this.cursorMap = new EnumMap<>(Cursor.class);
 		this.cursor    = Cursor.DEFAULT;
@@ -99,7 +99,7 @@ public final class WindowBridge implements IWindowBridge {
 
 	@Override
 	public void setCursor(final @NonNull Cursor cursor) {
-		GLFW.glfwSetCursor(this.window, cursor == Cursor.DEFAULT ? 0L : this.cursorMap.computeIfAbsent(cursor, WindowBridge::createCursor));
+		GLFW.glfwSetCursor(this.window, cursor == Cursor.DEFAULT ? 0L : this.cursorMap.computeIfAbsent(cursor, GlfwWindowBridge::createCursor));
 		this.cursor = cursor;
 	}
 

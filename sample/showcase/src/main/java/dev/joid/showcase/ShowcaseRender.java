@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.lwjgl.system.Configuration;
 
-import dev.joid.backend.vulkan.snapshot.SnapshotBackend;
+import dev.joid.backend.vulkan.snapshot.VulkanSnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import dev.joid.test.snapshot.SnapshotRunner;
 import lombok.AccessLevel;
@@ -25,7 +25,7 @@ public final class ShowcaseRender {
 		final File output = new File(args[1]);
 		output.mkdirs();
 
-		final SnapshotRunner runner = SnapshotRunner.start(new SnapshotBackend());
+		final SnapshotRunner runner = SnapshotRunner.start(new VulkanSnapshotBackend());
 		try {
 			for (final Map.Entry<String, SnapshotImage> entry : runner.execute(commands.toArray(new String[0])).entrySet()) {
 				entry.getValue().write(new File(output, entry.getKey() + ".png"));

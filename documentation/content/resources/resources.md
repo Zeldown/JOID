@@ -30,7 +30,7 @@ public class UIGallery extends UI {
 | `BufferedImage` | decoded from memory | the image's `toString()` |
 | `ITexture` | wrapped as is, without decoding | `texture_` followed by its identity hash |
 | `Integer`, `IntSupplier` (OpenGL backends) | an OpenGL texture of the host, [borrowed](#textures-of-the-host) | `gl_texture_` followed by the id, or `gl_texture_supplier_` followed by the identity hash of the supplier |
-| `VulkanImage`, `VulkanImageSupplier` (Vulkan backend) | a Vulkan image of the host, [borrowed](#textures-of-the-host) | `vulkan_image_` followed by the view handle, or `vulkan_image_supplier_` followed by the identity hash of the supplier |
+| `VulkanImage`, `IVulkanImageSupplier` (Vulkan backend) | a Vulkan image of the host, [borrowed](#textures-of-the-host) | `vulkan_image_` followed by the view handle, or `vulkan_image_supplier_` followed by the identity hash of the supplier |
 | any other object | a registered [locator](assets.md#writing-an-iassetlocator) or [resolver](custom-formats.md#resolvers-for-in-memory-inputs) | chosen by the locator or the resolver |
 
 The format (PNG, JPEG, WebP, SVG, GIF, APNG, MP4, WebM...) comes from the first bytes of the content, never from the file name: see [Supported Formats](formats.md).
@@ -269,7 +269,7 @@ ResourceNode.create(300, 20, 480, 270).resource(frame).attach(this);
 - The filter and the wrap of the resource are set on the texture while JOID draws it, and the host gets its own parameters back after the frame, through the [host-state journal](../integration/backends.md#giving-the-host-its-state-back).
 - Read the size of a borrowed resource on the render thread only: it queries OpenGL.
 
-On the Vulkan backend, `Resource.of(VulkanImage.create(image, view, width, height, levels))` borrows an image of the host, and a `VulkanImageSupplier` follows the image the host gives at each draw (see [Vulkan](../integration/backends.md#images-of-the-host-on-vulkan) for what the image must be).
+On the Vulkan backend, `Resource.of(VulkanImage.create(image, view, width, height, levels))` borrows an image of the host, and a `IVulkanImageSupplier` follows the image the host gives at each draw (see [Vulkan](../integration/backends.md#images-of-the-host-on-vulkan) for what the image must be).
 
 On every backend, `Resource.of(texture)` also takes a borrowed texture built by hand, such as `GlBorrowedTexture.create(bridge, id)` (`dev.joid.base.opengl.render.texture`). A backend that lends its own kind of texture extends `BorrowedTexture` (see [Writing a Backend](../integration/writing-a-backend.md#borrowed-textures)).
 

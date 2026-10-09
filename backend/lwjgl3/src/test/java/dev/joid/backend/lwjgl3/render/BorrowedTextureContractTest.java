@@ -8,7 +8,7 @@ public class BorrowedTextureContractTest extends BorrowedTextureContractSuite {
 
 	@Override
 	protected @NonNull IBorrowedTextureBackend createBackend() {
-		return new BorrowedTextureBackend();
+		return new Lwjgl3BorrowedTextureBackend();
 	}
 
 }

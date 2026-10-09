@@ -18,7 +18,7 @@ public final class JournalGlTextureBinding implements IGlTextureBinding {
 	@Override
 	public int genTexture() {
 		final int texture = this.binding.genTexture();
-		this.journal.ownTexture(texture);
+		this.journal.excludeTexture(texture);
 		return texture;
 	}
 
@@ -31,26 +31,26 @@ public final class JournalGlTextureBinding implements IGlTextureBinding {
 
 	@Override
 	public void deleteTexture(final int texture) {
-		this.journal.releaseTexture(texture);
+		this.journal.includeTexture(texture);
 		this.binding.deleteTexture(texture);
 	}
 
 	@Override
 	public void bindSampler(final int unit, final int sampler) {
-		this.journal.touchSampler(unit);
+		this.journal.saveSampler(unit);
 		this.binding.bindSampler(unit, sampler);
 	}
 
 	@Override
 	public void bindTexture(final int target, final int texture) {
-		this.journal.touchTexture();
+		this.journal.saveTexture();
 		this.journal.trackTexture(texture);
 		this.binding.bindTexture(target, texture);
 	}
 
 	@Override
 	public void texParameteri(final int target, final int name, final int value) {
-		this.journal.touchTextureParameter(name);
+		this.journal.saveTextureParameter(name);
 		this.binding.texParameteri(target, name, value);
 	}
 

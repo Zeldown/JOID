@@ -3,20 +3,20 @@ package dev.joid.base.glfw.demo;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
-import dev.joid.base.glfw.WindowBridge;
+import dev.joid.base.glfw.GlfwWindowBridge;
 import dev.joid.base.glfw.input.GlfwInputForwarder;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.BridgeHandler;
 import lombok.Getter;
 
-public abstract class DemoWindow extends DemoUIBridge {
+public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 	@Getter
 	private final long window;
 
 	private final GlfwInputForwarder input;
 
-	protected DemoWindow() {
+	protected GlfwDemoWindow() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
@@ -57,7 +57,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 			this.present();
 		}
 
-		BridgeHandler.WINDOW.getBridge(WindowBridge.class).destroy();
+		BridgeHandler.WINDOW.getBridge(GlfwWindowBridge.class).destroy();
 		GLFW.glfwDestroyWindow(this.window);
 		GLFW.glfwTerminate();
 		System.exit(0);

@@ -1,8 +1,8 @@
 package dev.joid.base.opengl.capability;
 
 import dev.joid.base.opengl.binding.IGlBinding;
-import dev.joid.base.opengl.render.texture.BlitMipmapBuilder;
-import dev.joid.base.opengl.render.texture.DrawMipmapBuilder;
+import dev.joid.base.opengl.render.texture.BlitGlMipmapBuilder;
+import dev.joid.base.opengl.render.texture.DrawGlMipmapBuilder;
 import dev.joid.base.opengl.render.texture.IGlMipmapBuilder;
 import dev.joid.base.opengl.render.vertex.ArrayObjectVertexInput;
 import dev.joid.base.opengl.render.vertex.DefaultVertexInput;
@@ -21,7 +21,7 @@ public final class GlStrategies {
 
 	private final boolean             blitMipmaps;
 	private final GlslDialect         dialect;
-	private final boolean             ownVertexArray;
+	private final boolean             vertexArrayObject;
 	private final GlFrameBufferFamily frameBufferFamily;
 
 	public static @NonNull GlStrategies of(final @NonNull GlCapabilities capabilities) {
@@ -48,11 +48,11 @@ public final class GlStrategies {
 	}
 
 	public @NonNull IGlMipmapBuilder createMipmapBuilder() {
-		return this.blitMipmaps ? BlitMipmapBuilder.create() : DrawMipmapBuilder.create();
+		return this.blitMipmaps ? BlitGlMipmapBuilder.create() : DrawGlMipmapBuilder.create();
 	}
 
 	public @NonNull GlVertexInput createVertexInput(final @NonNull IGlBinding binding) {
-		return this.ownVertexArray ? ArrayObjectVertexInput.create(binding) : DefaultVertexInput.create(binding);
+		return this.vertexArrayObject ? ArrayObjectVertexInput.create(binding) : DefaultVertexInput.create(binding);
 	}
 
 }

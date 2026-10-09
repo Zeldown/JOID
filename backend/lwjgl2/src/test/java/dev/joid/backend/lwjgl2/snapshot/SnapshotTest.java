@@ -8,7 +8,7 @@ public class SnapshotTest extends SnapshotSuite {
 
 	@Override
 	protected @NonNull ISnapshotBackend createBackend() {
-		return new SnapshotBackend();
+		return new Lwjgl2SnapshotBackend();
 	}
 
 }

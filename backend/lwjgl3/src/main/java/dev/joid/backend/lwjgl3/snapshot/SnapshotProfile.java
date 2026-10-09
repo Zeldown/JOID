@@ -18,7 +18,7 @@ public enum SnapshotProfile {
 	GL_21_EXT(GlContextRequest.COMPATIBILITY, 210, GlProfile.COMPATIBILITY, null, "GL_ARB_framebuffer_object", "GL_ARB_vertex_array_object"),
 	GL_21_EXT_NO_BLIT(GlContextRequest.COMPATIBILITY, 210, GlProfile.COMPATIBILITY, null, "GL_ARB_framebuffer_object", "GL_ARB_vertex_array_object", "GL_EXT_framebuffer_blit"),
 	GL_30(GlContextRequest.COMPATIBILITY, 300, GlProfile.COMPATIBILITY, null),
-	GL_32_FORWARD(GlContextRequest.CORE_32_FORWARD, 320, GlProfile.FORWARD_COMPATIBLE_CORE, null),
+	GL_32_FORWARD_COMPATIBLE(GlContextRequest.CORE_32_FORWARD_COMPATIBLE, 320, GlProfile.CORE_FORWARD_COMPATIBLE, null),
 	GL_33(GlContextRequest.CORE_33, 330, GlProfile.CORE, null),
 	GL_45_COMPATIBILITY(GlContextRequest.COMPATIBILITY, 450, GlProfile.COMPATIBILITY, null);
 

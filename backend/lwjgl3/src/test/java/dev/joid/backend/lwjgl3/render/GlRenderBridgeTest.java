@@ -9,7 +9,7 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dev.joid.backend.lwjgl3.snapshot.SnapshotBackend;
+import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
@@ -18,11 +18,11 @@ import dev.joid.lib.resource.Resource;
 
 public class GlRenderBridgeTest {
 
-	private static SnapshotBackend backend;
+	private static Lwjgl3SnapshotBackend backend;
 
 	@BeforeClass
 	public static void startBackend() {
-		GlRenderBridgeTest.backend = new SnapshotBackend();
+		GlRenderBridgeTest.backend = new Lwjgl3SnapshotBackend();
 		GlRenderBridgeTest.backend.create(64, 64);
 	}
 
@@ -48,7 +48,7 @@ public class GlRenderBridgeTest {
 		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
 		Assert.assertSame(bridge.getStrategies().getDialect(), bridge.getStrategies().createTranslator().getDialect());
 		Assert.assertSame(bridge.getFrameBufferBinding(), bridge.getBinding().getFrameBufferBinding(bridge.getStrategies().getFrameBufferFamily()));
-		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getStrategies().isOwnVertexArray());
+		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getStrategies().isVertexArrayObject());
 	}
 
 	@Test

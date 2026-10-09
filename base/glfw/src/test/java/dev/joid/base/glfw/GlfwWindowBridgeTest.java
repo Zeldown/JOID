@@ -14,7 +14,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 
 import dev.joid.lib.utils.cursor.Cursor;
 
-public class WindowBridgeTest {
+public class GlfwWindowBridgeTest {
 
 	private static long window;
 
@@ -24,22 +24,22 @@ public class WindowBridgeTest {
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
 		GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
-		WindowBridgeTest.window = GLFW.glfwCreateWindow(64, 64, "JOID cursor test", 0L, 0L);
-		Assume.assumeTrue(WindowBridgeTest.window != 0L);
+		GlfwWindowBridgeTest.window = GLFW.glfwCreateWindow(64, 64, "JOID cursor test", 0L, 0L);
+		Assume.assumeTrue(GlfwWindowBridgeTest.window != 0L);
 	}
 
 	@AfterClass
 	public static void destroyHiddenWindow() {
-		if (WindowBridgeTest.window != 0L) {
-			GLFW.glfwDestroyWindow(WindowBridgeTest.window);
+		if (GlfwWindowBridgeTest.window != 0L) {
+			GLFW.glfwDestroyWindow(GlfwWindowBridgeTest.window);
 		}
 		GLFW.glfwTerminate();
 	}
 
 	@Test
 	public void showsEveryCursorWithoutError() {
-		final List<Integer> errors = WindowBridgeTest.record(() -> {
-			final WindowBridge bridge = new WindowBridge(WindowBridgeTest.window);
+		final List<Integer> errors = GlfwWindowBridgeTest.record(() -> {
+			final GlfwWindowBridge bridge = new GlfwWindowBridge(GlfwWindowBridgeTest.window);
 			for (final Cursor cursor : Cursor.values()) {
 				bridge.setCursor(cursor);
 				Assert.assertSame(cursor, bridge.getCursor());
@@ -53,8 +53,8 @@ public class WindowBridgeTest {
 
 	@Test
 	public void reusesItsCursorsUntilDestroyed() {
-		final List<Integer> errors = WindowBridgeTest.record(() -> {
-			final WindowBridge bridge = new WindowBridge(WindowBridgeTest.window);
+		final List<Integer> errors = GlfwWindowBridgeTest.record(() -> {
+			final GlfwWindowBridge bridge = new GlfwWindowBridge(GlfwWindowBridgeTest.window);
 			for (int i = 0; i < 3; i++) {
 				bridge.setCursor(Cursor.TEXT);
 				bridge.setCursor(Cursor.DEFAULT);

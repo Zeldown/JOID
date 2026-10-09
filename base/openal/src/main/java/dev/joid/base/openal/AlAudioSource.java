@@ -30,7 +30,7 @@ public final class AlAudioSource implements IAudioSource {
 
 	private AlAudioSource(final IAlBinding binding, final IAudioGain audioGain, final int sampleRate, final int channels) {
 		this.binding          = binding;
-		this.audioGain         = audioGain;
+		this.audioGain        = audioGain;
 		this.channels         = channels;
 		this.sampleRate       = sampleRate;
 		this.bufferList       = new ArrayList<>();

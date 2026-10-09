@@ -3,9 +3,9 @@ package com.example.joid.backend;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 
-import com.example.joid.backend.audio.AudioBridge;
-import com.example.joid.backend.render.RenderBridge;
-import com.example.joid.backend.window.WindowBridge;
+import com.example.joid.backend.audio.ExampleAudioBridge;
+import com.example.joid.backend.render.ExampleRenderBridge;
+import com.example.joid.backend.window.ExampleWindowBridge;
 
 public final class Backend {
 
@@ -15,9 +15,9 @@ public final class Backend {
 
 	public static void register() {
 		JOID.checkVersion(Backend.JOID_VERSION);
-		BridgeHandler.AUDIO.register(new AudioBridge());
-		BridgeHandler.WINDOW.register(new WindowBridge());
-		BridgeHandler.RENDER.register(new RenderBridge());
+		BridgeHandler.AUDIO.register(new ExampleAudioBridge());
+		BridgeHandler.WINDOW.register(new ExampleWindowBridge());
+		BridgeHandler.RENDER.register(new ExampleRenderBridge());
 	}
 
 }

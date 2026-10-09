@@ -36,7 +36,7 @@ public final class JournalGlBufferBinding implements IGlBufferBinding {
 	@Override
 	public int genVertexArray() {
 		final int array = this.binding.genVertexArray();
-		this.journal.ownVertexArray(array);
+		this.journal.excludeVertexArray(array);
 		return array;
 	}
 
@@ -49,13 +49,13 @@ public final class JournalGlBufferBinding implements IGlBufferBinding {
 
 	@Override
 	public void enableVertexAttribArray(final int index) {
-		this.journal.touchVertexAttribute(index);
+		this.journal.saveVertexAttribute(index);
 		this.binding.enableVertexAttribArray(index);
 	}
 
 	@Override
 	public void disableVertexAttribArray(final int index) {
-		this.journal.touchVertexAttribute(index);
+		this.journal.saveVertexAttribute(index);
 		this.binding.disableVertexAttribArray(index);
 	}
 
@@ -79,7 +79,7 @@ public final class JournalGlBufferBinding implements IGlBufferBinding {
 
 	@Override
 	public void vertexAttribPointer(final int index, final int size, final int type, final boolean normalized, final int stride, final long offset) {
-		this.journal.touchVertexAttribute(index);
+		this.journal.saveVertexAttribute(index);
 		this.binding.vertexAttribPointer(index, size, type, normalized, stride, offset);
 	}
 

@@ -12,7 +12,7 @@ import lombok.Getter;
 public enum GlContextRequest {
 
 	COMPATIBILITY(0, 0, false),
-	CORE_32_FORWARD(3, 2, true),
+	CORE_32_FORWARD_COMPATIBLE(3, 2, true),
 	CORE_33(3, 3, false);
 
 	private final int     major;

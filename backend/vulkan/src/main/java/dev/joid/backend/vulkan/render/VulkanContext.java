@@ -45,7 +45,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class Context {
+public final class VulkanContext {
 
 	public static final int TEXTURE_FORMAT = VK10.VK_FORMAT_B8G8R8A8_UNORM;
 
@@ -61,20 +61,20 @@ public final class Context {
 	private final VkPhysicalDevice                 physicalDevice;
 	private final VkPhysicalDeviceMemoryProperties memoryProperties;
 
-	public Context(final long window) {
+	public VulkanContext(final long window) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			this.instance       = Context.createInstance(stack);
-			this.surface        = Context.createSurface(stack, this.instance, window);
-			this.physicalDevice = Context.selectPhysicalDevice(stack, this.instance, this.surface);
-			this.queueFamily    = Context.findQueueFamily(stack, this.physicalDevice, this.surface);
-			this.device         = Context.createDevice(stack, this.physicalDevice, this.queueFamily);
+			this.instance       = VulkanContext.createInstance(stack);
+			this.surface        = VulkanContext.createSurface(stack, this.instance, window);
+			this.physicalDevice = VulkanContext.selectPhysicalDevice(stack, this.instance, this.surface);
+			this.queueFamily    = VulkanContext.findQueueFamily(stack, this.physicalDevice, this.surface);
+			this.device         = VulkanContext.createDevice(stack, this.physicalDevice, this.queueFamily);
 
 			final PointerBuffer queue = stack.mallocPointer(1);
 			VK10.vkGetDeviceQueue(this.device, this.queueFamily, 0, queue);
 			this.queue = new VkQueue(queue.get(0), this.device);
 
 			final LongBuffer commandPool = stack.mallocLong(1);
-			Context.check(VK10.vkCreateCommandPool(this.device, VkCommandPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT).queueFamilyIndex(this.queueFamily), null, commandPool), "vkCreateCommandPool");
+			VulkanContext.check(VK10.vkCreateCommandPool(this.device, VkCommandPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT).queueFamilyIndex(this.queueFamily), null, commandPool), "vkCreateCommandPool");
 			this.commandPool = commandPool.get(0);
 
 			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
@@ -84,8 +84,8 @@ public final class Context {
 			this.memoryProperties = VkPhysicalDeviceMemoryProperties.malloc();
 			VK10.vkGetPhysicalDeviceMemoryProperties(this.physicalDevice, this.memoryProperties);
 
-			this.depthStencilFormat  = Context.selectDepthStencilFormat(stack, this.physicalDevice);
-			this.offscreenRenderPass = this.createRenderPass(Context.TEXTURE_FORMAT, false, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, true, true);
+			this.depthStencilFormat  = VulkanContext.selectDepthStencilFormat(stack, this.physicalDevice);
+			this.offscreenRenderPass = this.createRenderPass(VulkanContext.TEXTURE_FORMAT, false, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, true, true);
 		}
 	}
 
@@ -123,7 +123,7 @@ public final class Context {
 			}
 
 			final LongBuffer renderPass = stack.mallocLong(1);
-			Context.check(VK10.vkCreateRenderPass(this.device, VkRenderPassCreateInfo.calloc(stack).sType$Default().pAttachments(attachments).pSubpasses(subpass), null, renderPass), "vkCreateRenderPass");
+			VulkanContext.check(VK10.vkCreateRenderPass(this.device, VkRenderPassCreateInfo.calloc(stack).sType$Default().pAttachments(attachments).pSubpasses(subpass), null, renderPass), "vkCreateRenderPass");
 			return renderPass.get(0);
 		}
 	}
@@ -142,7 +142,7 @@ public final class Context {
 			info.subresourceRange().aspectMask(aspect).baseMipLevel(0).levelCount(levels).baseArrayLayer(0).layerCount(1);
 
 			final LongBuffer view = stack.mallocLong(1);
-			Context.check(VK10.vkCreateImageView(this.device, info, null, view), "vkCreateImageView");
+			VulkanContext.check(VK10.vkCreateImageView(this.device, info, null, view), "vkCreateImageView");
 			return view.get(0);
 		}
 	}
@@ -167,12 +167,12 @@ public final class Context {
 			info.extent().set(width, height, 1);
 
 			final LongBuffer image = stack.mallocLong(1);
-			Context.check(VK10.vkCreateImage(this.device, info, null, image), "vkCreateImage");
+			VulkanContext.check(VK10.vkCreateImage(this.device, info, null, image), "vkCreateImage");
 
 			final VkMemoryRequirements requirements = VkMemoryRequirements.malloc(stack);
 			VK10.vkGetImageMemoryRequirements(this.device, image.get(0), requirements);
 			final long memory = this.allocateMemory(stack, requirements, VK10.VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-			Context.check(VK10.vkBindImageMemory(this.device, image.get(0), memory, 0L), "vkBindImageMemory");
+			VulkanContext.check(VK10.vkBindImageMemory(this.device, image.get(0), memory, 0L), "vkBindImageMemory");
 			return new long[] {image.get(0), memory};
 		}
 	}
@@ -180,12 +180,12 @@ public final class Context {
 	public long[] createBuffer(final long size, final int usage, final int properties) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer buffer = stack.mallocLong(1);
-			Context.check(VK10.vkCreateBuffer(this.device, VkBufferCreateInfo.calloc(stack).sType$Default().size(size).usage(usage).sharingMode(VK10.VK_SHARING_MODE_EXCLUSIVE), null, buffer), "vkCreateBuffer");
+			VulkanContext.check(VK10.vkCreateBuffer(this.device, VkBufferCreateInfo.calloc(stack).sType$Default().size(size).usage(usage).sharingMode(VK10.VK_SHARING_MODE_EXCLUSIVE), null, buffer), "vkCreateBuffer");
 
 			final VkMemoryRequirements requirements = VkMemoryRequirements.malloc(stack);
 			VK10.vkGetBufferMemoryRequirements(this.device, buffer.get(0), requirements);
 			final long memory = this.allocateMemory(stack, requirements, properties);
-			Context.check(VK10.vkBindBufferMemory(this.device, buffer.get(0), memory, 0L), "vkBindBufferMemory");
+			VulkanContext.check(VK10.vkBindBufferMemory(this.device, buffer.get(0), memory, 0L), "vkBindBufferMemory");
 			return new long[] {buffer.get(0), memory};
 		}
 	}
@@ -193,7 +193,7 @@ public final class Context {
 	public @NonNull VkCommandBuffer allocateCommandBuffer() {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final PointerBuffer buffer = stack.mallocPointer(1);
-			Context.check(VK10.vkAllocateCommandBuffers(this.device, VkCommandBufferAllocateInfo.calloc(stack).sType$Default().commandPool(this.commandPool).level(VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY).commandBufferCount(1), buffer), "vkAllocateCommandBuffers");
+			VulkanContext.check(VK10.vkAllocateCommandBuffers(this.device, VkCommandBufferAllocateInfo.calloc(stack).sType$Default().commandPool(this.commandPool).level(VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY).commandBufferCount(1), buffer), "vkAllocateCommandBuffers");
 			return new VkCommandBuffer(buffer.get(0), this.device);
 		}
 	}
@@ -201,17 +201,17 @@ public final class Context {
 	public void submit(final @NonNull Consumer<VkCommandBuffer> recorder) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkCommandBuffer buffer = this.allocateCommandBuffer();
-			Context.check(VK10.vkBeginCommandBuffer(buffer, VkCommandBufferBeginInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)), "vkBeginCommandBuffer");
+			VulkanContext.check(VK10.vkBeginCommandBuffer(buffer, VkCommandBufferBeginInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)), "vkBeginCommandBuffer");
 			recorder.accept(buffer);
-			Context.check(VK10.vkEndCommandBuffer(buffer), "vkEndCommandBuffer");
-			Context.check(VK10.vkQueueSubmit(this.queue, VkSubmitInfo.calloc(stack).sType$Default().pCommandBuffers(stack.pointers(buffer)), VK10.VK_NULL_HANDLE), "vkQueueSubmit");
+			VulkanContext.check(VK10.vkEndCommandBuffer(buffer), "vkEndCommandBuffer");
+			VulkanContext.check(VK10.vkQueueSubmit(this.queue, VkSubmitInfo.calloc(stack).sType$Default().pCommandBuffers(stack.pointers(buffer)), VK10.VK_NULL_HANDLE), "vkQueueSubmit");
 			VK10.vkQueueWaitIdle(this.queue);
 			VK10.vkFreeCommandBuffers(this.device, this.commandPool, buffer);
 		}
 	}
 
 	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout) {
-		Context.transition(buffer, image, aspect, oldLayout, newLayout, 0, 1);
+		VulkanContext.transition(buffer, image, aspect, oldLayout, newLayout, 0, 1);
 	}
 
 	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout, final int baseLevel, final int levels) {
@@ -223,8 +223,8 @@ public final class Context {
 					.srcQueueFamilyIndex(VK10.VK_QUEUE_FAMILY_IGNORED)
 					.dstQueueFamilyIndex(VK10.VK_QUEUE_FAMILY_IGNORED)
 					.image(image)
-					.srcAccessMask(Context.getAccess(oldLayout))
-					.dstAccessMask(Context.getAccess(newLayout));
+					.srcAccessMask(VulkanContext.getAccess(oldLayout))
+					.dstAccessMask(VulkanContext.getAccess(newLayout));
 			barrier.subresourceRange().aspectMask(aspect).baseMipLevel(baseLevel).levelCount(levels).baseArrayLayer(0).layerCount(1);
 			VK10.vkCmdPipelineBarrier(buffer, VK10.VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK10.VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, null, null, barrier);
 		}
@@ -238,7 +238,7 @@ public final class Context {
 
 	private long allocateMemory(final MemoryStack stack, final VkMemoryRequirements requirements, final int properties) {
 		final LongBuffer memory = stack.mallocLong(1);
-		Context.check(VK10.vkAllocateMemory(this.device, VkMemoryAllocateInfo.calloc(stack).sType$Default().allocationSize(requirements.size()).memoryTypeIndex(this.findMemoryType(requirements.memoryTypeBits(), properties)), null, memory), "vkAllocateMemory");
+		VulkanContext.check(VK10.vkAllocateMemory(this.device, VkMemoryAllocateInfo.calloc(stack).sType$Default().allocationSize(requirements.size()).memoryTypeIndex(this.findMemoryType(requirements.memoryTypeBits(), properties)), null, memory), "vkAllocateMemory");
 		return memory.get(0);
 	}
 
@@ -285,21 +285,21 @@ public final class Context {
 				.ppEnabledExtensionNames(extensions);
 
 		final PointerBuffer instance = stack.mallocPointer(1);
-		Context.check(VK10.vkCreateInstance(info, null, instance), "vkCreateInstance");
+		VulkanContext.check(VK10.vkCreateInstance(info, null, instance), "vkCreateInstance");
 		return new VkInstance(instance.get(0), info);
 	}
 
 	private static long createSurface(final MemoryStack stack, final VkInstance instance, final long window) {
 		final LongBuffer surface = stack.mallocLong(1);
-		Context.check(GLFWVulkan.glfwCreateWindowSurface(instance, window, null, surface), "glfwCreateWindowSurface");
+		VulkanContext.check(GLFWVulkan.glfwCreateWindowSurface(instance, window, null, surface), "glfwCreateWindowSurface");
 		return surface.get(0);
 	}
 
 	private static VkPhysicalDevice selectPhysicalDevice(final MemoryStack stack, final VkInstance instance, final long surface) {
 		final IntBuffer count = stack.mallocInt(1);
-		Context.check(VK10.vkEnumeratePhysicalDevices(instance, count, null), "vkEnumeratePhysicalDevices");
+		VulkanContext.check(VK10.vkEnumeratePhysicalDevices(instance, count, null), "vkEnumeratePhysicalDevices");
 		final PointerBuffer devices = stack.mallocPointer(count.get(0));
-		Context.check(VK10.vkEnumeratePhysicalDevices(instance, count, devices), "vkEnumeratePhysicalDevices");
+		VulkanContext.check(VK10.vkEnumeratePhysicalDevices(instance, count, devices), "vkEnumeratePhysicalDevices");
 
 		VkPhysicalDevice selected = null;
 		boolean discrete = false;
@@ -307,7 +307,7 @@ public final class Context {
 		for (int i = 0; i < devices.capacity(); i++) {
 			final VkPhysicalDevice device = new VkPhysicalDevice(devices.get(i), instance);
 			VK10.vkGetPhysicalDeviceProperties(device, properties);
-			if (properties.apiVersion() < VK13.VK_API_VERSION_1_3 || Context.findQueueFamily(stack, device, surface) == -1 || !Context.hasExtension(device, KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
+			if (properties.apiVersion() < VK13.VK_API_VERSION_1_3 || VulkanContext.findQueueFamily(stack, device, surface) == -1 || !VulkanContext.hasExtension(device, KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
 				continue;
 			}
 
@@ -376,7 +376,7 @@ public final class Context {
 				.ppEnabledExtensionNames(stack.pointers(stack.UTF8(KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)));
 
 		final PointerBuffer device = stack.mallocPointer(1);
-		Context.check(VK10.vkCreateDevice(physicalDevice, info, null, device), "vkCreateDevice");
+		VulkanContext.check(VK10.vkCreateDevice(physicalDevice, info, null, device), "vkCreateDevice");
 		return new VkDevice(device.get(0), physicalDevice, info);
 	}
 

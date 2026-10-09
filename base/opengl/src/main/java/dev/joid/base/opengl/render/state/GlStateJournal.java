@@ -72,15 +72,15 @@ public final class GlStateJournal {
 		this.size = 0;
 	}
 
-	public void ownTexture(final int texture) {
+	public void excludeTexture(final int texture) {
 		this.textureSet.add(texture);
 	}
 
-	public void releaseTexture(final int texture) {
+	public void includeTexture(final int texture) {
 		this.textureSet.remove(texture);
 	}
 
-	public void ownVertexArray(final int array) {
+	public void excludeVertexArray(final int array) {
 		this.vertexArraySet.add(array);
 	}
 
@@ -107,28 +107,28 @@ public final class GlStateJournal {
 		this.touch(key, container, 0);
 	}
 
-	public void touchTexture() {
+	public void saveTexture() {
 		if (this.recording) {
 			this.touch(GlStateKey.ACTIVE_TEXTURE);
 			this.touch(GlStateKey.TEXTURE, this.getActiveUnit());
 		}
 	}
 
-	public void touchReadBuffer() {
+	public void saveReadBuffer() {
 		if (this.recording) {
-			this.touchFrameBuffer(GlConstants.READ_FRAMEBUFFER);
+			this.saveFrameBuffer(GlConstants.READ_FRAMEBUFFER);
 			this.touch(GlStateKey.READ_BUFFER, this.binding.getInteger(this.capabilities.hasFrameBufferBlit() ? GlConstants.READ_FRAMEBUFFER_BINDING : GlConstants.DRAW_FRAMEBUFFER_BINDING));
 		}
 	}
 
-	public void touchSampler(final int unit) {
+	public void saveSampler(final int unit) {
 		if (this.recording) {
 			this.touch(GlStateKey.ACTIVE_TEXTURE);
 			this.touch(GlStateKey.SAMPLER, unit);
 		}
 	}
 
-	public void touchFrameBuffer(final int target) {
+	public void saveFrameBuffer(final int target) {
 		if (target != GlConstants.READ_FRAMEBUFFER) {
 			this.touch(GlStateKey.FRAMEBUFFER, GlConstants.DRAW_FRAMEBUFFER);
 		}
@@ -137,7 +137,7 @@ public final class GlStateJournal {
 		}
 	}
 
-	public void touchTextureParameter(final int name) {
+	public void saveTextureParameter(final int name) {
 		if (!this.recording) {
 			return;
 		}
@@ -145,12 +145,12 @@ public final class GlStateJournal {
 		final int unit = this.getActiveUnit();
 		final int texture = unit < this.unitTextures.length && this.unitTextures[unit] >= 0 ? this.unitTextures[unit] : this.binding.getInteger(GlConstants.TEXTURE_BINDING_2D);
 		if (!this.textureSet.contains(texture)) {
-			this.touchTexture();
+			this.saveTexture();
 			this.touch(GlStateKey.TEXTURE_PARAMETER, texture, name);
 		}
 	}
 
-	public void touchVertexAttribute(final int index) {
+	public void saveVertexAttribute(final int index) {
 		if (!this.recording) {
 			return;
 		}

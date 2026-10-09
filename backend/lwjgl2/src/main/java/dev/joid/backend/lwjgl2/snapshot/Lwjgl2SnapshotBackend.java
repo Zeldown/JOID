@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class SnapshotBackend implements ISnapshotBackend {
+public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 
 	private Pbuffer        buffer;
 	private GlRenderBridge bridge;

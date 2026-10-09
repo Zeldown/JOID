@@ -2,21 +2,21 @@ package dev.joid.backend.vulkan.render.buffer;
 
 import java.util.function.Consumer;
 
-import dev.joid.backend.vulkan.render.Context;
+import dev.joid.backend.vulkan.render.VulkanContext;
 import lombok.Getter;
 
 @Getter
-public final class Stream {
+public final class FrameAllocator {
 
 	private final int                usage;
 	private final long               alignment;
-	private final Context            context;
+	private final VulkanContext      context;
 	private final Consumer<Runnable> disposer;
 
 	private long   offset;
 	private Buffer buffer;
 
-	public Stream(final Context context, final long capacity, final int usage, final long alignment, final Consumer<Runnable> disposer) {
+	public FrameAllocator(final VulkanContext context, final long capacity, final int usage, final long alignment, final Consumer<Runnable> disposer) {
 		this.context   = context;
 		this.usage     = usage;
 		this.alignment = alignment;

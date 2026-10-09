@@ -12,9 +12,9 @@ package com.example.joid.backend;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 
-import com.example.joid.backend.audio.AudioBridge;
-import com.example.joid.backend.render.RenderBridge;
-import com.example.joid.backend.window.WindowBridge;
+import com.example.joid.backend.audio.ExampleAudioBridge;
+import com.example.joid.backend.render.ExampleRenderBridge;
+import com.example.joid.backend.window.ExampleWindowBridge;
 
 public final class Backend {
 
@@ -24,9 +24,9 @@ public final class Backend {
 
 	public static void register() {
 		JOID.checkVersion(Backend.JOID_VERSION);
-		BridgeHandler.AUDIO.register(new AudioBridge());
-		BridgeHandler.WINDOW.register(new WindowBridge());
-		BridgeHandler.RENDER.register(new RenderBridge());
+		BridgeHandler.AUDIO.register(new ExampleAudioBridge());
+		BridgeHandler.WINDOW.register(new ExampleWindowBridge());
+		BridgeHandler.RENDER.register(new ExampleRenderBridge());
 	}
 
 }
@@ -45,11 +45,11 @@ Each release publishes `joid-backend-template-<version>.zip` (built by the `back
 | File | Role |
 |---|---|
 | `src/main/java/.../Backend.java` | Calls `JOID.checkVersion` and registers the three bridges. |
-| `src/main/java/.../render/RenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearDepth`, `clearStencil`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, and override `beginFrame` and `endFrame` when your engine needs them. |
-| `src/main/java/.../window/WindowBridge.java` | Window size, mouse, keyboard and clipboard. |
-| `src/main/java/.../audio/AudioBridge.java` | Streaming audio sources for the sound of videos. |
+| `src/main/java/.../render/ExampleRenderBridge.java` | Extends the core `RenderBridge`; implement `clear`, `clearDepth`, `clearStencil`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, and override `beginFrame` and `endFrame` when your engine needs them. |
+| `src/main/java/.../window/ExampleWindowBridge.java` | Window size, mouse, keyboard and clipboard. |
+| `src/main/java/.../audio/ExampleAudioBridge.java` | Streaming audio sources for the sound of videos. |
 | `src/demo/java/.../demo/DemoWindow.java` | Opens the JOID demo UIs on your engine. It is a source set of its own: only the `dev` jar contains it. |
-| `src/test/java/.../snapshot/SnapshotBackend.java` | Creates an offscreen surface, runs a frame and captures its pixels for the tests. |
+| `src/test/java/.../snapshot/ExampleSnapshotBackend.java` | Creates an offscreen surface, runs a frame and captures its pixels for the tests. |
 | `src/test/java/.../snapshot/SnapshotTest.java`, `render/RenderBridgeContractTest.java` | The [snapshot and contract suites](testkit.md) bound to your backend. |
 | `libs/README.md` | The JOID jars to download into `libs/`. |
 
@@ -363,7 +363,7 @@ A backend can also be a module of the JOID build: put it under `backend/<name>`,
 - builds a shadow jar that embeds the JOID modules the backend depends on and their media libraries, with the `prod` classifier, or `dev` with `-Pdev`; the `prod` jar leaves out the dev and demo code, and the `demo` and `snapshot` packages of every embedded module (`dev/joid/base/*/demo/**`, `dev/joid/base/*/snapshot/**`, `dev/joid/backend/*/demo/**`, `dev/joid/backend/*/snapshot/**`);
 - adds the testkit to the test classpath, with an `updateSnapshots` task and the snapshot folders `.snapshots/<name>` and `build/snapshots/<name>`.
 
-Put `SnapshotBackend` in the `snapshot` package of the main sources, as the official backends do, so that its `dev` jar can render a baseline.
+Put your `ISnapshotBackend` in the `snapshot` package of the main sources, as the official backends do, so that its `dev` jar can render a baseline.
 
 ## Pitfalls
 

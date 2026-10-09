@@ -1,7 +1,7 @@
 package dev.joid.backend.lwjgl3;
 
 import dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding;
-import dev.joid.base.glfw.WindowBridge;
+import dev.joid.base.glfw.GlfwWindowBridge;
 import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.openal.binding.Lwjgl3AlBinding;
 import dev.joid.base.opengl.binding.IGlBinding;
@@ -25,7 +25,7 @@ public final class Backend {
 		JOID.checkVersion(JOID.VERSION);
 		BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()));
 		BridgeHandler.RENDER.register(GlRenderBridge.create(binding));
-		BridgeHandler.WINDOW.register(new WindowBridge(window));
+		BridgeHandler.WINDOW.register(new GlfwWindowBridge(window));
 		ResourceResolver.register(GlTextureResourceResolver.inst());
 	}
 

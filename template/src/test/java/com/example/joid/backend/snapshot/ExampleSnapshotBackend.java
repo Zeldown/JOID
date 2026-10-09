@@ -3,7 +3,7 @@ package com.example.joid.backend.snapshot;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 
-public final class SnapshotBackend implements ISnapshotBackend {
+public final class ExampleSnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public void destroy() {

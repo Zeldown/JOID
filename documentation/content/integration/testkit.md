@@ -342,7 +342,7 @@ The LWJGL 3 snapshot backend creates the context of `SnapshotProfile.current()` 
 | `GL_21_EXT` | As `GL_21`, with `GL_ARB_framebuffer_object` and `GL_ARB_vertex_array_object` hidden: EXT framebuffers and the default vertex array | as `GL_21` |
 | `GL_21_EXT_NO_BLIT` | As `GL_21_EXT`, with `GL_EXT_framebuffer_blit` hidden too: drawn mipmaps | as `GL_21` |
 | `GL_30` | 3.0, GLSL 1.30, compatibility | `MESA_GL_VERSION_OVERRIDE=3.0 MESA_GLSL_VERSION_OVERRIDE=130` |
-| `GL_32_FORWARD` | 3.2 core, forward compatible, GLSL 1.50 | `MESA_GL_VERSION_OVERRIDE=3.2 MESA_GLSL_VERSION_OVERRIDE=150` |
+| `GL_32_FORWARD_COMPATIBLE` | 3.2 core, forward compatible, GLSL 1.50 | `MESA_GL_VERSION_OVERRIDE=3.2 MESA_GLSL_VERSION_OVERRIDE=150` |
 | `GL_33` | 3.3 core, GLSL 3.30 | `MESA_GL_VERSION_OVERRIDE=3.3 MESA_GLSL_VERSION_OVERRIDE=330` |
 | `GL_45_COMPATIBILITY` | 4.5 compatibility | none on llvmpipe |
 

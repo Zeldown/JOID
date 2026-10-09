@@ -1,8 +1,8 @@
 package dev.joid.backend.vulkan;
 
-import dev.joid.backend.vulkan.render.RenderBridge;
+import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.backend.vulkan.resource.VulkanImageResourceResolver;
-import dev.joid.base.glfw.WindowBridge;
+import dev.joid.base.glfw.GlfwWindowBridge;
 import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.openal.binding.Lwjgl3AlBinding;
 import dev.joid.internal.JOID;
@@ -17,8 +17,8 @@ public final class Backend {
 	public static void register(final long window) {
 		JOID.checkVersion(JOID.VERSION);
 		BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()));
-		BridgeHandler.WINDOW.register(new WindowBridge(window));
-		BridgeHandler.RENDER.register(new RenderBridge(window));
+		BridgeHandler.WINDOW.register(new GlfwWindowBridge(window));
+		BridgeHandler.RENDER.register(new VulkanRenderBridge(window));
 		ResourceResolver.register(VulkanImageResourceResolver.inst());
 	}
 

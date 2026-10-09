@@ -10,7 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.lwjgl.opengl.GL11;
 
-import dev.joid.backend.lwjgl2.snapshot.SnapshotBackend;
+import dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
 import dev.joid.base.opengl.render.vertex.ArrayObjectVertexInput;
@@ -20,11 +20,11 @@ import dev.joid.lib.resource.Resource;
 
 public class GlRenderBridgeTest {
 
-	private static SnapshotBackend backend;
+	private static Lwjgl2SnapshotBackend backend;
 
 	@BeforeClass
 	public static void startBackend() {
-		GlRenderBridgeTest.backend = new SnapshotBackend();
+		GlRenderBridgeTest.backend = new Lwjgl2SnapshotBackend();
 		GlRenderBridgeTest.backend.create(64, 64);
 	}
 

@@ -9,7 +9,7 @@ import org.lwjgl.opengl.PixelFormat;
 
 import dev.joid.backend.lwjgl2.Backend;
 import dev.joid.backend.lwjgl2.Natives;
-import dev.joid.backend.lwjgl2.window.WindowBridge;
+import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -72,7 +72,7 @@ public class DemoWindow extends DemoUIBridge {
 
 			while (Keyboard.next()) {
 				if (Keyboard.getEventKeyState()) {
-					super.keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()));
+					super.keyTyped(Keyboard.getEventCharacter(), Lwjgl2WindowBridge.getKey(Keyboard.getEventKey()));
 				}
 			}
 

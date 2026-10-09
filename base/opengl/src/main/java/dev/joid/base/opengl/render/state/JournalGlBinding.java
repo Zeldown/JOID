@@ -114,7 +114,7 @@ public final class JournalGlBinding implements IGlBinding {
 
 	@Override
 	public void readBuffer(final int buffer) {
-		this.journal.touchReadBuffer();
+		this.journal.saveReadBuffer();
 		this.binding.readBuffer(buffer);
 	}
 

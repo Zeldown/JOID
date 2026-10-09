@@ -35,7 +35,7 @@ import lombok.NonNull;
 public class GlRenderBridge extends RenderBridge {
 
 	private final IGlBinding            binding;
-	private final IGlStateGuard          guard;
+	private final IGlStateGuard         guard;
 	private final GlStrategies          strategies;
 	private final GlVertexInput         vertexInput;
 	private final GlCapabilities        capabilities;

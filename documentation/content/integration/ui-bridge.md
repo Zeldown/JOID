@@ -106,7 +106,7 @@ public final class AppLoop {
 			return;
 		}
 
-		this.keyMerger.keyPressed(WindowBridge.getKey(code), code, mods);
+		this.keyMerger.keyPressed(GlfwKeys.getKey(code), code, mods);
 	}
 
 }

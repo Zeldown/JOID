@@ -7,7 +7,7 @@ public class SnapshotTest extends SnapshotSuite {
 
 	@Override
 	protected ISnapshotBackend createBackend() {
-		return new SnapshotBackend();
+		return new ExampleSnapshotBackend();
 	}
 
 }

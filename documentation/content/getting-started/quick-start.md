@@ -324,7 +324,7 @@ JOID.inst().load();
 Theme.load();
 ```
 
-`Natives` and `Backend` are in `dev.joid.backend.lwjgl2`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(0D, Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.backend.lwjgl2.window.WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
+`Natives` and `Backend` are in `dev.joid.backend.lwjgl2`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(0D, Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
 
 ### Vulkan
 
@@ -338,7 +338,7 @@ Backend.register(window);
 ```
 
 ```java
-final RenderBridge render = (RenderBridge) BridgeHandler.RENDER.get();
+final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.RENDER.get();
 this.bridge.update();
 render.beginFrame();
 render.clear(0.1F, 0.1F, 0.1F, 1F);
@@ -347,7 +347,7 @@ render.endFrame();
 render.present();
 ```
 
-`Backend` is `dev.joid.backend.vulkan.Backend`, `RenderBridge` is `dev.joid.backend.vulkan.render.RenderBridge` and `Configuration` is `org.lwjgl.system.Configuration`. The rest of `Main` (`GlfwInputForwarder`, resize) is unchanged.
+`Backend` is `dev.joid.backend.vulkan.Backend`, `VulkanRenderBridge` is in `dev.joid.backend.vulkan.render` and `Configuration` is `org.lwjgl.system.Configuration`. The rest of `Main` (`GlfwInputForwarder`, resize) is unchanged.
 
 The demo window of each backend (`dev.joid.backend.<backend>.demo.DemoWindow` in the `-dev` jars) is a complete reference of this setup; see [Backends](../integration/backends.md).
 

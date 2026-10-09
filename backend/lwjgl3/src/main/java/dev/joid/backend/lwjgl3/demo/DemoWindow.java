@@ -5,10 +5,11 @@ import org.lwjgl.opengl.GL;
 
 import dev.joid.backend.lwjgl3.Backend;
 import dev.joid.backend.lwjgl3.GlContextRequest;
+import dev.joid.base.glfw.demo.GlfwDemoWindow;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 
-public class DemoWindow extends dev.joid.base.glfw.demo.DemoWindow {
+public class DemoWindow extends GlfwDemoWindow {
 
 	public static void main(final String[] args) {
 		final DemoWindow window = new DemoWindow();

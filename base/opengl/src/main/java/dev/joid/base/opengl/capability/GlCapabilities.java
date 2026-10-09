@@ -46,7 +46,7 @@ public final class GlCapabilities {
 
 		GlProfile profile = GlProfile.COMPATIBILITY;
 		if (version >= 300 && (binding.getInteger(GlConstants.CONTEXT_FLAGS) & GlConstants.CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT) != 0) {
-			profile = GlProfile.FORWARD_COMPATIBLE_CORE;
+			profile = GlProfile.CORE_FORWARD_COMPATIBLE;
 		} else if ((version >= 320 && (binding.getInteger(GlConstants.CONTEXT_PROFILE_MASK) & GlConstants.CONTEXT_CORE_PROFILE_BIT) != 0) || (version == 310 && !extensionSet.contains("GL_ARB_compatibility"))) {
 			profile = GlProfile.CORE;
 		}

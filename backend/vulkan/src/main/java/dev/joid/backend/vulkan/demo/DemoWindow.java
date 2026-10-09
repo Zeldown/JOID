@@ -4,11 +4,12 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.Configuration;
 
 import dev.joid.backend.vulkan.Backend;
-import dev.joid.backend.vulkan.render.RenderBridge;
+import dev.joid.backend.vulkan.render.VulkanRenderBridge;
+import dev.joid.base.glfw.demo.GlfwDemoWindow;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 
-public class DemoWindow extends dev.joid.base.glfw.demo.DemoWindow {
+public class DemoWindow extends GlfwDemoWindow {
 
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);
@@ -35,7 +36,7 @@ public class DemoWindow extends dev.joid.base.glfw.demo.DemoWindow {
 
 	@Override
 	protected void present() {
-		((RenderBridge) BridgeHandler.RENDER.get()).present();
+		((VulkanRenderBridge) BridgeHandler.RENDER.get()).present();
 	}
 
 }

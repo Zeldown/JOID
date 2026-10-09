@@ -23,11 +23,11 @@ The libraries of the JOID core are declared in the `libraries` configuration. No
 | Class | Role |
 |---|---|
 | `Backend` | Registers the bridges. It calls `JOID.checkVersion`, which warns when the loaded JOID has another major version than the one the backend targets. |
-| `render/RenderBridge` | Extends the core `RenderBridge`, which tracks matrices and state in Java. Implement `clear`, `clearStencil`, `draw`, `createTexture`, `createFrameBuffer` and `createShader`, applying the current state when they run. |
-| `window/WindowBridge` | Window size, mouse, keyboard and clipboard. |
-| `audio/AudioBridge` | Streaming audio sources used by the video player. |
+| `render/ExampleRenderBridge` | Extends the core `RenderBridge`, which tracks matrices and state in Java. Implement `clear`, `clearStencil`, `draw`, `createTexture`, `createFrameBuffer` and `createShader`, applying the current state when they run. |
+| `window/ExampleWindowBridge` | Window size, mouse, keyboard and clipboard. |
+| `audio/ExampleAudioBridge` | Streaming audio sources used by the video player. |
 | `demo/DemoWindow` | Opens the JOID demo UIs on your engine. It lives in `src/demo/java`, so only the dev jar contains it. |
-| `SnapshotBackend` (tests) | Creates an offscreen surface, runs a frame, captures its pixels and names the renderer. |
+| `ExampleSnapshotBackend` (tests) | Creates an offscreen surface, runs a frame, captures its pixels and names the renderer. |
 
 The render bridge contract — vertex layout, projection conventions, textures, framebuffers, state stack, shaders — is described in [Writing a Backend](https://joid.dev-zeldown.workers.dev/#/integration/writing-a-backend).
 

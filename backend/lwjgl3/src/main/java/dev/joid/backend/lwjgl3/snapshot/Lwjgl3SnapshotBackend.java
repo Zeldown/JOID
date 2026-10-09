@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class SnapshotBackend implements ISnapshotBackend {
+public final class Lwjgl3SnapshotBackend implements ISnapshotBackend {
 
 	private final SnapshotProfile profile = SnapshotProfile.current();
 

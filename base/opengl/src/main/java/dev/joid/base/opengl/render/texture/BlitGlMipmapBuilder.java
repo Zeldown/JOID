@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class BlitMipmapBuilder implements IGlMipmapBuilder {
+public final class BlitGlMipmapBuilder implements IGlMipmapBuilder {
 
-	public static @NonNull BlitMipmapBuilder create() {
-		return new BlitMipmapBuilder();
+	public static @NonNull BlitGlMipmapBuilder create() {
+		return new BlitGlMipmapBuilder();
 	}
 
 	@Override

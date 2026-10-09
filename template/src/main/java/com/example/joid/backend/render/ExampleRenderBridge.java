@@ -1,5 +1,6 @@
 package com.example.joid.backend.render;
 
+import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
@@ -8,7 +9,7 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 
-public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge {
+public final class ExampleRenderBridge extends RenderBridge {
 
 	@Override
 	public void endFrame() {

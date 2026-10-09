@@ -27,7 +27,7 @@ public final class JournalGlFrameBufferBinding implements IGlFrameBufferBinding 
 
 	@Override
 	public void bindFramebuffer(final int target, final int framebuffer) {
-		this.journal.touchFrameBuffer(target);
+		this.journal.saveFrameBuffer(target);
 		this.binding.bindFramebuffer(target, framebuffer);
 	}
 

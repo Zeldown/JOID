@@ -36,7 +36,7 @@ public class GlCapabilitiesTest {
 
 	@Test
 	public void readsAForwardCompatibleContext() {
-		Assert.assertSame(GlProfile.FORWARD_COMPATIBLE_CORE, GlCapabilities.read(new ContextBinding("4.1 Metal - 88", "4.10", GlConstants.CONTEXT_CORE_PROFILE_BIT, GlConstants.CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)).getProfile());
+		Assert.assertSame(GlProfile.CORE_FORWARD_COMPATIBLE, GlCapabilities.read(new ContextBinding("4.1 Metal - 88", "4.10", GlConstants.CONTEXT_CORE_PROFILE_BIT, GlConstants.CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)).getProfile());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class GlCapabilitiesTest {
 		final GlStrategies strategies = GlStrategies.of(GlCapabilities.read(new ContextBinding("4.6.0 NVIDIA", "4.60 NVIDIA", GlConstants.CONTEXT_CORE_PROFILE_BIT, 0)));
 		Assert.assertSame(GlslDialect.GLSL_330, strategies.getDialect());
 		Assert.assertSame(GlFrameBufferFamily.CORE, strategies.getFrameBufferFamily());
-		Assert.assertTrue(strategies.isOwnVertexArray());
+		Assert.assertTrue(strategies.isVertexArrayObject());
 		Assert.assertTrue(strategies.isBlitMipmaps());
 		Assert.assertSame(GlslDialect.GLSL_330, strategies.createTranslator().getDialect());
 	}
@@ -99,7 +99,7 @@ public class GlCapabilitiesTest {
 		final GlStrategies strategies = GlStrategies.of(GlCapabilities.read(new ContextBinding("2.1 Metal", "1.20", 0, 0, "GL_EXT_framebuffer_object")));
 		Assert.assertSame(GlslDialect.GLSL_120, strategies.getDialect());
 		Assert.assertSame(GlFrameBufferFamily.EXT, strategies.getFrameBufferFamily());
-		Assert.assertFalse(strategies.isOwnVertexArray());
+		Assert.assertFalse(strategies.isVertexArrayObject());
 		Assert.assertFalse(strategies.isBlitMipmaps());
 	}
 

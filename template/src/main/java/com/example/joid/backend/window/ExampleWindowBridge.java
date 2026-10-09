@@ -3,7 +3,7 @@ package com.example.joid.backend.window;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.utils.key.Key;
 
-public final class WindowBridge implements IWindowBridge {
+public final class ExampleWindowBridge implements IWindowBridge {
 
 	@Override
 	public int getWidth() {

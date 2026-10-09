@@ -2,7 +2,7 @@ package dev.joid.backend.lwjgl2;
 
 import dev.joid.backend.lwjgl2.binding.Lwjgl2AlBinding;
 import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
-import dev.joid.backend.lwjgl2.window.WindowBridge;
+import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.resource.GlTextureResourceResolver;
@@ -19,7 +19,7 @@ public final class Backend {
 		JOID.checkVersion(JOID.VERSION);
 		Natives.install();
 		BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl2AlBinding.inst()));
-		BridgeHandler.WINDOW.register(new WindowBridge());
+		BridgeHandler.WINDOW.register(new Lwjgl2WindowBridge());
 		BridgeHandler.RENDER.register(GlRenderBridge.create(Lwjgl2GlBinding.inst()));
 		ResourceResolver.register(GlTextureResourceResolver.inst());
 	}
