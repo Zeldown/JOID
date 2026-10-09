@@ -7,6 +7,7 @@ import java.util.List;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
+import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.dto.effect.ITextEffect;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,12 +18,14 @@ public final class TextStyle {
 	private final TextStyle         base;
 	private final List<ITextEffect> effects;
 
+	private IFont      font;
 	private Color      color;
 	private boolean    italic;
 	private FontWeight weight;
 
-	private TextStyle(final TextStyle base, final FontWeight weight, final boolean italic, final Color color, final List<ITextEffect> effects) {
+	private TextStyle(final TextStyle base, final IFont font, final FontWeight weight, final boolean italic, final Color color, final List<ITextEffect> effects) {
 		this.base = base;
+		this.font = font;
 		this.weight = weight;
 		this.italic = italic;
 		this.color = color;
@@ -30,15 +33,16 @@ public final class TextStyle {
 	}
 
 	public static @NonNull TextStyle create(final @NonNull FontWeight weight, final boolean italic, final @NonNull Color color, final @NonNull ITextEffect @NonNull... effects) {
-		return new TextStyle(null, weight, italic, color, Arrays.asList(effects));
+		return new TextStyle(null, null, weight, italic, color, Arrays.asList(effects));
 	}
 
 	public @NonNull TextStyle copy() {
-		return new TextStyle(this.base, this.weight, this.italic, this.color, this.effects);
+		return new TextStyle(this.base, this.font, this.weight, this.italic, this.color, this.effects);
 	}
 
 	public @NonNull TextStyle reset() {
 		if (this.base != null) {
+			this.font = this.base.font;
 			this.weight = this.base.weight;
 			this.italic = this.base.italic;
 			this.color = this.base.color;
@@ -49,7 +53,12 @@ public final class TextStyle {
 	}
 
 	public @NonNull TextStyle derive() {
-		return new TextStyle(this, this.weight, this.italic, this.color, this.effects);
+		return new TextStyle(this, this.font, this.weight, this.italic, this.color, this.effects);
+	}
+
+	public @NonNull TextStyle font(final IFont font) {
+		this.font = font;
+		return this;
 	}
 
 	public @NonNull TextStyle italic(final boolean italic) {

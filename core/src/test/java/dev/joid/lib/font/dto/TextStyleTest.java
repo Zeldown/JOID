@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
+import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.dto.effect.ITextEffect;
 
 public class TextStyleTest {
@@ -23,6 +24,18 @@ public class TextStyleTest {
 		Assert.assertFalse(style.isItalic());
 		Assert.assertSame(Color.WHITE, style.getColor());
 		Assert.assertEquals(Collections.singletonList(TextStyleTest.FIRST), style.getEffects());
+	}
+
+	@Test
+	public void carriesAFontFromItsBaseToItsCopies() {
+		final IFont first = () -> null;
+		final IFont second = () -> null;
+		final TextStyle style = TextStyle.create(FontWeight.REGULAR, false, Color.WHITE).font(first).derive();
+		Assert.assertSame(first, style.getFont());
+		final TextStyle snapshot = style.font(second).copy();
+		Assert.assertSame(second, snapshot.getFont());
+		Assert.assertSame(first, style.reset().getFont());
+		Assert.assertNull(TextStyle.create(FontWeight.REGULAR, false, Color.WHITE).getFont());
 	}
 
 	@Test

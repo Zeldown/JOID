@@ -3,10 +3,12 @@ package dev.joid.demo.ui.font.markup;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.font.effect.DemoHighlightTextEffect;
 import dev.joid.demo.ui.font.effect.DemoUnderlineTextEffect;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
+import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.dto.TextStyle;
 import dev.joid.lib.font.dto.markup.ITextMarkup;
 import lombok.AccessLevel;
@@ -18,7 +20,7 @@ public final class DemoTextMarkup implements ITextMarkup {
 
 	private static final DemoTextMarkup INSTANCE = new DemoTextMarkup();
 
-	private static final Pattern TAG = Pattern.compile("<(?:([biuh])|w=(\\d{3})|c=([0-9a-fA-F]{6})|(/[biuhwc]))>");
+	private static final Pattern TAG = Pattern.compile("<(?:([biuh])|w=(\\d{3})|c=([0-9a-fA-F]{6})|(/[biuhwcf])|f=(montserrat|pacifico|playfair))>");
 
 	public static @NonNull DemoTextMarkup inst() {
 		return DemoTextMarkup.INSTANCE;
@@ -36,7 +38,7 @@ public final class DemoTextMarkup implements ITextMarkup {
 		}
 
 		final TextStyle base = style.getBase();
-		switch (matcher.group(1) != null ? matcher.group(1) : matcher.group(2) != null ? "w" : matcher.group(3) != null ? "c" : matcher.group(4)) {
+		switch (matcher.group(1) != null ? matcher.group(1) : matcher.group(2) != null ? "w" : matcher.group(3) != null ? "c" : matcher.group(5) != null ? "f" : matcher.group(4)) {
 		case "b":
 			style.weight(FontWeight.BOLD);
 			break;
@@ -55,6 +57,9 @@ public final class DemoTextMarkup implements ITextMarkup {
 		case "c":
 			style.color(Color.decode("#" + matcher.group(3)));
 			break;
+		case "f":
+			style.font(DemoTextMarkup.getFont(matcher.group(5)));
+			break;
 		case "/i":
 			style.italic(base.isItalic());
 			break;
@@ -67,12 +72,26 @@ public final class DemoTextMarkup implements ITextMarkup {
 		case "/c":
 			style.color(base.getColor());
 			break;
+		case "/f":
+			style.font(base.getFont());
+			break;
 		default:
 			style.weight(base.getWeight());
 			break;
 		}
 
 		return matcher.end() - index;
+	}
+
+	private static IFont getFont(final String name) {
+		switch (name) {
+		case "pacifico":
+			return DemoFont.PACIFICO;
+		case "playfair":
+			return DemoFont.PLAYFAIR_DISPLAY;
+		default:
+			return DemoFont.MONTSERRAT;
+		}
 	}
 
 }

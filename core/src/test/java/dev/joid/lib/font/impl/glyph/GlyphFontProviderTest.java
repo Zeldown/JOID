@@ -36,6 +36,17 @@ public class GlyphFontProviderTest {
 	private static final Face     REGULAR  = new Face(FontWeight.REGULAR, false, 1F, false);
 	private static final Provider PROVIDER = new Provider();
 
+	private static final Font OTHER = new Font(FontFamily.of(GlyphFontProviderTest.SPACED));
+
+	private static final ITextMarkup FONT = (text, index, style) -> {
+		if (text.charAt(index) != '^') {
+			return 0;
+		}
+
+		style.font(style.getFont() == GlyphFontProviderTest.OTHER ? style.getBase().getFont() : GlyphFontProviderTest.OTHER);
+		return 1;
+	};
+
 	private static final ITextMarkup MARKUP = (text, index, style) -> {
 		switch (text.charAt(index)) {
 		case '*':
@@ -176,6 +187,28 @@ public class GlyphFontProviderTest {
 	public void drawsNoShadowWithoutColorOrTint() {
 		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.info().shadow(Color.BLACK).shadow(null).shadowTint(null));
 		Assert.assertEquals(Arrays.asList("begin", "draw A", "end"), this.events);
+	}
+
+	@Test
+	public void switchesTheFontThroughMarkup() {
+		final GlyphLayout<Face> layout = GlyphFontProviderTest.layout("A^A^A", GlyphFontProviderTest.info().markups(GlyphFontProviderTest.FONT));
+		Assert.assertSame(GlyphFontProviderTest.REGULAR, layout.getPlacements().get(0).getFace());
+		Assert.assertSame(GlyphFontProviderTest.SPACED, layout.getPlacements().get(1).getFace());
+		Assert.assertSame(GlyphFontProviderTest.REGULAR, layout.getPlacements().get(2).getFace());
+	}
+
+	@Test
+	public void keepsItsFontForAFontOfAnotherProvider() {
+		final ITextMarkup foreign = (text, index, style) -> {
+			if (text.charAt(index) != '%') {
+				return 0;
+			}
+
+			style.font(MsdfFontProvider::inst);
+			return 1;
+		};
+		final GlyphLayout<Face> layout = GlyphFontProviderTest.layout("%A", GlyphFontProviderTest.info().markups(foreign));
+		Assert.assertSame(GlyphFontProviderTest.REGULAR, layout.getPlacements().get(0).getFace());
 	}
 
 	@Test

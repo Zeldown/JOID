@@ -64,7 +64,7 @@ public final class TextInfo {
 	}
 
 	public final @NonNull TextStyle getStyle() {
-		return TextStyle.create(this.weight, this.italic, this.color, this.effects);
+		return TextStyle.create(this.weight, this.italic, this.color, this.effects).font(this.font);
 	}
 
 	public final float getShadowX() {

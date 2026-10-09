@@ -103,6 +103,7 @@ public class TextInfoTest {
 		Assert.assertTrue(style.isItalic());
 		Assert.assertSame(Color.RED, style.getColor());
 		Assert.assertEquals(Collections.singletonList(TextInfoTest.EFFECT), style.getEffects());
+		Assert.assertSame(TextInfoTest.FONT, style.getFont());
 	}
 
 	@Test

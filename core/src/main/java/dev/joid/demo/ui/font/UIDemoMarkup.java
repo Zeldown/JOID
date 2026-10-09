@@ -68,7 +68,8 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold <i>bold italic <c=3355cc>blue <u>underlined</u></c></i></b> back to ink", markup)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Nested tags", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(20, 110, 280, 0).text(Text.create("<f=pacifico>Pacifico <c=3355cc>blue</c></f> <f=playfair><i>Playfair</i></f> ink", markup)).mode(TextMode.SPLIT).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Tags and fonts", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

@@ -2,7 +2,10 @@ package dev.joid.lib.font.impl.glyph;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
@@ -22,6 +25,8 @@ import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
 public abstract class GlyphFontProvider<F extends IFontFace> implements IFontProvider {
+
+	private static final Set<Class<?>> WARNED_FONTS = ConcurrentHashMap.newKeySet();
 
 	@Override
 	public final @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
@@ -58,7 +63,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		final float spacing = info.getLetterSpacing() * size;
 
 		TextStyle snapshot = style.copy();
-		F face = font.getFace(style.getWeight(), style.isItalic());
+		F face = this.getFace(font, style);
 		double pen = 0D;
 		int previous = -1;
 		for (int index = 0; index < text.length();) {
@@ -66,7 +71,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 			if (consumed > 0) {
 				index += consumed;
 				snapshot = style.copy();
-				final F next = font.getFace(style.getWeight(), style.isItalic());
+				final F next = this.getFace(font, style);
 				if (next != face) {
 					face = next;
 					previous = -1;
@@ -101,6 +106,22 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 
 	private @NonNull F getFace(final @NonNull TextInfo info) {
 		return this.getFont(info).getFace(info.getWeight(), info.isItalic());
+	}
+
+	private @NonNull F getFace(final @NonNull GlyphFont<F> font, final @NonNull TextStyle style) {
+		final IFont styleFont = style.getFont();
+		if (styleFont == null || styleFont == font) {
+			return font.getFace(style.getWeight(), style.isItalic());
+		}
+
+		if (!(styleFont instanceof GlyphFont) || styleFont.getFontProvider().getClass() != this.getClass()) {
+			if (JOID.inst().isDevMode() && GlyphFontProvider.WARNED_FONTS.add(styleFont.getClass())) {
+				System.err.println("[JOID] The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font");
+			}
+			return font.getFace(style.getWeight(), style.isItalic());
+		}
+
+		return ((GlyphFont<F>) styleFont).getFace(style.getWeight(), style.isItalic());
 	}
 
 	private @NonNull GlyphFont<F> getFont(final @NonNull TextInfo info) {
