@@ -202,6 +202,8 @@ Each backend `-dev` jar contains a demo window: `dev.joid.backend.lwjgl2.demo.De
 
 ![The demo menu: a grid of gray buttons, one per demo UI](../images/dev-demo-menu.png "UIDemoChoice: click a demo to open it, Escape goes back to the menu.")
 
+The menu shows the entries of `UIDemoChoice.LIST`, a list of `DemoEntry` (`dev.joid.demo.ui`): `DemoEntry.create(UIDemoSimple.class)` opens a demo UI with a push transition, and `DemoEntry.create(label, action)` runs an action on click; `state(Supplier<Boolean>)` shows `label: on` or `label: off`, darker while on, from the first frame, as the `UIDemoOverlay` entry does. A backend that ships its own demos adds them to the list before opening the menu.
+
 Run it from the repository with `./gradlew :backend-lwjgl3:runDemo` (also `:backend-lwjgl2:runDemo`, `:backend-vulkan:runDemo`), or from a release jar with the libraries of [Installation](../getting-started/installation.md):
 
 ```
