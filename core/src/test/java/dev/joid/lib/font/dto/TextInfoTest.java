@@ -202,7 +202,7 @@ public class TextInfoTest {
 
 	@Test
 	public void copiesEveryProperty() {
-		final TextInfo copy = TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F, Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).shadow(Color.BLUE).shadow(3F, 4F).copy();
+		final TextInfo copy = TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F, Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).shadow(Color.BLUE).shadow(3F, 4F).shadowTint(0.25F).copy();
 		Assert.assertSame(TextInfoTest.FONT, copy.getFont());
 		Assert.assertEquals(20F, copy.getFontSize(), 0F);
 		Assert.assertSame(FontWeight.BOLD, copy.getWeight());
@@ -214,6 +214,7 @@ public class TextInfoTest {
 		Assert.assertSame(Color.BLUE, copy.getShadowColor());
 		Assert.assertEquals(3F, copy.getShadowX(), 0F);
 		Assert.assertEquals(4F, copy.getShadowY(), 0F);
+		Assert.assertEquals(0.25F, copy.getShadowTint(), 0F);
 	}
 
 	@Test

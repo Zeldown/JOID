@@ -30,6 +30,7 @@ public final class TextInfo {
 	private Color shadowColor;
 	private Float shadowX;
 	private Float shadowY;
+	private Float shadowTint;
 
 	private ITextMarkup[] markups;
 	private ITextEffect[] effects;
@@ -51,7 +52,7 @@ public final class TextInfo {
 	}
 
 	private TextInfo(final IFont font, final FontWeight weight, final float fontSize, final Color color) {
-		this(font, fontSize, weight, 0, 0, color, true, false, null, null, null, null, new ITextEffect[0]);
+		this(font, fontSize, weight, 0, 0, color, true, false, null, null, null, null, null, new ITextEffect[0]);
 	}
 
 	public final double getHeight() {
@@ -180,8 +181,13 @@ public final class TextInfo {
 		return this;
 	}
 
+	public final @NonNull TextInfo shadowTint(final Float shadowTint) {
+		this.shadowTint = shadowTint;
+		return this;
+	}
+
 	public final @NonNull TextInfo copy() {
-		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.markups, this.effects);
+		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.shadowTint, this.markups, this.effects);
 	}
 
 	@Override

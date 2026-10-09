@@ -71,13 +71,14 @@ A new `TextInfo` starts upright, colored by markup, without letter spacing, with
 
 - `shadow()` sets the shadow color to the text color made 30 % darker; `shadow(Color)` sets any color, `null` removes the shadow.
 - Without `shadow(x, y)`, the offset is `fontSize / 13.5` on both axes and follows the current size: a later `fontSize(...)` moves the shadow with it. An offset set with `shadow(x, y)` stays fixed.
-- `shadow(x, y)` only sets the offset: without a shadow color, nothing is drawn.
+- `shadow(x, y)` only sets the offset: without a shadow color or tint, nothing is drawn.
+- `shadowTint(Float)` draws the shadow of each glyph in the color of that glyph multiplied by the tint, alpha kept: `0.25F` gives the shadow of Minecraft, a red glyph casting a dark red shadow, markup colors and effects included. It wins over `shadow(Color)`; `null` turns it off.
 
 ### Colors and alpha
 
 - With `colored(true)` (the default), a color set by markup replaces the `TextInfo` color for the following glyphs and takes the alpha of the `TextInfo` color: fading `color` fades every glyph, markup colors included.
 - With `colored(false)`, every glyph takes `color`; text effects can still recolor glyphs (see [Markup and Text Effects](markup-and-effects.md)).
-- A gradient color spans the whole line, every run included. The shadow takes the shadow color, never the markup colors.
+- A gradient color spans the whole line, every run included. The shadow takes the shadow color, never the markup colors, unless a `shadowTint` derives it from each glyph.
 
 ## Sharing a TextInfo with copy
 
@@ -160,6 +161,7 @@ RectNode
 | `shadow()` | Shadow color: the text color made 30 % darker (`color.darker(0.3F)`). | No shadow |
 | `shadow(Color color)` | Shadow color; `null` removes the shadow. | `null` |
 | `shadow(float x, float y)` | Fixed shadow offset, in UI units. | `fontSize / 13.5` on both axes, following the size |
+| `shadowTint(Float tint)` | Shadow of each glyph in its own color times `tint` (on 1), alpha kept; wins over the shadow color; `null` turns it off. | `null` |
 | `markups(ITextMarkup... markups)` | Uses only these markups; `markups()` with no argument turns markup off. | Follows the `TextMarkup` registry |
 | `effects(ITextEffect... effects)` | Effects applied to every glyph of the run. | None |
 | `copy()` | New `TextInfo` with every property copied. | |
@@ -168,6 +170,7 @@ RectNode
 |---|---|
 | `getFont()`, `getFontSize()`, `getWeight()`, `isItalic()`, `getLetterSpacing()`, `getLineHeight()`, `getColor()`, `isColored()` | Current values. |
 | `getShadowColor()` | Shadow color, `null` without shadow. |
+| `getShadowTint()` | Shadow tint, `null` without tint. |
 | `getShadowX()`, `getShadowY()` | Shadow offset: the fixed one, or `fontSize / 13.5`. |
 | `getMarkups()` | The markups of the run (the registered ones while `markups(...)` was never called), read-only. |
 | `getEffects()` | The effects, read-only. |

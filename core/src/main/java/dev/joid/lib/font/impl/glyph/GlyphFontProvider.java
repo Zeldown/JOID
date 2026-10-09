@@ -126,12 +126,13 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		}
 
 		final Color shadow = info.getShadowColor();
-		if (shadow != null) {
+		final Float tint = info.getShadowTint();
+		if (shadow != null || tint != null) {
 			final double shadowX = grid == null ? info.getShadowX() : GlyphFontProvider.shadow(info.getShadowX(), grid.getUnitX(), grid.isAligned());
 			final double shadowY = grid == null ? info.getShadowY() : GlyphFontProvider.shadow(info.getShadowY(), grid.getUnitY(), grid.isAligned());
 			final List<TextGlyph<F>> shadows = new ArrayList<>(glyphs.size());
 			for (final TextGlyph<F> glyph : glyphs) {
-				shadows.add(glyph.shadow(shadowX, shadowY, shadow));
+				shadows.add(glyph.shadow(shadowX, shadowY, tint != null ? GlyphFontProvider.tint(glyph.getColor(), tint) : shadow));
 			}
 			this.render(shadows, runX + shadowX, runY + shadowY, runWidth, runHeight);
 		}
@@ -188,6 +189,11 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		}
 
 		return Math.signum(offset * unit) * Math.max(1D, Math.floor(Math.abs(offset * unit) + 0.5D + 1E-6D)) / unit;
+	}
+
+	private static @NonNull Color tint(final @NonNull Color color, final float tint) {
+		final Color current = color.update();
+		return new Color(current.r * tint, current.g * tint, current.b * tint, current.a);
 	}
 
 	private static @NonNull Color color(final @NonNull TextStyle style, final @NonNull TextInfo info) {

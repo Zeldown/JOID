@@ -162,6 +162,23 @@ public class GlyphFontProviderTest {
 	}
 
 	@Test
+	public void tintsTheShadowOfEachGlyphWithItsColor() {
+		GlyphFontProviderTest.draw("A~A", GlyphFontProviderTest.info().color(Color.WHITE).shadow(Color.BLUE).shadowTint(0.25F));
+		final TextGlyph<Face> white = GlyphFontProviderTest.PROVIDER.drawn.get(0);
+		final TextGlyph<Face> red = GlyphFontProviderTest.PROVIDER.drawn.get(1);
+		Assert.assertTrue(white.isShadow());
+		Assert.assertArrayEquals(new float[] {0.25F, 0.25F, 0.25F, 1F}, new float[] {white.getColor().r, white.getColor().g, white.getColor().b, white.getColor().a}, 1E-6F);
+		Assert.assertArrayEquals(new float[] {0.25F, 0F, 0F, 1F}, new float[] {red.getColor().r, red.getColor().g, red.getColor().b, red.getColor().a}, 1E-6F);
+		Assert.assertSame(Color.RED, GlyphFontProviderTest.PROVIDER.drawn.get(3).getColor());
+	}
+
+	@Test
+	public void drawsNoShadowWithoutColorOrTint() {
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.info().shadow(Color.BLACK).shadow(null).shadowTint(null));
+		Assert.assertEquals(Arrays.asList("begin", "draw A", "end"), this.events);
+	}
+
+	@Test
 	public void switchesTheFaceThroughMarkup() {
 		final GlyphLayout<Face> layout = GlyphFontProviderTest.layout("*A*A", GlyphFontProviderTest.info());
 		Assert.assertSame(GlyphFontProviderTest.BOLD, layout.getPlacements().get(0).getFace());

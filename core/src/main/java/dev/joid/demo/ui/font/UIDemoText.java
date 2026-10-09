@@ -2,6 +2,7 @@ package dev.joid.demo.ui.font;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.font.markup.DemoTextMarkup;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
@@ -168,6 +169,7 @@ public class UIDemoText extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("White shadow", caption.copy().shadow(Color.WHITE))).attach(flex);
 				TextNode.create(0, 0).text(Text.create("Offset shadow", caption.copy().shadow(Color.BLACK.copyAlpha(0.4F)).shadow(4F, 4F))).attach(flex);
 				TextNode.create(0, 0).text(Text.create("Rainbow shadow", caption.copy().shadow(Color.RAINBOW))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("<c=cc3333>Tinted</c> <c=3355cc>shadow</c>", caption.copy().markups(DemoTextMarkup.inst()).shadowTint(0.25F))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Shadow", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
