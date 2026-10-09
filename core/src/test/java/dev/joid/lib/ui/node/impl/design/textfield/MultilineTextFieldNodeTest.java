@@ -667,7 +667,7 @@ public class MultilineTextFieldNodeTest {
 	public void ignoresAWheelThatDoesNotTurn() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
 		this.bridges.move(10D, 10D).frames(2).scroll(-1D);
-		field.mouseScroll(10D, 10D, 0D, 0D, DispatchContext.create());
+		field.mouseScroll(10D, 10D, 0D, 0D, DispatchContext.create(Collections.singletonList(field)));
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
 	}
 
@@ -681,11 +681,11 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void consumesTheWheelWhileItScrolls() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		final DispatchContext down = DispatchContext.create();
+		final DispatchContext down = DispatchContext.create(Collections.singletonList(field));
 		field.mouseScroll(10D, 10D, 0D, -1D, down);
 		Assert.assertTrue(down.isCancelled());
 		Assert.assertEquals(20D, field.getYOffset(), 0D);
-		final DispatchContext up = DispatchContext.create();
+		final DispatchContext up = DispatchContext.create(Collections.singletonList(field));
 		field.mouseScroll(10D, 10D, 0D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
@@ -694,7 +694,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void leavesTheWheelToItsParentAtItsTop() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(Collections.singletonList(field));
 		field.mouseScroll(10D, 10D, 0D, 1D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, field.getYOffset(), 0D);
@@ -704,14 +704,14 @@ public class MultilineTextFieldNodeTest {
 	public void leavesTheWheelToItsParentAtItsBottom() {
 		final MultilineTextFieldNode field = this.field("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb\nc\nd\ne");
 		for (int i = 0; i < 6; i++) {
-			field.mouseScroll(10D, 10D, 0D, -1D, DispatchContext.create());
+			field.mouseScroll(10D, 10D, 0D, -1D, DispatchContext.create(Collections.singletonList(field)));
 		}
 		Assert.assertEquals(104D, field.getYOffset(), 0D);
-		final DispatchContext down = DispatchContext.create();
+		final DispatchContext down = DispatchContext.create(Collections.singletonList(field));
 		field.mouseScroll(10D, 10D, 0D, -1D, down);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertEquals(104D, field.getYOffset(), 0D);
-		final DispatchContext up = DispatchContext.create();
+		final DispatchContext up = DispatchContext.create(Collections.singletonList(field));
 		field.mouseScroll(10D, 10D, 0D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(84D, field.getYOffset(), 0D);
@@ -720,8 +720,8 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void leavesTheWheelToItsParentWithNothingToScroll() {
 		final MultilineTextFieldNode field = this.field("ab");
-		final DispatchContext down = DispatchContext.create();
-		final DispatchContext up = DispatchContext.create();
+		final DispatchContext down = DispatchContext.create(Collections.singletonList(field));
+		final DispatchContext up = DispatchContext.create(Collections.singletonList(field));
 		field.mouseScroll(10D, 10D, 0D, -1D, down);
 		field.mouseScroll(10D, 10D, 0D, 1D, up);
 		Assert.assertFalse(down.isCancelled());

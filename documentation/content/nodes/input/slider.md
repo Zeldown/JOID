@@ -99,7 +99,7 @@ Set the values before the slider is shown. If you replace them later, call `valu
 - The constructor `SliderThumbNode(double width, double height)` places the thumb at the start of the slider. The slider drives its position: it centers the thumb vertically on each frame (a 16-unit thumb in a 24-unit-high slider sits at `y = 4`) and moves it along the track.
 - `thumb(...)` attaches the thumb as a child of the slider and links it to the slider; a second call replaces the previous thumb.
 - Override `drawThumb` to draw it; its other methods can be overridden too.
-- The thumb counts as hovered during the whole drag, even when the pointer leaves it: `isHovered(...)` returns `true` and `hoverValue(...)` stays at its end value, so a hover effect drawn in `drawThumb` does not flicker while dragging.
+- The thumb counts as hovered during the whole drag, even when the pointer leaves it: `isHovered()` returns `true` and `hoverValue(...)` stays at its end value, so a hover effect drawn in `drawThumb` does not flicker while dragging.
 
 ## Dragging
 
@@ -181,7 +181,7 @@ All three are abstract, with a protected constructor `(double x, double y, doubl
 | `drawThumb(double mouseX, double mouseY)` | Abstract. Draws the thumb. |
 | `dragging(boolean)` | Starts or stops following the pointer. |
 | `isDragging()` | Whether the thumb follows the pointer. |
-| `isHovered(double mouseX, double mouseY, boolean checkEnabled)` | `true` during a drag, otherwise the usual hover test. |
+| `computeHovered()` | Protected. `true` during a drag, otherwise the usual hover state. |
 | `slider(SliderNode<?>)` | Links the thumb to its slider; `SliderNode.thumb(...)` calls it for you. |
 | `getSlider()` | The slider, or `null` before `thumb(...)`. |
 

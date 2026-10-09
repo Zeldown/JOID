@@ -351,17 +351,18 @@ public abstract class Node implements INode {
 					this.lastHeight = this.height;
 				}
 
-				if (!this.hovered && this.isHovered(mouseX, mouseY)) {
+				final boolean hovered = this.computeHovered();
+				if (!this.hovered && hovered) {
 					this.hoverAnimator.sequence(this.hoverDuration, 1F, this.hoverEquation).start();
 					this.executeCallback(Node.CALLBACK_HOVER_START, DispatchContext.create(), mouseX, mouseY);
 				}
 
-				if (this.hovered && !this.isHovered(mouseX, mouseY)) {
+				if (this.hovered && !hovered) {
 					this.hoverAnimator.sequence(this.hoverDuration, 0F, this.hoverEquation).start();
 					this.executeCallback(Node.CALLBACK_HOVER_END, DispatchContext.create(), mouseX, mouseY);
 				}
 
-				this.hovered = this.isHovered(mouseX, mouseY);
+				this.hovered = hovered;
 				this.hoverAnimator.update();
 
 				if (this.hovered) {
@@ -717,7 +718,7 @@ public abstract class Node implements INode {
 		}
 
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
-		if (!context.isCancelled() && this.isHovered(mouseX, mouseY)) {
+		if (!context.isCancelled() && enabled && context.isOnPath(this)) {
 			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
 			if (notchesY != 0D && this.hasOverflowY()) {
 				if (this.canScrollY(notchesY)) {
@@ -811,7 +812,7 @@ public abstract class Node implements INode {
 
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, context));
 		final boolean pressed = context.isCancelled();
-		if (!pressed && this.isHovered(mouseX, mouseY) && this.hasCallback(Node.CALLBACK_CLICK)) {
+		if (!pressed && enabled && context.isOnPath(this) && this.hasCallback(Node.CALLBACK_CLICK)) {
 			this.executeCallback(Node.CALLBACK_CLICK, context, mouseX, mouseY, button);
 			context.cancel();
 		}
@@ -826,7 +827,7 @@ public abstract class Node implements INode {
 			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, clicked ? DispatchContext.create() : context, mouseX, mouseY, button);
 		}
 
-		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && this.isHovered(mouseX, mouseY)) {
+		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && enabled && context.isOnPath(this)) {
 			this.startDragging(mouseX, mouseY);
 			if (this.dragging) {
 				context.cancel();
@@ -1442,24 +1443,8 @@ public abstract class Node implements INode {
 		return this.visible.test(this);
 	}
 
-	public boolean isHovered(final double mouseX, final double mouseY) {
-		return this.isHovered(mouseX, mouseY, true);
-	}
-
-	public boolean isHovered(final double mouseX, final double mouseY, final boolean checkEnabled) {
-		if (this.ui == null || !this.ui.isOnTop() || checkEnabled && !this.isEnabled()) {
-			return false;
-		}
-
-		if (mouseX == this.ui.getMouseX() && mouseY == this.ui.getMouseY()) {
-			return this.ui.getHoveredPath().contains(this);
-		}
-
-		Node target = this.ui.getNodeAt(mouseX, mouseY);
-		while (target != null && target != this) {
-			target = target.parent;
-		}
-		return target != null;
+	protected boolean computeHovered() {
+		return this.ui != null && this.ui.isOnTop() && this.isEnabled() && this.ui.getHoveredPath().contains(this);
 	}
 
 	public final @NonNull Cursor getResolvedCursor() {

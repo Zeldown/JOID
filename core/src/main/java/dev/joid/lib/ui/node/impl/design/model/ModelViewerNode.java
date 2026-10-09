@@ -91,7 +91,7 @@ public class ModelViewerNode extends ModelNode {
 
 	@Override
 	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
-		if (notchesY == 0D || !super.isHovered(mouseX, mouseY)) {
+		if (notchesY == 0D || !context.isOnPath(this)) {
 			return;
 		}
 
@@ -100,7 +100,7 @@ public class ModelViewerNode extends ModelNode {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (!button.isLeft() || !super.isHovered(mouseX, mouseY)) {
+		if (!button.isLeft() || !context.isOnPath(this)) {
 			return;
 		}
 

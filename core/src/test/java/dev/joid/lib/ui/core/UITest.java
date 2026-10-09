@@ -1045,8 +1045,8 @@ public class UITest {
 		this.bridges.open(ui).move(150D, 150D).frames(2);
 		final List<Node> path = ui.getHoveredPath();
 		Assert.assertEquals(Arrays.asList(child, parent), path);
-		Assert.assertTrue(child.isHovered(150D, 150D));
-		Assert.assertTrue(parent.isHovered(150D, 150D));
+		Assert.assertTrue(child.isHovered());
+		Assert.assertTrue(parent.isHovered());
 		Assert.assertSame(path, ui.getHoveredPath());
 		this.bridges.frame();
 		Assert.assertNotSame(path, ui.getHoveredPath());

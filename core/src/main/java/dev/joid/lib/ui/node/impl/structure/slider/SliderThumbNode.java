@@ -31,7 +31,7 @@ public abstract class SliderThumbNode extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || !this.isHovered(mouseX, mouseY)) {
+		if (context.isCancelled() || !this.dragging && !context.isOnPath(this)) {
 			return;
 		}
 
@@ -54,8 +54,8 @@ public abstract class SliderThumbNode extends Node {
 	}
 
 	@Override
-	public boolean isHovered(final double mouseX, final double mouseY, final boolean checkEnabled) {
-		return this.dragging || super.isHovered(mouseX, mouseY, checkEnabled);
+	protected boolean computeHovered() {
+		return this.dragging || super.computeHovered();
 	}
 
 	public final <T extends SliderThumbNode> @NonNull T dragging(final boolean dragging) {

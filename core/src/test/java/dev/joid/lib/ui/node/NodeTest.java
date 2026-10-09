@@ -312,8 +312,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		this.bridges.move(150D, 150D).frames(2);
 		Assert.assertFalse(node.isEnabled());
-		Assert.assertFalse(node.isHovered(150D, 150D));
-		Assert.assertTrue(node.isHovered(150D, 150D, false));
+		Assert.assertFalse(node.isHovered());
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(0, clicks[0]);
 		enabled[0] = true;
@@ -332,8 +331,8 @@ public class NodeTest {
 		this.bridges.move(150D, 150D).frames(2);
 		Assert.assertFalse(above.isInteractive());
 		Assert.assertFalse(child.isInteractive());
-		Assert.assertFalse(above.isHovered(150D, 150D, false));
-		Assert.assertTrue(below.isHovered(150D, 150D));
+		Assert.assertFalse(above.isHovered());
+		Assert.assertTrue(below.isHovered());
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("below"), clicks);
 		interactive[0] = true;
@@ -349,8 +348,7 @@ public class NodeTest {
 		final RectNode above = RectNode.create(150D, 150D, 100D, 100D);
 		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(below, above)));
 		this.bridges.move(175D, 175D).frames(2);
-		Assert.assertTrue(above.isHovered(175D, 175D));
-		Assert.assertFalse(below.isHovered(175D, 175D));
+		Assert.assertTrue(above.isHovered());
 		Assert.assertFalse(below.isHovered());
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(clicks.isEmpty());
@@ -399,6 +397,46 @@ public class NodeTest {
 		Assert.assertFalse(parent.getChildren().contains(child));
 		this.bridges.frame();
 		Assert.assertTrue(parent.isHovered());
+	}
+
+	@Test
+	public void bubblesTheClickAlongThePathFoundAtItsStart() {
+		final List<String> clicks = new ArrayList<>();
+		final RectNode other = RectNode.create(300D, 100D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("other"));
+		final RectNode child = RectNode.create(20D, 20D, 50D, 50D).onMousePressed((rect, mouseX, mouseY, button) -> {
+			if (rect.getParent() != other) {
+				other.append(rect);
+			}
+		});
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("parent")).append(child);
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 500D, 400D).append(other, parent)));
+		this.bridges.move(140D, 140D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("parent"), clicks);
+		Assert.assertSame(other, child.getParent());
+	}
+
+	@Test
+	public void givesItsHooksTheTargetOfTheMouse() {
+		final List<Node> targets = new ArrayList<>();
+		final RectNode child = RectNode.create(20D, 20D, 50D, 50D);
+		final RectNode parent = new RectNode(100D, 100D, 100D, 100D) {
+
+			@Override
+			public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+				targets.add(context.getTarget());
+				Assert.assertEquals(context.getTarget() != null, context.isOnPath(this));
+			}
+
+		}.append(child);
+		this.bridges.open(new NodeUI(parent));
+		this.bridges.move(140D, 140D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.move(190D, 190D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.move(300D, 300D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList(child, parent, null), targets);
 	}
 
 	@Test
@@ -456,8 +494,21 @@ public class NodeTest {
 		this.bridges.move(250D, 120D).frames(2);
 		Assert.assertTrue(child.isHovered());
 		Assert.assertTrue(parent.isHovered());
-		Assert.assertTrue(parent.isHovered(250D, 120D));
-		Assert.assertFalse(parent.isHovered(350D, 120D));
+		this.bridges.move(350D, 120D).frame();
+		Assert.assertFalse(parent.isHovered());
+	}
+
+	@Test
+	public void hoversTheParentsOfADisabledTarget() {
+		final List<String> events = new ArrayList<>();
+		final RectNode child = RectNode.create(20D, 20D, 50D, 50D).enabled(false).onHoverStart((rect, mouseX, mouseY) -> events.add("child"));
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).onHoverStart((rect, mouseX, mouseY) -> events.add("parent")).append(child);
+		final NodeUI ui = new NodeUI(parent);
+		this.bridges.open(ui).move(140D, 140D).frames(2);
+		Assert.assertSame(child, ui.getHoveredNode());
+		Assert.assertFalse(child.isHovered());
+		Assert.assertTrue(parent.isHovered());
+		Assert.assertEquals(Arrays.asList("parent"), events);
 	}
 
 	@Test
@@ -502,9 +553,10 @@ public class NodeTest {
 	@Test
 	public void ignoresTheMouseOverAChildOutsideItsOverflowArea() {
 		final RectNode child = RectNode.create(50D, 50D, 100D, 100D);
-		this.bridges.open(new NodeUI(ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child))).frame();
-		Assert.assertTrue(child.isHovered(160D, 160D));
-		Assert.assertFalse(child.isHovered(220D, 220D));
+		final NodeUI ui = new NodeUI(ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child));
+		this.bridges.open(ui).frame();
+		Assert.assertSame(child, ui.getNodeAt(160D, 160D));
+		Assert.assertNull(ui.getNodeAt(220D, 220D));
 	}
 
 	@Test
@@ -554,7 +606,7 @@ public class NodeTest {
 
 	@Test
 	public void isNeverHoveredOutsideAUi() {
-		Assert.assertFalse(RectNode.create(0D, 0D, 100D, 100D).isHovered(50D, 50D));
+		Assert.assertFalse(RectNode.create(0D, 0D, 100D, 100D).computeHovered());
 	}
 
 	@Test
@@ -1195,7 +1247,7 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column));
 		this.bridges.move(300D, 150D).frames(2);
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(column.getUi().getHoveredPath());
 		column.fireMouseScroll(300D, 150D, -1D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollX(), 0D);
@@ -1207,7 +1259,7 @@ public class NodeTest {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
 		this.bridges.move(300D, 150D).frames(2);
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(row.getUi().getHoveredPath());
 		row.fireMouseScroll(300D, 150D, 1D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, row.getTargetScrollX(), 0D);
@@ -1219,7 +1271,7 @@ public class NodeTest {
 		RectNode.create(0D, 0D, 700D, 10D).attach(area);
 		this.bridges.open(new NodeUI(area)).move(300D, 150D).frames(2);
 		area.scrollRatioY(1F);
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(area.getUi().getHoveredPath());
 		area.fireMouseScroll(300D, 150D, 0D, -1D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(-200D, area.getTargetScrollY(), 0D);
@@ -1237,7 +1289,7 @@ public class NodeTest {
 		Assert.assertEquals(0D, column.getScrollY(), 0D);
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 		Assert.assertEquals(100D, column.getChildren().get(1).getY(), 0D);
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(column.getUi().getHoveredPath());
 		column.fireMouseScroll(300D, 150D, 0D, -1D, context);
 		Assert.assertFalse(context.isCancelled());
 	}
@@ -1255,11 +1307,11 @@ public class NodeTest {
 	public void consumesTheWheelWhileItScrolls() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final DispatchContext down = DispatchContext.create();
+		final DispatchContext down = DispatchContext.create(column.getUi().getHoveredPath());
 		column.fireMouseScroll(300D, 150D, 0D, -1D, down);
 		Assert.assertTrue(down.isCancelled());
 		Assert.assertEquals(-30D, column.getTargetScrollY(), 0D);
-		final DispatchContext up = DispatchContext.create();
+		final DispatchContext up = DispatchContext.create(column.getUi().getHoveredPath());
 		column.fireMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
@@ -1269,11 +1321,11 @@ public class NodeTest {
 	public void leavesTheWheelToItsParentAtItsLimits() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final DispatchContext up = DispatchContext.create();
+		final DispatchContext up = DispatchContext.create(column.getUi().getHoveredPath());
 		column.fireMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertFalse(up.isCancelled());
 		column.scrollRatioY(1F);
-		final DispatchContext down = DispatchContext.create();
+		final DispatchContext down = DispatchContext.create(column.getUi().getHoveredPath());
 		column.fireMouseScroll(300D, 150D, 0D, -1D, down);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
@@ -1284,8 +1336,8 @@ public class NodeTest {
 		final ContainerNode box = ContainerNode.create(100D, 100D, 400D, 100D).overflow(OverflowProperty.SCROLL);
 		RectNode.create(0D, 0D, 400D, 100D).attach(box);
 		this.bridges.open(new NodeUI(box)).move(300D, 150D).frames(2);
-		final DispatchContext down = DispatchContext.create();
-		final DispatchContext up = DispatchContext.create();
+		final DispatchContext down = DispatchContext.create(box.getUi().getHoveredPath());
+		final DispatchContext up = DispatchContext.create(box.getUi().getHoveredPath());
 		box.fireMouseScroll(300D, 150D, 0D, -1D, down);
 		box.fireMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertFalse(down.isCancelled());
@@ -1296,7 +1348,7 @@ public class NodeTest {
 	public void leavesAStillWheelToItsParent() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(column.getUi().getHoveredPath());
 		column.fireMouseScroll(300D, 150D, 0D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);

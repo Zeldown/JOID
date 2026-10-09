@@ -21,9 +21,9 @@ The rectangle blends from `DARKGRAY` to its hovered color `GRAY` in 300 ms when 
 
 ## Hover state with isHovered
 
-On every frame where the node is visible, it tests the mouse with `isHovered(mouseX, mouseY)`: the node must be in a UI that is on top, enabled, and be the target of the mouse (the front-most interactive node under it) or one of its parents (see [Mouse target and bubbling](mouse-and-keyboard.md#mouse-target-and-bubbling)). The result is stored and returned by `isHovered()`.
+On every frame where the node is visible, it computes its hover state with `computeHovered()`: the node must be in a UI that is on top, enabled, and on the hovered path of the UI, `UI.getHoveredPath()`: the target of the mouse (the front-most interactive node under it) followed by its parents (see [Mouse target and bubbling](mouse-and-keyboard.md#mouse-target-and-bubbling)). The result is stored and returned by `isHovered()`, the only hover test of a node.
 
-- A disabled node (`enabled(...)` returning `false`) is never hovered; disabling a hovered node ends its hover.
+- A disabled node (`enabled(...)` returning `false`) is never hovered; disabling a hovered node ends its hover. When it is the target, its parents are still hovered.
 - A node with `interactive(false)` is never hovered either, and lets the mouse through to the nodes behind it (see [Letting the mouse through with interactive](mouse-and-keyboard.md#letting-the-mouse-through-with-interactive)).
 - A node covered by another interactive node is not hovered where it is covered, unless that node is one of its children: a label added over a button as a sibling takes its hover, a label attached to the button keeps it hovered.
 - A node that is not drawn (hidden, or outside the area of a parent with an overflow) keeps its last hover state until it is drawn again.
@@ -239,8 +239,7 @@ A node with an element shows a tooltip even when the element draws nothing, so i
 | Method | Description |
 |---|---|
 | `isHovered()` | Hover state of the last drawn frame. |
-| `isHovered(double mouseX, double mouseY)` | `true` when the node is enabled and is the mouse target at that point or one of its parents. |
-| `isHovered(double mouseX, double mouseY, boolean checkEnabled)` | The same test; `false` skips the enabled check. |
+| `computeHovered()` | Protected. Computes the hover state on each drawn frame; override it to change when the node counts as hovered, as `SliderThumbNode` does during a drag. |
 | `hovered(boolean hovered)` | Overwrites the stored hover state. |
 | `hoverValue(float value)` | `value` scaled by the hover animation. |
 | `hoverDuration(long)`, `hoverEquation(TweenEquation)` | Hover animation settings. |
@@ -259,6 +258,6 @@ A node with an element shows a tooltip even when the element draws nothing, so i
 - Next: [Drag and Drop](drag-drop.md)
 - [Input and Callbacks](../concepts/input.md) and [Animation](../essentials/animation.md): the basics this page builds on.
 - [Callbacks](callbacks.md): the order of the callbacks within a frame.
-- [Mouse and Keyboard](mouse-and-keyboard.md): hit testing with `isHovered`.
+- [Mouse and Keyboard](mouse-and-keyboard.md): the mouse target and its path.
 - [Easing](../animation/easing.md): every `hoverEquation`.
 - [UI Bridge](../integration/ui-bridge.md): the default look of text tooltips.

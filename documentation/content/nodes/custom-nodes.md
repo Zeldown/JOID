@@ -105,7 +105,7 @@ public class SwatchNode extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final MouseButton clickType, final DispatchContext context) {
-		if (context.isCancelled() || !clickType.isLeft() || !super.isHovered(mouseX, mouseY)) {
+		if (context.isCancelled() || !clickType.isLeft() || !context.isOnPath(this)) {
 			return;
 		}
 
@@ -206,7 +206,7 @@ Positions are units of the 1920×1080 virtual canvas, fitted to the window witho
 See [The Virtual Canvas](../concepts/canvas.md).
 
 - The render matrix is at the parent's origin: draw at `getX()`, `getY()` with `getWidth()`, `getHeight()`. The [drawing API](../drawing/draw-utils.md) is `DrawUtils`.
-- `mouseX` and `mouseY` are canvas coordinates of the UI, already converted from the window: compare them with `getAbsoluteX()`/`getAbsoluteY()`, or use `isHovered(mouseX, mouseY)`.
+- `mouseX` and `mouseY` are canvas coordinates of the UI, already converted from the window: compare them with `getAbsoluteX()`/`getAbsoluteY()`; in an event hook, `context.isOnPath(this)` tells whether the node is the mouse target or one of its parents.
 - `hoverValue(float max)` returns `max` × the hover animation progress: use it to blend colors or sizes on hover (see [Hover and Tooltips](../interactions/hover.md)).
 - `draw` is wrapped by the `onDraw` callbacks and by the node's effects. Override `drawSkeleton` to draw your own placeholder, or with an empty body to draw nothing while the node waits for data.
 
@@ -236,7 +236,7 @@ The UI sends each event to its top-level nodes, from the highest z-index, then t
 
 The other events follow the same order without `onClick` and without step 8. A release ends the node's own drag before step 2; a wheel event applies the node's [wheel scrolling](layout/overflow-and-scroll.md#wheel-scrolling) between steps 3 and 5.
 
-The hooks are called on every visible node of the UI, whatever the pointer position; a disabled node passes the event to its children but its own hooks and callbacks do not run. Check `isHovered(mouseX, mouseY)`, which tests the enabled state and whether the node is the mouse target, the front-most interactive node under the mouse, or one of its parents (see [Mouse target and bubbling](../interactions/mouse-and-keyboard.md#mouse-target-and-bubbling)). Key events reach every node too: keep your own focus state.
+The hooks are called on every visible node of the UI, whatever the pointer position; a disabled node passes the event to its children but its own hooks and callbacks do not run. Check `context.isOnPath(this)`, which tells whether the node is the mouse target, the front-most interactive node under the mouse, or one of its parents (see [Mouse target and bubbling](../interactions/mouse-and-keyboard.md#mouse-target-and-bubbling)). Key events reach every node too: keep your own focus state.
 
 ### Consuming events
 
@@ -389,7 +389,7 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, DispatchC
 - Extend a concrete node to add behavior: `RectNode` subclasses keep the fill, border and hover colors; `ContainerNode` draws nothing by itself. Every lifecycle and event method of the built-in nodes can be overridden; their fluent setters are `final`.
 - Extend the abstract structure nodes and implement their drawing method: `ScrollbarNode.drawScrollbar` (see [Overflow and Scrolling](layout/overflow-and-scroll.md#scrollbarnode)), and the input controls such as `CheckboxNode`, `SwitchNode` or `SliderNode` (see [CheckboxNode](input/checkbox.md)).
 - A node that owns child nodes attaches them to itself (`child.attach(this)`) and keeps a field to update them, as `SliderNode` does with its thumb.
-- Other overridable `Node` methods: `isVisible()`, `isVisibleProperty()`, `isEnabled()`, `isHovered(double mouseX, double mouseY, boolean checkEnabled)` (for a custom hit area), `getIndex()` (the sorting key, the z-index by default), `shouldApplyEffect(NodeEffect)` and `toJson()`.
+- Other overridable `Node` methods: `isVisible()`, `isVisibleProperty()`, `isEnabled()`, `computeHovered()` (the hover state computed on each frame), `getIndex()` (the sorting key, the z-index by default), `shouldApplyEffect(NodeEffect)` and `toJson()`.
 
 ## Reference
 

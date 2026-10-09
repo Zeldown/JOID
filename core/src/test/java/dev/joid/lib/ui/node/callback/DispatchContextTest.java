@@ -1,9 +1,12 @@
 package dev.joid.lib.ui.node.callback;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 public class DispatchContextTest {
 
@@ -59,6 +62,20 @@ public class DispatchContextTest {
 		final DispatchContext context = DispatchContext.create(true);
 		Assert.assertSame(context, context.cancelIf(() -> checks.incrementAndGet() > 0));
 		Assert.assertEquals(0, checks.get());
+	}
+
+	@Test
+	public void carriesThePathOfItsEvent() {
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D);
+		final RectNode parent = RectNode.create(0D, 0D, 20D, 20D);
+		final DispatchContext context = DispatchContext.create(Arrays.asList(child, parent));
+		Assert.assertSame(child, context.getTarget());
+		Assert.assertTrue(context.isOnPath(child));
+		Assert.assertTrue(context.isOnPath(parent));
+		Assert.assertFalse(context.isOnPath(RectNode.create(0D, 0D, 10D, 10D)));
+		Assert.assertFalse(context.isCancelled());
+		Assert.assertNull(DispatchContext.create().getTarget());
+		Assert.assertTrue(DispatchContext.create(true).getPath().isEmpty());
 	}
 
 	@Test

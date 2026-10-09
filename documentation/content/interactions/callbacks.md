@@ -187,7 +187,7 @@ ContainerNode
 
 	@Override
 	public void pre(final ContainerNode node, final DispatchContext context, final double mouseX, final double mouseY, final MouseButton clickType) {
-		if (loading.peek() && node.isHovered(mouseX, mouseY)) {
+		if (loading.peek() && context.isOnPath(node)) {
 			context.cancel();
 		}
 	}

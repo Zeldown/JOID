@@ -204,7 +204,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 	@Override
 	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || notchesY == 0D || !super.isHovered(mouseX, mouseY)) {
+		if (context.isCancelled() || notchesY == 0D || !context.isOnPath(this)) {
 			return;
 		}
 

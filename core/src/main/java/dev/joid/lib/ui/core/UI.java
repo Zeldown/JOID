@@ -116,10 +116,10 @@ public abstract class UI implements IUI, IndexedElement {
 
 	private Node devNode;
 
-	private double     hoveredX;
-	private double     hoveredY;
-	private long       hoveredFrame;
 	private List<Node> hoveredPath;
+	private double     lastHoveredX;
+	private double     lastHoveredY;
+	private long       lastHoveredFrame;
 
 	public UI() {
 		this.annotatedData    = UIDataObject.getOrDefault(this.getClass());
@@ -152,7 +152,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.scaledHeight = new DoubleSignal(1080D);
 
 		this.devNode = null;
-		this.hoveredFrame = -1L;
+		this.lastHoveredFrame = -1L;
 		this.hoveredPath = Collections.emptyList();
 	}
 
@@ -231,8 +231,6 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		this.getHoveredPath();
-
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
@@ -241,7 +239,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return true;
 		}
 
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(this.getHoveredPath());
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseScroll(mx, my, notchesX, notchesY, context)));
 
 		this.traced(() -> this.mouseScroll(mx, my, notchesX, notchesY, context));
@@ -253,13 +251,10 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		this.getHoveredPath();
-
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create();
-
+		final DispatchContext context = DispatchContext.create(this.getHoveredPath());
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMousePressed(mx, my, button, context)));
 
 		this.traced(() -> this.mousePressed(mx, my, button, context));
@@ -271,12 +266,10 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		this.getHoveredPath();
-
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(this.getHoveredPath());
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseReleased(mx, my, button, context)));
 
 		this.traced(() -> this.mouseReleased(mx, my, button, context));
@@ -288,12 +281,10 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		this.getHoveredPath();
-
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create();
+		final DispatchContext context = DispatchContext.create(this.getHoveredPath());
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseDragged(mx, my, button, deltaTime, context)));
 
 		this.traced(() -> this.mouseDragged(mx, my, button, deltaTime, context));
@@ -449,16 +440,16 @@ public abstract class UI implements IUI, IndexedElement {
 	public final @NonNull List<@NonNull Node> getHoveredPath() {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
-		if (this.hoveredFrame != this.frameCount || this.hoveredX != mx || this.hoveredY != my) {
+		if (this.lastHoveredFrame != this.frameCount || this.lastHoveredX != mx || this.lastHoveredY != my) {
 			final List<Node> path = new ArrayList<>();
 			for (Node node = this.onTop ? this.getNodeAt(mx, my) : null; node != null; node = node.getParent()) {
 				path.add(node);
 			}
 
 			this.hoveredPath = Collections.unmodifiableList(path);
-			this.hoveredFrame = this.frameCount;
-			this.hoveredX = mx;
-			this.hoveredY = my;
+			this.lastHoveredFrame = this.frameCount;
+			this.lastHoveredX = mx;
+			this.lastHoveredY = my;
 		}
 		return this.hoveredPath;
 	}
