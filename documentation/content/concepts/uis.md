@@ -112,17 +112,18 @@ public final class MenuUI extends UI {}
 | `backgroundColor` | `"#101010c0"` | A translucent dark gray that dims what is behind. |
 | `closeable` | `true` | Whether `Escape` closes the UI. `JOID.close` works either way. |
 | `zoomable` | `true` | Whether `Ctrl` or `Alt` with `+` and `-` zoom the UI. |
-| `zlevel` | `0D` | Order among the open UIs: a higher value is drawn on top. |
+| `zindex` | `0` | Order among the open UIs: a higher value is drawn on top. |
+| `zlevel` | `0D` | Depth offset of the drawing of the UI, for 3D content; it does not change the order. |
 | `anchorX`, `anchorY` | `Align.CENTER` | Where the canvas sits in a window that is not 16:9, and the pivot of the zoom (see [The Virtual Canvas](canvas.md#pinning-a-ui-with-anchorx-and-anchory)). |
 
-`ui.getData()` changes these values while the UI runs (`getData().setZlevel(200D)`); the change applies at the next frame.
+`ui.getData()` changes these values while the UI runs (`getData().setZindex(200)`); the change applies at the next frame.
 
 ## Several UIs and popups
 
-Several UIs can be open together: a HUD below, a menu above, a notification layer on top. They are ordered by `zlevel`, then by opening order: the last one is drawn on top and receives input first.
+Several UIs can be open together: a HUD below, a menu above, a notification layer on top. They are ordered by `zindex`, then by opening order: the last one is drawn on top and receives input first.
 
 ```java
-@UIData(zlevel = -10D, background = false, closeable = false)
+@UIData(zindex = -10, background = false, closeable = false)
 public final class HudUI extends UI {}
 ```
 

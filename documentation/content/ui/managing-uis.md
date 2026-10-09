@@ -43,11 +43,11 @@ The hook runs for `JOID.close(ui)`, Escape and bridges that call `ui.fireClose()
 
 The bridge loads a UI it adds with `ui.load(width, height)`. See [UI Bridge](../integration/ui-bridge.md).
 
-## Several UIs at once with zlevel
+## Several UIs at once with zindex
 
-A `UIBridge` keeps its UIs in `getUiList()`, an `IndexedLinkedList<UI>` sorted by `zlevel` rounded down, then by opening order. The bridge sorts the list again at every frame, so a `zlevel` changed at runtime applies from the next frame; the sort is stable, so a UI moved to the same index as another one does not pass in front of it.
+A `UIBridge` keeps its UIs in `getUiList()`, an `IndexedLinkedList<UI>` sorted by `zindex`, then by opening order. The bridge sorts the list again at every frame, so a `zindex` changed at runtime applies from the next frame; the sort is stable, so a UI moved to the same index as another one does not pass in front of it.
 
-![Four stacked boxes from BackgroundUI at zlevel -10 to ToastUI at zlevel 100, with an arrow up for the draw order and an arrow down for the input order](../images/diagram-ui-zlevel.png "The bridge draws from the lowest zlevel to the highest and sends input from the top down.")
+![Four stacked boxes from BackgroundUI at zindex -10 to ToastUI at zindex 100, with an arrow up for the draw order and an arrow down for the input order](../images/diagram-ui-zlevel.png "The bridge draws from the lowest zindex to the highest and sends input from the top down.")
 
 | Phase | Order |
 | --- | --- |
@@ -57,17 +57,17 @@ A `UIBridge` keeps its UIs in `getUiList()`, an `IndexedLinkedList<UI>` sorted b
 
 [Overlays](#overlays-with-uidataoverlay) come after every other UI in these orders: they are drawn above them and receive the input first.
 
-Give a UI a `zlevel` to keep it below or above the UIs opened later, for example a background below the menus and a notification layer above them:
+Give a UI a `zindex` to keep it below or above the UIs opened later, for example a background below the menus and a notification layer above them:
 
 ```java
-@UIData(zlevel = -10D, background = false, closeable = false)
+@UIData(zindex = -10, background = false, closeable = false)
 public class BackgroundUI extends UI {}
 
-@UIData(zlevel = 100D, background = false, closeable = false, active = false)
+@UIData(zindex = 100, background = false, closeable = false, active = false)
 public class ToastUI extends UI {}
 ```
 
-`zlevel` also offsets the depth at which the UI is drawn.
+`zlevel` offsets the depth at which the UI is drawn, for 3D content, without changing the order.
 
 ### The top UI with isOnTop
 
@@ -78,7 +78,7 @@ public class ToastUI extends UI {}
 Change these options through `getData()`; they apply from the next frame:
 
 ```java
-hud.getData().setZlevel(200D);
+hud.getData().setZindex(200);
 toast.getData().setVisible(false);
 menu.getData().setActive(false).setCloseable(false);
 ```
@@ -172,7 +172,7 @@ public class MinimapOverlay extends UI {
 
 An overlay:
 
-- is drawn above the UIs that are not overlays, whatever their `zlevel`, and receives the input before them;
+- is drawn above the UIs that are not overlays, whatever their `zindex`, and receives the input before them;
 - does not close on Escape: it receives Escape as a normal key, and the UI below closes as usual;
 - cannot be a popup: a UI with both `@UIDataPopup(active = true)` and `@UIDataOverlay(active = true)` throws an `IllegalStateException` when it is created.
 
@@ -203,7 +203,7 @@ All of them throw a `NullPointerException` for a `null` argument.
 
 | `UIBridge` method | Description |
 | --- | --- |
-| `getUiList()` | The open UIs, sorted by `zlevel`, then by opening order. |
+| `getUiList()` | The open UIs, sorted by `zindex`, then by opening order. |
 | `isOnTop(UI ui)` | Whether `ui` is the first active and visible UI from the top; `false` when no UI is open. |
 | `isOpen(UI ui)` | Whether `ui` is in the list. |
 | `load()` | Loads every UI again at the window size, keeping its zoom. Called by the backend on a resize. |
@@ -212,7 +212,7 @@ All of them throw a `NullPointerException` for a `null` argument.
 ## Pitfalls
 
 - `JOID.open` without a bridge that accepts the UI throws: register the UI bridge before opening anything.
-- `zlevel` is rounded down for the order: `0.5D` and `0D` share the same index and keep their opening order.
+- UIs with the same `zindex` keep their opening order.
 - A popup stops every event that reaches it, even one it does not use: keep popups small in number and close them.
 - A `ToastUI` with `active = false` gets no input at all: it cannot have clickable nodes.
 - An overlay without `interaction = @UIDataOverlayInteraction(active = true)` gets no input either, and one without `render = @UIDataOverlayRender(screens = true)` disappears as soon as another UI opens.

@@ -379,7 +379,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	@Override
 	public int getIndex() {
-		return (int) Math.floor(this.data.zlevel());
+		return this.data.zindex();
 	}
 
 	public final double getWidth() {

@@ -18,6 +18,7 @@ public class UIDataObjectTest {
 		Assert.assertTrue(data.zoomable());
 		Assert.assertTrue(data.background());
 		Assert.assertTrue(data.projection());
+		Assert.assertEquals(0, data.zindex());
 		Assert.assertEquals(0D, data.zlevel(), 0D);
 		Assert.assertSame(Align.CENTER, data.anchorX());
 		Assert.assertSame(Align.CENTER, data.anchorY());
@@ -33,6 +34,7 @@ public class UIDataObjectTest {
 		Assert.assertTrue(data.zoomable());
 		Assert.assertTrue(data.background());
 		Assert.assertTrue(data.projection());
+		Assert.assertEquals(0, data.zindex());
 		Assert.assertEquals(0D, data.zlevel(), 0D);
 		Assert.assertSame(Align.CENTER, data.anchorX());
 		Assert.assertSame(Align.CENTER, data.anchorY());
@@ -48,6 +50,7 @@ public class UIDataObjectTest {
 		Assert.assertFalse(data.zoomable());
 		Assert.assertFalse(data.background());
 		Assert.assertFalse(data.projection());
+		Assert.assertEquals(3, data.zindex());
 		Assert.assertEquals(2.5D, data.zlevel(), 0D);
 		Assert.assertSame(Align.START, data.anchorX());
 		Assert.assertSame(Align.END, data.anchorY());
@@ -98,13 +101,14 @@ public class UIDataObjectTest {
 	@Test
 	public void changesEveryValue() {
 		final UIDataObject data = new UIDataObject();
-		Assert.assertSame(data, data.setActive(false).setVisible(false).setCloseable(false).setZoomable(false).setBackground(false).setProjection(false).setZlevel(4D));
+		Assert.assertSame(data, data.setActive(false).setVisible(false).setCloseable(false).setZoomable(false).setBackground(false).setProjection(false).setZindex(7).setZlevel(4D));
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.visible());
 		Assert.assertFalse(data.closeable());
 		Assert.assertFalse(data.zoomable());
 		Assert.assertFalse(data.background());
 		Assert.assertFalse(data.projection());
+		Assert.assertEquals(7, data.zindex());
 		Assert.assertEquals(4D, data.zlevel(), 0D);
 	}
 
@@ -128,6 +132,7 @@ public class UIDataObjectTest {
 		Assert.assertFalse(data.zoomable());
 		Assert.assertFalse(data.background());
 		Assert.assertFalse(data.projection());
+		Assert.assertEquals(3, data.zindex());
 		Assert.assertEquals(2.5D, data.zlevel(), 0D);
 		Assert.assertSame(Align.START, data.anchorX());
 		Assert.assertSame(Align.END, data.anchorY());
@@ -160,7 +165,7 @@ public class UIDataObjectTest {
 	@UIData
 	public static class DefaultUI extends UI {}
 
-	@UIData(active = false, visible = false, closeable = false, zoomable = false, background = false, projection = false, backgroundColor = "#33669980", zlevel = 2.5D, anchorX = Align.START, anchorY = Align.END)
+	@UIData(active = false, visible = false, closeable = false, zoomable = false, background = false, projection = false, backgroundColor = "#33669980", zindex = 3, zlevel = 2.5D, anchorX = Align.START, anchorY = Align.END)
 	public static class CustomUI extends UI {}
 
 	public static class ChildUI extends CustomUI {}

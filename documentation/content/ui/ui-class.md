@@ -92,7 +92,7 @@ public void keyPressed(final char c, final Key key, final DispatchContext contex
 `@UIData` (`dev.joid.lib.ui.core.data`) sets the options of a UI class. JOID reads it on the class, then on its superclasses, and uses the first one found (attributes are not merged).
 
 ```java
-@UIData(zlevel = 10D, background = false, closeable = false, anchorX = Align.END, anchorY = Align.START)
+@UIData(zindex = 10, background = false, closeable = false, anchorX = Align.END, anchorY = Align.START)
 public class HudUI extends UI {}
 ```
 
@@ -105,19 +105,20 @@ public class HudUI extends UI {}
 | `background` | `true` | Fills the whole window with `backgroundColor` before drawing the UI. |
 | `backgroundColor` | `"#101010c0"` | Any string accepted by `Color.decode`: `#RRGGBB`, `#RRGGBBAA`, `rgb(...)`, `rgba(...)`, `gradient(...)`. See [Colors and Gradients](../styling/colors.md). |
 | `projection` | `true` | When `true`, the UI sets its own orthographic projection for the canvas. When `false`, it draws with the projection set by the host. |
-| `zlevel` | `0D` | Order among the UIs of a bridge: higher is drawn later and receives input first. Also offsets the depth of the UI. See [Several UIs at once](managing-uis.md#several-uis-at-once-with-zlevel). |
+| `zindex` | `0` | Order among the UIs of a bridge: higher is drawn later and receives input first. See [Several UIs at once](managing-uis.md#several-uis-at-once-with-zindex). |
+| `zlevel` | `0D` | Depth offset of the UI, for 3D content. |
 | `anchorX` | `Align.CENTER` | Horizontal anchor of the canvas in the window and pivot of the zoom. See [View and Scaling](view-and-scaling.md). |
 | `anchorY` | `Align.CENTER` | Vertical anchor. |
 
 ### Changing the options at runtime with getData
 
-`getData()` returns the options as a `UIDataObject`. Its setters (`setActive`, `setVisible`, `setCloseable`, `setZoomable`, `setBackground`, `setBackgroundColor(String)`, `setProjection`, `setZlevel`, `setAnchorX`, `setAnchorY`) return the object, and every change applies from the next frame: the bridge sorts its UIs again, the view reads the anchors again.
+`getData()` returns the options as a `UIDataObject`. Its setters (`setActive`, `setVisible`, `setCloseable`, `setZoomable`, `setBackground`, `setBackgroundColor(String)`, `setProjection`, `setZindex`, `setZlevel`, `setAnchorX`, `setAnchorY`) return the object, and every change applies from the next frame: the bridge sorts its UIs again, the view reads the anchors again.
 
 ```java
 this.getData().setCloseable(false).setBackground(false);
 ```
 
-The getters use the annotation names (`active()`, `zlevel()`, `anchorX()`...); `getBackgroundColor()` returns the decoded `Color`, and `getAnchorPositionX()` / `getAnchorPositionY()` the anchor in canvas units (0, 960 or 1920; 0, 540 or 1080).
+The getters use the annotation names (`active()`, `zindex()`, `anchorX()`...); `getBackgroundColor()` returns the decoded `Color`, and `getAnchorPositionX()` / `getAnchorPositionY()` the anchor in canvas units (0, 960 or 1920; 0, 540 or 1080).
 
 A reload applies only the annotation values that changed since their last read: a value set at runtime survives Ctrl + R as long as you do not edit that attribute of the annotation. `getData()`, `getDebug()` and `getPopup()` keep the same object for the whole life of the UI. The other annotations are [`@UIDataPopup`](managing-uis.md#popups-with-uidatapopup) and [`@UIDataDebug`](../concepts/dev-tools.md) (`profiler`, `hotreload`, both `true` by default).
 
@@ -240,7 +241,7 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 | `double getFps()` | Frames per second, updated once per second (`0` during the first second). |
 | `long getRenderTime()`, `long getLastFrame()` | Duration of the last draw and clock time of the last frame, in nanoseconds. |
 | `IUIBridge getBridge()` | The bridge that handles this UI, or `null`. |
-| `int getIndex()` | `zlevel` rounded down: the key that orders the UIs of a bridge. |
+| `int getIndex()` | `zindex`: the key that orders the UIs of a bridge. |
 | `boolean isOnTop()` | Whether the bridge reported the UI as the top one at the last draw. |
 | `boolean isInitialized()`, `boolean isClosed()` | Whether `init()` has run; whether `dispose()` ran since the last load. |
 | `boolean isReloadPending()` | Whether hot reload detected a change that the next draw reloads. |

@@ -67,7 +67,7 @@ The UI bridge hosts the UIs: it opens and closes them, dispatches input to them 
 | `add(UI)` / `remove(UI)` | Put a UI in the list, or take it out. |
 | `isOnTop(UI)` / `isOpen(UI)` | Whether the UI receives hover and tooltips, whether it is in the list. `UIBridge` implements both. |
 | `canHandle(UI)` / `canHandle(Class<? extends UI>)` | Routing between several UI bridges. |
-| `getUiList()` | The UIs of the bridge, sorted by `zlevel`. |
+| `getUiList()` | The UIs of the bridge, sorted by `zindex`. |
 | `getInterfaceScale(UI)` | Scale factor of the UI, `1` by default. |
 | `drawHover(UI, Object, double, double)` | Draws a tooltip: text lines by default in `UIBridge`, or a tooltip object of the engine. |
 

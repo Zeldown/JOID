@@ -19,6 +19,7 @@ public @interface UIData {
 	public boolean projection()      default true;
 	public String  backgroundColor() default "#101010c0";
 
+	public int    zindex()           default 0;
 	public double zlevel()           default 0D;
 
 	public Align anchorX()           default Align.CENTER;

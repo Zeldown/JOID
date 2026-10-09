@@ -194,11 +194,11 @@ Each UI then draws in its own projection: positions are units of the 1920×1080 
 See [The Virtual Canvas](../concepts/canvas.md) and [View and Scaling](../ui/view-and-scaling.md). `draw()` works in this order:
 
 - it frees the textures and framebuffers that nothing uses;
-- it sorts the UI list again when a `zlevel` changed (`ui.getData().setZlevel(...)` applies at the next frame);
+- it sorts the UI list again when a `zindex` changed (`ui.getData().setZindex(...)` applies at the next frame);
 - it stacks the UIs in depth: the first one at `z = -2000` plus its `zlevel`, each next one 10 units above the depth reached by the previous UI, plus its own `zlevel`;
 - an exception thrown while drawing is printed and stops the drawing of that frame; the matrix stack is restored.
 
-The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), then by the order in which UIs were added: a UI with a higher `zlevel` is drawn above and receives the events first.
+The UI list is sorted by `zindex` (`@UIData`), then by the order in which UIs were added: a UI with a higher `zindex` is drawn above and receives the events first.
 
 ## Methods you implement
 
@@ -214,7 +214,7 @@ The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), the
 
 | Method | Default |
 |---|---|
-| `isOnTop(UI ui)` | `true` for the first active and visible UI from the top of the sorted list (`zlevel`, then opening order); `false` when no UI is open. A hidden or inactive UI above, such as a notification layer with `active = false`, leaves hover and tooltips to the UI below. Overlays have their own top UI, among the overlays that take input. |
+| `isOnTop(UI ui)` | `true` for the first active and visible UI from the top of the sorted list (`zindex`, then opening order); `false` when no UI is open. A hidden or inactive UI above, such as a notification layer with `active = false`, leaves hover and tooltips to the UI below. Overlays have their own top UI, among the overlays that take input. |
 | `isOpen(UI ui)` | Whether the UI is in `getUiList()`. |
 | `getUiList()` | The sorted list of UIs, an `IndexedLinkedList<UI>`. |
 | `getInterfaceScale(UI ui)` | `1`. See [Interface scale with getInterfaceScale](#interface-scale-with-getinterfacescale). |

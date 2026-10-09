@@ -465,24 +465,24 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void drawsTheUiOfHigherZlevelOnTop() {
+	public void drawsTheUiOfHigherZindexOnTop() {
 		final DepthUI menu = new DepthUI("menu", this.trace);
 		final DepthUI hud = new DepthUI("hud", this.trace);
-		menu.getData().setZlevel(10D);
+		menu.getData().setZindex(10);
 		this.bridges.open(menu).open(hud);
 		Assert.assertTrue(menu.depth + " behind " + hud.depth, menu.depth > hud.depth);
 	}
 
 	@Test
-	public void sortsAUiAgainOnceItsZlevelChanges() {
+	public void sortsAUiAgainOnceItsZindexChanges() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(menu).open(hud);
-		menu.getData().setZlevel(10D);
+		menu.getData().setZindex(10);
 		this.trace.clear();
 		this.bridges.getUi().draw();
 		Assert.assertEquals(Arrays.asList(hud, menu), this.bridges.getUi().getUiList().ordered());
-		Assert.assertEquals(Arrays.asList("draw hud -2000.0", "draw menu -1980.0"), this.trace);
+		Assert.assertEquals(Arrays.asList("draw hud -2000.0", "draw menu -1990.0"), this.trace);
 	}
 
 	@Test
@@ -491,7 +491,7 @@ public class UIBridgeTest {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		final TraceUI chat = new TraceUI("chat", this.trace);
 		this.bridges.open(menu).open(hud).open(chat);
-		chat.getData().setZlevel(-1D);
+		chat.getData().setZindex(-1);
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(chat, menu, hud), this.bridges.getUi().getUiList().ordered());
 	}
@@ -508,20 +508,20 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void putsTheUiOfHighestZlevelOnTop() {
+	public void putsTheUiOfHighestZindexOnTop() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
-		menu.getData().setZlevel(10D);
+		menu.getData().setZindex(10);
 		this.bridges.open(menu).open(new TraceUI("hud", this.trace));
 		Assert.assertTrue(this.bridges.getUi().isOnTop(menu));
 		Assert.assertTrue(menu.isOnTop());
 	}
 
 	@Test
-	public void putsAUiOnTopOnceItsZlevelRises() {
+	public void putsAUiOnTopOnceItsZindexRises() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(menu).open(hud);
-		menu.getData().setZlevel(5D);
+		menu.getData().setZindex(5);
 		this.bridges.frame();
 		Assert.assertTrue(menu.isOnTop());
 		Assert.assertFalse(hud.isOnTop());

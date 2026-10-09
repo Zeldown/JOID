@@ -13,6 +13,7 @@ import lombok.ToString;
 @NoArgsConstructor
 public final class UIDataObject implements UIData {
 
+	private int     zindex          = 0;
 	private double  zlevel          = 0D;
 	private Align   anchorX         = Align.CENTER;
 	private Align   anchorY         = Align.CENTER;
@@ -34,6 +35,7 @@ public final class UIDataObject implements UIData {
 		this.projection      = data.projection();
 		this.background      = data.background();
 		this.backgroundColor = data.backgroundColor();
+		this.zindex          = data.zindex();
 		this.zlevel          = data.zlevel();
 		this.anchorX         = data.anchorX();
 		this.anchorY         = data.anchorY();
@@ -125,6 +127,11 @@ public final class UIDataObject implements UIData {
 	}
 
 	@Override
+	public int zindex() {
+		return this.zindex;
+	}
+
+	@Override
 	public double zlevel() {
 		return this.zlevel;
 	}
@@ -137,6 +144,11 @@ public final class UIDataObject implements UIData {
 	@Override
 	public Align anchorY() {
 		return this.anchorY;
+	}
+
+	public final @NonNull UIDataObject setZindex(final int zindex) {
+		this.zindex = zindex;
+		return this;
 	}
 
 	public final @NonNull UIDataObject setZlevel(final double zlevel) {
@@ -191,6 +203,10 @@ public final class UIDataObject implements UIData {
 	}
 
 	public final @NonNull UIDataObject update(final @NonNull UIData previous, final @NonNull UIData next) {
+		if (previous.zindex() != next.zindex()) {
+			this.setZindex(next.zindex());
+		}
+
 		if (previous.zlevel() != next.zlevel()) {
 			this.setZlevel(next.zlevel());
 		}
