@@ -303,7 +303,7 @@ public abstract class RenderBridge implements IRenderBridge {
 	protected final @NonNull SamplerBinding resolveTexture() {
 		final ITexture texture = this.state.getTexture();
 		if (texture != null && texture.isAllocated()) {
-			return SamplerBinding.of(texture, TextureSampling.of(this.state.getTextureFilter(), this.state.getTextureWrap(), texture.isMipmapped()));
+			return SamplerBinding.of(texture, TextureSampling.of(this.state.getTextureFilter(), this.toSupportedWrap(this.state.getTextureWrap()), texture.isMipmapped()));
 		}
 		return SamplerBinding.of(this.getEmptyTexture(), TextureSampling.of(TextureFilter.NEAREST, TextureWrap.REPEAT, false));
 	}
@@ -311,9 +311,13 @@ public abstract class RenderBridge implements IRenderBridge {
 	protected final @NonNull SamplerBinding resolveSampler(final @NonNull UniformSampler sampler) {
 		final ITexture texture = sampler.getTexture();
 		if (texture != null && texture.isAllocated()) {
-			return SamplerBinding.of(texture, TextureSampling.of(sampler.getFilter(), sampler.getWrap(), texture.isMipmapped()));
+			return SamplerBinding.of(texture, TextureSampling.of(sampler.getFilter(), this.toSupportedWrap(sampler.getWrap()), texture.isMipmapped()));
 		}
 		return this.resolveTexture();
+	}
+
+	private TextureWrap toSupportedWrap(final TextureWrap wrap) {
+		return this.canWrap(wrap) ? wrap : TextureWrap.CLAMP_TO_EDGE;
 	}
 
 	protected final @NonNull IShader getDefaultShader() {

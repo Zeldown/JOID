@@ -11,6 +11,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
@@ -18,16 +19,24 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 @Getter
 public final class RecordingRenderBridge extends RenderBridge {
 
 	private final List<Draw> draws = new ArrayList<>();
 
+	@Setter private boolean borderless;
+
 	private int colorClears;
 	private int depthClears;
 	private int stencilClears;
 	private int frameCommands;
+
+	@Override
+	public boolean canWrap(final @NonNull TextureWrap wrap) {
+		return !this.borderless || wrap != TextureWrap.CLAMP_TO_BORDER;
+	}
 
 	@Override
 	protected void beginFrameCommands() {

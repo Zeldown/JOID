@@ -225,10 +225,13 @@ An API without stencil buffer can emulate it with shaders. A `GlslShaderTranslat
 
 ### Border emulation
 
-`TextureWrap.CLAMP_TO_BORDER` samples transparent black outside the texture: the effects (blur, shadows) and the framebuffers rely on it. An API without border clamping (Blaze3D, OpenGL ES 2, WebGL) emulates it: its translator gets `clampToBorder(true)` and its sampler maps `CLAMP_TO_BORDER` to `CLAMP_TO_EDGE`. The translator then routes every `texture(sampler, uv)` of the shader through `joid_borderTexture`, driven by one `vec3` uniform per sampler, `joid_Border_<sampler>` (`GlslShaderTranslator.BORDER` + name): `x` is `0` when the sampler does not clamp to the border, `1` in `NEAREST` (transparent outside `[0, 1]`) and `2` in `LINEAR` (the edge texels fade out over half a texel, as the hardware blends them with the border), `y` and `z` the size of the texture. `Shader.builtins(...)` writes these uniforms at each draw from the texture, the filter and the wrap of each sampler, or from the bound texture for a sampler without its own, so the backend has nothing more to do. Without `clampToBorder(true)` the translation is unchanged.
+`TextureWrap.CLAMP_TO_BORDER` samples transparent black outside the texture: the effects (blur, shadows) and the framebuffers rely on it. An API without border clamping (Blaze3D, OpenGL ES 2, WebGL) says so with `canWrap(TextureWrap)` (`true` by default), and the core emulates it: the core `Shader` turns `clampToBorder(true)` on in the translator it receives when `canWrap(TextureWrap.CLAMP_TO_BORDER)` is `false` (translate the sources with that translator after the constructor), and `resolveTexture()` and `resolveSampler(...)` hand `CLAMP_TO_EDGE` to the backend instead of a wrap it cannot do. The translator then routes every `texture(sampler, uv)` of the shader through `joid_borderTexture`, driven by one `vec3` uniform per sampler, `joid_Border_<sampler>` (`GlslShaderTranslator.BORDER` + name): `x` is `0` when the sampler does not clamp to the border, `1` in `NEAREST` (transparent outside `[0, 1]`) and `2` in `LINEAR` (the edge texels fade out over half a texel, as the hardware blends them with the border), `y` and `z` the size of the texture. `Shader.builtins(...)` writes these uniforms at each draw from the texture, the filter and the wrap of each sampler, or from the bound texture for a sampler without its own, so the backend has nothing more to do. Without `clampToBorder(true)` the translation is unchanged.
 
 ```java
-final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true);
+@Override
+public boolean canWrap(final @NonNull TextureWrap wrap) {
+	return wrap != TextureWrap.CLAMP_TO_BORDER;
+}
 ```
 
 The result matches native border clamping to within the rounding of the filtering (`RenderBridgeContractSuite.samplesATransparentBorderBeyondTheTexture` checks a stretched texture against the expected fade).

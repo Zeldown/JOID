@@ -48,6 +48,10 @@ public abstract class Shader implements IShader {
 		this.blend      = blend;
 		this.vertex     = vertex;
 		this.fragment   = fragment;
+		if (!bridge.canWrap(TextureWrap.CLAMP_TO_BORDER)) {
+			translator.clampToBorder(true);
+		}
+
 		this.block      = translator.createBlock(vertex, fragment);
 		this.samplerMap = new LinkedHashMap<>();
 		for (final ShaderVariable sampler : translator.getSamplers(vertex, fragment)) {

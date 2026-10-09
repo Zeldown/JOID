@@ -333,4 +333,16 @@ public class RenderBridgeTest {
 		Assert.assertSame(render.getEmptyTexture(), render.resolveTexture().getTexture());
 	}
 
+	@Test
+	public void samplesTheEdgeForABorderTheBackendCannotWrap() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.setBorderless(true);
+		final ITexture texture = new RecordingTexture().allocate(2, 2);
+		render.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		Assert.assertSame(TextureSampling.of(TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE, false), render.resolveTexture().getSampling());
+		final UniformSampler sampler = UniformSampler.create("mask", 1).value(texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_BORDER);
+		Assert.assertSame(TextureSampling.of(TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE, false), render.resolveSampler(sampler).getSampling());
+		Assert.assertEquals(TextureWrap.CLAMP_TO_BORDER, render.getState().getTextureWrap());
+	}
+
 }

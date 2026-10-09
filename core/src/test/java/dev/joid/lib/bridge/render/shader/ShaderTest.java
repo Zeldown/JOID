@@ -131,6 +131,15 @@ public class ShaderTest {
 	}
 
 	@Test
+	public void emulatesTheBorderWhenTheBridgeCannotWrapToIt() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.setBorderless(true);
+		final TestShader shader = new TestShader(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		Assert.assertNotNull(shader.getBlock().getMember(GlslShaderTranslator.BORDER + "u_Noise"));
+		Assert.assertNull(new TestShader(new RecordingRenderBridge(), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT)).getBlock().getMember(GlslShaderTranslator.BORDER + "u_Noise"));
+	}
+
+	@Test
 	public void writesTheBorderOfEachEmulatedSampler() {
 		final TestShader shader = new TestShader(new RecordingRenderBridge(), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
 		final ITexture noise = new RecordingTexture().allocate(8, 4);
