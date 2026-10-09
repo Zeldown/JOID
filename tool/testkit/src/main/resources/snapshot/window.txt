@@ -22,3 +22,29 @@ zoom 2
 wait 500
 shot window-choice-scale-zoom
 zoom 1
+scale 0.25
+ui dev.joid.demo.ui.font.UIDemoFont
+wait 1000
+shot window-font-scale-0.25
+scale 0.5
+wait 500
+shot window-font-scale-0.5
+scale 0.75
+wait 500
+shot window-font-scale-0.75
+scale 2
+wait 500
+shot window-font-scale-2
+scale 1
+resize 1280 720
+wait 500
+shot window-font-1280x720
+resize 1366 768
+wait 500
+shot window-font-1366x768
+resize 1600 900
+scale 0.5
+wait 500
+shot window-font-1600x900-scale-0.5
+resize 1920 1080
+scale 1

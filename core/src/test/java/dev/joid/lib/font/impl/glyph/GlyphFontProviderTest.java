@@ -6,9 +6,12 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.font.FontScale;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.dto.FontBounds;
@@ -46,6 +49,9 @@ public class GlyphFontProviderTest {
 			return 0;
 		}
 	};
+
+	@Rule
+	public final CapturingRenderBridge render = new CapturingRenderBridge(1920, 1080);
 
 	private final List<String> events = new ArrayList<>();
 
@@ -285,12 +291,125 @@ public class GlyphFontProviderTest {
 		MsdfFontProvider.inst().getWidth("A", GlyphFontProviderTest.info());
 	}
 
+	@Test
+	public void measuresABitmapFontAtItsSnappedSize() {
+		final TextInfo info = GlyphFontProviderTest.bitmap(12F);
+		final double[] measures = new double[3];
+		FontScale.run(() -> 1D, () -> {
+			measures[0] = GlyphFontProviderTest.PROVIDER.getFontSize(info);
+			measures[1] = info.getWidth("AB");
+			measures[2] = info.getHeight();
+		});
+		Assert.assertArrayEquals(new double[] {16D, 16D, 19.2D}, measures, 1E-4D);
+	}
+
+	@Test
+	public void measuresABitmapFontAtTheScaleOfItsScope() {
+		final TextInfo info = GlyphFontProviderTest.bitmap(12F);
+		final double[] widths = new double[4];
+		FontScale.run(() -> 0.25D, () -> widths[0] = info.getWidth("AB"));
+		FontScale.run(() -> 0.5D, () -> widths[1] = info.getWidth("AB"));
+		FontScale.run(() -> 2D, () -> widths[2] = info.getWidth("AB"));
+		FontScale.run(() -> 3D, () -> widths[3] = info.getWidth("AB"));
+		Assert.assertArrayEquals(new double[] {32D, 16D, 12D, 40D / 3D}, widths, 1E-4D);
+	}
+
+	@Test
+	public void measuresAVectorFontAtItsSizeAtAnyScale() {
+		final double[] measures = new double[3];
+		FontScale.run(() -> 0.25D, () -> {
+			measures[0] = GlyphFontProviderTest.PROVIDER.getFontSize(GlyphFontProviderTest.info());
+			measures[1] = GlyphFontProviderTest.info().getWidth("AB");
+			measures[2] = GlyphFontProviderTest.info().getHeight();
+		});
+		Assert.assertArrayEquals(new double[] {10D, 10D, 12D}, measures, 1E-6D);
+	}
+
+	@Test
+	public void drawsABitmapFontAtTheSizeItMeasures() {
+		final TextInfo info = GlyphFontProviderTest.bitmap(10F).letterSpacing(0.25F);
+		final double[] measures = new double[3];
+		FontScale.run(() -> 0.75D, () -> {
+			final FontBounds bounds = GlyphFontProviderTest.PROVIDER.drawText(0D, 0D, "AVB", info);
+			measures[0] = bounds.getWidth() - info.getWidth("AVB");
+			measures[1] = bounds.getHeight() - info.getHeight();
+			measures[2] = GlyphFontProviderTest.PROVIDER.getFontSize(info);
+		});
+		Assert.assertEquals(0D, measures[0], 0D);
+		Assert.assertEquals(0D, measures[1], 0D);
+		Assert.assertEquals(32D / 3D, measures[2], 1E-4D);
+		for (final TextGlyph<Face> glyph : GlyphFontProviderTest.PROVIDER.drawn) {
+			Assert.assertEquals(measures[2], glyph.getSize(), 0D);
+		}
+	}
+
+	@Test
+	public void snapsTheGlyphsOfABitmapFontOnThePixelGrid() {
+		GlyphFontProviderTest.PROVIDER.drawText(0.3D, 0.4D, "AVB", GlyphFontProviderTest.bitmap(8F).letterSpacing(0.3F));
+		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.PROVIDER.drawn;
+		Assert.assertArrayEquals(new double[] {0D, 6D, 12D}, new double[] {drawn.get(0).getX(), drawn.get(1).getX(), drawn.get(2).getX()}, 1E-6D);
+		for (final TextGlyph<Face> glyph : drawn) {
+			Assert.assertEquals(8D, glyph.getBaseline(), 1E-6D);
+		}
+	}
+
+	@Test
+	public void keepsTheGlyphsOfAVectorFontWhereTheyAre() {
+		GlyphFontProviderTest.PROVIDER.drawText(0.3D, 0.4D, "AB", GlyphFontProviderTest.info());
+		Assert.assertEquals(0.3D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getX(), 1E-6D);
+		Assert.assertEquals(5.3D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getX(), 1E-6D);
+		Assert.assertEquals(10.4D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getBaseline(), 1E-6D);
+	}
+
+	@Test
+	public void roundsTheEffectOffsetsOfABitmapFont() {
+		final ITextEffect shake = new ITextEffect() {
+
+			@Override
+			public void apply(final ITextGlyph glyph) {
+				glyph.offset(0.4D, -0.6D);
+			}
+
+		};
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.bitmap(8F).effects(shake));
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.info().effects(shake));
+		Assert.assertEquals(0D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getOffsetX(), 1E-6D);
+		Assert.assertEquals(-1D, GlyphFontProviderTest.PROVIDER.drawn.get(0).getOffsetY(), 1E-6D);
+		Assert.assertEquals(0.4D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getOffsetX(), 1E-6D);
+		Assert.assertEquals(-0.6D, GlyphFontProviderTest.PROVIDER.drawn.get(1).getOffsetY(), 1E-6D);
+	}
+
+	@Test
+	public void keepsTheShadowOfABitmapFontAtLeastOnePixelAway() {
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.bitmap(8F).shadow(Color.BLACK).shadow(0.2F, -0.3F));
+		GlyphFontProviderTest.draw("A", GlyphFontProviderTest.bitmap(8F).shadow(Color.BLACK).shadow(2.6F, 0F));
+		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.PROVIDER.drawn;
+		Assert.assertEquals(drawn.get(1).getX() + 1D, drawn.get(0).getX(), 1E-6D);
+		Assert.assertEquals(drawn.get(1).getBaseline() - 1D, drawn.get(0).getBaseline(), 1E-6D);
+		Assert.assertEquals(drawn.get(3).getX() + 3D, drawn.get(2).getX(), 1E-6D);
+		Assert.assertEquals(drawn.get(3).getBaseline(), drawn.get(2).getBaseline(), 1E-6D);
+	}
+
+	@Test
+	public void leavesABitmapFontOffTheGridUnderARotation() {
+		this.render.rotate(30D, 0D, 0D, 1D);
+		GlyphFontProviderTest.PROVIDER.drawText(0.3D, 0.4D, "A", GlyphFontProviderTest.bitmap(8F).shadow(Color.BLACK).shadow(0.2F, 0.2F));
+		final List<TextGlyph<Face>> drawn = GlyphFontProviderTest.PROVIDER.drawn;
+		Assert.assertEquals(0.5D, drawn.get(0).getX(), 1E-6D);
+		Assert.assertEquals(0.3D, drawn.get(1).getX(), 1E-6D);
+		Assert.assertEquals(8.4D, drawn.get(1).getBaseline(), 1E-6D);
+	}
+
 	private static TextInfo info() {
 		return GlyphFontProviderTest.info(GlyphFontProviderTest.REGULAR, GlyphFontProviderTest.BOLD, GlyphFontProviderTest.ITALIC);
 	}
 
 	private static TextInfo info(final Face... faces) {
 		return TextInfo.create(new Font(FontFamily.of(faces)), 10F).markups(GlyphFontProviderTest.MARKUP);
+	}
+
+	private static TextInfo bitmap(final float size) {
+		return TextInfo.create(new Font(FontFamily.of(GlyphFontProviderTest.REGULAR, GlyphFontProviderTest.BOLD, GlyphFontProviderTest.ITALIC), 8), size).markups(GlyphFontProviderTest.MARKUP);
 	}
 
 	private static void draw(final String text, final TextInfo info) {
@@ -361,6 +480,10 @@ public class GlyphFontProviderTest {
 
 		private Font(final FontFamily<Face> family) {
 			super(family);
+		}
+
+		private Font(final FontFamily<Face> family, final int bitmapSize) {
+			super(family, bitmapSize);
 		}
 
 		@Override

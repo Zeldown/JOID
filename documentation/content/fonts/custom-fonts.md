@@ -170,6 +170,55 @@ public final class BitmapFont extends GlyphFont<BitmapFontFace> {
 
 The text resolves its faces, kerning, markup and effects like an MSDF text. `GlyphFontProvider` reads the faces from `TextInfo.getFont()`: a provider called with a font it does not draw (not a `GlyphFont`, or a font whose `getFontProvider()` is of another class) throws `IllegalArgumentException("<provider> cannot draw the font <font>, it is drawn by <its provider>: draw it with info.getFont().getFontProvider()")`. Measure through `info.getWidth(text)` or `DrawUtils.TEXT`, which always pick the right provider.
 
+### Pixel-perfect bitmap fonts with the bitmap size
+
+A pixel-art font, whose glyphs are drawn on a grid of texels with `nearest()` sampling, stays legible only when each texel covers a whole number of screen pixels. Give its size in texels per em to the `GlyphFont` constructor, and JOID keeps every texel on whole pixels, like a game draws its font:
+
+```java
+public final class PixelFont extends GlyphFont<PixelFontFace> {
+
+	private PixelFont(final FontFamily<PixelFontFace> family) {
+		super(family, 8);
+	}
+
+	public static @NonNull PixelFont create(final @NonNull PixelFontFace @NonNull... faces) {
+		return new PixelFont(FontFamily.of(faces));
+	}
+
+	@Override
+	public @NonNull IFontProvider getFontProvider() {
+		return PixelFontProvider.inst();
+	}
+
+}
+```
+
+Here the em is 8 texels: a glyph 5 texels wide advances by `6F / 8F`, an ascender of 7 texels is `7F / 8F`. The fonts built with `super(family)`, the MSDF fonts among them, keep their size as is.
+
+`GlyphFontProvider` snaps the size of a bitmap font to the pixel scale, the window pixels per canvas unit:
+
+1. `pixels = size × pixelScale / bitmapSize`, the window pixels of one texel.
+2. Rounded to the nearest whole number, halves up, and at least 1: a texel is never smaller than a pixel.
+3. The text is laid out and drawn at `pixels × bitmapSize / pixelScale`, the size `getFontSize(info)` returns.
+
+With a bitmap size of 8 and a font size of 24:
+
+| Pixel scale | Exact pixels per texel | Drawn pixels per texel | Size used |
+|---|---|---|---|
+| 0.26 (interface scale 0.25, window fit 1.04) | 0.78 | 1 | 30.77 |
+| 0.5 | 1.5 | 2 | 32 |
+| 2 / 3 (a 1280×720 window) | 2 | 2 | 24 |
+| 1 | 3 | 3 | 24 |
+| 2 | 6 | 6 | 24 |
+
+- Measuring follows the same size: `getWidth`, `getHeight`, `getLineHeight`, wrapping, alignment, overflow and the caret of the text fields match what is drawn. A `Text` is measured again when the size used changes, so a node sized by its text follows a resize, a zoom or a new interface scale.
+- The glyphs land on whole pixels: their x and baseline are snapped to the [pixel grid](../drawing/draw-utils.md#snapping-your-own-geometry-with-pixelgrid), the offsets of the effects are rounded to whole pixels, and the shadow offset to whole pixels, at least one.
+- The size grows when the scale shrinks: at a small interface scale, a pixel font keeps one pixel per texel and takes more canvas units than its font size.
+
+The pixel scale of a UI is `getView().getPixelScale()` (interface scale × zoom × window fit), during `init`, `update`, drawing and input. Outside a UI, it is the scale of the current transform of the render bridge, or 1 without one; `FontScale.run(DoubleSupplier scale, Runnable runnable)` (`dev.joid.lib.font`) sets it for code that measures and draws text itself, and `FontScale.getScale()` reads it.
+
+> NOTE: The size follows the view, not the transforms of the nodes. A node scaled by an integer factor keeps whole pixels per texel; another scale, a rotation or a skew draws the text as measured with the transform on top, and its glyphs keep their exact position, off the pixel grid.
+
 ## A raw font on IFont and IFontProvider
 
 Implement the two interfaces when the text is not made of glyphs on a baseline. Your provider draws and measures one line of one run:
@@ -182,6 +231,7 @@ Implement the two interfaces when the text is not made of glyphs on a baseline. 
 | | `getLineHeight(TextInfo info)` | Line height of the style. |
 | | `getWidth(String text, TextInfo info)` | Width of the line; must match what `drawText` draws. |
 | | `getHeight(String text, TextInfo info)` | Height of the line. |
+| | `getFontSize(TextInfo info)` | The size the text is laid out and drawn at, `info.getFontSize()` by default. A `Text` is measured again when it changes. |
 
 `TextInfo.getWidth`, `getHeight` and every measure of `Text` call these methods. With a raw provider, markup, effects, shadows, letter spacing and weights are yours to implement.
 
@@ -219,9 +269,10 @@ final double width = FontUsage.trace(element.getOrigin(), () -> element.getInfo(
 |---|---|
 | `IFontFace` | `getName()`, `getWeight()`, `isItalic()`, `hasGlyph(codepoint)`, `getAdvance(codepoint)`, `getKerning(previous, current)`, and the metrics `getAscender()`, `getDescender()`, `getLineHeight()`, `getUnderlineY()`, `getUnderlineThickness()`, all as fractions of the em measured upward from the baseline. |
 | `FontFamily<F>` | `FontFamily.of(F... faces)` sorts the faces by weight and refuses an empty family (`"A font family needs at least one face"`) or two faces of the same weight and style; `resolve(weight, italic)` picks the face and prints the dev warning; `getFaces()` lists them. |
-| `GlyphFont<F>` | `protected` constructor taking the `FontFamily`, `getFace(weight, italic)`, `getFamily()`. |
-| `GlyphFontProvider<F>` | Implements `IFontProvider`; you implement `begin`, `drawGlyph`, `end`. `layout(text, info)` returns the `GlyphLayout<F>` it measures and draws: `getWidth()` and `getPlacements()`, one `GlyphPlacement<F>` per glyph with `getIndex()`, `getCodepoint()`, `getFace()`, `getX()` and `getStyle()`. |
+| `GlyphFont<F>` | `protected` constructors taking the `FontFamily`, and the bitmap size in texels per em (`0` by default: not a bitmap font; a negative size throws `IllegalArgumentException`), `getFace(weight, italic)`, `getFamily()`, `getBitmapSize()`, `isBitmap()`, `snapSize(float size, double pixelScale)` (the size used at that pixel scale; the size itself for a font that is not a bitmap, a size of 0 or a scale of 0). |
+| `GlyphFontProvider<F>` | Implements `IFontProvider`; you implement `begin`, `drawGlyph`, `end`. `getFontSize(info)` is the snapped size of a bitmap font, the size of the `TextInfo` otherwise. `layout(text, info)` returns the `GlyphLayout<F>` it measures and draws: `getWidth()` and `getPlacements()`, one `GlyphPlacement<F>` per glyph with `getIndex()`, `getCodepoint()`, `getFace()`, `getX()` and `getStyle()`. |
 | `TextGlyph<F>` | The glyph handed to `drawGlyph`: the [`ITextGlyph`](../text/markup-and-effects.md#itextglyph) values plus `getFace()` and `isSlanted()`. |
+| `FontScale` | `FontScale.run(DoubleSupplier scale, Runnable runnable)` runs the code with this pixel scale and restores the previous one, even when it throws; `FontScale.getScale()` is the pixel scale of the scope, else the scale of the render bridge transform, else 1. A UI runs its `init`, frames and input in a scope of its pixel scale. |
 | `FontUsage` | `FontUsage.trace(StackTraceElement[] origin, DoubleSupplier usage)` runs the usage with this origin and returns its result (a `null` origin, outside dev mode, runs it as is); `FontUsage.getOrigin()` is the origin of the usage in progress, `null` outside `trace`. |
 
 ## Pitfalls
@@ -229,7 +280,8 @@ final double width = FontUsage.trace(element.getOrigin(), () -> element.getInfo(
 - `getWidth` must match what `drawText` draws, or alignment, wrapping and boxes are off.
 - Return your provider only from a `GlyphFont` of the same face type: the provider casts the font of the `TextInfo`.
 - Do not call a provider directly with another font: go through `info.getFont().getFontProvider()`, `info.getWidth(text)` or `DrawUtils.TEXT`.
-- A sprite font scaled to non-integer sizes blurs or shimmers: draw it at multiples of its pixel size and with `nearest()` resources.
+- A pixel font without its bitmap size drops rows and columns of texels at small or fractional scales: pass the bitmap size to `GlyphFont` and draw its sprites with `nearest()` resources.
+- The drawn size of a bitmap font is `glyph.getSize()`, not the size of the `TextInfo`: draw the quads from the glyph.
 
 ## See also
 

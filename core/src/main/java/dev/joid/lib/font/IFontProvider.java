@@ -16,4 +16,8 @@ public interface IFontProvider {
 	public double getWidth(final @NonNull String text, final @NonNull TextInfo info);
 	public double getHeight(final @NonNull String text, final @NonNull TextInfo info);
 
+	public default float getFontSize(final @NonNull TextInfo info) {
+		return info.getFontSize();
+	}
+
 }

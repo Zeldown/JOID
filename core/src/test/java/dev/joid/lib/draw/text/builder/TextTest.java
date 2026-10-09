@@ -297,6 +297,44 @@ public class TextTest {
 	}
 
 	@Test
+	public void remeasuresOnceItsProviderDrawsAnotherSize() {
+		final float[] size = {10F};
+		final IFontProvider provider = new IFontProvider() {
+
+			@Override
+			public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
+				return new FontBounds(this.getWidth(text, info), this.getHeight(text, info));
+			}
+
+			@Override
+			public double getWidth(final String text, final TextInfo info) {
+				return text.length() * size[0];
+			}
+
+			@Override
+			public double getHeight(final String text, final TextInfo info) {
+				return this.getLineHeight(info);
+			}
+
+			@Override
+			public double getLineHeight(final TextInfo info) {
+				return size[0] * 2D;
+			}
+
+			@Override
+			public float getFontSize(final TextInfo info) {
+				return size[0];
+			}
+
+		};
+		final Text text = Text.create("ab", TextInfo.create(() -> provider, 10F));
+		Assert.assertEquals(20D, text.getWidth(), 0D);
+		size[0] = 16F;
+		Assert.assertEquals(32D, text.getWidth(), 0D);
+		Assert.assertEquals(32D, text.getHeight(), 0D);
+	}
+
+	@Test
 	public void readsItsRawTextWithoutTheModifiersOfItsElements() {
 		final Text text = Text.create(TextElement.create("ab", TextTest.info()).modifier(TextModifier.UPPER_CASE), TextElement.create("cd", TextTest.info())).modifier(TextModifier.CAPITALIZE);
 		Assert.assertEquals("abcd", text.getRawText());

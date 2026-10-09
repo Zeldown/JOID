@@ -41,6 +41,16 @@ public class UIViewTest {
 	}
 
 	@Test
+	public void measuresTheScreenPixelsOfACanvasUnit() {
+		final UIView view = UIView.create(960D, 540D).resize(1280D, 720D);
+		Assert.assertEquals(2D / 3D, view.getPixelScale(), 1E-9D);
+		Assert.assertEquals(1D / 6D, view.interfaceScale(0.25D).getPixelScale(), 1E-9D);
+		Assert.assertEquals(1D / 3D, view.zoom(2D).getPixelScale(), 1E-9D);
+		Assert.assertEquals(view.toScreenWidth(1D), view.getPixelScale(), 0D);
+		Assert.assertEquals(1.04D, UIView.create(0D, 0D).resize(1996.8D, 1123.2D).getPixelScale(), 1E-9D);
+	}
+
+	@Test
 	public void mapsEveryPointBothWays() {
 		final double[][] windows = {{1920D, 1080D}, {1280D, 720D}, {2560D, 1080D}, {1080D, 1080D}, {1024D, 768D}};
 		for (final double anchor : new double[] {0D, 0.5D, 1D}) {
