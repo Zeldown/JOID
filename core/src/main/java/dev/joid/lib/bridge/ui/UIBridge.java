@@ -3,6 +3,7 @@ package dev.joid.lib.bridge.ui;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -134,6 +135,19 @@ public abstract class UIBridge implements IUIBridge {
 		return false;
 	}
 
+	public final boolean isConsumingKey(final @NonNull Key key) {
+		for (final UI ui : this.getInputList()) {
+			if (key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active()) {
+				return true;
+			}
+
+			if (ui.isConsumingKey(key) || ui.getPopup().active()) {
+				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
+			}
+		}
+		return false;
+	}
+
 	public final void update() {
 		for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
 			ui.fireUpdate();
@@ -141,10 +155,14 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void draw() {
+		this.draw(ui -> true);
+	}
+
+	public final void draw(final @NonNull Predicate<@NonNull UI> filter) {
 		try {
 			ResourceData.releaseCollected();
 			ShaderPipeline.releaseUnused();
-			this.drawLayers();
+			this.drawLayers(filter);
 			this.updateCursor();
 		} catch (final Exception throwable) {
 			throwable.printStackTrace();
@@ -203,7 +221,7 @@ public abstract class UIBridge implements IUIBridge {
 		return !overlay.active() || (overlay.render().always() || !this.isOverlayHidden()) && (overlay.render().screens() || !this.isScreenOpen());
 	}
 
-	private void drawLayers() {
+	private void drawLayers(final Predicate<UI> filter) {
 		if (this.uiList.isEmpty()) {
 			return;
 		}
@@ -216,7 +234,7 @@ public abstract class UIBridge implements IUIBridge {
 		try {
 			render.translate(0D, 0D, -2000D);
 			for (final UI ui : this.getLayerList()) {
-				if (!ui.getData().visible() || !this.isShown(ui)) {
+				if (!ui.getData().visible() || !this.isShown(ui) || !filter.test(ui)) {
 					continue;
 				}
 

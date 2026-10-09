@@ -31,6 +31,7 @@ import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 
+import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import lombok.NonNull;
 
 public class UIBridgeTest {
@@ -739,6 +740,34 @@ public class UIBridgeTest {
 		Assert.assertEquals(800, this.bridges.getRender().getViewportWidth());
 		Assert.assertEquals(600, this.bridges.getRender().getViewportHeight());
 		Assert.assertEquals(1, menu.inits);
+	}
+
+	@Test
+	public void drawsOnlyTheUisItsFilterAccepts() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final OverlayUI hud = new OverlayUI("hud", this.trace);
+		this.bridges.open(menu).open(hud);
+		this.trace.clear();
+		this.bridges.getUi().draw(ui -> ui == hud);
+		Assert.assertEquals(1, this.trace.size());
+		Assert.assertTrue(this.trace.get(0), this.trace.get(0).startsWith("draw hud"));
+	}
+
+	@Test
+	public void foreseesAKeyTakenByAFocusedFieldOfAnOverlay() {
+		final OverlayUI hud = new OverlayUI("hud", this.trace);
+		this.bridges.open(hud);
+		Assert.assertFalse(this.bridges.getUi().isConsumingKey(Key.A));
+		TextFieldNode.create(0D, 0D, 100D).<TextFieldNode>focused(true).attach(hud);
+		this.bridges.frame();
+		Assert.assertTrue(this.bridges.getUi().isConsumingKey(Key.A));
+	}
+
+	@Test
+	public void foreseesTheEscapeThatClosesAScreen() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		Assert.assertTrue(this.bridges.getUi().isConsumingKey(Key.ESCAPE));
+		Assert.assertFalse(this.bridges.getUi().isConsumingKey(Key.A));
 	}
 
 	@Test

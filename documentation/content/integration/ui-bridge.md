@@ -167,7 +167,16 @@ if (!this.bridge.mousePressed(MouseButton.from(button))) {
 }
 ```
 
-Where and when the host draws its overlays (above its own interface, in a layer of its own) belongs to the backend: draw them with `draw()` at that place, from a bridge that holds only overlays if your host draws its screens elsewhere.
+A host that hands the key and the character of a press in two events (a key event, then a character event) can still ask at the key whether JOID takes it, and keep the two merged for JOID with a `KeyCharacterMerger`: `isConsumingKey(Key key)` answers with the rules of `keyTyped`, before any dispatch. It is `true` for Escape when a closeable screen is open, and for a key that a keybind of a UI holds or that a focused text field receives, unless the UI is an overlay whose `cancelKeyboard` is off; a node that takes the key in its own `onKeyPressed` is not foreseen.
+
+```java
+if (this.bridge.isConsumingKey(key)) {
+	event.cancel();
+}
+this.merger.keyPressed(key, code, modifiers);
+```
+
+Where and when the host draws its overlays (above its own interface, in a layer of its own) belongs to the backend: draw them with `draw()` at that place, from a bridge that holds only overlays if your host draws its screens elsewhere. `draw(Predicate<UI> filter)` draws only the UIs the filter accepts, with the same order, stacking and cursor as `draw()`, for a host that draws its overlays in several layers: `bridge.draw(ui -> layerOf(ui) == layer)`.
 
 ## The frame: load, update and draw
 
@@ -342,6 +351,8 @@ JOID.open(new UISettings());
 | `load()` | Loads every UI again at the window size, keeping its zoom. |
 | `update()` | Updates every UI, bottom up. |
 | `draw()` | Draws every visible UI, bottom up. |
+| `draw(Predicate<UI> filter)` | Draws the visible UIs the filter accepts, bottom up. |
+| `isConsumingKey(Key key)` | Whether `keyTyped` would consume this key, foreseen at the press; see [Overlays and the host](#overlays-and-the-host). |
 | `resize(int, int)`, `frame()` | The screen and the whole frame, see [Frames with frame()](#frames-with-frame). |
 | `drawBackground()` | Protected hook of `frame()`, between `beginFrame()` and the UIs; nothing by default. |
 | `mousePressed(MouseButton)`, `mouseReleased(MouseButton)` | A button goes down or up. Like every input method, returns whether a UI consumed it. |

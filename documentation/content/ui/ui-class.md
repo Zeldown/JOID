@@ -256,6 +256,7 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 | `draw(double mouseX, double mouseY)` | Draws the UI; the mouse is in window coordinates. Runs a pending hot reload first. |
 | `fireUpdate()` | Updates the nodes, then calls `update()`. |
 | `fireMousePressed(MouseButton)`, `fireMouseReleased(MouseButton)`, `fireMouseDragged(MouseButton, long)`, `fireMouseScroll(double, double)`, `fireKeyPressed(char, Key)` | Dispatch an event to the nodes and the hooks; return `true` when it was consumed, `false` before the first load. |
+| `boolean isConsumingKey(Key key)` | Whether a key press would be consumed by a keybind or a focused text field of this UI, foreseen before the dispatch. |
 | `boolean fireClose()` | Asks `close()`, starts the Out transition, returns `true` when the bridge can remove the UI at once. |
 | `dispose()` | Releases the UI (see [Lifecycle](#lifecycle)). |
 

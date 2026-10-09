@@ -51,6 +51,7 @@ import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.ui.node.impl.design.textfield.FieldNode;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
@@ -284,6 +285,19 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.traced(() -> this.mouseDragged(mx, my, button, deltaTime, context));
 		return context.isCancelled();
+	}
+
+	public final boolean isConsumingKey(final @NonNull Key key) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		for (final Set<Object> bindings : this.keybindMap.keySet()) {
+			if (UI.isPressed(bindings, key)) {
+				return true;
+			}
+		}
+		return UI.hasFocusedField(this.nodeList);
 	}
 
 	public final boolean fireKeyPressed(final char c, final @NonNull Key key) {
@@ -990,6 +1004,15 @@ public abstract class UI implements IUI, IndexedElement {
 		} finally {
 			SignalContext.current().tracing(tracing);
 		}
+	}
+
+	private static boolean hasFocusedField(final Iterable<Node> nodes) {
+		for (final Node node : nodes) {
+			if (node instanceof FieldNode && ((FieldNode<?>) node).isFocused() || UI.hasFocusedField(node.getChildren())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean isPressed(final Set<Object> bindings, final Key key) {
