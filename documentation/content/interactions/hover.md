@@ -110,7 +110,7 @@ The text is built only while the tooltip is visible. `hoverLines(...)` replaces 
 
 ### Drawing text tooltips with drawHover
 
-JOID hands the lines to `UI.drawHover(Object content, double mouseX, double mouseY)`, which calls `IUIBridge.drawHover(UI ui, Object content, double mouseX, double mouseY)` of the UI's bridge. `UIBridge` draws them with the `TextInfo` given to its `hoverInfo(...)` (see [UI Bridge](../integration/ui-bridge.md#tooltips-with-drawhover)); the mouse position is in UI units and the drawing happens in the UI's coordinate space. Override `drawHover` in a UI to give its tooltips another look; `TextConverter.convertLines(content)` gives the lines:
+JOID hands the lines to `UI.drawHover(Object content, double mouseX, double mouseY)`, which calls `IUIBridge.drawHover(UI ui, Object content, double mouseX, double mouseY)` of the UI's bridge. The bridge draws them in the look of its engine (`UIBridge` draws nothing, the demo bridge a dark rounded box; see [UI Bridge](../integration/ui-bridge.md#tooltips-with-drawhover)); the mouse position is in UI units and the drawing happens in the UI's coordinate space. Override `drawHover` in a UI to give its tooltips another look; `TextConverter.convertLines(content)` gives the lines:
 
 ```java
 @Override

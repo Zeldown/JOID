@@ -69,7 +69,7 @@ The UI bridge hosts the UIs: it opens and closes them, dispatches input to them 
 | `canHandle(UI)` / `canHandle(Class<? extends UI>)` | Routing between several UI bridges. |
 | `getUiList()` | The UIs of the bridge, sorted by `zindex`. |
 | `getInterfaceScale(UI)` | Scale factor of the UI, `1` by default. |
-| `drawHover(UI, Object, double, double)` | Draws a tooltip: text lines by default in `UIBridge`, or a tooltip object of the engine. |
+| `drawHover(UI, Object, double, double)` | Draws a tooltip: text lines or a tooltip object of the engine. `UIBridge` draws nothing; each bridge draws its own. |
 
 `UIBridgeRegistry`, the type of `BridgeHandler.UI`, adds the routing of UIs: `get(UI)` and `get(Class<? extends UI>)` return the bridge of highest priority whose `canHandle` accepts the UI, or `null`. `JOID.open`, `JOID.close`, `JOID.isOpen` and `JOID.getUi` use them.
 

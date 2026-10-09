@@ -93,7 +93,7 @@ ToggleSwitchNode
 .attach(notifications);
 ```
 
-JOID collects the lines of the hovered node and asks the UI to draw them with `drawHover`, which by default hands them to the UI bridge. The `AppUIBridge` of the Quick Start has no `hoverInfo`, so the settings screen draws its own tooltips, in the colors of the app. Override `drawHover` in `SettingsUI`; `TextConverter.convertLines(content)` gives the lines:
+JOID collects the lines of the hovered node and asks the UI to draw them with `drawHover`, which by default hands them to the UI bridge. The `AppUIBridge` of the Quick Start does not override `drawHover`, so it draws no tooltip, and the settings screen draws its own, in the colors of the app. Override `drawHover` in `SettingsUI`; `TextConverter.convertLines(content)` gives the lines:
 
 ```java
 @Override

@@ -16,7 +16,6 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
-import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.ITextRenderer;
@@ -716,39 +715,67 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void drawsTheTooltipLinesWithItsHoverInfo() {
+	public void drawsTheTooltipLinesOfTheDemoBridge() {
 		final TraceFont font = new TraceFont();
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
-		Assert.assertSame(this.bridges.getUi(), this.bridges.getUi().hoverInfo(TextInfo.create(font, 20F)));
-		this.bridges.getUi().drawHover(menu, Arrays.asList("Play", 42), 100D, 100D);
+		new TooltipBridge(TextInfo.create(font, 20F)).drawHover(menu, Arrays.asList("Play", 42), 100D, 100D);
 		Assert.assertEquals(Arrays.asList("Play", "42"), font.drawn);
 	}
 
 	@Test
-	public void drawsTheTooltipBackgroundWithItsColors() {
+	public void drawsTheTooltipBackgroundOfTheDemoBridge() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.bridges.getRender().getDraws().clear();
-		this.bridges.getUi().hoverInfo(TextInfo.create(new TraceFont(), 20F)).hoverColor(Color.RED).<DemoUIBridge>hoverBorderColor(Color.BLUE).drawHover(menu, "Play", 100D, 100D);
-		Assert.assertTrue(this.bridges.getRender().getDraws().stream().anyMatch(draw -> draw.getRed() == 1F && draw.getBlue() == 0F));
-		Assert.assertTrue(this.bridges.getRender().getDraws().stream().anyMatch(draw -> draw.getBlue() == 1F && draw.getRed() == 0F));
+		new TooltipBridge(TextInfo.create(new TraceFont(), 20F)).drawHover(menu, "Play", 100D, 100D);
+		Assert.assertTrue(this.bridges.getRender().getDraws().stream().anyMatch(draw -> draw.getRed() == 0x27 / 255F && draw.getBlue() == 0x2A / 255F));
+		Assert.assertTrue(this.bridges.getRender().getDraws().stream().anyMatch(draw -> draw.getRed() == 0x18 / 255F && draw.getBlue() == 0x1B / 255F));
 	}
 
 	@Test
-	public void warnsOnceWhenATooltipHasNoHoverInfo() {
+	public void drawsNoTooltipWithoutTheDevFont() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
+		this.bridges.getRender().getDraws().clear();
+		new TooltipBridge(null).drawHover(menu, "Play", 100D, 100D);
+		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
+	}
+
+	@Test
+	public void warnsOnceInDevModeWhenABridgeDrawsNoTooltip() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		final UIBridge bridge = new StackUIBridge() {};
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		JOID.inst().setDevMode(true);
+		try {
+			bridge.drawHover(menu, "Play", 100D, 100D);
+			bridge.drawHover(menu, "Play", 100D, 100D);
+		} finally {
+			JOID.inst().setDevMode(false);
+			System.setErr(previous);
+		}
+		Assert.assertEquals("[JOID] " + bridge.getClass().getSimpleName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them" + System.lineSeparator(), output.toString());
+	}
+
+	@Test
+	public void staysSilentOutOfDevModeWhenABridgeDrawsNoTooltip() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		this.bridges.getRender().getDraws().clear();
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
 		try {
-			this.bridges.getUi().drawHover(menu, "Play", 100D, 100D);
-			this.bridges.getUi().drawHover(menu, "Play", 100D, 100D);
+			new StackUIBridge() {}.drawHover(menu, "Play", 100D, 100D);
 		} finally {
 			System.setErr(previous);
 		}
-		Assert.assertEquals("[JOID] DemoUIBridge has no text info for its tooltips, set one with hoverInfo(TextInfo)" + System.lineSeparator(), output.toString());
+		Assert.assertEquals("", output.toString());
+		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
 	@Test
@@ -757,7 +784,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.bridges.getRender().getDraws().clear();
-		this.bridges.getUi().hoverInfo(TextInfo.create(font, 20F)).drawHover(menu, Collections.emptyList(), 100D, 100D);
+		new TooltipBridge(TextInfo.create(font, 20F)).drawHover(menu, Collections.emptyList(), 100D, 100D);
 		Assert.assertTrue(font.drawn.isEmpty());
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
@@ -769,6 +796,21 @@ public class UIBridgeTest {
 
 	private static float depth() {
 		return ((RenderBridge) BridgeHandler.RENDER.get()).getModelView().getMatrix()[14];
+	}
+
+	public static final class TooltipBridge extends DemoUIBridge {
+
+		private final TextInfo info;
+
+		public TooltipBridge(final TextInfo info) {
+			this.info = info;
+		}
+
+		@Override
+		protected TextInfo getHoverInfo() {
+			return this.info;
+		}
+
 	}
 
 	public static final class TraceFont implements IFont, ITextRenderer {

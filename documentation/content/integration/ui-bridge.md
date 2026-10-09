@@ -42,11 +42,7 @@ public class AppUIBridge extends UIBridge {
 }
 ```
 
-This bridge stacks the UIs: `JOID.open` puts a UI on top of the others, and `JOID.close` or Escape removes it. Give it the style of the text tooltips once, with a `TextInfo` built from a loaded font (see [Text and TextInfo](../text/text-and-textinfo.md)):
-
-```java
-final AppUIBridge bridge = new AppUIBridge().hoverInfo(TextInfo.create(font, 20F, Color.WHITE));
-```
+This bridge stacks the UIs: `JOID.open` puts a UI on top of the others, and `JOID.close` or Escape removes it. It draws no tooltip until you override `drawHover`, in the look of your application: see [Tooltips with drawHover](#tooltips-with-drawhover).
 
 ![Diagram of the frame loop: poll window events, call the input methods, update(), clear and draw(), swap or present, and on resize set ortho, viewport and call load()](../images/diagram-ui-bridge-loop.png "Your loop forwards the events, then updates and draws every frame on the thread of the graphics context")
 
@@ -118,7 +114,7 @@ final AppUIBridge bridge = new AppUIBridge();
 BridgeHandler.UI.register(bridge);
 JOID.inst().load();
 
-final AppLoop loop = new AppLoop(window, bridge.tooltip(info));
+final AppLoop loop = new AppLoop(window, bridge);
 JOID.open(new UIMainMenu());
 loop.run();
 ```
@@ -252,15 +248,21 @@ The demo bridge (`DemoUIBridge`) extends it, with `start()` (opens the demo menu
 
 ## Tooltips with drawHover
 
-A node with text tooltips calls `drawHover(ui, content, mouseX, mouseY)` of the bridge of its UI while it is hovered and its UI is on top; `content` is the list of its lines. `UIBridge` draws it as a dark rounded box next to the mouse, kept inside the window, with one line per element converted by `TextConverter` (see [Objects as text with TextConverter](../text/markup-and-effects.md#objects-as-text-with-textconverter)):
+A node with text tooltips calls `drawHover(ui, content, mouseX, mouseY)` of the bridge of its UI while it is hovered and its UI is on top; `content` is the list of its lines, and `TextConverter.convertLines(content)` gives them as strings (see [Objects as text with TextConverter](../text/markup-and-effects.md#objects-as-text-with-textconverter)). JOID has no tooltip style of its own: each bridge draws its tooltips in the look of its engine. `UIBridge.drawHover` draws nothing; in dev mode it prints `[JOID] <bridge> draws no tooltip, override drawHover(UI, Object, double, double) to draw them` once.
 
-| Method | Default | Description |
-|---|---|---|
-| `hoverInfo(TextInfo)` | `null` | The style of the lines. Without one, the dev and demo modes use the internal Montserrat 20 in white; otherwise the bridge draws nothing and prints `[JOID] <bridge> has no text info for its tooltips, set one with hoverInfo(TextInfo)` once. |
-| `hoverColor(Color)` | `#18181B` | The fill of the box. |
-| `hoverBorderColor(Color)` | `#27272A` | The border of the box. |
+```java
+@Override
+public void drawHover(final UI ui, final Object content, final double mouseX, final double mouseY) {
+	final List<String> lines = TextConverter.convertLines(content);
+	for (int i = 0; i < lines.size(); i++) {
+		DrawUtils.TEXT.drawText(mouseX + 14D, mouseY + 14D + i * 22D, lines.get(i), this.info, Align.START, Align.START);
+	}
+}
+```
 
-`content` is an `Object`, so an engine with tooltips of its own passes them through the same call: `ui.drawHover(object, mouseX, mouseY)` from a node of the engine, and an override of `drawHover` in the bridge that draws the objects it knows and leaves the rest to `super.drawHover(...)`.
+The demo bridge, `DemoUIBridge`, draws a dark rounded box next to the mouse (`#18181B`, with a `#27272A` border), kept inside the window, with the lines in white Montserrat 20 from `getHoverInfo()`, and nothing outside the dev and demo modes, where the font is absent.
+
+`content` is an `Object`, so an engine with tooltips of its own passes them through the same call: `ui.drawHover(object, mouseX, mouseY)` from a node of the engine, and the `drawHover` of its bridge draws the objects it knows as well as the text lines.
 
 The call happens inside the drawing of the UI:
 
@@ -327,8 +329,7 @@ JOID.open(new UISettings());
 | `mouseScroll(double notchesX, double notchesY)` | The wheel turns, in notches on each axis. |
 | `keyTyped(char c, Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |
 | `getUiList()` | The sorted `IndexedLinkedList<UI>`. |
-| `drawHover(UI, Object, double, double)` | Draws a text tooltip, see [Tooltips with drawHover](#tooltips-with-drawhover). |
-| `hoverInfo(TextInfo)`, `hoverColor(Color)`, `hoverBorderColor(Color)` | The style of the text tooltips; `getHoverInfo()` (nullable), `getHoverColor()`, `getHoverBorderColor()` read it. |
+| `drawHover(UI, Object, double, double)` | Draws a tooltip; nothing by default, see [Tooltips with drawHover](#tooltips-with-drawhover). |
 | `isOnTop(UI)`, `isOpen(UI)` | See [Methods you implement](#methods-you-implement). |
 | `isScreenOpen()`, `isOverlayHidden()`, `hasScreen()` | See [Overlays and the host](#overlays-and-the-host). |
 

@@ -82,7 +82,7 @@ public final class AppUIBridge extends UIBridge {
 }
 ```
 
-`ui.load(width, height)` sizes the UI to the window and, the first time, runs its `init()`. `UIBridge` also draws the text tooltips of the nodes once you give it a `TextInfo` with `hoverInfo(...)`. See [UI Bridge](../integration/ui-bridge.md) for every method.
+`ui.load(width, height)` sizes the UI to the window and, the first time, runs its `init()`. To show the text tooltips of the nodes, override `drawHover(UI, Object, double, double)` in your bridge: JOID has no tooltip style of its own. See [UI Bridge](../integration/ui-bridge.md) for every method.
 
 ## Step 3: load the font
 
