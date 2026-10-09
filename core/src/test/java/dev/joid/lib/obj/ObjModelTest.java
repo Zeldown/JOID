@@ -17,16 +17,16 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.vertex.Primitive;
-import dev.joid.lib.obj.data.OBJFace;
-import dev.joid.lib.obj.data.OBJGroup;
-import dev.joid.lib.obj.data.OBJTextureCoordinate;
-import dev.joid.lib.obj.data.OBJVertex;
+import dev.joid.lib.obj.data.ObjFace;
+import dev.joid.lib.obj.data.ObjGroup;
+import dev.joid.lib.obj.data.ObjTextureCoordinate;
+import dev.joid.lib.obj.data.ObjVertex;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.resource.Resource;
 
 import lombok.NonNull;
 
-public class OBJModelTest {
+public class ObjModelTest {
 
 	private static final Resource TEXTURE = Resource.of(new Texture());
 
@@ -38,9 +38,9 @@ public class OBJModelTest {
 
 	@Test
 	public void readsATexturedCube() {
-		final OBJModel model = OBJModelTest.cube();
+		final ObjModel model = ObjModelTest.cube();
 		Assert.assertEquals("cube", model.getName());
-		Assert.assertSame(OBJModelTest.TEXTURE, model.getTexture());
+		Assert.assertSame(ObjModelTest.TEXTURE, model.getTexture());
 		Assert.assertEquals(8, model.getVertices().size());
 		Assert.assertEquals(4, model.getTextureCoordinates().size());
 		Assert.assertEquals(6, model.getVertexNormals().size());
@@ -53,14 +53,14 @@ public class OBJModelTest {
 
 	@Test
 	public void readsTheDemoModelWithItsOwnNormalAndTextureCoordinateOnEveryVertex() {
-		final OBJModel model = OBJModel.load("demo", OBJModel.class.getResourceAsStream("/assets/demo/models/model.obj"), OBJModelTest.TEXTURE);
+		final ObjModel model = ObjModel.load("demo", ObjModel.class.getResourceAsStream("/assets/demo/models/model.obj"), ObjModelTest.TEXTURE);
 		Assert.assertEquals(2D, model.getWidth(), 1E-4D);
 		Assert.assertEquals(0.9792D, model.getHeight(), 1E-4D);
 		Assert.assertEquals(1.2434D, model.getDepth(), 1E-4D);
 		Assert.assertEquals(model.getVertices().size(), model.getVertexNormals().size());
 		Assert.assertEquals(model.getVertices().size(), model.getTextureCoordinates().size());
 		Assert.assertSame(DrawMode.TRIANGLES, model.getCurrentGroup().getDrawMode());
-		for (final OBJFace face : model.getCurrentGroup().getFaces()) {
+		for (final ObjFace face : model.getCurrentGroup().getFaces()) {
 			Assert.assertEquals(3, face.getVertexNormals().length);
 			Assert.assertEquals(3, face.getTextureCoordinates().length);
 		}
@@ -68,7 +68,7 @@ public class OBJModelTest {
 
 	@Test
 	public void computesTheNormalOfEveryFace() {
-		for (final OBJFace face : OBJModelTest.cube().getCurrentGroup().getFaces()) {
+		for (final ObjFace face : ObjModelTest.cube().getCurrentGroup().getFaces()) {
 			Assert.assertEquals(face.getVertexNormals()[0].getX(), face.getFaceNormal().getX(), 0F);
 			Assert.assertEquals(face.getVertexNormals()[0].getY(), face.getFaceNormal().getY(), 0F);
 			Assert.assertEquals(face.getVertexNormals()[0].getZ(), face.getFaceNormal().getZ(), 0F);
@@ -77,7 +77,7 @@ public class OBJModelTest {
 
 	@Test
 	public void measuresItsBoundingBox() {
-		final OBJModel model = OBJModelTest.cube();
+		final ObjModel model = ObjModelTest.cube();
 		Assert.assertEquals(2D, model.getWidth(), 0D);
 		Assert.assertEquals(2D, model.getHeight(), 0D);
 		Assert.assertEquals(2D, model.getDepth(), 0D);
@@ -85,7 +85,7 @@ public class OBJModelTest {
 
 	@Test
 	public void readsSignedAndWholeCoordinates() {
-		final OBJVertex vertex = OBJModelTest.load("v -1.5 2 3").getVertices().get(0);
+		final ObjVertex vertex = ObjModelTest.load("v -1.5 2 3").getVertices().get(0);
 		Assert.assertEquals(-1.5F, vertex.getX(), 0F);
 		Assert.assertEquals(2F, vertex.getY(), 0F);
 		Assert.assertEquals(3F, vertex.getZ(), 0F);
@@ -93,7 +93,7 @@ public class OBJModelTest {
 
 	@Test
 	public void readsTheVertexNormals() {
-		final OBJVertex normal = OBJModelTest.load("vn 0 -1 0.5").getVertexNormals().get(0);
+		final ObjVertex normal = ObjModelTest.load("vn 0 -1 0.5").getVertexNormals().get(0);
 		Assert.assertEquals(0F, normal.getX(), 0F);
 		Assert.assertEquals(-1F, normal.getY(), 0F);
 		Assert.assertEquals(0.5F, normal.getZ(), 0F);
@@ -101,12 +101,12 @@ public class OBJModelTest {
 
 	@Test
 	public void flipsTheVerticalTextureCoordinate() {
-		final OBJModel model = OBJModelTest.load("vt 0.25 0.75", "vt 0.5 0.125 0.5");
-		final OBJTextureCoordinate flat = model.getTextureCoordinates().get(0);
+		final ObjModel model = ObjModelTest.load("vt 0.25 0.75", "vt 0.5 0.125 0.5");
+		final ObjTextureCoordinate flat = model.getTextureCoordinates().get(0);
 		Assert.assertEquals(0.25F, flat.getU(), 0F);
 		Assert.assertEquals(0.25F, flat.getV(), 0F);
 		Assert.assertEquals(0F, flat.getW(), 0F);
-		final OBJTextureCoordinate deep = model.getTextureCoordinates().get(1);
+		final ObjTextureCoordinate deep = model.getTextureCoordinates().get(1);
 		Assert.assertEquals(0.5F, deep.getU(), 0F);
 		Assert.assertEquals(0.875F, deep.getV(), 0F);
 		Assert.assertEquals(0.5F, deep.getW(), 0F);
@@ -114,7 +114,7 @@ public class OBJModelTest {
 
 	@Test
 	public void collapsesTheWhitespace() {
-		final OBJModel model = OBJModelTest.load("  v\t1   2  3  ", "vt  0.5\t0.5", "vn 0 0  1 ");
+		final ObjModel model = ObjModelTest.load("  v\t1   2  3  ", "vt  0.5\t0.5", "vn 0 0  1 ");
 		Assert.assertEquals(3F, model.getVertices().get(0).getZ(), 0F);
 		Assert.assertEquals(0.5F, model.getTextureCoordinates().get(0).getV(), 0F);
 		Assert.assertEquals(1F, model.getVertexNormals().get(0).getZ(), 0F);
@@ -122,7 +122,7 @@ public class OBJModelTest {
 
 	@Test
 	public void skipsCommentsBlankLinesAndOtherStatements() {
-		final OBJModel model = OBJModelTest.load("# exported", "", "mtllib cube.mtl", "usemtl red", "s off", "l 1 2", "v 1 2 3");
+		final ObjModel model = ObjModelTest.load("# exported", "", "mtllib cube.mtl", "usemtl red", "s off", "l 1 2", "v 1 2 3");
 		Assert.assertEquals(1, model.getVertices().size());
 		Assert.assertTrue(model.getTextureCoordinates().isEmpty());
 		Assert.assertTrue(model.getVertexNormals().isEmpty());
@@ -130,7 +130,7 @@ public class OBJModelTest {
 
 	@Test
 	public void gathersTheFacesWithoutGroupInADefaultOne() {
-		final OBJModel model = OBJModelTest.triangle("f 1 2 3");
+		final ObjModel model = ObjModelTest.triangle("f 1 2 3");
 		Assert.assertEquals(1, model.getGroups().size());
 		Assert.assertEquals("Default", model.getGroups().get(0).getName());
 		Assert.assertSame(DrawMode.TRIANGLES, model.getGroups().get(0).getDrawMode());
@@ -138,7 +138,7 @@ public class OBJModelTest {
 
 	@Test
 	public void splitsTheFacesByGroup() {
-		final OBJModel model = OBJModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "o first", "f 1 2 3", "g second.part", "f 1 2 4 3", "f 1 2 4 3");
+		final ObjModel model = ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "o first", "f 1 2 3", "g second.part", "f 1 2 4 3", "f 1 2 4 3");
 		Assert.assertEquals(2, model.getGroups().size());
 		Assert.assertEquals("first", model.getGroups().get(0).getName());
 		Assert.assertSame(DrawMode.TRIANGLES, model.getGroups().get(0).getDrawMode());
@@ -151,8 +151,8 @@ public class OBJModelTest {
 
 	@Test
 	public void readsAFaceWithTexturesAndNormals() {
-		final OBJModel model = OBJModelTest.triangle("f 1/3/1 2/2/1 3/1/1");
-		final OBJFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjModel model = ObjModelTest.triangle("f 1/3/1 2/2/1 3/1/1");
+		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
 		Assert.assertArrayEquals(model.getVertices().toArray(), face.getVertices());
 		Assert.assertSame(model.getTextureCoordinates().get(2), face.getTextureCoordinates()[0]);
 		Assert.assertSame(model.getTextureCoordinates().get(0), face.getTextureCoordinates()[2]);
@@ -162,8 +162,8 @@ public class OBJModelTest {
 
 	@Test
 	public void readsAFaceWithTexturesOnly() {
-		final OBJModel model = OBJModelTest.triangle("f 1/1 2/2 3/3");
-		final OBJFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjModel model = ObjModelTest.triangle("f 1/1 2/2 3/3");
+		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
 		Assert.assertArrayEquals(model.getVertices().toArray(), face.getVertices());
 		Assert.assertArrayEquals(model.getTextureCoordinates().toArray(), face.getTextureCoordinates());
 		Assert.assertNull(face.getVertexNormals());
@@ -172,8 +172,8 @@ public class OBJModelTest {
 
 	@Test
 	public void readsAFaceWithNormalsOnly() {
-		final OBJModel model = OBJModelTest.triangle("f 1//1 2//1 3//1");
-		final OBJFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjModel model = ObjModelTest.triangle("f 1//1 2//1 3//1");
+		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
 		Assert.assertArrayEquals(model.getVertices().toArray(), face.getVertices());
 		Assert.assertNull(face.getTextureCoordinates());
 		Assert.assertSame(model.getVertexNormals().get(0), face.getVertexNormals()[2]);
@@ -182,8 +182,8 @@ public class OBJModelTest {
 
 	@Test
 	public void readsAFaceWithVerticesOnly() {
-		final OBJModel model = OBJModelTest.triangle("f 3 2 1");
-		final OBJFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjModel model = ObjModelTest.triangle("f 3 2 1");
+		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
 		Assert.assertSame(model.getVertices().get(2), face.getVertices()[0]);
 		Assert.assertSame(model.getVertices().get(0), face.getVertices()[2]);
 		Assert.assertNull(face.getTextureCoordinates());
@@ -194,7 +194,7 @@ public class OBJModelTest {
 	@Test
 	public void refusesQuadsInAGroupOfTriangles() {
 		try {
-			OBJModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 3", "f 1 2 4 3");
+			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 3", "f 1 2 4 3");
 			Assert.fail("A quad must not join a group of triangles");
 		} catch (final RuntimeException expected) {
 			Assert.assertTrue(expected.getMessage(), expected.getMessage().contains("line 6"));
@@ -205,7 +205,7 @@ public class OBJModelTest {
 	@Test
 	public void refusesTrianglesInAGroupOfQuads() {
 		try {
-			OBJModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 4 3", "f 1 2 3");
+			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 4 3", "f 1 2 3");
 			Assert.fail("A triangle must not join a group of quads");
 		} catch (final RuntimeException expected) {
 			Assert.assertTrue(expected.getMessage(), expected.getMessage().contains("line 6"));
@@ -216,7 +216,7 @@ public class OBJModelTest {
 	@Test
 	public void namesTheFileAndTheLineOfAMalformedEntry() {
 		try {
-			OBJModelTest.load("# header", "v 1 2");
+			ObjModelTest.load("# header", "v 1 2");
 			Assert.fail("A vertex with two coordinates must be refused");
 		} catch (final RuntimeException expected) {
 			Assert.assertEquals("Error parsing entry ('v 1 2', line 2) in file 'test' - Incorrect format", expected.getMessage());
@@ -225,42 +225,42 @@ public class OBJModelTest {
 
 	@Test(expected = RuntimeException.class)
 	public void refusesANormalWithTwoCoordinates() {
-		OBJModelTest.load("vn 1 2");
+		ObjModelTest.load("vn 1 2");
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void refusesATextureCoordinateWithOneValue() {
-		OBJModelTest.load("vt 0.5");
+		ObjModelTest.load("vt 0.5");
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void refusesAFaceOfFivePoints() {
-		OBJModelTest.triangle("f 1 2 3 1 2");
+		ObjModelTest.triangle("f 1 2 3 1 2");
 	}
 
 	@Test(expected = RuntimeException.class)
 	public void refusesAFaceMixingFormats() {
-		OBJModelTest.triangle("f 1/1 2//1 3");
+		ObjModelTest.triangle("f 1/1 2//1 3");
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void refusesAFacePointingPastTheVertices() {
-		OBJModelTest.triangle("f 1 2 4");
+		ObjModelTest.triangle("f 1 2 4");
 	}
 
 	@Test
 	public void readsAModelFromAnyAssetHandle() throws IOException {
 		final File file = this.folder.newFile("triangle.obj");
 		Files.write(file.toPath(), "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n".getBytes(StandardCharsets.UTF_8));
-		Assert.assertEquals(3, OBJModel.load("file", file, OBJModelTest.TEXTURE).getVertices().size());
-		Assert.assertEquals(3, OBJModel.load("url", file.toURI().toString(), OBJModelTest.TEXTURE).getVertices().size());
+		Assert.assertEquals(3, ObjModel.load("file", file, ObjModelTest.TEXTURE).getVertices().size());
+		Assert.assertEquals(3, ObjModel.load("url", file.toURI().toString(), ObjModelTest.TEXTURE).getVertices().size());
 	}
 
 	@Test
 	public void wrapsAReadFailure() {
 		final IOException failure = new IOException("unreadable");
 		try {
-			OBJModel.load("broken", new FailingStream(failure), OBJModelTest.TEXTURE);
+			ObjModel.load("broken", new FailingStream(failure), ObjModelTest.TEXTURE);
 			Assert.fail("A read failure must reach the caller");
 		} catch (final RuntimeException expected) {
 			Assert.assertSame(failure, expected.getCause());
@@ -270,7 +270,7 @@ public class OBJModelTest {
 	@Test
 	public void closesItsStream() {
 		final TrackedStream stream = new TrackedStream("v 1 2 3", false);
-		OBJModel.load("tracked", stream, OBJModelTest.TEXTURE);
+		ObjModel.load("tracked", stream, ObjModelTest.TEXTURE);
 		Assert.assertTrue(stream.closed);
 	}
 
@@ -278,7 +278,7 @@ public class OBJModelTest {
 	public void closesItsStreamAfterAFailure() {
 		final TrackedStream stream = new TrackedStream("v 1 2", false);
 		try {
-			OBJModel.load("tracked", stream, OBJModelTest.TEXTURE);
+			ObjModel.load("tracked", stream, ObjModelTest.TEXTURE);
 			Assert.fail("A vertex with two coordinates must be refused");
 		} catch (final RuntimeException expected) {
 			Assert.assertTrue(stream.closed);
@@ -288,18 +288,18 @@ public class OBJModelTest {
 	@Test
 	public void ignoresAStreamFailingToClose() {
 		final TrackedStream stream = new TrackedStream("v 1 2 3", true);
-		Assert.assertEquals(1, OBJModel.load("tracked", stream, OBJModelTest.TEXTURE).getVertices().size());
+		Assert.assertEquals(1, ObjModel.load("tracked", stream, ObjModelTest.TEXTURE).getVertices().size());
 		Assert.assertTrue(stream.closed);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingTexture() {
-		OBJModel.load("cube", new ByteArrayInputStream(new byte[0]), null);
+		ObjModel.load("cube", new ByteArrayInputStream(new byte[0]), null);
 	}
 
 	@Test
 	public void startsEmpty() {
-		final OBJModel model = new OBJModel();
+		final ObjModel model = new ObjModel();
 		Assert.assertNull(model.getName());
 		Assert.assertNull(model.getTexture());
 		Assert.assertNull(model.getCurrentGroup());
@@ -312,10 +312,10 @@ public class OBJModelTest {
 
 	@Test
 	public void changesItsParts() {
-		final OBJGroup group = new OBJGroup("part");
-		final OBJModel model = new OBJModel("model", OBJModelTest.TEXTURE, group);
+		final ObjGroup group = new ObjGroup("part");
+		final ObjModel model = new ObjModel("model", ObjModelTest.TEXTURE, group);
 		Assert.assertEquals("model", model.getName());
-		Assert.assertSame(OBJModelTest.TEXTURE, model.getTexture());
+		Assert.assertSame(ObjModelTest.TEXTURE, model.getTexture());
 		Assert.assertSame(group, model.getCurrentGroup());
 
 		final Resource texture = Resource.of(new Texture());
@@ -329,7 +329,7 @@ public class OBJModelTest {
 
 	@Test
 	public void drawsTheCubeInOneCall() {
-		OBJModelTest.cube().render();
+		ObjModelTest.cube().render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(1, draws.size());
 		Assert.assertSame(Primitive.TRIANGLES, draws.get(0).getPrimitive());
@@ -338,7 +338,7 @@ public class OBJModelTest {
 
 	@Test
 	public void drawsEveryGroupThenUnbindsItsTexture() {
-		OBJModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "o first", "f 1 2 3", "g second", "f 1 2 4 3", "f 1 2 4 3").render();
+		ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "o first", "f 1 2 3", "g second", "f 1 2 4 3", "f 1 2 4 3").render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(2, draws.size());
 		Assert.assertEquals(3, draws.get(0).getXs().length);
@@ -348,14 +348,14 @@ public class OBJModelTest {
 
 	@Test
 	public void drawsNothingWithoutGroup() {
-		new OBJModel("empty", OBJModelTest.TEXTURE, (OBJGroup) null).render();
+		new ObjModel("empty", ObjModelTest.TEXTURE, (ObjGroup) null).render();
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 		Assert.assertNull(this.bridges.getRender().getState().getTexture());
 	}
 
 	@Test
 	public void measuresAModelAwayFromTheOrigin() {
-		final OBJModel model = OBJModelTest.load("v 1 1 1", "v 3 4 5");
+		final ObjModel model = ObjModelTest.load("v 1 1 1", "v 3 4 5");
 		Assert.assertEquals(2D, model.getWidth(), 0D);
 		Assert.assertEquals(3D, model.getHeight(), 0D);
 		Assert.assertEquals(4D, model.getDepth(), 0D);
@@ -363,7 +363,7 @@ public class OBJModelTest {
 
 	@Test
 	public void measuresAModelBelowTheOrigin() {
-		final OBJModel model = OBJModelTest.load("v -3 -4 -5", "v -1 -1 -1");
+		final ObjModel model = ObjModelTest.load("v -3 -4 -5", "v -1 -1 -1");
 		Assert.assertEquals(2D, model.getWidth(), 0D);
 		Assert.assertEquals(3D, model.getHeight(), 0D);
 		Assert.assertEquals(4D, model.getDepth(), 0D);
@@ -371,42 +371,42 @@ public class OBJModelTest {
 
 	@Test
 	public void keepsAVertexWithAWeight() {
-		final OBJModel model = OBJModelTest.load("v 1 2 3 1", "v 4 5 6");
+		final ObjModel model = ObjModelTest.load("v 1 2 3 1", "v 4 5 6");
 		Assert.assertEquals(2, model.getVertices().size());
 		Assert.assertEquals(4F, model.getVertices().get(1).getX(), 0F);
 	}
 
 	@Test
 	public void hasNoGroupWithoutFaces() {
-		Assert.assertTrue(OBJModelTest.load("v 1 2 3").getGroups().isEmpty());
+		Assert.assertTrue(ObjModelTest.load("v 1 2 3").getGroups().isEmpty());
 	}
 
 	@Test
 	public void readsAGroupWithSeveralNames() {
-		final OBJModel model = OBJModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "g left right", "f 1 2 3");
+		final ObjModel model = ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "g left right", "f 1 2 3");
 		Assert.assertEquals(1, model.getGroups().size());
 	}
 
 	@Test
 	public void namesTheLineOfAMalformedGroup() {
 		try {
-			OBJModelTest.load("v 0 0 0", "o left-wing");
+			ObjModelTest.load("v 0 0 0", "o left-wing");
 			Assert.fail("A group name with a dash must be refused");
 		} catch (final RuntimeException expected) {
 			Assert.assertEquals("Error parsing entry ('o left-wing', line 2) in file 'test' - Incorrect format", expected.getMessage());
 		}
 	}
 
-	private static OBJModel cube() {
-		return OBJModel.load("cube", OBJModelTest.class.getResourceAsStream("/dev/joid/lib/obj/cube.obj"), OBJModelTest.TEXTURE);
+	private static ObjModel cube() {
+		return ObjModel.load("cube", ObjModelTest.class.getResourceAsStream("/dev/joid/lib/obj/cube.obj"), ObjModelTest.TEXTURE);
 	}
 
-	private static OBJModel triangle(final String face) {
-		return OBJModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "vt 0 0", "vt 1 0", "vt 0 1", "vn 0 0 1", face);
+	private static ObjModel triangle(final String face) {
+		return ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "vt 0 0", "vt 1 0", "vt 0 1", "vn 0 0 1", face);
 	}
 
-	private static OBJModel load(final String... lines) {
-		return OBJModel.load("test", new ByteArrayInputStream(String.join("\n", lines).getBytes(StandardCharsets.UTF_8)), OBJModelTest.TEXTURE);
+	private static ObjModel load(final String... lines) {
+		return ObjModel.load("test", new ByteArrayInputStream(String.join("\n", lines).getBytes(StandardCharsets.UTF_8)), ObjModelTest.TEXTURE);
 	}
 
 	private static final class FailingStream extends InputStream {

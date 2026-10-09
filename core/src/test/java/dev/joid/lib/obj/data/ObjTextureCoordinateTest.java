@@ -3,11 +3,11 @@ package dev.joid.lib.obj.data;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class OBJTextureCoordinateTest {
+public class ObjTextureCoordinateTest {
 
 	@Test
 	public void keepsItsThreeCoordinates() {
-		final OBJTextureCoordinate coordinate = new OBJTextureCoordinate(0.25F, 0.5F, 0.75F);
+		final ObjTextureCoordinate coordinate = new ObjTextureCoordinate(0.25F, 0.5F, 0.75F);
 		Assert.assertEquals(0.25F, coordinate.getU(), 0F);
 		Assert.assertEquals(0.5F, coordinate.getV(), 0F);
 		Assert.assertEquals(0.75F, coordinate.getW(), 0F);
@@ -15,7 +15,7 @@ public class OBJTextureCoordinateTest {
 
 	@Test
 	public void hasNoDepthWithTwoCoordinates() {
-		final OBJTextureCoordinate coordinate = new OBJTextureCoordinate(0.25F, 0.5F);
+		final ObjTextureCoordinate coordinate = new ObjTextureCoordinate(0.25F, 0.5F);
 		Assert.assertEquals(0.25F, coordinate.getU(), 0F);
 		Assert.assertEquals(0.5F, coordinate.getV(), 0F);
 		Assert.assertEquals(0F, coordinate.getW(), 0F);

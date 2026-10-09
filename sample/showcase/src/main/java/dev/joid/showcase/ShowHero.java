@@ -16,7 +16,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.dto.TextInfo;
-import dev.joid.lib.obj.OBJModel;
+import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
@@ -227,7 +227,7 @@ public class ShowHero extends ShowUI {
 	}
 
 	private void model() {
-		final OBJModel model = OBJModel.load("showcase", JOID.class.getResourceAsStream("/assets/demo/models/model.obj"), Resource.of(ShowHero.class.getResourceAsStream("/assets/showcase/teapot.png")));
+		final ObjModel model = ObjModel.load("showcase", JOID.class.getResourceAsStream("/assets/demo/models/model.obj"), Resource.of(ShowHero.class.getResourceAsStream("/assets/showcase/teapot.png")));
 		RectNode
 		.create(1550, 560, 300, 340)
 		.color(ShowUI.vertical(Color.WHITE.copyAlpha(0.12F), Color.WHITE.copyAlpha(0.04F)))

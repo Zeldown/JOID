@@ -1,6 +1,6 @@
 package dev.joid.lib.ui.node.effect.impl;
 
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.pass.CircleShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
@@ -23,7 +23,7 @@ public class CircleNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public ShaderPass toShaderPass(final @NonNull Node node) {
+	public IShaderPass toShaderPass(final @NonNull Node node) {
 		return new CircleShaderPass(node);
 	}
 

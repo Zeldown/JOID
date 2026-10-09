@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.signal.Signal;
@@ -32,12 +32,12 @@ public abstract class NodeEffect<T extends Node> {
 		return false;
 	}
 
-	public ShaderPass toShaderPass(final @NonNull T node) {
+	public IShaderPass toShaderPass(final @NonNull T node) {
 		return null;
 	}
 
-	public List<ShaderPass> toShaderPasses(final @NonNull T node) {
-		final ShaderPass pass = this.toShaderPass(node);
+	public List<IShaderPass> toShaderPasses(final @NonNull T node) {
+		final IShaderPass pass = this.toShaderPass(node);
 		return pass != null ? Collections.singletonList(pass) : Collections.emptyList();
 	}
 

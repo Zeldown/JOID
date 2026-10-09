@@ -8,7 +8,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
 import lombok.NonNull;
 
-public abstract class ShaderImpl {
+public abstract class ShaderProgram {
 
 	private IShader      shader;
 	private boolean      warned;

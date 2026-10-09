@@ -10,7 +10,7 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.ColorGradient;
 import lombok.NonNull;
 
-public class RoundedShader extends ShaderImpl {
+public class RoundedShader extends ShaderProgram {
 
 	private static final RoundedShader INSTANCE = new RoundedShader();
 

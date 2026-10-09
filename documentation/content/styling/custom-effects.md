@@ -100,12 +100,12 @@ The node calls `post` in a `finally` block, so the matrix is popped even if the 
 
 A shader effect returns shader passes. As in [Effects](effects.md#effects-and-the-shader-pipeline), the node renders into a framebuffer (an offscreen image), then each pass runs a shader (a small GPU program written in GLSL, run on every pixel) over that image. This example turns a node to grayscale. It needs three pieces: the shader, a pass and the effect. This section shows the minimum; the [Shader Pipeline](../shaders/pipeline.md) and [Custom Shaders](../shaders/custom-shaders.md) pages of the Advanced section explain the pipeline, the GLSL dialect and the uniforms in depth.
 
-The shader loads its GLSL from the classpath through `ShaderImpl` (`dev.joid.lib.shader.impl`), like the built-in shaders. A uniform is a value you hand to the GPU program before it runs, here `u_Amount`, the strength of the filter:
+The shader loads its GLSL from the classpath through `ShaderProgram` (`dev.joid.lib.shader.impl`), like the built-in shaders. A uniform is a value you hand to the GPU program before it runs, here `u_Amount`, the strength of the filter:
 
 ```java
-import dev.joid.lib.shader.impl.ShaderImpl;
+import dev.joid.lib.shader.impl.ShaderProgram;
 
-public final class GrayscaleShader extends ShaderImpl {
+public final class GrayscaleShader extends ShaderProgram {
 
 	private static final GrayscaleShader INSTANCE = new GrayscaleShader();
 
@@ -156,10 +156,10 @@ The shaders are written in the JOID GLSL dialect: no `#version`, built-in attrib
 The pass binds the shader with its values:
 
 ```java
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 
-public final class GrayscaleShaderPass implements ShaderPass {
+public final class GrayscaleShaderPass implements IShaderPass {
 
 	private final float amount;
 
@@ -173,7 +173,7 @@ public final class GrayscaleShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindForTexture(final ShaderPassContext context) {
+	public void bind(final ShaderPassContext context) {
 		if (GrayscaleShader.inst().canDraw()) {
 			GrayscaleShader.inst().bind(this.amount);
 		}
@@ -190,7 +190,7 @@ public final class GrayscaleShaderPass implements ShaderPass {
 The effect creates a pass with its current values; the node calls `toShaderPasses` every frame:
 
 ```java
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 
@@ -212,7 +212,7 @@ public class GrayscaleNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public ShaderPass toShaderPass(final Node node) {
+	public IShaderPass toShaderPass(final Node node) {
 		return new GrayscaleShaderPass(this.amount);
 	}
 
@@ -231,7 +231,7 @@ The pipeline sorts the passes of a node by `priority()`, lowest first. The built
 
 Override `expansion()` (default `0F`) when the pass draws outside the node's rectangle, as a glow or a shadow would: the node is then rendered into an area enlarged by the largest expansion of its passes, in UI units on each side. Return several passes from `toShaderPasses(T node)` when the effect needs more than one, as the blur does with its horizontal and vertical passes.
 
-The pipeline always renders the node into a framebuffer, then composes it through the passes; `bindForTexture` binds the shader while that texture is drawn (see [Shader Pipeline](../shaders/pipeline.md)). `canDraw()` answers like `isAvailable()` and, in dev mode, prints once `[JOID] The shader <Class> is unavailable, what it draws is skipped`; call `isAvailable()` instead to choose a fallback silently.
+The pipeline always renders the node into a framebuffer, then composes it through the passes; `bind` binds the shader while that texture is drawn (see [Shader Pipeline](../shaders/pipeline.md)). `canDraw()` answers like `isAvailable()` and, in dev mode, prints once `[JOID] The shader <Class> is unavailable, what it draws is skipped`; call `isAvailable()` instead to choose a fallback silently.
 
 ## An effect for one node type
 

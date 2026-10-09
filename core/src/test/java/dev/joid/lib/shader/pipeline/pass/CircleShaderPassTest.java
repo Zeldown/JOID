@@ -29,7 +29,7 @@ public class CircleShaderPassTest {
 
 	@Test
 	public void fitsTheLargestCircleInANode() {
-		new CircleShaderPass(RectNode.create(10D, 20D, 100D, 60D)).bindForTexture(this.context());
+		new CircleShaderPass(RectNode.create(10D, 20D, 100D, 60D)).bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(30F, (Float) values.get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {60F, 50F}, (float[]) values.get("center"), 0F);
@@ -37,7 +37,7 @@ public class CircleShaderPassTest {
 
 	@Test
 	public void clipsTheRenderedTexture() {
-		new CircleShaderPass(15F, 40F, 50F).bindForTexture(this.context());
+		new CircleShaderPass(15F, 40F, 50F).bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(15F, (Float) values.get("radius"), 0F);
@@ -55,7 +55,7 @@ public class CircleShaderPassTest {
 	@Test
 	public void releasesTheShader() {
 		final CircleShaderPass pass = new CircleShaderPass(15F, 40F, 50F);
-		pass.bindForTexture(this.context());
+		pass.bind(this.context());
 		pass.unbind();
 		Assert.assertFalse(this.shader.isBound());
 	}

@@ -4,13 +4,13 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import lombok.NonNull;
 
-public class RoundedShaderPass implements ShaderPass {
+public class RoundedShaderPass implements IShaderPass {
 
 	private final Node node;
 	private final RoundedNodeEffect effect;
@@ -52,7 +52,7 @@ public class RoundedShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindForTexture(final @NonNull ShaderPassContext context) {
+	public void bind(final @NonNull ShaderPassContext context) {
 		if (!RoundedShader.inst().canDraw()) {
 			return;
 		}

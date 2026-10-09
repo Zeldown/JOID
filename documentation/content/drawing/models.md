@@ -1,11 +1,11 @@
 # 3D Models
 
-`DrawModel` (`dev.joid.lib.draw.model`) draws a 3D model in the UI through `DrawUtils.MODEL`. A model is anything that implements `IDrawableModel`; JOID ships `OBJModel`, which reads Wavefront `.obj` files drawn with one texture. To show a model as a node, fitted to the node and rotated with the mouse, use [ModelNode and ModelViewerNode](../nodes/visual/model.md).
+`DrawModel` (`dev.joid.lib.draw.model`) draws a 3D model in the UI through `DrawUtils.MODEL`. A model is anything that implements `IDrawableModel`; JOID ships `ObjModel`, which reads Wavefront `.obj` files drawn with one texture. To show a model as a node, fitted to the node and rotated with the mouse, use [ModelNode and ModelViewerNode](../nodes/visual/model.md).
 
 ```java
 public class UIShop extends UI {
 
-	private final OBJModel model = OBJModel.load("model.obj", UIShop.class.getResourceAsStream("/assets/models/model.obj"), Resource.of(UIShop.class.getResourceAsStream("/assets/models/texture.png")));
+	private final ObjModel model = ObjModel.load("model.obj", UIShop.class.getResourceAsStream("/assets/models/model.obj"), Resource.of(UIShop.class.getResourceAsStream("/assets/models/texture.png")));
 
 	@Override
 	public void init() {
@@ -78,9 +78,9 @@ RectNode.create(250, 300, 200, 80).color(Color.decode("#999999")).attach(this);
 
 You can put any number of models in a UI: each node after a model is drawn in front of it, at its usual place in the drawing order.
 
-## OBJModel
+## ObjModel
 
-`OBJModel` (`dev.joid.lib.obj`) parses an `.obj` file into vertices, normals, texture coordinates and groups of faces, and draws them with one texture.
+`ObjModel` (`dev.joid.lib.obj`) parses an `.obj` file into vertices, normals, texture coordinates and groups of faces, and draws them with one texture.
 
 | Member | Description |
 |---|---|
@@ -89,7 +89,7 @@ You can put any number of models in a UI: each node after a model is drawn in fr
 | `getWidth()`, `getHeight()`, `getDepth()` | Size of the bounding box of the vertices, in model units; `0` without vertex. |
 | `getVertices()`, `getVertexNormals()`, `getTextureCoordinates()`, `getGroups()` | The parsed data. |
 | `getName()`, `setName(String)`, `getTexture()`, `setTexture(Resource)` | Name and texture; the texture can change at any time. |
-| `new OBJModel()` | An empty model to fill through the lists above; set a texture before rendering it. |
+| `new ObjModel()` | An empty model to fill through the lists above; set a texture before rendering it. |
 
 The texture loads like any `Resource`: until it is loaded, the model is drawn with the transparent placeholder texture. A texture that [fails](../resources/resources.md#resources-in-error) shows the missing-image checkerboard in dev mode.
 
@@ -125,10 +125,10 @@ The parsed data lives in `dev.joid.lib.obj.data`:
 
 | Class | Members |
 |---|---|
-| `OBJGroup` | `getName()`, `getDrawMode()` (`TRIANGLES` or `QUADS`), `getFaces()` and their setters; constructors `OBJGroup()`, `OBJGroup(String name)`, `OBJGroup(String name, DrawMode drawMode)`; `render()` draws its faces in one call. |
-| `OBJFace` | `getVertices()`, `getTextureCoordinates()`, `getVertexNormals()`, `getFaceNormal()` and their setters; `normal()` computes the normal from the first three vertices; `render(Tessellator tessellator)` adds the face to a started tessellator. |
-| `OBJVertex` | `getX()`, `getY()`, `getZ()`; constructors `OBJVertex(float x, float y, float z)` and `OBJVertex(float x, float y)` (z = 0). |
-| `OBJTextureCoordinate` | `getU()`, `getV()`, `getW()`; constructors `OBJTextureCoordinate(float u, float v, float w)` and `OBJTextureCoordinate(float u, float v)` (w = 0). |
+| `ObjGroup` | `getName()`, `getDrawMode()` (`TRIANGLES` or `QUADS`), `getFaces()` and their setters; constructors `ObjGroup()`, `ObjGroup(String name)`, `ObjGroup(String name, DrawMode drawMode)`; `render()` draws its faces in one call. |
+| `ObjFace` | `getVertices()`, `getTextureCoordinates()`, `getVertexNormals()`, `getFaceNormal()` and their setters; `normal()` computes the normal from the first three vertices; `render(Tessellator tessellator)` adds the face to a started tessellator. |
+| `ObjVertex` | `getX()`, `getY()`, `getZ()`; constructors `ObjVertex(float x, float y, float z)` and `ObjVertex(float x, float y)` (z = 0). |
+| `ObjTextureCoordinate` | `getU()`, `getV()`, `getW()`; constructors `ObjTextureCoordinate(float u, float v, float w)` and `ObjTextureCoordinate(float u, float v)` (w = 0). |
 
 The vertex normals of the file are kept as read in `getVertexNormals()`, and normalized when the face is drawn (a zero normal falls back to the face normal). Each texture coordinate is pulled 0.0005 toward the center of the coordinates of its face, which keeps the neighboring texels of an atlas from bleeding on the edges.
 
@@ -187,7 +187,7 @@ public class TriangleModel implements IDrawableModel {
 ## Pitfalls
 
 - The origin of the model lands on `(x, y)`: a model whose origin is a corner is drawn off-center. Center it in your modeling tool, or offset the call.
-- `OBJModel.load` reads the file on the calling thread and throws on a malformed line: load models once, in a field or at startup, not in draw code.
+- `ObjModel.load` reads the file on the calling thread and throws on a malformed line: load models once, in a field or at startup, not in draw code.
 - A face with corners written in different formats (`f 1/1 2//2 3`) or a group mixing triangles and quads is refused: triangulate when you export.
 
 ## See also

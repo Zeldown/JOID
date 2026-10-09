@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.pass.BorderShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
@@ -55,7 +55,7 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public ShaderPass toShaderPass(final @NonNull Node node) {
+	public IShaderPass toShaderPass(final @NonNull Node node) {
 		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fillSupplier.get(), this.modeSupplier.get());
 	}
 

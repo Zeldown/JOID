@@ -7,7 +7,7 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.obj.OBJModel;
+import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
@@ -25,7 +25,7 @@ public class ShowModel extends ShowUI {
 		this.blob(-300, -250, 900, ShowUI.VIOLET.copyAlpha(0.40F), 9D, 0D, 50D);
 		this.blob(1300, 550, 900, ShowUI.PINK.copyAlpha(0.20F), 9D, 0.5D, 50D);
 
-		final OBJModel model = OBJModel.load("teapot", JOID.class.getResourceAsStream("/assets/demo/models/model.obj"), Resource.of(ShowModel.class.getResourceAsStream("/assets/showcase/teapot.png")));
+		final ObjModel model = ObjModel.load("teapot", JOID.class.getResourceAsStream("/assets/demo/models/model.obj"), Resource.of(ShowModel.class.getResourceAsStream("/assets/showcase/teapot.png")));
 		this.glass(110, 100, 1700, 880, 32F).attach(this);
 		CircleNode.create(330, 220, 640).color(ShowUI.FUCHSIA.copyAlpha(0.32F)).effect(BlurNodeEffect.create(110F)).attach(this);
 

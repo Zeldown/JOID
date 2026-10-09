@@ -3,11 +3,11 @@ package dev.joid.lib.shader.pipeline.pass;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BorderShader;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import lombok.NonNull;
 
-public class BorderShaderPass implements ShaderPass {
+public class BorderShaderPass implements IShaderPass {
 
 	private final boolean fill;
 	private final BorderMode mode;
@@ -45,7 +45,7 @@ public class BorderShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindForTexture(final @NonNull ShaderPassContext context) {
+	public void bind(final @NonNull ShaderPassContext context) {
 		if (!BorderShader.inst().canDraw()) {
 			return;
 		}

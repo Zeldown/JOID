@@ -4,16 +4,16 @@
 
 ## Loading a model
 
-Both nodes draw an `IDrawableModel` (`dev.joid.lib.draw.model.utils`). JOID ships `OBJModel` (`dev.joid.lib.obj`), which reads a Wavefront OBJ file with a texture:
+Both nodes draw an `IDrawableModel` (`dev.joid.lib.draw.model.utils`). JOID ships `ObjModel` (`dev.joid.lib.obj`), which reads a Wavefront OBJ file with a texture:
 
 ```java
 final Resource texture = Resource.of(MyUI.class.getResourceAsStream("/models/box.png"));
-final OBJModel model = OBJModel.load("box", MyUI.class.getResourceAsStream("/models/box.obj"), texture);
+final ObjModel model = ObjModel.load("box", MyUI.class.getResourceAsStream("/models/box.obj"), texture);
 ```
 
 The model follows the OBJ convention: +X to the right, +Y up, +Z toward the viewer. With `rotationYaw(0D)` you see its +Z face. Vertex normals (`v//vn`, `v/vt/vn`) give a smooth shading, and the lighting does not depend on the size of the model.
 
-Load a model once and reuse it. `OBJModel`, its data and writing your own `IDrawableModel` are covered in [3D Models](../../drawing/models.md).
+Load a model once and reuse it. `ObjModel`, its data and writing your own `IDrawableModel` are covered in [3D Models](../../drawing/models.md).
 
 ## Displaying a model with ModelNode
 

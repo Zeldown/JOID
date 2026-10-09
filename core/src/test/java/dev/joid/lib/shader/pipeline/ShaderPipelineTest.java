@@ -296,7 +296,7 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void rendersAReadOnlyListOfPasses() {
-		final List<ShaderPass> passes = Collections.unmodifiableList(Arrays.asList(new RecordingPass("border", 200, 0F, this.log), new RecordingPass("rounded", 100, 0F, this.log)));
+		final List<IShaderPass> passes = Collections.unmodifiableList(Arrays.asList(new RecordingPass("border", 200, 0F, this.log), new RecordingPass("rounded", 100, 0F, this.log)));
 		ShaderPipeline.render(10D, 20D, 100D, 50D, passes, () -> {});
 		Assert.assertEquals(Arrays.asList("rounded texture", "rounded unbind", "border texture", "border unbind"), this.log);
 	}
@@ -306,7 +306,7 @@ public class ShaderPipelineTest {
 	}
 
 	@Getter
-	private static final class RecordingPass implements ShaderPass {
+	private static final class RecordingPass implements IShaderPass {
 
 		private final String          name;
 		private final int             priority;
@@ -340,7 +340,7 @@ public class ShaderPipelineTest {
 		}
 
 		@Override
-		public void bindForTexture(final @NonNull ShaderPassContext context) {
+		public void bind(final @NonNull ShaderPassContext context) {
 			this.context = context;
 			this.log.add(this.name + " texture");
 			this.shader.bind();

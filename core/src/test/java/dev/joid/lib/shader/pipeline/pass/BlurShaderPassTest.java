@@ -44,7 +44,7 @@ public class BlurShaderPassTest {
 	@Test
 	public void blursHorizontallyInWindowPixels() {
 		final ShaderPassContext context = this.context();
-		new BlurShaderPass(4F, true, 0).bindForTexture(context);
+		new BlurShaderPass(4F, true, 0).bind(context);
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(4F * 1366F / 1920F, (Float) values.get("u_Radius"), 1E-4F);
@@ -54,7 +54,7 @@ public class BlurShaderPassTest {
 
 	@Test
 	public void blursVerticallyInWindowPixels() {
-		new BlurShaderPass(4F, false, 0).bindForTexture(this.context());
+		new BlurShaderPass(4F, false, 0).bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(4F * 768F / 1080F, (Float) values.get("u_Radius"), 1E-4F);
 		Assert.assertArrayEquals(new float[] {0F, 1F}, (float[]) values.get("u_Direction"), 0F);
@@ -63,7 +63,7 @@ public class BlurShaderPassTest {
 	@Test
 	public void releasesTheShader() {
 		final BlurShaderPass pass = new BlurShaderPass(4F, true, 0);
-		pass.bindForTexture(this.context());
+		pass.bind(this.context());
 		pass.unbind();
 		Assert.assertFalse(this.shader.isBound());
 	}

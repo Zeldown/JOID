@@ -11,7 +11,7 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.Color;
 import lombok.NonNull;
 
-public class GradientShader extends ShaderImpl {
+public class GradientShader extends ShaderProgram {
 
 	private static final GradientShader INSTANCE = new GradientShader();
 

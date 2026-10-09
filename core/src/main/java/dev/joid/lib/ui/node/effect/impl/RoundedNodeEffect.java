@@ -2,7 +2,7 @@ package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
@@ -73,7 +73,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public ShaderPass toShaderPass(final @NonNull Node node) {
+	public IShaderPass toShaderPass(final @NonNull Node node) {
 		return new RoundedShaderPass(this, node);
 	}
 

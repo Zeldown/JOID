@@ -34,7 +34,7 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
@@ -571,7 +571,7 @@ public abstract class Node implements INode {
 								if (selfShaderEffects.isEmpty()) {
 									selfDraw.run();
 								} else {
-									final List<ShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+									final List<IShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
 									ShaderPipeline.render(this, selfPasses, selfDraw);
 								}
 							}, mouseX, mouseY);
@@ -601,7 +601,7 @@ public abstract class Node implements INode {
 
 				try {
 					if (!subtreeShaderEffects.isEmpty()) {
-						final List<ShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+						final List<IShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
 						ShaderPipeline.render(this, subtreePasses, maskDraw);
 					} else {
 						maskDraw.run();

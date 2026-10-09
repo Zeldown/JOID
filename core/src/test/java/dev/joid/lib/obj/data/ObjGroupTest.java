@@ -12,14 +12,14 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.render.tessellator.DrawMode;
 
-public class OBJGroupTest {
+public class ObjGroupTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
 	public void startsWithoutNameNorFaces() {
-		final OBJGroup group = new OBJGroup();
+		final ObjGroup group = new ObjGroup();
 		Assert.assertEquals("", group.getName());
 		Assert.assertNull(group.getDrawMode());
 		Assert.assertTrue(group.getFaces().isEmpty());
@@ -27,15 +27,15 @@ public class OBJGroupTest {
 
 	@Test
 	public void takesItsNameAndDrawMode() {
-		Assert.assertEquals("part", new OBJGroup("part").getName());
-		Assert.assertNull(new OBJGroup("part").getDrawMode());
-		Assert.assertSame(DrawMode.QUADS, new OBJGroup("part", DrawMode.QUADS).getDrawMode());
+		Assert.assertEquals("part", new ObjGroup("part").getName());
+		Assert.assertNull(new ObjGroup("part").getDrawMode());
+		Assert.assertSame(DrawMode.QUADS, new ObjGroup("part", DrawMode.QUADS).getDrawMode());
 	}
 
 	@Test
 	public void changesEveryProperty() {
-		final List<OBJFace> faces = new ArrayList<>();
-		final OBJGroup group = new OBJGroup("part");
+		final List<ObjFace> faces = new ArrayList<>();
+		final ObjGroup group = new ObjGroup("part");
 		group.setName("renamed");
 		group.setDrawMode(DrawMode.TRIANGLES);
 		group.setFaces(faces);
@@ -46,9 +46,9 @@ public class OBJGroupTest {
 
 	@Test
 	public void drawsItsFacesInOneCall() {
-		final OBJGroup group = new OBJGroup("pair", DrawMode.TRIANGLES);
-		group.getFaces().add(OBJGroupTest.face(new OBJVertex(0F, 0F), new OBJVertex(1F, 0F), new OBJVertex(0F, 1F)));
-		group.getFaces().add(OBJGroupTest.face(new OBJVertex(1F, 0F), new OBJVertex(1F, 1F), new OBJVertex(0F, 1F)));
+		final ObjGroup group = new ObjGroup("pair", DrawMode.TRIANGLES);
+		group.getFaces().add(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F)));
+		group.getFaces().add(ObjGroupTest.face(new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
 		group.render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(1, draws.size());
@@ -58,8 +58,8 @@ public class OBJGroupTest {
 
 	@Test
 	public void splitsItsQuadsIntoTriangles() {
-		final OBJGroup group = new OBJGroup("quad", DrawMode.QUADS);
-		group.getFaces().add(OBJGroupTest.face(new OBJVertex(0F, 0F), new OBJVertex(1F, 0F), new OBJVertex(1F, 1F), new OBJVertex(0F, 1F)));
+		final ObjGroup group = new ObjGroup("quad", DrawMode.QUADS);
+		group.getFaces().add(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
 		group.render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertSame(Primitive.TRIANGLES, draws.get(0).getPrimitive());
@@ -68,17 +68,17 @@ public class OBJGroupTest {
 
 	@Test
 	public void drawsNothingWithoutFaces() {
-		new OBJGroup("empty", DrawMode.TRIANGLES).render();
+		new ObjGroup("empty", DrawMode.TRIANGLES).render();
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullName() {
-		new OBJGroup(null);
+		new ObjGroup(null);
 	}
 
-	private static OBJFace face(final OBJVertex... vertices) {
-		final OBJFace face = new OBJFace();
+	private static ObjFace face(final ObjVertex... vertices) {
+		final ObjFace face = new ObjFace();
 		face.setVertices(vertices);
 		return face;
 	}

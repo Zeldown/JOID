@@ -10,7 +10,7 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.ColorGradient;
 import lombok.NonNull;
 
-public class CircleShader extends ShaderImpl {
+public class CircleShader extends ShaderProgram {
 
 	private static final CircleShader INSTANCE = new CircleShader();
 

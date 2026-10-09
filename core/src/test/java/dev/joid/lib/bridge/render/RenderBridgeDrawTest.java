@@ -23,7 +23,7 @@ public class RenderBridgeDrawTest {
 	}
 
 	@Test
-	public void drawsWithTheFixedShaderWithoutABoundShader() {
+	public void drawsWithTheDefaultShaderWithoutABoundShader() {
 		final CapturingRenderBridge render = new CapturingRenderBridge(64, 64);
 		render.draw(Primitive.TRIANGLES, RenderBridgeDrawTest.triangle(3));
 		final IShader fixed = render.getLast().getShader();

@@ -767,7 +767,7 @@
 					"source": "core/src/main/java/dev/joid/lib/draw/model/DrawModel.java",
 					"refs": [
 						"DrawModel",
-						"OBJModel",
+						"ObjModel",
 						"IDrawableModel"
 					]
 				},
@@ -788,7 +788,7 @@
 					"source": "core/src/main/java/dev/joid/lib/shader/pipeline/ShaderPipeline.java",
 					"refs": [
 						"ShaderPipeline",
-						"ShaderPass",
+						"IShaderPass",
 						"ShaderPassContext"
 					]
 				},
@@ -799,7 +799,7 @@
 					"refs": [
 						"ShaderSource",
 						"IShader",
-						"ShaderImpl"
+						"ShaderProgram"
 					]
 				}
 			]

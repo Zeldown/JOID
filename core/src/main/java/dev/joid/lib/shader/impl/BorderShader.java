@@ -6,7 +6,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.color.ColorGradient;
 import lombok.NonNull;
 
-public class BorderShader extends ShaderImpl {
+public class BorderShader extends ShaderProgram {
 
 	private static final BorderShader INSTANCE = new BorderShader();
 

@@ -14,7 +14,7 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BorderShader;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -50,8 +50,8 @@ public class BorderNodeEffectTest {
 
 	@Test
 	public void passesItsValuesToTheShader() {
-		final ShaderPass pass = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F, BorderMode.IN).fill(false).toShaderPass(RectNode.create(0D, 0D, 10D, 10D));
-		pass.bindForTexture(this.context());
+		final IShaderPass pass = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F, BorderMode.IN).fill(false).toShaderPass(RectNode.create(0D, 0D, 10D, 10D));
+		pass.bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(5F, pass.expansion(), 0F);
 		Assert.assertEquals(200, pass.priority());
@@ -80,8 +80,8 @@ public class BorderNodeEffectTest {
 		Assert.assertSame(effect, effect.color(() -> color[0]).width(() -> width[0]));
 		color[0] = new Color(0.6F, 0.4F, 0.2F, 0.5F);
 		width[0] = 8F;
-		final ShaderPass pass = effect.toShaderPass(RectNode.create(0D, 0D, 10D, 10D));
-		pass.bindForTexture(this.context());
+		final IShaderPass pass = effect.toShaderPass(RectNode.create(0D, 0D, 10D, 10D));
+		pass.bind(this.context());
 		Assert.assertEquals(10F, pass.expansion(), 0F);
 		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 0.5F}, (float[]) this.shader.getValues().get("u_BorderColor"), 0F);
 	}

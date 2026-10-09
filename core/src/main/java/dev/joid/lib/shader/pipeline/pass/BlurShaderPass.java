@@ -1,11 +1,11 @@
 package dev.joid.lib.shader.pipeline.pass;
 
 import dev.joid.lib.shader.impl.BlurShader;
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import lombok.NonNull;
 
-public class BlurShaderPass implements ShaderPass {
+public class BlurShaderPass implements IShaderPass {
 
 	private final float radius;
 	private final int priorityValue;
@@ -33,7 +33,7 @@ public class BlurShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindForTexture(final @NonNull ShaderPassContext context) {
+	public void bind(final @NonNull ShaderPassContext context) {
 		if (!BlurShader.inst().canDraw()) {
 			return;
 		}

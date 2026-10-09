@@ -32,7 +32,7 @@ public abstract class RenderBridge implements IRenderBridge {
 	private final Deque<RenderState> stateStack;
 
 	private RenderState state;
-	private IShader     fixedShader;
+	private IShader     defaultShader;
 	private ITexture    emptyTexture;
 
 	protected RenderBridge() {
@@ -240,7 +240,7 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	@Override
 	public final void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer) {
-		final IShader shader = this.state.getShader() == null ? this.getFixedShader() : this.state.getShader();
+		final IShader shader = this.state.getShader() == null ? this.getDefaultShader() : this.state.getShader();
 		if (!shader.isActive() || buffer.getCount() == 0 || this.state.getViewportWidth() <= 0 || this.state.getViewportHeight() <= 0) {
 			return;
 		}
@@ -266,11 +266,11 @@ public abstract class RenderBridge implements IRenderBridge {
 		return this.resolveTexture();
 	}
 
-	protected final @NonNull IShader getFixedShader() {
-		if (this.fixedShader == null) {
-			this.fixedShader = this.createShader(CoreShader.FIXED.read(ShaderStage.VERTEX), CoreShader.FIXED.read(ShaderStage.FRAGMENT), BlendState.DISABLED);
+	protected final @NonNull IShader getDefaultShader() {
+		if (this.defaultShader == null) {
+			this.defaultShader = this.createShader(CoreShader.DEFAULT.read(ShaderStage.VERTEX), CoreShader.DEFAULT.read(ShaderStage.FRAGMENT), BlendState.DISABLED);
 		}
-		return this.fixedShader;
+		return this.defaultShader;
 	}
 
 	protected final @NonNull ITexture getEmptyTexture() {

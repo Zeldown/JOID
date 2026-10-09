@@ -12,7 +12,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.dto.ShaderPassContext;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -242,7 +242,7 @@ public class NodeEffectTest {
 
 	public static final class ShaderEffect extends NodeEffect<Node> {
 
-		private final ShaderPass pass;
+		private final IShaderPass pass;
 
 		private ShaderEffect(final List<String> trace) {
 			this.pass = new TracePass(trace);
@@ -254,14 +254,14 @@ public class NodeEffectTest {
 		}
 
 		@Override
-		public ShaderPass toShaderPass(final @NonNull Node node) {
+		public IShaderPass toShaderPass(final @NonNull Node node) {
 			return this.pass;
 		}
 
 	}
 
 	@AllArgsConstructor
-	public static final class TracePass implements ShaderPass {
+	public static final class TracePass implements IShaderPass {
 
 		private final List<String> trace;
 
@@ -276,7 +276,7 @@ public class NodeEffectTest {
 		}
 
 		@Override
-		public void bindForTexture(final @NonNull ShaderPassContext context) {
+		public void bind(final @NonNull ShaderPassContext context) {
 			this.trace.add("bind");
 		}
 

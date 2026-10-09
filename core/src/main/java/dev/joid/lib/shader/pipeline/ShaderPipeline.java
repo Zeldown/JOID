@@ -29,19 +29,19 @@ public final class ShaderPipeline {
 	private static final Map<List<Integer>, PooledFrameBuffers> FBO_POOL = new HashMap<>();
 	private static int pipelineDepth = 0;
 
-	public static void render(final @NonNull Node node, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
+	public static void render(final @NonNull Node node, final @NonNull Runnable baseDraw, final @NonNull IShaderPass... passes) {
 		ShaderPipeline.render(node, new ArrayList<>(Arrays.asList(passes)), baseDraw);
 	}
 
-	public static void render(final @NonNull Node node, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
+	public static void render(final @NonNull Node node, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
 		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), passes, baseDraw);
 	}
 
-	public static void render(final double x, final double y, final double width, final double height, final @NonNull Runnable baseDraw, final @NonNull ShaderPass... passes) {
+	public static void render(final double x, final double y, final double width, final double height, final @NonNull Runnable baseDraw, final @NonNull IShaderPass... passes) {
 		ShaderPipeline.render(x, y, width, height, new ArrayList<>(Arrays.asList(passes)), baseDraw);
 	}
 
-	public static void render(final double x, final double y, final double width, final double height, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
+	public static void render(final double x, final double y, final double width, final double height, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
 		if (passes.isEmpty()) {
 			baseDraw.run();
 			return;
@@ -49,11 +49,11 @@ public final class ShaderPipeline {
 
 		ShaderPipeline.pipelineDepth++;
 		try {
-			final List<ShaderPass> sorted = new ArrayList<>(passes);
-			sorted.sort(Comparator.comparingInt(ShaderPass::priority));
+			final List<IShaderPass> sorted = new ArrayList<>(passes);
+			sorted.sort(Comparator.comparingInt(IShaderPass::priority));
 
 			float expansion = 0F;
-			for (final ShaderPass pass : sorted) {
+			for (final IShaderPass pass : sorted) {
 				expansion = Math.max(expansion, pass.expansion());
 			}
 			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, BridgeHandler.RENDER.get().getPixelGrid()), sorted, baseDraw);
@@ -106,7 +106,7 @@ public final class ShaderPipeline {
 		render.resetTexture();
 	}
 
-	private static void renderMultiPass(final @NonNull ShaderPassContext context, final @NonNull List<ShaderPass> passes, final @NonNull Runnable baseDraw) {
+	private static void renderMultiPass(final @NonNull ShaderPassContext context, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
 		if (context.getWidth() <= 0D || context.getHeight() <= 0D) {
 			baseDraw.run();
 			return;
@@ -124,7 +124,7 @@ public final class ShaderPipeline {
 			FrameBuffer src = fbos[0];
 			FrameBuffer dst = fbos[1];
 			for (int i = 0; i < passes.size() - 1; i++) {
-				final ShaderPass pass = passes.get(i);
+				final IShaderPass pass = passes.get(i);
 				final FrameBuffer source = src;
 				ShaderPipeline.drawInto(dst, context, () -> ShaderPipeline.drawPass(pass, context, source));
 				src = dst;
@@ -155,8 +155,8 @@ public final class ShaderPipeline {
 		}
 	}
 
-	private static void drawPass(final @NonNull ShaderPass pass, final @NonNull ShaderPassContext context, final @NonNull FrameBuffer source) {
-		pass.bindForTexture(context);
+	private static void drawPass(final @NonNull IShaderPass pass, final @NonNull ShaderPassContext context, final @NonNull FrameBuffer source) {
+		pass.bind(context);
 		try {
 			ShaderPipeline.drawTexturedQuad(source, context);
 		} finally {

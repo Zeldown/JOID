@@ -26,7 +26,7 @@ public final class ExternalRaster {
 		ExternalRaster.instance = this;
 	}
 
-	public void drawRaster(final double x, final double y, final double width, final double height, final @NonNull IRasterDrawable drawable) {
+	public void drawRaster(final double x, final double y, final double width, final double height, final @NonNull IExternalRasterDrawable drawable) {
 		if (width <= 0D || height <= 0D) {
 			return;
 		}

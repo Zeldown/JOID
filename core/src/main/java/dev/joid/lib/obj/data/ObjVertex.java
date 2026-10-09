@@ -5,13 +5,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public final class OBJVertex {
+public final class ObjVertex {
 
 	private final float x;
 	private final float y;
 	private final float z;
 
-	public OBJVertex(final float x, final float y) {
+	public ObjVertex(final float x, final float y) {
 		this(x, y, 0F);
 	}
 

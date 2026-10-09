@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.draw.model.utils.IDrawableModel;
-import dev.joid.lib.obj.OBJModel;
+import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.dto.ResourceData;
 import dev.joid.lib.ui.core.UI;
@@ -123,8 +123,8 @@ public class ModelNodeTest {
 		return draws.get(1);
 	}
 
-	private static OBJModel cube() {
-		return OBJModel.load("cube", ModelNodeTest.class.getResourceAsStream("/dev/joid/lib/ui/node/impl/design/model/cube.obj"), ResourceBuilder.create().cache(null).compute("cube", () -> new ResourceData("cube", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)})));
+	private static ObjModel cube() {
+		return ObjModel.load("cube", ModelNodeTest.class.getResourceAsStream("/dev/joid/lib/ui/node/impl/design/model/cube.obj"), ResourceBuilder.create().cache(null).compute("cube", () -> new ResourceData("cube", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)})));
 	}
 
 	@AllArgsConstructor

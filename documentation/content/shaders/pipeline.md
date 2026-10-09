@@ -1,6 +1,6 @@
 # Shader Pipeline
 
-In [Styling and Effects](../concepts/styling.md) you saw that a node with shader effects draws into an offscreen buffer, then runs one pass per effect in a fixed order. `ShaderPipeline` (`dev.joid.lib.shader.pipeline`) is that mechanism: it renders a drawing through a chain of shader passes. The drawing is rendered offscreen, each `ShaderPass` processes the result in turn, and the last one composites it on the current target. The shader effects of nodes (`RoundedNodeEffect`, `CircleNodeEffect`, `BlurNodeEffect`, `BorderNodeEffect`) run through it; call it yourself to post-process your own drawing, and implement `ShaderPass` to add your own processing.
+In [Styling and Effects](../concepts/styling.md) you saw that a node with shader effects draws into an offscreen buffer, then runs one pass per effect in a fixed order. `ShaderPipeline` (`dev.joid.lib.shader.pipeline`) is that mechanism: it renders a drawing through a chain of shader passes. The drawing is rendered offscreen, each `IShaderPass` processes the result in turn, and the last one composites it on the current target. The shader effects of nodes (`RoundedNodeEffect`, `CircleNodeEffect`, `BlurNodeEffect`, `BorderNodeEffect`) run through it; call it yourself to post-process your own drawing, and implement `IShaderPass` to add your own processing.
 
 ## Rendering through passes
 
@@ -26,8 +26,8 @@ The rectangle is blurred horizontally, then vertically, then outlined, whatever 
 3. The region is the rectangle enlarged on every side by the largest `expansion()` of the passes. When the transform is axis-aligned, the region is extended outward to whole window pixels.
 4. Two framebuffers the size of the region in window pixels are taken from the pool.
 5. The first framebuffer is cleared to transparent, and the drawing draws into it with normal blending, in the same coordinates as on screen.
-6. Each pass but the last is bound with `bindForTexture(...)` and draws the previous framebuffer into the other one, then they swap.
-7. The last pass is bound with `bindForTexture(...)` and draws the result on the current target, as a quad covering the region, with premultiplied blending. Under a rotation or a skew, the quad is enlarged by one texel and sampled with `CLAMP_TO_EDGE`, so its edges stay smooth.
+6. Each pass but the last is bound with `bind(...)` and draws the previous framebuffer into the other one, then they swap.
+7. The last pass is bound with `bind(...)` and draws the result on the current target, as a quad covering the region, with premultiplied blending. Under a rotation or a skew, the quad is enlarged by one texel and sampled with `CLAMP_TO_EDGE`, so its edges stay smooth.
 
 A rectangle with a zero or negative width or height skips the passes: the drawing runs directly. The render state is saved before the render and restored after, even when a draw throws. Anything the drawing draws outside the region is cut off: expansion is the only way for a pass to draw outside the rectangle.
 
@@ -48,16 +48,16 @@ A shape is therefore cut first, then blurred, then outlined. Choose the priority
 
 `expansion()` returns, in canvas units, how far a pass needs to draw outside the rectangle: a blur spreads by its radius, an outer border by its width. The pipeline enlarges the region by the largest expansion of all its passes, so every pass of the render receives the same region (`ShaderPassContext.getExpansion()` is that largest value). Keep it as small as the effect allows: the framebuffers grow with it.
 
-## Writing a ShaderPass
+## Writing a IShaderPass
 
-A pass binds a shader in `bindForTexture`, and releases it in `unbind`. The pipeline then draws one quad covering the region (`getRegionX()`...), with the previous result bound as the current texture, a white vertex color and premultiplied blending. In the shader:
+A pass binds a shader in `bind`, and releases it in `unbind`. The pipeline then draws one quad covering the region (`getRegionX()`...), with the previous result bound as the current texture, a white vertex color and premultiplied blending. In the shader:
 
 - The texture is the previous result, with premultiplied alpha. Read it through a sampler you do not assign (see [Textures and samplers](custom-shaders.md#textures-and-samplers)).
 - The texture coordinates go from `0` to `1` across the region; `getTexelWidth()` / `getTexelHeight()` give the size of one pixel, for neighbor samples.
 - Write a premultiplied color to `fragColor`.
 - Distances in canvas units become window pixels with `getGrid().getScaleX()` / `getScaleY()`.
 
-This pass turns the result to grayscale. A shader is a pair of GLSL files, a vertex shader and a fragment shader, loaded by a `ShaderImpl` subclass. JOID declares the inputs and the output for you: the vertex attributes `aPosition` and `aTexCoord`, the matrices `uProjectionMatrix` and `uModelViewMatrix`, and `fragColor`, the color the fragment shader writes. The next page, [Custom Shaders](custom-shaders.md), explains this format, the loading and the uniforms in full. The shader files:
+This pass turns the result to grayscale. A shader is a pair of GLSL files, a vertex shader and a fragment shader, loaded by a `ShaderProgram` subclass. JOID declares the inputs and the output for you: the vertex attributes `aPosition` and `aTexCoord`, the matrices `uProjectionMatrix` and `uModelViewMatrix`, and `fragColor`, the color the fragment shader writes. The next page, [Custom Shaders](custom-shaders.md), explains this format, the loading and the uniforms in full. The shader files:
 
 ```glsl
 out vec2 vTexCoord;
@@ -84,7 +84,7 @@ void main() {
 The shader class, as on [Custom Shaders](custom-shaders.md):
 
 ```java
-public class GrayscaleShader extends ShaderImpl {
+public class GrayscaleShader extends ShaderProgram {
 
 	private static final GrayscaleShader INSTANCE = new GrayscaleShader();
 
@@ -107,7 +107,7 @@ public class GrayscaleShader extends ShaderImpl {
 The pass:
 
 ```java
-public class GrayscaleShaderPass implements ShaderPass {
+public class GrayscaleShaderPass implements IShaderPass {
 
 	private final float amount;
 
@@ -126,7 +126,7 @@ public class GrayscaleShaderPass implements ShaderPass {
 	}
 
 	@Override
-	public void bindForTexture(final @NonNull ShaderPassContext context) {
+	public void bind(final @NonNull ShaderPassContext context) {
 		if (GrayscaleShader.inst().canDraw()) {
 			GrayscaleShader.inst().bind(this.amount);
 		}
@@ -159,7 +159,7 @@ public class GrayscaleNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public ShaderPass toShaderPass(final @NonNull Node node) {
+	public IShaderPass toShaderPass(final @NonNull Node node) {
 		return new GrayscaleShaderPass(this.amount);
 	}
 
@@ -196,25 +196,25 @@ The node runs one pipeline render for its `SELF` passes and one for its `CHILDRE
 
 | Method | Description |
 |---|---|
-| `static render(Node node, Runnable baseDraw, ShaderPass... passes)` | Renders `baseDraw` through `passes`, over the node's rectangle (`getX()`, `getY()`, `getWidth()`, `getHeight()`). |
-| `static render(Node node, List<ShaderPass> passes, Runnable baseDraw)` | Same with a list. The list is not modified. |
-| `static render(double x, double y, double width, double height, Runnable baseDraw, ShaderPass... passes)` | Renders `baseDraw` through `passes` over the given rectangle. |
-| `static render(double x, double y, double width, double height, List<ShaderPass> passes, Runnable baseDraw)` | Same with a list. |
+| `static render(Node node, Runnable baseDraw, IShaderPass... passes)` | Renders `baseDraw` through `passes`, over the node's rectangle (`getX()`, `getY()`, `getWidth()`, `getHeight()`). |
+| `static render(Node node, List<IShaderPass> passes, Runnable baseDraw)` | Same with a list. The list is not modified. |
+| `static render(double x, double y, double width, double height, Runnable baseDraw, IShaderPass... passes)` | Renders `baseDraw` through `passes` over the given rectangle. |
+| `static render(double x, double y, double width, double height, List<IShaderPass> passes, Runnable baseDraw)` | Same with a list. |
 | `static releaseUnused()` | Deletes the pooled framebuffers unused for 5 seconds. Called at every frame by `UIBridge`. |
 | `static cleanup()` | Deletes every pooled framebuffer. |
 
-### ShaderPass
+### IShaderPass
 
 | Method | Description |
 |---|---|
 | `int priority()` | Order of the pass, lower first. |
 | `float expansion()` | Room needed outside the rectangle, in canvas units. Default `0F`. |
-| `void bindForTexture(ShaderPassContext context)` | Binds the shader that processes the previous result, drawn as a textured quad. |
-| `void unbind()` | Releases what `bindForTexture` set. Always called after the draw, even when it throws. |
+| `void bind(ShaderPassContext context)` | Binds the shader that processes the previous result, drawn as a textured quad. |
+| `void unbind()` | Releases what `bind` set. Always called after the draw, even when it throws. |
 
 ### ShaderPassContext
 
-`ShaderPassContext` (`dev.joid.lib.shader.pipeline.dto`) describes the area of a render. The pipeline creates one per render and passes it to `bindForTexture`.
+`ShaderPassContext` (`dev.joid.lib.shader.pipeline.dto`) describes the area of a render. The pipeline creates one per render and passes it to `bind`.
 
 | Method | Description |
 |---|---|

@@ -14,7 +14,7 @@ public enum CoreShader {
 	BLUR,
 	BORDER,
 	CIRCLE,
-	FIXED,
+	DEFAULT,
 	FONT,
 	GRADIENT,
 	LINE,

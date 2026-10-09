@@ -9,12 +9,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public final class OBJFace {
+public final class ObjFace {
 
-	private OBJVertex[]            vertices;
-	private OBJVertex              faceNormal;
-	private OBJVertex[]            vertexNormals;
-	private OBJTextureCoordinate[] textureCoordinates;
+	private ObjVertex[]            vertices;
+	private ObjVertex              faceNormal;
+	private ObjVertex[]            vertexNormals;
+	private ObjTextureCoordinate[] textureCoordinates;
 
 	public void render(final @NonNull Tessellator tessellator) {
 		final float textureOffset = 0.0005F;
@@ -43,7 +43,7 @@ public final class OBJFace {
 		float offsetV;
 		for (int i = 0; i < this.vertices.length; ++i) {
 			if (smooth) {
-				final OBJVertex normal = this.vertexNormals[i];
+				final ObjVertex normal = this.vertexNormals[i];
 				final float length = (float) Math.sqrt(normal.getX() * normal.getX() + normal.getY() * normal.getY() + normal.getZ() * normal.getZ());
 				if (length > 0F) {
 					tessellator.setNormal(normal.getX() / length, normal.getY() / length, normal.getZ() / length);
@@ -71,12 +71,12 @@ public final class OBJFace {
 		}
 	}
 
-	public @NonNull OBJVertex normal() {
+	public @NonNull ObjVertex normal() {
 		final Vector3d v1 = new Vector3d(this.vertices[1].getX() - this.vertices[0].getX(), this.vertices[1].getY() - this.vertices[0].getY(), this.vertices[1].getZ() - this.vertices[0].getZ());
 		final Vector3d v2 = new Vector3d(this.vertices[2].getX() - this.vertices[0].getX(), this.vertices[2].getY() - this.vertices[0].getY(), this.vertices[2].getZ() - this.vertices[0].getZ());
 		final Vector3d normalVector = this.crossProduct(v1, v2);
 		normalVector.normalize();
-		return new OBJVertex((float) normalVector.x, (float) normalVector.y, (float) normalVector.z);
+		return new ObjVertex((float) normalVector.x, (float) normalVector.y, (float) normalVector.z);
 	}
 
 	private Vector3d crossProduct(final @NonNull Vector3d vector1, final @NonNull Vector3d vector2) {

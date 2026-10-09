@@ -33,10 +33,10 @@ void main() {
 }
 ```
 
-A `ShaderImpl` subclass loads the pair and sets the uniforms:
+A `ShaderProgram` subclass loads the pair and sets the uniforms:
 
 ```java
-public class WaveShader extends ShaderImpl {
+public class WaveShader extends ShaderProgram {
 
 	private static final WaveShader INSTANCE = new WaveShader();
 
@@ -105,9 +105,9 @@ WaveNode.create(100, 100, 600, 160).attach(this);
 
 `load(...)` only reads the sources: the shader is compiled through the render bridge the first time it is used (`bind()`, `canDraw()`, `isAvailable()` or `getShader()`), on the render thread. A static instance such as `WaveShader.INSTANCE` can therefore be created anywhere, even before the backend is registered.
 
-## Loading a shader with ShaderImpl
+## Loading a shader with ShaderProgram
 
-`ShaderImpl` (`dev.joid.lib.shader.impl`) is the base class of the built-in shaders and the simplest way to write one, as in [A first shader](#a-first-shader).
+`ShaderProgram` (`dev.joid.lib.shader.impl`) is the base class of the built-in shaders and the simplest way to write one, as in [A first shader](#a-first-shader).
 
 - `load(Object vertexShader, Object fragmentShader)` reads both sources as JOID GLSL (UTF-8) from any [asset handle](../resources/assets.md) (an `InputStream`, a `File`, a URL `String`, or the handle of a locator you registered, such as a resource of a game) and closes what it opened. On any exception it prints `[JOID] Unable to load the shader <ClassName>: <message>` and the stack trace, and the shader stays unavailable.
 - `getShader()` creates the shader through the render bridge with `BlendState.NORMAL` on its first call, then returns it; `null` when the sources could not be read or the creation threw (`[JOID] Unable to create the shader <ClassName>: <message>`, printed once).
@@ -131,7 +131,7 @@ if (!shader.isActive()) {
 - `createShader(ShaderSource vertex, ShaderSource fragment, BlendState blend)` translates, compiles and links the pair. `blend` is the blending mode applied while the shader is bound. Compile errors do not throw: the shader is returned inactive.
 - `ShaderSource.read(ShaderStage stage, Object handle)` reads an asset handle (UTF-8), closes it and parses it; an `IOException` is rethrown as `UncheckedIOException`. `ShaderSource.parse(ShaderStage stage, String code)` parses code.
 - `BlendState` (`dev.joid.lib.bridge.render.state`) provides `NORMAL` (straight alpha), `PREMULTIPLIED`, `DISABLED`, and `create(...)` for custom equations and factors.
-- `IShader` has no release method: create each shader once and reuse it. `createShader` runs on the render thread, after the backend is registered: the OpenGL backends need their context. A `ShaderImpl` has no such constraint, since it creates its shader on first use.
+- `IShader` has no release method: create each shader once and reuse it. `createShader` runs on the render thread, after the backend is registered: the OpenGL backends need their context. A `ShaderProgram` has no such constraint, since it creates its shader on first use.
 
 ## Binding and drawing
 
@@ -146,7 +146,7 @@ What the draw calls send to the shader:
 
 ## Setting uniforms
 
-Set a uniform by name on the `IShader` with `uniform(name, values...)`. Each call returns the shader, so the values of a draw chain. In a `ShaderImpl` subclass:
+Set a uniform by name on the `IShader` with `uniform(name, values...)`. Each call returns the shader, so the values of a draw chain. In a `ShaderProgram` subclass:
 
 ```java
 public void bind(final Color tint, final float[] transform) {
@@ -222,7 +222,7 @@ The backend fills the built-in uniforms. The standard vertex transformation is `
 
 Your code is compiled as the highest of GLSL 1.10, 1.20, 1.30, 1.40, 1.50 and 3.30 that the OpenGL context compiles on LWJGL 2 and LWJGL 3, and as GLSL 4.50 on Vulkan. To run on every backend and every OpenGL context, keep the code within what these versions share:
 
-- GLSL 1.20 features only: no `%` or bitwise operators on integers, no `uint`, no `switch`, no `texelFetch` or `textureSize`, no `flat` varyings. LWJGL 2 and LWJGL 3 on a context below GLSL 1.30 refuse a shader that uses one of them, with a message naming the feature and the GLSL version it needs (`The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20`): `createShader` throws `UnsupportedOperationException` and `ShaderImpl` prints it. So that you see it on your own machine, whatever its backend, every shader created in [dev mode](../concepts/dev-tools.md) is checked against GLSL 1.20, once per shader and feature: `[JOID] A fragment shader uses flat varyings, which needs GLSL 1.30: the OpenGL 2.1 contexts (GLSL 1.20) that JOID supports refuse it, keep to GLSL 1.20 to draw on every backend`.
+- GLSL 1.20 features only: no `%` or bitwise operators on integers, no `uint`, no `switch`, no `texelFetch` or `textureSize`, no `flat` varyings. LWJGL 2 and LWJGL 3 on a context below GLSL 1.30 refuse a shader that uses one of them, with a message naming the feature and the GLSL version it needs (`The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20`): `createShader` throws `UnsupportedOperationException` and `ShaderProgram` prints it. So that you see it on your own machine, whatever its backend, every shader created in [dev mode](../concepts/dev-tools.md) is checked against GLSL 1.20, once per shader and feature: `[JOID] A fragment shader uses flat varyings, which needs GLSL 1.30: the OpenGL 2.1 contexts (GLSL 1.20) that JOID supports refuse it, keep to GLSL 1.20 to draw on every backend`.
 - On an OpenGL 2.0 context, LWJGL 2 and LWJGL 3 compile GLSL 1.10, which converts no integer to a float. The translator does it for you there: an integer literal used as a float (`vec4(1)`, `x * 2`, `pow(x, 2)`) is written `1.0`, while the integers of integer expressions stay (array indices, `int`, `ivec` and `bool` variables, uniforms and functions, `for (int i = 0; i < 4; i++)`). An integer argument of a function of yours that takes an `int` is not recognized: write it from an `int` variable.
 - `texture(...)` to sample (below GLSL 1.30 it is defined to `texture2D`), never `texture2D`, `gl_FragColor`, `attribute` or `varying`.
 
@@ -257,7 +257,7 @@ Declarations and the `#version` line are replaced by empty lines and the backend
 
 ## Built-in shaders
 
-The built-in shaders are `ShaderImpl` singletons in `dev.joid.lib.shader.impl`, used by the drawing helpers and the built-in shader passes. Each static `use(...)` binds the shader, runs the draw, unbinds it and restores the shader bound before; when the shader is not available, it does nothing at all (the draw is not run) and warns once in dev mode.
+The built-in shaders are `ShaderProgram` singletons in `dev.joid.lib.shader.impl`, used by the drawing helpers and the built-in shader passes. Each static `use(...)` binds the shader, runs the draw, unbinds it and restores the shader bound before; when the shader is not available, it does nothing at all (the draw is not run) and warns once in dev mode.
 
 | Shader | Methods | Purpose |
 |---|---|---|
@@ -278,7 +278,7 @@ In practice, prefer the higher-level APIs: `DrawUtils.SHAPE.drawRoundedRect(...)
 
 ## Reference
 
-### ShaderImpl
+### ShaderProgram
 
 | Member | Description |
 |---|---|

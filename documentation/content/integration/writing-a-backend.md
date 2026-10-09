@@ -98,7 +98,7 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 | `clear(float red, float green, float blue, float alpha)` | Clear the color of the current target. |
 | `clearDepth()` | Clear the depth of the current target to the far plane (1), whatever the depth write state; the depth write state is kept. |
 | `clearStencil()` | Clear the stencil of the current target to 0. |
-| `drawPrimitive(Primitive primitive, VertexBuffer buffer, IShader shader)` | Draw with the current state and `shader`. `RenderBridge.draw(...)` calls it with the bound shader, or with the fixed shader when none is bound, and only when that shader compiled (`isActive()`), the buffer holds vertices and the viewport is not empty, so every backend skips the same draws. |
+| `drawPrimitive(Primitive primitive, VertexBuffer buffer, IShader shader)` | Draw with the current state and `shader`. `RenderBridge.draw(...)` calls it with the bound shader, or with the default shader when none is bound, and only when that shader compiled (`isActive()`), the buffer holds vertices and the viewport is not empty, so every backend skips the same draws. |
 | `createTexture()` | Create an empty `ITexture`. |
 | `createFrameBuffer(int width, int height)` | Create an `IFrameBuffer` with a color texture of that size. |
 | `createShader(ShaderSource vertex, ShaderSource fragment, BlendState blend)` | Translate, compile and link a shader. |
@@ -108,7 +108,7 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 | `getModelView()` / `getProjection()` | `MatrixStack`s; `getMatrix()` returns a column-major `float[16]`, `getNormalMatrix()` a `float[9]` for normals. |
 | `getState()` | The current `RenderState`: color, blend, depth, cull, lighting, color mask, alpha test and threshold, line width and smoothing, stencil, viewport, framebuffer, texture with its filter and wrap, shader. |
 | `getStateStack()` | The states saved by `pushState()`. |
-| `getFixedShader()` | The `CoreShader.FIXED` shader, created once with your `createShader` and `BlendState.DISABLED`. |
+| `getDefaultShader()` | The `CoreShader.DEFAULT` shader, created once with your `createShader` and `BlendState.DISABLED`. |
 | `getEmptyTexture()` | A 1×1 opaque white texture, created once with your `createTexture()`. |
 | `resolveTexture()` | The `SamplerBinding` of the bound texture: the texture of `texture(...)` with its filter, wrap and mipmaps as a `TextureSampling`, or `getEmptyTexture()` (`NEAREST`, `REPEAT`) when none is bound or it is not allocated. |
 | `resolveSampler(UniformSampler sampler)` | The `SamplerBinding` of a sampler of a shader: its texture with its filter and wrap, or `resolveTexture()` when it was never set or its texture is not allocated. Every backend then samples the same texture. |
@@ -151,7 +151,7 @@ Without a bound shader, a draw outputs the bound texture sampled at the texture 
 rgb × (0.6 + max(normalize(normalMatrix × normal).z, 0)), clamped to 1
 ```
 
-A null normal gets no diffuse light. The light does not depend on the scale of the model: the testkit checks that a face is lit the same at scale 1 and 100. The core shader `CoreShader.FIXED` implements exactly this. `RenderBridge` hands it to `drawPrimitive` for every draw without a bound shader (`getFixedShader()`); a native bridge reads its stages with `CoreShader.FIXED.read(ShaderStage.VERTEX)` and `read(ShaderStage.FRAGMENT)` and pass them to your own `createShader` to do the same.
+A null normal gets no diffuse light. The light does not depend on the scale of the model: the testkit checks that a face is lit the same at scale 1 and 100. The core shader `CoreShader.DEFAULT` implements exactly this. `RenderBridge` hands it to `drawPrimitive` for every draw without a bound shader (`getDefaultShader()`); a native bridge reads its stages with `CoreShader.DEFAULT.read(ShaderStage.VERTEX)` and `read(ShaderStage.FRAGMENT)` and pass them to your own `createShader` to do the same.
 
 ### Coordinates
 
@@ -287,7 +287,7 @@ Each generated header ends with a `#line` directive, so compiler errors point to
 - A backend that declares something its own way subclasses the translator (protected constructor) and overrides its hooks: `isUniform(ShaderBuiltin)` and `declareBuiltin(ShaderBuiltin)` for the built-in uniforms it provides otherwise, `getInternals(vertex, fragment)` for its own uniforms, `getLayout()` for the qualifier of the block, `getMain()` for the wrapping `main`, and `declareAttribute`, `declareSampler`, `declareVarying` for one declaration line each. The Vulkan translator does so.
 - In the JOID repository, `./gradlew validateShaders` writes every core shader in every dialect into `build/shaders/<dialect>/` (`exportShaders`, the testkit's `GlslExport`) and compiles each file with `glslangValidator`, or the command given with `-Pglslang=<command>`; it fails with the log of each shader that does not compile.
 
-The shaders of the core are listed by the `CoreShader` enum (`dev.joid.lib.bridge.render.shader.source`): `BLUR`, `BORDER`, `CIRCLE`, `FIXED`, `FONT`, `GRADIENT`, `LINE`, `ROUNDED` and `SHADOW`. `open(ShaderStage)` opens the JOID GLSL file of a stage, `read(ShaderStage)` parses it into a `ShaderSource`, and `create(BlendState)` creates the shader through the registered render bridge. The files are always read through the class loader of the core jar, so a backend in another jar or class loader (a mod loader) reads them the same way. A missing file throws `IllegalStateException`.
+The shaders of the core are listed by the `CoreShader` enum (`dev.joid.lib.bridge.render.shader.source`): `BITMAP`, `BLUR`, `BORDER`, `CIRCLE`, `DEFAULT`, `FONT`, `GRADIENT`, `LINE`, `ROUNDED` and `SHADOW`. `open(ShaderStage)` opens the JOID GLSL file of a stage, `read(ShaderStage)` parses it into a `ShaderSource`, and `create(BlendState)` creates the shader through the registered render bridge. The files are always read through the class loader of the core jar, so a backend in another jar or class loader (a mod loader) reads them the same way. A missing file throws `IllegalStateException`.
 
 ### Uniforms in the core
 

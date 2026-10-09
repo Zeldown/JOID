@@ -11,7 +11,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BlurShader;
-import dev.joid.lib.shader.pipeline.ShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -29,7 +29,7 @@ public class BlurNodeEffectTest {
 
 	@Test
 	public void blursHorizontallyThenVertically() {
-		final List<ShaderPass> passes = BlurNodeEffect.create(4F).toShaderPasses(RectNode.create(0D, 0D, 10D, 10D));
+		final List<IShaderPass> passes = BlurNodeEffect.create(4F).toShaderPasses(RectNode.create(0D, 0D, 10D, 10D));
 		Assert.assertEquals(2, passes.size());
 		Assert.assertEquals(150, passes.get(0).priority());
 		Assert.assertEquals(151, passes.get(1).priority());

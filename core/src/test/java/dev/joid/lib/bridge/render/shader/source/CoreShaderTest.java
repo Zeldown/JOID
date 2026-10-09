@@ -26,8 +26,8 @@ public class CoreShaderTest {
 
 	@Test
 	public void readsTheStageItIsAskedFor() {
-		Assert.assertSame(ShaderStage.VERTEX, CoreShader.FIXED.read(ShaderStage.VERTEX).getStage());
-		Assert.assertSame(ShaderStage.FRAGMENT, CoreShader.FIXED.read(ShaderStage.FRAGMENT).getStage());
+		Assert.assertSame(ShaderStage.VERTEX, CoreShader.DEFAULT.read(ShaderStage.VERTEX).getStage());
+		Assert.assertSame(ShaderStage.FRAGMENT, CoreShader.DEFAULT.read(ShaderStage.FRAGMENT).getStage());
 	}
 
 	@Test

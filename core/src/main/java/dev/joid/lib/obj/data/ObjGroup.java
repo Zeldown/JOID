@@ -11,21 +11,21 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public final class OBJGroup {
+public final class ObjGroup {
 
 	private String        name;
 	private DrawMode      drawMode;
-	private List<OBJFace> faces;
+	private List<ObjFace> faces;
 
-	public OBJGroup() {
+	public ObjGroup() {
 		this("");
 	}
 
-	public OBJGroup(final @NonNull String name) {
+	public ObjGroup(final @NonNull String name) {
 		this(name, null);
 	}
 
-	public OBJGroup(final @NonNull String name, final DrawMode drawMode) {
+	public ObjGroup(final @NonNull String name, final DrawMode drawMode) {
 		this.name     = name;
 		this.drawMode = drawMode;
 		this.faces    = new ArrayList<>();
@@ -35,7 +35,7 @@ public final class OBJGroup {
 		if (this.faces.size() > 0) {
 			final Tessellator tessellator = Tessellator.inst().copy();
 			tessellator.start(this.drawMode);
-			for (final OBJFace face : this.faces) {
+			for (final ObjFace face : this.faces) {
 				face.render(tessellator);
 			}
 			tessellator.draw();

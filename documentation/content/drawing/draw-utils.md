@@ -180,7 +180,7 @@ A program that embeds JOID often has its own renderer for some content, such as 
 
 1. it snaps the box to the [pixel grid](#pixel-alignment) and measures it in real pixels (at most 4096 per side);
 2. it clears a region of that size in a framebuffer it keeps (grown when a larger box comes, reused otherwise) to transparent, depth included;
-3. it calls `drawable.draw(width, height)` (`IRasterDrawable`) with the size in pixels, through `IRenderBridge.raster(...)`, with the framebuffer bound and the viewport set to the region: the drawing fills `width` × `height` pixels, with its own state and its own projection, as on a screen of that size;
+3. it calls `drawable.draw(width, height)` (`IExternalRasterDrawable`) with the size in pixels, through `IRenderBridge.raster(...)`, with the framebuffer bound and the viewport set to the region: the drawing fills `width` × `height` pixels, with its own state and its own projection, as on a screen of that size;
 4. it draws the region over the box with `BlendState.PREMULTIPLIED`, in `NEAREST` when the grid is aligned (pixel for pixel) and `LINEAR` under a rotation or a non-integer scale.
 
 ```java
