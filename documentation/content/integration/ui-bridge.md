@@ -176,6 +176,8 @@ Where and when the host draws its overlays (above its own interface, in a layer 
 | `load()` | Lays out every opened UI again at the size of the window bridge, keeping the zoom of each UI. Call it after a resize, once `screen(width, height)` matches the new size. |
 | `update()` | Calls the update of every opened UI, from the bottom one, including inactive and hidden UIs. |
 | `draw()` | Draws every visible UI from the bottom one up. |
+| `resize(int width, int height)` | `screen(width, height)` of the render bridge, then `load()`. Final. |
+| `frame()` | One whole frame: `update()`, then `beginFrame()`, `drawBackground()` and `draw()`, and `endFrame()` in a `finally`. Final. |
 
 Before the first frame and after every resize, call `screen(width, height)` of the render bridge: it draws to the window (no framebuffer), with a viewport covering it and an orthographic projection in pixels, the origin at the top-left corner:
 
@@ -195,6 +197,22 @@ See [The Virtual Canvas](../concepts/canvas.md) and [View and Scaling](../ui/vie
 - an exception thrown while drawing is printed and stops the drawing of that frame; the matrix stack is restored.
 
 The UI list is sorted by `zindex` (`@UIData`), then by the order in which UIs were added: a UI with a higher `zindex` is drawn above and receives the events first.
+
+### Frames with frame()
+
+An application that draws only JOID runs `bridge.frame()` in its loop, and `bridge.resize(width, height)` when the window changes size. Between `beginFrame()` and the UIs, `frame()` calls the `drawBackground()` hook, which draws nothing by default. Override it to clear the window or to draw a background under every UI:
+
+```java
+@Override
+protected void drawBackground() {
+	final IRenderBridge render = BridgeHandler.RENDER.get();
+	render.clearColor(0.1F, 0.1F, 0.1F, 1F);
+	render.clearDepth();
+	render.clearStencil();
+}
+```
+
+A program that already has a scene, such as a game that draws JOID over its world, does not override it: the UIs then draw over what the program drew. Such a program usually keeps its own loop and calls `update()` and `draw()` between `beginFrame()` and `endFrame()` itself.
 
 ## Methods you implement
 
@@ -244,7 +262,7 @@ public class AppUIBridge extends StackUIBridge {
 }
 ```
 
-The demo bridge (`DemoUIBridge`) extends it, with `start()` (opens the demo menu), `resize(width, height)` (`screen(width, height)` then `load()`) and `frame()` (`update()`, then the gray background and `draw()` between `beginFrame()` and `endFrame()`), the whole loop of the demo windows.
+The demo bridge (`DemoUIBridge`) extends it, with `start()` (opens the demo menu) and a `drawBackground()` that clears the color, the depth and the stencil and draws the gray background of the demo windows over the whole window; they run on `resize(width, height)` and `frame()` of `UIBridge`.
 
 ## Tooltips with drawHover
 
@@ -324,6 +342,8 @@ JOID.open(new UISettings());
 | `load()` | Loads every UI again at the window size, keeping its zoom. |
 | `update()` | Updates every UI, bottom up. |
 | `draw()` | Draws every visible UI, bottom up. |
+| `resize(int, int)`, `frame()` | The screen and the whole frame, see [Frames with frame()](#frames-with-frame). |
+| `drawBackground()` | Protected hook of `frame()`, between `beginFrame()` and the UIs; nothing by default. |
 | `mousePressed(MouseButton)`, `mouseReleased(MouseButton)` | A button goes down or up. Like every input method, returns whether a UI consumed it. |
 | `mouseMoved()` | The mouse moves; a drag when a button is held, timed on `BridgeHandler.CLOCK`. |
 | `mouseScroll(double notchesX, double notchesY)` | The wheel turns, in notches on each axis. |

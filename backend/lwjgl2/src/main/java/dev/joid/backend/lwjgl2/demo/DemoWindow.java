@@ -1,21 +1,20 @@
 package dev.joid.backend.lwjgl2.demo;
 
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
 import dev.joid.backend.lwjgl2.Backend;
 import dev.joid.backend.lwjgl2.Natives;
-import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
+import dev.joid.backend.lwjgl2.input.Lwjgl2InputForwarder;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.input.mouse.MouseButton;
 
 public class DemoWindow extends DemoUIBridge {
+
+	private final Lwjgl2InputForwarder input;
 
 	public DemoWindow() throws LWJGLException {
 		Natives.install();
@@ -25,6 +24,7 @@ public class DemoWindow extends DemoUIBridge {
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 		Backend.register();
 
+		this.input = Lwjgl2InputForwarder.create(this);
 		super.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 	}
 
@@ -52,30 +52,7 @@ public class DemoWindow extends DemoUIBridge {
 				continue;
 			}
 
-			while (Mouse.next()) {
-				final int scroll = Mouse.getEventDWheel();
-				final int button = Mouse.getEventButton();
-				final boolean state = Mouse.getEventButtonState();
-
-				if (state && button != -1) {
-					super.mousePressed(MouseButton.from(button));
-				} else if (button != -1) {
-					super.mouseReleased(MouseButton.from(button));
-				} else {
-					super.mouseMoved();
-				}
-
-				if (scroll != 0) {
-					super.mouseScroll(0D, scroll / 120D);
-				}
-			}
-
-			while (Keyboard.next()) {
-				if (Keyboard.getEventKeyState()) {
-					super.keyTyped(Keyboard.getEventCharacter(), Lwjgl2WindowBridge.getKey(Keyboard.getEventKey()));
-				}
-			}
-
+			this.input.poll();
 			super.frame();
 			Display.update();
 

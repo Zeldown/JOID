@@ -149,21 +149,17 @@ public final class App {
 		BridgeHandler.UI.register(bridge);
 		JOID.inst().load();
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.screen(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
+		bridge.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 		JOID.open(new UIMainMenu());
 
-		final AppInput input = new AppInput(bridge);
+		final Lwjgl2InputForwarder input = Lwjgl2InputForwarder.create(bridge);
 		while (!Display.isCloseRequested()) {
 			input.poll();
-			bridge.update();
-			render.clearColor(0F, 0F, 0F, 1F);
-			bridge.draw();
+			bridge.frame();
 			Display.update();
 
 			if (Display.wasResized()) {
-				render.screen(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
-				bridge.load();
+				bridge.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 			}
 		}
 
@@ -173,39 +169,9 @@ public final class App {
 }
 ```
 
-LWJGL 2 delivers the character and the key of a press in the same event, so the input loop is short. `Lwjgl2WindowBridge` (`dev.joid.backend.lwjgl2.window`), whose static `getKey(int)` converts an LWJGL 2 key code:
+`frame()` of the bridge runs one frame: `update()`, `beginFrame()`, the `drawBackground()` hook (where `AppUIBridge` clears the window, as in [UI Bridge](ui-bridge.md#frames-with-frame)), `draw()` and `endFrame()`; `resize(width, height)` sets the screen and loads the UIs again.
 
-```java
-@RequiredArgsConstructor
-public final class AppInput {
-
-	@NonNull private final AppUIBridge bridge;
-
-	public void poll() {
-		while (Mouse.next()) {
-			final int button = Mouse.getEventButton();
-			if (button != -1 && Mouse.getEventButtonState()) {
-				this.bridge.mousePressed(MouseButton.from(button));
-			} else if (button != -1) {
-				this.bridge.mouseReleased(MouseButton.from(button));
-			} else {
-				this.bridge.mouseMoved();
-			}
-
-			if (Mouse.getEventDWheel() != 0) {
-				this.bridge.mouseScroll(0D, Mouse.getEventDWheel() / 120D);
-			}
-		}
-
-		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				this.bridge.keyTyped(Keyboard.getEventCharacter(), Lwjgl2Lwjgl2WindowBridge.getKey(Keyboard.getEventKey()));
-			}
-		}
-	}
-
-}
-```
+LWJGL 2 delivers the character and the key of a press in the same event. `Lwjgl2InputForwarder` (`dev.joid.backend.lwjgl2.input`) forwards them to the bridge: `poll()` empties the `Mouse` and `Keyboard` queues of LWJGL 2, and its methods `mousePressed(int button)`, `mouseReleased(int button)`, `mouseMoved()`, `mouseScrolled(int wheel)` (120 per notch) and `keyPressed(char character, int code)` forward one event each and return whether a UI consumed it, for a host that reads the events itself. `Lwjgl2WindowBridge.getKey(int)` (`dev.joid.backend.lwjgl2.window`) converts an LWJGL 2 key code.
 
 - The render bridge is the `GlRenderBridge` of `base-opengl`, on LWJGL 2's OpenGL (`dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding`): the renderer of LWJGL 3, with the same choices for each context (see [OpenGL versions](#opengl-versions)) and the same pixels. It keeps the matrices and the state in Java, and gives the host its OpenGL state back (see [Giving the host its state back](#giving-the-host-its-state-back)). It uses its own vertex array as soon as the context has OpenGL 3.0 or `GL_ARB_vertex_array_object`, and calls OpenGL only through LWJGL 2, whose own checks of the bound buffers stay right.
 - The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, the clipboard through AWT, and reports its size and the mouse in framebuffer pixels: `Display` and `Mouse` count in points, so it multiplies them by `Display.getPixelScaleFactor()`, which is `1` except on a macOS Retina screen with high density enabled (`-Dorg.lwjgl.opengl.Display.enableHighDPI=true`, outside fullscreen). Size the screen from the window bridge, not from `Display.getWidth()`; it sets the [mouse cursors](#mouse-cursors) through JNA. LWJGL 2 key codes follow the keyboard layout on Windows and Linux and the place of the key on macOS; `isPhysicalKeyDown` answers like `isKeyDown`.

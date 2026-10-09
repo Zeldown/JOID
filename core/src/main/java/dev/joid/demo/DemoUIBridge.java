@@ -28,23 +28,14 @@ public class DemoUIBridge extends StackUIBridge {
 		super.load();
 	}
 
-	public void resize(final int width, final int height) {
-		BridgeHandler.RENDER.get().screen(width, height);
-		super.load();
-	}
-
-	public void frame() {
+	@Override
+	protected void drawBackground() {
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		super.update();
-		render.beginFrame();
-		try {
-			render.clearColor(0F, 0F, 0F, 0F);
-			DrawUtils.SHAPE.drawRect(0, 0, window.getWidth(), window.getHeight(), DemoUIBridge.BACKGROUND);
-			super.draw();
-		} finally {
-			render.endFrame();
-		}
+		render.clearColor(0F, 0F, 0F, 0F);
+		render.clearDepth();
+		render.clearStencil();
+		DrawUtils.SHAPE.drawRect(0, 0, window.getWidth(), window.getHeight(), DemoUIBridge.BACKGROUND);
 	}
 
 

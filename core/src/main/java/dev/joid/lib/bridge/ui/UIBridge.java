@@ -46,6 +46,23 @@ public abstract class UIBridge implements IUIBridge {
 		this.uiList.forEach(ui -> ui.load(width, height, ui.getView().getZoom()));
 	}
 
+	public final void resize(final int width, final int height) {
+		BridgeHandler.RENDER.get().screen(width, height);
+		this.load();
+	}
+
+	public final void frame() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		this.update();
+		render.beginFrame();
+		try {
+			this.drawBackground();
+			this.draw();
+		} finally {
+			render.endFrame();
+		}
+	}
+
 	public final boolean mousePressed(final @NonNull MouseButton button) {
 		this.pressed     = button;
 		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
@@ -169,6 +186,8 @@ public abstract class UIBridge implements IUIBridge {
 	public boolean isOverlayHidden() {
 		return false;
 	}
+
+	protected void drawBackground() {}
 
 	protected final boolean hasScreen() {
 		for (final UI ui : this.uiList) {

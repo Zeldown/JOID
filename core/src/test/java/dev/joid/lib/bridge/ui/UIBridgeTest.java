@@ -715,6 +715,33 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void updatesThenDrawsItsBackgroundInsideTheFrameBeforeItsUis() {
+		final UIBridge bridge = new StackUIBridge() {
+
+			@Override
+			protected void drawBackground() {
+				UIBridgeTest.this.trace.add("background " + ((RenderBridge) BridgeHandler.RENDER.get()).isFrameActive());
+			}
+
+		};
+		bridge.add(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		bridge.frame();
+		Assert.assertEquals(Arrays.asList("update menu", "background true", "draw menu -2000.0"), this.trace);
+		Assert.assertFalse(((RenderBridge) BridgeHandler.RENDER.get()).isFrameActive());
+	}
+
+	@Test
+	public void resizesTheScreenAndLoadsItsUis() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		this.bridges.getUi().resize(800, 600);
+		Assert.assertEquals(800, this.bridges.getRender().getViewportWidth());
+		Assert.assertEquals(600, this.bridges.getRender().getViewportHeight());
+		Assert.assertEquals(1, menu.inits);
+	}
+
+	@Test
 	public void drawsTheTooltipLinesOfTheDemoBridge() {
 		final TraceFont font = new TraceFont();
 		final TraceUI menu = new TraceUI("menu", this.trace);
