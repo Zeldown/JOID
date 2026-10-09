@@ -150,7 +150,7 @@ public final class App {
 		JOID.inst().load();
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.screen(Display.getWidth(), Display.getHeight());
+		render.screen(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 		JOID.open(new UIMainMenu());
 
 		final AppInput input = new AppInput(bridge);
@@ -162,7 +162,7 @@ public final class App {
 			Display.update();
 
 			if (Display.wasResized()) {
-				render.screen(Display.getWidth(), Display.getHeight());
+				render.screen(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 				bridge.load();
 			}
 		}
@@ -208,7 +208,7 @@ public final class AppInput {
 ```
 
 - The render bridge is the `GlRenderBridge` of `base-opengl`, on LWJGL 2's OpenGL (`dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding`): the renderer of LWJGL 3, with the same choices for each context (see [OpenGL versions](#opengl-versions)) and the same pixels. It keeps the matrices and the state in Java, and gives the host its OpenGL state back (see [Giving the host its state back](#giving-the-host-its-state-back)). It uses its own vertex array as soon as the context has OpenGL 3.0 or `GL_ARB_vertex_array_object`, and calls OpenGL only through LWJGL 2, whose own checks of the bound buffers stay right.
-- The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, the clipboard through AWT, and sets the [mouse cursors](#mouse-cursors) through JNA. LWJGL 2 key codes follow the keyboard layout on Windows and Linux and the place of the key on macOS; `isPhysicalKeyDown` answers like `isKeyDown`.
+- The window bridge reads LWJGL 2's `Display`, `Mouse` and `Keyboard`, the clipboard through AWT, and reports its size and the mouse in framebuffer pixels: `Display` and `Mouse` count in points, so it multiplies them by `Display.getPixelScaleFactor()`, which is `1` except on a macOS Retina screen with high density enabled (`-Dorg.lwjgl.opengl.Display.enableHighDPI=true`, outside fullscreen). Size the screen from the window bridge, not from `Display.getWidth()`; it sets the [mouse cursors](#mouse-cursors) through JNA. LWJGL 2 key codes follow the keyboard layout on Windows and Linux and the place of the key on macOS; `isPhysicalKeyDown` answers like `isKeyDown`.
 - The audio bridge is the `AlAudioBridge` of `base-openal` on LWJGL 2's OpenAL (`dev.joid.backend.lwjgl2.binding.Lwjgl2AlBinding`). It creates the OpenAL context with `AL.create()` on the first video with sound, unless one already exists, and destroys it when the JVM exits; `AL.create()` loads the OpenAL native that `Backend.register()` installed.
 
 ### LWJGL 2 natives

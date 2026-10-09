@@ -25,7 +25,7 @@ public class DemoWindow extends DemoUIBridge {
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
 		Backend.register();
 
-		super.resize(Display.getWidth(), Display.getHeight());
+		super.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 	}
 
 	public static void main(final String[] args) throws LWJGLException {
@@ -80,7 +80,7 @@ public class DemoWindow extends DemoUIBridge {
 			Display.update();
 
 			if (Display.wasResized()) {
-				super.resize(Display.getWidth(), Display.getHeight());
+				super.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 			}
 		}
 

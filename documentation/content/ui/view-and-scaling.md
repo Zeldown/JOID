@@ -112,7 +112,7 @@ The zoom and the fit to the window are not affected. `getScale()` returns the se
 | Space | Unit | Where you meet it |
 | --- | --- | --- |
 | Canvas | Units of the 1920×1080 design | Node positions and sizes, mouse coordinates in node callbacks and UI hooks, `ui.getMouseX()`. |
-| Window | What the window bridge reports: framebuffer pixels for the GLFW backends | `IWindowBridge.getWidth()`, `UI.getWidth()`, `UI.draw(mouseX, mouseY)`, `drawBackground`. |
+| Window | What the window bridge reports: framebuffer pixels on every backend | `IWindowBridge.getWidth()`, `UI.getWidth()`, `UI.draw(mouseX, mouseY)`, `drawBackground`. |
 
 ![A 2560 by 1080 window with a ruler in window pixels above it and a ruler in canvas units below it; a pointer at pixel 1600 is at canvas x 1280](../images/diagram-canvas-coordinates.png "Pixel 0 of a centered 21:9 window is canvas x -320.")
 

@@ -142,22 +142,22 @@ public final class WindowBridge implements IWindowBridge {
 
 	@Override
 	public int getWidth() {
-		return Display.getWidth();
+		return Math.round(Display.getWidth() * Display.getPixelScaleFactor());
 	}
 
 	@Override
 	public int getHeight() {
-		return Display.getHeight();
+		return Math.round(Display.getHeight() * Display.getPixelScaleFactor());
 	}
 
 	@Override
 	public double getMouseX() {
-		return Mouse.getX();
+		return Mouse.getX() * (double) Display.getPixelScaleFactor();
 	}
 
 	@Override
 	public double getMouseY() {
-		return Display.getHeight() - Mouse.getY();
+		return (Display.getHeight() - Mouse.getY()) * (double) Display.getPixelScaleFactor();
 	}
 
 	@Override
