@@ -446,7 +446,7 @@ public final class DevNode extends Node {
 	}
 
 	@Override
-	public void keyPressed(final char c, final Key key, final DispatchContext context) {
+	public void keyPressed(final Key key, final DispatchContext context) {
 		if (context.isCancelled() || !super.isEnabled()) {
 			return;
 		}

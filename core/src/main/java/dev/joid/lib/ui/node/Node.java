@@ -56,6 +56,7 @@ import dev.joid.lib.ui.node.callback.impl.draggable.NodeSnapCallback;
 import dev.joid.lib.ui.node.callback.impl.hover.NodeHoverCallback;
 import dev.joid.lib.ui.node.callback.impl.hover.NodeHoverEndCallback;
 import dev.joid.lib.ui.node.callback.impl.hover.NodeHoverStartCallback;
+import dev.joid.lib.ui.node.callback.impl.key.NodeCharTypedCallback;
 import dev.joid.lib.ui.node.callback.impl.key.NodeKeyPressedCallback;
 import dev.joid.lib.ui.node.callback.impl.mouse.NodeMouseDraggedCallback;
 import dev.joid.lib.ui.node.callback.impl.mouse.NodeMousePressedCallback;
@@ -105,6 +106,7 @@ public abstract class Node implements INode {
 
 	private static final int CALLBACK_CLICK          = NodeCallbackRegistry.next(NodeMousePressedCallback.class);
 
+	private static final int CALLBACK_CHAR_TYPED     = NodeCallbackRegistry.next(NodeCharTypedCallback.class);
 	private static final int CALLBACK_KEY_PRESSED    = NodeCallbackRegistry.next(NodeKeyPressedCallback.class);
 	private static final int CALLBACK_MOUSE_SCROLL   = NodeCallbackRegistry.next(NodeMouseScrollCallback.class);
 	private static final int CALLBACK_MOUSE_PRESSED  = NodeCallbackRegistry.next(NodeMousePressedCallback.class);
@@ -227,7 +229,7 @@ public abstract class Node implements INode {
 
 	private Key  lastKey;
 	private long lastKeyTime;
-	private char lastCharacter;
+	private int  lastCodepoint;
 
 	private long renderTime;
 	private long updateCount;
@@ -869,40 +871,74 @@ public abstract class Node implements INode {
 		}
 	}
 
-	public final <T extends Node> @NonNull T onKeyPressed(final @NonNull NodeKeyPressedCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_KEY_PRESSED, callback);
+	public final <T extends Node> @NonNull T onCharTyped(final @NonNull NodeCharTypedCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_CHAR_TYPED, callback);
 	}
 
-	public final void fireKeyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
+	public final void fireCharTyped(final int codepoint, final @NonNull DispatchContext context) {
 		if (!this.isVisible()) {
 			return;
 		}
 
 		final boolean enabled = this.isEnabled();
-		this.lastCharacter = c;
+		this.lastCodepoint = codepoint;
+
+		if (this.scrollbar != null) {
+			this.scrollbar.fireCharTyped(codepoint, context);
+		}
+
+		if (this.skeleton != null && !this.mounted) {
+			this.skeleton.fireCharTyped(codepoint, context);
+		}
+
+		if (enabled && this.hasCallback(Node.CALLBACK_CHAR_TYPED)) {
+			this.executePreCallback(Node.CALLBACK_CHAR_TYPED, context, codepoint);
+		}
+
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireCharTyped(codepoint, context));
+		if (enabled) {
+			this.charTyped(codepoint, context);
+		}
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireCharTyped(codepoint, context));
+
+		if (enabled && this.hasCallback(Node.CALLBACK_CHAR_TYPED)) {
+			this.executePostCallback(Node.CALLBACK_CHAR_TYPED, context, codepoint);
+		}
+	}
+
+	public final <T extends Node> @NonNull T onKeyPressed(final @NonNull NodeKeyPressedCallback<T> callback) {
+		return this.registerCallback(Node.CALLBACK_KEY_PRESSED, callback);
+	}
+
+	public final void fireKeyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
+		if (!this.isVisible()) {
+			return;
+		}
+
+		final boolean enabled = this.isEnabled();
 		this.lastKey = key;
 		this.lastKeyTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		if (this.scrollbar != null) {
-			this.scrollbar.fireKeyPressed(c, key, context);
+			this.scrollbar.fireKeyPressed(key, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.fireKeyPressed(c, key, context);
+			this.skeleton.fireKeyPressed(key, context);
 		}
 
 		if (enabled && this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
-			this.executePreCallback(Node.CALLBACK_KEY_PRESSED, context, c, key);
+			this.executePreCallback(Node.CALLBACK_KEY_PRESSED, context, key);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireKeyPressed(c, key, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireKeyPressed(key, context));
 		if (enabled) {
-			this.keyPressed(c, key, context);
+			this.keyPressed(key, context);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireKeyPressed(c, key, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireKeyPressed(key, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
-			this.executePostCallback(Node.CALLBACK_KEY_PRESSED, context, c, key);
+			this.executePostCallback(Node.CALLBACK_KEY_PRESSED, context, key);
 		}
 	}
 

@@ -91,7 +91,7 @@ menu.getData().setActive(false).setCloseable(false);
 
 ## Escape handling
 
-When Escape is pressed, `UIBridge.keyTyped` goes through the active and visible UIs from the top:
+When Escape is pressed, `UIBridge.keyPressed` goes through the active and visible UIs from the top:
 
 ![Escape goes to the top active and visible UI; a closeable UI gets it as a key, then closes if nothing consumed it, and Escape stops; a UI that is not closeable gets it as a normal key, and Escape goes to the next UI below unless it was consumed or the UI is a popup](../images/diagram-ui-escape.png "The path of Escape: it stops at the first closeable UI, at a UI that consumes it, or at a popup.")
 
@@ -207,7 +207,7 @@ All of them throw a `NullPointerException` for a `null` argument.
 | `isOnTop(UI ui)` | Whether `ui` is the first active and visible UI from the top; `false` when no UI is open. |
 | `isOpen(UI ui)` | Whether `ui` is in the list. |
 | `load()` | Loads every UI again at the window size, keeping its zoom. Called by the backend on a resize. |
-| `draw()`, `update()`, `mousePressed(...)`, `mouseMoved()`, `mouseReleased(...)`, `mouseScroll(...)`, `keyTyped(...)` | Dispatch the frames and the input, as described above. |
+| `draw()`, `update()`, `mousePressed(...)`, `mouseMoved()`, `mouseReleased(...)`, `mouseScroll(...)`, `keyPressed(...)`, `charTyped(...)` | Dispatch the frames and the input, as described above. |
 
 ## Pitfalls
 

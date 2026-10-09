@@ -424,7 +424,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 
 | Feature | Node methods | Page |
 | --- | --- | --- |
-| Callbacks | `onInit`, `onDetach`, `onAppend`, `onMount`, `onUpdate`, `onRender`, `onDraw`, `onClick`, `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed`, `onHover`, `onHoverStart`, `onHoverEnd`, `onDrag`, `onDragStart`, `onDragEnd`, `onSnap`, `onWatch`, `onAnimate`, `onScrollUpdate`, `onScrollEnding`, `onScrollEnd` | [Callbacks](../interactions/callbacks.md) |
+| Callbacks | `onInit`, `onDetach`, `onAppend`, `onMount`, `onUpdate`, `onRender`, `onDraw`, `onClick`, `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed`, `onCharTyped`, `onHover`, `onHoverStart`, `onHoverEnd`, `onDrag`, `onDragStart`, `onDragEnd`, `onSnap`, `onWatch`, `onAnimate`, `onScrollUpdate`, `onScrollEnding`, `onScrollEnd` | [Callbacks](../interactions/callbacks.md) |
 | Hover and tooltips | `hover(...)`, `hoverLines(...)`, `hoverElements(...)`, `clearHover()`, `clearHoverLines()`, `clearHoverElements()`, `hoverDuration(long)`, `hoverEquation(TweenEquation)`, `hoverValue(float)`, `hovered(boolean)`, `isHovered()`, `isHovered(double, double)`, `isHovered(double, double, boolean)`, `renderHover(double, double)`, `getHoverDuration()`, `getHoverEquation()` | [Hover and Tooltips](../interactions/hover.md) |
 | Mouse cursor | `cursor(Cursor)`, `cursor(Supplier<Cursor>)`, `getCursor()`, `getResolvedCursor()`, `getNodeListAt(double, double)` | [Mouse and Keyboard](../interactions/mouse-and-keyboard.md#mouse-cursor) |
 | Effects | `effect(NodeEffect)`, `removeEffect(Class)`, `clearEffects()`, `getEffect(Class)`, `hasEffect(Class)`, `getEffectMap()`, `shouldApplyEffect(NodeEffect)` | [Effects](../styling/effects.md) |
@@ -504,7 +504,7 @@ These getters expose the node's internal bookkeeping. They are read-only views f
 | Method | Description |
 | --- | --- |
 | `getLastClickButton()`, `getLastClickTime()` | Last mouse press dispatched to the node (wherever the pointer was) and its clock time (ms). |
-| `getLastKey()`, `getLastCharacter()`, `getLastKeyTime()` | Last key event dispatched to the node and its clock time (ms). |
+| `getLastKey()`, `getLastKeyTime()`, `getLastCodepoint()` | Last key press dispatched to the node and its clock time (ms), and the code point of the last character. |
 | `getLastWidth()`, `getLastHeight()` | Size seen on the previous frame (anchor bookkeeping). |
 | `isMoving()`, `getRestX()`, `getRestY()`, `getDrawnX()`, `getDrawnY()` | Pixel-alignment bookkeeping of a moving node. |
 | `getOverflowArea()`, `overflowArea(Node)` | The ancestor whose overflow clips this node, set while drawing. `remove(...)`, `clearChildren()` and an `append` that moves the node set it back to `null`, on the node and on the descendants that inherited the same area, so the former container stops clipping or hiding them. |

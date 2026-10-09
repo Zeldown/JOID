@@ -252,7 +252,6 @@ public final class Main {
 			}
 
 			GLFW.glfwPollEvents();
-			this.input.flush();
 
 			this.bridge.update();
 			BridgeHandler.RENDER.get().clearColor(0.1F, 0.1F, 0.1F, 1F);
@@ -287,7 +286,7 @@ The order of the startup calls matters:
 5. `resize()` sets a pixel projection and the viewport for the window, then `bridge.load()` resizes every open UI, keeping its zoom. It runs again whenever the framebuffer size changes.
 6. `JOID.open(ui)` hands the UI to its bridge, which loads it.
 
-`GlfwInputForwarder` (`dev.joid.base.glfw.input`) sets the key, character, mouse button, cursor and scroll callbacks of the window and forwards them to the bridge: it pairs each key press with the character GLFW reports right after it, so a text key reaches JOID once, with both its `Key` and its character, and its `flush()`, once per frame, sends a key that produced no character. `GlfwKeys` maps GLFW key codes to `Key` values, and the scroll offset goes through in notches.
+`GlfwInputForwarder` (`dev.joid.base.glfw.input`) sets the key, character, mouse button, cursor and scroll callbacks of the window and forwards each event to the bridge as it comes: a key press to `keyPressed(Key)`, then the character GLFW reports for it to `charTyped(int)`. `GlfwKeys` maps GLFW key codes to `Key` values, and the scroll offset goes through in notches.
 
 ## Step 6: run it
 
@@ -324,7 +323,7 @@ JOID.inst().load();
 Theme.load();
 ```
 
-`Natives` and `Backend` are in `dev.joid.backend.lwjgl2`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(0D, Mouse.getEventDWheel() / 120D)`, and the `Keyboard.next()` key-down events to `keyTyped(Keyboard.getEventCharacter(), WindowBridge.getKey(Keyboard.getEventKey()))` with `dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge`. Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
+`Natives` and `Backend` are in `dev.joid.backend.lwjgl2`. In the loop, forward the `Mouse.next()` events to `mousePressed`, `mouseReleased`, `mouseMoved` and `mouseScroll(0D, Mouse.getEventDWheel() / 120D)`, and each `Keyboard.next()` key-down event to `keyPressed(Lwjgl2WindowBridge.getKey(Keyboard.getEventKey()))`, then, when `Keyboard.getEventCharacter()` is not `Keyboard.CHAR_NONE`, to `charTyped(Keyboard.getEventCharacter())`, with `dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge`; `Lwjgl2InputForwarder` does all of it in `poll()` (see [Backends](../integration/backends.md)). Call `Display.update()` instead of swapping buffers, and redo the projection, the viewport and `bridge.load()` when `Display.wasResized()` returns `true`.
 
 ### Vulkan
 

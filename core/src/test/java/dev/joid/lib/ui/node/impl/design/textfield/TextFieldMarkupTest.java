@@ -352,7 +352,7 @@ public class TextFieldMarkupTest {
 	}
 
 	private void press(final TextFieldNode field, final Key key) {
-		field.keyPressed(' ', key, DispatchContext.create());
+		field.keyPressed(key, DispatchContext.create());
 	}
 
 	private void control(final TextFieldNode field, final Key key) {
@@ -363,7 +363,7 @@ public class TextFieldMarkupTest {
 
 	private void type(final TextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
+			field.charTyped(c, DispatchContext.create());
 		}
 	}
 

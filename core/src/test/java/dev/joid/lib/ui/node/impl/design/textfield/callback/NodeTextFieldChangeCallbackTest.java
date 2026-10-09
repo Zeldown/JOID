@@ -88,8 +88,8 @@ public class NodeTextFieldChangeCallbackTest {
 		final TextFieldNode field = this.field().onChange((node, text, value, valid) -> received.addAll(Arrays.asList(node, text, value, valid)));
 		final MultilineTextFieldNode multiline = this.multiline().onChange((node, text, value, valid) -> received.addAll(Arrays.asList(node, text, value, valid)));
 		this.bridges.open(new NodeUI(field, multiline));
-		field.keyPressed('c', Key.C, DispatchContext.create());
-		multiline.keyPressed('d', Key.D, DispatchContext.create());
+		field.charTyped('c', DispatchContext.create());
+		multiline.charTyped('d', DispatchContext.create());
 		Assert.assertEquals(Arrays.asList(field, "abc", "abc", true, multiline, "abd", "abd", true), received);
 	}
 
@@ -108,7 +108,7 @@ public class NodeTextFieldChangeCallbackTest {
 
 		});
 		this.bridges.open(new NodeUI(field));
-		field.keyPressed('c', Key.C, DispatchContext.create());
+		field.charTyped('c', DispatchContext.create());
 		field.text("xyz");
 		Assert.assertEquals("ab", field.getText());
 	}
@@ -128,7 +128,7 @@ public class NodeTextFieldChangeCallbackTest {
 
 		});
 		this.bridges.open(new NodeUI(field));
-		field.keyPressed(' ', Key.ENTER, DispatchContext.create());
+		field.keyPressed(Key.ENTER, DispatchContext.create());
 		Assert.assertEquals("ab", field.getText());
 	}
 

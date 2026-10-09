@@ -33,7 +33,7 @@ public class UIDemoPopup extends UI {
 	}
 
 	@Override
-	public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
+	public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
 		if (!context.isCancelled() && key == Key.K && Key.LEFT_CONTROL.isDown()) {
 			context.cancel(() -> JOID.open(new UIDemoPopup()));
 		}

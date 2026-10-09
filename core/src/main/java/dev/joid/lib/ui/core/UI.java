@@ -51,7 +51,6 @@ import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.impl.design.textfield.FieldNode;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
@@ -284,26 +283,25 @@ public abstract class UI implements IUI, IndexedElement {
 		return context.isCancelled();
 	}
 
-	public final boolean isConsumingKey(final @NonNull Key key) {
-		if (!this.initialized) {
-			return false;
-		}
-
-		for (final Set<Object> bindings : this.keybindMap.keySet()) {
-			if (UI.isPressed(bindings, key)) {
-				return true;
-			}
-		}
-		return UI.hasFocusedField(this.nodeList);
-	}
-
-	public final boolean fireKeyPressed(final char c, final @NonNull Key key) {
+	public final boolean fireCharTyped(final int codepoint) {
 		if (!this.initialized) {
 			return false;
 		}
 
 		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(c, key, context)));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireCharTyped(codepoint, context)));
+
+		this.traced(() -> this.charTyped(codepoint, context));
+		return context.isCancelled();
+	}
+
+	public final boolean fireKeyPressed(final @NonNull Key key) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final DispatchContext context = DispatchContext.create();
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(key, context)));
 
 		if (!context.isCancelled()) {
 			for (final Map.Entry<Set<Object>, Runnable> entry : this.keybindMap.entrySet()) {
@@ -315,7 +313,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		if (this.data.zoomable() && !context.isCancelled()) {
-			if ((key == Key.NUMPAD_ADD || c == '+') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
 				final double previous = this.view.getZoom();
 				this.zoom(previous + 0.1D);
 				if (this.view.getZoom() != previous) {
@@ -323,7 +321,7 @@ public abstract class UI implements IUI, IndexedElement {
 				}
 			}
 
-			if ((key == Key.NUMPAD_SUBTRACT || c == '-') && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
+			if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
 				final double previous = this.view.getZoom();
 				this.zoom(previous - 0.1D);
 				if (this.view.getZoom() != previous) {
@@ -355,7 +353,7 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
-		this.traced(() -> this.keyPressed(c, key, context));
+		this.traced(() -> this.keyPressed(key, context));
 		return context.isCancelled();
 	}
 
@@ -991,15 +989,6 @@ public abstract class UI implements IUI, IndexedElement {
 		} finally {
 			SignalContext.current().tracing(tracing);
 		}
-	}
-
-	private static boolean hasFocusedField(final Iterable<Node> nodes) {
-		for (final Node node : nodes) {
-			if (node instanceof FieldNode && ((FieldNode<?>) node).isFocused() || UI.hasFocusedField(node.getChildren())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private static boolean isPressed(final Set<Object> bindings, final Key key) {

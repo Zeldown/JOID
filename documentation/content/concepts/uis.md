@@ -143,7 +143,7 @@ public final class ConfirmPopup extends UI {
 
 ![A white popup scales in over a settings screen and dims it, then scales out when Escape closes it](../images/ess-uis-popup.gif "ConfirmPopup opened over SettingsUI, then closed with Escape (whole canvas at 0.3× scale).")
 
-Besides `init()` and `close()`, a UI can override `update()` (every frame) and input hooks such as `keyPressed`; what it draws is always a node, placed by its `zindex`. [Input and Callbacks](input.md) shows the input hooks; [The UI Class](../ui/ui-class.md) lists them all.
+Besides `init()` and `close()`, a UI can override `update()` (every frame) and input hooks such as `keyPressed` and `charTyped`; what it draws is always a node, placed by its `zindex`. [Input and Callbacks](input.md) shows the input hooks; [The UI Class](../ui/ui-class.md) lists them all.
 
 ## Reloading while you work
 

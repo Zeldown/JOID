@@ -194,7 +194,8 @@ The hooks come from `INode` and do nothing by default, except `drawSkeleton`.
 | `mouseReleased(double mouseX, double mouseY, MouseButton clickType, DispatchContext context)` | Mouse button released. |
 | `mouseDragged(double mouseX, double mouseY, MouseButton clickType, long deltaTime, DispatchContext context)` | Mouse moved with a button held. `deltaTime` is the number of milliseconds since the press, measured by the UI bridge on the clock bridge. |
 | `mouseScroll(double mouseX, double mouseY, double notchesX, double notchesY, DispatchContext context)` | Mouse wheel, in notches on each axis. A positive `notchesY` is a wheel up, a positive `notchesX` a scroll toward the left. |
-| `keyPressed(char c, Key key, DispatchContext context)` | Key typed. `c` is the typed character, as reported by the UI bridge (the bundled windows send `0` for keys without one). |
+| `keyPressed(Key key, DispatchContext context)` | Key pressed or repeated. |
+| `charTyped(int codepoint, DispatchContext context)` | Character typed, after its key: one Unicode code point per call, never a control character. |
 
 ### Drawing in draw
 
@@ -395,8 +396,8 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, DispatchC
 | Member | Description |
 | --- | --- |
 | `Node(double x, double y)`, `Node(double x, double y, double width, double height)` | Constructors. |
-| `INode` hooks | `init`, `draw`, `drawSkeleton`, `update`, `detach`, `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`. |
-| `fireMousePressed(double, double, MouseButton, DispatchContext)`, `fireMouseReleased(...)`, `fireMouseDragged(double, double, MouseButton, long, DispatchContext)`, `fireMouseScroll(double, double, double, double, DispatchContext)`, `fireKeyPressed(char, Key, DispatchContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
+| `INode` hooks | `init`, `draw`, `drawSkeleton`, `update`, `detach`, `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`, `charTyped`. |
+| `fireMousePressed(double, double, MouseButton, DispatchContext)`, `fireMouseReleased(...)`, `fireMouseDragged(double, double, MouseButton, long, DispatchContext)`, `fireMouseScroll(double, double, double, double, DispatchContext)`, `fireKeyPressed(Key, DispatchContext)`, `fireCharTyped(int, DispatchContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
 | `registerCallback(int, NodeCallback)` | Protected. Stores a callback. |
 | `bind(Signal<V>, Consumer<V>)` | Protected. Runs the consumer with the signal's current value, then with each published value while the UI is open. Returns the subscription; each call adds one. |
 | `unbind(ISignalSubscriber<?>)` | Protected. Removes a subscription of the node. Does nothing with `null`. |

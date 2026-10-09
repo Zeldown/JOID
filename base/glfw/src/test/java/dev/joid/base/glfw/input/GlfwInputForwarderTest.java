@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.lwjgl.glfw.GLFW;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -64,16 +65,27 @@ public class GlfwInputForwarderTest {
 	}
 
 	@Test
-	public void forwardsACharacterWithoutKey() {
+	public void forwardsTheKeyAndTheCharacterAsTheyCome() {
+		this.input.keyPressed(GLFW.GLFW_KEY_F3);
 		this.input.charTyped(0xE9);
-		this.input.flush();
-		Assert.assertEquals(Collections.singletonList("typed é UNKNOWN"), this.trace);
+		this.input.keyPressed(GLFW.GLFW_KEY_ENTER);
+		Assert.assertEquals(Arrays.asList("key F3", "char é", "key ENTER"), this.trace);
+	}
+
+	@Test
+	public void forwardsACharacterOutsideTheBasicPlaneInOneCall() {
+		this.input.charTyped(0x1F600);
+		Assert.assertEquals(Collections.singletonList("char \uD83D\uDE00"), this.trace);
 	}
 
 	@Test
 	public void reportsTheEventsTheUiConsumed() {
 		Assert.assertFalse(this.input.mousePressed(0));
+		Assert.assertFalse(this.input.keyPressed(GLFW.GLFW_KEY_F3));
+		Assert.assertFalse(this.input.charTyped('a'));
 		this.ui.cancel = true;
+		Assert.assertTrue(this.input.keyPressed(GLFW.GLFW_KEY_F3));
+		Assert.assertTrue(this.input.charTyped('a'));
 		Assert.assertTrue(this.input.mousePressed(0));
 		Assert.assertTrue(this.input.mouseMoved());
 		Assert.assertTrue(this.input.mouseReleased(0));
@@ -111,8 +123,13 @@ public class GlfwInputForwarderTest {
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
-			this.record("typed " + c + " " + key, context);
+		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
+			this.record("key " + key, context);
+		}
+
+		@Override
+		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
+			this.record("char " + new String(Character.toChars(codepoint)), context);
 		}
 
 		private void record(final String event, final DispatchContext context) {

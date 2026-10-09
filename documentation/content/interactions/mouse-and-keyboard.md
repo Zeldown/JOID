@@ -146,14 +146,15 @@ The bridge calls `IWindowBridge.setCursor(...)` only when that cursor changes, a
 
 The text fields (`TextFieldNode`, `IntegerFieldNode`, `MultilineTextFieldNode`) show `TEXT` by default; no other built-in node sets a cursor, so a button shows `POINTER` only when you give it one. A window bridge that cannot change the cursor keeps the default one: see [Backends](../integration/backends.md#mouse-cursors) for each backend.
 
-## Keyboard callbacks with onKeyPressed
+## Keyboard callbacks with onKeyPressed and onCharTyped
 
-`onKeyPressed((node, c, key) -> ...)` fires for every key event the UI receives that is not consumed yet, wherever the mouse is, as long as the node is visible and enabled.
+The keyboard sends two events. A key press reaches the UI at once, then the character it types, if any, in an event of its own:
 
-- `c` is the printable character typed with the key, or `(char) 0` for the other keys, including text keys pressed with Ctrl or Alt. `UIBridge.keyTyped` turns every control character (`Character.isISOControl`: `\r`, `\b`, `\t`, Ctrl + C...) into `(char) 0`, so `c` is the same on every backend.
-- `key` is a `Key` constant; a key the bridge cannot map is `Key.UNKNOWN`. A letter key is the letter it types on the active keyboard layout (see [Keyboard layouts](#keyboard-layouts)).
+- `onKeyPressed((node, key) -> ...)` fires for every key press or repeat the UI receives that is not consumed yet, wherever the mouse is, as long as the node is visible and enabled. `key` is a `Key` constant; a key the bridge cannot map is `Key.UNKNOWN`. A letter key is the letter it types on the active keyboard layout (see [Keyboard layouts](#keyboard-layouts)). Shortcuts, navigation and Escape belong here.
+- `onCharTyped((node, codepoint) -> ...)` fires for every character the UI receives, after its key, under the same conditions. `codepoint` is a Unicode code point: an emoji or any character outside the basic plane is one call (`new String(Character.toChars(codepoint))` gives its text). The UI bridge drops the control characters (`Character.isISOControl`: `\r`, `\b`, `\t`, Ctrl + C...), so Enter, Backspace or Tab arrive as keys only, on every backend. Text input belongs here.
+- A key that types nothing, such as an arrow, F3 or Ctrl + C on GLFW, sends no character. Consuming the key does not consume its character: each event is consumed on its own.
 - There is no release event for keys. Read the current state of a key with `Key.isDown()`.
-- The lambda leaves the event to the other nodes and to the UI keybinds. Override `post` to consume the keys your node handles (see [Callbacks](callbacks.md#consuming-an-event-from-a-listener)).
+- The lambdas leave the event to the other nodes and to the UI keybinds. Override `post` to consume the keys or the characters your node handles (see [Callbacks](callbacks.md#consuming-an-event-from-a-listener)).
 
 ## Keys with Key
 
@@ -291,11 +292,12 @@ A `UI` can override the input hooks of `IUI`. They run after all the nodes of th
 | `mouseReleased` | `(mouseX, mouseY, clickType, context)` |
 | `mouseDragged` | `(mouseX, mouseY, clickType, deltaTime, context)` |
 | `mouseScroll` | `(mouseX, mouseY, notchesX, notchesY, context)` |
-| `keyPressed` | `(c, key, context)` |
+| `keyPressed` | `(key, context)` |
+| `charTyped` | `(codepoint, context)` |
 
 ```java
 @Override
-public void keyPressed(final char c, final Key key, final DispatchContext context) {
+public void keyPressed(final Key key, final DispatchContext context) {
 	if (!context.isCancelled() && key == Key.TAB) {
 		context.cancel();
 		System.out.println("Next tab");
@@ -307,27 +309,27 @@ public void keyPressed(final char c, final Key key, final DispatchContext contex
 
 ![Diagram: an event goes from the backend to the UI bridge, to the top UI, its nodes, its keybinds and hooks, then to the UI below unless it was consumed](../images/diagram-event-path.png "The path of an input event from the window to the nodes")
 
-The UI bridge receives the events from the backend through `UIBridge.mousePressed(MouseButton)`, `mouseReleased(MouseButton)`, `mouseMoved()`, `mouseScroll(double, double)` and `keyTyped(char, Key)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
+The UI bridge receives the events from the backend through `UIBridge.mousePressed(MouseButton)`, `mouseReleased(MouseButton)`, `mouseMoved()`, `mouseScroll(double, double)`, `keyPressed(Key)` and `charTyped(int)` (see [UI Bridge](../integration/ui-bridge.md)). For each event:
 
 1. The UI bridge walks its UIs from the top one down, the [overlays](../ui/managing-uis.md#overlays-with-uidataoverlay) first, skipping the UIs that are not active or not visible (`active` and `visible` of `@UIData`, readable and changeable through `ui.getData()`) and the overlays that take no input or are not drawn. A wheel event with a value of `0` is dropped.
-2. Key events only, on `Key.ESCAPE` in a closeable UI (`closeable`, `true` by default) that is not an overlay: the UI first receives the key like any other (steps 3 to 5: a focused text field cancels its edit and consumes it, a keybind on `ESCAPE` consumes it). When nobody consumed it, the UI is asked to close (`close()` may refuse, see [Opening and Closing UIs](../ui/managing-uis.md)). Either way the dispatch stops there: the UIs below never receive that Escape. A UI that is not closeable receives Escape as a normal key.
+2. Key presses only, on `Key.ESCAPE` in a closeable UI (`closeable`, `true` by default) that is not an overlay: the UI first receives the key like any other (steps 3 to 5: a focused text field cancels its edit and consumes it, a keybind on `ESCAPE` consumes it). When nobody consumed it, the UI is asked to close (`close()` may refuse, see [Opening and Closing UIs](../ui/managing-uis.md)). Either way the dispatch stops there: the UIs below never receive that Escape. A UI that is not closeable receives Escape as a normal key.
 3. The UI dispatches the event to its nodes, front to back (see [Callbacks](callbacks.md#input-events-across-nodes) for the order inside a node). Events that arrive before the UI finished its first initialization are ignored.
-4. Key events only, when no node consumed the event:
+4. Key presses only, when no node consumed the event:
    1. the keybinds (see above);
-   2. when the UI is zoomable (`zoomable`, `true` by default) and the event is still not consumed: `+` or `NUMPAD_ADD` with Ctrl or Alt zooms in by `0.1`, `-` or `NUMPAD_SUBTRACT` with Ctrl or Alt zooms out by `0.1`; the event is consumed when the zoom changed;
+   2. when the UI is zoomable (`zoomable`, `true` by default) and the event is still not consumed: `EQUAL` (the key of `=` and `+`) or `NUMPAD_ADD` with Ctrl or Alt zooms in by `0.1`, `MINUS` or `NUMPAD_SUBTRACT` with Ctrl or Alt zooms out by `0.1`; the event is consumed when the zoom changed;
    3. in dev mode, when the event is still not consumed: Left Ctrl + R or F5 reloads the UI (`UI.reload()`: same instance, fields and signals kept); with Left Shift held (Ctrl + Shift + R, Shift + F5) the UI is replaced by a new instance (`UI.renew()`, zoom back to `1`); F3 shows or hides the developer panel (see [Developer Tools](../concepts/dev-tools.md)).
-5. The UI hook (`mousePressed`, `keyPressed`...) runs with the context.
+5. The UI hook (`mousePressed`, `keyPressed`, `charTyped`...) runs with the context.
 6. When the event is consumed, or the UI is a popup (`@UIDataPopup(active = true)`, see [Opening and Closing UIs](../ui/managing-uis.md)), the dispatch stops; otherwise the next UI below receives it. The bridge method returns whether the event was consumed, so the host can skip it; an event consumed by an overlay whose `cancelClick`, `cancelScroll` or `cancelKeyboard` is off still goes to the host.
 
 Wheel events in dev mode: with Left Alt held, the wheel zooms the UI (in larger steps with Left Shift) and the event goes no further.
 
-The entry points of a UI are public: `fireMousePressed(MouseButton)`, `fireMouseReleased(MouseButton)`, `fireMouseDragged(MouseButton, long)`, `fireMouseScroll(double, double)` and `fireKeyPressed(char, Key)` run steps 3 to 5 and return `true` when the event was consumed. Calling them simulates input on one UI.
+The entry points of a UI are public: `fireMousePressed(MouseButton)`, `fireMouseReleased(MouseButton)`, `fireMouseDragged(MouseButton, long)`, `fireMouseScroll(double, double)`, `fireKeyPressed(Key)` and `fireCharTyped(int)` run steps 3 to 5 and return `true` when the event was consumed. Calling them simulates input on one UI.
 
 ## Keyboard focus
 
-JOID has no global focus: every key event reaches every node of the UI until one consumes it. Focus belongs to the nodes that need it:
+JOID has no global focus: every key press and every character reaches every node of the UI until one consumes it. Focus belongs to the nodes that need it:
 
-- A [TextFieldNode](../nodes/input/text-field.md) or [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) takes the focus when clicked and loses it when a press lands elsewhere, on Enter or on Escape; while focused it consumes every key (Tab included: there is no keyboard navigation between fields), so the keybinds and the nodes reached after it do not see the keys.
+- A [TextFieldNode](../nodes/input/text-field.md) or [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) takes the focus when clicked and loses it when a press lands elsewhere, on Enter or on Escape; while focused it consumes every key (Tab included: there is no keyboard navigation between fields) and every character, so the keybinds and the nodes reached after it do not see them. It types the characters and reads the keys for its navigation, its editing and its shortcuts; while Ctrl (Command on macOS) is held without Alt it types no character, and AltGr (Ctrl + Alt) still types.
 - For your own focus, keep the state yourself and consume keys only while focused:
 
 ```java
@@ -340,19 +342,31 @@ RectNode
 .onKeyPressed(new NodeKeyPressedCallback<RectNode>() {
 
 	@Override
-	public void apply(final RectNode node, final char c, final Key key) {
+	public void apply(final RectNode node, final Key key) {
 		if (key == Key.ENTER) {
 			focused.set(false);
-			return;
 		}
-
-		System.out.println("Typed " + c);
 	}
 
 	@Override
-	public void post(final RectNode node, final DispatchContext context, final char c, final Key key) {
+	public void post(final RectNode node, final DispatchContext context, final Key key) {
 		if (focused.peek()) {
-			context.cancel(() -> this.apply(node, c, key));
+			context.cancel(() -> this.apply(node, key));
+		}
+	}
+
+})
+.onCharTyped(new NodeCharTypedCallback<RectNode>() {
+
+	@Override
+	public void apply(final RectNode node, final int codepoint) {
+		System.out.println("Typed " + new String(Character.toChars(codepoint)));
+	}
+
+	@Override
+	public void post(final RectNode node, final DispatchContext context, final int codepoint) {
+		if (focused.peek()) {
+			context.cancel(() -> this.apply(node, codepoint));
 		}
 	}
 
@@ -360,7 +374,7 @@ RectNode
 .attach(this);
 ```
 
-A [custom node](../nodes/custom-nodes.md) can do the same in its `keyPressed` hook.
+A [custom node](../nodes/custom-nodes.md) can do the same in its `keyPressed` and `charTyped` hooks.
 
 ## Last input of a node
 
@@ -371,8 +385,8 @@ Each node records the last events dispatched to its UI, whether or not they happ
 | `getLastClickButton()` | Button of the last press; `null` before the first one. |
 | `getLastClickTime()` | Time of the last press, in milliseconds of the clock bridge. |
 | `getLastKey()` | Last key; `null` before the first one. |
-| `getLastCharacter()` | Character of the last key event. |
-| `getLastKeyTime()` | Time of the last key event, in milliseconds of the clock bridge. |
+| `getLastKeyTime()` | Time of the last key press, in milliseconds of the clock bridge. |
+| `getLastCodepoint()` | Code point of the last character; `0` before the first one. |
 
 ## Pitfalls
 

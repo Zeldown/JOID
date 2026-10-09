@@ -237,7 +237,6 @@ public final class Main {
 			}
 
 			GLFW.glfwPollEvents();
-			this.input.flush();
 
 			this.bridge.update();
 			BridgeHandler.RENDER.get().clearColor(0.1F, 0.1F, 0.1F, 1F);

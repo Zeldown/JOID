@@ -899,3 +899,19 @@ press LEFT
 release LEFT
 wait 50
 cursor NOT_ALLOWED
+ui dev.joid.demo.ui.textfield.UIDemoKeyboard
+wait 800
+move 240 170
+press LEFT
+release LEFT
+wait 100
+type a
+key LEFT
+wait 100
+move 600 105
+press LEFT
+release LEFT
+wait 100
+type é😀
+wait 300
+shot inter-keyboard

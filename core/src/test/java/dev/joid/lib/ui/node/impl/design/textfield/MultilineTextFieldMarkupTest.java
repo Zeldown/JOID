@@ -381,12 +381,12 @@ public class MultilineTextFieldMarkupTest {
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {
-		field.keyPressed(' ', key, DispatchContext.create());
+		field.keyPressed(key, DispatchContext.create());
 	}
 
 	private void type(final MultilineTextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
+			field.charTyped(c, DispatchContext.create());
 		}
 	}
 

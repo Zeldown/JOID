@@ -37,14 +37,27 @@ public final class Lwjgl2InputForwarder {
 		}
 
 		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				this.keyPressed(Keyboard.getEventCharacter(), Keyboard.getEventKey());
+			if (!Keyboard.getEventKeyState()) {
+				continue;
+			}
+
+			this.keyPressed(Keyboard.getEventKey());
+			if (Keyboard.getEventCharacter() != Keyboard.CHAR_NONE) {
+				this.charTyped(Keyboard.getEventCharacter());
 			}
 		}
 	}
 
-	public boolean keyPressed(final char character, final int code) {
-		return this.bridge.keyTyped(character, Lwjgl2WindowBridge.getKey(code));
+	public boolean keyPressed(final int code) {
+		return this.bridge.keyPressed(Lwjgl2WindowBridge.getKey(code));
+	}
+
+	public boolean charTyped(final int codepoint) {
+		return this.bridge.charTyped(codepoint);
+	}
+
+	public boolean mouseMoved() {
+		return this.bridge.mouseMoved();
 	}
 
 	public boolean mousePressed(final int button) {
@@ -53,10 +66,6 @@ public final class Lwjgl2InputForwarder {
 
 	public boolean mouseReleased(final int button) {
 		return this.bridge.mouseReleased(MouseButton.from(button));
-	}
-
-	public boolean mouseMoved() {
-		return this.bridge.mouseMoved();
 	}
 
 	public boolean mouseScrolled(final int wheel) {

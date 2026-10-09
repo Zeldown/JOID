@@ -75,3 +75,6 @@ shot static-UIDemoOtherStore
 ui dev.joid.demo.ui.cursor.UIDemoCursor
 wait 3500
 shot static-UIDemoCursor
+ui dev.joid.demo.ui.textfield.UIDemoKeyboard
+wait 3500
+shot static-UIDemoKeyboard

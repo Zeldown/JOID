@@ -173,7 +173,7 @@ public class KeyLayoutTest {
 
 	private void control(final Key physical) {
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, physical));
-		this.bridges.getUi().keyTyped('\0', this.layout.translate(physical));
+		this.bridges.getUi().keyPressed(this.layout.translate(physical));
 		this.bridges.getWindow().getKeys().clear();
 	}
 

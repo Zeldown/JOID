@@ -14,8 +14,6 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 	@Getter
 	private final long window;
 
-	private final GlfwInputForwarder input;
-
 	protected GlfwDemoWindow() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		if (!GLFW.glfwInit()) {
@@ -32,7 +30,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 		this.registerBackend(this.window);
 
-		this.input = GlfwInputForwarder.create(this).attach(this.window);
+		GlfwInputForwarder.create(this).attach(this.window);
 
 		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.onResize(width, height));
 		super.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
@@ -51,7 +49,6 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 			}
 
 			GLFW.glfwPollEvents();
-			this.input.flush();
 
 			super.frame();
 			this.present();

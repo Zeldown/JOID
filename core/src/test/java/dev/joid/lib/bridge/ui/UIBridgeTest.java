@@ -32,7 +32,6 @@ import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import lombok.NonNull;
 
 public class UIBridgeTest {
@@ -226,31 +225,49 @@ public class UIBridgeTest {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hud);
 		this.trace.clear();
-		this.bridges.getUi().keyTyped('a', Key.A);
+		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().charTyped('a');
 		hud.cancel = true;
-		this.bridges.getUi().keyTyped('b', Key.B);
-		Assert.assertEquals(Arrays.asList("typed hud a A", "typed menu a A", "typed hud b B"), this.trace);
+		this.bridges.getUi().keyPressed(Key.B);
+		this.bridges.getUi().charTyped('b');
+		Assert.assertEquals(Arrays.asList("key hud A", "key menu A", "char hud a", "char menu a", "key hud B", "char hud b"), this.trace);
 	}
 
 	@Test
-	public void typesNoCharacterForAControlCharacter() {
-		this.bridges.open(new TraceUI("menu", this.trace));
+	public void typesNoControlCharacter() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		menu.cancel = true;
+		this.bridges.open(menu);
 		this.trace.clear();
-		this.bridges.getUi().keyTyped('\u0003', Key.C);
-		this.bridges.getUi().keyTyped('\r', Key.ENTER);
-		this.bridges.getUi().keyTyped('\b', Key.BACKSPACE);
-		this.bridges.getUi().keyTyped('\t', Key.TAB);
-		this.bridges.getUi().keyTyped('\u007F', Key.DELETE);
-		Assert.assertEquals(Arrays.asList("typed menu \0 C", "typed menu \0 ENTER", "typed menu \0 BACKSPACE", "typed menu \0 TAB", "typed menu \0 DELETE"), this.trace);
+		Assert.assertFalse(this.bridges.getUi().charTyped('\u0003'));
+		Assert.assertFalse(this.bridges.getUi().charTyped('\r'));
+		Assert.assertFalse(this.bridges.getUi().charTyped('\b'));
+		Assert.assertFalse(this.bridges.getUi().charTyped('\t'));
+		Assert.assertFalse(this.bridges.getUi().charTyped('\u007F'));
+		Assert.assertFalse(this.bridges.getUi().charTyped(0));
+		Assert.assertTrue(this.trace.isEmpty());
 	}
 
 	@Test
-	public void typesThePrintableCharacterOfAKey() {
+	public void typesEachCharacterInOneCall() {
 		this.bridges.open(new TraceUI("menu", this.trace));
 		this.trace.clear();
-		this.bridges.getUi().keyTyped('é', Key.E);
-		this.bridges.getUi().keyTyped(' ', Key.SPACE);
-		Assert.assertEquals(Arrays.asList("typed menu é E", "typed menu   SPACE"), this.trace);
+		this.bridges.getUi().charTyped('é');
+		this.bridges.getUi().charTyped(' ');
+		this.bridges.getUi().charTyped(0x1F600);
+		Assert.assertEquals(Arrays.asList("char menu é", "char menu  ", "char menu \uD83D\uDE00"), this.trace);
+	}
+
+	@Test
+	public void consumesTheKeyAndTheCharacterApart() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		this.trace.clear();
+		menu.keybind(() -> this.trace.add("keybind"), Key.A);
+		this.bridges.getWindow().getKeys().add(Key.A);
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertFalse(this.bridges.getUi().charTyped('a'));
+		Assert.assertEquals(Arrays.asList("keybind", "key menu A", "char menu a"), this.trace);
 	}
 
 	@Test
@@ -261,8 +278,9 @@ public class UIBridgeTest {
 		hidden.getData().setVisible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
 		this.trace.clear();
-		this.bridges.getUi().keyTyped('a', Key.A);
-		Assert.assertEquals(Collections.singletonList("typed popup a A"), this.trace);
+		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().charTyped('a');
+		Assert.assertEquals(Arrays.asList("key popup A", "char popup a"), this.trace);
 	}
 
 	@Test
@@ -271,8 +289,8 @@ public class UIBridgeTest {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(menu).open(hud);
 		this.trace.clear();
-		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
-		Assert.assertEquals(Arrays.asList("typed hud \0 ESCAPE", "close hud"), this.trace);
+		this.bridges.getUi().keyPressed(Key.ESCAPE);
+		Assert.assertEquals(Arrays.asList("key hud ESCAPE", "close hud"), this.trace);
 		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList().ordered());
 	}
 
@@ -283,8 +301,8 @@ public class UIBridgeTest {
 		hud.cancel = true;
 		this.bridges.open(menu).open(hud);
 		this.trace.clear();
-		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
-		Assert.assertEquals(Collections.singletonList("typed hud \0 ESCAPE"), this.trace);
+		this.bridges.getUi().keyPressed(Key.ESCAPE);
+		Assert.assertEquals(Collections.singletonList("key hud ESCAPE"), this.trace);
 		Assert.assertTrue(this.bridges.getUi().isOpen(hud));
 		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 	}
@@ -295,8 +313,8 @@ public class UIBridgeTest {
 		hud.getData().setCloseable(false);
 		this.bridges.open(hud);
 		this.trace.clear();
-		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
-		Assert.assertEquals(Collections.singletonList("typed hud \0 ESCAPE"), this.trace);
+		this.bridges.getUi().keyPressed(Key.ESCAPE);
+		Assert.assertEquals(Collections.singletonList("key hud ESCAPE"), this.trace);
 		Assert.assertTrue(this.bridges.getUi().isOpen(hud));
 	}
 
@@ -307,8 +325,8 @@ public class UIBridgeTest {
 		hud.closeable = false;
 		this.bridges.open(menu).open(hud);
 		this.trace.clear();
-		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
-		Assert.assertEquals(Arrays.asList("typed hud \0 ESCAPE", "close hud"), this.trace);
+		this.bridges.getUi().keyPressed(Key.ESCAPE);
+		Assert.assertEquals(Arrays.asList("key hud ESCAPE", "close hud"), this.trace);
 		Assert.assertTrue(this.bridges.getUi().isOpen(hud));
 		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 	}
@@ -410,8 +428,8 @@ public class UIBridgeTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void refusesATypeWithoutKey() {
-		this.bridges.getUi().keyTyped('a', null);
+	public void refusesAKeyPressWithoutKey() {
+		this.bridges.getUi().keyPressed(null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -556,14 +574,16 @@ public class UIBridgeTest {
 		Assert.assertTrue(this.bridges.getUi().mouseMoved());
 		Assert.assertTrue(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseScroll(0D, 1D));
-		Assert.assertTrue(this.bridges.getUi().keyTyped('a', Key.A));
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertTrue(this.bridges.getUi().charTyped('a'));
 		Assert.assertFalse(this.bridges.getUi().mouseScroll(0D, 0D));
 	}
 
 	@Test
 	public void consumesNothingWithoutUi() {
 		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
-		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
+		Assert.assertFalse(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertFalse(this.bridges.getUi().charTyped('a'));
 	}
 
 	@Test
@@ -573,8 +593,9 @@ public class UIBridgeTest {
 		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		this.bridges.getUi().keyTyped('a', Key.A);
-		Assert.assertEquals(Arrays.asList("pressed menu LEFT", "typed menu a A"), this.trace);
+		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().charTyped('a');
+		Assert.assertEquals(Arrays.asList("pressed menu LEFT", "key menu A", "char menu a"), this.trace);
 	}
 
 	@Test
@@ -593,8 +614,9 @@ public class UIBridgeTest {
 		this.trace.clear();
 		Assert.assertTrue(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseScroll(0D, 1D));
-		Assert.assertTrue(this.bridges.getUi().keyTyped('a', Key.A));
-		Assert.assertEquals(Arrays.asList("pressed overlay LEFT", "scrolled overlay 1.0", "typed overlay a A"), this.trace);
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertTrue(this.bridges.getUi().charTyped('a'));
+		Assert.assertEquals(Arrays.asList("pressed overlay LEFT", "scrolled overlay 1.0", "key overlay A", "char overlay a"), this.trace);
 	}
 
 	@Test
@@ -608,7 +630,8 @@ public class UIBridgeTest {
 		Assert.assertFalse(this.bridges.getUi().mouseMoved());
 		Assert.assertFalse(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
 		Assert.assertFalse(this.bridges.getUi().mouseScroll(0D, 1D));
-		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
+		Assert.assertFalse(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertFalse(this.bridges.getUi().charTyped('a'));
 		Assert.assertFalse(this.trace.stream().anyMatch(line -> line.contains("menu")));
 	}
 
@@ -620,7 +643,8 @@ public class UIBridgeTest {
 		this.bridges.open(overlay);
 		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseScroll(0D, -1D));
-		Assert.assertFalse(this.bridges.getUi().keyTyped('a', Key.A));
+		Assert.assertFalse(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertFalse(this.bridges.getUi().charTyped('a'));
 	}
 
 	@Test
@@ -629,8 +653,8 @@ public class UIBridgeTest {
 		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
 		this.bridges.open(menu).open(overlay);
 		this.trace.clear();
-		Assert.assertTrue(this.bridges.getUi().keyTyped('\0', Key.ESCAPE));
-		Assert.assertEquals(Arrays.asList("typed overlay \0 ESCAPE", "typed menu \0 ESCAPE", "close menu"), this.trace);
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.ESCAPE));
+		Assert.assertEquals(Arrays.asList("key overlay ESCAPE", "key menu ESCAPE", "close menu"), this.trace);
 		Assert.assertEquals(Collections.singletonList(overlay), this.bridges.getUi().getUiList().ordered());
 	}
 
@@ -752,23 +776,6 @@ public class UIBridgeTest {
 		this.bridges.getUi().draw(ui -> ui == hud);
 		Assert.assertEquals(1, this.trace.size());
 		Assert.assertTrue(this.trace.get(0), this.trace.get(0).startsWith("draw hud"));
-	}
-
-	@Test
-	public void foreseesAKeyTakenByAFocusedFieldOfAnOverlay() {
-		final OverlayUI hud = new OverlayUI("hud", this.trace);
-		this.bridges.open(hud);
-		Assert.assertFalse(this.bridges.getUi().isConsumingKey(Key.A));
-		TextFieldNode.create(0D, 0D, 100D).<TextFieldNode>focused(true).attach(hud);
-		this.bridges.frame();
-		Assert.assertTrue(this.bridges.getUi().isConsumingKey(Key.A));
-	}
-
-	@Test
-	public void foreseesTheEscapeThatClosesAScreen() {
-		this.bridges.open(new TraceUI("menu", this.trace));
-		Assert.assertTrue(this.bridges.getUi().isConsumingKey(Key.ESCAPE));
-		Assert.assertFalse(this.bridges.getUi().isConsumingKey(Key.A));
 	}
 
 	@Test
@@ -967,8 +974,14 @@ public class UIBridgeTest {
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
-			this.trace.add("typed " + this.name + " " + c + " " + key);
+		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
+			this.trace.add("key " + this.name + " " + key);
+			this.cancel(context);
+		}
+
+		@Override
+		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
+			this.trace.add("char " + this.name + " " + new String(Character.toChars(codepoint)));
 			this.cancel(context);
 		}
 

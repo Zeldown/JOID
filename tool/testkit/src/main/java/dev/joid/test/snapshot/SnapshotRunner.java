@@ -172,9 +172,11 @@ public final class SnapshotRunner {
 	}
 
 	private void type(final String text) {
-		for (final char character : text.toCharArray()) {
+		for (final int codepoint : text.codePoints().toArray()) {
+			final char character = Character.isBmpCodePoint(codepoint) ? (char) codepoint : 0;
 			final boolean shift = SnapshotRunner.isShifted(character) && this.window.getKeys().add(Key.LEFT_SHIFT);
-			this.bridge.keyTyped(character, SnapshotRunner.getKey(character));
+			this.bridge.keyPressed(SnapshotRunner.getKey(character));
+			this.bridge.charTyped(codepoint);
 			if (shift) {
 				this.window.getKeys().remove(Key.LEFT_SHIFT);
 			}
@@ -211,7 +213,7 @@ public final class SnapshotRunner {
 			}
 		}
 
-		this.bridge.keyTyped((char) 0, key);
+		this.bridge.keyPressed(key);
 		this.window.getKeys().removeAll(added);
 	}
 

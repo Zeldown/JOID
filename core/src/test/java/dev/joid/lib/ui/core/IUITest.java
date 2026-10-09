@@ -24,7 +24,8 @@ public class IUITest {
 		this.ui.mouseDragged(10D, 20D, MouseButton.LEFT, 40L, context);
 		this.ui.mouseReleased(10D, 20D, MouseButton.LEFT, context);
 		this.ui.mouseScroll(10D, 20D, 0D, 1D, context);
-		this.ui.keyPressed('a', Key.A, context);
+		this.ui.keyPressed(Key.A, context);
+		this.ui.charTyped('a', context);
 		Assert.assertFalse(context.isCancelled());
 	}
 
@@ -71,12 +72,17 @@ public class IUITest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAKeyWithoutKey() {
-		this.ui.keyPressed('a', null, DispatchContext.create());
+		this.ui.keyPressed(null, DispatchContext.create());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAKeyWithoutContext() {
-		this.ui.keyPressed('a', Key.A, null);
+		this.ui.keyPressed(Key.A, null);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesACharacterWithoutContext() {
+		this.ui.charTyped('a', null);
 	}
 
 	public static final class PlainUI implements IUI {}

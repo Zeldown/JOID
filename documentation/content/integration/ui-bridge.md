@@ -53,14 +53,13 @@ Register the bridge after the backend, load JOID, then forward the events of you
 ```java
 public final class AppLoop {
 
-	private final long               window;
-	private final AppUIBridge        bridge;
-	private final GlfwInputForwarder input;
+	private final long        window;
+	private final AppUIBridge bridge;
 
 	public AppLoop(final long window, final @NonNull AppUIBridge bridge) {
 		this.window = window;
 		this.bridge = bridge;
-		this.input  = GlfwInputForwarder.create(bridge).attach(window);
+		GlfwInputForwarder.create(bridge).attach(window);
 
 		GLFW.glfwSetFramebufferSizeCallback(window, (handle, width, height) -> this.resize());
 		this.resize();
@@ -69,7 +68,6 @@ public final class AppLoop {
 	public void run() {
 		while (!GLFW.glfwWindowShouldClose(this.window)) {
 			GLFW.glfwPollEvents();
-			this.input.flush();
 
 			this.bridge.update();
 			BridgeHandler.RENDER.get().clearColor(0F, 0F, 0F, 1F);
@@ -97,12 +95,12 @@ public final class AppLoop {
 		}
 	}
 
-	private void onKey(final int code, final int action, final int mods) {
+	private void onKey(final int code, final int action) {
 		if (action == GLFW.GLFW_RELEASE) {
 			return;
 		}
 
-		this.keyMerger.keyPressed(GlfwKeys.getKey(code), code, mods);
+		this.bridge.keyPressed(GlfwKeys.getKey(code));
 	}
 
 }
@@ -119,7 +117,7 @@ JOID.open(new UIMainMenu());
 loop.run();
 ```
 
-`GlfwInputForwarder` (`dev.joid.base.glfw.input`) registers the GLFW input callbacks of the window and forwards them to the bridge: keys through `GlfwKeys.getKey(int)`, which gives the key of the active keyboard layout, each paired with its character by a `KeyCharacterMerger` flushed once per frame; buttons through `MouseButton.from(int)`; the scroll offset in notches. A host that owns the GLFW callbacks, such as a game, calls its methods itself: `keyPressed(code, modifiers)`, `charTyped(codepoint)`, `mousePressed(button)`, `mouseReleased(button)`, `mouseMoved()`, `mouseScrolled(notches)` and `flush()`; the mouse methods return whether a UI consumed the event. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
+`GlfwInputForwarder` (`dev.joid.base.glfw.input`) registers the GLFW input callbacks of the window and forwards each event to the bridge as it comes: a key press or repeat to `keyPressed`, through `GlfwKeys.getKey(int)`, which gives the key of the active keyboard layout; each character to `charTyped`; buttons through `MouseButton.from(int)`; the scroll offset in notches. A host that owns the GLFW callbacks, such as a game, calls its methods itself: `keyPressed(code)`, `charTyped(codepoint)`, `mousePressed(button)`, `mouseReleased(button)`, `mouseMoved()` and `mouseScrolled(notchesX, notchesY)`; each one returns whether a UI consumed the event. The demo windows of the backends contain the same loops for GLFW and LWJGL 2 (see [Backends](backends.md)).
 
 ## Feeding input events
 
@@ -131,10 +129,11 @@ loop.run();
 | `mouseReleased(MouseButton clickType)` | A mouse button goes up. | The button released. Releasing the button of the last `mousePressed` ends its drag. |
 | `mouseMoved()` | The mouse moves. | None. While a button is held, the bridge sends a drag with that button and the milliseconds since its press, read from the [clock bridge](bridges.md) (`BridgeHandler.CLOCK`), so a manual clock (testkit, replays) gives exact durations; without a held button it does nothing. |
 | `mouseScroll(double notchesX, double notchesY)` | The wheel turns or tilts, or a touchpad scrolls. | The distance in notches on each axis: `notchesY` is `1` for one notch away from the user, `-1` toward them; `notchesX` is positive toward the left, negative toward the right, as GLFW gives it; a fraction for a precise touchpad. GLFW and Minecraft give notches as they are; Windows and LWJGL 2 count `120` per notch, so divide by `120` (LWJGL 2 has no horizontal wheel: pass `0`). An event with both at `0` is ignored. Scrolling uses the sign; the dev-mode zoom (Alt + wheel) and the model viewer use the amount. |
-| `keyTyped(char c, Key key)` | A key is pressed or repeats. | The character it types (`0` when none) and the engine-neutral `Key` (`Key.UNKNOWN` when unknown). |
+| `keyPressed(Key key)` | A key is pressed or repeats. | The engine-neutral `Key` (`Key.UNKNOWN` when unknown). |
+| `charTyped(int codepoint)` | A character is typed, after the key that types it. | Its Unicode code point: a character outside the basic plane, such as an emoji, is one call. A control character (`Character.isISOControl`: `\r`, `\b`, `\t`, Ctrl + C...) is ignored and returns `false`. |
 
 - The mouse position is not an event: each UI reads `getMouseX()` and `getMouseY()` from the [window bridge](bridges.md#iwindowbridge) when it is drawn, and input events use the position of the last frame.
-- Deliver the character and the key of a press together: text fields read the character, shortcuts read the key. GLFW reports them in two callbacks, which is why the loop above holds a text key until its character arrives.
+- Forward the key and the character as the host reports them, each as soon as it arrives: `keyPressed` for every press, then `charTyped` for the text it types. A text field inserts the characters and reads the keys for its navigation, its editing and its shortcuts; the keybinds, the zoom keys and Escape read the key only. While Ctrl (Command on macOS) is held without Alt, a text field consumes the characters without typing them, so a host that reports a character with a shortcut does not insert it; AltGr (Ctrl + Alt) still types.
 
 ## Event dispatch and Escape
 
@@ -142,7 +141,7 @@ Each event goes to the UIs from the top one down, the [overlays](../ui/managing-
 
 ![Diagram of the dispatch: events go from the top UI down, skip inactive UIs and stop at the first UI that cancels them; Escape goes to the top closeable UI first and closes it only when nothing consumed it and onClose accepts](../images/diagram-ui-bridge-dispatch.png "Events go down the UI list; Escape reaches the UI before it closes")
 
-When `keyTyped` with `Key.ESCAPE` reaches an active, visible UI that is `closeable`:
+When `keyPressed(Key.ESCAPE)` reaches an active, visible UI that is `closeable`:
 
 1. The UI receives the key first: its nodes, its keybinds, its `keyPressed` hook and the dev shortcuts.
 2. When one of them consumes it, the UI stays open. A focused text field does: it restores the text it had before the focus and loses the focus. A second Escape then reaches step 3.
@@ -167,13 +166,12 @@ if (!this.bridge.mousePressed(MouseButton.from(button))) {
 }
 ```
 
-A host that hands the key and the character of a press in two events (a key event, then a character event) can still ask at the key whether JOID takes it, and keep the two merged for JOID with a `KeyCharacterMerger`: `isConsumingKey(Key key)` answers with the rules of `keyTyped`, before any dispatch. It is `true` for Escape when a closeable screen is open, and for a key that a keybind of a UI holds or that a focused text field receives, unless the UI is an overlay whose `cancelKeyboard` is off; a node that takes the key in its own `onKeyPressed` is not foreseen.
+The keyboard works the same way, one event at a time: `keyPressed` answers for the key (Escape of a closeable screen, a keybind, a focused text field, a node that consumes it), then `charTyped` for the character, which a focused text field consumes. A host that reports them in two events reads each answer as it comes:
 
 ```java
-if (this.bridge.isConsumingKey(key)) {
-	event.cancel();
+if (!this.bridge.charTyped(codepoint)) {
+	this.game.charTyped(codepoint);
 }
-this.merger.keyPressed(key, code, modifiers);
 ```
 
 Where and when the host draws its overlays (above its own interface, in a layer of its own) belongs to the backend: draw them with `draw()` at that place, from a bridge that holds only overlays if your host draws its screens elsewhere. `draw(Predicate<UI> filter)` draws only the UIs the filter accepts, with the same order, stacking and cursor as `draw()`, for a host that draws its overlays in several layers: `bridge.draw(ui -> layerOf(ui) == layer)`.
@@ -358,13 +356,13 @@ JOID.open(new UISettings());
 | `update()` | Updates every UI, bottom up. |
 | `draw()` | Draws every visible UI, bottom up. |
 | `draw(Predicate<UI> filter)` | Draws the visible UIs the filter accepts, bottom up. |
-| `isConsumingKey(Key key)` | Whether `keyTyped` would consume this key, foreseen at the press; see [Overlays and the host](#overlays-and-the-host). |
 | `resize(int, int)`, `frame()` | The screen and the whole frame, see [Frames with frame()](#frames-with-frame). |
 | `drawBackground()` | Protected hook of `frame()`, between `beginFrame()` and the UIs; nothing by default. |
 | `mousePressed(MouseButton)`, `mouseReleased(MouseButton)` | A button goes down or up. Like every input method, returns whether a UI consumed it. |
 | `mouseMoved()` | The mouse moves; a drag when a button is held, timed on `BridgeHandler.CLOCK`. |
 | `mouseScroll(double notchesX, double notchesY)` | The wheel turns, in notches on each axis. |
-| `keyTyped(char c, Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |
+| `keyPressed(Key key)` | A key is pressed or repeats; Escape closes the top closeable UI when nothing consumes it. |
+| `charTyped(int codepoint)` | A character is typed, one call per code point; control characters are ignored. |
 | `getUiList()` | The sorted `IndexedLinkedList<UI>`. |
 | `drawHover(UI, Object, double, double)` | Draws a tooltip; nothing by default, see [Tooltips with drawHover](#tooltips-with-drawhover). |
 | `isOnTop(UI)`, `isOpen(UI)` | See [Methods you implement](#methods-you-implement). |

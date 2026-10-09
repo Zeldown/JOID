@@ -42,7 +42,7 @@ An assignment gives the target type to the last call of the chain: `final RectNo
 
 ## Node callback reference
 
-The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mouse`, `key`, `hover`, `state`, `signal`, `animation`, `scroll` and `draggable`. Mouse coordinates are units of the virtual canvas, like the positions of the nodes (see [The Virtual Canvas](../concepts/canvas.md)). The last column is what runs between the PRE and the POST phase; for `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` it always runs, for the others a PRE cancel skips it (see [PRE and POST phases](#pre-and-post-phases)).
+The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mouse`, `key`, `hover`, `state`, `signal`, `animation`, `scroll` and `draggable`. Mouse coordinates are units of the virtual canvas, like the positions of the nodes (see [The Virtual Canvas](../concepts/canvas.md)). The last column is what runs between the PRE and the POST phase; for `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed` and `onCharTyped` it always runs, for the others a PRE cancel skips it (see [PRE and POST phases](#pre-and-post-phases)).
 
 | Method | Interface | Lambda arguments | Fires | Between PRE and POST |
 |---|---|---|---|---|
@@ -51,7 +51,8 @@ The interfaces live in sub-packages of `dev.joid.lib.ui.node.callback.impl`: `mo
 | `onMouseReleased` | `NodeMouseReleasedCallback<T>` | `(node, mouseX, mouseY, clickType)` | Every mouse button release, wherever the mouse is. | Dispatch to the children and the node's `mouseReleased` hook. |
 | `onMouseDragged` | `NodeMouseDraggedCallback<T>` | `(node, mouseX, mouseY, clickType, deltaTime)` | Every mouse move while a button is held. | Dispatch to the children, the node's `mouseDragged` hook, the drag of the node. |
 | `onMouseScroll` | `NodeMouseScrollCallback<T>` | `(node, mouseX, mouseY, notchesX, notchesY)` | Every mouse wheel event. | Dispatch to the children, scrolling of the hovered node, the node's `mouseScroll` hook. |
-| `onKeyPressed` | `NodeKeyPressedCallback<T>` | `(node, c, key)` | Every key event the UI receives, wherever the mouse is. | Dispatch to the children and the node's `keyPressed` hook. |
+| `onKeyPressed` | `NodeKeyPressedCallback<T>` | `(node, key)` | Every key press or repeat the UI receives, wherever the mouse is. | Dispatch to the children and the node's `keyPressed` hook. |
+| `onCharTyped` | `NodeCharTypedCallback<T>` | `(node, codepoint)` | Every character the UI receives, after its key, wherever the mouse is. | Dispatch to the children and the node's `charTyped` hook. |
 | `onHoverStart` | `NodeHoverStartCallback<T>` | `(node, mouseX, mouseY)` | The frame the node becomes hovered. | Nothing. |
 | `onHover` | `NodeHoverCallback<T>` | `(node, mouseX, mouseY)` | Every frame while the node is hovered. | Nothing. |
 | `onHoverEnd` | `NodeHoverEndCallback<T>` | `(node, mouseX, mouseY)` | The frame the node stops being hovered (the mouse left, or the node got disabled). | Nothing. |
@@ -89,7 +90,7 @@ Every callback interface declares three methods:
 A dispatch on one node runs:
 
 1. The `pre` method of every callback of that type, in registration order.
-2. The default action (last column of the reference table). For every callback except `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed`, a cancelled context at this point skips the default action and step 3.
+2. The default action (last column of the reference table). For every callback except `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed` and `onCharTyped`, a cancelled context at this point skips the default action and step 3.
 3. The `post` method of every callback, in registration order. When the context was not cancelled before this step, it is reset before each `post`, so every callback of the node runs; it ends cancelled when any `post` cancelled it.
 
 A lambda implements `apply`, so it runs in the POST phase. To act in the PRE phase, implement the interface and override `pre`. This flex node refuses a sixth child:
@@ -144,7 +145,7 @@ A mouse or key event travels through every node of the UI with a single context.
 
 Once the event is consumed, the input lambdas of the nodes reached afterwards do not run, `onClick` does not fire, built-in nodes ignore it, no drag starts, the UI keybinds do not run, and the UI bridge does not pass it to the UIs below.
 
-`onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` are listeners: their lambda runs for every event of its kind that is not consumed yet, wherever the mouse is, and leaves the event to the other nodes, the UI keybinds and the UIs below. Hidden and disabled nodes receive no input event at all: neither their lambdas nor their built-in handling run, and the children of a hidden node are skipped too.
+`onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed` and `onCharTyped` are listeners: their lambda runs for every event of its kind that is not consumed yet, wherever the mouse is, and leaves the event to the other nodes, the UI keybinds and the UIs below. Hidden and disabled nodes receive no input event at all: neither their lambdas nor their built-in handling run, and the children of a hidden node are skipped too.
 
 ### Consuming an event from a listener
 
@@ -156,10 +157,10 @@ RectNode
 .onKeyPressed(new NodeKeyPressedCallback<RectNode>() {
 
 	@Override
-	public void apply(final RectNode node, final char c, final Key key) {}
+	public void apply(final RectNode node, final Key key) {}
 
 	@Override
-	public void post(final RectNode node, final DispatchContext context, final char c, final Key key) {
+	public void post(final RectNode node, final DispatchContext context, final Key key) {
 		if (!context.isCancelled() && key == Key.ENTER) {
 			System.out.println("Submitted");
 			context.cancel();
@@ -212,7 +213,7 @@ Inside a UI, an input event reaches the top-level nodes from front to back: high
 2. The node's PRE callbacks.
 3. The children with a z-index of 0 or more, front to back, each one recursively.
 4. For a press: `onClick` when the node is hovered and the press is not consumed; the click then consumes it. For a wheel event: the scrolling of the node when it is hovered and the event is not consumed.
-5. The node's own hook (`mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`).
+5. The node's own hook (`mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`, `charTyped`).
 6. The children with a negative z-index, front to back.
 7. For a mouse drag: the move of the node's drag target when it is being dragged.
 8. The node's POST callbacks.

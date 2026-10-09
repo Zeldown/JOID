@@ -23,7 +23,7 @@ The `-prod` jars do not contain the classes and assets of these modes: there, `s
 
 ## Shortcuts
 
-A key goes first to the nodes of the UI, then to its keybinds, then to the zoom keys, then to the dev shortcuts, and last to the `keyPressed` hook of the UI. A dev shortcut runs only in dev mode and only when nothing before it consumed the key.
+A key press goes first to the nodes of the UI, then to its keybinds, then to the zoom keys, then to the dev shortcuts, and last to the `keyPressed` hook of the UI. A dev shortcut runs only in dev mode and only when nothing before it consumed the key.
 
 | Shortcut | Mode | Effect |
 | --- | --- | --- |
@@ -239,6 +239,7 @@ Click a button of the menu to open its demo; it slides in, and `Escape` goes bac
 | `UIDemoSignal` | Native expressions, `map`, `Signal.from`, lambdas, two-way controls, visibility, color, `watch`, `wait`, `subscribe` | [Signals](../state/signals.md) |
 | `UIDemoWatch` | `onWatch`, conditions, `WatchProperty.custom`, `wait`, futures, `batch`, `silent`, `peek`, `reset`, map and set signals, subscriptions | [Watching Signals](../state/watch.md) |
 | `UIDemoStore`, `UIDemoOtherStore` | Local, global and permanent stores shared between two UIs | [Stores](../state/stores.md) |
+| `UIDemoKeyboard` | A key press, then its character, received by a focused node; one call per code point, an emoji included | [Mouse and Keyboard](../interactions/mouse-and-keyboard.md#keyboard-callbacks-with-onkeypressed-and-onchartyped) |
 | `UIDemoPopup` | A popup UI, opened with `Ctrl+K` | [Opening and Closing UIs](../ui/managing-uis.md) |
 
 ## See also

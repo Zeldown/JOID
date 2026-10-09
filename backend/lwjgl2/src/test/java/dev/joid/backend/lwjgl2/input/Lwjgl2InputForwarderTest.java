@@ -57,16 +57,26 @@ public class Lwjgl2InputForwarderTest {
 	}
 
 	@Test
-	public void forwardsTheKeyWithItsCharacter() {
-		this.input.keyPressed('a', Keyboard.KEY_A);
-		Assert.assertEquals(Collections.singletonList("typed a A"), this.trace);
+	public void forwardsTheKeyAndTheCharacterApart() {
+		this.input.keyPressed(Keyboard.KEY_A);
+		this.input.charTyped('a');
+		Assert.assertEquals(Arrays.asList("key A", "char a"), this.trace);
+	}
+
+	@Test
+	public void forwardsNoControlCharacter() {
+		Assert.assertFalse(this.input.charTyped('\u0003'));
+		Assert.assertFalse(this.input.charTyped('\r'));
+		Assert.assertTrue(this.trace.isEmpty());
 	}
 
 	@Test
 	public void reportsTheEventsTheUiConsumed() {
-		Assert.assertFalse(this.input.keyPressed('a', Keyboard.KEY_A));
+		Assert.assertFalse(this.input.keyPressed(Keyboard.KEY_A));
+		Assert.assertFalse(this.input.charTyped('a'));
 		this.ui.cancel = true;
-		Assert.assertTrue(this.input.keyPressed('a', Keyboard.KEY_A));
+		Assert.assertTrue(this.input.keyPressed(Keyboard.KEY_A));
+		Assert.assertTrue(this.input.charTyped('a'));
 		Assert.assertTrue(this.input.mousePressed(0));
 		Assert.assertTrue(this.input.mouseMoved());
 		Assert.assertTrue(this.input.mouseReleased(0));
@@ -104,8 +114,13 @@ public class Lwjgl2InputForwarderTest {
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
-			this.record("typed " + c + " " + key, context);
+		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
+			this.record("key " + key, context);
+		}
+
+		@Override
+		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
+			this.record("char " + new String(Character.toChars(codepoint)), context);
 		}
 
 		private void record(final String event, final DispatchContext context) {

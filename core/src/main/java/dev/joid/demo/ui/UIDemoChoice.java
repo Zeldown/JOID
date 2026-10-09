@@ -29,6 +29,7 @@ import dev.joid.demo.ui.simple.UIDemoSimple;
 import dev.joid.demo.ui.slider.UIDemoSlider;
 import dev.joid.demo.ui.store.UIDemoOtherStore;
 import dev.joid.demo.ui.store.UIDemoStore;
+import dev.joid.demo.ui.textfield.UIDemoKeyboard;
 import dev.joid.demo.ui.textfield.UIDemoTextField;
 import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
@@ -86,6 +87,7 @@ public class UIDemoChoice extends UI {
 				JOID.open(new UIDemoOverlay());
 			}
 		}).state(() -> JOID.isOpen(UIDemoOverlay.class)));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoKeyboard.class));
 	}
 
 	@Override

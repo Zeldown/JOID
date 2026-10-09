@@ -71,7 +71,7 @@ A keybind runs when one of its keys is pressed while all of them are down; the o
 
 ## Pitfalls
 
-- `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll` and `onKeyPressed` are listeners: they receive every event of their kind, wherever the mouse is, without consuming it. For a click on a node, use `onClick`.
+- `onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`, `onKeyPressed` and `onCharTyped` are listeners: they receive every event of their kind, wherever the mouse is, without consuming it. For a click on a node, use `onClick`.
 - The mouse coordinates of a callback are canvas units, relative to the canvas and not to the node: compare them with `getAbsoluteX()` and `getAbsoluteY()` (the position of the node on the canvas), not with `getX()` (its position in its parent).
 
 ## See also

@@ -159,7 +159,20 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
+	public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
+		if (context.isCancelled() || !this.focused) {
+			return;
+		}
+
+		context.cancel(() -> {
+			if (!this.isShortcutKeyDown() || UI.isAltKeyDown()) {
+				this.insert(new String(Character.toChars(codepoint)));
+			}
+		});
+	}
+
+	@Override
+	public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
 		if (context.isCancelled() || !this.focused) {
 			return;
 		}
@@ -266,10 +279,7 @@ public abstract class FieldNode<V> extends Node {
 				if (this.insert(BridgeHandler.WINDOW.get().getClipboard())) {
 					this.commit();
 				}
-				return;
 			}
-
-			this.insert(Character.toString(c));
 		});
 	}
 

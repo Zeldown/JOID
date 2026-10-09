@@ -29,7 +29,7 @@ public class DemoEntryTest {
 
 	@Test
 	public void listsTheOverlayToggleInTheMenu() {
-		Assert.assertEquals("UIDemoOverlay: off", UIDemoChoice.LIST.get(UIDemoChoice.LIST.size() - 1).getText());
+		Assert.assertTrue(UIDemoChoice.LIST.stream().anyMatch(entry -> "UIDemoOverlay: off".equals(entry.getText())));
 	}
 
 }

@@ -72,7 +72,7 @@ public class MultilineTextFieldNodeTest {
 		this.bridges.open(ui);
 		this.bridges.getWindow().setClipboard("ab\r\ncd");
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		ui.field.keyPressed('v', Key.V, DispatchContext.create());
+		ui.field.keyPressed(Key.V, DispatchContext.create());
 		Assert.assertEquals("ab\ncd", ui.field.getText());
 	}
 
@@ -82,7 +82,7 @@ public class MultilineTextFieldNodeTest {
 		this.bridges.open(ui);
 		Assert.assertEquals("ab\ncd\nef", ui.field.getText());
 		ui.field.cursorPosition(1);
-		ui.field.keyPressed(' ', Key.DOWN, DispatchContext.create());
+		ui.field.keyPressed(Key.DOWN, DispatchContext.create());
 		Assert.assertEquals(4, ui.field.getCursorPos());
 	}
 
@@ -514,7 +514,8 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void receivesTheKeysTypedInItsUi() {
 		final MultilineTextFieldNode field = this.field("ab").cursorPosition(2);
-		this.bridges.getUi().keyTyped('c', Key.C);
+		this.bridges.getUi().keyPressed(Key.C);
+		this.bridges.getUi().charTyped('c');
 		Assert.assertEquals("abc", field.getText());
 	}
 
@@ -522,22 +523,27 @@ public class MultilineTextFieldNodeTest {
 	public void ignoresTheKeyboardWhileUnfocused() {
 		final MultilineTextFieldNode field = this.field("ab").focused(false);
 		final DispatchContext context = DispatchContext.create();
-		field.keyPressed('x', Key.X, context);
+		field.charTyped('x', context);
 		Assert.assertEquals("ab", field.getText());
 		Assert.assertFalse(context.isCancelled());
 	}
 
 	@Test
 	public void consumesTheKeysItReceives() {
-		final DispatchContext context = DispatchContext.create();
-		this.field("ab").keyPressed('x', Key.X, context);
-		Assert.assertTrue(context.isCancelled());
+		final DispatchContext key = DispatchContext.create();
+		final DispatchContext character = DispatchContext.create();
+		final MultilineTextFieldNode field = this.field("ab");
+		field.keyPressed(Key.X, key);
+		field.charTyped('x', character);
+		Assert.assertTrue(key.isCancelled());
+		Assert.assertTrue(character.isCancelled());
 	}
 
 	@Test
 	public void leavesAKeyAlreadyTakenElsewhere() {
 		final MultilineTextFieldNode field = this.field("ab");
-		field.keyPressed('x', Key.X, DispatchContext.create(true));
+		field.keyPressed(Key.X, DispatchContext.create(true));
+		field.charTyped('x', DispatchContext.create(true));
 		Assert.assertEquals("ab", field.getText());
 	}
 
@@ -1060,7 +1066,7 @@ public class MultilineTextFieldNodeTest {
 	public void selectsEverythingWithTheRightControlKey() {
 		final MultilineTextFieldNode field = this.field("ab\ncd").cursorPosition(2);
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_CONTROL);
-		field.keyPressed('a', Key.A, DispatchContext.create());
+		field.keyPressed(Key.A, DispatchContext.create());
 		Assert.assertEquals("ab\ncd", field.getText());
 		Assert.assertEquals(0, field.getSelectionStart());
 		Assert.assertEquals(5, field.getCursorPos());
@@ -1083,7 +1089,7 @@ public class MultilineTextFieldNodeTest {
 		final List<String> changes = new ArrayList<>();
 		final MultilineTextFieldNode field = this.field("ab").<MultilineTextFieldNode>accept(text -> !text.isEmpty()).onChange((node, text, value, valid) -> changes.add(text));
 		this.control(field, Key.A);
-		field.keyPressed('c', Key.C, DispatchContext.create());
+		field.charTyped('c', DispatchContext.create());
 		Assert.assertEquals("c", field.getText());
 		Assert.assertEquals(Collections.singletonList("c"), changes);
 	}
@@ -1091,7 +1097,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void refusesWhatIsTypedOnceFull() {
 		final MultilineTextFieldNode field = this.field("abc").maxTextLength(3).cursorPosition(1);
-		field.keyPressed('x', Key.X, DispatchContext.create());
+		field.charTyped('x', DispatchContext.create());
 		Assert.assertEquals("abc", field.getText());
 	}
 
@@ -1196,7 +1202,7 @@ public class MultilineTextFieldNodeTest {
 			this.bridges.getWindow().getKeys().add(Key.RIGHT_ALT);
 			this.press(field, Key.BACKSPACE);
 			this.bridges.getWindow().getKeys().remove(Key.RIGHT_ALT);
-			Assert.assertEquals(" one ", field.getText());
+			Assert.assertEquals("one ", field.getText());
 		} finally {
 			System.setProperty("os.name", system);
 		}
@@ -1253,7 +1259,7 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {
-		field.keyPressed(' ', key, DispatchContext.create());
+		field.keyPressed(key, DispatchContext.create());
 	}
 
 	private void control(final MultilineTextFieldNode field, final Key key) {
@@ -1264,7 +1270,7 @@ public class MultilineTextFieldNodeTest {
 
 	private void type(final MultilineTextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
+			field.charTyped(c, DispatchContext.create());
 		}
 	}
 

@@ -11,11 +11,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlfwInputForwarder {
 
-	private final UIBridge           bridge;
-	private final KeyCharacterMerger merger;
+	private final UIBridge bridge;
 
 	public static @NonNull GlfwInputForwarder create(final @NonNull UIBridge bridge) {
-		return new GlfwInputForwarder(bridge, KeyCharacterMerger.create(bridge::keyTyped));
+		return new GlfwInputForwarder(bridge);
 	}
 
 	public @NonNull GlfwInputForwarder attach(final long window) {
@@ -24,7 +23,7 @@ public final class GlfwInputForwarder {
 		GLFW.glfwSetScrollCallback(window, (handle, x, y) -> this.mouseScrolled(x, y));
 		GLFW.glfwSetKeyCallback(window, (handle, key, scancode, action, mods) -> {
 			if (action != GLFW.GLFW_RELEASE) {
-				this.keyPressed(key, mods);
+				this.keyPressed(key);
 			}
 		});
 		GLFW.glfwSetMouseButtonCallback(window, (handle, button, action, mods) -> {
@@ -37,16 +36,19 @@ public final class GlfwInputForwarder {
 		return this;
 	}
 
-	public void keyPressed(final int code, final int modifiers) {
-		this.merger.keyPressed(GlfwKeys.getKey(code), code, modifiers);
+	public boolean keyPressed(final int code) {
+		return this.bridge.keyPressed(GlfwKeys.getKey(code));
 	}
 
-	public void charTyped(final int codepoint) {
-		this.merger.charTyped(codepoint);
+	public boolean charTyped(final int codepoint) {
+		return this.bridge.charTyped(codepoint);
+	}
+
+	public boolean mouseMoved() {
+		return this.bridge.mouseMoved();
 	}
 
 	public boolean mousePressed(final int button) {
-		this.merger.flush();
 		return this.bridge.mousePressed(MouseButton.from(button));
 	}
 
@@ -54,16 +56,8 @@ public final class GlfwInputForwarder {
 		return this.bridge.mouseReleased(MouseButton.from(button));
 	}
 
-	public boolean mouseMoved() {
-		return this.bridge.mouseMoved();
-	}
-
 	public boolean mouseScrolled(final double notchesX, final double notchesY) {
 		return this.bridge.mouseScroll(notchesX, notchesY);
-	}
-
-	public void flush() {
-		this.merger.flush();
 	}
 
 }

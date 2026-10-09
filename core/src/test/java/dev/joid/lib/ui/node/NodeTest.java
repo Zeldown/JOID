@@ -739,8 +739,9 @@ public class NodeTest {
 		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.scroll(1D);
-		this.bridges.getUi().keyTyped('a', Key.A);
-		Assert.assertEquals(Arrays.asList("above pressed", "parent pressed", "below pressed", "above dragged", "parent dragged", "below dragged", "above released", "parent released", "below released", "above scrolled", "parent scrolled", "below scrolled", "above typed", "parent typed", "below typed"), events);
+		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().charTyped('a');
+		Assert.assertEquals(Arrays.asList("above pressed", "parent pressed", "below pressed", "above dragged", "parent dragged", "below dragged", "above released", "parent released", "below released", "above scrolled", "parent scrolled", "below scrolled", "above key", "parent key", "below key", "above char", "parent char", "below char"), events);
 	}
 
 	@Test
@@ -751,8 +752,9 @@ public class NodeTest {
 		Assert.assertSame(MouseButton.RIGHT, node.getLastClickButton());
 		Assert.assertEquals(this.bridges.getClock().currentTimeMillis(), node.getLastClickTime());
 		this.bridges.frame();
-		this.bridges.getUi().keyTyped('z', Key.Z);
-		Assert.assertEquals('z', node.getLastCharacter());
+		this.bridges.getUi().keyPressed(Key.Z);
+		this.bridges.getUi().charTyped('z');
+		Assert.assertEquals('z', node.getLastCodepoint());
 		Assert.assertSame(Key.Z, node.getLastKey());
 		Assert.assertEquals(this.bridges.getClock().currentTimeMillis(), node.getLastKeyTime());
 	}
@@ -919,8 +921,9 @@ public class NodeTest {
 		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.scroll(1D);
-		this.bridges.getUi().keyTyped('a', Key.A);
-		Assert.assertEquals(Arrays.asList("skeleton pressed", "skeleton dragged", "skeleton released", "skeleton scrolled", "skeleton typed"), events);
+		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().charTyped('a');
+		Assert.assertEquals(Arrays.asList("skeleton pressed", "skeleton dragged", "skeleton released", "skeleton scrolled", "skeleton key", "skeleton char"), events);
 		ready[0] = true;
 		this.bridges.frame();
 		events.clear();
@@ -1386,14 +1389,15 @@ public class NodeTest {
 	@Test
 	public void forwardsTheMouseAndKeysToItsScrollbar() {
 		final List<String> events = new ArrayList<>();
-		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D)).onKeyPressed((scrollbar, c, key) -> events.add("typed")).onMouseScroll((scrollbar, mouseX, mouseY, valueX, value) -> events.add("scrolled")).onMouseDragged((scrollbar, mouseX, mouseY, button, deltaTime) -> events.add("dragged")).onMouseReleased((scrollbar, mouseX, mouseY, button) -> events.add("released"));
+		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D)).onKeyPressed((scrollbar, key) -> events.add("key")).onCharTyped((scrollbar, codepoint) -> events.add("char")).onMouseScroll((scrollbar, mouseX, mouseY, valueX, value) -> events.add("scrolled")).onMouseDragged((scrollbar, mouseX, mouseY, button, deltaTime) -> events.add("dragged")).onMouseReleased((scrollbar, mouseX, mouseY, button) -> events.add("released"));
 		this.bridges.open(new NodeUI(NodeTest.row().scrollbar(bar)));
-		this.bridges.getUi().keyTyped('a', Key.A);
+		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().charTyped('a');
 		this.bridges.scroll(1D);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
-		Assert.assertEquals(Arrays.asList("typed", "scrolled", "dragged", "released"), events);
+		Assert.assertEquals(Arrays.asList("key", "char", "scrolled", "dragged", "released"), events);
 	}
 
 	@Test
@@ -2964,8 +2968,13 @@ public class NodeTest {
 		}
 
 		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
-			this.events.add(this.name + " typed");
+		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
+			this.events.add(this.name + " key");
+		}
+
+		@Override
+		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
+			this.events.add(this.name + " char");
 		}
 
 	}

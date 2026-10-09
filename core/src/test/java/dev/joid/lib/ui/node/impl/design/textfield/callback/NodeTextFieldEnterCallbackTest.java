@@ -86,7 +86,7 @@ public class NodeTextFieldEnterCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final TextFieldNode field = this.field().onEnter((node, text) -> received.addAll(Arrays.asList(node, text, node.isFocused())));
 		this.bridges.open(new NodeUI(field));
-		this.bridges.getUi().keyTyped('\r', Key.ENTER);
+		this.bridges.getUi().keyPressed(Key.ENTER);
 		Assert.assertEquals(Arrays.asList(field, "hello", false), received);
 	}
 
@@ -108,7 +108,7 @@ public class NodeTextFieldEnterCallbackTest {
 
 		});
 		this.bridges.open(new NodeUI(field));
-		this.bridges.getUi().keyTyped('\r', Key.NUMPAD_ENTER);
+		this.bridges.getUi().keyPressed(Key.NUMPAD_ENTER);
 		Assert.assertFalse(field.isFocused());
 		Assert.assertTrue(received.isEmpty());
 	}

@@ -316,11 +316,53 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void consumesACharacterOutsideTheBasicPlaneItCannotShow() {
+		final TextFieldNode field = this.field("ab").cursorPosition(2);
+		Assert.assertTrue(this.bridges.getUi().charTyped(0x1F600));
+		Assert.assertEquals("ab", field.getText());
+	}
+
+	@Test
+	public void typesNoCharacterWhileControlIsDown() {
+		final TextFieldNode field = this.field("ab").cursorPosition(2);
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.B));
+		Assert.assertTrue(this.bridges.getUi().charTyped('b'));
+		Assert.assertEquals("ab", field.getText());
+	}
+
+	@Test
+	public void typesTheCharacterOfAltGr() {
+		final TextFieldNode field = this.field("ab").cursorPosition(2);
+		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.RIGHT_ALT));
+		this.bridges.getUi().keyPressed(Key.DIGIT_0);
+		this.bridges.getUi().charTyped('@');
+		Assert.assertEquals("ab@", field.getText());
+	}
+
+	@Test
+	public void copiesAndPastesWithoutTypingTheShortcutLetter() {
+		final TextFieldNode field = this.field("ab").cursorPosition(2);
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().charTyped('a');
+		this.bridges.getUi().keyPressed(Key.C);
+		this.bridges.getUi().charTyped('\u0003');
+		this.bridges.getWindow().getKeys().remove(Key.LEFT_CONTROL);
+		this.bridges.getUi().keyPressed(Key.END);
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		this.bridges.getUi().keyPressed(Key.V);
+		this.bridges.getUi().charTyped('v');
+		Assert.assertEquals("ab", this.bridges.getWindow().getClipboard());
+		Assert.assertEquals("abab", field.getText());
+	}
+
+	@Test
 	public void ignoresTheKeyboardWhileUnfocused() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("abc");
 		this.bridges.open(new NodeUI(field));
 		final DispatchContext context = DispatchContext.create();
-		field.keyPressed('x', Key.X, context);
+		field.charTyped('x', context);
 		Assert.assertEquals("abc", field.getText());
 		Assert.assertFalse(context.isCancelled());
 	}
@@ -328,21 +370,27 @@ public class TextFieldNodeTest {
 	@Test
 	public void leavesAKeyAlreadyTakenElsewhere() {
 		final TextFieldNode field = this.field("abc");
-		field.keyPressed('x', Key.X, DispatchContext.create(true));
+		field.keyPressed(Key.X, DispatchContext.create(true));
+		field.charTyped('x', DispatchContext.create(true));
 		Assert.assertEquals("abc", field.getText());
 	}
 
 	@Test
 	public void consumesTheKeysItReceives() {
-		final DispatchContext context = DispatchContext.create();
-		this.field("abc").keyPressed('x', Key.X, context);
-		Assert.assertTrue(context.isCancelled());
+		final DispatchContext key = DispatchContext.create();
+		final DispatchContext character = DispatchContext.create();
+		final TextFieldNode field = this.field("abc");
+		field.keyPressed(Key.X, key);
+		field.charTyped('x', character);
+		Assert.assertTrue(key.isCancelled());
+		Assert.assertTrue(character.isCancelled());
 	}
 
 	@Test
 	public void receivesTheKeysTypedInItsUi() {
 		final TextFieldNode field = this.field("ab").cursorPosition(2);
-		this.bridges.getUi().keyTyped('c', Key.C);
+		this.bridges.getUi().keyPressed(Key.C);
+		this.bridges.getUi().charTyped('c');
 		Assert.assertEquals("abc", field.getText());
 	}
 
@@ -665,7 +713,7 @@ public class TextFieldNodeTest {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(true);
 		final PinnedUI ui = new PinnedUI(field);
 		this.bridges.open(ui);
-		this.bridges.getUi().keyTyped('\u001b', Key.ESCAPE);
+		this.bridges.getUi().keyPressed(Key.ESCAPE);
 		Assert.assertFalse(field.isFocused());
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 	}
@@ -676,11 +724,11 @@ public class TextFieldNodeTest {
 		final NodeUI ui = new NodeUI(field);
 		this.bridges.open(ui);
 		this.type(field, "!");
-		this.bridges.getUi().keyTyped('\u001b', Key.ESCAPE);
+		this.bridges.getUi().keyPressed(Key.ESCAPE);
 		Assert.assertFalse(field.isFocused());
 		Assert.assertEquals("hello", field.getText());
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
-		this.bridges.getUi().keyTyped('\u001b', Key.ESCAPE);
+		this.bridges.getUi().keyPressed(Key.ESCAPE);
 		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
 	}
 
@@ -979,7 +1027,7 @@ public class TextFieldNodeTest {
 	public void selectsEverythingWithTheRightControlKey() {
 		final TextFieldNode field = this.field("hello").cursorPosition(2);
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_CONTROL);
-		field.keyPressed('a', Key.A, DispatchContext.create());
+		field.keyPressed(Key.A, DispatchContext.create());
 		Assert.assertEquals("hello", field.getText());
 		Assert.assertEquals(0, field.getSelectionStart());
 		Assert.assertEquals(5, field.getCursorPos());
@@ -1004,7 +1052,7 @@ public class TextFieldNodeTest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		this.press(field, Key.A);
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_CONTROL);
-		field.keyPressed('c', Key.C, DispatchContext.create());
+		field.charTyped('c', DispatchContext.create());
 		Assert.assertEquals("c", field.getText());
 		Assert.assertEquals(Collections.singletonList("c"), changes);
 	}
@@ -1012,7 +1060,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void refusesWhatIsTypedOnceFull() {
 		final TextFieldNode field = this.field("abc").maxTextLength(3).cursorPosition(1);
-		field.keyPressed('x', Key.X, DispatchContext.create());
+		field.charTyped('x', DispatchContext.create());
 		Assert.assertEquals("abc", field.getText());
 	}
 
@@ -1132,7 +1180,7 @@ public class TextFieldNodeTest {
 			this.bridges.getWindow().getKeys().add(Key.LEFT_ALT);
 			this.press(field, Key.LEFT);
 			this.bridges.getWindow().getKeys().remove(Key.LEFT_ALT);
-			Assert.assertEquals(5, field.getCursorPos());
+			Assert.assertEquals(4, field.getCursorPos());
 		} finally {
 			System.setProperty("os.name", system);
 		}
@@ -1218,7 +1266,7 @@ public class TextFieldNodeTest {
 	}
 
 	private void press(final TextFieldNode field, final Key key) {
-		field.keyPressed(' ', key, DispatchContext.create());
+		field.keyPressed(key, DispatchContext.create());
 	}
 
 	private void control(final TextFieldNode field, final Key key) {
@@ -1229,7 +1277,7 @@ public class TextFieldNodeTest {
 
 	private void type(final TextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.keyPressed(c, Key.UNKNOWN, DispatchContext.create());
+			field.charTyped(c, DispatchContext.create());
 		}
 	}
 

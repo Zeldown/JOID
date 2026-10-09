@@ -64,18 +64,6 @@ public abstract class UIBridge implements IUIBridge {
 		}
 	}
 
-	public final boolean mousePressed(final @NonNull MouseButton button) {
-		this.pressed     = button;
-		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.pressedNode = this.getHoveredNode();
-		for (final UI ui : this.getInputList()) {
-			if (ui.fireMousePressed(button) || ui.getPopup().active()) {
-				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
-			}
-		}
-		return false;
-	}
-
 	public final boolean mouseMoved() {
 		if (this.pressed == null) {
 			return false;
@@ -85,6 +73,18 @@ public abstract class UIBridge implements IUIBridge {
 		final long deltaTime = BridgeHandler.CLOCK.get().currentTimeMillis() - this.pressTime;
 		for (final UI ui : this.getInputList()) {
 			if (ui.fireMouseDragged(button, deltaTime) || ui.getPopup().active()) {
+				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
+			}
+		}
+		return false;
+	}
+
+	public final boolean mousePressed(final @NonNull MouseButton button) {
+		this.pressed     = button;
+		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.pressedNode = this.getHoveredNode();
+		for (final UI ui : this.getInputList()) {
+			if (ui.fireMousePressed(button) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 			}
 		}
@@ -118,30 +118,29 @@ public abstract class UIBridge implements IUIBridge {
 		return false;
 	}
 
-	public final boolean keyTyped(final char c, final @NonNull Key key) {
-		final char typed = Character.isISOControl(c) ? (char) 0 : c;
-		for (final UI ui : this.getInputList()) {
-			if (key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active()) {
-				if (!ui.fireKeyPressed(typed, key) && ui.fireClose()) {
-					this.close(ui);
-				}
-				return true;
-			}
+	public final boolean charTyped(final int codepoint) {
+		if (Character.isISOControl(codepoint)) {
+			return false;
+		}
 
-			if (ui.fireKeyPressed(typed, key) || ui.getPopup().active()) {
+		for (final UI ui : this.getInputList()) {
+			if (ui.fireCharTyped(codepoint) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
 			}
 		}
 		return false;
 	}
 
-	public final boolean isConsumingKey(final @NonNull Key key) {
+	public final boolean keyPressed(final @NonNull Key key) {
 		for (final UI ui : this.getInputList()) {
 			if (key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active()) {
+				if (!ui.fireKeyPressed(key) && ui.fireClose()) {
+					this.close(ui);
+				}
 				return true;
 			}
 
-			if (ui.isConsumingKey(key) || ui.getPopup().active()) {
+			if (ui.fireKeyPressed(key) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
 			}
 		}
