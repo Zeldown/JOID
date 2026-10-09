@@ -39,6 +39,10 @@ public enum GlslDialect {
 		return this.version >= (this.es ? 300 : 330);
 	}
 
+	public boolean hasImplicitConversions() {
+		return !this.es && this.version >= 120;
+	}
+
 	public @NonNull String getLineDirective() {
 		return this.version >= (this.es ? 300 : 330) ? "#line 1\n" : "#line 0\n";
 	}

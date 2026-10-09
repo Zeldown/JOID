@@ -222,8 +222,8 @@ The backend fills the built-in uniforms. The standard vertex transformation is `
 
 Your code is compiled as the highest of GLSL 1.10, 1.20, 1.30, 1.40, 1.50 and 3.30 that the OpenGL context compiles on LWJGL 2 and LWJGL 3, and as GLSL 4.50 on Vulkan. To run on every backend and every OpenGL context, keep the code within what these versions share:
 
-- GLSL 1.20 features only: no `%` or bitwise operators on integers, no `uint`, no `switch`, no `texelFetch` or `textureSize`, no `flat` varyings. LWJGL 2 and LWJGL 3 on a context below GLSL 1.30 refuse a shader that uses one of them, with a message naming the feature and the GLSL version it needs (`The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20`): `createShader` throws `UnsupportedOperationException` and `ShaderImpl.load` prints it.
-- On an OpenGL 2.0 context, LWJGL 2 and LWJGL 3 compile GLSL 1.10, which converts no integer to a float: write `1.0`, not `1`, where a float is expected.
+- GLSL 1.20 features only: no `%` or bitwise operators on integers, no `uint`, no `switch`, no `texelFetch` or `textureSize`, no `flat` varyings. LWJGL 2 and LWJGL 3 on a context below GLSL 1.30 refuse a shader that uses one of them, with a message naming the feature and the GLSL version it needs (`The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20`): `createShader` throws `UnsupportedOperationException` and `ShaderImpl` prints it. So that you see it on your own machine, whatever its backend, every shader created in [dev mode](../concepts/dev-tools.md) is checked against GLSL 1.20, once per shader and feature: `[JOID] A fragment shader uses flat varyings, which needs GLSL 1.30: the OpenGL 2.1 contexts (GLSL 1.20) that JOID supports refuse it, keep to GLSL 1.20 to draw on every backend`.
+- On an OpenGL 2.0 context, LWJGL 2 and LWJGL 3 compile GLSL 1.10, which converts no integer to a float. The translator does it for you there: an integer literal used as a float (`vec4(1)`, `x * 2`, `pow(x, 2)`) is written `1.0`, while the integers of integer expressions stay (array indices, `int`, `ivec` and `bool` variables, uniforms and functions, `for (int i = 0; i < 4; i++)`). An integer argument of a function of yours that takes an `int` is not recognized: write it from an `int` variable.
 - `texture(...)` to sample (below GLSL 1.30 it is defined to `texture2D`), never `texture2D`, `gl_FragColor`, `attribute` or `varying`.
 
 ### What the backends generate
@@ -345,7 +345,7 @@ Enum of the [built-in variables](#built-in-variables): `POSITION`, `TEXTURE_COOR
 - `getShader()` is `null` when the shader failed to load: check `canDraw()` or `isAvailable()` before setting uniforms.
 - A declared uniform that the code does not use takes its value without error: a value that seems to have no effect may be unused in the code.
 - `uniform("u_Radius", 4)` passes an int and throws on a `float` uniform: write `4F`.
-- GLSL that works on one backend can fail on another: keep to the features of GLSL 1.20 and test on every backend you ship.
+- GLSL that works on one backend can fail on another: keep to the features of GLSL 1.20 (dev mode warns about the others) and test on every backend you ship.
 
 ## See also
 

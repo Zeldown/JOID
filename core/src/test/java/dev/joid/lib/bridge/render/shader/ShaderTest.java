@@ -1,13 +1,19 @@
 package dev.joid.lib.bridge.render.shader;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.GlslDialect;
 import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
@@ -145,6 +151,35 @@ public class ShaderTest {
 	}
 
 	@Test
+	public void warnsOnceInDevModeOfAFeatureBeyondGlsl120() {
+		final String fragment = "flat in vec4 vColor;\n\nvoid main() {\n    fragColor = vColor;\n}\n";
+		JOID.inst().setDevMode(true);
+		try {
+			final String first = ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, fragment)));
+			Assert.assertTrue(first, first.contains("[JOID] A fragment shader uses flat varyings, which needs GLSL 1.30"));
+			Assert.assertTrue(first, first.contains("[JOID] A vertex shader uses flat varyings"));
+			Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, fragment))));
+		} finally {
+			JOID.inst().setDevMode(false);
+		}
+	}
+
+	@Test
+	public void staysSilentForTheCoreShadersAndOutOfDevMode() {
+		JOID.inst().setDevMode(true);
+		try {
+			Assert.assertEquals("", ShaderTest.capture(() -> {
+				for (final CoreShader shader : CoreShader.values()) {
+					new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, shader.read(ShaderStage.VERTEX), shader.read(ShaderStage.FRAGMENT));
+				}
+			}));
+		} finally {
+			JOID.inst().setDevMode(false);
+		}
+		Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vTint;\n\nvoid main() {\n    vTint = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, "flat in vec4 vTint;\n\nvoid main() {\n    fragColor = vTint;\n}\n"))));
+	}
+
+	@Test
 	public void createsItsLineShaderOnce() {
 		final TestShader shader = ShaderTest.create(new LineRenderBridge());
 		final IShader line = shader.getLineShader();
@@ -189,6 +224,18 @@ public class ShaderTest {
 		Assert.assertEquals(mode, member.getValues().getFloat(0), 0F);
 		Assert.assertEquals(width, member.getValues().getFloat(4), 0F);
 		Assert.assertEquals(height, member.getValues().getFloat(8), 0F);
+	}
+
+	private static String capture(final Runnable runnable) {
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setErr(new PrintStream(output, true));
+			runnable.run();
+		} finally {
+			System.setErr(previous);
+		}
+		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	private static TestShader create() {

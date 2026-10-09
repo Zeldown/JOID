@@ -82,12 +82,12 @@ public class GlslShaderTranslator {
 		}
 
 		if (!vertex.isLine()) {
-			return builder.append(this.dialect.getLineDirective()).append(this.emulateBorder(vertex.getBody(), vertex, fragment)).toString();
+			return builder.append(this.dialect.getLineDirective()).append(this.adapt(vertex.getBody(), vertex, fragment)).toString();
 		}
 
 		this.appendLineVaryings(builder, varyings.size(), true);
 		builder.append("vec3 joid_Position;\nvec2 joid_TexCoord;\nvec3 joid_Normal;\n").append(this.dialect.getLineDirective());
-		final String body = this.emulateBorder(vertex.getBody(), vertex, fragment).replaceAll("\\baPosition\\b", "joid_Position").replaceAll("\\baTexCoord\\b", "joid_TexCoord").replaceAll("\\baNormal\\b", "joid_Normal");
+		final String body = this.adapt(vertex.getBody(), vertex, fragment).replaceAll("\\baPosition\\b", "joid_Position").replaceAll("\\baTexCoord\\b", "joid_TexCoord").replaceAll("\\baNormal\\b", "joid_Normal");
 		return builder.append(body.replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()")).append(GlslShaderTranslator.getLineMain()).toString();
 	}
 
@@ -108,11 +108,11 @@ public class GlslShaderTranslator {
 		}
 
 		if (!vertex.isLine()) {
-			return builder.append(this.dialect.getLineDirective()).append(this.emulateBorder(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain()).toString();
+			return builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain()).toString();
 		}
 
 		this.appendLineVaryings(builder, varyings.size(), false);
-		builder.append(this.dialect.getLineDirective()).append(this.emulateBorder(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
+		builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
 		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(min(joid_LineAlong, joid_LineLength - joid_LineAlong) + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain()).toString();
 	}
 
@@ -256,6 +256,17 @@ public class GlslShaderTranslator {
 				}
 			}
 		}
+	}
+
+	private String adapt(final String body, final ShaderSource vertex, final ShaderSource fragment) {
+		if (this.dialect.hasImplicitConversions()) {
+			return this.emulateBorder(body, vertex, fragment);
+		}
+
+		final List<ShaderVariable> variableList = new ArrayList<>(this.getUniforms(vertex, fragment));
+		variableList.addAll(vertex.getOutputs());
+		variableList.addAll(fragment.getInputs());
+		return this.emulateBorder(ImplicitConversion.apply(body, variableList), vertex, fragment);
 	}
 
 	private String emulateBorder(final String body, final ShaderSource vertex, final ShaderSource fragment) {

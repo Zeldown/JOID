@@ -159,6 +159,16 @@ public class GlslShaderTranslatorTest {
 	}
 
 	@Test
+	public void writesTheIntegerLiteralsOfFloatsForGlsl110() {
+		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = vec4(aPosition, 1);\n}\n");
+		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, "uniform int u_Type;\n\nvoid main() {\n    fragColor = u_Type == 2 ? vec4(1) : vec4(0.5 * 2);\n}\n");
+		Assert.assertTrue(GlslShaderTranslator.create(GlslDialect.GLSL_110, UniformLayout.LOOSE).translateVertex(vertex, fragment).contains("gl_Position = vec4(aPosition, 1.0);"));
+		Assert.assertTrue(GlslShaderTranslator.create(GlslDialect.GLSL_110, UniformLayout.LOOSE).translateFragment(vertex, fragment).contains("fragColor = u_Type == 2 ? vec4(1.0) : vec4(0.5 * 2.0);"));
+		Assert.assertTrue(GlslShaderTranslator.create(GlslDialect.ESSL_100, UniformLayout.LOOSE).translateFragment(vertex, fragment).contains("vec4(0.5 * 2.0)"));
+		Assert.assertTrue(GlslShaderTranslator.create(GlslDialect.GLSL_120, UniformLayout.LOOSE).translateFragment(vertex, fragment).contains("fragColor = u_Type == 2 ? vec4(1) : vec4(0.5 * 2);"));
+	}
+
+	@Test
 	public void keepsTheTranslationWithoutTheBorderEmulation() {
 		final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
 		Assert.assertEquals(translator.translateFragment(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(false).translateFragment(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()));
