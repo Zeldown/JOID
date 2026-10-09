@@ -15,8 +15,8 @@ public final class UniformMember {
 	private final String      name;
 	private final int         arrayStride;
 	private final int         matrixStride;
-	private final ByteBuffer  values;
 	private final UniformType type;
+	private final ByteBuffer  values;
 
 	private boolean dirty;
 

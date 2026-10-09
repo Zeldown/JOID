@@ -97,12 +97,12 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 
 	private static final class Control {
 
-		private int      width;
-		private int      height;
 		private int      x;
 		private int      y;
-		private long     duration;
+		private int      width;
+		private int      height;
 		private Blend    blend;
+		private long     duration;
 		private Disposal disposal;
 
 		private static Control read(final byte[] bytes, final int offset) {

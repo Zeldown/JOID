@@ -16,8 +16,8 @@ public final class ExternalRaster {
 	@Getter
 	private static ExternalRaster instance;
 
-	private IRenderBridge bridge;
 	private IFrameBuffer  target;
+	private IRenderBridge bridge;
 
 	public ExternalRaster() {
 		if (ExternalRaster.instance != null) {

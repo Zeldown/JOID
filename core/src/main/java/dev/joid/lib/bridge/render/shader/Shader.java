@@ -31,8 +31,8 @@ public abstract class Shader implements IShader {
 
 	private static final Set<String> WARNED_SET = ConcurrentHashMap.newKeySet();
 
-	private final RenderBridge bridge;
 	private final BlendState   blend;
+	private final RenderBridge bridge;
 	private final ShaderSource vertex;
 	private final ShaderSource fragment;
 

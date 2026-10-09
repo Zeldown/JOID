@@ -17,8 +17,8 @@ import lombok.NonNull;
 
 public class Signal<T> implements ISignal<T> {
 
-	private final transient List<@NonNull ComputedSignal<?>>   observerList;
 	private final transient Set<@NonNull ISignalSubscriber<T>> eventSet;
+	private final transient List<@NonNull ComputedSignal<?>>   observerList;
 
 	private volatile T value;
 	private volatile T defaultValue;

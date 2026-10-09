@@ -94,12 +94,12 @@ public final class UniformBlock {
 		return this;
 	}
 
-	public UniformMember getMember(final @NonNull String name) {
-		return this.memberMap.get(name);
-	}
-
 	public int getSize() {
 		return this.data.capacity();
+	}
+
+	public UniformMember getMember(final @NonNull String name) {
+		return this.memberMap.get(name);
 	}
 
 	private static int getLength(final ShaderVariable variable, final String code) {

@@ -283,6 +283,14 @@ public final class SignalReplay {
 		return slice.getSignalCount() > 0 ? weight + 10 : weight;
 	}
 
+	private static boolean isLibrary(final String name) {
+		return name.startsWith("dev.joid.") && !name.startsWith("dev.joid.demo.") && !name.startsWith("dev.joid.showcase.") && !name.contains(".demo.");
+	}
+
+	private static boolean isRuntime(final String name) {
+		return name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("sun.") || name.startsWith("jdk.") || name.startsWith("com.sun.");
+	}
+
 	private static boolean isSame(final Object value, final Object expected) {
 		if (Objects.equals(value, expected)) {
 			return true;
@@ -297,14 +305,6 @@ public final class SignalReplay {
 		} catch (final NoSuchMethodException exception) {
 			return false;
 		}
-	}
-
-	private static boolean isLibrary(final String name) {
-		return name.startsWith("dev.joid.") && !name.startsWith("dev.joid.demo.") && !name.startsWith("dev.joid.showcase.") && !name.contains(".demo.");
-	}
-
-	private static boolean isRuntime(final String name) {
-		return name.startsWith("java.") || name.startsWith("javax.") || name.startsWith("sun.") || name.startsWith("jdk.") || name.startsWith("com.sun.");
 	}
 
 	private static Class<?> typeOf(final Object self, final String name) {

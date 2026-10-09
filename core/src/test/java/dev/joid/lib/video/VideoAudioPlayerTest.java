@@ -402,8 +402,8 @@ public class VideoAudioPlayerTest {
 
 	private static final class RecordingAudioSource implements IAudioSource {
 
-		private final List<String>  calls   = new ArrayList<>();
 		private final List<Float>   gains   = new ArrayList<>();
+		private final List<String>  calls   = new ArrayList<>();
 		private final List<short[]> written = new ArrayList<>();
 
 		private int     played;

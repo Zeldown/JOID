@@ -25,8 +25,8 @@ public abstract class SelectorNode<V> extends Node {
 
 	private final Map<Node, V> optionMap;
 
-	private SelectorDirection    direction;
 	private Signal<V>            signal;
+	private SelectorDirection    direction;
 	private ISignalSubscriber<V> subscription;
 
 	private Node    selected;
@@ -128,12 +128,12 @@ public abstract class SelectorNode<V> extends Node {
 		return this.selected == node;
 	}
 
-	public final @NonNull Map<Node, V> getOptionMap() {
-		return Collections.unmodifiableMap(this.optionMap);
-	}
-
 	public final V getValue() {
 		return this.selected == null ? null : this.optionMap.get(this.selected);
+	}
+
+	public final @NonNull Map<Node, V> getOptionMap() {
+		return Collections.unmodifiableMap(this.optionMap);
 	}
 
 	@SafeVarargs

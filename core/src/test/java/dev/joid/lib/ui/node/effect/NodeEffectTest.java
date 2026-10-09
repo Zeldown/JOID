@@ -198,8 +198,8 @@ public class NodeEffectTest {
 	public static class TraceEffect extends NodeEffect<Node> {
 
 		private final String       name;
-		private final List<String> trace;
 		private final boolean      applies;
+		private final List<String> trace;
 
 		private UI ui;
 

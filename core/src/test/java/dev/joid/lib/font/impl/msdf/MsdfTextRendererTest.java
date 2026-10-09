@@ -33,8 +33,8 @@ import dev.joid.lib.font.markup.ITextMarkup;
 public class MsdfTextRendererTest {
 
 	private static MsdfFont font;
-	private static MsdfFontFace regular;
 	private static MsdfFont sample;
+	private static MsdfFontFace regular;
 
 	@Rule
 	public final CapturingRenderBridge render = new CapturingRenderBridge(1920, 1080);

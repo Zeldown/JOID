@@ -37,12 +37,12 @@ public abstract class FieldNode<V> extends Node {
 	private String   placeholder;
 
 	private boolean focused;
-	private String  focusedText;
 	private int     maxTextLength;
+	private String  focusedText;
 
-	private Predicate<String> accept;
-	private boolean           allowEmpty;
 	private V                 fallback;
+	private boolean           allowEmpty;
+	private Predicate<String> accept;
 
 	private boolean              markup;
 	private Signal<V>            signal;
@@ -299,13 +299,6 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
-		if (this.selecting) {
-			this.select(this.getPositionAt(mouseX, mouseY));
-		}
-	}
-
-	@Override
 	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		this.selecting = false;
 	}
@@ -317,6 +310,13 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		context.cancel(() -> this.stepValue(notchesY > 0D ? 1 : -1));
+	}
+
+	@Override
+	public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
+		if (this.selecting) {
+			this.select(this.getPositionAt(mouseX, mouseY));
+		}
 	}
 
 	@Override
@@ -498,13 +498,13 @@ public abstract class FieldNode<V> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T, V> callback) {
-		super.registerCallback(FieldNode.CALLBACK_CHANGE, callback);
+	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
+		super.registerCallback(FieldNode.CALLBACK_FOCUS, callback);
 		return (T) this;
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
-		super.registerCallback(FieldNode.CALLBACK_FOCUS, callback);
+	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T, V> callback) {
+		super.registerCallback(FieldNode.CALLBACK_CHANGE, callback);
 		return (T) this;
 	}
 

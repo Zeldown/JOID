@@ -34,29 +34,29 @@ import lombok.Getter;
 @Getter
 public class SetterUI extends UI {
 
+	private final TextInfo      info  = TextInfo.create(new TextFont(), 10F);
 	private final IntegerSignal step  = IntegerSignal.of(0);
 	private final BooleanSignal muted = new BooleanSignal(false);
-	private final TextInfo      info  = TextInfo.create(new TextFont(), 10F);
 
+	private Switch             named;
 	private RectNode           rect;
-	private CircleNode         circle;
 	private TextNode           text;
+	private Toggle             toggle;
+	private FlexNode           flex;
 	private TextNode           state;
 	private TextNode           label;
-	private ProgressNode       progress;
-	private ResourcePlayerNode player;
-	private ModelNode          model;
-	private TextFieldNode      field;
-	private Checkbox           checkbox;
-	private Toggle             toggle;
 	private Switch             indexed;
-	private Switch             named;
+	private ModelNode          model;
+	private CircleNode         circle;
+	private Checkbox           checkbox;
 	private Selector           selector;
+	private TextFieldNode      field;
 	private IntegerSlider      slider;
-	private FlexNode           flex;
+	private RadarChartData     radar;
+	private ProgressNode       progress;
 	private BorderNodeEffect   border;
 	private ShadowNodeEffect   shadow;
-	private RadarChartData     radar;
+	private ResourcePlayerNode player;
 
 	@Override
 	public void init() {

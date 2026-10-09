@@ -5,12 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface UIDataScale {
 
+	public double  limit()   default 1D;
 	public boolean active()  default true;
 	public boolean limited() default false;
-	public double  limit()   default 1D;
 
 }

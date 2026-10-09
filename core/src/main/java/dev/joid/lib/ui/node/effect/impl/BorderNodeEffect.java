@@ -16,10 +16,10 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public class BorderNodeEffect extends NodeEffect<Node> {
 
-	private Supplier<Boolean>    fillSupplier;
-	private Supplier<BorderMode> modeSupplier;
 	private Supplier<Color>      colorSupplier;
 	private Supplier<Float>      widthSupplier;
+	private Supplier<Boolean>    fillSupplier;
+	private Supplier<BorderMode> modeSupplier;
 
 	protected BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
 		this.fillSupplier  = () -> true;

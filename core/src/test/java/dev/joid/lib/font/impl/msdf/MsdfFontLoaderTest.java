@@ -270,9 +270,9 @@ public class MsdfFontLoaderTest {
 
 	private static final class FaceSource implements IMsdfSource {
 
-		private final CountDownLatch started;
-		private final List<String>   threads;
 		private final IMsdfSource    source;
+		private final List<String>   threads;
+		private final CountDownLatch started;
 
 		private FaceSource(final CountDownLatch started, final List<String> threads, final IMsdfSource source) {
 			this.started = started;

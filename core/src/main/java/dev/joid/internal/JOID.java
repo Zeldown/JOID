@@ -96,13 +96,13 @@ public final class JOID {
 		return this;
 	}
 
-	public static boolean isOpen(final @NonNull Class<? extends UI> uiClass) {
-		return JOID.getUi(uiClass) != null;
-	}
-
 	public static boolean isOpen(final @NonNull UI ui) {
 		final IUIBridge bridge = BridgeHandler.UI.get(ui);
 		return bridge != null && bridge.isOpen(ui);
+	}
+
+	public static boolean isOpen(final @NonNull Class<? extends UI> uiClass) {
+		return JOID.getUi(uiClass) != null;
 	}
 
 	@SuppressWarnings("unchecked")

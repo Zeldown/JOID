@@ -21,8 +21,8 @@ public class SliderThumbNodeTest {
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
-	private Slider slider;
 	private Thumb thumb;
+	private Slider slider;
 
 	@Before
 	public void openASlider() {

@@ -59,8 +59,8 @@ public class TextHoverElementTest {
 
 	public static final class HoverUI extends UI {
 
-		private final List<Object> hovers = new ArrayList<>();
 		private final Node[]       nodes;
+		private final List<Object> hovers = new ArrayList<>();
 
 		private HoverUI(final Node... nodes) {
 			this.nodes = nodes;

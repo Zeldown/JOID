@@ -34,10 +34,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	private final Asset asset;
 	private final Object grabberLock = new Object();
+	private final AtomicInteger seeks = new AtomicInteger(0);
 	private final AtomicBoolean paused = new AtomicBoolean(false);
 	private final AtomicBoolean running = new AtomicBoolean(false);
 	private final AtomicInteger decodedFrameIndex = new AtomicInteger(0);
-	private final AtomicInteger seeks = new AtomicInteger(0);
 
 	private File   file;
 	private String codec;
@@ -50,8 +50,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	private volatile boolean ended;
 	private volatile boolean seeked;
-	private volatile double loopOffset;
 	private volatile double seekTime;
+	private volatile double loopOffset;
 	private volatile int displayedFrameIndex;
 
 	private long startTime;

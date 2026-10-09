@@ -37,8 +37,8 @@ public class VideoResourceDecoderTest {
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	private final List<VideoResourceDecoder> decoders = new ArrayList<>();
 	private final RecordingAudioBridge       audio    = new RecordingAudioBridge();
+	private final List<VideoResourceDecoder> decoders = new ArrayList<>();
 
 	@Before
 	public void recordTheAudio() {

@@ -90,13 +90,13 @@ public class ComputedSignal<T> extends Signal<T> {
 		return this.value;
 	}
 
-	public boolean isConstant() {
-		return this.constant;
-	}
-
 	@Override
 	public boolean isPresent() {
 		return super.get() != null;
+	}
+
+	public boolean isConstant() {
+		return this.constant;
 	}
 
 	@Override

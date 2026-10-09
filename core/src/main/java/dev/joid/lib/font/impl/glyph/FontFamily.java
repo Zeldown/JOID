@@ -17,8 +17,8 @@ import lombok.NonNull;
 
 public final class FontFamily<F extends IFontFace> {
 
-	@Getter private final List<F> faces;
 	private final Set<String> warned = ConcurrentHashMap.newKeySet();
+	@Getter private final List<F> faces;
 
 	private FontFamily(final List<F> faces) {
 		this.faces = faces;

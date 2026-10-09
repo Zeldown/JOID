@@ -28,8 +28,8 @@ public final class SignalContext {
 	private int               depth;
 	private int               readIndex;
 	private int               readCount;
-	private boolean           flushing;
 	private boolean           tracing = true;
+	private boolean           flushing;
 	private ComputedSignal<?> observer;
 
 	@Getter

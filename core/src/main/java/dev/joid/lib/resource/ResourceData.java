@@ -21,8 +21,8 @@ import lombok.NonNull;
 @Getter
 public final class ResourceData {
 
-	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 	private static final Queue<ResourceData> COLLECTED      = new ConcurrentLinkedQueue<>();
+	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
 	private final List<Thread>              tasks          = new CopyOnWriteArrayList<>();
 	private final List<Consumer<Throwable>> errorListeners = new CopyOnWriteArrayList<>();

@@ -8,12 +8,12 @@ import java.lang.annotation.Target;
 import dev.joid.lib.ui.core.data.overlay.interaction.UIDataOverlayInteraction;
 import dev.joid.lib.ui.core.data.overlay.render.UIDataOverlayRender;
 
-@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface UIDataOverlay {
 
 	public boolean                  active()      default false;
-	public UIDataOverlayInteraction interaction() default @UIDataOverlayInteraction;
 	public UIDataOverlayRender      render()      default @UIDataOverlayRender;
+	public UIDataOverlayInteraction interaction() default @UIDataOverlayInteraction;
 
 }

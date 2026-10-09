@@ -68,8 +68,8 @@ public abstract class UI implements IUI, IndexedElement {
 	@Getter
 	private static UI current;
 
-	@NonNull private final Map<Set<Object>, Runnable>           keybindMap;
 	@NonNull private final Stack<MaskRegion>                    stencilStack;
+	@NonNull private final Map<Set<Object>, Runnable>           keybindMap;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
 	private final UIView       view;

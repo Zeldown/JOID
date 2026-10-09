@@ -42,12 +42,12 @@ public final class ReorderableFlexNode extends Node {
 	private boolean       autoDrag = true;
 	private FlexDirection direction;
 
-	private Node    reorderedNode;
-	private int     draggedZindex;
 	private int     initialIndex;
 	private int     currentIndex;
+	private int     draggedZindex;
 	private boolean releasing;
 	private double  dragOffset;
+	private Node    reorderedNode;
 	private boolean scrollArmed;
 	private double  draggedCurrent;
 	private double  dragStartMouseX;

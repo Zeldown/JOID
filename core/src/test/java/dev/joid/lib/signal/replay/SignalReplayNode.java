@@ -14,9 +14,9 @@ public class SignalReplayNode extends Node {
 
 	private Supplier<String>  text;
 	private Supplier<Color>   color;
-	private Supplier<Boolean> shown;
 	private Supplier<Double>  sizeX;
 	private Supplier<Double>  sizeY;
+	private Supplier<Boolean> shown;
 
 	private Supplier<SignalReplayCaption> caption;
 

@@ -44,10 +44,6 @@ public final class SignalReplaySlice {
 		return new SignalReplaySlice(method, start, end, type);
 	}
 
-	public boolean isEquivalent(final SignalReplaySlice slice) {
-		return Objects.equals(this.type, slice.type) && this.signature.equals(slice.signature);
-	}
-
 	public boolean isParameter() {
 		final AbstractInsnNode[] instructions = this.method.getInstructions();
 		boolean loaded = false;
@@ -64,6 +60,10 @@ public final class SignalReplaySlice {
 			}
 		}
 		return loaded;
+	}
+
+	public boolean isEquivalent(final SignalReplaySlice slice) {
+		return Objects.equals(this.type, slice.type) && this.signature.equals(slice.signature);
 	}
 
 	public Object convert(final Object value) {

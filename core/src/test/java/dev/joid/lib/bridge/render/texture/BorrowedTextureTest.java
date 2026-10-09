@@ -98,8 +98,8 @@ public class BorrowedTextureTest {
 
 		private final int     width;
 		private final int     height;
-		private final boolean mipmapped;
 		private final boolean valid;
+		private final boolean mipmapped;
 
 		private BorrowableImage(final int width, final int height, final boolean mipmapped, final boolean valid) {
 			this.width = width;

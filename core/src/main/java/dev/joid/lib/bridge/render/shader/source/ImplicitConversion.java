@@ -61,6 +61,10 @@ public final class ImplicitConversion {
 		return converted.toString();
 	}
 
+	private static boolean isOperand(final String token) {
+		return ")".equals(token) || "]".equals(token) || Character.isLetterOrDigit(token.charAt(0)) || token.charAt(0) == '_' || token.charAt(0) == '.';
+	}
+
 	private static boolean isIntegral(final List<String> tokenList, final int index, final Set<String> integralSet, final Deque<Boolean> integralScopes) {
 		if (!integralScopes.isEmpty() && integralScopes.peek()) {
 			return true;
@@ -79,10 +83,6 @@ public final class ImplicitConversion {
 			return true;
 		}
 		return index + 2 < tokenList.size() && ImplicitConversion.OPERATOR.matcher(tokenList.get(index + 1)).matches() && integralSet.contains(tokenList.get(index + 2));
-	}
-
-	private static boolean isOperand(final String token) {
-		return ")".equals(token) || "]".equals(token) || Character.isLetterOrDigit(token.charAt(0)) || token.charAt(0) == '_' || token.charAt(0) == '.';
 	}
 
 }

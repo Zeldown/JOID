@@ -292,11 +292,11 @@ public class ResourceBuilderTest {
 
 	private static final class HeldAsset extends Asset {
 
-		private final CountDownLatch release = new CountDownLatch(1);
 		private final AtomicInteger  opened  = new AtomicInteger();
+		private final CountDownLatch release = new CountDownLatch(1);
 
-		private final boolean remote;
 		private final byte[]  bytes;
+		private final boolean remote;
 
 		private HeldAsset(final String uniqueId, final boolean remote, final Asset source) {
 			super(uniqueId);

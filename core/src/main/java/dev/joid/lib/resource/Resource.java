@@ -106,16 +106,16 @@ public final class Resource {
 		return this.data.getWidth();
 	}
 
+	public final int getHeight() {
+		return this.data.getHeight();
+	}
+
 	public final int[] getData() {
 		return this.data.getData() == null || this.data.getData().length == 0 ? null : this.data.getData()[0];
 	}
 
 	public final int[] getData(final int index) {
 		return this.data.getData() == null || this.data.getData().length <= index ? null : this.data.getData()[index];
-	}
-
-	public final int getHeight() {
-		return this.data.getHeight();
 	}
 
 	public final ITexture getTexture() {
@@ -134,16 +134,16 @@ public final class Resource {
 		return this.data.getDecoder() == null || this.data.getDecoder().isMipmappable();
 	}
 
-	public final IResourcePlayback getPlayback() {
-		return this.data.getDecoder() instanceof IResourcePlayback ? (IResourcePlayback) this.data.getDecoder() : null;
-	}
-
 	public final @NonNull String getUniqueId() {
 		return this.data.getUniqueId();
 	}
 
 	public final ResourceData getResourceData() {
 		return this.data;
+	}
+
+	public final IResourcePlayback getPlayback() {
+		return this.data.getDecoder() instanceof IResourcePlayback ? (IResourcePlayback) this.data.getDecoder() : null;
 	}
 
 	public final boolean isLoaded() {

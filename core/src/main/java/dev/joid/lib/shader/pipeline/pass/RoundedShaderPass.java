@@ -47,11 +47,6 @@ public class RoundedShaderPass implements IShaderPass {
 	}
 
 	@Override
-	public int priority() {
-		return 100;
-	}
-
-	@Override
 	public void bind(final @NonNull ShaderPassContext context) {
 		if (!RoundedShader.inst().canDraw()) {
 			return;
@@ -71,6 +66,11 @@ public class RoundedShaderPass implements IShaderPass {
 		final float y2 = (float) (grid.snapBottom(this.node.getY(), this.node.getY() + this.node.getHeight()) - (this.effect.isBottom() ? radius : 0));
 		RoundedShader.inst().bind(radius, x1, y1, x2, y2, RoundedShaderType.TEXTURE);
 		RoundedShader.inst().aligned(grid.isAligned());
+	}
+
+	@Override
+	public int priority() {
+		return 100;
 	}
 
 }

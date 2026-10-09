@@ -43,8 +43,8 @@ public enum GlslDialect {
 		return !this.es && this.version >= 120;
 	}
 
-	public @NonNull String getLineDirective() {
-		return this.version >= (this.es ? 300 : 330) ? "#line 1\n" : "#line 0\n";
+	public @NonNull String getName() {
+		return (this.es ? "ESSL " : "GLSL ") + this.version / 100 + "." + String.format("%02d", this.version % 100);
 	}
 
 	public @NonNull String getPrecision() {
@@ -54,8 +54,8 @@ public enum GlslDialect {
 		return this.version >= 300 ? "precision highp float;\nprecision highp int;\n" : "#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n";
 	}
 
-	public @NonNull String getName() {
-		return (this.es ? "ESSL " : "GLSL ") + this.version / 100 + "." + String.format("%02d", this.version % 100);
+	public @NonNull String getLineDirective() {
+		return this.version >= (this.es ? 300 : 330) ? "#line 1\n" : "#line 0\n";
 	}
 
 }

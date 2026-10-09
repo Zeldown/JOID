@@ -19,8 +19,8 @@ public abstract class ToggleNode<F, S> extends Node {
 	public static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeToggleChangeCallback.class);
 
 	private boolean                    toggle;
-	private ToggleState<F, S>          state;
 	private Signal<Boolean>            signal;
+	private ToggleState<F, S>          state;
 	private ISignalSubscriber<Boolean> subscription;
 
 	protected ToggleNode(final double x, final double y, final double width, final double height) {

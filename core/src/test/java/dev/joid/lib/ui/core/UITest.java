@@ -1682,8 +1682,8 @@ public class UITest {
 	@UIDataDebug(profiler = false, hotreload = false)
 	public static class TraceUI extends UI {
 
-		private final List<String> trace;
 		private final Node[]       nodes;
+		private final List<String> trace;
 
 		private int      inits;
 		private boolean  cancel;
@@ -2015,8 +2015,8 @@ public class UITest {
 
 	public static final class DepthNode extends Node {
 
-		private final List<String> trace;
 		private final double       level;
+		private final List<String> trace;
 
 		private DepthNode(final List<String> trace, final int zindex, final double level) {
 			super(0D, 0D, 100D, 100D);

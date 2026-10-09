@@ -44,8 +44,8 @@ public interface IRenderBridge extends IBridge {
 	public void pushState();
 
 	public void cull(final boolean cull);
-	public void depthTest(final boolean test);
 	public void lineWidth(final float width);
+	public void depthTest(final boolean test);
 	public void depthWrite(final boolean write);
 	public void colorWrite(final boolean write);
 	public void alphaCutoff(final float cutoff);

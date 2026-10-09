@@ -40,12 +40,12 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	private final Map<Long, ITexture>     textures;
 	private final AtomicReference<Raster> pending;
 
-	private SVGDocument document;
 	private ITexture    texture;
+	private SVGDocument document;
 
+	private long changeTime;
 	private int  requestedWidth;
 	private int  requestedHeight;
-	private long changeTime;
 
 	private volatile boolean rendering;
 

@@ -19,8 +19,8 @@ import lombok.NonNull;
 
 public class DemoUIBridge extends StackUIBridge {
 
-	private static final Color BACKGROUND   = new Color(50, 50, 50);
 	private static final Color HOVER        = Color.decode("#18181b");
+	private static final Color BACKGROUND   = new Color(50, 50, 50);
 	private static final Color HOVER_BORDER = Color.decode("#27272a");
 
 	public void start() {

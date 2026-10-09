@@ -35,16 +35,6 @@ public class BorderShaderPass implements IShaderPass {
 	}
 
 	@Override
-	public int priority() {
-		return 200;
-	}
-
-	@Override
-	public float expansion() {
-		return this.borderWidth + 2F;
-	}
-
-	@Override
 	public void bind(final @NonNull ShaderPassContext context) {
 		if (!BorderShader.inst().canDraw()) {
 			return;
@@ -53,6 +43,16 @@ public class BorderShaderPass implements IShaderPass {
 		final float x = (float) context.getX();
 		final float y = (float) context.getY();
 		BorderShader.inst().bind((float) (this.borderWidth * context.getGrid().getScaleX()), this.borderColor, context.getTexelWidth(), context.getTexelHeight(), this.fill, this.mode.ordinal(), x, y, x + (float) context.getWidth(), y + (float) context.getHeight());
+	}
+
+	@Override
+	public int priority() {
+		return 200;
+	}
+
+	@Override
+	public float expansion() {
+		return this.borderWidth + 2F;
 	}
 
 }

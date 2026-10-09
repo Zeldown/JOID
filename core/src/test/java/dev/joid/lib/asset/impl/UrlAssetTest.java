@@ -129,8 +129,8 @@ public class UrlAssetTest {
 
 	private static final class Server implements Runnable {
 
-		private final ServerSocket socket;
 		private final List<String> paths  = new CopyOnWriteArrayList<>();
+		private final ServerSocket socket;
 		private final List<String> agents = new CopyOnWriteArrayList<>();
 
 		private Server() throws IOException {

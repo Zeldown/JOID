@@ -26,7 +26,8 @@ public final class RecordingRenderBridge extends RenderBridge {
 
 	private final List<Draw> draws = new ArrayList<>();
 
-	@Setter private boolean borderless;
+	@Setter
+	private boolean borderless;
 
 	private int colorClears;
 	private int depthClears;

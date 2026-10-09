@@ -16,9 +16,9 @@ import lombok.Setter;
 @Setter
 public class ReplayPitfallsUI extends UI {
 
-	private final IntegerSignal clicks = IntegerSignal.of(0);
-	private final IntegerSignal other  = IntegerSignal.of(0);
 	private final List<String>  names  = Arrays.asList("Ada", "Grace");
+	private final IntegerSignal other  = IntegerSignal.of(0);
+	private final IntegerSignal clicks = IntegerSignal.of(0);
 
 	private int     frame   = 0;
 	private int     bonus   = 100;

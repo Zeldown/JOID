@@ -57,8 +57,8 @@ public class KeyLayoutTest {
 	public final TemporaryFolder folder = new TemporaryFolder();
 
 	private final FieldFont    font   = new FieldFont();
-	private final List<String> trace  = new ArrayList<>();
 	private final KeyLayout    layout = KeyLayout.create(KeyLayoutTest::azerty);
+	private final List<String> trace  = new ArrayList<>();
 
 	private File    configDir;
 	private boolean devMode;

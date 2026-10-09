@@ -20,18 +20,18 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	private final Asset                    asset;
 	private final IResourceAnimationReader reader;
 
-	private ResourceAnimation animation;
 	private ITexture          texture;
+	private ResourceAnimation animation;
 
 	private Integer plays;
 	private boolean autoplay = true;
 
-	private boolean running;
+	private long    position;
+	private int     displayed = -1;
 	private boolean paused;
 	private long    startTime;
 	private long    pauseTime;
-	private long    position;
-	private int     displayed = -1;
+	private boolean running;
 
 	public AnimatedResourceDecoder(final @NonNull Asset asset, final @NonNull IResourceAnimationReader reader) {
 		this.asset = asset;
@@ -183,13 +183,6 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 		return this.animation == null ? 0D : this.getTime() % this.animation.getDuration() / 1000D;
 	}
 
-	private int getPlayCount() {
-		if (this.plays != null) {
-			return this.plays;
-		}
-		return this.animation == null ? 0 : this.animation.getPlays();
-	}
-
 	private long getTime() {
 		if (!this.running) {
 			return this.position;
@@ -197,6 +190,13 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 		final long now = this.paused ? this.pauseTime : BridgeHandler.CLOCK.get().nanoTime();
 		return (now - this.startTime) / 1000000L;
+	}
+
+	private int getPlayCount() {
+		if (this.plays != null) {
+			return this.plays;
+		}
+		return this.animation == null ? 0 : this.animation.getPlays();
 	}
 
 }

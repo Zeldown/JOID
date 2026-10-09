@@ -23,10 +23,10 @@ public final class RenderState {
 	private BlendState   blend;
 	private boolean      lighting;
 	private boolean      depthTest;
+	private float        alphaCutoff;
 	private boolean      colorWrite;
 	private boolean      depthWrite;
 	private boolean      lineSmooth;
-	private float        alphaCutoff;
 	private StencilState stencil;
 
 	private int viewportX;

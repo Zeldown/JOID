@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NodeCallbackRegistry {
 
-	private static final Map<Integer, Class<? extends NodeCallback>> REGISTRY = new HashMap<>();
 	private static final Map<Class<? extends NodeCallback>, Integer> IDS      = new HashMap<>();
+	private static final Map<Integer, Class<? extends NodeCallback>> REGISTRY = new HashMap<>();
 
 	private static int lastId = 0;
 

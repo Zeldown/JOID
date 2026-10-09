@@ -12,8 +12,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@SuppressWarnings("unchecked")
 public class MaskNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Resource> resourceSupplier;

@@ -7,9 +7,9 @@ import lombok.NonNull;
 @Getter
 public final class RecordingTexture implements ITexture {
 
-	private int[]   pixels;
 	private int     width;
 	private int     height;
+	private int[]   pixels;
 	private boolean deleted;
 	private boolean mipmapped;
 

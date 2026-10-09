@@ -36,9 +36,9 @@ import lombok.NonNull;
 public class DevNodeTest {
 
 	private static final Color RED    = new Color(239, 57, 38);
-	private static final Color ACTION = new Color(57, 120, 255);
 	private static final Color BLACK  = new Color(23, 23, 25);
 	private static final Color WHITE  = new Color(250, 250, 250);
+	private static final Color ACTION = new Color(57, 120, 255);
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
@@ -579,8 +579,8 @@ public class DevNodeTest {
 	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class DevUI extends UI {
 
-		private final List<String> hovers = new ArrayList<>();
 		private final Node[]       nodes;
+		private final List<String> hovers = new ArrayList<>();
 
 		private int inits;
 

@@ -17,9 +17,9 @@ public class RectNode extends Node {
 	private Supplier<Color> color;
 	private Supplier<Color> hoveredColor;
 
+	private Supplier<Color>   borderColor;
 	private Supplier<Boolean> borderFill;
 	private Supplier<Double>  borderStroke;
-	private Supplier<Color>   borderColor;
 	private Supplier<Color>   hoveredBorderColor;
 
 	protected RectNode(final double x, final double y, final double width, final double height) {

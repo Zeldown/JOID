@@ -159,16 +159,16 @@ public final class SignalReplayMethod {
 		return null;
 	}
 
-	public boolean isParameter(final int variable) {
-		return variable >= (this.isStatic ? 0 : 1) && variable < (Type.getArgumentsAndReturnSizes(this.method.desc) >> 2) - (this.isStatic ? 1 : 0);
-	}
-
 	public boolean isSignal(final String owner) {
 		try {
 			return ISignal.class.isAssignableFrom(this.type(Type.getObjectType(owner)));
 		} catch (final SignalReplayException exception) {
 			return false;
 		}
+	}
+
+	public boolean isParameter(final int variable) {
+		return variable >= (this.isStatic ? 0 : 1) && variable < (Type.getArgumentsAndReturnSizes(this.method.desc) >> 2) - (this.isStatic ? 1 : 0);
 	}
 
 	public Object member(final AbstractInsnNode instruction) {
@@ -329,6 +329,28 @@ public final class SignalReplayMethod {
 		return false;
 	}
 
+	private boolean isPure(final int start, final int end) {
+		for (int index = start; index < end; index++) {
+			final AbstractInsnNode instruction = this.instructions[index];
+			if (instruction instanceof MethodInsnNode) {
+				final String owner = ((MethodInsnNode) instruction).owner;
+				final Type returnType = Type.getReturnType(((MethodInsnNode) instruction).desc);
+				if (!owner.startsWith("java/") && !this.isSignal(owner) || returnType.getSort() == Type.OBJECT && this.isSignal(returnType.getInternalName())) {
+					return false;
+				}
+			} else if (instruction.getOpcode() == Opcodes.NEW) {
+				if (!((TypeInsnNode) instruction).desc.startsWith("java/")) {
+					return false;
+				}
+			} else if (instruction instanceof InvokeDynamicInsnNode) {
+				if (!((InvokeDynamicInsnNode) instruction).bsm.getOwner().equals("java/lang/invoke/StringConcatFactory")) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	private boolean isValue(final int variable, final int index) {
 		if (this.method.localVariables == null) {
 			return false;
@@ -350,28 +372,6 @@ public final class SignalReplayMethod {
 			}
 		}
 		return false;
-	}
-
-	private boolean isPure(final int start, final int end) {
-		for (int index = start; index < end; index++) {
-			final AbstractInsnNode instruction = this.instructions[index];
-			if (instruction instanceof MethodInsnNode) {
-				final String owner = ((MethodInsnNode) instruction).owner;
-				final Type returnType = Type.getReturnType(((MethodInsnNode) instruction).desc);
-				if (!owner.startsWith("java/") && !this.isSignal(owner) || returnType.getSort() == Type.OBJECT && this.isSignal(returnType.getInternalName())) {
-					return false;
-				}
-			} else if (instruction.getOpcode() == Opcodes.NEW) {
-				if (!((TypeInsnNode) instruction).desc.startsWith("java/")) {
-					return false;
-				}
-			} else if (instruction instanceof InvokeDynamicInsnNode) {
-				if (!((InvokeDynamicInsnNode) instruction).bsm.getOwner().equals("java/lang/invoke/StringConcatFactory")) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	private static int popCount(final AbstractInsnNode instruction, final Frame<SourceValue> before) {

@@ -40,14 +40,14 @@ public final class ObjModel implements IDrawableModel {
 	private static final Pattern FACE_VERTEX_PATTERN  = Pattern.compile("(f( \\d+){3,4} *\\n)|(f( \\d+){3,4} *$)");
 	private static final Pattern GROUP_PATTERN        = Pattern.compile("([go]( [\\w\\d\\.]+)+ *\\n)|([go]( [\\w\\d\\.]+)+ *$)");
 
-	private static Matcher vertexMatcher;
-	private static Matcher vertexNormalMatcher;
-	private static Matcher textureCoordinateMatcher;
 	private static Matcher faceMatcher;
-	private static Matcher faceTextureMatcher;
+	private static Matcher groupMatcher;
+	private static Matcher vertexMatcher;
 	private static Matcher faceNormalMatcher;
 	private static Matcher faceVertexMatcher;
-	private static Matcher groupMatcher;
+	private static Matcher faceTextureMatcher;
+	private static Matcher vertexNormalMatcher;
+	private static Matcher textureCoordinateMatcher;
 
 	private final List<ObjVertex>            vertices           = new ArrayList<>();
 	private final List<ObjVertex>            vertexNormals      = new ArrayList<>();

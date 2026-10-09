@@ -17,9 +17,9 @@ import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 
 public final class SignalReplayHiddenLoader extends ClassLoader {
 
-	private final String hiddenName;
-	private final byte[] defined;
 	private final byte[] served;
+	private final byte[] defined;
+	private final String hiddenName;
 
 	private SignalReplayHiddenLoader(final String name, final byte[] defined, final byte[] served) {
 		super(SignalReplayHiddenLoader.class.getClassLoader());

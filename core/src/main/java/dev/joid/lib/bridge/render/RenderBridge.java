@@ -316,10 +316,6 @@ public abstract class RenderBridge implements IRenderBridge {
 		return this.resolveTexture();
 	}
 
-	private TextureWrap toSupportedWrap(final TextureWrap wrap) {
-		return this.canWrap(wrap) ? wrap : TextureWrap.CLAMP_TO_EDGE;
-	}
-
 	protected final @NonNull IShader getDefaultShader() {
 		if (this.defaultShader == null) {
 			this.defaultShader = this.createShader(CoreShader.DEFAULT.read(ShaderStage.VERTEX), CoreShader.DEFAULT.read(ShaderStage.FRAGMENT), BlendState.DISABLED);
@@ -332,6 +328,10 @@ public abstract class RenderBridge implements IRenderBridge {
 			this.emptyTexture = this.createTexture().allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
 		}
 		return this.emptyTexture;
+	}
+
+	private TextureWrap toSupportedWrap(final TextureWrap wrap) {
+		return this.canWrap(wrap) ? wrap : TextureWrap.CLAMP_TO_EDGE;
 	}
 
 }

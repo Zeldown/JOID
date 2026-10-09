@@ -27,10 +27,10 @@ public final class ShaderSource {
 	private final ShaderStage          stage;
 	private final List<ShaderVariable> inputs;
 	private final Set<ShaderBuiltin>   builtins;
+	private final Set<ShaderFeature>   features;
 	private final List<ShaderVariable> outputs;
 	private final List<ShaderVariable> uniforms;
 	private final List<ShaderVariable> samplers;
-	private final Set<ShaderFeature>   features;
 
 	private String  body;
 	private boolean line;

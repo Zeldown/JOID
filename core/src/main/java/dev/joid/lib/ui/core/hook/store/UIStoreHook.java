@@ -27,8 +27,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("unchecked")
 public final class UIStoreHook {
 
 	private static final Gson GSON = new GsonBuilder().create();

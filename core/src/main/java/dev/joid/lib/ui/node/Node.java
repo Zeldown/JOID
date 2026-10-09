@@ -1454,18 +1454,18 @@ public abstract class Node implements INode {
 		return (!checkEnabled || this.isEnabled()) && this.isInteractive() && this.ui.isOnTop() && this.isAt(mouseX, mouseY);
 	}
 
-	public final @NonNull List<@NonNull Node> getNodeListAt(final double x, final double y) {
-		final List<Node> nodeList = new ArrayList<>();
-		this.collectNodesAt(x, y, nodeList);
-		return nodeList;
-	}
-
 	public final @NonNull Cursor getResolvedCursor() {
 		if (this.cursor != null) {
 			return this.cursor;
 		}
 
 		return this.parent != null ? this.parent.getResolvedCursor() : Cursor.DEFAULT;
+	}
+
+	public final @NonNull List<@NonNull Node> getNodeListAt(final double x, final double y) {
+		final List<Node> nodeList = new ArrayList<>();
+		this.collectNodesAt(x, y, nodeList);
+		return nodeList;
 	}
 
 	private boolean isAt(final double x, final double y) {
@@ -2202,11 +2202,6 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T removeHover(final @NonNull IHoverElement element) {
-		this.hoverElementList.remove(element);
-		return (T) this;
-	}
-
 	public final <T extends Node> @NonNull T hover(final @NonNull HoverSupplier supplier) {
 		this.hoverSupplierList.add(() -> {
 			final String line = supplier.get();
@@ -2217,6 +2212,11 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T hover(final @NonNull Supplier<@NonNull List<@NonNull String>> supplier) {
 		this.hoverSupplierList.add(supplier);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T removeHover(final @NonNull IHoverElement element) {
+		this.hoverElementList.remove(element);
 		return (T) this;
 	}
 

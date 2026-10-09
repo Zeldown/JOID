@@ -192,11 +192,6 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		return this.horizontalAlignment.isStart() || super.getShownInfo().getWidth(shown) > super.getWidth() - super.getMarginLeft() - super.getMarginRight() - 2D;
 	}
 
-	private final double getX(final @NonNull String text, final @NonNull int[] tags, final int position) {
-		final int end = position < text.length() && tags[position] != -1 ? tags[position] : position;
-		return super.getShownInfo().getWidth(text.substring(0, end));
-	}
-
 	private final double getTextX(final double x, final @NonNull String shown) {
 		if (this.isScrolling(shown)) {
 			return x + super.getMarginLeft() - this.xOffset;
@@ -207,6 +202,11 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		return x + super.getWidth() - super.getShownInfo().getWidth(shown) - super.getMarginRight() - 2D;
+	}
+
+	private final double getX(final @NonNull String text, final @NonNull int[] tags, final int position) {
+		final int end = position < text.length() && tags[position] != -1 ? tags[position] : position;
+		return super.getShownInfo().getWidth(text.substring(0, end));
 	}
 
 }

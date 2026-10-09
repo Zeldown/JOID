@@ -15,7 +15,8 @@ public final class DemoPixelFontFace implements IFontFace {
 
 	private final int[] advances;
 
-	@Getter private final Resource texture;
+	@Getter
+	private final Resource texture;
 
 	private DemoPixelFontFace(final int[] advances, final Resource texture) {
 		this.advances = advances;
