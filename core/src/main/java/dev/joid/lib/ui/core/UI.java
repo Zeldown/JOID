@@ -558,10 +558,10 @@ public abstract class UI implements IUI, IndexedElement {
 		final int stencilValue = this.stencilStack.size();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (stencilValue == 0) {
-			render.stencil(StencilState.DISABLED);
+			render.getState().stencil(StencilState.DISABLED);
 			render.clearStencil();
 		} else {
-			render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 		}
 	}
 
@@ -573,13 +573,13 @@ public abstract class UI implements IUI, IndexedElement {
 			render.clearStencil();
 		}
 
-		render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
+		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
 
-		render.colorWrite(false);
+		render.getState().colorWrite(false);
 		DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED);
-		render.colorWrite(true);
+		render.getState().colorWrite(true);
 
-		render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
 
 	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
@@ -590,18 +590,17 @@ public abstract class UI implements IUI, IndexedElement {
 			render.clearStencil();
 		}
 
-		render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
+		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
 
 		render.pushState();
 		try {
-			render.colorWrite(false);
-			render.alphaCutoff(0.5F);
+			render.getState().colorWrite(false).alphaCutoff(0.5F);
 			DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
 		} finally {
 			render.popState();
 		}
 
-		render.stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
 
 	public final void keybind(final @NonNull Runnable runnable, final @NonNull Object @NonNull... bindings) {
@@ -944,7 +943,7 @@ public abstract class UI implements IUI, IndexedElement {
 			this.transition.getOut().pre(this, mx, my);
 		}
 
-		render.alphaCutoff(0F);
+		render.getState().alphaCutoff(0F);
 		try {
 			this.view.render(render, this.data.projection(), () -> {
 				this.depthLevel = 0;
@@ -961,8 +960,7 @@ public abstract class UI implements IUI, IndexedElement {
 					render.getModelView().push();
 					render.pushState();
 					try {
-						render.depthTest(false);
-						render.depthWrite(false);
+						render.getState().depthTest(false).depthWrite(false);
 						while (hovered != null && !hovered.renderHover(mx, my)) {
 							hovered = hovered.getParent();
 						}

@@ -28,13 +28,13 @@ public class RoundedShader extends ShaderProgram {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IShader previousShader = render.getShader();
+		final IShader previousShader = render.getState().getShader();
 		RoundedShader.INSTANCE.bind(radius, x1, y1, x2, y2);
 		try {
 			runnable.run();
 		} finally {
 			RoundedShader.INSTANCE.unbind();
-			render.shader(previousShader);
+			render.getState().shader(previousShader);
 		}
 	}
 

@@ -76,13 +76,13 @@ public class StencilEmulationTest {
 
 	private static RenderState createState(final boolean test, final StencilOperation pass) {
 		final RenderState state = new RenderState();
-		state.setStencil(test ? StencilState.create(StencilFunction.ALWAYS, 0, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, pass) : StencilState.DISABLED);
+		state.stencil(test ? StencilState.create(StencilFunction.ALWAYS, 0, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, pass) : StencilState.DISABLED);
 		return state;
 	}
 
 	private static RenderState createState(final StencilFunction function, final int reference, final int mask, final StencilOperation fail, final StencilOperation pass) {
 		final RenderState state = new RenderState();
-		state.setStencil(StencilState.create(function, reference, mask, fail, StencilOperation.KEEP, pass));
+		state.stencil(StencilState.create(function, reference, mask, fail, StencilOperation.KEEP, pass));
 		return state;
 	}
 

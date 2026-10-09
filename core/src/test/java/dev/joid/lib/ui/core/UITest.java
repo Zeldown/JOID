@@ -1248,7 +1248,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		final Resource resource = Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png"));
 		this.bridges.open(ui);
-		this.bridges.getRender().alphaCutoff(0.25F);
+		this.bridges.getRender().getState().alphaCutoff(0.25F);
 		final List<String> stencils = new ArrayList<>();
 		ui.mask(resource, 10D, 20D, 30D, 40D, () -> stencils.add(UITest.stencil(this.bridges)));
 		ui.mask(resource, 10D, 20D, 30D, 40D, () -> stencils.add(UITest.stencil(this.bridges)), false);

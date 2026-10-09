@@ -40,7 +40,7 @@ public class ShaderTest {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		final TestShader shader = new TestShader(render, BlendState.PREMULTIPLIED);
 		shader.bind();
-		Assert.assertSame(shader, render.getShader());
+		Assert.assertSame(shader, render.getState().getShader());
 		Assert.assertSame(BlendState.PREMULTIPLIED, render.getState().getBlend());
 		Assert.assertTrue(shader.isBound());
 	}
@@ -49,10 +49,10 @@ public class ShaderTest {
 	public void restoresThePreviousBlendOnUnbind() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		final TestShader shader = new TestShader(render, BlendState.PREMULTIPLIED);
-		render.blend(BlendState.NORMAL);
+		render.getState().blend(BlendState.NORMAL);
 		shader.bind();
 		shader.unbind();
-		Assert.assertNull(render.getShader());
+		Assert.assertNull(render.getState().getShader());
 		Assert.assertSame(BlendState.NORMAL, render.getState().getBlend());
 		Assert.assertFalse(shader.isBound());
 	}
@@ -60,7 +60,7 @@ public class ShaderTest {
 	@Test
 	public void keepsTheBlendOfAnUnbindWithoutBind() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.blend(BlendState.NORMAL);
+		render.getState().blend(BlendState.NORMAL);
 		new TestShader(render, BlendState.PREMULTIPLIED).unbind();
 		Assert.assertSame(BlendState.NORMAL, render.getState().getBlend());
 	}
@@ -123,7 +123,7 @@ public class ShaderTest {
 		final MatrixStack modelView = new MatrixStack();
 		modelView.translate(4D, 0D, 0D);
 		final RenderState state = new RenderState();
-		state.setAlphaCutoff(0.5F);
+		state.alphaCutoff(0.5F);
 		shader.builtins(state, new float[16], modelView);
 		Assert.assertEquals(4F, shader.getBlock().getMember("uModelViewMatrix").getValues().getFloat(48), 0F);
 		Assert.assertEquals(1, shader.getBlock().getMember(GlslShaderTranslator.ALPHA_TEST).getValues().getInt(0));
@@ -148,12 +148,12 @@ public class ShaderTest {
 		shader.builtins(state, new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "u_Noise", 2F, 8F, 4F);
 		ShaderTest.assertBorder(shader, "tex", 0F, 1F, 1F);
-		state.setTexture(new RecordingTexture().allocate(16, 2));
-		state.setTextureFilter(TextureFilter.NEAREST);
-		state.setTextureWrap(TextureWrap.CLAMP_TO_BORDER);
+		state.texture(new RecordingTexture().allocate(16, 2));
+		state.textureFilter(TextureFilter.NEAREST);
+		state.textureWrap(TextureWrap.CLAMP_TO_BORDER);
 		shader.builtins(state, new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "tex", 1F, 16F, 2F);
-		state.setTextureWrap(TextureWrap.CLAMP_TO_EDGE);
+		state.textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		shader.builtins(state, new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "tex", 0F, 1F, 1F);
 	}
@@ -216,9 +216,8 @@ public class ShaderTest {
 	public void writesTheLineWidthAndViewportOnlyIntoALineShader() {
 		final TestShader shader = ShaderTest.create(new LineRenderBridge());
 		final RenderState state = new RenderState();
-		state.setLineWidth(3F);
-		state.setViewportWidth(800);
-		state.setViewportHeight(600);
+		state.lineWidth(3F);
+		state.viewport(0, 0, 800, 600);
 		((Shader) shader.getLineShader()).builtins(state, new float[16], new MatrixStack());
 		shader.builtins(state, new float[16], new MatrixStack());
 		final UniformBlock block = ((Shader) shader.getLineShader()).getBlock();

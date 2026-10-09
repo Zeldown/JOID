@@ -17,7 +17,7 @@ public class RenderBridgeDrawTest {
 	public void drawsWithTheBoundShader() {
 		final CapturingRenderBridge render = new CapturingRenderBridge(64, 64);
 		final RecordingShader shader = new RecordingShader();
-		render.shader(shader);
+		render.getState().shader(shader);
 		render.draw(Primitive.TRIANGLES, RenderBridgeDrawTest.triangle(3));
 		Assert.assertSame(shader, render.getLast().getShader());
 	}
@@ -43,9 +43,9 @@ public class RenderBridgeDrawTest {
 	@Test
 	public void skipsAnEmptyViewport() {
 		final CapturingRenderBridge render = new CapturingRenderBridge(64, 64);
-		render.viewport(0, 0, 0, 64);
+		render.getState().viewport(0, 0, 0, 64);
 		render.draw(Primitive.TRIANGLES, RenderBridgeDrawTest.triangle(3));
-		render.viewport(0, 0, 64, 0);
+		render.getState().viewport(0, 0, 64, 0);
 		render.draw(Primitive.TRIANGLES, RenderBridgeDrawTest.triangle(3));
 		Assert.assertTrue(render.getCaptures().isEmpty());
 	}
@@ -55,7 +55,7 @@ public class RenderBridgeDrawTest {
 		final CapturingRenderBridge render = new CapturingRenderBridge(64, 64);
 		final RecordingShader shader = new RecordingShader();
 		shader.setActive(false);
-		render.shader(shader);
+		render.getState().shader(shader);
 		render.draw(Primitive.TRIANGLES, RenderBridgeDrawTest.triangle(3));
 		Assert.assertTrue(render.getCaptures().isEmpty());
 	}

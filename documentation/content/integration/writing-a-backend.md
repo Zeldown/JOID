@@ -109,7 +109,7 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 | `getState()` | The current `RenderState`: color, blend, depth, cull, lighting, color mask, alpha test and threshold, line width and smoothing, stencil, viewport, framebuffer, texture with its filter and wrap, shader. |
 | `getDefaultShader()` | The `CoreShader.DEFAULT` shader, created once with your `createShader` and `BlendState.DISABLED`. |
 | `getEmptyTexture()` | A 1×1 opaque white texture, created once with your `createTexture()`. |
-| `resolveTexture()` | The `SamplerBinding` of the bound texture: the texture of `texture(...)` with its filter, wrap and mipmaps as a `TextureSampling`, or `getEmptyTexture()` (`NEAREST`, `REPEAT`) when none is bound or it is not allocated. |
+| `resolveTexture()` | The `SamplerBinding` of the bound texture: the texture of `getState().texture(...)` with its filter, wrap and mipmaps as a `TextureSampling`, or `getEmptyTexture()` (`NEAREST`, `REPEAT`) when none is bound or it is not allocated. |
 | `resolveSampler(UniformSampler sampler)` | The `SamplerBinding` of a sampler of a shader: its texture with its filter and wrap, or `resolveTexture()` when it was never set or its texture is not allocated. Every backend then samples the same texture. |
 
 `getPixelGrid()` and `quantize(...)` are computed from these matrices and the viewport.
@@ -139,12 +139,12 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 | `COLOR` | 2 | 20 | color, 4 × normalized `UNSIGNED_BYTE`, RGBA | `isColor()` |
 | `NORMAL` | 3 | 24 | normal, 3 × normalized `BYTE` | `isNormal()` |
 
-- Missing attributes take these values: the current color (`color(...)`) for the color, `(0, 0)` for the texture coordinates, `(0, 0, 1)` for the normal. Vertex colors replace the current color. An API without constant vertex attributes (Vulkan, Blaze3D) copies the buffer with `VertexFill.complete(VertexBuffer buffer, ByteBuffer target, RenderState state)`, which writes these values into the missing attributes of the copy (the current color rounded to bytes) from the position of `target`.
+- Missing attributes take these values: the current color (`getState().color(...)`) for the color, `(0, 0)` for the texture coordinates, `(0, 0, 1)` for the normal. Vertex colors replace the current color. An API without constant vertex attributes (Vulkan, Blaze3D) copies the buffer with `VertexFill.complete(VertexBuffer buffer, ByteBuffer target, RenderState state)`, which writes these values into the missing attributes of the copy (the current color rounded to bytes) from the position of `target`.
 - A normal component is a signed byte divided by 127, so `127` is `1.0` and `-127` is `-1.0`, as `VK_FORMAT_R8G8B8A8_SNORM` reads it. The `aNormal` attribute of shaders receives that value.
 
 ### Lighting
 
-Without a bound shader, a draw outputs the bound texture sampled at the texture coordinates, multiplied by the color. With `lighting(true)`, the color is lit per vertex, then interpolated between the vertices:
+Without a bound shader, a draw outputs the bound texture sampled at the texture coordinates, multiplied by the color. With `getState().lighting(true)`, the color is lit per vertex, then interpolated between the vertices:
 
 ```text
 rgb × (0.6 + max(normalize(normalMatrix × normal).z, 0)), clamped to 1
@@ -154,9 +154,9 @@ A null normal gets no diffuse light. The light does not depend on the scale of t
 
 ### Coordinates
 
-- Projection matrices follow OpenGL conventions: clip-space depth from -1 to 1, Y up, viewport origin at the bottom-left corner. `ortho(left, right, bottom, top, near, far)` replaces the projection matrix. A backend with other conventions converts them, as the Vulkan backend does for depth and Y: `DepthRange.toZeroToOne(float[] projection)` (`dev.joid.lib.bridge.render.matrix`) returns a copy of the projection whose clip-space depth runs from 0 to 1, for the APIs that use that range (Vulkan, Direct3D, Metal, Blaze3D on such a device).
-- JOID calls `ortho(0, width, height, 0, ...)`: the drawing has its origin at the top-left corner of the target. `screen(width, height)`, a default method of `IRenderBridge`, sets the window as target with that projection and a full viewport; a backend has nothing to implement for it.
-- `viewport(x, y, width, height)` is in pixels; `getViewportWidth()` and `getViewportHeight()` return it.
+- Projection matrices follow OpenGL conventions: clip-space depth from -1 to 1, Y up, viewport origin at the bottom-left corner. `getProjection().ortho(left, right, bottom, top, near, far)` replaces the projection matrix. A backend with other conventions converts them, as the Vulkan backend does for depth and Y: `DepthRange.toZeroToOne(float[] projection)` (`dev.joid.lib.bridge.render.matrix`) returns a copy of the projection whose clip-space depth runs from 0 to 1, for the APIs that use that range (Vulkan, Direct3D, Metal, Blaze3D on such a device).
+- JOID calls `getProjection().ortho(0, width, height, 0, ...)`: the drawing has its origin at the top-left corner of the target. `screen(width, height)`, final in `RenderBridge`, sets the window as target with that projection and a full viewport; a backend has nothing to implement for it.
+- `getState().viewport(x, y, width, height)` is in pixels; `getState().getViewportWidth()` and `getViewportHeight()` return it.
 - `translate` stays exact. `quantize(motionX, motionY)` rounds a motion already applied to whole window pixels: it translates by `grid.quantizeX(motionX) - motionX` and `grid.quantizeY(motionY) - motionY`, where `grid` is `getPixelGrid()`.
 - `getPixelGrid()` maps the current transform to window pixels. A native bridge reads its projection and model-view matrices and returns `PixelGrid.of(projection, modelView, viewportWidth, viewportHeight)`. See [Drawing Overview](../drawing/draw-utils.md).
 
@@ -167,8 +167,8 @@ A null normal gets no diffuse light. The light does not depend on the scale of t
 | Pixel format | `ITexture.upload(int[] pixels, int width, int height)` receives ARGB `int`s (`0xAARRGGBB`), row by row from the top row; texture coordinate `(0, 0)` is the first pixel. |
 | Allocation | `allocate(width, height)` (re)creates the storage, and keeps it when the size and the levels do not change; `upload` fills the whole texture. Both return the texture. `isAllocated()` tells whether the texture has storage and is not deleted. |
 | Mipmaps | Off by default. `mipmap(true)` works before allocation or after an upload, regenerates the levels at each upload, and `isMipmapped()` reports it. Linear filtering then uses the mipmaps. Take the levels from `MipmapChain.of(width, height, true)`: `getLevels()`, `getWidth(level)` and `getHeight(level)` give the storage to allocate, and `forEachStep((level, sourceWidth, sourceHeight, targetWidth, targetHeight) -> ...)` calls you once per level, in order, to copy level `level - 1` into `level` with a linear filter. Every backend then has the same levels. |
-| Binding | `texture(ITexture, TextureFilter, TextureWrap)` binds a texture with a filter (`NEAREST`, `LINEAR`) and a wrap (`REPEAT`, `CLAMP_TO_EDGE`, `CLAMP_TO_BORDER`). `TextureSampling.of(filter, wrap, mipmapped)` (`dev.joid.lib.bridge.render.texture`) is one of the `TextureSampling.values()` combinations, numbered by `getIndex()` for a table of sampler objects; `isMipmapFiltered()` tells whether the mipmaps are sampled: only a mipmapped texture with the `LINEAR` filter uses them. |
-| Reset | `resetTexture()` binds an opaque white texture, so drawing without a texture shows the plain color. With `RenderBridge`, `getState().getTexture()` is then `null`: draw with `getEmptyTexture()`. |
+| Binding | `getState().texture(ITexture)` binds a texture, sampled with `textureFilter(TextureFilter)` (`NEAREST`, `LINEAR`) and `textureWrap(TextureWrap)` (`REPEAT`, `CLAMP_TO_EDGE`, `CLAMP_TO_BORDER`). `TextureSampling.of(filter, wrap, mipmapped)` (`dev.joid.lib.bridge.render.texture`) is one of the `TextureSampling.values()` combinations, numbered by `getIndex()` for a table of sampler objects; `isMipmapFiltered()` tells whether the mipmaps are sampled: only a mipmapped texture with the `LINEAR` filter uses them. |
+| Reset | `getState().texture(null)` unbinds the texture: draw with an opaque white texture (`getEmptyTexture()`, which `resolveTexture()` returns then), so drawing without a texture shows the plain color. |
 | Deletion | `delete()` can be called more than once. |
 | Size | `getWidth()` and `getHeight()` return the allocated size. |
 
@@ -199,7 +199,7 @@ The bind path of the render bridge then samples the current handle with the filt
 
 ### Framebuffers
 
-`createFrameBuffer(width, height)` returns an `IFrameBuffer` with a color texture and a depth attachment of the same size (no stencil: the stencil test does not apply inside framebuffers), so the depth test of 3D models works inside effects as on the screen. `frameBuffer(IFrameBuffer)` makes it the target, `frameBuffer(null)` returns to the screen; its `getTexture()` can then be bound like any texture, with the filter and wrap given to `texture(...)`. `getWidth()`, `getHeight()` and `delete()` complete it.
+`createFrameBuffer(width, height)` returns an `IFrameBuffer` with a color texture and a depth attachment of the same size (no stencil: the stencil test does not apply inside framebuffers), so the depth test of 3D models works inside effects as on the screen. `getState().frameBuffer(IFrameBuffer)` makes it the target, `frameBuffer(null)` returns to the screen; its `getTexture()` can then be bound like any texture, with the `textureFilter` and `textureWrap` of the state. `getWidth()`, `getHeight()` and `delete()` complete it.
 
 The core `FrameBufferHandle<T extends Texture>` (`dev.joid.lib.bridge.render.framebuffer`) is the base of a backend framebuffer: its constructor takes the allocated color texture, `getTexture()` returns it with its type, `getWidth()` and `getHeight()` are its size, and `delete()` calls the `deleteHandle()` hook once, to release the framebuffer and its depth, then deletes the texture. The name keeps it apart from the `FrameBuffer` of UIs (`dev.joid.lib.render.framebuffer`), which holds an `IFrameBuffer` as its `getHandle()`.
 
@@ -207,14 +207,16 @@ The core `FrameBufferHandle<T extends Texture>` (`dev.joid.lib.bridge.render.fra
 
 | Method | Contract |
 |---|---|
-| `pushState()` / `popState()` | Save and restore everything set through the bridge: color, blend, depth, cull, lighting, color mask, alpha test, line state, stencil, viewport, framebuffer, texture and shader. |
+| `getState()` | The live `RenderState`, which JOID sets through its fluent setters and the backend reads at each draw, as `getModelView()` and `getProjection()`. The rows below are its properties. |
+| `pushState()` / `popState()` | Save and restore every property of the state: color, blend, depth, cull, lighting, color mask, alpha test, line state, stencil, viewport, framebuffer, texture and shader. `popState()` copies the saved values back into the same `RenderState`, so a reference to it never goes stale. |
 | `getModelView()` / `getProjection()` | The model-view and projection `MatrixStack`s, kept by the core and read by the backend at each draw. |
 | `blend(BlendState)` | Blending: `BlendState.NORMAL`, `PREMULTIPLIED`, `DISABLED`, or `BlendState.create(equation, source, destination)` and `create(equation, sourceColor, destinationColor, sourceAlpha, destinationAlpha)`. A `BlendState` exposes `isEnabled()`, `getEquation()` (`ADD`, `SUBTRACT`, `REVERSE_SUBTRACT`, `MIN`, `MAX`) and its four factors (`ZERO`, `ONE`, `SRC_COLOR`, `ONE_MINUS_SRC_COLOR`, `DST_COLOR`, `ONE_MINUS_DST_COLOR`, `SRC_ALPHA`, `ONE_MINUS_SRC_ALPHA`, `DST_ALPHA`, `ONE_MINUS_DST_ALPHA`). |
 | `depthTest(boolean)` / `depthWrite(boolean)` / `cull(boolean)` / `colorWrite(boolean)` | Depth test and write, face culling, color writes. |
 | `alphaCutoff(float cutoff)` | A cutoff above 0 discards the fragments whose alpha is at or below it; a cutoff of 0 or less turns the test off. UIs call `alphaCutoff(0F)` at the start of every frame to reset it; resource masks use `alphaCutoff(0.5F)`. The state holds only `getAlphaCutoff()`. |
-| `stencil(StencilState)`, `clearStencil()` | Stencil, used by the masks of a UI. A `StencilState` is an immutable value, as `BlendState`: `StencilState.DISABLED`, or `StencilState.create(function, reference, mask, fail, depthFail, pass)`, read with `isEnabled()`, `getFunction()`, `getReference()`, `getMask()`, `getFail()`, `getDepthFail()` and `getPass()`. `StencilFunction`: `NEVER`, `LESS`, `LESS_EQUAL`, `GREATER`, `GREATER_EQUAL`, `EQUAL`, `NOT_EQUAL`, `ALWAYS`; `StencilOperation`: `KEEP`, `ZERO`, `REPLACE`, `INCREMENT`, `DECREMENT`, `INVERT`. The screen needs an 8-bit stencil buffer. |
-| `lineWidth(float)` / `lineSmooth(boolean)` / `getLineWidth()` / `isLineSmooth()` | Line state, kept by the core. When a line is smooth or its width is not `1F`, the `Tessellator` expands each segment into triangles drawn with the line shader of the bound shader (`IShader.getLineShader()`), or of the core `line` shader without one: a backend only ever draws `LINES` of 1 pixel without smoothing, and needs neither wide nor smooth lines from its API. |
-| `shader(IShader)` / `getShader()` | The bound shader, `null` for none. |
+| `stencil(StencilState)`, and `clearStencil()` of the bridge | Stencil, used by the masks of a UI. A `StencilState` is an immutable value, as `BlendState`: `StencilState.DISABLED`, or `StencilState.create(function, reference, mask, fail, depthFail, pass)`, read with `isEnabled()`, `getFunction()`, `getReference()`, `getMask()`, `getFail()`, `getDepthFail()` and `getPass()`. `StencilFunction`: `NEVER`, `LESS`, `LESS_EQUAL`, `GREATER`, `GREATER_EQUAL`, `EQUAL`, `NOT_EQUAL`, `ALWAYS`; `StencilOperation`: `KEEP`, `ZERO`, `REPLACE`, `INCREMENT`, `DECREMENT`, `INVERT`. The screen needs an 8-bit stencil buffer. |
+| `lineWidth(float)` / `lineSmooth(boolean)` | Line state, kept by the core. When a line is smooth or its width is not `1F`, the `Tessellator` expands each segment into triangles drawn with the line shader of the bound shader (`IShader.getLineShader()`), or of the core `line` shader without one: a backend only ever draws `LINES` of 1 pixel without smoothing, and needs neither wide nor smooth lines from its API. |
+| `shader(IShader)` | The bound shader, `null` for none. |
+| `color(r, g, b, a)` / `viewport(x, y, width, height)` | The current color and the viewport, each one value of four components. |
 
 ### Pipelines and stencil emulation
 
@@ -341,13 +343,13 @@ A member's values are tightly packed in `getValues()` (column by column for a ma
 
 | Method | Contract |
 |---|---|
-| `bind()` | Makes the shader current (`shader(this)`) and switches to the blend state given to `createShader`, remembering the previous one. Implemented by the core `Shader`, as `unbind()` and `isBound()`. |
+| `bind()` | Makes the shader current (`getState().shader(this)`) and switches to the blend state given to `createShader`, remembering the previous one. Implemented by the core `Shader`, as `unbind()` and `isBound()`. |
 | `unbind()` | Returns to no shader and restores the previous blend state. |
 | `isBound()` | Whether the shader is bound. |
 | `isActive()` | Whether it compiled and linked, implemented by the backend shader, which may work it out on the first call. The reference backends print the compiler or linker log of a shader that fails to `System.err`. |
 | `uniform(name, ...)`, `sampler(name, texture, filter, wrap)` | Implemented by the core `Shader`. A value set before the shader is bound, or while another shader is bound, applies to this shader at its next draw. |
 
-A sampler that is never set samples the texture bound with `texture(...)`, as `resolveSampler(...)` gives it: the reference backends bind the bound texture to texture unit 0 and each sampler to its unit, from 1. The translator also wraps the fragment `main` to apply the alpha test of the render state.
+A sampler that is never set samples the texture bound with `getState().texture(...)`, as `resolveSampler(...)` gives it: the reference backends bind the bound texture to texture unit 0 and each sampler to its unit, from 1. The translator also wraps the fragment `main` to apply the alpha test of the render state.
 
 ## Window and audio bridges
 

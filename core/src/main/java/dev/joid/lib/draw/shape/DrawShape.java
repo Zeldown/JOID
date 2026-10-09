@@ -90,7 +90,7 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final PixelGrid grid = render.getPixelGrid();
 		final IShader rounded = RoundedShader.inst().getShader();
-		if (!grid.isAligned() && render.getShader() == null && rounded != null && rounded.isActive()) {
+		if (!grid.isAligned() && render.getState().getShader() == null && rounded != null && rounded.isActive()) {
 			this.drawOutline(Math.min(x, x2) - stroke, Math.min(y, y2) - stroke, Math.max(x, x2) + stroke, Math.max(y, y2) + stroke, color, stroke);
 			return;
 		}
@@ -125,7 +125,7 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
-			render.lineSmooth(true);
+			render.getState().lineSmooth(true);
 			this.drawShape(DrawMode.LINE_STRIP, color, points);
 		} finally {
 			render.popState();
@@ -136,7 +136,7 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
-			render.lineWidth(stroke);
+			render.getState().lineWidth(stroke);
 			this.drawLine(color, points);
 		} finally {
 			render.popState();
@@ -164,8 +164,7 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
-			render.lineWidth(stroke);
-			render.lineSmooth(true);
+			render.getState().lineWidth(stroke).lineSmooth(true);
 			this.drawShape(DrawMode.LINES, color, dashes.toArray(new Vector2d[0]));
 		} finally {
 			render.popState();
@@ -186,7 +185,7 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
-			render.lineWidth(stroke);
+			render.getState().lineWidth(stroke);
 			this.drawCurvedLine(color, start, end, control);
 		} finally {
 			render.popState();
@@ -207,7 +206,7 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
-			render.lineWidth(stroke);
+			render.getState().lineWidth(stroke);
 			this.drawCurvedLine(color, start, startControl, end, endControl);
 		} finally {
 			render.popState();
@@ -228,8 +227,7 @@ public final class DrawShape {
 		render.getModelView().push();
 		render.pushState();
 		try {
-			render.blend(BlendState.NORMAL);
-			render.resetTexture();
+			render.getState().blend(BlendState.NORMAL).texture(null);
 			tessellator.start(DrawMode.POLYGON);
 			tessellator.addVertex(horizontal.getStart(), vertical.getEnd(), 0D);
 			tessellator.addVertex(horizontal.getEnd(), vertical.getEnd(), 0D);
@@ -271,7 +269,7 @@ public final class DrawShape {
 		}
 
 		final IShader rounded = RoundedShader.inst().getShader();
-		if (render.getShader() != null || rounded == null || !rounded.isActive()) {
+		if (render.getState().getShader() != null || rounded == null || !rounded.isActive()) {
 			this.drawPoints(DrawMode.POLYGON, color, true, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
 			return;
 		}
@@ -324,8 +322,7 @@ public final class DrawShape {
 		render.getModelView().push();
 		render.pushState();
 		try {
-			render.blend(BlendState.NORMAL);
-			render.resetTexture();
+			render.getState().blend(BlendState.NORMAL).texture(null);
 			color.bind(() -> {
 				if (smooth) {
 					final Color resolved = color.isGradient() ? Color.WHITE : color.update();

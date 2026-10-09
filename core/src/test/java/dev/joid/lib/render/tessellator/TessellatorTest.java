@@ -136,8 +136,7 @@ public class TessellatorTest {
 
 	@Test
 	public void expandsSmoothLinesIntoQuads() {
-		this.render.lineSmooth(true);
-		this.render.lineWidth(3F);
+		this.render.getState().lineSmooth(true).lineWidth(3F);
 		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
 		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
 		Assert.assertEquals(12, capture.getCount());
@@ -154,17 +153,16 @@ public class TessellatorTest {
 
 	@Test
 	public void shadesSmoothLinesWithTheLineShader() {
-		this.render.lineSmooth(true);
-		this.render.lineWidth(3F);
+		this.render.getState().lineSmooth(true).lineWidth(3F);
 		final Capture capture = this.lines(DrawMode.LINES, 2);
 		Assert.assertTrue(capture.getState().getShader() instanceof RecordingShader);
 		Assert.assertEquals(3F, capture.getState().getLineWidth(), 0F);
-		Assert.assertNull(this.render.getShader());
+		Assert.assertNull(this.render.getState().getShader());
 	}
 
 	@Test
 	public void widensAHardLineOtherThanOnePixel() {
-		this.render.lineWidth(3F);
+		this.render.getState().lineWidth(3F);
 		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
 		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
 		Assert.assertEquals(12, capture.getCount());
@@ -180,7 +178,7 @@ public class TessellatorTest {
 
 	@Test
 	public void expandsEverySegmentOfASmoothLoop() {
-		this.render.lineSmooth(true);
+		this.render.getState().lineSmooth(true);
 		final Capture capture = this.lines(DrawMode.LINE_LOOP, 3);
 		Assert.assertEquals(18, capture.getCount());
 		Assert.assertEquals(2F, capture.getX(12), 0F);
@@ -189,7 +187,7 @@ public class TessellatorTest {
 
 	@Test
 	public void expandsSeparateSmoothLines() {
-		this.render.lineSmooth(true);
+		this.render.getState().lineSmooth(true);
 		final Capture capture = this.lines(DrawMode.LINES, 4);
 		Assert.assertEquals(12, capture.getCount());
 		Assert.assertEquals(2F, capture.getX(6), 0F);
@@ -199,13 +197,12 @@ public class TessellatorTest {
 	@Test
 	public void widensLinesWithTheLineShaderOfTheBoundShader() {
 		final RecordingShader shader = new RecordingShader();
-		this.render.lineWidth(4F);
-		this.render.shader(shader);
+		this.render.getState().lineWidth(4F).shader(shader);
 		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
 		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
 		Assert.assertEquals(12, capture.getCount());
 		Assert.assertSame(shader.getLineShader(), capture.getState().getShader());
-		Assert.assertSame(shader, this.render.getShader());
+		Assert.assertSame(shader, this.render.getState().getShader());
 	}
 
 	@Test

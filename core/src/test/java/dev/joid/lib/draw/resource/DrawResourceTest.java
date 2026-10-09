@@ -127,13 +127,13 @@ public class DrawResourceTest {
 		Assert.assertEquals(-0.01F, capture.getU(0), 1E-6F);
 		Assert.assertEquals(1.02F, capture.getV(0), 1E-6F);
 		Assert.assertSame(TextureWrap.CLAMP_TO_EDGE, capture.getState().getTextureWrap());
-		Assert.assertNull(this.render.getShader());
+		Assert.assertNull(this.render.getState().getShader());
 	}
 
 	@Test
 	public void smoothsTheEdgesOfARotatedImageUnderTheBoundShader() {
 		final RecordingShader shader = new RecordingShader();
-		this.render.shader(shader);
+		this.render.getState().shader(shader);
 		this.render.getModelView().push();
 		try {
 			this.render.getModelView().rotate(30D, 0D, 0D, 1D);

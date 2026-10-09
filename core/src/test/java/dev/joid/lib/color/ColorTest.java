@@ -605,9 +605,9 @@ public class ColorTest {
 	public void drawsAGradientThroughItsShaderAndRestoresThePreviousOne() {
 		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 1F), new Vector4f(0F, 0F, 1F, 0F));
 		final boolean[] shaded = new boolean[1];
-		gradient.bind(() -> shaded[0] = this.bridges.getRender().getShader() != null, new Vector4f(0F, 0F, 10F, 10F));
+		gradient.bind(() -> shaded[0] = this.bridges.getRender().getState().getShader() != null, new Vector4f(0F, 0F, 10F, 10F));
 		Assert.assertTrue(shaded[0]);
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test

@@ -175,7 +175,7 @@ public final class Resource {
 	}
 
 	public final void unbind() {
-		BridgeHandler.RENDER.get().resetTexture();
+		BridgeHandler.RENDER.get().getState().texture(null);
 	}
 
 	public final void bind(final @NonNull TextureWrap wrap, final @NonNull Runnable runnable) {
@@ -198,9 +198,9 @@ public final class Resource {
 		this.prepareBind();
 		if (this.isFailed()) {
 			if (JOID.inst().isDevMode()) {
-				BridgeHandler.RENDER.get().texture(this.data.getMissingTexture(), TextureFilter.NEAREST, wrap);
+				BridgeHandler.RENDER.get().getState().texture(this.data.getMissingTexture()).textureFilter(TextureFilter.NEAREST).textureWrap(wrap);
 			} else {
-				BridgeHandler.RENDER.get().resetTexture();
+				BridgeHandler.RENDER.get().getState().texture(null);
 			}
 			return;
 		}
@@ -212,11 +212,11 @@ public final class Resource {
 
 		final ITexture texture = this.getTexture();
 		if (texture == null) {
-			BridgeHandler.RENDER.get().resetTexture();
+			BridgeHandler.RENDER.get().getState().texture(null);
 			return;
 		}
 
-		BridgeHandler.RENDER.get().texture(texture, this.properties.getInterpolation(), wrap);
+		BridgeHandler.RENDER.get().getState().texture(texture).textureFilter(this.properties.getInterpolation()).textureWrap(wrap);
 	}
 
 	public final void prepareBind() {

@@ -28,7 +28,7 @@ public class CircleShader extends ShaderProgram {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IShader previousShader = render.getShader();
+		final IShader previousShader = render.getState().getShader();
 		CircleShader.INSTANCE.bind(radius, centerX, centerY);
 		try {
 			if (runnable != null) {
@@ -36,7 +36,7 @@ public class CircleShader extends ShaderProgram {
 			}
 		} finally {
 			CircleShader.INSTANCE.unbind();
-			render.shader(previousShader);
+			render.getState().shader(previousShader);
 		}
 	}
 

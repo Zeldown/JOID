@@ -102,7 +102,7 @@ public void draw(final double mouseX, final double mouseY) {
 		render.getModelView().push();
 		try {
 			this.buffer.fill(() -> {
-				render.viewport(0, 0, 256, 256);
+				render.getState().viewport(0, 0, 256, 256);
 				render.clearColor(0F, 0F, 0F, 0F);
 				render.getProjection().ortho(0D, 256D, 256D, 0D, -1000D, 1000D);
 				render.getModelView().identity();

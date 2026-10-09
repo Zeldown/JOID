@@ -34,7 +34,7 @@ public class RoundedShaderTest {
 	public void bindsTheRadiusAndTheInnerBox() {
 		RoundedShader.inst().bind(6F, 1F, 2F, 3F, 4F);
 		final Map<String, Object> values = this.shader.getValues();
-		Assert.assertSame(this.shader, this.bridges.getRender().getShader());
+		Assert.assertSame(this.shader, this.bridges.getRender().getState().getShader());
 		Assert.assertEquals(6F, (Float) values.get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {1F, 2F, 3F, 4F}, (float[]) values.get("u_InnerRect"), 0F);
 		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), values.get("u_Type"));
@@ -59,11 +59,11 @@ public class RoundedShaderTest {
 	@Test
 	public void wrapsADrawInTheShader() {
 		final IShader[] bound = new IShader[1];
-		RoundedShader.use(5F, 10F, 20F, 30F, 40F, () -> bound[0] = this.bridges.getRender().getShader());
+		RoundedShader.use(5F, 10F, 20F, 30F, 40F, () -> bound[0] = this.bridges.getRender().getState().getShader());
 		Assert.assertSame(this.shader, bound[0]);
 		Assert.assertArrayEquals(new float[] {10F, 20F, 30F, 40F}, (float[]) this.shader.getValues().get("u_InnerRect"), 0F);
 		Assert.assertFalse(this.shader.isBound());
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test

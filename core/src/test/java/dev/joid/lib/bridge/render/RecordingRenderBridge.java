@@ -71,7 +71,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 		final double[] ys = new double[buffer.getCount()];
 		for (int i = 0; i < buffer.getCount(); i++) {
 			xs[i] = grid.toScreenX(buffer.getBuffer().getFloat(i * VertexBuffer.STRIDE + VertexAttribute.POSITION.getOffset()));
-			ys[i] = super.getViewportHeight() - grid.toScreenY(buffer.getBuffer().getFloat(i * VertexBuffer.STRIDE + VertexAttribute.POSITION.getOffset() + 4));
+			ys[i] = super.getState().getViewportHeight() - grid.toScreenY(buffer.getBuffer().getFloat(i * VertexBuffer.STRIDE + VertexAttribute.POSITION.getOffset() + 4));
 		}
 
 		final RenderState state = super.getState();

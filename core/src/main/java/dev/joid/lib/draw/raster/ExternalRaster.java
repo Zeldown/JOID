@@ -45,8 +45,7 @@ public final class ExternalRaster {
 		render.getProjection().push();
 		render.getModelView().push();
 		try {
-			render.frameBuffer(target);
-			render.viewport(0, 0, pixelWidth, pixelHeight);
+			render.getState().frameBuffer(target).viewport(0, 0, pixelWidth, pixelHeight);
 			render.getProjection().ortho(0D, pixelWidth, pixelHeight, 0D, -1000D, 1000D);
 			render.getModelView().identity();
 			render.clearColor(0F, 0F, 0F, 0F);

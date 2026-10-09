@@ -19,6 +19,7 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.state.StencilState;
@@ -149,8 +150,7 @@ public abstract class StateGuardContractSuite {
 		try {
 			render.getModelView().identity();
 			render.getProjection().ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
-			render.viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
-			render.frameBuffer(null);
+			render.getState().viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE).frameBuffer(null);
 			render.clearColor(0F, 0F, 0F, 1F);
 			DrawUtils.RASTER.drawRaster(8D, 8D, 32D, 32D, (width, height) -> {
 				size[0] = width;
@@ -195,16 +195,7 @@ public abstract class StateGuardContractSuite {
 		try {
 			render.getModelView().identity();
 			render.getProjection().ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
-			render.viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
-			render.frameBuffer(null);
-			render.shader(null);
-			render.resetTexture();
-			render.blend(BlendState.NORMAL);
-			render.depthTest(false);
-			render.depthWrite(false);
-			render.cull(false);
-			render.color(1F, 1F, 1F, 1F);
-			render.alphaCutoff(0F);
+			render.getState().load(new RenderState().viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
 			render.clearColor(0F, 0F, 0F, 1F);
 			StateGuardContractSuite.drawTexture(render);
 			StateGuardContractSuite.drawTranslucent(render);
@@ -232,53 +223,51 @@ public abstract class StateGuardContractSuite {
 
 	private static void drawTexture(final IRenderBridge render) {
 		final ITexture texture = render.createTexture().allocate(2, 2).upload(new int[] {0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFFFFFFFF}, 2, 2);
-		render.texture(texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
+		render.getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(0F, 0F, 16F, 16F, -1F, true, 0));
-		render.resetTexture();
+		render.getState().texture(null);
 		texture.delete();
 	}
 
 	private static void drawTranslucent(final IRenderBridge render) {
-		render.color(0F, 1F, 0F, 0.5F);
+		render.getState().color(0F, 1F, 0F, 0.5F);
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(16F, 0F, 16F, 16F, -1F, false, 0));
-		render.color(1F, 1F, 1F, 1F);
+		render.getState().color(1F, 1F, 1F, 1F);
 	}
 
 	private static void drawInDepth(final IRenderBridge render) {
-		render.depthTest(true);
-		render.depthWrite(true);
+		render.getState().depthTest(true).depthWrite(true);
 		render.clearDepth();
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(32F, 0F, 16F, 16F, -10F, false, 0xFFFF0000));
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(32F, 0F, 16F, 16F, -20F, false, 0xFF0000FF));
-		render.depthTest(false);
-		render.depthWrite(false);
+		render.getState().depthTest(false).depthWrite(false);
 	}
 
 	private static void drawCulled(final IRenderBridge render) {
-		render.cull(true);
+		render.getState().cull(true);
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(48F, 0F, 16F, 16F, -1F, false, 0xFFFFFF00));
-		render.cull(false);
+		render.getState().cull(false);
 	}
 
 	private static void drawMasked(final IRenderBridge render) {
 		render.clearStencil();
-		render.colorWrite(false);
-		render.stencil(StencilState.create(StencilFunction.ALWAYS, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE));
+		render.getState().colorWrite(false);
+		render.getState().stencil(StencilState.create(StencilFunction.ALWAYS, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE));
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(0F, 16F, 8F, 16F, -1F, false, 0xFFFFFFFF));
-		render.colorWrite(true);
-		render.stencil(StencilState.create(StencilFunction.EQUAL, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		render.getState().colorWrite(true);
+		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(0F, 16F, 16F, 16F, -1F, false, 0xFF00FFFF));
-		render.stencil(StencilState.DISABLED);
+		render.getState().stencil(StencilState.DISABLED);
 	}
 
 	private static void drawFrameBuffer(final IRenderBridge render) {
 		final IFrameBuffer frameBuffer = render.createFrameBuffer(StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
-		render.frameBuffer(frameBuffer);
+		render.getState().frameBuffer(frameBuffer);
 		render.clearColor(1F, 0F, 1F, 1F);
-		render.frameBuffer(null);
-		render.texture(frameBuffer.getTexture(), TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
+		render.getState().frameBuffer(null);
+		render.getState().texture(frameBuffer.getTexture()).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(16F, 16F, 16F, 16F, -1F, true, 0));
-		render.resetTexture();
+		render.getState().texture(null);
 		frameBuffer.delete();
 	}
 
@@ -303,9 +292,9 @@ public abstract class StateGuardContractSuite {
 		}
 
 		final ITexture texture = render.createTexture().mipmap(true).allocate(64, 64).upload(pixels, 64, 64);
-		render.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
+		render.getState().texture(texture).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(48F, 16F, 8F, 8F, -1F, true, 0));
-		render.resetTexture();
+		render.getState().texture(null);
 		texture.delete();
 	}
 

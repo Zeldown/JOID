@@ -587,7 +587,7 @@ public abstract class Node implements INode {
 								render.pushState();
 								render.getModelView().push();
 								try {
-									render.stencil(StencilState.DISABLED);
+									render.getState().stencil(StencilState.DISABLED);
 
 									if (this.parent != null) {
 										render.getModelView().translate(-this.parent.x, -this.parent.y, 0D);

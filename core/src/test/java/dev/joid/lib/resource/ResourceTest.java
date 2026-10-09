@@ -263,7 +263,6 @@ public class ResourceTest {
 		});
 		Assert.assertEquals(Arrays.asList(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE), bound);
 		Assert.assertNull(this.bridges.getRender().getState().getTexture());
-		Assert.assertSame(TextureWrap.REPEAT, this.bridges.getRender().getState().getTextureWrap());
 	}
 
 	@Test
@@ -291,7 +290,7 @@ public class ResourceTest {
 
 	@Test
 	public void bindsNoTextureWithoutOne() {
-		this.bridges.getRender().texture(new RecordingTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
+		this.bridges.getRender().getState().texture(new RecordingTexture()).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		ResourceTest.resource(null).bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
 		Assert.assertNull(this.bridges.getRender().getState().getTexture());
 	}

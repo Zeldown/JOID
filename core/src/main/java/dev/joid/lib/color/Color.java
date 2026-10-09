@@ -238,7 +238,7 @@ public final class Color {
 
 	public void bind() {
 		final Color color = this.update();
-		BridgeHandler.RENDER.get().color(color.r, color.g, color.b, color.a);
+		BridgeHandler.RENDER.get().getState().color(color.r, color.g, color.b, color.a);
 	}
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
@@ -248,11 +248,11 @@ public final class Color {
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas, final boolean hasTexture) {
 		if (this.isGradient()) {
 			final IRenderBridge render = BridgeHandler.RENDER.get();
-			final IShader previousShader = render.getShader();
+			final IShader previousShader = render.getState().getShader();
 			try {
 				this.gradient.use(hasTexture, runnable, canvas);
 			} finally {
-				render.shader(previousShader);
+				render.getState().shader(previousShader);
 			}
 		} else {
 			this.bind();
@@ -456,7 +456,7 @@ public final class Color {
 	}
 
 	public static void reset() {
-		BridgeHandler.RENDER.get().color(1F, 1F, 1F, 1F);
+		BridgeHandler.RENDER.get().getState().color(1F, 1F, 1F, 1F);
 	}
 
 	private @NonNull String padZero(final @NonNull String str) {

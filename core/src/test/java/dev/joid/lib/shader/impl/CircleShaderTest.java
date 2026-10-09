@@ -31,7 +31,7 @@ public class CircleShaderTest {
 	@Test
 	public void bindsTheRadiusAndTheCenter() {
 		CircleShader.inst().bind(12F, 30F, 40F);
-		Assert.assertSame(this.shader, this.bridges.getRender().getShader());
+		Assert.assertSame(this.shader, this.bridges.getRender().getState().getShader());
 		Assert.assertEquals(12F, (Float) this.shader.getValues().get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {30F, 40F}, (float[]) this.shader.getValues().get("center"), 0F);
 		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), this.shader.getValues().get("type"));
@@ -48,11 +48,11 @@ public class CircleShaderTest {
 	@Test
 	public void wrapsADrawInTheShader() {
 		final IShader[] bound = new IShader[1];
-		CircleShader.use(8F, 1F, 2F, () -> bound[0] = this.bridges.getRender().getShader());
+		CircleShader.use(8F, 1F, 2F, () -> bound[0] = this.bridges.getRender().getState().getShader());
 		Assert.assertSame(this.shader, bound[0]);
 		Assert.assertEquals(8F, (Float) this.shader.getValues().get("radius"), 0F);
 		Assert.assertFalse(this.shader.isBound());
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test

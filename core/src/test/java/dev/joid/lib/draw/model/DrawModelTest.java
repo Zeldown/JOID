@@ -43,7 +43,7 @@ public class DrawModelTest {
 	@Test
 	public void litsTheModelOnBothFaces() {
 		final RecordingModel model = new RecordingModel(this.bridges.getRender(), false);
-		this.bridges.getRender().cull(true);
+		this.bridges.getRender().getState().cull(true);
 		DrawUtils.MODEL.drawModel(0D, 0D, 1D, model);
 		Assert.assertTrue(model.lighting);
 		Assert.assertFalse(model.cull);

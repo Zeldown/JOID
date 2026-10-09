@@ -33,9 +33,9 @@ public class ShaderProgramTest {
 		Assert.assertTrue(shader.getShader() instanceof RecordingShader);
 		Assert.assertTrue(shader.isAvailable());
 		shader.bind();
-		Assert.assertSame(shader.getShader(), this.bridges.getRender().getShader());
+		Assert.assertSame(shader.getShader(), this.bridges.getRender().getState().getShader());
 		shader.unbind();
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class ShaderProgramTest {
 		Assert.assertTrue(error, error.contains("broken"));
 		shader[0].bind();
 		shader[0].unbind();
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test

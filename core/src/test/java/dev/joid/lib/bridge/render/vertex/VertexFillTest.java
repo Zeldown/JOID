@@ -35,10 +35,7 @@ public class VertexFillTest {
 	@Test
 	public void givesTheCurrentColorToTheMissingColors() {
 		final RenderState state = new RenderState();
-		state.setRed(1F);
-		state.setGreen(0.5F);
-		state.setBlue(0F);
-		state.setAlpha(2F);
+		state.color(1F, 0.5F, 0F, 2F);
 		final ByteBuffer target = VertexFill.complete(VertexFillTest.create(1, true, false, true), VertexFillTest.allocate(1), state);
 		Assert.assertEquals(255, target.get(VertexAttribute.COLOR.getOffset()) & 0xFF);
 		Assert.assertEquals(128, target.get(VertexAttribute.COLOR.getOffset() + 1) & 0xFF);

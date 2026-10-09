@@ -50,13 +50,11 @@ public final class DrawResource {
 
 	public void drawTexture(final double x, final double y, final double width, final double height, final @NonNull ITexture texture, final double u0, final double v0, final double u1, final double v1, final @NonNull TextureFilter filter, final @NonNull BlendState blend) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.blend(blend);
-		render.texture(texture, filter, TextureWrap.CLAMP_TO_EDGE);
+		render.getState().blend(blend).texture(texture).textureFilter(filter).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		try {
 			DrawResource.drawQuad(x, y, x + width, y + height, new double[] {u0, v0, u1, v1}, 0D);
 		} finally {
-			render.resetTexture();
-			render.blend(BlendState.DISABLED);
+			render.getState().texture(null).blend(BlendState.DISABLED);
 		}
 	}
 
@@ -89,10 +87,10 @@ public final class DrawResource {
 		final double[] uv = failed || region == null || region.length != 4 ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getWidth(), region[1] / resource.getHeight(), (region[0] + region[2]) / resource.getWidth(), (region[1] + region[3]) / resource.getHeight()};
 		render.getModelView().push();
 		try {
-			render.blend(BlendState.NORMAL);
+			render.getState().blend(BlendState.NORMAL);
 			if (grid.isAligned()) {
 				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 0D));
-			} else if (render.getShader() == null && RoundedShader.inst().isAvailable()) {
+			} else if (render.getState().getShader() == null && RoundedShader.inst().isAvailable()) {
 				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> RoundedShader.use(0F, (float) (left + 0.5D), (float) (top + 0.5D), (float) (right - 0.5D), (float) (bottom - 0.5D), () -> {
 					RoundedShader.inst().aligned(false);
 					DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 1D);
@@ -100,7 +98,7 @@ public final class DrawResource {
 			} else {
 				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> EdgeSmoothing.rect(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 1F, 1F, 1F, 1F));
 			}
-			render.blend(BlendState.DISABLED);
+			render.getState().blend(BlendState.DISABLED);
 		} finally {
 			render.getModelView().pop();
 		}

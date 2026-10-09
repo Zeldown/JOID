@@ -762,8 +762,8 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.bridges.getUi().resize(800, 600);
-		Assert.assertEquals(800, this.bridges.getRender().getViewportWidth());
-		Assert.assertEquals(600, this.bridges.getRender().getViewportHeight());
+		Assert.assertEquals(800, this.bridges.getRender().getState().getViewportWidth());
+		Assert.assertEquals(600, this.bridges.getRender().getState().getViewportHeight());
 		Assert.assertEquals(1, menu.inits);
 	}
 

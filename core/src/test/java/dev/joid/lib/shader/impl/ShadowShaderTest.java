@@ -34,7 +34,7 @@ public class ShadowShaderTest {
 	public void bindsTheRadiusTheBlurAndTheBox() {
 		ShadowShader.inst().bind(6F, 12F, 1F, 2F, 3F, 4F);
 		final Map<String, Object> values = this.shader.getValues();
-		Assert.assertSame(this.shader, this.bridges.getRender().getShader());
+		Assert.assertSame(this.shader, this.bridges.getRender().getState().getShader());
 		Assert.assertEquals(6F, (Float) values.get("u_Radius"), 0F);
 		Assert.assertEquals(12F, (Float) values.get("u_Blur"), 0F);
 		Assert.assertArrayEquals(new float[] {1F, 2F, 3F, 4F}, (float[]) values.get("u_Box"), 0F);
@@ -43,11 +43,11 @@ public class ShadowShaderTest {
 	@Test
 	public void wrapsADrawInTheShader() {
 		final IShader[] bound = new IShader[1];
-		ShadowShader.use(5F, 8F, 10F, 20F, 30F, 40F, () -> bound[0] = this.bridges.getRender().getShader());
+		ShadowShader.use(5F, 8F, 10F, 20F, 30F, 40F, () -> bound[0] = this.bridges.getRender().getState().getShader());
 		Assert.assertSame(this.shader, bound[0]);
 		Assert.assertArrayEquals(new float[] {10F, 20F, 30F, 40F}, (float[]) this.shader.getValues().get("u_Box"), 0F);
 		Assert.assertFalse(this.shader.isBound());
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test

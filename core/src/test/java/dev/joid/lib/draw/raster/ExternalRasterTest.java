@@ -26,8 +26,8 @@ public class ExternalRasterTest {
 		DrawUtils.RASTER.drawRaster(10D, 20D, 32D, 16D, (width, height) -> {
 			calls.add(width + "x" + height);
 			Assert.assertSame(DrawUtils.RASTER.getTarget(), this.render.getState().getFrameBuffer());
-			Assert.assertEquals(32, this.render.getViewportWidth());
-			Assert.assertEquals(16, this.render.getViewportHeight());
+			Assert.assertEquals(32, this.render.getState().getViewportWidth());
+			Assert.assertEquals(16, this.render.getState().getViewportHeight());
 		});
 		Assert.assertEquals(1, calls.size());
 		Assert.assertEquals("32x16", calls.get(0));
@@ -55,8 +55,8 @@ public class ExternalRasterTest {
 	public void restoresTheStateSetBeforeTheRaster() {
 		DrawUtils.RASTER.drawRaster(10D, 20D, 32D, 16D, (width, height) -> {});
 		Assert.assertNull(this.render.getState().getFrameBuffer());
-		Assert.assertEquals(1920, this.render.getViewportWidth());
-		Assert.assertEquals(1080, this.render.getViewportHeight());
+		Assert.assertEquals(1920, this.render.getState().getViewportWidth());
+		Assert.assertEquals(1080, this.render.getState().getViewportHeight());
 		Assert.assertNull(this.render.getState().getTexture());
 		Assert.assertSame(BlendState.DISABLED, this.render.getState().getBlend());
 	}

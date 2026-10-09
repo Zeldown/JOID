@@ -46,7 +46,7 @@ public final class HeadlessBridges extends ExternalResource {
 		this.window.setWidth(width);
 		this.window.setHeight(height);
 		this.render.getProjection().ortho(0D, width, height, 0D, 0D, 10000D);
-		this.render.viewport(0, 0, width, height);
+		this.render.getState().viewport(0, 0, width, height);
 		this.ui.load();
 		return this;
 	}

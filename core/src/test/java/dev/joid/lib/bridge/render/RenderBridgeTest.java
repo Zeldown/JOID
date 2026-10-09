@@ -25,9 +25,9 @@ public class RenderBridgeTest {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		Assert.assertEquals(1F, render.getState().getRed(), 0F);
 		Assert.assertEquals(1F, render.getState().getAlpha(), 0F);
-		Assert.assertEquals(1F, render.getLineWidth(), 0F);
-		Assert.assertFalse(render.isLineSmooth());
-		Assert.assertNull(render.getShader());
+		Assert.assertEquals(1F, render.getState().getLineWidth(), 0F);
+		Assert.assertFalse(render.getState().isLineSmooth());
+		Assert.assertNull(render.getState().getShader());
 		Assert.assertSame(BlendState.DISABLED, render.getState().getBlend());
 		Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F}, render.getModelView().getMatrix(), 0F);
 	}
@@ -63,10 +63,10 @@ public class RenderBridgeTest {
 	@Test
 	public void clearsNoColorWhileTheColorIsMasked() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.colorWrite(false);
+		render.getState().colorWrite(false);
 		render.clearColor(1F, 0F, 0F, 1F);
 		Assert.assertEquals(0, render.getColorClears());
-		render.colorWrite(true);
+		render.getState().colorWrite(true);
 		render.clearColor(1F, 0F, 0F, 1F);
 		Assert.assertEquals(1, render.getColorClears());
 	}
@@ -74,10 +74,10 @@ public class RenderBridgeTest {
 	@Test
 	public void clearsTheStencilOfTheScreenOnly() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.frameBuffer(render.createFrameBuffer(4, 4));
+		render.getState().frameBuffer(render.createFrameBuffer(4, 4));
 		render.clearStencil();
 		Assert.assertEquals(0, render.getStencilClears());
-		render.frameBuffer(null);
+		render.getState().frameBuffer(null);
 		render.clearStencil();
 		Assert.assertEquals(1, render.getStencilClears());
 	}
@@ -85,31 +85,43 @@ public class RenderBridgeTest {
 	@Test
 	public void restoresThePushedStateOnPop() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.color(0.2F, 0.4F, 0.6F, 0.8F);
+		render.getState().color(0.2F, 0.4F, 0.6F, 0.8F);
 		render.pushState();
-		render.color(0.5F, 0.5F, 0.5F, 0.5F);
-		render.lineWidth(3F);
+		render.getState().color(0.5F, 0.5F, 0.5F, 0.5F).lineWidth(3F);
 		render.popState();
 		Assert.assertEquals(0.2F, render.getState().getRed(), 0F);
 		Assert.assertEquals(0.4F, render.getState().getGreen(), 0F);
 		Assert.assertEquals(0.6F, render.getState().getBlue(), 0F);
 		Assert.assertEquals(0.8F, render.getState().getAlpha(), 0F);
-		Assert.assertEquals(1F, render.getLineWidth(), 0F);
+		Assert.assertEquals(1F, render.getState().getLineWidth(), 0F);
+	}
+
+	@Test
+	public void restoresThePushedStateIntoTheSameInstance() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final RenderState state = render.getState();
+		render.pushState();
+		state.blend(BlendState.NORMAL).lineWidth(4F);
+		render.popState();
+		Assert.assertSame(state, render.getState());
+		Assert.assertSame(BlendState.DISABLED, state.getBlend());
+		Assert.assertEquals(1F, state.getLineWidth(), 0F);
+		state.lineWidth(2F);
+		Assert.assertEquals(2F, render.getState().getLineWidth(), 0F);
 	}
 
 	@Test
 	public void drawsToTheWholeWindowOnScreen() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		final RecordingRenderBridge expected = new RecordingRenderBridge();
-		render.frameBuffer(render.createFrameBuffer(4, 4));
-		render.viewport(1, 2, 3, 4);
+		render.getState().frameBuffer(render.createFrameBuffer(4, 4)).viewport(1, 2, 3, 4);
 		render.screen(1280, 720);
 		expected.getProjection().ortho(0D, 1280D, 720D, 0D, 0D, 10000D);
 		Assert.assertNull(render.getState().getFrameBuffer());
 		Assert.assertEquals(0, render.getState().getViewportX());
 		Assert.assertEquals(0, render.getState().getViewportY());
-		Assert.assertEquals(1280, render.getViewportWidth());
-		Assert.assertEquals(720, render.getViewportHeight());
+		Assert.assertEquals(1280, render.getState().getViewportWidth());
+		Assert.assertEquals(720, render.getState().getViewportHeight());
 		Assert.assertArrayEquals(expected.getProjection().getMatrix(), render.getProjection().getMatrix(), 0F);
 	}
 
@@ -121,11 +133,7 @@ public class RenderBridgeTest {
 	@Test
 	public void storesItsDepthCullingLightingAndColorWrite() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.depthTest(true);
-		render.depthWrite(false);
-		render.cull(true);
-		render.lighting(true);
-		render.colorWrite(false);
+		render.getState().depthTest(true).depthWrite(false).cull(true).lighting(true).colorWrite(false);
 		final RenderState state = render.getState();
 		Assert.assertTrue(state.isDepthTest());
 		Assert.assertFalse(state.isDepthWrite());
@@ -138,31 +146,29 @@ public class RenderBridgeTest {
 	public void storesItsAlphaCutoff() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		Assert.assertEquals(0F, render.getState().getAlphaCutoff(), 0F);
-		render.alphaCutoff(0.5F);
+		render.getState().alphaCutoff(0.5F);
 		Assert.assertEquals(0.5F, render.getState().getAlphaCutoff(), 0F);
 	}
 
 	@Test
 	public void disablesTheAlphaTestAtZero() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.alphaCutoff(0.5F);
-		render.alphaCutoff(0F);
+		render.getState().alphaCutoff(0.5F).alphaCutoff(0F);
 		Assert.assertEquals(0F, render.getState().getAlphaCutoff(), 0F);
 	}
 
 	@Test
 	public void storesItsLines() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.lineWidth(2.5F);
-		render.lineSmooth(true);
-		Assert.assertEquals(2.5F, render.getLineWidth(), 0F);
-		Assert.assertTrue(render.isLineSmooth());
+		render.getState().lineWidth(2.5F).lineSmooth(true);
+		Assert.assertEquals(2.5F, render.getState().getLineWidth(), 0F);
+		Assert.assertTrue(render.getState().isLineSmooth());
 	}
 
 	@Test
 	public void storesItsBlending() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.blend(BlendState.NORMAL);
+		render.getState().blend(BlendState.NORMAL);
 		Assert.assertSame(BlendState.NORMAL, render.getState().getBlend());
 	}
 
@@ -170,7 +176,7 @@ public class RenderBridgeTest {
 	public void storesItsStencil() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		Assert.assertSame(StencilState.DISABLED, render.getState().getStencil());
-		render.stencil(StencilState.create(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT));
+		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT));
 		final StencilState stencil = render.getState().getStencil();
 		Assert.assertTrue(stencil.isEnabled());
 		Assert.assertSame(StencilFunction.EQUAL, stencil.getFunction());
@@ -185,25 +191,23 @@ public class RenderBridgeTest {
 	@Test
 	public void storesItsViewport() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.viewport(10, 20, 300, 400);
+		render.getState().viewport(10, 20, 300, 400);
 		Assert.assertEquals(10, render.getState().getViewportX());
 		Assert.assertEquals(20, render.getState().getViewportY());
-		Assert.assertEquals(300, render.getViewportWidth());
-		Assert.assertEquals(400, render.getViewportHeight());
+		Assert.assertEquals(300, render.getState().getViewportWidth());
+		Assert.assertEquals(400, render.getState().getViewportHeight());
 	}
 
 	@Test
-	public void bindsATextureUntilItIsReset() {
+	public void bindsATextureUntilItIsUnbound() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		final RecordingTexture texture = new RecordingTexture();
-		render.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		render.getState().texture(texture).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_BORDER);
 		Assert.assertSame(texture, render.getState().getTexture());
 		Assert.assertSame(TextureFilter.LINEAR, render.getState().getTextureFilter());
 		Assert.assertSame(TextureWrap.CLAMP_TO_BORDER, render.getState().getTextureWrap());
-		render.resetTexture();
+		render.getState().texture(null);
 		Assert.assertNull(render.getState().getTexture());
-		Assert.assertSame(TextureFilter.NEAREST, render.getState().getTextureFilter());
-		Assert.assertSame(TextureWrap.REPEAT, render.getState().getTextureWrap());
 	}
 
 	@Test
@@ -211,14 +215,12 @@ public class RenderBridgeTest {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		final RecordingFrameBuffer frameBuffer = new RecordingFrameBuffer(64, 32);
 		final RecordingShader shader = new RecordingShader();
-		render.frameBuffer(frameBuffer);
-		render.shader(shader);
+		render.getState().frameBuffer(frameBuffer).shader(shader);
 		Assert.assertSame(frameBuffer, render.getState().getFrameBuffer());
-		Assert.assertSame(shader, render.getShader());
-		render.frameBuffer(null);
-		render.shader(null);
+		Assert.assertSame(shader, render.getState().getShader());
+		render.getState().frameBuffer(null).shader(null);
 		Assert.assertNull(render.getState().getFrameBuffer());
-		Assert.assertNull(render.getShader());
+		Assert.assertNull(render.getState().getShader());
 	}
 
 	@Test
@@ -251,7 +253,7 @@ public class RenderBridgeTest {
 	public void readsThePixelGridOfItsMatrices() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
-		render.viewport(0, 0, 3840, 2160);
+		render.getState().viewport(0, 0, 3840, 2160);
 		render.getModelView().translate(100D, 0D, 0D);
 		Assert.assertEquals(2D, render.getPixelGrid().getScaleX(), 1E-4D);
 		Assert.assertEquals(200D, render.getPixelGrid().toScreenX(0D), 1E-3D);
@@ -261,7 +263,7 @@ public class RenderBridgeTest {
 	public void leavesTheMatrixStillWithoutMotion() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
-		render.viewport(0, 0, 1366, 768);
+		render.getState().viewport(0, 0, 1366, 768);
 		render.getModelView().translate(10.3D, 0D, 0D);
 		final float[] before = render.getModelView().getMatrix().clone();
 		render.quantize(0D, 0D);
@@ -272,7 +274,7 @@ public class RenderBridgeTest {
 	public void roundsAMotionToWholePixels() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
-		render.viewport(0, 0, 1366, 768);
+		render.getState().viewport(0, 0, 1366, 768);
 		render.getModelView().translate(10.3D, 0D, 0D);
 		final PixelGrid rest = render.getPixelGrid();
 		render.getModelView().translate(0.6D, 2.2D, 0D);
@@ -288,7 +290,7 @@ public class RenderBridgeTest {
 	public void forgetsItsRoundingOnceTheMatrixIsPopped() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
-		render.viewport(0, 0, 1366, 768);
+		render.getState().viewport(0, 0, 1366, 768);
 		final float[] before = render.getModelView().getMatrix().clone();
 		render.getModelView().push();
 		render.quantize(0.6D, 0D);
@@ -299,7 +301,7 @@ public class RenderBridgeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingBlendState() {
-		new RecordingRenderBridge().blend(null);
+		new RecordingRenderBridge().getState().blend(null);
 	}
 
 	@Test
@@ -307,7 +309,7 @@ public class RenderBridgeTest {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		final ITexture texture = new RecordingTexture().allocate(4, 4).mipmap(true);
 		final UniformSampler sampler = UniformSampler.create("mask", 1).value(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
-		render.texture(new RecordingTexture().allocate(2, 2), TextureFilter.NEAREST, TextureWrap.REPEAT);
+		render.getState().texture(new RecordingTexture().allocate(2, 2)).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.REPEAT);
 		final SamplerBinding binding = render.resolveSampler(sampler);
 		Assert.assertSame(texture, binding.getTexture());
 		Assert.assertSame(TextureSampling.of(TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE, true), binding.getSampling());
@@ -317,7 +319,7 @@ public class RenderBridgeTest {
 	public void resolvesAnUnsetSamplerToTheBoundTexture() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		final ITexture texture = new RecordingTexture().allocate(2, 2);
-		render.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		render.getState().texture(texture).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_BORDER);
 		final SamplerBinding binding = render.resolveSampler(UniformSampler.create("mask", 1));
 		Assert.assertSame(texture, binding.getTexture());
 		Assert.assertSame(TextureSampling.of(TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER, false), binding.getSampling());
@@ -326,7 +328,7 @@ public class RenderBridgeTest {
 	@Test
 	public void resolvesTheEmptyTextureWithoutAnAllocatedTexture() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
-		render.texture(new RecordingTexture(), TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		render.getState().texture(new RecordingTexture()).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_BORDER);
 		final SamplerBinding binding = render.resolveSampler(UniformSampler.create("mask", 1).value(new RecordingTexture(), TextureFilter.LINEAR, TextureWrap.REPEAT));
 		Assert.assertSame(render.getEmptyTexture(), binding.getTexture());
 		Assert.assertSame(TextureSampling.of(TextureFilter.NEAREST, TextureWrap.REPEAT, false), binding.getSampling());
@@ -338,7 +340,7 @@ public class RenderBridgeTest {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.setBorderless(true);
 		final ITexture texture = new RecordingTexture().allocate(2, 2);
-		render.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		render.getState().texture(texture).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_BORDER);
 		Assert.assertSame(TextureSampling.of(TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE, false), render.resolveTexture().getSampling());
 		final UniformSampler sampler = UniformSampler.create("mask", 1).value(texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_BORDER);
 		Assert.assertSame(TextureSampling.of(TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE, false), render.resolveSampler(sampler).getSampling());

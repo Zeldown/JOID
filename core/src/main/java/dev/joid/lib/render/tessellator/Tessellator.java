@@ -77,7 +77,7 @@ public final class Tessellator {
 
 		final int count = Tessellator.getOutputCount(this.drawMode, this.vertexCount);
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (count > 0 && this.isLineMode() && (render.isLineSmooth() || render.getLineWidth() != 1F)) {
+		if (count > 0 && this.isLineMode() && (render.getState().isLineSmooth() || render.getState().getLineWidth() != 1F)) {
 			this.drawWideLines(render, count / 2);
 		} else if (count > 0) {
 			Tessellator.ensureCapacity(count);
@@ -289,7 +289,7 @@ public final class Tessellator {
 		Tessellator.byteBuffer.limit(segments * 6 * VertexBuffer.STRIDE);
 
 		final VertexBuffer buffer = VertexBuffer.create(Tessellator.byteBuffer, segments * 6, true, this.hasColor, true);
-		final IShader shader = render.getShader();
+		final IShader shader = render.getState().getShader();
 		if (shader == null) {
 			LineShader.SHADER.bind();
 			try {
@@ -300,11 +300,11 @@ public final class Tessellator {
 			return;
 		}
 
-		render.shader(shader.getLineShader());
+		render.getState().shader(shader.getLineShader());
 		try {
 			render.draw(Primitive.TRIANGLES, buffer);
 		} finally {
-			render.shader(shader);
+			render.getState().shader(shader);
 		}
 	}
 

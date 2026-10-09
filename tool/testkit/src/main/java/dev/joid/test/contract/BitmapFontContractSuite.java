@@ -46,16 +46,9 @@ public abstract class BitmapFontContractSuite {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.getModelView().identity();
 		render.getProjection().ortho(0D, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, 0D, 0D, 10000D);
-		render.viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT);
-		render.frameBuffer(null);
-		render.shader(null);
-		render.resetTexture();
-		render.blend(BlendState.NORMAL);
-		render.depthTest(false);
-		render.depthWrite(false);
-		render.cull(false);
-		render.color(1F, 1F, 1F, 1F);
-		render.alphaCutoff(0F);
+		render.getState().viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT).frameBuffer(null).shader(null);
+		render.getState().texture(null).blend(BlendState.NORMAL).depthTest(false).depthWrite(false).cull(false).color(1F, 1F, 1F, 1F);
+		render.getState().alphaCutoff(0F);
 	}
 
 	@AfterClass

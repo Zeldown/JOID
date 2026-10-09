@@ -29,10 +29,7 @@ public final class DrawModel {
 			render.getModelView().translate(x, y, 0D);
 			render.getModelView().scale(sizeX, -sizeY, sizeZ);
 
-			render.cull(false);
-			render.lighting(true);
-			render.depthTest(true);
-			render.depthWrite(true);
+			render.getState().cull(false).lighting(true).depthTest(true).depthWrite(true);
 			render.clearDepth();
 
 			model.render();

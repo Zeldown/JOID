@@ -33,7 +33,7 @@ public class GradientShader extends ShaderProgram {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IShader previousShader = render.getShader();
+		final IShader previousShader = render.getState().getShader();
 		GradientShader.INSTANCE.bind();
 		GradientShader.INSTANCE.getShader()
 		.uniform("startPos", startPos.x, startPos.y)
@@ -49,7 +49,7 @@ public class GradientShader extends ShaderProgram {
 			}
 		} finally {
 			GradientShader.INSTANCE.unbind();
-			render.shader(previousShader);
+			render.getState().shader(previousShader);
 		}
 	}
 

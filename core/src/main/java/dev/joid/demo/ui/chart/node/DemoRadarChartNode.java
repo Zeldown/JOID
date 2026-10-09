@@ -47,8 +47,7 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
-		render.lineSmooth(true);
-		render.lineWidth(3F);
+		render.getState().lineSmooth(true).lineWidth(3F);
 		DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, DemoRadarChartNode.INK, points);
 		render.popState();
 

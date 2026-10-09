@@ -162,8 +162,7 @@ When you change the state yourself, save it with `pushState()` and restore it wi
 final IRenderBridge render = BridgeHandler.RENDER.get();
 render.pushState();
 try {
-	render.lineSmooth(true);
-	render.lineWidth(6F);
+	render.getState().lineSmooth(true).lineWidth(6F);
 	DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.decode("#999999"), new Vector2d(100D, 100D), new Vector2d(300D, 100D), new Vector2d(200D, 220D));
 } finally {
 	render.popState();
@@ -206,21 +205,31 @@ Each class is a singleton also reachable through its static `getInstance()` (`Dr
 
 ### Render state of IRenderBridge
 
+`getState()` returns the live `RenderState` (`dev.joid.lib.bridge.render.state`) of the bridge: the next draw reads it as it is. Its setters are named after the property, set one property each and return the state, so the calls chain (`render.getState().blend(BlendState.NORMAL).depthTest(true)`); each has its getter (`getBlend()`, `isDepthTest()`...). `pushState()` and `popState()` save and restore the whole state in that same instance, so a `RenderState` kept in a variable stays the live one.
+
 | Method | Description |
 |---|---|
-| `pushState()`, `popState()` | Save and restore the whole state: color, blending, depth, culling, lighting, color mask, alpha test, lines, stencil, viewport, shader, texture and framebuffer. |
-| `color(float red, float green, float blue, float alpha)` | Current color; vertices without their own color take it. `Color.bind()` sets it from a `Color`, `Color.reset()` sets it back to white (see [Colors and Gradients](../styling/colors.md)). White by default. |
-| `blend(BlendState state)` | `BlendState.NORMAL`, `BlendState.PREMULTIPLIED`, `BlendState.DISABLED` or `BlendState.create(...)`. `DISABLED` by default. |
-| `lineWidth(float width)`, `getLineWidth()` | Width of lines, in window pixels. `1F` by default. A line of another width is antialiased, whatever `lineSmooth`. |
-| `lineSmooth(boolean smooth)`, `isLineSmooth()` | Antialiased lines, for a width of `1F`. |
-| `depthTest(boolean test)`, `depthWrite(boolean write)` | Depth test, depth writes. |
+| `pushState()`, `popState()` (on the bridge) | Save and restore the whole state: color, blending, depth, culling, lighting, color mask, alpha test, lines, stencil, viewport, shader, texture and framebuffer. |
+| `color(float red, float green, float blue, float alpha)`, `getRed()`, `getGreen()`, `getBlue()`, `getAlpha()` | Current color; vertices without their own color take it. `Color.bind()` sets it from a `Color`, `Color.reset()` sets it back to white (see [Colors and Gradients](../styling/colors.md)). White by default. |
+| `blend(BlendState blend)` | `BlendState.NORMAL`, `BlendState.PREMULTIPLIED`, `BlendState.DISABLED` or `BlendState.create(...)`. `DISABLED` by default. |
+| `lineWidth(float lineWidth)` | Width of lines, in window pixels. `1F` by default. A line of another width is antialiased, whatever `lineSmooth`. |
+| `lineSmooth(boolean lineSmooth)` | Antialiased lines, for a width of `1F`. |
+| `depthTest(boolean depthTest)`, `depthWrite(boolean depthWrite)` | Depth test, depth writes. |
 | `cull(boolean cull)` | Back-face culling. |
 | `lighting(boolean lighting)` | Lighting of 3D models (see [3D Models](models.md)). |
-| `colorWrite(boolean write)` | Whether the color is written. |
-| `alphaCutoff(float cutoff)` | Above `0F`, discards the fragments whose alpha is at or below the cutoff; `0F` or less draws every fragment. Every UI calls `alphaCutoff(0F)` before drawing its nodes. |
-| `shader(IShader shader)`, `getShader()` | Current shader, `null` for the default one (see [Custom Shaders](../shaders/custom-shaders.md)). |
-| `texture(ITexture texture, TextureFilter filter, TextureWrap wrap)`, `resetTexture()` | Binds a texture, or unbinds it. |
+| `colorWrite(boolean colorWrite)` | Whether the color is written. |
+| `alphaCutoff(float alphaCutoff)` | Above `0F`, discards the fragments whose alpha is at or below the cutoff; `0F` or less draws every fragment. Every UI sets `alphaCutoff(0F)` before drawing its nodes. |
+| `stencil(StencilState stencil)` | Stencil test, used by the masks of a UI. `StencilState.DISABLED` by default. |
+| `shader(IShader shader)` | Current shader, `null` for the default one (see [Custom Shaders](../shaders/custom-shaders.md)). |
+| `texture(ITexture texture)`, `textureFilter(TextureFilter textureFilter)`, `textureWrap(TextureWrap textureWrap)` | Bound texture, `null` for none, and how it is sampled (`NEAREST` and `REPEAT` by default). |
 | `viewport(int x, int y, int width, int height)`, `getViewportWidth()`, `getViewportHeight()` | Viewport, in window pixels. |
+| `frameBuffer(IFrameBuffer frameBuffer)` | Target of the draws, `null` for the screen. |
+| `copy()`, `load(RenderState state)` | A detached copy of the state, and the copy of every property of another state into this one. |
+
+The bridge itself clears the target and maps the transform:
+
+| Method | Description |
+|---|---|
 | `clearColor(float red, float green, float blue, float alpha)`, `clearDepth()` | Clear the color (while it is written) or the depth of the current target. |
 | `getPixelGrid()` | The `PixelGrid` of the current transform. |
 

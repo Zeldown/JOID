@@ -52,7 +52,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 	}
 
 	public @NonNull CapturingRenderBridge resize(final int width, final int height) {
-		super.viewport(0, 0, width, height);
+		super.getState().viewport(0, 0, width, height);
 		super.getProjection().ortho(0D, width, height, 0D, 0D, 10000D);
 		return this;
 	}
@@ -73,7 +73,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 			vertices[i] = buffer.getBuffer().getInt(i * 4);
 		}
 
-		final IShader bound = super.getShader();
+		final IShader bound = super.getState().getShader();
 		final Map<String, Object> uniforms = bound instanceof RecordingShader ? new HashMap<>(((RecordingShader) bound).getValues()) : Collections.emptyMap();
 		this.captures.add(new Capture(primitive, buffer.isTexture(), buffer.isColor(), buffer.isNormal(), vertices, super.getState().copy(), shader, uniforms));
 	}

@@ -36,7 +36,7 @@ public class FrameBuffer {
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
-		render.frameBuffer(this.handle);
+		render.getState().frameBuffer(this.handle);
 		this.bound = true;
 		return this;
 	}
@@ -69,8 +69,8 @@ public class FrameBuffer {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.blend(BlendState.NORMAL);
-		render.texture(this.handle.getTexture(), this.filter, TextureWrap.CLAMP_TO_BORDER);
+		render.getState().blend(BlendState.NORMAL);
+		render.getState().texture(this.handle.getTexture()).textureFilter(this.filter).textureWrap(TextureWrap.CLAMP_TO_BORDER);
 
 		final Tessellator tess = Tessellator.inst();
 		tess.start(DrawMode.QUADS);
@@ -80,8 +80,7 @@ public class FrameBuffer {
 		tess.addVertexWithUV(x, y, 0D, 0D, 1D);
 		tess.draw();
 
-		render.blend(BlendState.DISABLED);
-		render.resetTexture();
+		render.getState().blend(BlendState.DISABLED).texture(null);
 		return this;
 	}
 

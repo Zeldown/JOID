@@ -85,7 +85,7 @@ public class RenderBridgeContractTest extends RenderBridgeContractSuite {
 
 ## RenderBridgeContractSuite tests
 
-The contract suite creates the backend once, on a 64×64 surface, and resets the render state before each test: identity matrix, `ortho(0, 64, 64, 0, 0, 10000)`, full viewport, no framebuffer, no shader, `resetTexture()`, `BlendState.NORMAL`, no depth, no culling, white color, line width 1, no smoothing, no alpha test.
+The contract suite creates the backend once, on a 64×64 surface, and resets the render state before each test: identity matrix, orthographic projection `(0, 64, 64, 0, 0, 10000)`, and `getState().load(new RenderState())` with a full viewport, `BlendState.NORMAL` and no depth write (no framebuffer, shader, texture, depth test, culling, stencil or alpha test, white color, line width 1, no smoothing).
 
 | Test | Checks |
 |---|---|
@@ -98,7 +98,7 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 | `readsTheLightingOfEachDraw` | `uLighting` follows a `lighting(...)` call made between two draws of a bound shader. |
 | `litsAFaceTheSameAtAnyScale` | A face turned to the light is lit above the ambient light, and gives the same pixel at scale 1 and 100. |
 | `disablesTheAlphaTestAtZero` | A fully transparent fragment is discarded under `alphaCutoff(0.5F)` and written again under `alphaCutoff(0F)`. |
-| `exposesTheLineState` | `getLineWidth()` and `isLineSmooth()` return what was set. |
+| `exposesTheLineState` | `getState().getLineWidth()` and `isLineSmooth()` return what was set. |
 | `drawsAWideLineAsWideAsItsWidth` | A hard line of 6 pixels covers 6 rows of pixels: the core draws it as triangles, the backend needs no wide lines. |
 | `drawsAWideLineWithTheBoundShader` | The same line, drawn while a shader is bound, is as wide and takes the color of that shader. |
 | `uploadsArgbTextures` | A 2×2 ARGB texture shows its first texel at the top-left corner. |
@@ -110,7 +110,7 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 | `clearsTheDepth` | `clearDepth()` between the two quads lets the far one draw. |
 | `testsTheDepthInFrameBuffers` | The depth test works inside a framebuffer. |
 | `followsTheOpenGlProjection` | `ortho(0, 64, 64, 0, ...)` puts the origin at the top-left corner of the capture. |
-| `resetsToAnOpaqueWhiteTexture` | `resetTexture()` binds an opaque white texture. |
+| `resetsToAnOpaqueWhiteTexture` | Without a texture (`getState().texture(null)`), the draw samples an opaque white texture. |
 | `keepsTranslationsExact` | `getPixelGrid()` follows a scale and a fractional translation exactly. |
 | `quantizesAMotionToWholePixels` | `quantize` rounds a motion to whole pixels. |
 | `restoresTheMatrixAfterATransformation` | Applying and resetting a `Transformation` leaves the pixel grid unchanged. |

@@ -133,7 +133,7 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 
 	private void bindTexture(final @NonNull ITexture texture) {
 		this.texture = texture;
-		this.render.texture(texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
+		this.render.getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		this.shader.uniform("texel", 1F / texture.getWidth(), 1F / texture.getHeight());
 	}
 

@@ -37,7 +37,7 @@ public class GradientShaderTest {
 	@Test
 	public void paintsADrawWithTheGradient() {
 		final IShader[] bound = new IShader[1];
-		GradientShader.use(new Vector2f(0F, 0.25F), new Vector2f(1F, 0.75F), new Color(0.2F, 0.4F, 0.6F, 1F), new Color(0.8F, 0.6F, 0.4F, 0.5F), () -> bound[0] = this.bridges.getRender().getShader(), new Vector4f(10F, 20F, 110F, 70F));
+		GradientShader.use(new Vector2f(0F, 0.25F), new Vector2f(1F, 0.75F), new Color(0.2F, 0.4F, 0.6F, 1F), new Color(0.8F, 0.6F, 0.4F, 0.5F), () -> bound[0] = this.bridges.getRender().getState().getShader(), new Vector4f(10F, 20F, 110F, 70F));
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertSame(this.shader, bound[0]);
 		Assert.assertArrayEquals(new float[] {0F, 0.25F}, (float[]) values.get("startPos"), 0F);
@@ -47,7 +47,7 @@ public class GradientShaderTest {
 		Assert.assertArrayEquals(new float[] {10F, 20F, 110F, 70F}, (float[]) values.get("canvas"), 0F);
 		Assert.assertEquals(0, values.get("hasTexture"));
 		Assert.assertFalse(this.shader.isBound());
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class GradientShaderTest {
 		final RecordingShader previous = new RecordingShader();
 		previous.bind();
 		GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.BLUE, null, new Vector4f(0F, 0F, 1F, 1F));
-		Assert.assertSame(previous, this.bridges.getRender().getShader());
+		Assert.assertSame(previous, this.bridges.getRender().getState().getShader());
 	}
 
 	@Test

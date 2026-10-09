@@ -67,16 +67,15 @@ public abstract class Shader implements IShader {
 	@Override
 	public final void bind() {
 		this.previousBlend = this.bridge.getState().getBlend();
-		this.bridge.shader(this);
-		this.bridge.blend(this.blend);
+		this.bridge.getState().shader(this).blend(this.blend);
 		this.bound = true;
 	}
 
 	@Override
 	public final void unbind() {
-		this.bridge.shader(null);
+		this.bridge.getState().shader(null);
 		if (this.previousBlend != null) {
-			this.bridge.blend(this.previousBlend);
+			this.bridge.getState().blend(this.previousBlend);
 			this.previousBlend = null;
 		}
 

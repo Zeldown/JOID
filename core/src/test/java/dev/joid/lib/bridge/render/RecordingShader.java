@@ -25,13 +25,13 @@ public final class RecordingShader implements IShader {
 
 	@Override
 	public void bind() {
-		BridgeHandler.RENDER.get().shader(this);
+		BridgeHandler.RENDER.get().getState().shader(this);
 		this.bound = true;
 	}
 
 	@Override
 	public void unbind() {
-		BridgeHandler.RENDER.get().shader(null);
+		BridgeHandler.RENDER.get().getState().shader(null);
 		this.bound = false;
 	}
 

@@ -25,13 +25,13 @@ public class ShadowShader extends ShaderProgram {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IShader previousShader = render.getShader();
+		final IShader previousShader = render.getState().getShader();
 		ShadowShader.INSTANCE.bind(radius, blur, x1, y1, x2, y2);
 		try {
 			runnable.run();
 		} finally {
 			ShadowShader.INSTANCE.unbind();
-			render.shader(previousShader);
+			render.getState().shader(previousShader);
 		}
 	}
 

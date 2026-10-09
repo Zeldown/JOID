@@ -128,8 +128,8 @@ public class ShaderPipelineTest {
 		Assert.assertNull(this.render.getState().getFrameBuffer());
 		Assert.assertNull(this.render.getState().getShader());
 		Assert.assertNull(this.render.getState().getTexture());
-		Assert.assertEquals(1920, this.render.getViewportWidth());
-		Assert.assertEquals(1080, this.render.getViewportHeight());
+		Assert.assertEquals(1920, this.render.getState().getViewportWidth());
+		Assert.assertEquals(1080, this.render.getState().getViewportHeight());
 		Assert.assertSame(BlendState.DISABLED, this.render.getState().getBlend());
 		Assert.assertEquals(1D, this.render.getPixelGrid().getScaleX(), 1E-6D);
 		ShaderPipelineTest.assertNoPushedState(this.render);

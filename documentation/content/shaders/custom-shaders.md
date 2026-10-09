@@ -77,7 +77,7 @@ public class WaveNode extends Node {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IShader previous = render.getShader();
+		final IShader previous = render.getState().getShader();
 		shader.bind(BridgeHandler.CLOCK.get().currentTimeMillis() % 60000L / 1000F);
 		try {
 			final Tessellator tessellator = Tessellator.inst();
@@ -90,7 +90,7 @@ public class WaveNode extends Node {
 			tessellator.draw();
 		} finally {
 			shader.unbind();
-			render.shader(previous);
+			render.getState().shader(previous);
 		}
 	}
 
@@ -135,7 +135,7 @@ if (!shader.isActive()) {
 
 ## Binding and drawing
 
-`bind()` makes the shader current for the following draw calls and applies its blending mode, remembering the previous one; `unbind()` returns to the default shader of the backend and restores that blending mode. `unbind()` does not restore a custom shader bound before yours: to nest correctly (inside a shader pass, or inside a node drawn with an effect), save `render.getShader()` before `bind()` and restore it with `render.shader(previous)` after `unbind()`, in a `finally` block, as `WaveNode` does. `IRenderBridge.shader(null)` selects the default shader.
+`bind()` makes the shader current for the following draw calls and applies its blending mode, remembering the previous one; `unbind()` returns to the default shader of the backend and restores that blending mode. `unbind()` does not restore a custom shader bound before yours: to nest correctly (inside a shader pass, or inside a node drawn with an effect), save `render.getState().getShader()` before `bind()` and restore it with `render.getState().shader(previous)` after `unbind()`, in a `finally` block, as `WaveNode` does. `render.getState().shader(null)` selects the default shader.
 
 What the draw calls send to the shader:
 
@@ -341,7 +341,7 @@ Enum of the [built-in variables](#built-in-variables): `POSITION`, `TEXTURE_COOR
 
 ## Pitfalls
 
-- Restore the previous shader after `unbind()` (`render.shader(previous)`): `unbind()` alone selects the default shader and breaks an enclosing pass or effect.
+- Restore the previous shader after `unbind()` (`render.getState().shader(previous)`): `unbind()` alone selects the default shader and breaks an enclosing pass or effect.
 - `getShader()` is `null` when the shader failed to load: check `canDraw()` or `isAvailable()` before setting uniforms.
 - A declared uniform that the code does not use takes its value without error: a value that seems to have no effect may be unused in the code.
 - `uniform("u_Radius", 4)` passes an int and throws on a `float` uniform: write `4F`.

@@ -203,7 +203,7 @@ public class MsdfTextRendererTest {
 	public void releasesTheShaderAfterTheText() {
 		MsdfTextRenderer.inst().drawText(100D, 100D, "Ax", MsdfTextRendererTest.sampleInfo());
 		Assert.assertNotNull(this.render.getLast().getState().getShader());
-		Assert.assertNull(this.render.getShader());
+		Assert.assertNull(this.render.getState().getShader());
 	}
 
 	@Test

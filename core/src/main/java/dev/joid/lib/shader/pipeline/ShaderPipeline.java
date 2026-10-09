@@ -83,9 +83,9 @@ public final class ShaderPipeline {
 	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final @NonNull ShaderPassContext context) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final boolean aligned = render.getPixelGrid().isAligned();
-		render.blend(BlendState.PREMULTIPLIED);
-		render.texture(frameBuffer.getHandle().getTexture(), TextureFilter.LINEAR, aligned ? TextureWrap.CLAMP_TO_BORDER : TextureWrap.CLAMP_TO_EDGE);
-		render.color(1F, 1F, 1F, 1F);
+		render.getState().blend(BlendState.PREMULTIPLIED);
+		render.getState().texture(frameBuffer.getHandle().getTexture()).textureFilter(TextureFilter.LINEAR).textureWrap(aligned ? TextureWrap.CLAMP_TO_BORDER : TextureWrap.CLAMP_TO_EDGE);
+		render.getState().color(1F, 1F, 1F, 1F);
 
 		final double growU = aligned ? 0D : 1D / context.getTextureWidth();
 		final double growV = aligned ? 0D : 1D / context.getTextureHeight();
@@ -101,8 +101,7 @@ public final class ShaderPipeline {
 		tess.addVertexWithUV(x, y, 0D, -growU, 1D + growV);
 		tess.draw();
 
-		render.blend(BlendState.DISABLED);
-		render.resetTexture();
+		render.getState().blend(BlendState.DISABLED).texture(null);
 	}
 
 	private static void renderMultiPass(final @NonNull ShaderPassContext context, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
@@ -116,7 +115,7 @@ public final class ShaderPipeline {
 		render.pushState();
 		try {
 			ShaderPipeline.drawInto(fbos[0], context, () -> {
-				render.blend(BlendState.NORMAL);
+				render.getState().blend(BlendState.NORMAL);
 				baseDraw.run();
 			});
 
@@ -142,7 +141,7 @@ public final class ShaderPipeline {
 		render.getModelView().push();
 		try {
 			target.fill(() -> {
-				render.viewport(0, 0, context.getTextureWidth(), context.getTextureHeight());
+				render.getState().viewport(0, 0, context.getTextureWidth(), context.getTextureHeight());
 				render.clearColor(0F, 0F, 0F, 0F);
 				render.getProjection().ortho(context.getRegionX(), context.getRegionX() + context.getRegionWidth(), context.getRegionY() + context.getRegionHeight(), context.getRegionY(), -1000D, 1000D);
 				render.getModelView().identity();

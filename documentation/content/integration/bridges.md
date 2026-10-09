@@ -98,11 +98,9 @@ The render bridge draws: matrix stacks, render state, textures, framebuffers, sh
 | Matrices | `getModelView()`, `getProjection()` (two `MatrixStack`s, see [Transformations](../drawing/transformations.md#matrixstack)), `quantize(motionX, motionY)` |
 | Window | `screen(width, height)`: no framebuffer, a viewport covering the window and an orthographic projection `(0, width, height, 0, 0, 10000)`, before the first frame and after a resize |
 | State stack | `pushState()`, `popState()` |
-| State | `color(r, g, b, a)`, `blend(BlendState)`, `depthTest(boolean)`, `depthWrite(boolean)`, `cull(boolean)`, `lighting(boolean)`, `colorWrite(boolean)`, `alphaCutoff(cutoff)`, `lineWidth(width)`, `lineSmooth(boolean)`, `getLineWidth()`, `isLineSmooth()` |
-| Stencil | `stencil(StencilState)`, `clearStencil()` |
-| Target | `viewport(x, y, width, height)`, `getViewportWidth()`, `getViewportHeight()`, `getPixelGrid()`, `clearColor(r, g, b, a)`, `clearDepth()`, `frameBuffer(IFrameBuffer)` |
+| State | `getState()`: the live `RenderState`, with its fluent setters `color(r, g, b, a)`, `blend(BlendState)`, `depthTest(boolean)`, `depthWrite(boolean)`, `cull(boolean)`, `lighting(boolean)`, `colorWrite(boolean)`, `alphaCutoff(cutoff)`, `lineWidth(width)`, `lineSmooth(boolean)`, `stencil(StencilState)`, `viewport(x, y, width, height)`, `frameBuffer(IFrameBuffer)`, `texture(ITexture)`, `textureFilter(TextureFilter)`, `textureWrap(TextureWrap)`, `shader(IShader)` and their getters (see [Drawing Overview](../drawing/draw-utils.md#render-state-of-irenderbridge)) |
+| Target | `getPixelGrid()`, `clearColor(r, g, b, a)`, `clearDepth()`, `clearStencil()` |
 | Drawings made outside JOID | `suspend(Runnable)`, `raster(IFrameBuffer target, int width, int height, Runnable draw)` |
-| Textures and shaders | `texture(ITexture, TextureFilter, TextureWrap)`, `resetTexture()`, `shader(IShader)`, `getShader()` |
 | Drawing | `draw(Primitive, VertexBuffer)` |
 | Factories | `createTexture()`, `createFrameBuffer(width, height)`, `createShader(ShaderSource vertex, ShaderSource fragment, BlendState)` |
 

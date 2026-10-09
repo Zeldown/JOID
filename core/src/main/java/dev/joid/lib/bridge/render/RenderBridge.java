@@ -3,7 +3,6 @@ package dev.joid.lib.bridge.render;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -13,7 +12,6 @@ import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
-import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureSampling;
@@ -30,8 +28,8 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	private final Deque<RenderState> stateStack;
 
-	@Getter private RenderState state;
-	@Getter private boolean     frameActive;
+	@Getter private final RenderState state;
+	@Getter private boolean           frameActive;
 
 	private IShader  defaultShader;
 	private ITexture emptyTexture;
@@ -75,14 +73,13 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	@Override
 	public final void screen(final int width, final int height) {
-		this.frameBuffer(null);
-		this.viewport(0, 0, width, height);
+		this.state.frameBuffer(null).viewport(0, 0, width, height);
 		this.projection.ortho(0D, width, height, 0D, 0D, 10000D);
 	}
 
 	@Override
 	public final void popState() {
-		this.state = this.stateStack.pop();
+		this.state.load(this.stateStack.pop());
 	}
 
 	@Override
@@ -91,123 +88,8 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public final void color(final float red, final float green, final float blue, final float alpha) {
-		this.state.setRed(red);
-		this.state.setGreen(green);
-		this.state.setBlue(blue);
-		this.state.setAlpha(alpha);
-	}
-
-	@Override
-	public final void blend(final @NonNull BlendState state) {
-		this.state.setBlend(state);
-	}
-
-	@Override
-	public final void depthTest(final boolean test) {
-		this.state.setDepthTest(test);
-	}
-
-	@Override
-	public final void depthWrite(final boolean write) {
-		this.state.setDepthWrite(write);
-	}
-
-	@Override
-	public final void cull(final boolean cull) {
-		this.state.setCull(cull);
-	}
-
-	@Override
-	public final void lighting(final boolean lighting) {
-		this.state.setLighting(lighting);
-	}
-
-	@Override
-	public final void colorWrite(final boolean write) {
-		this.state.setColorWrite(write);
-	}
-
-	@Override
-	public final void alphaCutoff(final float cutoff) {
-		this.state.setAlphaCutoff(cutoff);
-	}
-
-	@Override
-	public final void lineWidth(final float width) {
-		this.state.setLineWidth(width);
-	}
-
-	@Override
-	public final void lineSmooth(final boolean smooth) {
-		this.state.setLineSmooth(smooth);
-	}
-
-	@Override
-	public final IShader getShader() {
-		return this.state.getShader();
-	}
-
-	@Override
-	public final float getLineWidth() {
-		return this.state.getLineWidth();
-	}
-
-	@Override
-	public final int getViewportWidth() {
-		return this.state.getViewportWidth();
-	}
-
-	@Override
-	public final int getViewportHeight() {
-		return this.state.getViewportHeight();
-	}
-
-	@Override
 	public final @NonNull PixelGrid getPixelGrid() {
-		return PixelGrid.of(this.projection.getMatrix(), this.modelView.getMatrix(), this.getViewportWidth(), this.getViewportHeight());
-	}
-
-	@Override
-	public final boolean isLineSmooth() {
-		return this.state.isLineSmooth();
-	}
-
-	@Override
-	public final void stencil(final @NonNull StencilState stencil) {
-		this.state.setStencil(stencil);
-	}
-
-	@Override
-	public final void viewport(final int x, final int y, final int width, final int height) {
-		this.state.setViewportX(x);
-		this.state.setViewportY(y);
-		this.state.setViewportWidth(width);
-		this.state.setViewportHeight(height);
-	}
-
-	@Override
-	public final void frameBuffer(final IFrameBuffer frameBuffer) {
-		this.state.setFrameBuffer(frameBuffer);
-	}
-
-	@Override
-	public final void texture(final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
-		this.state.setTexture(texture);
-		this.state.setTextureFilter(filter);
-		this.state.setTextureWrap(wrap);
-	}
-
-	@Override
-	public final void resetTexture() {
-		this.state.setTexture(null);
-		this.state.setTextureFilter(TextureFilter.NEAREST);
-		this.state.setTextureWrap(TextureWrap.REPEAT);
-	}
-
-	@Override
-	public final void shader(final IShader shader) {
-		this.state.setShader(shader);
+		return PixelGrid.of(this.projection.getMatrix(), this.modelView.getMatrix(), this.state.getViewportWidth(), this.state.getViewportHeight());
 	}
 
 	@Override

@@ -138,7 +138,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(0, shader.getValues().get("u_Aligned"));
 		Assert.assertEquals(9F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
 		Assert.assertEquals(71F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -212,7 +212,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(draw.getBottom() * 1080D / 768D - 8D, inner[3], 1E-3D);
 		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), shader.getValues().get("u_Type"));
 		Assert.assertEquals(1, shader.getValues().get("u_Aligned"));
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(70D, draw.getBottom(), 1E-3D);
 		Assert.assertEquals(3F, (Float) shader.getValues().get("u_Stroke"), 0F);
 		Assert.assertArrayEquals(new float[] {18F, 28F, 102F, 62F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-3F);
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -265,7 +265,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(10F, (Float) values.get("u_Radius"), 0F);
 		Assert.assertEquals(8F, (Float) values.get("u_Blur"), 0F);
 		Assert.assertArrayEquals(new float[] {100F, 100F, 300F, 150F}, (float[]) values.get("u_Box"), 1E-3F);
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -295,7 +295,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(10F, (Float) shader.getValues().get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {50.3F, 60.6F}, (float[]) shader.getValues().get("center"), 0F);
 		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), shader.getValues().get("type"));
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -360,7 +360,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(0, shader.getValues().get("u_Aligned"));
 		Assert.assertEquals(6F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
 		Assert.assertEquals(74F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -456,8 +456,8 @@ public class DrawShapeTest {
 	@Test
 	public void restoresTheBlendingAndTheTextureAfterAShape() {
 		final ITexture texture = this.bridges.getRender().createTexture();
-		this.bridges.getRender().blend(BlendState.PREMULTIPLIED);
-		this.bridges.getRender().texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
+		this.bridges.getRender().getState().blend(BlendState.PREMULTIPLIED);
+		this.bridges.getRender().getState().texture(texture).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), new Vector2d(0D, 0D), new Vector2d(10D, 0D), new Vector2d(10D, 10D));
 		DrawUtils.SHAPE.drawRawRect(0D, 0D, 10D, 10D);
 		Assert.assertSame(BlendState.PREMULTIPLIED, this.bridges.getRender().getState().getBlend());
@@ -479,7 +479,7 @@ public class DrawShapeTest {
 		Assert.assertArrayEquals(new float[] {0.8F, 0.6F, 0.4F, 0.5F}, (float[]) values.get("endColor"), 0F);
 		Assert.assertEquals(0, values.get("hasTexture"));
 		Assert.assertArrayEquals(new float[] {10F, 20F, 110F, 70F}, (float[]) values.get("canvas"), 1E-3F);
-		Assert.assertNull(this.bridges.getRender().getShader());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -491,7 +491,7 @@ public class DrawShapeTest {
 
 	@Test
 	public void drawsARawRectangleWithTheBoundColor() {
-		this.bridges.getRender().color(0.2F, 0.4F, 0.6F, 1F);
+		this.bridges.getRender().getState().color(0.2F, 0.4F, 0.6F, 1F);
 		DrawUtils.SHAPE.drawRawRect(10.3D, 20.6D, 100D, 1D);
 		final Draw draw = this.single(0.2F, 0.4F, 0.6F);
 		Assert.assertEquals(Math.rint(10.3D * 1366D / 1920D), draw.getLeft(), 1E-3D);
@@ -511,39 +511,38 @@ public class DrawShapeTest {
 		Assert.assertEquals(110D * 1366D / 1920D, draw.getRight(), 1E-4D);
 		Assert.assertEquals(80D * 768D / 1080D, draw.getBottom(), 1E-4D);
 		Assert.assertEquals(1F, draw.getLineWidth(), 0F);
-		Assert.assertFalse(this.bridges.getRender().isLineSmooth());
+		Assert.assertFalse(this.bridges.getRender().getState().isLineSmooth());
 	}
 
 	@Test
 	public void widensALineForItsDrawOnly() {
 		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, new Vector2d(10D, 20D), new Vector2d(110D, 20D));
 		Assert.assertEquals(4F, this.single(0F, 1F, 0F).getLineWidth(), 0F);
-		Assert.assertEquals(1F, this.bridges.getRender().getLineWidth(), 0F);
-		Assert.assertFalse(this.bridges.getRender().isLineSmooth());
+		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
+		Assert.assertFalse(this.bridges.getRender().getState().isLineSmooth());
 	}
 
 	@Test
 	public void restoresTheLineStateAfterALine() {
-		this.bridges.getRender().lineWidth(3F);
-		this.bridges.getRender().lineSmooth(true);
+		this.bridges.getRender().getState().lineWidth(3F).lineSmooth(true);
 		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), new Vector2d(10D, 20D), new Vector2d(110D, 20D));
 		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, new Vector2d(10D, 20D), new Vector2d(110D, 20D));
 		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 2F, new Vector2d(0D, 50D), new Vector2d(100D, 50D));
 		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, new Vector2d(0D, 0D), new Vector2d(10D, 0D), new Vector2d(5D, 5D));
 		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, new Vector2d(0D, 0D), new Vector2d(0D, 5D), new Vector2d(10D, 0D), new Vector2d(10D, 5D));
-		Assert.assertEquals(3F, this.bridges.getRender().getLineWidth(), 0F);
-		Assert.assertTrue(this.bridges.getRender().isLineSmooth());
+		Assert.assertEquals(3F, this.bridges.getRender().getState().getLineWidth(), 0F);
+		Assert.assertTrue(this.bridges.getRender().getState().isLineSmooth());
 	}
 
 	@Test
 	public void restoresTheLineStateWhenALineFails() {
-		this.bridges.getRender().lineWidth(3F);
+		this.bridges.getRender().getState().lineWidth(3F);
 		try {
 			DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, new Vector2d(10D, 20D), null);
 			Assert.fail();
 		} catch (final NullPointerException exception) {
-			Assert.assertEquals(3F, this.bridges.getRender().getLineWidth(), 0F);
-			Assert.assertFalse(this.bridges.getRender().isLineSmooth());
+			Assert.assertEquals(3F, this.bridges.getRender().getState().getLineWidth(), 0F);
+			Assert.assertFalse(this.bridges.getRender().getState().isLineSmooth());
 		}
 	}
 
@@ -558,8 +557,8 @@ public class DrawShapeTest {
 			Assert.assertEquals(dash * 20D + 10D, draw.getXs()[dash * 6 + 2], 1E-3D);
 		}
 		Assert.assertEquals(2F, draw.getLineWidth(), 0F);
-		Assert.assertEquals(1F, this.bridges.getRender().getLineWidth(), 0F);
-		Assert.assertFalse(this.bridges.getRender().isLineSmooth());
+		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
+		Assert.assertFalse(this.bridges.getRender().getState().isLineSmooth());
 	}
 
 	@Test
@@ -579,7 +578,7 @@ public class DrawShapeTest {
 		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 3F, new Vector2d(5D, 5D), new Vector2d(5D, 5D));
 		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 3F, new Vector2d(5D, 5D));
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
-		Assert.assertEquals(1F, this.bridges.getRender().getLineWidth(), 0F);
+		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
 	}
 
 	@Test
@@ -620,11 +619,11 @@ public class DrawShapeTest {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 3F, new Vector2d(0D, 0D), new Vector2d(10D, 0D), new Vector2d(5D, 5D));
 		Assert.assertEquals(3F, this.bridges.getRender().getDraws().get(0).getLineWidth(), 0F);
-		Assert.assertEquals(1F, this.bridges.getRender().getLineWidth(), 0F);
+		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
 		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, new Vector2d(0D, 0D), new Vector2d(0D, 5D), new Vector2d(10D, 0D), new Vector2d(10D, 5D));
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(5F, draws.get(draws.size() - 1).getLineWidth(), 0F);
-		Assert.assertEquals(1F, this.bridges.getRender().getLineWidth(), 0F);
+		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
 	}
 
 	@Test
@@ -671,7 +670,7 @@ public class DrawShapeTest {
 		final RecordingShader shader = new RecordingShader();
 		shader.bind();
 		DrawUtils.SHAPE.drawRoundedRect(10D, 20D, 100D, 50D, new Color(0F, 1F, 0F, 1F), 8F);
-		Assert.assertSame(shader, this.bridges.getRender().getShader());
+		Assert.assertSame(shader, this.bridges.getRender().getState().getShader());
 	}
 
 	@Test
@@ -679,7 +678,7 @@ public class DrawShapeTest {
 		final RecordingShader shader = new RecordingShader();
 		shader.bind();
 		DrawUtils.SHAPE.drawCircle(50D, 50D, new Color(0F, 1F, 0F, 1F), 10D);
-		Assert.assertSame(shader, this.bridges.getRender().getShader());
+		Assert.assertSame(shader, this.bridges.getRender().getState().getShader());
 	}
 
 	private Draw single(final float red, final float green, final float blue) {
