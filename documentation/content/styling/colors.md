@@ -254,7 +254,7 @@ When you draw geometry yourself, in the `draw` of a [custom node](../nodes/custo
 | Method | Description |
 | --- | --- |
 | `bind()` | Sets the renderer's current color to the r, g, b, a of `update()`. |
-| `bind(Runnable draw, Vector4f canvas)` | Runs `draw` with this color: a plain color is bound then reset to white afterwards, a gradient binds the gradient shader over `canvas` (`minX, minY, maxX, maxY`) and restores the previous shader. |
+| `bind(Runnable draw, Vector4f canvas)` | Runs `draw` with this color: a plain color is bound and the previous color restored afterwards, a gradient binds the gradient shader over `canvas` (`minX, minY, maxX, maxY`) and restores the previous shader. |
 | `bind(Runnable draw, Vector4f canvas, boolean hasTexture)` | Same; with `hasTexture`, a gradient multiplies the bound texture. |
 | `Color.reset()` | Sets the renderer's current color back to opaque white. |
 

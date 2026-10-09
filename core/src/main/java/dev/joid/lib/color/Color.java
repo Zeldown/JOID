@@ -9,8 +9,8 @@ import java.util.function.UnaryOperator;
 import javax.vecmath.Vector4f;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.state.RenderState;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
@@ -246,20 +246,24 @@ public final class Color {
 	}
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas, final boolean hasTexture) {
+		final RenderState state = BridgeHandler.RENDER.get().getState();
 		if (this.isGradient()) {
-			final IRenderBridge render = BridgeHandler.RENDER.get();
-			final IShader previousShader = render.getState().getShader();
+			final IShader previousShader = state.getShader();
 			try {
 				this.gradient.use(hasTexture, runnable, canvas);
 			} finally {
-				render.getState().shader(previousShader);
+				state.shader(previousShader);
 			}
 		} else {
+			final float red = state.getRed();
+			final float green = state.getGreen();
+			final float blue = state.getBlue();
+			final float alpha = state.getAlpha();
 			this.bind();
 			try {
 				runnable.run();
 			} finally {
-				Color.reset();
+				state.color(red, green, blue, alpha);
 			}
 		}
 	}

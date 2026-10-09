@@ -594,11 +594,15 @@ public class ColorTest {
 	}
 
 	@Test
-	public void drawsWithAPlainColorThenResetsIt() {
+	public void drawsWithAPlainColorThenRestoresThePreviousOne() {
 		final float[] seen = new float[1];
-		new Color(0.2F, 0.4F, 0.6F, 0.8F).bind(() -> seen[0] = this.bridges.getRender().getState().getBlue(), new Vector4f(0F, 0F, 10F, 10F));
+		final RenderState state = this.bridges.getRender().getState().color(0.1F, 0.3F, 0.5F, 0.7F);
+		new Color(0.2F, 0.4F, 0.6F, 0.8F).bind(() -> seen[0] = state.getBlue(), new Vector4f(0F, 0F, 10F, 10F));
 		Assert.assertEquals(0.6F, seen[0], 0F);
-		Assert.assertEquals(1F, this.bridges.getRender().getState().getBlue(), 0F);
+		Assert.assertEquals(0.1F, state.getRed(), 0F);
+		Assert.assertEquals(0.3F, state.getGreen(), 0F);
+		Assert.assertEquals(0.5F, state.getBlue(), 0F);
+		Assert.assertEquals(0.7F, state.getAlpha(), 0F);
 	}
 
 	@Test
