@@ -2,6 +2,7 @@ package dev.joid.test.contract;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import javax.vecmath.Vector2d;
@@ -275,6 +276,27 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void samplesATransparentBorderBeyondTheTexture() {
+		final int[] pixels = new int[16];
+		Arrays.fill(pixels, RenderBridgeContractSuite.RED);
+		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(4, 4).upload(pixels, 4, 4);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.blend(BlendState.DISABLED);
+			bridge.texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, -0.5F, 1.5F));
+			bridge.resetTexture();
+		});
+		texture.delete();
+
+		for (int x = 0; x < RenderBridgeContractSuite.SIZE; x++) {
+			final double texel = (-0.5D + 2D * (x + 0.5D) / RenderBridgeContractSuite.SIZE) * 4D;
+			final double coverage = Math.max(0D, Math.min(1D, Math.min(texel, 4D - texel) + 0.5D));
+			final int red = image.getPixels()[x + 32 * image.getWidth()] >> 16 & 255;
+			Assert.assertEquals("Pixel " + x + ",32", 255D * coverage, red, 2D);
+		}
+	}
+
+	@Test
 	public void deletesTexturesTwice() {
 		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.WHITE}, 1, 1);
 		texture.delete();
@@ -540,12 +562,20 @@ public abstract class RenderBridgeContractSuite {
 		Assert.assertEquals("Pixel " + x + "," + y, String.format("#%08X", expected), String.format("#%08X", actual));
 	}
 
+	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final float start, final float end) {
+		return RenderBridgeContractSuite.quad(x, y, width, height, true, 0, false, start, end);
+	}
+
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color) {
 		return RenderBridgeContractSuite.quad(x, y, width, height, texture, color, false);
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color, final boolean normal) {
-		final float[][] corners = {{x, y, 0F, 0F}, {x + width, y, 1F, 0F}, {x + width, y + height, 1F, 1F}, {x, y, 0F, 0F}, {x + width, y + height, 1F, 1F}, {x, y + height, 0F, 1F}};
+		return RenderBridgeContractSuite.quad(x, y, width, height, texture, color, normal, 0F, 1F);
+	}
+
+	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color, final boolean normal, final float start, final float end) {
+		final float[][] corners = {{x, y, start, start}, {x + width, y, end, start}, {x + width, y + height, end, end}, {x, y, start, start}, {x + width, y + height, end, end}, {x, y + height, start, end}};
 		final ByteBuffer buffer = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
 		for (int i = 0; i < corners.length; i++) {
 			final int offset = i * VertexBuffer.STRIDE;

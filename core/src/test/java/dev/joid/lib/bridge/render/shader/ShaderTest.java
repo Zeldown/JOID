@@ -14,6 +14,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.shader.source.UniformLayout;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
+import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
@@ -125,6 +126,25 @@ public class ShaderTest {
 	}
 
 	@Test
+	public void writesTheBorderOfEachEmulatedSampler() {
+		final TestShader shader = new TestShader(new RecordingRenderBridge(), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		final ITexture noise = new RecordingTexture().allocate(8, 4);
+		shader.sampler("u_Noise", noise, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
+		final RenderState state = new RenderState();
+		shader.builtins(state, new float[16], new MatrixStack());
+		ShaderTest.assertBorder(shader, "u_Noise", 2F, 8F, 4F);
+		ShaderTest.assertBorder(shader, "tex", 0F, 1F, 1F);
+		state.setTexture(new RecordingTexture().allocate(16, 2));
+		state.setTextureFilter(TextureFilter.NEAREST);
+		state.setTextureWrap(TextureWrap.CLAMP_TO_BORDER);
+		shader.builtins(state, new float[16], new MatrixStack());
+		ShaderTest.assertBorder(shader, "tex", 1F, 16F, 2F);
+		state.setTextureWrap(TextureWrap.CLAMP_TO_EDGE);
+		shader.builtins(state, new float[16], new MatrixStack());
+		ShaderTest.assertBorder(shader, "tex", 0F, 1F, 1F);
+	}
+
+	@Test
 	public void createsItsLineShaderOnce() {
 		final TestShader shader = ShaderTest.create(new LineRenderBridge());
 		final IShader line = shader.getLineShader();
@@ -164,6 +184,13 @@ public class ShaderTest {
 		Assert.assertNull(shader.getBlock().getMember(GlslShaderTranslator.LINE_WIDTH));
 	}
 
+	private static void assertBorder(final TestShader shader, final String sampler, final float mode, final float width, final float height) {
+		final UniformMember member = shader.getBlock().getMember(GlslShaderTranslator.BORDER + sampler);
+		Assert.assertEquals(mode, member.getValues().getFloat(0), 0F);
+		Assert.assertEquals(width, member.getValues().getFloat(4), 0F);
+		Assert.assertEquals(height, member.getValues().getFloat(8), 0F);
+	}
+
 	private static TestShader create() {
 		return ShaderTest.create(new RecordingRenderBridge());
 	}
@@ -180,6 +207,10 @@ public class ShaderTest {
 
 		private TestShader(final RenderBridge render, final BlendState blend, final ShaderSource vertex, final ShaderSource fragment) {
 			super(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), vertex, fragment, blend);
+		}
+
+		private TestShader(final RenderBridge render, final GlslShaderTranslator translator, final ShaderSource vertex, final ShaderSource fragment) {
+			super(render, translator, vertex, fragment, BlendState.NORMAL);
 		}
 
 		@Override

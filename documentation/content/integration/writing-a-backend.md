@@ -224,6 +224,16 @@ An API that bakes the state into pipeline objects (Vulkan, Blaze3D, WebGPU, Meta
 
 An API without stencil buffer can emulate it with shaders. A `GlslShaderTranslator` (see [GLSL dialects](#glsl-dialects)) with `stencil(StencilEmulation.Pass.TEST)` or `stencil(StencilEmulation.Pass.WRITE)` reads the stencil from an 8-bit texture `joid_Stencil` and adds six `int` uniforms (`joid_StencilTest`, `joid_StencilFunction`, `joid_StencilReference`, `joid_StencilMask`, `joid_StencilFail`, `joid_StencilPass`): the `TEST` pass discards the fragments that fail the test, the `WRITE` pass writes the new stencil value in place of the color. It needs GLSL 1.30 or ESSL 3.00 (`texelFetch`, `switch`, bitwise operators); `NONE`, the default, emulates nothing. At each draw, `StencilEmulation.create(RenderState state, boolean screen)` (`dev.joid.lib.bridge.render.state`) tells whether the stencil is tested (`isTest()`, only on the screen, as framebuffers have no stencil) and written (`isWrite()`, when the fail or pass operation changes it), and `write(UniformBlock)` sets the six uniforms; `PipelineKey.stencil(shader, state, primitive)` is the key of the pass that writes the stencil (no blend, no depth, color writes on). The JOID-MC backend draws its masks this way on Blaze3D.
 
+### Border emulation
+
+`TextureWrap.CLAMP_TO_BORDER` samples transparent black outside the texture: the effects (blur, shadows) and the framebuffers rely on it. An API without border clamping (Blaze3D, OpenGL ES 2, WebGL) emulates it: its translator gets `clampToBorder(true)` and its sampler maps `CLAMP_TO_BORDER` to `CLAMP_TO_EDGE`. The translator then routes every `texture(sampler, uv)` of the shader through `joid_borderTexture`, driven by one `vec3` uniform per sampler, `joid_Border_<sampler>` (`GlslShaderTranslator.BORDER` + name): `x` is `0` when the sampler does not clamp to the border, `1` in `NEAREST` (transparent outside `[0, 1]`) and `2` in `LINEAR` (the edge texels fade out over half a texel, as the hardware blends them with the border), `y` and `z` the size of the texture. `Shader.builtins(...)` writes these uniforms at each draw from the texture, the filter and the wrap of each sampler, or from the bound texture for a sampler without its own, so the backend has nothing more to do. Without `clampToBorder(true)` the translation is unchanged.
+
+```java
+final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true);
+```
+
+The result matches native border clamping to within the rounding of the filtering (`RenderBridgeContractSuite.samplesATransparentBorderBeyondTheTexture` checks a stretched texture against the expected fade).
+
 ## Shaders
 
 Shaders are written once, in JOID GLSL (see [Custom Shaders](../shaders/custom-shaders.md)). The core parses each stage into a `ShaderSource` (`dev.joid.lib.bridge.render.shader.source`) and passes both stages to `createShader`. The backend generates the declarations of its shading language in front of the body.

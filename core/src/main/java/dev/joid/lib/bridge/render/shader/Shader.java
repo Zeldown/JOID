@@ -117,6 +117,13 @@ public abstract class Shader implements IShader {
 	}
 
 	public final @NonNull UniformBlock builtins(final @NonNull RenderState state, final @NonNull float[] projection, final @NonNull MatrixStack modelView) {
+		for (final UniformSampler sampler : this.samplerMap.values()) {
+			final String name = GlslShaderTranslator.BORDER + sampler.getName();
+			if (this.block.getMember(name) != null) {
+				this.block.value(name, Shader.getBorder(sampler, state));
+			}
+		}
+
 		return this.block
 		.value(ShaderBuiltin.PROJECTION_MATRIX.getIdentifier(), projection)
 		.value(ShaderBuiltin.MODEL_VIEW_MATRIX.getIdentifier(), modelView.getMatrix())
@@ -134,6 +141,16 @@ public abstract class Shader implements IShader {
 			throw new IllegalArgumentException("The shader declares no uniform " + name);
 		}
 		return member;
+	}
+
+	private static float[] getBorder(final UniformSampler sampler, final RenderState state) {
+		final boolean own = sampler.getTexture() != null && sampler.getTexture().isAllocated();
+		final ITexture texture = own ? sampler.getTexture() : state.getTexture();
+		final TextureWrap wrap = own ? sampler.getWrap() : state.getTextureWrap();
+		if (texture == null || !texture.isAllocated() || wrap != TextureWrap.CLAMP_TO_BORDER) {
+			return new float[] {0F, 1F, 1F};
+		}
+		return new float[] {(own ? sampler.getFilter() : state.getTextureFilter()) == TextureFilter.LINEAR ? 2F : 1F, texture.getWidth(), texture.getHeight()};
 	}
 
 }

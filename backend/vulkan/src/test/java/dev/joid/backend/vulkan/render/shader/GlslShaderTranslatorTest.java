@@ -66,6 +66,17 @@ public class GlslShaderTranslatorTest {
 	}
 
 	@Test
+	public void compilesCoreShadersWithTheBorderEmulation() {
+		for (final CoreShader shader : CoreShader.values()) {
+			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
+			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true).translateVertex(vertex, fragment), ShaderStage.VERTEX).remaining() > 0);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true).stencil(StencilEmulation.Pass.TEST).translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
+			Assert.assertTrue(shader.name(), GlslCompiler.compileVulkan(GlslShaderTranslator.create().clampToBorder(true).translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
+		}
+	}
+
+	@Test
 	public void layoutsTheBlockOfEveryCoreShaderLikeTheCompiler() {
 		for (final CoreShader shader : CoreShader.values()) {
 			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);

@@ -159,6 +159,46 @@ public class GlslShaderTranslatorTest {
 	}
 
 	@Test
+	public void keepsTheTranslationWithoutTheBorderEmulation() {
+		final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
+		Assert.assertEquals(translator.translateFragment(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(false).translateFragment(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()));
+		Assert.assertFalse(translator.translateFragment(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()).contains("joid_border"));
+	}
+
+	@Test
+	public void samplesEverySamplerThroughTheBorderEmulation() {
+		final String translated = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true).translateFragment(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment());
+		Assert.assertTrue(translated.contains("fragColor = joid_borderTexture(tex, joid_Border_tex, vTexCoord) * joid_borderTexture(mask, joid_Border_mask, vTexCoord)"));
+		Assert.assertTrue(translated.contains("\tvec3 joid_Border_mask;\n\tvec3 joid_Border_tex;\n"));
+		Assert.assertTrue(translated.contains("vec4 joid_borderTexture(sampler2D joid_sampler, vec3 joid_border, vec2 joid_uv) {"));
+		Assert.assertTrue(translated.contains("vec4 joid_borderTexture(sampler2D joid_sampler, vec3 joid_border, vec2 joid_uv, float joid_bias) {"));
+		Assert.assertEquals(2, GlslShaderTranslatorTest.count(translated, "\\btexture\\("));
+	}
+
+	@Test
+	public void declaresTheBorderOfEachSamplerOnce() {
+		final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_120, UniformLayout.LOOSE).clampToBorder(true);
+		final String vertex = translator.translateVertex(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment());
+		Assert.assertTrue(vertex.contains("uniform vec3 joid_Border_tex;\n"));
+		Assert.assertFalse(vertex.contains("joid_bias"));
+		Assert.assertNotNull(translator.createBlock(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment()).getMember("joid_Border_tex"));
+	}
+
+	@Test
+	public void translatesEveryCoreShaderWithTheBorderEmulationInEveryDialect() {
+		for (final CoreShader shader : CoreShader.values()) {
+			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
+			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
+			for (final GlslDialect dialect : GlslDialect.values()) {
+				final GlslShaderTranslator translator = GlslShaderTranslator.create(dialect, dialect.hasUniformBlocks() ? UniformLayout.BLOCK : UniformLayout.LOOSE).clampToBorder(true);
+				final String translated = translator.translateFragment(vertex, fragment);
+				Assert.assertEquals(shader + " " + dialect, 1, GlslShaderTranslatorTest.count(translated, "\\btexture\\(joid_sampler, joid_uv\\)"));
+				Assert.assertTrue(shader + " " + dialect, translator.translateVertex(vertex, fragment).startsWith(dialect.getDeclaration() + "\n"));
+			}
+		}
+	}
+
+	@Test
 	public void declaresTheStencilUniformsInTheBlock() {
 		final String block = "layout(std140) uniform JoidUniforms {\n\tmat4 uProjectionMatrix;\n\tmat4 uModelViewMatrix;\n\tint joid_AlphaTest;\n\tfloat joid_AlphaThreshold;\n\tint joid_StencilTest;\n\tint joid_StencilFunction;\n\tint joid_StencilReference;\n\tint joid_StencilMask;\n\tint joid_StencilFail;\n\tint joid_StencilPass;\n\tfloat u_Scale;\n\tvec3 u_Tint;\n};\n";
 		Assert.assertTrue(GlslShaderTranslatorTest.translateStencil(StencilEmulation.Pass.TEST).contains(block));

@@ -29,11 +29,14 @@ public class GlslShaderTranslator {
 	public static final String LINE_WIDTH    = "joid_LineWidth";
 	public static final String LINE_VIEWPORT = "joid_LineViewport";
 
+	public static final String BORDER = "joid_Border_";
+
 	private static final String[] LINE_VARYINGS = {"joid_LineAcross", "joid_LineAlong", "joid_LineLength"};
 
 	private final GlslDialect   dialect;
 	private final UniformLayout layout;
 
+	private boolean               clampToBorder;
 	private StencilEmulation.Pass stencil;
 
 	protected GlslShaderTranslator(final @NonNull GlslDialect dialect, final @NonNull UniformLayout layout) {
@@ -48,6 +51,12 @@ public class GlslShaderTranslator {
 
 	public static @NonNull GlslShaderTranslator create(final @NonNull GlslDialect dialect, final @NonNull UniformLayout layout) {
 		return new GlslShaderTranslator(dialect, layout);
+	}
+
+	@SuppressWarnings("unchecked")
+	public final <T extends GlslShaderTranslator> @NonNull T clampToBorder(final boolean clampToBorder) {
+		this.clampToBorder = clampToBorder;
+		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -66,18 +75,19 @@ public class GlslShaderTranslator {
 		}
 
 		this.appendSamplers(builder, vertex, fragment, vertex);
+		builder.append(this.getBorderFunctions(false));
 		final List<String> varyings = GlslShaderTranslator.getVaryings(vertex, fragment);
 		for (final ShaderVariable output : vertex.getOutputs()) {
 			builder.append(this.declareVarying(output, varyings.indexOf(output.getName()), true));
 		}
 
 		if (!vertex.isLine()) {
-			return builder.append(this.dialect.getLineDirective()).append(vertex.getBody()).toString();
+			return builder.append(this.dialect.getLineDirective()).append(this.emulateBorder(vertex.getBody(), vertex, fragment)).toString();
 		}
 
 		this.appendLineVaryings(builder, varyings.size(), true);
 		builder.append("vec3 joid_Position;\nvec2 joid_TexCoord;\nvec3 joid_Normal;\n").append(this.dialect.getLineDirective());
-		final String body = vertex.getBody().replaceAll("\\baPosition\\b", "joid_Position").replaceAll("\\baTexCoord\\b", "joid_TexCoord").replaceAll("\\baNormal\\b", "joid_Normal");
+		final String body = this.emulateBorder(vertex.getBody(), vertex, fragment).replaceAll("\\baPosition\\b", "joid_Position").replaceAll("\\baTexCoord\\b", "joid_TexCoord").replaceAll("\\baNormal\\b", "joid_Normal");
 		return builder.append(body.replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()")).append(GlslShaderTranslator.getLineMain()).toString();
 	}
 
@@ -91,17 +101,18 @@ public class GlslShaderTranslator {
 
 		final StringBuilder builder = this.createHeader(vertex, fragment, fragment).append(this.declareOutput());
 		this.appendSamplers(builder, vertex, fragment, fragment);
+		builder.append(this.getBorderFunctions(true));
 		final List<String> varyings = GlslShaderTranslator.getVaryings(vertex, fragment);
 		for (final ShaderVariable input : fragment.getInputs()) {
 			builder.append(this.declareVarying(input, varyings.indexOf(input.getName()), false));
 		}
 
 		if (!vertex.isLine()) {
-			return builder.append(this.dialect.getLineDirective()).append(fragment.getBody().replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain()).toString();
+			return builder.append(this.dialect.getLineDirective()).append(this.emulateBorder(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain()).toString();
 		}
 
 		this.appendLineVaryings(builder, varyings.size(), false);
-		builder.append(this.dialect.getLineDirective()).append(fragment.getBody().replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
+		builder.append(this.dialect.getLineDirective()).append(this.emulateBorder(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
 		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(min(joid_LineAlong, joid_LineLength - joid_LineAlong) + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain()).toString();
 	}
 
@@ -151,6 +162,11 @@ public class GlslShaderTranslator {
 		if (vertex.isLine()) {
 			internalList.add(ShaderVariable.create("float", GlslShaderTranslator.LINE_WIDTH, "", false));
 			internalList.add(ShaderVariable.create("vec2", GlslShaderTranslator.LINE_VIEWPORT, "", false));
+		}
+		if (this.clampToBorder) {
+			for (final ShaderVariable sampler : this.getSamplers(vertex, fragment)) {
+				internalList.add(ShaderVariable.create("vec3", GlslShaderTranslator.BORDER + sampler.getName(), "", false));
+			}
 		}
 		if (this.stencil != StencilEmulation.Pass.NONE) {
 			for (final String name : new String[] {GlslShaderTranslator.STENCIL_TEST, GlslShaderTranslator.STENCIL_FUNCTION, GlslShaderTranslator.STENCIL_REFERENCE, GlslShaderTranslator.STENCIL_MASK, GlslShaderTranslator.STENCIL_FAIL, GlslShaderTranslator.STENCIL_PASS}) {
@@ -240,6 +256,28 @@ public class GlslShaderTranslator {
 				}
 			}
 		}
+	}
+
+	private String emulateBorder(final String body, final ShaderSource vertex, final ShaderSource fragment) {
+		if (!this.clampToBorder) {
+			return body;
+		}
+
+		String emulated = body;
+		for (final ShaderVariable sampler : this.getSamplers(vertex, fragment)) {
+			emulated = emulated.replaceAll("\\btexture\\s*\\(\\s*" + sampler.getName() + "\\s*,", "joid_borderTexture(" + sampler.getName() + ", " + GlslShaderTranslator.BORDER + sampler.getName() + ",");
+		}
+		return emulated;
+	}
+
+	private String getBorderFunctions(final boolean fragment) {
+		if (!this.clampToBorder) {
+			return "";
+		}
+
+		final String border = "\tif (joid_border.x < 0.5) {\n\t\treturn joid_color;\n\t}\n\tif (joid_border.x < 1.5) {\n\t\treturn any(lessThan(joid_uv, vec2(0.0))) || any(greaterThanEqual(joid_uv, vec2(1.0))) ? vec4(0.0) : joid_color;\n\t}\n\tvec2 joid_coverage = clamp(min(joid_uv, 1.0 - joid_uv) * joid_border.yz + 0.5, 0.0, 1.0);\n\treturn joid_color * joid_coverage.x * joid_coverage.y;\n}\n";
+		final String sample = "\nvec4 joid_borderTexture(sampler2D joid_sampler, vec3 joid_border, vec2 joid_uv) {\n\tvec4 joid_color = texture(joid_sampler, joid_uv);\n" + border;
+		return fragment ? sample + "\nvec4 joid_borderTexture(sampler2D joid_sampler, vec3 joid_border, vec2 joid_uv, float joid_bias) {\n\tvec4 joid_color = texture(joid_sampler, joid_uv, joid_bias);\n" + border : sample;
 	}
 
 	private void appendLineVaryings(final StringBuilder builder, final int location, final boolean output) {
