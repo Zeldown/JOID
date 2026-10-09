@@ -15,6 +15,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
+import lombok.NonNull;
 
 public class StackUIBridgeTest {
 
@@ -123,9 +124,28 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
+	public void keepsTheScreensItCannotReplace() {
+		final BaseBridge bridge = new BaseBridge();
+		final BaseUI base = new BaseUI("base", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		bridge.open(base);
+		bridge.open(menu);
+		bridge.open(settings);
+		Assert.assertEquals(Arrays.asList(base, settings), bridge.getUiList().ordered());
+		Assert.assertFalse(this.trace.contains("close base"));
+		Assert.assertTrue(this.trace.contains("close menu"));
+	}
+
+	@Test
 	public void handlesEveryUi() {
 		Assert.assertTrue(this.bridge.canHandle(new ScreenUI("menu", this.trace)));
 		Assert.assertTrue(this.bridge.canHandle(ScreenUI.class));
+	}
+
+	@Test
+	public void replacesEveryUiByDefault() {
+		Assert.assertTrue(this.bridge.canReplace(new ScreenUI("menu", this.trace)));
 	}
 
 	public static final class ScreenBridge extends StackUIBridge {
@@ -144,6 +164,15 @@ public class StackUIBridgeTest {
 		@Override
 		protected void detachScreen() {
 			this.trace.add("last screen");
+		}
+
+	}
+
+	public static final class BaseBridge extends StackUIBridge {
+
+		@Override
+		public boolean canReplace(final @NonNull UI ui) {
+			return !(ui instanceof BaseUI);
 		}
 
 	}
@@ -177,6 +206,14 @@ public class StackUIBridgeTest {
 	public static final class PopupUI extends ScreenUI {
 
 		public PopupUI(final String name, final List<String> trace) {
+			super(name, trace);
+		}
+
+	}
+
+	public static final class BaseUI extends ScreenUI {
+
+		public BaseUI(final String name, final List<String> trace) {
 			super(name, trace);
 		}
 

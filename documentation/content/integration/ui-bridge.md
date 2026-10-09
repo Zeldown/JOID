@@ -251,6 +251,7 @@ A program that already has a scene, such as a game that draws JOID over its worl
 To replace the current UI instead of stacking, extend `StackUIBridge` (`dev.joid.lib.bridge.ui`) instead of `UIBridge`. It implements `open`, `close`, `add`, `remove` and `canHandle` (`true`):
 
 - `open(ui)` asks each open UI that is not an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) to close (`fireClose()`) before it adds `ui`, unless `ui` is a popup or an overlay. When one of them refuses, `ui` is not opened; when one plays an out transition, `ui` opens when the transition ends.
+- `canReplace(ui)` (`true` by default) tells whether `open` may close an open UI: return `false` for a base screen that stays under the UIs opened over it, such as the inventory of a game under its dialogs.
 - `add(ui)` loads the UI at the window size; `close(ui)` removes it.
 - `closeAll()` releases every UI with `dispose()` and removes it, without asking.
 - `attachScreen()` and `detachScreen()` run when the first UI that is not an overlay is added and when the last one is removed: a host shows and hides its own screen there. A screen that replaces another through `open(ui)` runs neither: the engine screen stays open during the switch.
@@ -266,6 +267,11 @@ public class AppUIBridge extends StackUIBridge {
 	@Override
 	protected void detachScreen() {
 		this.game.hideCursor();
+	}
+
+	@Override
+	public boolean canReplace(final @NonNull UI ui) {
+		return !(ui instanceof InventoryUI);
 	}
 
 }

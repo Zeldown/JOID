@@ -21,7 +21,7 @@ public abstract class StackUIBridge extends UIBridge {
 		this.replacing = super.hasScreen();
 		try {
 			for (final UI current : new ArrayList<>(super.getUiList().ordered())) {
-				if (current.getOverlay().active()) {
+				if (current.getOverlay().active() || !this.canReplace(current)) {
 					continue;
 				}
 
@@ -82,6 +82,10 @@ public abstract class StackUIBridge extends UIBridge {
 
 	@Override
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz) {
+		return true;
+	}
+
+	public boolean canReplace(final @NonNull UI ui) {
 		return true;
 	}
 

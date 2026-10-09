@@ -36,6 +36,21 @@ public class UIBridgeRegistryTest {
 	}
 
 	@Test
+	public void routesAnOpenUiToTheBridgeThatHoldsIt() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final RoutingBridge huds = new RoutingBridge(HudUI.class, 0);
+		final RoutingBridge latest = new RoutingBridge(UI.class, 5);
+		final MenuUI ui = new MenuUI();
+		registry.register(huds);
+		registry.register(latest);
+		huds.add(ui);
+		Assert.assertSame(huds, registry.get(ui));
+		Assert.assertSame(latest, registry.get(new MenuUI()));
+		huds.remove(ui);
+		Assert.assertSame(latest, registry.get(ui));
+	}
+
+	@Test
 	public void routesAUiToNoBridgeWhenNoneHandlesIt() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
 		registry.register(new RoutingBridge(MenuUI.class, 0));

@@ -15,7 +15,8 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 	}
 
 	public IUIBridge get(final @NonNull UI ui) {
-		return super.find(bridge -> bridge.canHandle(ui));
+		final IUIBridge holder = super.find(bridge -> bridge.isOpen(ui));
+		return holder != null ? holder : super.find(bridge -> bridge.canHandle(ui));
 	}
 
 	public IUIBridge get(final @NonNull Class<? extends UI> clazz) {
