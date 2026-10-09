@@ -55,7 +55,7 @@ public abstract class ScrollbarNode extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (this.dragging || !context.isOnPath(this)) {
+		if (this.dragging || !super.isHovered()) {
 			return;
 		}
 

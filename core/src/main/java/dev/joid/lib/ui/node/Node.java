@@ -718,7 +718,7 @@ public abstract class Node implements INode {
 		}
 
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
-		if (!context.isCancelled() && enabled && context.isOnPath(this)) {
+		if (!context.isCancelled() && enabled && this.isHovered()) {
 			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
 			if (notchesY != 0D && this.hasOverflowY()) {
 				if (this.canScrollY(notchesY)) {
@@ -812,7 +812,7 @@ public abstract class Node implements INode {
 
 		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, context));
 		final boolean pressed = context.isCancelled();
-		if (!pressed && enabled && context.isOnPath(this) && this.hasCallback(Node.CALLBACK_CLICK)) {
+		if (!pressed && enabled && this.isHovered() && this.hasCallback(Node.CALLBACK_CLICK)) {
 			this.executeCallback(Node.CALLBACK_CLICK, context, mouseX, mouseY, button);
 			context.cancel();
 		}
@@ -827,7 +827,7 @@ public abstract class Node implements INode {
 			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, clicked ? DispatchContext.create() : context, mouseX, mouseY, button);
 		}
 
-		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && enabled && context.isOnPath(this)) {
+		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && enabled && this.isHovered()) {
 			this.startDragging(mouseX, mouseY);
 			if (this.dragging) {
 				context.cancel();

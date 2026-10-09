@@ -96,7 +96,7 @@ public final class ReorderableFlexNode extends Node {
 		}
 
 		for (final Node child : super.getChildren()) {
-			if (child.isEnabled() && context.isOnPath(child)) {
+			if (child.isHovered()) {
 				if (this.lockedNodes.contains(child)) {
 					return;
 				}

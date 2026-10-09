@@ -285,7 +285,7 @@ public abstract class FieldNode<V> extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || !context.isOnPath(this)) {
+		if (context.isCancelled() || !super.isHovered()) {
 			this.focus(false);
 			this.selectionStart = -1;
 			this.pressCount = 0;
@@ -305,7 +305,7 @@ public abstract class FieldNode<V> extends Node {
 
 	@Override
 	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || notchesY == 0D || !context.isOnPath(this) || !this.canStep()) {
+		if (context.isCancelled() || notchesY == 0D || !super.isHovered() || !this.canStep()) {
 			return;
 		}
 

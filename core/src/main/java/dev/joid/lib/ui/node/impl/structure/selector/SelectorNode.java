@@ -92,13 +92,13 @@ public abstract class SelectorNode<V> extends Node {
 		if (this.active) {
 			Node clicked = null;
 			for (final Node child : this.getChildren()) {
-				if (child.isEnabled() && context.isOnPath(child)) {
+				if (child.isHovered()) {
 					clicked = child;
 					break;
 				}
 			}
 
-			if (context.isCancelled() || clicked == null && !context.isOnPath(this)) {
+			if (context.isCancelled() || clicked == null && !super.isHovered()) {
 				this.active = false;
 				return;
 			}
@@ -114,7 +114,7 @@ public abstract class SelectorNode<V> extends Node {
 			return;
 		}
 
-		if (this.selected.isEnabled() && context.isOnPath(this.selected)) {
+		if (this.selected.isHovered()) {
 			context.cancel(() -> this.active = true);
 		}
 	}

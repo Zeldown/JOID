@@ -239,7 +239,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return true;
 		}
 
-		final DispatchContext context = DispatchContext.create(this.getHoveredPath());
+		final DispatchContext context = DispatchContext.create();
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseScroll(mx, my, notchesX, notchesY, context)));
 
 		this.traced(() -> this.mouseScroll(mx, my, notchesX, notchesY, context));
@@ -254,7 +254,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create(this.getHoveredPath());
+		final DispatchContext context = DispatchContext.create();
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMousePressed(mx, my, button, context)));
 
 		this.traced(() -> this.mousePressed(mx, my, button, context));
@@ -269,7 +269,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create(this.getHoveredPath());
+		final DispatchContext context = DispatchContext.create();
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseReleased(mx, my, button, context)));
 
 		this.traced(() -> this.mouseReleased(mx, my, button, context));
@@ -284,7 +284,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create(this.getHoveredPath());
+		final DispatchContext context = DispatchContext.create();
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseDragged(mx, my, button, deltaTime, context)));
 
 		this.traced(() -> this.mouseDragged(mx, my, button, deltaTime, context));

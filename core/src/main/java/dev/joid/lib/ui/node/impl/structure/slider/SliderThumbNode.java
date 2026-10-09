@@ -31,7 +31,7 @@ public abstract class SliderThumbNode extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || !this.dragging && !context.isOnPath(this)) {
+		if (context.isCancelled() || !this.dragging && !super.isHovered()) {
 			return;
 		}
 

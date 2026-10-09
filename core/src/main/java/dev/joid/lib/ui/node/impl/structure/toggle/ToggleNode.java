@@ -29,7 +29,7 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || !context.isOnPath(this)) {
+		if (context.isCancelled() || !super.isHovered()) {
 			return;
 		}
 

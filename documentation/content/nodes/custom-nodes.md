@@ -105,7 +105,7 @@ public class SwatchNode extends Node {
 
 	@Override
 	public void mousePressed(final double mouseX, final double mouseY, final MouseButton clickType, final DispatchContext context) {
-		if (context.isCancelled() || !clickType.isLeft() || !context.isOnPath(this)) {
+		if (context.isCancelled() || !clickType.isLeft() || !super.isHovered()) {
 			return;
 		}
 
@@ -206,7 +206,7 @@ Positions are units of the 1920×1080 virtual canvas, fitted to the window witho
 See [The Virtual Canvas](../concepts/canvas.md).
 
 - The render matrix is at the parent's origin: draw at `getX()`, `getY()` with `getWidth()`, `getHeight()`. The [drawing API](../drawing/draw-utils.md) is `DrawUtils`.
-- `mouseX` and `mouseY` are canvas coordinates of the UI, already converted from the window: compare them with `getAbsoluteX()`/`getAbsoluteY()`; in an event hook, `context.isOnPath(this)` tells whether the node is the mouse target or one of its parents.
+- `mouseX` and `mouseY` are canvas coordinates of the UI, already converted from the window: compare them with `getAbsoluteX()`/`getAbsoluteY()`; in an event hook, `isHovered()` tells whether the node is the mouse target or one of its parents.
 - `hoverValue(float max)` returns `max` × the hover animation progress: use it to blend colors or sizes on hover (see [Hover and Tooltips](../interactions/hover.md)).
 - `draw` is wrapped by the `onDraw` callbacks and by the node's effects. Override `drawSkeleton` to draw your own placeholder, or with an empty body to draw nothing while the node waits for data.
 
@@ -236,7 +236,7 @@ The UI sends each event to its top-level nodes, from the highest z-index, then t
 
 The other events follow the same order without `onClick` and without step 8. A release ends the node's own drag before step 2; a wheel event applies the node's [wheel scrolling](layout/overflow-and-scroll.md#wheel-scrolling) between steps 3 and 5.
 
-The hooks are called on every visible node of the UI, whatever the pointer position; a disabled node passes the event to its children but its own hooks and callbacks do not run. Check `context.isOnPath(this)`, which tells whether the node is the mouse target, the front-most interactive node under the mouse, or one of its parents (see [Mouse target and bubbling](../interactions/mouse-and-keyboard.md#mouse-target-and-bubbling)). Key events reach every node too: keep your own focus state.
+The hooks are called on every visible node of the UI, whatever the pointer position; a disabled node passes the event to its children but its own hooks and callbacks do not run. Check `isHovered()`, which tells whether the node is the mouse target, the front-most interactive node under the mouse, or one of its parents (see [Mouse target and bubbling](../interactions/mouse-and-keyboard.md#mouse-target-and-bubbling)). Key events reach every node too: keep your own focus state.
 
 ### Consuming events
 

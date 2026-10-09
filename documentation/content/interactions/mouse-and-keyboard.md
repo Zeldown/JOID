@@ -98,7 +98,7 @@ A press on the white child counts: the child has no `onClick`, so the click bubb
 - A disabled node stays the target: it hides the nodes behind it and does not react, and its parents still receive the event.
 - The listeners (`onMousePressed`, `onMouseReleased`, `onMouseDragged`, `onMouseScroll`) and the `mousePressed`, `mouseReleased`, `mouseDragged` and `mouseScroll` hooks of a node are not limited to the target: they hear every event not consumed yet. A release ends a drag, and a press outside a focused text field or an open selector closes it, wherever the mouse is.
 
-The UI finds the target at the mouse once per frame, and again only when the mouse position changes: `UI.getHoveredPath()` is the target followed by its parents, and `UI.getHoveredNode()` its first node; both are empty when the UI is not on top (`UI.isOnTop()`, as reported by its UI bridge). `node.isHovered()` returns the hover state of the last drawn frame: `true` when the node is enabled and on that path (see [Hover and Tooltips](hover.md)). Each mouse event carries the path read at its start in its `DispatchContext`: `context.getTarget()` is the target, or `null` over an empty area, and `context.isOnPath(node)` tells whether a node is the target or one of its parents. That is the test the nodes make in their hooks and callbacks. The path stays the same from the start of the event to its end: when a callback removes the target, moves it or opens a popup over it, the event still bubbles up to the parents it had. Nodes that move, hide, change their `interactive(...)` or their `zindex`, or a UI opened on top, change the hover on the next frame. To find the node under any other point, use `UI.getNodeAt(x, y)` or `getNodeListAt(x, y)`.
+The UI finds the target at the mouse once per frame, and again only when the mouse position changes: `UI.getHoveredPath()` is the target followed by its parents, and `UI.getHoveredNode()` its first node; both are empty when the UI is not on top (`UI.isOnTop()`, as reported by its UI bridge). `node.isHovered()` returns the hover state of the last drawn frame: `true` when the node is enabled and on that path (see [Hover and Tooltips](hover.md)). The mouse events use `isHovered()`: it is the test the nodes make in their hooks and callbacks. Nodes that move, hide, change their `interactive(...)` or their `zindex`, or a UI opened on top, change the hover on the next frame. To find the node under any other point, use `UI.getNodeAt(x, y)` or `getNodeListAt(x, y)`.
 
 ### Letting the mouse through with interactive
 
@@ -412,7 +412,7 @@ Each node records the last events dispatched to its UI, whether or not they happ
 ## Pitfalls
 
 - Keybinds and UI hooks run only when no node consumed the event: a focused text field takes every key.
-- Node hooks receive every event of their UI, wherever the pointer is: test `context.isOnPath(this)` before reacting to a click.
+- Node hooks receive every event of their UI, wherever the pointer is: test `isHovered()` before reacting to a click.
 - Only Left Ctrl, Left Shift and Left Alt drive the dev shortcuts and the dev zoom.
 - A label or an icon drawn over a button as a sibling takes the clicks, the hover, the tooltip and the cursor of the button where it covers it: give it `interactive(false)`, or attach it to the button so that the events bubble up to the button.
 - `Key.W.isDown()` is the key labelled W on every layout: on AZERTY it sits where Z is on QWERTY. Use `isPhysicalDown()` for keys chosen for their place.
