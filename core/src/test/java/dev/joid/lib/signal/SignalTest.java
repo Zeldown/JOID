@@ -13,9 +13,27 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 
 public class SignalTest {
+
+	@Test
+	public void notifiesItsSubscribersOnTheRenderThread() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<String>().subscribe(received::add);
+		BridgeHandler.THREAD.register(thread);
+		try {
+			signal.set("ui");
+			Assert.assertTrue(received.isEmpty());
+			thread.run();
+			Assert.assertEquals(Collections.singletonList("ui"), received);
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
 
 	@Test
 	public void readsItsValueWithGetOrPeekOnly() {

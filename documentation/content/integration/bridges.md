@@ -194,7 +194,7 @@ Unregistering it gives the time back to the `SystemClockBridge`. The [testkit](t
 
 ## IThreadBridge
 
-The thread bridge tells JOID which thread draws, and runs a task on it. `JOID.open` and `JOID.close` (with or without `force`) post their work through it when they are called from another thread, for example from a network thread of the engine, so `init()`, the bridge and the graphics calls always run on the render thread.
+The thread bridge tells JOID which thread draws, and runs a task on it. `JOID.open` and `JOID.close` (with or without `force`) post their work through it when they are called from another thread, for example from a network thread of the engine, so `init()`, the bridge and the graphics calls always run on the render thread. Every callback JOID hands to your code goes through it too, so it runs on the render thread whatever thread did the work: the callback of `Resource.of(input, callback)`, `onError(...)` of a resource, the `CompletableFuture` of `MsdfFontLoader.load(...)` and its stages, and the subscribers of a signal written from another thread. The heavy work (downloads, decoding, font generation) stays on its own threads. `ThreadUtils.runOnRenderThread(Runnable)` (`dev.joid.lib.utils.thread`) does the same for your own tasks: at once on the render thread, through `execute` otherwise.
 
 | Method | Description |
 |---|---|

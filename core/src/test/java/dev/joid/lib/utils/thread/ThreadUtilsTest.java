@@ -6,7 +6,39 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.thread.QueueThreadBridge;
+
 public class ThreadUtilsTest {
+
+	@Test
+	public void runsATaskAtOnceOnTheRenderThread() {
+		final QueueThreadBridge thread = new QueueThreadBridge().renderThread(true);
+		final AtomicBoolean ran = new AtomicBoolean();
+		BridgeHandler.THREAD.register(thread);
+		try {
+			ThreadUtils.runOnRenderThread(() -> ran.set(true));
+			Assert.assertTrue(ran.get());
+			Assert.assertTrue(thread.isIdle());
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
+	public void postsATaskFromAnotherThreadToTheRenderThread() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		final AtomicBoolean ran = new AtomicBoolean();
+		BridgeHandler.THREAD.register(thread);
+		try {
+			ThreadUtils.runOnRenderThread(() -> ran.set(true));
+			Assert.assertFalse(ran.get());
+			thread.run();
+			Assert.assertTrue(ran.get());
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
 
 	@Test
 	public void createsANamedDaemonThread() throws InterruptedException {

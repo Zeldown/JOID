@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -125,7 +125,7 @@ public final class JOID {
 			return;
 		}
 
-		JOID.execute(() -> {
+		ThreadUtils.runOnRenderThread(() -> {
 			if (ui.fireClose()) {
 				bridge.close(ui);
 			}
@@ -143,7 +143,7 @@ public final class JOID {
 			return;
 		}
 
-		JOID.execute(() -> {
+		ThreadUtils.runOnRenderThread(() -> {
 			ui.dispose();
 			bridge.close(ui);
 		});
@@ -151,7 +151,7 @@ public final class JOID {
 
 	public static @NonNull IUIBridge open(final @NonNull UI ui) {
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
-		JOID.execute(() -> bridge.open(ui));
+		ThreadUtils.runOnRenderThread(() -> bridge.open(ui));
 		return bridge;
 	}
 
@@ -161,7 +161,7 @@ public final class JOID {
 		}
 
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
-		JOID.execute(() -> {
+		ThreadUtils.runOnRenderThread(() -> {
 			for (final UI currentUi : new ArrayList<>(bridge.getUiList().ordered())) {
 				currentUi.dispose();
 				bridge.close(currentUi);
@@ -178,15 +178,6 @@ public final class JOID {
 			throw new IllegalStateException("No IUIBridge can open " + ui.getClass().getSimpleName() + ": register one whose canHandle accepts it");
 		}
 		return bridge;
-	}
-
-	private static void execute(final @NonNull Runnable runnable) {
-		final IThreadBridge thread = BridgeHandler.THREAD.get();
-		if (thread.isRenderThread()) {
-			runnable.run();
-		} else {
-			thread.execute(runnable);
-		}
 	}
 
 }

@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import dev.joid.lib.signal.replay.SignalReplay;
+import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -205,10 +206,12 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	protected final void emit(final T value) {
-		if (this.eventSet.isEmpty()) {
-			return;
+		if (!this.eventSet.isEmpty()) {
+			ThreadUtils.runOnRenderThread(() -> this.notifySubscribers(value));
 		}
+	}
 
+	private void notifySubscribers(final T value) {
 		final Set<ISignalSubscriber<T>> outdatedSet = new HashSet<>();
 		final Set<ISignalSubscriber<T>> copiedSet = new HashSet<>(this.eventSet);
 		for (final ISignalSubscriber<T> subscriber : copiedSet) {

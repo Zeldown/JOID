@@ -30,6 +30,8 @@ import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VectorResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import lombok.NonNull;
 
 public class ResourceBuilderTest {
@@ -132,6 +134,21 @@ public class ResourceBuilderTest {
 		final List<Resource> received = new ArrayList<>();
 		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png"), received::add);
 		Assert.assertEquals(Collections.singletonList(resource), received);
+	}
+
+	@Test
+	public void deliversTheCallbackOnTheRenderThread() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		final List<Resource> received = new ArrayList<>();
+		BridgeHandler.THREAD.register(thread);
+		try {
+			final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png"), received::add);
+			Assert.assertTrue(received.isEmpty());
+			thread.run();
+			Assert.assertEquals(Collections.singletonList(resource), received);
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
 	}
 
 	@Test

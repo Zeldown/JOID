@@ -24,14 +24,13 @@ import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.node.Node;
 
-import lombok.NonNull;
+import dev.joid.lib.bridge.thread.QueueThreadBridge;
 
 public class JOIDTest {
 
@@ -349,7 +348,7 @@ public class JOIDTest {
 	@Test
 	public void opensAndClosesAtOnceOnTheRenderThread() {
 		final QueueThreadBridge thread = new QueueThreadBridge();
-		thread.renderThread = true;
+		thread.renderThread(true);
 		final MenuUI menu = new MenuUI();
 		BridgeHandler.THREAD.register(thread);
 		try {
@@ -357,7 +356,7 @@ public class JOIDTest {
 			Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 			JOID.close(menu);
 			Assert.assertFalse(this.bridges.getUi().isOpen(menu));
-			Assert.assertTrue(thread.tasks.isEmpty());
+			Assert.assertTrue(thread.isIdle());
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
 		}
@@ -504,30 +503,6 @@ public class JOIDTest {
 		} catch (final InvocationTargetException e) {
 			throw e.getCause();
 		}
-	}
-
-	public static final class QueueThreadBridge implements IThreadBridge {
-
-		private final List<Runnable> tasks = new ArrayList<>();
-
-		private boolean renderThread;
-
-		@Override
-		public boolean isRenderThread() {
-			return this.renderThread;
-		}
-
-		@Override
-		public void execute(final @NonNull Runnable runnable) {
-			this.tasks.add(runnable);
-		}
-
-		public void run() {
-			final List<Runnable> tasks = new ArrayList<>(this.tasks);
-			this.tasks.clear();
-			tasks.forEach(Runnable::run);
-		}
-
 	}
 
 	public static final class MenuUI extends UI {

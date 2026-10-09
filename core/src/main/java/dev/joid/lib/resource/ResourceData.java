@@ -245,14 +245,15 @@ public final class ResourceData {
 		}
 
 		for (final Consumer<Throwable> listener : this.errorListeners) {
-			listener.accept(error);
+			ThreadUtils.runOnRenderThread(() -> listener.accept(error));
 		}
 	}
 
 	public final synchronized @NonNull ResourceData onError(final @NonNull Consumer<@NonNull Throwable> listener) {
 		this.errorListeners.add(listener);
 		if (this.error != null) {
-			listener.accept(this.error);
+			final Throwable error = this.error;
+			ThreadUtils.runOnRenderThread(() -> listener.accept(error));
 		}
 		return this;
 	}

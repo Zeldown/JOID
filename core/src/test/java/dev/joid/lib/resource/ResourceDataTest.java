@@ -11,7 +11,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import lombok.Getter;
@@ -204,6 +206,23 @@ public class ResourceDataTest {
 		Assert.assertTrue(texture.isDeleted());
 		Assert.assertNull(data.getData());
 		Assert.assertEquals(Arrays.asList("init", "clear"), decoder.calls);
+	}
+
+	@Test
+	public void reportsItsFailureOnTheRenderThread() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		final List<String> errors = new ArrayList<>();
+		final ResourceData data = new ResourceData("image", null).onError(error -> errors.add(error.getMessage()));
+		BridgeHandler.THREAD.register(thread);
+		try {
+			data.fail(new IllegalStateException("missing"));
+			data.onError(error -> errors.add("late " + error.getMessage()));
+			Assert.assertTrue(errors.isEmpty());
+			thread.run();
+			Assert.assertEquals(Arrays.asList("missing", "late missing"), errors);
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
 	}
 
 	@Test

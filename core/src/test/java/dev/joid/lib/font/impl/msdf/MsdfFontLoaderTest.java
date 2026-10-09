@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -28,6 +29,8 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
@@ -84,6 +87,37 @@ public class MsdfFontLoaderTest {
 		Assert.assertEquals(FontWeight.values().length, font.getFamily().getFaces().size());
 		for (final FontWeight weight : FontWeight.values()) {
 			Assert.assertSame(weight, font.getFace(weight, false).getWeight());
+		}
+	}
+
+	@Test(timeout = 30000L)
+	public void completesTheFontOnTheRenderThread() throws InterruptedException {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		BridgeHandler.THREAD.register(thread);
+		try {
+			final CompletableFuture<MsdfFont> future = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"));
+			while (thread.isIdle()) {
+				Thread.sleep(10L);
+			}
+			Assert.assertFalse(future.isDone());
+			thread.run();
+			Assert.assertTrue(future.isDone());
+			Assert.assertNotNull(future.join());
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test(timeout = 30000L)
+	public void joinsAFontFromTheRenderThreadWithoutWaitingForIt() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		BridgeHandler.THREAD.register(thread);
+		try {
+			final CompletableFuture<MsdfFont> future = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"));
+			thread.renderThread(true);
+			Assert.assertNotNull(future.join());
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
 		}
 	}
 

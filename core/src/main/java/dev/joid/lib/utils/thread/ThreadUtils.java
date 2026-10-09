@@ -3,6 +3,8 @@ package dev.joid.lib.utils.thread;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.thread.IThreadBridge;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -19,6 +21,15 @@ public final class ThreadUtils {
 		final Thread thread = new Thread(task, name);
 		thread.setDaemon(true);
 		return thread;
+	}
+
+	public static void runOnRenderThread(final @NonNull Runnable task) {
+		final IThreadBridge thread = BridgeHandler.THREAD.get();
+		if (thread.isRenderThread()) {
+			task.run();
+		} else {
+			thread.execute(task);
+		}
 	}
 
 }

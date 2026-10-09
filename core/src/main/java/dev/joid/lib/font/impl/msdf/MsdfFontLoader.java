@@ -13,6 +13,7 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
 import dev.joid.lib.font.impl.msdf.source.MsdfOpenTypeSource;
+import dev.joid.lib.utils.thread.RenderThreadFuture;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -35,13 +36,13 @@ public final class MsdfFontLoader {
 			futures.add(MsdfFontLoader.read(handle));
 		}
 
-		return CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).thenApply(done -> {
+		return RenderThreadFuture.of(CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).thenApply(done -> {
 			final MsdfFontFace[] loaded = new MsdfFontFace[futures.size()];
 			for (int i = 0; i < loaded.length; i++) {
 				loaded[i] = futures.get(i).join();
 			}
 			return MsdfFont.create(loaded);
-		});
+		}));
 	}
 
 	private static @NonNull CompletableFuture<MsdfFontFace> read(final @NonNull Object handle) {

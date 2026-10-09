@@ -18,6 +18,7 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.resource.resolver.ResourceResolver;
+import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -95,7 +96,8 @@ public final class ResourceBuilder {
 		return this.of(input, null);
 	}
 
-	public @NonNull Resource of(final @NonNull Object input, final Consumer<Resource> callback) {
+	public @NonNull Resource of(final @NonNull Object input, final Consumer<Resource> listener) {
+		final Consumer<Resource> callback = listener == null ? null : resource -> ThreadUtils.runOnRenderThread(() -> listener.accept(resource));
 		if (ResourceResolver.supports(input)) {
 			return ResourceResolver.resolve(this, input, callback);
 		}

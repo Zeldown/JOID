@@ -126,11 +126,11 @@ A resource that wraps an `ITexture` has no decoder: it is loaded at its first dr
 
 | Input | When the callback runs |
 |---|---|
-| Local input (file, stream, local asset, `BufferedImage`, `ITexture`) | At once, on the calling thread, before `of` returns. |
-| Remote input (URL, an asset whose `isRemote()` is `true`), not cached | After the format is detected: on the `ResourceTask/<id>` thread when the resource is asynchronous, on the calling thread when it is blocking. |
-| Remote input already cached | At once, on the calling thread. |
+| Local input (file, stream, local asset, `BufferedImage`, `ITexture`) | At once, before `of` returns, when `of` is called on the render thread. |
+| Remote input (URL, an asset whose `isRemote()` is `true`), not cached | After the format is detected, on the `ResourceTask/<id>` thread when the resource is asynchronous. |
+| Remote input already cached | At once, when `of` is called on the render thread. |
 
-The callback does not mean that the pixels are loaded: check `isLoaded()` before reading the size or the pixels.
+The callback always runs on the render thread: from another thread, it goes through the [thread bridge](../integration/bridges.md#ithreadbridge). It does not mean that the pixels are loaded: check `isLoaded()` before reading the size or the pixels.
 
 ```java
 Resource.of("https://placehold.co/800x400/DDDDDD/999999.png", resource -> System.out.println("Decoder: " + resource.getDecoder().getClass().getSimpleName()));
@@ -147,7 +147,7 @@ ResourceNode.create(340, 100, 200, 120).resource(Resource.of(new File("images/mi
 
 ![A loaded placeholder image next to the magenta and black checkerboard of a missing file](../images/resources-failed.png "In dev mode a failed resource shows a checkerboard; in production it is drawn empty")
 
-`onError((resource, error) -> ...)` is called once when the resource fails, or at once when it has already failed. It runs on the thread of the failure: the `ResourceTask/<id>` thread for a URL, a `ResourceAsync` thread for an asynchronous decoding, the render thread for a blocking one.
+`onError((resource, error) -> ...)` is called once when the resource fails, or at once when it has already failed. It runs on the render thread: a failure on the `ResourceTask/<id>` thread of a URL or on a `ResourceAsync` thread is handed to the render thread through the [thread bridge](../integration/bridges.md#ithreadbridge).
 
 In dev mode, JOID also prints one warning per resource, with the reason and an advice:
 

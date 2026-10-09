@@ -40,7 +40,7 @@ public final class Fonts {
 }
 ```
 
-- `join()` blocks until the family is ready; chain `thenAccept(...)` to go on and receive the font later.
+- `join()` blocks until the family is ready; chain `thenAccept(...)` to go on and receive the font later. The future completes on the render thread through the [thread bridge](../integration/bridges.md#ithreadbridge), so a `thenAccept(...)` can touch the UI; a `join()` called on the render thread waits for the loading itself instead of a frame.
 - Load each family once and share the `MsdfFont` between your UIs.
 - The atlas textures are uploaded on the render thread the first time a face draws, so loading off the render thread is safe.
 
