@@ -97,7 +97,7 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
-	public void keepsTheHostScreenWhileAScreenReplacesAnother() {
+	public void skipsTheScreenCallbacksWhileAScreenReplacesAnother() {
 		this.bridge.open(new ScreenUI("menu", this.trace));
 		this.bridge.open(new PopupUI("popup", this.trace));
 		this.bridge.open(new ScreenUI("settings", this.trace));
@@ -114,7 +114,7 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
-	public void keepsTheHostScreenWhenTheOpenScreenRefusesToClose() {
+	public void skipsTheScreenCallbacksWhenTheOpenScreenRefusesToClose() {
 		final ScreenUI menu = new ScreenUI("menu", this.trace);
 		menu.closeable = false;
 		this.bridge.open(menu);

@@ -10,6 +10,10 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.converter.ITextConverter;
+import dev.joid.lib.font.dto.converter.TextConverter;
+
+import lombok.NonNull;
 
 public class TextElementTest {
 
@@ -166,6 +170,36 @@ public class TextElementTest {
 		Assert.assertSame(TextElementTest.INFO, copy.getInfo());
 		Assert.assertEquals("TEXT", element.getText());
 		Assert.assertNull(element.copyWithModifier(null).getModifier());
+	}
+
+	@Test
+	public void convertsAnObjectAtEachRead() {
+		final AtomicInteger language = new AtomicInteger();
+		final ITextConverter converter = new ITextConverter() {
+
+			@Override
+			public boolean supports(final @NonNull Object text) {
+				return text instanceof StringBuilder;
+			}
+
+			@Override
+			public @NonNull String convert(final @NonNull Object text) {
+				return text + " " + language.get();
+			}
+
+		};
+
+		TextConverter.register(converter);
+		try {
+			final Text text = Text.create(new StringBuilder("play"), TextElementTest.INFO);
+			Assert.assertEquals("play 0", text.getText());
+			language.set(1);
+			Assert.assertEquals("play 1", text.getText());
+			Assert.assertEquals("play 1", text.get(0).copyWithText(new StringBuilder("play")).getRawText());
+		} finally {
+			TextConverter.unregister(converter);
+		}
+		Assert.assertEquals("play", Text.create(new StringBuilder("play"), TextElementTest.INFO).getText());
 	}
 
 	@Test

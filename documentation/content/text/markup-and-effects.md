@@ -79,6 +79,36 @@ public final class TagTextMarkup implements ITextMarkup {
 
 `TextMarkup.register(markup)` adds a markup for every `TextInfo` that follows the registry; the latest registration is tried first, and the first markup that consumes characters at an index wins. `TextMarkup.unregister(markup)` removes it.
 
+## Objects as text with TextConverter
+
+A `Text` accepts any object as its text: `Text.create(object, info)`, `TextElement.create(object, info)` or a `Supplier` of objects. `TextConverter` (`dev.joid.lib.font.dto.converter`) turns the object into a string each time the text is measured or drawn: a `String` stays as is, the latest registered `ITextConverter` that `supports` the object converts it, and any other object gives its `toString()`. The result goes through the markups like any string, so a converter returns markup codes for its colors and styles.
+
+```java
+public final class TranslationTextConverter implements ITextConverter {
+
+	@Override
+	public boolean supports(final @NonNull Object text) {
+		return text instanceof Translation;
+	}
+
+	@Override
+	public @NonNull String convert(final @NonNull Object text) {
+		return Language.current().get(((Translation) text).getKey());
+	}
+
+}
+```
+
+Register it once, then pass the objects directly:
+
+```java
+TextConverter.register(new TranslationTextConverter());
+
+TextNode.create(100, 100).text(Text.create(new Translation("menu.play"), this.info)).attach(this);
+```
+
+The conversion runs on every read, so the text follows a change of language without a signal. The engine JOID runs in registers a converter for its own text objects (the chat components of Minecraft, for example), and an interface passes them as they are. Tooltips convert their lines the same way (see [Hover and Tooltips](../interactions/hover.md)).
+
 ## Choosing the markups of a TextInfo with markups
 
 A `TextInfo` follows the registry until you call `markups(...)` on it. Give it a markup to use only that one, or no argument to draw the raw string:
@@ -244,6 +274,17 @@ TextNode.create(100, 220).text(Text.create("ScrambleTextEffect swaps each glyph"
 | `TextMarkup.unregister(ITextMarkup markup)` | Removes it; an unknown markup is ignored. |
 | `TextMarkup.getRegistered()` | Registered markups, latest first, read-only. |
 | `TextMarkup.parse(List<ITextMarkup> markups, String text, int index, TextStyle style)` | Asks each markup in order and returns the first count above 0, or `0`. |
+
+### ITextConverter and TextConverter
+
+| Method | Description |
+|---|---|
+| `boolean supports(Object text)` | `ITextConverter`: whether it converts this object. |
+| `String convert(Object text)` | `ITextConverter`: the text of the object, with markup codes if needed. |
+| `TextConverter.register(ITextConverter converter)` | Adds a converter, tried first; registering it again moves it first. |
+| `TextConverter.unregister(ITextConverter converter)` | Removes it; an unknown converter is ignored. |
+| `TextConverter.convert(Object text)` | The string itself, the result of the first converter that supports the object, or its `toString()`. |
+| `TextConverter.convertLines(Object content)` | One converted line per element of an `Iterable`, or a single line for any other object. |
 
 ### TextStyle
 

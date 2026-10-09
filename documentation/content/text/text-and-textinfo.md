@@ -35,7 +35,7 @@ The second run follows the signal `name`: when it changes, the run shows the new
 | Object | Role |
 |---|---|
 | `TextInfo` | The style of a run: font, size, weight, italic, color, spacing, line height, shadow, markup, effects. |
-| `TextElement` | One run: a text source and its `TextInfo`, plus an optional modifier. |
+| `TextElement` | One run: a text source and its `TextInfo`, plus an optional modifier. The source is any object, converted to a string on each read by `TextConverter` (see [Objects as text with TextConverter](markup-and-effects.md#objects-as-text-with-textconverter)). |
 | `Text` | The runs of one line, with an alignment, an overflow mark and an optional modifier. |
 | `FontBounds` | The width and height returned by every measure and draw. |
 

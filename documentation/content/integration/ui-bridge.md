@@ -256,7 +256,7 @@ To replace the current UI instead of stacking, extend `StackUIBridge` (`dev.joid
 - `open(ui)` asks each open UI that is not an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) to close (`onClose()`) before it adds `ui`, unless `ui` is a popup or an overlay. When one of them refuses, `ui` is not opened; when one plays an out transition, `ui` opens when the transition ends.
 - `add(ui)` loads the UI at the window size; `close(ui)` removes it.
 - `closeAll()` releases every UI with `properlyClose()` and removes it, without asking.
-- `onFirstScreenOpen()` and `onLastScreenClose()` run when the first UI that is not an overlay is added and when the last one is removed: a host shows and hides its own screen there. A screen that replaces another through `open(ui)` runs neither: the host screen stays open during the switch.
+- `onFirstScreenOpen()` and `onLastScreenClose()` run when the first UI that is not an overlay is added and when the last one is removed: a host shows and hides its own screen there. A screen that replaces another through `open(ui)` runs neither: the engine screen stays open during the switch.
 
 ```java
 public class AppUIBridge extends StackUIBridge {

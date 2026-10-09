@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import dev.joid.internal.JOID;
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.dto.TextInfo;
+import dev.joid.lib.font.dto.converter.TextConverter;
 import dev.joid.lib.utils.signal.Signal;
 import lombok.Getter;
 import lombok.NonNull;
@@ -63,7 +64,7 @@ public class TextElement {
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Object text) {
-		return (T) new TextElement(() -> text.toString(), this.info, this.modifier, this.origin);
+		return (T) new TextElement(() -> text, this.info, this.modifier, this.origin);
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Supplier<?> text) {
@@ -84,7 +85,7 @@ public class TextElement {
 	}
 
 	public final @NonNull String getRawText() {
-		return this.text.get().toString();
+		return TextConverter.convert(this.text.get());
 	}
 
 	private static @NonNull StackTraceElement[] locate() {
