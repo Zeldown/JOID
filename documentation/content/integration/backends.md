@@ -121,6 +121,16 @@ public final class App {
 - The jar does not contain LWJGL: your application declares `lwjgl`, `lwjgl-glfw`, `lwjgl-openal`, `lwjgl-vulkan` and `lwjgl-shaderc` 3.3.4, with the natives of `lwjgl`, `lwjgl-glfw`, `lwjgl-openal` and `lwjgl-shaderc`, plus those of `lwjgl-vulkan` on macOS (MoltenVK).
 - On macOS, start the JVM with `-XstartOnFirstThread`.
 
+### Images of the host on Vulkan
+
+A host that renders with Vulkan lends its images to JOID with `Resource.of(VulkanImage.create(image, view, width, height, levels))` or a `VulkanImageSupplier` (`dev.joid.backend.vulkan.render.texture`), wrapped in a `VulkanBorrowedTexture` by the `VulkanImageResourceResolver` that `Backend.register` registers. JOID samples the image through its view and never writes, transitions or destroys it, so the image must:
+
+- belong to the `VkDevice` of JOID: create it with `getContext().getDevice()` of the render bridge, or with `getContext().createImage(...)` and `createImageView(...)`;
+- be created with `VK_IMAGE_USAGE_SAMPLED_BIT`, in a color format JOID can sample, with `levels` mip levels in its view (more than 1 to sample mipmaps);
+- be in `VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL`, with its writes finished, between `beginFrame()` and `endFrame()` of every frame that draws it.
+
+The bridge caches a descriptor set per view: before destroying a view JOID has drawn, call `releaseHandle(view)` of the render bridge, as its own textures do.
+
 ## LWJGL 2
 
 Install the natives before creating the `Display`, so that they are in place when LWJGL loads them, and register the backend once the `Display` exists: its render bridge reads the OpenGL context. Ask for a stencil buffer:

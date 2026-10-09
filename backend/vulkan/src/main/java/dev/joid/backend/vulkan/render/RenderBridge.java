@@ -33,6 +33,7 @@ import dev.joid.backend.vulkan.render.pipeline.PipelineCache;
 import dev.joid.backend.vulkan.render.shader.GlslShaderTranslator;
 import dev.joid.backend.vulkan.render.shader.Shader;
 import dev.joid.backend.vulkan.render.texture.Texture;
+import dev.joid.backend.vulkan.render.texture.VulkanBorrowedTexture;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.DepthRange;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -400,7 +401,7 @@ public final class RenderBridge extends dev.joid.lib.bridge.render.RenderBridge 
 		int index = 0;
 		for (final UniformSampler sampler : shader.getSamplerMap().values()) {
 			final SamplerBinding binding = super.resolveSampler(sampler);
-			images[index] = ((Texture) binding.getTexture()).getView();
+			images[index] = binding.getTexture() instanceof VulkanBorrowedTexture ? ((VulkanBorrowedTexture) binding.getTexture()).getView() : ((Texture) binding.getTexture()).getView();
 			images[index + 1] = this.samplers[binding.getSampling().getIndex()];
 			index += 2;
 		}
