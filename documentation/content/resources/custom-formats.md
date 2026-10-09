@@ -263,6 +263,7 @@ An `IResourceResolver` (`dev.joid.lib.resource.dto.resolver`) handles inputs tha
 |---|---|---|---|
 | `TextureResourceResolver` | `ITexture` | Wraps the texture, without decoder. | `texture_` and the identity hash of the texture |
 | `BufferedImageResourceResolver` | `BufferedImage` | `RasterResourceDecoder` over the image. | the image's `toString()` |
+| `GlTextureResourceResolver` (`dev.joid.base.opengl.resource`), registered by the OpenGL backends | `Integer`, `IntSupplier`, while the render bridge is a `GlRenderBridge` | A `GlBorrowedTexture` of the host, see [Textures of the host](resources.md#textures-of-the-host). | `gl_texture_` and the id, or `gl_texture_supplier_` and the identity hash of the supplier |
 
 This resolver accepts Swing icons:
 

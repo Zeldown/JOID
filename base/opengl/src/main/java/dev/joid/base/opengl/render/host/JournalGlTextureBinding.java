@@ -64,4 +64,19 @@ public final class JournalGlTextureBinding implements IGlTextureBinding {
 		this.binding.texSubImage2D(target, level, x, y, width, height, format, type, pixels);
 	}
 
+	@Override
+	public boolean isTexture(final int texture) {
+		return this.binding.isTexture(texture);
+	}
+
+	@Override
+	public int getTexParameteri(final int target, final int name) {
+		return this.binding.getTexParameteri(target, name);
+	}
+
+	@Override
+	public int getTexLevelParameteri(final int target, final int level, final int name) {
+		return this.binding.getTexLevelParameteri(target, level, name);
+	}
+
 }

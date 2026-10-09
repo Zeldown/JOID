@@ -157,6 +157,26 @@ Each test creates the backend on a 64×64 surface, renders a reference frame, in
 
 On OpenGL, `GlStateSnapshot.read(binding, capabilities)` (`dev.joid.base.opengl.snapshot`) is the oracle: about 150 values read with `glGet*` through a binding (enabled capabilities, bindings, blend, depth, stencil, pixel store, viewport and scissor box, the textures, samplers and texture parameters of units 0 to 3, the attributes of the bound vertex array, and, in a compatibility profile, the fixed-function state, the client arrays and the material). The LWJGL 3 module implements the traps with LWJGL in `HostStateBackend` and runs the suite in `HostStateContractTest`, on every [OpenGL profile](#opengl-profiles).
 
+## BorrowedTextureContractSuite tests
+
+`BorrowedTextureContractSuite` (`dev.joid.test.contract`) checks the [borrowed textures](writing-a-backend.md#borrowed-textures) of a backend. Extend it with an `IBorrowedTextureBackend`, an `ISnapshotBackend` that also plays the host:
+
+| Method | Contract |
+|---|---|
+| `createHostTexture(int width, int height, int color, boolean mipmapped)` | Creates a texture the way the host would, filled with the ARGB `color`, with every mip level when `mipmapped`, and returns its handle as `Resource.of(...)` takes it (an `Integer` on OpenGL). |
+| `isHostTexture(Object texture)` | Whether that texture still exists. |
+| `borrow(Supplier<Object> texture)` | The borrowed texture of the backend over a supplier of such handles. |
+| `readHostParameters(Object texture)` | The sampling parameters of the texture by name (an empty map when the API has none on the texture, as on Vulkan). |
+
+| Test | Checks |
+|---|---|
+| `drawsABorrowedTexture` | `Resource.of(handle)` draws the host texture, with its size, and does not fail. |
+| `keepsTheHostTextureOnceTheResourceIsReleased` | `delete()` and `clear()` leave the host texture, which still draws. |
+| `refusesToWriteABorrowedTexture` | `allocate` and `upload` throw, `mipmap(true)` changes nothing. |
+| `readsTheMipLevelsOfTheHost` | `isMipmapped()` follows the levels of the host texture. |
+| `givesTheHostItsParametersBackAfterTheFrame` | The parameters of the host texture are the same after a frame that drew it with other ones. |
+| `followsTheHandleOfItsSupplier` | Switching the handle of the supplier draws the other texture, at its size. |
+
 ## SnapshotSuite
 
 `SnapshotSuite` runs the scenarios of the testkit and checks the runner itself:

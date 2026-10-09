@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class GlTexture extends Texture {
+public final class GlTexture extends Texture implements IGlTexture {
 
 	private final int            id;
 	private final GlRenderBridge bridge;
@@ -27,6 +27,7 @@ public final class GlTexture extends Texture {
 		return new GlTexture(bridge, bridge.getBinding().getTextureBinding().genTexture());
 	}
 
+	@Override
 	public void sample(final @NonNull TextureSampling sampling) {
 		if (sampling == this.sampling) {
 			return;

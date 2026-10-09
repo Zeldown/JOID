@@ -23,6 +23,7 @@ public class ResourceResolver {
 	}
 
 	public static void register(final @NonNull IResourceResolver resolver) {
+		ResourceResolver.RESOLVERS.remove(resolver);
 		ResourceResolver.RESOLVERS.add(0, resolver);
 	}
 

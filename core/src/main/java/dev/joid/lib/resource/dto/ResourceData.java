@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.dto.decoder.IResourceDecoder;
 import dev.joid.lib.utils.thread.ThreadUtils;
@@ -160,6 +161,11 @@ public final class ResourceData {
 			}
 		} else if (this.textures != null && this.textures.length > 0) {
 			this.generated = true;
+			if (this.textures[0] instanceof BorrowedTexture && !((BorrowedTexture<?>) this.textures[0]).isValid()) {
+				this.fail(new IllegalArgumentException("The borrowed texture " + ((BorrowedTexture<?>) this.textures[0]).getHandle() + " is not a texture of the host"));
+				return;
+			}
+
 			this.width = this.textures[0].getWidth();
 			this.height = this.textures[0].getHeight();
 
@@ -198,7 +204,7 @@ public final class ResourceData {
 		this.loaded = false;
 		this.data = null;
 		if (JOID.inst().isDevMode()) {
-			System.err.println("[JOID] The resource " + this.uniqueId + " cannot be read and is drawn empty: " + ResourceData.describe(error));
+			System.err.println("[JOID] The resource " + this.uniqueId + " cannot be read and is drawn empty: " + ResourceData.describe(error, !this.isBorrowed()));
 		}
 
 		for (final Consumer<Throwable> listener : this.errorListeners) {
@@ -216,6 +222,14 @@ public final class ResourceData {
 
 	public final boolean isFailed() {
 		return this.error != null;
+	}
+
+	public final int getWidth() {
+		return this.isBorrowed() ? this.textures[0].getWidth() : this.width;
+	}
+
+	public final int getHeight() {
+		return this.isBorrowed() ? this.textures[0].getHeight() : this.height;
 	}
 
 	public final @NonNull ITexture getMissingTexture() {
@@ -260,14 +274,21 @@ public final class ResourceData {
 		return clazz.cast(this.decoder);
 	}
 
-	private static @NonNull String describe(final @NonNull Throwable error) {
+	private boolean isBorrowed() {
+		return this.decoder == null && this.textures != null && this.textures.length > 0 && this.textures[0] instanceof BorrowedTexture;
+	}
+
+	private static @NonNull String describe(final @NonNull Throwable error, final boolean decodable) {
 		Throwable cause = error;
 		while (cause.getCause() != null && cause.getCause() != cause) {
 			cause = cause.getCause();
 		}
 
 		final String reason = cause == error ? String.valueOf(error.getMessage()) : error.getMessage() + " (" + cause + ")";
-		return reason + (cause instanceof IOException ? ", check that the file or the URL exists and can be read" : ", convert it to PNG, JPEG or WebP");
+		if (cause instanceof IOException) {
+			return reason + ", check that the file or the URL exists and can be read";
+		}
+		return decodable ? reason + ", convert it to PNG, JPEG or WebP" : reason;
 	}
 
 	@Override

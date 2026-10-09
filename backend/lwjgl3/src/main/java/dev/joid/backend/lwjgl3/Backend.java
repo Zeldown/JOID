@@ -6,8 +6,10 @@ import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.openal.binding.Lwjgl3AlBinding;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
+import dev.joid.base.opengl.resource.GlTextureResourceResolver;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.resource.dto.resolver.ResourceResolver;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -24,6 +26,7 @@ public final class Backend {
 		BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()));
 		BridgeHandler.RENDER.register(GlRenderBridge.create(binding));
 		BridgeHandler.WINDOW.register(new WindowBridge(window));
+		ResourceResolver.register(GlTextureResourceResolver.inst());
 	}
 
 }

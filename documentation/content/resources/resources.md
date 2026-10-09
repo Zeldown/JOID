@@ -29,6 +29,7 @@ public class UIGallery extends UI {
 | `Asset` | the asset itself | its `getUniqueId()` |
 | `BufferedImage` | decoded from memory | the image's `toString()` |
 | `ITexture` | wrapped as is, without decoding | `texture_` followed by its identity hash |
+| `Integer`, `IntSupplier` (OpenGL backends) | an OpenGL texture of the host, [borrowed](#textures-of-the-host) | `gl_texture_` followed by the id, or `gl_texture_supplier_` followed by the identity hash of the supplier |
 | any other object | a registered [locator](assets.md#writing-an-iassetlocator) or [resolver](custom-formats.md#resolvers-for-in-memory-inputs) | chosen by the locator or the resolver |
 
 The format (PNG, JPEG, WebP, SVG, GIF, APNG, MP4, WebM...) comes from the first bytes of the content, never from the file name: see [Supported Formats](formats.md).
@@ -232,6 +233,26 @@ banner.clear();
 ```
 
 Without `clear()`, the data and its textures live as long as a `Resource` or a cache references them. Data that nothing references is released on its own: once the garbage collector finds it, the next `UIBridge.draw()` deletes its textures and releases its decoder on the render thread. `ResourceData.releaseCollected()` does the same for a host that draws without a UI bridge.
+
+## Textures of the host
+
+An application that embeds JOID in an engine or a game draws the textures the host already has, without copying them: on the OpenGL backends (LWJGL 2, LWJGL 3 and any engine on `joid-base-opengl`), `Resource.of(textureId)` borrows the OpenGL texture of that id.
+
+```java
+final Resource minimap = Resource.of(this.minimapTextureId);
+final Resource frame = Resource.of((IntSupplier) () -> this.camera.getColorTexture());
+
+ResourceNode.create(20, 20, 256, 256).resource(minimap).attach(this);
+ResourceNode.create(300, 20, 480, 270).resource(frame).attach(this);
+```
+
+- JOID reads the texture at each draw and never writes or deletes it: it survives `clear()` and the release of the resource, and `allocate` and `upload` on it throw an `UnsupportedOperationException`. The host keeps it alive while JOID draws it.
+- The size comes from the texture itself at each draw (`glGetTexLevelParameteri`), as do its mipmaps (levels allocated below `GL_TEXTURE_MAX_LEVEL`): a host texture resized or replaced shows at its new size. An `IntSupplier` is asked for the id at each draw, so the resource follows a texture the host swaps, such as the target of a double-buffered camera.
+- An id that is not a texture of the context (`glIsTexture`) fails the resource at its first draw, like a file that cannot be read: drawn empty, with the checkerboard and `[JOID] The resource gl_texture_<id> cannot be read and is drawn empty: The borrowed texture <id> is not a texture of the host` in dev mode.
+- The filter and the wrap of the resource are set on the texture while JOID draws it, and the host gets its own parameters back after the frame, through the [host-state journal](../integration/backends.md#giving-the-host-its-state-back).
+- Read the size of a borrowed resource on the render thread only: it queries OpenGL.
+
+On every backend, `Resource.of(texture)` also takes a borrowed texture built by hand, such as `GlBorrowedTexture.create(bridge, id)` (`dev.joid.base.opengl.render.texture`). A backend that lends its own kind of texture extends `BorrowedTexture` (see [Writing a Backend](../integration/writing-a-backend.md#borrowed-textures)).
 
 ## Binding a resource in your own drawing
 

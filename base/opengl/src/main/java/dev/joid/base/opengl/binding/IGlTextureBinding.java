@@ -13,4 +13,8 @@ public interface IGlTextureBinding {
 	public void texImage2D(final int target, final int level, final int internalFormat, final int width, final int height, final int format, final int type);
 	public void texSubImage2D(final int target, final int level, final int x, final int y, final int width, final int height, final int format, final int type, final @NonNull int[] pixels);
 
+	public boolean isTexture(final int texture);
+	public int getTexParameteri(final int target, final int name);
+	public int getTexLevelParameteri(final int target, final int level, final int name);
+
 }

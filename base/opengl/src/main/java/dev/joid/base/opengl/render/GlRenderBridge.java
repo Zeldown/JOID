@@ -13,6 +13,7 @@ import dev.joid.base.opengl.render.host.IGlHostGuard;
 import dev.joid.base.opengl.render.host.JournalGlHostGuard;
 import dev.joid.base.opengl.render.shader.GlShader;
 import dev.joid.base.opengl.render.texture.GlTexture;
+import dev.joid.base.opengl.render.texture.IGlTexture;
 import dev.joid.base.opengl.render.texture.IGlMipmapBuilder;
 import dev.joid.base.opengl.render.vertex.GlVertexInput;
 import dev.joid.lib.bridge.render.RenderBridge;
@@ -175,7 +176,7 @@ public class GlRenderBridge extends RenderBridge {
 
 	private void bindTexture(final int unit, final SamplerBinding resolved) {
 		final IGlTextureBinding textures = this.binding.getTextureBinding();
-		final GlTexture texture = (GlTexture) resolved.getTexture();
+		final IGlTexture texture = (IGlTexture) resolved.getTexture();
 		textures.activeTexture(GlConstants.TEXTURE0 + unit);
 		textures.bindTexture(GlConstants.TEXTURE_2D, texture.getId());
 		texture.sample(resolved.getSampling());

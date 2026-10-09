@@ -89,7 +89,7 @@ When a test fails, the build prints the link of its interactive `report.html`.
 | Emulated: extend `RenderBridge` | The engine has no fixed pipeline (modern OpenGL, Vulkan, a game engine renderer). | LWJGL 3, Vulkan |
 | On OpenGL: implement the bindings of `joid-base-opengl` | The engine gives access to an OpenGL context, from 2.0 to 4.6, compatibility or core. `GlRenderBridge`, an emulated bridge, does the rendering and adapts to the context; you only forward its OpenGL calls. A host with fixed-function matrices hands them to the bridge with `HostMatrixImport`. | LWJGL 2, LWJGL 3 |
 
-On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.joid.base.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, clears, reading pixels, and the getters of the others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding`, and `IGlFrameBufferBinding` twice, once with the core and ARB functions and once with the `EXT` ones (a context that has only one family never calls the other). Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-base-opengl-module).
+On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.joid.base.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, clears, reading pixels, and the getters of the others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding` (with `glIsTexture`, `glGetTexParameteri` and `glGetTexLevelParameteri` for the [borrowed textures](#borrowed-textures)), and `IGlFrameBufferBinding` twice, once with the core and ARB functions and once with the `EXT` ones (a context that has only one family never calls the other). Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-base-opengl-module).
 
 `RenderBridge` (`dev.joid.lib.bridge.render`) implements every matrix and state method in Java. Your subclass implements seven methods, and applies the current state each time one of them runs:
 
@@ -181,6 +181,18 @@ The core `Texture` (`dev.joid.lib.bridge.render.texture`) implements this contra
 | `onDelete()` | Release the storage. Called once. |
 
 The LWJGL 3 and Vulkan textures extend it.
+
+### Borrowed textures
+
+A texture of the host, lent to JOID, follows another contract: JOID samples it and never writes it. The core `BorrowedTexture<H>` (`dev.joid.lib.bridge.render.texture`) implements `ITexture` around a `Supplier<H>` of host handles, asked again at each call, so the texture follows a handle the host swaps. Its final methods hold the contract: `allocate` and `upload` throw an `UnsupportedOperationException`, `delete()` does nothing (the host owns the texture, which survives the release of its resource), `mipmap(...)` changes nothing, and `getWidth()`, `getHeight()`, `isMipmapped()` and `isValid()` read the current handle (0, `false` without one). A backend writes four hooks:
+
+| Hook | What it must return |
+|---|---|
+| `getWidth(H handle)` / `getHeight(H handle)` | The size of level 0, 0 when the handle is no texture. |
+| `isValid(H handle)` | Whether the handle is a texture JOID can sample. A resource whose borrowed texture is not valid at its first draw fails like an unreadable file. |
+| `isMipmapped(H handle)` | Whether the texture has mip levels to sample with a linear filter. |
+
+The bind path of the render bridge then samples the current handle with the filter and the wrap of the draw; a borrowed texture never goes through `onAllocate` or `onUpload`. To let `Resource.of(...)` take the handles of your host directly, register an `IResourceResolver` that wraps them in your borrowed texture (see [Custom Formats](../resources/custom-formats.md#resolvers-for-in-memory-inputs)). On OpenGL, `joid-base-opengl` does all of it: `GlBorrowedTexture` (`create(bridge, int)`, `create(bridge, IntSupplier)`) reads the size with `glGetTexLevelParameteri`, validates with `glIsTexture`, and `GlTextureResourceResolver.inst()`, registered by `Backend.register` of LWJGL 2 and LWJGL 3, turns an `Integer` or an `IntSupplier` into a resource; register it too when your engine builds its own `GlRenderBridge`. `BorrowedTextureContractSuite` of the testkit checks a backend (see [Testkit](testkit.md#borrowedtexturecontractsuite-tests)).
 
 ### Framebuffers
 

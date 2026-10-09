@@ -77,6 +77,8 @@ public final class GlConstants {
 
 	public static final int TEXTURE0           = 0x84C0;
 	public static final int TEXTURE_2D         = 0x0DE1;
+	public static final int TEXTURE_WIDTH      = 0x1000;
+	public static final int TEXTURE_HEIGHT     = 0x1001;
 	public static final int TEXTURE_WRAP_S     = 0x2802;
 	public static final int TEXTURE_WRAP_T     = 0x2803;
 	public static final int TEXTURE_MAX_LEVEL  = 0x813D;

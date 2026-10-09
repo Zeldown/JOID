@@ -58,4 +58,19 @@ public final class Lwjgl3GlTextureBinding implements IGlTextureBinding {
 		GL11C.glTexSubImage2D(target, level, x, y, width, height, format, type, pixels);
 	}
 
+	@Override
+	public boolean isTexture(final int texture) {
+		return GL11C.glIsTexture(texture);
+	}
+
+	@Override
+	public int getTexParameteri(final int target, final int name) {
+		return GL11C.glGetTexParameteri(target, name);
+	}
+
+	@Override
+	public int getTexLevelParameteri(final int target, final int level, final int name) {
+		return GL11C.glGetTexLevelParameteri(target, level, name);
+	}
+
 }

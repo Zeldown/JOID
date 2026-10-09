@@ -1,5 +1,8 @@
 package dev.joid.backend.lwjgl3.render;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -10,6 +13,8 @@ import dev.joid.backend.lwjgl3.snapshot.SnapshotBackend;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.host.HostMatrixImport;
+import dev.joid.internal.JOID;
+import dev.joid.lib.resource.Resource;
 
 public class GlRenderBridgeTest {
 
@@ -56,6 +61,24 @@ public class GlRenderBridgeTest {
 		} catch (final IllegalStateException e) {
 			Assert.assertTrue(e.getMessage().startsWith("Only a compatibility context has fixed-function matrices to import"));
 		}
+	}
+
+	@Test
+	public void failsABorrowedTextureThatTheHostNeverCreated() {
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		final boolean devMode = JOID.inst().isDevMode();
+		System.setErr(new PrintStream(output, true));
+		JOID.inst().setDevMode(true);
+		try {
+			final Resource resource = Resource.of(2147483000);
+			resource.prepareBind();
+			Assert.assertTrue(resource.isFailed());
+		} finally {
+			JOID.inst().setDevMode(devMode);
+			System.setErr(previous);
+		}
+		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] The resource gl_texture_2147483000 cannot be read and is drawn empty: The borrowed texture 2147483000 is not a texture of the host"));
 	}
 
 }
