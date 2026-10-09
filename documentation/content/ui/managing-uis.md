@@ -15,7 +15,7 @@ if (JOID.isOpen(SettingsUI.class)) {
 
 ![A gray menu card; a popup card opens on top of it with a pop and dims the menu, then Escape closes the popup](../images/ui-open-popup.gif "JOID.open adds a popup on top of the open menu; Escape closes the top closeable UI.")
 
-`JOID.open` finds the bridge that accepts the UI (the registered bridge whose `canHandle(ui)` returns `true`, the highest index first, then the last registered) and calls its `open(ui)`. It returns that bridge, and throws an `IllegalStateException` ("No IUIBridge can open X: register one whose canHandle accepts it") when none accepts the UI. `JOID.close` asks the UI through `ui.onClose()`, then calls the bridge's `close(ui)`. Both work whatever the `closeable` option of the UI. Called from another thread than the render thread of the engine, they run on the render thread a moment later, through the [thread bridge](../integration/bridges.md#ithreadbridge).
+`JOID.open` finds the bridge that accepts the UI (the registered bridge whose `canHandle(ui)` returns `true`, the highest index first, then the last registered) and calls its `open(ui)`. It returns that bridge, and throws an `IllegalStateException` ("No IUIBridge can open X: register one whose canHandle accepts it") when none accepts the UI. `JOID.close` asks the UI through `ui.fireClose()`, then calls the bridge's `close(ui)`. Both work whatever the `closeable` option of the UI. Called from another thread than the render thread of the engine, they run on the render thread a moment later, through the [thread bridge](../integration/bridges.md#ithreadbridge).
 
 ## Refusing to close with close()
 
@@ -32,14 +32,14 @@ public boolean close() {
 }
 ```
 
-The hook runs for `JOID.close(ui)`, Escape and bridges that call `ui.onClose()`. It does not run for the `force` variants. While the Out transition of a UI plays, further close requests are refused.
+The hook runs for `JOID.close(ui)`, Escape and bridges that call `ui.fireClose()`. It does not run for the `force` variants. While the Out transition of a UI plays, further close requests are refused.
 
 ## What open does depends on the bridge
 
 `JOID.open` and `JOID.close` only call the bridge's `open` and `close`; the bridge decides what they mean. `UIBridge` (`dev.joid.lib.bridge.ui`), the base class of UI bridges, leaves `open`, `close`, `add` and `remove` to you:
 
 - A simple bridge adds every opened UI on top of the others and removes the closed ones (the bridge of the [Quick Start](../getting-started/quick-start.md)).
-- `StackUIBridge` (`dev.joid.lib.bridge.ui`), and `DemoUIBridge`, the bridge of the demo window that extends it, close the open UIs (through `onClose()`) before it opens a UI that is neither a popup nor an [overlay](#overlays-with-uidataoverlay). If one of them refuses, the new UI is not opened; if one plays an Out transition, the new UI opens when the transition ends. A popup or an overlay opens without closing anything, and the overlays stay open when another UI opens.
+- `StackUIBridge` (`dev.joid.lib.bridge.ui`), and `DemoUIBridge`, the bridge of the demo window that extends it, close the open UIs (through `fireClose()`) before it opens a UI that is neither a popup nor an [overlay](#overlays-with-uidataoverlay). If one of them refuses, the new UI is not opened; if one plays an Out transition, the new UI opens when the transition ends. A popup or an overlay opens without closing anything, and the overlays stay open when another UI opens.
 
 The bridge loads a UI it adds with `ui.load(width, height)`. See [UI Bridge](../integration/ui-bridge.md).
 
@@ -95,7 +95,7 @@ When Escape is pressed, `UIBridge.keyTyped` goes through the active and visible 
 
 ![Escape goes to the top active and visible UI; a closeable UI gets it as a key, then closes if nothing consumed it, and Escape stops; a UI that is not closeable gets it as a normal key, and Escape goes to the next UI below unless it was consumed or the UI is a popup](../images/diagram-ui-escape.png "The path of Escape: it stops at the first closeable UI, at a UI that consumes it, or at a popup.")
 
-1. A closeable UI that is not an overlay first receives Escape as a key press: its nodes, keybinds, zoom and dev keys and `keyPressed`. If none of them consumes it, the bridge asks the UI to close (`onClose()`) and closes it when it agrees. In both cases Escape goes no further.
+1. A closeable UI that is not an overlay first receives Escape as a key press: its nodes, keybinds, zoom and dev keys and `keyPressed`. If none of them consumes it, the bridge asks the UI to close (`fireClose()`) and closes it when it agrees. In both cases Escape goes no further.
 2. A UI that is not closeable, or an overlay, receives Escape as a normal key. If it consumes it, or if the UI is a popup, Escape stops; otherwise the next UI below gets the same treatment.
 
 So a focused text field cancels its edit on the first Escape and the UI closes on the second one, a keybind on `Key.ESCAPE` keeps a closeable UI open, and a popup always stops Escape from reaching the UIs below. A UI that refuses to close (its `close()` returns `false`, or its Out transition plays) still consumes Escape.
@@ -193,7 +193,7 @@ In the demo window, the `UIDemoOverlay` button of the demo menu shows and hides 
 | --- | --- |
 | `static IUIBridge open(UI ui)` | Calls `open(ui)` on the bridge that accepts `ui` and returns it. Throws an `IllegalStateException` when no bridge accepts the UI. |
 | `static IUIBridge open(UI ui, boolean force)` | With `force` `false`, same as `open(ui)`. With `true`, first closes every UI of that bridge without asking them (no `close()`, no Out transition: each one is released with `dispose()` and passed to the bridge's `close`), then opens `ui`. |
-| `static void close(UI ui)` | Asks the UI through `onClose()`: its `close()` can refuse, and an Out transition delays the removal until it ends. Then calls the bridge's `close(ui)`. Does nothing when no bridge accepts the UI. |
+| `static void close(UI ui)` | Asks the UI through `fireClose()`: its `close()` can refuse, and an Out transition delays the removal until it ends. Then calls the bridge's `close(ui)`. Does nothing when no bridge accepts the UI. |
 | `static void close(UI ui, boolean force)` | With `force` `false`, same as `close(ui)`. With `true`, releases the UI with `dispose()` and calls the bridge's `close(ui)` without asking and without transition. |
 | `static boolean isOpen(UI ui)` | Whether the bridge of `ui` lists it as opened. |
 | `static boolean isOpen(Class<? extends UI> uiClass)` | Whether an open UI is an instance of `uiClass` (subclasses count). |

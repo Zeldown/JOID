@@ -23,7 +23,7 @@ JOID.open(settings);
 | After each `init()` (first load, reload, renew) | If the In state is enabled, calls `in.init(ui)` then `in.start()`. If the Out state is enabled, calls `out.init(ui)`. |
 | Every draw while a state runs | Calls `update()` on the state, then `pre(ui, mouseX, mouseY)` before drawing the view, its nodes and its tooltips, and `post(ui, mouseX, mouseY)` after them, even when the drawing throws. |
 | While a state runs | Multiplies the alpha of the `@UIData` background by the animator value of the state, so the background fades with the transition. |
-| Closing (`ui.onClose()`) | Once `close()` agreed, if the Out state is enabled, calls `out.start()` and removes the UI (`dispose()`, then the bridge's `close`) when the Out timeline ends. Close requests made meanwhile are refused. Without an enabled Out state, the UI is removed at once. |
+| Closing (`ui.fireClose()`) | Once `close()` agreed, if the Out state is enabled, calls `out.start()` and removes the UI (`dispose()`, then the bridge's `close`) when the Out timeline ends. Close requests made meanwhile are refused. Without an enabled Out state, the UI is removed at once. |
 
 A state stops running when the timeline of its animator ends (`getAnimator().getTimeline()` returns `null`). The `force` variants of `JOID.open` and `JOID.close` remove UIs without playing their Out state.
 

@@ -25,7 +25,7 @@ public abstract class StackUIBridge extends UIBridge {
 					continue;
 				}
 
-				final boolean result = current.onClose();
+				final boolean result = current.fireClose();
 				if (current.getTransition() != null && current.getTransition().getOut() != null && current.getTransition().getOut().isRunning()) {
 					current.getTransition().getOut().getAnimator().setCallback(tween -> JOID.open(ui));
 					return;
@@ -55,7 +55,7 @@ public abstract class StackUIBridge extends UIBridge {
 		super.getUiList().add(ui);
 		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 		if (screen && !this.replacing) {
-			this.onFirstScreenOpen();
+			this.attachScreen();
 		}
 	}
 
@@ -64,7 +64,7 @@ public abstract class StackUIBridge extends UIBridge {
 		final boolean screen = super.getUiList().contains(ui) && !ui.getOverlay().active();
 		super.getUiList().remove(ui);
 		if (screen && !super.hasScreen() && !this.replacing) {
-			this.onLastScreenClose();
+			this.detachScreen();
 		}
 	}
 
@@ -85,8 +85,8 @@ public abstract class StackUIBridge extends UIBridge {
 		return true;
 	}
 
-	protected void onFirstScreenOpen() {}
+	protected void attachScreen() {}
 
-	protected void onLastScreenClose() {}
+	protected void detachScreen() {}
 
 }

@@ -289,7 +289,7 @@ The UI bridge receives the events from the backend through `UIBridge.mousePresse
 
 Wheel events in dev mode: with Left Alt held, the wheel zooms the UI (in larger steps with Left Shift) and the event goes no further.
 
-The entry points of a UI are public: `onMousePressed(MouseButton)`, `onMouseReleased(MouseButton)`, `onMouseDragged(MouseButton, long)`, `onMouseScroll(double, double)` and `onKeyPressed(char, Key)` run steps 3 to 5 and return `true` when the event was consumed. Calling them simulates input on one UI.
+The entry points of a UI are public: `fireMousePressed(MouseButton)`, `fireMouseReleased(MouseButton)`, `fireMouseDragged(MouseButton, long)`, `fireMouseScroll(double, double)` and `fireKeyPressed(char, Key)` run steps 3 to 5 and return `true` when the event was consumed. Calling them simulates input on one UI.
 
 ## Keyboard focus
 

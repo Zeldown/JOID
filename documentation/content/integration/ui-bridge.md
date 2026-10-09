@@ -150,7 +150,7 @@ When `keyTyped` with `Key.ESCAPE` reaches an active, visible UI that is `closeab
 
 1. The UI receives the key first: its nodes, its keybinds, its `keyPressed` hook and the dev shortcuts.
 2. When one of them consumes it, the UI stays open. A focused text field does: it restores the text it had before the focus and loses the focus. A second Escape then reaches step 3.
-3. Otherwise `ui.onClose()` runs; when it accepts, the bridge calls `close(ui)`. When it refuses (`close()` returns `false`, or an out [transition](../ui/transitions.md) starts or runs), the key is consumed anyway.
+3. Otherwise `ui.fireClose()` runs; when it accepts, the bridge calls `close(ui)`. When it refuses (`close()` returns `false`, or an out [transition](../ui/transitions.md) starts or runs), the key is consumed anyway.
 
 The key goes no further than that closeable UI. A UI that is not `closeable`, or an overlay, receives Escape like any other key.
 
@@ -205,7 +205,7 @@ The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), the
 | Method | Called by | What it must do |
 |---|---|---|
 | `open(UI ui)` | `JOID.open(ui)`, and `JOID.open(ui, true)` after it closed every UI of the bridge | Decide how the UI joins the others, then `add(ui)`. |
-| `close(UI ui)` | `JOID.close(ui)` once `ui.onClose()` accepted, Escape, and a UI whose out transition ends | Take the UI out, usually with `remove(ui)`. The UI is already cleaned up. |
+| `close(UI ui)` | `JOID.close(ui)` once `ui.fireClose()` accepted, Escape, and a UI whose out transition ends | Take the UI out, usually with `remove(ui)`. The UI is already cleaned up. |
 | `add(UI ui)` | your `open`, and tools such as the [testkit](testkit.md) | Add the UI to `getUiList()` and call `ui.load(width, height)` with the window size: a UI that was never loaded ignores every event. |
 | `remove(UI ui)` | your `close` | Remove the UI from `getUiList()`. |
 | `canHandle(UI ui)` / `canHandle(Class<? extends UI> clazz)` | `BridgeHandler.UI.get(...)` | `true` for the UIs this bridge hosts. |
@@ -223,25 +223,25 @@ The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), the
 
 ### Opening and closing
 
-`JOID.close(ui)` first calls `ui.onClose()`: the UI can refuse, and a UI with an out [transition](../ui/transitions.md) starts it and calls `close(ui)` of its bridge itself when it ends. Your `close` only takes the UI out of the list. `JOID.close(ui, true)` skips the checks.
+`JOID.close(ui)` first calls `ui.fireClose()`: the UI can refuse, and a UI with an out [transition](../ui/transitions.md) starts it and calls `close(ui)` of its bridge itself when it ends. Your `close` only takes the UI out of the list. `JOID.close(ui, true)` skips the checks.
 
 To replace the current UI instead of stacking, extend `StackUIBridge` (`dev.joid.lib.bridge.ui`) instead of `UIBridge`. It implements `open`, `close`, `add`, `remove` and `canHandle` (`true`):
 
-- `open(ui)` asks each open UI that is not an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) to close (`onClose()`) before it adds `ui`, unless `ui` is a popup or an overlay. When one of them refuses, `ui` is not opened; when one plays an out transition, `ui` opens when the transition ends.
+- `open(ui)` asks each open UI that is not an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) to close (`fireClose()`) before it adds `ui`, unless `ui` is a popup or an overlay. When one of them refuses, `ui` is not opened; when one plays an out transition, `ui` opens when the transition ends.
 - `add(ui)` loads the UI at the window size; `close(ui)` removes it.
 - `closeAll()` releases every UI with `dispose()` and removes it, without asking.
-- `onFirstScreenOpen()` and `onLastScreenClose()` run when the first UI that is not an overlay is added and when the last one is removed: a host shows and hides its own screen there. A screen that replaces another through `open(ui)` runs neither: the engine screen stays open during the switch.
+- `attachScreen()` and `detachScreen()` run when the first UI that is not an overlay is added and when the last one is removed: a host shows and hides its own screen there. A screen that replaces another through `open(ui)` runs neither: the engine screen stays open during the switch.
 
 ```java
 public class AppUIBridge extends StackUIBridge {
 
 	@Override
-	protected void onFirstScreenOpen() {
+	protected void attachScreen() {
 		this.game.showCursor();
 	}
 
 	@Override
-	protected void onLastScreenClose() {
+	protected void detachScreen() {
 		this.game.hideCursor();
 	}
 

@@ -708,9 +708,9 @@ public abstract class Node implements INode {
 		DrawUtils.SHAPE.drawRect(this.x,this.y, this.width, this.height, Color.LOADING());
 	}
 
-	public final void onUpdate() {
+	public final void fireUpdate() {
 		this.executeCallback(Node.CALLBACK_UPDATE, DispatchContext.create(), () -> {
-			this.children.ordered().stream().forEach(Node::onUpdate);
+			this.children.ordered().stream().forEach(Node::fireUpdate);
 			this.update();
 		});
 	}
@@ -723,25 +723,25 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_SCROLL, callback);
 	}
 
-	public final void onMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
+	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
 		if (!this.isVisible()) {
 			return;
 		}
 
 		final boolean enabled = this.isEnabled();
 		if (this.scrollbar != null) {
-			this.scrollbar.onMouseScroll(mouseX, mouseY, notchesX, notchesY, context);
+			this.scrollbar.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.onMouseScroll(mouseX, mouseY, notchesX, notchesY, context);
+			this.skeleton.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context);
 		}
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_SCROLL)) {
 			this.executePreCallback(Node.CALLBACK_MOUSE_SCROLL, context, mouseX, mouseY, notchesX, notchesY);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
 		if (!context.isCancelled() && this.isHovered(mouseX, mouseY)) {
 			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
 			if (notchesY != 0D && this.hasOverflowY()) {
@@ -763,7 +763,7 @@ public abstract class Node implements INode {
 		if (enabled) {
 			this.mouseScroll(mouseX, mouseY, notchesX, notchesY, context);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_SCROLL)) {
 			this.executePostCallback(Node.CALLBACK_MOUSE_SCROLL, context, mouseX, mouseY, notchesX, notchesY);
@@ -774,27 +774,27 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_DRAGGED, callback);
 	}
 
-	public final void onMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
+	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
 		final boolean visible = this.isVisible();
 		final boolean enabled = visible && this.isEnabled();
 		if (visible) {
 			if (this.scrollbar != null) {
-				this.scrollbar.onMouseDragged(mouseX, mouseY, button, deltaTime, context);
+				this.scrollbar.fireMouseDragged(mouseX, mouseY, button, deltaTime, context);
 			}
 
 			if (this.skeleton != null && !this.mounted) {
-				this.skeleton.onMouseDragged(mouseX, mouseY, button, deltaTime, context);
+				this.skeleton.fireMouseDragged(mouseX, mouseY, button, deltaTime, context);
 			}
 
 			if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_DRAGGED)) {
 				this.executePreCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, button, deltaTime);
 			}
 
-			this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, button, deltaTime, context));
+			this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseDragged(mouseX, mouseY, button, deltaTime, context));
 			if (enabled) {
 				this.mouseDragged(mouseX, mouseY, button, deltaTime, context);
 			}
-			this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseDragged(mouseX, mouseY, button, deltaTime, context));
+			this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseDragged(mouseX, mouseY, button, deltaTime, context));
 		}
 
 		if (this.dragging) {
@@ -813,7 +813,7 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_PRESSED, callback);
 	}
 
-	public final void onMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+	public final void fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (!this.isVisible()) {
 			return;
 		}
@@ -823,18 +823,18 @@ public abstract class Node implements INode {
 		this.lastClickTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		if (this.scrollbar != null) {
-			this.scrollbar.onMousePressed(mouseX, mouseY, button, context);
+			this.scrollbar.fireMousePressed(mouseX, mouseY, button, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.onMousePressed(mouseX, mouseY, button, context);
+			this.skeleton.fireMousePressed(mouseX, mouseY, button, context);
 		}
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_PRESSED)) {
 			this.executePreCallback(Node.CALLBACK_MOUSE_PRESSED, context, mouseX, mouseY, button);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMousePressed(mouseX, mouseY, button, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, context));
 		final boolean pressed = context.isCancelled();
 		if (!pressed && this.isHovered(mouseX, mouseY) && this.hasCallback(Node.CALLBACK_CLICK)) {
 			this.executeCallback(Node.CALLBACK_CLICK, context, mouseX, mouseY, button);
@@ -845,7 +845,7 @@ public abstract class Node implements INode {
 		if (enabled) {
 			this.mousePressed(mouseX, mouseY, button, context);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMousePressed(mouseX, mouseY, button, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_PRESSED)) {
 			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, clicked ? DispatchContext.create() : context, mouseX, mouseY, button);
@@ -863,13 +863,13 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_MOUSE_RELEASED, callback);
 	}
 
-	public final void onMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
 		if (this.scrollbar != null) {
-			this.scrollbar.onMouseReleased(mouseX, mouseY, button, context);
+			this.scrollbar.fireMouseReleased(mouseX, mouseY, button, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.onMouseReleased(mouseX, mouseY, button, context);
+			this.skeleton.fireMouseReleased(mouseX, mouseY, button, context);
 		}
 
 		if (this.dragging) {
@@ -885,11 +885,11 @@ public abstract class Node implements INode {
 			this.executePreCallback(Node.CALLBACK_MOUSE_RELEASED, context, mouseX, mouseY, button);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onMouseReleased(mouseX, mouseY, button, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseReleased(mouseX, mouseY, button, context));
 		if (enabled) {
 			this.mouseReleased(mouseX, mouseY, button, context);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onMouseReleased(mouseX, mouseY, button, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseReleased(mouseX, mouseY, button, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_RELEASED)) {
 			this.executePostCallback(Node.CALLBACK_MOUSE_RELEASED, context, mouseX, mouseY, button);
@@ -900,7 +900,7 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_KEY_PRESSED, callback);
 	}
 
-	public final void onKeyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
+	public final void fireKeyPressed(final char c, final @NonNull Key key, final @NonNull DispatchContext context) {
 		if (!this.isVisible()) {
 			return;
 		}
@@ -911,38 +911,38 @@ public abstract class Node implements INode {
 		this.lastKeyTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		if (this.scrollbar != null) {
-			this.scrollbar.onKeyPressed(c, key, context);
+			this.scrollbar.fireKeyPressed(c, key, context);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.onKeyPressed(c, key, context);
+			this.skeleton.fireKeyPressed(c, key, context);
 		}
 
 		if (enabled && this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
 			this.executePreCallback(Node.CALLBACK_KEY_PRESSED, context, c, key);
 		}
 
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.onKeyPressed(c, key, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireKeyPressed(c, key, context));
 		if (enabled) {
 			this.keyPressed(c, key, context);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.onKeyPressed(c, key, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireKeyPressed(c, key, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
 			this.executePostCallback(Node.CALLBACK_KEY_PRESSED, context, c, key);
 		}
 	}
 
-	public final void onDetach() {
+	public final void fireDetach() {
 		this.executeCallback(Node.CALLBACK_DETACH, DispatchContext.create(), () -> {
-			this.children.forEach(Node::onDetach);
+			this.children.forEach(Node::fireDetach);
 
 			if (this.scrollbar != null) {
-				this.scrollbar.onDetach();
+				this.scrollbar.fireDetach();
 			}
 
 			if (this.skeleton != null) {
-				this.skeleton.onDetach();
+				this.skeleton.fireDetach();
 			}
 
 			this.unsubscribe();
@@ -962,7 +962,7 @@ public abstract class Node implements INode {
 				if (node.parent != null && node.parent != this) {
 					node.parent.remove(node);
 				} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
-					node.onDetach();
+					node.fireDetach();
 					node.ui.getNodeList().remove(node);
 					node.clearOverflowArea(node.overflowArea);
 				}
@@ -980,7 +980,7 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T remove(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
 			if (this.children.contains(node)) {
-				node.onDetach();
+				node.fireDetach();
 				this.children.remove(node);
 				node.parent(null);
 				node.clearOverflowArea(node.overflowArea);
@@ -1372,7 +1372,7 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T clearChildren() {
 		this.children.forEach(child -> {
-			child.onDetach();
+			child.fireDetach();
 			child.parent(null);
 			child.clearOverflowArea(child.overflowArea);
 		});

@@ -52,7 +52,7 @@ public final class GlTexture extends Texture implements IGlTexture {
 	}
 
 	@Override
-	protected void onAllocate(final @NonNull MipmapChain chain) {
+	protected void allocateStorage(final @NonNull MipmapChain chain) {
 		final int maxSize = this.bridge.getCapabilities().getMaxTextureSize();
 		if (chain.getWidth() > maxSize || chain.getHeight() > maxSize) {
 			throw new IllegalArgumentException("A texture of " + chain.getWidth() + "x" + chain.getHeight() + " exceeds the maximum size " + maxSize + " of " + this.bridge.getCapabilities().getName());
@@ -72,7 +72,7 @@ public final class GlTexture extends Texture implements IGlTexture {
 	}
 
 	@Override
-	protected void onUpload(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
+	protected void uploadPixels(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
 		this.bridge.getGuard().enter();
 		try {
 			final IGlTextureBinding texture = this.bridge.getBinding().getTextureBinding();
@@ -85,7 +85,7 @@ public final class GlTexture extends Texture implements IGlTexture {
 	}
 
 	@Override
-	protected void onGenerateLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
+	protected void generateMipmapLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
 		this.bridge.getGuard().enter();
 		try {
 			this.bridge.getBinding().getTextureBinding().bindTexture(GlConstants.TEXTURE_2D, this.id);
@@ -99,7 +99,7 @@ public final class GlTexture extends Texture implements IGlTexture {
 	}
 
 	@Override
-	protected void onDelete() {
+	protected void deleteStorage() {
 		this.bridge.getBinding().getTextureBinding().deleteTexture(this.id);
 	}
 

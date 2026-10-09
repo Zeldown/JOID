@@ -96,7 +96,7 @@ public class ModelViewerNodeTest {
 	public void stopsTurningWhenDetached() {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
 		Assert.assertTrue(viewer.isDragged());
-		viewer.onDetach();
+		viewer.fireDetach();
 		Assert.assertFalse(viewer.isDragged());
 	}
 

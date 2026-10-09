@@ -361,7 +361,7 @@ public class ReorderableFlexNodeTest {
 		this.bridges.open(new NodeUI(flex));
 		this.press(150D, 120D);
 		this.bridges.move(150D, 150D).frames(60);
-		flex.onDetach();
+		flex.fireDetach();
 		Assert.assertNull(flex.getReorderedNode());
 		Assert.assertFalse(flex.isReleasing());
 		Assert.assertEquals(Arrays.asList(second, first, third), flex.getChildren().ordered());

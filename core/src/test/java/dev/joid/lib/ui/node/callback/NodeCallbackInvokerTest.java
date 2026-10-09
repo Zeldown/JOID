@@ -137,7 +137,7 @@ public class NodeCallbackInvokerTest {
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).onUpdate(node -> {
 			throw new IllegalStateException("update");
 		}).onUpdate(node -> runs.add("second"));
-		final String output = NodeCallbackInvokerTest.capture(rect::onUpdate);
+		final String output = NodeCallbackInvokerTest.capture(rect::fireUpdate);
 		Assert.assertTrue(output, output.contains("[JOID] The post phase of NodeUpdateCallback failed: java.lang.IllegalStateException: update"));
 		Assert.assertEquals(Arrays.asList("second"), runs);
 	}

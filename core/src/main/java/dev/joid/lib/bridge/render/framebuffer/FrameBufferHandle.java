@@ -31,11 +31,11 @@ public abstract class FrameBufferHandle<T extends Texture> implements IFrameBuff
 			return;
 		}
 
-		this.onDelete();
+		this.deleteHandle();
 		this.texture.delete();
 		this.deleted = true;
 	}
 
-	protected abstract void onDelete();
+	protected abstract void deleteHandle();
 
 }

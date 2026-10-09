@@ -45,7 +45,7 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 	}
 
 	@Override
-	protected void onDelete() {
+	protected void deleteHandle() {
 		final long framebuffer = this.framebuffer;
 		final long depthImage = this.depthImage;
 		final long depthMemory = this.depthMemory;

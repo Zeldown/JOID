@@ -86,7 +86,7 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.getThumb().dragging(true);
-		slider.onDetach();
+		slider.fireDetach();
 		Assert.assertFalse(slider.getThumb().isDragging());
 	}
 

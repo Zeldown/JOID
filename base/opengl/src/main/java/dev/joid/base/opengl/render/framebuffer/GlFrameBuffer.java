@@ -40,7 +40,7 @@ public final class GlFrameBuffer extends FrameBufferHandle<GlTexture> {
 	}
 
 	@Override
-	protected void onDelete() {
+	protected void deleteHandle() {
 		this.bridge.getFrameBufferBinding().deleteFramebuffer(this.id);
 		this.bridge.getFrameBufferBinding().deleteRenderbuffer(this.depth);
 	}

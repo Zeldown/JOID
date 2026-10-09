@@ -343,7 +343,7 @@ public class ResourcePlayerNodeTest {
 		final NodeUI ui = new NodeUI(player);
 		this.bridges.open(ui).frames(3);
 		final double progress = player.getProgress();
-		player.onDetach();
+		player.fireDetach();
 		Assert.assertFalse(player.isResourceStarted());
 		Assert.assertFalse(player.isWasPlaying());
 		player.load(ui);

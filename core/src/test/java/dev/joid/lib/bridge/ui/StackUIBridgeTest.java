@@ -137,12 +137,12 @@ public class StackUIBridgeTest {
 		}
 
 		@Override
-		protected void onFirstScreenOpen() {
+		protected void attachScreen() {
 			this.trace.add("first screen");
 		}
 
 		@Override
-		protected void onLastScreenClose() {
+		protected void detachScreen() {
 			this.trace.add("last screen");
 		}
 

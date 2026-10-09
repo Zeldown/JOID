@@ -30,7 +30,7 @@ public final class VulkanTexture extends Texture {
 	}
 
 	@Override
-	protected void onAllocate(final @NonNull MipmapChain chain) {
+	protected void allocateStorage(final @NonNull MipmapChain chain) {
 		this.release();
 		final VulkanContext context = this.bridge.getContext();
 		final long[] handles = context.createImage(chain.getWidth(), chain.getHeight(), VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_USAGE_SAMPLED_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK10.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, chain.getLevels());
@@ -43,7 +43,7 @@ public final class VulkanTexture extends Texture {
 	}
 
 	@Override
-	protected void onUpload(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
+	protected void uploadPixels(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
 		final int width = chain.getWidth();
 		final int height = chain.getHeight();
 		final Buffer staging = this.bridge.getStagingBuffer((long) width * height * 4L);
@@ -65,7 +65,7 @@ public final class VulkanTexture extends Texture {
 	}
 
 	@Override
-	protected void onGenerateLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
+	protected void generateMipmapLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
 		if (allocatedLevels == chain.getLevels()) {
 			final long image = this.image;
 			this.bridge.getContext().submit(buffer -> {
@@ -105,7 +105,7 @@ public final class VulkanTexture extends Texture {
 	}
 
 	@Override
-	protected void onDelete() {
+	protected void deleteStorage() {
 		this.release();
 	}
 

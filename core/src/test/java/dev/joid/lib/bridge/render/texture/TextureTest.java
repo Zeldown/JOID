@@ -93,22 +93,22 @@ public class TextureTest {
 		private int maxLevels = Integer.MAX_VALUE;
 
 		@Override
-		protected void onAllocate(final @NonNull MipmapChain chain) {
+		protected void allocateStorage(final @NonNull MipmapChain chain) {
 			this.calls.add("allocate " + chain.getWidth() + "x" + chain.getHeight() + " " + chain.getLevels());
 		}
 
 		@Override
-		protected void onUpload(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
+		protected void uploadPixels(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
 			this.calls.add("upload " + chain.getWidth() + "x" + chain.getHeight() + " " + chain.getLevels());
 		}
 
 		@Override
-		protected void onGenerateLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
+		protected void generateMipmapLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
 			this.calls.add("generate " + chain.getWidth() + "x" + chain.getHeight() + " " + chain.getLevels() + " from " + allocatedLevels);
 		}
 
 		@Override
-		protected void onDelete() {
+		protected void deleteStorage() {
 			this.calls.add("delete");
 		}
 

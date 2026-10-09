@@ -396,7 +396,7 @@ context.cancel(() -> super.executeCallback(SwatchNode.CALLBACK_SELECT, DispatchC
 | --- | --- |
 | `Node(double x, double y)`, `Node(double x, double y, double width, double height)` | Constructors. |
 | `INode` hooks | `init`, `draw`, `drawSkeleton`, `update`, `detach`, `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll`, `keyPressed`. |
-| `onMousePressed(double, double, MouseButton, DispatchContext)`, `onMouseReleased(...)`, `onMouseDragged(double, double, MouseButton, long, DispatchContext)`, `onMouseScroll(double, double, double, double, DispatchContext)`, `onKeyPressed(char, Key, DispatchContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
+| `fireMousePressed(double, double, MouseButton, DispatchContext)`, `fireMouseReleased(...)`, `fireMouseDragged(double, double, MouseButton, long, DispatchContext)`, `fireMouseScroll(double, double, double, double, DispatchContext)`, `fireKeyPressed(char, Key, DispatchContext)` | Dispatch entry points, called by the parent or the UI. A node forwards events to its scrollbar and skeleton through them. |
 | `registerCallback(int, NodeCallback)` | Protected. Stores a callback. |
 | `bind(Signal<V>, Consumer<V>)` | Protected. Runs the consumer with the signal's current value, then with each published value while the UI is open. Returns the subscription; each call adds one. |
 | `unbind(ISignalSubscriber<?>)` | Protected. Removes a subscription of the node. Does nothing with `null`. |

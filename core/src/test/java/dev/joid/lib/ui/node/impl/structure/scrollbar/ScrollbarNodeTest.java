@@ -90,7 +90,7 @@ public class ScrollbarNodeTest {
 		final RectNode content = ScrollbarNodeTest.column(bar);
 		this.press(content, 515D, 110D);
 		Assert.assertTrue(bar.isDragging());
-		content.onDetach();
+		content.fireDetach();
 		Assert.assertFalse(bar.isDragging());
 		Assert.assertNull(bar.getDragButton());
 	}

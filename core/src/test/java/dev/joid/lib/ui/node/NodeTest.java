@@ -748,7 +748,7 @@ public class NodeTest {
 		final List<String> events = new ArrayList<>();
 		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D);
 		final RecordingNode parent = new RecordingNode("parent", events, 0D, 0D, 100D, 100D).append(child).onUpdate(target -> events.add("callback"));
-		parent.onUpdate();
+		parent.fireUpdate();
 		Assert.assertEquals(Arrays.asList("child update", "parent update", "callback"), events);
 	}
 
@@ -808,7 +808,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		events.clear();
 		node.getCallbackMap().values().forEach(List::clear);
-		node.onDetach();
+		node.fireDetach();
 		Assert.assertEquals(0, detaches[0]);
 		Assert.assertEquals(Arrays.asList("node detach"), events);
 	}
@@ -831,7 +831,7 @@ public class NodeTest {
 		});
 		this.bridges.open(new NodeUI(node));
 		events.clear();
-		node.onDetach();
+		node.fireDetach();
 		Assert.assertTrue(events.isEmpty());
 	}
 
@@ -841,7 +841,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).onDetach(rect -> detaches[0]++);
 		node.getCallbackMap().get(NodeCallbackRegistry.getId(NodeDetachCallback.class)).add(null);
 		this.bridges.open(new NodeUI(node));
-		node.onDetach();
+		node.fireDetach();
 		Assert.assertEquals(1, detaches[0]);
 	}
 
@@ -1042,7 +1042,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(column));
 		this.bridges.move(300D, 150D).frames(2);
 		final DispatchContext context = DispatchContext.create();
-		column.onMouseScroll(300D, 150D, -1D, 0D, context);
+		column.fireMouseScroll(300D, 150D, -1D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollX(), 0D);
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
@@ -1054,7 +1054,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(row));
 		this.bridges.move(300D, 150D).frames(2);
 		final DispatchContext context = DispatchContext.create();
-		row.onMouseScroll(300D, 150D, 1D, 0D, context);
+		row.fireMouseScroll(300D, 150D, 1D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, row.getTargetScrollX(), 0D);
 	}
@@ -1066,7 +1066,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(area)).move(300D, 150D).frames(2);
 		area.scrollRatioY(1F);
 		final DispatchContext context = DispatchContext.create();
-		area.onMouseScroll(300D, 150D, 0D, -1D, context);
+		area.fireMouseScroll(300D, 150D, 0D, -1D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(-200D, area.getTargetScrollY(), 0D);
 		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
@@ -1084,7 +1084,7 @@ public class NodeTest {
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 		Assert.assertEquals(100D, column.getChildren().get(1).getY(), 0D);
 		final DispatchContext context = DispatchContext.create();
-		column.onMouseScroll(300D, 150D, 0D, -1D, context);
+		column.fireMouseScroll(300D, 150D, 0D, -1D, context);
 		Assert.assertFalse(context.isCancelled());
 	}
 
@@ -1102,11 +1102,11 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		final DispatchContext down = DispatchContext.create();
-		column.onMouseScroll(300D, 150D, 0D, -1D, down);
+		column.fireMouseScroll(300D, 150D, 0D, -1D, down);
 		Assert.assertTrue(down.isCancelled());
 		Assert.assertEquals(-30D, column.getTargetScrollY(), 0D);
 		final DispatchContext up = DispatchContext.create();
-		column.onMouseScroll(300D, 150D, 0D, 1D, up);
+		column.fireMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertTrue(up.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 	}
@@ -1116,11 +1116,11 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		final DispatchContext up = DispatchContext.create();
-		column.onMouseScroll(300D, 150D, 0D, 1D, up);
+		column.fireMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertFalse(up.isCancelled());
 		column.scrollRatioY(1F);
 		final DispatchContext down = DispatchContext.create();
-		column.onMouseScroll(300D, 150D, 0D, -1D, down);
+		column.fireMouseScroll(300D, 150D, 0D, -1D, down);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
 	}
@@ -1132,8 +1132,8 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(box)).move(300D, 150D).frames(2);
 		final DispatchContext down = DispatchContext.create();
 		final DispatchContext up = DispatchContext.create();
-		box.onMouseScroll(300D, 150D, 0D, -1D, down);
-		box.onMouseScroll(300D, 150D, 0D, 1D, up);
+		box.fireMouseScroll(300D, 150D, 0D, -1D, down);
+		box.fireMouseScroll(300D, 150D, 0D, 1D, up);
 		Assert.assertFalse(down.isCancelled());
 		Assert.assertFalse(up.isCancelled());
 	}
@@ -1143,7 +1143,7 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		final DispatchContext context = DispatchContext.create();
-		column.onMouseScroll(300D, 150D, 0D, 0D, context);
+		column.fireMouseScroll(300D, 150D, 0D, 0D, context);
 		Assert.assertFalse(context.isCancelled());
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 	}
@@ -2330,7 +2330,7 @@ public class NodeTest {
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
 		this.bridges.open(new NodeUI(parent));
 		node.startDragging(110D, 110D);
-		node.onMouseDragged(160D, 110D, MouseButton.LEFT, 0L, DispatchContext.create());
+		node.fireMouseDragged(160D, 110D, MouseButton.LEFT, 0L, DispatchContext.create());
 		parent.remove(node);
 		Assert.assertEquals(Arrays.asList("start", "end"), events);
 		Assert.assertFalse(node.isDragging());
@@ -2365,7 +2365,7 @@ public class NodeTest {
 		Assert.assertFalse(node.isHovered());
 		Assert.assertEquals(1, ends[0]);
 		Assert.assertEquals(0F, node.hoverValue(1F), 0F);
-		node.onDetach();
+		node.fireDetach();
 		Assert.assertEquals(1, ends[0]);
 	}
 

@@ -126,7 +126,7 @@ public final class JOID {
 		}
 
 		JOID.execute(() -> {
-			if (ui.onClose()) {
+			if (ui.fireClose()) {
 				bridge.close(ui);
 			}
 		});

@@ -81,7 +81,7 @@ public class SelectorNodeTest {
 	@Test
 	public void closesWhenDetached() {
 		this.bridges.open(new NodeUI(this.selector.active(true)));
-		this.selector.onDetach();
+		this.selector.fireDetach();
 		Assert.assertFalse(this.selector.isActive());
 	}
 

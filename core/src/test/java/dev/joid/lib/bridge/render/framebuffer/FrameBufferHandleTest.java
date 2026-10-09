@@ -38,7 +38,7 @@ public class FrameBufferHandleTest {
 		}
 
 		@Override
-		protected void onDelete() {
+		protected void deleteHandle() {
 			this.deletions++;
 		}
 
@@ -47,16 +47,16 @@ public class FrameBufferHandleTest {
 	private static final class HookTexture extends Texture {
 
 		@Override
-		protected void onAllocate(final @NonNull MipmapChain chain) {}
+		protected void allocateStorage(final @NonNull MipmapChain chain) {}
 
 		@Override
-		protected void onUpload(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {}
+		protected void uploadPixels(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {}
 
 		@Override
-		protected void onGenerateLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {}
+		protected void generateMipmapLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {}
 
 		@Override
-		protected void onDelete() {}
+		protected void deleteStorage() {}
 
 	}
 

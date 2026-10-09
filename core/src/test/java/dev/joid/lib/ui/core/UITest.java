@@ -283,11 +283,11 @@ public class UITest {
 	public void ignoresTheInputBeforeItsFirstLoad() {
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.cancel = true;
-		Assert.assertFalse(ui.onMousePressed(MouseButton.LEFT));
-		Assert.assertFalse(ui.onMouseReleased(MouseButton.LEFT));
-		Assert.assertFalse(ui.onMouseDragged(MouseButton.LEFT, 10L));
-		Assert.assertFalse(ui.onMouseScroll(0D, 1D));
-		Assert.assertFalse(ui.onKeyPressed('a', Key.A));
+		Assert.assertFalse(ui.fireMousePressed(MouseButton.LEFT));
+		Assert.assertFalse(ui.fireMouseReleased(MouseButton.LEFT));
+		Assert.assertFalse(ui.fireMouseDragged(MouseButton.LEFT, 10L));
+		Assert.assertFalse(ui.fireMouseScroll(0D, 1D));
+		Assert.assertFalse(ui.fireKeyPressed('a', Key.A));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
 
@@ -336,14 +336,14 @@ public class UITest {
 	public void tellsWhetherItsHooksCancelledTheInput() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		Assert.assertFalse(ui.onMousePressed(MouseButton.LEFT));
-		Assert.assertFalse(ui.onKeyPressed('a', Key.A));
+		Assert.assertFalse(ui.fireMousePressed(MouseButton.LEFT));
+		Assert.assertFalse(ui.fireKeyPressed('a', Key.A));
 		ui.cancel = true;
-		Assert.assertTrue(ui.onMousePressed(MouseButton.LEFT));
-		Assert.assertTrue(ui.onMouseReleased(MouseButton.LEFT));
-		Assert.assertTrue(ui.onMouseDragged(MouseButton.LEFT, 10L));
-		Assert.assertTrue(ui.onMouseScroll(0D, 1D));
-		Assert.assertTrue(ui.onKeyPressed('a', Key.A));
+		Assert.assertTrue(ui.fireMousePressed(MouseButton.LEFT));
+		Assert.assertTrue(ui.fireMouseReleased(MouseButton.LEFT));
+		Assert.assertTrue(ui.fireMouseDragged(MouseButton.LEFT, 10L));
+		Assert.assertTrue(ui.fireMouseScroll(0D, 1D));
+		Assert.assertTrue(ui.fireKeyPressed('a', Key.A));
 	}
 
 	@Test
@@ -351,10 +351,10 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui);
 		this.trace.clear();
-		ui.onMouseScroll(0D, 1D);
-		ui.onMouseDragged(MouseButton.LEFT, 10L);
-		ui.onMouseReleased(MouseButton.LEFT);
-		ui.onKeyPressed('a', Key.A);
+		ui.fireMouseScroll(0D, 1D);
+		ui.fireMouseDragged(MouseButton.LEFT, 10L);
+		ui.fireMouseReleased(MouseButton.LEFT);
+		ui.fireKeyPressed('a', Key.A);
 		Assert.assertEquals(Arrays.asList("scrolled node", "scrolled 1.0", "dragged node", "dragged LEFT 10", "released node", "released LEFT", "typed node", "typed a A"), this.trace);
 	}
 
@@ -363,7 +363,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("below", this.trace, -5), new TraceNode("middle", this.trace, 0), new TraceNode("above", this.trace, 5));
 		this.bridges.open(ui);
 		this.trace.clear();
-		ui.onMousePressed(MouseButton.RIGHT);
+		ui.fireMousePressed(MouseButton.RIGHT);
 		Assert.assertEquals(Arrays.asList("pressed above", "pressed middle", "pressed below", "pressed RIGHT 0.0 0.0"), this.trace);
 	}
 
@@ -708,7 +708,7 @@ public class UITest {
 		this.bridges.scroll(-1D);
 		Assert.assertEquals(0.868D, ui.getView().getZoom(), 0.0001D);
 		Assert.assertTrue(this.trace.isEmpty());
-		Assert.assertFalse(ui.onMouseScroll(0D, 0D));
+		Assert.assertFalse(ui.fireMouseScroll(0D, 0D));
 		Assert.assertEquals(Collections.singletonList("scrolled 0.0"), this.trace);
 	}
 
@@ -767,7 +767,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui);
 		this.trace.clear();
-		Assert.assertTrue(ui.onClose());
+		Assert.assertTrue(ui.fireClose());
 		Assert.assertEquals(Arrays.asList("close", "detach node"), this.trace);
 	}
 
@@ -777,7 +777,7 @@ public class UITest {
 		ui.closeable = false;
 		this.bridges.open(ui);
 		this.trace.clear();
-		Assert.assertFalse(ui.onClose());
+		Assert.assertFalse(ui.fireClose());
 		Assert.assertEquals(Collections.singletonList("close"), this.trace);
 	}
 
@@ -785,9 +785,9 @@ public class UITest {
 	public void playsItsOutTransitionBeforeClosing() {
 		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui).frames(20);
-		Assert.assertFalse(ui.onClose());
+		Assert.assertFalse(ui.fireClose());
 		Assert.assertTrue(ui.getTransition().getOut().isRunning());
-		Assert.assertFalse(ui.onClose());
+		Assert.assertFalse(ui.fireClose());
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertFalse(this.trace.contains("detach node"));
 		this.bridges.frames(20);
@@ -800,7 +800,7 @@ public class UITest {
 	public void closesAtOnceWithItsOutTransitionDisabled() {
 		final InPopupUI ui = new InPopupUI(this.trace);
 		this.bridges.open(ui).frames(20);
-		Assert.assertTrue(ui.onClose());
+		Assert.assertTrue(ui.fireClose());
 	}
 
 	@Test
@@ -852,7 +852,7 @@ public class UITest {
 		Assert.assertEquals(0F, UITest.background(this.bridges).getAlpha(), 0F);
 		this.bridges.frames(20);
 		Assert.assertEquals(192F / 255F, UITest.background(this.bridges).getAlpha(), 0.0001F);
-		ui.onClose();
+		ui.fireClose();
 		this.bridges.frames(4);
 		final float alpha = UITest.background(this.bridges).getAlpha();
 		Assert.assertTrue(String.valueOf(alpha), alpha > 0F && alpha < 192F / 255F);
@@ -887,7 +887,7 @@ public class UITest {
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("in init", "in start", "out init", "update node", "update", "background", "in pre", "pre", "draw node", "post", "in post"), this.trace);
 		this.trace.clear();
-		Assert.assertFalse(ui.onClose());
+		Assert.assertFalse(ui.fireClose());
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("close", "out start", "update node", "update", "background", "in pre", "out pre", "pre", "draw node", "post", "in post", "out post"), this.trace);
 	}
@@ -901,7 +901,7 @@ public class UITest {
 		ui.setTransition(transition);
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("update", "background", "pre", "post"), this.trace);
-		Assert.assertTrue(ui.onClose());
+		Assert.assertTrue(ui.fireClose());
 	}
 
 	@Test
@@ -911,7 +911,7 @@ public class UITest {
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("in init", "in start", "update", "background", "in pre", "pre", "post", "in post"), this.trace);
 		this.trace.clear();
-		Assert.assertTrue(ui.onClose());
+		Assert.assertTrue(ui.fireClose());
 		Assert.assertEquals(Collections.singletonList("close"), this.trace);
 	}
 
@@ -922,7 +922,7 @@ public class UITest {
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("out init", "update", "background", "pre", "post"), this.trace);
 		this.trace.clear();
-		Assert.assertFalse(ui.onClose());
+		Assert.assertFalse(ui.fireClose());
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("close", "out start", "update", "background", "out pre", "pre", "post", "out post"), this.trace);
 		this.bridges.frames(10);
@@ -1495,12 +1495,12 @@ public class UITest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAPressWithoutButton() {
-		new TraceUI(this.trace).onMousePressed(null);
+		new TraceUI(this.trace).fireMousePressed(null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAKeyWithoutKey() {
-		new TraceUI(this.trace).onKeyPressed('a', null);
+		new TraceUI(this.trace).fireKeyPressed('a', null);
 	}
 
 	@Test

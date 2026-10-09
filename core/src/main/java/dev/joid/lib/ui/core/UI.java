@@ -167,7 +167,7 @@ public abstract class UI implements IUI, IndexedElement {
 			this.keybindMap.clear();
 			for (final Node node : this.nodeList) {
 				if (node != this.devNode) {
-					node.onDetach();
+					node.fireDetach();
 				}
 			}
 			this.nodeList.clear();
@@ -216,7 +216,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.refreshMonitor();
 	}
 
-	public final boolean onMouseScroll(final double notchesX, final double notchesY) {
+	public final boolean fireMouseScroll(final double notchesX, final double notchesY) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -230,13 +230,13 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseScroll(mx, my, notchesX, notchesY, context)));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseScroll(mx, my, notchesX, notchesY, context)));
 
 		this.traced(() -> this.mouseScroll(mx, my, notchesX, notchesY, context));
 		return context.isCancelled();
 	}
 
-	public final boolean onMousePressed(final @NonNull MouseButton button) {
+	public final boolean fireMousePressed(final @NonNull MouseButton button) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -247,15 +247,15 @@ public abstract class UI implements IUI, IndexedElement {
 		final DispatchContext context = DispatchContext.create();
 
 		this.untraced(() -> {
-			this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.onMousePressed(mx, my, button, context));
-			this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.onMousePressed(mx, my, button, context));
+			this.nodeList.reversed().stream().filter(node -> node.getZindex() > 0).forEach(node -> node.fireMousePressed(mx, my, button, context));
+			this.nodeList.reversed().stream().filter(node -> node.getZindex() <= 0).forEach(node -> node.fireMousePressed(mx, my, button, context));
 		});
 
 		this.traced(() -> this.mousePressed(mx, my, button, context));
 		return context.isCancelled();
 	}
 
-	public final boolean onMouseReleased(final @NonNull MouseButton button) {
+	public final boolean fireMouseReleased(final @NonNull MouseButton button) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -264,13 +264,13 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseReleased(mx, my, button, context)));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseReleased(mx, my, button, context)));
 
 		this.traced(() -> this.mouseReleased(mx, my, button, context));
 		return context.isCancelled();
 	}
 
-	public final boolean onMouseDragged(final @NonNull MouseButton button, final long deltaTime) {
+	public final boolean fireMouseDragged(final @NonNull MouseButton button, final long deltaTime) {
 		if (!this.initialized) {
 			return false;
 		}
@@ -279,19 +279,19 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onMouseDragged(mx, my, button, deltaTime, context)));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseDragged(mx, my, button, deltaTime, context)));
 
 		this.traced(() -> this.mouseDragged(mx, my, button, deltaTime, context));
 		return context.isCancelled();
 	}
 
-	public final boolean onKeyPressed(final char c, final @NonNull Key key) {
+	public final boolean fireKeyPressed(final char c, final @NonNull Key key) {
 		if (!this.initialized) {
 			return false;
 		}
 
 		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.onKeyPressed(c, key, context)));
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(c, key, context)));
 
 		if (!context.isCancelled()) {
 			for (final Map.Entry<Set<Object>, Runnable> entry : this.keybindMap.entrySet()) {
@@ -347,14 +347,14 @@ public abstract class UI implements IUI, IndexedElement {
 		return context.isCancelled();
 	}
 
-	public final void onUpdate() {
+	public final void fireUpdate() {
 		this.untraced(() -> {
-			this.nodeList.forEach(Node::onUpdate);
+			this.nodeList.forEach(Node::fireUpdate);
 			this.update();
 		});
 	}
 
-	public final boolean onClose() {
+	public final boolean fireClose() {
 		if (this.transition != null && this.transition.getOut() != null && this.transition.getOut().isRunning()) {
 			return false;
 		}
@@ -415,7 +415,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void dispose() {
-		this.nodeList.forEach(Node::onDetach);
+		this.nodeList.forEach(Node::fireDetach);
 		this.closed = true;
 
 		this.stopMonitor();

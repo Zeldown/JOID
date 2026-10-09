@@ -46,7 +46,7 @@ Every concrete node exposes static factories: `RectNode.create(x, y, width, heig
 | `attach(Node parent)` | Appends this node to `parent` (same as `parent.append(this)`). Returns this node. |
 | `attach(UI ui)` | Adds this node at the top level of `ui` (`ui.add(this)`) and loads it immediately. Returns this node. |
 | `append(Node... nodes)` | Appends the nodes, in order, as children of this node. Each child gets this node as parent and is loaded immediately when this node already belongs to a UI. Returns this node. |
-| `remove(Node... nodes)` | Removes the nodes from the children of this node: each one is detached (`onDetach()`, see [Lifecycle](#lifecycle)) and loses its parent. Nodes that are not children are ignored. Returns this node. |
+| `remove(Node... nodes)` | Removes the nodes from the children of this node: each one is detached (`fireDetach()`, see [Lifecycle](#lifecycle)) and loses its parent. Nodes that are not children are ignored. Returns this node. |
 
 Children appended before their tree is attached are loaded together with it, so you can build a whole tree first and attach its root last:
 
@@ -114,8 +114,8 @@ Most setters are declared as `<T extends Node> T method(...)`: the compiler infe
 
 | Code | Effect |
 | --- | --- |
-| `node.clearChildren()` | Detaches every child (runs `onDetach()` on each subtree), empties the children list and clears the parent of each child, as `remove(...)` does. Returns the node. |
-| `node.remove(child...)` | Detaches the children (runs `onDetach()` on each subtree), removes them from the list and clears their parent. Returns the node. |
+| `node.clearChildren()` | Detaches every child (runs `fireDetach()` on each subtree), empties the children list and clears the parent of each child, as `remove(...)` does. Returns the node. |
+| `node.remove(child...)` | Detaches the children (runs `fireDetach()` on each subtree), removes them from the list and clears their parent. Returns the node. |
 | `node.getChildren().remove(child)` | Removes one child from the list only. Its detach hooks do not run: prefer `remove(...)`. |
 | `ui.getNodeList().remove(node)` | Removes a top-level node from its UI (see [The UI Class](../ui/ui-class.md)). |
 
@@ -362,14 +362,14 @@ for (final RectNode tile : panel.getChildren(RectNode.class)) {
 | Creation | The factory | The constructor. `body` and `self` consumers run as soon as you call them. |
 | Load | `attach` to a UI, `append` to a node that has a UI, the UI opening, a reload | `load(UI)`, wrapped by the `onInit` callbacks: the children are loaded first, then the scrollbar and skeleton, then the effects' `init`, then the node's `init(UI)` hook. A node loaded again after a detach then subscribes again to its signals (see below). |
 | Frame | Every frame, while visible | `render(mouseX, mouseY)`: anchors and aspect ratio, hover, animators, scroll, drag, mount check, then drawing (wrapped by `onRender`, with `draw` wrapped by `onDraw`). |
-| Update | Each update tick of the UI bridge (once per frame, before drawing, in the bundled demo windows) | `onUpdate()`: the children first, then the node's `update()` hook, wrapped by the `onUpdate` callbacks. Runs for hidden nodes too. |
+| Update | Each update tick of the UI bridge (once per frame, before drawing, in the bundled demo windows) | `fireUpdate()`: the children first, then the node's `update()` hook, wrapped by the `onUpdate` callbacks. Runs for hidden nodes too. |
 | Mount | The first rendered frame in which `isMounted()` is `true` | The `onMount` callbacks. Without [wait conditions](#waiting-and-skeletons), this is the node's first rendered frame. |
-| Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `onDetach()`: the children first, then the scrollbar and the skeleton, then the node unsubscribes from its signals, ends its interactions (see below), runs the `detach` hook of its effects and its own `detach()` hook, all wrapped by the `onDetach` callbacks. When the node leaves its parent, it also forgets the overflow area of its former container (see `getOverflowArea()`). |
+| Detach | `clearChildren()` or `remove(...)` on the parent, an `append` that moves the node to another parent, `WatchProperty.CLEAR_CHILDREN`, the UI closing or reloading | `fireDetach()`: the children first, then the scrollbar and the skeleton, then the node unsubscribes from its signals, ends its interactions (see below), runs the `detach` hook of its effects and its own `detach()` hook, all wrapped by the `onDetach` callbacks. When the node leaves its parent, it also forgets the overflow area of its former container (see `getOverflowArea()`). |
 
-- Methods named `onX(callback)` register a callback; the overloads without callback (`onUpdate()`, `onDetach()`, `onMousePressed(mouseX, mouseY, button, context)`...) are the entry points that run the stage, called by the framework.
+- Methods named `onX(callback)` register a callback; the `fireX(...)` methods (`fireUpdate()`, `fireDetach()`, `fireMousePressed(mouseX, mouseY, button, context)`...) are the entry points that run the stage, called by the framework.
 - `init` runs on every load, including a new attachment after a detach: keep it repeatable. Override the hooks in your own nodes (see [Custom Nodes](custom-nodes.md)).
-- A node follows the signals of its [`watch(...)`](../state/watch.md) calls and of the controls' `signal(...)` only while it is attached: `onDetach()` unsubscribes the whole subtree, so a signal neither reloads, rebuilds nor updates a detached node. Loading it again (`append`, `attach`, reopening its UI) subscribes each of them again, once, and applies right away a value published while it was detached. `isSubscribed()` tells whether the node follows its signals.
-- A detached node is inert: it is not drawn, updated or reached by the input, and nothing global keeps it, so you can drop it. `onDetach()` also ends what was in progress, so that a node attached again behaves like a new one, without double registration:
+- A node follows the signals of its [`watch(...)`](../state/watch.md) calls and of the controls' `signal(...)` only while it is attached: `fireDetach()` unsubscribes the whole subtree, so a signal neither reloads, rebuilds nor updates a detached node. Loading it again (`append`, `attach`, reopening its UI) subscribes each of them again, once, and applies right away a value published while it was detached. `isSubscribed()` tells whether the node follows its signals.
+- A detached node is inert: it is not drawn, updated or reached by the input, and nothing global keeps it, so you can drop it. `fireDetach()` also ends what was in progress, so that a node attached again behaves like a new one, without double registration:
   - an ongoing drag ends with its `onDragEnd` callbacks; a `MOVE` node lands at once where the drag aimed, and the copy of a `COPY` drag is dropped;
   - a hovered node fires `onHoverEnd` and its hover progress (`hoverValue`) goes back to `0`;
   - the node is unmounted: `onMount` runs again on its first frame once attached again, after its `wait(...)` conditions pass;
@@ -486,8 +486,8 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | Method | Description |
 | --- | --- |
 | `load(UI ui)` | Loads the node and its subtree in `ui`. Called by `attach`/`append`. |
-| `onDetach()` | Detaches the subtree (runs the detach hooks). |
-| `onUpdate()` | Runs one update tick on the subtree. Called by the UI. |
+| `fireDetach()` | Detaches the subtree (runs the detach hooks). |
+| `fireUpdate()` | Runs one update tick on the subtree. Called by the UI. |
 | `render(double mouseX, double mouseY)` | Draws the node for one frame. Called by the UI or by the parent. |
 | `wait(...)`, `skeleton(...)`, `isMounted()`, `getSkeleton()`, `getWaitingList()` | Loading state. |
 | `copy()` | Copies the node. |

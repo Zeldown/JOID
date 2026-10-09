@@ -483,7 +483,7 @@ public class DevNodeTest {
 	public void ignoresTheKeysBelowAnotherUi() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.open(new DevUI());
-		panel.onKeyPressed('g', Key.G, DispatchContext.create());
+		panel.fireKeyPressed('g', Key.G, DispatchContext.create());
 		Assert.assertFalse(panel.getGridSignal().get());
 	}
 
@@ -491,8 +491,8 @@ public class DevNodeTest {
 	public void ignoresACancelledInput() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
-		panel.onKeyPressed('g', Key.G, DispatchContext.create(true));
-		panel.onMousePressed(250D, 250D, MouseButton.LEFT, DispatchContext.create(true));
+		panel.fireKeyPressed('g', Key.G, DispatchContext.create(true));
+		panel.fireMousePressed(250D, 250D, MouseButton.LEFT, DispatchContext.create(true));
 		Assert.assertFalse(panel.getGridSignal().get());
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 	}
@@ -502,7 +502,7 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
 		this.bridges.open(new DevUI());
-		panel.onMousePressed(250D, 250D, MouseButton.LEFT, DispatchContext.create());
+		panel.fireMousePressed(250D, 250D, MouseButton.LEFT, DispatchContext.create());
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 	}
 

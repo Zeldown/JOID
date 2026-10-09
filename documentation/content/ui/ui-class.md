@@ -31,7 +31,7 @@ public class MenuUI extends UI {
 
 ## Lifecycle
 
-![Boxes for the construction, the load with init(), the frames, onClose() and dispose(), with reload, renew, resize and reopen branching from the frames](../images/diagram-ui-lifecycle.png "The life of a UI: reload keeps the instance, renew replaces it, a resize keeps the zoom, a reopen loads the nodes again without init().")
+![Boxes for the construction, the load with init(), the frames, fireClose() and dispose(), with reload, renew, resize and reopen branching from the frames](../images/diagram-ui-lifecycle.png "The life of a UI: reload keeps the instance, renew replaces it, a resize keeps the zoom, a reopen loads the nodes again without init().")
 
 | Stage | Trigger | What happens |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ public class MenuUI extends UI {
 | Resize | `UIBridge.load()`, called by the backend when the window changes | `load(width, height, zoom)` resizes the view and keeps the current zoom. `init()` does not run again. |
 | Reload | `reload()`, Ctrl + R or F5, the DevNode button, hot reload | Saves then restores the `@UIProperty` fields, applies the annotation values changed since their last read, detaches every node, clears the keybinds and tasks, runs `init()` again and replays the In transition. Same instance: fields, signals and zoom are kept. |
 | Renew | `renew()`, Ctrl + Shift + R or Shift + F5 | Creates a new instance with the constructor without argument, releases the current instance with `dispose()`, then removes it from the bridge and adds the new one (no `close()`, no Out transition). New fields, new signals, zoom 1. Returns the new instance. |
-| Close | `JOID.close(ui)`, Escape, the bridge | `onClose()` asks your `close()` hook; if it agrees, plays the Out transition, then `dispose()` releases the UI and the bridge removes it. |
+| Close | `JOID.close(ui)`, Escape, the bridge | `fireClose()` asks your `close()` hook; if it agrees, plays the Out transition, then `dispose()` releases the UI and the bridge removes it. |
 | Reopen | `JOID.open(ui)` on a closed instance | `init()` does not run again: every top-level node is loaded again and follows its signals again. |
 
 `dispose()` detaches every node (which ends their drags, hovers and focus and unsubscribes them from their signals), stops the hot reload watcher, saves every [store](../state/stores.md), destroys the local stores of the UI and saves its `@UIProperty` fields. `JOID.close` and the Out transition call it; call it yourself only from a bridge that removes a UI without `JOID.close`.
@@ -253,9 +253,9 @@ For timed animations, use a [TweenAnimator](../animation/tween-animator.md).
 | --- | --- |
 | `load(double width, double height)`, `load(double width, double height, double zoom)` | Sizes the UI to the window (zoom 1 for the first form) and initializes it on the first call. |
 | `draw(double mouseX, double mouseY)` | Draws the UI; the mouse is in window coordinates. Runs a pending hot reload first. |
-| `onUpdate()` | Updates the nodes, then calls `update()`. |
-| `onMousePressed(MouseButton)`, `onMouseReleased(MouseButton)`, `onMouseDragged(MouseButton, long)`, `onMouseScroll(double, double)`, `onKeyPressed(char, Key)` | Dispatch an event to the nodes and the hooks; return `true` when it was consumed, `false` before the first load. |
-| `boolean onClose()` | Asks `close()`, starts the Out transition, returns `true` when the bridge can remove the UI at once. |
+| `fireUpdate()` | Updates the nodes, then calls `update()`. |
+| `fireMousePressed(MouseButton)`, `fireMouseReleased(MouseButton)`, `fireMouseDragged(MouseButton, long)`, `fireMouseScroll(double, double)`, `fireKeyPressed(char, Key)` | Dispatch an event to the nodes and the hooks; return `true` when it was consumed, `false` before the first load. |
+| `boolean fireClose()` | Asks `close()`, starts the Out transition, returns `true` when the bridge can remove the UI at once. |
 | `dispose()` | Releases the UI (see [Lifecycle](#lifecycle)). |
 
 ## Pitfalls

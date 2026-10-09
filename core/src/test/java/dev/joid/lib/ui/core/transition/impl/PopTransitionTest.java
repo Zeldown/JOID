@@ -85,7 +85,7 @@ public class PopTransitionTest {
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)));
 		ui.setTransition(new PopTransition());
 		this.bridges.open(ui).frames(20);
-		Assert.assertFalse(ui.onClose());
+		Assert.assertFalse(ui.fireClose());
 		this.bridges.frames(2);
 		Assert.assertTrue(this.width() < 200D);
 		Assert.assertTrue(this.bridges.getUi().getUiList().contains(ui));
