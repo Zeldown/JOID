@@ -161,7 +161,7 @@ At each frame, the UI bridge picks the cursor the way a browser does:
 - only the UIs that receive the mouse count, from the top: an interactive overlay comes before the screen below it, a popup hides the UIs under it, and a passive overlay is ignored;
 - outside every node, the cursor is `DEFAULT`.
 
-![Each card of the cursor demo gives its square one of the ten cursors; the last row shows an inherited cursor, an overridden one, a dragged square, a reactive cursor and a text field](../images/cursor-demo.png "The cursor demo: one card per cursor, then inheritance, drag, a reactive cursor and the text cursor of a field")
+![Each card of the cursor demo gives its square one of the ten cursors; the third row shows an inherited cursor, an overridden one, a dragged square, a reactive cursor and a text field; the last row shows a click through a decoration, a click blocked by one, a click bubbling up to a parent, the nodes under the mouse and the edges of the view](../images/cursor-demo.png "The cursor demo: one card per cursor, then inheritance, drag, a reactive cursor and the text cursor of a field, then the mouse target")
 
 The bridge calls `IWindowBridge.setCursor(...)` only when that cursor changes, and never while the mouse is grabbed. `cursor(Supplier<Cursor>)` follows a signal or any expression; a supplier that gives `null` lets the node take the cursor of its parent. `getCursor()` returns the cursor set on the node (`null` when it has none), `getResolvedCursor()` the one it shows after inheritance, and `UI.getHoveredNode()` the node that decides.
 
