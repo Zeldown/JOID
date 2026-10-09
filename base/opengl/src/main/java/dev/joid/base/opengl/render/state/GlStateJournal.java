@@ -19,10 +19,10 @@ import lombok.NonNull;
 
 public final class GlStateJournal {
 
-	private final List<Entry>           entryList;
-	private final Set<Integer>          textureSet;
 	private final int[]                 unitTextures;
 	private final IGlBinding            binding;
+	private final List<Entry>           entryList;
+	private final Set<Integer>          textureSet;
 	private final Set<Integer>          vertexArraySet;
 	private final GlCapabilities        capabilities;
 	private final IGlFrameBufferBinding frameBufferBinding;

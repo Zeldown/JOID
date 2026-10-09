@@ -12,8 +12,8 @@ import lombok.NonNull;
 @Getter
 public abstract class GlVertexInput {
 
-	private final IGlBinding binding;
 	private final int        buffer;
+	private final IGlBinding binding;
 
 	protected GlVertexInput(final @NonNull IGlBinding binding) {
 		this.binding = binding;

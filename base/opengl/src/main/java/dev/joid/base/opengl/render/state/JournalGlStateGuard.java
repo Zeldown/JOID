@@ -8,10 +8,11 @@ import lombok.NonNull;
 
 public final class JournalGlStateGuard implements IGlStateGuard {
 
-	private final GlStateJournal  journal;
 	private final GlPipelineReset reset;
+	private final GlStateJournal  journal;
 
-	@Getter private final IGlBinding binding;
+	@Getter
+	private final IGlBinding binding;
 
 	private int depth;
 

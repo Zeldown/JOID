@@ -129,9 +129,9 @@ public class GlCapabilitiesTest {
 
 	private static final class ContextBinding implements IGlBinding {
 
-		private final Map<Integer, Integer> integerMap;
-		private final Map<Integer, String>  stringMap;
 		private final List<String>          extensionList;
+		private final Map<Integer, String>  stringMap;
+		private final Map<Integer, Integer> integerMap;
 
 		private ContextBinding(final String version, final String glsl, final int profileMask, final int flags, final String... extensions) {
 			this.integerMap    = new HashMap<>();

@@ -23,8 +23,8 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 
 	private final ByteBuffer quad;
 
-	private GlShader shader;
 	private boolean  warned;
+	private GlShader shader;
 
 	private DrawGlMipmapBuilder() {
 		final float[][] corners = {{-1F, -1F, 0F, 0F}, {1F, -1F, 1F, 0F}, {1F, 1F, 1F, 1F}, {-1F, -1F, 0F, 0F}, {1F, 1F, 1F, 1F}, {-1F, 1F, 0F, 1F}};

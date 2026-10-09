@@ -12,10 +12,10 @@ import lombok.NonNull;
 
 public final class AlAudioSource implements IAudioSource {
 
-	private final IAlBinding     binding;
-	private final IAudioGain     audioGain;
 	private final int            channels;
 	private final int            sampleRate;
+	private final IAlBinding     binding;
+	private final IAudioGain     audioGain;
 	private final List<Integer>  bufferList;
 	private final Deque<Integer> freeBufferQueue;
 	private final Deque<Integer> sampleCountQueue;
