@@ -4,7 +4,7 @@ import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
@@ -13,10 +13,10 @@ public interface NodeAnimationCallback<T extends Node> extends NodeCallback {
 
 	public void apply(final @NonNull T node, final @NonNull TweenAnimator animator, final float value);
 
-	@NodeCallbackMethod(Type.PRE)
+	@NodeCallbackMethod(Phase.PRE)
 	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final @NonNull TweenAnimator animator, final float value) {}
 
-	@NodeCallbackMethod(Type.POST)
+	@NodeCallbackMethod(Phase.POST)
 	public default void post(final @NonNull T node, final @NonNull InternalContext context, final @NonNull TweenAnimator animator, final float value) {
 		context.cancel(() -> this.apply(node, animator, value));
 	}

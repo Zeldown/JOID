@@ -209,12 +209,12 @@ public final class ReorderableFlexNode extends Node {
 		return super.follow("margin", margin, value -> this.margin = value);
 	}
 
-	public final @NonNull ReorderableFlexNode auto(final boolean auto) {
-		return this.auto(Signal.from(auto));
+	public final @NonNull ReorderableFlexNode autoDrag(final boolean autoDrag) {
+		return this.autoDrag(Signal.from(autoDrag));
 	}
 
-	public final @NonNull ReorderableFlexNode auto(final @NonNull Supplier<Boolean> auto) {
-		return super.follow("auto", auto, value -> this.autoDrag = value);
+	public final @NonNull ReorderableFlexNode autoDrag(final @NonNull Supplier<Boolean> autoDrag) {
+		return super.follow("autoDrag", autoDrag, value -> this.autoDrag = value);
 	}
 
 	public final int getChildIndex(final @NonNull Node child) {

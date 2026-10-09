@@ -55,7 +55,7 @@ public final class SnapshotRunner {
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
 		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
-		AssetLocator.register(new SnapshotUrlLocator(SnapshotSettings.getCache()));
+		AssetLocator.register(new SnapshotUrlAssetLocator(SnapshotSettings.getCache()));
 		runner.resize(1920, 1080);
 
 		JOID.inst().setDevMode(false).setDemoMode(true).load();

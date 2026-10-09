@@ -27,9 +27,9 @@ public class NodeCallbackRegistry {
 		boolean foundPre = false;
 		boolean foundPost = false;
 		for (final Method method : clazz.getDeclaredMethods()) {
-			if (NodeCallbackRegistry.validate(method, NodeCallbackMethod.Type.PRE)) {
+			if (NodeCallbackRegistry.validate(method, NodeCallbackMethod.Phase.PRE)) {
 				foundPre = true;
-			} else if (NodeCallbackRegistry.validate(method, NodeCallbackMethod.Type.POST)) {
+			} else if (NodeCallbackRegistry.validate(method, NodeCallbackMethod.Phase.POST)) {
 				foundPost = true;
 			}
 		}
@@ -52,7 +52,7 @@ public class NodeCallbackRegistry {
 		return NodeCallbackRegistry.IDS.getOrDefault(clazz, -1);
 	}
 
-	private static boolean validate(final Method method, final NodeCallbackMethod.Type type) {
+	private static boolean validate(final Method method, final NodeCallbackMethod.Phase type) {
 		if (method.isAnnotationPresent(NodeCallbackMethod.class)) {
 			final NodeCallbackMethod annotation = method.getAnnotation(NodeCallbackMethod.class);
 			if (annotation.value() == type) {

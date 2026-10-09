@@ -15,8 +15,8 @@ import org.junit.rules.TemporaryFolder;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.ui.core.hook.store.context.StoreContext;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import lombok.NonNull;
 
 public class UIStoreTest {
@@ -47,7 +47,7 @@ public class UIStoreTest {
 	public void readsItsAnnotation() {
 		final UIStoreData data = new SharedStore().getData();
 		Assert.assertEquals("shared", data.id());
-		Assert.assertSame(StoreContext.GLOBAL, data.context());
+		Assert.assertSame(StoreScope.GLOBAL, data.scope());
 	}
 
 	@Test
@@ -90,10 +90,10 @@ public class UIStoreTest {
 		Assert.assertFalse(new File(this.folder.getRoot(), "store").exists());
 	}
 
-	@UIStoreData(id = "shared", context = StoreContext.GLOBAL)
+	@UIStoreData(id = "shared", scope = StoreScope.GLOBAL)
 	public static class SharedStore extends UIStore {}
 
-	@UIStoreData(id = "saved", context = StoreContext.PERMANENT)
+	@UIStoreData(id = "saved", scope = StoreScope.PERMANENT)
 	public static class SavedStore extends UIStore {
 
 		@Override

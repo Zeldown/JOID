@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
@@ -76,7 +76,7 @@ public class NodeDetachCallbackTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onDetach(received::add);
 		final NodeUI ui = new NodeUI(rect);
 		this.bridges.open(ui).frames(30);
-		ui.properlyClose();
+		ui.dispose();
 		Assert.assertEquals(Collections.singletonList(rect), received);
 	}
 
@@ -92,7 +92,7 @@ public class NodeDetachCallbackTest {
 			}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull RectNode node, final @NonNull InternalContext context) {
 				context.cancel();
 			}

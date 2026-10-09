@@ -74,7 +74,7 @@ public class UIDemoReorderable extends UIDemo {
 			final ReorderableFlexNode manual = ReorderableFlexNode
 					.vertical(20, 20, 360)
 					.margin(6D)
-					.auto(false)
+					.autoDrag(false)
 					.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] vertical handle list: reorder end " + oldIndex + " -> " + newIndex));
 			manual.body(flex -> {
 			for (int i = 0; i < 5; i++) {
@@ -216,7 +216,7 @@ public class UIDemoReorderable extends UIDemo {
 				final ReorderableFlexNode manual = ReorderableFlexNode
 						.horizontal(10, 10, 200)
 						.margin(10D)
-						.auto(false)
+						.autoDrag(false)
 						.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] horizontal handle list: reorder end " + oldIndex + " -> " + newIndex));
 				manual.body(flex -> {
 					for (int i = 0; i < 8; i++) {

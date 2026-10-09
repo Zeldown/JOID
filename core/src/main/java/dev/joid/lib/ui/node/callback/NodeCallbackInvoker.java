@@ -11,21 +11,21 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class NodeCallbackObject<T extends NodeCallback> {
+public class NodeCallbackInvoker<T extends NodeCallback> {
 
 	private final T callback;
 	private Method pre;
 	private Method post;
 
-	public NodeCallbackObject(final @NonNull T callback) {
+	public NodeCallbackInvoker(final @NonNull T callback) {
 		this.callback = callback;
 		for (final Method method : callback.getClass().getMethods()) {
-			final NodeCallbackMethod annotation = NodeCallbackObject.findAnnotation(method);
+			final NodeCallbackMethod annotation = NodeCallbackInvoker.findAnnotation(method);
 			if (annotation != null) {
-				if (annotation.value() == NodeCallbackMethod.Type.PRE) {
+				if (annotation.value() == NodeCallbackMethod.Phase.PRE) {
 					this.pre = method;
 					this.pre.setAccessible(true);
-				} else if (annotation.value() == NodeCallbackMethod.Type.POST) {
+				} else if (annotation.value() == NodeCallbackMethod.Phase.POST) {
 					this.post = method;
 					this.post.setAccessible(true);
 				}
@@ -63,7 +63,7 @@ public class NodeCallbackObject<T extends NodeCallback> {
 			method.invoke(this.callback, arguments);
 		} catch (final Exception e) {
 			final Throwable cause = e instanceof InvocationTargetException ? e.getCause() : e;
-			System.err.println("[JOID] The " + phase + " phase of " + NodeCallbackObject.nameOf(this.callback) + " failed: " + cause);
+			System.err.println("[JOID] The " + phase + " phase of " + NodeCallbackInvoker.nameOf(this.callback) + " failed: " + cause);
 			cause.printStackTrace();
 		} finally {
 			SignalReplay.exit();

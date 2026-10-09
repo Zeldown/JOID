@@ -13,7 +13,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
@@ -76,7 +76,7 @@ public class NodeRenderCallbackTest {
 			}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull RectNode node, final @NonNull InternalContext context, final double mouseX, final double mouseY) {
 				context.cancel();
 			}

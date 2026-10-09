@@ -20,7 +20,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class SnapshotUrlLocator implements IAssetLocator {
+public final class SnapshotUrlAssetLocator implements IAssetLocator {
 
 	private final File directory;
 
@@ -32,7 +32,7 @@ public final class SnapshotUrlLocator implements IAssetLocator {
 	@Override
 	public @NonNull Asset locate(final @NonNull Object handle) {
 		final String url = (String) handle;
-		return new CachedAsset(url, new File(this.directory, SnapshotUrlLocator.hash(url)));
+		return new CachedAsset(url, new File(this.directory, SnapshotUrlAssetLocator.hash(url)));
 	}
 
 	private static void download(final @NonNull String url, final @NonNull File file) {
@@ -80,7 +80,7 @@ public final class SnapshotUrlLocator implements IAssetLocator {
 		@Override
 		public @NonNull InputStream open() throws IOException {
 			if (!this.file.exists()) {
-				SnapshotUrlLocator.download(super.getUniqueId(), this.file);
+				SnapshotUrlAssetLocator.download(super.getUniqueId(), this.file);
 			}
 			return new FileInputStream(this.file);
 		}

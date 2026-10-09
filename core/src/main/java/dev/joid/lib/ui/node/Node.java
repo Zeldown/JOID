@@ -39,7 +39,7 @@ import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.node.callback.NodeCallback;
-import dev.joid.lib.ui.node.callback.NodeCallbackObject;
+import dev.joid.lib.ui.node.callback.NodeCallbackInvoker;
 import dev.joid.lib.ui.node.callback.impl.animation.NodeAnimationCallback;
 import dev.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
 import dev.joid.lib.ui.node.callback.impl.draggable.NodeSnapCallback;
@@ -135,10 +135,10 @@ public abstract class Node implements INode {
 	private static final int CALLBACK_HOVER_END      = NodeCallbackRegistry.next(NodeHoverEndCallback.class);
 	private static final int CALLBACK_HOVER_START    = NodeCallbackRegistry.next(NodeHoverStartCallback.class);
 
-	private final transient List<Predicate<Node>>                     waitingList;
-	private final transient Map<String, NodeSource<?>>                sourceMap;
-	private final transient List<SignalSubscriber<?>>                 subscriptionList;
-	private final transient Map<Integer, List<NodeCallbackObject<?>>> callbackMap;
+	private final transient List<Predicate<Node>>                      waitingList;
+	private final transient Map<String, NodeSource<?>>                 sourceMap;
+	private final transient List<SignalSubscriber<?>>                  subscriptionList;
+	private final transient Map<Integer, List<NodeCallbackInvoker<?>>> callbackMap;
 
 	private final transient TweenAnimator             hoverAnimator;
 	private final transient Map<TweenAnimator, Float> animatorMap;
@@ -1166,7 +1166,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull InternalContext context, final Runnable runnable, final Object... args) {
-		final List<NodeCallbackObject<T>> callbackList = this.getCallbackList(type);
+		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
 		if (callbackList.isEmpty()) {
 			if (runnable != null) {
 				runnable.run();
@@ -1174,7 +1174,7 @@ public abstract class Node implements INode {
 			return;
 		}
 
-		for (final NodeCallbackObject<T> callback : callbackList) {
+		for (final NodeCallbackInvoker<T> callback : callbackList) {
 			callback.pre(this, context, args);
 		}
 
@@ -1190,18 +1190,18 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends NodeCallback> void executePreCallback(final int type, final @NonNull InternalContext context, final Object... args) {
-		final List<NodeCallbackObject<T>> callbackList = this.getCallbackList(type);
+		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
 		if (callbackList.isEmpty()) {
 			return;
 		}
 
-		for (final NodeCallbackObject<T> callback : callbackList) {
+		for (final NodeCallbackInvoker<T> callback : callbackList) {
 			callback.pre(this, context, args);
 		}
 	}
 
 	public final <T extends NodeCallback> void executePostCallback(final int type, final @NonNull InternalContext context, final Object... args) {
-		final List<NodeCallbackObject<T>> callbackList = this.getCallbackList(type);
+		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
 		if (callbackList.isEmpty()) {
 			return;
 		}
@@ -1209,10 +1209,10 @@ public abstract class Node implements INode {
 		this.post(callbackList, context, args);
 	}
 
-	private <T extends NodeCallback> void post(final List<NodeCallbackObject<T>> callbackList, final InternalContext context, final Object... args) {
+	private <T extends NodeCallback> void post(final List<NodeCallbackInvoker<T>> callbackList, final InternalContext context, final Object... args) {
 		final boolean cancelled = context.isCancelled();
 		boolean handled = cancelled;
-		for (final NodeCallbackObject<T> callback : callbackList) {
+		for (final NodeCallbackInvoker<T> callback : callbackList) {
 			if (!cancelled) {
 				context.reset();
 			}
@@ -1227,8 +1227,8 @@ public abstract class Node implements INode {
 	}
 
 	protected final <T extends Node> @NonNull T registerCallback(final int type, final @NonNull NodeCallback callback) {
-		final List<NodeCallbackObject<?>> callbackList = this.callbackMap.getOrDefault(type, new ArrayList<>());
-		callbackList.add(new NodeCallbackObject<>(callback));
+		final List<NodeCallbackInvoker<?>> callbackList = this.callbackMap.getOrDefault(type, new ArrayList<>());
+		callbackList.add(new NodeCallbackInvoker<>(callback));
 		this.callbackMap.put(type, callbackList);
 		return (T) this;
 	}
@@ -1349,22 +1349,22 @@ public abstract class Node implements INode {
 		return new IndexedLinkedList<>(this.children.ordered().stream().filter(child -> clazz.isAssignableFrom(child.getClass())).map(child -> (T) child).collect(Collectors.toList()));
 	}
 
-	public final <T extends NodeCallback> @NonNull List<@NonNull NodeCallbackObject<T>> getCallbackList(final int type) {
+	public final <T extends NodeCallback> @NonNull List<@NonNull NodeCallbackInvoker<T>> getCallbackList(final int type) {
 		if (this.callbackMap.isEmpty() || !this.callbackMap.containsKey(type)) {
 			return Collections.emptyList();
 		}
 
-		final List<NodeCallbackObject<?>> callbackList = this.callbackMap.get(type);
+		final List<NodeCallbackInvoker<?>> callbackList = this.callbackMap.get(type);
 		if (callbackList.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		final List<NodeCallbackObject<T>> mappedCallbackList = new ArrayList<>();
-		for (final NodeCallbackObject<?> callback : callbackList) {
+		final List<NodeCallbackInvoker<T>> mappedCallbackList = new ArrayList<>();
+		for (final NodeCallbackInvoker<?> callback : callbackList) {
 			if (callback == null) {
 				continue;
 			}
-			mappedCallbackList.add((NodeCallbackObject<T>) callback);
+			mappedCallbackList.add((NodeCallbackInvoker<T>) callback);
 		}
 
 		return mappedCallbackList;
@@ -1541,7 +1541,7 @@ public abstract class Node implements INode {
 		copy.skeleton = this.skeleton;
 
 		copy.getCallbackMap().clear();
-		for (final Entry<Integer, List<NodeCallbackObject<?>>> entry : this.callbackMap.entrySet()) {
+		for (final Entry<Integer, List<NodeCallbackInvoker<?>>> entry : this.callbackMap.entrySet()) {
 			copy.getCallbackMap().put(entry.getKey(), new ArrayList<>(entry.getValue()));
 		}
 

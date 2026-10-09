@@ -1,12 +1,12 @@
 # Stores
 
-[Saving State](../essentials/saving-state.md) showed a store, `@UIStoreData`, the three `StoreContext` values and a `PERMANENT` store with `load` and `save`. This page covers stores in full: how `useStore` finds or creates a store, constructor arguments, the lifecycle of a store, its file, and `UIStoreHook`. Use a store for state that outlives a node tree: a cart, the settings of a menu, a session.
+[Saving State](../essentials/saving-state.md) showed a store, `@UIStoreData`, the three `StoreScope` values and a `PERMANENT` store with `load` and `save`. This page covers stores in full: how `useStore` finds or creates a store, constructor arguments, the lifecycle of a store, its file, and `UIStoreHook`. Use a store for state that outlives a node tree: a cart, the settings of a menu, a session.
 
 ## A first store
 
 ```java
 @Getter
-@UIStoreData(context = StoreContext.GLOBAL)
+@UIStoreData(scope = StoreScope.GLOBAL)
 public class CartStore extends UIStore {
 
 	private final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
@@ -30,13 +30,13 @@ RectNode
 
 ![Clicking a button adds items to a cart; closing and reopening the UI keeps the count](../images/store-cart.gif "A GLOBAL store outlives the UI that uses it")
 
-Every UI that calls `useStore(CartStore.class)` gets the same instance, so the cart survives when the shop closes and opens again. The text reads the `ListSignal` of the store with `size()`, a followed read: it updates on each `add` (see [Reactive Properties](reactive-properties.md)). `UIStore` is in `dev.joid.lib.ui.core.hook.store`, `UIStoreData` in `dev.joid.lib.ui.core.hook.store.data`, `StoreContext` in `dev.joid.lib.ui.core.hook.store.context`; `info` is a `TextInfo` (see [Text](../essentials/text.md)). `@Getter` is the Lombok annotation that writes `getItems()`.
+Every UI that calls `useStore(CartStore.class)` gets the same instance, so the cart survives when the shop closes and opens again. The text reads the `ListSignal` of the store with `size()`, a followed read: it updates on each `add` (see [Reactive Properties](reactive-properties.md)). `UIStore` is in `dev.joid.lib.ui.core.hook.store`, `UIStoreData` in `dev.joid.lib.ui.core.hook.store.data`, `StoreScope` in `dev.joid.lib.ui.core.hook.store.scope`; `info` is a `TextInfo` (see [Text](../essentials/text.md)). `@Getter` is the Lombok annotation that writes `getItems()`.
 
-## Store contexts with StoreContext
+## Store scopes with StoreScope
 
 ![Diagram: a LOCAL store per UI instance, one GLOBAL store shared by every UI, one PERMANENT store shared and saved to a file](../images/diagram-store-contexts.png "Where each kind of store lives")
 
-| Context | Instances | Lifetime | Saved to disk |
+| Scope | Instances | Lifetime | Saved to disk |
 | --- | --- | --- | --- |
 | `LOCAL` (default) | One per UI instance. | Destroyed when that UI closes; reopening the UI creates a new one. | No |
 | `GLOBAL` | One shared by every UI. | Until `UIStoreHook.destroyStore(store)`. | No |
@@ -51,7 +51,7 @@ Every store class needs `@UIStoreData`; a store without it throws `IllegalStateE
 | Attribute | Default | Description |
 | --- | --- | --- |
 | `id` | `""` | Name of the file of a `PERMANENT` store. Empty: the fully qualified class name of the store. |
-| `context` | `StoreContext.LOCAL` | Context of the store. |
+| `scope` | `StoreScope.LOCAL` | Scope of the store. |
 
 Give a `PERMANENT` store an explicit id: renaming or moving the class would otherwise change its file. Two stores with the same id share one file. `getData()` returns the annotation of a store.
 
@@ -108,7 +108,7 @@ A store is not a signal: a value computed once from a store is written directly 
 | `init()` | When the store is created and not restored from a file. |
 | `load(JsonObject json)` | When a `PERMANENT` store is created and its file was read; `init()` is not called then. |
 | `save(JsonObject json)` | Before a `PERMANENT` store is written: fill `json` with the state to keep. |
-| `save()` | Writes a `PERMANENT` store immediately; does nothing for the other contexts. |
+| `save()` | Writes a `PERMANENT` store immediately; does nothing for the other scopes. |
 | `destroy()` | When the store is destroyed: a `LOCAL` store when its UI closes, any store through `UIStoreHook.destroyStore`. |
 
 When a UI closes, JOID saves every `PERMANENT` store in use, then destroys the `LOCAL` stores of that UI and forgets them: the next open starts with fresh local stores.
@@ -117,7 +117,7 @@ When a UI closes, JOID saves every `PERMANENT` store in use, then destroys the `
 
 ```java
 @Getter
-@UIStoreData(id = "settings", context = StoreContext.PERMANENT)
+@UIStoreData(id = "settings", scope = StoreScope.PERMANENT)
 public class SettingsStore extends UIStore {
 
 	private final FloatSignal volume = new FloatSignal(1F);
@@ -159,7 +159,7 @@ public class SettingsStore extends UIStore {
 | Method | Description |
 | --- | --- |
 | `useStore(Class<T> clazz, Object... args)` | Gets or creates a store. |
-| `saveStore(UIStore store)` | Writes a `PERMANENT` store; does nothing for the other contexts. |
+| `saveStore(UIStore store)` | Writes a `PERMANENT` store; does nothing for the other scopes. |
 | `saveAll()` | Writes every shared `PERMANENT` store. |
 | `destroyStore(UIStore store)` | Removes a `GLOBAL` or `PERMANENT` store from the shared instances (the next `useStore` creates a new one), deletes the file of a `PERMANENT` store, then calls `destroy()`. It does not save the store first. |
 

@@ -90,10 +90,10 @@ A video's audio can fade with the distance to a listener, for UIs placed in a 3D
 | `referenceDistance(float distance)` | decoder default (`5F`) | Distance up to which the volume is full. |
 | `maxDistance(float distance)` | decoder default (`50F`) | Distance from which the audio is silent. |
 
-Between the two distances the volume fades quadratically. The listener position comes from `VideoAudioPlayer.setAudioListener(AudioListener)` (`dev.joid.lib.video`); without a listener, the audio is not attenuated.
+Between the two distances the volume fades quadratically. The listener position comes from `VideoAudioPlayer.setAudioListenerPosition(AudioListenerPosition)` (`dev.joid.lib.video`); without a listener, the audio is not attenuated.
 
 ```java
-VideoAudioPlayer.setAudioListener(() -> new Vector3f(0F, 1.6F, 0F));
+VideoAudioPlayer.setAudioListenerPosition(() -> new Vector3f(0F, 1.6F, 0F));
 
 ResourcePlayerNode
 .create(0, 0, 640, 360)

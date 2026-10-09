@@ -13,7 +13,7 @@ import lombok.NonNull;
 
 public final class VideoAudioPlayer {
 
-	private static AudioListener audioListener;
+	private static AudioListenerPosition audioListenerPosition;
 
 	private final int channels;
 	private final int sampleRate;
@@ -182,8 +182,8 @@ public final class VideoAudioPlayer {
 		return this.sampleQueue.size();
 	}
 
-	public static AudioListener getAudioListener() {
-		return VideoAudioPlayer.audioListener;
+	public static AudioListenerPosition getAudioListenerPosition() {
+		return VideoAudioPlayer.audioListenerPosition;
 	}
 
 	public void setGroup(final Object group) {
@@ -212,8 +212,8 @@ public final class VideoAudioPlayer {
 		this.positional = true;
 	}
 
-	public static void setAudioListener(final AudioListener audioListener) {
-		VideoAudioPlayer.audioListener = audioListener;
+	public static void setAudioListenerPosition(final AudioListenerPosition audioListenerPosition) {
+		VideoAudioPlayer.audioListenerPosition = audioListenerPosition;
 	}
 
 	public void cleanup() {
@@ -229,11 +229,11 @@ public final class VideoAudioPlayer {
 	}
 
 	private float computeDistanceVolume() {
-		if (VideoAudioPlayer.audioListener == null) {
+		if (VideoAudioPlayer.audioListenerPosition == null) {
 			return 1F;
 		}
 
-		final Vector3f listenerPos = VideoAudioPlayer.audioListener.getListenerPosition();
+		final Vector3f listenerPos = VideoAudioPlayer.audioListenerPosition.getListenerPosition();
 		final double dx = listenerPos.x - this.posX;
 		final double dy = listenerPos.y - this.posY;
 		final double dz = listenerPos.z - this.posZ;

@@ -32,7 +32,7 @@ public final class HeadlessBridges extends ExternalResource {
 	@Override
 	protected void after() {
 		for (final UI opened : new ArrayList<>(this.ui.getUiList().ordered())) {
-			opened.properlyClose();
+			opened.dispose();
 			this.ui.getUiList().remove(opened);
 		}
 

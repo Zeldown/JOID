@@ -215,7 +215,7 @@ The UI list is sorted by `zlevel` (`@UIData`, compared on its integer part), the
 | Method | Default |
 |---|---|
 | `isOnTop(UI ui)` | `true` for the first active and visible UI from the top of the sorted list (`zlevel`, then opening order); `false` when no UI is open. A hidden or inactive UI above, such as a notification layer with `active = false`, leaves hover and tooltips to the UI below. Overlays have their own top UI, among the overlays that take input. |
-| `isOpened(UI ui)` | Whether the UI is in `getUiList()`. |
+| `isOpen(UI ui)` | Whether the UI is in `getUiList()`. |
 | `getUiList()` | The sorted list of UIs, an `IndexedLinkedList<UI>`. |
 | `getInterfaceScale(UI ui)` | `1`. See [Interface scale with getInterfaceScale](#interface-scale-with-getinterfacescale). |
 | `getIndex()` | `0`. See [Several UI bridges](#several-ui-bridges). |
@@ -229,7 +229,7 @@ To replace the current UI instead of stacking, extend `StackUIBridge` (`dev.joid
 
 - `open(ui)` asks each open UI that is not an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) to close (`onClose()`) before it adds `ui`, unless `ui` is a popup or an overlay. When one of them refuses, `ui` is not opened; when one plays an out transition, `ui` opens when the transition ends.
 - `add(ui)` loads the UI at the window size; `close(ui)` removes it.
-- `closeAll()` releases every UI with `properlyClose()` and removes it, without asking.
+- `closeAll()` releases every UI with `dispose()` and removes it, without asking.
 - `onFirstScreenOpen()` and `onLastScreenClose()` run when the first UI that is not an overlay is added and when the last one is removed: a host shows and hides its own screen there. A screen that replaces another through `open(ui)` runs neither: the engine screen stays open during the switch.
 
 ```java
@@ -311,7 +311,7 @@ JOID.open(new ShopPanel());
 JOID.open(new UISettings());
 ```
 
-`ShopPanel`, a `WorldPanel`, goes to the `WorldUIBridge`; `UISettings` goes to the `AppUIBridge`. When several bridges handle a UI, the one with the highest `getIndex()` wins, then the latest registered. `canHandle(Class)` answers the lookups by class: `JOID.getUI(Class)` and `JOID.isOpen(Class)`. When no bridge handles a UI, `JOID.open` throws an `IllegalStateException` (`No IUIBridge can open ShopPanel: register one whose canHandle accepts it`). Each bridge runs its own loop: forward events and call `update()` and `draw()` on each of them where they belong.
+`ShopPanel`, a `WorldPanel`, goes to the `WorldUIBridge`; `UISettings` goes to the `AppUIBridge`. When several bridges handle a UI, the one with the highest `getIndex()` wins, then the latest registered. `canHandle(Class)` answers the lookups by class: `JOID.getUi(Class)` and `JOID.isOpen(Class)`. When no bridge handles a UI, `JOID.open` throws an `IllegalStateException` (`No IUIBridge can open ShopPanel: register one whose canHandle accepts it`). Each bridge runs its own loop: forward events and call `update()` and `draw()` on each of them where they belong.
 
 ## Reference
 
@@ -329,7 +329,7 @@ JOID.open(new UISettings());
 | `getUiList()` | The sorted `IndexedLinkedList<UI>`. |
 | `drawHover(UI, Object, double, double)` | Draws a text tooltip, see [Tooltips with drawHover](#tooltips-with-drawhover). |
 | `hoverInfo(TextInfo)`, `hoverColor(Color)`, `hoverBorderColor(Color)` | The style of the text tooltips; `getHoverInfo()` (nullable), `getHoverColor()`, `getHoverBorderColor()` read it. |
-| `isOnTop(UI)`, `isOpened(UI)` | See [Methods you implement](#methods-you-implement). |
+| `isOnTop(UI)`, `isOpen(UI)` | See [Methods you implement](#methods-you-implement). |
 | `isScreenOpen()`, `isOverlayHidden()`, `hasScreen()` | See [Overlays and the host](#overlays-and-the-host). |
 
 ## Pitfalls

@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import dev.joid.internal.JOID;
-import dev.joid.internal.font.InternalFont;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
@@ -235,7 +235,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	@Override
-	public boolean isOpened(final @NonNull UI ui) {
+	public boolean isOpen(final @NonNull UI ui) {
 		return this.uiList.contains(ui);
 	}
 
@@ -269,7 +269,7 @@ public abstract class UIBridge implements IUIBridge {
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 
-		double renderPipeline = 0D;
+		double depthLevel = 0D;
 		render.pushMatrix();
 		try {
 			render.translate(0D, 0D, -2000D);
@@ -278,12 +278,12 @@ public abstract class UIBridge implements IUIBridge {
 					continue;
 				}
 
-				renderPipeline += ui.getData().zlevel();
-				render.translate(0D, 0D, renderPipeline);
+				depthLevel += ui.getData().zlevel();
+				render.translate(0D, 0D, depthLevel);
 				ui.draw(window.getMouseX(), window.getMouseY());
-				renderPipeline = ui.getRenderPipelineLevel() + 10D;
+				depthLevel = ui.getDepthLevel() + 10D;
 			}
-			render.translate(0D, 0D, -renderPipeline);
+			render.translate(0D, 0D, -depthLevel);
 		} finally {
 			render.popMatrix();
 		}
@@ -349,7 +349,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	private static TextInfo getDefaultHoverInfo() {
 		final JOID joid = JOID.inst();
-		return (joid.isDevMode() || joid.isDemoMode()) && InternalFont.MONTSERRAT != null ? TextInfo.create(InternalFont.MONTSERRAT, 20, Color.WHITE) : null;
+		return (joid.isDevMode() || joid.isDemoMode()) && DevFont.MONTSERRAT != null ? TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE) : null;
 	}
 
 	private static boolean isConsumed(final UI ui, final boolean cancel) {

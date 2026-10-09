@@ -35,7 +35,7 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
-import dev.joid.internal.font.InternalFont;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
@@ -52,8 +52,8 @@ import dev.joid.lib.ui.core.data.scale.UIDataScale;
 import dev.joid.lib.ui.core.hook.property.UIProperty;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
-import dev.joid.lib.ui.core.hook.store.context.StoreContext;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.node.Node;
@@ -84,7 +84,7 @@ public class UITest {
 
 	@BeforeClass
 	public static void loadTheDevFont() {
-		InternalFont.load();
+		DevFont.load();
 	}
 
 	@Before
@@ -265,7 +265,7 @@ public class UITest {
 			UITest.out(() -> ui.draw(0D, 0D));
 			Assert.assertNull(ui.getFileMonitor());
 		} finally {
-			ui.properlyClose();
+			ui.dispose();
 		}
 	}
 
@@ -565,7 +565,7 @@ public class UITest {
 		ui.zoom(0.5D);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
 		this.bridges.getUi().keyTyped('r', Key.R);
-		Assert.assertFalse(this.bridges.getUi().isOpened(ui));
+		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(1, ui.inits);
 		final RenewUI renewed = (RenewUI) this.bridges.getUi().getUiList().get(0);
 		Assert.assertNotSame(ui, renewed);
@@ -582,7 +582,7 @@ public class UITest {
 		ui.clicks++;
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		this.bridges.getUi().keyTyped('r', Key.R);
-		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(2, ui.inits);
 		Assert.assertEquals(1, ui.clicks);
 	}
@@ -597,7 +597,7 @@ public class UITest {
 		} catch (final IllegalStateException exception) {
 			Assert.assertEquals("The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead", exception.getMessage());
 		}
-		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 	}
 
 	@Test
@@ -615,7 +615,7 @@ public class UITest {
 			System.setErr(previous);
 		}
 		Assert.assertEquals("[JOID] The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead", output.toString().trim());
-		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(1, ui.inits);
 	}
 
@@ -788,10 +788,10 @@ public class UITest {
 		Assert.assertFalse(ui.onClose());
 		Assert.assertTrue(ui.getTransition().getOut().isRunning());
 		Assert.assertFalse(ui.onClose());
-		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertFalse(this.trace.contains("detach node"));
 		this.bridges.frames(20);
-		Assert.assertFalse(this.bridges.getUi().isOpened(ui));
+		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(1, Collections.frequency(this.trace, "close"));
 		Assert.assertEquals(1, Collections.frequency(this.trace, "detach node"));
 	}
@@ -868,16 +868,16 @@ public class UITest {
 	}
 
 	@Test
-	public void raisesTheNodesDrawnAfterItsRenderPipelineLevel() {
+	public void raisesTheNodesDrawnAfterItsDepthLevel() {
 		final TraceUI ui = new TraceUI(this.trace, new DepthNode(this.trace, 0, 30D), new DepthNode(this.trace, 1, 0D));
 		ui.getData().setBackground(false);
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("update", "background", "pre", "depth 0.0", "depth 30.0", "post"), this.trace);
-		Assert.assertEquals(30D, ui.getRenderPipelineLevel(), 0D);
-		ui.setRenderPipelineLevel(5D);
-		Assert.assertEquals(5D, ui.getRenderPipelineLevel(), 0D);
+		Assert.assertEquals(30D, ui.getDepthLevel(), 0D);
+		ui.setDepthLevel(5D);
+		Assert.assertEquals(5D, ui.getDepthLevel(), 0D);
 	}
 
 	@Test
@@ -926,7 +926,7 @@ public class UITest {
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("close", "out start", "update", "background", "out pre", "pre", "post", "out post"), this.trace);
 		this.bridges.frames(10);
-		Assert.assertFalse(this.bridges.getUi().isOpened(ui));
+		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
 	}
 
 	@Test
@@ -1299,7 +1299,7 @@ public class UITest {
 	public void destroysItsLocalStoresOnClose() {
 		final TraceUI ui = new TraceUI(this.trace);
 		final LocalStore store = ui.useStore(LocalStore.class);
-		ui.properlyClose();
+		ui.dispose();
 		Assert.assertTrue(store.destroyed);
 	}
 
@@ -1307,7 +1307,7 @@ public class UITest {
 	public void createsItsLocalStoresAgainOnceReopened() {
 		final TraceUI ui = new TraceUI(this.trace);
 		final LocalStore store = ui.useStore(LocalStore.class);
-		ui.properlyClose();
+		ui.dispose();
 		Assert.assertTrue(ui.getStoreMap().isEmpty());
 		final LocalStore reopened = ui.useStore(LocalStore.class);
 		Assert.assertNotSame(store, reopened);
@@ -1319,7 +1319,7 @@ public class UITest {
 		final PropertyUI ui = new PropertyUI();
 		ui.load(1920D, 1080D);
 		ui.title = "Shop";
-		ui.properlyClose();
+		ui.dispose();
 		final File file = new File(new File(this.folder.getRoot(), "property"), PropertyUI.class.getName() + ".property");
 		final String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 		Assert.assertTrue(json, json.contains("\"title\":\"Shop\""));
@@ -1329,7 +1329,7 @@ public class UITest {
 	public void restoresItsPropertiesOnItsFirstLoad() {
 		final PropertyUI saved = new PropertyUI();
 		saved.title = "Shop";
-		saved.properlyClose();
+		saved.dispose();
 		final PropertyUI loaded = new PropertyUI();
 		Assert.assertEquals("Home", loaded.title);
 		loaded.load(1920D, 1080D);
@@ -1339,7 +1339,7 @@ public class UITest {
 	@Test
 	public void keepsItsPropertiesAcrossAReload() {
 		final PropertyUI ui = new PropertyUI();
-		ui.properlyClose();
+		ui.dispose();
 		ui.load(1920D, 1080D);
 		ui.title = "Shop";
 		ui.reload();
@@ -1349,7 +1349,7 @@ public class UITest {
 	@Test
 	public void leavesItsStaticFieldsOutOfItsProperties() throws IOException {
 		final StaticPropertyUI ui = new StaticPropertyUI();
-		ui.properlyClose();
+		ui.dispose();
 		final File file = new File(new File(this.folder.getRoot(), "property"), StaticPropertyUI.class.getName() + ".property");
 		final String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 		Assert.assertEquals("{\"title\":\"" + ui.title + "\"}", json);
@@ -1392,7 +1392,7 @@ public class UITest {
 			Assert.assertTrue(ui.isInitialized());
 			Assert.assertTrue(output, output.contains("Reload completed in "));
 		} finally {
-			ui.properlyClose();
+			ui.dispose();
 		}
 	}
 
@@ -1421,7 +1421,7 @@ public class UITest {
 			UITest.out(() -> ui.draw(0D, 0D));
 			Assert.assertEquals(3, inits.get());
 		} finally {
-			ui.properlyClose();
+			ui.dispose();
 		}
 	}
 
@@ -1442,7 +1442,7 @@ public class UITest {
 			UITest.out(() -> ui.draw(0D, 0D));
 			Assert.assertEquals(1, inits.get());
 		} finally {
-			ui.properlyClose();
+			ui.dispose();
 		}
 	}
 
@@ -1473,7 +1473,7 @@ public class UITest {
 			UITest.out(() -> ui.draw(0D, 0D));
 			Assert.assertEquals(1, inits.get());
 		} finally {
-			ui.properlyClose();
+			ui.dispose();
 		}
 	}
 
@@ -1485,7 +1485,7 @@ public class UITest {
 		JOID.inst().setDevMode(true);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		Assert.assertNotNull(ui.getFileMonitor());
-		ui.properlyClose();
+		ui.dispose();
 		final long deadline = System.currentTimeMillis() + 5000L;
 		while (ui.getFileMonitor() != null && System.currentTimeMillis() < deadline) {
 			Thread.sleep(10L);
@@ -1875,7 +1875,7 @@ public class UITest {
 
 	}
 
-	@UIStoreData(id = "uicore-global", context = StoreContext.GLOBAL)
+	@UIStoreData(id = "uicore-global", scope = StoreScope.GLOBAL)
 	public static final class GlobalStore extends UIStore {}
 
 	@AllArgsConstructor
@@ -1961,7 +1961,7 @@ public class UITest {
 		public void draw(final double mouseX, final double mouseY) {
 			this.trace.add("depth " + (UITest.depth() + 2000F));
 			if (this.level > 0D) {
-				super.getUi().setRenderPipelineLevel(this.level);
+				super.getUi().setDepthLevel(this.level);
 			}
 		}
 

@@ -17,7 +17,7 @@ import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCallback;
 import dev.joid.lib.utils.click.ClickType;
@@ -229,7 +229,7 @@ public class IntegerFieldNodeTest {
 			public void apply(final @NonNull IntegerFieldNode node, final @NonNull String text, final Integer value, final boolean valid) {}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull IntegerFieldNode node, final @NonNull InternalContext context, final @NonNull String text, final Integer value, final boolean valid) {
 				if (value != null && value > 10) {
 					context.cancel();

@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
 import dev.joid.lib.utils.click.ClickType;
@@ -86,7 +86,7 @@ public class NodeReorderEndCallbackTest {
 			}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child, final int oldIndex, final int newIndex) {
 				context.cancel();
 			}

@@ -43,7 +43,7 @@ A color swatch that the user selects with a click, with its own `onSelect` callb
 ```java
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
 
@@ -52,10 +52,10 @@ public interface NodeSwatchSelectCallback<T extends SwatchNode> extends NodeCall
 
 	public void apply(final @NonNull T node, final boolean selected);
 
-	@NodeCallbackMethod(Type.PRE)
+	@NodeCallbackMethod(Phase.PRE)
 	public default void pre(final @NonNull T node, final @NonNull InternalContext context, final boolean selected) {}
 
-	@NodeCallbackMethod(Type.POST)
+	@NodeCallbackMethod(Phase.POST)
 	public default void post(final @NonNull T node, final @NonNull InternalContext context, final boolean selected) {
 		context.cancel(() -> this.apply(node, selected));
 	}
@@ -267,7 +267,7 @@ public void mouseReleased(final double mouseX, final double mouseY, final ClickT
 A callback type is an interface that extends `NodeCallback` (`dev.joid.lib.ui.node.callback`), with:
 
 - `@FunctionalInterface` and a single abstract method, by convention `apply(...)`, the method lambdas implement;
-- a default method annotated `@NodeCallbackMethod(Type.PRE)` and a default method annotated `@NodeCallbackMethod(Type.POST)`, declared in the interface itself;
+- a default method annotated `@NodeCallbackMethod(Phase.PRE)` and a default method annotated `@NodeCallbackMethod(Phase.POST)`, declared in the interface itself;
 - for both phases: a `void` return, the node as first parameter (a `Node` type), an `InternalContext` as second parameter, then the event arguments in the order you pass them when firing.
 
 The POST phase usually runs `apply` through `context.cancel(() -> this.apply(...))`, like every built-in callback. A user overrides `pre` to act, or veto, before the action (see [Callbacks](../interactions/callbacks.md)).
@@ -310,21 +310,21 @@ Pass a fresh `InternalContext.create()` for an action of your own, as `SwatchNod
 | `executePreCallback(int type, InternalContext context, Object... args)` | PRE phases only. |
 | `executePostCallback(int type, InternalContext context, Object... args)` | POST phases only. With an already cancelled context, the POST phases see it cancelled and the default POST does not call `apply`. |
 | `hasCallback(int type)` | `true` when callbacks were registered for `type`. |
-| `getCallbackList(int type)` | The registered callbacks, wrapped in `NodeCallbackObject`s. Empty when none. |
+| `getCallbackList(int type)` | The registered callbacks, wrapped in `NodeCallbackInvoker`s. Empty when none. |
 | `getCallbackMap()` | Every registered callback, by id. |
 
 The input dispatch uses `executePreCallback` and `executePostCallback` to wrap the children between the two phases. `fireDrag(Runnable)`, `fireDragStart(Runnable)` and `fireDragEnd(Runnable)` run an action inside the node's `onDrag`, `onDragStart` and `onDragEnd` callbacks: `ReorderableFlexNode` uses them to report its drags on the dragged child.
 
 > WARNING: An exception thrown by a phase, or arguments that do not match the phase's parameters, do not propagate: JOID prints the failing callback class with the parameter and value types, then the stack trace, and skips that phase.
 
-### Events without arguments with NodeEmptyCallback
+### Events without arguments with NodeEventCallback
 
-For an event that only passes the node, reuse `NodeEmptyCallback<T extends Node>` (`dev.joid.lib.ui.node.callback.impl`), whose `apply(T node)` has the usual PRE and POST phases:
+For an event that only passes the node, reuse `NodeEventCallback<T extends Node>` (`dev.joid.lib.ui.node.callback.impl`), whose `apply(T node)` has the usual PRE and POST phases:
 
 ```java
-private static final int CALLBACK_OPEN = NodeCallbackRegistry.next(NodeEmptyCallback.class);
+private static final int CALLBACK_OPEN = NodeCallbackRegistry.next(NodeEventCallback.class);
 
-public final <T extends DrawerNode> @NonNull T onOpen(final @NonNull NodeEmptyCallback<T> callback) {
+public final <T extends DrawerNode> @NonNull T onOpen(final @NonNull NodeEventCallback<T> callback) {
 	return super.registerCallback(DrawerNode.CALLBACK_OPEN, callback);
 }
 
@@ -334,11 +334,11 @@ public final <T extends DrawerNode> @NonNull T open() {
 }
 ```
 
-### NodeCallbackMethod and NodeCallbackObject
+### NodeCallbackMethod and NodeCallbackInvoker
 
-`@NodeCallbackMethod` (`dev.joid.lib.ui.node.callback`) marks the phases; its `value()` is `NodeCallbackMethod.Type.PRE` or `NodeCallbackMethod.Type.POST`. An implementation that overrides `pre` or `post`, such as an anonymous class, does not need to repeat the annotation: the phase is found on the interface.
+`@NodeCallbackMethod` (`dev.joid.lib.ui.node.callback`) marks the phases; its `value()` is `NodeCallbackMethod.Phase.PRE` or `NodeCallbackMethod.Phase.POST`. An implementation that overrides `pre` or `post`, such as an anonymous class, does not need to repeat the annotation: the phase is found on the interface.
 
-`registerCallback` wraps each callback in a `NodeCallbackObject`, which finds the two phase methods and invokes them by reflection, the node and the context first. `getCallback()`, `getPre()` and `getPost()` return the callback and its phase methods. Its constructor throws `IllegalArgumentException` when the callback has no annotated method.
+`registerCallback` wraps each callback in a `NodeCallbackInvoker`, which finds the two phase methods and invokes them by reflection, the node and the context first. `getCallback()`, `getPre()` and `getPost()` return the callback and its phase methods. Its constructor throws `IllegalArgumentException` when the callback has no annotated method.
 
 ## Generic fluent setters
 

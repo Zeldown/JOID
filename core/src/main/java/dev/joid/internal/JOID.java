@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.internal.font.InternalFont;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.ui.IUIBridge;
@@ -55,7 +55,7 @@ public final class JOID {
 		System.out.println("=================================");
 
 		if (this.devMode || this.demoMode) {
-			InternalFont.load();
+			DevFont.load();
 		}
 
 		if (this.demoMode) {
@@ -97,16 +97,16 @@ public final class JOID {
 	}
 
 	public static boolean isOpen(final @NonNull Class<? extends UI> uiClass) {
-		return JOID.getUI(uiClass) != null;
+		return JOID.getUi(uiClass) != null;
 	}
 
 	public static boolean isOpen(final @NonNull UI ui) {
 		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		return bridge != null && bridge.isOpened(ui);
+		return bridge != null && bridge.isOpen(ui);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends UI> T getUI(final @NonNull Class<T> uiClass) {
+	public static <T extends UI> T getUi(final @NonNull Class<T> uiClass) {
 		final IUIBridge bridge = BridgeHandler.UI.get(uiClass);
 		if (bridge != null) {
 			for (final UI ui : bridge.getUiList()) {
@@ -144,7 +144,7 @@ public final class JOID {
 		}
 
 		JOID.execute(() -> {
-			ui.properlyClose();
+			ui.dispose();
 			bridge.close(ui);
 		});
 	}
@@ -163,7 +163,7 @@ public final class JOID {
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
 		JOID.execute(() -> {
 			for (final UI currentUi : new ArrayList<>(bridge.getUiList().ordered())) {
-				currentUi.properlyClose();
+				currentUi.dispose();
 				bridge.close(currentUi);
 			}
 

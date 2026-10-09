@@ -17,7 +17,7 @@ import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.textfield.MultilineTextFieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.utils.click.ClickType;
@@ -112,7 +112,7 @@ public class NodeTextFieldFocusCallbackTest {
 			}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull TextFieldNode node, final @NonNull InternalContext context) {
 				context.cancel();
 			}
@@ -133,7 +133,7 @@ public class NodeTextFieldFocusCallbackTest {
 			public void apply(final @NonNull MultilineTextFieldNode node) {}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull MultilineTextFieldNode node, final @NonNull InternalContext context) {
 				context.cancel();
 			}

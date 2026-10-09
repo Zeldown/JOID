@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.internal.font.InternalFont;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.thread.IThreadBridge;
@@ -144,39 +144,39 @@ public class JOIDTest {
 
 	@Test
 	public void loadsNoFontOutsideTheDevAndDemoModes() {
-		final MsdfFont previous = InternalFont.MONTSERRAT;
-		InternalFont.MONTSERRAT = null;
+		final MsdfFont previous = DevFont.MONTSERRAT;
+		DevFont.MONTSERRAT = null;
 		try {
 			JOIDTest.quietly(new JOID());
-			Assert.assertNull(InternalFont.MONTSERRAT);
+			Assert.assertNull(DevFont.MONTSERRAT);
 			Assert.assertNull(DemoFont.MONTSERRAT);
 		} finally {
-			InternalFont.MONTSERRAT = previous;
+			DevFont.MONTSERRAT = previous;
 		}
 	}
 
 	@Test
 	public void loadsTheInternalFontInDevMode() {
-		final MsdfFont previous = InternalFont.MONTSERRAT;
-		InternalFont.MONTSERRAT = null;
+		final MsdfFont previous = DevFont.MONTSERRAT;
+		DevFont.MONTSERRAT = null;
 		try {
 			JOIDTest.quietly(new JOID().setDevMode(true));
-			Assert.assertNotNull(InternalFont.MONTSERRAT);
+			Assert.assertNotNull(DevFont.MONTSERRAT);
 			Assert.assertNull(DemoFont.MONTSERRAT);
 		} finally {
-			InternalFont.MONTSERRAT = previous;
+			DevFont.MONTSERRAT = previous;
 		}
 	}
 
 	@Test
 	public void loadsTheDemoFontsInDemoMode() {
-		final MsdfFont previous = InternalFont.MONTSERRAT;
+		final MsdfFont previous = DevFont.MONTSERRAT;
 		try {
 			JOIDTest.quietly(new JOID().setDemoMode(true));
 			Assert.assertTrue(DemoFont.isLoaded());
-			Assert.assertSame(InternalFont.MONTSERRAT, DemoFont.MONTSERRAT);
+			Assert.assertSame(DevFont.MONTSERRAT, DemoFont.MONTSERRAT);
 		} finally {
-			InternalFont.MONTSERRAT = previous;
+			DevFont.MONTSERRAT = previous;
 			DemoFont.MONTSERRAT = null;
 			DemoFont.PACIFICO = null;
 			DemoFont.PLAYFAIR_DISPLAY = null;
@@ -210,11 +210,11 @@ public class JOIDTest {
 	public void findsAnOpenedUiByItsClass() {
 		final MenuUI menu = new MenuUI();
 		Assert.assertFalse(JOID.isOpen(MenuUI.class));
-		Assert.assertNull(JOID.getUI(MenuUI.class));
+		Assert.assertNull(JOID.getUi(MenuUI.class));
 		this.bridges.open(menu);
 		Assert.assertTrue(JOID.isOpen(MenuUI.class));
-		Assert.assertSame(menu, JOID.getUI(MenuUI.class));
-		Assert.assertSame(menu, JOID.getUI(UI.class));
+		Assert.assertSame(menu, JOID.getUi(MenuUI.class));
+		Assert.assertSame(menu, JOID.getUi(UI.class));
 		Assert.assertFalse(JOID.isOpen(PopupUI.class));
 	}
 
@@ -224,7 +224,7 @@ public class JOIDTest {
 		BridgeHandler.UI.unregister(this.bridges.getUi());
 		try {
 			Assert.assertFalse(JOID.isOpen(MenuUI.class));
-			Assert.assertNull(JOID.getUI(MenuUI.class));
+			Assert.assertNull(JOID.getUi(MenuUI.class));
 		} finally {
 			BridgeHandler.UI.register(this.bridges.getUi());
 		}
@@ -298,7 +298,7 @@ public class JOIDTest {
 		menu.getData().setCloseable(false);
 		JOID.open(menu);
 		JOID.close(menu);
-		Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+		Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 	}
 
 	@Test
@@ -307,7 +307,7 @@ public class JOIDTest {
 		menu.closeable = false;
 		JOID.open(menu);
 		JOID.close(menu, false);
-		Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 		Assert.assertEquals(0, menu.detaches);
 	}
 
@@ -317,7 +317,7 @@ public class JOIDTest {
 		menu.closeable = false;
 		JOID.open(menu);
 		JOID.close(menu, true);
-		Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+		Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 		Assert.assertEquals(0, menu.closes);
 		Assert.assertEquals(1, menu.detaches);
 	}
@@ -329,18 +329,18 @@ public class JOIDTest {
 		BridgeHandler.THREAD.register(thread);
 		try {
 			Assert.assertSame(this.bridges.getUi(), JOID.open(menu));
-			Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+			Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 			thread.run();
-			Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+			Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 			JOID.close(menu);
 			Assert.assertEquals(0, menu.closes);
 			thread.run();
-			Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+			Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 			Assert.assertEquals(1, menu.closes);
 			JOID.open(menu, true);
 			JOID.close(menu, true);
 			thread.run();
-			Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+			Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
 		}
@@ -354,9 +354,9 @@ public class JOIDTest {
 		BridgeHandler.THREAD.register(thread);
 		try {
 			JOID.open(menu);
-			Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+			Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 			JOID.close(menu);
-			Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+			Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 			Assert.assertTrue(thread.tasks.isEmpty());
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
@@ -381,7 +381,7 @@ public class JOIDTest {
 		} finally {
 			BridgeHandler.UI.register(this.bridges.getUi());
 		}
-		Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 		Assert.assertEquals(0, menu.closes);
 	}
 
@@ -407,7 +407,7 @@ public class JOIDTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToGetAMissingClass() {
-		JOID.getUI(null);
+		JOID.getUi(null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -460,7 +460,7 @@ public class JOIDTest {
 		} finally {
 			BridgeHandler.UI.register(this.bridges.getUi());
 		}
-		Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 	}
 
 	@Test

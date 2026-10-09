@@ -332,7 +332,7 @@ public class ResourcePlayerNodeTest {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		final NodeUI ui = new NodeUI(player);
 		this.bridges.open(ui).frames(2);
-		ui.properlyClose();
+		ui.dispose();
 		Assert.assertTrue(player.getVideo().isReleased());
 		Assert.assertFalse(player.isPlaying());
 	}

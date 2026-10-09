@@ -13,7 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
-import dev.joid.internal.font.InternalFont;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
@@ -47,7 +47,7 @@ public class DevNodeTest {
 
 	@BeforeClass
 	public static void loadTheDevFont() {
-		InternalFont.load();
+		DevFont.load();
 	}
 
 	@Before

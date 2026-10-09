@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
 import dev.joid.lib.utils.click.ClickType;
@@ -67,7 +67,7 @@ public class NodeReorderStartCallbackTest {
 	public void firesForADragStartedFromCode() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode first = RectNode.create(0D, 0D, 200D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).auto(false).onReorderStart((node, child) -> received.add(child));
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).autoDrag(false).onReorderStart((node, child) -> received.add(child));
 		flex.append(first);
 		this.bridges.open(new NodeUI(flex));
 		flex.startDrag(first);
@@ -107,7 +107,7 @@ public class NodeReorderStartCallbackTest {
 			}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
 				context.cancel();
 			}

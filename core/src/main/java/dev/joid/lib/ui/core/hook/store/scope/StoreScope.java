@@ -1,6 +1,6 @@
-package dev.joid.lib.ui.core.hook.store.context;
+package dev.joid.lib.ui.core.hook.store.scope;
 
-public enum StoreContext {
+public enum StoreScope {
 
 	LOCAL(false),
 	GLOBAL(true),
@@ -8,7 +8,7 @@ public enum StoreContext {
 
 	private final boolean global;
 
-	private StoreContext(final boolean global) {
+	private StoreScope(final boolean global) {
 		this.global = global;
 	}
 

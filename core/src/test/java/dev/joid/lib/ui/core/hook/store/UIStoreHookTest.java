@@ -20,8 +20,8 @@ import org.junit.rules.TemporaryFolder;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.ui.core.hook.store.context.StoreContext;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -296,7 +296,7 @@ public class UIStoreHookTest {
 
 	}
 
-	@UIStoreData(id = "global", context = StoreContext.GLOBAL)
+	@UIStoreData(id = "global", scope = StoreScope.GLOBAL)
 	public static class GlobalStore extends UIStore {
 
 		private int inits;
@@ -314,7 +314,7 @@ public class UIStoreHookTest {
 
 	}
 
-	@UIStoreData(id = "permanent", context = StoreContext.PERMANENT)
+	@UIStoreData(id = "permanent", scope = StoreScope.PERMANENT)
 	public static class PermanentStore extends UIStore {
 
 		private String value = "default";
@@ -366,7 +366,7 @@ public class UIStoreHookTest {
 
 	public static class BareStore extends UIStore {}
 
-	@UIStoreData(context = StoreContext.PERMANENT)
+	@UIStoreData(scope = StoreScope.PERMANENT)
 	public static class UnnamedStore extends UIStore {}
 
 	@UIStoreData(id = "overloaded")

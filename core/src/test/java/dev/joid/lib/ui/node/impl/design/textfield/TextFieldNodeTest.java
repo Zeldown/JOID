@@ -667,7 +667,7 @@ public class TextFieldNodeTest {
 		this.bridges.open(ui);
 		this.bridges.getUi().keyTyped('\u001b', Key.ESCAPE);
 		Assert.assertFalse(field.isFocused());
-		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 	}
 
 	@Test
@@ -679,9 +679,9 @@ public class TextFieldNodeTest {
 		this.bridges.getUi().keyTyped('\u001b', Key.ESCAPE);
 		Assert.assertFalse(field.isFocused());
 		Assert.assertEquals("hello", field.getText());
-		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		this.bridges.getUi().keyTyped('\u001b', Key.ESCAPE);
-		Assert.assertFalse(this.bridges.getUi().isOpened(ui));
+		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
 	}
 
 	@Test

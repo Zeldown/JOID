@@ -8,7 +8,7 @@ Signals declared in a UI live as long as that UI. A store holds state that sever
 
 ```java
 @Getter
-@UIStoreData(context = StoreContext.GLOBAL)
+@UIStoreData(scope = StoreScope.GLOBAL)
 public class CartStore extends UIStore {
 
 	private final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
@@ -20,11 +20,11 @@ public class CartStore extends UIStore {
 final CartStore cart = super.useStore(CartStore.class);
 ```
 
-`useStore` returns the store of that class for this UI, creating it the first time. The context of `@UIStoreData` decides how far it is shared:
+`useStore` returns the store of that class for this UI, creating it the first time. The scope of `@UIStoreData` decides how far it is shared:
 
 ![InventoryUI has its own LOCAL store, InventoryUI and ShopUI share one GLOBAL store, and a PERMANENT store is saved to config/store/<id>.store](../images/ess-diagram-stores.png "The three store contexts.")
 
-| `StoreContext` | Instances | Saved to disk |
+| `StoreScope` | Instances | Saved to disk |
 | --- | --- | --- |
 | `LOCAL` (default) | One per UI, destroyed when the UI closes. | No |
 | `GLOBAL` | One for the whole application. | No |
@@ -36,7 +36,7 @@ A `PERMANENT` store chooses what goes into its file in `save` and reads it back 
 
 ```java
 @Getter
-@UIStoreData(id = "settings", context = StoreContext.PERMANENT)
+@UIStoreData(id = "settings", scope = StoreScope.PERMANENT)
 public class SettingsStore extends UIStore {
 
 	private final BooleanSignal music = BooleanSignal.of(true);

@@ -14,7 +14,7 @@ public interface IUIBridge extends IBridge {
 	public void remove(final @NonNull UI ui);
 
 	public boolean isOnTop(final @NonNull UI ui);
-	public boolean isOpened(final @NonNull UI ui);
+	public boolean isOpen(final @NonNull UI ui);
 
 	public boolean canHandle(final @NonNull UI ui);
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz);

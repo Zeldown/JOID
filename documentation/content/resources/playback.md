@@ -132,12 +132,12 @@ The audio track of a video plays through the audio bridge (`BridgeHandler.AUDIO`
 - `audioGroup` places the track in an audio group of the engine, such as a sound category of a game: the engine applies the volume of that group, live, and `null` (the default) plays in its default group. The group goes to the audio source (`IAudioSource.group`) when it is created and whenever it changes; an engine without groups ignores it.
 - Without a registered audio bridge, the video plays silently and the error (`No audio bridge registered, ...`) is printed with its stack trace.
 
-### 3D audio with location and AudioListener
+### 3D audio with location and AudioListenerPosition
 
-A video with a location fades with the distance between that location and the listener. The listener is global: register an `AudioListener` (`dev.joid.lib.video`) that returns its position, in the same space as the locations. Here `camera` stands for the object of your application that holds the listening position:
+A video with a location fades with the distance between that location and the listener. The listener is global: register an `AudioListenerPosition` (`dev.joid.lib.video`) that returns its position, in the same space as the locations. Here `camera` stands for the object of your application that holds the listening position:
 
 ```java
-VideoAudioPlayer.setAudioListener(() -> new Vector3f((float) this.camera.getX(), (float) this.camera.getY(), (float) this.camera.getZ()));
+VideoAudioPlayer.setAudioListenerPosition(() -> new Vector3f((float) this.camera.getX(), (float) this.camera.getY(), (float) this.camera.getZ()));
 
 ResourcePlayerNode
 .create(100, 100, 320, 180)
@@ -165,7 +165,7 @@ When the factor is `0.001` or less, the audio source pauses and the buffered sam
 
 | Method | Description |
 |---|---|
-| `static setAudioListener(AudioListener listener)`, `static getAudioListener()` | The listener shared by every player, `null` by default. |
+| `static setAudioListenerPosition(AudioListenerPosition listener)`, `static getAudioListenerPosition()` | The listener shared by every player, `null` by default. |
 | `new VideoAudioPlayer(int sampleRate, int channels)` | A player for interleaved 16-bit samples. |
 | `play()`, `pause()`, `resume()`, `stop()` | Creates the audio source on the first `play()`, then controls it. |
 | `pushSamples(Buffer[] samples)` | Queues decoded samples: planar or packed `ShortBuffer`, or planar `FloatBuffer` converted to 16 bits. At most 128 blocks wait; extra blocks are dropped. |

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import javax.vecmath.Vector2d;
 
 import dev.joid.internal.JOID;
-import dev.joid.internal.font.InternalFont;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -21,7 +21,7 @@ import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.NodeCallbackObject;
+import dev.joid.lib.ui.node.callback.NodeCallbackInvoker;
 import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
@@ -173,7 +173,7 @@ public final class DevNode extends Node {
 			.body(flex -> {
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(inspectedNode.getClass().getSimpleName(), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE), Align.START, Align.CENTER))
+				.text(Text.create(inspectedNode.getClass().getSimpleName(), TextInfo.create(DevFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE), Align.START, Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 
@@ -184,7 +184,7 @@ public final class DevNode extends Node {
 
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(String.format("%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
+				.text(Text.create(String.format("%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 			})
@@ -197,9 +197,9 @@ public final class DevNode extends Node {
 				FlexNode
 				.vertical(10, 10, container.aw(-20))
 				.body(scroll -> {
-					final TextInfo categoryInfo = TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE);
-					final TextInfo labelInfo = TextInfo.create(InternalFont.MONTSERRAT, FontWeight.SEMI_BOLD, 15, DevNode.ACTION.brighter(0.3F));
-					final TextInfo valueInfo = TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.ACTION);
+					final TextInfo categoryInfo = TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE);
+					final TextInfo labelInfo = TextInfo.create(DevFont.MONTSERRAT, FontWeight.SEMI_BOLD, 15, DevNode.ACTION.brighter(0.3F));
+					final TextInfo valueInfo = TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.ACTION);
 
 					TextNode
 					.create(0, 0)
@@ -242,9 +242,9 @@ public final class DevNode extends Node {
 						.text(Text.create("Callbacks", categoryInfo))
 						.attach(scroll);
 
-						for (final Entry<Integer, List<NodeCallbackObject<?>>> callback : inspectedNode.getCallbackMap().entrySet()) {
+						for (final Entry<Integer, List<NodeCallbackInvoker<?>>> callback : inspectedNode.getCallbackMap().entrySet()) {
 							final int id = callback.getKey();
-							final List<NodeCallbackObject<?>> callbackList = callback.getValue();
+							final List<NodeCallbackInvoker<?>> callbackList = callback.getValue();
 
 							TextNode
 							.create(10, 0)
@@ -348,7 +348,7 @@ public final class DevNode extends Node {
 
 		TextNode
 		.create(123 + super.aw(-123) / 2, super.getHeight() - super.getDefaultHeight() + super.getDefaultHeight() / 2)
-		.text(Text.create(() -> String.format("%.0f fps", super.getUi().getFps()), TextInfo.create(InternalFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
+		.text(Text.create(() -> String.format("%.0f fps", super.getUi().getFps()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
 		.anchor(Align.CENTER)
 		.attach(this);
 	}
@@ -403,16 +403,16 @@ public final class DevNode extends Node {
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, new Vector2d(0, 1080 / 2 - 1), new Vector2d(1920, 1080 / 2 + 1));
 
 			DrawUtils.SHAPE.drawRect(0, mouseY, mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(InternalFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
+			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 1920 - mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + (1920 - mouseX) / 2, mouseY + 5, Text.create((int) (1920 - mouseX) + "px", TextInfo.create(InternalFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
+			DrawUtils.TEXT.drawText(mouseX + (1920 - mouseX) / 2, mouseY + 5, Text.create((int) (1920 - mouseX) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, 0, 3, mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", TextInfo.create(InternalFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
+			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
 
 			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 3, 1080 - mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (1080 - mouseY) / 2, Text.create((int) (1080 - mouseY) + "px", TextInfo.create(InternalFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
+			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (1080 - mouseY) / 2, Text.create((int) (1080 - mouseY) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
 		}
 
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK, 10F);
@@ -477,7 +477,7 @@ public final class DevNode extends Node {
 		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x + width, y), new Vector2d(x + width, y + height));
 		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y + height), new Vector2d(x + width, y + height));
 
-		final TextInfo textInfo = TextInfo.create(InternalFont.MONTSERRAT, 15, DevNode.WHITE.copyAlpha(opacity)).shadow().shadow(Color.BLACK.copyAlpha(0.7F * opacity));
+		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE.copyAlpha(opacity)).shadow().shadow(Color.BLACK.copyAlpha(0.7F * opacity));
 		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);
 		final Text nodeTimeText = Text.create(String.format("%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
 

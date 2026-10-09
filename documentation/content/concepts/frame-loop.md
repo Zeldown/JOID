@@ -45,7 +45,7 @@ JOID.inst().setConfigDir(new File("run/config")).setDevMode(true).load();
 | `File getConfigDir()`, `boolean isDevMode()`, `boolean isDemoMode()` | The current settings. |
 | `static final String VERSION` | The library version, `"8.0.0"`. |
 
-`JOID` also holds the static methods that open and close UIs (`open`, `close`, `isOpen`, `getUI`), shown in [UIs and Their Lifecycle](uis.md).
+`JOID` also holds the static methods that open and close UIs (`open`, `close`, `isOpen`, `getUi`), shown in [UIs and Their Lifecycle](uis.md).
 
 ## One frame: input, update, draw
 

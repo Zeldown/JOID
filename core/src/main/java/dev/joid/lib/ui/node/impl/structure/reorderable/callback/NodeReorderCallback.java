@@ -3,7 +3,7 @@ package dev.joid.lib.ui.node.impl.structure.reorderable.callback;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
 import dev.joid.lib.utils.context.InternalContext;
 import lombok.NonNull;
@@ -13,10 +13,10 @@ public interface NodeReorderCallback extends NodeCallback {
 
 	public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child);
 
-	@NodeCallbackMethod(Type.PRE)
+	@NodeCallbackMethod(Phase.PRE)
 	public default void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {}
 
-	@NodeCallbackMethod(Type.POST)
+	@NodeCallbackMethod(Phase.POST)
 	public default void post(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
 		context.cancel(() -> this.apply(node, child));
 	}

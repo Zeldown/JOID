@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOID;
-import dev.joid.internal.font.InternalFont;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.ui.core.UI;
@@ -65,7 +65,7 @@ public class KeyLayoutTest {
 
 	@BeforeClass
 	public static void loadTheDevFont() {
-		InternalFont.load();
+		DevFont.load();
 	}
 
 	@Before

@@ -109,7 +109,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private double  mouseX;
 	private double  mouseY;
 	private boolean onTop;
-	private double  renderPipelineLevel;
+	private double  depthLevel;
 
 	private Node devNode;
 
@@ -367,13 +367,13 @@ public abstract class UI implements IUI, IndexedElement {
 		if (this.transition != null && this.transition.getOut() != null && this.transition.getOut().isEnabled()) {
 			this.transition.getOut().start();
 			this.transition.getOut().getAnimator().setCallback(tween -> {
-				this.properlyClose();
+				this.dispose();
 				this.getBridge().close(this);
 			});
 			return false;
 		}
 
-		this.properlyClose();
+		this.dispose();
 		return true;
 	}
 
@@ -414,7 +414,7 @@ public abstract class UI implements IUI, IndexedElement {
 		return BridgeHandler.UI.get(this);
 	}
 
-	public final void properlyClose() {
+	public final void dispose() {
 		this.nodeList.forEach(Node::onDetach);
 		this.closed = true;
 
@@ -570,7 +570,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final @NonNull UI renew() {
 		final IUIBridge bridge = BridgeHandler.UI.get(this);
-		if (bridge == null || !bridge.isOpened(this)) {
+		if (bridge == null || !bridge.isOpen(this)) {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " is not open, only an open UI can be renewed");
 		}
 
@@ -585,7 +585,7 @@ public abstract class UI implements IUI, IndexedElement {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be renewed: its constructor without argument failed", exception);
 		}
 
-		this.properlyClose();
+		this.dispose();
 		bridge.remove(this);
 		bridge.add(renewed);
 		return renewed;
@@ -623,8 +623,8 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	public final void setRenderPipelineLevel(final double level) {
-		this.renderPipelineLevel = level;
+	public final void setDepthLevel(final double level) {
+		this.depthLevel = level;
 	}
 
 	public final @NonNull UI setTransition(final Transition transition) {
@@ -639,7 +639,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		final T store = UIStoreHook.useStore(clazz, args);
-		if (store.getData().context().isLocal()) {
+		if (store.getData().scope().isLocal()) {
 			this.storeMap.put(clazz, store);
 		}
 
@@ -885,21 +885,21 @@ public abstract class UI implements IUI, IndexedElement {
 		render.alphaTest(0F);
 		try {
 			this.view.render(render, this.data.projection(), () -> {
-				this.renderPipelineLevel = 0;
-				final AtomicDouble lastRenderPipelineLevel = new AtomicDouble(this.renderPipelineLevel);
+				this.depthLevel = 0;
+				final AtomicDouble lastDepthLevel = new AtomicDouble(this.depthLevel);
 
 				this.nodeList
 				.ordered()
 				.stream()
 				.filter(node -> node.getZindex() < 0)
 				.forEach(node -> {
-					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
+					lastDepthLevel.set(this.depthLevel);
 					node.render(mx, my);
 				});
 
-				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-				lastRenderPipelineLevel.set(this.renderPipelineLevel);
+				render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
+				lastDepthLevel.set(this.depthLevel);
 				this.preDraw(mx, my);
 
 				this.nodeList
@@ -907,13 +907,13 @@ public abstract class UI implements IUI, IndexedElement {
 				.stream()
 				.filter(node -> node.getZindex() >= 0 && node.getZindex() < 100)
 				.forEach(node -> {
-					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
+					lastDepthLevel.set(this.depthLevel);
 					node.render(mx, my);
 				});
 
-				render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-				lastRenderPipelineLevel.set(this.renderPipelineLevel);
+				render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
+				lastDepthLevel.set(this.depthLevel);
 				this.postDraw(mx, my);
 
 				this.nodeList
@@ -921,8 +921,8 @@ public abstract class UI implements IUI, IndexedElement {
 				.stream()
 				.filter(node -> node.getZindex() >= 100)
 				.forEach(node -> {
-					render.translate(0, 0, this.renderPipelineLevel - lastRenderPipelineLevel.get());
-					lastRenderPipelineLevel.set(this.renderPipelineLevel);
+					render.translate(0, 0, this.depthLevel - lastDepthLevel.get());
+					lastDepthLevel.set(this.depthLevel);
 					node.render(mx, my);
 				});
 

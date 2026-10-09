@@ -11,7 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.callback.impl.mouse.NodeMousePressedCallback;
 import dev.joid.lib.ui.node.callback.impl.state.NodeInitCallback;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -20,12 +20,12 @@ import dev.joid.lib.utils.context.InternalContext;
 
 import lombok.NonNull;
 
-public class NodeCallbackObjectTest {
+public class NodeCallbackInvokerTest {
 
 	@Test
 	public void findsThePhasesOfACallback() {
 		final NodeInitCallback<Node> callback = node -> {};
-		final NodeCallbackObject<NodeInitCallback<Node>> object = new NodeCallbackObject<>(callback);
+		final NodeCallbackInvoker<NodeInitCallback<Node>> object = new NodeCallbackInvoker<>(callback);
 		Assert.assertSame(callback, object.getCallback());
 		Assert.assertEquals("pre", object.getPre().getName());
 		Assert.assertEquals("post", object.getPost().getName());
@@ -33,12 +33,12 @@ public class NodeCallbackObjectTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingCallback() {
-		new NodeCallbackObject<>(null);
+		new NodeCallbackInvoker<>(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesACallbackWithoutPhase() {
-		new NodeCallbackObject<>(new SilentCallback());
+		new NodeCallbackInvoker<>(new SilentCallback());
 	}
 
 	@Test
@@ -46,7 +46,7 @@ public class NodeCallbackObjectTest {
 		final RecordingCallback callback = new RecordingCallback();
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final InternalContext context = InternalContext.create();
-		final NodeCallbackObject<RecordingCallback> object = new NodeCallbackObject<>(callback);
+		final NodeCallbackInvoker<RecordingCallback> object = new NodeCallbackInvoker<>(callback);
 		object.pre(rect, context, "before", 1);
 		object.post(rect, context, "after", 2);
 		Assert.assertEquals(Arrays.asList(Arrays.asList("pre", rect, context, "before", 1), Arrays.asList("post", rect, context, "after", 2)), callback.calls);
@@ -55,7 +55,7 @@ public class NodeCallbackObjectTest {
 	@Test
 	public void skipsAMissingPrePhase() {
 		final RecordingPostCallback callback = new RecordingPostCallback();
-		final NodeCallbackObject<RecordingPostCallback> object = new NodeCallbackObject<>(callback);
+		final NodeCallbackInvoker<RecordingPostCallback> object = new NodeCallbackInvoker<>(callback);
 		Assert.assertNull(object.getPre());
 		object.pre(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create());
 		Assert.assertEquals(0, callback.calls);
@@ -66,7 +66,7 @@ public class NodeCallbackObjectTest {
 	@Test
 	public void skipsAMissingPostPhase() {
 		final RecordingPreCallback callback = new RecordingPreCallback();
-		final NodeCallbackObject<RecordingPreCallback> object = new NodeCallbackObject<>(callback);
+		final NodeCallbackInvoker<RecordingPreCallback> object = new NodeCallbackInvoker<>(callback);
 		Assert.assertNull(object.getPost());
 		object.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create());
 		Assert.assertEquals(0, callback.calls);
@@ -76,23 +76,23 @@ public class NodeCallbackObjectTest {
 
 	@Test
 	public void reportsAFailingPrePhaseWithoutThrowing() {
-		final NodeCallbackObject<FailingCallback> object = new NodeCallbackObject<>(new FailingCallback());
-		final String output = NodeCallbackObjectTest.capture(() -> object.pre(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create()));
+		final NodeCallbackInvoker<FailingCallback> object = new NodeCallbackInvoker<>(new FailingCallback());
+		final String output = NodeCallbackInvokerTest.capture(() -> object.pre(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create()));
 		Assert.assertTrue(output, output.startsWith("[JOID] The pre phase of " + FailingCallback.class.getName() + " failed: java.lang.IllegalStateException: pre"));
 	}
 
 	@Test
 	public void reportsAFailingPostPhaseWithoutThrowing() {
-		final NodeCallbackObject<FailingCallback> object = new NodeCallbackObject<>(new FailingCallback());
-		final String output = NodeCallbackObjectTest.capture(() -> object.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create()));
+		final NodeCallbackInvoker<FailingCallback> object = new NodeCallbackInvoker<>(new FailingCallback());
+		final String output = NodeCallbackInvokerTest.capture(() -> object.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create()));
 		Assert.assertTrue(output, output.startsWith("[JOID] The post phase of " + FailingCallback.class.getName() + " failed: java.lang.IllegalStateException: post"));
 	}
 
 	@Test
 	public void reportsArgumentsThatDoNotFitThePhase() {
 		final RecordingPostCallback callback = new RecordingPostCallback();
-		final NodeCallbackObject<RecordingPostCallback> object = new NodeCallbackObject<>(callback);
-		final String output = NodeCallbackObjectTest.capture(() -> object.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(), "extra"));
+		final NodeCallbackInvoker<RecordingPostCallback> object = new NodeCallbackInvoker<>(callback);
+		final String output = NodeCallbackInvokerTest.capture(() -> object.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(), "extra"));
 		Assert.assertTrue(output, output.startsWith("[JOID] The post phase of " + RecordingPostCallback.class.getName() + " failed: java.lang.IllegalArgumentException"));
 		Assert.assertEquals(0, callback.calls);
 	}
@@ -111,15 +111,15 @@ public class NodeCallbackObjectTest {
 
 		};
 		final InternalContext context = InternalContext.create();
-		new NodeCallbackObject<>(callback).pre(RectNode.create(0D, 0D, 10D, 10D), context, 3D, 4D, ClickType.LEFT);
+		new NodeCallbackInvoker<>(callback).pre(RectNode.create(0D, 0D, 10D, 10D), context, 3D, 4D, ClickType.LEFT);
 		Assert.assertTrue(context.isCancelled());
 	}
 
 	@Test
 	public void reportsAFailingPhaseCalledWithoutNode() {
 		final NodeInitCallback<Node> callback = node -> {};
-		final NodeCallbackObject<NodeInitCallback<Node>> object = new NodeCallbackObject<>(callback);
-		final String output = NodeCallbackObjectTest.capture(() -> object.post(null, InternalContext.create()));
+		final NodeCallbackInvoker<NodeInitCallback<Node>> object = new NodeCallbackInvoker<>(callback);
+		final String output = NodeCallbackInvokerTest.capture(() -> object.post(null, InternalContext.create()));
 		Assert.assertTrue(output, output.startsWith("[JOID] The post phase of NodeInitCallback failed: java.lang.NullPointerException"));
 	}
 
@@ -128,7 +128,7 @@ public class NodeCallbackObjectTest {
 		final NodeMousePressedCallback<RectNode> callback = (node, mouseX, mouseY, clickType) -> {
 			throw new IllegalStateException("click");
 		};
-		final String output = NodeCallbackObjectTest.capture(() -> new NodeCallbackObject<>(callback).post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(), 3D, 4D, ClickType.LEFT));
+		final String output = NodeCallbackInvokerTest.capture(() -> new NodeCallbackInvoker<>(callback).post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(), 3D, 4D, ClickType.LEFT));
 		Assert.assertTrue(output, output.startsWith("[JOID] The post phase of NodeMousePressedCallback failed: java.lang.IllegalStateException: click"));
 	}
 
@@ -138,7 +138,7 @@ public class NodeCallbackObjectTest {
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).onUpdate(node -> {
 			throw new IllegalStateException("update");
 		}).onUpdate(node -> runs.add("second"));
-		final String output = NodeCallbackObjectTest.capture(rect::onUpdate);
+		final String output = NodeCallbackInvokerTest.capture(rect::onUpdate);
 		Assert.assertTrue(output, output.contains("[JOID] The post phase of NodeUpdateCallback failed: java.lang.IllegalStateException: update"));
 		Assert.assertEquals(Arrays.asList("second"), runs);
 	}
@@ -161,12 +161,12 @@ public class NodeCallbackObjectTest {
 
 		private final List<Object> calls = new ArrayList<>();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public void pre(final Node node, final InternalContext context, final String text, final int value) {
 			this.calls.add(Arrays.asList("pre", node, context, text, value));
 		}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public void post(final Node node, final InternalContext context, final String text, final int value) {
 			this.calls.add(Arrays.asList("post", node, context, text, value));
 		}
@@ -177,7 +177,7 @@ public class NodeCallbackObjectTest {
 
 		private int calls;
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public void pre(final Node node, final InternalContext context) {
 			this.calls++;
 		}
@@ -188,7 +188,7 @@ public class NodeCallbackObjectTest {
 
 		private int calls;
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public void post(final Node node, final InternalContext context) {
 			this.calls++;
 		}
@@ -197,12 +197,12 @@ public class NodeCallbackObjectTest {
 
 	private static final class FailingCallback implements NodeCallback {
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public void pre(final Node node, final InternalContext context) {
 			throw new IllegalStateException("pre");
 		}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public void post(final Node node, final InternalContext context) {
 			throw new IllegalStateException("post");
 		}

@@ -40,7 +40,7 @@ The layout follows the rules of [FlexNode](flex.md): children in the order of `g
 
 ## Dragging with the mouse
 
-With `auto(true)` (default), a left press over a child starts dragging it, unless the press is already consumed (for example by an `onClick` on the child or one of its descendants), the list is disabled, another child is being dragged, or the child is locked. The press that starts a drag is consumed: the parents' `onClick` callbacks do not run.
+With `autoDrag(true)` (default), a left press over a child starts dragging it, unless the press is already consumed (for example by an `onClick` on the child or one of its descendants), the list is disabled, another child is being dragged, or the child is locked. The press that starts a drag is consumed: the parents' `onClick` callbacks do not run.
 
 While dragging:
 
@@ -74,10 +74,10 @@ for (int i = 1; i <= 5; i++) {
 
 ## Drag handles with auto and startDrag
 
-`auto(false)` turns off the drag on press; start drags from your own code with `startDrag(Node child)`, for example from a handle. `startDrag` uses the current mouse position of the UI and does nothing while another child is dragged or when the child is locked.
+`autoDrag(false)` turns off the drag on press; start drags from your own code with `startDrag(Node child)`, for example from a handle. `startDrag` uses the current mouse position of the UI and does nothing while another child is dragged or when the child is locked.
 
 ```java
-final ReorderableFlexNode list = ReorderableFlexNode.vertical(100, 100, 300).margin(8D).auto(false).attach(this);
+final ReorderableFlexNode list = ReorderableFlexNode.vertical(100, 100, 300).margin(8D).autoDrag(false).attach(this);
 for (int i = 0; i < 5; i++) {
 	final RectNode item = RectNode.create(0, 0, 300, 50).color(Color.GRAY).attach(list);
 	RectNode
@@ -185,7 +185,7 @@ During a drag, the order shown on screen is the logical order (`getLogicalOrder(
 | `margin(double)`, `margin(Supplier<Double>)` | Gap between visible children. Default `0D`. |
 | `align(Align)`, `align(Supplier<Align>)` | Cross-axis alignment, or `null` to keep the children's own cross position. Default `null`. |
 | `direction(FlexDirection)`, `direction(Supplier<FlexDirection>)` | `COLUMN` or `ROW`. |
-| `auto(boolean)`, `auto(Supplier<Boolean>)` | Whether a press on a child starts a drag. Default `true`. |
+| `autoDrag(boolean)`, `autoDrag(Supplier<Boolean>)` | Whether a press on a child starts a drag. Default `true`. |
 | `lock(Node...)`, `unlock(Node...)` | Pin children to their slot, or free them. |
 | `isLocked(Node)`, `getLockedNodes()` | Lock state. |
 | `startDrag(Node)`, `endDrag()` | Start or drop a drag from code. |
@@ -198,7 +198,7 @@ The setters return `ReorderableFlexNode`. Everything else is inherited from `Nod
 ## Pitfalls
 
 - `overflow(OverflowProperty.SCROLL)` on the list itself does not scroll it: wrap it in a scrolling node, which also gives the auto-scroll.
-- An `onClick` that consumes the press on a child (or a descendant) prevents the drag of that child: keep clickable parts small, or drag from a handle with `auto(false)`.
+- An `onClick` that consumes the press on a child (or a descendant) prevents the drag of that child: keep clickable parts small, or drag from a handle with `autoDrag(false)`.
 - `getDraggedNode()`, inherited from `Node`, is the copy of a [`COPY` drag](../../interactions/drag-drop.md) and stays `null` here: use `getReorderedNode()`.
 - Lock nodes that are children of the list: `lock` accepts any node and only the children's slots are kept.
 

@@ -435,7 +435,7 @@
 							"refs": [
 								"UIStore",
 								"UIStoreData",
-								"StoreContext"
+								"StoreScope"
 							]
 						},
 						{
@@ -616,7 +616,7 @@
 							"refs": [
 								"IResourcePlayback",
 								"VideoAudioPlayer",
-								"AudioListener"
+								"AudioListenerPosition"
 							]
 						},
 						{

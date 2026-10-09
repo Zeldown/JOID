@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface NodeCallbackMethod {
 
-	public Type value();
+	public Phase value();
 
-	public enum Type {
+	public enum Phase {
 		PRE, POST;
 	}
 

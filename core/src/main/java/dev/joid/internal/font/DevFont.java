@@ -9,12 +9,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class InternalFont {
+public class DevFont {
 
 	public static MsdfFont MONTSERRAT;
 
 	public static void load() {
-		InternalFont.MONTSERRAT = MsdfFontLoader.load(InternalFont.get("Thin"), InternalFont.get("ExtraLight"), InternalFont.get("Light"), InternalFont.get("Regular"), InternalFont.get("Medium"), InternalFont.get("SemiBold"), InternalFont.get("Bold"), InternalFont.get("ExtraBold"), InternalFont.get("Black")).join();
+		DevFont.MONTSERRAT = MsdfFontLoader.load(DevFont.get("Thin"), DevFont.get("ExtraLight"), DevFont.get("Light"), DevFont.get("Regular"), DevFont.get("Medium"), DevFont.get("SemiBold"), DevFont.get("Bold"), DevFont.get("ExtraBold"), DevFont.get("Black")).join();
 	}
 
 	private static InputStream get(final String weight) {

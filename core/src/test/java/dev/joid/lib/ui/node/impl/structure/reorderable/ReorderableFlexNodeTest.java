@@ -16,7 +16,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
 import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderStartCallback;
@@ -154,7 +154,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertTrue(flex.isAutoDrag());
 		Assert.assertSame(flex, flex.margin(10D));
 		Assert.assertSame(flex, flex.align(Align.END));
-		Assert.assertSame(flex, flex.auto(false));
+		Assert.assertSame(flex, flex.autoDrag(false));
 		Assert.assertSame(flex, flex.direction(FlexDirection.ROW));
 		Assert.assertEquals(10D, flex.getMargin(), 0D);
 		Assert.assertSame(Align.END, flex.getAlign());
@@ -236,7 +236,7 @@ public class ReorderableFlexNodeTest {
 
 	@Test
 	public void ignoresPressesWithoutAutoDrag() {
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item()).auto(false);
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item()).autoDrag(false);
 		this.bridges.open(new NodeUI(flex));
 		this.press(150D, 120D);
 		Assert.assertNull(flex.getReorderedNode());
@@ -494,7 +494,7 @@ public class ReorderableFlexNodeTest {
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();
 		final RectNode third = ReorderableFlexNodeTest.item();
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third).auto(false);
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third).autoDrag(false);
 		this.bridges.open(new NodeUI(flex)).move(150D, 180D).frames(2);
 		Assert.assertSame(flex, flex.startDrag(second));
 		Assert.assertTrue(flex.isDragging(second));
@@ -801,7 +801,7 @@ public class ReorderableFlexNodeTest {
 			public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child) {}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
 				context.cancel();
 			}
@@ -822,7 +822,7 @@ public class ReorderableFlexNodeTest {
 			public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child) {}
 
 			@Override
-			@NodeCallbackMethod(Type.PRE)
+			@NodeCallbackMethod(Phase.PRE)
 			public void pre(final @NonNull ReorderableFlexNode node, final @NonNull InternalContext context, final @NonNull Node child) {
 				context.cancel();
 			}

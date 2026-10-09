@@ -183,13 +183,13 @@ package com.example.settings;
 import com.google.gson.JsonObject;
 
 import dev.joid.lib.ui.core.hook.store.UIStore;
-import dev.joid.lib.ui.core.hook.store.context.StoreContext;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.utils.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.utils.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.utils.signal.impl.primitive.StringSignal;
 
-@UIStoreData(id = "settings", context = StoreContext.PERMANENT)
+@UIStoreData(id = "settings", scope = StoreScope.PERMANENT)
 public class SettingsStore extends UIStore {
 
 	private final BooleanSignal music = BooleanSignal.of(true);

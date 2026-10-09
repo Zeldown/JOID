@@ -44,10 +44,10 @@ public class UIBridgeTest {
 	@Test
 	public void listsTheUisItOpened() {
 		final TraceUI ui = new TraceUI("menu", this.trace);
-		Assert.assertFalse(this.bridges.getUi().isOpened(ui));
+		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
 		this.bridges.open(ui);
 		this.trace.clear();
-		Assert.assertTrue(this.bridges.getUi().isOpened(ui));
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(Collections.singletonList(ui), this.bridges.getUi().getUiList().ordered());
 	}
 
@@ -284,8 +284,8 @@ public class UIBridgeTest {
 		this.trace.clear();
 		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
 		Assert.assertEquals(Collections.singletonList("typed hud \0 ESCAPE"), this.trace);
-		Assert.assertTrue(this.bridges.getUi().isOpened(hud));
-		Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+		Assert.assertTrue(this.bridges.getUi().isOpen(hud));
+		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 	}
 
 	@Test
@@ -296,7 +296,7 @@ public class UIBridgeTest {
 		this.trace.clear();
 		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
 		Assert.assertEquals(Collections.singletonList("typed hud \0 ESCAPE"), this.trace);
-		Assert.assertTrue(this.bridges.getUi().isOpened(hud));
+		Assert.assertTrue(this.bridges.getUi().isOpen(hud));
 	}
 
 	@Test
@@ -308,8 +308,8 @@ public class UIBridgeTest {
 		this.trace.clear();
 		this.bridges.getUi().keyTyped('\0', Key.ESCAPE);
 		Assert.assertEquals(Arrays.asList("typed hud \0 ESCAPE", "close hud"), this.trace);
-		Assert.assertTrue(this.bridges.getUi().isOpened(hud));
-		Assert.assertTrue(this.bridges.getUi().isOpened(menu));
+		Assert.assertTrue(this.bridges.getUi().isOpen(hud));
+		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 	}
 
 	@Test
@@ -415,7 +415,7 @@ public class UIBridgeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToLookForAMissingUi() {
-		this.bridges.getUi().isOpened(null);
+		this.bridges.getUi().isOpen(null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -461,7 +461,7 @@ public class UIBridgeTest {
 		} finally {
 			System.setErr(previous);
 		}
-		Assert.assertFalse(this.bridges.getUi().isOpened(menu));
+		Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 	}
 
 	@Test
@@ -680,7 +680,7 @@ public class UIBridgeTest {
 		bridge.mousePressed(ClickType.LEFT);
 		Assert.assertEquals(Arrays.asList("draw overlay -2000.0", "pressed overlay LEFT"), this.trace);
 		bridge.getUiList().remove(overlay);
-		overlay.properlyClose();
+		overlay.dispose();
 	}
 
 	@Test
@@ -872,7 +872,7 @@ public class UIBridgeTest {
 			}
 
 			this.trace.add("draw " + this.name + " " + UIBridgeTest.depth());
-			super.setRenderPipelineLevel(this.level);
+			super.setDepthLevel(this.level);
 		}
 
 		private void cancel(final InternalContext context) {

@@ -21,8 +21,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.ui.core.hook.store.context.StoreContext;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -41,7 +41,7 @@ public final class UIStoreHook {
 
 		final T store = UIStoreHook.createStoreInstance(clazz, args);
 		final File file = UIStoreHook.getFile(UIStoreHook.getId(store));
-		if (store.getData().context() == StoreContext.PERMANENT && file.exists()) {
+		if (store.getData().scope() == StoreScope.PERMANENT && file.exists()) {
 			final JsonObject json = UIStoreHook.loadFile(UIStoreHook.getId(store));
 			if (json == null) {
 				if (!file.delete()) {
@@ -55,7 +55,7 @@ public final class UIStoreHook {
 			store.init();
 		}
 
-		if (store.getData().context().isGlobal()) {
+		if (store.getData().scope().isGlobal()) {
 			UIStoreHook.GLOBAL_CACHE.put(clazz, store);
 		}
 
@@ -65,11 +65,11 @@ public final class UIStoreHook {
 	public static void destroyStore(final @NonNull UIStore store) {
 		final Class<? extends UIStore> clazz = store.getClass();
 		final UIStoreData data = store.getData();
-		if (data.context().isGlobal()) {
+		if (data.scope().isGlobal()) {
 			UIStoreHook.GLOBAL_CACHE.remove(clazz);
 		}
 
-		if (store.getData().context() == StoreContext.PERMANENT) {
+		if (store.getData().scope() == StoreScope.PERMANENT) {
 			UIStoreHook.deleteFile(UIStoreHook.getId(store));
 		}
 
@@ -77,7 +77,7 @@ public final class UIStoreHook {
 	}
 
 	public static void saveStore(final @NonNull UIStore store) {
-		if (store.getData().context() != StoreContext.PERMANENT) {
+		if (store.getData().scope() != StoreScope.PERMANENT) {
 			return;
 		}
 

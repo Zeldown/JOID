@@ -119,7 +119,7 @@ public class UIDemoChoice extends UI {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create(() -> JOID.isOpen(UIDemoOverlay.class) ? "UIDemoOverlay: on" : "UIDemoOverlay: off", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.onClick((node, mouseX, mouseY, clickType) -> {
-				final UIDemoOverlay overlay = JOID.getUI(UIDemoOverlay.class);
+				final UIDemoOverlay overlay = JOID.getUi(UIDemoOverlay.class);
 				if (overlay != null) {
 					JOID.close(overlay);
 				} else {

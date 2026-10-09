@@ -84,13 +84,13 @@ public abstract class SnapshotSuite {
 	public void resetsTheInterfaceScaleBetweenScenarios() {
 		this.getRunner().execute("ui " + TraceUI.class.getName(), "scale 2");
 		this.getRunner().execute("ui " + TraceUI.class.getName());
-		Assert.assertEquals(1D, JOID.getUI(TraceUI.class).getView().getInterfaceScale(), 0D);
+		Assert.assertEquals(1D, JOID.getUi(TraceUI.class).getView().getInterfaceScale(), 0D);
 	}
 
 	@Test
 	public void rendersAFrameAfterAMove() {
 		this.getRunner().execute("ui " + TraceUI.class.getName(), "move 100 200");
-		final TraceUI ui = JOID.getUI(TraceUI.class);
+		final TraceUI ui = JOID.getUi(TraceUI.class);
 		Assert.assertEquals(ui.getView().toUiX(100D), ui.getMouseX(), 0D);
 		Assert.assertEquals(ui.getView().toUiY(200D), ui.getMouseY(), 0D);
 	}
@@ -98,7 +98,7 @@ public abstract class SnapshotSuite {
 	@Test
 	public void dragsWithThePositionOfEachStep() {
 		this.getRunner().execute("ui " + TraceUI.class.getName(), "move 100 100", "press LEFT", "moveto 300 140 160", "release LEFT");
-		final TraceUI ui = JOID.getUI(TraceUI.class);
+		final TraceUI ui = JOID.getUi(TraceUI.class);
 		Assert.assertEquals(ui.getView().toUiX(300D), ui.getDragX(), 0D);
 		Assert.assertEquals(ui.getView().toUiY(140D), ui.getDragY(), 0D);
 	}
@@ -123,7 +123,7 @@ public abstract class SnapshotSuite {
 	@Test
 	public void doesNotWaitForAFailedResourceBeforeAShot() {
 		this.getRunner().execute("ui " + FailedResourceUI.class.getName(), "shot failed");
-		Assert.assertTrue(JOID.getUI(FailedResourceUI.class).getResource().isFailed());
+		Assert.assertTrue(JOID.getUi(FailedResourceUI.class).getResource().isFailed());
 	}
 
 	private SnapshotRunner getRunner() {

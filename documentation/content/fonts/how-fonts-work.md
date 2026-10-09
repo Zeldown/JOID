@@ -138,7 +138,7 @@ The `dev` jars ship fonts for the developer tools and the demo UIs, under the SI
 
 | Field | Faces | Loaded by |
 |---|---|---|
-| `InternalFont.MONTSERRAT` (`dev.joid.internal.font`) | Montserrat, the nine upright weights | `JOID.inst().load()` in dev or demo mode |
+| `DevFont.MONTSERRAT` (`dev.joid.internal.font`) | Montserrat, the nine upright weights | `JOID.inst().load()` in dev or demo mode |
 | `DemoFont.MONTSERRAT` (`dev.joid.demo`) | The same family | `JOID.inst().load()` in demo mode |
 | `DemoFont.PACIFICO` | Pacifico Regular | `JOID.inst().load()` in demo mode |
 | `DemoFont.PLAYFAIR_DISPLAY` | Playfair Display | `JOID.inst().load()` in demo mode |

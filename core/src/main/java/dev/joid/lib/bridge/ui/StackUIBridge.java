@@ -70,7 +70,7 @@ public abstract class StackUIBridge extends UIBridge {
 
 	public void closeAll() {
 		for (final UI ui : new ArrayList<>(super.getUiList().ordered())) {
-			ui.properlyClose();
+			ui.dispose();
 			this.remove(ui);
 		}
 	}

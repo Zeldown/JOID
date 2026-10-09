@@ -66,7 +66,7 @@ UIs are opened and closed through the static methods of `JOID` (`dev.joid.intern
 JOID.open(new SettingsUI());
 
 if (JOID.isOpen(SettingsUI.class)) {
-	JOID.close(JOID.getUI(SettingsUI.class));
+	JOID.close(JOID.getUi(SettingsUI.class));
 }
 ```
 
@@ -76,7 +76,7 @@ if (JOID.isOpen(SettingsUI.class)) {
 | `JOID.open(ui, true)` | Closes every UI of that bridge first, then opens this one. |
 | `JOID.close(ui)` | Asks the UI to close, plays its closing transition, then removes it. |
 | `JOID.isOpen(SettingsUI.class)` | Whether a UI of that class is open. |
-| `JOID.getUI(SettingsUI.class)` | The open UI of that class, or `null`. |
+| `JOID.getUi(SettingsUI.class)` | The open UI of that class, or `null`. |
 
 The user can close a UI too: `Escape` closes the top UI when it is `closeable`, unless a focused text field takes the key first to cancel its edit. What "open" means exactly (above the others, or replacing them) is decided by your UI bridge, set up in the [Quick Start](../getting-started/quick-start.md).
 

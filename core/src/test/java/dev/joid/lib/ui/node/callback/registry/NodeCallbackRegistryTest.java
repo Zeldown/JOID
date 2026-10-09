@@ -6,7 +6,7 @@ import org.junit.Test;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.NodeCallback;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
-import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Type;
+import dev.joid.lib.ui.node.callback.NodeCallbackMethod.Phase;
 import dev.joid.lib.utils.context.InternalContext;
 
 public class NodeCallbackRegistryTest {
@@ -90,10 +90,10 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default void pre(final Node node, final InternalContext context) {}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context) {}
 
 	}
@@ -103,10 +103,10 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default void pre(final Node node, final InternalContext context, final int value) {}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context, final int value) {}
 
 	}
@@ -116,10 +116,10 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default void pre(final Node node, final InternalContext context) {}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context) {}
 
 	}
@@ -128,10 +128,10 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default void pre(final Node node, final InternalContext context) {}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context) {}
 
 	}
@@ -141,7 +141,7 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context) {}
 
 	}
@@ -151,7 +151,7 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default void pre(final Node node, final InternalContext context) {}
 
 	}
@@ -161,12 +161,12 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default boolean pre(final Node node, final InternalContext context) {
 			return true;
 		}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context) {}
 
 	}
@@ -176,10 +176,10 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default void pre(final Node node) {}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context) {}
 
 	}
@@ -189,10 +189,10 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default void pre(final String text, final InternalContext context) {}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context) {}
 
 	}
@@ -202,10 +202,10 @@ public class NodeCallbackRegistryTest {
 
 		public void apply();
 
-		@NodeCallbackMethod(Type.PRE)
+		@NodeCallbackMethod(Phase.PRE)
 		public default void pre(final Node node, final String text) {}
 
-		@NodeCallbackMethod(Type.POST)
+		@NodeCallbackMethod(Phase.POST)
 		public default void post(final Node node, final InternalContext context) {}
 
 	}

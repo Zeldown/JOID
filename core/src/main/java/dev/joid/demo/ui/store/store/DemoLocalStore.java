@@ -1,8 +1,8 @@
 package dev.joid.demo.ui.store.store;
 
 import dev.joid.lib.ui.core.hook.store.UIStore;
-import dev.joid.lib.ui.core.hook.store.context.StoreContext;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@UIStoreData(id = "DemoLocalStore", context = StoreContext.LOCAL)
+@UIStoreData(id = "DemoLocalStore", scope = StoreScope.LOCAL)
 public class DemoLocalStore extends UIStore {
 
 	private long time;

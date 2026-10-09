@@ -7,16 +7,16 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.lib.ui.node.callback.NodeCallbackObject;
+import dev.joid.lib.ui.node.callback.NodeCallbackInvoker;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.utils.context.InternalContext;
 
-public class NodeEmptyCallbackTest {
+public class NodeEventCallbackTest {
 
 	@Test
 	public void runsAfterTheNodeAndConsumesTheContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeEmptyCallback<RectNode> callback = received::add;
+		final NodeEventCallback<RectNode> callback = received::add;
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final InternalContext context = InternalContext.create();
 		callback.pre(rect, context);
@@ -30,7 +30,7 @@ public class NodeEmptyCallbackTest {
 	@Test
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeEmptyCallback<RectNode> callback = received::add;
+		final NodeEventCallback<RectNode> callback = received::add;
 		callback.post(RectNode.create(0D, 0D, 10D, 10D), InternalContext.create(true));
 		Assert.assertTrue(received.isEmpty());
 	}
@@ -40,7 +40,7 @@ public class NodeEmptyCallbackTest {
 		final List<Object> received = new ArrayList<>();
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
 		final InternalContext context = InternalContext.create();
-		final NodeCallbackObject<NodeEmptyCallback<RectNode>> object = new NodeCallbackObject<>(received::add);
+		final NodeCallbackInvoker<NodeEventCallback<RectNode>> object = new NodeCallbackInvoker<>(received::add);
 		object.pre(rect, context);
 		Assert.assertTrue(received.isEmpty());
 		object.post(rect, context);

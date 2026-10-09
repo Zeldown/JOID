@@ -106,7 +106,7 @@ public class ModelNodeTest {
 	public void leavesTheNextNodesAtItsDepth() {
 		final NodeUI ui = new NodeUI(ModelNode.create(100D, 100D, 200D, 200D).model(new RecordingModel(2D, 2D, 2D)));
 		this.bridges.open(ui).frame();
-		Assert.assertEquals(0D, ui.getRenderPipelineLevel(), 0D);
+		Assert.assertEquals(0D, ui.getDepthLevel(), 0D);
 	}
 
 	@Test

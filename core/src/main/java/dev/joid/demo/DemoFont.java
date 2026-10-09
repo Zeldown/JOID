@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 
 import dev.joid.demo.ui.font.pixel.DemoPixelFont;
 import dev.joid.internal.JOID;
-import dev.joid.internal.font.InternalFont;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import lombok.AccessLevel;
@@ -25,7 +25,7 @@ public class DemoFont {
 	public static DemoPixelFont PIXEL;
 
 	public static void load() {
-		DemoFont.MONTSERRAT = InternalFont.MONTSERRAT;
+		DemoFont.MONTSERRAT = DevFont.MONTSERRAT;
 		DemoFont.PACIFICO = MsdfFontLoader.load(DemoFont.get("Pacifico/Pacifico-Regular.ttf")).join();
 		DemoFont.PLAYFAIR_DISPLAY = MsdfFontLoader.load(DemoFont.get("Playfair-Display/PlayfairDisplay.ttf")).join();
 		DemoFont.PIXEL = DemoPixelFont.create(DemoFont.read("Pixel/Pixel.png"));

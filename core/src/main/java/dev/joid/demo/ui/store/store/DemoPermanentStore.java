@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.hook.store.UIStore;
-import dev.joid.lib.ui.core.hook.store.context.StoreContext;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -14,7 +14,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@UIStoreData(id = "DemoPermanentStore", context = StoreContext.PERMANENT)
+@UIStoreData(id = "DemoPermanentStore", scope = StoreScope.PERMANENT)
 public class DemoPermanentStore extends UIStore {
 
 	private long time;

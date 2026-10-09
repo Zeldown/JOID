@@ -65,13 +65,13 @@ The UI bridge hosts the UIs: it opens and closes them, dispatches input to them 
 |---|---|
 | `open(UI)` / `close(UI)` | Called by `JOID.open` and `JOID.close`. |
 | `add(UI)` / `remove(UI)` | Put a UI in the list, or take it out. |
-| `isOnTop(UI)` / `isOpened(UI)` | Whether the UI receives hover and tooltips, whether it is in the list. `UIBridge` implements both. |
+| `isOnTop(UI)` / `isOpen(UI)` | Whether the UI receives hover and tooltips, whether it is in the list. `UIBridge` implements both. |
 | `canHandle(UI)` / `canHandle(Class<? extends UI>)` | Routing between several UI bridges. |
 | `getUiList()` | The UIs of the bridge, sorted by `zlevel`. |
 | `getInterfaceScale(UI)` | Scale factor of the UI, `1` by default. |
 | `drawHover(UI, Object, double, double)` | Draws a tooltip: text lines by default in `UIBridge`, or a tooltip object of the engine. |
 
-`UIBridgeRegistry`, the type of `BridgeHandler.UI`, adds the routing of UIs: `get(UI)` and `get(Class<? extends UI>)` return the bridge of highest priority whose `canHandle` accepts the UI, or `null`. `JOID.open`, `JOID.close`, `JOID.isOpen` and `JOID.getUI` use them.
+`UIBridgeRegistry`, the type of `BridgeHandler.UI`, adds the routing of UIs: `get(UI)` and `get(Class<? extends UI>)` return the bridge of highest priority whose `canHandle` accepts the UI, or `null`. `JOID.open`, `JOID.close`, `JOID.isOpen` and `JOID.getUi` use them.
 
 ## IWindowBridge
 

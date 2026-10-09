@@ -9,7 +9,7 @@ final SettingsUI settings = new SettingsUI();
 JOID.open(settings);
 
 if (JOID.isOpen(SettingsUI.class)) {
-	JOID.close(JOID.getUI(SettingsUI.class));
+	JOID.close(JOID.getUi(SettingsUI.class));
 }
 ```
 
@@ -192,12 +192,12 @@ In the demo window, the `UIDemoOverlay` button of the demo menu shows and hides 
 | Method | Description |
 | --- | --- |
 | `static IUIBridge open(UI ui)` | Calls `open(ui)` on the bridge that accepts `ui` and returns it. Throws an `IllegalStateException` when no bridge accepts the UI. |
-| `static IUIBridge open(UI ui, boolean force)` | With `force` `false`, same as `open(ui)`. With `true`, first closes every UI of that bridge without asking them (no `close()`, no Out transition: each one is released with `properlyClose()` and passed to the bridge's `close`), then opens `ui`. |
+| `static IUIBridge open(UI ui, boolean force)` | With `force` `false`, same as `open(ui)`. With `true`, first closes every UI of that bridge without asking them (no `close()`, no Out transition: each one is released with `dispose()` and passed to the bridge's `close`), then opens `ui`. |
 | `static void close(UI ui)` | Asks the UI through `onClose()`: its `close()` can refuse, and an Out transition delays the removal until it ends. Then calls the bridge's `close(ui)`. Does nothing when no bridge accepts the UI. |
-| `static void close(UI ui, boolean force)` | With `force` `false`, same as `close(ui)`. With `true`, releases the UI with `properlyClose()` and calls the bridge's `close(ui)` without asking and without transition. |
+| `static void close(UI ui, boolean force)` | With `force` `false`, same as `close(ui)`. With `true`, releases the UI with `dispose()` and calls the bridge's `close(ui)` without asking and without transition. |
 | `static boolean isOpen(UI ui)` | Whether the bridge of `ui` lists it as opened. |
 | `static boolean isOpen(Class<? extends UI> uiClass)` | Whether an open UI is an instance of `uiClass` (subclasses count). |
-| `static <T extends UI> T getUI(Class<T> uiClass)` | The first open UI, in the bridge's order, that is an instance of `uiClass`; `null` if none. |
+| `static <T extends UI> T getUi(Class<T> uiClass)` | The first open UI, in the bridge's order, that is an instance of `uiClass`; `null` if none. |
 
 All of them throw a `NullPointerException` for a `null` argument.
 
@@ -205,7 +205,7 @@ All of them throw a `NullPointerException` for a `null` argument.
 | --- | --- |
 | `getUiList()` | The open UIs, sorted by `zlevel`, then by opening order. |
 | `isOnTop(UI ui)` | Whether `ui` is the first active and visible UI from the top; `false` when no UI is open. |
-| `isOpened(UI ui)` | Whether `ui` is in the list. |
+| `isOpen(UI ui)` | Whether `ui` is in the list. |
 | `load()` | Loads every UI again at the window size, keeping its zoom. Called by the backend on a resize. |
 | `draw()`, `update()`, `mousePressed(...)`, `mouseMoved()`, `mouseReleased(...)`, `mouseScroll(...)`, `keyTyped(...)` | Dispatch the frames and the input, as described above. |
 

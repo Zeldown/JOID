@@ -83,8 +83,8 @@ Every callback interface declares three methods:
 | Method | Default | Role |
 |---|---|---|
 | `apply(node, args...)` | Abstract: the body of your lambda. | Your code. |
-| `pre(node, context, args...)`, annotated `@NodeCallbackMethod(Type.PRE)` | Does nothing. | Runs before the default action. |
-| `post(node, context, args...)`, annotated `@NodeCallbackMethod(Type.POST)` | `context.cancel(() -> this.apply(node, args...))` | Runs after the default action: calls `apply` only when the context is not cancelled, then cancels it. |
+| `pre(node, context, args...)`, annotated `@NodeCallbackMethod(Phase.PRE)` | Does nothing. | Runs before the default action. |
+| `post(node, context, args...)`, annotated `@NodeCallbackMethod(Phase.POST)` | `context.cancel(() -> this.apply(node, args...))` | Runs after the default action: calls `apply` only when the context is not cancelled, then cancels it. |
 
 A dispatch on one node runs:
 
@@ -266,9 +266,9 @@ A custom node declares its own callback types and fires them with the public met
 | `executePreCallback(int type, InternalContext context, Object... args)` | Runs the PRE phase only. |
 | `executePostCallback(int type, InternalContext context, Object... args)` | Runs the POST phase only. |
 | `hasCallback(int type)` | `true` when at least one callback is registered under `type`. |
-| `getCallbackList(int type)` | The registered callbacks, as `NodeCallbackObject` wrappers. |
+| `getCallbackList(int type)` | The registered callbacks, as `NodeCallbackInvoker` wrappers. |
 
-The `type` ids come from `NodeCallbackRegistry.next(Class)` and callbacks are stored with the protected `registerCallback(int type, NodeCallback callback)`. `next` rejects, with an `IllegalArgumentException`, an interface that is not annotated `@FunctionalInterface`, or that lacks a `@NodeCallbackMethod(Type.PRE)` or `@NodeCallbackMethod(Type.POST)` method returning `void` whose first parameter is a `Node` and second an `InternalContext`. `NodeEmptyCallback<T>` (`dev.joid.lib.ui.node.callback.impl`) is a ready-made callback whose lambda takes only `(node)`.
+The `type` ids come from `NodeCallbackRegistry.next(Class)` and callbacks are stored with the protected `registerCallback(int type, NodeCallback callback)`. `next` rejects, with an `IllegalArgumentException`, an interface that is not annotated `@FunctionalInterface`, or that lacks a `@NodeCallbackMethod(Phase.PRE)` or `@NodeCallbackMethod(Phase.POST)` method returning `void` whose first parameter is a `Node` and second an `InternalContext`. `NodeEventCallback<T>` (`dev.joid.lib.ui.node.callback.impl`) is a ready-made callback whose lambda takes only `(node)`.
 
 ## Pitfalls
 
