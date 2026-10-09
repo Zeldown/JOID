@@ -328,21 +328,21 @@ try {
 
 Every OpenGL call of the bridge goes through a journal. The first time the bridge changes a state during a frame, the journal reads its value with `glGet*`; `endFrame()` puts back exactly the values it read, and only those. Its own objects (textures, vertex array, framebuffers) are left out; the parameters of a texture of the host, the attributes of a vertex array of the host and the bindings of each texture unit are put back. A call outside a frame (creating a shader or a framebuffer, uploading a texture) is journaled on its own. At the start of each frame, the bridge also sets the state it needs whatever the host left: no scissor, logic operation, polygon offset, sRGB conversion, primitive restart, depth clamp or rasterizer discard, filled polygons, 1-pixel lines without smoothing, counter-clockwise front faces with back faces culled, depth function `LESS`, depth cleared to 1 and stencil to 0, stencil write mask `0xFF`, pixel store at its defaults (alignment 4) without pixel buffer, and, in a compatibility profile, no alpha test, lighting, fog or color material. Caches of the host that mirror the OpenGL state stay right, since the state comes back unchanged.
 
-When the host draws inside a JOID frame (an item or a model of the host shown in a UI), wrap its drawing in `host(...)`: the bridge puts the state of the host back before it, and journals again after it:
+When the host draws inside a JOID frame (an item or a model of the host shown in a UI), wrap its drawing in `suspend(...)`: the bridge puts the state of the host back before it, and journals again after it:
 
 ```java
-render.host(() -> hostRenderer.drawItem(stack, x, y));
+render.suspend(() -> hostRenderer.drawItem(stack, x, y));
 ```
 
-The Vulkan bridge keeps its state in Java and applies it at each draw call; its `host(...)` runs the drawing as is.
+The Vulkan bridge keeps its state in Java and applies it at each draw call; its `suspend(...)` runs the drawing as is.
 
 ### Matrices of a fixed-function host
 
-JOID keeps its matrices in Java and never reads the OpenGL matrix stacks. A host whose interface draws with the fixed-function matrices (`glOrtho`, `glTranslate`, as Minecraft up to 1.12 does) can hand them to JOID instead of calling `screen(width, height)`: `HostMatrixImport` (`dev.joid.base.opengl.render.host`) reads `GL_PROJECTION_MATRIX` and `GL_MODELVIEW_MATRIX` and loads them into the projection and model-view of the bridge, so the UIs draw in the coordinates of the host:
+JOID keeps its matrices in Java and never reads the OpenGL matrix stacks. A host whose interface draws with the fixed-function matrices (`glOrtho`, `glTranslate`, as Minecraft up to 1.12 does) can hand them to JOID instead of calling `screen(width, height)`: `FixedMatrixImport` (`dev.joid.base.opengl.render.state`) reads `GL_PROJECTION_MATRIX` and `GL_MODELVIEW_MATRIX` and loads them into the projection and model-view of the bridge, so the UIs draw in the coordinates of the host:
 
 ```java
 final GlRenderBridge bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
-final HostMatrixImport matrices = HostMatrixImport.create(bridge);
+final FixedMatrixImport matrices = FixedMatrixImport.create(bridge);
 
 bridge.beginFrame();
 try {
@@ -353,7 +353,7 @@ try {
 }
 ```
 
-`HostMatrixImport.create(bridge)` throws an `IllegalStateException` on a core context, which has no fixed-function matrices.
+`FixedMatrixImport.create(bridge)` throws an `IllegalStateException` on a core context, which has no fixed-function matrices.
 
 ### Natives, audio and interface size
 
@@ -382,9 +382,9 @@ The LWJGL 2 and LWJGL 3 backends render with `joid-base-opengl`, a module in pla
 | `binding` | `IGlBinding` (`glEnable`, `glDisable`, `glIsEnabled`, `glGetInteger`, `glGetIntegerv`, `glGetString`, `glGetStringi`, `glGetFloatv`, `glGetTexParameteri`, `glGetVertexAttribi`, `glGetVertexAttribPointerv`, `glGetVertexAttribfv`, `glGetMaterialfv`, `glClear`, `glReadBuffer`, `glReadPixels`, and the getters of the domain bindings), `IGlStateBinding` (blending, depth, stencil, color mask, viewport, clear values, culling and front face, line width, polygon mode, pixel store), `IGlBufferBinding` (buffers, vertex arrays, attributes, `glDrawArrays`), `IGlProgramBinding` (shaders, programs, attribute and fragment output locations, uniforms), `IGlTextureBinding` (textures, units, `glBindSampler`), `IGlFrameBufferBinding` (framebuffers, renderbuffers, blits), returned by `getFrameBufferBinding(GlFrameBufferFamily)` for the core and ARB entry points (`CORE`) or the `EXT` ones, and `GlConstants`, the OpenGL values the module passes to them. |
 | `capability` | `GlCapabilities.read(IGlBinding)` reads the context once: version, GLSL version, `GlProfile` (`COMPATIBILITY`, `CORE`, `FORWARD_COMPATIBLE_CORE`), extensions and maximum texture size; `hasVertexArrays()`, `hasSamplerObjects()`, `hasFrameBufferBlit()` and `getFrameBufferFamily()` (`null` without framebuffer objects) tell what it can do. `GlStrategies.of(GlCapabilities)` is the one place that chooses how to render on that context, see [OpenGL versions](#opengl-versions). |
 | `render` | `GlRenderBridge` (`create(IGlBinding)`), the render bridge; `GlEnums`, the OpenGL values of the blend, stencil, wrap, filter, vertex and primitive enums of JOID; `shader.GlShader`, `texture.GlTexture` and `framebuffer.GlFrameBuffer`, on the core `Shader`, `Texture` and `FrameBufferHandle`; `texture.GlBorrowedTexture`, a texture of the host on the core `BorrowedTexture`, and `texture.IGlTexture` (`getId()`, `sample(TextureSampling)`), what the bridge binds; `vertex.GlVertexInput` (`ArrayObjectVertexInput`, `DefaultVertexInput`) and `texture.IGlMipmapBuilder` (`BlitMipmapBuilder`, `DrawMipmapBuilder`), the strategies of the bridge. |
-| `render.host` | `IGlHostGuard` (`enter()`, `exit()`, `host(Runnable)`), implemented by `JournalGlHostGuard`: a `GlStateJournal` of `GlStateKey` values, written by `Journal*Binding` decorators of each binding, and `GlPipelineReset`, the state JOID sets at the start of each frame. `GlRenderBridge.getBinding()` returns the journaled binding. `HostMatrixImport` (`create(GlRenderBridge)`, `apply()`) loads the fixed-function matrices of a host into the bridge, see [Matrices of a fixed-function host](#matrices-of-a-fixed-function-host). |
+| `render.state` | `IGlStateGuard` (`enter()`, `exit()`, `suspend(Runnable)`), implemented by `JournalGlStateGuard`: a `GlStateJournal` of `GlStateKey` values, written by `Journal*Binding` decorators of each binding, and `GlPipelineReset`, the state JOID sets at the start of each frame. `GlRenderBridge.getBinding()` returns the journaled binding. `FixedMatrixImport` (`create(GlRenderBridge)`, `apply()`) loads the fixed-function matrices of a host into the bridge, see [Matrices of a fixed-function host](#matrices-of-a-fixed-function-host). |
 | `resource` | `GlTextureResourceResolver.inst()`, which turns an `Integer` or an `IntSupplier` into a [texture of the host](../resources/resources.md#textures-of-the-host); `Backend.register` of LWJGL 2 and LWJGL 3 registers it. |
-| `snapshot` | `GlSnapshotCapture.capture(bridge, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL, and `GlStateSnapshot.read(binding, capabilities)`, the whole OpenGL state for [`HostStateContractSuite`](testkit.md#hoststatecontractsuite-tests); left out of the `-prod` jars and of the released `joid-base-opengl` jar. |
+| `snapshot` | `GlSnapshotCapture.capture(bridge, width, height)` and `getRenderer(binding)`, for an `ISnapshotBackend` on OpenGL, and `GlStateSnapshot.read(binding, capabilities)`, the whole OpenGL state for [`StateGuardContractSuite`](testkit.md#stateguardcontractsuite-tests); left out of the `-prod` jars and of the released `joid-base-opengl` jar. |
 
 `GlRenderBridge.create(binding)` reads the capabilities, chooses its strategies and creates its vertex buffer, and its vertex array when the context has them: the context must be current. Every OpenGL call of JOID then goes through the bindings, so a binding that wraps another one sees all of them (the bridge wraps them itself in its journal), and `dev.joid.backend.lwjgl3.Backend.register(window, binding)` registers the bridges with such a binding. On LWJGL 3, `GlContextRequest` sets the GLFW hints of a context: `CORE_33` (OpenGL 3.3 core, forward compatible on macOS), `CORE_32_FORWARD` (3.2 core, forward compatible) or `COMPATIBILITY` (no version hint: the highest compatibility context of the driver, 2.1 on macOS), each with 24 bits of depth and 8 of stencil.
 
@@ -412,7 +412,7 @@ Each backend module has a demo window that opens the JOID demo UIs in dev and de
 | `./gradlew :backend-lwjgl3:runDemo` | `dev.joid.backend.lwjgl3.demo.DemoWindow` |
 | `./gradlew :backend-vulkan:runDemo` | `dev.joid.backend.vulkan.demo.DemoWindow` |
 
-The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-base-glfw` jar. Its subclasses provide `getEngineName()`, `configureWindow()` (window hints), `registerBackend(long window)` and `present()`; the loop calls `beginFrame()` and `endFrame()` of the render bridge around each frame. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
+The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`, an abstract GLFW loop that is part of the `-dev` jars of LWJGL 3 and Vulkan, not of the published `joid-base-glfw` jar. Its subclasses provide `getBackendName()`, `configureWindow()` (window hints), `registerBackend(long window)` and `present()`; the loop calls `beginFrame()` and `endFrame()` of the render bridge around each frame. Its input handling, which merges the GLFW key and character callbacks, is the one of `AppLoop` in [UI Bridge](ui-bridge.md). See [Developer Tools](../concepts/dev-tools.md) for the demo UIs.
 
 ## Reference
 
@@ -423,7 +423,7 @@ The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`,
 | `dev.joid.backend.lwjgl3.Backend` | `static register(long window, IGlBinding binding)` | The same, with the render bridge on `binding`, a binding that wraps `Lwjgl3GlBinding.inst()`. |
 | `dev.joid.backend.vulkan.Backend` | `static register(long window)` | Checks the version, registers the OpenAL audio bridge, the GLFW window bridge and a Vulkan render bridge on `window`. |
 | `dev.joid.backend.lwjgl2.Natives` | `static install()` | Installs the LWJGL 2 natives once per JVM; call it before `Display.create()`. |
-| `dev.joid.base.opengl.render.host.HostMatrixImport` | `static create(GlRenderBridge bridge)`, `apply()` | Loads the projection and model-view matrices of a fixed-function host into the bridge; refuses a core context. |
+| `dev.joid.base.opengl.render.state.FixedMatrixImport` | `static create(GlRenderBridge bridge)`, `apply()` | Loads the projection and model-view matrices of a fixed-function host into the bridge; refuses a core context. |
 | `dev.joid.internal.JOID` | `static checkVersion(String version)` | `true` when the major version of `version` matches the loaded JOID; otherwise prints the warning and returns `false`. |
 
 ## Pitfalls
@@ -432,7 +432,7 @@ The LWJGL 3 and Vulkan demo windows extend `dev.joid.base.glfw.demo.DemoWindow`,
 - Create the `Display` (or let the host create its context) before `dev.joid.backend.lwjgl2.Backend.register`, and install the natives with `Natives.install()` before `Display.create()`.
 - On LWJGL 2 without vertex array objects (OpenGL 2.1 without `GL_ARB_vertex_array_object`), an attribute of the host that points into client memory instead of a buffer is not put back: LWJGL 2 only takes a buffer offset or a Java buffer.
 - On a context without `glBlitFramebuffer`, mipmapped textures may not be pixel-exact with the other backends.
-- A host draw inside a JOID frame without `host(...)` runs on the state JOID set, and JOID then puts back the state of the host as it was before the frame, over what the host draw changed.
+- A host draw inside a JOID frame without `suspend(...)` runs on the state JOID set, and JOID then puts back the state of the host as it was before the frame, over what the host draw changed.
 - Never draw JOID while the host records a display list (`glNewList`): its calls would be recorded in it.
 - On Vulkan, a clear or a `draw()` outside `beginFrame()` / `endFrame()` throws.
 - Without a stencil buffer, the masks of the UIs do not clip.

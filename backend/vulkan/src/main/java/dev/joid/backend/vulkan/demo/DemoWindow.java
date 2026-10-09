@@ -19,7 +19,7 @@ public class DemoWindow extends dev.joid.base.glfw.demo.DemoWindow {
 	}
 
 	@Override
-	protected String getEngineName() {
+	protected String getBackendName() {
 		return "Vulkan";
 	}
 

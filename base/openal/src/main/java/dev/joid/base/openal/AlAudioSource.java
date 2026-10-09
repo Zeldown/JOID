@@ -13,7 +13,7 @@ import lombok.NonNull;
 public final class AlAudioSource implements IAudioSource {
 
 	private final IAlBinding     binding;
-	private final IAudioGain     hostGain;
+	private final IAudioGain     audioGain;
 	private final int            channels;
 	private final int            sampleRate;
 	private final List<Integer>  bufferList;
@@ -28,9 +28,9 @@ public final class AlAudioSource implements IAudioSource {
 	private float   appliedGain;
 	private int     bufferedSamples;
 
-	private AlAudioSource(final IAlBinding binding, final IAudioGain hostGain, final int sampleRate, final int channels) {
+	private AlAudioSource(final IAlBinding binding, final IAudioGain audioGain, final int sampleRate, final int channels) {
 		this.binding          = binding;
-		this.hostGain         = hostGain;
+		this.audioGain         = audioGain;
 		this.channels         = channels;
 		this.sampleRate       = sampleRate;
 		this.bufferList       = new ArrayList<>();
@@ -39,8 +39,8 @@ public final class AlAudioSource implements IAudioSource {
 		this.gain             = 1F;
 	}
 
-	public static @NonNull AlAudioSource create(final @NonNull IAlBinding binding, final @NonNull IAudioGain hostGain, final int sampleRate, final int channels) {
-		return new AlAudioSource(binding, hostGain, sampleRate, channels);
+	public static @NonNull AlAudioSource create(final @NonNull IAlBinding binding, final @NonNull IAudioGain audioGain, final int sampleRate, final int channels) {
+		return new AlAudioSource(binding, audioGain, sampleRate, channels);
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public final class AlAudioSource implements IAudioSource {
 			this.appliedGain = Float.NaN;
 		}
 
-		final float applied = this.hostGain.apply(this.gain, this.group);
+		final float applied = this.audioGain.apply(this.gain, this.group);
 		if (Float.compare(applied, this.appliedGain) != 0) {
 			this.appliedGain = applied;
 			this.binding.gain(this.source, applied);

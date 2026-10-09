@@ -263,13 +263,13 @@ It prints `JOID 8.0.0`. Each official `Backend.register(...)` also compares its 
 | Part | Content |
 | --- | --- |
 | `libs/` | The JOID jars to download: `joid-core-8.0.0-dev.jar` and `-prod.jar`, `joid-tool-testkit-8.0.0.jar`, `joid-backend-lwjgl3-8.0.0-dev.jar` (the official rendering your shots are compared to), and optionally `joid-base-glfw` and `joid-base-openal`. |
-| `src/main/java` | `Backend`, `RenderBridge`, `WindowBridge`, `AudioBridge` in `com.example.joid.engine`. |
+| `src/main/java` | `Backend`, `RenderBridge`, `WindowBridge`, `AudioBridge` in `com.example.joid.backend`. |
 | `src/test/java` | `RenderBridgeContractTest` and `SnapshotTest`. |
 | `src/demo/java` | `DemoWindow`, which opens the demo UIs on your engine. Only the dev jar contains it. |
 | `libraries` configuration | The libraries listed in [Libraries to declare](#libraries-to-declare). No jar embeds them: the application that uses your backend declares them too. JavaCV, JavaCPP and FFmpeg need no declaration. |
 | `embed` configuration | `joid-base-glfw` and `joid-base-openal`, when your engine runs on GLFW or OpenAL, and `joid-base-opengl` on OpenGL. |
 
-`./gradlew build` produces `joid-engine-1.0.0-dev.jar`, with the demo assets and `DemoWindow`, and `joid-engine-1.0.0-prod.jar`, without them. Both embed the JOID core with its embedded libraries and the `embed` jars, but none of the `libraries`. The tasks and the render contract are described in [Writing a Backend](../integration/writing-a-backend.md).
+`./gradlew build` produces `joid-backend-example-1.0.0-dev.jar`, with the demo assets and `DemoWindow`, and `joid-backend-example-1.0.0-prod.jar`, without them. Both embed the JOID core with its embedded libraries and the `embed` jars, but none of the `libraries`. The tasks and the render contract are described in [Writing a Backend](../integration/writing-a-backend.md).
 
 ## Building from source
 

@@ -52,7 +52,7 @@ public class ExternalRasterTest {
 	}
 
 	@Test
-	public void restoresTheStateOfTheCaller() {
+	public void restoresTheStateSetBeforeTheRaster() {
 		DrawUtils.RASTER.drawRaster(10D, 20D, 32D, 16D, (width, height) -> {});
 		Assert.assertNull(this.render.getState().getFrameBuffer());
 		Assert.assertEquals(1920, this.render.getViewportWidth());

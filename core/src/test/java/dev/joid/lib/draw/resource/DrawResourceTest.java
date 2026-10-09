@@ -131,7 +131,7 @@ public class DrawResourceTest {
 	}
 
 	@Test
-	public void smoothsTheEdgesOfARotatedImageUnderTheShaderOfTheCaller() {
+	public void smoothsTheEdgesOfARotatedImageUnderTheBoundShader() {
 		final RecordingShader shader = new RecordingShader();
 		this.render.shader(shader);
 		this.render.pushMatrix();

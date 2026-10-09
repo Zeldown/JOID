@@ -45,7 +45,7 @@ public class GlfwKeysTest {
 	}
 
 	@Test
-	public void readsAPhysicalKeyFromTheStateOfTheHost() {
+	public void readsAPhysicalKeyFromTheKeyState() {
 		Assert.assertTrue(GlfwKeys.isPhysicalKeyDown(Key.SPACE, code -> code == GLFW.GLFW_KEY_SPACE));
 		Assert.assertFalse(GlfwKeys.isPhysicalKeyDown(Key.ENTER, code -> code == GLFW.GLFW_KEY_SPACE));
 		Assert.assertFalse(GlfwKeys.isPhysicalKeyDown(Key.UNKNOWN, code -> true));

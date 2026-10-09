@@ -52,24 +52,24 @@ public final class BorrowedTextureBackend implements IBorrowedTextureBackend {
 	}
 
 	@Override
-	public boolean isHostTexture(final @NonNull Object texture) {
-		final Texture host = this.textures.get(texture);
-		return host != null && !host.isDeleted() && host.getImage() == ((VulkanImage) texture).getImage();
+	public boolean isBorrowableTexture(final @NonNull Object texture) {
+		final Texture borrowable = this.textures.get(texture);
+		return borrowable != null && !borrowable.isDeleted() && borrowable.getImage() == ((VulkanImage) texture).getImage();
 	}
 
 	@Override
-	public @NonNull Object createHostTexture(final int width, final int height, final int color, final boolean mipmapped) {
+	public @NonNull Object createBorrowableTexture(final int width, final int height, final int color, final boolean mipmapped) {
 		final int[] pixels = new int[width * height];
 		Arrays.fill(pixels, color);
-		final Texture host = (Texture) BridgeHandler.RENDER.get().createTexture();
-		host.mipmap(mipmapped).allocate(width, height).upload(pixels, width, height);
-		final VulkanImage image = VulkanImage.create(host.getImage(), host.getView(), width, height, host.getLevels());
-		this.textures.put(image, host);
+		final Texture texture = (Texture) BridgeHandler.RENDER.get().createTexture();
+		texture.mipmap(mipmapped).allocate(width, height).upload(pixels, width, height);
+		final VulkanImage image = VulkanImage.create(texture.getImage(), texture.getView(), width, height, texture.getLevels());
+		this.textures.put(image, texture);
 		return image;
 	}
 
 	@Override
-	public @NonNull Map<@NonNull String, @NonNull String> readHostParameters(final @NonNull Object texture) {
+	public @NonNull Map<@NonNull String, @NonNull String> readBorrowableParameters(final @NonNull Object texture) {
 		return Collections.emptyMap();
 	}
 

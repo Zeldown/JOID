@@ -102,7 +102,7 @@ The render bridge draws: matrix stacks, render state, textures, framebuffers, sh
 | State | `color(r, g, b, a)`, `blend(BlendState)`, `depth(test, write)`, `cull(boolean)`, `lighting(boolean)`, `colorMask(boolean)`, `alphaTest(threshold)`, `lineWidth(width)`, `lineSmooth(boolean)`, `getLineWidth()`, `isLineSmooth()` |
 | Stencil | `stencilTest(boolean)`, `stencilFunction(StencilFunction, reference, mask)`, `stencilOperation(fail, depthFail, pass)`, `clearStencil()` |
 | Target | `viewport(x, y, width, height)`, `getViewportWidth()`, `getViewportHeight()`, `getPixelGrid()`, `clear(r, g, b, a)`, `clearDepth()`, `frameBuffer(IFrameBuffer)` |
-| Drawings made outside JOID | `host(Runnable)`, `raster(IFrameBuffer target, int width, int height, Runnable draw)` |
+| Drawings made outside JOID | `suspend(Runnable)`, `raster(IFrameBuffer target, int width, int height, Runnable draw)` |
 | Textures and shaders | `texture(ITexture, TextureFilter, TextureWrap)`, `resetTexture()`, `shader(IShader)`, `getShader()` |
 | Drawing | `draw(Primitive, VertexBuffer)` |
 | Factories | `createTexture()`, `createFrameBuffer(width, height)`, `createShader(ShaderSource vertex, ShaderSource fragment, BlendState)` |

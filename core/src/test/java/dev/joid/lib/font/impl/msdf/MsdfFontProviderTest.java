@@ -304,7 +304,7 @@ public class MsdfFontProviderTest {
 	}
 
 	@Test
-	public void spreadsTheGradientOverTheRunOfTheCaller() {
+	public void spreadsTheGradientOverTheGivenRun() {
 		final Color gradient = Color.BLUE.toGradient(Color.GREEN);
 		MsdfFontProvider.inst().drawText(100D, 100D, "Ax", MsdfFontProviderTest.sampleInfo().color(gradient), 50D, 60D, 300D, 80D);
 		Assert.assertArrayEquals(new float[] {50F, 60F, 350F, 140F}, (float[]) this.render.getLast().getUniforms().get("u_GradientCanvas"), 0F);

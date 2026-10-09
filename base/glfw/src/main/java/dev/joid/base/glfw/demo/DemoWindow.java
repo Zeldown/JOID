@@ -25,7 +25,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 		this.configureWindow();
 		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
 
-		this.window = GLFW.glfwCreateWindow(1920, 1080, "JOID - Demo (" + this.getEngineName() + ")", 0L, 0L);
+		this.window = GLFW.glfwCreateWindow(1920, 1080, "JOID - Demo (" + this.getBackendName() + ")", 0L, 0L);
 		if (this.window == 0L) {
 			throw new IllegalStateException("Unable to create the GLFW window");
 		}
@@ -63,7 +63,7 @@ public abstract class DemoWindow extends DemoUIBridge {
 		System.exit(0);
 	}
 
-	protected abstract String getEngineName();
+	protected abstract String getBackendName();
 
 	protected abstract void configureWindow();
 

@@ -2,7 +2,7 @@ apply plugin: 'java'
 
 group = 'com.example.joid'
 version = '1.0.0'
-archivesBaseName = 'joid-engine'
+archivesBaseName = 'joid-backend-example'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -182,7 +182,7 @@ gradle.buildFinished {
 task runDemo(type: JavaExec) {
     group = 'JOID'
     description = 'Launches the demo window.'
-    main = 'com.example.joid.engine.demo.DemoWindow'
+    main = 'com.example.joid.backend.demo.DemoWindow'
     classpath = sourceSets.demo.runtimeClasspath
     if (macOs) {
         jvmArgs '-XstartOnFirstThread'

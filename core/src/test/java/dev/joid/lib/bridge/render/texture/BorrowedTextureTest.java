@@ -16,12 +16,12 @@ public class BorrowedTextureTest {
 
 	@Test
 	public void readsTheSizeOfTheCurrentHandle() {
-		final AtomicReference<HostImage> image = new AtomicReference<>(new HostImage(4, 2, false, true));
-		final HostTexture texture = new HostTexture(image::get);
+		final AtomicReference<BorrowableImage> image = new AtomicReference<>(new BorrowableImage(4, 2, false, true));
+		final BorrowableTexture texture = new BorrowableTexture(image::get);
 		Assert.assertEquals(4, texture.getWidth());
 		Assert.assertEquals(2, texture.getHeight());
 		Assert.assertTrue(texture.isAllocated());
-		image.set(new HostImage(16, 8, true, true));
+		image.set(new BorrowableImage(16, 8, true, true));
 		Assert.assertEquals(16, texture.getWidth());
 		Assert.assertEquals(8, texture.getHeight());
 		Assert.assertTrue(texture.isMipmapped());
@@ -29,7 +29,7 @@ public class BorrowedTextureTest {
 
 	@Test
 	public void isEmptyWithoutHandle() {
-		final HostTexture texture = new HostTexture(() -> null);
+		final BorrowableTexture texture = new BorrowableTexture(() -> null);
 		Assert.assertEquals(0, texture.getWidth());
 		Assert.assertEquals(0, texture.getHeight());
 		Assert.assertFalse(texture.isAllocated());
@@ -39,7 +39,7 @@ public class BorrowedTextureTest {
 
 	@Test
 	public void refusesToBeWritten() {
-		final HostTexture texture = new HostTexture(() -> new HostImage(4, 4, false, true));
+		final BorrowableTexture texture = new BorrowableTexture(() -> new BorrowableImage(4, 4, false, true));
 		try {
 			texture.allocate(8, 8);
 			Assert.fail();
@@ -56,9 +56,9 @@ public class BorrowedTextureTest {
 	}
 
 	@Test
-	public void keepsTheHostTextureWhenDeletedOrMipmapped() {
-		final HostImage image = new HostImage(4, 4, false, true);
-		final HostTexture texture = new HostTexture(() -> image);
+	public void keepsTheBorrowedTextureWhenDeletedOrMipmapped() {
+		final BorrowableImage image = new BorrowableImage(4, 4, false, true);
+		final BorrowableTexture texture = new BorrowableTexture(() -> image);
 		Assert.assertSame(texture, texture.mipmap(true));
 		texture.delete();
 		Assert.assertFalse(texture.isMipmapped());
@@ -68,11 +68,11 @@ public class BorrowedTextureTest {
 
 	@Test
 	public void followsTheSizeOfItsHandleInAResource() {
-		final AtomicReference<HostImage> image = new AtomicReference<>(new HostImage(4, 2, false, true));
-		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new HostTexture(image::get), null);
+		final AtomicReference<BorrowableImage> image = new AtomicReference<>(new BorrowableImage(4, 2, false, true));
+		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(image::get), null);
 		resource.prepareBind();
 		Assert.assertEquals(4, resource.getWidth());
-		image.set(new HostImage(32, 16, false, true));
+		image.set(new BorrowableImage(32, 16, false, true));
 		Assert.assertEquals(32, resource.getWidth());
 		Assert.assertEquals(16, resource.getHeight());
 		Assert.assertFalse(resource.isFailed());
@@ -80,7 +80,7 @@ public class BorrowedTextureTest {
 
 	@Test
 	public void failsTheResourceOfAnInvalidHandle() {
-		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new HostTexture(() -> new HostImage(4, 4, false, false)), null);
+		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(() -> new BorrowableImage(4, 4, false, false)), null);
 		resource.prepareBind();
 		Assert.assertTrue(resource.isFailed());
 		Assert.assertEquals("The borrowed texture host 4x4 is not a texture of the host", resource.getResourceData().getError().getMessage());
@@ -88,20 +88,20 @@ public class BorrowedTextureTest {
 
 	@Test
 	public void survivesTheReleaseOfItsResource() {
-		final HostImage image = new HostImage(4, 4, false, true);
-		final ResourceData data = new ResourceData("borrowed", null).texture(new HostTexture(() -> image));
+		final BorrowableImage image = new BorrowableImage(4, 4, false, true);
+		final ResourceData data = new ResourceData("borrowed", null).texture(new BorrowableTexture(() -> image));
 		data.clear();
 		Assert.assertTrue(image.valid);
 	}
 
-	private static final class HostImage {
+	private static final class BorrowableImage {
 
 		private final int     width;
 		private final int     height;
 		private final boolean mipmapped;
 		private final boolean valid;
 
-		private HostImage(final int width, final int height, final boolean mipmapped, final boolean valid) {
+		private BorrowableImage(final int width, final int height, final boolean mipmapped, final boolean valid) {
 			this.width = width;
 			this.height = height;
 			this.mipmapped = mipmapped;
@@ -115,29 +115,29 @@ public class BorrowedTextureTest {
 
 	}
 
-	private static final class HostTexture extends BorrowedTexture<HostImage> {
+	private static final class BorrowableTexture extends BorrowedTexture<BorrowableImage> {
 
-		private HostTexture(final Supplier<HostImage> supplier) {
+		private BorrowableTexture(final Supplier<BorrowableImage> supplier) {
 			super(supplier);
 		}
 
 		@Override
-		protected int getWidth(final @NonNull HostImage handle) {
+		protected int getWidth(final @NonNull BorrowableImage handle) {
 			return handle.width;
 		}
 
 		@Override
-		protected int getHeight(final @NonNull HostImage handle) {
+		protected int getHeight(final @NonNull BorrowableImage handle) {
 			return handle.height;
 		}
 
 		@Override
-		protected boolean isValid(final @NonNull HostImage handle) {
+		protected boolean isValid(final @NonNull BorrowableImage handle) {
 			return handle.valid;
 		}
 
 		@Override
-		protected boolean isMipmapped(final @NonNull HostImage handle) {
+		protected boolean isMipmapped(final @NonNull BorrowableImage handle) {
 			return handle.mipmapped;
 		}
 

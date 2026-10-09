@@ -51,12 +51,12 @@ public final class BorrowedTextureBackend implements IBorrowedTextureBackend {
 	}
 
 	@Override
-	public boolean isHostTexture(final @NonNull Object texture) {
+	public boolean isBorrowableTexture(final @NonNull Object texture) {
 		return GL11.glIsTexture((Integer) texture);
 	}
 
 	@Override
-	public @NonNull Object createHostTexture(final int width, final int height, final int color, final boolean mipmapped) {
+	public @NonNull Object createBorrowableTexture(final int width, final int height, final int color, final boolean mipmapped) {
 		final int previous = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
 		final int texture = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture);
@@ -81,7 +81,7 @@ public final class BorrowedTextureBackend implements IBorrowedTextureBackend {
 	}
 
 	@Override
-	public @NonNull Map<@NonNull String, @NonNull String> readHostParameters(final @NonNull Object texture) {
+	public @NonNull Map<@NonNull String, @NonNull String> readBorrowableParameters(final @NonNull Object texture) {
 		final int previous = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, (Integer) texture);
 		final Map<String, String> parameters = new TreeMap<>();

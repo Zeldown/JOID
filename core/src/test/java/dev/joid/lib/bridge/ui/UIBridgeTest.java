@@ -597,7 +597,7 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void leavesToTheHostTheEventsAnOverlayDoesNotCancel() {
+	public void leavesUnconsumedTheEventsAnOverlayDoesNotCancel() {
 		final TraceUI overlay = new OverlayUI("overlay", this.trace);
 		overlay.cancel = true;
 		overlay.getOverlay().interaction().setCancelClick(false).setCancelScroll(false).setCancelKeyboard(false);
@@ -666,7 +666,7 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void hidesTheOverlaysTheHostHidesUnlessAlways() {
+	public void hidesTheHiddenOverlaysUnlessAlways() {
 		final HidingBridge bridge = new HidingBridge();
 		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
 		bridge.add(overlay);

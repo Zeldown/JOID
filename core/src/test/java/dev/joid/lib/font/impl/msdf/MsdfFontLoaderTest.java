@@ -89,7 +89,7 @@ public class MsdfFontLoaderTest {
 	}
 
 	@Test(timeout = 10000L)
-	public void handsTheFailureBackToTheCaller() {
+	public void completesTheFutureWithTheFailure() {
 		MsdfFontLoaderTest.fails(IOException.class, new ByteArrayInputStream("not a font at all".getBytes(StandardCharsets.UTF_8)));
 	}
 

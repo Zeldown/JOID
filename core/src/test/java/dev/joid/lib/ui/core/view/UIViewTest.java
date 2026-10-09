@@ -131,24 +131,24 @@ public class UIViewTest {
 		final MatrixStack projection = new MatrixStack();
 		final MatrixStack modelView = new MatrixStack();
 		projection.ortho(0D, 640D, 360D, 0D, 0D, 1D);
-		final float[] host = projection.getMatrix().clone();
+		final float[] projected = projection.getMatrix().clone();
 		try {
 			UIView.create(960D, 540D).resize(2560D, 1440D).zoom(0.5D).render(UIViewTest.bridge(projection, modelView), true, () -> {
 				throw new IllegalStateException("draw failed");
 			});
 			Assert.fail("The failure of the draw must reach the caller");
 		} catch (final IllegalStateException expected) {
-			Assert.assertArrayEquals(host, projection.getMatrix(), 0F);
+			Assert.assertArrayEquals(projected, projection.getMatrix(), 0F);
 			Assert.assertArrayEquals(new MatrixStack().getMatrix(), modelView.getMatrix(), 0F);
 		}
 	}
 
 	@Test
-	public void keepsTheHostProjectionWhenAsked() {
+	public void keepsTheBoundProjectionWhenAsked() {
 		final MatrixStack projection = new MatrixStack();
 		projection.ortho(0D, 640D, 360D, 0D, 0D, 1D);
-		final float[] host = projection.getMatrix().clone();
-		UIView.create(960D, 540D).resize(1920D, 1080D).render(UIViewTest.bridge(projection, new MatrixStack()), false, () -> Assert.assertArrayEquals(host, projection.getMatrix(), 0F));
+		final float[] projected = projection.getMatrix().clone();
+		UIView.create(960D, 540D).resize(1920D, 1080D).render(UIViewTest.bridge(projection, new MatrixStack()), false, () -> Assert.assertArrayEquals(projected, projection.getMatrix(), 0F));
 	}
 
 	@Test

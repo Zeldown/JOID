@@ -9,12 +9,12 @@ import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
 import dev.joid.base.opengl.capability.GlStrategies;
 import dev.joid.base.opengl.render.framebuffer.GlFrameBuffer;
-import dev.joid.base.opengl.render.host.IGlHostGuard;
-import dev.joid.base.opengl.render.host.JournalGlHostGuard;
 import dev.joid.base.opengl.render.shader.GlShader;
+import dev.joid.base.opengl.render.state.IGlStateGuard;
+import dev.joid.base.opengl.render.state.JournalGlStateGuard;
 import dev.joid.base.opengl.render.texture.GlTexture;
-import dev.joid.base.opengl.render.texture.IGlTexture;
 import dev.joid.base.opengl.render.texture.IGlMipmapBuilder;
+import dev.joid.base.opengl.render.texture.IGlTexture;
 import dev.joid.base.opengl.render.vertex.GlVertexInput;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
@@ -35,7 +35,7 @@ import lombok.NonNull;
 public class GlRenderBridge extends RenderBridge {
 
 	private final IGlBinding            binding;
-	private final IGlHostGuard          guard;
+	private final IGlStateGuard          guard;
 	private final GlStrategies          strategies;
 	private final GlVertexInput         vertexInput;
 	private final GlCapabilities        capabilities;
@@ -45,7 +45,7 @@ public class GlRenderBridge extends RenderBridge {
 	protected GlRenderBridge(final @NonNull IGlBinding binding) {
 		this.capabilities       = GlCapabilities.read(binding);
 		this.strategies         = GlStrategies.of(this.capabilities);
-		this.guard              = JournalGlHostGuard.create(binding, this.capabilities, this.strategies.getFrameBufferFamily());
+		this.guard              = JournalGlStateGuard.create(binding, this.capabilities, this.strategies.getFrameBufferFamily());
 		this.binding            = this.guard.getBinding();
 		this.mipmapBuilder      = this.strategies.createMipmapBuilder();
 		this.frameBufferBinding = this.binding.getFrameBufferBinding(this.strategies.getFrameBufferFamily());
@@ -72,13 +72,13 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void host(final @NonNull Runnable host) {
-		this.guard.host(host);
+	public void suspend(final @NonNull Runnable draw) {
+		this.guard.suspend(draw);
 	}
 
 	@Override
 	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
-		this.guard.host(() -> {
+		this.guard.suspend(() -> {
 			final int[] viewport = new int[4];
 			final int previous = this.binding.getInteger(GlConstants.DRAW_FRAMEBUFFER_BINDING);
 			this.binding.getIntegers(GlConstants.VIEWPORT, viewport);

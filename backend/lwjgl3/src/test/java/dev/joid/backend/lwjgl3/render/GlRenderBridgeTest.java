@@ -12,7 +12,7 @@ import org.junit.Test;
 import dev.joid.backend.lwjgl3.snapshot.SnapshotBackend;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.render.GlRenderBridge;
-import dev.joid.base.opengl.render.host.HostMatrixImport;
+import dev.joid.base.opengl.render.state.FixedMatrixImport;
 import dev.joid.internal.JOID;
 import dev.joid.lib.resource.Resource;
 
@@ -56,7 +56,7 @@ public class GlRenderBridgeTest {
 		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
 		Assume.assumeTrue(bridge.getCapabilities().getProfile() != GlProfile.COMPATIBILITY);
 		try {
-			HostMatrixImport.create(bridge);
+			FixedMatrixImport.create(bridge);
 			Assert.fail();
 		} catch (final IllegalStateException e) {
 			Assert.assertTrue(e.getMessage().startsWith("Only a compatibility context has fixed-function matrices to import"));
@@ -64,7 +64,7 @@ public class GlRenderBridgeTest {
 	}
 
 	@Test
-	public void failsABorrowedTextureThatTheHostNeverCreated() {
+	public void failsABorrowedTextureThatWasNeverCreated() {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		final boolean devMode = JOID.inst().isDevMode();

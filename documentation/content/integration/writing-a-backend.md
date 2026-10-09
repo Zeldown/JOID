@@ -7,14 +7,14 @@ The [previous page](backends.md) showed the three official backends; their bridg
 A backend is a set of bridges and one static method that registers them. This is the `Backend` class of the template:
 
 ```java
-package com.example.joid.engine;
+package com.example.joid.backend;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 
-import com.example.joid.engine.audio.AudioBridge;
-import com.example.joid.engine.render.RenderBridge;
-import com.example.joid.engine.window.WindowBridge;
+import com.example.joid.backend.audio.AudioBridge;
+import com.example.joid.backend.render.RenderBridge;
+import com.example.joid.backend.window.WindowBridge;
 
 public final class Backend {
 
@@ -58,7 +58,7 @@ Each release publishes `joid-backend-template-<version>.zip` (built by the `back
 Setup:
 
 1. Put the jars listed in `libs/README.md` in `libs/`: `joid-core-<version>-dev.jar` and `-prod.jar`, `joid-tool-testkit-<version>.jar`, `joid-backend-lwjgl3-<version>-dev.jar` (the reference rendering), and optionally `joid-base-glfw-<version>.jar` and `joid-base-openal-<version>.jar`.
-2. Rename the `com.example.joid.engine` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group` and `archivesBaseName` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
+2. Rename the `com.example.joid.backend` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group` and `archivesBaseName` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
 3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, put `joid-base-glfw` and `joid-base-openal` (and `joid-base-opengl` on OpenGL, see [Two ways to implement IRenderBridge](#two-ways-to-implement-irenderbridge)) in the `embed` configuration and reuse their bridges instead of writing your own:
 
 ```groovy
@@ -87,7 +87,7 @@ When a test fails, the build prints the link of its interactive `report.html`.
 |---|---|---|
 | Native: implement `IRenderBridge` directly | The engine has a fixed pipeline with its own matrix stacks and state. Forward each call and read the state back from the engine. | None |
 | Emulated: extend `RenderBridge` | The engine has no fixed pipeline (modern OpenGL, Vulkan, a game engine renderer). | LWJGL 3, Vulkan |
-| On OpenGL: implement the bindings of `joid-base-opengl` | The engine gives access to an OpenGL context, from 2.0 to 4.6, compatibility or core. `GlRenderBridge`, an emulated bridge, does the rendering and adapts to the context; you only forward its OpenGL calls. A host with fixed-function matrices hands them to the bridge with `HostMatrixImport`. | LWJGL 2, LWJGL 3 |
+| On OpenGL: implement the bindings of `joid-base-opengl` | The engine gives access to an OpenGL context, from 2.0 to 4.6, compatibility or core. `GlRenderBridge`, an emulated bridge, does the rendering and adapts to the context; you only forward its OpenGL calls. A host with fixed-function matrices hands them to the bridge with `FixedMatrixImport`. | LWJGL 2, LWJGL 3 |
 
 On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.joid.base.opengl.binding`) with the OpenGL functions of your engine, one call each: `IGlBinding` (capabilities, `glGet*`, `glEnable`, clears, reading pixels, and the getters of the others), `IGlStateBinding`, `IGlBufferBinding`, `IGlProgramBinding`, `IGlTextureBinding` (with `glIsTexture`, `glGetTexParameteri` and `glGetTexLevelParameteri` for the [borrowed textures](#borrowed-textures)), and `IGlFrameBufferBinding` twice, once with the core and ARB functions and once with the `EXT` ones (a context that has only one family never calls the other). Then register `GlRenderBridge.create(binding)`. See [Backends](backends.md#the-base-opengl-module).
 
@@ -121,9 +121,9 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 
 `IRenderBridge.beginFrame()` and `endFrame()` wrap each frame; both do nothing by default. The demo windows, the testkit and the loops of the official backends call them around the clear and the `draw()` of the UI bridge, without knowing the class of your bridge. Override them when your engine records its commands per frame, as Vulkan does: `beginFrame()` acquires the image and starts recording, `endFrame()` submits, or when it shares its context with a host, as the OpenGL bridge does: `beginFrame()` starts its journal of the host state, `endFrame()` puts that state back. Showing the image on a window stays outside the contract (the Vulkan `present()`, a buffer swap).
 
-`IRenderBridge.host(Runnable host)` runs a drawing of the host inside a JOID frame (an item of a game in a UI); by default it runs it as is. A bridge that changes the state of a shared context overrides it to give the host its state before the runnable and to take its own back after it, as `GlRenderBridge` does.
+`IRenderBridge.suspend(Runnable draw)` runs a drawing of the host inside a JOID frame (an item of a game in a UI); by default it runs it as is. A bridge that changes the state of a shared context overrides it to give the host its state before the runnable and to take its own back after it, as `GlRenderBridge` does.
 
-`IRenderBridge.raster(IFrameBuffer target, int width, int height, Runnable draw)` runs a drawing made outside JOID into `target`, for [`DrawUtils.RASTER`](../drawing/draw-utils.md#drawings-made-outside-joid-with-drawutilsraster). When it is called, the render state already targets `target` with a `width` × `height` viewport at its origin, an `ortho(0, width, height, 0)` projection and a transparent clear; by default it runs `draw` through `host(...)`, which suits a bridge that keeps its state in Java. A bridge whose `host(...)` gives a shared context back to the program that embeds JOID makes `target` current inside it: `GlRenderBridge` binds the framebuffer and sets the viewport with the OpenGL state of that program, then puts its framebuffer and viewport back. A bridge whose engine draws into its own kind of target (another texture format, a depth texture) points that engine at the color of `target` there.
+`IRenderBridge.raster(IFrameBuffer target, int width, int height, Runnable draw)` runs a drawing made outside JOID into `target`, for [`DrawUtils.RASTER`](../drawing/draw-utils.md#drawings-made-outside-joid-with-drawutilsraster). When it is called, the render state already targets `target` with a `width` × `height` viewport at its origin, an `ortho(0, width, height, 0)` projection and a transparent clear; by default it runs `draw` through `suspend(...)`, which suits a bridge that keeps its state in Java. A bridge whose `suspend(...)` gives a shared context back to the program that embeds JOID makes `target` current inside it: `GlRenderBridge` binds the framebuffer and sets the viewport with the OpenGL state of that program, then puts its framebuffer and viewport back. A bridge whose engine draws into its own kind of target (another texture format, a depth texture) points that engine at the color of `target` there.
 
 ### Draw calls and vertices
 

@@ -99,7 +99,7 @@ public class AlAudioSourceTest {
 	}
 
 	@Test
-	public void appliesTheGainOfTheHost() {
+	public void appliesTheAudioGain() {
 		final IAudioSource source = AlAudioSource.create(this.binding, (gain, group) -> gain * 0.5F, 8000, 1);
 		source.gain(0.8F);
 		Assert.assertEquals("gain 1 0.4", this.binding.calls.get(this.binding.calls.size() - 1));
@@ -139,7 +139,7 @@ public class AlAudioSourceTest {
 	}
 
 	@Test
-	public void followsANewContextOfTheHost() {
+	public void followsANewCurrentContext() {
 		final IAudioSource source = this.create(1);
 		source.gain(0.5F);
 		source.write(new short[] {1, 2});
@@ -206,7 +206,7 @@ public class AlAudioSourceTest {
 	}
 
 	@Test
-	public void givesTheGainOfTheHostToItsSources() {
+	public void givesItsAudioGainToItsSources() {
 		AlAudioBridge.create(this.binding).gain((gain, group) -> 0F).createSource(8000, 1).gain(1F);
 		Assert.assertEquals("gain 1 0.0", this.binding.calls.get(this.binding.calls.size() - 1));
 	}

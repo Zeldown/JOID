@@ -12,7 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import dev.joid.backend.lwjgl2.snapshot.SnapshotBackend;
 import dev.joid.base.opengl.render.GlRenderBridge;
-import dev.joid.base.opengl.render.host.HostMatrixImport;
+import dev.joid.base.opengl.render.state.FixedMatrixImport;
 import dev.joid.base.opengl.render.vertex.ArrayObjectVertexInput;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
@@ -34,7 +34,7 @@ public class GlRenderBridgeTest {
 	}
 
 	@Test
-	public void importsTheFixedMatricesOfTheHost() {
+	public void importsTheFixedMatrices() {
 		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
@@ -42,7 +42,7 @@ public class GlRenderBridgeTest {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GL11.glTranslatef(5F, 7F, -2000F);
-		HostMatrixImport.create(bridge).apply();
+		FixedMatrixImport.create(bridge).apply();
 
 		final MatrixStack projection = new MatrixStack();
 		projection.ortho(0D, 320D, 240D, 0D, 1000D, 3000D);
@@ -60,7 +60,7 @@ public class GlRenderBridgeTest {
 	}
 
 	@Test
-	public void failsABorrowedTextureThatTheHostNeverCreated() {
+	public void failsABorrowedTextureThatWasNeverCreated() {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		final boolean devMode = JOID.inst().isDevMode();

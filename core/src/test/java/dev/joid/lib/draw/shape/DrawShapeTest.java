@@ -163,7 +163,7 @@ public class DrawShapeTest {
 	}
 
 	@Test
-	public void keepsTheShaderOfTheCallerOnARotatedRectangle() {
+	public void keepsTheBoundShaderOnARotatedRectangle() {
 		this.bridges.resize(1920, 1080);
 		final RecordingShader shader = new RecordingShader();
 		shader.bind();
@@ -454,7 +454,7 @@ public class DrawShapeTest {
 	}
 
 	@Test
-	public void restoresTheBlendingAndTheTextureOfTheCallerAfterAShape() {
+	public void restoresTheBlendingAndTheTextureAfterAShape() {
 		final ITexture texture = this.bridges.getRender().createTexture();
 		this.bridges.getRender().blend(BlendState.PREMULTIPLIED);
 		this.bridges.getRender().texture(texture, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_EDGE);
@@ -523,7 +523,7 @@ public class DrawShapeTest {
 	}
 
 	@Test
-	public void restoresTheLineStateOfTheCallerAfterALine() {
+	public void restoresTheLineStateAfterALine() {
 		this.bridges.getRender().lineWidth(3F);
 		this.bridges.getRender().lineSmooth(true);
 		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), new Vector2d(10D, 20D), new Vector2d(110D, 20D));

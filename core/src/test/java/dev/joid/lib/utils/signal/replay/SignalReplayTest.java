@@ -365,7 +365,7 @@ public class SignalReplayTest {
 	}
 
 	@Test
-	public void warnsWhenTheBytecodeOfTheCallerCannotBeRead() throws IOException {
+	public void warnsWhenTheBytecodeOfTheCallSiteCannotBeRead() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenMissing", true, false, null, null);
 		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);

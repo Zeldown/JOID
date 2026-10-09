@@ -117,45 +117,45 @@ The contract suite creates the backend once, on a 64×64 surface, and resets the
 
 Your own tests reach the core shaders through the core enum `CoreShader` (`dev.joid.lib.bridge.render.shader.source`): loop over `CoreShader.values()` and parse a stage with `read(ShaderStage stage)`.
 
-## HostStateContractSuite tests
+## StateGuardContractSuite tests
 
-A backend embedded in a host that owns the graphics context (a game, an engine) shares its state with it. `HostStateContractSuite` (`dev.joid.test.contract`) checks that JOID draws correctly whatever state the host left, and gives the host its state back. Extend it with an `IHostStateBackend`, an `ISnapshotBackend` that also plays the host:
+A backend embedded in a host that owns the graphics context (a game, an engine) shares its state with it. `StateGuardContractSuite` (`dev.joid.test.contract`) checks that JOID draws correctly whatever state the host left, and gives the host its state back. Extend it with an `IStateGuardBackend`, an `ISnapshotBackend` that also plays the host:
 
 | Method | Contract |
 |---|---|
-| `inject(HostTrap trap)` | Leaves the state of `trap` in the context, as a host would before calling JOID. |
-| `supports(HostTrap trap)` | Whether the context has that state (`ALPHA_TEST` only in a compatibility profile, `SAMPLER_OBJECTS` from OpenGL 3.3...); the tests of the others are skipped. |
-| `drawHost()` | Draws as the host, changing its state, from inside `IRenderBridge.host(...)`. |
+| `inject(StateTrap trap)` | Leaves the state of `trap` in the context, as a host would before calling JOID. |
+| `supports(StateTrap trap)` | Whether the context has that state (`ALPHA_TEST` only in a compatibility profile, `SAMPLER_OBJECTS` from OpenGL 3.3...); the tests of the others are skipped. |
+| `drawExternal()` | Draws as the host, changing its state, from inside `IRenderBridge.suspend(...)`. |
 | `readState()` | The whole state of the context, by name: the oracle the suite compares. |
 
-Each test creates the backend on a 64×64 surface, renders a reference frame, injects its `HostTrap`, then renders the frame again. The frame uploads textures (one with mipmaps), blends, tests the depth, culls, writes and tests the stencil, draws into a framebuffer and through a shader with a sampler, and calls `render.host(...)` in the middle. The suite fails when:
+Each test creates the backend on a 64×64 surface, renders a reference frame, injects its `StateTrap`, then renders the frame again. The frame uploads textures (one with mipmaps), blends, tests the depth, culls, writes and tests the stencil, draws into a framebuffer and through a shader with a sampler, and calls `render.suspend(...)` in the middle. The suite fails when:
 
 - the frame differs from the reference by a single pixel;
-- the state read inside `host(...)` differs from the state before the frame: JOID must give the host its state back before a nested host draw;
+- the state read inside `suspend(...)` differs from the state before the frame: JOID must give the host its state back before a nested host draw;
 - the state after the frame, then after `capture`, differs from the state the host draw left.
 
-| Test | `HostTrap` |
+| Test | `StateTrap` |
 |---|---|
-| `leavesACleanHostAsItWas` | none |
-| `restoresTheBlendingOfTheHost` | `BLEND`: blend functions, equations and color, color and depth masks, clear color, viewport |
-| `drawsThroughTheScissorOfTheHost` | `SCISSOR` |
-| `drawsThroughTheLogicOperationOfTheHost` | `LOGIC_OP` |
-| `cullsWhateverTheFrontFaceOfTheHost` | `FRONT_FACE`: clockwise front faces, front faces culled |
-| `drawsThroughTheAlphaTestOfTheHost` | `ALPHA_TEST` |
-| `uploadsWhateverThePixelStoreOfTheHost` | `PIXEL_STORE`: unpack and pack alignment, row length and skips |
-| `drawsWhateverTheFrameBufferOfTheHost` | `FRAMEBUFFER`: a framebuffer and a renderbuffer of the host bound |
-| `uploadsWhateverThePixelBufferOfTheHost` | `PIXEL_BUFFER`: pixel pack and unpack buffers bound |
-| `fillsWhateverThePolygonModeOfTheHost` | `POLYGON_MODE`: lines |
-| `masksWhateverTheStencilMaskOfTheHost` | `STENCIL_MASK`: stencil write mask 0, stencil clear value 5 |
-| `keepsTheVertexArrayOfTheHost` | `VERTEX_ARRAY`: a vertex array of the host with its attributes and buffers |
-| `keepsTheClientArraysOfTheHost` | `CLIENT_ARRAYS`: client arrays and generic attributes of the default vertex array |
-| `keepsTheMaterialOfTheHost` | `COLOR_MATERIAL`: lighting, color material, current color and normal |
-| `testsTheDepthWhateverTheDepthFunctionOfTheHost` | `DEPTH_FUNCTION`: `GREATER`, depth clear value 0.25 |
-| `samplesWhateverTheSamplerObjectsOfTheHost` | `SAMPLER_OBJECTS`: sampler objects bound on units 0 to 3 |
-| `keepsTheTextureParametersOfTheHost` | `TEXTURE_PARAMETERS`: textures of the host, with their own filter and wrap, bound on units 0 to 3 |
+| `leavesACleanStateAsItWas` | none |
+| `restoresTheBlendingSetBeforeJoid` | `BLEND`: blend functions, equations and color, color and depth masks, clear color, viewport |
+| `drawsThroughTheScissorSetBeforeJoid` | `SCISSOR` |
+| `drawsThroughTheLogicOperationSetBeforeJoid` | `LOGIC_OP` |
+| `cullsWhateverTheFrontFaceSetBeforeJoid` | `FRONT_FACE`: clockwise front faces, front faces culled |
+| `drawsThroughTheAlphaTestSetBeforeJoid` | `ALPHA_TEST` |
+| `uploadsWhateverThePixelStoreSetBeforeJoid` | `PIXEL_STORE`: unpack and pack alignment, row length and skips |
+| `drawsWhateverTheFrameBufferSetBeforeJoid` | `FRAMEBUFFER`: a framebuffer and a renderbuffer of the host bound |
+| `uploadsWhateverThePixelBufferSetBeforeJoid` | `PIXEL_BUFFER`: pixel pack and unpack buffers bound |
+| `fillsWhateverThePolygonModeSetBeforeJoid` | `POLYGON_MODE`: lines |
+| `masksWhateverTheStencilMaskSetBeforeJoid` | `STENCIL_MASK`: stencil write mask 0, stencil clear value 5 |
+| `keepsTheVertexArraySetBeforeJoid` | `VERTEX_ARRAY`: a vertex array of the host with its attributes and buffers |
+| `keepsTheClientArraysSetBeforeJoid` | `CLIENT_ARRAYS`: client arrays and generic attributes of the default vertex array |
+| `keepsTheMaterialSetBeforeJoid` | `COLOR_MATERIAL`: lighting, color material, current color and normal |
+| `testsTheDepthWhateverTheDepthFunctionSetBeforeJoid` | `DEPTH_FUNCTION`: `GREATER`, depth clear value 0.25 |
+| `samplesWhateverTheSamplerObjectsSetBeforeJoid` | `SAMPLER_OBJECTS`: sampler objects bound on units 0 to 3 |
+| `keepsTheTextureParametersSetBeforeJoid` | `TEXTURE_PARAMETERS`: textures of the host, with their own filter and wrap, bound on units 0 to 3 |
 | `survivesEveryTrapAtOnce` | `EVERYTHING`: every trap the context supports |
 
-On OpenGL, `GlStateSnapshot.read(binding, capabilities)` (`dev.joid.base.opengl.snapshot`) is the oracle: about 150 values read with `glGet*` through a binding (enabled capabilities, bindings, blend, depth, stencil, pixel store, viewport and scissor box, the textures, samplers and texture parameters of units 0 to 3, the attributes of the bound vertex array, and, in a compatibility profile, the fixed-function state, the client arrays and the material). The LWJGL 3 module implements the traps with LWJGL in `HostStateBackend` and runs the suite in `HostStateContractTest`, on every [OpenGL profile](#opengl-profiles).
+On OpenGL, `GlStateSnapshot.read(binding, capabilities)` (`dev.joid.base.opengl.snapshot`) is the oracle: about 150 values read with `glGet*` through a binding (enabled capabilities, bindings, blend, depth, stencil, pixel store, viewport and scissor box, the textures, samplers and texture parameters of units 0 to 3, the attributes of the bound vertex array, and, in a compatibility profile, the fixed-function state, the client arrays and the material). The LWJGL 3 module implements the traps with LWJGL in `Lwjgl2StateGuardBackend` and runs the suite in `StateGuardContractTest`, on every [OpenGL profile](#opengl-profiles).
 
 ## BitmapFontContractSuite tests
 
@@ -173,18 +173,18 @@ On OpenGL, `GlStateSnapshot.read(binding, capabilities)` (`dev.joid.base.opengl.
 
 | Method | Contract |
 |---|---|
-| `createHostTexture(int width, int height, int color, boolean mipmapped)` | Creates a texture the way the host would, filled with the ARGB `color`, with every mip level when `mipmapped`, and returns its handle as `Resource.of(...)` takes it (an `Integer` on OpenGL). |
-| `isHostTexture(Object texture)` | Whether that texture still exists. |
+| `createBorrowableTexture(int width, int height, int color, boolean mipmapped)` | Creates a texture the way the host would, filled with the ARGB `color`, with every mip level when `mipmapped`, and returns its handle as `Resource.of(...)` takes it (an `Integer` on OpenGL). |
+| `isBorrowableTexture(Object texture)` | Whether that texture still exists. |
 | `borrow(Supplier<Object> texture)` | The borrowed texture of the backend over a supplier of such handles. |
-| `readHostParameters(Object texture)` | The sampling parameters of the texture by name (an empty map when the API has none on the texture, as on Vulkan). |
+| `readBorrowableParameters(Object texture)` | The sampling parameters of the texture by name (an empty map when the API has none on the texture, as on Vulkan). |
 
 | Test | Checks |
 |---|---|
 | `drawsABorrowedTexture` | `Resource.of(handle)` draws the host texture, with its size, and does not fail. |
-| `keepsTheHostTextureOnceTheResourceIsReleased` | `delete()` and `clear()` leave the host texture, which still draws. |
+| `keepsTheBorrowedTextureOnceTheResourceIsReleased` | `delete()` and `clear()` leave the host texture, which still draws. |
 | `refusesToWriteABorrowedTexture` | `allocate` and `upload` throw, `mipmap(true)` changes nothing. |
-| `readsTheMipLevelsOfTheHost` | `isMipmapped()` follows the levels of the host texture. |
-| `givesTheHostItsParametersBackAfterTheFrame` | The parameters of the host texture are the same after a frame that drew it with other ones. |
+| `readsTheMipLevelsOfTheBorrowedTexture` | `isMipmapped()` follows the levels of the host texture. |
+| `restoresTheTextureParametersAfterTheFrame` | The parameters of the host texture are the same after a frame that drew it with other ones. |
 | `followsTheHandleOfItsSupplier` | Switching the handle of the supplier draws the other texture, at its size. |
 
 ## SnapshotSuite
