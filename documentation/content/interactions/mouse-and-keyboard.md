@@ -66,7 +66,7 @@ Positions are units of the 1920×1080 virtual canvas, fitted to the window witho
 ![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
 
 - The `mouseX` and `mouseY` given to callbacks and hooks are canvas units: the window position of the mouse at the last drawn frame, converted through the UI's view. Over the extra area of a wider or taller window, they fall outside `0`..`1920` and `0`..`1080`. `UI.getMouseX()` and `UI.getMouseY()` return the same values.
-- For coordinates relative to a node, subtract its absolute position: `mouseX - node.getAbsoluteX()`.
+- For coordinates relative to a node, subtract its absolute position: `mouseX - node.getAbsoluteX()`. To draw at the mouse from `draw(mouseX, mouseY)`, convert it into the space the node draws in, where the node sits at `getX()`, `getY()`: `toDrawX(mouseX)` and `toDrawY(mouseY)`.
 - The window position in pixels is `BridgeHandler.WINDOW.get().getMouseX()` and `getMouseY()`; convert between window pixels and canvas units with `ui.getView().toUiX(...)`, `toUiY(...)`, `toScreenX(...)` and `toScreenY(...)` (see also [View and Scaling](../ui/view-and-scaling.md)).
 
 ### Hit testing with isHovered

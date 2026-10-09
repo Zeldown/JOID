@@ -219,11 +219,12 @@ The tooltip node is not part of the node tree: it is loaded into the UI of the h
 | Method | Description |
 |---|---|
 | `hover(HoverElement element)` | Adds an element. |
+| `removeHover(HoverElement element)` | Removes this element; the others and the text lines stay. |
 | `hoverElements(HoverElement element)` | Removes every element, then adds this one. |
 | `clearHoverElements()` | Removes every element. |
 | `clearHover()` | Removes every element and every line supplier. |
 
-The elements of a node are drawn in the order you added them, then its text tooltip. `DefaultHoverElement` (`new DefaultHoverElement(List<String> lines)`) is the element JOID builds for the text lines; adding one yourself shows fixed lines through `drawHover`.
+A node with an element shows a tooltip even when the element draws nothing, so its parent shows none: remove an element you turn off with `removeHover(element)` rather than leaving it empty. The elements of a node are drawn in the order you added them, then its text tooltip. `DefaultHoverElement` (`new DefaultHoverElement(List<String> lines)`) is the element JOID builds for the text lines; adding one yourself shows fixed lines through `drawHover`.
 
 ## Which tooltip shows
 

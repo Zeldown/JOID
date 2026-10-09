@@ -1250,6 +1250,14 @@ public abstract class Node implements INode {
 		return (T) (this.ui != null ? this.ui : UI.getCurrent());
 	}
 
+	public final double toDrawX(final double x) {
+		return this.x + x - this.getAbsoluteX();
+	}
+
+	public final double toDrawY(final double y) {
+		return this.y + y - this.getAbsoluteY();
+	}
+
 	public final double getAbsoluteDefaultX() {
 		if (this.position == PositionProperty.ABSOLUTE) {
 			return this.defaultX;
@@ -2125,6 +2133,11 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T hover(final @NonNull HoverElement element) {
 		this.hoverElementList.add(element);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T removeHover(final @NonNull HoverElement element) {
+		this.hoverElementList.remove(element);
 		return (T) this;
 	}
 

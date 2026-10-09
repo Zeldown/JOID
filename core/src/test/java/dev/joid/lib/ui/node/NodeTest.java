@@ -43,6 +43,7 @@ import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.hover.HoverElement;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
@@ -2573,6 +2574,31 @@ public class NodeTest {
 		this.bridges.open(ui);
 		this.bridges.move(170D, 170D).frame();
 		Assert.assertEquals(Arrays.asList(Arrays.asList("Child")), ui.tooltips);
+	}
+
+	@Test
+	public void removesAHoverElementToShowTheTooltipOfItsParent() {
+		final HoverElement silent = (rect, mouseX, mouseY) -> {};
+		final RectNode child = RectNode.create(50D, 50D, 50D, 50D).hover(silent);
+		final HoverUI ui = new HoverUI(RectNode.create(100D, 100D, 200D, 200D).hover(() -> "Parent").append(child));
+		this.bridges.open(ui);
+		this.bridges.move(170D, 170D).frame();
+		Assert.assertTrue(ui.tooltips.isEmpty());
+		Assert.assertSame(child, child.removeHover(silent));
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList(Arrays.asList("Parent")), ui.tooltips);
+		Assert.assertTrue(child.getHoverElementList().isEmpty());
+	}
+
+	@Test
+	public void convertsACanvasCoordinateIntoItsDrawingSpace() {
+		final RectNode child = RectNode.create(30D, 40D, 50D, 50D);
+		final RectNode parent = RectNode.create(100D, 200D, 300D, 300D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		Assert.assertEquals(45D, child.toDrawX(145D), 1E-9D);
+		Assert.assertEquals(45D, child.toDrawY(245D), 1E-9D);
+		Assert.assertEquals(145D, parent.toDrawX(145D), 1E-9D);
+		Assert.assertEquals(245D, parent.toDrawY(245D), 1E-9D);
 	}
 
 	@Test

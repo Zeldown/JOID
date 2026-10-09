@@ -147,6 +147,7 @@ The values given to the factory are kept as the default bounds: `getDefaultX()`,
 | --- | --- |
 | `getAbsoluteX()`, `getAbsoluteY()` | Position on the UI canvas: the node's position plus the absolute position of its parent. For an `ABSOLUTE` node, its own `x`/`y`. Compare these with the mouse coordinates given to callbacks. |
 | `getAbsoluteDefaultX()`, `getAbsoluteDefaultY()` | The parent's current absolute position plus this node's default position (the default position itself for an `ABSOLUTE` node). |
+| `toDrawX(double x)`, `toDrawY(double y)` | A canvas coordinate, such as the mouse, in the space the node draws in (its `getX()`, `getY()` there): `getX() + x - getAbsoluteX()`. A node that follows the mouse in `draw` uses them. |
 
 ### Relative helpers dw, dh, mw, mh, aw, ah, ax, ay
 
@@ -464,6 +465,7 @@ Callbacks added to the copy afterwards do not reach the original, and the other 
 | `getX()`, `getY()`, `getWidth()`, `getHeight()`, `w()`, `h()` | Current values. |
 | `getDefaultX()`, `getDefaultY()`, `getDefaultWidth()`, `getDefaultHeight()` | Factory values. |
 | `getAbsoluteX()`, `getAbsoluteY()`, `getAbsoluteDefaultX()`, `getAbsoluteDefaultY()` | Canvas coordinates. |
+| `toDrawX(double)`, `toDrawY(double)` | A canvas coordinate in the drawing space of the node. |
 | `dw`, `dh`, `mw`, `mh`, `aw`, `ah`, `ax`, `ay` | Relative helpers. |
 | `position(PositionProperty)`, `getPosition()` | Relative or absolute placement. Default `RELATIVE`. |
 | `anchor(Align)`, `anchorX`, `anchorY`, `getAnchorX()`, `getAnchorY()` | Anchors. Default `START`. |
