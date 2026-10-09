@@ -216,6 +216,27 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void typesNoCharacterForAControlCharacter() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		this.bridges.getUi().keyTyped('\u0003', Key.C);
+		this.bridges.getUi().keyTyped('\r', Key.ENTER);
+		this.bridges.getUi().keyTyped('\b', Key.BACKSPACE);
+		this.bridges.getUi().keyTyped('\t', Key.TAB);
+		this.bridges.getUi().keyTyped('\u007F', Key.DELETE);
+		Assert.assertEquals(Arrays.asList("typed menu \0 C", "typed menu \0 ENTER", "typed menu \0 BACKSPACE", "typed menu \0 TAB", "typed menu \0 DELETE"), this.trace);
+	}
+
+	@Test
+	public void typesThePrintableCharacterOfAKey() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		this.bridges.getUi().keyTyped('é', Key.E);
+		this.bridges.getUi().keyTyped(' ', Key.SPACE);
+		Assert.assertEquals(Arrays.asList("typed menu é E", "typed menu   SPACE"), this.trace);
+	}
+
+	@Test
 	public void skipsTheInactiveAndHiddenUisOnAKey() {
 		final TraceUI inactive = new TraceUI("inactive", this.trace);
 		final TraceUI hidden = new TraceUI("hidden", this.trace);

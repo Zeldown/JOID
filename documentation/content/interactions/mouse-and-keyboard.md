@@ -118,7 +118,7 @@ The text fields (`TextFieldNode`, `IntegerFieldNode`, `MultilineTextFieldNode`) 
 
 `onKeyPressed((node, c, key) -> ...)` fires for every key event the UI receives that is not consumed yet, wherever the mouse is, as long as the node is visible and enabled.
 
-- `c` is the character the UI bridge sends with the key. The demo window of the GLFW module sends the typed character for text input and `(char) 0` for the other keys, including text keys pressed with Ctrl or Alt.
+- `c` is the printable character typed with the key, or `(char) 0` for the other keys, including text keys pressed with Ctrl or Alt. `UIBridge.keyTyped` turns every control character (`Character.isISOControl`: `\r`, `\b`, `\t`, Ctrl + C...) into `(char) 0`, so `c` is the same on every backend.
 - `key` is a `Key` constant; a key the bridge cannot map is `Key.UNKNOWN`. A letter key is the letter it types on the active keyboard layout (see [Keyboard layouts](#keyboard-layouts)).
 - There is no release event for keys. Read the current state of a key with `Key.isDown()`.
 - The lambda leaves the event to the other nodes and to the UI keybinds. Override `post` to consume the keys your node handles (see [Callbacks](callbacks.md#consuming-an-event-from-a-listener)).

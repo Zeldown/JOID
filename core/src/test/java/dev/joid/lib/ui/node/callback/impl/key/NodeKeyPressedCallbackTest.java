@@ -50,7 +50,7 @@ public class NodeKeyPressedCallbackTest {
 		this.bridges.move(1500D, 900D).frames(2);
 		this.bridges.getUi().keyTyped('a', Key.A);
 		this.bridges.getUi().keyTyped('\r', Key.ENTER);
-		Assert.assertEquals(Arrays.asList(rect, 'a', Key.A, rect, '\r', Key.ENTER), received);
+		Assert.assertEquals(Arrays.asList(rect, 'a', Key.A, rect, '\0', Key.ENTER), received);
 	}
 
 	@Test

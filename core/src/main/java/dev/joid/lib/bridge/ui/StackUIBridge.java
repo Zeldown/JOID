@@ -9,9 +9,17 @@ import lombok.NonNull;
 
 public abstract class StackUIBridge extends UIBridge {
 
+	private boolean replacing;
+
 	@Override
 	public void open(final @NonNull UI ui) {
-		if (!ui.getPopup().active() && !ui.getOverlay().active()) {
+		if (ui.getPopup().active() || ui.getOverlay().active()) {
+			this.add(ui);
+			return;
+		}
+
+		this.replacing = super.hasScreen();
+		try {
 			for (final UI current : new ArrayList<>(super.getUiList().ordered())) {
 				if (current.getOverlay().active()) {
 					continue;
@@ -29,9 +37,11 @@ public abstract class StackUIBridge extends UIBridge {
 
 				this.close(current);
 			}
-		}
 
-		this.add(ui);
+			this.add(ui);
+		} finally {
+			this.replacing = false;
+		}
 	}
 
 	@Override
@@ -44,7 +54,7 @@ public abstract class StackUIBridge extends UIBridge {
 		final boolean screen = !ui.getOverlay().active() && !super.hasScreen();
 		super.getUiList().add(ui);
 		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
-		if (screen) {
+		if (screen && !this.replacing) {
 			this.onFirstScreenOpen();
 		}
 	}
@@ -53,7 +63,7 @@ public abstract class StackUIBridge extends UIBridge {
 	public void remove(final @NonNull UI ui) {
 		final boolean screen = super.getUiList().contains(ui) && !ui.getOverlay().active();
 		super.getUiList().remove(ui);
-		if (screen && !super.hasScreen()) {
+		if (screen && !super.hasScreen() && !this.replacing) {
 			this.onLastScreenClose();
 		}
 	}

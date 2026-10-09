@@ -98,15 +98,16 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean keyTyped(final char c, final @NonNull Key key) {
+		final char typed = Character.isISOControl(c) ? (char) 0 : c;
 		for (final UI ui : this.getInputList()) {
 			if (key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active()) {
-				if (!ui.onKeyPressed(c, key) && ui.onClose()) {
+				if (!ui.onKeyPressed(typed, key) && ui.onClose()) {
 					this.close(ui);
 				}
 				return true;
 			}
 
-			if (ui.onKeyPressed(c, key) || ui.getPopup().active()) {
+			if (ui.onKeyPressed(typed, key) || ui.getPopup().active()) {
 				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
 			}
 		}

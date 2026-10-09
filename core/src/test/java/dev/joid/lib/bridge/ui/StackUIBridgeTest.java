@@ -97,6 +97,34 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
+	public void keepsTheHostScreenWhileAScreenReplacesAnother() {
+		this.bridge.open(new ScreenUI("menu", this.trace));
+		this.bridge.open(new PopupUI("popup", this.trace));
+		this.bridge.open(new ScreenUI("settings", this.trace));
+		this.bridge.close(this.bridge.getUiList().getLast());
+		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void tellsTheFirstScreenOpenWhenNoScreenWasReplaced() {
+		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		this.bridge.open(overlay);
+		this.bridge.open(new ScreenUI("menu", this.trace));
+		Assert.assertEquals(Collections.singletonList("first screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void keepsTheHostScreenWhenTheOpenScreenRefusesToClose() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		menu.closeable = false;
+		this.bridge.open(menu);
+		this.bridge.open(new ScreenUI("settings", this.trace));
+		menu.closeable = true;
+		this.bridge.close(menu);
+		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
 	public void handlesEveryUi() {
 		Assert.assertTrue(this.bridge.canHandle(new ScreenUI("menu", this.trace)));
 		Assert.assertTrue(this.bridge.canHandle(ScreenUI.class));
