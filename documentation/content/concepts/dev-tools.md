@@ -239,7 +239,6 @@ Click a button of the menu to open its demo; it slides in, and `Escape` goes bac
 | `UIDemoSignal` | Native expressions, `map`, `Signal.from`, lambdas, two-way controls, visibility, color, `watch`, `wait`, `subscribe` | [Signals](../state/signals.md) |
 | `UIDemoWatch` | `onWatch`, conditions, `WatchProperty.custom`, `wait`, futures, `batch`, `silent`, `peek`, `reset`, map and set signals, subscriptions | [Watching Signals](../state/watch.md) |
 | `UIDemoStore`, `UIDemoOtherStore` | Local, global and permanent stores shared between two UIs | [Stores](../state/stores.md) |
-| `UIDemoKeyboard` | A key press, then its character, received by a focused node; one call per code point, an emoji included | [Mouse and Keyboard](../interactions/mouse-and-keyboard.md#keyboard-callbacks-with-onkeypressed-and-onchartyped) |
 | `UIDemoPopup` | A popup UI, opened with `Ctrl+K` | [Opening and Closing UIs](../ui/managing-uis.md) |
 
 ## See also

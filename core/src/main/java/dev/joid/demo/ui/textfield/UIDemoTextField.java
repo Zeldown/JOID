@@ -9,9 +9,13 @@ import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.ui.node.callback.impl.key.NodeCharTypedCallback;
+import dev.joid.lib.ui.node.callback.impl.key.NodeKeyPressedCallback;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
@@ -26,6 +30,8 @@ public class UIDemoTextField extends UIDemo {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoTextField.INK);
 		final TextInfo markup = info.copy().markups(DemoTextMarkup.inst());
 		final StringSignal typed = StringSignal.of("");
+		final StringSignal key = StringSignal.of("-");
+		final StringSignal character = StringSignal.of("-");
 		final BooleanSignal valid = BooleanSignal.of(true);
 		final IntegerSignal number = IntegerSignal.of(7);
 		final StringSignal empty = StringSignal.of("null");
@@ -46,8 +52,35 @@ public class UIDemoTextField extends UIDemo {
 				System.out.println("[UIDemoTextField] text field: " + text);
 				typed.set(text);
 			})
+			.onKeyPressed(new NodeKeyPressedCallback<DemoTextFieldNode>() {
+
+				@Override
+				public void apply(final DemoTextFieldNode field, final Key pressed) {}
+
+				@Override
+				public void pre(final DemoTextFieldNode field, final DispatchContext context, final Key pressed) {
+					if (!context.isCancelled() && field.isFocused()) {
+						key.set(pressed.name());
+					}
+				}
+
+			})
+			.onCharTyped(new NodeCharTypedCallback<DemoTextFieldNode>() {
+
+				@Override
+				public void apply(final DemoTextFieldNode field, final int codepoint) {}
+
+				@Override
+				public void pre(final DemoTextFieldNode field, final DispatchContext context, final int codepoint) {
+					if (!context.isCancelled() && field.isFocused()) {
+						character.set(String.format("U+%04X", codepoint));
+					}
+				}
+
+			})
 			.attach(rect);
 			TextNode.create(40, 130).text(Text.create("Typed: " + typed.get(), info)).attach(rect);
+			TextNode.create(40, 170).text(Text.create("Key: " + key.get() + "  Char: " + character.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Text", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
