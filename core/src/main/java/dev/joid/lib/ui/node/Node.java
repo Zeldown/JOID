@@ -1451,7 +1451,11 @@ public abstract class Node implements INode {
 			return false;
 		}
 
-		Node target = mouseX == this.ui.getMouseX() && mouseY == this.ui.getMouseY() ? this.ui.getHoveredNode() : this.ui.getNodeAt(mouseX, mouseY);
+		if (mouseX == this.ui.getMouseX() && mouseY == this.ui.getMouseY()) {
+			return this.ui.getHoveredPath().contains(this);
+		}
+
+		Node target = this.ui.getNodeAt(mouseX, mouseY);
 		while (target != null && target != this) {
 			target = target.parent;
 		}

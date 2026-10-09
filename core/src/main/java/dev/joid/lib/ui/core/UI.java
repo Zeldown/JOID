@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -104,6 +105,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private long   lastFrame;
 	private long   fpsCounter;
 	private long   renderTime;
+	private long   frameCount;
 	private double frameTime;
 	private long   lastFpsUpdate;
 
@@ -113,7 +115,11 @@ public abstract class UI implements IUI, IndexedElement {
 	private double  depthLevel;
 
 	private Node devNode;
-	private Node hoveredNode;
+
+	private double     hoveredX;
+	private double     hoveredY;
+	private long       hoveredFrame;
+	private List<Node> hoveredPath;
 
 	public UI() {
 		this.annotatedData    = UIDataObject.getOrDefault(this.getClass());
@@ -146,6 +152,8 @@ public abstract class UI implements IUI, IndexedElement {
 		this.scaledHeight = new DoubleSignal(1080D);
 
 		this.devNode = null;
+		this.hoveredFrame = -1L;
+		this.hoveredPath = Collections.emptyList();
 	}
 
 	public final void load(final double finalWidth, final double finalHeight) {
@@ -223,7 +231,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		this.refreshHoveredNode();
+		this.getHoveredPath();
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
@@ -245,7 +253,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		this.refreshHoveredNode();
+		this.getHoveredPath();
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
@@ -263,7 +271,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		this.refreshHoveredNode();
+		this.getHoveredPath();
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
@@ -280,7 +288,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		this.refreshHoveredNode();
+		this.getHoveredPath();
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
@@ -431,6 +439,28 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final double getMouseY() {
 		return this.view.toUiY(this.mouseY);
+	}
+
+	public final Node getHoveredNode() {
+		final List<Node> path = this.getHoveredPath();
+		return path.isEmpty() ? null : path.get(0);
+	}
+
+	public final @NonNull List<@NonNull Node> getHoveredPath() {
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+		if (this.hoveredFrame != this.frameCount || this.hoveredX != mx || this.hoveredY != my) {
+			final List<Node> path = new ArrayList<>();
+			for (Node node = this.onTop ? this.getNodeAt(mx, my) : null; node != null; node = node.getParent()) {
+				path.add(node);
+			}
+
+			this.hoveredPath = Collections.unmodifiableList(path);
+			this.hoveredFrame = this.frameCount;
+			this.hoveredX = mx;
+			this.hoveredY = my;
+		}
+		return this.hoveredPath;
 	}
 
 	public final Node getNodeAt(final double x, final double y) {
@@ -720,10 +750,6 @@ public abstract class UI implements IUI, IndexedElement {
 		this.scaledHeight.set(this.view.getVisibleHeight());
 	}
 
-	private void refreshHoveredNode() {
-		this.hoveredNode = this.onTop ? this.getNodeAt(this.getMouseX(), this.getMouseY()) : null;
-	}
-
 	private void refreshTransition() {
 		if (this.popup.active() == this.transitionPopup.active() && this.popup.transition() == this.transitionPopup.transition()) {
 			return;
@@ -854,6 +880,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final long frame = BridgeHandler.CLOCK.get().nanoTime();
 		this.frameTime = this.lastFrame == 0L ? 1000D / 60D : (frame - this.lastFrame) / 1_000_000D;
 		this.lastFrame = frame;
+		this.frameCount++;
 
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
@@ -887,7 +914,6 @@ public abstract class UI implements IUI, IndexedElement {
 			this.view.interfaceScale(interfaceScale);
 			this.refreshView();
 		}
-		this.refreshHoveredNode();
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
@@ -930,8 +956,7 @@ public abstract class UI implements IUI, IndexedElement {
 					node.render(mx, my);
 				});
 
-				this.refreshHoveredNode();
-				Node hovered = this.hoveredNode;
+				Node hovered = this.getHoveredNode();
 				if (hovered != null) {
 					render.pushMatrix();
 					render.pushState();

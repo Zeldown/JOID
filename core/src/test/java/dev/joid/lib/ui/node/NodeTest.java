@@ -25,6 +25,7 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
+import dev.joid.lib.bridge.ui.UIBridgeTest.PopupUI;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -336,6 +337,7 @@ public class NodeTest {
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("below"), clicks);
 		interactive[0] = true;
+		this.bridges.frame();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("below", "above"), clicks);
 	}
@@ -368,6 +370,82 @@ public class NodeTest {
 		Assert.assertTrue(parent.isHovered());
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("parent"), clicks);
+	}
+
+	@Test
+	public void clicksTheTargetAtTheMouseOfTheLastDrawnFrame() {
+		final List<String> clicks = new ArrayList<>();
+		final RectNode left = RectNode.create(0D, 0D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("left " + (int) mouseX));
+		final RectNode right = RectNode.create(200D, 0D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("right " + (int) mouseX));
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(left, right)));
+		this.bridges.move(50D, 50D).frames(2);
+		this.bridges.move(250D, 50D);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("left 50"), clicks);
+		this.bridges.frame();
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("left 50", "right 250"), clicks);
+	}
+
+	@Test
+	public void bubblesTheClickToTheParentsOfATargetDetachedOnTheWay() {
+		final List<String> clicks = new ArrayList<>();
+		final RectNode child = RectNode.create(20D, 20D, 50D, 50D).onMousePressed((rect, mouseX, mouseY, button) -> rect.getParent().remove(rect));
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("parent")).append(child);
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(parent)));
+		this.bridges.move(140D, 140D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("parent"), clicks);
+		Assert.assertFalse(parent.getChildren().contains(child));
+		this.bridges.frame();
+		Assert.assertTrue(parent.isHovered());
+	}
+
+	@Test
+	public void bubblesTheClickToTheParentsOfATargetCoveredByAPopupOnTheWay() {
+		final List<String> clicks = new ArrayList<>();
+		final RectNode child = RectNode.create(20D, 20D, 50D, 50D).onMousePressed((rect, mouseX, mouseY, button) -> this.bridges.getUi().add(new PopupUI("popup", new ArrayList<>())));
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).onClick((rect, mouseX, mouseY, button) -> clicks.add("parent")).append(child);
+		final NodeUI ui = new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(parent));
+		this.bridges.open(ui).move(140D, 140D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("parent"), clicks);
+		this.bridges.frame();
+		Assert.assertNull(ui.getHoveredNode());
+		Assert.assertFalse(parent.isHovered());
+		Assert.assertFalse(child.isHovered());
+	}
+
+	@Test
+	public void hoversTheNodeLeftByAnUpdateOnTheNextFrame() {
+		final int[] step = {0};
+		final RectNode below = RectNode.create(100D, 100D, 100D, 100D);
+		final RectNode hidden = RectNode.create(100D, 100D, 100D, 100D);
+		final RectNode passive = RectNode.create(100D, 100D, 100D, 100D);
+		final RectNode lowered = RectNode.create(100D, 100D, 100D, 100D);
+		final ContainerNode root = ContainerNode.create(0D, 0D, 400D, 400D).append(below, hidden, passive, lowered).onUpdate(container -> {
+			if (step[0] == 1) {
+				lowered.zindex(-1);
+			} else if (step[0] == 2) {
+				passive.interactive(false);
+			} else if (step[0] == 3) {
+				hidden.visible(false);
+			}
+		});
+		final NodeUI ui = new NodeUI(root);
+		this.bridges.open(ui).move(150D, 150D).frames(2);
+		Assert.assertSame(lowered, ui.getHoveredNode());
+		step[0] = 1;
+		this.bridges.frame();
+		Assert.assertSame(passive, ui.getHoveredNode());
+		Assert.assertFalse(lowered.isHovered());
+		step[0] = 2;
+		this.bridges.frame();
+		Assert.assertSame(hidden, ui.getHoveredNode());
+		step[0] = 3;
+		this.bridges.frame();
+		Assert.assertSame(below, ui.getHoveredNode());
+		Assert.assertTrue(below.isHovered());
 	}
 
 	@Test

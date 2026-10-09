@@ -1038,6 +1038,22 @@ public class UITest {
 	}
 
 	@Test
+	public void findsTheHoveredPathOncePerFrameWhileTheMouseStays() {
+		final RectNode child = RectNode.create(20D, 20D, 50D, 50D);
+		final RectNode parent = RectNode.create(100D, 100D, 200D, 200D).append(child);
+		final TraceUI ui = new TraceUI(this.trace, parent);
+		this.bridges.open(ui).move(150D, 150D).frames(2);
+		final List<Node> path = ui.getHoveredPath();
+		Assert.assertEquals(Arrays.asList(child, parent), path);
+		Assert.assertTrue(child.isHovered(150D, 150D));
+		Assert.assertTrue(parent.isHovered(150D, 150D));
+		Assert.assertSame(path, ui.getHoveredPath());
+		this.bridges.frame();
+		Assert.assertNotSame(path, ui.getHoveredPath());
+		Assert.assertEquals(path, ui.getHoveredPath());
+	}
+
+	@Test
 	public void hoversNoNodeBelowAnotherUi() {
 		final TraceUI ui = new TraceUI(this.trace, RectNode.create(100D, 100D, 200D, 200D));
 		this.bridges.open(ui).open(new TraceUI(new ArrayList<>())).move(200D, 200D).frames(2);
