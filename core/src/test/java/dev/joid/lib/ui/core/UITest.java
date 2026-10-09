@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -43,7 +42,6 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.font.FontScale;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
@@ -187,30 +185,6 @@ public class UITest {
 		ui.load(1920D, 1080D);
 		Assert.assertSame(ui, ui.current);
 		Assert.assertNull(UI.getCurrent());
-	}
-
-	@Test
-	public void measuresItsTextAtItsOwnPixelScale() {
-		final HoverBridge bridge = new HoverBridge();
-		final ScaleUI ui = new ScaleUI();
-		bridge.interfaceScale = 0.25D;
-		BridgeHandler.UI.register(bridge);
-		try {
-			this.bridges.resize(1280, 720);
-			bridge.add(ui);
-			Assert.assertEquals(Arrays.asList("init 0.6667"), ui.scales);
-			bridge.draw();
-			ui.zoom(2D);
-			ui.scales.clear();
-			bridge.update();
-			bridge.draw();
-			bridge.mousePressed(ClickType.LEFT);
-			bridge.keyTyped('a', Key.A);
-			Assert.assertEquals(Arrays.asList("update 0.3333", "draw 0.3333", "press 0.3333", "key 0.3333"), ui.scales);
-			Assert.assertEquals(1D, FontScale.getScale(), 1E-6D);
-		} finally {
-			BridgeHandler.UI.unregister(bridge);
-		}
 	}
 
 	@Test
@@ -1856,41 +1830,6 @@ public class UITest {
 		@Override
 		public void init() {
 			this.current = UI.getCurrent();
-		}
-
-	}
-
-	public static final class ScaleUI extends UI {
-
-		private final List<String> scales = new ArrayList<>();
-
-		@Override
-		public void init() {
-			this.record("init");
-		}
-
-		@Override
-		public void update() {
-			this.record("update");
-		}
-
-		@Override
-		public void drawBackground(final double mouseX, final double mouseY) {
-			this.record("draw");
-		}
-
-		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull ClickType clickType, final @NonNull InternalContext context) {
-			this.record("press");
-		}
-
-		@Override
-		public void keyPressed(final char c, final @NonNull Key key, final @NonNull InternalContext context) {
-			this.record("key");
-		}
-
-		private void record(final String hook) {
-			this.scales.add(hook + " " + String.format(Locale.ROOT, "%.4f", FontScale.getScale()));
 		}
 
 	}

@@ -34,13 +34,4 @@ public abstract class GlyphFont<F extends IFontFace> implements IFont {
 		return this.family.resolve(weight, italic);
 	}
 
-	public final float snapSize(final float size, final double scale) {
-		if (!this.isBitmap() || size <= 0F || scale <= 0D) {
-			return size;
-		}
-
-		final double texel = Math.max(1D, Math.floor(size * scale / this.bitmapSize + 0.5D + 1E-6D));
-		return (float) (texel * this.bitmapSize / scale);
-	}
-
 }

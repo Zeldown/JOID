@@ -38,10 +38,6 @@ public final class UIView {
 		return Math.max(1D, 1D / this.interfaceScale);
 	}
 
-	public double getPixelScale() {
-		return this.toScreenWidth(1D);
-	}
-
 	public double getOffsetX() {
 		return (this.viewportWidth - 1920D) * this.anchorX / 1920D;
 	}

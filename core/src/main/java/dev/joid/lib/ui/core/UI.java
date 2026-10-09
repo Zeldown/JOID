@@ -28,7 +28,6 @@ import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.font.FontScale;
 import dev.joid.lib.render.context.Drawing;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.data.UIDataObject;
@@ -178,7 +177,7 @@ public abstract class UI implements IUI, IndexedElement {
 			SignalReplay.reset();
 			SignalReplay.enter(this);
 			try {
-				FontScale.run(this.view::getPixelScale, this::init);
+				this.init();
 			} finally {
 				SignalReplay.exit();
 			}
@@ -983,7 +982,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private void traced(final Runnable runnable) {
 		SignalReplay.enter(this);
 		try {
-			FontScale.run(this.view::getPixelScale, runnable);
+			runnable.run();
 		} finally {
 			SignalReplay.exit();
 		}
@@ -992,7 +991,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private void untraced(final Runnable runnable) {
 		final boolean tracing = SignalContext.current().tracing(false);
 		try {
-			FontScale.run(this.view::getPixelScale, runnable);
+			runnable.run();
 		} finally {
 			SignalContext.current().tracing(tracing);
 		}

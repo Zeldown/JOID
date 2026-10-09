@@ -145,7 +145,6 @@ With `@UIData(projection = true)` (default), the UI draws with its own orthograp
 | `double toScreenWidth(double uiWidth)`, `double toScreenHeight(double uiHeight)` | Canvas length to window pixels. |
 | `double getScale()` | `interfaceScale × zoom`. |
 | `double getMaxZoom()` | `max(1, 1 / interfaceScale)`. |
-| `double getPixelScale()` | Window pixels per canvas unit, `toScreenWidth(1)`: `interfaceScale × zoom` × the fit. Bitmap fonts snap their size to it (see [Pixel-perfect bitmap fonts](../fonts/custom-fonts.md#pixel-perfect-bitmap-fonts-with-the-bitmap-size)). |
 | `double getVisibleWidth()`, `double getVisibleHeight()` | The visible area in canvas units. |
 | `double getOffsetX()`, `double getOffsetY()` | Offset of the design inside the visible area, from the anchor. |
 | `double getViewportWidth()`, `double getViewportHeight()` | The visible area at scale 1 (at least 1920×1080). |

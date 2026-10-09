@@ -6,7 +6,6 @@ import java.util.List;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.font.FontScale;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.IFontProvider;
 import dev.joid.lib.font.dto.FontBounds;
@@ -37,8 +36,7 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 
 	@Override
 	public final double getLineHeight(final @NonNull TextInfo info) {
-		final float size = this.getFontSize(info);
-		return info.getLineHeight() > 0F ? info.getLineHeight() * size : this.getFace(info).getLineHeight() * size;
+		return info.getLineHeight() > 0F ? info.getLineHeight() * info.getFontSize() : this.getFace(info).getLineHeight() * info.getFontSize();
 	}
 
 	@Override
@@ -51,18 +49,12 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		return this.getLineHeight(info);
 	}
 
-	@Override
-	public final float getFontSize(final @NonNull TextInfo info) {
-		final GlyphFont<F> font = this.getFont(info);
-		return font.isBitmap() ? font.snapSize(info.getFontSize(), FontScale.getScale()) : info.getFontSize();
-	}
-
 	public final @NonNull GlyphLayout<F> layout(final @NonNull String text, final @NonNull TextInfo info) {
 		final GlyphFont<F> font = this.getFont(info);
 		final List<ITextMarkup> markups = info.getMarkups();
 		final List<GlyphPlacement<F>> placements = new ArrayList<>();
 		final TextStyle style = info.getStyle().derive();
-		final float size = this.getFontSize(info);
+		final float size = info.getFontSize();
 		final float spacing = info.getLetterSpacing() * size;
 
 		TextStyle snapshot = style.copy();
@@ -152,14 +144,14 @@ public abstract class GlyphFontProvider<F extends IFontFace> implements IFontPro
 		final List<GlyphPlacement<F>> placements = layout.getPlacements();
 		final List<TextGlyph<F>> glyphs = new ArrayList<>(placements.size());
 		final F base = this.getFace(info);
-		final float size = this.getFontSize(info);
+		final float size = info.getFontSize();
 		final double exact = y + (base.getLineHeight() + base.getDescender()) * size + (this.getLineHeight(info) - base.getLineHeight() * size) / 2D;
 		final double baseline = grid == null ? exact : grid.snapY(exact);
+		final double origin = grid == null ? x : grid.snapX(x);
 		for (int i = 0; i < placements.size(); i++) {
 			final GlyphPlacement<F> placement = placements.get(i);
 			final double advance = (i + 1 < placements.size() ? placements.get(i + 1).getX() : layout.getWidth()) - placement.getX();
-			final double left = grid == null ? x + placement.getX() : grid.snapX(x + placement.getX());
-			final TextGlyph<F> glyph = TextGlyph.create(placement.getFace(), placement.getIndex(), placement.getCodepoint(), placement.getStyle(), left, baseline, size, advance, GlyphFontProvider.color(placement.getStyle(), info));
+			final TextGlyph<F> glyph = TextGlyph.create(placement.getFace(), placement.getIndex(), placement.getCodepoint(), placement.getStyle(), origin + placement.getX(), baseline, size, advance, GlyphFontProvider.color(placement.getStyle(), info));
 			for (final ITextEffect effect : placement.getStyle().getEffects()) {
 				effect.apply(glyph);
 			}

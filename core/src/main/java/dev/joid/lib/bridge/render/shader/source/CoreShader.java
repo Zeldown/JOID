@@ -10,6 +10,7 @@ import lombok.NonNull;
 
 public enum CoreShader {
 
+	BITMAP,
 	BLUR,
 	BORDER,
 	CIRCLE,

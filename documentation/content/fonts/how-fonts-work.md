@@ -38,7 +38,7 @@ Most fonts are made of glyphs: one shape per character, placed one after the oth
 
 `MsdfFont` is a `GlyphFont<MsdfFontFace>`, drawn by the shared `MsdfFontProvider`. A family refuses to be empty and refuses two faces of the same weight and style (`IllegalArgumentException`).
 
-A glyph font made of texels, a pixel-art font, declares its bitmap size: the provider then keeps a whole number of window pixels per texel at any interface scale, zoom and window size, and measures the text at that size (see [Pixel-perfect bitmap fonts](custom-fonts.md#pixel-perfect-bitmap-fonts-with-the-bitmap-size)).
+A glyph font made of texels, a pixel-art font, declares its bitmap size: it keeps its size like any other font, starts its lines on the pixel grid, and its provider filters the texels so that each keeps the same width at any interface scale, zoom and window size (see [Pixel-art fonts](custom-fonts.md#pixel-art-fonts-with-the-bitmap-size)).
 
 ### Choosing a face with FontFamily.resolve
 
@@ -144,7 +144,7 @@ The `dev` jars ship fonts for the developer tools and the demo UIs, under the SI
 | `DemoFont.PLAYFAIR_DISPLAY` | Playfair Display | `JOID.inst().load()` in demo mode |
 | `DemoFont.PIXEL` | A 5×7 pixel font of the printable ASCII, a bitmap font of 8 texels per em | `JOID.inst().load()` in demo mode |
 
-The MSDF fonts are `.ttf` files: their atlases are generated into the [MSDF cache](adding-fonts.md#the-msdf-cache-with-msdffontcache) on the first launch of a machine, then read from it. The pixel font is one 128×48 image. `DemoFont.isLoaded()` tells whether the demo fonts are ready. The demo UI `UIDemoFont` shows these families, every weight, sizes from 8 to 160, kerning, the closest-weight fallback, and the pixel font with its snapped sizes, a shadow, an underline, markup colors and a wave.
+The MSDF fonts are `.ttf` files: their atlases are generated into the [MSDF cache](adding-fonts.md#the-msdf-cache-with-msdffontcache) on the first launch of a machine, then read from it. The pixel font is one 128×48 image. `DemoFont.isLoaded()` tells whether the demo fonts are ready. The demo UI `UIDemoFont` shows these families, every weight, sizes from 8 to 160, kerning, the closest-weight fallback, and the pixel font at five sizes, a shadow, an underline, markup colors and a wave.
 
 ## Choosing how to provide a font
 

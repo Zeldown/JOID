@@ -308,7 +308,7 @@ public final class Text {
 			key.add(element.getRawText());
 			key.add(element.getModifier());
 			key.add(info.getFont());
-			key.add(info.getFont().getFontProvider().getFontSize(info));
+			key.add(info.getFontSize());
 			key.add(info.getWeight());
 			key.add(info.isItalic());
 			key.add(info.getLetterSpacing());

@@ -35,6 +35,12 @@ shot window-font-scale-0.75
 scale 2
 wait 500
 shot window-font-scale-2
+scale 1.268
+wait 500
+shot window-font-scale-1.268
+scale 1.04
+wait 500
+shot window-font-scale-1.04
 scale 1
 resize 1280 720
 wait 500

@@ -1,9 +1,9 @@
 package dev.joid.demo.ui.font.pixel;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -15,16 +15,15 @@ import org.junit.Test;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
+import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.font.FontScale;
 import dev.joid.lib.font.dto.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.click.ClickType;
 
 public class DemoPixelFontTest {
@@ -49,75 +48,121 @@ public class DemoPixelFontTest {
 	}
 
 	@Test
-	public void sizesATextNodeAtTheScaleOfItsWindow() {
+	public void sizesATextNodeAtItsFontSizeInEveryWindow() {
 		final TextNode node = TextNode.create(100D, 100D).text(Text.create("Hello", DemoPixelFontTest.info(16F)));
 		this.bridges.open(new NodeUI(node));
-		final int[][] windows = {{1920, 1080}, {1280, 720}, {480, 270}, {1600, 900}, {3840, 2160}, {960, 540}};
-		final double[] widths = {48D, 36D, 96D, 57.6D, 48D, 48D};
-		for (int i = 0; i < windows.length; i++) {
-			this.bridges.resize(windows[i][0], windows[i][1]).frames(2);
-			Assert.assertEquals(windows[i][0] + "x" + windows[i][1], widths[i], node.getWidth(), 1E-4D);
-			Assert.assertEquals(windows[i][0] + "x" + windows[i][1], widths[i] * 9D / 24D, node.getHeight(), 1E-4D);
+		final int[][] windows = {{1920, 1080}, {1280, 720}, {480, 270}, {1600, 900}, {2560, 1369}, {3840, 2160}};
+		for (final int[] window : windows) {
+			this.bridges.resize(window[0], window[1]).frames(2);
+			Assert.assertEquals(window[0] + "x" + window[1], 48D, node.getWidth(), 1E-4D);
+			Assert.assertEquals(window[0] + "x" + window[1], 18D, node.getHeight(), 1E-4D);
 		}
 	}
 
 	@Test
-	public void drawsEveryTexelOnWholeScreenPixels() {
+	public void measuresEverySizeApart() {
+		final float[] sizes = {8F, 12F, 16F, 20F, 32F};
+		final double[] widths = new double[sizes.length];
+		for (int i = 0; i < sizes.length; i++) {
+			widths[i] = DemoPixelFontTest.info(sizes[i]).getWidth("Size");
+		}
+		for (int i = 0; i < sizes.length; i++) {
+			Assert.assertEquals(widths[0] * sizes[i] / sizes[0], widths[i], 1E-4D);
+		}
+	}
+
+	@Test
+	public void drawsEveryTexelOnWholeScreenPixelsAtAWholeScale() {
 		this.bridges.open(new NodeUI(TextNode.create(100.3D, 100.6D).text(Text.create("Ag ~", DemoPixelFontTest.info(16F)))));
-		final int[][] windows = {{1920, 1080}, {1280, 720}, {1366, 768}, {480, 270}, {1600, 900}};
-		final double[] texels = {2D, 1D, 1D, 1D, 2D};
+		final int[][] windows = {{1920, 1080}, {960, 540}, {3840, 2160}};
+		final double[] texels = {2D, 1D, 4D};
 		for (int i = 0; i < windows.length; i++) {
 			this.bridges.resize(windows[i][0], windows[i][1]).frames(2);
-			final List<Draw> glyphs = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
-			Assert.assertEquals(3, glyphs.size());
+			final List<Draw> glyphs = this.glyphs();
+			final String label = windows[i][0] + "x" + windows[i][1];
+			Assert.assertEquals(label, 3, glyphs.size());
 			for (final Draw glyph : glyphs) {
-				final String label = windows[i][0] + "x" + windows[i][1];
 				Assert.assertEquals(label, Math.rint(glyph.getLeft()), glyph.getLeft(), 1E-3D);
 				Assert.assertEquals(label, Math.rint(glyph.getTop()), glyph.getTop(), 1E-3D);
-				Assert.assertEquals(label, texels[i] * 8D, glyph.getRight() - glyph.getLeft(), 1E-3D);
-				Assert.assertEquals(label, texels[i] * 8D, glyph.getBottom() - glyph.getTop(), 1E-3D);
+				Assert.assertEquals(label, texels[i] * 8D + 2D, glyph.getRight() - glyph.getLeft(), 1E-3D);
+				Assert.assertEquals(label, texels[i] * 8D + 2D, glyph.getBottom() - glyph.getTop(), 1E-3D);
 			}
-			Assert.assertEquals(texels[i] * 6D, glyphs.get(1).getLeft() - glyphs.get(0).getLeft(), 1E-3D);
-			Assert.assertEquals(texels[i] * 10D, glyphs.get(2).getLeft() - glyphs.get(1).getLeft(), 1E-3D);
+			Assert.assertEquals(label, texels[i] * 6D, glyphs.get(1).getLeft() - glyphs.get(0).getLeft(), 1E-3D);
+			Assert.assertEquals(label, texels[i] * 10D, glyphs.get(2).getLeft() - glyphs.get(1).getLeft(), 1E-3D);
+			Assert.assertArrayEquals(label, new float[] {(float) (1D / texels[i]), (float) (1D / texels[i])}, (float[]) this.shader().getValues().get("pixel"), 1E-6F);
 		}
 	}
 
 	@Test
-	public void centersATextOnItsSnappedWidth() {
-		this.bridges.resize(480, 270).open(new NodeUI(TextNode.create(960D, 540D).text(Text.create("Hi", DemoPixelFontTest.info(16F), Align.CENTER)).anchorX(Align.CENTER)));
+	public void givesEveryTexelTheSameWidthAtAFractionalScale() {
+		this.bridges.open(new NodeUI(TextNode.create(100.3D, 100.6D).text(Text.create("MMMMMM", DemoPixelFontTest.info(16F)))));
+		final int[][] windows = {{2560, 1369}, {1996, 1123}, {1366, 768}, {960, 540}, {480, 270}};
+		for (final int[] window : windows) {
+			this.bridges.resize(window[0], window[1]).frames(2);
+			final double scale = Math.min(window[0] / 1920D, window[1] / 1080D);
+			final List<Draw> glyphs = this.glyphs();
+			final String label = window[0] + "x" + window[1];
+			Assert.assertEquals(label, 6, glyphs.size());
+			Assert.assertEquals(label, Math.rint(glyphs.get(0).getLeft()), glyphs.get(0).getLeft(), 1E-3D);
+			for (int i = 0; i < glyphs.size(); i++) {
+				Assert.assertEquals(label, 16D * scale + 2D, glyphs.get(i).getRight() - glyphs.get(i).getLeft(), 1E-3D);
+				Assert.assertEquals(label, 16D * scale + 2D, glyphs.get(i).getBottom() - glyphs.get(i).getTop(), 1E-3D);
+				Assert.assertEquals(label, glyphs.get(0).getTop(), glyphs.get(i).getTop(), 1E-3D);
+				Assert.assertEquals(label, glyphs.get(0).getLeft() + i * 12D * scale, glyphs.get(i).getLeft(), 1E-3D);
+			}
+			final float pixel = (float) (DemoPixelFont.SIZE / (16D * scale));
+			Assert.assertArrayEquals(label, new float[] {pixel, pixel}, (float[]) this.shader().getValues().get("pixel"), 1E-5F);
+		}
+	}
+
+	@Test
+	public void boundsTheSamplingToTheCellOfTheGlyph() {
+		this.bridges.open(new NodeUI(TextNode.create(100D, 100D).text(Text.create("A", DemoPixelFontTest.info(16F)))));
 		this.bridges.frames(2);
-		final List<Draw> glyphs = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
-		Assert.assertEquals(236D, glyphs.get(0).getLeft(), 1E-3D);
-		Assert.assertEquals(242D, glyphs.get(1).getLeft(), 1E-3D);
+		final float[] bounds = {DemoPixelFontFace.cellX('A'), DemoPixelFontFace.cellY('A'), DemoPixelFontFace.cellX('A') + 8F, DemoPixelFontFace.cellY('A') + 8F};
+		Assert.assertArrayEquals(bounds, (float[]) this.shader().getValues().get("bounds"), 0F);
+		Assert.assertArrayEquals(new float[] {1F / 128F, 1F / 48F}, (float[]) this.shader().getValues().get("texel"), 0F);
 	}
 
 	@Test
-	public void wrapsAtTheWidthItDraws() {
+	public void wrapsAtItsFontSizeInEveryWindow() {
 		final TextInfo info = DemoPixelFontTest.info(16F);
-		final List<List<String>> lines = new ArrayList<>();
-		FontScale.run(() -> 1D, () -> lines.add(DrawUtils.TEXT.getLines(200D, "aaa aaa aaa", info)));
-		FontScale.run(() -> 0.25D, () -> lines.add(DrawUtils.TEXT.getLines(200D, "aaa aaa aaa", info)));
-		FontScale.run(() -> 0.25D, () -> lines.add(Arrays.asList(String.valueOf(info.getWidth("aaa aaa")), String.valueOf(info.getHeight()))));
-		Assert.assertEquals(Arrays.asList("aaa aaa aaa"), lines.get(0));
-		Assert.assertEquals(Arrays.asList("aaa aaa", "aaa"), lines.get(1));
-		Assert.assertEquals(Arrays.asList("160.0", "36.0"), lines.get(2));
+		for (final int[] window : new int[][] {{1920, 1080}, {480, 270}, {2560, 1369}}) {
+			this.bridges.resize(window[0], window[1]);
+			Assert.assertEquals(Arrays.asList("aaa aaa", "aaa"), DrawUtils.TEXT.getLines(info.getWidth("aaa aaa"), "aaa aaa aaa", info));
+		}
 	}
 
 	@Test
-	public void putsTheCaretWhereTheSnappedGlyphsAre() {
-		final TextFieldNode wide = TextFieldNode.create(100D, 100D, 600D).info(DemoPixelFontTest.info(16F)).text("abcd");
-		this.bridges.open(new NodeUI(wide));
-		this.click(154D, 120D);
-		Assert.assertEquals(4, wide.getCursorPos());
+	public void putsTheCaretAtTheSamePlaceInEveryWindow() {
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 600D).info(DemoPixelFontTest.info(16F)).text("abcd");
+		this.bridges.open(new NodeUI(field));
+		this.click(1D, 124D, 120D);
+		final int caret = field.getCursorPos();
 		this.bridges.resize(480, 270).getClock().advance(1000L);
-		this.click(154D / 4D, 120D / 4D);
-		Assert.assertEquals(2, wide.getCursorPos());
-		this.click(176D / 4D, 120D / 4D);
-		Assert.assertEquals(3, wide.getCursorPos());
+		this.click(0.25D, 124D, 120D);
+		Assert.assertEquals(caret, field.getCursorPos());
+		this.bridges.resize(2560, 1369).getClock().advance(1000L);
+		this.click(1369D / 1080D, 124D, 120D);
+		Assert.assertEquals(caret, field.getCursorPos());
 	}
 
-	private void click(final double x, final double y) {
-		this.bridges.move(x, y).frames(2);
+	private List<Draw> glyphs() {
+		final RecordingShader shader = this.shader();
+		return this.bridges.getRender().getDraws().stream().filter(draw -> draw.getShader() == shader).collect(Collectors.toList());
+	}
+
+	private RecordingShader shader() {
+		for (final Draw draw : this.bridges.getRender().getDraws()) {
+			if (draw.getShader() instanceof RecordingShader && ((RecordingShader) draw.getShader()).getValues().containsKey("bounds")) {
+				return (RecordingShader) draw.getShader();
+			}
+		}
+		throw new IllegalStateException("No glyph was drawn");
+	}
+
+	private void click(final double scale, final double x, final double y) {
+		this.bridges.move(x * scale, y * scale).frames(2);
 		this.bridges.getUi().mousePressed(ClickType.LEFT);
 	}
 
