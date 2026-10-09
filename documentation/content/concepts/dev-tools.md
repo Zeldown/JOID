@@ -210,7 +210,7 @@ java -cp "joid-backend-lwjgl3-8.0.0-dev.jar:libs/*" dev.joid.backend.lwjgl3.demo
 
 Use `;` as classpath separator on Windows, and add `-XstartOnFirstThread` on macOS for LWJGL 3 and Vulkan.
 
-Click a button of the menu to open its demo; it slides in, and `Escape` goes back to the menu. `Ctrl+K` on the menu opens `UIDemoPopup`, a popup with a text field, and `Ctrl+K` in a popup opens another one. `Ctrl+O` on the menu opens or closes `UIDemoOverlay`, an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) you can drag, which stays above every demo. The `DemoUIBridge`, a `StackUIBridge`, closes the open UIs when a UI that is neither a popup nor an overlay opens; see [Opening and Closing UIs](../ui/managing-uis.md). Each demo is a grid of cases, each with a short caption, and its source in `dev.joid.demo` is a working example of every case.
+Click a button of the menu to open its demo; it slides in, and `Escape` goes back to the menu. `Ctrl+K` on the menu opens `UIDemoPopup`, a popup with a text field, and `Ctrl+K` in a popup opens another one. The last button of the menu, `UIDemoOverlay: off`, shows or hides `UIDemoOverlay`, an [overlay](../ui/managing-uis.md#overlays-with-uidataoverlay) you can drag, which stays above every demo and after the menu closes, until you hide it; the button reads `on` and turns darker while the overlay shows. The `DemoUIBridge`, a `StackUIBridge`, closes the open UIs when a UI that is neither a popup nor an overlay opens; see [Opening and Closing UIs](../ui/managing-uis.md). Each demo is a grid of cases, each with a short caption, and its source in `dev.joid.demo` is a working example of every case.
 
 | Demo UI | Shows | Read |
 | --- | --- | --- |

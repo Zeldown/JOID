@@ -185,7 +185,7 @@ this.getOverlay().interaction().setActive(false);
 this.getOverlay().render().setZindex(10);
 ```
 
-In the demo window, Ctrl + O on the demo menu opens and closes an overlay that you can drag over the demos.
+In the demo window, the `UIDemoOverlay` button of the demo menu shows and hides an overlay that you can drag over the demos.
 
 ## Reference
 

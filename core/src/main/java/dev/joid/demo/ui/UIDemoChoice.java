@@ -47,6 +47,7 @@ import lombok.NoArgsConstructor;
 public class UIDemoChoice extends UI {
 
 	private static final Color INK     = new Color(153, 153, 153);
+	private static final Color ACTIVE  = new Color(102, 102, 102);
 	private static final Color HOVERED = new Color(128, 128, 128);
 
 	public static final Set<Class<? extends UI>> LIST = new LinkedHashSet<>();
@@ -109,21 +110,29 @@ public class UIDemoChoice extends UI {
 				.hover(() -> clazz.getName())
 				.attach(grid);
 			}
+
+			RectNode
+			.create(0, 0, 420, 70)
+			.color(() -> JOID.isOpen(UIDemoOverlay.class) ? UIDemoChoice.ACTIVE : UIDemoChoice.INK)
+			.hoveredColor(UIDemoChoice.HOVERED)
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create(() -> JOID.isOpen(UIDemoOverlay.class) ? "UIDemoOverlay: on" : "UIDemoOverlay: off", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.onClick((node, mouseX, mouseY, clickType) -> {
+				final UIDemoOverlay overlay = JOID.getUI(UIDemoOverlay.class);
+				if (overlay != null) {
+					JOID.close(overlay);
+				} else {
+					JOID.open(new UIDemoOverlay());
+				}
+			})
+			.attach(grid);
 		})
 		.attach(this);
 
 		this.keybind(() -> {
 			JOID.open(new UIDemoPopup());
 		}, Key.K, Key.LEFT_CONTROL);
-
-		this.keybind(() -> {
-			final UIDemoOverlay overlay = JOID.getUI(UIDemoOverlay.class);
-			if (overlay != null) {
-				JOID.close(overlay);
-			} else {
-				JOID.open(new UIDemoOverlay());
-			}
-		}, Key.O, Key.LEFT_CONTROL);
 	}
 
 }

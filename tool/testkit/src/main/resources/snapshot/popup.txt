@@ -8,7 +8,9 @@ wait 500
 shot popup-stacked
 ui dev.joid.demo.ui.UIDemoChoice
 wait 1500
-key LEFT_CONTROL+O
+move 740 615
+press LEFT
+release LEFT
 wait 500
 shot popup-overlay
 move 1520 520
