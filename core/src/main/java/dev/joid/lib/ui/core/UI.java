@@ -3,6 +3,10 @@ package dev.joid.lib.ui.core;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.security.CodeSource;
+import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,6 +72,8 @@ public abstract class UI implements IUI, IndexedElement {
 
 	@Getter
 	private static UI current;
+
+	private static boolean monitorWarned;
 
 	@NonNull private final Stack<MaskRegion>                    stencilStack;
 	@NonNull private final Map<Set<Object>, Runnable>           keybindMap;
@@ -756,8 +762,16 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		if (JOID.inst().isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
+			final File location = UI.locate(this.getClass());
+			if (location == null) {
+				if (!UI.monitorWarned) {
+					UI.monitorWarned = true;
+					System.err.println("[JOID] Hot reload is off for " + this.getClass().getSimpleName() + ": its classes are not loaded from a folder or a jar file");
+				}
+				return;
+			}
+
 			try {
-				final File location = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI());
 				final FileAlterationObserver observer = new FileAlterationObserver(location.isDirectory() ? location : location.getParentFile());
 				observer.addListener(new FileAlterationListener() {
 
@@ -1027,6 +1041,21 @@ public abstract class UI implements IUI, IndexedElement {
 			pressed |= bound == key;
 		}
 		return pressed;
+	}
+
+	private static File locate(final Class<?> type) {
+		final ProtectionDomain domain = type.getProtectionDomain();
+		final CodeSource source = domain != null ? domain.getCodeSource() : null;
+		final URL location = source != null ? source.getLocation() : null;
+		if (location == null || !"file".equals(location.getProtocol())) {
+			return null;
+		}
+
+		try {
+			return new File(location.toURI());
+		} catch (final URISyntaxException | IllegalArgumentException exception) {
+			return null;
+		}
 	}
 
 	@Getter

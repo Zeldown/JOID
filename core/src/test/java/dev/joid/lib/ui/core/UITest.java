@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.CodeSource;
@@ -1450,6 +1451,21 @@ public class UITest {
 	}
 
 	@Test
+	public void watchesNothingOnceItsClassesAreNotInAFile() throws Exception {
+		final UI first = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
+		final UI second = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
+		JOID.inst().setDevMode(true);
+		final String errors = UITest.err(() -> {
+			first.load(1920D, 1080D);
+			second.load(1920D, 1080D);
+		});
+		Assert.assertNull(first.getFileMonitor());
+		Assert.assertNull(second.getFileMonitor());
+		Assert.assertTrue(errors, errors.contains("[JOID] Hot reload is off for HotReloadUI"));
+		Assert.assertEquals(errors, errors.indexOf("Hot reload is off"), errors.lastIndexOf("Hot reload is off"));
+	}
+
+	@Test
 	public void watchesNoFileWithoutHotReload() {
 		JOID.inst().setDevMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
@@ -1685,7 +1701,23 @@ public class UITest {
 		return output.toString();
 	}
 
+	private static String err(final Runnable runnable) {
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			runnable.run();
+		} finally {
+			System.setErr(previous);
+		}
+		return output.toString();
+	}
+
 	private static UI hotReloaded(final File location, final AtomicInteger inits) throws Exception {
+		return UITest.hotReloaded(location.toURI().toURL(), inits);
+	}
+
+	private static UI hotReloaded(final URL location, final AtomicInteger inits) throws Exception {
 		final byte[] bytes = IOUtils.toByteArray(HotReloadUI.class.getResource("HotReloadUI.class"));
 		final Class<?> clazz = new LocationClassLoader(location).define(HotReloadUI.class.getName(), bytes);
 		return (UI) clazz.getConstructor(AtomicInteger.class).newInstance(inits);
@@ -2223,15 +2255,15 @@ public class UITest {
 
 	public static final class LocationClassLoader extends ClassLoader {
 
-		private final File location;
+		private final URL location;
 
-		private LocationClassLoader(final File location) {
+		private LocationClassLoader(final URL location) {
 			super(UITest.class.getClassLoader());
 			this.location = location;
 		}
 
 		private Class<?> define(final String name, final byte[] bytes) throws MalformedURLException {
-			final CodeSource source = new CodeSource(this.location.toURI().toURL(), (Certificate[]) null);
+			final CodeSource source = new CodeSource(this.location, (Certificate[]) null);
 			return super.defineClass(name, bytes, 0, bytes.length, new ProtectionDomain(source, null, this, null));
 		}
 
