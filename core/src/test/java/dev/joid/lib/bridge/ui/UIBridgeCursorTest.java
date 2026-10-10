@@ -7,9 +7,11 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.demo.DemoUIBridge;
 import dev.joid.demo.ui.textfield.node.DemoIntegerFieldNode;
 import dev.joid.demo.ui.textfield.node.DemoMultilineTextFieldNode;
 import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.mouse.MouseButton;
@@ -167,6 +169,23 @@ public class UIBridgeCursorTest {
 		this.bridges.getUi().close(ui);
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(Cursor.POINTER, Cursor.DEFAULT), this.bridges.getWindow().getCursors());
+	}
+
+	@Test
+	public void ignoresTheCursorOfABridgeWithoutUi() {
+		final DemoUIBridge other = new DemoUIBridge();
+		final NodeUI ui = new NodeUI(RectNode.create(100, 100, 200, 200).cursor(Cursor.POINTER));
+		BridgeHandler.UI.register(other);
+		try {
+			this.bridges.open(new NodeUI(RectNode.create(100, 100, 200, 200).cursor(Cursor.TEXT))).move(150D, 150D);
+			other.add(ui);
+			other.draw();
+			other.close(ui);
+			this.bridges.frame();
+			Assert.assertEquals(Arrays.asList(Cursor.POINTER, Cursor.TEXT), this.bridges.getWindow().getCursors());
+		} finally {
+			BridgeHandler.UI.unregister(other);
+		}
 	}
 
 	public static class NodeUI extends UI {

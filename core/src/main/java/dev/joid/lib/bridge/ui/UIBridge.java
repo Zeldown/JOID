@@ -274,7 +274,7 @@ public abstract class UIBridge implements IUIBridge {
 			return;
 		}
 
-		final IUIBridge bridge = BridgeHandler.UI.find(current -> current instanceof UIBridge && ((UIBridge) current).hoveredCursor != null);
+		final IUIBridge bridge = BridgeHandler.UI.find(current -> current instanceof UIBridge && !((UIBridge) current).uiList.isEmpty() && ((UIBridge) current).hoveredCursor != null);
 		final Cursor cursor = bridge != null ? ((UIBridge) bridge).hoveredCursor : Cursor.DEFAULT;
 		if (cursor != UIBridge.windowCursor) {
 			UIBridge.windowCursor = cursor;
