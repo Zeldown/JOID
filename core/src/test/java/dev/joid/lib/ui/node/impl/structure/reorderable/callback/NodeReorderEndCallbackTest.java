@@ -27,7 +27,7 @@ public class NodeReorderEndCallbackTest {
 	@Test
 	public void runsAfterTheNodeAndConsumesTheContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeReorderEndCallback callback = (node, child, oldIndex, newIndex) -> received.addAll(Arrays.asList(node, child, oldIndex, newIndex));
+		final NodeReorderEndCallback<ReorderableFlexNode> callback = (node, child, oldIndex, newIndex) -> received.addAll(Arrays.asList(node, child, oldIndex, newIndex));
 		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(0D, 0D, 200D);
 		final RectNode child = RectNode.create(0D, 0D, 200D, 50D);
 		final DispatchContext context = DispatchContext.create();
@@ -42,7 +42,7 @@ public class NodeReorderEndCallbackTest {
 	@Test
 	public void ignoresAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
-		final NodeReorderEndCallback callback = (node, child, oldIndex, newIndex) -> received.add(child);
+		final NodeReorderEndCallback<ReorderableFlexNode> callback = (node, child, oldIndex, newIndex) -> received.add(child);
 		callback.post(ReorderableFlexNode.vertical(0D, 0D, 200D), DispatchContext.create(true), RectNode.create(0D, 0D, 200D, 50D), 0, 1);
 		Assert.assertTrue(received.isEmpty());
 	}
@@ -78,7 +78,7 @@ public class NodeReorderEndCallbackTest {
 	@Test
 	public void skipsTheCallbackWhenThePrePhaseConsumesTheEnd() {
 		final List<Object> received = new ArrayList<>();
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).onReorderEnd(new NodeReorderEndCallback() {
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).onReorderEnd(new NodeReorderEndCallback<ReorderableFlexNode>() {
 
 			@Override
 			public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child, final int oldIndex, final int newIndex) {

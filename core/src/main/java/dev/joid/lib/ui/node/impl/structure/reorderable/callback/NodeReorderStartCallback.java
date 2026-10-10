@@ -9,15 +9,15 @@ import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface NodeReorderStartCallback extends NodeCallback {
+public interface NodeReorderStartCallback<T extends ReorderableFlexNode> extends NodeCallback {
 
-	public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child);
+	public void apply(final @NonNull T node, final @NonNull Node child);
 
 	@NodeCallbackMethod(Phase.PRE)
-	public default void pre(final @NonNull ReorderableFlexNode node, final @NonNull DispatchContext context, final @NonNull Node child) {}
+	public default void pre(final @NonNull T node, final @NonNull DispatchContext context, final @NonNull Node child) {}
 
 	@NodeCallbackMethod(Phase.POST)
-	public default void post(final @NonNull ReorderableFlexNode node, final @NonNull DispatchContext context, final @NonNull Node child) {
+	public default void post(final @NonNull T node, final @NonNull DispatchContext context, final @NonNull Node child) {
 		context.cancel(() -> this.apply(node, child));
 	}
 

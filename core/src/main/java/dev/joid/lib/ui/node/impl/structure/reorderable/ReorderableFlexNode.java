@@ -24,7 +24,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class ReorderableFlexNode extends Node {
+@SuppressWarnings("unchecked")
+public class ReorderableFlexNode extends Node {
 
 	public static final int CALLBACK_REORDER       = NodeCallbackRegistry.next(NodeReorderCallback.class);
 	public static final int CALLBACK_REORDER_END   = NodeCallbackRegistry.next(NodeReorderEndCallback.class);
@@ -53,7 +54,7 @@ public final class ReorderableFlexNode extends Node {
 	private double  dragStartMouseX;
 	private double  dragStartMouseY;
 
-	private ReorderableFlexNode(final double x, final double y, final double width, final double height, final @NonNull FlexDirection direction) {
+	protected ReorderableFlexNode(final double x, final double y, final double width, final double height, final @NonNull FlexDirection direction) {
 		super(x, y, width, height);
 		this.direction = direction;
 	}
@@ -130,90 +131,90 @@ public final class ReorderableFlexNode extends Node {
 		}
 	}
 
-	public final @NonNull ReorderableFlexNode startDrag(final @NonNull Node child) {
+	public final <T extends ReorderableFlexNode> @NonNull T startDrag(final @NonNull Node child) {
 		if (this.reorderedNode != null) {
-			return this;
+			return (T) this;
 		}
 
 		this.getChildIndex(child);
 		if (this.lockedNodes.contains(child)) {
-			return this;
+			return (T) this;
 		}
 
 		final UI ui = super.getUi();
 		final double mouseX = ui != null ? ui.getMouseX() : 0D;
 		final double mouseY = ui != null ? ui.getMouseY() : 0D;
 		this.startDragInternal(child, mouseX, mouseY);
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ReorderableFlexNode endDrag() {
+	public final <T extends ReorderableFlexNode> @NonNull T endDrag() {
 		if (this.reorderedNode == null || this.releasing) {
-			return this;
+			return (T) this;
 		}
 
 		this.releasing = true;
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ReorderableFlexNode lock(final @NonNull Node @NonNull... children) {
+	public final <T extends ReorderableFlexNode> @NonNull T lock(final @NonNull Node @NonNull... children) {
 		for (final Node child : children) {
 			this.lockedNodes.add(child);
 		}
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ReorderableFlexNode unlock(final @NonNull Node @NonNull... children) {
+	public final <T extends ReorderableFlexNode> @NonNull T unlock(final @NonNull Node @NonNull... children) {
 		for (final Node child : children) {
 			this.lockedNodes.remove(child);
 		}
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ReorderableFlexNode onReorder(final @NonNull NodeReorderCallback callback) {
+	public final <T extends ReorderableFlexNode> @NonNull T onReorder(final @NonNull NodeReorderCallback<T> callback) {
 		super.registerCallback(ReorderableFlexNode.CALLBACK_REORDER, callback);
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ReorderableFlexNode onReorderEnd(final @NonNull NodeReorderEndCallback callback) {
+	public final <T extends ReorderableFlexNode> @NonNull T onReorderEnd(final @NonNull NodeReorderEndCallback<T> callback) {
 		super.registerCallback(ReorderableFlexNode.CALLBACK_REORDER_END, callback);
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ReorderableFlexNode onReorderStart(final @NonNull NodeReorderStartCallback callback) {
+	public final <T extends ReorderableFlexNode> @NonNull T onReorderStart(final @NonNull NodeReorderStartCallback<T> callback) {
 		super.registerCallback(ReorderableFlexNode.CALLBACK_REORDER_START, callback);
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ReorderableFlexNode direction(final @NonNull FlexDirection direction) {
+	public final <T extends ReorderableFlexNode> @NonNull T direction(final @NonNull FlexDirection direction) {
 		return this.direction(Signal.from(direction));
 	}
 
-	public final @NonNull ReorderableFlexNode direction(final @NonNull Supplier<@NonNull FlexDirection> direction) {
+	public final <T extends ReorderableFlexNode> @NonNull T direction(final @NonNull Supplier<@NonNull FlexDirection> direction) {
 		return super.follow("direction", direction, this::changeDirection);
 	}
 
-	public final @NonNull ReorderableFlexNode align(final Align align) {
+	public final <T extends ReorderableFlexNode> @NonNull T align(final Align align) {
 		return this.align(Signal.from(align));
 	}
 
-	public final @NonNull ReorderableFlexNode align(final @NonNull Supplier<Align> align) {
+	public final <T extends ReorderableFlexNode> @NonNull T align(final @NonNull Supplier<Align> align) {
 		return super.follow("align", align, value -> this.align = value);
 	}
 
-	public final @NonNull ReorderableFlexNode margin(final double margin) {
+	public final <T extends ReorderableFlexNode> @NonNull T margin(final double margin) {
 		return this.margin(Signal.from(margin));
 	}
 
-	public final @NonNull ReorderableFlexNode margin(final @NonNull Supplier<Double> margin) {
+	public final <T extends ReorderableFlexNode> @NonNull T margin(final @NonNull Supplier<Double> margin) {
 		return super.follow("margin", margin, value -> this.margin = value);
 	}
 
-	public final @NonNull ReorderableFlexNode autoDrag(final boolean autoDrag) {
+	public final <T extends ReorderableFlexNode> @NonNull T autoDrag(final boolean autoDrag) {
 		return this.autoDrag(Signal.from(autoDrag));
 	}
 
-	public final @NonNull ReorderableFlexNode autoDrag(final @NonNull Supplier<Boolean> autoDrag) {
+	public final <T extends ReorderableFlexNode> @NonNull T autoDrag(final @NonNull Supplier<Boolean> autoDrag) {
 		return super.follow("autoDrag", autoDrag, value -> this.autoDrag = value);
 	}
 

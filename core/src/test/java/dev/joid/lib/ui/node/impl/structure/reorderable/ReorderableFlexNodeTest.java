@@ -795,7 +795,7 @@ public class ReorderableFlexNodeTest {
 	@Test
 	public void keepsTheListStillWhenThePrePhaseConsumesTheStart() {
 		final RectNode first = ReorderableFlexNodeTest.item();
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, ReorderableFlexNodeTest.item()).onReorderStart(new NodeReorderStartCallback() {
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, ReorderableFlexNodeTest.item()).onReorderStart(new NodeReorderStartCallback<ReorderableFlexNode>() {
 
 			@Override
 			public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child) {}
@@ -816,7 +816,7 @@ public class ReorderableFlexNodeTest {
 	public void letsThePressThroughWhenThePrePhaseRefusesTheStart() {
 		final List<Object> clicks = new ArrayList<>();
 		final RectNode parent = RectNode.create(100D, 100D, 200D, 400D).onClick((node, mouseX, mouseY, button) -> clicks.add(mouseY));
-		ReorderableFlexNodeTest.column(0D, 0D, ReorderableFlexNodeTest.item(), ReorderableFlexNodeTest.item()).onReorderStart(new NodeReorderStartCallback() {
+		ReorderableFlexNodeTest.column(0D, 0D, ReorderableFlexNodeTest.item(), ReorderableFlexNodeTest.item()).onReorderStart(new NodeReorderStartCallback<ReorderableFlexNode>() {
 
 			@Override
 			public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child) {}

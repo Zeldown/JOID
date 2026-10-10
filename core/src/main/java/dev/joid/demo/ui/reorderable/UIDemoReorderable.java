@@ -308,7 +308,7 @@ public class UIDemoReorderable extends UIDemo {
 			ReorderableFlexNode
 			.vertical(20, 20, 360)
 			.margin(6D)
-			.onReorder(new NodeReorderCallback() {
+			.onReorder(new NodeReorderCallback<ReorderableFlexNode>() {
 
 				@Override
 				public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child) {}
