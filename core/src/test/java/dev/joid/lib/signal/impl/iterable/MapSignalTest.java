@@ -38,6 +38,14 @@ public class MapSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenMap() {
+		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>(Collections.singletonMap("a", 1)));
+		signal.put("b", 2);
+		signal.reset();
+		Assert.assertEquals(Collections.singletonMap("a", 1), signal.get());
+	}
+
+	@Test
 	public void readsItsMap() {
 		final Map<String, Integer> map = new LinkedHashMap<>();
 		map.put("a", 1);

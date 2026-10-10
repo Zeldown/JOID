@@ -21,6 +21,8 @@ public class Signal<T> implements ISignal<T> {
 	private final transient List<@NonNull ComputedSignal<?>>   observerList;
 
 	private volatile T value;
+
+	@Getter(AccessLevel.PROTECTED)
 	private volatile T defaultValue;
 
 	private transient boolean nextSilent = false;
@@ -39,7 +41,7 @@ public class Signal<T> implements ISignal<T> {
 	}
 
 	public static <T> @NonNull Signal<T> of(final T defaultValue) {
-		final Signal<T> instance = new Signal<>();
+		final Signal<T> instance = new Signal<>(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}

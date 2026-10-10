@@ -13,7 +13,7 @@ public class IntegerSignal extends Signal<Integer> {
 	}
 
 	public static IntegerSignal of(final int defaultValue) {
-		final IntegerSignal instance = new IntegerSignal();
+		final IntegerSignal instance = new IntegerSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}

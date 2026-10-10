@@ -31,6 +31,11 @@ public class LongSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenValue() {
+		Assert.assertEquals(5L, LongSignal.of(5L).set(8L).reset().get().longValue());
+	}
+
+	@Test
 	public void computesFromItsDefault() {
 		final LongSignal signal = new LongSignal(5L);
 		signal.increment();

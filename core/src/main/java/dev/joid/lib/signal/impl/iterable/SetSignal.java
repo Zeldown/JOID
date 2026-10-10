@@ -21,7 +21,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	public static <E> SetSignal<E> of(final Set<E> defaultValue) {
-		final SetSignal<E> instance = new SetSignal<>();
+		final SetSignal<E> instance = new SetSignal<>(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}
@@ -59,7 +59,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	private Set<E> mutable() {
-		if (!this.isPresent()) {
+		if (this.peek() == this.getDefaultValue()) {
 			this.assign(this.peek() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(this.peek()));
 		}
 

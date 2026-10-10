@@ -13,7 +13,7 @@ public class DoubleSignal extends Signal<Double> {
 	}
 
 	public static DoubleSignal of(final double defaultValue) {
-		final DoubleSignal instance = new DoubleSignal();
+		final DoubleSignal instance = new DoubleSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}

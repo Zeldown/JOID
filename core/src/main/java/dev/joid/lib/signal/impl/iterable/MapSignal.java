@@ -19,7 +19,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public static <K, V> MapSignal<K, V> of(final Map<K, V>defaultValue) {
-		final MapSignal<K, V> instance = new MapSignal<>();
+		final MapSignal<K, V> instance = new MapSignal<>(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}
@@ -77,7 +77,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	private Map<K, V> mutable() {
-		if (!this.isPresent()) {
+		if (this.peek() == this.getDefaultValue()) {
 			this.assign(this.peek() == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.peek()));
 		}
 

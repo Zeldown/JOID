@@ -13,7 +13,7 @@ public class LongSignal extends Signal<Long> {
 	}
 
 	public static LongSignal of(final long defaultValue) {
-		final LongSignal instance = new LongSignal();
+		final LongSignal instance = new LongSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}

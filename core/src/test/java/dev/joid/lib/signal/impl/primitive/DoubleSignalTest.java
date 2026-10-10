@@ -31,6 +31,11 @@ public class DoubleSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenValue() {
+		Assert.assertEquals(0.5D, DoubleSignal.of(0.5D).set(2D).reset().get(), 0D);
+	}
+
+	@Test
 	public void computesFromItsDefault() {
 		final DoubleSignal signal = new DoubleSignal(2D);
 		signal.add(0.5D);

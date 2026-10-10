@@ -33,7 +33,7 @@ The text and the width are ordinary Java expressions. Because they read `this.cl
 | `StringSignal` | A string | `append(s)`, `toUpperCase()`, `trim()`, `substring(i, j)` |
 | `ListSignal<E>`, `SetSignal<E>`, `MapSignal<K, V>` | A collection | `add(e)`, `remove(e)`, `clear()`, `size()`, `put(k, v)` |
 
-`get()` reads the value and makes the expression follow the signal; `peek()` reads it without following. Collection signals notify after each change, so `this.items.add("Sword")` updates everything that reads `items`. `reset()` goes back to the value given to the constructor (`new IntegerSignal(5)`), or to the default of the type (`0`, `false`, `null`) for a signal made with `of(...)`.
+`get()` reads the value and makes the expression follow the signal; `peek()` reads it without following. Collection signals notify after each change, so `this.items.add("Sword")` updates everything that reads `items`. `reset()` goes back to the value given to `of(...)` or to the constructor (`new IntegerSignal(5)`).
 
 ## Reactive setters
 

@@ -45,6 +45,14 @@ public class SetSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenSet() {
+		final SetSignal<String> signal = SetSignal.of(new HashSet<>(Arrays.asList("a")));
+		signal.add("b");
+		signal.reset();
+		Assert.assertEquals(Collections.singleton("a"), signal.get());
+	}
+
+	@Test
 	public void readsItsSet() {
 		final SetSignal<String> signal = SetSignal.of(new HashSet<>(Arrays.asList("a", "b")));
 		Assert.assertEquals(2, signal.size());

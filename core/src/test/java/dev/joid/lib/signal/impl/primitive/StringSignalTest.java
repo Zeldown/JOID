@@ -31,6 +31,11 @@ public class StringSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenValue() {
+		Assert.assertEquals("joid", StringSignal.of("joid").set("ui").reset().get());
+	}
+
+	@Test
 	public void computesFromItsDefault() {
 		final StringSignal signal = new StringSignal("jo");
 		signal.append("id");

@@ -11,7 +11,7 @@ public class StringSignal extends Signal<String> {
 	}
 
 	public static StringSignal of(final String defaultValue) {
-		final StringSignal instance = new StringSignal();
+		final StringSignal instance = new StringSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}

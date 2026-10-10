@@ -13,7 +13,7 @@ public class BooleanSignal extends Signal<Boolean> {
 	}
 
 	public static BooleanSignal of(final boolean defaultValue) {
-		final BooleanSignal instance = new BooleanSignal();
+		final BooleanSignal instance = new BooleanSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}

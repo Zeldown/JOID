@@ -31,6 +31,11 @@ public class BooleanSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenValue() {
+		Assert.assertTrue(BooleanSignal.of(true).set(false).reset().get());
+	}
+
+	@Test
 	public void togglesItsValue() {
 		final List<Boolean> received = new ArrayList<>();
 		final BooleanSignal signal = new BooleanSignal();

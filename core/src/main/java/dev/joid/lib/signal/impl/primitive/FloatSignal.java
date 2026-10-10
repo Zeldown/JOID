@@ -13,7 +13,7 @@ public class FloatSignal extends Signal<Float> {
 	}
 
 	public static FloatSignal of(final float defaultValue) {
-		final FloatSignal instance = new FloatSignal();
+		final FloatSignal instance = new FloatSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}

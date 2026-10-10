@@ -31,6 +31,11 @@ public class IntegerSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenValue() {
+		Assert.assertEquals(5, IntegerSignal.of(5).set(8).reset().get().intValue());
+	}
+
+	@Test
 	public void computesFromItsDefault() {
 		final IntegerSignal signal = new IntegerSignal(5);
 		signal.increment();

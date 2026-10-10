@@ -45,6 +45,14 @@ public class ListSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenList() {
+		final ListSignal<String> signal = ListSignal.of(new ArrayList<>(Arrays.asList("a")));
+		signal.add("b");
+		signal.reset();
+		Assert.assertEquals(Collections.singletonList("a"), signal.get());
+	}
+
+	@Test
 	public void readsItsList() {
 		final ListSignal<String> signal = ListSignal.of(new ArrayList<>(Arrays.asList("a", "b")));
 		Assert.assertEquals(2, signal.size());

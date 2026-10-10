@@ -21,7 +21,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public static <E> ListSignal<E> of(final List<E> defaultValue) {
-		final ListSignal<E> instance = new ListSignal<>();
+		final ListSignal<E> instance = new ListSignal<>(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}
@@ -79,7 +79,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	private List<E> mutable() {
-		if (!this.isPresent()) {
+		if (this.peek() == this.getDefaultValue()) {
 			this.assign(this.peek() == null ? new ArrayList<>() : new ArrayList<>(this.peek()));
 		}
 

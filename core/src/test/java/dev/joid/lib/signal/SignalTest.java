@@ -64,6 +64,11 @@ public class SignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenValue() {
+		Assert.assertEquals("joid", Signal.of("joid").set("ui").reset().get());
+	}
+
+	@Test
 	public void keepsItsValueOverItsDefault() {
 		final Signal<String> signal = new Signal<>("joid").set("ui");
 		Assert.assertTrue(signal.isPresent());

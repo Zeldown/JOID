@@ -31,6 +31,11 @@ public class FloatSignalTest {
 	}
 
 	@Test
+	public void resetsToTheGivenValue() {
+		Assert.assertEquals(0.5F, FloatSignal.of(0.5F).set(2F).reset().get(), 0F);
+	}
+
+	@Test
 	public void computesFromItsDefault() {
 		final FloatSignal signal = new FloatSignal(2F);
 		signal.add(0.5F);
