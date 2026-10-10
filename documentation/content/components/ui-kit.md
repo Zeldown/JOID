@@ -1,48 +1,40 @@
 # Building a UI Kit
 
-JOID is design-neutral: its interactive components own the behavior (state, input, values, callbacks, signals) and draw nothing. You draw each of them once, in a small subclass, and these subclasses form your UI kit. Your screens only use the kit, so the same screen code takes a completely different look when you switch to another kit. This page builds on the checkbox and the slider you drew in [Input Controls](../essentials/controls.md) and the [Tutorial](../tutorial/interactivity.md), and turns them into a complete kit.
+JOID's interactive components own the behavior (state, input, values, callbacks, signals) and draw nothing. You draw each one once in a small subclass, and these subclasses form your UI kit: the same screen code takes another look when you switch kits.
 
 ![The same settings panel drawn by a flat light kit and by a rounded dark kit](../images/uikit-side-by-side.png "The same screen code and the same signals: only the import line selects the kit")
 
-## What a component gives you and what you draw
+## Kit classes
 
-A kit class is written like the controls of [Input Controls](../essentials/controls.md): it extends a component, keeps a `protected` constructor and adds a public static `create(...)` factory, as the built-in nodes do. The component class handles the input and keeps the state; your subclass reads that state and draws it.
+A kit class extends a component, keeps a `protected` constructor and adds a `public static create(...)` factory, like the built-in nodes. The component handles input and state; your subclass reads the state and draws it.
 
-| Component | It handles | You draw in |
-| --- | --- | --- |
-| [SliderNode](../nodes/input/slider.md) (`IntegerSliderNode`, `DoubleSliderNode`, `StringSliderNode`) | Values, dragging, the selected value, `signal`, `onChange` | `drawSlider(mouseX, mouseY)` for the track, and `drawThumb(mouseX, mouseY)` in a `SliderThumbNode` subclass installed with `thumb(...)` |
-| [CheckboxNode](../nodes/input/checkbox.md) | The checked state, clicks, `signal`, `onChange` | `draw(mouseX, mouseY)`, reading `isChecked()` |
-| [ToggleNode](../nodes/input/toggle.md) | The side, the value of each side, clicks, `signal`, `onChange` | `draw(mouseX, mouseY)`, reading `isToggle()` |
-| [SwitchNode](../nodes/input/switch.md) | The list of states, the current one, `signal`, `onChange`, rebuilding when the states change | `init(UI)`: one child per state that follows `getState()` and calls `state(...)` on click |
-| [SelectorNode](../nodes/input/selector.md) | The values, opening, closing, the layout of the options, the selection, `signal`, `onChange` | `option(value)`, which returns the node of one option, and `drawBackground(mouseX, mouseY)` |
-| [ChartNode](../nodes/data/chart.md) | Labels, series, the scale (`getMin`, `getMax`), loading | `draw(mouseX, mouseY)` |
-| [RadarChartNode](../nodes/data/radar-chart.md) | Axes, values, the scale, loading | `draw(mouseX, mouseY)` |
+| Component | You override | You read while drawing |
+|---|---|---|
+| [SliderNode](../nodes/input/slider.md) | `drawSlider(mouseX, mouseY)`; `drawThumb(mouseX, mouseY)` in a `SliderThumbNode` installed with `thumb(...)` | `getProgress()` (`0F` to `1F`), `getValue()` |
+| [CheckboxNode](../nodes/input/checkbox.md) | `draw(mouseX, mouseY)` | `isChecked()` |
+| [ToggleNode](../nodes/input/toggle.md) | `draw(mouseX, mouseY)` | `isToggle()`, `getValue()` |
+| [SwitchNode](../nodes/input/switch.md) | `init(UI)`: one child per state | `getStateList()`, `getState()`; `state(...)` on click |
+| [SelectorNode](../nodes/input/selector.md) | `option(value)`, `drawBackground(mouseX, mouseY)` | `isActive()`, `isSelected(node)`, `getValue()` |
+| [ChartNode](../nodes/data/chart.md), [RadarChartNode](../nodes/data/radar-chart.md) | `draw(mouseX, mouseY)` | the series and the scale |
 
-## Drawing a component
+## Drawing with DrawUtils
 
-A kit class draws in a method that JOID calls on every frame, such as `draw(mouseX, mouseY)`. Nothing is kept from one frame to the next: each frame draws the current state, so a change of state shows at once. What a drawing method uses:
+Drawing methods run on every frame and draw the current state. Draw relative to the node: `super.getX()`, `super.getY()`, `super.getWidth()`, `super.getHeight()`, `super.dw(2)` and `super.dh(2)`. `super.hoverValue(1F)` animates from `0F` to `1F` while the pointer is over the node: blend colors with `Theme.LINE.to(Theme.INK, super.hoverValue(1F))`.
 
-- The bounds of the node. A node draws in the coordinates of its parent, so the node starts at `super.getX()`, `super.getY()`; `super.getWidth()`, `super.getHeight()`, `super.dw(2)` (half the width) and `super.dh(2)` give its size. Draw relative to them, never at fixed canvas positions.
-- `super.hoverValue(1F)`: the hover progress of the node, from `0F` to `1F`, animated over `hoverDuration` (200 ms by default, see [Animation](../essentials/animation.md)). Blend colors with it: `Theme.LINE.to(Theme.INK, super.hoverValue(1F))`.
-- The state of the component: `isChecked()`, `getProgress()`, `isActive()`, `isSelected(node)`, `getState()`.
-- `DrawUtils` (`dev.joid.lib.draw`): `DrawUtils.SHAPE` draws shapes and `DrawUtils.TEXT` draws text. Positions and sizes are canvas units; every color can be a gradient (`Color.toGradient`).
+![Six shapes in a row: a rectangle, a rounded rectangle, a circle, an outline, a polyline and a text](../images/uikit-draw-calls.png "The DrawUtils calls a kit uses most.")
 
 | Call | Draws |
-| --- | --- |
+|---|---|
 | `DrawUtils.SHAPE.drawRect(x, y, width, height, color)` | A filled rectangle. |
-| `DrawUtils.SHAPE.drawRoundedRect(x, y, width, height, color, radius)` | A filled rectangle with rounded corners; `radius` is a `float`. |
-| `DrawUtils.SHAPE.drawCircle(centerX, centerY, color, radius)` | A filled circle around its center. |
-| `DrawUtils.SHAPE.drawBorder(x, y, x2, y2, color)` | A 1-unit outline just outside the rectangle from the corner (x, y) to the corner (x2, y2); a last `stroke` argument sets its thickness. |
-| `DrawUtils.SHAPE.drawLine(color, stroke, points...)` | A line through `Vector2d` points (`javax.vecmath`), `stroke` units thick. |
-| `DrawUtils.TEXT.drawText(x, y, text)` | A `Text` placed at (x, y) by its alignment: its top-left corner with the default `START` alignment. |
+| `DrawUtils.SHAPE.drawRoundedRect(x, y, width, height, color, radius)` | A rounded rectangle. |
+| `DrawUtils.SHAPE.drawCircle(centerX, centerY, color, radius)` | A filled circle. |
+| `DrawUtils.SHAPE.drawBorder(x, y, x2, y2, color)` | An outline. |
+| `DrawUtils.SHAPE.drawLine(color, stroke, points...)` | A polyline through `Vector2d` points. |
+| `DrawUtils.TEXT.drawText(x, y, text)` | A `Text`. |
 
-![A rectangle, a rounded rectangle, a circle, an outline, a line through three points and a text, each labeled with its call](../images/uikit-draw-calls.png "The six DrawUtils calls of this page.")
+## Theme
 
-The rest of `DrawUtils` (images, models, clipping, transforms) is described in [Drawing Overview](../drawing/draw-utils.md), in the Advanced section.
-
-## Fonts and colors in a Theme
-
-A kit keeps its colors and its text styles in one `Theme` class, used by every component. Colors are plain constants. Text styles need a loaded font, so the `Theme` loads it in a `load()` method that the application calls once, after JOID:
+Keep the colors and text styles of the kit in one `Theme` class. Load the font in a `load()` method that your `Main` calls after `JOID.inst().load()`:
 
 ```java
 package kit.flat;
@@ -54,7 +46,11 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Theme {
 
 	public static final Color INK     = Color.decode("#999999");
@@ -62,11 +58,9 @@ public final class Theme {
 	public static final Color HOVER   = Color.decode("#F4F4F4");
 	public static final Color SURFACE = Color.decode("#FFFFFF");
 
-	private static TextInfo text;
-	private static TextInfo title;
-	private static TextInfo inverse;
-
-	private Theme() {}
+	@Getter private static TextInfo text;
+	@Getter private static TextInfo title;
+	@Getter private static TextInfo inverse;
 
 	public static void load() {
 		final MsdfFont font = MsdfFontLoader.load(new File("fonts/Montserrat-Regular.ttf"), new File("fonts/Montserrat-Bold.ttf")).join();
@@ -75,39 +69,12 @@ public final class Theme {
 		Theme.inverse = TextInfo.create(font, 18F, Theme.SURFACE);
 	}
 
-	public static TextInfo getText() {
-		return Theme.text;
-	}
-
-	public static TextInfo getTitle() {
-		return Theme.title;
-	}
-
-	public static TextInfo getInverse() {
-		return Theme.inverse;
-	}
-
 }
 ```
 
-```java
-JOID.inst().load();
-Theme.load();
-```
+## Panel and Label
 
-- `load()` runs from your `Main`, after `JOID.inst().load()`: the bridges and the settings of JOID (dev mode, configuration folder) are in place, and you control when the font loads. `join()` waits for the font; the first load of a font file generates its atlas, later loads read a cache.
-- The components read the styles with `Theme.getText()`, `Theme.getTitle()` and `Theme.getInverse()`, when they build their nodes or draw.
-- Do not load the font in a `static final` field: the font would load whenever the class is first touched, possibly before JOID, and a missing file would fail the class initialization instead of a call you control.
-
-See [Adding Your Own Fonts](../fonts/adding-fonts.md) for the other ways to load a font.
-
-## A complete kit: kit.flat
-
-The flat kit is minimal and rectangular: a white surface, gray ink, hairline borders. It has one class per component, plus a `Panel` and a `Label` so that a whole screen comes from the kit. All the classes are in the package `kit.flat`.
-
-### Panel and Label
-
-The card that holds a screen, with its title, and the text of a row. `Panel` extends `Node` itself, the base of every node, and draws everything in `draw`; `Label` extends `TextNode` and only sets its text:
+`Panel` extends `Node` and draws everything in `draw`; `Label` extends `TextNode` and only sets its text:
 
 ```java
 package kit.flat;
@@ -159,11 +126,11 @@ public class Label extends TextNode {
 }
 ```
 
-`Label.create` passes its text to `Text.create`, which follows the signals that the text reads. A method that only passes its parameter on keeps the expression of its caller, so `Label.create(500, 110, 60, 44, this.volume.get() + " %")` shows the new volume each time the signal changes.
+`Text.create` follows the signals its text reads, so `Label.create(500, 110, 60, 44, this.volume.get() + " %")` shows each new volume.
 
-### Slider
+## Slider
 
-`drawSlider` draws the track and fills it up to `getProgress()`, the position of the thumb on its travel from `0F` to `1F`. The thumb is a `SliderThumbNode`: the slider centers it vertically, moves it along the track and snaps it onto the chosen value on release. The cursor counts as hovered during the whole drag, so its halo stays even when the pointer leaves it.
+`drawSlider` draws the track, filled up to `getProgress()`. The thumb is a `SliderThumbNode`: the slider centers it, moves it and snaps it onto the chosen value.
 
 ```java
 package kit.flat;
@@ -208,7 +175,7 @@ public class Slider extends IntegerSliderNode {
 }
 ```
 
-### Checkbox
+## Checkbox
 
 The size is a parameter of `create`: each kit decides the width it needs for that height.
 
@@ -248,9 +215,9 @@ public class Checkbox extends CheckboxNode {
 }
 ```
 
-### Switch
+## Switch
 
-A switch is drawn with child nodes rather than in `draw`. Every node has an `init(UI)` method, empty by default, that JOID runs when the node joins a UI, like the `init()` of a UI; `SwitchNode` runs it again each time its list of states changes. You build the children there. Each segment is a `RectNode` whose color and text follow `getState()` through `Signal.from(() -> ...)`, so a segment changes without being rebuilt, and its click calls `state(...)`.
+A switch is built from child nodes in `init(UI)`, which JOID runs when the node joins a UI and `SwitchNode` runs again when its states change. Each segment follows `getState()` through `Signal.from(() -> ...)` and calls `state(...)` on click.
 
 ```java
 package kit.flat;
@@ -258,12 +225,12 @@ package kit.flat;
 import java.util.List;
 
 import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.signal.Signal;
 
 public class Switch extends SwitchNode {
 
@@ -300,11 +267,9 @@ public class Switch extends SwitchNode {
 }
 ```
 
-`Signal.from(() -> ...)` follows the signals its lambda reads (`getState()` reads the states and the index of the switch). The loop variable `state` decides the result, which a plain expression cannot follow: the lambda form is the one to use here.
+## Selector
 
-### Selector
-
-`Selector` extends `SelectorNode<String>`: its values are strings. `values(...)` calls `option(value)` once per value, and the selector sizes and places the nodes that `option` returns. Each option is a `RectNode` with a hover color, its text, and a layer that draws the arrow of the selected option: `layer((mouseX, mouseY) -> ...)` adds a drawing to any node, run on every frame after its children, in the same coordinates as `draw`. `drawBackground` outlines the selector, darker while the list is open.
+`values(...)` calls `option(value)` once per value, and the selector sizes and places the returned nodes. `layer((mouseX, mouseY) -> ...)` adds a drawing to any node, here the arrow of the selected option. `drawBackground` outlines the selector, darker while it is open.
 
 ```java
 package kit.flat;
@@ -362,15 +327,15 @@ public class Selector extends SelectorNode<String> {
 
 ## Using the kit
 
-A settings panel built only from the kit. The signals hold the values; the screen code says what to show, never how it looks:
+The screen only uses the kit. Signals hold the values; the screen says what to show, never how it looks:
 
 ```java
 package app.flat;
 
-import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.core.UI;
 import kit.flat.*;
 
 public final class SettingsUI extends UI {
@@ -401,13 +366,13 @@ public final class SettingsUI extends UI {
 }
 ```
 
-`signal(...)` binds each control to its signal both ways: the control takes the value of the signal, writes each change of the user into it, and follows the values that other code sets. The first argument of `values(...)` is the initial value, which the binding replaces with the value of the signal. The volume label follows `this.volume.get()`, so it changes only when the slider writes a new value.
+`signal(...)` binds each control to its signal both ways: the control shows the signal's value, writes each user change into it, and follows the values other code sets.
 
 ![The cursor drags the volume slider, unchecks Subtitles, picks Medium and selects Deutsch in both kits at once](../images/uikit-use.gif "The same clicks on both kits: the components behave the same, only the drawing differs")
 
-## A second kit: kit.round
+## A second kit
 
-The round kit has the same class names and the same factories, in the package `kit.round`: a dark surface, rounded pills, a white accent and soft glows. Its `Theme` adds a `glow` helper, drawn as stacked translucent rounded rectangles:
+The round kit has the same class names and factories in `kit.round`, with a dark surface, rounded pills and soft glows. Only the theme and the drawing change:
 
 ```java
 package kit.round;
@@ -415,12 +380,15 @@ package kit.round;
 import java.io.File;
 
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Theme {
 
 	public static final Color INK     = Color.decode("#FFFFFF");
@@ -428,11 +396,9 @@ public final class Theme {
 	public static final Color MUTED   = Color.decode("#A1A1AA");
 	public static final Color SURFACE = Color.decode("#3F3F46");
 
-	private static TextInfo text;
-	private static TextInfo title;
-	private static TextInfo inverse;
-
-	private Theme() {}
+	@Getter private static TextInfo text;
+	@Getter private static TextInfo title;
+	@Getter private static TextInfo inverse;
 
 	public static void load() {
 		final MsdfFont font = MsdfFontLoader.load(new File("fonts/Montserrat-Regular.ttf"), new File("fonts/Montserrat-Bold.ttf")).join();
@@ -441,76 +407,10 @@ public final class Theme {
 		Theme.inverse = TextInfo.create(font, FontWeight.BOLD, 18F, Theme.SURFACE);
 	}
 
-	public static void glow(final double x, final double y, final double width, final double height, final float radius, final double spread) {
-		for (int i = 8; i >= 1; i--) {
-			final double grow = spread * i / 8D;
-			DrawUtils.SHAPE.drawRoundedRect(x - grow, y - grow, width + grow * 2D, height + grow * 2D, Theme.INK.copyAlpha(0.03F), radius + (float) grow);
-		}
-	}
-
-	public static TextInfo getText() {
-		return Theme.text;
-	}
-
-	public static TextInfo getTitle() {
-		return Theme.title;
-	}
-
-	public static TextInfo getInverse() {
-		return Theme.inverse;
-	}
-
 }
 ```
 
-Its slider draws a rounded track filled with the accent and a round thumb whose glow grows on hover:
-
-```java
-package kit.round;
-
-import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
-import dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode;
-
-public class Slider extends IntegerSliderNode {
-
-	protected Slider(final double x, final double y, final double width, final double height) {
-		super(x, y, width, height);
-		super.thumb(new Knob(24D));
-	}
-
-	public static Slider create(final double x, final double y, final double width, final double height) {
-		return new Slider(x, y, width, height);
-	}
-
-	@Override
-	public void drawSlider(final double mouseX, final double mouseY) {
-		final double trackY = super.getY() + super.dh(2) - 4D;
-		DrawUtils.SHAPE.drawRoundedRect(super.getX(), trackY, super.getWidth(), 8D, Theme.TRACK, 4F);
-		DrawUtils.SHAPE.drawRoundedRect(super.getX(), trackY, super.getWidth() * super.getProgress(), 8D, Theme.INK, 4F);
-	}
-
-	private static final class Knob extends SliderThumbNode {
-
-		private Knob(final double size) {
-			super(size, size);
-		}
-
-		@Override
-		public void drawThumb(final double mouseX, final double mouseY) {
-			final float focus = super.hoverValue(1F);
-			final double centerX = super.getX() + super.dw(2);
-			final double centerY = super.getY() + super.dh(2);
-			DrawUtils.SHAPE.drawCircle(centerX, centerY, Theme.INK.copyAlpha(0.12F + 0.12F * focus), 16D + 4D * focus);
-			DrawUtils.SHAPE.drawCircle(centerX, centerY, Theme.INK, 11D);
-		}
-
-	}
-
-}
-```
-
-Its checkbox is a pill switch: the same `CheckboxNode` state, drawn as a track and a knob. `create` makes it 1.8 times as wide as it is high:
+Its checkbox is a pill switch, 1.8 times as wide as it is high:
 
 ```java
 package kit.round;
@@ -540,7 +440,7 @@ public class Checkbox extends CheckboxNode {
 			return;
 		}
 
-		Theme.glow(x, y, super.getWidth(), super.getHeight(), radius, 10D);
+		DrawUtils.SHAPE.drawRoundedRect(x, y, super.getWidth(), super.getHeight(), Theme.INK.copyAlpha(0.2F), radius + 4F);
 		DrawUtils.SHAPE.drawRoundedRect(x, y, super.getWidth(), super.getHeight(), Theme.INK, radius);
 		DrawUtils.SHAPE.drawCircle(x + super.getWidth() - radius, knobY, Theme.SURFACE, radius - 4D);
 	}
@@ -548,27 +448,9 @@ public class Checkbox extends CheckboxNode {
 }
 ```
 
-`Panel`, `Label`, `Switch` and `Selector` keep the structure and the API of the flat classes and change only what they draw: a rounded glowing panel, pill segments with `RoundedNodeEffect`, rounded options with a glow around the open list.
-
 ## Switching kits
 
-### By import
-
-When both kits have the same class names and the same factories, the import line is the only difference:
-
-```java
-import kit.flat.*;
-```
-
-```java
-import kit.round.*;
-```
-
-The rest of `SettingsUI` does not change. This is the simplest way when a project uses one kit at a time.
-
-### With a factory
-
-To choose the kit at runtime (a theme setting, a light and a dark mode), put the factories behind an interface. The methods return the base types of JOID, so screens keep the whole API of each component:
+When both kits share class names and factories, the import line is the only difference: `import kit.flat.*;` or `import kit.round.*;`. To choose the kit at runtime (a light and a dark mode), put the factories behind an interface that returns the JOID base types:
 
 ```java
 package kit;
@@ -587,8 +469,6 @@ public interface Kit {
 
 }
 ```
-
-Each kit implements it with its own classes:
 
 ```java
 package kit.flat;
@@ -624,79 +504,19 @@ public final class FlatKit implements Kit {
 }
 ```
 
-`kit.round.RoundKit` is the same class with the `kit.round` classes. A screen then receives a `Kit`:
+The screen receives a `Kit` and calls `this.kit.slider(...)`, `this.kit.checkbox(...)` and so on; open it with `JOID.open(new SettingsUI(new FlatKit()))`.
 
-```java
-package app.factory;
+## Good to know
 
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.signal.impl.primitive.StringSignal;
-import kit.Kit;
-
-public final class SettingsUI extends UI {
-
-	private final Kit kit;
-
-	private final IntegerSignal volume = IntegerSignal.of(65);
-	private final StringSignal quality = StringSignal.of("High");
-	private final StringSignal language = StringSignal.of("English");
-	private final BooleanSignal subtitles = BooleanSignal.of(true);
-
-	public SettingsUI(final Kit kit) {
-		this.kit = kit;
-	}
-
-	@Override
-	public void init() {
-		this.kit.slider(860, 380, 280, 44).values(0, 100, 65).signal(this.volume).attach(this);
-		this.kit.checkbox(860, 458, 28).signal(this.subtitles).attach(this);
-		this.kit.switcher(860, 520, 360, 44).states("Low", "Medium", "High").signal(this.quality).attach(this);
-		this.kit.selector(860, 590, 360, 44).values("English", "English", "Français", "Deutsch", "Español").signal(this.language).attach(this);
-	}
-
-}
-```
-
-Open it with `JOID.open(new SettingsUI(new FlatKit()))` or `JOID.open(new SettingsUI(new RoundKit()))`. A method that a kit class adds on top of JOID is not reachable through the base type: keep the kit classes to the API of JOID, or add the method to the interface.
-
-## Reference
-
-What a kit class reads and overrides, per component:
-
-| Component | Override | Read while drawing |
-| --- | --- | --- |
-| `SliderNode<O>` | `drawSlider(double, double)`; `SliderThumbNode.drawThumb(double, double)` | `getProgress()` (`0F` to `1F`), `getValue()`, `getThumb()`, `hoverValue(float)` of the thumb |
-| `CheckboxNode` | `draw(double, double)` | `isChecked()`, `hoverValue(float)` |
-| `ToggleNode<F, S>` | `draw(double, double)` | `isToggle()`, `getValue()` |
-| `SwitchNode` | `init(UI)` | `getStateList()`, `getState()`; `state(String)` or `index(int)` on click |
-| `SelectorNode<V>` | `option(V)`, `drawBackground(double, double)` | `isActive()`, `isSelected(Node)`, `getValue()`, `getDefaultWidth()`, `getDefaultHeight()` |
-| `ChartNode`, `RadarChartNode` | `draw(double, double)` | the data, the labels and the scale of the chart |
-
-Tips for a kit:
-
-| Tip | Why |
-| --- | --- |
-| One `Theme` class | The colors, gradients and text styles in one place: a new palette is one file. |
-| Draw from the size of the node | `getWidth()`, `getHeight()`, `dw(2)` and `dh(2)` make every size work. |
-| Sizes as parameters | Take the sizes in `create(...)`; derive the other dimension when a kit needs a shape, as the round `Checkbox` does with `size * 1.8D`. |
-| Hover with `hoverValue` | `hoverValue(1F)` animates from `0F` to `1F` when the pointer enters the node and back when it leaves; set the speed with `hoverDuration(...)` and the curve with `hoverEquation(...)`. |
-| Keep the behavior in JOID | Override the drawing hooks and leave the input methods alone: dragging, clicking, selecting and the callbacks work the same in every kit. |
-| Same names in every kit | Same class names and same `create(...)` signatures keep switching kits a one-line change. |
-
-## Pitfalls
-
-- A font loaded in a `static final` field of the `Theme` loads whenever the class is first touched: load it in a `load()` method called after `JOID.inst().load()`.
-- A setter of `Node` in the middle of a chain returns a `Node`: call the setters of the component first (`values`, `states`, `signal`), then `attach`.
-- `signal(...)` needs a writable signal: a `ComputedSignal` (a `map(...)` or a `Signal.from(...)`) throws an `IllegalArgumentException`. Pass a computed signal to a setter such as `value(...)` instead, which follows it one way.
-- Draw relative to `super.getX()` and `super.getY()`: a kit class drawn at fixed canvas positions breaks as soon as it moves.
+- Do not load a font in a `static final` field of the `Theme`: it loads whenever the class is first touched, possibly before JOID.
+- Call the component setters (`values`, `states`, `signal`) before a `Node` setter in a chain: a `Node` setter returns a `Node`.
+- `signal(...)` needs a writable signal; pass a `map(...)` or `Signal.from(...)` to a setter such as `value(...)` instead.
 
 ## See also
 
-- Next: [ContainerNode](../nodes/layout/container.md)
+- Next: [RectNode](../nodes/visual/rect.md)
 - [Component Catalog](overview.md)
-- [Input Controls](../essentials/controls.md)
-- [SwitchNode](../nodes/input/switch.md)
-- [SelectorNode](../nodes/input/selector.md)
-- [Drawing Overview](../drawing/draw-utils.md) and [Custom Nodes](../nodes/custom-nodes.md): drawing and writing nodes in depth.
+- [Custom Nodes](../nodes/custom-nodes.md)
+- [Drawing](../drawing/drawing.md)
+- [Signals and State](../concepts/state.md)
+- [Layout](../concepts/layout.md)

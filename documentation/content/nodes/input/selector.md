@@ -1,10 +1,6 @@
 # SelectorNode
 
-`SelectorNode<V>` (`dev.joid.lib.ui.node.impl.structure.selector`) is a dropdown that picks one value of type `V` from a list: it shows the selected option, a click opens the list of the others and a click on one selects it. It is abstract: your subclass builds the node of each option and draws the background; the selector creates, sizes and places the options and keeps the selected value. The `Selector` of [Building a UI Kit](../../components/ui-kit.md#selector) is one; this page starts from a smaller one.
-
-## Creating a selector
-
-A subclass implements `option(V value)`, which returns the node that shows one value, and `drawBackground(...)`:
+`SelectorNode<V>` is a dropdown that picks one value from a list: a click on the selected option opens the list, a click on another option selects it and closes the list. Your subclass builds the node of each option in `option(V)` and draws the background in `drawBackground`.
 
 ```java
 public class DifficultySelectorNode extends SelectorNode<String> {
@@ -33,78 +29,23 @@ public class DifficultySelectorNode extends SelectorNode<String> {
 }
 ```
 
-Then, in `UI.init()` (`font` is an `IFont` you loaded, see [Text](../../essentials/text.md)):
+Then use it (`this.info` is a `TextInfo` built from a loaded font, see [Text and Fonts](../../concepts/text.md)):
 
 ```java
-DifficultySelectorNode
-.create(810, 400, 300, 50, TextInfo.create(font, 20F, Color.decode("#999999")))
-.onChange((selector, difficulty) -> System.out.println("Difficulty: " + difficulty))
-.values("Easy", "Easy", "Normal", "Hard")
-.attach(this);
+DifficultySelectorNode.create(810, 400, 300, 50, this.info).values("Easy", "Easy", "Normal", "Hard").attach(this);
 ```
 
-![The cursor opens a white dropdown showing Easy, then picks Hard](../../images/selector-pick.gif "A click on the selected option opens the list; a click on another option selects it and closes the list.")
+![The cursor opens a white dropdown showing Easy, then picks Hard](../../images/selector-pick.gif "Click the selected option to open; click another to select it.")
 
-- `values("Easy", "Easy", "Normal", "Hard")` creates the options "Easy", "Normal" and "Hard" and selects "Easy", its first argument.
-- A click on "Easy" opens the list below; a click on "Hard" selects it, calls `onChange` with `"Hard"` and closes the list.
-
-The value type is yours: a `String`, an enum, a `Color` whose options are colored rectangles. `option(...)` decides how a value looks; the demo `UIDemoSelector` opens one selector down and one up.
-
-The protected constructor and the `create` factory follow the same contract as the components of [Building a UI Kit](../../components/ui-kit.md).
+The value type is yours: a `String`, an enum, a `Color` whose options are colored rectangles. The width and height of the selector are the size of each option.
 
 ## Options with values
 
-`values(V value, V... values)` replaces the options:
+`values(V value, V... values)` removes the previous options, calls `option(...)` once per value in order, and selects `value`, which must be one of `values`. `value(V)` selects another option from code. Values are compared with `equals`.
 
-1. it removes every child of the selector;
-2. it calls `option(...)` once per value, in order, and appends each returned node as an option;
-3. it selects `value`, which must be one of `values`.
+## Opening direction with direction
 
-| Method | Effect |
-| --- | --- |
-| `values(V value, V... values)` | Creates one option per value and selects `value`. Calling it again replaces all the options. |
-| `value(V value)` | Selects the option of this value. Throws an `IllegalArgumentException` when no option has this value. |
-| `getValue()` | The selected value, `null` while the selector has no option. |
-
-- Values are compared with `equals`. Give each option a distinct value: `value(...)` selects the first option equal to the value.
-- `values(...)` and `value(...)` write the selected value into the signal and call `onChange` when the selected value changes. `values(...)` that keeps the current value selected calls nothing.
-- `values(...)` with a selected value that is not in the list throws an `IllegalArgumentException` and keeps the current options.
-
-> WARNING: Let `values(...)` create the options. A child that you attach yourself has no value: on its next draw, the selector removes it and throws an `IllegalStateException` ("The node ... is not an option of the selector, add the options with values(...)"), which the UI bridge prints. Draw decorations in `drawBackground` or in the option nodes.
-
-## Binding a signal with signal
-
-`signal(Signal<V>)` keeps the selector and a [signal](../../concepts/signals.md) in sync, both ways:
-
-- the selector starts on the signal's value, when the signal holds one of the options;
-- each value the user picks is written into the signal;
-- each value the signal publishes later selects its option, and calls `onChange` when it changes. A value that is not an option is ignored.
-
-```java
-private final Signal<String> difficulty = Signal.of("Normal");
-
-DifficultySelectorNode
-.create(810, 400, 300, 50, TextInfo.create(font, 20F, Color.decode("#999999")))
-.values("Normal", "Easy", "Normal", "Hard")
-.signal(this.difficulty)
-.attach(this);
-```
-
-- Call `signal(...)` after `values(...)`: the signal's value is applied once, when you bind it, and it can only select an existing option.
-- The selector follows the signal while its UI is open, and one signal at a time: calling `signal(...)` again unbinds the previous signal, which then stops selecting options and receiving the picked values.
-- Any other node follows the selection by reading the signal in a setter: `text(Text.create("Difficulty: " + this.difficulty.get(), info))`.
-- `value(...)`, `direction(...)` and `active(...)` also take a `Supplier` (a native expression that reads signals, a signal or a lambda) and follow it one way.
-
-## Options and layout
-
-On each frame, the selector lays its options out:
-
-- every option gets `x = 0`, the selector's initial width and its initial height (the values given to the constructor);
-- the selected option sits at `y = 0`;
-- the other options are stacked one initial height apart, below (`SelectorDirection.DOWN`, the default) or above (`SelectorDirection.UP`), in their order;
-- their visibility becomes "visible while the list is open, or when selected", replacing any `visible(...)` rule you gave them.
-
-The selector's own height follows: with `DOWN` it grows to cover the open list (so `drawBackground` covers it too) and goes back to the initial height when closed; with `UP` it keeps the initial height and the list opens outside it.
+The list opens below the selector by default (`SelectorDirection.DOWN`), and the selector grows to cover it, so `drawBackground` covers the open list too. With `SelectorDirection.UP` it opens above and keeps its height: give the options their own background. `active(true)` opens the list from code.
 
 ```java
 DifficultySelectorNode.create(560, 500, 300, 50, this.info).values("Easy", "Easy", "Normal", "Hard").active(true).attach(this);
@@ -112,78 +53,66 @@ DifficultySelectorNode.create(560, 500, 300, 50, this.info).values("Easy", "Easy
 DifficultySelectorNode.create(1060, 500, 300, 50, this.info).values("Easy", "Easy", "Normal", "Hard").direction(SelectorDirection.UP).active(true).attach(this);
 ```
 
-![Two open selectors: on the left the list opens below Easy on a white background, on the right Normal and Hard are stacked above Easy with no background](../../images/selector-direction.png "With UP the background stays on the selected option: give the options their own background to cover the list.")
+![Two open selectors: on the left the list opens below Easy on a white background, on the right Normal and Hard are stacked above Easy with no background](../../images/selector-direction.png "With UP the background stays on the selected option.")
 
-`drawBackground(double mouseX, double mouseY)` is abstract and called on each draw, after the layout. The selector draws nothing and lays nothing out while it has no option. An option node can read `isActive()` and `isSelected(this)` of its selector to draw the open list or the selected option differently, as the selector of the [UI kit](../../components/ui-kit.md#selector) does.
+An option node can read `isActive()` and `isSelected(node)` of its selector to draw the open list or the selected option differently, as the selector of [Building a UI Kit](../../components/ui-kit.md) does.
 
-## Clicking
+## Binding a signal with signal
 
-| Event | Effect |
-| --- | --- |
-| Closed, press on the selected option | Opens the list. The press is consumed. |
-| Closed, press elsewhere | Nothing. |
-| Open, press on another option | Selects it, writes the signal, calls `onChange`, closes the list. The press is consumed. |
-| Open, press on the selected option or elsewhere on the open list | Closes the list. The press is consumed, so the nodes under the list do not receive it. |
-| Open, press beside the selector, or a press another node already consumed | Closes the list without consuming the press: the node under the pointer receives it. |
+`signal(Signal<V>)` keeps the selection and a [signal](../../concepts/state.md) in sync both ways. Call it after `values(...)`: a value that is not an option is ignored.
 
-- Any mouse button works. There is no keyboard control.
-- The selector ignores presses while it has no option.
+```java
+private final StringSignal difficulty = StringSignal.of("Normal");
 
-> WARNING: The options receive the press before the selector. An option with its own click callback (`onClick`) consumes the press, and the selector then neither opens nor selects. Leave the options without click callbacks and react in `onChange`.
+@Override
+public void init() {
+	DifficultySelectorNode.create(810, 400, 300, 50, this.info).values("Normal", "Easy", "Normal", "Hard").signal(this.difficulty).attach(this);
 
-> TIP: The open list is drawn with the selector, so attach the selector after the nodes the list overlaps (or give it a higher z-index): it then draws above them and receives the press first.
+	TextNode.create(810, 300).text(Text.create("Difficulty: " + this.difficulty.get(), this.info)).attach(this);
+}
+```
 
-## onChange
+## Events with onChange
 
-`onChange(NodeSelectorChangeCallback<T, V>)` takes `(node, value)`, where `value` is the newly selected value; `node.getValue()` already returns it and the signal already holds it. It runs on every change of the selected value: a click on an option, `value(...)`, `values(...)` or the bound signal. Cancelling the context in the `pre(...)` phase, in an anonymous class of the callback interface as for [CheckboxNode](checkbox.md#reacting-with-onchange), keeps the previous option selected, leaves the list open and does not write the signal (see [Callbacks](../../interactions/callbacks.md)). The callback interface is in `dev.joid.lib.ui.node.impl.structure.selector.callback`.
+`onChange((selector, value) -> ...)` runs after each change of the selected value: a click on an option, `value(...)`, `values(...)` or the bound signal. Cancel the context in the `pre(...)` phase to keep the previous option and leave the list open, as shown for [CheckboxNode](checkbox.md).
+
+```java
+private final IntegerSignal level = IntegerSignal.of(1);
+
+@Override
+public void init() {
+	DifficultySelectorNode
+	.create(810, 400, 300, 50, this.info)
+	.values("Normal", "Easy", "Normal", "Hard")
+	.onChange((selector, value) -> this.level.set(Arrays.asList("Easy", "Normal", "Hard").indexOf(value)))
+	.attach(this);
+}
+```
 
 ## Reference
 
-### SelectorNode
-
 | Method | Default | Description |
-| --- | --- | --- |
-| `SelectorNode(double x, double y, double width, double height)` | | Protected constructor. The width and height are the size of each option. |
-| `option(V value)` | | Abstract, protected. Returns the node of one option. |
-| `drawBackground(double mouseX, double mouseY)` | | Abstract. Draws the background. |
+|---|---|---|
+| `SelectorNode(x, y, width, height)` | | Protected constructor; the size of each option. |
+| `option(V value)` | | Abstract: returns the node of one option. |
+| `drawBackground(mouseX, mouseY)` | | Abstract: draws the background. |
 | `values(V value, V... values)` | no option | Replaces the options and selects `value`. |
-| `value(V value)`, `value(Supplier<V>)` | | Selects the option of this value. |
-| `signal(Signal<V>)` | none | Binds a signal both ways. |
-| `direction(SelectorDirection)`, `direction(Supplier<SelectorDirection>)` | `DOWN` | Side the list opens to. |
-| `active(boolean)`, `active(Supplier<Boolean>)` | `false` | Opens or closes the list. |
-| `onChange(NodeSelectorChangeCallback<T, V>)` | | Adds a callback `(node, value)` run after each change of the selected value. |
-| `getValue()` | | The selected value, `null` while there is no option. |
-| `getSelected()` | | Node of the selected option, `null` while there is no option. |
-| `isSelected(Node)` | | Whether the node is the selected option. |
-| `isActive()` | | Whether the list is open. |
-| `getDirection()` | | Opening direction. |
-| `getSignal()` | | Bound signal, or `null`. |
-| `getOptionMap()` | | Option nodes mapped to their values, in order. Read it only. |
-| `SelectorNode.CALLBACK_CHANGE` | | Callback id of `onChange`. |
+| `value(V)`, `value(Supplier<V>)` | | Selects an option; throws for an unknown value. |
+| `direction(SelectorDirection)` | `DOWN` | Side the list opens to. |
+| `active(boolean)` | `false` | Opens or closes the list. |
+| `signal(Signal<V>)` | none | Two-way binding. |
+| `onChange(NodeSelectorChangeCallback<T, V>)` | | `(selector, value)` after each change. |
+| `getValue()`, `isActive()`, `isSelected(Node)` | | Selected value (`null` without option), open state, selected option. |
 
-Every setter returns the node itself, typed by the generic return of the fluent API; `draw` and `mousePressed` can be overridden.
+## Good to know
 
-### SelectorDirection
-
-`SelectorNode.SelectorDirection` is a nested enum.
-
-| Constant / method | Description |
-| --- | --- |
-| `UP` | The list opens above the selector. |
-| `DOWN` | The list opens below the selector. |
-| `isDown()` | `true` for `DOWN`. |
-
-## Pitfalls
-
-- An option node appended by hand, outside `values(...)`, throws an explicit exception: build the options through `option(V)`.
-- A click on the open list, or on the current option, is consumed; a click beside it closes the list and goes through to the nodes below.
-- A detached selector closes its list.
+- Let `values(...)` create the options: a child attached by hand is removed and throws `IllegalStateException`.
+- An option with its own `onClick` consumes the press, so the selector neither opens nor selects: react in `onChange`.
+- Attach the selector after the nodes its open list overlaps, so the list draws above them and receives the press first.
 
 ## See also
 
-- Next: [ChartNode](../data/chart.md)
-- [SwitchNode](switch.md)
-- [Signals](../../state/signals.md)
-- [Callbacks](../../interactions/callbacks.md)
-- [Custom Nodes](../custom-nodes.md)
+- Next: [ReorderableFlexNode](../layout/reorderable-flex.md)
 - [Building a UI Kit](../../components/ui-kit.md)
+- [Input](../../concepts/input.md)
+- [Signals and State](../../concepts/state.md)

@@ -1,6 +1,6 @@
 # RadarChartNode
 
-`RadarChartNode<DATA extends RadarChartData>` (`dev.joid.lib.ui.node.impl.structure.chart`) is the base of radar (spider) charts: an ordered list of labeled values, one per spoke. It stores the values and computes the scale; it is abstract and draws nothing, so you subclass it and draw the chart your way.
+`RadarChartNode<DATA extends RadarChartData>` is the base of radar (spider) charts: an ordered list of labeled values, one per spoke. It stores the values and computes the scale; it draws nothing, so you subclass it and draw the chart your way.
 
 ```java
 public class StatsRadarNode extends RadarChartNode<RadarChartData> {
@@ -50,7 +50,7 @@ public class StatsRadarNode extends RadarChartNode<RadarChartData> {
 }
 ```
 
-Then create it with its values (`this.info` is a `TextInfo` built from a loaded font, see [Text](../../essentials/text.md)):
+Create it with its values (`this.info` is a `TextInfo` built from a loaded font, see [Text and Fonts](../../concepts/text.md)):
 
 ```java
 StatsRadarNode
@@ -65,13 +65,11 @@ StatsRadarNode
 
 ![A white pentagon with a gray polygon inside: Speed and Grip reach the edge, Power and Armor stop at 4/5, Range at 3/5](../../images/chart-radar.png "Each value is drawn as a fraction of getMax(): the largest values touch the frame.")
 
-The first spoke points up and the next ones turn clockwise. `drawPolygon` fills a fan from its first point, so the value polygon starts at the center (`values[0]`) and closes on its first spoke: any shape of values fills correctly. `RadarChartData` is the nested class `RadarChartNode.RadarChartData`; `Vector2d` comes from `javax.vecmath`. `drawPolygon`, `drawText` and the other `DrawUtils` calls are all listed in [Shapes](../../drawing/shapes.md) and [Drawing Text](../../drawing/text.md); the constructor and the factory follow the contract of [Building a UI Kit](../../components/ui-kit.md).
+The first spoke points up and the next ones turn clockwise in this example. `drawPolygon` fills a fan from its first point, so the value polygon starts at the center and closes on its first spoke. `RadarChartData` is a nested class of `RadarChartNode`.
 
 ## Values with RadarChartData
 
-`RadarChartData.create(label, value)` creates a value with its label; `RadarChartData.create(label)` creates a value still empty. `data(...)` appends a value to the node: the spokes follow the order of the calls.
-
-`value(...)` and `label(...)` set the value and the label later. Like node setters, they take a plain value, an expression that reads [signals](../../concepts/signals.md), a signal or a `Supplier`, and the chart reads them on every frame. `this.white` is a white `TextInfo` for the label of the button:
+`RadarChartData.create(label, value)` creates a value; `create(label)` creates an empty one. `data(...)` appends a value: the spokes follow the order of the calls. `value(...)` and `label(...)` take a plain value, an expression that reads [signals](../../concepts/state.md), or a `Supplier`, and the chart reads them on every frame.
 
 ```java
 private final IntegerSignal speed = IntegerSignal.of(2);
@@ -89,47 +87,21 @@ public void init() {
 	RectNode
 	.create(460, 100, 120, 60)
 	.color(Color.decode("#999999"))
-	.onClick((node, mouseX, mouseY, clickType) -> this.speed.set(this.speed.peek() % 5 + 1))
+	.onClick((node, mouseX, mouseY, button) -> this.speed.set(this.speed.peek() % 5 + 1))
 	.body(rect -> {
-		TextNode.create(60, 30).text(Text.create("Speed", this.white)).anchor(Align.CENTER).attach(rect);
+		TextNode.create(60, 30).text(Text.create("Speed", this.info)).anchor(Align.CENTER).attach(rect);
 	})
 	.attach(this);
 }
 ```
 
-![The cursor clicks a Speed button four times: the Speed spoke of the radar grows, then falls back, and the whole shape rescales](../../images/radar-signal.gif "value(this.speed.get()) follows speed: each click moves the Speed spoke, and getMax() follows the largest value.")
+![The cursor clicks a Speed button four times: the Speed spoke of the radar grows, then falls back, and the whole shape rescales](../../images/radar-signal.gif "value(this.speed.get()) follows speed; getMax() follows the largest value.")
 
-`clear()` on a `RadarChartData` forgets its value: the data becomes empty, and the chart is not loaded until it gets a value again.
-
-## Adding and removing values
-
-| Method | Effect |
-| --- | --- |
-| `data(DATA data)` | Appends a value (a new spoke). |
-| `remove(DATA data)` | Removes that value. |
-| `clear()` | Removes every value. |
-
-The list is read on every frame: the next frame draws the new spokes. `getDataList()` returns the values in their order.
-
-## Scale with getMax
-
-| Method | Returns |
-| --- | --- |
-| `getMax()` | Largest value. |
-| `getMin()` | Smallest value. |
-| `getAverage()` | Average of the values. |
-
-- Empty values are ignored.
-- `getMax()` is never `0`: it returns `1` when the largest value is `0` or when there is no value, and twice the value when all the values are equal (then `getMin()` returns `0`). You can divide by it.
-- Draw each value as a fraction of `getMax()` for a radar scaled on its largest value, as above, or divide by a fixed maximum of your own (`5D` for a score out of 5) to keep the scale steady.
-
-## Loading state with isLoaded
-
-`isLoaded()` returns `true` once the node is mounted (no pending `wait(...)` condition), it has at least three values and none of them is empty. Test it at the start of `draw`: `getValue()` of an empty value returns `null`. While the node waits for a `wait(...)` condition, it draws the default pulsing skeleton over its bounds; override `drawSkeleton` to draw your own (see [Node Fundamentals](../node-fundamentals.md)).
+`remove(data)` and `clear()` on the node remove one value or all of them; the next frame draws the new spokes.
 
 ## Custom values
 
-`DATA` lets a radar carry more than a label and a number per spoke. Extend `RadarChartData` (its constructors are protected) and type your node with it (`@Getter` is the Lombok annotation that generates `getColor()`):
+Extend `RadarChartData` (its constructors are protected) to carry more per spoke, and type your node with it:
 
 ```java
 @Getter
@@ -153,44 +125,28 @@ A `TeamRadarNode extends RadarChartNode<ColoredRadarData>` then accepts only `Co
 
 ## Reference
 
-### RadarChartNode
-
 | Method | Description |
-| --- | --- |
-| `RadarChartNode(double x, double y, double width, double height)` | Protected constructor for your subclass. |
-| `data(DATA data)` | Appends a value. |
-| `remove(DATA data)` | Removes a value. |
-| `clear()` | Removes every value. |
+|---|---|
+| `data(DATA)` | Appends a value (a new spoke). |
+| `remove(DATA)`, `clear()` | Removes a value, or every value. |
 | `getDataList()` | The values, in order. |
-| `getMax()`, `getMin()`, `getAverage()` | Scale of the values that are not empty. |
+| `getMax()`, `getMin()`, `getAverage()` | Scale of the non-empty values. `getMax()` is never `0`. |
 | `isLoaded()` | `true` when mounted, with at least three values, none empty. |
+| `RadarChartData.create(label)`, `create(label, value)` | Creates an empty value, or a value. |
+| `value(Number)`, `value(Supplier)` | Sets the value, or follows it. |
+| `label(String)`, `label(Supplier)` | Sets the label, or follows it. |
+| `clear()` (on the data) | Empties the value. |
+| `getValue()`, `getLabel()`, `isEmpty()` | Current value (`null` when empty), label, emptiness. |
 
-### RadarChartData
+## Good to know
 
-| Method | Description |
-| --- | --- |
-| `RadarChartData.create(String label)` | Creates an empty value. |
-| `RadarChartData.create(String label, Number value)` | Creates a value. |
-| `value(Number)`, `value(Supplier<? extends Number>)` | Sets the value, or follows it. |
-| `label(String)`, `label(Supplier<String>)` | Sets the label, or follows it. |
-| `clear()` | Forgets the value: the data becomes empty. |
-| `getValue()` | Current value, or `null` when empty. |
-| `getLabel()` | Current label. |
-| `isEmpty()` | `true` without value. |
-
-The setters return the object itself, typed by the generic return of the fluent API. The rest of the node API is inherited from `Node` (see [Node Fundamentals](../node-fundamentals.md)).
-
-## Pitfalls
-
-- `getValue()` of an empty value returns `null`: draw only when `isLoaded()` is `true`, or check each value.
-- With fewer than three values, `isLoaded()` stays `false`: a radar of two spokes is never drawn by code that tests it.
-- `clear()` exists on both classes: on the node it removes every value, on a `RadarChartData` it empties that value only.
+- Test `isLoaded()` at the start of `draw`: `getValue()` of an empty value is `null`, and with fewer than three values the chart is not loaded.
+- Divide by `getMax()` for a radar scaled on its largest value, or by your own fixed maximum (`5D`) to keep the scale steady.
 
 ## See also
 
-- Next: [Node Fundamentals](../node-fundamentals.md), the first of the Guides
+- Next: [Effects](../../styling/effects.md)
 - [ChartNode](chart.md)
 - [Custom Nodes](../custom-nodes.md)
-- [Shapes](../../drawing/shapes.md)
-- [Drawing Text](../../drawing/text.md)
-- [Reactive Properties](../../state/reactive-properties.md)
+- [Drawing](../../drawing/drawing.md)
+- [Signals and State](../../concepts/state.md)

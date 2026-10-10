@@ -1,69 +1,58 @@
 # TextFieldNode
 
-`TextFieldNode` (`dev.joid.lib.ui.node.impl.design.textfield`) is a single-line editable text input: it owns its text, cursor and selection, and handles typing, the keyboard, the clipboard and the mouse. `IntegerFieldNode` (same package, `.impl`) is its sibling for whole numbers. Use them for search boxes, names, chat inputs, quantities; use [`MultilineTextFieldNode`](multiline-text-field.md) for several lines. You met the field in [Input Controls](../../essentials/controls.md); this page covers all of it, then the other controls follow.
+`TextFieldNode` is a single-line text input that handles typing, selection and the clipboard; `IntegerFieldNode` is its sibling for whole numbers. Use [MultilineTextFieldNode](multiline-text-field.md) for several lines.
 
-In the examples, the code runs in `UI.init()` and `font` is an `IFont` you loaded (see [Text](../../essentials/text.md)).
-
-## Creating a text field
-
-The field draws its text, placeholder, cursor and selection only: no background. Put it in a [`RectNode`](../visual/rect.md), or draw a background in a subclass (see [Styling the field](#styling-the-field)).
+In the examples, `this.info` is a `TextInfo` built from a loaded font (see [Text and Fonts](../../concepts/text.md)).
 
 ```java
-RectNode
-.create(760, 515, 400, 50)
-.color(Color.DARKGRAY)
-.body(background -> {
-	TextFieldNode
-	.create(10, 0, 380, 50)
-	.info(TextInfo.create(font, 24F, Color.WHITE))
-	.placeholder("Search")
-	.<TextFieldNode>onChange((field, text, value, valid) -> System.out.println("[Search] " + text))
-	.onEnter((field, text) -> System.out.println("[Search] submitted: " + text))
-	.attach(background);
-})
-.attach(this);
+private final StringSignal query = StringSignal.of("");
+
+@Override
+public void init() {
+	RectNode
+	.create(760, 515, 400, 50)
+	.color(Color.DARKGRAY)
+	.body(rect -> {
+		TextFieldNode
+		.create(10, 0, 380, 50)
+		.onEnter((field, text) -> this.query.set(text))
+		.info(this.info)
+		.placeholder("Search")
+		.attach(rect);
+	})
+	.attach(this);
+}
 ```
 
 ![The cursor clicks a gray search field and types a query, then Enter removes the text cursor](../../images/textfield-type.gif "A click focuses the field, typing edits the text, Enter commits and leaves it.")
 
-- `info(TextInfo)` is required: it gives the font, size and color of the text, the placeholder and the cursor.
-- A click on the field focuses it and places the cursor under the pointer; typing then edits the text. Enter commits, leaves the field and calls `onEnter`; Escape cancels the edit.
-- `getText()` returns the raw text, `getValue()` the value it stands for.
+The field draws no background: put it in a `RectNode` or draw one in a subclass. `info(TextInfo)` is required.
 
 ## How input becomes a value
 
 ![Diagram: a keystroke builds a new text; accept decides whether it is kept; onChange receives the text, the corrected value and its validity; the commit on Enter or focus loss writes the corrected value back](../../images/diagram-field-input.png "From a keystroke to a committed value")
 
-Every field converts between its text and a value of type `V` (`String` for text fields, `Integer` for `IntegerFieldNode`):
+`accept` decides whether a keystroke is kept; `onChange` receives the text, the corrected value and its validity. The commit (Enter, focus loss) replaces the text by the formatted value.
 
-1. **Keystroke.** Each typed character, deletion, cut or paste builds the complete new text.
-2. **Accept.** The field keeps the new text only if it is acceptable: the syntax of the field (`IntegerFieldNode`: digits, a leading `-` only when `min < 0`, or empty) and your `accept(Predicate<String>)`. A refused keystroke changes nothing, the cursor does not move. Nothing is rewritten while you type.
-3. **onChange.** Every change of the text, valid or not, calls `onChange((field, text, value, valid) -> ...)`: `text` is the raw text, `value` the corrected value the commit will apply (brought into the bounds; for an empty, `-` or invalid text, the last committed value, or `null` with `allowEmpty(true)`), `valid` tells whether the text is accepted and within the bounds. The bound signal receives `value` too.
-4. **Commit.** Enter, the loss of the focus (a click elsewhere, `focused(false)`, a detach), and immediately the arrow keys, the wheel and a paste: the text is replaced by the corrected value, formatted. `onChange` runs again only if the text changes.
+## Filtering with accept and format
 
-`isValid()` reads the state of the current text at any time.
-
-## Accepting text with accept and format
+`accept(Predicate<String>)` refuses keystrokes whose resulting text fails; `format(UnaryOperator<String>)` transforms the text at the commit.
 
 ```java
 TextFieldNode
 .create(760, 500, 400)
 .format(String::trim)
-.info(TextInfo.create(font, 24F, Color.WHITE))
+.info(this.info)
 .placeholder("Nickname")
 .accept(text -> text.length() <= 12 && text.matches("[A-Za-z ]*"))
-.onChange((field, text, value, valid) -> System.out.println("[Profile] " + value))
 .attach(this);
 ```
 
-![Typing letters and digits in a Nickname field: the digits are refused, the letters are kept](../../images/textfield-accept.gif "accept refuses every keystroke that would make the text invalid")
-
-- `accept(Predicate<String>)` tests the complete text a keystroke would produce; it never rewrites it.
-- `format(UnaryOperator<String>)` (text fields) runs at the commit: `value` in `onChange` is the text after `format`, and the committed text becomes it.
-- `maxTextLength(int)` caps the length (`-1`, the default, means no limit): typing or pasting inserts only what fits.
-- The text keeps only the characters from U+0020 to U+0233, except U+007F and `§` (U+00A7): line breaks, tabs, other control characters and characters above U+0233 are dropped, from typing, pasting and `text(...)` alike.
+![Typing letters and digits in a Nickname field: the digits are refused, the letters are kept](../../images/textfield-accept.gif "accept refuses every keystroke that would make the text invalid.")
 
 ## Numbers with IntegerFieldNode
+
+Bounds apply at the commit; the arrows and the wheel add or subtract `step`.
 
 ```java
 IntegerFieldNode
@@ -72,115 +61,42 @@ IntegerFieldNode
 .max(100)
 .value(42)
 .step(5)
-.info(TextInfo.create(font, 24F, Color.WHITE))
-.onChange((field, text, value, valid) -> System.out.println("[Volume] " + value + (valid ? "" : " (out of range)")))
+.info(this.info)
 .attach(this);
 ```
 
-![An integer field: typing 425 shows out of range, the down arrow commits 95, the wheel steps by 5](../../images/integer-field.gif "Bounds apply at the commit; the arrows and the wheel step by 5")
+![An integer field: typing 425 shows out of range, the down arrow commits 95, the wheel steps by 5](../../images/integer-field.gif "Bounds apply at the commit; the arrows and the wheel step by 5.")
 
-| Behaviour | Rule |
-| --- | --- |
-| While typing | Digits, a leading `-` when `min < 0`, or empty are accepted; no bound applies (`425` stays shown with `max(100)`). |
-| Commit | Above `max` gives `max`, below `min` gives `min`; empty or `-` gives the last committed value (`0`, brought into the bounds, at the start). |
-| `allowEmpty(true)` | An empty field is valid and its value is `null`. |
-| Up / Down arrows, wheel over the field | Add or subtract `step` (default `1`), within the bounds, and commit at once. The wheel is consumed, focused or not. |
-| `value(int)` | Writes a value and commits it. |
+## Binding a signal
 
-Call the `IntegerFieldNode` setters (`min`, `max`, `step`, `value`) before the shared field setters (`info`, `marginHorizontal`...), which return a `FieldNode`.
-
-## Binding a signal with signal
-
-`signal(Signal<V>)` keeps the value and a [signal](../../concepts/signals.md) in sync, both ways:
+`signal(Signal<V>)` keeps the value and a [signal](../../concepts/state.md) in sync both ways.
 
 ```java
 private final IntegerSignal amount = IntegerSignal.of(3);
 
-IntegerFieldNode.create(40, 40, 320, 50).signal(this.amount).info(TextInfo.create(font, 24F, Color.WHITE)).attach(this);
+@Override
+public void init() {
+	IntegerFieldNode.create(40, 40, 320, 50).signal(this.amount).info(this.info).attach(this);
 
-TextNode.create(40, 120).text(Text.create("Doubled: " + this.amount.get() * 2, TextInfo.create(font, 24F, Color.GRAY))).attach(this);
+	TextNode.create(40, 120).text(Text.create("Doubled: " + this.amount.get() * 2, this.info)).attach(this);
+}
 ```
 
-- The field starts on the value of the signal.
-- Each keystroke writes the corrected value into the signal (never `null`); while focused, the field ignores the echo of its own write and keeps the text you are typing.
-- A change of the signal from elsewhere always replaces the text, even during the focus.
-- One signal at a time: a second `signal(...)` replaces the first. A `ComputedSignal` is refused with `IllegalArgumentException` (it is read-only): pass it to `text(...)` or `value(...)`, which follow it one way.
+## Events with onChange, onEnter and onFocus
 
-## Focus, Enter and Escape
+| Callback | Lambda | Fired when |
+|---|---|---|
+| `onChange` | `(field, text, value, valid) -> ...` | Every text change, valid or not; `value` is the corrected value. |
+| `onEnter` | `(field, text) -> ...` | Enter commits and leaves the field. |
+| `onFocus` | `field -> ...` | The focus changes; read `field.isFocused()`. |
 
-| Event | Effect |
-| --- | --- |
-| Press on the field | Focuses it and places the cursor on the clicked character (left or right half). The press is consumed. |
-| Press anywhere else | Commits and leaves the field, drops the selection. |
-| Enter, Numpad Enter | Commits, leaves the field, then calls `onEnter((field, text) -> ...)`. |
-| Escape | Restores the text from before the focus (the bound signal follows), leaves the field, no `onEnter`. In a closeable UI, this Escape does not close the UI; the next one does. |
-| `focused(true)` / `focused(false)` | Focuses / leaves from code. |
-| Tab | Ignored: there is no keyboard navigation between fields. |
+A click elsewhere commits and leaves; Escape restores the previous text. Double click selects a word, triple click everything; Ctrl (Command on macOS) + A, C, X, V work as usual.
 
-`onFocus(field -> ...)` runs when the focus changes, both ways: read `field.isFocused()`. A focused field consumes every key, so the UI keybinds and shortcuts wait until it loses the focus (see [Input and Callbacks](../../concepts/input.md)).
-
-When the program rewrites the text of a focused field (a step, the bound signal, `text(...)`, a commit), the cursor and the selection keep their distance to the end of the text: `9` with the cursor at the end, Up gives `10` with the cursor still at the end.
-
-## Selecting with the mouse
-
-![A double click selects a word, dragging extends the selection word by word, a triple click selects the whole text](../../images/textfield-select.gif "Double click selects a word, triple click the whole field")
-
-| Gesture | Selection |
-| --- | --- |
-| Click | Cursor at the clicked character. |
-| Drag after a click | Character by character. |
-| Double click (within 500 ms and 4 units) | The word under the mouse (separated by spaces); between two spaces, the run of spaces. Dragging then extends word by word. |
-| Triple click | The whole text. |
-| Shift + click | Extends the selection to the clicked position. |
-
-## Keyboard shortcuts
-
-On macOS (`os.name` contains `mac`), the shortcuts use Command and the word moves use Option; elsewhere, both use Control. "Ctrl" stands for that key below.
-
-| Keys | Action |
-| --- | --- |
-| A character | Inserts it at the cursor, replacing the selection. |
-| Left / Right | Moves one character; Ctrl moves by word; Shift extends the selection. |
-| Home / End | Start / end of the text; Shift extends the selection. |
-| Backspace / Delete | Deletes the selection or one character; Ctrl deletes a word. |
-| Up / Down | Steps the value (`IntegerFieldNode`). |
-| Ctrl + A / C / X / V | Select all, copy, cut, paste (the clipboard of the window bridge). A paste commits at once. |
-| Enter / Escape | Commit and leave / cancel and leave. |
-
-Left, Right, Backspace and Delete repeat while held: 500 ms, then every 100 ms.
-
-## Markup in a field
-
-By default the field shows its text raw: a typed `<b>` stays text. `markup(true)` turns on the markups of the `TextInfo`, registered as shown in [Text](../../essentials/text.md): tags take no width, the cursor and the selection stay exact around them, a click lands on the visible character, the arrows cross a tag one character at a time without visible movement, and Ctrl + arrows treat a tag as part of its word. Typing just after an opening tag writes in its style; editing inside a tag breaks it and it shows as text.
-
-## Size, margins and alignment
-
-| Factory | Height |
-| --- | --- |
-| `create(double x, double y, double width)` | The line height of the `TextInfo` plus `marginTop` and `marginBottom`, computed on the first draw. |
-| `create(double x, double y, double width, double height)` | The given height. |
-
-| Property | Default | Role |
-| --- | --- | --- |
-| `marginLeft`, `marginRight` (`marginHorizontal`) | `2` | Inner horizontal padding; the text is clipped between them. |
-| `marginTop`, `marginBottom` (`marginVertical`) | `10` | Inner vertical padding. |
-| `margin(double)` | | The four margins. |
-| `cursorMargin` | `15` | Distance kept between the cursor and the inner edges while the text scrolls. |
-| `horizontalAlign(Align)` | `START` | `CENTER` and `END` apply while the text fits; a longer text scrolls like `START`. |
-| `verticalAlign(Align)` | `CENTER` | `START` / `END` use `marginTop` / `marginBottom`. |
-
-A text wider than the field scrolls horizontally so that the cursor stays `cursorMargin` away from the edges.
+![A double click selects a word, dragging extends the selection word by word, a triple click selects the whole text](../../images/textfield-select.gif "Double click selects a word, triple click the whole field.")
 
 ## Styling the field
 
-| Element | Look |
-| --- | --- |
-| Text | The `TextInfo`. |
-| Placeholder | The `TextInfo` color at 50 % alpha, while the text is empty and the field is not focused. |
-| Cursor | 2 units wide, the line height, the `TextInfo` color, blinking once per second, while focused. |
-| Selection | Translucent blue, `new Color(50, 152, 253, 100)`. |
-
-To draw a background, a focus border or a disabled look, subclass the field and draw before `super.draw`:
+Subclass the field and draw before `super.draw`:
 
 ```java
 public class SearchFieldNode extends TextFieldNode {
@@ -210,68 +126,32 @@ public class SearchFieldNode extends TextFieldNode {
 
 ## Reference
 
-### Factories
-
-| Method | Description |
-| --- | --- |
-| `TextFieldNode.create(double x, double y, double width)`, `create(x, y, width, height)` | A text field. |
-| `IntegerFieldNode.create(double x, double y, double width)`, `create(x, y, width, height)` | An integer field. |
-
-### Shared properties (FieldNode)
-
-Every setter has a value overload and a `Supplier` overload (followed, see [Signals and Reactivity](../../concepts/signals.md)), except `accept`.
+Every setter has a value overload and a `Supplier` overload, except `accept` and `format`.
 
 | Method | Default | Description |
-| --- | --- | --- |
-| `text(String)` | `""` | The text; outside the focus it is committed at once. |
-| `placeholder(String)` | `""` | Shown while empty and unfocused. |
-| `info(TextInfo)` | none | Required style. |
-| `focused(boolean)` | `false` | Focus state. |
-| `accept(Predicate<String>)` | accepts all | Keystroke filter on the complete text. |
-| `allowEmpty(boolean)` | `false` | An empty text is valid, value `null`. |
-| `maxTextLength(int)` | `-1` | Maximum length. |
-| `markup(boolean)` | `false` | Markup of the `TextInfo`. |
-| `margin`, `marginTop`, `marginLeft`, `marginRight`, `marginBottom`, `marginVertical`, `marginHorizontal`, `cursorMargin` | see above | Padding. |
-| `cursorPosition(int)` | | Moves the cursor (clamped). |
+|---|---|---|
+| `create(x, y, width)`, `create(x, y, width, height)` | | Height from the `TextInfo` plus margins, or given. |
+| `info(TextInfo)` | none | Required style of text, placeholder and cursor. |
+| `text(String)`, `placeholder(String)` | `""` | Text, and hint shown while empty and unfocused. |
+| `accept(Predicate<String>)`, `format(UnaryOperator<String>)` | all, identity | Keystroke filter; transformation at the commit. |
+| `maxTextLength(int)`, `allowEmpty(boolean)` | `-1`, `false` | Length cap; empty text valid with a `null` value. |
+| `focused(boolean)` | `false` | Focuses or leaves from code. |
+| `markup(boolean)` | `false` | Applies the markups of the `TextInfo`. |
+| `marginHorizontal(...)`, `marginVertical(...)` | `2`, `10` | Inner padding. |
+| `horizontalAlign(Align)`, `verticalAlign(Align)` | `START`, `CENTER` | Alignment while the text fits. |
+| `min(int)`, `max(int)`, `step(int)`, `value(int)` | | `IntegerFieldNode` bounds, step (`1`) and value. |
 | `signal(Signal<V>)` | | Two-way binding. |
-| `onChange(NodeTextFieldChangeCallback<T, V>)` | | `(field, text, value, valid)` on every change. |
-| `onFocus(NodeTextFieldFocusCallback<T>)` | | `(field)` on focus changes. |
+| `getText()`, `getValue()`, `isValid()`, `isFocused()` | | Raw text, corrected value, validity, focus. |
 
-### Line fields (TextFieldNode, IntegerFieldNode)
+## Good to know
 
-| Method | Description |
-| --- | --- |
-| `horizontalAlign(Align)`, `verticalAlign(Align)` | Alignments. |
-| `onEnter(NodeTextFieldEnterCallback<T>)` | `(field, text)` after Enter. |
-| `format(UnaryOperator<String>)` | `TextFieldNode`: transformation applied at the commit. |
-| `min(int)`, `max(int)`, `step(int)`, `value(int)` | `IntegerFieldNode`: bounds (`Integer.MIN_VALUE` / `MAX_VALUE`), step (`1`), value. |
-
-### Getters
-
-| Method | Description |
-| --- | --- |
-| `getText()`, `getValue()`, `isValid()` | Raw text, corrected value (nullable), validity. |
-| `isFocused()`, `getPlaceholder()`, `getInfo()`, `isMarkup()`, `getMaxTextLength()`, `isAllowEmpty()` | Settings. |
-| `getCursorPos()`, `getSelectionStart()` | Cursor index and selection anchor (`-1` without selection). |
-| `getPressCount()`, `getLastPress()`, `isSelecting()` | Mouse selection state. |
-| `getSignal()`, `getSubscription()` | The bound signal and its subscription. |
-
-### Writing your own field type
-
-Extend `LineFieldNode<V>` (or `FieldNode<V>`) and implement the converter: `V parse(String text)` (`null` when the text gives no value), `String format(V value)`, and optionally `V correct(V value)` (bounds), `V increment(V value, int count)` (step, `null` for no step) and `boolean accepts(String text)` (syntax). `fallback(V)` sets the starting fallback value and `write(V)` writes a value and commits it. See [Custom Nodes](../custom-nodes.md).
-
-## Pitfalls
-
-- A shared field setter in the middle of a chain returns `FieldNode`: call `horizontalAlign`, `onEnter`, `min`... first, or add a witness (`.<TextFieldNode>onChange(...)`).
-- `onChange` fires on invalid texts too: check `valid`, or read `value`, which is always the corrected one.
-- An `IntegerFieldNode` never shows an out-of-range value after a commit, but it does while you type.
-- A field without `info(...)` cannot draw.
+- A shared field setter (`info`, `onChange`) returns a `FieldNode`: call `format`, `onEnter`, `min`, `max` first.
+- A focused field consumes every key: UI keybinds wait until it loses the focus.
+- The text keeps only characters from U+0020 to U+0233: line breaks, tabs and emojis are dropped.
 
 ## See also
 
 - Next: [MultilineTextFieldNode](multiline-text-field.md)
-- [Input Controls](../../essentials/controls.md)
-- [Signals](../../state/signals.md)
-- [Mouse and Keyboard](../../interactions/mouse-and-keyboard.md)
-- [Markup and Text Effects](../../text/markup-and-effects.md)
-- [Callbacks](../../interactions/callbacks.md)
+- [Input](../../concepts/input.md)
+- [Signals and State](../../concepts/state.md)
+- [Text and Fonts](../../concepts/text.md) for markup

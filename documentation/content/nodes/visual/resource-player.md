@@ -1,15 +1,13 @@
 # ResourcePlayerNode
 
-`ResourcePlayerNode` (`dev.joid.lib.ui.node.impl.design.resource`) plays a video or an animated image (GIF, APNG, animated WebP) with playback controls, looping, volume, positional audio and play, pause, stop, end and progress callbacks. Use [`ResourceNode`](resource.md) for still images. [Images and Media](../../essentials/media.md#videos-with-resourceplayernode) introduced it; this page describes the playback in detail.
-
-## Creating a ResourcePlayerNode
+`ResourcePlayerNode` plays a video or an animated image with playback controls, looping, volume and callbacks. Use [ResourceNode](resource.md) for still images.
 
 ```java
 final ResourcePlayerNode player = ResourcePlayerNode
-.create(430, 10, 640, 360)
-.resource(Resource.of(MyUI.class.getResourceAsStream("/videos/intro.mp4")))
-.loop(true)
-.attach(this);
+		.create(430, 10, 640, 360)
+		.resource(Resource.of(new File("videos/intro.mp4")))
+		.loop(true)
+		.attach(this);
 
 super.keybind(() -> {
 	if (player.isPlaying()) {
@@ -20,175 +18,95 @@ super.keybind(() -> {
 }, Key.SPACE);
 ```
 
-![A looping placeholder video that freezes for a moment, then plays on](../../images/player-pause.gif "Space pauses the looping video, a second press resumes it (a short placeholder video stands in for intro.mp4).")
+![A looping placeholder video that freezes for a moment, then plays on](../../images/player-pause.gif "Space pauses the looping video, a second press resumes it.")
 
-`keybind` and `Key` (`dev.joid.lib.input.key`) are the keyboard shortcuts of [Input and Callbacks](../../concepts/input.md#keyboard-shortcuts-with-keybind).
-
-The resource is any [`Resource`](../../resources/resources.md) whose decoder provides an `IResourcePlayback`: videos and animated images (see [Supported Formats](../../resources/formats.md)). A still image is displayed, but the playback controls do nothing on it.
-
-## Starting the playback
-
-The playback starts the first time the node draws its loaded resource with a non-zero size. At that moment the node:
-
-1. applies its volume and audio position to a video;
-2. stops the playback, seeks to `0`, and applies `loop` and `autoplay`;
-3. calls `play()` when `autoplay` is `true`.
-
-`resource(...)` with another resource releases the previous video and starts the new resource the same way on its next draw. With `autoplay(false)`, the playback stays stopped until you call `play()`.
-
-### Size and placeholder
-
-- A node created with `create(x, y)` (0×0) takes the size of the resource's frame in pixels, used as UI units, on the first frame where the resource is loaded; it is drawn from the next frame on.
-- Like `ResourceNode`, a node with a single `0` dimension derives it from the aspect ratio of the frame: `create(x, y, 640, 0)` gets a height of 360 for a 16:9 video.
-- `stretch(StretchType)` fits the frame into the node with `ResourceNode.StretchType` (`STRETCH` by default, `CONTAIN`, `COVER`; see [ResourceNode](resource.md#fitting-with-stretchtype)). The frame is drawn without tint.
-- While there is no resource, while it loads, or when it has no size, the node draws a pulsing grey rectangle (`Color.LOADING()`).
+The playback starts the first time the node draws its loaded resource, and plays at once while `autoplay` is `true` (the default). Sizing, the loading placeholder and `stretch(StretchType)` work as on a [ResourceNode](resource.md): `create(x, y, 640, 0)` gets a height of 360 for a 16:9 video.
 
 ## Controlling the playback
 
 | Method | Description |
-| --- | --- |
-| `play()` | Starts the playback from the beginning when it is stopped or ended, and resumes it where it was when it is paused. |
-| `pause()` | Pauses a running playback and fires `onPause`; does nothing (no callback) when nothing plays. |
-| `resume()` | Resumes a paused playback. |
-| `stop()` | Stops the playback and fires `onStop` right away; the current frame stays displayed. |
-| `seek(double seconds)` / `seekTo(double seconds)` | Moves the playback to a time in seconds. `seekTo` is an alias of `seek`. |
-| `restart()` | Stops, seeks to `0` and plays, then fires `onPlay` right away, even when the playback was already playing. It is the only control that brings a running or paused playback back to the beginning. |
+|---|---|
+| `play()` | Starts from the beginning when stopped or ended; resumes when paused. |
+| `pause()`, `resume()` | Pauses and resumes. |
+| `stop()` | Stops; the current frame stays displayed. |
+| `seek(double seconds)` | Moves to a time in seconds. |
+| `restart()` | Goes back to the beginning and plays, even while playing or paused. |
+| `isPlaying()`, `isPaused()` | Playback state; `false` without playback. |
+| `getDuration()`, `getProgress()` | Duration in seconds, position from `0` to `1`. |
 
-These methods return the node (`ResourcePlayerNode`) and do nothing when the node has no resource with a playback.
+With `autoplay(false)`, the playback stays stopped until you call `play()`. `resource(...)` with another resource releases the previous video and starts the new one.
 
-### Reading the state
+## Events with onProgress and onEnd
 
-| Method | Description |
-| --- | --- |
-| `isPlaying()` | `true` while the playback runs and is not paused. `false` without playback. |
-| `isPaused()` | `true` while paused. `false` without playback. |
-| `getDuration()` | Duration in seconds, `0` without playback. |
-| `getProgress()` | Position as a fraction of the duration, from `0` to `1`; `0` without playback. |
-| `getPlayback()` | `IResourcePlayback` (`dev.joid.lib.resource.playback`) of the current resource, `null` without one. |
-| `getVideo()` | `VideoResourceDecoder` (`dev.joid.lib.resource.decoder.impl`) of the current resource, `null` unless it is a video. |
+The player fires callbacks while it draws. Here `onProgress` drives a [ProgressNode](progress.md) under the video:
 
-The current time in seconds is given by `onProgress`, or read with `getPlayback().getCurrentTime()` once `getPlayback()` is not `null`. The full playback contract (`IResourcePlayback`, video decoding, looping and seeking semantics) is described in [Playback, Video and Audio](../../resources/playback.md).
+```java
+private final BooleanSignal finished = BooleanSignal.of(false);
 
-> NOTE: The playback belongs to the resource's decoder. Resources created from the same source (for example the same URL through `Resource.of`) can share one decoder; two players on such resources play, pause and seek together.
+@Override
+public void init() {
+	final ProgressNode bar = ProgressNode.create(0, 370, 640, 6).background(Color.DARKGRAY).foreground(Color.WHITE).attach(this);
 
-## Loop, autoplay and volume
+	ResourcePlayerNode
+	.create(0, 0, 640, 360)
+	.resource(Resource.of(new File("videos/intro.mp4")))
+	.onProgress((player, progress, currentTime) -> bar.progress((float) progress))
+	.onEnd(player -> this.finished.set(true))
+	.attach(this);
+}
+```
 
-| Method | Default | Description |
-| --- | --- | --- |
-| `loop(boolean loop)` | `false` | Loops the playback. Applies to the current playback right away and again when it starts. |
-| `autoplay(boolean autoplay)` | `true` | Plays as soon as the playback starts. Read when the playback starts. |
-| `volume(float volume)` | `1F` | Volume of a video's audio, `1F` = 100 %. Applies to the current video right away and again when it starts. Animated images have no audio. |
-| `audioGroup(Object audioGroup)` | `null` | Audio group of the engine for a video's audio (see [Audio](../../resources/playback.md#audio)). Applies to the current video right away and again when it starts. |
+![A placeholder video playing above a thin white bar that fills as it plays](../../images/player-progress.gif "onProgress drives the ProgressNode under the video.")
+
+| Callback | Lambda | Fired when |
+|---|---|---|
+| `onPlay` | `player -> ...` | The playback starts or resumes, and on `restart()`. |
+| `onPause` | `player -> ...` | `pause()` pauses a playback. |
+| `onStop` | `player -> ...` | `stop()` is called, or the resource reaches its end (after `onEnd`). |
+| `onEnd` | `player -> ...` | The resource reaches its end while `loop` is `false`. |
+| `onProgress` | `(player, progress, currentTime) -> ...` | Each drawn frame where the position changed; `progress` from `0` to `1`, `currentTime` in seconds. |
 
 ## Positional audio
 
-A video's audio can fade with the distance to a listener, for UIs placed in a 3D world.
-
-| Method | Default | Description |
-| --- | --- | --- |
-| `location(Vector3f location)`, `location(Supplier<Vector3f> location)` | none | Position of the audio source. Without a location, the audio is not attenuated. |
-| `referenceDistance(float distance)` | decoder default (`5F`) | Distance up to which the volume is full. |
-| `maxDistance(float distance)` | decoder default (`50F`) | Distance from which the audio is silent. |
-
-Between the two distances the volume fades quadratically. The listener position comes from `VideoAudioPlayer.setAudioListenerPosition(AudioListenerPosition)` (`dev.joid.lib.video`); without a listener, the audio is not attenuated.
+For UIs placed in a 3D world, the audio fades from `referenceDistance` to `maxDistance` around the listener of `VideoAudioPlayer.setAudioListenerPosition(...)`.
 
 ```java
 VideoAudioPlayer.setAudioListenerPosition(() -> new Vector3f(0F, 1.6F, 0F));
 
 ResourcePlayerNode
 .create(0, 0, 640, 360)
-.resource(Resource.of(MyUI.class.getResourceAsStream("/videos/screen.mp4")))
+.resource(Resource.of(new File("videos/screen.mp4")))
 .location(new Vector3f(10F, 2F, -4F))
 .referenceDistance(3F)
 .maxDistance(30F)
 .attach(this);
 ```
 
-These settings apply to the current video right away and again when the playback starts. They have no effect on animated images.
-
-## Callbacks
-
-```java
-final ProgressNode bar = ProgressNode.create(0, 370, 640, 6).background(Color.DARKGRAY).foreground(Color.WHITE).attach(this);
-
-ResourcePlayerNode
-.create(0, 0, 640, 360)
-.resource(Resource.of(MyUI.class.getResourceAsStream("/videos/intro.mp4")))
-.onPlay(player -> System.out.println("[Intro] playing"))
-.onProgress((player, progress, currentTime) -> bar.progress((float) progress))
-.onStop(player -> System.out.println("[Intro] stopped"))
-.onEnd(player -> System.out.println("[Intro] finished"))
-.attach(this);
-```
-
-![A placeholder video playing above a thin white bar that fills as it plays](../../images/player-progress.gif "onProgress drives the ProgressNode under the video.")
-
-| Method | Lambda | Fired when |
-| --- | --- | --- |
-| `onPlay(NodeResourcePlayerPlayCallback<T>)` | `(node) -> ...` | The playback was not playing on the previous drawn frame and plays on the current one: when it starts, and after `play()` or `resume()` from a stopped or paused state. `restart()` fires it immediately, inside the call. |
-| `onPause(NodeResourcePlayerPauseCallback<T>)` | `(node) -> ...` | `pause()` is called on the node and the resource has a playback. It fires immediately, inside the `pause()` call. |
-| `onStop(NodeResourcePlayerStopCallback<T>)` | `(node) -> ...` | The playback stops: `stop()` is called on the node and the resource has a playback (it fires immediately, inside the `stop()` call), or the resource reaches its end, right after `onEnd`. `restart()` does not fire it. |
-| `onEnd(NodeResourcePlayerEndCallback<T>)` | `(node) -> ...` | The resource reaches its end while `loop` is `false`. `stop()` does not fire it, and it never fires while looping. |
-| `onProgress(NodeResourcePlayerProgressCallback<T>)` | `(node, progress, currentTime) -> ...` | On each drawn frame where the progress changed: while playing, and after a `seek(...)`, also while paused. `progress` goes from `0` to `1`, `currentTime` is in seconds. |
-
-- `onPlay`, `onEnd`, `onProgress` and the `onStop` of the end of the resource are detected while the node draws: a node that is not drawn (hidden, or outside a closed UI) does not fire them. A playback stopped through `getPlayback()` rather than the node's `stop()` is seen the same way, as an end.
-- The callback interfaces live in `dev.joid.lib.ui.node.impl.design.resource.callback`. Each has an `apply(...)` method for the lambda and `pre(...)`/`post(...)` phases taking an `DispatchContext`; the lambda runs in the POST phase ([Input and Callbacks](../../concepts/input.md#how-events-travel)). See [Callbacks](../../interactions/callbacks.md) for the PRE phase.
-- You can register several callbacks of the same kind; they run in registration order.
-- The callback ids are the constants `ResourcePlayerNode.CALLBACK_PLAY`, `CALLBACK_PAUSE`, `CALLBACK_STOP`, `CALLBACK_END` and `CALLBACK_PROGRESS`, usable with `hasCallback(int)`.
-
-## Releasing the video
-
-The node releases its video decoder (decoding thread, audio source) when it is detached: when its UI closes or is rebuilt, or when its parent's children are cleared with `clearChildren()`. Attached again, the node starts its resource from the beginning on its next draw, as a new node does (playing it when `autoplay` is on). `resource(...)` also releases the previous video before switching. See the node lifecycle in [Node Fundamentals](../node-fundamentals.md).
-
 ## Reference
 
-### Factories
-
-| Method | Description |
-| --- | --- |
-| `ResourcePlayerNode.create(double x, double y)` | Creates a player sized by its resource. |
-| `ResourcePlayerNode.create(double x, double y, double width, double height)` | Creates a player with a given box; a `0` dimension follows the resource's aspect ratio. |
-
-### Properties
+Every setter has a value overload and a `Supplier` overload.
 
 | Method | Default | Description |
-| --- | --- | --- |
-| `resource(Resource)`, `resource(Supplier<Resource>)` | `null` | Media to play. Releases the previous video. |
-| `stretch(StretchType)`, `stretch(Supplier<StretchType>)` | `StretchType.STRETCH` | How the frame fills the box. |
-| `autoplay(boolean)`, `autoplay(Supplier<Boolean>)` | `true` | Plays when the playback starts. |
-| `loop(boolean)`, `loop(Supplier<Boolean>)` | `false` | Loops the playback. |
-| `volume(float)`, `volume(Supplier<Float>)` | `1F` | Video audio volume. |
-| `audioGroup(Object)`, `audioGroup(Supplier<?>)` | `null` | Audio group of the engine for the video's audio, such as a sound category of a game; `null` plays in the default group of the engine. |
-| `location(Vector3f)`, `location(Supplier<Vector3f>)` | none | Position of the video's audio source. |
-| `referenceDistance(float)`, `referenceDistance(Supplier<Float>)` | none | Full-volume distance. |
-| `maxDistance(float)`, `maxDistance(Supplier<Float>)` | none | Silent distance. |
+|---|---|---|
+| `create(x, y)`, `create(x, y, width, height)` | | Player sized by its resource, or with a box (`0` follows the aspect ratio). |
+| `resource(Resource)` | `null` | Media to play. |
+| `stretch(StretchType)` | `STRETCH` | `STRETCH`, `CONTAIN` or `COVER`. |
+| `autoplay(boolean)` | `true` | Plays as soon as the playback starts. |
+| `loop(boolean)` | `false` | Loops the playback. |
+| `volume(float)` | `1F` | Volume of the video's audio (`1F` = 100 %). |
+| `audioGroup(Object)` | `null` | Audio group of the engine, such as a sound category of a game. |
+| `location(Vector3f)` | none | Position of the audio source; none means no attenuation. |
+| `referenceDistance(float)`, `maxDistance(float)` | `5F`, `50F` | Full-volume and silent distances. |
 
-Every setter takes a value, an expression that reads signals, a signal or a lambda (see [Signals and Reactivity](../../concepts/signals.md)).
+## Good to know
 
-### Getters
-
-| Method | Description |
-| --- | --- |
-| `getResource()` | The current `Resource`, or `null`. |
-| `getStretchType()` | The current `StretchType`. |
-| `isAutoplay()`, `isLoop()`, `getVolume()` | The configured values. |
-| `getLocation()` | The audio position as a `Vector3f`, or `null`. |
-| `getReferenceDistance()`, `getMaxDistance()` | The configured distances as `Float`, or `null` when not set on the node. |
-| `isResourceStarted()` | `true` once the playback of the current resource has started. |
-| `isWasPlaying()`, `getLastProgress()` | Playing state and progress seen on the previous frame, from which the callbacks are fired. |
-| `isPlaying()`, `isPaused()`, `getDuration()`, `getProgress()`, `getPlayback()`, `getVideo()` | See [Reading the state](#reading-the-state). |
-
-## Pitfalls
-
-- Two players on resources that share a decoder (the same URL through `Resource.of`) play, pause and seek together.
-- `restart()` is the only control that brings a running or paused playback back to the beginning; `play()` resumes.
-- A failed resource plays nothing: no callback fires, and the dev checkerboard is drawn in dev mode.
+- Resources from the same source (the same URL through `Resource.of`) can share a decoder: two players on them play, pause and seek together.
+- The node releases its video when it is detached (its UI closes or is rebuilt); attached again, it starts over.
+- Callbacks other than `onPause` and a direct `stop()` fire while the node draws: a hidden player does not fire them.
 
 ## See also
 
-- Next: [ModelNode and ModelViewerNode](model.md)
+- Next: [ModelNode](model.md)
 - [ResourceNode](resource.md)
-- [Playback, Video and Audio](../../resources/playback.md)
-- [Supported Formats](../../resources/formats.md)
-- [ProgressNode](progress.md)
-- [Callbacks](../../interactions/callbacks.md)
+- [Images and Media](../../concepts/media.md)
+- [Input](../../concepts/input.md) for `keybind`

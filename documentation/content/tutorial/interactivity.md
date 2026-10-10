@@ -1,12 +1,12 @@
 # Tutorial 3: Interactivity and State
 
-In this part the settings screen comes alive: the language list reacts to clicks, the placeholders become real switches and a slider, the screen follows its state through signals, and the values are saved to disk so they survive a restart. It applies [Input and Callbacks](../concepts/input.md), [Signals and Reactivity](../concepts/signals.md), [Input Controls](../essentials/controls.md) and [Saving State](../essentials/saving-state.md) to the screen of part 2.
+In this part the settings screen comes alive: the language list reacts to clicks, the placeholders become real switches and a slider, the screen follows its state through signals, and the values are saved to disk. It applies [Input](../concepts/input.md) and [Signals and State](../concepts/state.md) to the screen of part 2.
 
 You start from the code of [Tutorial 2](layout.md). By the end you add three classes (`ToggleSwitchNode`, `VolumeSliderNode`, `SettingsStore`) and one line to `Main`.
 
 ## Step 1: react to a click with onClick
 
-Start with the language list: give each row an `onClick` callback, as in [Input and Callbacks](../concepts/input.md), that prints its language:
+Start with the language list: give each row an `onClick` callback that prints its language:
 
 ```java
 RectNode
@@ -19,17 +19,17 @@ RectNode
 .attach(list);
 ```
 
-Run the program and click the rows: the console prints the language you clicked. Each lambda captures the `language` of its loop turn, so every row knows its own language. `color(...)` stays before `onClick(...)` in the chain, following the chaining rule of [Nodes and the Node Tree](../concepts/nodes.md): the setters of `RectNode` first, then the setters that every node shares.
+Click the rows: the console prints the language you clicked. Each lambda captures the `language` of its loop turn. `color(...)` stays before `onClick(...)`: the setters of `RectNode` first, then those every node shares (see [Nodes](../concepts/nodes.md)).
 
 ## Step 2: keep the selection in a signal
 
-The selection is state, so it goes in a signal ([Signals and Reactivity](../concepts/signals.md)), a field of `SettingsUI`:
+The selection is state, so it goes in a signal, a field of `SettingsUI`:
 
 ```java
 private final StringSignal language = StringSignal.of("English");
 ```
 
-`"English"` is the default value of the `StringSignal` (`dev.joid.lib.signal.impl.primitive`). Write the click into the signal, and give each row a dot that shows while its language is the selected one:
+Write the click into the signal, and give each row a dot that shows while its language is the selected one:
 
 ```java
 RectNode
@@ -43,11 +43,11 @@ RectNode
 .attach(list);
 ```
 
-- `CircleNode.create(x, y, diameter)` (`dev.joid.lib.ui.node.impl.design.shape`) draws a filled circle.
+- `CircleNode.create(x, y, diameter)` draws a filled circle.
 - `this.language.map(...)` derives a signal from `language`: `true` for the row of the selected language. `visible(...)` follows it, so the dot shows and hides when `language` changes.
-- `map` is the right tool here because the loop variable `language` decides the result. When the value depends only on signals and fields, you write the plain expression instead, as the next step does.
+- `map` fits here because the loop variable `language` decides the result. When the value depends only on signals and fields, write the plain expression instead, as the next step does.
 
-Click "Deutsch": the click sets the signal, the dot of English hides and the dot of Deutsch shows. You never told a row to repaint, and no node is rebuilt: you changed the state, and the values that depend on it followed.
+Click "Deutsch": the dot of English hides and the dot of Deutsch shows. No node is rebuilt: you changed the state, and the values that depend on it followed.
 
 ![Clicking the Deutsch row moves the dot from English to Deutsch](../images/tutorial-language-click.gif "The click sets the signal; the dots follow it")
 
@@ -55,11 +55,11 @@ Click "Deutsch": the click sets the signal, the dot of English hides and the dot
 
 ## Step 3: input controls
 
-The controls handle the input and the value, and you draw them, as [Input Controls](../essentials/controls.md) showed with a checkbox. The screen needs two of them: an on/off switch and a slider.
+Controls handle the input and the value; you draw them. The screen needs two: an on/off switch and a slider.
 
 ### An on/off switch with CheckboxNode
 
-`CheckboxNode` (`dev.joid.lib.ui.node.impl.structure.checkbox`) flips between checked and unchecked on each click. Here it is drawn as a switch: a track and a knob that moves to the right when checked:
+`CheckboxNode` flips between checked and unchecked on each click. Here it is drawn as a switch: a track and a knob that moves to the right when checked:
 
 ```java
 package com.example.settings;
@@ -89,12 +89,11 @@ public class ToggleSwitchNode extends CheckboxNode {
 }
 ```
 
-- Like the checkbox of Input Controls, the switch has a `protected` constructor and a static `create(...)` factory, like every node.
-- `draw` runs every frame. It draws in the coordinate space of the parent, so the position of the node is `super.getX()`, `super.getY()`. `DrawUtils.SHAPE` (`dev.joid.lib.draw`) draws the shapes; see [Shapes](../drawing/shapes.md) for the others.
+The switch has a `protected` constructor and a static `create(...)` factory, like every node. `draw` runs every frame in the coordinate space of the parent, so the node is at `super.getX()`, `super.getY()`. `DrawUtils.SHAPE` draws the shapes (see [Drawing](../drawing/drawing.md)).
 
 ### A slider with IntegerSliderNode
 
-A slider has two parts to draw. `IntegerSliderNode` (`dev.joid.lib.ui.node.impl.structure.slider.impl`) picks an integer by dragging a thumb along a track: you draw the track in `drawSlider`, and the thumb is a `SliderThumbNode` (`dev.joid.lib.ui.node.impl.structure.slider`) that draws itself in `drawThumb`, given to the slider with `thumb(...)`:
+`IntegerSliderNode` picks an integer by dragging a thumb along a track: you draw the track in `drawSlider`, and the thumb is a `SliderThumbNode` that draws itself in `drawThumb`, given to the slider with `thumb(...)`:
 
 ```java
 package com.example.settings;
@@ -135,7 +134,7 @@ public class VolumeSliderNode extends IntegerSliderNode {
 }
 ```
 
-The thumb is a child of the slider: the slider centers it vertically and moves it along the track. Pressing anywhere on the track jumps the cursor under the mouse and starts dragging it; on release, the cursor snaps onto the position of the chosen value.
+The slider centers the thumb vertically and moves it along the track; pressing anywhere on the track jumps the thumb under the mouse and starts a drag.
 
 ### Connecting the controls to signals
 
@@ -164,30 +163,30 @@ ToggleSwitchNode.create(notifications.aw(-100), 18, 76, 36).signal(this.notifica
 
 | Code | What it does |
 | --- | --- |
-| `signal(this.music)` | Binds the switch to the signal both ways, as in [Input Controls](../essentials/controls.md): the switch takes the value of the signal, each click writes the new state into it, and a value set elsewhere moves the switch. |
-| `values(0, 100, 80)` | Gives the slider the integers from 0 to 100. The last number is the initial value; the binding then applies the value of the signal. |
+| `signal(this.music)` | Binds the switch to the signal both ways: each click writes the new state, and a value set elsewhere moves the switch. |
+| `values(0, 100, 80)` | The integers from 0 to 100, starting at 80; the binding then applies the value of the signal. |
 | `signal(this.volume)` | Binds the slider the same way: each new value is written into the signal. |
 | `visible(this.music)` | A boolean signal goes as it is to `visible(...)`: the Volume row shows only while the music is on. |
 | `Text.create(this.volume.get() + " %", ...)` | A plain expression that reads a signal: JOID follows it and recomputes the text each time `volume` changes, so "80 %" follows the slider. |
 
-Turn the music off: the Volume row disappears and the next sections move up, because a `FlexNode` gives no room to hidden children. Turn it on again and the row comes back with the slider where you left it.
+Turn the music off: the Volume row disappears and the next sections move up, because a `FlexNode` gives no room to hidden children.
 
 ![The Music switch is turned off and on, hiding then showing the Volume row, the slider is dragged from 80 % to 65 %, and the Notifications switch is turned on](../images/tutorial-controls.gif "Hidden rows give their room back; the value text follows the signal written by the slider")
 ## Step 4: persist the settings with a store
 
-Close the window and start the program again: every value is back to its default. The signals live in the UI, and the UI starts from scratch on each launch. To keep them, move them into a `PERMANENT` store, the store context of [Saving State](../essentials/saving-state.md) that is saved to a file between runs. Create `SettingsStore`, with one signal per setting:
+Restart the program: every value is back to its default, because the signals live in the UI. To keep them, move them into a store with the `PERMANENT` scope, saved to a file between runs. Create `SettingsStore`, with one signal per setting:
 
 ```java
 package com.example.settings;
 
 import com.google.gson.JsonObject;
 
-import dev.joid.lib.ui.core.hook.store.UIStore;
-import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
-import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.core.hook.store.UIStore;
+import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 
 @UIStoreData(id = "settings", scope = StoreScope.PERMANENT)
 public class SettingsStore extends UIStore {
@@ -240,9 +239,8 @@ public class SettingsStore extends UIStore {
 }
 ```
 
-- `@UIStoreData` is required on every store. `id` names the file: `config/store/settings.store` in the working directory (the `joid.config` system property changes the folder).
+- `@UIStoreData` is required on every store. `id` names the file: `config/store/settings.store` in the working directory.
 - `load(JsonObject)` runs once, when the store is created and its file exists; `save(JsonObject)` fills the JSON before each write. A value missing from the file keeps its default.
-- The store needs a public constructor that accepts the arguments of `useStore`, here none: the default constructor.
 
 In `SettingsUI`, replace the four signal fields with the store:
 
@@ -250,36 +248,25 @@ In `SettingsUI`, replace the four signal fields with the store:
 private final SettingsStore settings = super.useStore(SettingsStore.class);
 ```
 
-then replace `this.music` with `this.settings.getMusic()`, `this.volume` with `this.settings.getVolume()`, and so on. `useStore` creates the store the first time, reading its file, and returns the same instance afterwards; the signals of the store are followed exactly like the fields were.
+then replace `this.music` with `this.settings.getMusic()`, `this.volume` with `this.settings.getVolume()`, and so on. `useStore` creates the store the first time, reading its file, and returns the same instance afterwards.
 
-JOID writes the permanent stores when a UI closes, so pressing `Escape` saves them. Closing the window while the screen is open does not close the UI: save the stores yourself when the loop ends. In `Main`, add `UIStoreHook.saveAll()` (`dev.joid.lib.ui.core.hook.store`) after the loop:
+JOID writes the stores when a UI closes, so `Escape` saves them. Closing the window does not close the UI: in `Main`, save the stores with `UIStoreHook.saveAll()` when the loop ends:
 
 ```java
-private void loop() {
-	while (!GLFW.glfwWindowShouldClose(this.window)) {
-		if (GLFW.glfwGetWindowAttrib(this.window, GLFW.GLFW_ICONIFIED) == GLFW.GLFW_TRUE) {
-			GLFW.glfwWaitEvents();
-			continue;
-		}
-
-		GLFW.glfwPollEvents();
-		this.flushPendingKey();
-
-		this.bridge.update();
-		BridgeHandler.RENDER.get().clearColor(0.1F, 0.1F, 0.1F, 1F);
-		this.bridge.draw();
-		GLFW.glfwSwapBuffers(this.window);
-	}
-
-	UIStoreHook.saveAll();
-	GLFW.glfwDestroyWindow(this.window);
-	GLFW.glfwTerminate();
+while (!GLFW.glfwWindowShouldClose(window)) {
+	GLFW.glfwPollEvents();
+	bridge.frame();
+	GLFW.glfwSwapBuffers(window);
 }
+
+UIStoreHook.saveAll();
+GLFW.glfwDestroyWindow(window);
+GLFW.glfwTerminate();
 ```
 
-The rest of `Main` is unchanged; add `import dev.joid.lib.ui.core.hook.store.UIStoreHook;`.
+Add `import dev.joid.lib.ui.core.hook.store.UIStoreHook;`; the rest of `Main` is unchanged.
 
-> TIP: A store fits these settings because they are signals that other screens of the application could share. For a few plain fields of one UI class, such as the selected tab, `@UIProperty` of [Saving State](../essentials/saving-state.md) is simpler.
+> TIP: A store fits signals that other screens could share. For a few plain fields of one UI class, such as the selected tab, `@UIProperty` is simpler (see [Signals and State](../concepts/state.md)).
 
 ## The complete code
 
@@ -380,22 +367,14 @@ public final class SettingsUI extends UI {
 
 ## What you should see
 
-The rows hold working controls: two switches, a slider with its value on the right, and a clickable language list. Change a few values, close the window and start the program again: the screen opens with your values. The file `config/store/settings.store` holds them as JSON, for example `{"music":true,"volume":65,"language":"Deutsch","notifications":true}`.
+Change a few values, close the window and start again: the screen opens with your values. The file `config/store/settings.store` holds them as JSON, for example `{"music":true,"volume":65,"language":"Deutsch","notifications":true}`.
 
 ![The settings card with the Music switch on, the Volume slider at 65 %, the Notifications switch on and the dot on Deutsch](../images/tutorial-interactivity.png "These values come back from config/store/settings.store on the next launch")
 
-## Recap
-
-- Callbacks such as `onClick` are lambdas registered on a node; an input callback consumes the event it handles.
-- A `Signal<T>` holds state. A setter that receives a signal, a `map(...)` of a signal or an expression that reads signals follows them; a boolean signal goes as it is to `visible(...)`.
-- Input controls are abstract: you subclass `CheckboxNode`, `IntegerSliderNode` and the others, and only draw them. `signal(...)` binds a control to a signal both ways.
-- A `PERMANENT` store keeps signals between runs; `UIStoreHook.saveAll()` saves it when the application exits.
-
 ## See also
 
-- Next: [Tutorial 4: Polish](polish.md) gives the screen its final look.
-- [Signals and Reactivity](../concepts/signals.md)
-- [Input Controls](../essentials/controls.md)
-- [Saving State](../essentials/saving-state.md)
+- Next: [Tutorial 4: Polish](polish.md)
+- [Input](../concepts/input.md)
+- [Signals and State](../concepts/state.md)
 - [SliderNode](../nodes/input/slider.md)
-- [Stores](../state/stores.md)
+- [CheckboxNode](../nodes/input/checkbox.md)

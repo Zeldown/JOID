@@ -1,78 +1,52 @@
 # Component Catalog
 
-Every node JOID ships, grouped by purpose, with what to use it for. You have used several of them in the Tutorial; this section describes each one in detail, starting with this catalog and with [Building a UI Kit](ui-kit.md), which draws the interactive ones in your own style.
+Every component JOID ships is a node. Display nodes draw themselves; input and data nodes own the state and the behavior but leave the drawing to your subclass, so your UI keeps its own look.
 
-![A grid of cards, one per component: rectangle, circle, text, image, progress bar, flex, grid, scroll area, chart, text field, checkbox, toggle, switch, slider and selector](../images/components-catalog.png "The components drawn with the neutral demo kit; your kit gives them your own look.")
+![A grid of fifteen component thumbnails: RectNode, CircleNode, TextNode, ResourceNode, ProgressNode, FlexNode, GridNode, overflow and scrolling, ChartNode, TextFieldNode, CheckboxNode, ToggleNode, SwitchNode, SliderNode and SelectorNode](../images/components-catalog.png "The components JOID ships, drawn by the demo kit.")
 
-JOID is design-neutral: no component imposes a look. The display and layout nodes draw plain shapes, text and images that you color and style. The input and data components marked abstract handle the state, the input and the values, and leave the drawing to a small subclass you write once. Those subclasses are your UI kit: your screens use them with the same code whatever kit draws them, so another kit gives the same screens a different design. [Building a UI Kit](ui-kit.md) shows how; each component page starts with a subclass you can copy.
+Every component is created with a factory, configured with a chain of setters and attached to a parent (`this.info` is a `TextInfo` built from a loaded font, see [Text and Fonts](../concepts/text.md)):
+
+```java
+RectNode
+.create(100, 100, 400, 120)
+.color(Color.decode("#DDDDDD"))
+.body(rect -> {
+	TextNode.create(0, 0, 400, 120).text(Text.create("Hello, JOID", this.info, Align.CENTER, Align.CENTER)).attach(rect);
+})
+.attach(this);
+```
+
+## Components
+
+| Component | Kind | Use it for | Preview |
+|---|---|---|---|
+| [RectNode](../nodes/visual/rect.md) | Display | Backgrounds, cards, buttons, separators, click areas. | [image](../images/rect-basic.png) |
+| [CircleNode](../nodes/visual/circle.md) | Display | Dots, avatar placeholders, status indicators. | [image](../images/circle-basic.png) |
+| [TextNode](../nodes/visual/text.md) | Display | Labels, wrapped paragraphs, truncated lines. | [image](../images/text-modes.png) |
+| [ResourceNode](../nodes/visual/resource.md) | Display | Images, SVG, animated GIF, APNG and WebP. | [image](../images/resource-stretch.png) |
+| [ResourcePlayerNode](../nodes/visual/resource-player.md) | Display | Videos and animations with playback control. | [image](../images/player-progress.gif) |
+| [ModelNode](../nodes/visual/model.md) | Display | 3D models, still or in an interactive viewer. | [image](../images/model-node.png) |
+| [ProgressNode](../nodes/visual/progress.md) | Display | Loading bars, health bars, gauges. | [image](../images/progress-directions.png) |
+| [TextFieldNode](../nodes/input/text-field.md) | Input | Single-line text and whole numbers. | [image](../images/textfield-type.gif) |
+| [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | Input | Text areas that wrap and scroll. | [image](../images/multiline-type.gif) |
+| [SliderNode](../nodes/input/slider.md) | Input, you draw | One value out of a range or a list. | [image](../images/slider-drag.gif) |
+| [CheckboxNode](../nodes/input/checkbox.md) | Input, you draw | A yes / no setting. | [image](../images/checkbox-click.gif) |
+| [ToggleNode](../nodes/input/toggle.md) | Input, you draw | Two sides that carry a value each. | [image](../images/toggle-click.gif) |
+| [SwitchNode](../nodes/input/switch.md) | Input, you draw | One state out of several: segments, tabs, pickers. | [image](../images/switch-click.gif) |
+| [SelectorNode](../nodes/input/selector.md) | Input, you draw | Dropdown lists. | [image](../images/selector-pick.gif) |
+| [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | Layout | Lists the user sorts by dragging. | [image](../images/reorder-drag.gif) |
+| [ChartNode](../nodes/data/chart.md) | Data, you draw | Line, bar and area charts. | [image](../images/chart-line.png) |
+| [RadarChartNode](../nodes/data/radar-chart.md) | Data, you draw | Radar (spider) charts. | [image](../images/chart-radar.png) |
+
+ContainerNode, FlexNode, GridNode and scrolling are covered in [Layout](../concepts/layout.md).
 
 ## What every component shares
 
-Every component is a node, so everything [Nodes and the Node Tree](../concepts/nodes.md) teaches applies to it: a factory, `attach`, `body`, the chaining rule, `visible`, `zindex`, the `on...` callbacks of [Input and Callbacks](../concepts/input.md), the effects of [Styling and Effects](../concepts/styling.md), and setters that take a value or follow a signal ([Signals and Reactivity](../concepts/signals.md)). The component pages only describe what each node adds.
-
-Positions and sizes are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it.
-
-![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
-
-See [The Virtual Canvas](../concepts/canvas.md).
-
-## Layout
-
-Nodes that group and place other nodes. They draw nothing themselves.
-
-| Component | Use it for |
-| --- | --- |
-| [ContainerNode](../nodes/layout/container.md) | Grouping children under a common origin to move, hide, clip, scroll, rebuild or load them together. |
-| [FlexNode](../nodes/layout/flex.md) | Lists, toolbars and menus: children one after the other in a column or a row. |
-| [GridNode](../nodes/layout/grid.md) | Tiles that wrap into rows: inventories, galleries, icon pickers. |
-| [ReorderableFlexNode](../nodes/layout/reorderable-flex.md) | A column or row the user reorders by dragging, with locked slots. |
-| [Overflow and Scrolling](../nodes/layout/overflow-and-scroll.md) | Clipping or scrolling the children of any node, with the wheel, from code or with a `ScrollbarNode`. |
-
-## Display
-
-Nodes that draw something.
-
-| Component | Use it for |
-| --- | --- |
-| [RectNode](../nodes/visual/rect.md) | Backgrounds, cards, buttons, separators, click areas. |
-| [CircleNode](../nodes/visual/circle.md) | Dots, status indicators, avatar placeholders. |
-| [TextNode](../nodes/visual/text.md) | A line, a truncated line or a wrapped paragraph of text. |
-| [ResourceNode](../nodes/visual/resource.md) | Images, SVGs and animated images, fitted with STRETCH, CONTAIN or COVER. |
-| [ResourcePlayerNode](../nodes/visual/resource-player.md) | Videos and animations with playback control and sound. |
-| [ModelNode and ModelViewerNode](../nodes/visual/model.md) | 3D models, still or turned with the mouse. |
-| [ProgressNode](../nodes/visual/progress.md) | Loading bars, health bars, gauges. |
-
-## Inputs
-
-Nodes the user edits. Each one keeps its value, calls `onChange` on every change, follows a value or a signal given to its value setter, and binds both ways to a signal with `signal(...)`, as in [Input Controls](../essentials/controls.md).
-
-| Component | Abstract | Use it for |
-| --- | --- | --- |
-| [TextFieldNode](../nodes/input/text-field.md) | No | A single line of text or a number (`IntegerFieldNode`): names, search boxes, amounts. |
-| [MultilineTextFieldNode](../nodes/input/multiline-text-field.md) | No | A text area that wraps and scrolls. |
-| [SliderNode](../nodes/input/slider.md) | Yes | Picking a number or a value from an ordered set. |
-| [CheckboxNode](../nodes/input/checkbox.md) | Yes | A yes / no choice. |
-| [ToggleNode](../nodes/input/toggle.md) | Yes | A two-state switch that maps each state to a value. |
-| [SwitchNode](../nodes/input/switch.md) | Yes | Tabs and segmented controls: one state out of several. |
-| [SelectorNode](../nodes/input/selector.md) | Yes | A dropdown list. |
-
-## Data
-
-| Component | Abstract | Use it for |
-| --- | --- | --- |
-| [ChartNode](../nodes/data/chart.md) | Yes | Line charts over labeled values. |
-| [RadarChartNode](../nodes/data/radar-chart.md) | Yes | Radar (spider) charts. |
-
-## Not finding what you need
-
-- Combine nodes: a button is a `RectNode` with a `TextNode` child and an `onClick` callback.
-- Change how any node looks with [effects](../concepts/styling.md#effects): rounded corners, borders, blur, shadows, masks, transforms.
-- Draw anything yourself in a [custom node](../nodes/custom-nodes.md).
+Every component is a `Node`: `attach`, `body`, `visible`, `zindex`, `onClick`, `effect` and the other node setters work on all of them, and every setter accepts a plain value, an expression that reads signals, or a `Supplier`. Positions and sizes are in units of the virtual canvas. The components marked "you draw" are subclassed once in your [UI kit](ui-kit.md).
 
 ## See also
 
 - Next: [Building a UI Kit](ui-kit.md)
-- [Nodes and the Node Tree](../concepts/nodes.md)
-- [Input Controls](../essentials/controls.md)
-- [Node Fundamentals](../nodes/node-fundamentals.md): the complete node API, in the Guides.
-- [Custom Nodes](../nodes/custom-nodes.md)
+- [Nodes](../concepts/nodes.md)
+- [Layout](../concepts/layout.md)
+- [Styling](../concepts/styling.md)

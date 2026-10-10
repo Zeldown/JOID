@@ -1,43 +1,39 @@
 # Tutorial 1: Project Setup
 
-This four-part tutorial puts what [Core Concepts](../concepts/canvas.md) and the Essentials taught together in one real application: a settings screen. In this first part you turn the [Quick Start](../getting-started/quick-start.md) project into that application: a new package, a bold face in the font, and a first screen in place of the counter. Each later part starts from the code of the previous one.
+This four-part tutorial puts the Core Concepts together in one real application: a settings screen. In this first part you turn the [Quick Start](../getting-started/quick-start.md) project into that application: a new package, a bold face in the font, and a first screen. Each later part starts from the code of the previous one.
 
 ## What you build
 
 By the end of [Tutorial 4](polish.md), the application shows a settings card centered in the window:
 
 - a header with an icon, the title "Settings" and a hint;
-- an **Audio** section with a **Music** on/off switch and a **Volume** slider whose row hides while the music is off;
+- an **Audio** section with a **Music** switch and a **Volume** slider whose row hides while the music is off;
 - a **General** section with a **Notifications** switch;
 - a **Language** list where the selected entry carries a dot;
-- values saved to disk and restored on the next launch;
-- hover colors, tooltips, rounded corners, a gradient background, a sliding switch and an opening animation.
+- values saved to disk, hover colors, tooltips, rounded corners, a gradient background, a sliding switch and an opening animation.
 
 ![The finished settings screen: a rounded light gray card on a dark gradient, with a header, Music and Notifications switches, a Volume slider at 80 % and a language list with English selected](../images/tutorial-overview.png "The settings screen at the end of Tutorial 4")
 
-JOID draws nothing by itself: every color, size and shape of this screen is written in the tutorial code, in the neutral grays of the documentation. Change the constants and the same code draws your own design.
+JOID draws nothing by itself: every color, size and shape of this screen is written in the tutorial code, in neutral grays. Change the constants and the same code draws your own design.
 
 | Part | You put into practice |
 | --- | --- |
 | 1. Project Setup (this page) | The Quick Start project as a base, a font family, a first screen configured with `@UIData`. |
-| [2. Building the Layout](layout.md) | Nodes and `body`, the size helpers, anchors, nested `FlexNode` columns, text and an image. |
-| [3. Interactivity and State](interactivity.md) | `onClick`, signals followed by the nodes, controls you draw (a switch, a slider), a permanent store. |
-| [4. Polish](polish.md) | A gradient background, effects, hover animation, tooltips drawn by the UI, a `TweenAnimator`, a transition. |
-
-The application has these classes, all in the package `com.example.settings`:
+| [2. Building the Layout](layout.md) | Nodes and `body`, size helpers, anchors, nested `FlexNode` columns, text and an image. |
+| [3. Interactivity and State](interactivity.md) | `onClick`, signals followed by nodes, controls you draw, a permanent store. |
+| [4. Polish](polish.md) | A gradient, effects, hover animation, tooltips, a `TweenAnimator`, a transition. |
 
 | Class | Role | Written in |
 | --- | --- | --- |
 | `Main` | Creates the window, registers the backend and the bridge, loads JOID and the theme, runs the frame loop. | Quick Start, adapted in parts 1 and 3 |
-| `AppUIBridge` | Hosts the open UIs and feeds them the input. | Quick Start, unchanged |
+| `AppUIBridge` | Hosts the open UIs and clears the screen. | Quick Start, unchanged |
 | `Theme` | The font and the colors of the application. | Quick Start, grows in parts 1, 2 and 4 |
 | `SettingsUI` | The settings screen. | Part 1, grows in every part |
-| `ToggleSwitchNode`, `VolumeSliderNode` | The on/off switch and the slider. | Part 3 |
-| `SettingsStore` | The settings values, saved to disk. | Part 3 |
+| `ToggleSwitchNode`, `VolumeSliderNode`, `SettingsStore` | The switch, the slider and the saved values. | Part 3 |
 
 ## Step 1: start from the Quick Start project
 
-Make a copy of the project of the [Quick Start](../getting-started/quick-start.md), with its `-dev` jar: the developer tools help while you build the screen, and you switch to the `-prod` jar when you ship. Move `Main`, `AppUIBridge` and `Theme` to the package `com.example.settings`, and delete `CounterUI`: `SettingsUI` takes its place in step 3. Then point the `application` block of `build.gradle` to the new main class:
+Copy the [Quick Start](../getting-started/quick-start.md) project with its `-dev` jar: the developer tools help while you build. Move `Main`, `AppUIBridge` and `Theme` to the package `com.example.settings`, delete `CounterUI`, and point `build.gradle` to the new main class:
 
 ```groovy
 application {
@@ -48,18 +44,16 @@ application {
 }
 ```
 
-Finally, put these files in the working directory of the program (the project folder when you use `gradle run`):
+Put these files in the working directory (the project folder with `gradle run`):
 
 | File | Content |
 | --- | --- |
-| `fonts/Montserrat-Regular.ttf`, `fonts/Montserrat-Bold.ttf` | A regular and a bold face of any TrueType or OpenType family. The tutorial uses Montserrat; any family works if you adjust the file names in `Theme`. |
+| `fonts/Montserrat-Regular.ttf`, `fonts/Montserrat-Bold.ttf` | A regular and a bold face of any TrueType or OpenType family; adjust the names in `Theme` for another family. |
 | `icons/settings.png` | A 48×48 icon (PNG or SVG), shown in the header from part 2. |
-
-`AppUIBridge` does not change in the whole tutorial: it keeps every open UI in a list, as in the Quick Start. If your Quick Start runs on LWJGL 2 or Vulkan, keep its `Main` too: the changes of this tutorial are the same on every backend.
 
 ## Step 2: add the bold face to Theme
 
-The screen has bold titles, so the font needs a bold face. Passing several files to `MsdfFontLoader.load(...)` builds one family, as [Text](../essentials/text.md) showed. Replace `load()` in `Theme`:
+The screen has bold titles, so the font needs a bold face. Several files passed to `MsdfFontLoader.load(...)` build one family. Replace `load()` in `Theme`:
 
 ```java
 public static void load() {
@@ -67,7 +61,7 @@ public static void load() {
 }
 ```
 
-A `TextInfo` that asks for `FontWeight.BOLD` draws the bold face; any other weight picks the closest loaded face. The first launch generates the atlas of the new file, which takes a few seconds; later launches read the cache. The UIs keep reading the font with `Theme.getFont()`, so they keep a constructor without arguments, which `Ctrl+Shift+R` needs to recreate a UI.
+A `TextInfo` that asks for `FontWeight.BOLD` draws the bold face; any other weight picks the closest loaded face. The first launch generates the atlas of the new file, which takes a few seconds; later launches read the cache.
 
 ## Step 3: write the settings screen
 
@@ -97,38 +91,32 @@ public final class SettingsUI extends UI {
 }
 ```
 
-- `@UIData(backgroundColor = "#18181B")` replaces the default translucent dark gray behind the UI with an opaque near-black. The other options of a UI class are in [UIs and Their Lifecycle](../concepts/uis.md).
+- `@UIData(backgroundColor = "#18181B")` replaces the default translucent background of the UI with an opaque near-black.
 - `TextInfo.create(font, weight, size, color)` is the bold style of the title. (960, 540) is the center of the canvas, and `anchor(Align.CENTER)` puts the center of the text there.
 
 ## Step 4: open it from Main
 
-`Main` keeps the window, the startup order, the input forwarding and the frame loop of the Quick Start, which [The Frame Loop](../concepts/frame-loop.md) explains. Only two lines change. The window gets its title:
+`Main` keeps the window, the startup order, the input forwarding and the frame loop of the Quick Start. Only two lines change: the window title,
 
 ```java
 final long window = GLFW.glfwCreateWindow(1280, 720, "Settings", 0L, 0L);
 ```
 
-and `JOID.open` receives the settings screen:
+and the screen that `JOID.open` receives:
 
 ```java
 JOID.open(new SettingsUI());
 ```
 
-The complete `Main` is at the end of this page.
-
 ## Step 5: run it
 
-Run `gradle run`, or the `Main` class from your IDE (with `-XstartOnFirstThread` on macOS). You see a window filled with near-black, with "Settings" in bold white at its center:
+Run `gradle run`, or `Main` from your IDE (with `-XstartOnFirstThread` on macOS). The window is near-black, with "Settings" in bold white at its center:
 
 ![A near-black window with the word Settings in bold white at its center](../images/tutorial-setup-window.png "The first UI: one centered text node on the UI background")
 
-Resize the window: the title stays centered and scales with it. Positions are units of the 1920×1080 virtual canvas, fitted to the window without stretching; wider or taller windows show extra canvas around it.
+Resize the window: the title stays centered and scales with it, because positions are units of the 1920×1080 canvas (see [Canvas and Scaling](../concepts/canvas.md)). Press `Escape`: the screen closes, and only the clear color of `AppUIBridge` remains.
 
-![The 1920×1080 canvas fitted into a 16:9, a 21:9 and a 4:3 window; the extra visible area is hatched](../images/diagram-canvas.png "One canvas, fitted into every window")
-
-See [The Virtual Canvas](../concepts/canvas.md). Press `Escape`: the screen closes, as a UI does by default (its `closeable` option is `true`), and only the gray clear color of the loop remains.
-
-> TIP: Start JOID with `JOID.inst().setDevMode(true).load()` instead of `JOID.inst().load()` while you follow the next parts: `Ctrl+R` or `F5` then reruns `init()` after each change, and `F3` shows the developer panel. See [Developer Tools](../concepts/dev-tools.md).
+> TIP: Start JOID with `JOID.inst().setDevMode(true).load()` while you follow the next parts: `Ctrl+R` or `F5` reruns `init()` after each change, and `F3` shows the developer panel.
 
 ## The complete code
 
@@ -167,26 +155,15 @@ package com.example.settings;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.system.Platform;
 
 import dev.joid.backend.lwjgl3.Backend;
+import dev.joid.backend.lwjgl3.GlContextRequest;
 import dev.joid.base.glfw.input.GlfwInputForwarder;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 
 public final class Main {
-
-	private final long window;
-	private final AppUIBridge bridge;
-	private final GlfwInputForwarder input;
-
-	private Main(final long window, final AppUIBridge bridge) {
-		this.window = window;
-		this.bridge = bridge;
-		this.input = GlfwInputForwarder.create(bridge);
-	}
 
 	public static void main(final String[] args) {
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -194,13 +171,7 @@ public final class Main {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
 
-		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
-		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, Platform.get() == Platform.MACOSX ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
-		GLFW.glfwWindowHint(GLFW.GLFW_DEPTH_BITS, 24);
-		GLFW.glfwWindowHint(GLFW.GLFW_STENCIL_BITS, 8);
-
+		GlContextRequest.CORE_33.apply();
 		final long window = GLFW.glfwCreateWindow(1280, 720, "Settings", 0L, 0L);
 		if (window == 0L) {
 			throw new IllegalStateException("Unable to create the window");
@@ -212,51 +183,28 @@ public final class Main {
 
 		final AppUIBridge bridge = new AppUIBridge();
 		BridgeHandler.UI.register(bridge);
-
 		JOID.inst().load();
 		Theme.load();
 
-		final Main main = new Main(window, bridge);
-		main.listen();
-		main.resize();
-
-		JOID.open(new SettingsUI());
-		main.loop();
-	}
-
-	private void listen() {
-		this.input.attach(this.window);
-		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.resize());
-	}
-
-	private void loop() {
-		while (!GLFW.glfwWindowShouldClose(this.window)) {
-			if (GLFW.glfwGetWindowAttrib(this.window, GLFW.GLFW_ICONIFIED) == GLFW.GLFW_TRUE) {
-				GLFW.glfwWaitEvents();
-				continue;
+		GlfwInputForwarder.create(bridge).attach(window);
+		GLFW.glfwSetFramebufferSizeCallback(window, (handle, width, height) -> {
+			if (width > 0 && height > 0) {
+				bridge.resize(width, height);
 			}
+		});
 
+		final IWindowBridge windowBridge = BridgeHandler.WINDOW.get();
+		bridge.resize(windowBridge.getWidth(), windowBridge.getHeight());
+		JOID.open(new SettingsUI());
+
+		while (!GLFW.glfwWindowShouldClose(window)) {
 			GLFW.glfwPollEvents();
-
-			this.bridge.update();
-			BridgeHandler.RENDER.get().clearColor(0.1F, 0.1F, 0.1F, 1F);
-			this.bridge.draw();
-			GLFW.glfwSwapBuffers(this.window);
+			bridge.frame();
+			GLFW.glfwSwapBuffers(window);
 		}
 
-		GLFW.glfwDestroyWindow(this.window);
+		GLFW.glfwDestroyWindow(window);
 		GLFW.glfwTerminate();
-	}
-
-	private void resize() {
-		final IWindowBridge window = BridgeHandler.WINDOW.get();
-		if (window.getWidth() == 0 || window.getHeight() == 0) {
-			return;
-		}
-
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.screen(window.getWidth(), window.getHeight());
-		this.bridge.load();
 	}
 
 }
@@ -268,57 +216,26 @@ public final class Main {
 package com.example.settings;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.ui.UIBridge;
-import dev.joid.lib.bridge.window.IWindowBridge;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.ui.StackUIBridge;
 
-public final class AppUIBridge extends UIBridge {
-
-	@Override
-	public void open(final UI ui) {
-		this.add(ui);
-	}
+public final class AppUIBridge extends StackUIBridge {
 
 	@Override
-	public void close(final UI ui) {
-		this.remove(ui);
-	}
-
-	@Override
-	public void add(final UI ui) {
-		final IWindowBridge window = BridgeHandler.WINDOW.get();
-		super.getUiList().add(ui);
-		ui.load(window.getWidth(), window.getHeight());
-	}
-
-	@Override
-	public void remove(final UI ui) {
-		super.getUiList().remove(ui);
-	}
-
-	@Override
-	public boolean canHandle(final UI ui) {
-		return true;
-	}
-
-	@Override
-	public boolean canHandle(final Class<? extends UI> clazz) {
-		return true;
+	protected void drawBackground() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.clearColor(0.1F, 0.1F, 0.1F, 1F);
+		render.clearDepth();
+		render.clearStencil();
 	}
 
 }
 ```
 
-## Recap
-
-- The settings application is the Quick Start project in the package `com.example.settings`: the same `Main`, `AppUIBridge` and `Theme`, with a window title, a bold face and another screen.
-- Several font files passed to `MsdfFontLoader.load(...)` make one family; `FontWeight` picks the face.
-- `@UIData` configures the screen class, here its background.
-
 ## See also
 
-- Next: [Tutorial 2: Building the Layout](layout.md) fills the screen with the settings card.
+- Next: [Tutorial 2: Building the Layout](layout.md)
 - [Quick Start](../getting-started/quick-start.md)
-- [UIs and Their Lifecycle](../concepts/uis.md)
-- [The Frame Loop](../concepts/frame-loop.md)
-- [Text](../essentials/text.md)
+- [UIs](../concepts/uis.md)
+- [Frame Loop and Dev Tools](../concepts/frame-loop.md)
+- [Text and Fonts](../concepts/text.md)
