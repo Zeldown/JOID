@@ -17,9 +17,7 @@ public interface NodeCharTypedCallback<T extends Node> extends NodeCallback {
 
 	@NodeCallbackMethod(Phase.POST)
 	public default void post(final @NonNull T node, final @NonNull DispatchContext context, final int codepoint) {
-		if (!context.isCancelled()) {
-			this.apply(node, codepoint);
-		}
+		this.apply(node, codepoint);
 	}
 
 }

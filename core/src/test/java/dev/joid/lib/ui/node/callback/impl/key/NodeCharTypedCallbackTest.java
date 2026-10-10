@@ -14,6 +14,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import lombok.NonNull;
 
 public class NodeCharTypedCallbackTest {
 
@@ -35,11 +36,36 @@ public class NodeCharTypedCallbackTest {
 	}
 
 	@Test
-	public void ignoresAConsumedContext() {
+	public void hearsAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeCharTypedCallback<RectNode> callback = (node, codepoint) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), 'z');
-		Assert.assertTrue(received.isEmpty());
+		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
+		callback.post(rect, DispatchContext.create(true), 'z');
+		Assert.assertEquals(Collections.singletonList(rect), received);
+	}
+
+	@Test
+	public void hearsACharacterConsumedByAnotherNode() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode parent = RectNode.create(100D, 100D, 200D, 100D).onCharTyped((node, codepoint) -> received.add("parent"));
+		final RectNode child = RectNode.create(10D, 10D, 20D, 20D).onCharTyped(new NodeCharTypedCallback<RectNode>() {
+
+			@Override
+			public void apply(final @NonNull RectNode node, final int codepoint) {
+				received.add("child");
+			}
+
+			@Override
+			public void post(final @NonNull RectNode node, final @NonNull DispatchContext context, final int codepoint) {
+				context.cancel(() -> this.apply(node, codepoint));
+			}
+
+		});
+		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).onCharTyped((node, codepoint) -> received.add("sibling"));
+		parent.append(child);
+		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
+		Assert.assertTrue(this.bridges.getUi().charTyped('a'));
+		Assert.assertEquals(Arrays.asList("child", "parent", "sibling"), received);
 	}
 
 	@Test

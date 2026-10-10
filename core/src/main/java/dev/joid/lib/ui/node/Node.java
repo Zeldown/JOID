@@ -816,7 +816,6 @@ public abstract class Node implements INode {
 			this.executeCallback(Node.CALLBACK_CLICK, context, mouseX, mouseY, button);
 			context.cancel();
 		}
-		final boolean clicked = !pressed && context.isCancelled();
 
 		if (enabled) {
 			this.mousePressed(mouseX, mouseY, button, context);
@@ -824,7 +823,7 @@ public abstract class Node implements INode {
 		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, context));
 
 		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_PRESSED)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, clicked ? DispatchContext.create() : context, mouseX, mouseY, button);
+			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, context, mouseX, mouseY, button);
 		}
 
 		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && enabled && this.isHovered()) {

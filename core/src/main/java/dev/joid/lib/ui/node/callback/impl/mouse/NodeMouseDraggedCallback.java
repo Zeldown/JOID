@@ -18,9 +18,7 @@ public interface NodeMouseDraggedCallback<T extends Node> extends NodeCallback {
 
 	@NodeCallbackMethod(Phase.POST)
 	public default void post(final @NonNull T node, final @NonNull DispatchContext context, final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime) {
-		if (!context.isCancelled()) {
-			this.apply(node, mouseX, mouseY, button, deltaTime);
-		}
+		this.apply(node, mouseX, mouseY, button, deltaTime);
 	}
 
 }

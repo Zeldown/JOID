@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.callback.impl.key;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -14,6 +15,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import lombok.NonNull;
 
 public class NodeKeyPressedCallbackTest {
 
@@ -35,11 +37,36 @@ public class NodeKeyPressedCallbackTest {
 	}
 
 	@Test
-	public void ignoresAConsumedContext() {
+	public void hearsAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeKeyPressedCallback<RectNode> callback = (node, key) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), Key.Z);
-		Assert.assertTrue(received.isEmpty());
+		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
+		callback.post(rect, DispatchContext.create(true), Key.Z);
+		Assert.assertEquals(Collections.singletonList(rect), received);
+	}
+
+	@Test
+	public void hearsAKeyConsumedByAnotherNode() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode parent = RectNode.create(100D, 100D, 200D, 100D).onKeyPressed((node, key) -> received.add("parent"));
+		final RectNode child = RectNode.create(10D, 10D, 20D, 20D).onKeyPressed(new NodeKeyPressedCallback<RectNode>() {
+
+			@Override
+			public void apply(final @NonNull RectNode node, final @NonNull Key key) {
+				received.add("child");
+			}
+
+			@Override
+			public void post(final @NonNull RectNode node, final @NonNull DispatchContext context, final @NonNull Key key) {
+				context.cancel(() -> this.apply(node, key));
+			}
+
+		});
+		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).onKeyPressed((node, key) -> received.add("sibling"));
+		parent.append(child);
+		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertEquals(Arrays.asList("child", "parent", "sibling"), received);
 	}
 
 	@Test

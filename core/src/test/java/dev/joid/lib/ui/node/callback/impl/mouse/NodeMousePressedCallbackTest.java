@@ -36,11 +36,25 @@ public class NodeMousePressedCallbackTest {
 	}
 
 	@Test
-	public void ignoresAConsumedContext() {
+	public void hearsAConsumedContext() {
 		final List<Object> received = new ArrayList<>();
 		final NodeMousePressedCallback<RectNode> callback = (node, mouseX, mouseY, button) -> received.add(node);
-		callback.post(RectNode.create(0D, 0D, 10D, 10D), DispatchContext.create(true), 3D, 4D, MouseButton.LEFT);
-		Assert.assertTrue(received.isEmpty());
+		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D);
+		callback.post(rect, DispatchContext.create(true), 3D, 4D, MouseButton.LEFT);
+		Assert.assertEquals(Collections.singletonList(rect), received);
+	}
+
+	@Test
+	public void hearsAPressConsumedByAnotherNode() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode parent = RectNode.create(100D, 100D, 200D, 100D).onMousePressed((node, mouseX, mouseY, button) -> received.add("parent"));
+		final RectNode child = RectNode.create(10D, 10D, 20D, 20D).onClick((node, mouseX, mouseY, button) -> received.add("child"));
+		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).onMousePressed((node, mouseX, mouseY, button) -> received.add("sibling"));
+		parent.append(child);
+		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
+		this.bridges.move(120D, 120D).frames(2);
+		Assert.assertTrue(this.bridges.getUi().mousePressed(MouseButton.LEFT));
+		Assert.assertEquals(Arrays.asList("child", "parent", "sibling"), received);
 	}
 
 	@Test

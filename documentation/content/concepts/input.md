@@ -122,7 +122,7 @@ RectNode
 TextNode.create(120, 120).text(Text.create(typed.get(), this.info)).attach(this);
 ```
 
-Keyboard events reach every visible, enabled node of the UI, wherever the mouse is, until one consumes them. There is no release event: read the current state of a key with `Key.LEFT_SHIFT.isDown()`, or both sides of a modifier with `UI.isCtrlKeyDown()`, `UI.isShiftKeyDown()` and `UI.isAltKeyDown()`. Letter keys follow the keyboard layout (`Key.A` is the key that types `a`); `isPhysicalDown()` tests a key by its place on a US QWERTY keyboard, for WASD controls.
+Keyboard events reach every visible, enabled node of the UI, wherever the mouse is. There is no release event: read the current state of a key with `Key.LEFT_SHIFT.isDown()`, or both sides of a modifier with `UI.isCtrlKeyDown()`, `UI.isShiftKeyDown()` and `UI.isAltKeyDown()`. Letter keys follow the keyboard layout (`Key.A` is the key that types `a`); `isPhysicalDown()` tests a key by its place on a US QWERTY keyboard, for WASD controls.
 
 ## Shortcuts with keybind
 
@@ -138,7 +138,7 @@ A keybind runs when one of its keys is pressed while all of them are down; the o
 
 ## Listening to every event
 
-The listeners hear every event that no node consumed yet, even outside the node, and leave it to the others. Use `onClick` to react to a press on the node, and `onMousePressed` to react to any press, for example to close a menu when the user clicks elsewhere.
+The listeners hear every event, even one a node already consumed and even outside the node, and leave it to the others. Use `onClick` to react to a press on the node, and `onMousePressed` to react to any press, for example to close a menu when the user clicks elsewhere.
 
 ```java
 final BooleanSignal open = BooleanSignal.of(true);
@@ -237,11 +237,11 @@ public void keyPressed(final Key key, final DispatchContext context) {
 | Method | Description |
 |---|---|
 | `onClick((node, mouseX, mouseY, button) -> ...)` | A press on the node or one of its children; consumes it. |
-| `onMousePressed`, `onMouseReleased` `((node, mouseX, mouseY, button) -> ...)` | Every press or release not consumed yet, anywhere. |
+| `onMousePressed`, `onMouseReleased` `((node, mouseX, mouseY, button) -> ...)` | Every press or release, anywhere. |
 | `onMouseDragged((node, mouseX, mouseY, button, deltaTime) -> ...)` | Every mouse move while a button is held. |
 | `onMouseScroll((node, mouseX, mouseY, notchesX, notchesY) -> ...)` | Every wheel event; `notchesY` is `1` per notch up. |
-| `onKeyPressed((node, key) -> ...)` | Every key press or repeat not consumed yet. |
-| `onCharTyped((node, codepoint) -> ...)` | Every typed character not consumed yet. |
+| `onKeyPressed((node, key) -> ...)` | Every key press or repeat. |
+| `onCharTyped((node, codepoint) -> ...)` | Every typed character. |
 | `onHoverStart`, `onHover`, `onHoverEnd` `((node, mouseX, mouseY) -> ...)` | The node becomes hovered, stays hovered (each frame), stops being hovered. |
 | `isHovered()` | Hover state of the last drawn frame. |
 | `hoverDuration(long)`, `hoverEquation(TweenEquation)` | Hover animation; 200 ms, `LINEAR` by default. |
