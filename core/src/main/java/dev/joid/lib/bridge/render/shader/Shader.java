@@ -14,6 +14,7 @@ import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderBuiltin;
 import dev.joid.lib.bridge.render.shader.source.ShaderFeature;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
+import dev.joid.lib.bridge.render.shader.source.ShaderTranslation;
 import dev.joid.lib.bridge.render.shader.source.ShaderVariable;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
@@ -62,6 +63,8 @@ public abstract class Shader implements IShader {
 			Shader.warnBeyondBaseline(vertex);
 			Shader.warnBeyondBaseline(fragment);
 		}
+
+		this.compileProgram(translator.translate(vertex, fragment));
 	}
 
 	@Override
@@ -150,6 +153,8 @@ public abstract class Shader implements IShader {
 		.value(GlslShaderTranslator.LINE_WIDTH, state.getLineWidth())
 		.value(GlslShaderTranslator.LINE_VIEWPORT, state.getViewportWidth(), state.getViewportHeight());
 	}
+
+	protected abstract void compileProgram(final @NonNull ShaderTranslation translation);
 
 	private UniformMember getMember(final String name) {
 		final UniformMember member = this.block.getMember(name);

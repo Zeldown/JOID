@@ -92,9 +92,13 @@ public class GlslShaderTranslator {
 	}
 
 	public final @NonNull String translateFragment(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
+		return this.translateFragment(vertex, fragment, this.stencil);
+	}
+
+	public final @NonNull String translateFragment(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull StencilEmulation.Pass stencil) {
 		final Set<ShaderFeature> featureSet = EnumSet.noneOf(ShaderFeature.class);
 		featureSet.addAll(fragment.getFeatures());
-		if (this.stencil != StencilEmulation.Pass.NONE) {
+		if (stencil != StencilEmulation.Pass.NONE) {
 			featureSet.addAll(EnumSet.of(ShaderFeature.BITWISE_OPERATORS, ShaderFeature.SWITCH, ShaderFeature.TEXEL_FETCH));
 		}
 		this.require(featureSet);
@@ -108,12 +112,17 @@ public class GlslShaderTranslator {
 		}
 
 		if (!vertex.isLine()) {
-			return builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain()).toString();
+			return builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain(stencil)).toString();
 		}
 
 		this.appendLineVaryings(builder, varyings.size(), false);
 		builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
-		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(min(joid_LineAlong, joid_LineLength - joid_LineAlong) + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain()).toString();
+		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(min(joid_LineAlong, joid_LineLength - joid_LineAlong) + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain(stencil)).toString();
+	}
+
+	public final @NonNull ShaderTranslation translate(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
+		final String stencilFragment = this.stencil == StencilEmulation.Pass.NONE ? null : this.translateFragment(vertex, fragment, StencilEmulation.Pass.WRITE);
+		return ShaderTranslation.of(this.dialect, this.translateVertex(vertex, fragment), this.translateFragment(vertex, fragment), stencilFragment);
 	}
 
 	public final @NonNull UniformBlock createBlock(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
@@ -155,8 +164,12 @@ public class GlslShaderTranslator {
 		return true;
 	}
 
-	protected @NonNull String getMain() {
-		if (this.stencil == StencilEmulation.Pass.NONE) {
+	protected @NonNull String getLayout() {
+		return "std140";
+	}
+
+	protected @NonNull String getMain(final @NonNull StencilEmulation.Pass stencil) {
+		if (stencil == StencilEmulation.Pass.NONE) {
 			return "\nvoid main() {\n\tjoid_main();\n\tif (joid_AlphaTest != 0 && fragColor.a <= joid_AlphaThreshold) {\n\t\tdiscard;\n\t}\n}\n";
 		}
 
@@ -165,11 +178,7 @@ public class GlslShaderTranslator {
 		+ "\nbool joid_stencilCompare(int value) {\n\tint reference = joid_StencilReference & joid_StencilMask;\n\tint current = value & joid_StencilMask;\n\tswitch (joid_StencilFunction) {\n\tcase 0:\n\t\treturn false;\n\tcase 1:\n\t\treturn reference < current;\n\tcase 2:\n\t\treturn reference <= current;\n\tcase 3:\n\t\treturn reference > current;\n\tcase 4:\n\t\treturn reference >= current;\n\tcase 5:\n\t\treturn reference == current;\n\tcase 6:\n\t\treturn reference != current;\n\tdefault:\n\t\treturn true;\n\t}\n}\n"
 		+ "\nint joid_stencilApply(int operation, int value) {\n\tswitch (operation) {\n\tcase 1:\n\t\treturn 0;\n\tcase 2:\n\t\treturn joid_StencilReference & 255;\n\tcase 3:\n\t\treturn min(value + 1, 255);\n\tcase 4:\n\t\treturn max(value - 1, 0);\n\tcase 5:\n\t\treturn ~value & 255;\n\tdefault:\n\t\treturn value;\n\t}\n}\n"
 		+ "\nvoid main() {\n\tfragColor = vec4(0.0);\n\tjoid_main();\n\tif (joid_AlphaTest != 0 && fragColor.a <= joid_AlphaThreshold) {\n\t\tdiscard;\n\t}\n\n"
-		+ (this.stencil == StencilEmulation.Pass.WRITE ? "\tint value = joid_stencilValue();\n\tvalue = joid_stencilApply(joid_stencilCompare(value) ? joid_StencilPass : joid_StencilFail, value);\n\tfragColor = vec4(float(value) / 255.0, 0.0, 0.0, 1.0);\n}\n" : "\tif (joid_StencilTest != 0 && !joid_stencilCompare(joid_stencilValue())) {\n\t\tdiscard;\n\t}\n}\n");
-	}
-
-	protected @NonNull String getLayout() {
-		return "std140";
+		+ (stencil == StencilEmulation.Pass.WRITE ? "\tint value = joid_stencilValue();\n\tvalue = joid_stencilApply(joid_stencilCompare(value) ? joid_StencilPass : joid_StencilFail, value);\n\tfragColor = vec4(float(value) / 255.0, 0.0, 0.0, 1.0);\n}\n" : "\tif (joid_StencilTest != 0 && !joid_stencilCompare(joid_stencilValue())) {\n\t\tdiscard;\n\t}\n}\n");
 	}
 
 	protected @NonNull List<@NonNull ShaderVariable> getInternals(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {

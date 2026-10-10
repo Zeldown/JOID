@@ -8,8 +8,8 @@ import dev.joid.base.opengl.binding.IGlProgramBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.render.shader.Shader;
 import dev.joid.lib.bridge.render.shader.source.GlslDialect;
-import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
+import dev.joid.lib.bridge.render.shader.source.ShaderTranslation;
 import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
 import dev.joid.lib.bridge.render.shader.uniform.UniformType;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -21,25 +21,20 @@ import lombok.NonNull;
 @Getter
 public final class GlShader extends Shader {
 
-	private final int                  program;
-	private final boolean              active;
 	private final IGlProgramBinding    programs;
 	private final Map<String, Integer> locationMap;
 
-	private GlShader(final GlRenderBridge bridge, final GlslShaderTranslator translator, final ShaderSource vertex, final ShaderSource fragment, final int program, final boolean active, final BlendState blend) {
-		super(bridge, translator, vertex, fragment, blend);
+	private int     program;
+	private boolean active;
+
+	private GlShader(final GlRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
+		super(bridge, bridge.getStrategies().createTranslator(), vertex, fragment, blend);
 		this.programs    = bridge.getBinding().getProgramBinding();
-		this.program     = program;
-		this.active      = active;
 		this.locationMap = new HashMap<>();
 	}
 
 	public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
-		final GlslShaderTranslator translator = bridge.getStrategies().createTranslator();
-		final IGlProgramBinding programs = bridge.getBinding().getProgramBinding();
-		final int program = programs.createProgram();
-		final boolean active = GlShader.link(programs, translator.getDialect(), program, translator.translateVertex(vertex, fragment), translator.translateFragment(vertex, fragment));
-		return new GlShader(bridge, translator, vertex, fragment, program, active, blend);
+		return new GlShader(bridge, vertex, fragment, blend);
 	}
 
 	public void use(final @NonNull RenderState state) {
@@ -49,6 +44,13 @@ public final class GlShader extends Shader {
 
 	public int getLocation(final @NonNull String name) {
 		return this.locationMap.computeIfAbsent(name, key -> this.programs.getUniformLocation(this.program, key));
+	}
+
+	@Override
+	protected void compileProgram(final @NonNull ShaderTranslation translation) {
+		final IGlProgramBinding programs = ((GlRenderBridge) super.getBridge()).getBinding().getProgramBinding();
+		this.program = programs.createProgram();
+		this.active  = GlShader.link(programs, translation.getDialect(), this.program, translation.getVertex(), translation.getFragment());
 	}
 
 	private void upload(final UniformMember member) {

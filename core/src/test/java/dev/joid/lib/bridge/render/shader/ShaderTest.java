@@ -18,11 +18,13 @@ import dev.joid.lib.bridge.render.shader.source.GlslDialect;
 import dev.joid.lib.bridge.render.shader.source.GlslShaderTranslator;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.shader.source.ShaderTranslation;
 import dev.joid.lib.bridge.render.shader.source.UniformLayout;
 import dev.joid.lib.bridge.render.shader.uniform.UniformBlock;
 import dev.joid.lib.bridge.render.shader.uniform.UniformMember;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.bridge.render.state.StencilEmulation;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
@@ -137,6 +139,19 @@ public class ShaderTest {
 		final TestShader shader = new TestShader(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
 		Assert.assertNotNull(shader.getBlock().getMember(GlslShaderTranslator.BORDER + "u_Noise"));
 		Assert.assertNull(new TestShader(new RecordingRenderBridge(), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT)).getBlock().getMember(GlslShaderTranslator.BORDER + "u_Noise"));
+	}
+
+	@Test
+	public void compilesTheSourcesItTranslatedForTheBridge() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.setBorderless(true);
+		final TestShader shader = new TestShader(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		Assert.assertSame(GlslDialect.GLSL_330, shader.translation.getDialect());
+		Assert.assertTrue(shader.translation.getVertex().startsWith("#version 330 core\n"));
+		Assert.assertTrue(shader.translation.getFragment().contains("joid_borderTexture(tex, joid_Border_tex, "));
+		Assert.assertTrue(shader.translation.getFragment().contains("if (joid_StencilTest != 0"));
+		Assert.assertTrue(shader.translation.getStencilFragment().contains("joid_stencilApply(joid_stencilCompare(value)"));
+		Assert.assertNull(ShaderTest.create().translation.getStencilFragment());
 	}
 
 	@Test
@@ -255,6 +270,8 @@ public class ShaderTest {
 
 	private static final class TestShader extends Shader {
 
+		private ShaderTranslation translation;
+
 		private TestShader(final RenderBridge render, final BlendState blend) {
 			this(render, blend, ShaderSource.parse(ShaderStage.VERTEX, "void main() {}"), ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {}"));
 		}
@@ -270,6 +287,11 @@ public class ShaderTest {
 		@Override
 		public boolean isActive() {
 			return true;
+		}
+
+		@Override
+		protected void compileProgram(final @NonNull ShaderTranslation translation) {
+			this.translation = translation;
 		}
 
 	}
