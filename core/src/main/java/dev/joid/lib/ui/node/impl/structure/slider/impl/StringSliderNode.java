@@ -1,9 +1,5 @@
 package dev.joid.lib.ui.node.impl.structure.slider.impl;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import dev.joid.lib.ui.node.impl.structure.slider.SliderNode;
 import lombok.NonNull;
 
@@ -13,16 +9,16 @@ public abstract class StringSliderNode extends SliderNode<String> {
 		super(x, y, width, height);
 	}
 
-	public final <T extends StringSliderNode> @NonNull T values(final String value, final String... values) {
-		return this.valueSet(new LinkedHashSet<>(Arrays.asList(values)), value);
+	public final <T extends StringSliderNode> @NonNull T values(final @NonNull Enum<?> @NonNull... values) {
+		final String[] names = new String[values.length];
+		for (int i = 0; i < values.length; i++) {
+			names[i] = values[i].name();
+		}
+		return super.values(names);
 	}
 
-	public final <T extends StringSliderNode> @NonNull T values(final Enum<?> value, final Enum<?>... values) {
-		final Set<String> mappedValues = new LinkedHashSet<>();
-		for (final Enum<?> v : values) {
-			mappedValues.add(v.name());
-		}
-		return this.valueSet(mappedValues, value.name());
+	public final <T extends StringSliderNode> @NonNull T value(final @NonNull Enum<?> value) {
+		return super.value(value.name());
 	}
 
 }

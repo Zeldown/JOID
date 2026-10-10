@@ -43,7 +43,7 @@ private final IntegerSignal volume = IntegerSignal.of(50);
 
 @Override
 public void init() {
-	VolumeSliderNode.create(760, 520, 400, 24).values(0, 100, 50).signal(this.volume).attach(this);
+	VolumeSliderNode.create(760, 520, 400, 24).range(0, 100).signal(this.volume).attach(this);
 }
 ```
 
@@ -51,16 +51,20 @@ public void init() {
 
 `getProgress()` is the position of the thumb on its travel, from `0F` to `1F`: draw a filled track with it. The values are evenly spaced along the track.
 
-## Values with values
+## Options with values and range
 
-| Class | Method | Values |
+| Class | Method | Options |
 |---|---|---|
-| `IntegerSliderNode` | `values(int min, int max, int value)`, `values(int value, Integer... values)` | Every integer from `min` to `max`, or the listed ones. |
-| `DoubleSliderNode` | `values(double min, double max, double step, double value)`, `values(double value, Double... values)` | `min`, `min + step`, ... up to `max`, or the listed ones. |
-| `StringSliderNode` | `values(String value, String... values)`, `values(Enum<?> value, Enum<?>... values)` | The strings or enum names, in order. |
-| `SliderNode<O>` | `valueSet(Set<O> set, O value)` | Any set, in iteration order. |
+| `SliderNode<O>` | `values(O... values)` | The listed values, in order. |
+| `IntegerSliderNode` | `range(int min, int max)` | Every integer from `min` to `max`. |
+| `DoubleSliderNode` | `range(double min, double max, double step)` | `min`, `min + step`, ... up to `max`. |
+| `StringSliderNode` | `values(Enum<?>... values)` | The enum names, in order. |
 
-The first or last argument is the selected value; it must be one of the values, or an `IllegalArgumentException` is thrown. `value(O)` selects another value from code and moves the thumb.
+Each call replaces the options and selects the first one, or keeps the current value when it is still an option. An empty list throws an `IllegalArgumentException`. `value(O)` selects another option and moves the thumb; `StringSliderNode.value(Enum<?>)` selects a constant by name.
+
+```java
+VolumeSliderNode.create(760, 520, 400, 24).values(0, 25, 50, 75, 100).value(50).attach(this);
+```
 
 ## Dragging and snapping
 
@@ -83,7 +87,8 @@ private final BooleanSignal muted = BooleanSignal.of(false);
 public void init() {
 	VolumeSliderNode
 	.create(760, 600, 400, 24)
-	.values(0, 100, 50)
+	.range(0, 100)
+	.value(50)
 	.onChange((slider, value) -> this.muted.set(value == 0))
 	.attach(this);
 }
@@ -93,8 +98,8 @@ public void init() {
 
 | Method | Description |
 |---|---|
-| `values(...)`, `valueSet(Set<O>, O)` | Sets the values and the selected value (see above). |
-| `value(O)`, `value(Supplier<O>)` | Selects a value, or follows one. |
+| `values(O...)`, `range(...)` | Replaces the options; selects the first one unless the current value remains (see above). |
+| `value(O)`, `value(Supplier<O>)` | Selects an option, or follows one. Default: the first option. |
 | `signal(Signal<O>)` | Two-way binding. |
 | `onChange(NodeSliderChangeCallback<T, O>)` | `(slider, value)` after each change. |
 | `thumb(SliderThumbNode)` | Installs the thumb. Required. |
@@ -105,8 +110,7 @@ public void init() {
 
 ## Good to know
 
-- An argument count that matches a range overload picks the range: `IntegerSliderNode.values(2, 1, 2)` is the range from 2 to 1. Pass an array for a list: `values(2, new Integer[] { 1, 2 })`.
-- Call `values(...)` before `signal(...)`, and both before a `Node` setter in a chain.
+- Call `values(...)` or `range(...)` before `value(...)` and `signal(...)`, and all of them before a `Node` setter in a chain.
 - `signal(...)` needs a writable signal: pass a `map(...)` to `value(...)` instead.
 
 ## See also

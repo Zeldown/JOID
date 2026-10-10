@@ -1,8 +1,7 @@
 package dev.joid.lib.ui.node.impl.structure.slider.impl;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import dev.joid.lib.ui.node.impl.structure.slider.SliderNode;
 import lombok.NonNull;
@@ -13,16 +12,12 @@ public abstract class IntegerSliderNode extends SliderNode<Integer> {
 		super(x, y, width, height);
 	}
 
-	public final <T extends IntegerSliderNode> @NonNull T values(final int value, final Integer... values) {
-		return this.valueSet(new LinkedHashSet<>(Arrays.asList(values)), value);
-	}
-
-	public final <T extends IntegerSliderNode> @NonNull T values(final int min, final int max, final int value) {
-		final Set<Integer> values = new LinkedHashSet<>();
+	public final <T extends IntegerSliderNode> @NonNull T range(final int min, final int max) {
+		final List<Integer> values = new ArrayList<>();
 		for (int i = min; i <= max; i++) {
 			values.add(i);
 		}
-		return this.valueSet(values, value);
+		return super.values(values.toArray(new Integer[0]));
 	}
 
 }

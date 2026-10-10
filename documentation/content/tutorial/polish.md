@@ -270,7 +270,7 @@ public final class SettingsUI extends UI {
 				.hover(() -> this.settings.getMusic().get() ? "Music is playing" : "Music is muted")
 				.attach(music);
 				final RectNode volume = this.row(flex, "Volume", label).visible(this.settings.getMusic());
-				VolumeSliderNode.create(200, 24, 400, 24).values(0, 100, 80).signal(this.settings.getVolume()).attach(volume);
+				VolumeSliderNode.create(200, 24, 400, 24).range(0, 100).signal(this.settings.getVolume()).attach(volume);
 				TextNode.create(0, 0, volume.aw(-24), volume.getHeight()).text(Text.create(this.settings.getVolume().get() + " %", label, Align.END, Align.CENTER)).attach(volume);
 				TextNode.create(0, 0, 0, 36).text(Text.create("GENERAL", section, Align.START, Align.END)).attach(flex);
 				final RectNode notifications = this.row(flex, "Notifications", label);

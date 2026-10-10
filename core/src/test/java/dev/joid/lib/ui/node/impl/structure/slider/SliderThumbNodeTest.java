@@ -1,8 +1,5 @@
 package dev.joid.lib.ui.node.impl.structure.slider;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,7 +24,7 @@ public class SliderThumbNodeTest {
 	@Before
 	public void openASlider() {
 		this.thumb = new Thumb();
-		this.slider = new Slider().valueSet(new LinkedHashSet<>(Arrays.asList(1, 2, 3)), 1).thumb(this.thumb);
+		this.slider = new Slider().values(1, 2, 3).thumb(this.thumb);
 		this.bridges.open(new NodeUI(this.slider)).frame();
 	}
 

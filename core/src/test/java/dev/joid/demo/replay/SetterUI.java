@@ -121,7 +121,7 @@ public class SetterUI extends UI {
 		.value(this.step.get() > 0 ? "second" : "first")
 		.active(this.step.get() > 1)
 		.attach(this);
-		this.slider = new IntegerSlider().values(1, 9, 1).thumb(new Thumb()).value(1 + this.step.get()).attach(this);
+		this.slider = new IntegerSlider().range(1, 9).thumb(new Thumb()).value(1 + this.step.get()).attach(this);
 		this.flex = FlexNode
 		.vertical(0D, 0D, 100D)
 		.margin(this.step.get() * 5D)

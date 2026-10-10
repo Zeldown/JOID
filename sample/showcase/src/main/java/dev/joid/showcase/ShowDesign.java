@@ -78,7 +78,7 @@ public class ShowDesign extends ShowUI {
 
 		TextNode.create(1040, 554).text(Text.create("Volume", kit.label())).anchorY(Align.CENTER).attach(layer);
 		TextNode.create(1720, 554).text(() -> Text.create(String.format(Locale.US, "%d %%", Math.round(this.volume.get() * 100D)), kit.label())).anchorX(Align.END).anchorY(Align.CENTER).attach(layer);
-		kit.slider(1040, 584, 680).values(0D, 1D, 0.01D, 0.3D).signal(this.volume).attach(layer);
+		kit.slider(1040, 584, 680).range(0D, 1D, 0.01D).signal(this.volume).attach(layer);
 
 		TextNode.create(1040, 674).text(Text.create("Display name", kit.label())).anchorY(Align.CENTER).attach(layer);
 		kit.field(1040, 704, 680).signal(this.name).attach(layer);

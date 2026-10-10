@@ -2,9 +2,7 @@ package dev.joid.lib.ui.node.impl.structure.slider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -32,18 +30,52 @@ public class SliderNodeTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test(expected = IllegalArgumentException.class)
-	public void refusesAValueSetWithoutItsValue() {
-		new Slider().valueSet(SliderNodeTest.digits(), 10);
+	public void refusesAnEmptyOptionList() {
+		new Slider().values();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAValueOutsideItsSet() {
-		new Slider().valueSet(SliderNodeTest.digits(), 1).value(10);
+		new Slider().values(SliderNodeTest.digits()).value(10);
+	}
+
+	@Test
+	public void startsOnItsFirstOption() {
+		final List<Integer> changes = new ArrayList<>();
+		final Slider slider = new Slider().onChange((node, value) -> changes.add(value)).values(3, 6, 9);
+		Assert.assertEquals(3, slider.getValue().intValue());
+		Assert.assertEquals(Arrays.asList(3), changes);
+	}
+
+	@Test
+	public void keepsItsValueWhenItsOptionsAreRebuilt() {
+		final List<Integer> changes = new ArrayList<>();
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).onChange((node, value) -> changes.add(value));
+		slider.values(5, 6, 7);
+		Assert.assertEquals(5, slider.getValue().intValue());
+		Assert.assertTrue(changes.isEmpty());
+	}
+
+	@Test
+	public void selectsItsFirstOptionWhenItsValueIsGone() {
+		final List<Integer> changes = new ArrayList<>();
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(9).onChange((node, value) -> changes.add(value));
+		slider.values(1, 2);
+		Assert.assertEquals(1, slider.getValue().intValue());
+		Assert.assertEquals(Arrays.asList(1), changes);
+	}
+
+	@Test
+	public void movesItsThumbWhenItsOptionsAreRebuilt() {
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
+		this.bridges.open(new NodeUI(slider)).frame();
+		slider.values(5, 6, 7);
+		Assert.assertEquals(0D, slider.getThumb().getX(), 1E-9D);
 	}
 
 	@Test
 	public void placesItsThumbOnItsValue() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		Assert.assertEquals(175D, slider.getThumb().getX(), 1E-9D);
 		Assert.assertEquals(275D, this.thumb().getLeft(), 1E-3D);
@@ -52,7 +84,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void movesItsThumbToANewValue() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		Assert.assertSame(slider, slider.value(9));
 		this.bridges.frame();
@@ -62,7 +94,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void changesItsValueBeforeBeingShown() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb()).value(7);
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).value(7);
 		Assert.assertEquals(7, slider.getValue().intValue());
 		Assert.assertEquals(0D, slider.getThumb().getX(), 0D);
 	}
@@ -75,7 +107,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void drawsNothingWithoutThumb() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5);
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5);
 		this.bridges.open(new NodeUI(slider)).frame();
 		Assert.assertTrue(this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).isEmpty());
 		Assert.assertEquals(5, slider.getValue().intValue());
@@ -83,7 +115,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void releasesItsThumbWhenDetached() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.getThumb().dragging(true);
 		slider.fireDetach();
@@ -94,7 +126,7 @@ public class SliderNodeTest {
 	public void jumpsToTheClickedPosition() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(5);
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb()).signal(signal).onChange((node, value) -> changes.add(value));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).signal(signal).onChange((node, value) -> changes.add(value));
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -110,7 +142,7 @@ public class SliderNodeTest {
 	public void followsItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(5);
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 1).thumb(new Thumb()).signal(signal).onChange((node, value) -> changes.add(value));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(signal).onChange((node, value) -> changes.add(value));
 		Assert.assertEquals(5, slider.getValue().intValue());
 		this.bridges.open(new NodeUI(slider)).frame();
 		signal.set(2);
@@ -123,7 +155,7 @@ public class SliderNodeTest {
 	public void followsOnlyItsLastSignal() {
 		final Signal<Integer> volume = new Signal<>(5);
 		final Signal<Integer> balance = new Signal<>(3);
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 1).thumb(new Thumb()).signal(volume).signal(balance);
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(volume).signal(balance);
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.value(7);
 		this.bridges.frame();
@@ -140,7 +172,7 @@ public class SliderNodeTest {
 	@Test
 	public void refusesAComputedSignal() {
 		final Signal<Integer> volume = new Signal<>(5);
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 1).thumb(new Thumb()).signal(volume);
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(volume);
 		try {
 			slider.signal(volume.map(value -> value + 1));
 			Assert.fail("A ComputedSignal cannot be bound in both directions");
@@ -157,7 +189,7 @@ public class SliderNodeTest {
 	public void writesAChosenValueIntoItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(5);
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb()).signal(signal).onChange((node, value) -> changes.add(value));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).signal(signal).onChange((node, value) -> changes.add(value));
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.value(3);
 		slider.value(3);
@@ -168,7 +200,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void followsItsDraggedThumb() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -180,7 +212,7 @@ public class SliderNodeTest {
 	@Test
 	public void snapsItsThumbOnTheStepOfItsValueOnRelease() {
 		final List<Integer> changes = new ArrayList<>();
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb()).onChange((node, value) -> changes.add(value));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).onChange((node, value) -> changes.add(value));
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -196,7 +228,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void picksTheValueUnderItsThumbOnRelease() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.getThumb().dragging(true).x(300D);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
@@ -206,7 +238,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void ignoresAPressBesideIt() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(1000D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -228,14 +260,14 @@ public class SliderNodeTest {
 
 	@Test
 	public void keepsTheValueItIsGivenOnItsFirstFrames() {
-		final IntegerSlider slider = new IntegerSlider().values(1, 4, 2);
+		final IntegerSlider slider = new IntegerSlider().range(1, 4).value(2);
 		this.bridges.open(new NodeUI(slider)).frames(2);
 		Assert.assertEquals(2, slider.getValue().intValue());
 	}
 
 	@Test
 	public void placesASingleValueAtTheStartOfItsTrack() {
-		final Slider slider = new Slider().valueSet(new LinkedHashSet<>(Arrays.asList(4)), 4).thumb(new Thumb());
+		final Slider slider = new Slider().values(4).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frames(2);
 		Assert.assertEquals(0D, slider.getThumb().getX(), 0D);
 		Assert.assertEquals(0F, slider.getProgress(), 0F);
@@ -245,7 +277,7 @@ public class SliderNodeTest {
 	@Test
 	public void putsItsThumbBackOnceWhenAChangeIsRefused() {
 		final List<Integer> proposals = new ArrayList<>();
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb()).onChange(new NodeSliderChangeCallback<Slider, Integer>() {
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).onChange(new NodeSliderChangeCallback<Slider, Integer>() {
 
 			@Override
 			public void apply(final @NonNull Slider node, final @NonNull Integer value) {}
@@ -269,7 +301,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void ignoresAPressAlreadyConsumed() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new Thumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
 		final NodeUI ui = new NodeUI(slider);
 		this.bridges.open(ui).frame();
 		RectNode.create(100D, 100D, 400D, 50D).onClick((node, mouseX, mouseY, button) -> {}).attach(ui);
@@ -282,7 +314,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void readsItsProgressOnOne() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 3).thumb(new Thumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(3).thumb(new Thumb());
 		Assert.assertEquals(0F, new Slider().getProgress(), 0F);
 		this.bridges.open(new NodeUI(slider)).frame();
 		Assert.assertEquals(0.25F, slider.getProgress(), 1E-6F);
@@ -292,7 +324,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void centersItsThumbVertically() {
-		final Slider slider = new Slider().valueSet(SliderNodeTest.digits(), 5).thumb(new SmallThumb());
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new SmallThumb());
 		this.bridges.open(new NodeUI(slider)).frame();
 		Assert.assertEquals(17D, slider.getThumb().getY(), 1E-9D);
 	}
@@ -303,8 +335,8 @@ public class SliderNodeTest {
 		return draws.get(0);
 	}
 
-	private static Set<Integer> digits() {
-		return new LinkedHashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+	private static Integer[] digits() {
+		return new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 	}
 
 	@AllArgsConstructor

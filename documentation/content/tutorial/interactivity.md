@@ -152,7 +152,7 @@ Then replace the placeholder texts of the three rows with the controls:
 final RectNode music = this.row(flex, "Music", label);
 ToggleSwitchNode.create(music.aw(-100), 18, 76, 36).signal(this.music).attach(music);
 final RectNode volume = this.row(flex, "Volume", label).visible(this.music);
-VolumeSliderNode.create(200, 24, 400, 24).values(0, 100, 80).signal(this.volume).attach(volume);
+VolumeSliderNode.create(200, 24, 400, 24).range(0, 100).signal(this.volume).attach(volume);
 TextNode.create(0, 0, volume.aw(-24), volume.getHeight()).text(Text.create(this.volume.get() + " %", label, Align.END, Align.CENTER)).attach(volume);
 ```
 
@@ -164,7 +164,7 @@ ToggleSwitchNode.create(notifications.aw(-100), 18, 76, 36).signal(this.notifica
 | Code | What it does |
 | --- | --- |
 | `signal(this.music)` | Binds the switch to the signal both ways: each click writes the new state, and a value set elsewhere moves the switch. |
-| `values(0, 100, 80)` | The integers from 0 to 100, starting at 80; the binding then applies the value of the signal. |
+| `range(0, 100)` | The integers from 0 to 100; the binding then applies the value of the signal, 80. |
 | `signal(this.volume)` | Binds the slider the same way: each new value is written into the signal. |
 | `visible(this.music)` | A boolean signal goes as it is to `visible(...)`: the Volume row shows only while the music is on. |
 | `Text.create(this.volume.get() + " %", ...)` | A plain expression that reads a signal: JOID follows it and recomputes the text each time `volume` changes, so "80 %" follows the slider. |
@@ -323,7 +323,7 @@ public final class SettingsUI extends UI {
 				final RectNode music = this.row(flex, "Music", label);
 				ToggleSwitchNode.create(music.aw(-100), 18, 76, 36).signal(this.settings.getMusic()).attach(music);
 				final RectNode volume = this.row(flex, "Volume", label).visible(this.settings.getMusic());
-				VolumeSliderNode.create(200, 24, 400, 24).values(0, 100, 80).signal(this.settings.getVolume()).attach(volume);
+				VolumeSliderNode.create(200, 24, 400, 24).range(0, 100).signal(this.settings.getVolume()).attach(volume);
 				TextNode.create(0, 0, volume.aw(-24), volume.getHeight()).text(Text.create(this.settings.getVolume().get() + " %", label, Align.END, Align.CENTER)).attach(volume);
 				TextNode.create(0, 0, 0, 36).text(Text.create("GENERAL", section, Align.START, Align.END)).attach(flex);
 				final RectNode notifications = this.row(flex, "Notifications", label);

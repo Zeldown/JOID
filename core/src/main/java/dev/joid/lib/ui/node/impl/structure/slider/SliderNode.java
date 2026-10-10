@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.structure.slider;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -82,13 +83,18 @@ public abstract class SliderNode<O> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends SliderNode<O>> @NonNull T valueSet(final @NonNull Set<O> valueSet, final @NonNull O value) {
-		if (!valueSet.contains(value)) {
-			throw new IllegalArgumentException("The value is not in the value set");
+	@SafeVarargs
+	public final <T extends SliderNode<O>> @NonNull T values(final @NonNull O @NonNull... values) {
+		if (values.length == 0) {
+			throw new IllegalArgumentException("A slider needs at least one option");
 		}
 
-		this.valueSet = valueSet;
-		this.change(value);
+		this.valueSet = new LinkedHashSet<>(Arrays.asList(values));
+		if (!this.valueSet.contains(this.value)) {
+			this.change(values[0]);
+		} else if (super.getUi() != null) {
+			this.place();
+		}
 		return (T) this;
 	}
 

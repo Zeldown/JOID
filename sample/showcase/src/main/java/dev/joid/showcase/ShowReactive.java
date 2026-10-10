@@ -45,15 +45,15 @@ public class ShowReactive extends ShowUI {
 
 		TextNode.create(158, 304).text(Text.create("Energy", ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).attach(this);
 		TextNode.create(764, 304).text(Text.create(Math.round(this.energy.get() * 100D) + " %", ShowUI.font(FontWeight.BOLD, 26F, ShowUI.PINK))).anchorX(Align.END).attach(this);
-		ShowSliderNode.create(156, 350, 610, ShowUI.FUCHSIA, ShowUI.PINK).values(0D, 1D, 0.01D, 0.35D).signal(this.energy).attach(this);
+		ShowSliderNode.create(156, 350, 610, ShowUI.FUCHSIA, ShowUI.PINK).range(0D, 1D, 0.01D).signal(this.energy).attach(this);
 
 		TextNode.create(158, 444).text(Text.create("Warmth", ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).attach(this);
 		TextNode.create(764, 444).text(Text.create(Math.round(this.warmth.get() * 100D) + " %", ShowUI.font(FontWeight.BOLD, 26F, ShowUI.AMBER))).anchorX(Align.END).attach(this);
-		ShowSliderNode.create(156, 490, 610, ShowUI.AMBER, ShowUI.ORANGE).values(0D, 1D, 0.01D, 0.2D).signal(this.warmth).attach(this);
+		ShowSliderNode.create(156, 490, 610, ShowUI.AMBER, ShowUI.ORANGE).range(0D, 1D, 0.01D).signal(this.warmth).attach(this);
 
 		TextNode.create(158, 584).text(Text.create("Space", ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).attach(this);
 		TextNode.create(764, 584).text(Text.create(Math.round(this.space.get() * 100D) + " %", ShowUI.font(FontWeight.BOLD, 26F, ShowUI.CYAN))).anchorX(Align.END).attach(this);
-		ShowSliderNode.create(156, 630, 610, ShowUI.SKY, ShowUI.CYAN).values(0D, 1D, 0.01D, 0.3D).signal(this.space).attach(this);
+		ShowSliderNode.create(156, 630, 610, ShowUI.SKY, ShowUI.CYAN).range(0D, 1D, 0.01D).signal(this.space).attach(this);
 
 		TextNode.create(158, 734).text(Text.create("Halo", ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).attach(this);
 		TextNode.create(158, 770).text(Text.create(this.halo.get() ? "On, glowing behind the orb" : "Off", ShowUI.font(FontWeight.MEDIUM, 18F, ShowUI.MUTED))).attach(this);

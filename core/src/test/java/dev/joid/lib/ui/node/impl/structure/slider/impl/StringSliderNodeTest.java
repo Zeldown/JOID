@@ -10,26 +10,31 @@ public class StringSliderNodeTest {
 
 	@Test
 	public void keepsTheOrderOfItsValues() {
-		final Slider slider = new Slider().values("medium", "low", "medium", "high");
+		final Slider slider = new Slider().values("low", "medium", "high").value("medium");
 		Assert.assertEquals(Arrays.asList("low", "medium", "high"), new ArrayList<>(slider.getValueSet()));
 		Assert.assertEquals("medium", slider.getValue());
 	}
 
 	@Test
 	public void namesTheConstantsOfAnEnum() {
-		final Slider slider = new Slider().values(Quality.HIGH, Quality.values());
+		final Slider slider = new Slider().values(Quality.values());
 		Assert.assertEquals(Arrays.asList("LOW", "MEDIUM", "HIGH"), new ArrayList<>(slider.getValueSet()));
-		Assert.assertEquals("HIGH", slider.getValue());
+		Assert.assertEquals("LOW", slider.getValue());
+	}
+
+	@Test
+	public void selectsAConstantOfAnEnum() {
+		Assert.assertEquals("HIGH", new Slider().values(Quality.values()).value(Quality.HIGH).getValue());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAValueOutsideItsValues() {
-		new Slider().values("ultra", "low", "high");
+		new Slider().values("low", "high").value("ultra");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAConstantOutsideItsValues() {
-		new Slider().values(Quality.HIGH, Quality.LOW, Quality.MEDIUM);
+		new Slider().values(Quality.LOW, Quality.MEDIUM).value(Quality.HIGH);
 	}
 
 	public static enum Quality {

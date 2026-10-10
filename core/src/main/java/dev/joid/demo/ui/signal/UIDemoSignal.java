@@ -130,7 +130,7 @@ public class UIDemoSignal extends UIDemo {
 		.create(100, 380, 400, 260)
 		.color(UIDemoSignal.PLACEHOLDER)
 		.body(rect -> {
-			DemoIntegerSliderNode.create(40, 40, 320, 40).values(0, 10, 5).signal(volume).attach(rect);
+			DemoIntegerSliderNode.create(40, 40, 320, 40).range(0, 10).signal(volume).attach(rect);
 			ProgressNode
 			.create(40, 110, 320, 20)
 			.background(Color.WHITE)

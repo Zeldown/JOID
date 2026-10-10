@@ -351,7 +351,7 @@ public final class SettingsUI extends UI {
 		.create(660, 270, 600, 400, "Settings")
 		.body(panel -> {
 			Label.create(40, 110, 160, 44, "Volume").attach(panel);
-			Slider.create(200, 110, 280, 44).values(0, 100, 65).signal(this.volume).attach(panel);
+			Slider.create(200, 110, 280, 44).range(0, 100).signal(this.volume).attach(panel);
 			Label.create(500, 110, 60, 44, this.volume.get() + " %").attach(panel);
 			Label.create(40, 180, 160, 44, "Subtitles").attach(panel);
 			Checkbox.create(200, 188, 28).signal(this.subtitles).attach(panel);
