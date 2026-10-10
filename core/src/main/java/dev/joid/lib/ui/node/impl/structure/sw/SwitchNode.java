@@ -48,7 +48,7 @@ public abstract class SwitchNode extends Node {
 				throw new IllegalArgumentException("The state list is empty");
 			}
 
-			this.configure(new LinkedList<>(value), 0);
+			this.configure(new LinkedList<>(value));
 		});
 	}
 
@@ -101,9 +101,9 @@ public abstract class SwitchNode extends Node {
 		this.change(this.stateList.peek(), index, this.stateList.peek().get(this.stateIndex.peek()));
 	}
 
-	private void configure(final List<String> stateList, final int index) {
+	private void configure(final List<String> stateList) {
 		final String previous = this.stateList.peek() == null || this.stateList.peek().isEmpty() ? null : this.stateList.peek().get(this.stateIndex.peek());
-		this.change(stateList, index, previous);
+		this.change(stateList, Math.max(0, stateList.indexOf(previous)), previous);
 	}
 
 	private void change(final List<String> stateList, final int index, final String previous) {

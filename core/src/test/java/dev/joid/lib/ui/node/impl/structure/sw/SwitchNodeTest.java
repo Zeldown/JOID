@@ -113,6 +113,18 @@ public class SwitchNodeTest {
 		final Switch node = this.open();
 		node.index(2).states("off", "on");
 		Assert.assertEquals("off", node.getState());
+		Assert.assertEquals(Arrays.asList("high", "off"), this.changes);
+	}
+
+	@Test
+	public void keepsItsStateWhenItRemainsAState() {
+		final Switch node = this.open();
+		node.state("medium");
+		this.changes.clear();
+		node.states("medium", "high");
+		Assert.assertEquals("medium", node.getState());
+		Assert.assertEquals(0, node.getStateIndex().get().intValue());
+		Assert.assertTrue(this.changes.isEmpty());
 	}
 
 	@Test

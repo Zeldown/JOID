@@ -53,7 +53,7 @@ Each segment follows `getState()` through `Signal.from(() -> ...)`: the loop var
 
 ## Defining the states with states
 
-`states(String...)` sets the list; the first state becomes current. `states(Supplier<List<String>>)` follows a list that changes. Each new list removes the children, runs `init(UI)` again and starts on the first state; a change of the current state rebuilds nothing.
+`states(String...)` sets the list; the first state becomes current. `states(Supplier<List<String>>)` follows a list that changes. Each new list removes the children and runs `init(UI)` again; the current state stays if the new list has it, otherwise the first state becomes current. A change of the current state rebuilds nothing.
 
 ```java
 private final BooleanSignal expert = BooleanSignal.of(false);
@@ -69,7 +69,7 @@ public void init() {
 }
 ```
 
-![Checking Expert adds an Ultra segment to the switch; the cursor selects Ultra, then unchecking Expert removes it and the switch is back on Low](../../images/switch-states.gif "Each new list of states rebuilds the segments and starts on the first state.")
+![Checking Expert adds an Ultra segment to the switch; the cursor selects Ultra, then unchecking Expert removes it and the switch is back on Low](../../images/switch-states.gif "Each new list of states rebuilds the segments; when the current state is gone, the first state takes over.")
 
 `SettingCheckboxNode` is the subclass written in [CheckboxNode](checkbox.md).
 
@@ -139,7 +139,7 @@ public void init() {
 |---|---|
 | `SwitchNode(x, y, width, height)` | Protected constructor for your subclass. |
 | `init(UI)` | Override to build the children; runs again for each new list of states. |
-| `states(String...)`, `states(Supplier<List<String>>)` | Sets the states; the first becomes current. |
+| `states(String...)`, `states(Supplier<List<String>>)` | Sets the states; keeps the current state if it is in the list, otherwise the first becomes current. |
 | `index(int)`, `state(String)` | Selects a state by position or name (also `Supplier` overloads). |
 | `signal(Signal<String>)` | Two-way binding of the state name. |
 | `onChange(NodeSwitchChangeCallback<T>)` | `(node, state)` after each change. |
