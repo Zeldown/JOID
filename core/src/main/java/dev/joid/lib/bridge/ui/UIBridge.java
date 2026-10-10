@@ -2,7 +2,9 @@ package dev.joid.lib.bridge.ui;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import dev.joid.internal.JOID;
@@ -28,9 +30,10 @@ public abstract class UIBridge implements IUIBridge {
 	@NonNull
 	private final IndexedLinkedList<@NonNull UI> uiList;
 
+	private final Set<MouseButton> consumedButtonSet;
+
 	private long        pressTime;
 	private MouseButton pressed;
-	private boolean     pressConsumed;
 
 	private Node   pressedNode;
 	private Cursor hoveredCursor;
@@ -39,6 +42,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	public UIBridge() {
 		this.uiList = new IndexedLinkedList<>();
+		this.consumedButtonSet = EnumSet.noneOf(MouseButton.class);
 	}
 
 	public final void load() {
@@ -81,25 +85,27 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean mousePressed(final @NonNull MouseButton button) {
-		this.pressed       = button;
-		this.pressTime     = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.pressedNode   = this.getHoveredNode();
-		this.pressConsumed = false;
+		this.pressed     = button;
+		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.pressedNode = this.getHoveredNode();
+		this.consumedButtonSet.remove(button);
 		for (final UI ui : this.getInputList()) {
 			if (ui.fireMousePressed(button) || ui.getPopup().active()) {
-				this.pressConsumed = UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
-				return this.pressConsumed;
+				final boolean consumed = UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
+				if (consumed) {
+					this.consumedButtonSet.add(button);
+				}
+				return consumed;
 			}
 		}
 		return false;
 	}
 
 	public final boolean mouseReleased(final @NonNull MouseButton button) {
-		final boolean consumed = this.pressed == button && this.pressConsumed;
+		final boolean consumed = this.consumedButtonSet.remove(button);
 		if (this.pressed == button) {
-			this.pressed       = null;
-			this.pressedNode   = null;
-			this.pressConsumed = false;
+			this.pressed     = null;
+			this.pressedNode = null;
 		}
 
 		for (final UI ui : this.getInputList()) {

@@ -634,6 +634,21 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void consumesTheReleaseOfEachButtonWhosePressItConsumed() {
+		final TraceUI overlay = new OverlayUI("overlay", this.trace);
+		overlay.cancel = true;
+		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
+		Assert.assertTrue(this.bridges.getUi().mousePressed(MouseButton.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mousePressed(MouseButton.MIDDLE));
+		overlay.cancel = false;
+		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.RIGHT));
+		Assert.assertFalse(this.bridges.getUi().mouseReleased(MouseButton.RIGHT));
+		Assert.assertTrue(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
+		Assert.assertTrue(this.bridges.getUi().mouseReleased(MouseButton.MIDDLE));
+		Assert.assertFalse(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
+	}
+
+	@Test
 	public void leavesUnconsumedTheEventsAnOverlayDoesNotCancel() {
 		final TraceUI overlay = new OverlayUI("overlay", this.trace);
 		overlay.cancel = true;
