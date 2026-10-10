@@ -126,7 +126,7 @@ loop.run();
 | Method | When to call it | Argument |
 |---|---|---|
 | `mousePressed(MouseButton clickType)` | A mouse button goes down. | `MouseButton.from(button)` maps 0 to `LEFT`, 1 to `RIGHT`, 2 to `MIDDLE`, 3 to `BACK`, 4 to `FORWARD`, anything else to `OTHER`. |
-| `mouseReleased(MouseButton clickType)` | A mouse button goes up. | The button released. Releasing the button of the last `mousePressed` ends its drag. |
+| `mouseReleased(MouseButton clickType)` | A mouse button goes up. | The button released. Releasing the button of the last `mousePressed` ends its drag, and is consumed when that press was. |
 | `mouseMoved()` | The mouse moves. | None. While a button is held, the bridge sends a drag with that button and the milliseconds since its press, read from the [clock bridge](bridges.md) (`BridgeHandler.CLOCK`), so a manual clock (testkit, replays) gives exact durations; without a held button it does nothing. |
 | `mouseScroll(double notchesX, double notchesY)` | The wheel turns or tilts, or a touchpad scrolls. | The distance in notches on each axis: `notchesY` is `1` for one notch away from the user, `-1` toward them; `notchesX` is positive toward the left, negative toward the right, as GLFW gives it; a fraction for a precise touchpad. GLFW and Minecraft give notches as they are; Windows and LWJGL 2 count `120` per notch, so divide by `120` (LWJGL 2 has no horizontal wheel: pass `0`). An event with both at `0` is ignored. Scrolling uses the sign; the dev-mode zoom (Alt + wheel) and the model viewer use the amount. |
 | `keyPressed(Key key)` | A key is pressed or repeats. | The engine-neutral `Key` (`Key.UNKNOWN` when unknown). |

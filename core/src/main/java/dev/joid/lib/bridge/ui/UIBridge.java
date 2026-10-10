@@ -30,6 +30,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	private long        pressTime;
 	private MouseButton pressed;
+	private boolean     pressConsumed;
 
 	private Node   pressedNode;
 	private Cursor hoveredCursor;
@@ -80,29 +81,33 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean mousePressed(final @NonNull MouseButton button) {
-		this.pressed     = button;
-		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.pressedNode = this.getHoveredNode();
+		this.pressed       = button;
+		this.pressTime     = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.pressedNode   = this.getHoveredNode();
+		this.pressConsumed = false;
 		for (final UI ui : this.getInputList()) {
 			if (ui.fireMousePressed(button) || ui.getPopup().active()) {
-				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
+				this.pressConsumed = UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
+				return this.pressConsumed;
 			}
 		}
 		return false;
 	}
 
 	public final boolean mouseReleased(final @NonNull MouseButton button) {
+		final boolean consumed = this.pressed == button && this.pressConsumed;
 		if (this.pressed == button) {
-			this.pressed     = null;
-			this.pressedNode = null;
+			this.pressed       = null;
+			this.pressedNode   = null;
+			this.pressConsumed = false;
 		}
 
 		for (final UI ui : this.getInputList()) {
 			if (ui.fireMouseReleased(button) || ui.getPopup().active()) {
-				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
+				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick()) || consumed;
 			}
 		}
-		return false;
+		return consumed;
 	}
 
 	public final boolean mouseScroll(final double notchesX, final double notchesY) {
