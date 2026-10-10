@@ -1,6 +1,5 @@
 package dev.joid.lib.ui.node.impl.structure.selector;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -137,9 +136,9 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	@SafeVarargs
-	public final <T extends SelectorNode<V>> @NonNull T values(final @NonNull V value, final @NonNull V @NonNull... values) {
-		if (!Arrays.asList(values).contains(value)) {
-			throw new IllegalArgumentException("The value " + value + " is not an option of the selector");
+	public final <T extends SelectorNode<V>> @NonNull T values(final @NonNull V @NonNull... values) {
+		if (values.length == 0) {
+			throw new IllegalArgumentException("A selector needs at least one option");
 		}
 
 		final V previous = this.getValue();
@@ -151,10 +150,10 @@ public abstract class SelectorNode<V> extends Node {
 			super.append(node);
 		}
 
-		if (value.equals(previous)) {
-			this.selected = this.find(value);
+		if (this.optionMap.containsValue(previous)) {
+			this.selected = this.find(previous);
 		} else {
-			this.select(this.find(value), DispatchContext.create());
+			this.select(this.find(values[0]), DispatchContext.create());
 		}
 		return (T) this;
 	}

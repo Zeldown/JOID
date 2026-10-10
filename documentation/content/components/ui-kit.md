@@ -358,7 +358,7 @@ public final class SettingsUI extends UI {
 			Label.create(40, 250, 160, 44, "Quality").attach(panel);
 			Switch.create(200, 250, 360, 44).states("Low", "Medium", "High").signal(this.quality).attach(panel);
 			Label.create(40, 320, 160, 44, "Language").attach(panel);
-			Selector.create(200, 320, 360, 44).values("English", "English", "Français", "Deutsch", "Español").signal(this.language).attach(panel);
+			Selector.create(200, 320, 360, 44).values("English", "Français", "Deutsch", "Español").signal(this.language).attach(panel);
 		})
 		.attach(this);
 	}

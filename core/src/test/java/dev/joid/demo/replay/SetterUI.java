@@ -117,7 +117,7 @@ public class SetterUI extends UI {
 		this.indexed = new Switch().states("low", "medium", "high").index(this.step.get() % 3).attach(this);
 		this.named = new Switch().states("low", "medium", "high").state(this.step.get() > 0 ? "high" : "low").attach(this);
 		this.selector = new Selector()
-		.values("first", "first", "second", "third")
+		.values("first", "second", "third")
 		.value(this.step.get() > 0 ? "second" : "first")
 		.active(this.step.get() > 1)
 		.attach(this);

@@ -34,7 +34,7 @@ public class UIDemoSelector extends UIDemo {
 		.body(rect -> {
 			DemoSelectorNode
 			.create(40, 30, 320, 50)
-			.values("First", "First", "Second", "Third")
+			.values("First", "Second", "Third")
 			.onChange((node, value) -> {
 				System.out.println("[UIDemoSelector] down selector value: " + value);
 				down.set(value);
@@ -52,7 +52,7 @@ public class UIDemoSelector extends UIDemo {
 			DemoSelectorNode
 			.create(40, 180, 320, 50)
 			.direction(SelectorDirection.UP)
-			.values("First", "First", "Second", "Third")
+			.values("First", "Second", "Third")
 			.onChange((node, value) -> System.out.println("[UIDemoSelector] up selector value: " + value))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Up", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -63,7 +63,7 @@ public class UIDemoSelector extends UIDemo {
 		.create(1200, 210, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
-			DemoSelectorNode.create(40, 30, 320, 50).values("Second", "First", "Second", "Third").active(true).attach(rect);
+			DemoSelectorNode.create(40, 30, 320, 50).values("First", "Second", "Third").value("Second").active(true).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Open", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -72,8 +72,8 @@ public class UIDemoSelector extends UIDemo {
 		.create(320, 550, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
-			DemoSelectorNode.create(40, 30, 150, 50).values("Second", "First", "Second", "Third").signal(shared).attach(rect);
-			DemoSelectorNode.create(210, 30, 150, 50).values("Second", "First", "Second", "Third").signal(shared).attach(rect);
+			DemoSelectorNode.create(40, 30, 150, 50).values("First", "Second", "Third").value("Second").signal(shared).attach(rect);
+			DemoSelectorNode.create(210, 30, 150, 50).values("First", "Second", "Third").value("Second").signal(shared).attach(rect);
 			TextNode.create(40, 200).text(Text.create("Value: " + shared.get(), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Shared signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -85,7 +85,7 @@ public class UIDemoSelector extends UIDemo {
 		.body(rect -> {
 			DemoSelectorNode
 			.create(40, 30, 320, 50)
-			.values("First", "First", "Second", "Third")
+			.values("First", "Second", "Third")
 			.onChange(new NodeSelectorChangeCallback<DemoSelectorNode, String>() {
 
 				@Override
@@ -110,7 +110,7 @@ public class UIDemoSelector extends UIDemo {
 		.create(1200, 550, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
-			DemoSelectorNode.create(40, 30, 320, 50).values("Second", "First", "Second", "Third").enabled(false).attach(rect);
+			DemoSelectorNode.create(40, 30, 320, 50).values("First", "Second", "Third").value("Second").enabled(false).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Disabled", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

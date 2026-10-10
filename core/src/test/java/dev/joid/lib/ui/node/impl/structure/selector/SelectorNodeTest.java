@@ -38,7 +38,7 @@ public class SelectorNodeTest {
 
 	@Before
 	public void createAnOptionList() {
-		this.selector = new Selector().onChange((node, value) -> this.changes.add(value)).values("first", "first", "second", "third");
+		this.selector = new Selector().onChange((node, value) -> this.changes.add(value)).values("first", "second", "third");
 		this.first = (RectNode) this.selector.getChildren().ordered().get(0);
 		this.second = (RectNode) this.selector.getChildren().ordered().get(1);
 		this.third = (RectNode) this.selector.getChildren().ordered().get(2);
@@ -181,13 +181,42 @@ public class SelectorNodeTest {
 	@Test
 	public void reportsItsFirstSelection() {
 		final List<String> selections = new ArrayList<>();
-		new Selector().onChange((node, value) -> selections.add(value)).values("second", "first", "second");
-		Assert.assertEquals(Arrays.asList("second"), selections);
+		new Selector().onChange((node, value) -> selections.add(value)).values("first", "second");
+		Assert.assertEquals(Arrays.asList("first"), selections);
+	}
+
+	@Test
+	public void keepsEveryValueAsAnOption() {
+		final Selector selector = new Selector().values("easy", "normal", "hard");
+		Assert.assertEquals(Arrays.asList("easy", "normal", "hard"), new ArrayList<>(selector.getOptionMap().values()));
+		Assert.assertEquals("easy", selector.getValue());
+	}
+
+	@Test
+	public void selectsTheGivenValue() {
+		final List<String> selections = new ArrayList<>();
+		final Selector selector = new Selector().onChange((node, value) -> selections.add(value)).values("easy", "normal", "hard").value("normal");
+		Assert.assertEquals("normal", selector.getValue());
+		Assert.assertEquals(Arrays.asList("easy", "normal"), selections);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAnEmptyOptionList() {
+		new Selector().values();
+	}
+
+	@Test
+	public void selectsItsFirstOptionWhenItsValueIsGone() {
+		this.selector.value("third");
+		this.changes.clear();
+		this.selector.values("first", "second");
+		Assert.assertEquals("first", this.selector.getValue());
+		Assert.assertEquals(Arrays.asList("first"), this.changes);
 	}
 
 	@Test
 	public void keepsItsValueWhenItsOptionsAreRebuilt() {
-		this.selector.values("first", "first", "second");
+		this.selector.values("first", "second");
 		Assert.assertEquals("first", this.selector.getValue());
 		Assert.assertTrue(this.changes.isEmpty());
 	}
@@ -195,7 +224,7 @@ public class SelectorNodeTest {
 	@Test
 	public void dropsItsOldOptionsWhenItsOptionsAreRebuilt() {
 		this.bridges.open(new NodeUI(this.selector)).frame();
-		this.selector.values("first", "first", "second");
+		this.selector.values("first", "second");
 		this.bridges.frame();
 		Assert.assertNull(this.first.getParent());
 		Assert.assertNull(this.third.getParent());
