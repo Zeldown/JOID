@@ -94,7 +94,7 @@ public class ShowPlayer extends ShowUI {
 		})
 		.onMouseReleased((node, mouseX, mouseY, button) -> {
 			if (this.scrub.get() >= 0D) {
-				this.player.seekTo(this.scrub.get() * this.player.getDuration());
+				this.player.seek(this.scrub.get() * this.player.getDuration());
 				this.scrub.set(-1D);
 			}
 		})

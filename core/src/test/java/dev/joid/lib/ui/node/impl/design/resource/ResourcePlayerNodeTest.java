@@ -45,7 +45,7 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void controlsNothingWithoutResource() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(10D, 20D, 30D, 40D);
-		Assert.assertSame(player, player.play().pause().resume().seek(1D).seekTo(1D).restart().stop());
+		Assert.assertSame(player, player.play().pause().resume().seek(1D).restart().stop());
 		Assert.assertSame(player, player.location(new Vector3f(1F, 2F, 3F)).referenceDistance(2F).maxDistance(9F));
 		Assert.assertFalse(player.isPlaying());
 		Assert.assertFalse(player.isPaused());
@@ -184,7 +184,7 @@ public class ResourcePlayerNodeTest {
 		this.bridges.open(new NodeUI(player));
 		Assert.assertSame(player, player.seek(0.12D));
 		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
-		Assert.assertSame(player, player.seekTo(0.06D));
+		Assert.assertSame(player, player.seek(0.06D));
 		Assert.assertEquals(0.25D, player.getProgress(), 1E-9D);
 	}
 
@@ -193,7 +193,7 @@ public class ResourcePlayerNodeTest {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));
 		this.settle(player, 6);
-		player.pause().seekTo(0.5D);
+		player.pause().seek(0.5D);
 		this.settle(player, 10);
 		Assert.assertTrue(player.isPaused());
 		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
@@ -209,7 +209,7 @@ public class ResourcePlayerNodeTest {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));
 		this.settle(player, 6);
-		player.seekTo(0.5D);
+		player.seek(0.5D);
 		this.settle(player, 1);
 		Assert.assertTrue(player.isPlaying());
 		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);

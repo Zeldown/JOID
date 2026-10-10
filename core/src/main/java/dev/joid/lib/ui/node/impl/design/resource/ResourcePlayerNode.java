@@ -192,10 +192,6 @@ public class ResourcePlayerNode extends Node {
 		return this;
 	}
 
-	public final @NonNull ResourcePlayerNode seekTo(final double seconds) {
-		return this.seek(seconds);
-	}
-
 	public final @NonNull ResourcePlayerNode restart() {
 		final IResourcePlayback playback = this.getPlayback();
 		if (playback != null && playback.restart().isPlaying()) {
