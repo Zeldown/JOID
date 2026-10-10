@@ -139,7 +139,7 @@ public final class ConfirmPopup extends UI {
 
 ## Overlays with @UIDataOverlay
 
-An overlay stays open while other UIs open and close, is drawn above them, and ignores `Escape`: a minimap, a notification panel. By default it takes no input and hides while a screen is open; `interaction` and `render` change that:
+An overlay stays open while other UIs open and close, is drawn above them, and ignores `Escape`: a minimap, a notification panel. A screen is a UI that is not an overlay, or a screen of the application (for example a game menu). By default an overlay takes no input and hides while a screen is open; `interaction` and `render` change that:
 
 ```java
 @UIData(background = false)
