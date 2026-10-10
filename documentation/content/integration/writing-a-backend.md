@@ -131,7 +131,7 @@ Here `EngineDevice` stands for the API of your engine.
 | `clearStencilBuffer()` | Clear the stencil of the screen to 0. |
 | `drawPrimitive(Primitive, VertexBuffer, IShader)` | Draw `TRIANGLES` or `LINES` with the current state and the given shader (the default shader when none is bound). |
 | `createTexture()` / `createFrameBuffer(width, height)` / `createShader(vertex, fragment, blend)` | Create the GPU objects below. |
-| `beginFrameCommands()` / `submitFrameCommands()` | Optional hooks of `beginFrame()` and `endFrame()`: start recording and submit, for an API that records commands per frame. |
+| `beginFrameCommands()` / `submitFrameCommands()` | Empty hooks of `beginFrame()` and `endFrame()`: start recording and submit, for an API that records commands per frame. |
 | `canWrap(TextureWrap)` | Return `false` for a wrap your API lacks; JOID then emulates `CLAMP_TO_BORDER` in the shaders. |
 
 Read the state with `getState()` (color, blend, depth, cull, lighting, color mask, alpha cutoff, stencil, viewport, framebuffer, texture with its filter and wrap, shader), and the matrices with `getProjection()` and `getModelView()`: column-major `float[16]` from `getMatrix()`. `resolveTexture()` and `resolveSampler(sampler)` give the texture to sample, or a 1×1 white texture when none is bound.

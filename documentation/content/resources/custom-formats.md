@@ -1,6 +1,6 @@
 # Custom Formats
 
-Every step of the resource pipeline is open: add a format, write a decoder, build animations from your own frames, or accept new in-memory inputs. Use this page when the formats of [Images and Media](../concepts/media.md) do not cover your content.
+Every step of the resource pipeline is open: add a format, write a decoder, build animations from your own frames, or accept other in-memory inputs. Use this page when the formats of [Images and Media](../concepts/media.md) do not cover your content.
 
 ```java
 ResourceFormat.register(new PpmResourceFormat());

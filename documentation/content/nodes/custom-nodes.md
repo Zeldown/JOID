@@ -243,7 +243,7 @@ Each property setter comes in pairs, like the built-in ones: the value overload 
 | `executeCallback(int, DispatchContext, Runnable, Object...)` | PRE phases, action, POST phases. Without the `Runnable`: the phases only. |
 | `executePreCallback`, `executePostCallback` | One phase only. |
 | `hasCallback(int)`, `getCallbackList(int)` | Registered callbacks. |
-| `follow(String, Supplier<V>, Consumer<V>)` | Protected. Applies the value now and on each change of the source. |
+| `follow(String, Supplier<V>, Consumer<V>)` | Protected. Applies the value at once, then on each change of the source. |
 | `bind`, `unbind`, `rebind` | Protected. Signal subscriptions that follow the node's UI. |
 | `sync(Signal<V>, V)` | Protected. Sets the signal when it is not `null` and holds another value. |
 | `NodeCallbackRegistry.next(Class)` | Validates a callback interface and returns its new id. |

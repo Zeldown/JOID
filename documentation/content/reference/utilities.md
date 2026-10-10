@@ -88,7 +88,7 @@ ThreadUtils.runOnRenderThread(() -> this.label.text(Text.create("Loaded", this.i
 | --- | --- |
 | `daemonFactory(String name)` | A factory of daemon threads named `name/1`, `name/2`, and so on. |
 | `daemonThread(Runnable task, String name)` | A daemon thread running `task`, not started. |
-| `runOnRenderThread(Runnable task)` | Runs `task` now on the render thread, or queues it there. |
+| `runOnRenderThread(Runnable task)` | Runs `task` at once from the render thread, otherwise queues it there. |
 
 ## Platform
 

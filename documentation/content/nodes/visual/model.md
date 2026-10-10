@@ -1,4 +1,4 @@
-# ModelNode
+# ModelNode and ModelViewerNode
 
 `ModelNode` draws a 3D model inside its box with a scale and a rotation. `ModelViewerNode` extends it into an interactive viewer: drag to rotate, wheel to zoom. Use them for item previews, character viewers and 3D icons.
 

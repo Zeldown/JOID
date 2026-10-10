@@ -56,7 +56,7 @@ RectNode
 .attach(this);
 ```
 
-After `zindex(...)` the chain is typed `Node`, so `color(...)` no longer compiles there. The same goes for lambda parameters: in `.body(rect -> ...)`, `rect` is a `Node`. When you need the concrete type, assign the result to a variable, or give the type to the shared setter:
+After `zindex(...)` the chain is typed `Node`, so `color(...)` does not compile there. The same goes for lambda parameters: in `.body(rect -> ...)`, `rect` is a `Node`. When you need the concrete type, assign the result to a variable, or give the type to the shared setter:
 
 ```java
 RectNode.create(100, 200, 300, 80).<RectNode>zindex(10).color(Color.GRAY).attach(this);
