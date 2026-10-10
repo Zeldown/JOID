@@ -88,7 +88,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 			final int start = index;
 			index += Character.charCount(codepoint);
 			final boolean drawn = face.hasGlyph(codepoint);
-			if (!drawn && codepoint != ' ' && codepoint != ' ') {
+			if (!drawn && codepoint != ' ' && codepoint != '\u00A0') {
 				continue;
 			}
 
