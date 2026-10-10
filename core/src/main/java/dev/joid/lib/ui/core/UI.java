@@ -516,8 +516,8 @@ public abstract class UI implements IUI, IndexedElement {
 		this.getBridge().drawHover(this, content, mouseX, mouseY);
 	}
 
-	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeiht, final @NonNull Drawing drawing) {
-		this.mask(maskX, maskY, maskWidth, maskHeiht, drawing, true);
+	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
+		this.mask(maskX, maskY, maskWidth, maskHeight, drawing, true);
 	}
 
 	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
