@@ -141,7 +141,7 @@ public class GlRenderBridge extends RenderBridge {
 			this.applyTarget(state);
 			this.applyPipeline(state);
 			final GlShader shader = (GlShader) current;
-			shader.use(state);
+			shader.use(state, buffer);
 			this.bindTexture(0, super.resolveTexture());
 			for (final UniformSampler sampler : shader.getSamplerMap().values()) {
 				final int location = shader.getLocation(sampler.getName());
@@ -159,7 +159,6 @@ public class GlRenderBridge extends RenderBridge {
 			this.toggleAttribute(VertexAttribute.COLOR.getLocation(), buffer.isColor());
 			this.toggleAttribute(VertexAttribute.NORMAL.getLocation(), buffer.isNormal());
 			vertices.vertexAttrib2f(VertexAttribute.TEXTURE_COORDINATE.getLocation(), 0F, 0F);
-			vertices.vertexAttrib4f(VertexAttribute.COLOR.getLocation(), state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
 			vertices.vertexAttrib3f(VertexAttribute.NORMAL.getLocation(), 0F, 0F, 1F);
 			vertices.drawArrays(GlEnums.mode(primitive), 0, buffer.getCount());
 		} finally {

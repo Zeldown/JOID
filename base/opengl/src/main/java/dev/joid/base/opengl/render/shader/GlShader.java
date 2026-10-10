@@ -15,6 +15,7 @@ import dev.joid.lib.bridge.render.shader.uniform.UniformType;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
+import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -37,9 +38,9 @@ public final class GlShader extends Shader {
 		return new GlShader(bridge, vertex, fragment, blend);
 	}
 
-	public void use(final @NonNull RenderState state) {
+	public void use(final @NonNull RenderState state, final @NonNull VertexBuffer buffer) {
 		this.programs.useProgram(this.program);
-		super.builtins(state, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
+		super.builtins(state, buffer, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
 	}
 
 	public int getLocation(final @NonNull String name) {

@@ -139,7 +139,7 @@ On OpenGL, embed `joid-base-opengl` and implement its binding interfaces (`dev.j
 | `COLOR` | 2 | 20 | color, 4 × normalized `UNSIGNED_BYTE`, RGBA | `isColor()` |
 | `NORMAL` | 3 | 24 | normal, 3 × normalized `BYTE` | `isNormal()` |
 
-- Missing attributes take these values: the current color (`getState().color(...)`) for the color, `(0, 0)` for the texture coordinates, `(0, 0, 1)` for the normal. Vertex colors replace the current color. An API without constant vertex attributes (Vulkan, Blaze3D) copies the buffer with `VertexFill.complete(VertexBuffer buffer, ByteBuffer target, RenderState state)`, which writes these values into the missing attributes of the copy (the current color rounded to bytes) from the position of `target`.
+- Missing attributes take these values: the current color (`getState().color(...)`) for the color, `(0, 0)` for the texture coordinates, `(0, 0, 1)` for the normal. Vertex colors replace the current color. The color comes from the shader on every backend: the translator reads `aColor` from the `joid_CurrentColor` uniform when `joid_VertexColor` is `0`, and `Shader.builtins(...)` writes both. An API without constant vertex attributes (Vulkan, Blaze3D) copies the buffer with `VertexFill.complete(VertexBuffer buffer, ByteBuffer target)`, which writes the texture coordinates and the normal into the missing attributes of the copy from the position of `target`.
 - A normal component is a signed byte divided by 127, so `127` is `1.0` and `-127` is `-1.0`, as `VK_FORMAT_R8G8B8A8_SNORM` reads it. The `aNormal` attribute of shaders receives that value.
 
 ### Lighting
@@ -319,7 +319,7 @@ protected void compileProgram(final @NonNull ShaderTranslation translation) {
 | `GlslShaderTranslator.translate(vertex, fragment)` | The `ShaderTranslation` the `Shader` constructor hands to `compileProgram`; `translateVertex` and `translateFragment` give one stage. |
 | `GlslShaderTranslator.createBlock(vertex, fragment)` | The `UniformBlock` of the declared uniforms: the built-in uniforms the code uses, the alpha test, the emulated stencil and the backend's own uniforms, then the uniforms of both stages, each once. |
 | `GlslShaderTranslator.getSamplers(vertex, fragment)` | The samplers of both stages, each once, for the `Shader` constructor. |
-| `Shader.builtins(RenderState state, float[] projection, MatrixStack modelView)` | Writes the built-in uniforms and the alpha test of a draw, and returns the block. |
+| `Shader.builtins(RenderState state, VertexBuffer buffer, float[] projection, MatrixStack modelView)` | Writes the built-in uniforms, the alpha test and the current color of a draw, and returns the block. |
 | `UniformBlock.value(name, ...)` | Writes a uniform the shader may not declare (ignored when absent), such as a backend uniform. |
 | `UniformBlock.pack()` | Copies the changed members into `getData()`, the `std140` image of the block, and returns whether anything changed. |
 | `UniformBlock.upload(Consumer<UniformMember>)` | Hands each changed member to the consumer, for APIs without uniform blocks. |
@@ -327,7 +327,7 @@ protected void compileProgram(final @NonNull ShaderTranslation translation) {
 At each draw, the backend writes the built-ins and sends what changed. With a uniform block:
 
 ```java
-if (super.builtins(state, projection, modelView).pack()) {
+if (super.builtins(state, buffer, projection, modelView).pack()) {
 	GL15C.glBufferSubData(GL31C.GL_UNIFORM_BUFFER, 0L, super.getBlock().getData());
 }
 ```
@@ -335,7 +335,7 @@ if (super.builtins(state, projection, modelView).pack()) {
 Vulkan sends the block this way, into its uniform stream at each draw. The OpenGL backends declare their uniforms with `UniformLayout.LOOSE` and send each changed member with `glUniform*` through `upload(...)`, by its `UniformType`; `GlShader` does it on every OpenGL context:
 
 ```java
-super.builtins(state, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
+super.builtins(state, buffer, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
 ```
 
 A member's values are tightly packed in `getValues()` (column by column for a matrix), ready for these calls.

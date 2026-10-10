@@ -31,7 +31,6 @@ import dev.joid.backend.vulkan.render.descriptor.DescriptorCache;
 import dev.joid.backend.vulkan.render.framebuffer.VulkanFrameBuffer;
 import dev.joid.backend.vulkan.render.pipeline.PipelineCache;
 import dev.joid.backend.vulkan.render.shader.VulkanShader;
-import dev.joid.backend.vulkan.render.shader.VulkanShaderTranslator;
 import dev.joid.backend.vulkan.render.texture.VulkanBorrowedTexture;
 import dev.joid.backend.vulkan.render.texture.VulkanTexture;
 import dev.joid.lib.bridge.render.RenderBridge;
@@ -234,7 +233,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			this.applyDynamicState(stack, state, target != null, primitive == Primitive.LINES ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 			final long vertexOffset = this.writeVertices(buffer, state);
-			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer.isColor());
+			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer);
 			final long descriptorSet = this.descriptorCache.get(shader, this.uniformAllocator.getBuffer().getBuffer(), this.getImages(shader));
 
 			VK10.vkCmdBindDescriptorSets(this.commandBuffer, VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, shader.getPipelineLayout(), 0, stack.longs(descriptorSet), dynamicOffsets);
@@ -355,15 +354,12 @@ public final class VulkanRenderBridge extends RenderBridge {
 	private long writeVertices(final VertexBuffer buffer, final RenderState state) {
 		final int size = buffer.getCount() * VertexBuffer.STRIDE;
 		final long offset = this.vertexAllocator.allocate(size);
-		VertexFill.complete(buffer, MemoryUtil.memByteBuffer(this.vertexAllocator.getBuffer().getAddress() + offset, size), state);
+		VertexFill.complete(buffer, MemoryUtil.memByteBuffer(this.vertexAllocator.getBuffer().getAddress() + offset, size));
 		return offset;
 	}
 
-	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final VulkanShader shader, final boolean color) {
-		shader.builtins(state, DepthRange.toZeroToOne(super.getProjection().getMatrix()), super.getModelView())
-		.value(VulkanShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha())
-		.value(VulkanShaderTranslator.VERTEX_COLOR, color)
-		.pack();
+	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final VulkanShader shader, final VertexBuffer buffer) {
+		shader.builtins(state, buffer, DepthRange.toZeroToOne(super.getProjection().getMatrix()), super.getModelView()).pack();
 
 		final long previousBuffer = this.uniformAllocator.getBuffer().getBuffer();
 		final IntBuffer offsets = this.uploadBlock(stack, shader);

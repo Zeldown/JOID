@@ -24,6 +24,7 @@ import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
+import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -135,7 +136,7 @@ public abstract class Shader implements IShader {
 		return this.lineShader;
 	}
 
-	public final @NonNull UniformBlock builtins(final @NonNull RenderState state, final @NonNull float[] projection, final @NonNull MatrixStack modelView) {
+	public final @NonNull UniformBlock builtins(final @NonNull RenderState state, final @NonNull VertexBuffer buffer, final @NonNull float[] projection, final @NonNull MatrixStack modelView) {
 		for (final UniformSampler sampler : this.samplerMap.values()) {
 			final String name = GlslShaderTranslator.BORDER + sampler.getName();
 			if (this.block.getMember(name) != null) {
@@ -151,7 +152,9 @@ public abstract class Shader implements IShader {
 		.value(GlslShaderTranslator.ALPHA_TEST, state.getAlphaCutoff() > 0F)
 		.value(GlslShaderTranslator.ALPHA_THRESHOLD, state.getAlphaCutoff())
 		.value(GlslShaderTranslator.LINE_WIDTH, state.getLineWidth())
-		.value(GlslShaderTranslator.LINE_VIEWPORT, state.getViewportWidth(), state.getViewportHeight());
+		.value(GlslShaderTranslator.LINE_VIEWPORT, state.getViewportWidth(), state.getViewportHeight())
+		.value(GlslShaderTranslator.VERTEX_COLOR, buffer.isColor())
+		.value(GlslShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
 	}
 
 	protected abstract void compileProgram(final @NonNull ShaderTranslation translation);

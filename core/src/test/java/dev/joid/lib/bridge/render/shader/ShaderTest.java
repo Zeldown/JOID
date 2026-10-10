@@ -2,6 +2,7 @@ package dev.joid.lib.bridge.render.shader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
@@ -120,13 +121,25 @@ public class ShaderTest {
 	}
 
 	@Test
+	public void writesTheCurrentColorForTheVerticesWithoutColor() {
+		final TestShader shader = new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, "in vec4 vColor;\n\nvoid main() {\n    fragColor = vColor;\n}\n"));
+		final RenderState state = new RenderState();
+		state.color(1F, 0.5F, 0.25F, 1F);
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
+		Assert.assertEquals(0.25F, shader.getBlock().getMember(GlslShaderTranslator.CURRENT_COLOR).getValues().getFloat(8), 0F);
+		Assert.assertEquals(0, shader.getBlock().getMember(GlslShaderTranslator.VERTEX_COLOR).getValues().getInt(0));
+		shader.builtins(state, ShaderTest.vertices(true), new float[16], new MatrixStack());
+		Assert.assertEquals(1, shader.getBlock().getMember(GlslShaderTranslator.VERTEX_COLOR).getValues().getInt(0));
+	}
+
+	@Test
 	public void writesTheBuiltinsOfADraw() {
 		final TestShader shader = ShaderTest.create();
 		final MatrixStack modelView = new MatrixStack();
 		modelView.translate(4D, 0D, 0D);
 		final RenderState state = new RenderState();
 		state.alphaCutoff(0.5F);
-		shader.builtins(state, new float[16], modelView);
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], modelView);
 		Assert.assertEquals(4F, shader.getBlock().getMember("uModelViewMatrix").getValues().getFloat(48), 0F);
 		Assert.assertEquals(1, shader.getBlock().getMember(GlslShaderTranslator.ALPHA_TEST).getValues().getInt(0));
 		Assert.assertEquals(0.5F, shader.getBlock().getMember(GlslShaderTranslator.ALPHA_THRESHOLD).getValues().getFloat(0), 0F);
@@ -160,16 +173,16 @@ public class ShaderTest {
 		final ITexture noise = new RecordingTexture().allocate(8, 4);
 		shader.sampler("u_Noise", noise, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
 		final RenderState state = new RenderState();
-		shader.builtins(state, new float[16], new MatrixStack());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "u_Noise", 2F, 8F, 4F);
 		ShaderTest.assertBorder(shader, "tex", 0F, 1F, 1F);
 		state.texture(new RecordingTexture().allocate(16, 2));
 		state.textureFilter(TextureFilter.NEAREST);
 		state.textureWrap(TextureWrap.CLAMP_TO_BORDER);
-		shader.builtins(state, new float[16], new MatrixStack());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "tex", 1F, 16F, 2F);
 		state.textureWrap(TextureWrap.CLAMP_TO_EDGE);
-		shader.builtins(state, new float[16], new MatrixStack());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "tex", 0F, 1F, 1F);
 	}
 
@@ -233,8 +246,8 @@ public class ShaderTest {
 		final RenderState state = new RenderState();
 		state.lineWidth(3F);
 		state.viewport(0, 0, 800, 600);
-		((Shader) shader.getLineShader()).builtins(state, new float[16], new MatrixStack());
-		shader.builtins(state, new float[16], new MatrixStack());
+		((Shader) shader.getLineShader()).builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		final UniformBlock block = ((Shader) shader.getLineShader()).getBlock();
 		Assert.assertEquals(3F, block.getMember(GlslShaderTranslator.LINE_WIDTH).getValues().getFloat(0), 0F);
 		Assert.assertEquals(600F, block.getMember(GlslShaderTranslator.LINE_VIEWPORT).getValues().getFloat(4), 0F);
@@ -258,6 +271,10 @@ public class ShaderTest {
 			System.setErr(previous);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	private static VertexBuffer vertices(final boolean color) {
+		return VertexBuffer.create(ByteBuffer.allocateDirect(VertexBuffer.STRIDE), 1, false, color, false);
 	}
 
 	private static TestShader create() {

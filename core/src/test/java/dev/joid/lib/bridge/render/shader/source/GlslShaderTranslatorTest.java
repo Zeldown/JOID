@@ -18,7 +18,7 @@ public class GlslShaderTranslatorTest {
 	private static final String SMOOTH_VERTEX   = "out vec2 vTexCoord;\nuniform float u_Scale;\n\nvoid main() {\n    vTexCoord = aTexCoord * u_Scale;\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}\n";
 	private static final String SMOOTH_FRAGMENT = "in vec2 vTexCoord;\nuniform sampler2D tex;\nuniform vec3 u_Tint;\n\nvoid main() {\n    fragColor = texture(tex, vTexCoord) * vec4(u_Tint, 1.0);\n}\n";
 
-	private static final String BLOCK = "layout(std140) uniform JoidUniforms {\n\tmat4 uProjectionMatrix;\n\tmat4 uModelViewMatrix;\n\tbool uLighting;\n\tint joid_AlphaTest;\n\tfloat joid_AlphaThreshold;\n\tfloat u_Scale;\n\tvec4 u_Colors[4];\n\tvec3 u_Tint;\n};\n";
+	private static final String BLOCK = "layout(std140) uniform JoidUniforms {\n\tmat4 uProjectionMatrix;\n\tmat4 uModelViewMatrix;\n\tbool uLighting;\n\tint joid_AlphaTest;\n\tfloat joid_AlphaThreshold;\n\tvec4 joid_CurrentColor;\n\tint joid_VertexColor;\n\tfloat u_Scale;\n\tvec4 u_Colors[4];\n\tvec3 u_Tint;\n};\n";
 
 	@Test
 	public void sharesTheUniformBlockBetweenStages() {
@@ -33,6 +33,12 @@ public class GlslShaderTranslatorTest {
 		Assert.assertTrue(vertex.contains("layout(location = 1) in vec2 aTexCoord;\n"));
 		Assert.assertTrue(vertex.contains("layout(location = 2) in vec4 aColor;\n"));
 		Assert.assertFalse(vertex.contains("aNormal"));
+	}
+
+	@Test
+	public void takesTheCurrentColorForTheVerticesWithoutColor() {
+		Assert.assertTrue(GlslShaderTranslatorTest.translateVertex(GlslDialect.GLSL_330).contains("(joid_VertexColor != 0 ? aColor : joid_CurrentColor)"));
+		Assert.assertFalse(GlslShaderTranslatorTest.translate(GlslDialect.GLSL_120, UniformLayout.LOOSE, GlslShaderTranslatorTest.SMOOTH_VERTEX, GlslShaderTranslatorTest.SMOOTH_FRAGMENT, true).contains("joid_CurrentColor"));
 	}
 
 	@Test
@@ -76,14 +82,14 @@ public class GlslShaderTranslatorTest {
 	@Test
 	public void listsTheUniformsOnceForBothStages() {
 		final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
-		Assert.assertEquals("uProjectionMatrix uModelViewMatrix uLighting joid_AlphaTest joid_AlphaThreshold u_Scale u_Colors u_Tint", translator.getUniforms(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()).stream().map(ShaderVariable::getName).collect(Collectors.joining(" ")));
+		Assert.assertEquals("uProjectionMatrix uModelViewMatrix uLighting joid_AlphaTest joid_AlphaThreshold joid_CurrentColor joid_VertexColor u_Scale u_Colors u_Tint", translator.getUniforms(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()).stream().map(ShaderVariable::getName).collect(Collectors.joining(" ")));
 		Assert.assertEquals("mask tex", translator.getSamplers(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()).stream().map(ShaderVariable::getName).collect(Collectors.joining(" ")));
 	}
 
 	@Test
 	public void createsTheBlockOfTheTranslatedUniforms() {
 		final GlslShaderTranslator translator = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK);
-		Assert.assertEquals(8, translator.createBlock(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()).getMemberMap().size());
+		Assert.assertEquals(10, translator.createBlock(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()).getMemberMap().size());
 		Assert.assertEquals(4, translator.createBlock(GlslShaderTranslatorTest.vertex(), GlslShaderTranslatorTest.fragment()).getMember("u_Colors").getLength());
 	}
 
@@ -91,7 +97,7 @@ public class GlslShaderTranslatorTest {
 	public void declaresLooseUniformsInBothStages() {
 		final String vertex = GlslShaderTranslatorTest.translate(GlslDialect.GLSL_330, UniformLayout.LOOSE, GlslShaderTranslatorTest.VERTEX, GlslShaderTranslatorTest.FRAGMENT, true);
 		Assert.assertFalse(vertex.contains("JoidUniforms"));
-		Assert.assertTrue(vertex.contains("uniform mat4 uProjectionMatrix;\nuniform mat4 uModelViewMatrix;\nuniform bool uLighting;\nuniform int joid_AlphaTest;\nuniform float joid_AlphaThreshold;\nuniform float u_Scale;\nuniform vec4 u_Colors[4];\nuniform vec3 u_Tint;\n"));
+		Assert.assertTrue(vertex.contains("uniform mat4 uProjectionMatrix;\nuniform mat4 uModelViewMatrix;\nuniform bool uLighting;\nuniform int joid_AlphaTest;\nuniform float joid_AlphaThreshold;\nuniform vec4 joid_CurrentColor;\nuniform int joid_VertexColor;\nuniform float u_Scale;\nuniform vec4 u_Colors[4];\nuniform vec3 u_Tint;\n"));
 	}
 
 	@Test

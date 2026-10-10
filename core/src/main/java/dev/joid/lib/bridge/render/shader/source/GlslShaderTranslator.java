@@ -29,6 +29,9 @@ public class GlslShaderTranslator {
 	public static final String LINE_WIDTH    = "joid_LineWidth";
 	public static final String LINE_VIEWPORT = "joid_LineViewport";
 
+	public static final String VERTEX_COLOR  = "joid_VertexColor";
+	public static final String CURRENT_COLOR = "joid_CurrentColor";
+
 	public static final String BORDER = "joid_Border_";
 
 	private static final String[] LINE_VARYINGS = {"joid_LineAcross", "joid_LineAlong", "joid_LineLength"};
@@ -82,12 +85,12 @@ public class GlslShaderTranslator {
 		}
 
 		if (!vertex.isLine()) {
-			return builder.append(this.dialect.getLineDirective()).append(this.adapt(vertex.getBody(), vertex, fragment)).toString();
+			return builder.append(this.dialect.getLineDirective()).append(GlslShaderTranslator.colorize(this.adapt(vertex.getBody(), vertex, fragment))).toString();
 		}
 
 		this.appendLineVaryings(builder, varyings.size(), true);
 		builder.append("vec3 joid_Position;\nvec2 joid_TexCoord;\nvec3 joid_Normal;\n").append(this.dialect.getLineDirective());
-		final String body = this.adapt(vertex.getBody(), vertex, fragment).replaceAll("\\baPosition\\b", "joid_Position").replaceAll("\\baTexCoord\\b", "joid_TexCoord").replaceAll("\\baNormal\\b", "joid_Normal");
+		final String body = GlslShaderTranslator.colorize(this.adapt(vertex.getBody(), vertex, fragment)).replaceAll("\\baPosition\\b", "joid_Position").replaceAll("\\baTexCoord\\b", "joid_TexCoord").replaceAll("\\baNormal\\b", "joid_Normal");
 		return builder.append(body.replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()")).append(GlslShaderTranslator.getLineMain()).toString();
 	}
 
@@ -198,6 +201,10 @@ public class GlslShaderTranslator {
 			for (final String name : new String[] {GlslShaderTranslator.STENCIL_TEST, GlslShaderTranslator.STENCIL_FUNCTION, GlslShaderTranslator.STENCIL_REFERENCE, GlslShaderTranslator.STENCIL_MASK, GlslShaderTranslator.STENCIL_FAIL, GlslShaderTranslator.STENCIL_PASS}) {
 				internalList.add(ShaderVariable.create("int", name, "", false));
 			}
+		}
+		if (vertex.getBuiltins().contains(ShaderBuiltin.COLOR)) {
+			internalList.add(ShaderVariable.create("vec4", GlslShaderTranslator.CURRENT_COLOR, "", false));
+			internalList.add(ShaderVariable.create("int", GlslShaderTranslator.VERTEX_COLOR, "", false));
 		}
 		return internalList;
 	}
@@ -312,6 +319,10 @@ public class GlslShaderTranslator {
 				throw new UnsupportedOperationException("The shader uses " + feature.getDescription() + ", which needs " + (this.dialect.isEs() ? feature.getEssl() : feature.getGlsl()).getName() + ", but the dialect is " + this.dialect.getName());
 			}
 		}
+	}
+
+	private static String colorize(final String body) {
+		return body.replaceAll("\\baColor\\b", "(joid_VertexColor != 0 ? aColor : joid_CurrentColor)");
 	}
 
 	private static String getLineMain() {

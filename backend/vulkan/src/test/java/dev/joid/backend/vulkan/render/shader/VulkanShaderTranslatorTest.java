@@ -104,8 +104,8 @@ public class VulkanShaderTranslatorTest {
 	@Test
 	public void redirectsColorToCurrentColor() {
 		final String vertex = VulkanShaderTranslatorTest.translateVertex();
-		Assert.assertTrue(vertex.contains("layout(location = 2) in vec4 joid_Color;\n"));
-		Assert.assertTrue(vertex.contains("#define aColor (joid_VertexColor != 0 ? joid_Color : joid_CurrentColor)\n"));
+		Assert.assertTrue(vertex.contains("layout(location = 2) in vec4 aColor;\n"));
+		Assert.assertTrue(vertex.contains("vColor = (joid_VertexColor != 0 ? aColor : joid_CurrentColor) * u_Colors[1];\n"));
 	}
 
 	@Test

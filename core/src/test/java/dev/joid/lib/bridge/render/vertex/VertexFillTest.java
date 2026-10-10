@@ -6,14 +6,12 @@ import java.nio.ByteOrder;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.lib.bridge.render.state.RenderState;
-
 public class VertexFillTest {
 
 	@Test
 	public void copiesACompleteBufferAsIs() {
 		final VertexBuffer buffer = VertexFillTest.create(2, true, true, true);
-		final ByteBuffer target = VertexFill.complete(buffer, VertexFillTest.allocate(2), new RenderState());
+		final ByteBuffer target = VertexFill.complete(buffer, VertexFillTest.allocate(2));
 		for (int i = 0; i < 2 * VertexBuffer.STRIDE; i++) {
 			Assert.assertEquals(buffer.getBuffer().get(i), target.get(i));
 		}
@@ -21,31 +19,20 @@ public class VertexFillTest {
 
 	@Test
 	public void keepsThePositions() {
-		final ByteBuffer target = VertexFill.complete(VertexFillTest.create(2, false, false, false), VertexFillTest.allocate(2), new RenderState());
+		final ByteBuffer target = VertexFill.complete(VertexFillTest.create(2, false, false, false), VertexFillTest.allocate(2));
 		Assert.assertEquals(1F, target.getFloat(VertexBuffer.STRIDE + VertexAttribute.POSITION.getOffset()), 0F);
 	}
 
 	@Test
 	public void zeroesTheMissingTextureCoordinates() {
-		final ByteBuffer target = VertexFill.complete(VertexFillTest.create(1, false, true, true), VertexFillTest.allocate(1), new RenderState());
+		final ByteBuffer target = VertexFill.complete(VertexFillTest.create(1, false, true, true), VertexFillTest.allocate(1));
 		Assert.assertEquals(0F, target.getFloat(VertexAttribute.TEXTURE_COORDINATE.getOffset()), 0F);
 		Assert.assertEquals(0F, target.getFloat(VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4), 0F);
 	}
 
 	@Test
-	public void givesTheCurrentColorToTheMissingColors() {
-		final RenderState state = new RenderState();
-		state.color(1F, 0.5F, 0F, 2F);
-		final ByteBuffer target = VertexFill.complete(VertexFillTest.create(1, true, false, true), VertexFillTest.allocate(1), state);
-		Assert.assertEquals(255, target.get(VertexAttribute.COLOR.getOffset()) & 0xFF);
-		Assert.assertEquals(128, target.get(VertexAttribute.COLOR.getOffset() + 1) & 0xFF);
-		Assert.assertEquals(0, target.get(VertexAttribute.COLOR.getOffset() + 2) & 0xFF);
-		Assert.assertEquals(255, target.get(VertexAttribute.COLOR.getOffset() + 3) & 0xFF);
-	}
-
-	@Test
 	public void pointsTheMissingNormalsTowardsTheViewer() {
-		final ByteBuffer target = VertexFill.complete(VertexFillTest.create(1, true, true, false), VertexFillTest.allocate(1), new RenderState());
+		final ByteBuffer target = VertexFill.complete(VertexFillTest.create(1, true, true, false), VertexFillTest.allocate(1));
 		Assert.assertEquals(0, target.get(VertexAttribute.NORMAL.getOffset()));
 		Assert.assertEquals(0, target.get(VertexAttribute.NORMAL.getOffset() + 1));
 		Assert.assertEquals(127, target.get(VertexAttribute.NORMAL.getOffset() + 2));
@@ -55,7 +42,7 @@ public class VertexFillTest {
 	public void writesFromThePositionOfTheTarget() {
 		final ByteBuffer target = ByteBuffer.allocateDirect(3 * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
 		target.position(VertexBuffer.STRIDE);
-		VertexFill.complete(VertexFillTest.create(2, false, true, true), target, new RenderState());
+		VertexFill.complete(VertexFillTest.create(2, false, true, true), target);
 		Assert.assertEquals(VertexBuffer.STRIDE, target.position());
 		Assert.assertEquals(1F, target.getFloat(2 * VertexBuffer.STRIDE + VertexAttribute.POSITION.getOffset()), 0F);
 		Assert.assertEquals(0F, target.getFloat(2 * VertexBuffer.STRIDE + VertexAttribute.TEXTURE_COORDINATE.getOffset()), 0F);
