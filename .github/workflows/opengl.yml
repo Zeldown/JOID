@@ -1,0 +1,111 @@
+name: OpenGL Profiles
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+env:
+  LIBGL_ALWAYS_SOFTWARE: 1
+  GALLIUM_DRIVER: llvmpipe
+
+jobs:
+  references:
+    name: References (Mesa llvmpipe)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+      - name: Install Mesa and Xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0
+      - name: Record the snapshots of the default context
+        run: chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew :base-opengl:test :backend-lwjgl3:updateSnapshots --continue
+      - name: Upload the references
+        uses: actions/upload-artifact@v4
+        with:
+          name: references
+          path: .snapshots/backend-lwjgl3
+          include-hidden-files: true
+          retention-days: 1
+      - name: Upload the report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-DEFAULT
+          path: |
+            build/snapshots/backend-lwjgl3
+            backend/lwjgl3/build/reports/tests
+            base/opengl/build/reports/tests
+          retention-days: 7
+
+  profiles:
+    name: ${{ matrix.profile }}
+    needs: references
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: GL_20
+            gl: '2.0'
+            glsl: '120'
+          - profile: GL_21
+            gl: '2.1'
+            glsl: '120'
+          - profile: GL_21_EXT
+            gl: '2.1'
+            glsl: '120'
+          - profile: GL_21_EXT_NO_BLIT
+            gl: '2.1'
+            glsl: '120'
+          - profile: GL_30
+            gl: '3.0'
+            glsl: '130'
+          - profile: GL_32_FORWARD_COMPATIBLE
+            gl: '3.2'
+            glsl: '150'
+          - profile: GL_33
+            gl: '3.3'
+            glsl: '330'
+          - profile: GL_45_COMPATIBILITY
+            gl: ''
+            glsl: ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+      - name: Install Mesa and Xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0
+      - name: Download the references
+        uses: actions/download-artifact@v4
+        with:
+          name: references
+          path: .snapshots/backend-lwjgl3
+      - name: Test the profile
+        run: |
+          if [ -n "${{ matrix.gl }}" ]; then
+            export MESA_GL_VERSION_OVERRIDE=${{ matrix.gl }}
+            export MESA_GLSL_VERSION_OVERRIDE=${{ matrix.glsl }}
+          fi
+          chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew :base-opengl:test :backend-lwjgl3:test -PglProfile=${{ matrix.profile }} --continue
+      - name: Upload the report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ matrix.profile }}
+          path: |
+            build/snapshots/backend-lwjgl3
+            backend/lwjgl3/build/reports/tests
+            base/opengl/build/reports/tests
+          retention-days: 7
