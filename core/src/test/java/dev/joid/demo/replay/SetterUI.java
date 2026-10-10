@@ -9,6 +9,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.model.ModelNode;
@@ -32,6 +33,7 @@ import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 
 @Getter
+@UIDataDebug(profiler = false, hotreload = false)
 public class SetterUI extends UI {
 
 	private final TextInfo      info  = TextInfo.create(new TextFont(), 10F);
