@@ -316,9 +316,9 @@ public class DrawShapeTest {
 	}
 
 	@Test
-	public void fillsTheCornersOfAFilledBorder() {
+	public void fillsTheCornersOfABorder() {
 		DrawUtils.SHAPE.drawRect(10.3D, 10.3D, 100D, 50D, new Color(0F, 0F, 1F, 1F));
-		DrawUtils.SHAPE.drawFilledBorder(10.3D, 10.3D, 110.3D, 60.3D, new Color(0F, 1F, 1F, 1F), 3D);
+		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 110.3D, 60.3D, new Color(0F, 1F, 1F, 1F), 3D);
 		final Draw box = this.single(0F, 0F, 1F);
 		final List<Draw> sides = this.bridges.getRender().getDraws(0F, 1F, 1F);
 		Assert.assertEquals(4, sides.size());
@@ -361,32 +361,6 @@ public class DrawShapeTest {
 		Assert.assertEquals(6F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
 		Assert.assertEquals(74F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
-	}
-
-	@Test
-	public void drawsAFilledBorderLikeABorder() {
-		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 110.3D, 60.3D, new Color(1F, 0F, 0F, 1F), 3D);
-		DrawUtils.SHAPE.drawFilledBorder(10.3D, 10.3D, 110.3D, 60.3D, new Color(0F, 1F, 1F, 1F), 3D);
-		final List<Draw> border = this.bridges.getRender().getDraws(1F, 0F, 0F);
-		final List<Draw> filled = this.bridges.getRender().getDraws(0F, 1F, 1F);
-		Assert.assertEquals(border.size(), filled.size());
-		for (int i = 0; i < border.size(); i++) {
-			Assert.assertEquals(border.get(i).getLeft(), filled.get(i).getLeft(), 1E-3D);
-			Assert.assertEquals(border.get(i).getTop(), filled.get(i).getTop(), 1E-3D);
-			Assert.assertEquals(border.get(i).getRight(), filled.get(i).getRight(), 1E-3D);
-			Assert.assertEquals(border.get(i).getBottom(), filled.get(i).getBottom(), 1E-3D);
-		}
-	}
-
-	@Test
-	public void fadesAFilledBorderThinnerThanAPixel() {
-		DrawUtils.SHAPE.drawFilledBorder(10.3D, 10.3D, 110.3D, 60.3D, new Color(0F, 1F, 1F, 1F));
-		final List<Draw> sides = this.bridges.getRender().getDraws(0F, 1F, 1F);
-		Assert.assertEquals(4, sides.size());
-		Assert.assertEquals(1D, sides.get(0).getBottom() - sides.get(0).getTop(), 1E-3D);
-		Assert.assertEquals(sides.get(1).getLeft(), sides.get(0).getLeft(), 1E-3D);
-		Assert.assertEquals(768F / 1080F, sides.get(0).getAlpha(), 1E-4F);
-		Assert.assertEquals(1366F / 1920F, sides.get(1).getAlpha(), 1E-4F);
 	}
 
 	@Test

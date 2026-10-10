@@ -109,14 +109,6 @@ public final class DrawShape {
 		this.drawEdges(right, top, outerRight, bottom, vertical);
 	}
 
-	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
-		this.drawFilledBorder(x, y, x2, y2, color, 1D);
-	}
-
-	public void drawFilledBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
-		this.drawBorder(x, y, x2, y2, color, stroke);
-	}
-
 	public void drawPolygon(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
 		this.drawShape(DrawMode.POLYGON, color, points);
 	}

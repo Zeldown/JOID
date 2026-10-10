@@ -42,7 +42,7 @@ public class UIDemoDraggable extends UIDemo {
 			RectNode.create(22, 48, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 		};
 		final Consumer<Node> outline = node -> node.layer((mouseX, mouseY) -> {
-			DrawUtils.SHAPE.drawFilledBorder(node.getX(), node.getY(), node.getX() + node.getWidth(), node.getY() + node.getHeight(), UIDemoDraggable.INK, 2D);
+			DrawUtils.SHAPE.drawBorder(node.getX(), node.getY(), node.getX() + node.getWidth(), node.getY() + node.getHeight(), UIDemoDraggable.INK, 2D);
 		});
 
 		RectNode

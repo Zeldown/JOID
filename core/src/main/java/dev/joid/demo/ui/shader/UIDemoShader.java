@@ -93,7 +93,7 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(1205, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawFilledBorder(node.getX(), node.getY(), node.getX() + node.getWidth(), node.getY() + node.getHeight(), Color.WHITE, 6D)))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(node.getX(), node.getY(), node.getX() + node.getWidth(), node.getY() + node.getHeight(), Color.WHITE, 6D)))
 		.attach(this);
 		TextNode.create(1305, 375).text(Text.create("Filled border", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 

@@ -221,12 +221,12 @@ public class UIDemoText extends UIDemo {
 			TextNode
 			.create(20, 40)
 			.text(Text.create("Short", caption))
-			.self(text -> text.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawFilledBorder(text.getX(), text.getY(), text.getX() + text.getWidth(), text.getY() + text.getHeight(), UIDemoText.INK, 1D)))
+			.self(text -> text.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(text.getX(), text.getY(), text.getX() + text.getWidth(), text.getY() + text.getHeight(), UIDemoText.INK, 1D)))
 			.attach(rect);
 			TextNode
 			.create(20, 100)
 			.text(Text.create("A longer text", caption.copy().fontSize(36F)))
-			.self(text -> text.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawFilledBorder(text.getX(), text.getY(), text.getX() + text.getWidth(), text.getY() + text.getHeight(), UIDemoText.INK, 1D)))
+			.self(text -> text.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(text.getX(), text.getY(), text.getX() + text.getWidth(), text.getY() + text.getHeight(), UIDemoText.INK, 1D)))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Size from text", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
