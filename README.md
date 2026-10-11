@@ -28,7 +28,7 @@ JOID is a Java UI engine: build your interface once, run it on any engine, and g
 - **Your mockup, at any size.** Lay out your UI on a fixed design canvas, copy positions, sizes and colors straight from your mockup, and JOID scales it to any window.
 - **Reactive to your data.** Show your data and forget about it: when a value changes, everything displaying it on screen updates by itself.
 - **Your look, not ours.** Components handle behavior and input. You draw them in your own UI kit, and another kit gives the same code a whole new design.
-- **Looks great at any size.** Text and shapes stay razor-sharp at any size and any resolution, thanks to built-in MSDF text and anti-aliasing.
+- **Looks great at any size.** Text and shapes stay razor-sharp at any size and any resolution.
 - **Everything included.** Images, SVG, animated GIF and WebP, video, 3D models, shadows, blur, masks, shaders, animations, and whatever else you can imagine.
 - **Made to be pleasant to use.** A typed fluent API, sensible defaults, and a dev mode with an inspector, hot reload and warnings that point at your line of code.
 
