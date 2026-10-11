@@ -5,7 +5,6 @@
 
 <div align="center">
   <img align="center" src="https://img.shields.io/badge/version-8.0.0 (ceac7d5)-blue">
-  <img align="center" src="https://img.shields.io/badge/maintainer-Zeldown-orange">
   <img align="center" src="https://img.shields.io/maintenance/yes/9999">
   <img align="center" src="https://img.shields.io/badge/license-Apache--2.0-blue">
   <img align="center" src="https://github.com/Zeldown/JOID/actions/workflows/release.yml/badge.svg">
