@@ -81,3 +81,6 @@ shot static-UIDemoAudio
 ui dev.joid.demo.ui.shader.UIDemoRender
 wait 3500
 shot static-UIDemoRender
+ui dev.joid.demo.ui.event.UIDemoEvent
+wait 3500
+shot static-UIDemoEvent

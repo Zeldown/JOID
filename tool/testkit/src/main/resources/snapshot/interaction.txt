@@ -919,3 +919,8 @@ release LEFT
 move 240 890
 wait 300
 shot inter-click
+ui dev.joid.demo.ui.event.UIDemoEvent
+wait 800
+move 1320 490
+wait 300
+shot inter-event-tooltip
