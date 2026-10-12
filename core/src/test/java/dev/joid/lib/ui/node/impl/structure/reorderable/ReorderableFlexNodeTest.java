@@ -14,7 +14,6 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.NodeCallbackMethod;
@@ -904,7 +903,6 @@ public class ReorderableFlexNodeTest {
 		return RectNode.create(0D, 0D, 200D, 50D);
 	}
 
-	@UIData(background = false)
 	public static final class NodeUI extends UI {
 
 		private final Node[] nodes;

@@ -16,6 +16,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
@@ -23,6 +24,7 @@ import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoSignal extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153);

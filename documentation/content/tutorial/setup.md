@@ -79,7 +79,7 @@ import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
-@UIData(backgroundColor = "#18181B")
+@UIData(background = true, backgroundColor = "#18181B")
 public final class SettingsUI extends UI {
 
 	@Override
@@ -91,7 +91,7 @@ public final class SettingsUI extends UI {
 }
 ```
 
-- `@UIData(backgroundColor = "#18181B")` replaces the default translucent background of the UI with an opaque near-black.
+- `@UIData(background = true, backgroundColor = "#18181B")` fills the window behind the UI with an opaque near-black. Without `background = true`, a UI draws nothing behind its nodes.
 - `TextInfo.create(font, weight, size, color)` is the bold style of the title. (960, 540) is the center of the canvas, and `anchor(Align.CENTER)` puts the center of the text there.
 
 ## Step 4: open it from Main

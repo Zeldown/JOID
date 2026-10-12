@@ -9,12 +9,14 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.model.ModelNode;
 import dev.joid.lib.ui.node.impl.design.model.ModelViewerNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoModel extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153);

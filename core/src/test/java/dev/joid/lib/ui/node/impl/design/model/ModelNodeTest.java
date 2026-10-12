@@ -58,7 +58,7 @@ public class ModelNodeTest {
 	@Test
 	public void drawsNothingWithoutModel() {
 		this.bridges.open(new NodeUI(ModelNode.create(100D, 100D, 200D, 200D))).frame();
-		Assert.assertEquals(1, this.bridges.getRender().getDraws().size());
+		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
 	@Test
@@ -119,8 +119,8 @@ public class ModelNodeTest {
 
 	private Draw model() {
 		final List<Draw> draws = this.bridges.getRender().getDraws();
-		Assert.assertEquals(2, draws.size());
-		return draws.get(1);
+		Assert.assertEquals(1, draws.size());
+		return draws.get(0);
 	}
 
 	private static ObjModel cube() {

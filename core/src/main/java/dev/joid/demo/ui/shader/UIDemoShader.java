@@ -17,6 +17,7 @@ import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.render.transform.operation.RotateTransformOperation;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.shader.impl.GradientShader;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
@@ -27,6 +28,7 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoShader extends UIDemo {
 
 	private static final Color INK = new Color(153, 153, 153);

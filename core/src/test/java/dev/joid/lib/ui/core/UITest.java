@@ -832,7 +832,9 @@ public class UITest {
 
 	@Test
 	public void drawsItsBackgroundOverTheWholeWindow() {
-		this.bridges.resize(1366, 768).open(new TraceUI(this.trace));
+		final TraceUI ui = new TraceUI(this.trace);
+		ui.getData().setBackground(true);
+		this.bridges.resize(1366, 768).open(ui);
 		final Draw background = UITest.background(this.bridges);
 		Assert.assertSame(background, this.bridges.getRender().getDraws().get(0));
 		Assert.assertEquals(192F / 255F, background.getAlpha(), 0.0001F);
@@ -843,16 +845,15 @@ public class UITest {
 	}
 
 	@Test
-	public void drawsNoBackgroundOnceDisabled() {
-		final TraceUI ui = new TraceUI(this.trace);
-		ui.getData().setBackground(false);
-		this.bridges.open(ui);
+	public void drawsNoBackgroundByDefault() {
+		this.bridges.open(new TraceUI(this.trace));
 		Assert.assertTrue(this.bridges.getRender().getDraws(16F / 255F, 16F / 255F, 16F / 255F).isEmpty());
 	}
 
 	@Test
 	public void fadesItsBackgroundWithItsTransitions() {
 		final PopupUI ui = new PopupUI(this.trace);
+		ui.getData().setBackground(true);
 		this.bridges.open(ui);
 		Assert.assertEquals(0F, UITest.background(this.bridges).getAlpha(), 0F);
 		this.bridges.frames(20);
@@ -891,7 +892,6 @@ public class UITest {
 	@Test
 	public void raisesTheNodesDrawnAfterItsDepthLevel() {
 		final TraceUI ui = new TraceUI(this.trace, new DepthNode(this.trace, 0, 30D), new DepthNode(this.trace, 1, 0D));
-		ui.getData().setBackground(false);
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.frame();

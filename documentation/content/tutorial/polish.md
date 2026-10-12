@@ -9,7 +9,7 @@ You start from the code of [Tutorial 3](interactivity.md). `Main`, `AppUIBridge`
 A `Color` can carry a linear gradient, and `@UIData` accepts it as a string:
 
 ```java
-@UIData(backgroundColor = "gradient(#18181B, #52525B, 0, 0, 1, 1)")
+@UIData(background = true, backgroundColor = "gradient(#18181B, #52525B, 0, 0, 1, 1)")
 public final class SettingsUI extends UI {
 ```
 
@@ -230,7 +230,7 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.utils.align.Align;
 
-@UIData(backgroundColor = "gradient(#18181B, #52525B, 0, 0, 1, 1)")
+@UIData(background = true, backgroundColor = "gradient(#18181B, #52525B, 0, 0, 1, 1)")
 public final class SettingsUI extends UI {
 
 	private static final List<String> LANGUAGES = Arrays.asList("English", "Français", "Deutsch", "Español");

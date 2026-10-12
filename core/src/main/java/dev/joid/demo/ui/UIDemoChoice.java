@@ -36,6 +36,7 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
@@ -44,6 +45,7 @@ import dev.joid.lib.utils.align.Align;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@UIData(background = true)
 public class UIDemoChoice extends UI {
 
 	private static final Color INK     = new Color(153, 153, 153);

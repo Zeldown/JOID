@@ -13,7 +13,6 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 
 public class CircleNodeTest {
@@ -177,7 +176,6 @@ public class CircleNodeTest {
 		return draws.get(0);
 	}
 
-	@UIData(background = false)
 	public static final class NodeUI extends UI {
 
 		private final Node[] nodes;

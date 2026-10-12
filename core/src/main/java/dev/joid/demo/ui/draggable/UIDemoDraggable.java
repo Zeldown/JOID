@@ -9,6 +9,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
@@ -22,6 +23,7 @@ import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 import lombok.NonNull;
 
+@UIData(background = true)
 public class UIDemoDraggable extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153);

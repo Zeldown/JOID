@@ -18,7 +18,6 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartAxis;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartAxis.XChartAxis;
@@ -346,7 +345,6 @@ public class ChartNodeTest {
 		Assert.assertEquals(bottom, draw.getBottom(), 1E-3D);
 	}
 
-	@UIData(background = false)
 	public static final class NodeUI extends UI {
 
 		private final Node[] nodes;

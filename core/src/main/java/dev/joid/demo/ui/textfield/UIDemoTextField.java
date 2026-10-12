@@ -13,6 +13,7 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.callback.impl.key.NodeCharTypedCallback;
 import dev.joid.lib.ui.node.callback.impl.key.NodeKeyPressedCallback;
@@ -20,6 +21,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoTextField extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153);

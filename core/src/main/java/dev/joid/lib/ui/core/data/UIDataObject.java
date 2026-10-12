@@ -22,7 +22,7 @@ public final class UIDataObject implements UIData {
 	private boolean zoomable        = true;
 	private boolean closeable       = true;
 	private boolean projection      = true;
-	private boolean background      = true;
+	private boolean background      = false;
 	private String  backgroundColor = "#101010C0";
 
 	private Color backgroundColorCache = Color.decode(this.backgroundColor);

@@ -294,7 +294,7 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.utils.align.Align;
 
-@UIData(backgroundColor = "#18181B")
+@UIData(background = true, backgroundColor = "#18181B")
 public final class SettingsUI extends UI {
 
 	private static final List<String> LANGUAGES = Arrays.asList("English", "Français", "Deutsch", "Español");

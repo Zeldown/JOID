@@ -15,6 +15,7 @@ import dev.joid.lib.render.transform.operation.ScaleTransformOperation;
 import dev.joid.lib.render.transform.operation.TranslateTransformOperation;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
@@ -29,6 +30,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoEffect extends UIDemo {
 
 	private static final Color INK = new Color(153, 153, 153);

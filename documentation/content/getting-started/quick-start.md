@@ -2,7 +2,7 @@
 
 This page is the smallest complete JOID program: a window on the LWJGL 3 backend, a UI bridge, a font and a first `UI` with a button that counts its clicks. Copy the four classes into the package `com.example` and run them.
 
-![A dimmed window with a rounded gray button at its center reading Clicks: 2](../images/intro-quick-start.png "The program of this page after two clicks")
+![A dark gray window with a rounded gray button at its center reading Clicks: 2](../images/intro-quick-start.png "The program of this page after two clicks")
 
 | Class | Role |
 | --- | --- |
@@ -209,7 +209,7 @@ The order of the startup calls matters:
 
 ## Step 6: run it
 
-Run `gradle run`. The window shows the button on a dimmed background, the default background of a UI; each click increments the counter. `Escape` closes the UI.
+Run `gradle run`. The window shows the button on the color cleared by `drawBackground()`; each click increments the counter. `Escape` closes the UI.
 
 With the `-dev` jar, enable the developer tools before loading JOID, then press `F3` for the developer panel:
 

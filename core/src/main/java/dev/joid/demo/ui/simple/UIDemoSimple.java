@@ -19,7 +19,7 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.utils.align.Align;
 
-@UIData(anchorX = Align.END, anchorY = Align.START)
+@UIData(background = true, anchorX = Align.END, anchorY = Align.START)
 public class UIDemoSimple extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153);

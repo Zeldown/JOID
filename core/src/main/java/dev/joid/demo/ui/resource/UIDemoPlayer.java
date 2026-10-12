@@ -12,6 +12,7 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.impl.primitive.FloatSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
@@ -19,6 +20,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoPlayer extends UIDemo {
 
 	private static final Color INK = new Color(153, 153, 153);

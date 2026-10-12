@@ -13,10 +13,12 @@ import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.draw.text.builder.TextOverflow;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoMarkup extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153);

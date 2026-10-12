@@ -14,7 +14,6 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
 
@@ -189,7 +188,6 @@ public class RadarChartNodeTest {
 		Assert.assertEquals(5D, chart.getAverage().doubleValue(), 0D);
 	}
 
-	@UIData(background = false)
 	public static final class NodeUI extends UI {
 
 		private final Node[] nodes;

@@ -54,7 +54,7 @@ RectNode.create(0, 0, 120, 120).color(Color.decode("#DDDDDD")).<RectNode>x(() ->
 The anchors decide where the canvas sits when the window shows more than it. Set them with `@UIData`, which holds the options of a UI; each takes an `Align`: `START`, `CENTER` (default) or `END`.
 
 ```java
-@UIData(anchorX = Align.END, anchorY = Align.START, background = false)
+@UIData(anchorX = Align.END, anchorY = Align.START)
 public class MinimapUI extends UI {
 
 	@Override
@@ -67,7 +67,7 @@ public class MinimapUI extends UI {
 
 ![While the window is resized, the canvas stays pinned to the top-right corner and the minimap with it](../images/view-minimap.gif "anchorX END, anchorY START: the extra area opens on the left and at the bottom")
 
-The canvas is pinned to the top-right corner of the window, so the minimap stays there in any window. `background = false` keeps what is behind the UI visible; by default a UI dims it.
+The canvas is pinned to the top-right corner of the window, so the minimap stays there in any window.
 
 ![Three 21:9 windows with anchorX START, CENTER and END, and three tall windows with anchorY START, CENTER and END](../images/diagram-canvas-anchors.png "A wider window moves the canvas with anchorX, a taller one with anchorY")
 

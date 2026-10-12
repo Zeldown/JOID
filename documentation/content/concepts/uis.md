@@ -85,13 +85,13 @@ public boolean close() {
 ## Configuring a UI with @UIData
 
 ```java
-@UIData(backgroundColor = "#000000A0", closeable = false, zoomable = false)
+@UIData(background = true, backgroundColor = "#000000A0", closeable = false, zoomable = false)
 public final class MenuUI extends UI {}
 ```
 
 | Option | Default | Effect |
 | --- | --- | --- |
-| `background` | `true` | Fills the window with `backgroundColor` behind the UI. |
+| `background` | `false` | When `true`, fills the window with `backgroundColor` behind the UI, for example to dim the screen under a popup. |
 | `backgroundColor` | `"#101010c0"` | Any `Color.decode` string: `#RRGGBB`, `#RRGGBBAA`, `rgba(...)`, `gradient(...)`. |
 | `closeable` | `true` | Whether `Escape` closes the UI. `JOID.close` works either way. |
 | `zoomable` | `true` | Whether `Ctrl` or `Alt` with `+` and `-` zoom the UI. |
@@ -111,7 +111,7 @@ this.getData().setCloseable(false).setZindex(200);
 Several UIs can be open together, ordered by `zindex`, then by opening order: the last one is drawn on top and receives the input first, and the event stops at the first UI that consumes it.
 
 ```java
-@UIData(zindex = -10, background = false, closeable = false)
+@UIData(zindex = -10, closeable = false)
 public final class HudUI extends UI {}
 ```
 
@@ -122,6 +122,7 @@ public final class HudUI extends UI {}
 A popup keeps every input event from the UIs below it and opens and closes with a short scale animation. A `StackUIBridge` opens it on top without closing the current screen.
 
 ```java
+@UIData(background = true)
 @UIDataPopup(active = true)
 public final class ConfirmPopup extends UI {
 
@@ -142,7 +143,6 @@ public final class ConfirmPopup extends UI {
 An overlay stays open while other UIs open and close, is drawn above them, and ignores `Escape`: a minimap, a notification panel. A screen is a UI that is not an overlay, or a screen of the application (for example a game menu). By default an overlay takes no input and hides while a screen is open; `interaction` and `render` change that:
 
 ```java
-@UIData(background = false)
 @UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(screens = true))
 public final class MinimapOverlay extends UI {
 

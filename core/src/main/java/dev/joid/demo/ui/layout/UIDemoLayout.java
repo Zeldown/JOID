@@ -6,6 +6,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
@@ -14,6 +15,7 @@ import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoLayout extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153);

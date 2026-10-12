@@ -19,7 +19,6 @@ import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
@@ -354,7 +353,6 @@ public class RectNodeTest {
 		return draws.get(0);
 	}
 
-	@UIData(background = false)
 	public static final class NodeUI extends UI {
 
 		private final Node[] nodes;

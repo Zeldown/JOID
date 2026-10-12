@@ -11,11 +11,13 @@ import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.render.transform.operation.RotateTransformOperation;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(background = true)
 public class UIDemoAnimation extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153);
