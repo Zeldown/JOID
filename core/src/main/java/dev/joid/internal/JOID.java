@@ -2,6 +2,7 @@ package dev.joid.internal;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
@@ -12,16 +13,19 @@ import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public final class JOID {
 
 	public static final String VERSION = "8.0.0";
 
 	private static JOID instance;
 
-	private File configDir;
+	private final List<Runnable> readyList;
+
+	@Getter private File    configDir;
+	@Getter private boolean ready;
 
 	public JOID() {
+		this.readyList = new ArrayList<>();
 		this.configDir = new File(System.getProperty("joid.config", "config"));
 	}
 
@@ -32,7 +36,13 @@ public final class JOID {
 		return JOID.instance;
 	}
 
-	public JOID load() {
+	public @NonNull JOID load() {
+		synchronized (this.readyList) {
+			if (this.ready) {
+				return this;
+			}
+		}
+
 		System.out.println("=================================");
 		System.out.println("");
 		System.out.println("         _  ____ _____ _____    ");
@@ -58,7 +68,27 @@ public final class JOID {
 			DemoFont.load();
 		}
 
+		final List<Runnable> readyList;
+		synchronized (this.readyList) {
+			this.ready = true;
+			readyList = new ArrayList<>(this.readyList);
+			this.readyList.clear();
+		}
+
+		readyList.forEach(ThreadUtils::runOnRenderThread);
 		return this;
+	}
+
+	public static void onReady(final @NonNull Runnable callback) {
+		final JOID joid = JOID.inst();
+		synchronized (joid.readyList) {
+			if (!joid.ready) {
+				joid.readyList.add(callback);
+				return;
+			}
+		}
+
+		ThreadUtils.runOnRenderThread(callback);
 	}
 
 	public static boolean checkVersion(final @NonNull String version) {

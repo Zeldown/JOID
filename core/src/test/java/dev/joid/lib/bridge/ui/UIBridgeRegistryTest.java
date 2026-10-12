@@ -1,13 +1,31 @@
 package dev.joid.lib.bridge.ui;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.bridge.render.RecordingRenderBridge;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.callback.DispatchContext;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 public class UIBridgeRegistryTest {
+
+	@Rule
+	public final HeadlessBridges bridges = new HeadlessBridges();
+
+	private final List<String> trace = new ArrayList<>();
 
 	@Test
 	public void createsAnEmptyRegistryEachTime() {
@@ -112,6 +130,106 @@ public class UIBridgeRegistryTest {
 		Assert.assertNull(registry.get(new MenuUI()));
 	}
 
+	@Test
+	public void framesEveryBridgeFromTheLowestPriority() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final RecordingRenderBridge render = this.bridges.getRender();
+		registry.register(this.bridge("high", Color.BLUE), 1);
+		registry.register(this.bridge("low", Color.RED), -1);
+		final int clears = render.getColorClears();
+		registry.frame();
+		Assert.assertEquals(Arrays.asList("update low", "update high", "draw low", "draw high"), this.trace);
+		Assert.assertEquals(Color.BLUE, render.getClearedColor());
+		Assert.assertEquals(clears + 1, render.getColorClears());
+	}
+
+	@Test
+	public void clearsNothingWithoutUIBridge() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final int clears = this.bridges.getRender().getColorClears();
+		registry.frame();
+		Assert.assertEquals(clears, this.bridges.getRender().getColorClears());
+		Assert.assertEquals(0, this.bridges.getRender().getFrameCommands());
+	}
+
+	@Test
+	public void resizesTheBridgesWhenTheWindowChanges() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final RecordingRenderBridge render = this.bridges.getRender();
+		registry.register(this.bridge("menu", Color.RED));
+		registry.frame();
+		Assert.assertEquals(1920, render.getState().getViewportWidth());
+		this.bridges.getWindow().setWidth(800);
+		this.bridges.getWindow().setHeight(600);
+		registry.frame();
+		Assert.assertEquals(800, render.getState().getViewportWidth());
+		Assert.assertEquals(600, render.getState().getViewportHeight());
+		this.bridges.getWindow().setWidth(0);
+		registry.frame();
+		Assert.assertEquals(800, render.getState().getViewportWidth());
+	}
+
+	@Test
+	public void sendsAnEventToTheHighestBridgeFirstAndStopsAtTheOneThatConsumesIt() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final TraceUI high = this.open(registry, "high", 1);
+		this.open(registry, "low", 0);
+		high.cancel = true;
+		Assert.assertTrue(registry.mousePressed(MouseButton.LEFT));
+		Assert.assertTrue(registry.keyPressed(Key.A));
+		Assert.assertTrue(registry.charTyped('a'));
+		Assert.assertTrue(registry.mouseScroll(0D, 1D));
+		Assert.assertEquals(Arrays.asList("pressed high", "key high", "char high", "scroll high"), this.trace);
+	}
+
+	@Test
+	public void sendsAnEventNoBridgeConsumesToEveryBridge() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		this.open(registry, "high", 1);
+		this.open(registry, "low", 0);
+		Assert.assertFalse(registry.mousePressed(MouseButton.LEFT));
+		Assert.assertFalse(registry.keyPressed(Key.A));
+		Assert.assertEquals(Arrays.asList("pressed high", "pressed low", "key high", "key low"), this.trace);
+	}
+
+	@Test
+	public void releasesEveryBridgeThatSawThePress() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final TraceUI high = this.open(registry, "high", 1);
+		this.open(registry, "low", 0);
+		registry.mousePressed(MouseButton.LEFT);
+		high.cancel = true;
+		this.trace.clear();
+		Assert.assertTrue(registry.mouseReleased(MouseButton.LEFT));
+		Assert.assertEquals(Arrays.asList("released high", "released low"), this.trace);
+	}
+
+	@Test
+	public void releasesOnlyTheBridgesThatSawThePress() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final TraceUI high = this.open(registry, "high", 1);
+		this.open(registry, "low", 0);
+		high.cancel = true;
+		registry.mousePressed(MouseButton.LEFT);
+		high.cancel = false;
+		this.trace.clear();
+		Assert.assertTrue(registry.mouseReleased(MouseButton.LEFT));
+		Assert.assertEquals(Collections.singletonList("released high"), this.trace);
+	}
+
+	@Test
+	public void consumesTheReleaseOfAKeyABridgeConsumed() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		this.open(registry, "high", 1);
+		final TraceUI low = this.open(registry, "low", 0);
+		low.cancel = true;
+		Assert.assertTrue(registry.keyPressed(Key.A));
+		low.cancel = false;
+		Assert.assertTrue(registry.keyReleased(Key.A));
+		Assert.assertFalse(registry.keyReleased(Key.A));
+		Assert.assertFalse(registry.keyReleased(Key.B));
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesToRouteAMissingUi() {
 		UIBridgeRegistry.create().get((UI) null);
@@ -120,6 +238,20 @@ public class UIBridgeRegistryTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesToRouteAMissingClass() {
 		UIBridgeRegistry.create().get((Class<? extends UI>) null);
+	}
+
+	private WindowUIBridge bridge(final String name, final Color background) {
+		final WindowUIBridge bridge = WindowUIBridge.create().background(background);
+		bridge.add(new TraceUI(name, this.trace));
+		return bridge;
+	}
+
+	private TraceUI open(final UIBridgeRegistry registry, final String name, final int priority) {
+		final TraceUI ui = new TraceUI(name, this.trace);
+		final WindowUIBridge bridge = WindowUIBridge.create();
+		bridge.add(ui);
+		registry.register(bridge, priority);
+		return ui;
 	}
 
 	public static final class MenuUI extends UI {}
@@ -163,6 +295,78 @@ public class UIBridgeRegistryTest {
 
 		@Override
 		public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {}
+
+	}
+
+	public static final class TraceUI extends UI {
+
+		private final String       name;
+		private final List<String> trace;
+
+		private boolean cancel;
+
+		public TraceUI(final String name, final List<String> trace) {
+			this.name = name;
+			this.trace = trace;
+		}
+
+		@Override
+		public void init() {
+			super.add(new TraceNode(() -> this.trace.add("draw " + this.name)));
+		}
+
+		@Override
+		public void update() {
+			this.trace.add("update " + this.name);
+		}
+
+		@Override
+		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+			this.record("pressed", context);
+		}
+
+		@Override
+		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+			this.record("released", context);
+		}
+
+		@Override
+		public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notches, final @NonNull DispatchContext context) {
+			this.record("scroll", context);
+		}
+
+		@Override
+		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
+			this.record("key", context);
+		}
+
+		@Override
+		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
+			this.record("char", context);
+		}
+
+		private void record(final String event, final DispatchContext context) {
+			this.trace.add(event + " " + this.name);
+			if (this.cancel) {
+				context.cancel();
+			}
+		}
+
+	}
+
+	public static final class TraceNode extends Node {
+
+		private final Runnable drawing;
+
+		private TraceNode(final Runnable drawing) {
+			super(0D, 0D, 0D, 0D);
+			this.drawing = drawing;
+		}
+
+		@Override
+		public void draw(final double mouseX, final double mouseY) {
+			this.drawing.run();
+		}
 
 	}
 

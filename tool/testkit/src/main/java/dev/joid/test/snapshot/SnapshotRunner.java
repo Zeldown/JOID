@@ -61,7 +61,6 @@ public final class SnapshotRunner {
 		runner.resize(1920, 1080);
 
 		JOIDEnv.devMode(false);
-		JOID.inst().load();
 		return runner;
 	}
 

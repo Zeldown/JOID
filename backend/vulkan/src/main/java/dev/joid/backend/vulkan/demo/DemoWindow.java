@@ -3,19 +3,18 @@ package dev.joid.backend.vulkan.demo;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.Configuration;
 
-import dev.joid.backend.vulkan.Backend;
+import dev.joid.backend.vulkan.VulkanBackend;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.base.glfw.demo.GlfwDemoWindow;
-import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.backend.Backend;
+import lombok.NonNull;
 
 public class DemoWindow extends GlfwDemoWindow {
 
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);
-		final DemoWindow window = new DemoWindow();
-		JOID.inst().load();
-		window.run();
+		new DemoWindow().run();
 	}
 
 	@Override
@@ -29,8 +28,8 @@ public class DemoWindow extends GlfwDemoWindow {
 	}
 
 	@Override
-	protected void registerBackend(final long window) {
-		Backend.register(window);
+	protected @NonNull Backend<?> registerBackend(final long window) {
+		return VulkanBackend.create(window).register();
 	}
 
 	@Override

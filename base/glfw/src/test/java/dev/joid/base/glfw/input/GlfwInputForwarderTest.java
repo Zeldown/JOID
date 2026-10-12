@@ -37,12 +37,14 @@ public class GlfwInputForwarderTest {
 		JOIDEnv.devMode(false);
 		BridgeHandler.WINDOW.register(this.window);
 		this.bridge.add(this.ui);
-		this.input = GlfwInputForwarder.create(this.bridge);
+		BridgeHandler.UI.register(this.bridge);
+		this.input = GlfwInputForwarder.create();
 	}
 
 	@After
 	public void closeTheUi() {
 		this.bridge.closeAll();
+		BridgeHandler.UI.unregister(this.bridge);
 		BridgeHandler.WINDOW.unregister(this.window);
 		JOIDEnv.devMode(this.devMode);
 	}

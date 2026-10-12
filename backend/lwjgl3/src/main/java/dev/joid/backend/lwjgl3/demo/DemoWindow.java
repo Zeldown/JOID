@@ -3,17 +3,16 @@ package dev.joid.backend.lwjgl3.demo;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
-import dev.joid.backend.lwjgl3.Backend;
 import dev.joid.backend.lwjgl3.GlContextRequest;
+import dev.joid.backend.lwjgl3.Lwjgl3Backend;
 import dev.joid.base.glfw.demo.GlfwDemoWindow;
-import dev.joid.internal.JOID;
+import dev.joid.lib.bridge.backend.Backend;
+import lombok.NonNull;
 
 public class DemoWindow extends GlfwDemoWindow {
 
 	public static void main(final String[] args) {
-		final DemoWindow window = new DemoWindow();
-		JOID.inst().load();
-		window.run();
+		new DemoWindow().run();
 	}
 
 	@Override
@@ -27,10 +26,10 @@ public class DemoWindow extends GlfwDemoWindow {
 	}
 
 	@Override
-	protected void registerBackend(final long window) {
+	protected @NonNull Backend<?> registerBackend(final long window) {
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
-		Backend.register(window);
+		return Lwjgl3Backend.create(window).register();
 	}
 
 	@Override

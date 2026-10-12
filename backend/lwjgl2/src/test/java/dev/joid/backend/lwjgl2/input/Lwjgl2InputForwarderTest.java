@@ -33,12 +33,14 @@ public class Lwjgl2InputForwarderTest {
 	public void openAUi() {
 		BridgeHandler.WINDOW.register(this.window);
 		this.bridge.add(this.ui);
-		this.input = Lwjgl2InputForwarder.create(this.bridge);
+		BridgeHandler.UI.register(this.bridge);
+		this.input = Lwjgl2InputForwarder.create();
 	}
 
 	@After
 	public void closeTheUi() {
 		this.bridge.closeAll();
+		BridgeHandler.UI.unregister(this.bridge);
 		BridgeHandler.WINDOW.unregister(this.window);
 	}
 

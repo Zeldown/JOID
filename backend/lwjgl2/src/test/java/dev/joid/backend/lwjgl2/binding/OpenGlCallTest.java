@@ -19,7 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.backend.lwjgl2.Backend;
+import dev.joid.backend.lwjgl2.Lwjgl2Backend;
 import dev.joid.base.opengl.render.GlRenderBridge;
 
 public class OpenGlCallTest {
@@ -29,7 +29,7 @@ public class OpenGlCallTest {
 	@Test
 	public void callsOpenGlOnlyThroughTheBindings() throws IOException, URISyntaxException {
 		final List<String> callerList = new ArrayList<>();
-		for (final Class<?> type : new Class<?>[] {Backend.class, GlRenderBridge.class}) {
+		for (final Class<?> type : new Class<?>[] {Lwjgl2Backend.class, GlRenderBridge.class}) {
 			final File root = new File(type.getProtectionDomain().getCodeSource().getLocation().toURI());
 			if (root.isDirectory()) {
 				try (Stream<Path> files = Files.walk(root.toPath())) {

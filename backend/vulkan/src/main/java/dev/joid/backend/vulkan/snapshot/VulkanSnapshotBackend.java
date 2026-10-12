@@ -8,7 +8,7 @@ import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkBufferImageCopy;
 import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 
-import dev.joid.backend.vulkan.Backend;
+import dev.joid.backend.vulkan.VulkanBackend;
 import dev.joid.backend.vulkan.render.Swapchain;
 import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
@@ -32,7 +32,7 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 	@Override
 	public void create(final int width, final int height) {
 		this.window = GlfwSnapshotWindow.create(width, height, () -> GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API));
-		Backend.register(this.window.getWindow());
+		VulkanBackend.create(this.window.getWindow()).audio(false).register();
 	}
 
 	@Override

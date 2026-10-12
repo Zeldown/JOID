@@ -3,28 +3,23 @@ package com.example.joid.backend.demo;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.window.IWindowBridge;
 
-import com.example.joid.backend.Backend;
+import com.example.joid.backend.ExampleBackend;
 
 public class DemoWindow extends DemoUIBridge {
 
-	public void run() {
-		final IWindowBridge window = BridgeHandler.WINDOW.get();
-		super.resize(window.getWidth(), window.getHeight());
+	public void run(final ExampleBackend backend) {
 		super.start();
 
 		while (true) {
-			super.frame();
+			backend.frame();
 		}
 	}
 
 	public static void main(final String[] args) {
 		final DemoWindow window = new DemoWindow();
-		BridgeHandler.UI.register(window);
-		Backend.register();
-		JOID.inst().load();
-		window.run();
+		JOID.onReady(() -> BridgeHandler.UI.register(window));
+		window.run(ExampleBackend.create().register());
 	}
 
 }

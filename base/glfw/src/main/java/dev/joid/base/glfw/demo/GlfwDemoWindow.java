@@ -4,15 +4,19 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 
 import dev.joid.base.glfw.GlfwWindowBridge;
-import dev.joid.base.glfw.input.GlfwInputForwarder;
 import dev.joid.demo.DemoUIBridge;
+import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.backend.Backend;
 import lombok.Getter;
+import lombok.NonNull;
 
 public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 	@Getter
 	private final long window;
+
+	private final Backend<?> backend;
 
 	protected GlfwDemoWindow() {
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -28,13 +32,8 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 			throw new IllegalStateException("Unable to create the GLFW window");
 		}
 
-		BridgeHandler.UI.register(this);
-		this.registerBackend(this.window);
-
-		GlfwInputForwarder.create(this).attach(this.window);
-
-		GLFW.glfwSetFramebufferSizeCallback(this.window, (handle, width, height) -> this.onResize(width, height));
-		super.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
+		JOID.onReady(() -> BridgeHandler.UI.register(this));
+		this.backend = this.registerBackend(this.window);
 	}
 
 	public void run() {
@@ -51,7 +50,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 			GLFW.glfwPollEvents();
 
-			super.frame();
+			this.backend.frame();
 			this.present();
 		}
 
@@ -65,16 +64,8 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 	protected abstract void configureWindow();
 
-	protected abstract void registerBackend(final long window);
+	protected abstract @NonNull Backend<?> registerBackend(final long window);
 
 	protected abstract void present();
-
-	private void onResize(final int width, final int height) {
-		if (width == 0 || height == 0) {
-			return;
-		}
-
-		super.resize(width, height);
-	}
 
 }

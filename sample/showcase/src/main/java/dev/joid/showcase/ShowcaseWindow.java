@@ -10,9 +10,7 @@ public class ShowcaseWindow extends DemoWindow {
 
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);
-		final ShowcaseWindow window = new ShowcaseWindow();
-		JOID.inst().load();
-		window.run();
+		new ShowcaseWindow().run();
 	}
 
 	@Override

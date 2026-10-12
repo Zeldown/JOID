@@ -18,18 +18,17 @@ import dev.joid.lib.bridge.ui.StackUIBridge;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.color.Color;
 
-public class BackendTest {
+public class Lwjgl3BackendTest {
 
 	@Test
-	public void checksTheVersionOfJOIDItWasBuiltAgainst() throws IOException {
-		final String bytecode = new String(Asset.of(Backend.class.getResourceAsStream("Backend.class")).read(), StandardCharsets.ISO_8859_1);
-		Assert.assertTrue(bytecode.contains("checkVersion"));
+	public void keepsTheVersionOfJOIDItWasBuiltAgainst() throws IOException {
+		final String bytecode = new String(Asset.of(Lwjgl3Backend.class.getResourceAsStream("Lwjgl3Backend.class")).read(), StandardCharsets.ISO_8859_1);
 		Assert.assertTrue(bytecode.contains(JOID.VERSION));
 	}
 
 	@Test
 	public void registersAWindowUIBridgeThatClearsToItsBackground() {
-		final List<IUIBridge> previous = BackendTest.unregisterUIBridges();
+		final List<IUIBridge> previous = Lwjgl3BackendTest.unregisterUIBridges();
 		final Lwjgl3SnapshotBackend backend = new Lwjgl3SnapshotBackend();
 		try {
 			backend.create(64, 64);
@@ -42,24 +41,24 @@ public class BackendTest {
 			Assert.assertEquals(0xFFFF0000, backend.capture(64, 64).getPixels()[0]);
 		} finally {
 			backend.destroy();
-			BackendTest.unregisterUIBridges();
+			Lwjgl3BackendTest.unregisterUIBridges();
 			previous.forEach(BridgeHandler.UI::register);
 		}
 	}
 
 	@Test
 	public void keepsTheUIBridgeRegisteredBefore() {
-		final List<IUIBridge> previous = BackendTest.unregisterUIBridges();
+		final List<IUIBridge> previous = Lwjgl3BackendTest.unregisterUIBridges();
 		final Lwjgl3SnapshotBackend backend = new Lwjgl3SnapshotBackend();
 		final StackUIBridge bridge = new StackUIBridge() {};
 		BridgeHandler.UI.register(bridge);
 		try {
 			backend.create(64, 64);
 			Assert.assertNull(BridgeHandler.UI.getBridge(WindowUIBridge.class));
-			Assert.assertEquals(Collections.singletonList(bridge), BackendTest.unregisterUIBridges());
+			Assert.assertEquals(Collections.singletonList(bridge), Lwjgl3BackendTest.unregisterUIBridges());
 		} finally {
 			backend.destroy();
-			BackendTest.unregisterUIBridges();
+			Lwjgl3BackendTest.unregisterUIBridges();
 			previous.forEach(BridgeHandler.UI::register);
 		}
 	}

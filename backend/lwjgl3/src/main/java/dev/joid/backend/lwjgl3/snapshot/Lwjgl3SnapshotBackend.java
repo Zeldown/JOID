@@ -3,7 +3,7 @@ package dev.joid.backend.lwjgl3.snapshot;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
-import dev.joid.backend.lwjgl3.Backend;
+import dev.joid.backend.lwjgl3.Lwjgl3Backend;
 import dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding;
 import dev.joid.base.glfw.snapshot.GlfwSnapshotWindow;
 import dev.joid.base.opengl.render.GlRenderBridge;
@@ -33,7 +33,7 @@ public final class Lwjgl3SnapshotBackend implements ISnapshotBackend {
 		GLFW.glfwMakeContextCurrent(this.window.getWindow());
 		GLFW.glfwSwapInterval(0);
 		GL.createCapabilities();
-		Backend.register(this.window.getWindow(), ProfileGlBinding.create(Lwjgl3GlBinding.inst(), this.profile));
+		Lwjgl3Backend.create(this.window.getWindow()).binding(ProfileGlBinding.create(Lwjgl3GlBinding.inst(), this.profile)).audio(false).register();
 		this.bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
 		this.profile.check(this.bridge.getCapabilities());
 	}

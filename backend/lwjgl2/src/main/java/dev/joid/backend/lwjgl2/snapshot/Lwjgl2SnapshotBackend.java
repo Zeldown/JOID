@@ -4,8 +4,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 
-import dev.joid.backend.lwjgl2.Backend;
-import dev.joid.backend.lwjgl2.Natives;
+import dev.joid.backend.lwjgl2.Lwjgl2Backend;
 import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.snapshot.GlSnapshotCapture;
@@ -28,7 +27,7 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public void create(final int width, final int height) {
-		Natives.install();
+		final Lwjgl2Backend backend = Lwjgl2Backend.create().audio(false);
 		try {
 			this.buffer = new Pbuffer(width, height, new PixelFormat().withDepthBits(24).withStencilBits(8), null);
 			this.buffer.makeCurrent();
@@ -36,7 +35,7 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 			throw new IllegalStateException("Unable to create the LWJGL 2 pbuffer", e);
 		}
 
-		Backend.register();
+		backend.register();
 		this.bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
 	}
 

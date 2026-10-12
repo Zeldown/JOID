@@ -4,19 +4,17 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
-import dev.joid.lib.bridge.ui.UIBridge;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.input.mouse.MouseButton;
 import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2InputForwarder {
 
-	private final UIBridge bridge;
-
-	public static @NonNull Lwjgl2InputForwarder create(final @NonNull UIBridge bridge) {
-		return new Lwjgl2InputForwarder(bridge);
+	public static @NonNull Lwjgl2InputForwarder create() {
+		return new Lwjgl2InputForwarder();
 	}
 
 	public void poll() {
@@ -50,31 +48,31 @@ public final class Lwjgl2InputForwarder {
 	}
 
 	public boolean keyPressed(final int code) {
-		return this.bridge.keyPressed(Lwjgl2WindowBridge.getKey(code));
+		return BridgeHandler.UI.keyPressed(Lwjgl2WindowBridge.getKey(code));
 	}
 
 	public boolean keyReleased(final int code) {
-		return this.bridge.keyReleased(Lwjgl2WindowBridge.getKey(code));
+		return BridgeHandler.UI.keyReleased(Lwjgl2WindowBridge.getKey(code));
 	}
 
 	public boolean charTyped(final int codepoint) {
-		return this.bridge.charTyped(codepoint);
+		return BridgeHandler.UI.charTyped(codepoint);
 	}
 
 	public boolean mouseMoved() {
-		return this.bridge.mouseMoved();
+		return BridgeHandler.UI.mouseMoved();
 	}
 
 	public boolean mousePressed(final int button) {
-		return this.bridge.mousePressed(MouseButton.from(button));
+		return BridgeHandler.UI.mousePressed(MouseButton.from(button));
 	}
 
 	public boolean mouseReleased(final int button) {
-		return this.bridge.mouseReleased(MouseButton.from(button));
+		return BridgeHandler.UI.mouseReleased(MouseButton.from(button));
 	}
 
 	public boolean mouseScrolled(final int wheel) {
-		return this.bridge.mouseScroll(0D, wheel / 120D);
+		return BridgeHandler.UI.mouseScroll(0D, wheel / 120D);
 	}
 
 }
