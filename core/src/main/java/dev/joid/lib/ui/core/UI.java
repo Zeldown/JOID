@@ -909,10 +909,12 @@ public abstract class UI implements IUI, IndexedElement {
 		} finally {
 			if (transitionIn) {
 				this.transition.getIn().post(this, mx, my);
+				this.transition.getIn().endFrame();
 			}
 
 			if (transitionOut) {
 				this.transition.getOut().post(this, mx, my);
+				this.transition.getOut().endFrame();
 			}
 		}
 

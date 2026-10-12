@@ -45,6 +45,8 @@ public class PopTransitionTest {
 		final PopInTransition in = new PopInTransition();
 		in.start();
 		Assert.assertTrue(in.isRunning());
+		in.update();
+		in.endFrame();
 		this.bridges.getClock().advance(65L);
 		in.update();
 		Assert.assertTrue(in.getAnimator().getValue() > 0.5F && in.getAnimator().getValue() < 1F);
@@ -61,6 +63,8 @@ public class PopTransitionTest {
 		out.init(ui);
 		this.assertScale(ui, out, 1D);
 		out.start();
+		out.update();
+		out.endFrame();
 		this.bridges.getClock().advance(65L);
 		out.update();
 		Assert.assertTrue(out.getAnimator().getValue() > 0F && out.getAnimator().getValue() < 1F);
@@ -75,6 +79,22 @@ public class PopTransitionTest {
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)));
 		ui.setTransition(new PopTransition());
 		this.bridges.open(ui);
+		Assert.assertEquals(150D, this.width(), 1E-3D);
+		this.bridges.frame();
+		Assert.assertTrue(this.width() > 150D && this.width() < 200D);
+		this.bridges.frames(20);
+		Assert.assertEquals(200D, this.width(), 1E-3D);
+	}
+
+	@Test
+	public void popsAUiInAfterASlowOpening() {
+		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)));
+		ui.setTransition(new PopTransition());
+		this.bridges.getUi().add(ui);
+		this.bridges.getClock().advance(500L);
+		this.bridges.frame();
+		Assert.assertEquals(150D, this.width(), 1E-3D);
+		this.bridges.frame();
 		Assert.assertTrue(this.width() > 150D && this.width() < 200D);
 		this.bridges.frames(20);
 		Assert.assertEquals(200D, this.width(), 1E-3D);

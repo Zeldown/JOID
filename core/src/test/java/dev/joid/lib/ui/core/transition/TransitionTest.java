@@ -53,12 +53,43 @@ public class TransitionTest {
 		final FadeIn in = new FadeIn();
 		in.start();
 		Assert.assertTrue(in.isRunning());
+		in.update();
+		in.endFrame();
 		this.clock.advance(50L);
 		in.update();
 		Assert.assertEquals(0.5F, in.getAnimator().getValue(), 0.0001F);
 		this.clock.advance(50L);
 		in.update();
 		Assert.assertEquals(1F, in.getAnimator().getValue(), 0F);
+	}
+
+	@Test
+	public void waitsItsFirstDrawnFrameBeforeItsClockRuns() {
+		final FadeIn in = new FadeIn();
+		in.start();
+		this.clock.advance(500L);
+		in.update();
+		Assert.assertEquals(0F, in.getAnimator().getValue(), 0F);
+		Assert.assertTrue(in.isRunning());
+		this.clock.advance(500L);
+		in.endFrame();
+		this.clock.advance(50L);
+		in.update();
+		Assert.assertEquals(0.5F, in.getAnimator().getValue(), 0.0001F);
+	}
+
+	@Test
+	public void countsTheDrawOfTheFramesAfterItsFirst() {
+		final FadeIn in = new FadeIn();
+		in.start();
+		in.update();
+		in.endFrame();
+		this.clock.advance(30L);
+		in.update();
+		this.clock.advance(20L);
+		in.endFrame();
+		in.update();
+		Assert.assertEquals(0.5F, in.getAnimator().getValue(), 0.0001F);
 	}
 
 	@Test
@@ -88,6 +119,8 @@ public class TransitionTest {
 		out.disable();
 		out.enable();
 		out.start();
+		out.update();
+		out.endFrame();
 		this.clock.advance(100L);
 		out.update();
 		Assert.assertTrue(out.isEnabled());
@@ -104,6 +137,8 @@ public class TransitionTest {
 	public void stopsRunningOnceItsTweenEnds() {
 		final FadeIn in = new FadeIn();
 		in.start();
+		in.update();
+		in.endFrame();
 		this.clock.advance(200L);
 		in.update();
 		Assert.assertEquals(1F, in.getAnimator().getValue(), 0F);
