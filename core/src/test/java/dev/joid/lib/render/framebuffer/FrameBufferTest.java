@@ -7,6 +7,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.RecordingFrameBuffer;
+import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
@@ -86,6 +87,60 @@ public class FrameBufferTest {
 	}
 
 	@Test
+	public void fillsWithItsOwnViewportAndProjection() {
+		final FrameBuffer frameBuffer = FrameBuffer.create(64, 32, TextureFilter.NEAREST);
+		final int[] viewport = new int[4];
+		final float[][] matrices = new float[2][];
+		this.render.getModelView().translate(5D, 6D, 0D);
+		final float[] projection = this.render.getProjection().getMatrix().clone();
+		final float[] modelView = this.render.getModelView().getMatrix().clone();
+		frameBuffer.fill(() -> {
+			viewport[0] = this.render.getState().getViewportX();
+			viewport[1] = this.render.getState().getViewportY();
+			viewport[2] = this.render.getState().getViewportWidth();
+			viewport[3] = this.render.getState().getViewportHeight();
+			matrices[0] = this.render.getProjection().getMatrix().clone();
+			matrices[1] = this.render.getModelView().getMatrix().clone();
+		});
+		Assert.assertArrayEquals(new int[] {0, 0, 64, 32}, viewport);
+		Assert.assertArrayEquals(FrameBufferTest.ortho(0D, 64D, 32D, 0D), matrices[0], 0F);
+		Assert.assertArrayEquals(new MatrixStack().getMatrix(), matrices[1], 0F);
+		Assert.assertEquals(1920, this.render.getState().getViewportWidth());
+		Assert.assertArrayEquals(projection, this.render.getProjection().getMatrix(), 0F);
+		Assert.assertArrayEquals(modelView, this.render.getModelView().getMatrix(), 0F);
+	}
+
+	@Test
+	public void fillsARegionOfTheCanvas() {
+		final int[] viewport = new int[1];
+		final float[][] projection = new float[1][];
+		final FrameBuffer frameBuffer = FrameBuffer.create(64, 32, TextureFilter.NEAREST).fill(10D, 20D, 100D, 50D, () -> {
+			viewport[0] = this.render.getState().getViewportWidth();
+			projection[0] = this.render.getProjection().getMatrix().clone();
+		});
+		Assert.assertEquals(64, viewport[0]);
+		Assert.assertArrayEquals(FrameBufferTest.ortho(10D, 110D, 70D, 20D), projection[0], 0F);
+		Assert.assertTrue(frameBuffer.isFilled());
+	}
+
+	@Test
+	public void restoresTheMatricesOfAFailedFill() {
+		final float[] projection = this.render.getProjection().getMatrix().clone();
+		final float[] modelView = this.render.getModelView().getMatrix().clone();
+		try {
+			FrameBuffer.create(64, 32, TextureFilter.NEAREST).fill(() -> {
+				throw new IllegalStateException("fill");
+			});
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("fill", exception.getMessage());
+		}
+		Assert.assertArrayEquals(projection, this.render.getProjection().getMatrix(), 0F);
+		Assert.assertArrayEquals(modelView, this.render.getModelView().getMatrix(), 0F);
+		Assert.assertEquals(1920, this.render.getState().getViewportWidth());
+	}
+
+	@Test
 	public void unbindsAFailedFill() {
 		final FrameBuffer frameBuffer = FrameBuffer.create(64, 32, TextureFilter.NEAREST);
 		try {
@@ -153,6 +208,12 @@ public class FrameBufferTest {
 	private Capture single() {
 		Assert.assertEquals(1, this.render.getCaptures().size());
 		return this.render.getCaptures().get(0);
+	}
+
+	private static float[] ortho(final double left, final double right, final double bottom, final double top) {
+		final MatrixStack stack = new MatrixStack();
+		stack.ortho(left, right, bottom, top, -1000D, 1000D);
+		return stack.getMatrix();
 	}
 
 }

@@ -136,21 +136,10 @@ public final class ShaderPipeline {
 	}
 
 	private static void drawInto(final @NonNull FrameBuffer target, final @NonNull ShaderPassContext context, final @NonNull Runnable draw) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getProjection().push();
-		render.getModelView().push();
-		try {
-			target.fill(() -> {
-				render.getState().viewport(0, 0, context.getTextureWidth(), context.getTextureHeight());
-				render.clearColor(0F, 0F, 0F, 0F);
-				render.getProjection().ortho(context.getRegionX(), context.getRegionX() + context.getRegionWidth(), context.getRegionY() + context.getRegionHeight(), context.getRegionY(), -1000D, 1000D);
-				render.getModelView().identity();
-				draw.run();
-			});
-		} finally {
-			render.getModelView().pop();
-			render.getProjection().pop();
-		}
+		target.fill(context.getRegionX(), context.getRegionY(), context.getRegionWidth(), context.getRegionHeight(), () -> {
+			BridgeHandler.RENDER.get().clearColor(0F, 0F, 0F, 0F);
+			draw.run();
+		});
 	}
 
 	private static void drawPass(final @NonNull IShaderPass pass, final @NonNull ShaderPassContext context, final @NonNull FrameBuffer source) {

@@ -52,10 +52,22 @@ public class FrameBuffer {
 	}
 
 	public @NonNull FrameBuffer fill(final @NonNull Runnable runnable) {
+		return this.fill(0D, 0D, this.getWidth(), this.getHeight(), runnable);
+	}
+
+	public @NonNull FrameBuffer fill(final double x, final double y, final double width, final double height, final @NonNull Runnable runnable) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
 		this.bind();
+		render.getProjection().push();
+		render.getModelView().push();
 		try {
+			render.getState().viewport(0, 0, this.getWidth(), this.getHeight());
+			render.getProjection().ortho(x, x + width, y + height, y, -1000D, 1000D);
+			render.getModelView().identity();
 			runnable.run();
 		} finally {
+			render.getModelView().pop();
+			render.getProjection().pop();
 			this.unbind();
 		}
 

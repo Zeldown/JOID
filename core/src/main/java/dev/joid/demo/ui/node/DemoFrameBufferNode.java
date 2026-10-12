@@ -1,7 +1,6 @@
 package dev.joid.demo.ui.node;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -26,23 +25,11 @@ public class DemoFrameBufferNode extends Node {
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
 		if (this.frameBuffer == null) {
-			final IRenderBridge render = BridgeHandler.RENDER.get();
-			this.frameBuffer = FrameBuffer.create(40, 25, TextureFilter.NEAREST);
-			render.getProjection().push();
-			render.getModelView().push();
-			try {
-				this.frameBuffer.fill(() -> {
-					render.getState().viewport(0, 0, 40, 25);
-					render.clearColor(1F, 1F, 1F, 1F);
-					render.getProjection().ortho(0D, 40D, 25D, 0D, -1000D, 1000D);
-					render.getModelView().identity();
-					DrawUtils.SHAPE.drawRect(4D, 4D, 14D, 17D, DemoFrameBufferNode.INK);
-					DrawUtils.SHAPE.drawCircle(29D, 12.5D, DemoFrameBufferNode.INK, 7D);
-				});
-			} finally {
-				render.getModelView().pop();
-				render.getProjection().pop();
-			}
+			this.frameBuffer = FrameBuffer.create(40, 25, TextureFilter.NEAREST).fill(() -> {
+				BridgeHandler.RENDER.get().clearColor(1F, 1F, 1F, 1F);
+				DrawUtils.SHAPE.drawRect(4D, 4D, 14D, 17D, DemoFrameBufferNode.INK);
+				DrawUtils.SHAPE.drawCircle(29D, 12.5D, DemoFrameBufferNode.INK, 7D);
+			});
 		}
 
 		this.frameBuffer.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight());
