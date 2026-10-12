@@ -11,6 +11,9 @@ libs/
 !template/libs/
 build/
 .snapshots/
+/joid/
+/*/joid/
+/*/*/joid/
 cmake-build-*/
 
 modules.xml
