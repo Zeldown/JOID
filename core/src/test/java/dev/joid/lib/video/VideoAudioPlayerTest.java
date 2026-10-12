@@ -281,11 +281,22 @@ public class VideoAudioPlayerTest {
 	}
 
 	@Test
-	public void ignoresTheDistanceWithoutListener() {
+	public void hearsFromTheOriginWithoutListener() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		player.setLocation(100F, 0F, 0F);
+		player.setLocation(0F, 0F, 27.5F);
 		player.update();
-		Assert.assertEquals(0.3F, this.audio.source().lastGain(), 1E-6F);
+		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
+	}
+
+	@Test
+	public void pausesFarFromTheOriginWithoutListener() {
+		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
+		final RecordingAudioSource source = this.audio.source();
+		player.setLocation(100F, 0F, 0F);
+		VideoAudioPlayerTest.push(player, 3, 10);
+		source.calls.clear();
+		player.update();
+		Assert.assertEquals(Collections.singletonList("pause"), source.calls);
 	}
 
 	@Test

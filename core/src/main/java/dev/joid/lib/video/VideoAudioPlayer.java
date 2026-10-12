@@ -229,11 +229,7 @@ public final class VideoAudioPlayer {
 	}
 
 	private float computeDistanceVolume() {
-		if (VideoAudioPlayer.audioListenerPosition == null) {
-			return 1F;
-		}
-
-		final Vector3f listenerPos = VideoAudioPlayer.audioListenerPosition.getListenerPosition();
+		final Vector3f listenerPos = VideoAudioPlayer.audioListenerPosition == null ? new Vector3f() : VideoAudioPlayer.audioListenerPosition.getListenerPosition();
 		final double dx = listenerPos.x - this.posX;
 		final double dy = listenerPos.y - this.posY;
 		final double dz = listenerPos.z - this.posZ;
