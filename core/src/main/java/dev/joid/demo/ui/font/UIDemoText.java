@@ -193,6 +193,7 @@ public class UIDemoText extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("hello joid world", info).modifier(TextModifier.CAMEL_CASE)).attach(flex);
 				TextNode.create(0, 0).text(Text.create("hello joid world", info).modifier(TextModifier.UPPER_CAMEL_CASE)).attach(flex);
 				TextNode.create(0, 0).text(Text.create("hello joid world", info).modifier(TextModifier.SNAKE_CASE)).attach(flex);
+				TextNode.create(0, 0).text(Text.create("hello joid world", info).modifier(text -> new StringBuilder(text).reverse().toString())).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Modifiers", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
