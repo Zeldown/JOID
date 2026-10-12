@@ -36,12 +36,12 @@ ext {
     variants = ['prod', 'dev', 'demo']
 
     excludeDemo = { task ->
-        task.exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/*/demo/**', 'dev/joid/base/*/snapshot/**', 'dev/joid/backend/*/demo/**', 'dev/joid/backend/*/snapshot/**'
+        task.exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/*/demo/**', 'dev/joid/backend/*/demo/**'
     }
 
     excludeDevelopment = { task ->
         rootProject.excludeDemo(task)
-        task.exclude 'assets/dev/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**'
+        task.exclude 'assets/dev/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**', 'dev/joid/base/*/snapshot/**', 'dev/joid/backend/*/snapshot/**'
     }
 
     excludeVariant = { task, variant ->
@@ -160,18 +160,24 @@ assemble.dependsOn collectArtifacts
 
 task checkJars {
     group = 'JOID'
-    description = 'Checks that the prod jars hold no dev tool nor demo, and that only the demo jars hold the demos.'
+    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, and that the snapshot tools of the dev jars need no demo.'
+    dependsOn ':tool-testkit:jar'
     dependsOn variants.collectMany { variant -> [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { module -> "$module:${variant}Jar" } }
     doLast {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
         def demo = ['dev/joid/demo/DemoFont.class', 'assets/demo/']
         def failures = []
+        def reads = { file, filter -> new java.util.zip.ZipFile(file).withCloseable { zip -> zip.entries().findAll { entry -> filter(entry.name) }.findAll { entry -> new String(zip.getInputStream(entry).bytes, 'ISO-8859-1').contains('dev/joid/demo/') }.collect { entry -> entry.name } } }
+        reads(project(':tool-testkit').jar.archivePath, { name -> name.endsWith('.class') }).each { name ->
+            failures << "joid-tool-testkit needs the demo class of $name"
+        }
         [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].each { module ->
             variants.each { variant ->
                 def jar = project(module).tasks["${variant}Jar"].archivePath
                 def entries = new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.entries().collect { entry -> entry.name } }
                 def holds = { prefix -> entries.any { entry -> entry.startsWith(prefix) } }
-                def windows = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/(demo|snapshot)\/.*/ }
+                def windows = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/demo\/.*/ }
+                def snapshots = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*/ }
                 if (!holds('dev/joid/internal/JOID.class')) {
                     failures << "${jar.name} misses JOID"
                 }
@@ -186,7 +192,15 @@ task checkJars {
                     }
                 }
                 if (module != ':core' && windows != (variant == 'demo')) {
-                    failures << "${jar.name} ${variant == 'demo' ? 'misses' : 'holds'} its demo and snapshot windows"
+                    failures << "${jar.name} ${variant == 'demo' ? 'misses' : 'holds'} its demo window"
+                }
+                if (module != ':core' && snapshots != (variant != 'prod')) {
+                    failures << "${jar.name} ${variant == 'prod' ? 'holds' : 'misses'} its snapshot backend"
+                }
+                if (variant == 'dev') {
+                    reads(jar, { name -> name ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*\.class/ }).each { name ->
+                        failures << "${jar.name}: $name needs a demo class"
+                    }
                 }
             }
         }
