@@ -1,14 +1,21 @@
 package dev.joid.demo.ui.resource;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.resource.format.DemoCheckerResourceFormat;
+import dev.joid.demo.ui.resource.locator.DemoAssetLocator;
 import dev.joid.internal.JOID;
+import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.resource.ResourceBuilder;
+import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
@@ -25,6 +32,13 @@ public class UIDemoResource extends UIDemo {
 
 	private static final Color INK = new Color(153, 153, 153);
 
+	private static final ResourceBuilder PIXELATED = ResourceBuilder.create().nearest().textureCoords(160D, 165D, 35D, 35D);
+
+	static {
+		AssetLocator.register(DemoAssetLocator.inst());
+		ResourceFormat.register(DemoCheckerResourceFormat.inst());
+	}
+
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoResource.INK);
@@ -32,6 +46,12 @@ public class UIDemoResource extends UIDemo {
 		final Resource square = Resource.of("https://placehold.co/100x100.png");
 		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-image").onError((resource, error) -> System.out.println("[UIDemoResource] failed resource: " + error.getMessage()));
 		final BooleanSignal second = BooleanSignal.of(false);
+		final BufferedImage disc = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+		for (int x = 0; x < 100; x++) {
+			for (int y = 0; y < 100; y++) {
+				disc.setRGB(x, y, Math.hypot(x - 49.5D, y - 49.5D) < 40D ? 0xFF999999 : 0xFFDDDDDD);
+			}
+		}
 
 		ResourceNode.create(105, 50).resource(Resource.of("https://placehold.co/100x100.png")).attach(this);
 		TextNode.create(155, 175).text(Text.create("PNG", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
@@ -123,6 +143,25 @@ public class UIDemoResource extends UIDemo {
 		.onClick((node, mouseX, mouseY, button) -> second.toggle())
 		.attach(this);
 		TextNode.create(385, 865).text(Text.create("Switch on click", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+
+		ResourceNode.create(565, 740, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp")).textureCoords(40D, 60D, 280D, 280D)).attach(this);
+		TextNode.create(615, 865).text(Text.create("Region", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+
+		ResourceNode.create(795, 740, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp")).mipmap(false)).attach(this);
+		TextNode.create(845, 865).text(Text.create("Mipmap off", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+
+		ResourceNode.create(1025, 740).resource(Resource.of(disc)).attach(this);
+		TextNode.create(1075, 865).text(Text.create("BufferedImage", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+
+		ResourceNode.create(1257, 742, 96, 96).resource(Resource.of(new ByteArrayInputStream("CHECKER 8".getBytes(StandardCharsets.US_ASCII))).nearest()).attach(this);
+		TextNode.create(1305, 865).text(Text.create("Custom format", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+
+		ResourceNode.create(1485, 740, 100, 100).resource(Resource.of("demo:textures/image/placeholder.webp")).attach(this);
+		TextNode.create(1535, 865).text(Text.create("Custom locator", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+
+		ResourceNode.create(1690, 755, 70, 70).resource(UIDemoResource.PIXELATED.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"))).attach(this);
+		ResourceNode.create(1770, 755, 70, 70).resource(UIDemoResource.PIXELATED.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.png"))).attach(this);
+		TextNode.create(1765, 865).text(Text.create("Builder", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 	}
 
 }
