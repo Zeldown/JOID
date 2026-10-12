@@ -8,7 +8,7 @@ import javax.vecmath.Vector2d;
 import javax.vecmath.Vector4f;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.demo.ui.font.markup.DemoTextMarkup;
+import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.internal.JOID;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;

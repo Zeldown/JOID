@@ -5,9 +5,9 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.demo.asset.locator.impl.DemoAssetLocator;
+import dev.joid.demo.resource.format.impl.DemoCheckerResourceFormat;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.resource.format.DemoCheckerResourceFormat;
-import dev.joid.demo.ui.resource.locator.DemoAssetLocator;
 import dev.joid.internal.JOID;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.color.Color;

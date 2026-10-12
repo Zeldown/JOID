@@ -2,8 +2,8 @@ package dev.joid.demo.ui.chart;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.chart.node.DemoChartNode;
-import dev.joid.demo.ui.chart.node.DemoRadarChartNode;
+import dev.joid.demo.ui.node.impl.structure.chart.DemoChartNode;
+import dev.joid.demo.ui.node.impl.structure.chart.DemoRadarChartNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;

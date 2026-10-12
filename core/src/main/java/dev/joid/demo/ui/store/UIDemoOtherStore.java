@@ -2,9 +2,9 @@ package dev.joid.demo.ui.store;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.store.store.DemoGlobalStore;
-import dev.joid.demo.ui.store.store.DemoLocalStore;
-import dev.joid.demo.ui.store.store.DemoPermanentStore;
+import dev.joid.demo.ui.core.hook.store.DemoGlobalStore;
+import dev.joid.demo.ui.core.hook.store.DemoLocalStore;
+import dev.joid.demo.ui.core.hook.store.DemoPermanentStore;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;

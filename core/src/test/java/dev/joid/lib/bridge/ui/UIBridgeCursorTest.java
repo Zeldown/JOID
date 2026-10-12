@@ -8,9 +8,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.demo.ui.textfield.node.DemoIntegerFieldNode;
-import dev.joid.demo.ui.textfield.node.DemoMultilineTextFieldNode;
-import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.DemoMultilineTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.impl.DemoIntegerFieldNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.cursor.Cursor;

@@ -3,9 +3,9 @@ package dev.joid.showcase;
 import java.util.Locale;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.demo.ui.font.effect.DemoRainbowTextEffect;
-import dev.joid.demo.ui.font.effect.DemoWaveTextEffect;
-import dev.joid.demo.ui.font.markup.DemoTextMarkup;
+import dev.joid.demo.font.effect.DemoRainbowTextEffect;
+import dev.joid.demo.font.effect.DemoWaveTextEffect;
+import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;

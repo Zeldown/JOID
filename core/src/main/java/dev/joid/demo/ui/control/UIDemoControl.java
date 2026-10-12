@@ -2,9 +2,9 @@ package dev.joid.demo.ui.control;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.checkbox.node.DemoCheckboxNode;
-import dev.joid.demo.ui.sw.node.DemoSwitchNode;
-import dev.joid.demo.ui.toggle.node.DemoToggleNode;
+import dev.joid.demo.ui.node.impl.structure.checkbox.DemoCheckboxNode;
+import dev.joid.demo.ui.node.impl.structure.sw.DemoSwitchNode;
+import dev.joid.demo.ui.node.impl.structure.toggle.DemoToggleNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;

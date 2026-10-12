@@ -1,0 +1,97 @@
+package dev.joid.demo.font.markup;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import dev.joid.demo.DemoFont;
+import dev.joid.demo.font.effect.DemoHighlightTextEffect;
+import dev.joid.demo.font.effect.DemoUnderlineTextEffect;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.font.FontWeight;
+import dev.joid.lib.font.IFont;
+import dev.joid.lib.font.TextStyle;
+import dev.joid.lib.font.markup.ITextMarkup;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DemoTextMarkup implements ITextMarkup {
+
+	private static final DemoTextMarkup INSTANCE = new DemoTextMarkup();
+
+	private static final Pattern TAG = Pattern.compile("<(?:([biuh])|w=(\\d{3})|c=([0-9a-fA-F]{6})|(/[biuhwcf])|f=(montserrat|pacifico|playfair))>");
+
+	public static @NonNull DemoTextMarkup inst() {
+		return DemoTextMarkup.INSTANCE;
+	}
+
+	@Override
+	public int parse(final @NonNull String text, final int index, final @NonNull TextStyle style) {
+		if (text.charAt(index) != '<') {
+			return 0;
+		}
+
+		final Matcher matcher = DemoTextMarkup.TAG.matcher(text).region(index, text.length());
+		if (!matcher.lookingAt()) {
+			return 0;
+		}
+
+		final TextStyle base = style.getBase();
+		switch (matcher.group(1) != null ? matcher.group(1) : matcher.group(2) != null ? "w" : matcher.group(3) != null ? "c" : matcher.group(5) != null ? "f" : matcher.group(4)) {
+		case "b":
+			style.weight(FontWeight.BOLD);
+			break;
+		case "i":
+			style.italic(true);
+			break;
+		case "u":
+			style.effect(DemoUnderlineTextEffect.inst());
+			break;
+		case "h":
+			style.effect(DemoHighlightTextEffect.inst());
+			break;
+		case "w":
+			style.weight(FontWeight.of(Integer.parseInt(matcher.group(2))));
+			break;
+		case "c":
+			style.color(Color.decode("#" + matcher.group(3)));
+			break;
+		case "f":
+			style.font(DemoTextMarkup.getFont(matcher.group(5)));
+			break;
+		case "/i":
+			style.italic(base.isItalic());
+			break;
+		case "/u":
+			style.removeEffect(DemoUnderlineTextEffect.inst());
+			break;
+		case "/h":
+			style.removeEffect(DemoHighlightTextEffect.inst());
+			break;
+		case "/c":
+			style.color(base.getColor());
+			break;
+		case "/f":
+			style.font(base.getFont());
+			break;
+		default:
+			style.weight(base.getWeight());
+			break;
+		}
+
+		return matcher.end() - index;
+	}
+
+	private static IFont getFont(final String name) {
+		switch (name) {
+		case "pacifico":
+			return DemoFont.PACIFICO;
+		case "playfair":
+			return DemoFont.PLAYFAIR_DISPLAY;
+		default:
+			return DemoFont.MONTSERRAT;
+		}
+	}
+
+}

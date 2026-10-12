@@ -2,7 +2,7 @@ package dev.joid.demo.ui.cursor;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.DemoTextFieldNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;

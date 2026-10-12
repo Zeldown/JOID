@@ -2,9 +2,9 @@ package dev.joid.demo.ui.slider;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.slider.node.DemoDoubleSliderNode;
-import dev.joid.demo.ui.slider.node.DemoIntegerSliderNode;
-import dev.joid.demo.ui.slider.node.DemoStringSliderNode;
+import dev.joid.demo.ui.node.impl.structure.slider.impl.DemoDoubleSliderNode;
+import dev.joid.demo.ui.node.impl.structure.slider.impl.DemoIntegerSliderNode;
+import dev.joid.demo.ui.node.impl.structure.slider.impl.DemoStringSliderNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;

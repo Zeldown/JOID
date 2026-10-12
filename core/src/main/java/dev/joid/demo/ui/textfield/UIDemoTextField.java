@@ -1,11 +1,11 @@
 package dev.joid.demo.ui.textfield;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.font.markup.DemoTextMarkup;
-import dev.joid.demo.ui.textfield.node.DemoIntegerFieldNode;
-import dev.joid.demo.ui.textfield.node.DemoMultilineTextFieldNode;
-import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.DemoMultilineTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.impl.DemoIntegerFieldNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;

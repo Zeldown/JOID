@@ -3,7 +3,7 @@ package dev.joid.showcase;
 import javax.vecmath.Vector4f;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.demo.ui.DemoPushTransition;
+import dev.joid.demo.ui.core.transition.impl.DemoPushTransition;
 import dev.joid.internal.JOID;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.bridge.BridgeHandler;

@@ -7,7 +7,7 @@ import java.io.UncheckedIOException;
 
 import javax.imageio.ImageIO;
 
-import dev.joid.demo.ui.font.pixel.DemoPixelFont;
+import dev.joid.demo.font.impl.bitmap.DemoPixelFont;
 import dev.joid.internal.JOID;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.font.impl.msdf.MsdfFont;

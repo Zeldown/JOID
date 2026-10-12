@@ -1,10 +1,10 @@
 package dev.joid.demo.ui.font;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.demo.font.effect.DemoUnderlineTextEffect;
+import dev.joid.demo.font.effect.DemoWaveTextEffect;
+import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.font.effect.DemoUnderlineTextEffect;
-import dev.joid.demo.ui.font.effect.DemoWaveTextEffect;
-import dev.joid.demo.ui.font.markup.DemoTextMarkup;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;

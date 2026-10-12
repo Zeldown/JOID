@@ -3,7 +3,7 @@ package dev.joid.demo.ui.popup;
 import java.util.Random;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.DemoTextFieldNode;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;

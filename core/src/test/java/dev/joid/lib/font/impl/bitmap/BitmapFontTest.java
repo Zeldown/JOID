@@ -3,7 +3,7 @@ package dev.joid.lib.font.impl.bitmap;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.demo.ui.font.effect.DemoFace;
+import dev.joid.demo.font.effect.DemoFace;
 import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.impl.glyph.FontFamily;
 

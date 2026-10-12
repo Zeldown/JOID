@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.checkbox.node.DemoCheckboxNode;
+import dev.joid.demo.ui.node.impl.structure.checkbox.DemoCheckboxNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;

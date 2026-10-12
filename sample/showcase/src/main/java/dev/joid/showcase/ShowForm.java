@@ -3,7 +3,7 @@ package dev.joid.showcase;
 import javax.vecmath.Vector2d;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.demo.ui.font.markup.DemoTextMarkup;
+import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;

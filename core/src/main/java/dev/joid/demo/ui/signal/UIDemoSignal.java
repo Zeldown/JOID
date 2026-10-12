@@ -5,9 +5,9 @@ import java.util.Collections;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.checkbox.node.DemoCheckboxNode;
-import dev.joid.demo.ui.slider.node.DemoIntegerSliderNode;
-import dev.joid.demo.ui.textfield.node.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.design.textfield.DemoTextFieldNode;
+import dev.joid.demo.ui.node.impl.structure.checkbox.DemoCheckboxNode;
+import dev.joid.demo.ui.node.impl.structure.slider.impl.DemoIntegerSliderNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
