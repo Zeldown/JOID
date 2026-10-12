@@ -1,8 +1,12 @@
 package dev.joid.internal;
 
+import java.io.File;
+
+import dev.joid.lib.utils.platform.Platform;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JOIDEnv {
@@ -12,6 +16,9 @@ public final class JOIDEnv {
 
 	@Getter private static boolean devMode  = JOIDEnv.DEV;
 	@Getter private static boolean demoMode = JOIDEnv.DEMO;
+
+	@Getter private static File dataDir  = JOIDEnv.locateDataDir();
+	@Getter private static File cacheDir = JOIDEnv.locateCacheDir();
 
 	public static void devMode(final boolean devMode) {
 		if (devMode && !JOIDEnv.DEV) {
@@ -27,6 +34,24 @@ public final class JOIDEnv {
 		}
 
 		JOIDEnv.demoMode = demoMode;
+	}
+
+	public static void dataDir(final @NonNull File dataDir) {
+		JOIDEnv.dataDir = dataDir;
+	}
+
+	public static void cacheDir(final @NonNull File cacheDir) {
+		JOIDEnv.cacheDir = cacheDir;
+	}
+
+	public static @NonNull File locateDataDir() {
+		final String property = System.getProperty("joid.data");
+		return property != null ? new File(property) : new File("joid");
+	}
+
+	public static @NonNull File locateCacheDir() {
+		final String property = System.getProperty("joid.cache");
+		return property != null ? new File(property) : new File(Platform.current().getCacheDir(System.getProperty("user.home"), System::getenv), "joid");
 	}
 
 }

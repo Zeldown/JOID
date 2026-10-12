@@ -17,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -71,15 +70,15 @@ public class KeyLayoutTest {
 
 	@Before
 	public void useAnAzertyKeyboard() {
-		this.configDir = JOID.inst().getConfigDir();
+		this.configDir = JOIDEnv.getDataDir();
 		this.devMode = JOIDEnv.isDevMode();
-		JOID.inst().setConfigDir(this.folder.getRoot());
+		JOIDEnv.dataDir(this.folder.getRoot());
 		this.bridges.getWindow().setLayout(this.layout);
 	}
 
 	@After
 	public void restoreTheSettings() {
-		JOID.inst().setConfigDir(this.configDir);
+		JOIDEnv.dataDir(this.configDir);
 		JOIDEnv.devMode(this.devMode);
 	}
 

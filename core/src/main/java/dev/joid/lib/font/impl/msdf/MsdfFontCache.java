@@ -9,26 +9,22 @@ import java.nio.file.StandardCopyOption;
 import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.utils.platform.Platform;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.tool.msdf.MsdfGenerator;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfFontCache {
 
-	@Getter
-	private static File directory = MsdfFontCache.locateDirectory();
-
-	public static void directory(final @NonNull File directory) {
-		MsdfFontCache.directory = directory;
+	public static @NonNull File getDirectory() {
+		return new File(JOIDEnv.getCacheDir(), "msdf");
 	}
 
 	public static @NonNull File locate(final @NonNull byte[] font) {
-		return new File(MsdfFontCache.directory, Hashing.sha256().newHasher().putString(JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT, StandardCharsets.UTF_8).putBytes(font).hash() + ".msdf");
+		return new File(MsdfFontCache.getDirectory(), Hashing.sha256().newHasher().putString(JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT, StandardCharsets.UTF_8).putBytes(font).hash() + ".msdf");
 	}
 
 	public static @NonNull File resolve(final @NonNull byte[] font) throws IOException {
@@ -62,22 +58,6 @@ public final class MsdfFontCache {
 		} finally {
 			Files.deleteIfExists(temporary.toPath());
 		}
-	}
-
-	private static @NonNull File locateDirectory() {
-		final Platform platform = Platform.current();
-		final String home = System.getProperty("user.home");
-		if (platform == Platform.WINDOWS) {
-			final String local = System.getenv("LOCALAPPDATA");
-			return new File(local != null ? new File(local) : new File(home, "AppData/Local"), "joid/msdf");
-		}
-
-		if (platform == Platform.MACOS) {
-			return new File(home, "Library/Caches/joid/msdf");
-		}
-
-		final String cache = System.getenv("XDG_CACHE_HOME");
-		return new File(cache != null ? new File(cache) : new File(home, ".cache"), "joid/msdf");
 	}
 
 }

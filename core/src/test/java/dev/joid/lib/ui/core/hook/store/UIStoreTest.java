@@ -14,7 +14,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonObject;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import lombok.NonNull;
@@ -30,14 +30,14 @@ public class UIStoreTest {
 	@Before
 	public void useATemporaryConfig() {
 		final boolean existed = new File("config").exists();
-		this.previous = JOID.inst().getConfigDir();
+		this.previous = JOIDEnv.getDataDir();
 		this.created = !existed && new File("config").exists();
-		JOID.inst().setConfigDir(this.folder.getRoot());
+		JOIDEnv.dataDir(this.folder.getRoot());
 	}
 
 	@After
 	public void restoreTheConfig() {
-		JOID.inst().setConfigDir(this.previous);
+		JOIDEnv.dataDir(this.previous);
 		if (this.created) {
 			new File("config").delete();
 		}

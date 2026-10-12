@@ -91,14 +91,14 @@ public class UITest {
 
 	@Before
 	public void useATemporaryConfig() {
-		this.configDir = JOID.inst().getConfigDir();
+		this.configDir = JOIDEnv.getDataDir();
 		this.devMode = JOIDEnv.isDevMode();
-		JOID.inst().setConfigDir(this.folder.getRoot());
+		JOIDEnv.dataDir(this.folder.getRoot());
 	}
 
 	@After
 	public void restoreTheSettings() {
-		JOID.inst().setConfigDir(this.configDir);
+		JOIDEnv.dataDir(this.configDir);
 		JOIDEnv.devMode(this.devMode);
 	}
 

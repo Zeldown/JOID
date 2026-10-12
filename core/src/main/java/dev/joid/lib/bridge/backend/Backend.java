@@ -1,6 +1,9 @@
 package dev.joid.lib.bridge.backend;
 
+import java.io.File;
+
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
@@ -16,6 +19,8 @@ public abstract class Backend<T extends Backend<T>> {
 	private final String version;
 
 	private boolean audio;
+	private File    dataDir;
+	private File    cacheDir;
 	private boolean registered;
 
 	protected Backend(final @NonNull String version) {
@@ -25,6 +30,16 @@ public abstract class Backend<T extends Backend<T>> {
 
 	public final @NonNull T audio(final boolean audio) {
 		this.audio = audio;
+		return (T) this;
+	}
+
+	public final @NonNull T dataDir(final @NonNull File dataDir) {
+		this.dataDir = dataDir;
+		return (T) this;
+	}
+
+	public final @NonNull T cacheDir(final @NonNull File cacheDir) {
+		this.cacheDir = cacheDir;
 		return (T) this;
 	}
 
@@ -51,6 +66,15 @@ public abstract class Backend<T extends Backend<T>> {
 
 		this.registerDefaults();
 		this.attachInput();
+
+		if (this.dataDir != null) {
+			JOIDEnv.dataDir(this.dataDir);
+		}
+
+		if (this.cacheDir != null) {
+			JOIDEnv.cacheDir(this.cacheDir);
+		}
+
 		JOID.inst().load();
 		return (T) this;
 	}

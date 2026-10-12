@@ -43,22 +43,25 @@ public class MsdfFontCacheTest {
 	public final TemporaryFolder folder = new TemporaryFolder();
 
 	private File previous;
+	private File cache;
 	private File directory;
 
 	@Before
 	public void useATemporaryCache() throws IOException {
-		this.previous = MsdfFontCache.getDirectory();
-		this.directory = Files.createTempDirectory("joid-msdf-").toFile();
-		MsdfFontCache.directory(this.directory);
+		this.previous = JOIDEnv.getCacheDir();
+		this.cache = Files.createTempDirectory("joid-cache-").toFile();
+		this.directory = Files.createDirectory(new File(this.cache, "msdf").toPath()).toFile();
+		JOIDEnv.cacheDir(this.cache);
 	}
 
 	@After
 	public void restoreTheCache() throws IOException {
-		MsdfFontCache.directory(this.previous);
+		JOIDEnv.cacheDir(this.previous);
 		for (final File file : this.directory.listFiles()) {
 			Files.delete(file.toPath());
 		}
 		Files.delete(this.directory.toPath());
+		Files.delete(this.cache.toPath());
 	}
 
 	@Test(timeout = 60000L)
@@ -111,26 +114,29 @@ public class MsdfFontCacheTest {
 	public void logsNothingOutsideDevMode() {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		final PrintStream previous = System.out;
+		final boolean devMode = JOIDEnv.isDevMode();
 		try {
+			JOIDEnv.devMode(false);
 			System.setOut(new PrintStream(output, true));
 			MsdfFontLoader.load(MsdfFontCacheTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).join();
 		} finally {
 			System.setOut(previous);
+			JOIDEnv.devMode(devMode);
 		}
 		Assert.assertEquals(0, output.size());
 	}
 
 	@Test
-	public void movesItsDirectory() {
+	public void followsTheCacheFolderOfJOID() {
 		Assert.assertEquals(this.directory, MsdfFontCache.getDirectory());
-		MsdfFontCache.directory(this.folder.getRoot());
-		Assert.assertEquals(this.folder.getRoot(), MsdfFontCache.getDirectory());
-		Assert.assertEquals(this.folder.getRoot(), MsdfFontCache.locate(new byte[] {1, 2, 3}).getParentFile());
+		JOIDEnv.cacheDir(this.folder.getRoot());
+		Assert.assertEquals(new File(this.folder.getRoot(), "msdf"), MsdfFontCache.getDirectory());
+		Assert.assertEquals(new File(this.folder.getRoot(), "msdf"), MsdfFontCache.locate(new byte[] {1, 2, 3}).getParentFile());
 	}
 
 	@Test
 	public void defaultsToADirectoryOfTheSystemCache() {
-		Assert.assertTrue(this.previous.getPath(), this.previous.getPath().endsWith(new File("joid", "msdf").getPath()));
+		Assert.assertEquals("joid", this.previous.getName());
 	}
 
 	@Test

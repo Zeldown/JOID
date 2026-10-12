@@ -1,6 +1,5 @@
 package dev.joid.internal;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +20,11 @@ public final class JOID {
 
 	private final List<Runnable> readyList;
 
-	@Getter private File    configDir;
-	@Getter private boolean ready;
+	@Getter
+	private boolean ready;
 
 	public JOID() {
 		this.readyList = new ArrayList<>();
-		this.configDir = new File(System.getProperty("joid.config", "config"));
 	}
 
 	public static @NonNull JOID inst() {
@@ -53,7 +51,8 @@ public final class JOID {
 		System.out.println("    \\____/ \\____/_____|_____/ ");
 		System.out.println("");
 		System.out.println("[JOID] Loading JOID with parameters:");
-		System.out.println(" - ConfigDir: " + this.configDir.getAbsolutePath());
+		System.out.println(" - DataDir: " + JOIDEnv.getDataDir().getAbsolutePath());
+		System.out.println(" - CacheDir: " + JOIDEnv.getCacheDir().getAbsolutePath());
 		System.out.println(" - DevMode: " + JOIDEnv.isDevMode());
 		System.out.println(" - DemoMode: " + JOIDEnv.isDemoMode());
 		System.out.println(" - Version: " + JOID.VERSION);
@@ -97,11 +96,6 @@ public final class JOID {
 			System.err.println("[JOID] This backend targets JOID " + version + " but JOID " + JOID.VERSION + " is loaded");
 		}
 		return compatible;
-	}
-
-	public JOID setConfigDir(final @NonNull File configDir) {
-		this.configDir = configDir;
-		return this;
 	}
 
 	public static boolean isOpen(final @NonNull UI ui) {

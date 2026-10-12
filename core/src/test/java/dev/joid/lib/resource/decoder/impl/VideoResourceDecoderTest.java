@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -415,6 +416,25 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void copiesAStreamedVideoIntoTheCacheFolderUntilCleared() {
+		final File previous = JOIDEnv.getCacheDir();
+		JOIDEnv.cacheDir(this.folder.getRoot());
+		try {
+			final File directory = new File(this.folder.getRoot(), "video");
+			final VideoResourceDecoder decoder = new VideoResourceDecoder(Asset.of(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp9.webm")));
+			this.decoders.add(decoder);
+			Assert.assertFalse(directory.exists());
+			final ResourceData data = new ResourceData("alpha-vp9.webm", null);
+			decoder.decode(data);
+			Assert.assertEquals(1, directory.list().length);
+			decoder.clear(data);
+			Assert.assertEquals(0, directory.list().length);
+		} finally {
+			JOIDEnv.cacheDir(previous);
+		}
+	}
+
+	@Test
 	public void deletesItsTexturesOnClear() {
 		final VideoResourceDecoder decoder = this.frames();
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
@@ -461,7 +481,14 @@ public class VideoResourceDecoderTest {
 		final VideoResourceDecoder decoder = this.decoder(new ByteArrayInputStream("not a video".getBytes(StandardCharsets.UTF_8)));
 		final ResourceData data = new ResourceData("notes.mkv", decoder);
 		decoder.prepare(data);
-		final String error = VideoResourceDecoderTest.capture(() -> decoder.decode(data));
+		final boolean devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(false);
+		final String error;
+		try {
+			error = VideoResourceDecoderTest.capture(() -> decoder.decode(data));
+		} finally {
+			JOIDEnv.devMode(devMode);
+		}
 		decoder.upload(data);
 		Assert.assertEquals("", error);
 		Assert.assertTrue(data.isFailed());

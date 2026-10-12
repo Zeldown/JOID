@@ -20,7 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import lombok.AccessLevel;
@@ -136,7 +136,7 @@ public final class UIStoreHook {
 	}
 
 	private static void deleteFile(final @NonNull String id) {
-		final File parent = new File(JOID.inst().getConfigDir(), "store");
+		final File parent = new File(JOIDEnv.getDataDir(), "store");
 		final File file = new File(parent, id + ".store");
 		if (file.exists()) {
 			file.delete();
@@ -144,7 +144,7 @@ public final class UIStoreHook {
 	}
 
 	private static @NonNull File getFile(final @NonNull String id) {
-		final File parent = new File(JOID.inst().getConfigDir(), "store");
+		final File parent = new File(JOIDEnv.getDataDir(), "store");
 		return new File(parent, id + ".store");
 	}
 

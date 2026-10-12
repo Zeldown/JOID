@@ -19,7 +19,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.ui.core.UI;
 import lombok.AccessLevel;
@@ -85,7 +84,7 @@ public final class UIPropertyHook {
 	}
 
 	private static @NonNull File getFile(final @NonNull UI ui) {
-		return new File(new File(JOID.inst().getConfigDir(), "property"), ui.getClass().getName() + ".property");
+		return new File(new File(JOIDEnv.getDataDir(), "property"), ui.getClass().getName() + ".property");
 	}
 
 	private static @NonNull String getKey(final @NonNull Field field) {

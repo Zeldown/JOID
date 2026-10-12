@@ -13,7 +13,7 @@ task run(type: JavaExec) {
     description = 'Launches the README showcase in a Vulkan window.'
     main = "dev.joid.showcase.ShowcaseWindow"
     classpath = sourceSets.main.runtimeClasspath
-    systemProperty 'joid.config', file("$buildDir/config").absolutePath
+    systemProperty 'joid.data', file("$buildDir/data").absolutePath
     if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
         jvmArgs "-XstartOnFirstThread"
     }

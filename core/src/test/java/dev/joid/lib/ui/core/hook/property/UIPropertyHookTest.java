@@ -13,7 +13,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.ui.core.UI;
 
 import lombok.AllArgsConstructor;
@@ -27,13 +27,13 @@ public class UIPropertyHookTest {
 
 	@Before
 	public void useATemporaryConfig() {
-		this.previous = JOID.inst().getConfigDir();
-		JOID.inst().setConfigDir(this.folder.getRoot());
+		this.previous = JOIDEnv.getDataDir();
+		JOIDEnv.dataDir(this.folder.getRoot());
 	}
 
 	@After
 	public void restoreTheConfig() {
-		JOID.inst().setConfigDir(this.previous);
+		JOIDEnv.dataDir(this.previous);
 	}
 
 	@Test

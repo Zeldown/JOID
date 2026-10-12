@@ -1,6 +1,7 @@
 package dev.joid.lib.bridge.backend;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -36,6 +37,9 @@ public class BackendTest {
 	private boolean devMode;
 	private boolean demoMode;
 
+	private File dataDir;
+	private File cacheDir;
+
 	private TraceBackend backend;
 
 	@Before
@@ -43,6 +47,8 @@ public class BackendTest {
 		this.previous = JOID.inst();
 		this.devMode = JOIDEnv.isDevMode();
 		this.demoMode = JOIDEnv.isDemoMode();
+		this.dataDir = JOIDEnv.getDataDir();
+		this.cacheDir = JOIDEnv.getCacheDir();
 		JOIDEnv.devMode(false);
 		JOIDEnv.demoMode(false);
 		BackendTest.instance(new JOID());
@@ -65,6 +71,8 @@ public class BackendTest {
 		BackendTest.instance(this.previous);
 		JOIDEnv.devMode(this.devMode);
 		JOIDEnv.demoMode(this.demoMode);
+		JOIDEnv.dataDir(this.dataDir);
+		JOIDEnv.cacheDir(this.cacheDir);
 	}
 
 	@Test
@@ -120,8 +128,32 @@ public class BackendTest {
 	}
 
 	@Test
+	public void setsItsFoldersBeforeLoading() {
+		final File data = new File("data");
+		final File cache = new File("cache");
+		final TraceBackend backend = this.backend().dataDir(data).cacheDir(cache);
+		JOID.onReady(() -> this.trace.add(JOIDEnv.getDataDir() + " " + JOIDEnv.getCacheDir()));
+		backend.register();
+		Assert.assertEquals("data cache", this.trace.get(this.trace.size() - 1));
+		Assert.assertSame(data, backend.getDataDir());
+		Assert.assertSame(cache, backend.getCacheDir());
+	}
+
+	@Test
+	public void keepsTheFoldersOfTheEnvironmentByDefault() {
+		JOIDEnv.dataDir(new File("property/data"));
+		JOIDEnv.cacheDir(new File("property/cache"));
+		final TraceBackend backend = this.backend().register();
+		Assert.assertNull(backend.getDataDir());
+		Assert.assertEquals(new File("property/data"), JOIDEnv.getDataDir());
+		Assert.assertEquals(new File("property/cache"), JOIDEnv.getCacheDir());
+	}
+
+	@Test
 	public void chainsItsSettings() {
 		final TraceBackend backend = this.backend();
+		Assert.assertSame(backend, backend.dataDir(new File("data")));
+		Assert.assertSame(backend, backend.cacheDir(new File("cache")));
 		Assert.assertSame(backend, backend.audio(true));
 		Assert.assertSame(backend, backend.register());
 		Assert.assertSame(backend, backend.frame());

@@ -32,7 +32,7 @@ public class JOIDTest {
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
-	private File    configDir;
+	private File    dataDir;
 	private boolean devMode;
 	private boolean demoMode;
 
@@ -41,14 +41,14 @@ public class JOIDTest {
 
 	@Before
 	public void rememberTheSettings() {
-		this.configDir = JOID.inst().getConfigDir();
+		this.dataDir = JOIDEnv.getDataDir();
 		this.devMode = JOIDEnv.isDevMode();
 		this.demoMode = JOIDEnv.isDemoMode();
 	}
 
 	@After
 	public void restoreTheSettings() {
-		JOID.inst().setConfigDir(this.configDir);
+		JOIDEnv.dataDir(this.dataDir);
 		JOIDEnv.devMode(this.devMode);
 		JOIDEnv.demoMode(this.demoMode);
 	}
@@ -59,43 +59,8 @@ public class JOIDTest {
 	}
 
 	@Test
-	public void startsInTheConfigFolder() {
-		final String property = System.clearProperty("joid.config");
-		try {
-			Assert.assertEquals(new File("config"), new JOID().getConfigDir());
-		} finally {
-			if (property != null) {
-				System.setProperty("joid.config", property);
-			}
-		}
-	}
-
-	@Test
-	public void readsItsConfigFolderFromTheJoidConfigProperty() {
-		final File config = new File(this.folder.getRoot(), "config");
-		final String property = System.setProperty("joid.config", config.getPath());
-		try {
-			Assert.assertEquals(config, new JOID().getConfigDir());
-		} finally {
-			if (property == null) {
-				System.clearProperty("joid.config");
-			} else {
-				System.setProperty("joid.config", property);
-			}
-		}
-	}
-
-	@Test
-	public void chainsItsSettings() {
-		final JOID joid = new JOID();
-		final File folder = new File("settings");
-		Assert.assertSame(joid, joid.setConfigDir(folder));
-		Assert.assertSame(folder, joid.getConfigDir());
-	}
-
-	@Test
 	public void printsItsSettingsOnLoad() {
-		final JOID joid = new JOID().setConfigDir(new File("loaded"));
+		final JOID joid = new JOID();
 		final PrintStream previous = System.out;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(output, true));
@@ -106,7 +71,8 @@ public class JOIDTest {
 		}
 		final String text = output.toString();
 		Assert.assertTrue(text, text.contains("[JOID] Loading JOID with parameters:"));
-		Assert.assertTrue(text, text.contains(" - ConfigDir: " + new File("loaded").getAbsolutePath()));
+		Assert.assertTrue(text, text.contains(" - DataDir: " + JOIDEnv.getDataDir().getAbsolutePath()));
+		Assert.assertTrue(text, text.contains(" - CacheDir: " + JOIDEnv.getCacheDir().getAbsolutePath()));
 		Assert.assertTrue(text, text.contains(" - DevMode: true"));
 		Assert.assertTrue(text, text.contains(" - DemoMode: true"));
 		Assert.assertTrue(text, text.contains(" - Version: " + JOID.VERSION));
@@ -365,11 +331,6 @@ public class JOIDTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void refusesAMissingConfigFolder() {
-		new JOID().setConfigDir(null);
-	}
-
-	@Test(expected = NullPointerException.class)
 	public void refusesToLookForAMissingClass() {
 		JOID.isOpen((Class<? extends UI>) null);
 	}
@@ -405,23 +366,27 @@ public class JOIDTest {
 	}
 
 	@Test
-	public void createsNoConfigFolderBeforeWritingIntoIt() {
-		final File config = new File(this.folder.getRoot(), "config");
-		final String property = System.setProperty("joid.config", config.getPath());
+	public void createsNoDataFolderOnLoad() {
+		final File data = new File(this.folder.getRoot(), "joid");
+		JOIDEnv.dataDir(data);
+		JOIDTest.quietly(new JOID());
+		Assert.assertFalse(data.exists());
+	}
+
+	@Test
+	public void loadsOnce() {
+		final JOID joid = new JOID();
+		JOIDTest.quietly(joid);
 		final PrintStream previous = System.out;
-		System.setOut(new PrintStream(new ByteArrayOutputStream(), true));
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(output, true));
 		try {
-			new JOID().load();
-			new JOID().setConfigDir(config).load();
+			Assert.assertSame(joid, joid.load());
 		} finally {
 			System.setOut(previous);
-			if (property == null) {
-				System.clearProperty("joid.config");
-			} else {
-				System.setProperty("joid.config", property);
-			}
 		}
-		Assert.assertFalse(config.exists());
+		Assert.assertTrue(joid.isReady());
+		Assert.assertEquals(0, output.size());
 	}
 
 	@Test

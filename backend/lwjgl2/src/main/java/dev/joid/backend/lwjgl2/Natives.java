@@ -7,6 +7,7 @@ import java.nio.file.Files;
 
 import org.apache.commons.io.IOUtils;
 
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.utils.platform.Platform;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ public final class Natives {
 			return;
 		}
 
-		final File directory = new File(new File(System.getProperty("java.io.tmpdir"), "joid-lwjgl-2.9.1"), platform);
+		final File directory = new File(new File(JOIDEnv.getCacheDir(), "lwjgl-2.9.1"), platform);
 		if (!directory.isDirectory() && !directory.mkdirs()) {
 			throw new IllegalStateException("Unable to create the LWJGL 2 natives folder " + directory.getAbsolutePath());
 		}

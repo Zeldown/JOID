@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,6 +17,7 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegLogCallback;
 import org.bytedeco.javacv.Frame;
 
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.FileAsset;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -221,6 +223,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	@Override
 	public void clear(final @NonNull ResourceData resource) {
 		this.release();
+
+		if (this.asset != null && this.file != null) {
+			this.file.delete();
+			this.file = null;
+		}
 
 		if (this.textures != null) {
 			this.textures[0].delete();
@@ -660,7 +667,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			return ((FileAsset) asset).getFile();
 		}
 
-		final File target = File.createTempFile("joid-video-", ".mp4");
+		final File directory = new File(JOIDEnv.getCacheDir(), "video");
+		Files.createDirectories(directory.toPath());
+
+		final File target = File.createTempFile("joid-video-", ".mp4", directory);
 		target.deleteOnExit();
 
 		try (InputStream stream = asset.open(); FileOutputStream output = new FileOutputStream(target)) {
