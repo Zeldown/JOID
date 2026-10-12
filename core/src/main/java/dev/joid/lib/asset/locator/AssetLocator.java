@@ -26,6 +26,10 @@ public class AssetLocator {
 		AssetLocator.LOCATORS.add(0, locator);
 	}
 
+	public static void unregister(final @NonNull IAssetLocator locator) {
+		AssetLocator.LOCATORS.remove(locator);
+	}
+
 	public static boolean supports(final @NonNull Object handle) {
 		if (handle instanceof Asset) {
 			return true;

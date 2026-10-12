@@ -26,6 +26,14 @@ public class SnapshotUrlAssetLocatorTest {
 	}
 
 	@Test
+	public void leavesTheOtherStringsToTheOtherLocators() {
+		final SnapshotUrlAssetLocator locator = new SnapshotUrlAssetLocator(this.folder.getRoot());
+		Assert.assertTrue(locator.supports("http://example.invalid/image.png"));
+		Assert.assertFalse(locator.supports("assets/demo/image.png"));
+		Assert.assertFalse(locator.supports("joid://image.png"));
+	}
+
+	@Test
 	public void staysRemoteUntilCached() {
 		final Asset asset = new SnapshotUrlAssetLocator(this.folder.getRoot()).locate("https://example.invalid/image.png");
 		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());

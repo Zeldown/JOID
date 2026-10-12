@@ -53,6 +53,27 @@ public class AssetLocatorTest {
 	}
 
 	@Test
+	public void forgetsAnUnregisteredLocator() {
+		final IAssetLocator locator = new IAssetLocator() {
+
+			@Override
+			public boolean supports(final @NonNull Object handle) {
+				return handle instanceof StringBuilder;
+			}
+
+			@Override
+			public @NonNull Asset locate(final @NonNull Object handle) {
+				return FileAsset.create(new File(handle.toString()));
+			}
+
+		};
+		AssetLocator.register(locator);
+		Assert.assertTrue(AssetLocator.supports(new StringBuilder("image.png")));
+		AssetLocator.unregister(locator);
+		Assert.assertFalse(AssetLocator.supports(new StringBuilder("image.png")));
+	}
+
+	@Test
 	public void namesTheTypeOfAnUnknownHandle() {
 		try {
 			AssetLocator.locate(new Object());

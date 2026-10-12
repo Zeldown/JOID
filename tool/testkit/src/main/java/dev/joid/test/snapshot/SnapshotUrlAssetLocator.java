@@ -26,7 +26,7 @@ public final class SnapshotUrlAssetLocator implements IAssetLocator {
 
 	@Override
 	public boolean supports(final @NonNull Object handle) {
-		return handle instanceof String;
+		return handle instanceof String && (((String) handle).startsWith("http://") || ((String) handle).startsWith("https://"));
 	}
 
 	@Override

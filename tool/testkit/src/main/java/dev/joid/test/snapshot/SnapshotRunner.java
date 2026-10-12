@@ -18,6 +18,8 @@ import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.BridgeRegistry;
+import dev.joid.lib.bridge.IBridge;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
@@ -36,18 +38,24 @@ public final class SnapshotRunner {
 	private static final String SHIFTED_DIGITS  = ")!@#$%^&*(";
 	private static final String SHIFTED_SYMBOLS = " \"_<>?:+{|}~";
 
-	private final List<int[]>          masks;
-	private final ManualClockBridge    clock;
-	private final SnapshotUIBridge     bridge;
-	private final ISnapshotBackend     backend;
-	private final SnapshotWindowBridge window;
+	private final List<int[]>             masks;
+	private final ManualClockBridge       clock;
+	private final List<Runnable>          restorers;
+	private final SnapshotUIBridge        bridge;
+	private final ISnapshotBackend        backend;
+	private final SnapshotWindowBridge    window;
+	private final SnapshotUrlAssetLocator locator;
+	private final boolean                 devMode;
 
 	private SnapshotRunner(final ISnapshotBackend backend) {
-		this.clock   = ManualClockBridge.create(1735689600000L);
-		this.masks   = new ArrayList<>();
-		this.window  = new SnapshotWindowBridge();
-		this.bridge  = new SnapshotUIBridge();
-		this.backend = backend;
+		this.clock     = ManualClockBridge.create(1735689600000L);
+		this.masks     = new ArrayList<>();
+		this.window    = new SnapshotWindowBridge();
+		this.bridge    = new SnapshotUIBridge();
+		this.backend   = backend;
+		this.locator   = new SnapshotUrlAssetLocator(SnapshotSettings.getCache());
+		this.devMode   = JOIDEnv.isDevMode();
+		this.restorers = Arrays.asList(SnapshotRunner.restorer(BridgeHandler.UI), SnapshotRunner.restorer(BridgeHandler.AUDIO), SnapshotRunner.restorer(BridgeHandler.CLOCK), SnapshotRunner.restorer(BridgeHandler.WINDOW), SnapshotRunner.restorer(BridgeHandler.RENDER), SnapshotRunner.restorer(BridgeHandler.THREAD), SnapshotRunner.restorer(BridgeHandler.SIGNAL_REPLAY));
 	}
 
 	public static @NonNull SnapshotRunner start(final @NonNull ISnapshotBackend backend) {
@@ -57,7 +65,7 @@ public final class SnapshotRunner {
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
 		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
-		AssetLocator.register(new SnapshotUrlAssetLocator(SnapshotSettings.getCache()));
+		AssetLocator.register(runner.locator);
 		runner.resize(1920, 1080);
 
 		JOIDEnv.devMode(false);
@@ -67,6 +75,9 @@ public final class SnapshotRunner {
 	public void stop() {
 		this.bridge.closeAll();
 		this.backend.destroy();
+		this.restorers.forEach(Runnable::run);
+		AssetLocator.unregister(this.locator);
+		JOIDEnv.devMode(this.devMode);
 	}
 
 	public @NonNull String getRenderer() {
@@ -321,6 +332,17 @@ public final class SnapshotRunner {
 		} catch (final InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
+	}
+
+	private static <T extends IBridge> Runnable restorer(final BridgeRegistry<T> registry) {
+		final List<T> before = registry.getBridgeList();
+		return () -> {
+			for (final T bridge : registry.getBridgeList()) {
+				if (!before.contains(bridge)) {
+					registry.unregister(bridge);
+				}
+			}
+		};
 	}
 
 	private static boolean isSettled() {
