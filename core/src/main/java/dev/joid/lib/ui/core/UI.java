@@ -73,6 +73,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	private static final Map<File, Set<UI>>               WATCHER_MAP      = new HashMap<>();
 	private static final Map<File, FileAlterationMonitor> MONITOR_MAP      = new HashMap<>();
+	private static final Set<FileAlterationMonitor>       RUNNING_SET      = new HashSet<>();
 	private static final ExecutorService                  MONITOR_EXECUTOR = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("UI/monitor"));
 
 	@Getter
@@ -986,13 +987,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 			final FileAlterationMonitor monitor = UI.createMonitor(location);
 			UI.MONITOR_MAP.put(location, monitor);
-			UI.MONITOR_EXECUTOR.execute(() -> {
-				try {
-					monitor.start();
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-			});
+			UI.MONITOR_EXECUTOR.execute(() -> UI.openMonitor(location, monitor));
 			return monitor;
 		}
 	}
@@ -1006,13 +1001,34 @@ public abstract class UI implements IUI, IndexedElement {
 
 			UI.WATCHER_MAP.remove(location);
 			final FileAlterationMonitor monitor = UI.MONITOR_MAP.remove(location);
-			UI.MONITOR_EXECUTOR.execute(() -> {
-				try {
-					monitor.stop();
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-			});
+			UI.MONITOR_EXECUTOR.execute(() -> UI.closeMonitor(monitor));
+		}
+	}
+
+	private static void openMonitor(final File location, final FileAlterationMonitor monitor) {
+		synchronized (UI.WATCHER_MAP) {
+			if (UI.MONITOR_MAP.get(location) != monitor) {
+				return;
+			}
+		}
+
+		try {
+			monitor.start();
+			UI.RUNNING_SET.add(monitor);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static void closeMonitor(final FileAlterationMonitor monitor) {
+		if (!UI.RUNNING_SET.remove(monitor)) {
+			return;
+		}
+
+		try {
+			monitor.stop();
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -639,6 +639,7 @@ public class UITest {
 
 	@Test
 	public void ignoresTheDevKeysOutsideTheDevMode() {
+		JOIDEnv.devMode(false);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
@@ -693,6 +694,7 @@ public class UITest {
 
 	@Test
 	public void ignoresF3WithoutDevPanel() {
+		JOIDEnv.devMode(false);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		JOIDEnv.devMode(true);
@@ -721,6 +723,7 @@ public class UITest {
 
 	@Test
 	public void scrollsWithAltOutsideTheDevMode() {
+		JOIDEnv.devMode(false);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
@@ -1490,6 +1493,7 @@ public class UITest {
 
 	@Test
 	public void watchesNoFileOutsideTheDevMode() {
+		JOIDEnv.devMode(false);
 		final HotReloadUI ui = new HotReloadUI(new AtomicInteger());
 		ui.load(1920D, 1080D);
 		Assert.assertNull(ui.getFileMonitor());
