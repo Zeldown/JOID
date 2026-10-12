@@ -14,7 +14,7 @@
 
 **Write your interface once. Render it anywhere, with your design.**
 
-[**Documentation**](https://joid.dev-zeldown.workers.dev/) · [**Quick Start**](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) · [**Tutorial**](https://joid.dev-zeldown.workers.dev/#/tutorial/setup) · [**Releases**](https://github.com/Zeldown/JOID/releases)
+[**Documentation**](https://documentation.joid.dev/) · [**Quick Start**](https://documentation.joid.dev/#/getting-started/quick-start) · [**Tutorial**](https://documentation.joid.dev/#/tutorial/setup) · [**Releases**](https://github.com/Zeldown/JOID/releases)
 
 </div>
 
@@ -127,13 +127,13 @@ The same scene twice: a plain renderer on the left, JOID on the right. Both are 
 
 <div align="center">
 
-### [**joid.dev-zeldown.workers.dev**](https://joid.dev-zeldown.workers.dev/)
+### [**documentation.joid.dev**](https://documentation.joid.dev/)
 
 Getting started · Core concepts · Essentials · Tutorial · Components · Guides · Search (`Ctrl+K`)
 
 </div>
 
-Start with the [Quick Start](https://joid.dev-zeldown.workers.dev/#/getting-started/quick-start) for a first window in a few minutes, then read the [Core Concepts](https://joid.dev-zeldown.workers.dev/#/concepts/canvas) in order, starting with the virtual canvas: the documentation is a learning path where each page relies only on the ones before it. The site also lives in the [`documentation/`](documentation) folder: serve it with any static HTTP server (`cd documentation && npx serve .`).
+Start with the [Quick Start](https://documentation.joid.dev/#/getting-started/quick-start) for a first window in a few minutes, then read the [Core Concepts](https://documentation.joid.dev/#/concepts/canvas) in order, starting with the virtual canvas: the documentation is a learning path where each page relies only on the ones before it. The site also lives in the [`documentation/`](documentation) folder: serve it with any static HTTP server (`cd documentation && npx serve .`).
 
 ## Credits
 
