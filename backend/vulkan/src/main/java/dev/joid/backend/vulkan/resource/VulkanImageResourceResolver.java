@@ -1,7 +1,5 @@
 package dev.joid.backend.vulkan.resource;
 
-import java.util.function.Consumer;
-
 import dev.joid.backend.vulkan.render.texture.IVulkanImageSupplier;
 import dev.joid.backend.vulkan.render.texture.VulkanBorrowedTexture;
 import dev.joid.backend.vulkan.render.texture.VulkanImage;
@@ -28,14 +26,10 @@ public final class VulkanImageResourceResolver implements IResourceResolver {
 	}
 
 	@Override
-	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {
+	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
 		final String uniqueId = input instanceof VulkanImage ? "vulkan_image_" + ((VulkanImage) input).getView() : "vulkan_image_supplier_" + System.identityHashCode(input);
 		final VulkanBorrowedTexture texture = input instanceof VulkanImage ? VulkanBorrowedTexture.create((VulkanImage) input) : VulkanBorrowedTexture.create((IVulkanImageSupplier) input);
-		final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(texture));
-		if (callback != null) {
-			callback.accept(resource);
-		}
-		return resource;
+		return builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(texture));
 	}
 
 }

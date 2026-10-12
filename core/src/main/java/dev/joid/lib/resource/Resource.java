@@ -33,10 +33,6 @@ public final class Resource {
 		return Resource.DEFAULT_BUILDER.of(input);
 	}
 
-	public static @NonNull Resource of(final @NonNull Object input, final Consumer<Resource> callback) {
-		return Resource.DEFAULT_BUILDER.of(input, callback);
-	}
-
 	public final @NonNull Resource properties(final @NonNull ResourceProperties properties) {
 		this.properties = properties;
 		return this;
@@ -85,6 +81,11 @@ public final class Resource {
 
 	public final @NonNull Resource decoder(final IResourceDecoder decoder) {
 		this.data.decoder(decoder);
+		return this;
+	}
+
+	public final @NonNull Resource onLoad(final @NonNull Consumer<@NonNull Resource> callback) {
+		this.data.onLoad(() -> callback.accept(this));
 		return this;
 	}
 

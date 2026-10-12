@@ -43,10 +43,13 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void notifiesTheCallbackOfTheDefaultBuilder() {
-		final List<Resource> received = new ArrayList<>();
-		final Resource resource = Resource.of(new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB), received::add);
-		Assert.assertEquals(Collections.singletonList(resource), received);
+	public void notifiesItsLoadWithItself() {
+		final List<Resource> loads = new ArrayList<>();
+		final Resource resource = ResourceBuilder.create().cache(null).of(new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB)).onLoad(loads::add);
+		Assert.assertTrue(loads.isEmpty());
+		resource.generate();
+		Assert.assertTrue(resource.isLoaded());
+		Assert.assertEquals(Collections.singletonList(resource), loads);
 	}
 
 	@Test

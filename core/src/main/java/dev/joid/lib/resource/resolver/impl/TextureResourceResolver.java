@@ -1,7 +1,5 @@
 package dev.joid.lib.resource.resolver.impl;
 
-import java.util.function.Consumer;
-
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
@@ -17,14 +15,10 @@ public class TextureResourceResolver implements IResourceResolver {
 	}
 
 	@Override
-	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {
+	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
 		final ITexture texture = (ITexture) input;
 		final String uniqueId = "texture_" + System.identityHashCode(texture);
-		final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(texture));
-		if (callback != null) {
-			callback.accept(resource);
-		}
-		return resource;
+		return builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(texture));
 	}
 
 }

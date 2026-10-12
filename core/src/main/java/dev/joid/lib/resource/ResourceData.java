@@ -25,6 +25,7 @@ public final class ResourceData {
 	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
 	private final List<Thread>              tasks          = new CopyOnWriteArrayList<>();
+	private final List<Runnable>            loadListeners  = new CopyOnWriteArrayList<>();
 	private final List<Consumer<Throwable>> errorListeners = new CopyOnWriteArrayList<>();
 
 	private String           uniqueId;
@@ -86,7 +87,11 @@ public final class ResourceData {
 	}
 
 	public final @NonNull ResourceData loaded(final boolean loaded) {
-		this.loaded = loaded;
+		if (loaded) {
+			this.fireLoad();
+		} else {
+			this.loaded = false;
+		}
 		return this;
 	}
 
@@ -186,8 +191,8 @@ public final class ResourceData {
 				}
 
 				if (this.decoder == decoder && this.error == null) {
-					this.loaded = true;
 					this.uploaded = false;
+					this.fireLoad();
 				}
 			};
 
@@ -206,8 +211,8 @@ public final class ResourceData {
 			this.width = this.textures[0].getWidth();
 			this.height = this.textures[0].getHeight();
 
-			this.loaded = true;
 			this.uploaded = false;
+			this.fireLoad();
 		}
 	}
 
@@ -247,6 +252,14 @@ public final class ResourceData {
 		for (final Consumer<Throwable> listener : this.errorListeners) {
 			ThreadUtils.runOnRenderThread(() -> listener.accept(error));
 		}
+	}
+
+	public final synchronized @NonNull ResourceData onLoad(final @NonNull Runnable listener) {
+		this.loadListeners.add(listener);
+		if (this.loaded) {
+			ThreadUtils.runOnRenderThread(listener);
+		}
+		return this;
 	}
 
 	public final synchronized @NonNull ResourceData onError(final @NonNull Consumer<@NonNull Throwable> listener) {
@@ -316,6 +329,17 @@ public final class ResourceData {
 			return null;
 		}
 		return clazz.cast(this.decoder);
+	}
+
+	private synchronized void fireLoad() {
+		if (this.loaded) {
+			return;
+		}
+
+		this.loaded = true;
+		for (final Runnable listener : this.loadListeners) {
+			ThreadUtils.runOnRenderThread(listener);
+		}
 	}
 
 	private boolean isBorrowed() {

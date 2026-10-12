@@ -69,7 +69,7 @@ public class BorrowedTextureTest {
 	@Test
 	public void followsTheSizeOfItsHandleInAResource() {
 		final AtomicReference<BorrowableImage> image = new AtomicReference<>(new BorrowableImage(4, 2, false, true));
-		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(image::get), null);
+		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(image::get));
 		resource.prepareBind();
 		Assert.assertEquals(4, resource.getWidth());
 		image.set(new BorrowableImage(32, 16, false, true));
@@ -80,7 +80,7 @@ public class BorrowedTextureTest {
 
 	@Test
 	public void failsTheResourceOfAnInvalidHandle() {
-		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(() -> new BorrowableImage(4, 4, false, false)), null);
+		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(() -> new BorrowableImage(4, 4, false, false)));
 		resource.prepareBind();
 		Assert.assertTrue(resource.isFailed());
 		Assert.assertEquals("The borrowed texture host 4x4 is not a texture of the host", resource.getResourceData().getError().getMessage());

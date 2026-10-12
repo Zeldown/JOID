@@ -1,6 +1,5 @@
 package dev.joid.base.opengl.resource;
 
-import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 
 import dev.joid.base.opengl.render.GlRenderBridge;
@@ -29,15 +28,11 @@ public final class GlTextureResourceResolver implements IResourceResolver {
 	}
 
 	@Override
-	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {
+	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
 		final GlRenderBridge bridge = BridgeHandler.RENDER.getBridge(GlRenderBridge.class);
 		final String uniqueId = input instanceof Integer ? "gl_texture_" + input : "gl_texture_supplier_" + System.identityHashCode(input);
 		final GlBorrowedTexture texture = input instanceof Integer ? GlBorrowedTexture.create(bridge, (Integer) input) : GlBorrowedTexture.create(bridge, (IntSupplier) input);
-		final Resource resource = builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(texture));
-		if (callback != null) {
-			callback.accept(resource);
-		}
-		return resource;
+		return builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(texture));
 	}
 
 }

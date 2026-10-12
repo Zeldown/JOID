@@ -1,9 +1,6 @@
 package dev.joid.lib.resource.resolver.impl;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,17 +24,10 @@ public class TextureResourceResolverTest {
 	@Test
 	public void wrapsTheTextureWithoutDecoder() {
 		final Texture texture = new Texture();
-		final Resource resource = new TextureResourceResolver().resolve(ResourceBuilder.create().cache(null), texture, null);
+		final Resource resource = new TextureResourceResolver().resolve(ResourceBuilder.create().cache(null), texture);
 		Assert.assertEquals("texture_" + System.identityHashCode(texture), resource.getUniqueId());
 		Assert.assertSame(texture, resource.getTexture());
 		Assert.assertNull(resource.getDecoder());
-	}
-
-	@Test
-	public void handsTheResourceToTheCallback() {
-		final List<Resource> resolved = new ArrayList<>();
-		final Resource resource = new TextureResourceResolver().resolve(ResourceBuilder.create().cache(null), new Texture(), resolved::add);
-		Assert.assertEquals(Collections.singletonList(resource), resolved);
 	}
 
 	@Test
@@ -45,7 +35,7 @@ public class TextureResourceResolverTest {
 		final Texture texture = new Texture();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(CacheBuilder.newBuilder().build());
 		final TextureResourceResolver resolver = new TextureResourceResolver();
-		Assert.assertSame(resolver.resolve(builder, texture, null).getResourceData(), resolver.resolve(builder, texture, null).getResourceData());
+		Assert.assertSame(resolver.resolve(builder, texture).getResourceData(), resolver.resolve(builder, texture).getResourceData());
 	}
 
 	private static final class Texture implements ITexture {

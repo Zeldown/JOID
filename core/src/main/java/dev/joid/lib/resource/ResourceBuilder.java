@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -18,7 +17,6 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.resource.resolver.ResourceResolver;
-import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -93,43 +91,22 @@ public final class ResourceBuilder {
 	}
 
 	public @NonNull Resource of(final @NonNull Object input) {
-		return this.of(input, null);
-	}
-
-	public @NonNull Resource of(final @NonNull Object input, final Consumer<Resource> listener) {
-		final Consumer<Resource> callback = listener == null ? null : resource -> ThreadUtils.runOnRenderThread(() -> listener.accept(resource));
 		if (ResourceResolver.supports(input)) {
-			return ResourceResolver.resolve(this, input, callback);
+			return ResourceResolver.resolve(this, input);
 		}
 
 		final Asset asset = Asset.of(input);
 		if (asset.isRemote()) {
-			final AtomicBoolean created = new AtomicBoolean();
-			final Resource resource = this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), null), computed -> {
-				created.set(true);
-				computed.dispatch(() -> {
-					try {
-						computed.decoder(ResourceFormat.decoder(asset));
-					} catch (final RuntimeException exception) {
-						computed.getResourceData().fail(exception);
-					}
-
-					if (callback != null) {
-						callback.accept(computed);
-					}
-				});
-			});
-			if (!created.get() && callback != null) {
-				callback.accept(resource);
-			}
-			return resource;
+			return this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), null), computed -> computed.dispatch(() -> {
+				try {
+					computed.decoder(ResourceFormat.decoder(asset));
+				} catch (final RuntimeException exception) {
+					computed.getResourceData().fail(exception);
+				}
+			}));
 		}
 
-		final Resource resource = this.compute(asset.getUniqueId(), () -> ResourceBuilder.read(asset));
-		if (callback != null) {
-			callback.accept(resource);
-		}
-		return resource;
+		return this.compute(asset.getUniqueId(), () -> ResourceBuilder.read(asset));
 	}
 
 	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {

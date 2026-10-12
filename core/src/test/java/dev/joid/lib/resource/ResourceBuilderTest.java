@@ -23,6 +23,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
@@ -38,6 +39,9 @@ public class ResourceBuilderTest {
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
+
+	@Rule
+	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
 	public void startsBlockingAndNearestOnTheDefaultCache() {
@@ -103,12 +107,10 @@ public class ResourceBuilderTest {
 
 	@Test
 	public void resolvesABufferedImage() {
-		final List<Resource> received = new ArrayList<>();
 		final BufferedImage image = new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB);
-		final Resource resource = ResourceBuilder.create().cache(null).of(image, received::add);
+		final Resource resource = ResourceBuilder.create().cache(null).of(image);
 		Assert.assertTrue(resource.getDecoder() instanceof RasterResourceDecoder);
 		Assert.assertEquals(image.toString(), resource.getUniqueId());
-		Assert.assertEquals(Collections.singletonList(resource), received);
 	}
 
 	@Test
@@ -130,22 +132,26 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
-	public void notifiesTheCallbackOfALocalAssetAtOnce() {
-		final List<Resource> received = new ArrayList<>();
-		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png"), received::add);
-		Assert.assertEquals(Collections.singletonList(resource), received);
+	public void notifiesTheLoadOfALocalAssetOnceDecoded() {
+		final List<Resource> loads = new ArrayList<>();
+		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png")).onLoad(loads::add);
+		Assert.assertTrue(loads.isEmpty());
+		resource.generate();
+		Assert.assertTrue(resource.isLoaded());
+		Assert.assertEquals(Collections.singletonList(resource), loads);
 	}
 
 	@Test
-	public void deliversTheCallbackOnTheRenderThread() {
+	public void deliversTheLoadOnTheRenderThread() {
 		final QueueThreadBridge thread = new QueueThreadBridge();
-		final List<Resource> received = new ArrayList<>();
+		final List<Resource> loads = new ArrayList<>();
 		BridgeHandler.THREAD.register(thread);
 		try {
-			final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png"), received::add);
-			Assert.assertTrue(received.isEmpty());
+			final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png")).onLoad(loads::add);
+			resource.generate();
+			Assert.assertTrue(loads.isEmpty());
 			thread.run();
-			Assert.assertEquals(Collections.singletonList(resource), received);
+			Assert.assertEquals(Collections.singletonList(resource), loads);
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
 		}
@@ -179,25 +185,22 @@ public class ResourceBuilderTest {
 
 	@Test
 	public void picksTheDecoderOfAHeldAssetOnATaskThread() throws InterruptedException {
-		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
-		final Resource resource = ResourceBuilder.create().async().cache(null).of(asset, received -> threads.add(Thread.currentThread()));
+		final Resource resource = ResourceBuilder.create().async().cache(null).of(asset);
 		Assert.assertNull(resource.getDecoder());
-		Assert.assertTrue(threads.isEmpty());
+		Assert.assertTrue(asset.readers.isEmpty());
 		asset.release.countDown();
 		resource.blocking();
 		Assert.assertTrue(resource.getDecoder() instanceof RasterResourceDecoder);
-		Assert.assertEquals("ResourceTask/remote", threads.get(0).getName());
+		Assert.assertEquals("ResourceTask/remote", asset.readers.get(0).getName());
 	}
 
 	@Test
 	public void picksTheDecoderOfAHeldAssetAtOnceWhenBlocking() {
-		final List<Resource> received = new ArrayList<>();
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")));
 		asset.release.countDown();
-		final Resource resource = ResourceBuilder.create().cache(null).of(asset, received::add);
+		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
 		Assert.assertTrue(resource.getDecoder() instanceof AnimatedResourceDecoder);
-		Assert.assertEquals(Collections.singletonList(resource), received);
 	}
 
 	@Test
@@ -275,14 +278,15 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
-	public void notifiesTheCallbackOfACachedRemoteAsset() throws IOException {
+	public void notifiesALateListenerOfACachedRemoteAssetAtOnce() throws IOException {
 		final List<Resource> first = new ArrayList<>();
 		final List<Resource> second = new ArrayList<>();
 		final RemoteAsset asset = new RemoteAsset(Asset.of(ResourceBuilderTest.class.getResourceAsStream("/animation/still.png")).read());
 		final ResourceBuilder builder = ResourceBuilder.create().cache(CacheBuilder.newBuilder().build());
-		builder.of(asset, first::add);
-		final Resource cached = builder.of(asset, second::add);
-		Assert.assertEquals(1, first.size());
+		final Resource loaded = builder.of(asset).onLoad(first::add);
+		loaded.generate();
+		final Resource cached = builder.of(asset).onLoad(second::add);
+		Assert.assertEquals(Collections.singletonList(loaded), first);
 		Assert.assertEquals(Collections.singletonList(cached), second);
 	}
 
@@ -293,6 +297,7 @@ public class ResourceBuilderTest {
 	private static final class HeldAsset extends Asset {
 
 		private final AtomicInteger  opened  = new AtomicInteger();
+		private final List<Thread>   readers = new CopyOnWriteArrayList<>();
 		private final CountDownLatch release = new CountDownLatch(1);
 
 		private final byte[]  bytes;
@@ -316,6 +321,7 @@ public class ResourceBuilderTest {
 				throw new IOException(exception);
 			}
 			this.opened.incrementAndGet();
+			this.readers.add(Thread.currentThread());
 			return new ByteArrayInputStream(this.bytes);
 		}
 

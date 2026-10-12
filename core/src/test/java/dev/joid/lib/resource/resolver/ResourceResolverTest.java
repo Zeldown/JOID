@@ -1,10 +1,6 @@
 package dev.joid.lib.resource.resolver;
 
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Consumer;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,34 +29,27 @@ public class ResourceResolverTest {
 	@Test
 	public void resolvesATexture() {
 		final Texture texture = new Texture();
-		Assert.assertSame(texture, ResourceResolver.resolve(ResourceBuilder.create().cache(null), texture, null).getTexture());
+		Assert.assertSame(texture, ResourceResolver.resolve(ResourceBuilder.create().cache(null), texture).getTexture());
 	}
 
 	@Test
 	public void resolvesAnImage() {
-		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), null);
+		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
 		Assert.assertTrue(resource.getDecoder() instanceof RasterResourceDecoder);
-	}
-
-	@Test
-	public void handsTheResourceToTheCallback() {
-		final List<Resource> resolved = new ArrayList<>();
-		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new Texture(), resolved::add);
-		Assert.assertEquals(Collections.singletonList(resource), resolved);
 	}
 
 	@Test
 	public void prefersTheLastRegisteredResolver() {
 		ResourceResolver.register(new SpecialResolver());
 		Assert.assertTrue(ResourceResolver.supports(new SpecialImage()));
-		Assert.assertEquals("special", ResourceResolver.resolve(ResourceBuilder.create().cache(null), new SpecialImage(), null).getUniqueId());
-		Assert.assertTrue(ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), null).getDecoder() instanceof RasterResourceDecoder);
+		Assert.assertEquals("special", ResourceResolver.resolve(ResourceBuilder.create().cache(null), new SpecialImage()).getUniqueId());
+		Assert.assertTrue(ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)).getDecoder() instanceof RasterResourceDecoder);
 	}
 
 	@Test
 	public void namesTheTypeOfAnUnknownInput() {
 		try {
-			ResourceResolver.resolve(ResourceBuilder.create().cache(null), "image.png", null);
+			ResourceResolver.resolve(ResourceBuilder.create().cache(null), "image.png");
 			Assert.fail("An unknown input must be refused");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("No resolver found for input of type java.lang.String", expected.getMessage());
@@ -79,7 +68,7 @@ public class ResourceResolverTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToResolveWithoutBuilder() {
-		ResourceResolver.resolve(null, new Texture(), null);
+		ResourceResolver.resolve(null, new Texture());
 	}
 
 	private static final class SpecialImage extends BufferedImage {
@@ -98,7 +87,7 @@ public class ResourceResolverTest {
 		}
 
 		@Override
-		public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input, final Consumer<Resource> callback) {
+		public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
 			return builder.compute("special", () -> new ResourceData("special", null));
 		}
 

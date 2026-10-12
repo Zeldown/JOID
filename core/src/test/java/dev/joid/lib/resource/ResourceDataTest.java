@@ -226,6 +226,69 @@ public class ResourceDataTest {
 	}
 
 	@Test
+	public void notifiesItsLoadOnceDecoded() {
+		final List<String> loads = new ArrayList<>();
+		final ResourceData data = new ResourceData("image", new Decoder()).onLoad(() -> loads.add("load"));
+		Assert.assertTrue(loads.isEmpty());
+		data.generate(false);
+		Assert.assertEquals(Collections.singletonList("load"), loads);
+		data.onLoad(() -> loads.add("late"));
+		Assert.assertEquals(Arrays.asList("load", "late"), loads);
+	}
+
+	@Test
+	public void notifiesItsLoadOnTheRenderThread() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		final List<String> loads = new ArrayList<>();
+		final ResourceData data = new ResourceData("image", new Decoder()).onLoad(() -> loads.add("load"));
+		BridgeHandler.THREAD.register(thread);
+		try {
+			data.generate(false);
+			data.onLoad(() -> loads.add("late"));
+			Assert.assertTrue(loads.isEmpty());
+			thread.run();
+			Assert.assertEquals(Arrays.asList("load", "late"), loads);
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
+	public void notifiesTheLoadOfAGivenTexture() {
+		final List<String> loads = new ArrayList<>();
+		new ResourceData("image", null).texture(new Texture(4, 2)).onLoad(() -> loads.add("load")).generate(false);
+		Assert.assertEquals(Collections.singletonList("load"), loads);
+	}
+
+	@Test
+	public void notifiesItsLoadOncePerLoad() {
+		final List<String> loads = new ArrayList<>();
+		final ResourceData data = new ResourceData("image", new Decoder()).onLoad(() -> loads.add("load"));
+		data.loaded(true).loaded(true);
+		Assert.assertEquals(1, loads.size());
+		data.reload(new Decoder());
+		Assert.assertEquals(1, loads.size());
+		data.generate(false);
+		Assert.assertEquals(2, loads.size());
+	}
+
+	@Test
+	public void notifiesNoLoadOfAFailedDecode() {
+		final List<String> loads = new ArrayList<>();
+		final ResourceData data = new ResourceData("image", new Decoder() {
+
+			@Override
+			public void decode(final @NonNull ResourceData resource) {
+				throw new IllegalStateException("broken");
+			}
+
+		}).onLoad(() -> loads.add("load"));
+		data.generate(false);
+		Assert.assertTrue(data.isFailed());
+		Assert.assertTrue(loads.isEmpty());
+	}
+
+	@Test
 	public void reloadsAFailedResourceWithANewDecoder() {
 		final ResourceData data = new ResourceData("image", null);
 		data.fail(new IllegalStateException("missing"));

@@ -17,6 +17,7 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
@@ -46,6 +47,7 @@ public class UIDemoResource extends UIDemo {
 		final Resource square = Resource.of("https://placehold.co/100x100.png");
 		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-image").onError((resource, error) -> System.out.println("[UIDemoResource] failed resource: " + error.getMessage()));
 		final BooleanSignal second = BooleanSignal.of(false);
+		final StringSignal natural = StringSignal.of("");
 		final BufferedImage disc = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
 		for (int x = 0; x < 100; x++) {
 			for (int y = 0; y < 100; y++) {
@@ -79,8 +81,9 @@ public class UIDemoResource extends UIDemo {
 		TextNode.create(1765, 100).text(() -> Text.create(broken.isFailed() ? "isFailed" : "Loading", caption, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(this);
 		TextNode.create(1765, 175).text(Text.create("Failed", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(105, 280).resource(Resource.of("https://placehold.co/100x100.png")).attach(this);
+		ResourceNode.create(105, 280).resource(Resource.of("https://placehold.co/100x100.png").onLoad(resource -> natural.set("onLoad " + resource.getWidth() + "x" + resource.getHeight()))).attach(this);
 		TextNode.create(155, 405).text(Text.create("Natural size", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(155, 440).text(() -> Text.create(natural.get(), caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode.create(360, 270, 50, 0).resource(Resource.of("https://placehold.co/400x800.png")).attach(this);
 		TextNode.create(385, 405).text(Text.create("Width only", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
