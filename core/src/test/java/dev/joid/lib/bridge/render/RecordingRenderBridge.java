@@ -15,6 +15,7 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
+import dev.joid.lib.color.Color;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +34,8 @@ public final class RecordingRenderBridge extends RenderBridge {
 	private int depthClears;
 	private int stencilClears;
 	private int frameCommands;
+
+	private Color clearedColor;
 
 	@Override
 	public boolean canWrap(final @NonNull TextureWrap wrap) {
@@ -62,6 +65,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 	@Override
 	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
 		this.colorClears++;
+		this.clearedColor = new Color(red, green, blue, alpha);
 	}
 
 	@Override

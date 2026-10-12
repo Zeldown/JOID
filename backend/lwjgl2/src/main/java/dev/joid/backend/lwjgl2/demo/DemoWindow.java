@@ -22,6 +22,7 @@ public class DemoWindow extends DemoUIBridge {
 		Display.setResizable(true);
 		Display.setTitle("JOID - Demo (LWJGL 2)");
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
+		BridgeHandler.UI.register(this);
 		Backend.register();
 
 		this.input = Lwjgl2InputForwarder.create(this);
@@ -30,7 +31,6 @@ public class DemoWindow extends DemoUIBridge {
 
 	public static void main(final String[] args) throws LWJGLException {
 		final DemoWindow window = new DemoWindow();
-		BridgeHandler.UI.register(window);
 		JOID.inst().setDevMode(true).setDemoMode(true).load();
 		window.run();
 	}

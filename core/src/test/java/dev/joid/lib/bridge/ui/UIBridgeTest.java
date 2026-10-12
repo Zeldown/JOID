@@ -16,6 +16,7 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
+import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.ITextRenderer;
@@ -882,6 +883,49 @@ public class UIBridgeTest {
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
+	@Test
+	public void clearsTheScreenToTheBackgroundOfAWindowBridge() {
+		final WindowUIBridge bridge = WindowUIBridge.create();
+		bridge.frame();
+		Assert.assertEquals(Color.BLACK, this.bridges.getRender().getClearedColor());
+		bridge.background(Color.RED).frame();
+		Assert.assertEquals(Color.RED, this.bridges.getRender().getClearedColor());
+		Assert.assertEquals(2, this.bridges.getRender().getColorClears());
+		Assert.assertEquals(2, this.bridges.getRender().getDepthClears());
+	}
+
+	@Test
+	public void drawsTheTooltipOfAWindowBridgeWithItsHoverInfo() {
+		final TraceFont font = new TraceFont();
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		this.bridges.getRender().getDraws().clear();
+		WindowUIBridge.create().hoverColor(Color.BLUE).hoverInfo(TextInfo.create(font, 20F)).drawHover(menu, "Play", 100D, 100D);
+		Assert.assertEquals(Collections.singletonList("Play"), font.drawn);
+		Assert.assertTrue(this.bridges.getRender().getDraws().stream().anyMatch(draw -> draw.getBlue() == 1F && draw.getRed() == 0F));
+	}
+
+	@Test
+	public void warnsOnceInDevModeWhenAWindowBridgeHasNoHoverInfo() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		this.bridges.open(menu);
+		this.bridges.getRender().getDraws().clear();
+		final WindowUIBridge bridge = WindowUIBridge.create();
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		JOID.inst().setDevMode(true);
+		try {
+			bridge.drawHover(menu, "Play", 100D, 100D);
+			bridge.drawHover(menu, "Play", 100D, 100D);
+		} finally {
+			JOID.inst().setDevMode(false);
+			System.setErr(previous);
+		}
+		Assert.assertEquals("[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them" + System.lineSeparator(), output.toString());
+		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesATooltipWithoutContent() {
 		this.bridges.getUi().drawHover(new TraceUI("menu", this.trace), null, 0D, 0D);
@@ -900,7 +944,7 @@ public class UIBridgeTest {
 		}
 
 		@Override
-		protected TextInfo getHoverInfo() {
+		public TextInfo getHoverInfo() {
 			return this.info;
 		}
 

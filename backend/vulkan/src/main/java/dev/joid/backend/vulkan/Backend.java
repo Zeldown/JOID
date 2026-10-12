@@ -7,6 +7,7 @@ import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.openal.binding.Lwjgl3AlBinding;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public final class Backend {
 		BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()));
 		BridgeHandler.WINDOW.register(new GlfwWindowBridge(window));
 		BridgeHandler.RENDER.register(new VulkanRenderBridge(window));
+		BridgeHandler.UI.registerDefault(WindowUIBridge.create());
 		ResourceResolver.register(VulkanImageResourceResolver.inst());
 	}
 

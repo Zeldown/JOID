@@ -28,6 +28,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 			throw new IllegalStateException("Unable to create the GLFW window");
 		}
 
+		BridgeHandler.UI.register(this);
 		this.registerBackend(this.window);
 
 		GlfwInputForwarder.create(this).attach(this.window);

@@ -51,6 +51,7 @@ public final class SnapshotRunner {
 
 	public static @NonNull SnapshotRunner start(final @NonNull ISnapshotBackend backend) {
 		final SnapshotRunner runner = new SnapshotRunner(backend);
+		BridgeHandler.UI.register(runner.bridge);
 		backend.create(1920, 1080);
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
@@ -59,7 +60,6 @@ public final class SnapshotRunner {
 		runner.resize(1920, 1080);
 
 		JOID.inst().setDevMode(false).setDemoMode(true).load();
-		BridgeHandler.UI.register(runner.bridge);
 		return runner;
 	}
 

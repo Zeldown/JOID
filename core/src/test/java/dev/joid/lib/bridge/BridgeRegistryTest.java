@@ -35,6 +35,16 @@ public class BridgeRegistryTest {
 	}
 
 	@Test
+	public void registersADefaultBridgeOnlyIntoAnEmptyRegistry() {
+		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
+		final ManualClockBridge first = ManualClockBridge.create(1L);
+		registry.registerDefault(first);
+		registry.registerDefault(ManualClockBridge.create(2L));
+		Assert.assertSame(first, registry.get());
+		Assert.assertNull(registry.find(bridge -> bridge.currentTimeMillis() == 2L));
+	}
+
+	@Test
 	public void findsTheLatestBridgeMatchingAFilter() {
 		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
 		final ManualClockBridge early = ManualClockBridge.create(1L);

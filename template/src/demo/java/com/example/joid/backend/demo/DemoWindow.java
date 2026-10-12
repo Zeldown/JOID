@@ -20,9 +20,9 @@ public class DemoWindow extends DemoUIBridge {
 	}
 
 	public static void main(final String[] args) {
-		Backend.register();
 		final DemoWindow window = new DemoWindow();
 		BridgeHandler.UI.register(window);
+		Backend.register();
 		JOID.inst().setDevMode(true).setDemoMode(true).load();
 		window.run();
 	}

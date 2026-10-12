@@ -2,6 +2,7 @@ package com.example.joid.backend;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.ui.WindowUIBridge;
 
 import com.example.joid.backend.audio.ExampleAudioBridge;
 import com.example.joid.backend.render.ExampleRenderBridge;
@@ -18,6 +19,7 @@ public final class Backend {
 		BridgeHandler.AUDIO.register(new ExampleAudioBridge());
 		BridgeHandler.WINDOW.register(new ExampleWindowBridge());
 		BridgeHandler.RENDER.register(new ExampleRenderBridge());
+		BridgeHandler.UI.registerDefault(WindowUIBridge.create());
 	}
 
 }

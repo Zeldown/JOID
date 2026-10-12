@@ -14,7 +14,6 @@ public class DemoWindow extends GlfwDemoWindow {
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);
 		final DemoWindow window = new DemoWindow();
-		BridgeHandler.UI.register(window);
 		JOID.inst().setDevMode(true).setDemoMode(true).load();
 		window.run();
 	}
