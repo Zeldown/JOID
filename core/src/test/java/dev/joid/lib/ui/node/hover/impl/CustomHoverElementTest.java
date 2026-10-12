@@ -11,7 +11,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.hover.IHoverElement;
-import dev.joid.lib.ui.node.hover.impl.CustomHoverElement.HoverElementPosition;
+import dev.joid.lib.ui.node.hover.impl.PositionedHoverElement.HoverElementPosition;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,10 +42,10 @@ public class CustomHoverElementTest {
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 160D).frames(2);
 		Assert.assertEquals(160D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(135D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(155D, this.tooltip().getTop(), 1E-3D);
 		this.bridges.move(250D, 180D).frames(1);
 		Assert.assertEquals(260D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(155D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(175D, this.tooltip().getTop(), 1E-3D);
 	}
 
 	@Test
@@ -54,16 +54,16 @@ public class CustomHoverElementTest {
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(250D, 180D).frames(2);
 		Assert.assertEquals(110D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(75D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(95D, this.tooltip().getTop(), 1E-3D);
 	}
 
 	@Test
-	public void sitsAtTheUiOriginWhenFixed() {
+	public void sitsAtItsOwnCoordinatesWhenFixed() {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).hover(CustomHoverElement.fixed(new BoxElement(30D, 40D, 40D, 20D)));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(250D, 180D).frames(2);
 		Assert.assertEquals(30D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(20D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(40D, this.tooltip().getTop(), 1E-3D);
 	}
 
 	@Test
@@ -80,16 +80,34 @@ public class CustomHoverElementTest {
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(1900D, 500D).frames(2);
 		Assert.assertEquals(1880D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(475D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(495D, this.tooltip().getTop(), 1E-3D);
+	}
+
+	@Test
+	public void staysRightOfTheLeftEdge() {
+		final RectNode rect = RectNode.create(0D, 400D, 200D, 200D).hover(CustomHoverElement.follow(new BoxElement(-30D, 5D, 40D, 20D)));
+		this.bridges.open(new NodeUI(rect)).frames(30);
+		this.bridges.move(10D, 500D).frames(2);
+		Assert.assertEquals(0D, this.tooltip().getLeft(), 1E-3D);
+		Assert.assertEquals(505D, this.tooltip().getTop(), 1E-3D);
 	}
 
 	@Test
 	public void staysBelowTheTopEdge() {
-		final RectNode rect = RectNode.create(100D, 0D, 200D, 100D).hover(CustomHoverElement.follow(new BoxElement(10D, -5D, 40D, 20D)));
+		final RectNode rect = RectNode.create(100D, 0D, 200D, 100D).hover(CustomHoverElement.follow(new BoxElement(10D, -30D, 40D, 20D)));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 10D).frames(2);
 		Assert.assertEquals(160D, this.tooltip().getLeft(), 1E-3D);
 		Assert.assertEquals(0D, this.tooltip().getTop(), 1E-3D);
+	}
+
+	@Test
+	public void staysAboveTheBottomEdge() {
+		final RectNode rect = RectNode.create(100D, 1000D, 200D, 80D).hover(CustomHoverElement.follow(new BoxElement(10D, 20D, 40D, 20D)));
+		this.bridges.open(new NodeUI(rect)).frames(30);
+		this.bridges.move(150D, 1070D).frames(2);
+		Assert.assertEquals(160D, this.tooltip().getLeft(), 1E-3D);
+		Assert.assertEquals(1060D, this.tooltip().getTop(), 1E-3D);
 	}
 
 	@Test
@@ -114,7 +132,7 @@ public class CustomHoverElementTest {
 	public void leavesTheElementWhereItIsOutsideAUi() {
 		CustomHoverElement.follow(new BoxElement(10D, -5D, 40D, 20D)).render(RectNode.create(0D, 0D, 10D, 10D), 1900D, 10D);
 		Assert.assertEquals(1910D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(-15D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(5D, this.tooltip().getTop(), 1E-3D);
 	}
 
 	@Test

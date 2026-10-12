@@ -40,15 +40,6 @@ public class UIDemoEvent extends UIDemo {
 		final IntegerSignal appended = IntegerSignal.of(0);
 		final IntegerSignal detached = IntegerSignal.of(0);
 		final IntegerSignal clicks = IntegerSignal.of(0);
-		final RectNode follow = RectNode.create(16, 0, 140, 50).color(UIDemoEvent.INK).body(tooltip -> {
-			TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("A node", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
-		});
-		final RectNode fixed = RectNode.create(120, 795, 240, 50).color(UIDemoEvent.INK).body(tooltip -> {
-			TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("Always here", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
-		});
-		final RectNode relative = RectNode.create(0, -8, 120, 40).color(Color.WHITE).body(tooltip -> {
-			TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("Above", info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
-		});
 
 		RectNode
 		.create(80, 40, 320, 260)
@@ -194,7 +185,9 @@ public class UIDemoEvent extends UIDemo {
 			.create(100, 50, 120, 120)
 			.color(UIDemoEvent.INK)
 			.hoveredColor(Color.WHITE)
-			.hover(NodeHoverElement.follow(follow))
+			.hover(NodeHoverElement.follow(RectNode.create(16, -50, 140, 50).color(UIDemoEvent.INK).body(tooltip -> {
+				TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("A node", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
+			})))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Node tooltip", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -222,7 +215,9 @@ public class UIDemoEvent extends UIDemo {
 			.create(100, 90, 120, 120)
 			.color(UIDemoEvent.INK)
 			.hoveredColor(Color.WHITE)
-			.hover(NodeHoverElement.fixed(fixed))
+			.hover(NodeHoverElement.fixed(RectNode.create(120, 745, 240, 50).color(UIDemoEvent.INK).body(tooltip -> {
+				TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("Always here", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
+			})))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Fixed tooltip", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -236,7 +231,9 @@ public class UIDemoEvent extends UIDemo {
 			.create(100, 50, 120, 120)
 			.color(UIDemoEvent.INK)
 			.hoveredColor(Color.WHITE)
-			.hover(NodeHoverElement.relative(relative))
+			.hover(NodeHoverElement.relative(RectNode.create(0, -48, 120, 40).color(Color.WHITE).body(tooltip -> {
+				TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("Above", info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
+			})))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Relative tooltip", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

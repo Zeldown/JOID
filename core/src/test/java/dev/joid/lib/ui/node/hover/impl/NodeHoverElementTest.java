@@ -14,7 +14,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.hover.IHoverElement;
-import dev.joid.lib.ui.node.hover.impl.CustomHoverElement.HoverElementPosition;
+import dev.joid.lib.ui.node.hover.impl.PositionedHoverElement.HoverElementPosition;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 public class NodeHoverElementTest {
@@ -44,15 +44,22 @@ public class NodeHoverElementTest {
 	}
 
 	@Test
+	public void takesANodeBuiltInTheCall() {
+		Assert.assertEquals(40D, NodeHoverElement.follow(RectNode.create(10D, -5D, 40D, 20D).color(Color.WHITE)).getElement().getWidth(), 0D);
+		Assert.assertEquals(20D, NodeHoverElement.fixed(RectNode.create(10D, -5D, 40D, 20D).color(Color.WHITE)).getElement().getHeight(), 0D);
+		Assert.assertSame(HoverElementPosition.RELATIVE, NodeHoverElement.relative(RectNode.create(10D, -5D, 40D, 20D).color(Color.WHITE)).getPosition());
+	}
+
+	@Test
 	public void drawsTheNodeNextToTheMouse() {
 		final RectNode tooltip = RectNode.create(10D, -5D, 40D, 20D).color(new Color(0.6F, 0.4F, 0.2F, 1F));
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).hover(NodeHoverElement.follow(tooltip));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 160D).frames(2);
 		Assert.assertEquals(160D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(135D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(155D, this.tooltip().getTop(), 1E-3D);
 		Assert.assertEquals(200D, this.tooltip().getRight(), 1E-3D);
-		Assert.assertEquals(155D, this.tooltip().getBottom(), 1E-3D);
+		Assert.assertEquals(175D, this.tooltip().getBottom(), 1E-3D);
 	}
 
 	@Test
@@ -62,17 +69,17 @@ public class NodeHoverElementTest {
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(250D, 180D).frames(2);
 		Assert.assertEquals(110D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(75D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(95D, this.tooltip().getTop(), 1E-3D);
 	}
 
 	@Test
-	public void drawsTheNodeFromTheUiOriginWhenFixed() {
+	public void drawsTheNodeAtItsOwnCoordinatesWhenFixed() {
 		final RectNode tooltip = RectNode.create(30D, 40D, 40D, 20D).color(new Color(0.6F, 0.4F, 0.2F, 1F));
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).hover(NodeHoverElement.fixed(tooltip));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(250D, 180D).frames(2);
 		Assert.assertEquals(30D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(20D, this.tooltip().getTop(), 1E-3D);
+		Assert.assertEquals(40D, this.tooltip().getTop(), 1E-3D);
 	}
 
 	@Test

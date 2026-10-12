@@ -5,7 +5,7 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import lombok.NonNull;
 
-public class NodeHoverElement extends CustomHoverElement {
+public class NodeHoverElement extends PositionedHoverElement {
 
 	protected NodeHoverElement(final @NonNull Node node, final HoverElementPosition position) {
 		super(new IHoverElement() {
