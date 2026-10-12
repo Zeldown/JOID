@@ -26,7 +26,6 @@ public class SystemClockBridgeTest {
 	@Test
 	public void isRegisteredByDefault() {
 		Assert.assertNotNull(BridgeHandler.CLOCK.getBridge(SystemClockBridge.class));
-		Assert.assertEquals(0, new SystemClockBridge().getIndex());
 	}
 
 }

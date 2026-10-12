@@ -25,8 +25,8 @@ public class UIBridgeRegistryTest {
 	@Test
 	public void routesAUiToTheBridgeThatHandlesIt() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
-		final RoutingBridge menus = new RoutingBridge(MenuUI.class, 0);
-		final RoutingBridge huds = new RoutingBridge(HudUI.class, 0);
+		final RoutingBridge menus = new RoutingBridge(MenuUI.class);
+		final RoutingBridge huds = new RoutingBridge(HudUI.class);
 		registry.register(menus);
 		registry.register(huds);
 		Assert.assertSame(menus, registry.get(new MenuUI()));
@@ -38,11 +38,11 @@ public class UIBridgeRegistryTest {
 	@Test
 	public void routesAnOpenUiToTheBridgeThatHoldsIt() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
-		final RoutingBridge huds = new RoutingBridge(HudUI.class, 0);
-		final RoutingBridge latest = new RoutingBridge(UI.class, 5);
+		final RoutingBridge huds = new RoutingBridge(HudUI.class);
+		final RoutingBridge latest = new RoutingBridge(UI.class);
 		final MenuUI ui = new MenuUI();
 		registry.register(huds);
-		registry.register(latest);
+		registry.register(latest, 5);
 		huds.add(ui);
 		Assert.assertSame(huds, registry.get(ui));
 		Assert.assertSame(latest, registry.get(new MenuUI()));
@@ -53,35 +53,60 @@ public class UIBridgeRegistryTest {
 	@Test
 	public void routesAUiToNoBridgeWhenNoneHandlesIt() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
-		registry.register(new RoutingBridge(MenuUI.class, 0));
+		registry.register(new RoutingBridge(MenuUI.class));
 		Assert.assertNull(registry.get(new HudUI()));
 		Assert.assertNull(registry.get(HudUI.class));
 	}
 
 	@Test
-	public void prefersTheLatestBridgeOfTheSameIndex() {
+	public void prefersTheLatestBridgeOfTheSamePriority() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
-		final RoutingBridge latest = new RoutingBridge(UI.class, 0);
-		registry.register(new RoutingBridge(UI.class, 0));
+		final RoutingBridge latest = new RoutingBridge(UI.class);
+		registry.register(new RoutingBridge(UI.class));
 		registry.register(latest);
 		Assert.assertSame(latest, registry.get(new MenuUI()));
 		Assert.assertSame(latest, registry.get(MenuUI.class));
 	}
 
 	@Test
-	public void prefersTheHighestIndexOverTheLatestBridge() {
+	public void prefersTheHighestPriorityOverTheLatestBridge() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
-		final RoutingBridge highest = new RoutingBridge(UI.class, 5);
-		registry.register(highest);
-		registry.register(new RoutingBridge(UI.class, 0));
+		final RoutingBridge highest = new RoutingBridge(UI.class);
+		registry.register(highest, 5);
+		registry.register(new RoutingBridge(UI.class));
 		Assert.assertSame(highest, registry.get(new MenuUI()));
 		Assert.assertSame(highest, registry.get(MenuUI.class));
 	}
 
 	@Test
+	public void routesToARegisteredBridgeBeforeTheDefaultOne() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final RoutingBridge fallback = new RoutingBridge(UI.class);
+		final RoutingBridge lowest = new RoutingBridge(UI.class);
+		registry.registerDefault(fallback);
+		registry.register(lowest, -100);
+		Assert.assertSame(lowest, registry.get(new MenuUI()));
+		registry.unregister(lowest);
+		Assert.assertSame(fallback, registry.get(new MenuUI()));
+	}
+
+	@Test
+	public void routesAnOpenUiToItsHolderWhateverThePriority() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final RoutingBridge low = new RoutingBridge(UI.class);
+		final RoutingBridge high = new RoutingBridge(UI.class);
+		final MenuUI ui = new MenuUI();
+		registry.register(low, -1);
+		registry.register(high, 1);
+		low.add(ui);
+		Assert.assertSame(low, registry.get(ui));
+		Assert.assertSame(high, registry.get(new MenuUI()));
+	}
+
+	@Test
 	public void forgetsAnUnregisteredBridge() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
-		final RoutingBridge bridge = new RoutingBridge(UI.class, 0);
+		final RoutingBridge bridge = new RoutingBridge(UI.class);
 		registry.register(bridge);
 		registry.unregister(bridge);
 		Assert.assertNull(registry.get(new MenuUI()));
@@ -105,7 +130,6 @@ public class UIBridgeRegistryTest {
 	public static final class RoutingBridge extends UIBridge {
 
 		private final Class<? extends UI> type;
-		private final int                 index;
 
 		@Override
 		public void open(final @NonNull UI ui) {
@@ -135,11 +159,6 @@ public class UIBridgeRegistryTest {
 		@Override
 		public boolean canHandle(final @NonNull Class<? extends UI> clazz) {
 			return this.type.isAssignableFrom(clazz);
-		}
-
-		@Override
-		public int getIndex() {
-			return this.index;
 		}
 
 		@Override

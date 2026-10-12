@@ -1,18 +1,26 @@
 package dev.joid.lib.bridge;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
-import dev.joid.lib.utils.list.IndexedLinkedList;
 import lombok.NonNull;
 
 public class BridgeRegistry<T extends IBridge> {
 
-	@NonNull private final String               name;
-	@NonNull private final IndexedLinkedList<T> bridgeList;
+	@NonNull private final String          name;
+	@NonNull private final Map<T, Integer> priorityMap;
+
+	@NonNull
+	private volatile List<@NonNull T> bridgeList;
 
 	protected BridgeRegistry(final @NonNull String name) {
-		this.name       = name;
-		this.bridgeList = new IndexedLinkedList<>();
+		this.name        = name;
+		this.priorityMap = new HashMap<>();
+		this.bridgeList  = Collections.emptyList();
 	}
 
 	public static <T extends IBridge> @NonNull BridgeRegistry<T> create(final @NonNull String name) {
@@ -20,24 +28,42 @@ public class BridgeRegistry<T extends IBridge> {
 	}
 
 	public final void register(final @NonNull T bridge) {
-		this.bridgeList.add(bridge);
+		this.register(bridge, 0);
 	}
 
-	public final void unregister(final @NonNull T bridge) {
-		this.bridgeList.remove(bridge);
+	public final synchronized void register(final @NonNull T bridge, final int priority) {
+		final List<T> bridgeList = new ArrayList<>(this.bridgeList);
+		bridgeList.remove(bridge);
+		this.priorityMap.put(bridge, priority);
+
+		int index = bridgeList.size();
+		while (index > 0 && this.priorityMap.get(bridgeList.get(index - 1)) > priority) {
+			index--;
+		}
+
+		bridgeList.add(index, bridge);
+		this.bridgeList = Collections.unmodifiableList(bridgeList);
 	}
 
-	public final void registerDefault(final @NonNull T bridge) {
+	public final synchronized void unregister(final @NonNull T bridge) {
+		final List<T> bridgeList = new ArrayList<>(this.bridgeList);
+		bridgeList.remove(bridge);
+		this.priorityMap.remove(bridge);
+		this.bridgeList = Collections.unmodifiableList(bridgeList);
+	}
+
+	public final synchronized void registerDefault(final @NonNull T bridge) {
 		if (this.bridgeList.isEmpty()) {
-			this.bridgeList.add(bridge);
+			this.register(bridge, Integer.MIN_VALUE);
 		}
 	}
 
 	public final @NonNull T get() {
-		if (this.bridgeList.isEmpty()) {
+		final List<T> bridgeList = this.bridgeList;
+		if (bridgeList.isEmpty()) {
 			throw new IllegalStateException("No " + this.name.toLowerCase() + " bridge registered, call BridgeHandler." + this.name + ".register before using JOID");
 		}
-		return this.bridgeList.getLast();
+		return bridgeList.get(bridgeList.size() - 1);
 	}
 
 	public final <B extends T> B getBridge(final @NonNull Class<B> bridgeClass) {
@@ -45,12 +71,17 @@ public class BridgeRegistry<T extends IBridge> {
 	}
 
 	public final T find(final @NonNull Predicate<@NonNull T> filter) {
-		for (final T bridge : this.bridgeList.reversed()) {
-			if (filter.test(bridge)) {
-				return bridge;
+		final List<T> bridgeList = this.bridgeList;
+		for (int i = bridgeList.size() - 1; i >= 0; i--) {
+			if (filter.test(bridgeList.get(i))) {
+				return bridgeList.get(i);
 			}
 		}
 		return null;
+	}
+
+	public final @NonNull List<@NonNull T> getBridgeList() {
+		return this.bridgeList;
 	}
 
 }
