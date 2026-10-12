@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.lwjgl.glfw.GLFW;
 
 import dev.joid.demo.DemoUIBridge;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
@@ -28,9 +29,12 @@ public class GlfwInputForwarderTest {
 	private final IWindowBridge window = new FixedWindowBridge();
 
 	private GlfwInputForwarder input;
+	private boolean            devMode;
 
 	@Before
 	public void openAUi() {
+		this.devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(false);
 		BridgeHandler.WINDOW.register(this.window);
 		this.bridge.add(this.ui);
 		this.input = GlfwInputForwarder.create(this.bridge);
@@ -40,6 +44,7 @@ public class GlfwInputForwarderTest {
 	public void closeTheUi() {
 		this.bridge.closeAll();
 		BridgeHandler.WINDOW.unregister(this.window);
+		JOIDEnv.devMode(this.devMode);
 	}
 
 	@Test

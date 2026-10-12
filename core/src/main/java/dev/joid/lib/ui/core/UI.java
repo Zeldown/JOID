@@ -25,7 +25,7 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.state.StencilFunction;
@@ -168,7 +168,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void load(final double finalWidth, final double finalHeight, final double zoomLevel) {
 		final long start = System.nanoTime();
-		if (JOID.inst().isDevMode() && this.debug.profiler() && !this.initialized) {
+		if (JOIDEnv.isDevMode() && this.debug.profiler() && !this.initialized) {
 			System.out.println("##########################");
 			System.out.println("Starting load...");
 		}
@@ -211,7 +211,7 @@ public abstract class UI implements IUI, IndexedElement {
 				}
 			}
 
-			if (JOID.inst().isDevMode()) {
+			if (JOIDEnv.isDevMode()) {
 				if (devNodeEnabled) {
 					this.devNode.attach(this);
 				} else {
@@ -219,7 +219,7 @@ public abstract class UI implements IUI, IndexedElement {
 				}
 			}
 
-			if (JOID.inst().isDevMode() && this.debug.profiler()) {
+			if (JOIDEnv.isDevMode() && this.debug.profiler()) {
 				final long end = System.nanoTime();
 				System.out.println("Load completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
 				System.out.println("##########################");
@@ -240,7 +240,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		if (JOID.inst().isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
+		if (JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
 			this.zoom(this.view.getZoom() + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
 			return true;
 		}
@@ -344,7 +344,7 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
-		if (JOID.inst().isDevMode() && !context.isCancelled()) {
+		if (JOIDEnv.isDevMode() && !context.isCancelled()) {
 			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
 				if (!Key.LEFT_SHIFT.isDown()) {
 					this.reload();
@@ -761,7 +761,7 @@ public abstract class UI implements IUI, IndexedElement {
 			this.stopMonitor();
 		}
 
-		if (JOID.inst().isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
+		if (JOIDEnv.isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
 			final File location = UI.locate(this.getClass());
 			if (location == null) {
 				if (!UI.monitorWarned) {
@@ -988,7 +988,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final long end = System.nanoTime();
 		this.renderTime = end - start;
 
-		if (JOID.inst().isDevMode() && this.debug.profiler()) {
+		if (JOIDEnv.isDevMode() && this.debug.profiler()) {
 			final float ms = this.renderTime / 1_000_000F;
 			if (ms > 16.66F) {
 				System.err.println("##########################");

@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
@@ -883,12 +884,12 @@ public class UIBridgeTest {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		try {
 			bridge.drawHover(menu, "Play", 100D, 100D);
 			bridge.drawHover(menu, "Play", 100D, 100D);
 		} finally {
-			JOID.inst().setDevMode(false);
+			JOIDEnv.devMode(false);
 			System.setErr(previous);
 		}
 		Assert.assertEquals("[JOID] " + bridge.getClass().getSimpleName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them" + System.lineSeparator(), output.toString());
@@ -953,12 +954,12 @@ public class UIBridgeTest {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		try {
 			bridge.drawHover(menu, "Play", 100D, 100D);
 			bridge.drawHover(menu, "Play", 100D, 100D);
 		} finally {
-			JOID.inst().setDevMode(false);
+			JOIDEnv.devMode(false);
 			System.setErr(previous);
 		}
 		Assert.assertEquals("[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them" + System.lineSeparator(), output.toString());

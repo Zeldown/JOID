@@ -24,7 +24,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
@@ -2307,7 +2307,7 @@ public abstract class Node implements INode {
 		boundingJson.addProperty("height", this.height);
 		json.add("bounding", boundingJson);
 
-		if (JOID.inst().isDevMode()) {
+		if (JOIDEnv.isDevMode()) {
 			json.addProperty("scrollX", this.targetScrollX + " / " + this.maxScrollX + " [" + this.overflow.toString() + "]");
 			json.addProperty("scrollY", this.targetScrollY + " / " + this.maxScrollY + " [" + this.overflow.toString() + "]");
 
@@ -2358,7 +2358,7 @@ public abstract class Node implements INode {
 	@Override
 	public @NonNull String toString() {
 		final JsonObject json = this.toJson();
-		if (JOID.inst().isDevMode()) {
+		if (JOIDEnv.isDevMode()) {
 			return Node.PRETTY_GSON.toJson(json);
 		}
 

@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
@@ -240,7 +240,7 @@ public final class ResourceData {
 		this.error = error;
 		this.loaded = false;
 		this.data = null;
-		if (JOID.inst().isDevMode()) {
+		if (JOIDEnv.isDevMode()) {
 			System.err.println("[JOID] The resource " + this.uniqueId + " cannot be read and is drawn empty: " + ResourceData.describe(error, !this.isBorrowed()));
 		}
 

@@ -26,17 +26,19 @@ sourceSets {
 }
 
 configurations {
+    joidDemo
     joidDev
     joidProd
     embed
     baseline
     libraries
-    compile.extendsFrom joidDev, embed, libraries
+    compile.extendsFrom joidDemo, embed, libraries
     demoCompile.extendsFrom compile
     demoRuntime.extendsFrom runtime
 }
 
 dependencies {
+    joidDemo files("libs/joid-core-${joidVersion}-demo.jar")
     joidDev files("libs/joid-core-${joidVersion}-dev.jar")
     joidProd files("libs/joid-core-${joidVersion}-prod.jar")
 
@@ -51,7 +53,7 @@ dependencies {
     testCompile files("libs/joid-tool-testkit-${joidVersion}.jar")
     testCompile "junit:junit:4.13.2"
 
-    baseline files("libs/joid-backend-lwjgl3-${joidVersion}-dev.jar")
+    baseline files("libs/joid-backend-lwjgl3-${joidVersion}-demo.jar")
     ['lwjgl', 'lwjgl-glfw', 'lwjgl-opengl', 'lwjgl-openal'].each { module ->
         baseline "org.lwjgl:$module:$lwjglVersion"
         baseline "org.lwjgl:$module:$lwjglVersion:$lwjglNatives"
@@ -59,12 +61,22 @@ dependencies {
 }
 
 /* Packaging */
-task devJar(type: Jar) {
+task demoJar(type: Jar) {
     group = 'build'
-    description = 'Builds the dev jar, with the JOID core, its demo assets and the demo window.'
-    classifier = 'dev'
+    description = 'Builds the demo jar, with the JOID core, its dev tools, its demos and the demo window.'
+    classifier = 'demo'
     from sourceSets.main.output
     from sourceSets.demo.output
+    from({ (configurations.joidDemo + configurations.embed).collect { zipTree(it) } }) {
+        exclude 'META-INF/MANIFEST.MF'
+    }
+}
+
+task devJar(type: Jar) {
+    group = 'build'
+    description = 'Builds the dev jar, with the JOID core and its dev tools, without the demos or the demo window.'
+    classifier = 'dev'
+    from sourceSets.main.output
     from({ (configurations.joidDev + configurations.embed).collect { zipTree(it) } }) {
         exclude 'META-INF/MANIFEST.MF'
     }
@@ -72,7 +84,7 @@ task devJar(type: Jar) {
 
 task prodJar(type: Jar) {
     group = 'build'
-    description = 'Builds the prod jar, with the JOID core and without the demo assets or the demo window.'
+    description = 'Builds the prod jar, with the JOID core and without its dev tools, its demos or the demo window.'
     classifier = 'prod'
     from sourceSets.main.output
     from({ (configurations.joidProd + configurations.embed).collect { zipTree(it) } }) {
@@ -80,7 +92,7 @@ task prodJar(type: Jar) {
     }
 }
 
-assemble.dependsOn devJar, prodJar
+assemble.dependsOn demoJar, devJar, prodJar
 
 /* Tests */
 def snapshots = { Test testTask, String name ->
@@ -103,12 +115,12 @@ def snapshots = { Test testTask, String name ->
     }
 }
 
-task testDevJar(type: Test) {
+task testDemoJar(type: Test) {
     group = 'verification'
-    description = 'Runs every test against the dev jar.'
-    dependsOn devJar
+    description = 'Runs every test against the demo jar.'
+    dependsOn demoJar
     testClassesDir = sourceSets.test.output.classesDir
-    classpath = files(devJar.archivePath) + sourceSets.test.output + configurations.testRuntime - configurations.joidDev - configurations.embed
+    classpath = files(demoJar.archivePath) + sourceSets.test.output + configurations.testRuntime - configurations.joidDemo - configurations.embed
 }
 
 task testProdJar(type: Test) {
@@ -116,12 +128,12 @@ task testProdJar(type: Test) {
     description = 'Runs the contract and unit tests against the prod jar.'
     dependsOn prodJar
     testClassesDir = sourceSets.test.output.classesDir
-    classpath = files(prodJar.archivePath) + sourceSets.test.output + configurations.testRuntime - configurations.joidDev - configurations.embed
+    classpath = files(prodJar.archivePath) + sourceSets.test.output + configurations.testRuntime - configurations.joidDemo - configurations.embed
     exclude '**/SnapshotTest.class'
 }
 
 snapshots(test, archivesBaseName)
-snapshots(testDevJar, "${archivesBaseName}-dev")
+snapshots(testDemoJar, "${archivesBaseName}-demo")
 snapshots(testProdJar, "${archivesBaseName}-prod")
 
 task updateSnapshots {
@@ -158,7 +170,7 @@ task crossBackendTest(type: JavaExec) {
     description = 'Compares the snapshots of this backend to the official LWJGL 3 rendering.'
     dependsOn test, renderBaseline
     main = 'dev.joid.test.snapshot.SnapshotComparison'
-    classpath = files("libs/joid-tool-testkit-${joidVersion}.jar") + configurations.joidDev + configurations.libraries
+    classpath = files("libs/joid-tool-testkit-${joidVersion}.jar") + configurations.joidDemo + configurations.libraries
     args file("$buildDir/snapshots/cross").absolutePath, file("$buildDir/snapshots/lwjgl3").absolutePath, file("$buildDir/snapshots/$archivesBaseName").absolutePath
 }
 

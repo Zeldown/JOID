@@ -1,6 +1,6 @@
 package dev.joid.lib.draw.resource;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
@@ -60,7 +60,7 @@ public final class DrawResource {
 
 	private void drawRegion(final double x, final double y, final double width, final double height, final double[] region, final Resource resource) {
 		final boolean failed = resource.isFailed();
-		if (failed && !JOID.inst().isDevMode()) {
+		if (failed && !JOIDEnv.isDevMode()) {
 			return;
 		}
 

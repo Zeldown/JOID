@@ -23,7 +23,7 @@ public class DemoWindow extends DemoUIBridge {
 		final DemoWindow window = new DemoWindow();
 		BridgeHandler.UI.register(window);
 		Backend.register();
-		JOID.inst().setDevMode(true).setDemoMode(true).load();
+		JOID.inst().load();
 		window.run();
 	}
 

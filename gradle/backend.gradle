@@ -12,22 +12,25 @@ collectModules = { current ->
 }
 collectModules(project)
 
-shadowJar {
-    embeddedModules.each { module ->
-        from module.sourceSets.main.output
+def shadowJarType = plugins.getPlugin('com.github.johnrengelman.shadow').class.classLoader.loadClass('com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar')
+
+rootProject.variants.each { variant ->
+    task("${variant}Jar", type: shadowJarType) {
+        group = 'build'
+        description = "Builds the ${variant} jar of the backend, with JOID and the modules it uses embedded."
+        from sourceSets.main.output
+        embeddedModules.each { module ->
+            from module.sourceSets.main.output
+        }
+
+        configurations = ([project] + embeddedModules).collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null }
+        classifier = variant
+        rootProject.shadeLibraries(it)
+        rootProject.excludeVariant(it, variant)
     }
 
-    configurations = embeddedModules.collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null }
-    classifier = project.hasProperty('dev') ? 'dev' : 'prod'
-    rootProject.shadeLibraries(it)
-
-    if (!project.hasProperty('dev')) {
-        rootProject.excludeDevelopment(it)
-        exclude 'dev/joid/base/*/demo/**', 'dev/joid/base/*/snapshot/**', 'dev/joid/backend/*/demo/**', 'dev/joid/backend/*/snapshot/**'
-    }
+    build.dependsOn "${variant}Jar"
 }
-
-build.dependsOn shadowJar
 
 
 dependencies {

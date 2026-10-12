@@ -13,7 +13,7 @@ import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.resource.Resource;
 
 public class GlRenderBridgeTest {
@@ -67,15 +67,15 @@ public class GlRenderBridgeTest {
 	public void failsABorrowedTextureThatWasNeverCreated() {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		final boolean devMode = JOID.inst().isDevMode();
+		final boolean devMode = JOIDEnv.isDevMode();
 		System.setErr(new PrintStream(output, true));
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		try {
 			final Resource resource = Resource.of(2147483000);
 			resource.prepareBind();
 			Assert.assertTrue(resource.isFailed());
 		} finally {
-			JOID.inst().setDevMode(devMode);
+			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
 		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] The resource gl_texture_2147483000 cannot be read and is drawn empty: The borrowed texture 2147483000 is not a texture of the host"));

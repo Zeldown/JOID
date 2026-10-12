@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.draw.text.builder.TextElement;
@@ -106,14 +107,14 @@ public class DrawTextTest {
 
 	@Test
 	public void drawsEachElementUnderItsOrigin() {
-		final boolean previous = JOID.inst().isDevMode();
-		JOID.inst().setDevMode(true);
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(true);
 		try {
 			final Text text = Text.create("ab", this.info);
 			DrawTextTest.draw().drawText(0D, 0D, text);
 			Assert.assertSame(text.get(0).getOrigin(), this.font.origin);
 		} finally {
-			JOID.inst().setDevMode(previous);
+			JOIDEnv.devMode(previous);
 		}
 	}
 
@@ -234,8 +235,8 @@ public class DrawTextTest {
 
 	@Test
 	public void keepsTheOriginOfTheSplitElements() {
-		final boolean previous = JOID.inst().isDevMode();
-		JOID.inst().setDevMode(true);
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(true);
 		try {
 			final Text text = Text.create("ab cd", this.info);
 			final List<Text> lines = DrawTextTest.draw().getLines(35D, text);
@@ -243,7 +244,7 @@ public class DrawTextTest {
 			Assert.assertSame(text.get(0).getOrigin(), lines.get(0).get(0).getOrigin());
 			Assert.assertSame(text.get(0).getOrigin(), lines.get(1).get(0).getOrigin());
 		} finally {
-			JOID.inst().setDevMode(previous);
+			JOIDEnv.devMode(previous);
 		}
 	}
 

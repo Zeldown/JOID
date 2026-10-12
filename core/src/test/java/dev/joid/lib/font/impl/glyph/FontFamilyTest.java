@@ -8,7 +8,7 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
 import lombok.AllArgsConstructor;
@@ -148,15 +148,15 @@ public class FontFamilyTest {
 
 	private static String capture(final boolean devMode, final Runnable runnable) {
 		final PrintStream error = System.err;
-		final boolean previous = JOID.inst().isDevMode();
+		final boolean previous = JOIDEnv.isDevMode();
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
-			JOID.inst().setDevMode(devMode);
+			JOIDEnv.devMode(devMode);
 			System.setErr(new PrintStream(output, true));
 			runnable.run();
 		} finally {
 			System.setErr(error);
-			JOID.inst().setDevMode(previous);
+			JOIDEnv.devMode(previous);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}

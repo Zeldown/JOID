@@ -3,7 +3,7 @@ package dev.joid.lib.draw.text.builder;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.TextConverter;
@@ -22,7 +22,7 @@ public class TextElement {
 	private ITextModifier modifier;
 
 	protected TextElement(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final ITextModifier modifier) {
-		this(text, info, modifier, JOID.inst().isDevMode() ? TextElement.locate() : null);
+		this(text, info, modifier, JOIDEnv.isDevMode() ? TextElement.locate() : null);
 	}
 
 	private TextElement(final Supplier<?> text, final TextInfo info, final ITextModifier modifier, final StackTraceElement[] origin) {

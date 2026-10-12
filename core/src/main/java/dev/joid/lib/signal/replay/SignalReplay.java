@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
@@ -93,7 +93,7 @@ public final class SignalReplay {
 	}
 
 	public static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
-		if (!JOID.inst().isDevMode() || !SignalReplay.WARNINGS.add(call.getKey())) {
+		if (!JOIDEnv.isDevMode() || !SignalReplay.WARNINGS.add(call.getKey())) {
 			return;
 		}
 		System.err.println("[JOID] " + call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());

@@ -8,7 +8,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
@@ -51,7 +51,7 @@ public final class MsdfFontLoader {
 				final long start = System.nanoTime();
 				final IMsdfSource source = MsdfFontLoader.source(handle);
 				final MsdfFontFace face = source.read();
-				if (JOID.inst().isDevMode()) {
+				if (JOIDEnv.isDevMode()) {
 					System.out.println("[JOID] Font " + face.getName() + " " + source.describe() + " in " + String.format("%.2f", (System.nanoTime() - start) / 1000000F) + "ms");
 				}
 				return face;

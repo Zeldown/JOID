@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.font.TextInfo;
@@ -71,14 +72,15 @@ public class KeyLayoutTest {
 	@Before
 	public void useAnAzertyKeyboard() {
 		this.configDir = JOID.inst().getConfigDir();
-		this.devMode = JOID.inst().isDevMode();
+		this.devMode = JOIDEnv.isDevMode();
 		JOID.inst().setConfigDir(this.folder.getRoot());
 		this.bridges.getWindow().setLayout(this.layout);
 	}
 
 	@After
 	public void restoreTheSettings() {
-		JOID.inst().setConfigDir(this.configDir).setDevMode(this.devMode);
+		JOID.inst().setConfigDir(this.configDir);
+		JOIDEnv.devMode(this.devMode);
 	}
 
 	@Test
@@ -138,7 +140,7 @@ public class KeyLayoutTest {
 
 	@Test
 	public void reloadsWithControlROnAnAzertyKeyboardInDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final ShortcutUI ui = new ShortcutUI();
 		this.bridges.open(ui);
 		this.control(Key.R);

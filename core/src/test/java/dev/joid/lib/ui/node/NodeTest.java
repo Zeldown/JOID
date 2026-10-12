@@ -20,6 +20,7 @@ import org.junit.Test;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -2760,8 +2761,8 @@ public class NodeTest {
 
 	@Test
 	public void describesItsStateInDevMode() {
-		final boolean previous = JOID.inst().isDevMode();
-		JOID.inst().setDevMode(true);
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(true);
 		try {
 			final RectNode child = RectNode.create(0D, 0D, 10D, 10D).overflow(OverflowProperty.SCROLL);
 			final RectNode parent = RectNode.create(0D, 0D, 100D, 100D).append(child);
@@ -2778,7 +2779,7 @@ public class NodeTest {
 			Assert.assertEquals(1, parent.toJson().get("children").getAsInt());
 			Assert.assertTrue(child.toString().contains("\n"));
 		} finally {
-			JOID.inst().setDevMode(previous);
+			JOIDEnv.devMode(previous);
 		}
 	}
 

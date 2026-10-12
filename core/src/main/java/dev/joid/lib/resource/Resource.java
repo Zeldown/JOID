@@ -3,7 +3,7 @@ package dev.joid.lib.resource;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
@@ -197,7 +197,7 @@ public final class Resource {
 	public final void bindTextureOnly(final @NonNull TextureWrap wrap) {
 		this.prepareBind();
 		if (this.isFailed()) {
-			if (JOID.inst().isDevMode()) {
+			if (JOIDEnv.isDevMode()) {
 				BridgeHandler.RENDER.get().getState().texture(this.data.getMissingTexture()).textureFilter(TextureFilter.NEAREST).textureWrap(wrap);
 			} else {
 				BridgeHandler.RENDER.get().getState().texture(null);

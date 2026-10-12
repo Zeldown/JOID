@@ -35,21 +35,20 @@ dependencies {
     shade "org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64"
 }
 
-task releaseJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
-    group = 'build'
-    description = 'Builds the dev or prod jar of the core, with the media libraries and the FFmpeg natives embedded.'
-    from sourceSets.main.output
-    from project(':tool-msdf').sourceSets.main.output
-    configurations = [project.configurations.shade]
-    classifier = project.hasProperty('dev') ? 'dev' : 'prod'
-    rootProject.shadeLibraries(it)
-
-    if (!project.hasProperty('dev')) {
-        rootProject.excludeDevelopment(it)
+rootProject.variants.each { variant ->
+    task("${variant}Jar", type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+        group = 'build'
+        description = "Builds the ${variant} jar of the core, with the media libraries and the FFmpeg natives embedded."
+        from sourceSets.main.output
+        from project(':tool-msdf').sourceSets.main.output
+        configurations = [project.configurations.shade]
+        classifier = variant
+        rootProject.shadeLibraries(it)
+        rootProject.excludeVariant(it, variant)
     }
-}
 
-build.dependsOn releaseJar
+    build.dependsOn "${variant}Jar"
+}
 
 task updateVersion() {
     group = 'JOID'

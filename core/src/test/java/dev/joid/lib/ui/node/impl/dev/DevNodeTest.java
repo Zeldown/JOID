@@ -12,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
@@ -52,13 +52,13 @@ public class DevNodeTest {
 
 	@Before
 	public void enableTheDevMode() {
-		this.devMode = JOID.inst().isDevMode();
-		JOID.inst().setDevMode(true);
+		this.devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(true);
 	}
 
 	@After
 	public void restoreTheDevMode() {
-		JOID.inst().setDevMode(this.devMode);
+		JOIDEnv.devMode(this.devMode);
 	}
 
 	@Test

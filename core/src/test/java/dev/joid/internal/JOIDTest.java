@@ -2,17 +2,12 @@ package dev.joid.internal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,13 +42,15 @@ public class JOIDTest {
 	@Before
 	public void rememberTheSettings() {
 		this.configDir = JOID.inst().getConfigDir();
-		this.devMode = JOID.inst().isDevMode();
-		this.demoMode = JOID.inst().isDemoMode();
+		this.devMode = JOIDEnv.isDevMode();
+		this.demoMode = JOIDEnv.isDemoMode();
 	}
 
 	@After
 	public void restoreTheSettings() {
-		JOID.inst().setConfigDir(this.configDir).setDevMode(this.devMode).setDemoMode(this.demoMode);
+		JOID.inst().setConfigDir(this.configDir);
+		JOIDEnv.devMode(this.devMode);
+		JOIDEnv.demoMode(this.demoMode);
 	}
 
 	@Test
@@ -62,13 +59,10 @@ public class JOIDTest {
 	}
 
 	@Test
-	public void startsInTheConfigFolderWithoutDevNorDemoMode() {
+	public void startsInTheConfigFolder() {
 		final String property = System.clearProperty("joid.config");
 		try {
-			final JOID joid = new JOID();
-			Assert.assertEquals(new File("config"), joid.getConfigDir());
-			Assert.assertFalse(joid.isDevMode());
-			Assert.assertFalse(joid.isDemoMode());
+			Assert.assertEquals(new File("config"), new JOID().getConfigDir());
 		} finally {
 			if (property != null) {
 				System.setProperty("joid.config", property);
@@ -96,30 +90,7 @@ public class JOIDTest {
 		final JOID joid = new JOID();
 		final File folder = new File("settings");
 		Assert.assertSame(joid, joid.setConfigDir(folder));
-		Assert.assertSame(joid, joid.setDevMode(true));
-		Assert.assertSame(joid, joid.setDemoMode(true));
 		Assert.assertSame(folder, joid.getConfigDir());
-		Assert.assertTrue(joid.isDevMode());
-		Assert.assertTrue(joid.isDemoMode());
-		joid.setDevMode(false).setDemoMode(false);
-		Assert.assertFalse(joid.isDevMode());
-		Assert.assertFalse(joid.isDemoMode());
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void refusesTheDevModeWithoutTheDevClasses() throws Throwable {
-		JOIDTest.prod("setDevMode");
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void refusesTheDemoModeWithoutTheDemoClasses() throws Throwable {
-		JOIDTest.prod("setDemoMode");
-	}
-
-	@Test
-	public void turnsTheModesOffWithoutTheDevClasses() throws Throwable {
-		Assert.assertNotNull(JOIDTest.prod("setDevMode", false));
-		Assert.assertNotNull(JOIDTest.prod("setDemoMode", false));
 	}
 
 	@Test
@@ -136,8 +107,8 @@ public class JOIDTest {
 		final String text = output.toString();
 		Assert.assertTrue(text, text.contains("[JOID] Loading JOID with parameters:"));
 		Assert.assertTrue(text, text.contains(" - ConfigDir: " + new File("loaded").getAbsolutePath()));
-		Assert.assertTrue(text, text.contains(" - DevMode: false"));
-		Assert.assertTrue(text, text.contains(" - DemoMode: false"));
+		Assert.assertTrue(text, text.contains(" - DevMode: true"));
+		Assert.assertTrue(text, text.contains(" - DemoMode: true"));
 		Assert.assertTrue(text, text.contains(" - Version: " + JOID.VERSION));
 	}
 
@@ -146,6 +117,8 @@ public class JOIDTest {
 		final MsdfFont previous = DevFont.MONTSERRAT;
 		DevFont.MONTSERRAT = null;
 		try {
+			JOIDEnv.devMode(false);
+			JOIDEnv.demoMode(false);
 			JOIDTest.quietly(new JOID());
 			Assert.assertNull(DevFont.MONTSERRAT);
 			Assert.assertNull(DemoFont.MONTSERRAT);
@@ -159,7 +132,8 @@ public class JOIDTest {
 		final MsdfFont previous = DevFont.MONTSERRAT;
 		DevFont.MONTSERRAT = null;
 		try {
-			JOIDTest.quietly(new JOID().setDevMode(true));
+			JOIDEnv.demoMode(false);
+			JOIDTest.quietly(new JOID());
 			Assert.assertNotNull(DevFont.MONTSERRAT);
 			Assert.assertNull(DemoFont.MONTSERRAT);
 		} finally {
@@ -171,7 +145,8 @@ public class JOIDTest {
 	public void loadsTheDemoFontsInDemoMode() {
 		final MsdfFont previous = DevFont.MONTSERRAT;
 		try {
-			JOIDTest.quietly(new JOID().setDemoMode(true));
+			JOIDEnv.devMode(false);
+			JOIDTest.quietly(new JOID());
 			Assert.assertTrue(DemoFont.isLoaded());
 			Assert.assertSame(DevFont.MONTSERRAT, DemoFont.MONTSERRAT);
 		} finally {
@@ -491,20 +466,6 @@ public class JOIDTest {
 		}
 	}
 
-	private static Object prod(final String setter) throws Throwable {
-		return JOIDTest.prod(setter, true);
-	}
-
-	private static Object prod(final String setter, final boolean value) throws Throwable {
-		final Class<?> clazz = new ProdClassLoader().loadClass(JOID.class.getName());
-		final Object joid = clazz.getConstructor().newInstance();
-		try {
-			return clazz.getMethod(setter, boolean.class).invoke(joid, value);
-		} catch (final InvocationTargetException e) {
-			throw e.getCause();
-		}
-	}
-
 	public static final class MenuUI extends UI {
 
 		private int     inits;
@@ -541,44 +502,6 @@ public class JOIDTest {
 		@Override
 		public void detach() {
 			this.menu.detaches++;
-		}
-
-	}
-
-	public static final class ProdClassLoader extends ClassLoader {
-
-		private ProdClassLoader() {
-			super(JOIDTest.class.getClassLoader());
-		}
-
-		@Override
-		protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
-			if (!name.equals(JOID.class.getName())) {
-				return super.loadClass(name, resolve);
-			}
-
-			synchronized (super.getClassLoadingLock(name)) {
-				final Class<?> loaded = super.findLoadedClass(name);
-				if (loaded != null) {
-					return loaded;
-				}
-
-				try (InputStream input = super.getParent().getResourceAsStream(name.replace('.', '/') + ".class")) {
-					final byte[] bytes = IOUtils.toByteArray(input);
-					return super.defineClass(name, bytes, 0, bytes.length, JOID.class.getProtectionDomain());
-				} catch (final IOException e) {
-					throw new ClassNotFoundException(name, e);
-				}
-			}
-		}
-
-		@Override
-		public URL getResource(final String name) {
-			if (name.endsWith("DevNode.class") || name.endsWith("DemoFont.class")) {
-				return null;
-			}
-
-			return super.getResource(name);
 		}
 
 	}

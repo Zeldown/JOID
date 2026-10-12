@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.shader.source.GlslDialect;
@@ -60,7 +60,7 @@ public abstract class Shader implements IShader {
 			this.samplerMap.put(sampler.getName(), UniformSampler.create(sampler.getName(), this.samplerMap.size() + 1));
 		}
 
-		if (JOID.inst().isDevMode()) {
+		if (JOIDEnv.isDevMode()) {
 			Shader.warnBeyondBaseline(vertex);
 			Shader.warnBeyondBaseline(fragment);
 		}

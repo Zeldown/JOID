@@ -36,6 +36,7 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -91,13 +92,14 @@ public class UITest {
 	@Before
 	public void useATemporaryConfig() {
 		this.configDir = JOID.inst().getConfigDir();
-		this.devMode = JOID.inst().isDevMode();
+		this.devMode = JOIDEnv.isDevMode();
 		JOID.inst().setConfigDir(this.folder.getRoot());
 	}
 
 	@After
 	public void restoreTheSettings() {
-		JOID.inst().setConfigDir(this.configDir).setDevMode(this.devMode);
+		JOID.inst().setConfigDir(this.configDir);
+		JOIDEnv.devMode(this.devMode);
 	}
 
 	@Test
@@ -254,7 +256,7 @@ public class UITest {
 	@Test
 	public void watchesItsClassesFromTheFrameAfterItsHotReloadChanges() throws Exception {
 		final UI ui = UITest.hotReloaded(this.folder.newFolder("classes"), new AtomicInteger());
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		ui.getDebug().setHotreload(false);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		try {
@@ -540,7 +542,7 @@ public class UITest {
 
 	@Test
 	public void reloadsWithControlRInDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
@@ -552,7 +554,7 @@ public class UITest {
 
 	@Test
 	public void reloadsWithF5InDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		ui.zoom(0.5D);
@@ -563,7 +565,7 @@ public class UITest {
 
 	@Test
 	public void renewsItsInstanceWithControlShiftRInDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final RenewUI ui = new RenewUI();
 		this.bridges.open(ui);
 		ui.clicks++;
@@ -581,7 +583,7 @@ public class UITest {
 
 	@Test
 	public void keepsItsInstanceAndItsStateWithControlRInDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final RenewUI ui = new RenewUI();
 		this.bridges.open(ui);
 		ui.clicks++;
@@ -607,7 +609,7 @@ public class UITest {
 
 	@Test
 	public void warnsWhenControlShiftRCannotRenewTheUI() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
@@ -651,7 +653,7 @@ public class UITest {
 
 	@Test
 	public void togglesItsDevPanelWithF3InDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
@@ -666,7 +668,7 @@ public class UITest {
 
 	@Test
 	public void keepsItsDevPanelAcrossItsReloads() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.bridges.getUi().keyPressed(Key.F3);
@@ -680,7 +682,7 @@ public class UITest {
 
 	@Test
 	public void replacesItsDetachedDevPanelOnReload() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		final Node panel = ui.getDevNode();
@@ -693,7 +695,7 @@ public class UITest {
 	public void ignoresF3WithoutDevPanel() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		this.trace.clear();
 		this.bridges.getUi().keyPressed(Key.F3);
 		Assert.assertNull(ui.getDevNode());
@@ -702,7 +704,7 @@ public class UITest {
 
 	@Test
 	public void zoomsWithAltAndTheWheelInDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
@@ -730,7 +732,7 @@ public class UITest {
 
 	@Test
 	public void printsItsLoadTimeWithItsProfilerInDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final String output = UITest.out(() -> new ProfiledUI(this.trace).load(1920D, 1080D));
 		Assert.assertTrue(output, output.contains("Starting load..."));
 		Assert.assertTrue(output, output.contains("Load completed in "));
@@ -738,7 +740,7 @@ public class UITest {
 
 	@Test
 	public void printsItsLoadTimeOnlyOnItsFirstLoad() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final ProfiledUI ui = new ProfiledUI(this.trace);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		Assert.assertEquals("", UITest.out(() -> ui.load(1366D, 768D)));
@@ -746,13 +748,13 @@ public class UITest {
 
 	@Test
 	public void loadsQuietlyWithoutItsProfiler() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		Assert.assertEquals("", UITest.out(() -> new TraceUI(this.trace).load(1920D, 1080D)));
 	}
 
 	@Test
 	public void warnsAboutASlowFrameWithItsProfilerInDevMode() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final ProfiledUI ui = new ProfiledUI(this.trace);
 		UITest.out(() -> this.bridges.open(ui));
 		ui.pause = 20L;
@@ -1454,7 +1456,7 @@ public class UITest {
 	public void watchesNothingOnceItsClassesAreNotInAFile() throws Exception {
 		final UI first = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
 		final UI second = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final String errors = UITest.err(() -> {
 			first.load(1920D, 1080D);
 			second.load(1920D, 1080D);
@@ -1467,7 +1469,7 @@ public class UITest {
 
 	@Test
 	public void watchesNoFileWithoutHotReload() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.load(1920D, 1080D);
 		Assert.assertNull(ui.getFileMonitor());
@@ -1479,7 +1481,7 @@ public class UITest {
 		final AtomicInteger inits = new AtomicInteger();
 		Files.write(location.toPath(), new byte[] {1});
 		final UI ui = UITest.hotReloaded(location, inits);
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		try {
 			final BlockingQueue<String> changes = UITest.listen(ui);
@@ -1505,7 +1507,7 @@ public class UITest {
 		final AtomicInteger inits = new AtomicInteger();
 		Assert.assertTrue(type.getParentFile().mkdir());
 		final UI ui = UITest.hotReloaded(location, inits);
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		try {
 			final BlockingQueue<String> changes = UITest.listen(ui);
@@ -1533,7 +1535,7 @@ public class UITest {
 		final File other = new File(location, "logo.png");
 		final AtomicInteger inits = new AtomicInteger();
 		final UI ui = UITest.hotReloaded(location, inits);
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		try {
 			final BlockingQueue<String> changes = UITest.listen(ui);
@@ -1557,7 +1559,7 @@ public class UITest {
 		final AtomicInteger inits = new AtomicInteger();
 		Files.write(location.toPath(), new byte[] {1});
 		final UI ui = UITest.hotReloaded(location, inits);
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		try {
 			final BlockingQueue<String> changes = UITest.listen(ui);
@@ -1584,7 +1586,7 @@ public class UITest {
 		final File location = new File(this.folder.newFolder("classes"), "ui.jar");
 		Files.write(location.toPath(), new byte[] {1});
 		final UI ui = UITest.hotReloaded(location, new AtomicInteger());
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		Assert.assertNotNull(ui.getFileMonitor());
 		ui.dispose();

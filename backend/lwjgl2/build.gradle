@@ -37,9 +37,8 @@ processResources.dependsOn extractNatives
 
 apply from: rootProject.file('gradle/backend.gradle')
 
-shadowJar {
-    configurations += [project.configurations.shade]
-    exclude 'dev/joid/base/openal/binding/Lwjgl3AlBinding*'
+rootProject.variants.each { variant ->
+    tasks["${variant}Jar"].exclude 'dev/joid/base/openal/binding/Lwjgl3AlBinding*'
 }
 
 /* Demo */

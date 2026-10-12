@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
 import lombok.Getter;
@@ -53,7 +53,7 @@ public final class FontFamily<F extends IFontFace> {
 		}
 
 		final F face = FontFamily.match(styled.isEmpty() ? this.faces : styled, weight.getValue());
-		if (face.getWeight() != weight && JOID.inst().isDevMode() && this.warned.add(FontFamily.style(weight, italic))) {
+		if (face.getWeight() != weight && JOIDEnv.isDevMode() && this.warned.add(FontFamily.style(weight, italic))) {
 			this.warn(weight, italic, face);
 		}
 		return face;

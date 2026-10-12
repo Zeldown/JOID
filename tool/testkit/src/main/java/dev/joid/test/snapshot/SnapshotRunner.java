@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
@@ -59,7 +60,8 @@ public final class SnapshotRunner {
 		AssetLocator.register(new SnapshotUrlAssetLocator(SnapshotSettings.getCache()));
 		runner.resize(1920, 1080);
 
-		JOID.inst().setDevMode(false).setDemoMode(true).load();
+		JOIDEnv.devMode(false);
+		JOID.inst().load();
 		return runner;
 	}
 
@@ -90,7 +92,7 @@ public final class SnapshotRunner {
 		this.window.getKeys().clear();
 		this.masks.clear();
 		this.clock.setTime(1735689600000L);
-		JOID.inst().setDevMode(false);
+		JOIDEnv.devMode(false);
 		this.resize(1920, 1080);
 
 		final Map<String, SnapshotImage> shots = new LinkedHashMap<>();
@@ -150,7 +152,7 @@ public final class SnapshotRunner {
 				this.bridge.interfaceScale(Double.parseDouble(arguments[1]));
 				break;
 			case "dev":
-				JOID.inst().setDevMode(Boolean.parseBoolean(arguments[1]));
+				JOIDEnv.devMode(Boolean.parseBoolean(arguments[1]));
 				break;
 			case "mask":
 				this.masks.add(new int[] {Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]), Integer.parseInt(arguments[3]), Integer.parseInt(arguments[4])});

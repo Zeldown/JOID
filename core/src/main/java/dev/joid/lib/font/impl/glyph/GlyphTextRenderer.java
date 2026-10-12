@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -151,7 +151,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		if (!(styleFont instanceof GlyphFont) || styleFont.getTextRenderer().getClass() != this.getClass()) {
-			if (JOID.inst().isDevMode() && GlyphTextRenderer.WARNED_FONTS.add(styleFont.getClass())) {
+			if (JOIDEnv.isDevMode() && GlyphTextRenderer.WARNED_FONTS.add(styleFont.getClass())) {
 				System.err.println("[JOID] The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font");
 			}
 			return font;

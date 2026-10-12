@@ -20,13 +20,9 @@ public final class JOID {
 	private static JOID instance;
 
 	private File configDir;
-	private boolean devMode;
-	private boolean demoMode;
 
 	public JOID() {
 		this.configDir = new File(System.getProperty("joid.config", "config"));
-		this.devMode = false;
-		this.demoMode = false;
 	}
 
 	public static @NonNull JOID inst() {
@@ -48,17 +44,17 @@ public final class JOID {
 		System.out.println("");
 		System.out.println("[JOID] Loading JOID with parameters:");
 		System.out.println(" - ConfigDir: " + this.configDir.getAbsolutePath());
-		System.out.println(" - DevMode: " + this.devMode);
-		System.out.println(" - DemoMode: " + this.demoMode);
+		System.out.println(" - DevMode: " + JOIDEnv.isDevMode());
+		System.out.println(" - DemoMode: " + JOIDEnv.isDemoMode());
 		System.out.println(" - Version: " + JOID.VERSION);
 		System.out.println("");
 		System.out.println("=================================");
 
-		if (this.devMode || this.demoMode) {
+		if (JOIDEnv.isDevMode() || JOIDEnv.isDemoMode()) {
 			DevFont.load();
 		}
 
-		if (this.demoMode) {
+		if (JOIDEnv.isDemoMode()) {
 			DemoFont.load();
 		}
 
@@ -71,24 +67,6 @@ public final class JOID {
 			System.err.println("[JOID] This backend targets JOID " + version + " but JOID " + JOID.VERSION + " is loaded");
 		}
 		return compatible;
-	}
-
-	public JOID setDevMode(final boolean devMode) {
-		if (devMode && JOID.class.getResource("/dev/joid/lib/ui/node/impl/dev/DevNode.class") == null) {
-			throw new IllegalStateException("The dev mode is not part of the prod jar of JOID, use the dev jar of your backend");
-		}
-
-		this.devMode = devMode;
-		return this;
-	}
-
-	public JOID setDemoMode(final boolean demoMode) {
-		if (demoMode && JOID.class.getResource("/dev/joid/demo/DemoFont.class") == null) {
-			throw new IllegalStateException("The demo mode is not part of the prod jar of JOID, use the dev jar of your backend");
-		}
-
-		this.demoMode = demoMode;
-		return this;
 	}
 
 	public JOID setConfigDir(final @NonNull File configDir) {

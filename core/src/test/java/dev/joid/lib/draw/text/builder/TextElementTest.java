@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.TextInfo;
@@ -21,8 +21,8 @@ public class TextElementTest {
 
 	@Test
 	public void remembersWhereItWasCreatedInDevMode() {
-		final boolean previous = JOID.inst().isDevMode();
-		JOID.inst().setDevMode(true);
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(true);
 		try {
 			final TextElement element = Text.create("text", TextElementTest.INFO).getElementList().get(0);
 			Assert.assertEquals(TextElementTest.class.getName(), element.getOrigin()[0].getClassName());
@@ -30,7 +30,7 @@ public class TextElementTest {
 			Assert.assertSame(element.getOrigin(), element.copyWithText("other").getOrigin());
 			Assert.assertSame(element.getOrigin(), element.copy().getOrigin());
 		} finally {
-			JOID.inst().setDevMode(previous);
+			JOIDEnv.devMode(previous);
 		}
 	}
 
@@ -49,8 +49,8 @@ public class TextElementTest {
 
 	@Test
 	public void keepsItsOriginInEveryCopy() {
-		final boolean previous = JOID.inst().isDevMode();
-		JOID.inst().setDevMode(true);
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(true);
 		try {
 			final TextElement element = TextElement.create("text", TextElementTest.INFO);
 			Assert.assertNotNull(element.getOrigin());
@@ -58,7 +58,7 @@ public class TextElementTest {
 			Assert.assertSame(element.getOrigin(), element.copyWithInfo(TextElementTest.INFO).getOrigin());
 			Assert.assertSame(element.getOrigin(), element.copyWithModifier(TextModifier.UPPER_CASE).getOrigin());
 		} finally {
-			JOID.inst().setDevMode(previous);
+			JOIDEnv.devMode(previous);
 		}
 	}
 

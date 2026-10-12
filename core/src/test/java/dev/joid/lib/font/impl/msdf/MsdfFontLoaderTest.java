@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
@@ -232,15 +233,15 @@ public class MsdfFontLoaderTest {
 	@Test(timeout = 10000L)
 	public void logsACustomSourceByItsClassInDevMode() {
 		final PrintStream previous = System.out;
-		final boolean devMode = JOID.inst().isDevMode();
+		final boolean devMode = JOIDEnv.isDevMode();
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
-			JOID.inst().setDevMode(true);
+			JOIDEnv.devMode(true);
 			System.setOut(new PrintStream(output, true));
 			MsdfFontLoader.load(new FaceSource(new CountDownLatch(0), new CopyOnWriteArrayList<>(), MsdfBinarySource.of(MsdfFontLoaderTest.atlas))).join();
 		} finally {
 			System.setOut(previous);
-			JOID.inst().setDevMode(devMode);
+			JOIDEnv.devMode(devMode);
 		}
 		final String line = new String(output.toByteArray(), StandardCharsets.UTF_8);
 		Assert.assertTrue(line, line.startsWith("[JOID] Font JOID Test Regular read from FaceSource in "));

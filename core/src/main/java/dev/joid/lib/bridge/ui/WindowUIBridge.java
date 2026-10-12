@@ -2,7 +2,7 @@ package dev.joid.lib.bridge.ui;
 
 import java.util.List;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.color.Color;
@@ -59,7 +59,7 @@ public class WindowUIBridge extends StackUIBridge {
 		final List<String> lines = TextConverter.convertLines(content);
 		final TextInfo info = this.getHoverInfo();
 		if (info == null) {
-			if (!this.hoverWarned && JOID.inst().isDevMode()) {
+			if (!this.hoverWarned && JOIDEnv.isDevMode()) {
 				this.hoverWarned = true;
 				System.err.println("[JOID] " + this.getClass().getSimpleName() + " draws no tooltip, set its hoverInfo(TextInfo) to draw them");
 			}

@@ -15,7 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
@@ -75,7 +75,7 @@ public class ResourceFailureTest {
 
 	@Test
 	public void warnsInDevModeWithTheReasonAndTheAdvice() {
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		try {
 			final String heif = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new BytesAsset("photo.heic", false, ResourceFailureTest.HEIC)));
 			Assert.assertEquals("[JOID] The resource photo.heic cannot be read and is drawn empty: photo.heic is a HEIF or AVIF image, which JOID cannot decode, convert it to PNG, JPEG or WebP" + System.lineSeparator(), heif);
@@ -83,7 +83,7 @@ public class ResourceFailureTest {
 			Assert.assertTrue(missing, missing.startsWith("[JOID] The resource "));
 			Assert.assertTrue(missing, missing.endsWith(", check that the file or the URL exists and can be read" + System.lineSeparator()));
 		} finally {
-			JOID.inst().setDevMode(false);
+			JOIDEnv.devMode(false);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class ResourceFailureTest {
 	@Test
 	public void drawsTheMissingImageInDevMode() {
 		final Resource resource = ResourceBuilder.create().cache(null).of(new BytesAsset("photo.heic", false, ResourceFailureTest.HEIC));
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		try {
 			ResourceFailureTest.capture(() -> {
 				DrawUtils.RESOURCE.drawResource(10D, 10D, 100D, 100D, 0D, 0D, 50D, 50D, resource);
@@ -112,7 +112,7 @@ public class ResourceFailureTest {
 				ResourcePlayerNode.create(10D, 10D, 100D, 100D).resource(resource).draw(0D, 0D);
 			});
 		} finally {
-			JOID.inst().setDevMode(false);
+			JOIDEnv.devMode(false);
 		}
 		Assert.assertEquals(3, this.bridges.getRender().getDraws().size());
 		final RecordingTexture missing = (RecordingTexture) resource.getResourceData().getMissingTexture();

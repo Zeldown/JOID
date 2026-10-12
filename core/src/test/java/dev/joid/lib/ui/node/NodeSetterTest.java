@@ -14,7 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.replay.SetterUI;
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.TextMode;
@@ -102,15 +102,15 @@ public class NodeSetterTest {
 	public void followsABooleanSignalReadInAConditionOrAConcatenationWithoutWarning() {
 		final SetterUI ui = new SetterUI();
 		final PrintStream error = System.err;
-		final boolean devMode = JOID.inst().isDevMode();
+		final boolean devMode = JOIDEnv.isDevMode();
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
-			JOID.inst().setDevMode(true);
+			JOIDEnv.devMode(true);
 			System.setErr(new PrintStream(output, true));
 			this.bridges.open(ui);
 		} finally {
 			System.setErr(error);
-			JOID.inst().setDevMode(devMode);
+			JOIDEnv.devMode(devMode);
 		}
 		Assert.assertEquals("", new String(output.toByteArray(), StandardCharsets.UTF_8));
 		ui.getMuted().set(true);

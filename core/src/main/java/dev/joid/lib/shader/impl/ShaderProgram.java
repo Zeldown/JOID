@@ -1,6 +1,6 @@
 package dev.joid.lib.shader.impl;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
@@ -57,7 +57,7 @@ public abstract class ShaderProgram {
 
 	public boolean canDraw() {
 		final boolean available = this.isAvailable();
-		if (!available && JOID.inst().isDevMode() && !this.warned) {
+		if (!available && JOIDEnv.isDevMode() && !this.warned) {
 			this.warned = true;
 			System.err.println("[JOID] The shader " + this.getClass().getSimpleName() + " is unavailable, what it draws is skipped");
 		}

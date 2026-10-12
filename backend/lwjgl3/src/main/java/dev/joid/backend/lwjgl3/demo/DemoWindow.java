@@ -12,7 +12,7 @@ public class DemoWindow extends GlfwDemoWindow {
 
 	public static void main(final String[] args) {
 		final DemoWindow window = new DemoWindow();
-		JOID.inst().setDevMode(true).setDemoMode(true).load();
+		JOID.inst().load();
 		window.run();
 	}
 

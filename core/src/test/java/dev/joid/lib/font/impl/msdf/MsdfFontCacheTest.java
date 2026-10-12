@@ -29,6 +29,7 @@ import org.junit.rules.TemporaryFolder;
 import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
@@ -308,15 +309,15 @@ public class MsdfFontCacheTest {
 
 	private static String capture(final Runnable runnable) {
 		final PrintStream previous = System.out;
-		final boolean devMode = JOID.inst().isDevMode();
+		final boolean devMode = JOIDEnv.isDevMode();
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
-			JOID.inst().setDevMode(true);
+			JOIDEnv.devMode(true);
 			System.setOut(new PrintStream(output, true));
 			runnable.run();
 		} finally {
 			System.setOut(previous);
-			JOID.inst().setDevMode(devMode);
+			JOIDEnv.devMode(devMode);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}

@@ -16,7 +16,7 @@ import dev.joid.demo.replay.ReplayCountedSignal;
 import dev.joid.demo.replay.ReplayLocalUI;
 import dev.joid.demo.replay.ReplayPitfallsUI;
 import dev.joid.demo.replay.ReplayScenarioUI;
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
@@ -454,15 +454,15 @@ public class SignalReplayTest {
 
 	private static String capture(final boolean devMode, final Runnable runnable) {
 		final PrintStream error = System.err;
-		final boolean previous = JOID.inst().isDevMode();
+		final boolean previous = JOIDEnv.isDevMode();
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
-			JOID.inst().setDevMode(devMode);
+			JOIDEnv.devMode(devMode);
 			System.setErr(new PrintStream(output, true));
 			runnable.run();
 		} finally {
 			System.setErr(error);
-			JOID.inst().setDevMode(previous);
+			JOIDEnv.devMode(previous);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8).replace("\r\n", "\n");
 	}

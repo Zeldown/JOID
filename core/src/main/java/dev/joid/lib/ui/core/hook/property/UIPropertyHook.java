@@ -20,6 +20,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.ui.core.UI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -94,7 +95,7 @@ public final class UIPropertyHook {
 
 	private static @NonNull List<Field> getFields(final @NonNull UI ui) {
 		final String className = ui.getClass().getName();
-		if (!JOID.inst().isDevMode() && UIPropertyHook.PROPERTY_MAP.containsKey(className)) {
+		if (!JOIDEnv.isDevMode() && UIPropertyHook.PROPERTY_MAP.containsKey(className)) {
 			return UIPropertyHook.PROPERTY_MAP.get(className);
 		}
 

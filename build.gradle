@@ -33,8 +33,23 @@ ext {
         task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
     }
 
+    variants = ['prod', 'dev', 'demo']
+
+    excludeDemo = { task ->
+        task.exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/*/demo/**', 'dev/joid/base/*/snapshot/**', 'dev/joid/backend/*/demo/**', 'dev/joid/backend/*/snapshot/**'
+    }
+
     excludeDevelopment = { task ->
-        task.exclude 'assets/dev/**', 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**'
+        rootProject.excludeDemo(task)
+        task.exclude 'assets/dev/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**'
+    }
+
+    excludeVariant = { task, variant ->
+        if (variant == 'prod') {
+            rootProject.excludeDevelopment(task)
+        } else if (variant == 'dev') {
+            rootProject.excludeDemo(task)
+        }
     }
 
     lwjglVersion = "3.3.4"
@@ -131,9 +146,10 @@ task msdfGenerator(type: Zip) {
 task collectArtifacts(type: Copy) {
     group = 'JOID'
     description = 'Copies every release artifact into build/libs.'
-    dependsOn ':core:releaseJar', ':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':base-openal:jar', ':backend-lwjgl2:shadowJar', ':backend-lwjgl3:shadowJar', ':backend-vulkan:shadowJar', ':tool-msdf:jar'
-    from { [':core', ':base-glfw', ':base-opengl'].collect { project(it).releaseJar.archivePath } }
-    from { [':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { project(it).shadowJar.archivePath } }
+    dependsOn ':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':base-openal:jar', ':tool-msdf:jar'
+    dependsOn variants.collectMany { variant -> [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { module -> "$module:${variant}Jar" } }
+    from { [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collectMany { module -> variants.collect { variant -> project(module).tasks["${variant}Jar"].archivePath } } }
+    from { [':base-glfw', ':base-opengl'].collect { project(it).releaseJar.archivePath } }
     from { [':tool-testkit', ':tool-msdf', ':base-openal'].collect { project(it).jar.archivePath } }
     from backendTemplate
     from msdfGenerator
@@ -141,6 +157,45 @@ task collectArtifacts(type: Copy) {
 }
 
 assemble.dependsOn collectArtifacts
+
+task checkJars {
+    group = 'JOID'
+    description = 'Checks that the prod jars hold no dev tool nor demo, and that only the demo jars hold the demos.'
+    dependsOn variants.collectMany { variant -> [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { module -> "$module:${variant}Jar" } }
+    doLast {
+        def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
+        def demo = ['dev/joid/demo/DemoFont.class', 'assets/demo/']
+        def failures = []
+        [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].each { module ->
+            variants.each { variant ->
+                def jar = project(module).tasks["${variant}Jar"].archivePath
+                def entries = new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.entries().collect { entry -> entry.name } }
+                def holds = { prefix -> entries.any { entry -> entry.startsWith(prefix) } }
+                def windows = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/(demo|snapshot)\/.*/ }
+                if (!holds('dev/joid/internal/JOID.class')) {
+                    failures << "${jar.name} misses JOID"
+                }
+                dev.each { prefix ->
+                    if (holds(prefix) != (variant != 'prod')) {
+                        failures << "${jar.name} ${variant == 'prod' ? 'holds' : 'misses'} $prefix"
+                    }
+                }
+                demo.each { prefix ->
+                    if (holds(prefix) != (variant == 'demo')) {
+                        failures << "${jar.name} ${variant == 'demo' ? 'misses' : 'holds'} $prefix"
+                    }
+                }
+                if (module != ':core' && windows != (variant == 'demo')) {
+                    failures << "${jar.name} ${variant == 'demo' ? 'misses' : 'holds'} its demo and snapshot windows"
+                }
+            }
+        }
+        if (!failures.isEmpty()) {
+            throw new GradleException(failures.join('\n'))
+        }
+        println "The prod, dev and demo jars hold what they should"
+    }
+}
 
 /* Tests */
 task crossBackendTest(type: JavaExec) {

@@ -14,7 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
@@ -94,7 +94,7 @@ public class ShaderProgramTest {
 	public void warnsOnceInDevModeThatItIsUnavailable() {
 		final SourceShader[] shader = new SourceShader[1];
 		ShaderProgramTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		try {
 			final String error = ShaderProgramTest.capture(() -> {
 				shader[0].canDraw();
@@ -102,7 +102,7 @@ public class ShaderProgramTest {
 			});
 			Assert.assertEquals("[JOID] The shader SourceShader is unavailable, what it draws is skipped" + System.lineSeparator(), error);
 		} finally {
-			JOID.inst().setDevMode(false);
+			JOIDEnv.devMode(false);
 		}
 	}
 
@@ -117,23 +117,23 @@ public class ShaderProgramTest {
 	public void checksItsAvailabilitySilentlyInDevMode() {
 		final SourceShader[] shader = new SourceShader[1];
 		ShaderProgramTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		try {
 			Assert.assertEquals("", ShaderProgramTest.capture(() -> Assert.assertFalse(shader[0].isAvailable())));
 			Assert.assertNotEquals("", ShaderProgramTest.capture(() -> Assert.assertFalse(shader[0].canDraw())));
 		} finally {
-			JOID.inst().setDevMode(false);
+			JOIDEnv.devMode(false);
 		}
 	}
 
 	@Test
 	public void staysSilentWhenItIsAvailable() {
 		final SourceShader shader = new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source());
-		JOID.inst().setDevMode(true);
+		JOIDEnv.devMode(true);
 		try {
 			Assert.assertEquals("", ShaderProgramTest.capture(() -> Assert.assertTrue(shader.canDraw())));
 		} finally {
-			JOID.inst().setDevMode(false);
+			JOIDEnv.devMode(false);
 		}
 	}
 
