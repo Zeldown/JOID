@@ -73,9 +73,11 @@ public class Lwjgl2InputForwarderTest {
 	@Test
 	public void reportsTheEventsTheUiConsumed() {
 		Assert.assertFalse(this.input.keyPressed(Keyboard.KEY_A));
+		Assert.assertFalse(this.input.keyReleased(Keyboard.KEY_A));
 		Assert.assertFalse(this.input.charTyped('a'));
 		this.ui.cancel = true;
 		Assert.assertTrue(this.input.keyPressed(Keyboard.KEY_A));
+		Assert.assertTrue(this.input.keyReleased(Keyboard.KEY_A));
 		Assert.assertTrue(this.input.charTyped('a'));
 		Assert.assertTrue(this.input.mousePressed(0));
 		Assert.assertTrue(this.input.mouseMoved());

@@ -24,6 +24,8 @@ public final class GlfwInputForwarder {
 		GLFW.glfwSetKeyCallback(window, (handle, key, scancode, action, mods) -> {
 			if (action != GLFW.GLFW_RELEASE) {
 				this.keyPressed(key);
+			} else {
+				this.keyReleased(key);
 			}
 		});
 		GLFW.glfwSetMouseButtonCallback(window, (handle, button, action, mods) -> {
@@ -38,6 +40,10 @@ public final class GlfwInputForwarder {
 
 	public boolean keyPressed(final int code) {
 		return this.bridge.keyPressed(GlfwKeys.getKey(code));
+	}
+
+	public boolean keyReleased(final int code) {
+		return this.bridge.keyReleased(GlfwKeys.getKey(code));
 	}
 
 	public boolean charTyped(final int codepoint) {

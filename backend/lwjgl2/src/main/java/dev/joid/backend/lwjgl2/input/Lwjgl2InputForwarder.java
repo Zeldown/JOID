@@ -38,6 +38,7 @@ public final class Lwjgl2InputForwarder {
 
 		while (Keyboard.next()) {
 			if (!Keyboard.getEventKeyState()) {
+				this.keyReleased(Keyboard.getEventKey());
 				continue;
 			}
 
@@ -50,6 +51,10 @@ public final class Lwjgl2InputForwarder {
 
 	public boolean keyPressed(final int code) {
 		return this.bridge.keyPressed(Lwjgl2WindowBridge.getKey(code));
+	}
+
+	public boolean keyReleased(final int code) {
+		return this.bridge.keyReleased(Lwjgl2WindowBridge.getKey(code));
 	}
 
 	public boolean charTyped(final int codepoint) {

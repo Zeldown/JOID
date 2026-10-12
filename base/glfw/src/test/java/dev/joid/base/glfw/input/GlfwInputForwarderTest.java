@@ -82,9 +82,11 @@ public class GlfwInputForwarderTest {
 	public void reportsTheEventsTheUiConsumed() {
 		Assert.assertFalse(this.input.mousePressed(0));
 		Assert.assertFalse(this.input.keyPressed(GLFW.GLFW_KEY_F3));
+		Assert.assertFalse(this.input.keyReleased(GLFW.GLFW_KEY_F3));
 		Assert.assertFalse(this.input.charTyped('a'));
 		this.ui.cancel = true;
 		Assert.assertTrue(this.input.keyPressed(GLFW.GLFW_KEY_F3));
+		Assert.assertTrue(this.input.keyReleased(GLFW.GLFW_KEY_F3));
 		Assert.assertTrue(this.input.charTyped('a'));
 		Assert.assertTrue(this.input.mousePressed(0));
 		Assert.assertTrue(this.input.mouseMoved());

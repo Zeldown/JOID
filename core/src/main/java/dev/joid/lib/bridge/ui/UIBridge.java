@@ -30,6 +30,7 @@ public abstract class UIBridge implements IUIBridge {
 	@NonNull
 	private final IndexedLinkedList<@NonNull UI> uiList;
 
+	private final Set<Key>         consumedKeySet;
 	private final Set<MouseButton> consumedButtonSet;
 
 	private long        pressTime;
@@ -42,6 +43,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	public UIBridge() {
 		this.uiList = new IndexedLinkedList<>();
+		this.consumedKeySet = EnumSet.noneOf(Key.class);
 		this.consumedButtonSet = EnumSet.noneOf(MouseButton.class);
 	}
 
@@ -143,8 +145,10 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean keyPressed(final @NonNull Key key) {
+		this.consumedKeySet.remove(key);
 		for (final UI ui : this.getInputList()) {
 			if (key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active()) {
+				this.consumedKeySet.add(key);
 				if (!ui.fireKeyPressed(key) && ui.fireClose()) {
 					this.close(ui);
 				}
@@ -152,10 +156,18 @@ public abstract class UIBridge implements IUIBridge {
 			}
 
 			if (ui.fireKeyPressed(key) || ui.getPopup().active()) {
-				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
+				final boolean consumed = UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
+				if (consumed) {
+					this.consumedKeySet.add(key);
+				}
+				return consumed;
 			}
 		}
 		return false;
+	}
+
+	public final boolean keyReleased(final @NonNull Key key) {
+		return this.consumedKeySet.remove(key);
 	}
 
 	public final void update() {

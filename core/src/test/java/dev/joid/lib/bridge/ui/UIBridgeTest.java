@@ -650,6 +650,43 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void consumesTheReleaseOfAKeyItConsumed() {
+		final TraceUI overlay = new OverlayUI("overlay", this.trace);
+		overlay.cancel = true;
+		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A));
+		overlay.cancel = false;
+		Assert.assertFalse(this.bridges.getUi().keyReleased(Key.B));
+		Assert.assertTrue(this.bridges.getUi().keyReleased(Key.A));
+		Assert.assertFalse(this.bridges.getUi().keyReleased(Key.A));
+		Assert.assertFalse(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertFalse(this.bridges.getUi().keyReleased(Key.A));
+	}
+
+	@Test
+	public void consumesTheReleaseOfEachKeyWhosePressItConsumed() {
+		final TraceUI overlay = new OverlayUI("overlay", this.trace);
+		overlay.cancel = true;
+		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.B));
+		overlay.cancel = false;
+		Assert.assertFalse(this.bridges.getUi().keyPressed(Key.C));
+		Assert.assertFalse(this.bridges.getUi().keyReleased(Key.C));
+		Assert.assertTrue(this.bridges.getUi().keyReleased(Key.A));
+		Assert.assertTrue(this.bridges.getUi().keyReleased(Key.B));
+		Assert.assertFalse(this.bridges.getUi().keyReleased(Key.A));
+	}
+
+	@Test
+	public void consumesTheReleaseOfTheEscapeThatClosedAScreen() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.ESCAPE));
+		Assert.assertTrue(this.bridges.getUi().getUiList().isEmpty());
+		Assert.assertTrue(this.bridges.getUi().keyReleased(Key.ESCAPE));
+	}
+
+	@Test
 	public void leavesUnconsumedTheEventsAnOverlayDoesNotCancel() {
 		final TraceUI overlay = new OverlayUI("overlay", this.trace);
 		overlay.cancel = true;
@@ -661,6 +698,7 @@ public class UIBridgeTest {
 		Assert.assertFalse(this.bridges.getUi().mouseReleased(MouseButton.LEFT));
 		Assert.assertFalse(this.bridges.getUi().mouseScroll(0D, 1D));
 		Assert.assertFalse(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertFalse(this.bridges.getUi().keyReleased(Key.A));
 		Assert.assertFalse(this.bridges.getUi().charTyped('a'));
 		Assert.assertFalse(this.trace.stream().anyMatch(line -> line.contains("menu")));
 	}
@@ -674,6 +712,7 @@ public class UIBridgeTest {
 		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseScroll(0D, -1D));
 		Assert.assertFalse(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertFalse(this.bridges.getUi().keyReleased(Key.A));
 		Assert.assertFalse(this.bridges.getUi().charTyped('a'));
 	}
 
