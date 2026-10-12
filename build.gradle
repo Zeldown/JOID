@@ -52,6 +52,7 @@ ext {
         }
     }
 
+    testHeap     = project.hasProperty('joid.testHeap') ? project.property('joid.testHeap') : '1g'
     lwjglVersion = "3.3.4"
     lwjglNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? "natives-windows" : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos") : "natives-linux"
 }
@@ -78,6 +79,7 @@ subprojects {
 
     tasks.withType(Test) {
         systemProperty 'joid.data', file("$buildDir/data").absolutePath
+        maxHeapSize = rootProject.testHeap
     }
 
     dependencies {
@@ -217,6 +219,7 @@ task crossBackendTest(type: JavaExec) {
     description = 'Runs the snapshot tests of every backend, then compares the LWJGL 2 and Vulkan shots to LWJGL 3.'
     dependsOn ':backend-lwjgl2:test', ':backend-lwjgl3:test', ':backend-vulkan:test'
     main = "dev.joid.test.snapshot.SnapshotComparison"
+    maxHeapSize = testHeap
     classpath = project(':tool-testkit').sourceSets.main.runtimeClasspath
     args file('build/snapshots/cross').absolutePath, file('build/snapshots/backend-lwjgl3').absolutePath, file('build/snapshots/backend-lwjgl2').absolutePath, file('build/snapshots/backend-vulkan').absolutePath
 }

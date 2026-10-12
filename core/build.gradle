@@ -2,6 +2,10 @@ archivesBaseName = "joid-core"
 
 evaluationDependsOn(':tool-msdf')
 
+test {
+    maxHeapSize = project.hasProperty('joid.testHeap') ? rootProject.testHeap : '3g'
+}
+
 configurations {
     shade
     compile.extendsFrom shade
