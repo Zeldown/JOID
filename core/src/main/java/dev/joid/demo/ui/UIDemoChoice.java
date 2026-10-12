@@ -5,23 +5,28 @@ import java.util.List;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.animation.UIDemoAnimation;
+import dev.joid.demo.ui.animation.UIDemoTween;
 import dev.joid.demo.ui.chart.UIDemoChart;
 import dev.joid.demo.ui.control.UIDemoControl;
 import dev.joid.demo.ui.cursor.UIDemoCursor;
 import dev.joid.demo.ui.draggable.UIDemoDraggable;
+import dev.joid.demo.ui.event.UIDemoEvent;
 import dev.joid.demo.ui.font.UIDemoFont;
 import dev.joid.demo.ui.font.UIDemoMarkup;
 import dev.joid.demo.ui.font.UIDemoText;
 import dev.joid.demo.ui.layout.UIDemoLayout;
 import dev.joid.demo.ui.model.UIDemoModel;
+import dev.joid.demo.ui.option.UIDemoOption;
 import dev.joid.demo.ui.overflow.UIDemoOverflow;
 import dev.joid.demo.ui.popup.UIDemoOverlay;
 import dev.joid.demo.ui.popup.UIDemoPopup;
 import dev.joid.demo.ui.reorderable.UIDemoReorderable;
+import dev.joid.demo.ui.resource.UIDemoAudio;
 import dev.joid.demo.ui.resource.UIDemoPlayer;
 import dev.joid.demo.ui.resource.UIDemoResource;
 import dev.joid.demo.ui.selector.UIDemoSelector;
 import dev.joid.demo.ui.shader.UIDemoEffect;
+import dev.joid.demo.ui.shader.UIDemoRender;
 import dev.joid.demo.ui.shader.UIDemoShader;
 import dev.joid.demo.ui.signal.UIDemoSignal;
 import dev.joid.demo.ui.signal.UIDemoWatch;
@@ -88,6 +93,11 @@ public class UIDemoChoice extends UI {
 				JOID.open(new UIDemoOverlay());
 			}
 		}).state(() -> JOID.isOpen(UIDemoOverlay.class)));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEvent.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoTween.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoRender.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoAudio.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOption.class));
 	}
 
 	@Override
