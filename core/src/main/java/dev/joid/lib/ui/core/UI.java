@@ -2,7 +2,6 @@ package dev.joid.lib.ui.core;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
@@ -18,6 +17,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -69,6 +70,10 @@ public abstract class UI implements IUI, IndexedElement {
 
 	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
 	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
+
+	private static final Map<File, Set<UI>>               WATCHER_MAP      = new HashMap<>();
+	private static final Map<File, FileAlterationMonitor> MONITOR_MAP      = new HashMap<>();
+	private static final ExecutorService                  MONITOR_EXECUTOR = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("UI/monitor"));
 
 	@Getter
 	private static UI current;
@@ -771,94 +776,20 @@ public abstract class UI implements IUI, IndexedElement {
 				return;
 			}
 
-			try {
-				final FileAlterationObserver observer = new FileAlterationObserver(location.isDirectory() ? location : location.getParentFile());
-				observer.addListener(new FileAlterationListener() {
-
-					private File change;
-
-					@Override
-					public void onFileChange(final @NonNull File file) {
-						this.track(file);
-					}
-
-					@Override
-					public void onStop(final @NonNull FileAlterationObserver observer) {
-						if (this.change == null) {
-							return;
-						}
-
-						try {
-							Thread.sleep(1000L);
-						} catch (final Exception e) {}
-
-						System.out.println("##########################");
-						System.out.println("Detected file change: " + this.change.getName());
-						this.change = null;
-						UI.this.reloadPending = true;
-					}
-
-					@Override
-					public void onStart(final @NonNull FileAlterationObserver observer) {}
-
-					@Override
-					public void onFileDelete(final @NonNull File file) {}
-
-					@Override
-					public void onFileCreate(final @NonNull File file) {
-						this.track(file);
-					}
-
-					@Override
-					public void onDirectoryDelete(final @NonNull File file) {}
-
-					@Override
-					public void onDirectoryCreate(final @NonNull File file) {}
-
-					@Override
-					public void onDirectoryChange(final @NonNull File file) {}
-
-					private void track(final File file) {
-						if (location.isDirectory() ? file.getName().endsWith(".class") : file.equals(location)) {
-							this.change = file;
-						}
-					}
-
-				});
-
-				this.fileMonitor = new FileAlterationMonitor(500);
-				this.fileMonitor.setThreadFactory(ThreadUtils.daemonFactory("UI/" + this.getClass().getName() + "/monitor"));
-				this.fileMonitor.addObserver(observer);
-				this.fileMonitor.start();
-
-				System.out.println("##########################");
-				System.out.println("Hot-reload enabled on " + this.getClass().getSimpleName());
-				System.out.println("##########################");
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
+			this.fileMonitor = UI.watch(location, this);
+			System.out.println("##########################");
+			System.out.println("Hot-reload enabled on " + this.getClass().getSimpleName());
+			System.out.println("##########################");
 		}
 	}
 
 	private void stopMonitor() {
-		final FileAlterationMonitor monitor = this.fileMonitor;
-		if (monitor == null) {
+		if (this.fileMonitor == null) {
 			return;
 		}
 
 		this.fileMonitor = null;
-		ThreadUtils.daemonThread(() -> {
-			try {
-				final Field runningField = FileAlterationMonitor.class.getDeclaredField("running");
-				runningField.setAccessible(true);
-				final boolean running = runningField.getBoolean(monitor);
-				if (running) {
-					monitor.stop();
-				}
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-		}, "UI/" + this.getClass().getName() + "/monitor-close").start();
+		UI.unwatch(UI.locate(this.getClass()), this);
 	}
 
 	private Transition createPopupTransition() {
@@ -1041,6 +972,112 @@ public abstract class UI implements IUI, IndexedElement {
 			pressed |= bound == key;
 		}
 		return pressed;
+	}
+
+	private static FileAlterationMonitor watch(final File location, final UI ui) {
+		synchronized (UI.WATCHER_MAP) {
+			UI.WATCHER_MAP.computeIfAbsent(location, key -> new HashSet<>()).add(ui);
+			final FileAlterationMonitor watched = UI.MONITOR_MAP.get(location);
+			if (watched != null) {
+				return watched;
+			}
+
+			final FileAlterationMonitor monitor = UI.createMonitor(location);
+			UI.MONITOR_MAP.put(location, monitor);
+			UI.MONITOR_EXECUTOR.execute(() -> {
+				try {
+					monitor.start();
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+			});
+			return monitor;
+		}
+	}
+
+	private static void unwatch(final File location, final UI ui) {
+		synchronized (UI.WATCHER_MAP) {
+			final Set<UI> watchers = UI.WATCHER_MAP.get(location);
+			if (watchers == null || !watchers.remove(ui) || !watchers.isEmpty()) {
+				return;
+			}
+
+			UI.WATCHER_MAP.remove(location);
+			final FileAlterationMonitor monitor = UI.MONITOR_MAP.remove(location);
+			UI.MONITOR_EXECUTOR.execute(() -> {
+				try {
+					monitor.stop();
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+			});
+		}
+	}
+
+	private static FileAlterationMonitor createMonitor(final File location) {
+		final FileAlterationObserver observer = new FileAlterationObserver(location.isDirectory() ? location : location.getParentFile());
+		observer.addListener(new FileAlterationListener() {
+
+			private File change;
+
+			@Override
+			public void onFileChange(final @NonNull File file) {
+				this.track(file);
+			}
+
+			@Override
+			public void onStop(final @NonNull FileAlterationObserver observer) {
+				if (this.change == null) {
+					return;
+				}
+
+				try {
+					Thread.sleep(1000L);
+				} catch (final Exception e) {}
+
+				System.out.println("##########################");
+				System.out.println("Detected file change: " + this.change.getName());
+				this.change = null;
+				synchronized (UI.WATCHER_MAP) {
+					final Set<UI> watchers = UI.WATCHER_MAP.get(location);
+					if (watchers != null) {
+						watchers.forEach(watcher -> watcher.reloadPending = true);
+					}
+				}
+			}
+
+			@Override
+			public void onStart(final @NonNull FileAlterationObserver observer) {}
+
+			@Override
+			public void onFileDelete(final @NonNull File file) {}
+
+			@Override
+			public void onFileCreate(final @NonNull File file) {
+				this.track(file);
+			}
+
+			@Override
+			public void onDirectoryDelete(final @NonNull File file) {}
+
+			@Override
+			public void onDirectoryCreate(final @NonNull File file) {}
+
+			@Override
+			public void onDirectoryChange(final @NonNull File file) {}
+
+			private void track(final File file) {
+				if (location.isDirectory() ? file.getName().endsWith(".class") : file.equals(location)) {
+					this.change = file;
+				}
+			}
+
+		});
+
+		final FileAlterationMonitor monitor = new FileAlterationMonitor(500);
+		monitor.setThreadFactory(ThreadUtils.daemonFactory("UI/" + location.getName() + "/monitor"));
+		monitor.addObserver(observer);
+		return monitor;
 	}
 
 	private static File locate(final Class<?> type) {

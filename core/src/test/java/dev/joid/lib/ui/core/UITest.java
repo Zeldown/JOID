@@ -1446,6 +1446,49 @@ public class UITest {
 	}
 
 	@Test
+	public void sharesOneMonitorBetweenTheUisOfAClassLocation() throws Exception {
+		final File location = this.folder.newFolder("classes");
+		final UI first = UITest.hotReloaded(location, new AtomicInteger());
+		final UI second = UITest.hotReloaded(location, new AtomicInteger());
+		JOIDEnv.devMode(true);
+		UITest.out(() -> {
+			first.load(1920D, 1080D);
+			second.load(1920D, 1080D);
+		});
+		try {
+			Assert.assertNotNull(first.getFileMonitor());
+			Assert.assertSame(first.getFileMonitor(), second.getFileMonitor());
+			final BlockingQueue<String> changes = UITest.listen(first);
+			Files.write(new File(location, "ShopNode.class").toPath(), new byte[] {1});
+			UITest.await(changes, "file create ShopNode.class");
+			UITest.await(changes, "stop");
+			Assert.assertTrue(first.isReloadPending());
+			Assert.assertTrue(second.isReloadPending());
+		} finally {
+			first.dispose();
+			second.dispose();
+		}
+	}
+
+	@Test
+	public void watchesAgainOnceTheUisOfItsClassLocationAreGone() throws Exception {
+		final File location = this.folder.newFolder("classes");
+		final UI first = UITest.hotReloaded(location, new AtomicInteger());
+		final UI second = UITest.hotReloaded(location, new AtomicInteger());
+		JOIDEnv.devMode(true);
+		UITest.out(() -> first.load(1920D, 1080D));
+		final Object monitor = first.getFileMonitor();
+		first.dispose();
+		UITest.out(() -> second.load(1920D, 1080D));
+		try {
+			Assert.assertNotNull(second.getFileMonitor());
+			Assert.assertNotSame(monitor, second.getFileMonitor());
+		} finally {
+			second.dispose();
+		}
+	}
+
+	@Test
 	public void watchesNoFileOutsideTheDevMode() {
 		final HotReloadUI ui = new HotReloadUI(new AtomicInteger());
 		ui.load(1920D, 1080D);
@@ -1725,11 +1768,12 @@ public class UITest {
 		return (UI) clazz.getConstructor(AtomicInteger.class).newInstance(inits);
 	}
 
-	private static BlockingQueue<String> listen(final UI ui) {
+	private static BlockingQueue<String> listen(final UI ui) throws InterruptedException {
 		final ChangeListener listener = new ChangeListener();
 		for (final FileAlterationObserver observer : ui.getFileMonitor().getObservers()) {
 			observer.addListener(listener);
 		}
+		UITest.await(listener.changes, "stop");
 		return listener.changes;
 	}
 
