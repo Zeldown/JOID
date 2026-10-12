@@ -8,28 +8,13 @@ public class TweenAnimatorAccessor implements TweenAccessor<TweenAnimator> {
 
 	@Override
 	public int getValues(final TweenAnimator target, final int tweenType, final float[] returnValues) {
-		switch (tweenType) {
-		case ANIMATION_VALUE:
-			returnValues[0] = target.getValue();
-			break;
-
-		default:
-			break;
-		}
-
+		returnValues[0] = target.getValue(tweenType);
 		return 1;
 	}
 
 	@Override
 	public void setValues(final TweenAnimator target, final int tweenType, final float[] newValues) {
-		switch (tweenType) {
-		case ANIMATION_VALUE:
-			target.setValue(newValues[0]);
-			break;
-
-		default:
-			break;
-		}
+		target.setValue(tweenType, newValues[0]);
 	}
 
 }

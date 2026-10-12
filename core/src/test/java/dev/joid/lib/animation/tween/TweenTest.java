@@ -24,8 +24,7 @@ public class TweenTest {
 	}
 
 	@After
-	public void restoreTheLimits() {
-		Tween.setWaypointsLimit(0);
+	public void restoreTheLimit() {
 		Tween.setCombinedAttributesLimit(3);
 	}
 
@@ -242,29 +241,35 @@ public class TweenTest {
 		Tween.to(new Point(0F, 0F, 0F), 3, 1F).targetRelative(1F, 2F, 3F, 4F);
 	}
 
-	@Test(expected = RuntimeException.class)
-	public void refusesAWaypointBeyondTheLimit() {
-		Tween.to(new MutableFloat(0F), 0, 1F).waypoint(5F);
+	@Test
+	public void takesAsManyWaypointsAsGiven() {
+		final MutableFloat value = new MutableFloat(0F);
+		final Tween tween = Tween.to(value, 0, 1F).waypoint(10F).waypoint(20F).waypoint(30F).waypoint(40F).waypoint(50F).target(60F).path(TweenPaths.linear).ease(TweenEquations.LINEAR).start();
+		tween.update(0.5F);
+		Assert.assertEquals(30F, value.floatValue(), 1E-4F);
+		tween.update(0.25F);
+		Assert.assertEquals(45F, value.floatValue(), 1E-4F);
 	}
 
-	@Test(expected = RuntimeException.class)
-	public void refusesAPairWaypointBeyondTheLimit() {
-		Tween.to(new Point(0F, 0F, 0F), 2, 1F).waypoint(5F, 5F);
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void refusesATripleWaypointBeyondTheLimit() {
-		Tween.to(new Point(0F, 0F, 0F), 3, 1F).waypoint(5F, 5F, 5F);
-	}
-
-	@Test(expected = RuntimeException.class)
-	public void refusesAnArrayWaypointBeyondTheLimit() {
-		Tween.to(new Point(0F, 0F, 0F), 3, 1F).waypoint(new float[] {5F, 5F, 5F});
+	@Test
+	public void takesAsManyWaypointsOfEverySizeAsGiven() {
+		final Point pair = new Point(0F, 0F, 0F);
+		final Point triple = new Point(0F, 0F, 0F);
+		final Point array = new Point(0F, 0F, 0F);
+		Tween.to(pair, 2, 1F).waypoint(1F, 2F).waypoint(2F, 4F).waypoint(3F, 6F).target(4F, 8F).path(TweenPaths.linear).ease(TweenEquations.LINEAR).start().update(0.5F);
+		Tween.to(triple, 3, 1F).waypoint(1F, 2F, 3F).waypoint(2F, 4F, 6F).waypoint(3F, 6F, 9F).target(4F, 8F, 12F).path(TweenPaths.linear).ease(TweenEquations.LINEAR).start().update(0.5F);
+		Tween.to(array, 3, 1F).waypoint(new float[] {1F, 2F, 3F}).waypoint(new float[] {2F, 4F, 6F}).waypoint(new float[] {3F, 6F, 9F}).target(4F, 8F, 12F).path(TweenPaths.linear).ease(TweenEquations.LINEAR).start().update(0.5F);
+		Assert.assertEquals(2F, pair.x, 1E-4F);
+		Assert.assertEquals(4F, pair.y, 1E-4F);
+		for (final Point point : new Point[] {triple, array}) {
+			Assert.assertEquals(2F, point.x, 1E-4F);
+			Assert.assertEquals(4F, point.y, 1E-4F);
+			Assert.assertEquals(6F, point.z, 1E-4F);
+		}
 	}
 
 	@Test
 	public void curvesThroughItsWaypoint() {
-		Tween.setWaypointsLimit(1);
 		TweenTest.emptyThePool();
 		final MutableFloat value = new MutableFloat(0F);
 		final Tween tween = Tween.to(value, 0, 1F).target(30F).waypoint(10F).ease(TweenEquations.LINEAR).start();
@@ -276,7 +281,6 @@ public class TweenTest {
 
 	@Test
 	public void followsItsPathThroughItsWaypoint() {
-		Tween.setWaypointsLimit(1);
 		TweenTest.emptyThePool();
 		final MutableFloat value = new MutableFloat(0F);
 		final Tween tween = Tween.to(value, 0, 1F).target(30F).waypoint(10F).path(TweenPaths.linear).ease(TweenEquations.LINEAR).start();
@@ -288,7 +292,6 @@ public class TweenTest {
 
 	@Test
 	public void ignoresItsWaypointsWithoutPath() {
-		Tween.setWaypointsLimit(1);
 		TweenTest.emptyThePool();
 		final MutableFloat value = new MutableFloat(0F);
 		Tween.to(value, 0, 1F).target(30F).waypoint(10F).path(null).ease(TweenEquations.LINEAR).start().update(0.5F);
@@ -297,7 +300,6 @@ public class TweenTest {
 
 	@Test
 	public void movesEveryAttributeThroughItsWaypoints() {
-		Tween.setWaypointsLimit(1);
 		TweenTest.emptyThePool();
 		final Point pair = new Point(0F, 0F, 0F);
 		final Point triple = new Point(0F, 0F, 0F);
@@ -316,7 +318,6 @@ public class TweenTest {
 
 	@Test
 	public void shiftsItsWaypointsWithARelativeTarget() {
-		Tween.setWaypointsLimit(1);
 		TweenTest.emptyThePool();
 		final MutableFloat value = new MutableFloat(5F);
 		final Tween tween = Tween.to(value, 0, 1F).targetRelative(20F).waypoint(10F).path(TweenPaths.linear).ease(TweenEquations.LINEAR).start();
@@ -404,10 +405,9 @@ public class TweenTest {
 	}
 
 	@Test
-	public void acceptsAWaypointOnAPooledTweenOnceTheLimitIsRaised() {
+	public void acceptsAWaypointOnAPooledTween() {
 		TweenTest.emptyThePool();
 		Tween.mark().free();
-		Tween.setWaypointsLimit(1);
 		final MutableFloat value = new MutableFloat(0F);
 		Tween.to(value, 0, 1F).target(30F).waypoint(10F).path(TweenPaths.linear).ease(TweenEquations.LINEAR).start().update(0.5F);
 		Assert.assertEquals(10F, value.floatValue(), 0F);
@@ -428,17 +428,6 @@ public class TweenTest {
 		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).target(1F, 2F, 3F, 4F)));
 		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).targetRelative(1F, 2F, 3F, 4F)));
 		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 4, 1F).start()));
-	}
-
-	@Test
-	public void explainsTheWaypointsLimitItReached() {
-		Tween.setWaypointsLimit(1);
-		TweenTest.emptyThePool();
-		final String message = "You cannot add more than 1 waypoints to a tween. You can raise this limit with Tween.setWaypointsLimit(), which should be called once in application initialization code.";
-		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new MutableFloat(0F), 0, 1F).waypoint(5F).waypoint(6F)));
-		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 2, 1F).waypoint(5F, 5F).waypoint(6F, 6F)));
-		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).waypoint(5F, 5F, 5F).waypoint(6F, 6F, 6F)));
-		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).waypoint(new float[] {5F, 5F, 5F}).waypoint(new float[] {6F, 6F, 6F})));
 	}
 
 	private static void emptyThePool() {

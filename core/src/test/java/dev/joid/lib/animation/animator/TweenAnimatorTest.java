@@ -75,6 +75,25 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
+	public void drivesOneValuePerParallelStep() {
+		final TweenAnimator animator = TweenAnimator.create().parallel(2F, 10F).push(1F, 30F).push(4F, 8F, TweenEquations.QUAD_IN).start();
+		animator.update(1F);
+		Assert.assertEquals(5F, animator.getValue(), 0F);
+		Assert.assertEquals(5F, animator.getValue(0), 0F);
+		Assert.assertEquals(30F, animator.getValue(1), 0F);
+		Assert.assertEquals(0.5F, animator.getValue(2), 0F);
+		Assert.assertEquals(0F, animator.getValue(3), 0F);
+	}
+
+	@Test
+	public void drivesOneValueInSequence() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).push(1F, 30F).start();
+		animator.update(1.5F);
+		Assert.assertEquals(20F, animator.getValue(), 0F);
+		Assert.assertEquals(0F, animator.getValue(1), 0F);
+	}
+
+	@Test
 	public void easesInParallelWithItsEquation() {
 		final TweenAnimator animator = TweenAnimator.create().parallel(1F, 10F, TweenEquations.QUAD_IN).start();
 		animator.update(0.5F);
@@ -145,6 +164,14 @@ public class TweenAnimatorTest {
 		Assert.assertTrue(previous.isFinished());
 		animator.update(0.5F);
 		Assert.assertEquals(1, animator.getManager().size());
+	}
+
+	@Test
+	public void clearsTheValuesOfItsParallelSteps() {
+		final TweenAnimator animator = TweenAnimator.create().parallel(1F, 10F).push(1F, 20F).start();
+		animator.update(1F);
+		animator.clear();
+		Assert.assertEquals(0F, animator.getValue(1), 0F);
 	}
 
 	@Test

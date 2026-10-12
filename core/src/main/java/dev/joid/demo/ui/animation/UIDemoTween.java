@@ -25,10 +25,6 @@ public class UIDemoTween extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153);
 	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 
-	static {
-		Tween.setWaypointsLimit(2);
-	}
-
 	private final MutableFloat value   = new MutableFloat(0F);
 	private final TweenManager manager = new TweenManager();
 
@@ -49,11 +45,9 @@ public class UIDemoTween extends UIDemo {
 		final TweenAnimator quint = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUINT_INOUT);
 		quint.getTimeline().repeatYoyo(-1, 0F);
 		quint.start();
-		final TweenAnimator horizontal = TweenAnimator.create(0F);
-		final TweenAnimator vertical = TweenAnimator.create(0F);
-		horizontal.setTimeline(Timeline.createParallel().push(Tween.to(horizontal, TweenAnimatorAccessor.ANIMATION_VALUE, 1000F).target(1F).ease(TweenEquations.QUAD_INOUT)).push(Tween.to(vertical, TweenAnimatorAccessor.ANIMATION_VALUE, 500F).target(1F).ease(TweenEquations.SINE_INOUT).repeatYoyo(1, 0F)));
-		horizontal.getTimeline().repeatYoyo(-1, 0F);
-		horizontal.start();
+		final TweenAnimator parallel = TweenAnimator.create(0F).parallel(1000F, 1F, TweenEquations.QUAD_INOUT).push(500F, 1F, TweenEquations.SINE_INOUT);
+		parallel.getTimeline().repeatYoyo(-1, 0F);
+		parallel.start();
 		final TweenAnimator paused = TweenAnimator.create(0F);
 		paused.setTimeline(Timeline.createSequence().push(Tween.to(paused, TweenAnimatorAccessor.ANIMATION_VALUE, 600F).target(1F).ease(TweenEquations.QUAD_OUT)).pushPause(600F).push(Tween.to(paused, TweenAnimatorAccessor.ANIMATION_VALUE, 600F).target(0F).ease(TweenEquations.QUAD_IN)));
 		paused.getTimeline().repeat(-1, 300F);
@@ -135,7 +129,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 40, 320, 180)
 			.color(Color.WHITE)
 			.body(area -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * horizontal.getValue()).y(() -> 120D * vertical.getValue()).animate(horizontal).attach(area);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * parallel.getValue(0)).y(() -> 120D * parallel.getValue(1)).animate(parallel).attach(area);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Parallel timeline", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);

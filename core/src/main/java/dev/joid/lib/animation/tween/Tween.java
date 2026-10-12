@@ -2,6 +2,7 @@ package dev.joid.lib.animation.tween;
 
 
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,14 +39,13 @@ public final class Tween extends BaseTween<Tween> {
 
 	private static final Map<Class<?>, TweenAccessor<?>> registeredAccessors = new HashMap<>();
 
-	private static int waypointsLimit = 0;
 	private static int combinedAttrsLimit = 3;
 
 	static {
 		Tween.registerAccessor(TweenAnimator.class, new TweenAnimatorAccessor());
 	}
 
-	private float[] waypoints = new float[Tween.waypointsLimit * Tween.combinedAttrsLimit];
+	private float[] waypoints = new float[0];
 	private float[] startValues = new float[Tween.combinedAttrsLimit];
 	private float[] targetValues = new float[Tween.combinedAttrsLimit];
 
@@ -61,7 +61,7 @@ public final class Tween extends BaseTween<Tween> {
 	private boolean isRelative;
 	private int combinedAttrsCnt;
 
-	private float[] pathBuffer = new float[(2 + Tween.waypointsLimit) * Tween.combinedAttrsLimit];
+	private float[] pathBuffer = new float[2];
 	private float[] accessorBuffer = new float[Tween.combinedAttrsLimit];
 
 	public static Tween to(final Object target, final int tweenType, final float duration) {
@@ -104,10 +104,6 @@ public final class Tween extends BaseTween<Tween> {
 
 	private Tween() {
 		this.reset();
-	}
-
-	public static void setWaypointsLimit(final int limit) {
-		Tween.waypointsLimit = limit;
 	}
 
 	public static void setCombinedAttributesLimit(final int limit) {
@@ -180,14 +176,6 @@ public final class Tween extends BaseTween<Tween> {
 			this.startValues = new float[Tween.combinedAttrsLimit];
 			this.targetValues = new float[Tween.combinedAttrsLimit];
 			this.accessorBuffer = new float[Tween.combinedAttrsLimit];
-		}
-
-		if (this.waypoints.length != Tween.waypointsLimit * Tween.combinedAttrsLimit) {
-			this.waypoints = new float[Tween.waypointsLimit * Tween.combinedAttrsLimit];
-		}
-
-		if (this.pathBuffer.length != (2 + Tween.waypointsLimit) * Tween.combinedAttrsLimit) {
-			this.pathBuffer = new float[(2 + Tween.waypointsLimit) * Tween.combinedAttrsLimit];
 		}
 	}
 
@@ -267,9 +255,7 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	public Tween waypoint(final float targetValue) {
-		if (this.waypointsCnt == Tween.waypointsLimit) {
-			throw this.waypointsLimitReached();
-		}
+		this.reserveWaypoint(1);
 
 		this.waypoints[this.waypointsCnt] = targetValue;
 		this.waypointsCnt += 1;
@@ -277,9 +263,7 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	public Tween waypoint(final float... targetValues) {
-		if (this.waypointsCnt == Tween.waypointsLimit) {
-			throw this.waypointsLimitReached();
-		}
+		this.reserveWaypoint(targetValues.length);
 
 		System.arraycopy(targetValues, 0, this.waypoints, this.waypointsCnt * targetValues.length, targetValues.length);
 		this.waypointsCnt += 1;
@@ -287,9 +271,7 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	public Tween waypoint(final float targetValue1, final float targetValue2) {
-		if (this.waypointsCnt == Tween.waypointsLimit) {
-			throw this.waypointsLimitReached();
-		}
+		this.reserveWaypoint(2);
 
 		this.waypoints[this.waypointsCnt * 2] = targetValue1;
 		this.waypoints[this.waypointsCnt * 2 + 1] = targetValue2;
@@ -298,9 +280,7 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	public Tween waypoint(final float targetValue1, final float targetValue2, final float targetValue3) {
-		if (this.waypointsCnt == Tween.waypointsLimit) {
-			throw this.waypointsLimitReached();
-		}
+		this.reserveWaypoint(3);
 
 		this.waypoints[this.waypointsCnt * 3] = targetValue1;
 		this.waypoints[this.waypointsCnt * 3 + 1] = targetValue2;
@@ -471,19 +451,21 @@ public final class Tween extends BaseTween<Tween> {
 		return parentClass;
 	}
 
+	private void reserveWaypoint(final int size) {
+		if (this.waypoints.length < (this.waypointsCnt + 1) * size) {
+			this.waypoints = Arrays.copyOf(this.waypoints, (this.waypointsCnt + 1) * size);
+		}
+
+		if (this.pathBuffer.length < this.waypointsCnt + 3) {
+			this.pathBuffer = Arrays.copyOf(this.pathBuffer, this.waypointsCnt + 3);
+		}
+	}
+
 	private RuntimeException combinedAttrsLimitReached() {
 		final String msg = "You cannot combine more than " + Tween.combinedAttrsLimit + " "
 				+ "attributes in a tween. You can raise this limit with "
 				+ "Tween.setCombinedAttributesLimit(), which should be called once "
 				+ "in application initialization code.";
-		return new RuntimeException(msg);
-	}
-
-	private RuntimeException waypointsLimitReached() {
-		final String msg = "You cannot add more than " + Tween.waypointsLimit + " "
-				+ "waypoints to a tween. You can raise this limit with "
-				+ "Tween.setWaypointsLimit(), which should be called once in "
-				+ "application initialization code.";
 		return new RuntimeException(msg);
 	}
 

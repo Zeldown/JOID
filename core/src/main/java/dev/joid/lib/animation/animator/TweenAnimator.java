@@ -1,5 +1,6 @@
 package dev.joid.lib.animation.animator;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import dev.joid.lib.animation.tween.BaseTween;
@@ -15,20 +16,22 @@ import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class TweenAnimator {
 
-	private float value;
+	private float[] values;
+	private boolean parallel;
+
+	@Setter
 	private float speed;
 
-	private long         lastUpdate;
-	private Timeline     timeline;
-	private TweenManager manager;
+	@Setter private long         lastUpdate;
+	@Setter private Timeline     timeline;
+	@Setter private TweenManager manager;
 
 	private TweenAnimator(final float value) {
 		this.manager = new TweenManager();
 		this.clear();
-		this.value = value;
+		this.values[0] = value;
 	}
 
 	public static @NonNull TweenAnimator create() {
@@ -49,7 +52,8 @@ public class TweenAnimator {
 	public void clear() {
 		this.manager.killAll();
 		this.manager.update(0F);
-		this.value      = 0F;
+		this.values     = new float[1];
+		this.parallel   = false;
 		this.speed      = 1F;
 		this.timeline   = null;
 		this.lastUpdate = 0L;
@@ -62,6 +66,7 @@ public class TweenAnimator {
 	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation equation) {
 		this.killTimeline();
 		this.timeline = Timeline.createSequence();
+		this.parallel = false;
 		this.push(duration, value, equation);
 		return this;
 	}
@@ -73,6 +78,7 @@ public class TweenAnimator {
 	public @NonNull TweenAnimator parallel(final float duration, final float value, final @NonNull TweenEquation equation) {
 		this.killTimeline();
 		this.timeline = Timeline.createParallel();
+		this.parallel = true;
 		this.push(duration, value, equation);
 		return this;
 	}
@@ -84,7 +90,7 @@ public class TweenAnimator {
 
 	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
 		this.requireTimeline();
-		this.timeline.push(Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
+		this.timeline.push(Tween.to(this, this.parallel ? this.timeline.getChildren().size() : TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
 		return this;
 	}
 
@@ -99,6 +105,26 @@ public class TweenAnimator {
 		this.update(now - this.lastUpdate);
 		this.lastUpdate = now;
 		return this;
+	}
+
+	public float getValue() {
+		return this.values[0];
+	}
+
+	public float getValue(final int index) {
+		return index < this.values.length ? this.values[index] : 0F;
+	}
+
+	public void setValue(final float value) {
+		this.values[0] = value;
+	}
+
+	public void setValue(final int index, final float value) {
+		if (index >= this.values.length) {
+			this.values = Arrays.copyOf(this.values, index + 1);
+		}
+
+		this.values[index] = value;
 	}
 
 	public @NonNull TweenAnimator update(final float delta) {
