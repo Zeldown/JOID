@@ -229,7 +229,7 @@ public class UIDemoAnimation extends UIDemo {
 			RectNode
 			.create(40, 150, 100, 50)
 			.color(UIDemoAnimation.INK)
-			.onClick(event -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).setCallback(tween -> plays.increment()).start())
+			.onClick(event -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).onComplete(tween -> plays.increment()).start())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Play", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

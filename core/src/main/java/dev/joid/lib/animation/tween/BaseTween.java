@@ -2,10 +2,25 @@ package dev.joid.lib.animation.tween;
 
 
 
-import java.util.function.Consumer;
+import dev.joid.lib.ui.event.EventBus;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseTween<T> {
+
+	private static final EventType<TweenEvent> START                   = EventType.create("onStart");
+	private static final EventType<TweenEvent> COMPLETE                = EventType.create("onComplete");
+	private static final EventType<TweenEvent> ITERATION_END           = EventType.create("onIterationEnd");
+	private static final EventType<TweenEvent> REVERSE_START           = EventType.create("onReverseStart");
+	private static final EventType<TweenEvent> ITERATION_START         = EventType.create("onIterationStart");
+	private static final EventType<TweenEvent> REVERSE_COMPLETE        = EventType.create("onReverseComplete");
+	private static final EventType<TweenEvent> REVERSE_ITERATION_END   = EventType.create("onReverseIterationEnd");
+	private static final EventType<TweenEvent> REVERSE_ITERATION_START = EventType.create("onReverseIterationStart");
+
+	private final EventBus eventBus = EventBus.create(() -> this.getClass().getSimpleName());
 
 	private int step;
 	private int repeatCnt;
@@ -24,8 +39,6 @@ public abstract class BaseTween<T> {
 	private boolean isInitialized;
 
 	private Object userData;
-	private int callbackTriggers;
-	private TweenCallback callback;
 
 	protected boolean isAutoStartEnabled;
 	protected boolean isAutoRemoveEnabled;
@@ -50,8 +63,7 @@ public abstract class BaseTween<T> {
 		this.delay = this.duration = this.repeatDelay = this.currentTime = this.deltaTime = 0;
 		this.isStarted = this.isInitialized = this.isFinished = this.isKilled = this.isPaused = false;
 
-		this.callback = null;
-		this.callbackTriggers = TweenCallback.COMPLETE;
+		this.eventBus.clear();
 		this.userData = null;
 
 		this.isAutoRemoveEnabled = this.isAutoStartEnabled = true;
@@ -107,29 +119,68 @@ public abstract class BaseTween<T> {
 		return (T) this;
 	}
 
-	public T setCallbackTriggers(final int flags) {
-		this.callbackTriggers = flags;
-		return (T) this;
+	public T onStart(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onStart(EventPriority.NORMAL, listener);
 	}
 
-	public T setCallback(final TweenCallback callback) {
-		if (this.callback == null) {
-			this.callback = callback;
-		} else {
-			this.callback = this.callback.andThen(callback);
-		}
-
-		return (T) this;
+	public T onStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		return this.listen(BaseTween.START, priority, listener);
 	}
 
-	public T addCallback(final int flags, final Consumer<BaseTween<?>> callback) {
-		this.callbackTriggers |= flags;
+	public T onIterationStart(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onIterationStart(EventPriority.NORMAL, listener);
+	}
 
-		return this.setCallback(((type, source) -> {
-			if ((flags & type) != 0) {
-				callback.accept(source);
-			}
-		}));
+	public T onIterationStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		return this.listen(BaseTween.ITERATION_START, priority, listener);
+	}
+
+	public T onIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onIterationEnd(EventPriority.NORMAL, listener);
+	}
+
+	public T onIterationEnd(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		return this.listen(BaseTween.ITERATION_END, priority, listener);
+	}
+
+	public T onComplete(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onComplete(EventPriority.NORMAL, listener);
+	}
+
+	public T onComplete(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		return this.listen(BaseTween.COMPLETE, priority, listener);
+	}
+
+	public T onReverseStart(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onReverseStart(EventPriority.NORMAL, listener);
+	}
+
+	public T onReverseStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		return this.listen(BaseTween.REVERSE_START, priority, listener);
+	}
+
+	public T onReverseIterationStart(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onReverseIterationStart(EventPriority.NORMAL, listener);
+	}
+
+	public T onReverseIterationStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		return this.listen(BaseTween.REVERSE_ITERATION_START, priority, listener);
+	}
+
+	public T onReverseIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onReverseIterationEnd(EventPriority.NORMAL, listener);
+	}
+
+	public T onReverseIterationEnd(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		return this.listen(BaseTween.REVERSE_ITERATION_END, priority, listener);
+	}
+
+	public T onReverseComplete(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onReverseComplete(EventPriority.NORMAL, listener);
+	}
+
+	public T onReverseComplete(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		return this.listen(BaseTween.REVERSE_COMPLETE, priority, listener);
 	}
 
 	public int getStep() {
@@ -224,12 +275,6 @@ public abstract class BaseTween<T> {
 		}
 	}
 
-	protected void callCallback(final int type) {
-		if (this.callback != null && (this.callbackTriggers & type) > 0) {
-			this.callback.onEvent(type, this);
-		}
-	}
-
 	protected void killTarget(final Object target) {
 		if (this.containsTarget(target)) {
 			this.kill();
@@ -271,8 +316,8 @@ public abstract class BaseTween<T> {
 			this.step = 0;
 			this.deltaTime -= this.delay - this.currentTime;
 			this.currentTime = 0;
-			this.callCallback(TweenCallback.BEGIN);
-			this.callCallback(TweenCallback.START);
+			this.fire(BaseTween.START);
+			this.fire(BaseTween.ITERATION_START);
 		}
 	}
 
@@ -284,8 +329,8 @@ public abstract class BaseTween<T> {
 			final float delta = 0 - this.currentTime;
 			this.deltaTime -= delta;
 			this.currentTime = 0;
-			this.callCallback(TweenCallback.BEGIN);
-			this.callCallback(TweenCallback.START);
+			this.fire(BaseTween.START);
+			this.fire(BaseTween.ITERATION_START);
 			this.updateOverride(this.step, this.step - 1, this.isIterationStep, delta);
 		} else if (!this.isIterationStep && this.repeatCnt >= 0 && this.step > this.repeatCnt * 2 && this.currentTime + this.deltaTime < 0) {
 			assert this.step == this.repeatCnt * 2 + 1;
@@ -294,8 +339,8 @@ public abstract class BaseTween<T> {
 			final float delta = 0 - this.currentTime;
 			this.deltaTime -= delta;
 			this.currentTime = this.duration;
-			this.callCallback(TweenCallback.BACK_BEGIN);
-			this.callCallback(TweenCallback.BACK_START);
+			this.fire(BaseTween.REVERSE_START);
+			this.fire(BaseTween.REVERSE_ITERATION_START);
 			this.updateOverride(this.step, this.step + 1, this.isIterationStep, delta);
 		}
 	}
@@ -316,7 +361,7 @@ public abstract class BaseTween<T> {
 					this.forceEndValues();
 				}
 
-				this.callCallback(TweenCallback.BACK_START);
+				this.fire(BaseTween.REVERSE_ITERATION_START);
 				this.updateOverride(this.step, this.step + 1, this.isIterationStep, delta);
 			} else if (!this.isIterationStep && this.currentTime + this.deltaTime >= this.repeatDelay) {
 				this.isIterationStep = true;
@@ -332,7 +377,7 @@ public abstract class BaseTween<T> {
 					this.forceStartValues();
 				}
 
-				this.callCallback(TweenCallback.START);
+				this.fire(BaseTween.ITERATION_START);
 				this.updateOverride(this.step, this.step - 1, this.isIterationStep, delta);
 			} else if (this.isIterationStep && this.currentTime + this.deltaTime < 0) {
 				this.isIterationStep = false;
@@ -343,10 +388,10 @@ public abstract class BaseTween<T> {
 				this.currentTime = 0;
 
 				this.updateOverride(this.step, this.step + 1, this.isIterationStep, delta);
-				this.callCallback(TweenCallback.BACK_END);
+				this.fire(BaseTween.REVERSE_ITERATION_END);
 
 				if (this.step < 0 && this.repeatCnt >= 0) {
-					this.callCallback(TweenCallback.BACK_COMPLETE);
+					this.fire(BaseTween.REVERSE_COMPLETE);
 				} else {
 					this.currentTime = this.repeatDelay;
 				}
@@ -359,10 +404,10 @@ public abstract class BaseTween<T> {
 				this.currentTime = this.duration;
 
 				this.updateOverride(this.step, this.step - 1, this.isIterationStep, delta);
-				this.callCallback(TweenCallback.END);
+				this.fire(BaseTween.ITERATION_END);
 
 				if (this.step > this.repeatCnt * 2 && this.repeatCnt >= 0) {
-					this.callCallback(TweenCallback.COMPLETE);
+					this.fire(BaseTween.COMPLETE);
 				}
 
 				this.currentTime = 0;
@@ -383,6 +428,17 @@ public abstract class BaseTween<T> {
 
 	private void testCompletion() {
 		this.isFinished = this.repeatCnt >= 0 && (this.step > this.repeatCnt * 2 || this.step < 0);
+	}
+
+	private T listen(final EventType<TweenEvent> type, final EventPriority priority, final EventListener<TweenEvent> listener) {
+		this.eventBus.listen(type, priority, listener);
+		return (T) this;
+	}
+
+	private void fire(final EventType<TweenEvent> type) {
+		if (this.eventBus.has(type)) {
+			this.eventBus.fire(type, TweenEvent.create(this));
+		}
 	}
 
 }

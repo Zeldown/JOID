@@ -1,5 +1,7 @@
 package dev.joid.lib.animation.tween;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.animation.tween.primitive.MutableFloat;
+import dev.joid.lib.ui.event.EventPriority;
 
 public class BaseTweenTest {
 
@@ -220,69 +223,127 @@ public class BaseTweenTest {
 
 	@Test
 	public void rewindsForeverWithAnInfiniteCount() {
-		final List<Integer> events = new ArrayList<>();
+		final List<String> events = new ArrayList<>();
 		final MutableFloat value = new MutableFloat(0F);
-		final Tween tween = BaseTweenTest.tween(value).repeat(Tween.INFINITY, 0F).setCallback((type, source) -> events.add(type)).setCallbackTriggers(TweenCallback.ANY_BACKWARD).start();
+		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(value).repeat(Tween.INFINITY, 0F), events).start();
 		tween.update(0.5F);
+		events.clear();
 		tween.update(-1F);
 		Assert.assertEquals(5F, value.floatValue(), 0F);
 		Assert.assertFalse(tween.isFinished());
-		Assert.assertEquals(Arrays.asList(TweenCallback.BACK_END, TweenCallback.BACK_START), events);
+		Assert.assertEquals(Arrays.asList("onReverseIterationEnd", "onReverseIterationStart"), events);
 	}
 
 	@Test
 	public void notifiesEveryForwardStep() {
-		final List<Integer> events = new ArrayList<>();
-		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).setCallback((type, source) -> events.add(type)).setCallbackTriggers(TweenCallback.ANY).start();
+		final List<String> events = new ArrayList<>();
+		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(new MutableFloat(0F)), events).start();
 		tween.update(2F);
-		Assert.assertEquals(Arrays.asList(TweenCallback.BEGIN, TweenCallback.START, TweenCallback.END, TweenCallback.COMPLETE), events);
+		Assert.assertEquals(Arrays.asList("onStart", "onIterationStart", "onIterationEnd", "onComplete"), events);
 	}
 
 	@Test
 	public void notifiesEveryBackwardStep() {
-		final List<Integer> events = new ArrayList<>();
-		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).setCallback((type, source) -> events.add(type)).setCallbackTriggers(TweenCallback.ANY).start();
+		final List<String> events = new ArrayList<>();
+		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(new MutableFloat(0F)), events).start();
 		tween.update(2F);
 		events.clear();
 		tween.update(-3F);
-		Assert.assertEquals(Arrays.asList(TweenCallback.BACK_BEGIN, TweenCallback.BACK_START, TweenCallback.BACK_END, TweenCallback.BACK_COMPLETE), events);
+		Assert.assertEquals(Arrays.asList("onReverseStart", "onReverseIterationStart", "onReverseIterationEnd", "onReverseComplete"), events);
 	}
 
 	@Test
-	public void notifiesOnlyItsCompletionByDefault() {
-		final List<Integer> events = new ArrayList<>();
-		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).setCallback((type, source) -> events.add(type)).start();
+	public void notifiesEachIterationOfItsRepetitions() {
+		final List<String> events = new ArrayList<>();
+		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(new MutableFloat(0F)).repeat(2, 0.5F), events).start();
+		tween.update(5F);
+		Assert.assertEquals(Arrays.asList("onStart", "onIterationStart", "onIterationEnd", "onIterationStart", "onIterationEnd", "onIterationStart", "onIterationEnd", "onComplete"), events);
+	}
+
+	@Test
+	public void notifiesEachWayOfAYoyoForward() {
+		final List<String> events = new ArrayList<>();
+		final MutableFloat value = new MutableFloat(0F);
+		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(value).repeatYoyo(1, 0F), events).start();
+		tween.update(1.5F);
+		Assert.assertEquals(Arrays.asList("onStart", "onIterationStart", "onIterationEnd", "onIterationStart"), events);
+		Assert.assertEquals(5F, value.floatValue(), 0F);
+		tween.update(1F);
+		Assert.assertEquals(Arrays.asList("onStart", "onIterationStart", "onIterationEnd", "onIterationStart", "onIterationEnd", "onComplete"), events);
+		Assert.assertEquals(0F, value.floatValue(), 0F);
+	}
+
+	@Test
+	public void startsOnceAfterItsDelay() {
+		final List<String> events = new ArrayList<>();
+		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(new MutableFloat(0F)).delay(0.5F), events).start();
+		tween.update(0.25F);
+		Assert.assertTrue(events.isEmpty());
+		tween.update(0.5F);
+		Assert.assertEquals(Arrays.asList("onStart", "onIterationStart"), events);
+		tween.update(0.25F);
+		Assert.assertEquals(Arrays.asList("onStart", "onIterationStart"), events);
+	}
+
+	@Test
+	public void notifiesOnlyItsListeners() {
+		final List<String> events = new ArrayList<>();
+		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).onStart(event -> events.add("start")).onIterationEnd(event -> events.add("end")).start();
 		tween.update(2F);
-		Assert.assertEquals(Collections.singletonList(TweenCallback.COMPLETE), events);
+		Assert.assertEquals(Arrays.asList("start", "end"), events);
 	}
 
 	@Test
-	public void notifiesOnlyTheChosenTriggers() {
-		final List<Integer> events = new ArrayList<>();
-		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).setCallback((type, source) -> events.add(type)).setCallbackTriggers(TweenCallback.BEGIN | TweenCallback.END).start();
-		tween.update(2F);
-		Assert.assertEquals(Arrays.asList(TweenCallback.BEGIN, TweenCallback.END), events);
-	}
-
-	@Test
-	public void chainsItsCallbacks() {
+	public void runsItsListenersInTheOrderOfTheirPriority() {
 		final List<String> calls = new ArrayList<>();
-		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).setCallback((type, source) -> calls.add("first")).setCallback((type, source) -> calls.add("second")).start();
+		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).onComplete(event -> calls.add("first")).onComplete(event -> calls.add("second")).onComplete(EventPriority.HIGH, event -> calls.add("high")).start();
 		tween.update(2F);
-		Assert.assertEquals(Arrays.asList("first", "second"), calls);
+		Assert.assertEquals(Arrays.asList("high", "first", "second"), calls);
 	}
 
 	@Test
-	public void passesItselfToAnAddedCallback() {
+	public void givesItselfInItsEvents() {
 		final List<BaseTween<?>> starts = new ArrayList<>();
 		final List<BaseTween<?>> ends = new ArrayList<>();
-		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).addCallback(TweenCallback.START, starts::add).addCallback(TweenCallback.END, ends::add).start();
+		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).onIterationStart(event -> starts.add(event.getTween())).onIterationEnd(event -> ends.add(event.getTween())).start();
 		tween.update(0.5F);
 		Assert.assertEquals(Collections.singletonList(tween), starts);
 		Assert.assertTrue(ends.isEmpty());
 		tween.update(1F);
 		Assert.assertEquals(Collections.singletonList(tween), starts);
 		Assert.assertEquals(Collections.singletonList(tween), ends);
+	}
+
+	@Test
+	public void keepsGoingWhenAListenerFails() {
+		final List<String> calls = new ArrayList<>();
+		final MutableFloat value = new MutableFloat(0F);
+		final Tween tween = BaseTweenTest.tween(value).repeat(1, 0F).onIterationEnd(event -> {
+			throw new IllegalStateException("boom");
+		}).onIterationEnd(event -> calls.add("end")).onComplete(event -> calls.add("complete")).start();
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			tween.update(3F);
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertEquals(Arrays.asList("end", "end", "complete"), calls);
+		Assert.assertEquals(10F, value.floatValue(), 0F);
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The onIterationEnd listener of Tween failed: java.lang.IllegalStateException: boom"));
+		Assert.assertEquals(output.toString(), output.toString().indexOf("[JOID]"), output.toString().lastIndexOf("[JOID]"));
+	}
+
+	@Test
+	public void forgetsItsListenersOnceFreed() {
+		final List<String> events = new ArrayList<>();
+		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(new MutableFloat(0F)), events);
+		tween.free();
+		final Tween reused = BaseTweenTest.tween(new MutableFloat(0F)).start();
+		reused.update(2F);
+		Assert.assertSame(tween, reused);
+		Assert.assertTrue(events.isEmpty());
 	}
 
 	@Test
@@ -337,6 +398,18 @@ public class BaseTweenTest {
 
 	private static Tween tween(final MutableFloat value) {
 		return Tween.to(value, 0, 1F).target(10F).ease(TweenEquations.LINEAR);
+	}
+
+	private static Tween record(final Tween tween, final List<String> events) {
+		return tween
+		.onStart(event -> events.add("onStart"))
+		.onIterationStart(event -> events.add("onIterationStart"))
+		.onIterationEnd(event -> events.add("onIterationEnd"))
+		.onComplete(event -> events.add("onComplete"))
+		.onReverseStart(event -> events.add("onReverseStart"))
+		.onReverseIterationStart(event -> events.add("onReverseIterationStart"))
+		.onReverseIterationEnd(event -> events.add("onReverseIterationEnd"))
+		.onReverseComplete(event -> events.add("onReverseComplete"));
 	}
 
 	private static final class StepTween extends BaseTween<StepTween> {

@@ -9,6 +9,8 @@ import java.util.Map;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.animator.TweenAnimatorAccessor;
 import dev.joid.lib.animation.tween.equation.Quad;
+import dev.joid.lib.ui.event.EventListener;
+import lombok.NonNull;
 
 public final class Tween extends BaseTween<Tween> {
 
@@ -88,11 +90,10 @@ public final class Tween extends BaseTween<Tween> {
 		return tween;
 	}
 
-	public static Tween call(final TweenCallback callback) {
+	public static Tween call(final @NonNull EventListener<TweenEvent> listener) {
 		final Tween tween = Tween.pool.get();
 		tween.setup(null, -1, 0);
-		tween.setCallback(callback);
-		tween.setCallbackTriggers(TweenCallback.START);
+		tween.onIterationStart(listener);
 		return tween;
 	}
 

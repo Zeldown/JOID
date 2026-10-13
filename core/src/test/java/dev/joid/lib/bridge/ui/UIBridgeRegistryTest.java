@@ -9,6 +9,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.animation.animator.TweenAnimator;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.color.Color;
@@ -144,6 +146,40 @@ public class UIBridgeRegistryTest {
 	}
 
 	@Test
+	public void runsItsFrameTasksOnceAFrameBeforeTheBridges() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		registry.register(this.bridge("high", Color.BLUE), 1);
+		registry.register(this.bridge("low", Color.RED), -1);
+		Assert.assertSame(registry, registry.onFrame(() -> this.trace.add("frame")));
+		registry.frame();
+		Assert.assertEquals(Arrays.asList("frame", "update low", "update high", "draw low", "draw high"), this.trace);
+	}
+
+	@Test
+	public void advancesTheAutomaticAnimatorsOnceAFrameWithSeveralBridges() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(64F, 1F);
+		final WindowUIBridge other = this.bridge("other", Color.RED);
+		BridgeHandler.UI.register(other, -1);
+		try {
+			BridgeHandler.UI.frame();
+			this.bridges.open(new AnimatorUI(animator));
+			Assert.assertTrue(animator.isAutomatic());
+			Assert.assertEquals(0.25F, animator.get(), 0F);
+			this.bridges.getClock().advance(16L);
+			this.bridges.getUi().update();
+			other.update();
+			Assert.assertEquals(0.25F, animator.get(), 0F);
+			BridgeHandler.UI.frame();
+			Assert.assertEquals(0.5F, animator.get(), 0F);
+			this.bridges.getClock().advance(16L);
+			this.bridges.getUi().frame();
+			Assert.assertEquals(0.75F, animator.get(), 0F);
+		} finally {
+			BridgeHandler.UI.unregister(other);
+		}
+	}
+
+	@Test
 	public void clearsNothingWithoutUIBridge() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
 		final int clears = this.bridges.getRender().getColorClears();
@@ -255,6 +291,18 @@ public class UIBridgeRegistryTest {
 	}
 
 	public static final class MenuUI extends UI {}
+
+	@AllArgsConstructor
+	public static final class AnimatorUI extends UI {
+
+		private final TweenAnimator animator;
+
+		@Override
+		public void init() {
+			this.animator.start();
+		}
+
+	}
 
 	public static final class HudUI extends UI {}
 

@@ -1,6 +1,9 @@
 package dev.joid.lib.animation.tween;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -328,6 +331,16 @@ public class TimelineTest {
 		timeline.update(-1F);
 		Assert.assertEquals(10F, first.floatValue(), 0F);
 		Assert.assertEquals(10F, second.floatValue(), 0F);
+	}
+
+	@Test
+	public void notifiesItsChildrenBeforeItsCompletion() {
+		final List<String> events = new ArrayList<>();
+		final Tween first = TimelineTest.tween(new MutableFloat(0F), 10F).onComplete(event -> events.add("first"));
+		final Tween second = TimelineTest.tween(new MutableFloat(0F), 20F).onComplete(event -> events.add("second"));
+		final Timeline timeline = Timeline.createSequence().push(first).push(second).onStart(event -> events.add("start")).onComplete(event -> events.add("complete")).start();
+		timeline.update(3F);
+		Assert.assertEquals(Arrays.asList("start", "first", "second", "complete"), events);
 	}
 
 	private static Tween tween(final MutableFloat value, final float target) {

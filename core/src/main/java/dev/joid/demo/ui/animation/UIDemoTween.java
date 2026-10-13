@@ -4,7 +4,6 @@ import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.animator.TweenAnimatorAccessor;
-import dev.joid.lib.animation.animator.TweenAnimatorChannel;
 import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
@@ -15,6 +14,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
@@ -46,11 +46,12 @@ public class UIDemoTween extends UIDemo {
 		final TweenAnimator quint = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUINT_INOUT);
 		quint.getTimeline().repeatYoyo(-1, 0F);
 		quint.start();
-		final TweenAnimator parallel = TweenAnimator.create(0F).parallel(1000F, 1F, TweenEquations.QUAD_INOUT).push(500F, 1F, TweenEquations.SINE_INOUT);
-		parallel.getTimeline().repeatYoyo(-1, 0F);
-		parallel.start();
-		final TweenAnimatorChannel horizontal = parallel.channel(0);
-		final TweenAnimatorChannel vertical = parallel.channel(1);
+		final TweenAnimator horizontal = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_INOUT);
+		horizontal.getTimeline().repeatYoyo(-1, 0F);
+		horizontal.start();
+		final TweenAnimator vertical = TweenAnimator.create(0F).sequence(500F, 1F, TweenEquations.SINE_INOUT).push(500F, 1F);
+		vertical.getTimeline().repeatYoyo(-1, 0F);
+		vertical.start();
 		final TweenAnimator paused = TweenAnimator.create(0F);
 		paused.setTimeline(Timeline.createSequence().push(Tween.to(paused, TweenAnimatorAccessor.ANIMATION_VALUE, 600F).target(1F).ease(TweenEquations.QUAD_OUT)).pushPause(600F).push(Tween.to(paused, TweenAnimatorAccessor.ANIMATION_VALUE, 600F).target(0F).ease(TweenEquations.QUAD_IN)));
 		paused.getTimeline().repeat(-1, 300F);
@@ -59,13 +60,18 @@ public class UIDemoTween extends UIDemo {
 		waypoints.setTimeline(Timeline.createSequence().push(Tween.to(waypoints, TweenAnimatorAccessor.ANIMATION_VALUE, 2000F).waypoint(1F).waypoint(0.2F).target(1F).path(TweenPaths.catmullRom)));
 		waypoints.getTimeline().repeatYoyo(-1, 0F);
 		waypoints.start();
+		final IntegerSignal starts = IntegerSignal.of(0);
+		final IntegerSignal laps = IntegerSignal.of(0);
+		final TweenAnimator events = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT);
+		events.getTimeline().repeatYoyo(-1, 0F).onStart(event -> starts.increment()).onIterationEnd(event -> laps.increment());
+		events.start();
 		this.manager.killAll();
 		this.value.setValue(0F);
 		Tween.to(this.value, 0, 1000F).target(1F).ease(TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(this.manager);
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		RectNode
-		.create(100, 210, 400, 260)
+		.create(100, 40, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -80,7 +86,7 @@ public class UIDemoTween extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(540, 210, 400, 260)
+		.create(540, 40, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -95,7 +101,7 @@ public class UIDemoTween extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(980, 210, 400, 260)
+		.create(980, 40, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -110,7 +116,7 @@ public class UIDemoTween extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(1420, 210, 400, 260)
+		.create(1420, 40, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -125,7 +131,7 @@ public class UIDemoTween extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(100, 550, 400, 260)
+		.create(100, 380, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -135,12 +141,12 @@ public class UIDemoTween extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(260D * horizontal.get()).y(120D * vertical.get()).attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Parallel timeline", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Two animators", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
 		RectNode
-		.create(540, 550, 400, 260)
+		.create(540, 380, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -155,7 +161,7 @@ public class UIDemoTween extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(980, 550, 400, 260)
+		.create(980, 380, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -170,7 +176,7 @@ public class UIDemoTween extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(1420, 550, 400, 260)
+		.create(1420, 380, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -181,6 +187,22 @@ public class UIDemoTween extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Waypoints", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(100, 720, 400, 260)
+		.color(UIDemoTween.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 60, 320, 60)
+			.color(Color.WHITE)
+			.body(line -> {
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(events).attach(line);
+			})
+			.attach(rect);
+			TextNode.create(40, 162).text(Text.create("Starts: " + starts.get() + ", laps: " + laps.get(), caption)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Tween events", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

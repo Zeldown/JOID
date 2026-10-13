@@ -92,7 +92,7 @@ public class TweenTest {
 	public void setsItsTargetThenItsStartOnAYoyo() {
 		final List<Float> values = new ArrayList<>();
 		final MutableFloat value = new MutableFloat(0F);
-		final Tween tween = Tween.set(value, 0).target(5F).repeatYoyo(1, 0F).setCallback((type, source) -> values.add(value.floatValue())).setCallbackTriggers(TweenCallback.START).start();
+		final Tween tween = Tween.set(value, 0).target(5F).repeatYoyo(1, 0F).onIterationStart(event -> values.add(value.floatValue())).start();
 		tween.update(0.25F);
 		Assert.assertEquals(Arrays.asList(0F, 5F), values);
 		Assert.assertEquals(0F, value.floatValue(), 0F);
@@ -100,13 +100,13 @@ public class TweenTest {
 	}
 
 	@Test
-	public void callsItsCallbackOnStart() {
-		final List<Integer> events = new ArrayList<>();
-		final Tween tween = Tween.call((type, source) -> events.add(type)).start();
+	public void callsItsListenerOnStart() {
+		final List<BaseTween<?>> events = new ArrayList<>();
+		final Tween tween = Tween.call(event -> events.add(event.getTween())).start();
 		Assert.assertNull(tween.getTarget());
 		Assert.assertEquals(-1, tween.getType());
 		tween.update(1F);
-		Assert.assertEquals(Collections.singletonList(TweenCallback.START), events);
+		Assert.assertEquals(Collections.singletonList(tween), events);
 	}
 
 	@Test

@@ -1,25 +1,23 @@
 package dev.joid.lib.animation.animator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.function.Consumer;
+import java.util.concurrent.ConcurrentHashMap;
 
-import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
-import dev.joid.lib.animation.tween.TweenCallback;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
+import dev.joid.lib.animation.tween.TweenEvent;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -27,12 +25,13 @@ import lombok.Setter;
 @Getter
 public class TweenAnimator extends Signal<Float> {
 
+	private static final Set<String>        FAILURE_SET = ConcurrentHashMap.newKeySet();
 	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
-	private final Map<Integer, TweenAnimatorChannel> channelMap;
+	static {
+		BridgeHandler.UI.onFrame(TweenAnimator::updateRunning);
+	}
 
-	private float[] values;
-	private boolean parallel;
 	private boolean automatic;
 
 	@Setter
@@ -44,9 +43,7 @@ public class TweenAnimator extends Signal<Float> {
 
 	private TweenAnimator(final float value) {
 		super(value);
-		this.channelMap = new HashMap<>();
 		this.manager = new TweenManager();
-		this.values = new float[] {value};
 		this.speed = 1F;
 	}
 
@@ -72,16 +69,13 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public void clear() {
-		final float[] previous = this.values;
 		this.release();
 		this.manager.killAll();
 		this.manager.update(0F);
-		this.values     = new float[1];
-		this.parallel   = false;
 		this.speed      = 1F;
 		this.timeline   = null;
 		this.lastUpdate = 0L;
-		this.notifyValues(previous);
+		this.writeValue(0F);
 	}
 
 	public @NonNull TweenAnimator sequence(final float duration, final float value) {
@@ -91,19 +85,6 @@ public class TweenAnimator extends Signal<Float> {
 	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation equation) {
 		this.killTimeline();
 		this.timeline = Timeline.createSequence();
-		this.parallel = false;
-		this.push(duration, value, equation);
-		return this;
-	}
-
-	public @NonNull TweenAnimator parallel(final float duration, final float value) {
-		return this.parallel(duration, value, TweenEquations.LINEAR);
-	}
-
-	public @NonNull TweenAnimator parallel(final float duration, final float value, final @NonNull TweenEquation equation) {
-		this.killTimeline();
-		this.timeline = Timeline.createParallel();
-		this.parallel = true;
 		this.push(duration, value, equation);
 		return this;
 	}
@@ -115,21 +96,95 @@ public class TweenAnimator extends Signal<Float> {
 
 	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
 		this.requireTimeline();
-		this.timeline.push(Tween.to(this, this.parallel ? this.timeline.getChildren().size() : TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
+		this.timeline.push(Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
 		return this;
 	}
 
-	public @NonNull TweenAnimator setCallback(final @NonNull Consumer<@NonNull BaseTween<@NonNull ?>> callback) {
+	public @NonNull TweenAnimator onStart(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onStart(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull TweenAnimator onStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.addCallback(TweenCallback.END, callback);
+		this.timeline.onStart(priority, listener);
+		return this;
+	}
+
+	public @NonNull TweenAnimator onIterationStart(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onIterationStart(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull TweenAnimator onIterationStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		this.requireTimeline();
+		this.timeline.onIterationStart(priority, listener);
+		return this;
+	}
+
+	public @NonNull TweenAnimator onIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onIterationEnd(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull TweenAnimator onIterationEnd(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		this.requireTimeline();
+		this.timeline.onIterationEnd(priority, listener);
+		return this;
+	}
+
+	public @NonNull TweenAnimator onComplete(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onComplete(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull TweenAnimator onComplete(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		this.requireTimeline();
+		this.timeline.onComplete(priority, listener);
+		return this;
+	}
+
+	public @NonNull TweenAnimator onReverseStart(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onReverseStart(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull TweenAnimator onReverseStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		this.requireTimeline();
+		this.timeline.onReverseStart(priority, listener);
+		return this;
+	}
+
+	public @NonNull TweenAnimator onReverseIterationStart(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onReverseIterationStart(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull TweenAnimator onReverseIterationStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		this.requireTimeline();
+		this.timeline.onReverseIterationStart(priority, listener);
+		return this;
+	}
+
+	public @NonNull TweenAnimator onReverseIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onReverseIterationEnd(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull TweenAnimator onReverseIterationEnd(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		this.requireTimeline();
+		this.timeline.onReverseIterationEnd(priority, listener);
+		return this;
+	}
+
+	public @NonNull TweenAnimator onReverseComplete(final @NonNull EventListener<TweenEvent> listener) {
+		return this.onReverseComplete(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull TweenAnimator onReverseComplete(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
+		this.requireTimeline();
+		this.timeline.onReverseComplete(priority, listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator update() {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.update(now - this.lastUpdate);
+		final long delta = now - this.lastUpdate;
 		this.lastUpdate = now;
-		return this;
+		return this.update(delta);
 	}
 
 	public @NonNull TweenAnimator update(final float delta) {
@@ -141,18 +196,10 @@ public class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
-	public @NonNull TweenAnimatorChannel channel(final int index) {
-		return this.channelMap.computeIfAbsent(index, key -> new TweenAnimatorChannel(this.readValue(key)));
-	}
-
 	public void setValue(final float value) {
-		this.setValue(TweenAnimatorAccessor.ANIMATION_VALUE, value);
-	}
-
-	public void setValue(final int index, final float value) {
 		this.killTimeline();
 		this.timeline = null;
-		this.writeValue(index, value);
+		this.writeValue(value);
 	}
 
 	@Override
@@ -166,46 +213,14 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	@Override
-	public Float peek() {
-		return this.values[TweenAnimatorAccessor.ANIMATION_VALUE];
-	}
-
-	@Override
 	public boolean isPresent() {
 		return super.get() != null;
 	}
 
-	public @NonNull Map<@NonNull Integer, @NonNull TweenAnimatorChannel> getChannelMap() {
-		return Collections.unmodifiableMap(this.channelMap);
-	}
-
-	public @NonNull float[] getValues() {
-		return this.values.clone();
-	}
-
-	public static void updateRunning() {
-		final List<TweenAnimator> animatorList;
-		synchronized (TweenAnimator.RUNNING_SET) {
-			animatorList = new ArrayList<>(TweenAnimator.RUNNING_SET);
+	protected void writeValue(final float value) {
+		if (Float.compare(this.peek(), value) != 0) {
+			super.set(value);
 		}
-
-		for (final TweenAnimator animator : animatorList) {
-			animator.update();
-		}
-	}
-
-	protected float readValue(final int index) {
-		return index < this.values.length ? this.values[index] : 0F;
-	}
-
-	protected void writeValue(final int index, final float value) {
-		final float previous = this.readValue(index);
-		if (index >= this.values.length) {
-			this.values = Arrays.copyOf(this.values, index + 1);
-		}
-
-		this.values[index] = value;
-		this.notifyValue(index, previous);
 	}
 
 	private void release() {
@@ -222,32 +237,27 @@ public class TweenAnimator extends Signal<Float> {
 
 	private void requireTimeline() {
 		if (this.timeline == null) {
-			throw new IllegalStateException("The animator has no timeline, call sequence(...) or parallel(...) first");
+			throw new IllegalStateException("The animator has no timeline, call sequence(...) first");
 		}
 	}
 
-	private void notifyValue(final int index, final float previous) {
-		final float value = this.readValue(index);
-		if (Float.compare(previous, value) == 0) {
-			return;
+	private static void updateRunning() {
+		final List<TweenAnimator> animatorList;
+		synchronized (TweenAnimator.RUNNING_SET) {
+			animatorList = new ArrayList<>(TweenAnimator.RUNNING_SET);
 		}
 
-		if (index == TweenAnimatorAccessor.ANIMATION_VALUE) {
-			super.publish();
-		}
-
-		final TweenAnimatorChannel channel = this.channelMap.get(index);
-		if (channel != null) {
-			channel.update(value);
-		}
-	}
-
-	private void notifyValues(final float[] previous) {
-		Signal.batch(() -> {
-			for (int index = 0; index < previous.length; index++) {
-				this.notifyValue(index, previous[index]);
+		for (final TweenAnimator animator : animatorList) {
+			try {
+				animator.update();
+			} catch (final RuntimeException exception) {
+				final String failure = exception.toString();
+				if (TweenAnimator.FAILURE_SET.add(System.identityHashCode(animator) + failure)) {
+					System.err.println("[JOID] The update of TweenAnimator failed: " + failure);
+					exception.printStackTrace();
+				}
 			}
-		});
+		}
 	}
 
 	@Override

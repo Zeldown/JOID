@@ -28,7 +28,7 @@ public abstract class StackUIBridge extends UIBridge {
 
 				final boolean result = current.fireClose();
 				if (current.getTransition() != null && current.getTransition().getOut() != null && current.getTransition().getOut().isRunning()) {
-					current.getTransition().getOut().getAnimator().setCallback(tween -> JOID.open(ui));
+					current.getTransition().getOut().getAnimator().onComplete(tween -> JOID.open(ui));
 					return;
 				}
 

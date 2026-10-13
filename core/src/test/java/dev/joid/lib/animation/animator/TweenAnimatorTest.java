@@ -1,5 +1,7 @@
 package dev.joid.lib.animation.animator;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,7 +22,6 @@ import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
-import lombok.AllArgsConstructor;
 
 public class TweenAnimatorTest {
 
@@ -73,36 +74,31 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
-	public void playsInParallel() {
-		final TweenAnimator animator = TweenAnimator.create().parallel(2F, 10F).start();
-		animator.update(1F);
-		Assert.assertEquals(5F, animator.get(), 0F);
-	}
-
-	@Test
-	public void drivesOneValuePerParallelStep() {
-		final TweenAnimator animator = TweenAnimator.create().parallel(2F, 10F).push(1F, 30F).push(4F, 8F, TweenEquations.QUAD_IN).start();
-		animator.update(1F);
-		Assert.assertEquals(5F, animator.get(), 0F);
-		Assert.assertEquals(5F, animator.channel(0).get(), 0F);
-		Assert.assertEquals(30F, animator.channel(1).get(), 0F);
-		Assert.assertEquals(0.5F, animator.channel(2).get(), 0F);
-		Assert.assertEquals(0F, animator.channel(3).get(), 0F);
-	}
-
-	@Test
-	public void drivesOneValueInSequence() {
-		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).push(1F, 30F).start();
+	public void chainsItsStepsOnItsSingleValue() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create(4F).sequence(1F, 10F).push(1F, 30F).push(1F, 30F).start();
+		animator.subscribe(values::add);
 		animator.update(1.5F);
 		Assert.assertEquals(20F, animator.get(), 0F);
-		Assert.assertEquals(0F, animator.channel(1).get(), 0F);
+		animator.update(1F);
+		animator.update(1F);
+		Assert.assertEquals(30F, animator.get(), 0F);
+		Assert.assertEquals(Arrays.asList(20F, 30F), values);
 	}
 
 	@Test
-	public void easesInParallelWithItsEquation() {
-		final TweenAnimator animator = TweenAnimator.create().parallel(1F, 10F, TweenEquations.QUAD_IN).start();
-		animator.update(0.5F);
-		Assert.assertEquals(2.5F, animator.get(), 0F);
+	public void animatesSeveralValuesWithSeveralAnimatorsStartedTogether() {
+		final TweenAnimator horizontal = TweenAnimator.create().sequence(32F, 1F);
+		final TweenAnimator vertical = TweenAnimator.create().sequence(64F, 1F);
+		new AnimatorUI(horizontal, vertical).load(1920D, 1080D);
+		this.clock.advance(16L);
+		BridgeHandler.UI.fireFrame();
+		Assert.assertEquals(0.5F, horizontal.get(), 0F);
+		Assert.assertEquals(0.25F, vertical.get(), 0F);
+		this.clock.advance(16L);
+		BridgeHandler.UI.fireFrame();
+		Assert.assertEquals(1F, horizontal.get(), 0F);
+		Assert.assertEquals(0.5F, vertical.get(), 0F);
 	}
 
 	@Test
@@ -126,12 +122,37 @@ public class TweenAnimatorTest {
 	@Test
 	public void notifiesTheEndOfItsTimeline() {
 		final List<BaseTween<?>> ends = new ArrayList<>();
-		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).setCallback(ends::add).start();
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).push(1F, 20F).onComplete(event -> ends.add(event.getTween())).start();
 		final Timeline timeline = animator.getTimeline();
-		animator.update(0.5F);
+		animator.update(1.5F);
 		Assert.assertTrue(ends.isEmpty());
 		animator.update(1F);
 		Assert.assertEquals(Collections.singletonList(timeline), ends);
+		animator.update(1F);
+		Assert.assertEquals(Collections.singletonList(timeline), ends);
+	}
+
+	@Test
+	public void notifiesEveryStepOfItsTimeline() {
+		final List<String> calls = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F);
+		animator.getTimeline().repeatYoyo(1, 0F);
+		animator
+		.onStart(event -> calls.add("start"))
+		.onIterationStart(event -> calls.add("iterationStart"))
+		.onIterationEnd(event -> calls.add("iterationEnd"))
+		.onComplete(event -> calls.add("complete"))
+		.onReverseStart(event -> calls.add("reverseStart"))
+		.onReverseIterationStart(event -> calls.add("reverseIterationStart"))
+		.onReverseIterationEnd(event -> calls.add("reverseIterationEnd"))
+		.onReverseComplete(event -> calls.add("reverseComplete"))
+		.start();
+		animator.update(0.5F);
+		Assert.assertEquals(Arrays.asList("start", "iterationStart"), calls);
+		animator.update(1F);
+		Assert.assertEquals(Arrays.asList("start", "iterationStart", "iterationEnd", "iterationStart"), calls);
+		animator.update(1F);
+		Assert.assertEquals(Arrays.asList("start", "iterationStart", "iterationEnd", "iterationStart", "iterationEnd", "complete"), calls);
 	}
 
 	@Test
@@ -162,24 +183,6 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
-	public void killsThePreviousTimelineOfANewParallel() {
-		final TweenAnimator animator = TweenAnimator.create().parallel(1F, 10F).start();
-		final Timeline previous = animator.getTimeline();
-		animator.parallel(1F, 20F).start();
-		Assert.assertTrue(previous.isFinished());
-		animator.update(0.5F);
-		Assert.assertEquals(1, animator.getManager().size());
-	}
-
-	@Test
-	public void clearsTheValuesOfItsParallelSteps() {
-		final TweenAnimator animator = TweenAnimator.create().parallel(1F, 10F).push(1F, 20F).start();
-		animator.update(1F);
-		animator.clear();
-		Assert.assertEquals(0F, animator.channel(1).get(), 0F);
-	}
-
-	@Test
 	public void clearsItsAnimation() {
 		final TweenAnimator animator = TweenAnimator.create(5F).sequence(1F, 10F).start();
 		animator.setSpeed(2F);
@@ -195,7 +198,7 @@ public class TweenAnimatorTest {
 	@Test
 	public void killsAndFreesItsTimelineWhenItClears() {
 		final List<BaseTween<?>> ends = new ArrayList<>();
-		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).setCallback(ends::add).start();
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).onComplete(event -> ends.add(event.getTween())).start();
 		final TweenManager manager = animator.getManager();
 		final int pooled = Timeline.getPoolSize();
 		animator.clear();
@@ -226,11 +229,11 @@ public class TweenAnimatorTest {
 		new AnimatorUI(animator).load(1920D, 1080D);
 		Assert.assertTrue(animator.isAutomatic());
 		this.clock.advance(16L);
-		TweenAnimator.updateRunning();
-		TweenAnimator.updateRunning();
+		BridgeHandler.UI.fireFrame();
+		BridgeHandler.UI.fireFrame();
 		Assert.assertEquals(0.5F, animator.get(), 0F);
 		this.clock.advance(16L);
-		TweenAnimator.updateRunning();
+		BridgeHandler.UI.fireFrame();
 		Assert.assertEquals(1F, animator.get(), 0F);
 	}
 
@@ -239,12 +242,12 @@ public class TweenAnimatorTest {
 		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
 		new AnimatorUI(animator).load(1920D, 1080D);
 		this.clock.advance(48L);
-		TweenAnimator.updateRunning();
+		BridgeHandler.UI.fireFrame();
 		Assert.assertNull(animator.getTimeline());
 		Assert.assertFalse(animator.isAutomatic());
 		animator.setValue(0.5F);
 		this.clock.advance(16L);
-		TweenAnimator.updateRunning();
+		BridgeHandler.UI.fireFrame();
 		Assert.assertEquals(0.5F, animator.get(), 0F);
 	}
 
@@ -263,16 +266,58 @@ public class TweenAnimatorTest {
 		animator.sequence(32F, 2F);
 		Assert.assertFalse(animator.isAutomatic());
 		this.clock.advance(16L);
-		TweenAnimator.updateRunning();
+		BridgeHandler.UI.fireFrame();
 		Assert.assertEquals(0F, animator.get(), 0F);
 	}
 
 	@Test
-	public void leavesTheRunningAnimatorsForANewParallel() {
-		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
-		new AnimatorUI(animator).load(1920D, 1080D);
-		animator.parallel(32F, 2F);
-		Assert.assertFalse(animator.isAutomatic());
+	public void keepsTheFrameGoingWhenAnAnimatorFails() {
+		final TweenAnimator failing = TweenAnimator.create().sequence(64F, 1F);
+		final TweenAnimator other = TweenAnimator.create().sequence(64F, 1F);
+		failing.subscribe(value -> {
+			throw new IllegalStateException("boom");
+		});
+		new AnimatorUI(failing, other).load(1920D, 1080D);
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			this.clock.advance(16L);
+			BridgeHandler.UI.fireFrame();
+			this.clock.advance(16L);
+			BridgeHandler.UI.fireFrame();
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertEquals(0.5F, other.get(), 0F);
+		Assert.assertEquals(0.5F, failing.get(), 0F);
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The update of TweenAnimator failed: java.lang.IllegalStateException: boom"));
+		Assert.assertEquals(output.toString(), output.toString().indexOf("[JOID]"), output.toString().lastIndexOf("[JOID]"));
+	}
+
+	@Test
+	public void keepsTheFrameGoingWhenAListenerOfItsTimelineFails() {
+		final List<String> calls = new ArrayList<>();
+		final TweenAnimator failing = TweenAnimator.create().sequence(16F, 1F);
+		final TweenAnimator other = TweenAnimator.create().sequence(64F, 1F);
+		failing.onComplete(event -> {
+			throw new IllegalStateException("boom");
+		}).onComplete(event -> calls.add("complete"));
+		new AnimatorUI(failing, other).load(1920D, 1080D);
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			this.clock.advance(32L);
+			BridgeHandler.UI.fireFrame();
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertEquals(Collections.singletonList("complete"), calls);
+		Assert.assertEquals(1F, failing.get(), 0F);
+		Assert.assertEquals(0.5F, other.get(), 0F);
+		Assert.assertFalse(failing.isAutomatic());
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The onComplete listener of Timeline failed: java.lang.IllegalStateException: boom"));
 	}
 
 	@Test
@@ -280,7 +325,7 @@ public class TweenAnimatorTest {
 		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F).start();
 		Assert.assertFalse(animator.isAutomatic());
 		this.clock.advance(16L);
-		TweenAnimator.updateRunning();
+		BridgeHandler.UI.fireFrame();
 		Assert.assertEquals(0F, animator.get(), 0F);
 		animator.update();
 		Assert.assertEquals(0.5F, animator.get(), 0F);
@@ -292,7 +337,7 @@ public class TweenAnimatorTest {
 			TweenAnimator.create().start();
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("The animator has no timeline, call sequence(...) or parallel(...) first", exception.getMessage());
+			Assert.assertEquals("The animator has no timeline, call sequence(...) first", exception.getMessage());
 		}
 	}
 
@@ -303,17 +348,12 @@ public class TweenAnimatorTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void refusesACallbackWithoutTimeline() {
-		TweenAnimator.create().setCallback(tween -> {});
+		TweenAnimator.create().onComplete(event -> {});
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesASequenceWithoutEquation() {
 		TweenAnimator.create().sequence(1F, 10F, null);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void refusesAParallelWithoutEquation() {
-		TweenAnimator.create().parallel(1F, 10F, null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -323,7 +363,7 @@ public class TweenAnimatorTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingCallback() {
-		TweenAnimator.create().sequence(1F, 10F).setCallback(null);
+		TweenAnimator.create().sequence(1F, 10F).onComplete(null);
 	}
 
 	@Test
@@ -356,7 +396,7 @@ public class TweenAnimatorTest {
 		new AnimatorUI(animator).load(1920D, 1080D);
 		for (int i = 0; i < 5; i++) {
 			this.clock.advance(16L);
-			TweenAnimator.updateRunning();
+			BridgeHandler.UI.fireFrame();
 		}
 		Assert.assertEquals(Arrays.asList(0.5F, 1F), values);
 	}
@@ -384,66 +424,8 @@ public class TweenAnimatorTest {
 		animator.setValue(0.25F);
 		Assert.assertFalse(animator.isAutomatic());
 		this.clock.advance(16L);
-		TweenAnimator.updateRunning();
+		BridgeHandler.UI.fireFrame();
 		Assert.assertEquals(0.25F, animator.get(), 0F);
-	}
-
-	@Test
-	public void notifiesEachChannelOnlyWhenItsValueChanges() {
-		final List<Float> first = new ArrayList<>();
-		final List<Float> second = new ArrayList<>();
-		final TweenAnimator animator = TweenAnimator.create().parallel(2F, 10F).push(1F, 30F).start();
-		animator.channel(0).subscribe(first::add);
-		animator.channel(1).subscribe(second::add);
-		animator.update(1F);
-		animator.update(1F);
-		animator.update(1F);
-		Assert.assertEquals(Arrays.asList(5F, 10F), first);
-		Assert.assertEquals(Arrays.asList(30F), second);
-	}
-
-	@Test
-	public void startsAChannelFromItsValue() {
-		final TweenAnimator animator = TweenAnimator.create(4F).parallel(2F, 10F).push(1F, 30F).start();
-		animator.update(1F);
-		Assert.assertEquals(7F, animator.channel(0).get(), 0F);
-		Assert.assertEquals(30F, animator.channel(1).get(), 0F);
-		Assert.assertEquals(0F, animator.channel(4).get(), 0F);
-		Assert.assertSame(animator.channel(1), animator.channel(1));
-	}
-
-	@Test
-	public void setsTheValueOfAChannel() {
-		final List<Float> values = new ArrayList<>();
-		final TweenAnimator animator = TweenAnimator.create().parallel(2F, 10F).push(1F, 30F).start();
-		animator.channel(2).subscribe(values::add);
-		animator.setValue(2, 7F);
-		Assert.assertNull(animator.getTimeline());
-		Assert.assertEquals(7F, animator.channel(2).get(), 0F);
-		Assert.assertEquals(Arrays.asList(7F), values);
-	}
-
-	@Test
-	public void clearsItsChannels() {
-		final List<Float> values = new ArrayList<>();
-		final TweenAnimator animator = TweenAnimator.create().parallel(1F, 10F).push(1F, 20F).start();
-		animator.update(1F);
-		animator.channel(1).subscribe(values::add);
-		animator.clear();
-		Assert.assertEquals(Arrays.asList(0F), values);
-	}
-
-	@Test
-	public void exposesItsChannelsAndValuesReadOnly() {
-		final TweenAnimator animator = TweenAnimator.create(3F);
-		animator.getValues()[0] = 9F;
-		Assert.assertEquals(3F, animator.get(), 0F);
-		try {
-			animator.getChannelMap().put(0, animator.channel(0));
-			Assert.fail();
-		} catch (final UnsupportedOperationException exception) {
-			Assert.assertEquals(1, animator.getChannelMap().size());
-		}
 	}
 
 	@Test
@@ -462,35 +444,25 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
-	public void refusesToSetAChannel() {
-		try {
-			TweenAnimator.create().channel(1).set(1F);
-			Assert.fail();
-		} catch (final UnsupportedOperationException exception) {
-			Assert.assertEquals("A TweenAnimatorChannel is read-only and takes the value of its animator: call setValue(index, value) on the animator instead", exception.getMessage());
-		}
-	}
-
-	@Test(expected = UnsupportedOperationException.class)
-	public void refusesToResetAChannel() {
-		TweenAnimator.create().channel(1).reset();
-	}
-
-	@Test
 	public void staysDistinctFromAnAnimatorOfTheSameValue() {
 		Assert.assertNotEquals(TweenAnimator.create(), TweenAnimator.create());
 		Assert.assertEquals(2, new HashSet<>(Arrays.asList(TweenAnimator.create(), TweenAnimator.create())).size());
 	}
 
-	@AllArgsConstructor
 	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class AnimatorUI extends UI {
 
-		private final TweenAnimator animator;
+		private final TweenAnimator[] animators;
+
+		public AnimatorUI(final TweenAnimator... animators) {
+			this.animators = animators;
+		}
 
 		@Override
 		public void init() {
-			this.animator.start();
+			for (final TweenAnimator animator : this.animators) {
+				animator.start();
+			}
 		}
 
 	}

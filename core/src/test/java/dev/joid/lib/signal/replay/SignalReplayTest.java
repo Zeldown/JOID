@@ -90,9 +90,8 @@ public class SignalReplayTest {
 	}
 
 	@Test
-	public void followsAnAnimatorAndItsChannelsReadInASetter() {
-		final TweenAnimator animator = TweenAnimator.create().parallel(32F, 1F).push(64F, 1F);
-		final ReplayAnimatorUI ui = new ReplayAnimatorUI(animator);
+	public void followsTheAnimatorsReadInTheSetters() {
+		final ReplayAnimatorUI ui = new ReplayAnimatorUI(TweenAnimator.create().sequence(32F, 1F), TweenAnimator.create().sequence(64F, 1F));
 		Assert.assertEquals("", this.open(ui));
 		final Node node = ui.getNodeList().get(0);
 		this.bridges.frame();

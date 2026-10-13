@@ -486,7 +486,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		if (this.transition != null && this.transition.getOut() != null && this.transition.getOut().isEnabled()) {
 			this.transition.getOut().start();
-			this.transition.getOut().getAnimator().setCallback(tween -> {
+			this.transition.getOut().getAnimator().onComplete(tween -> {
 				this.dispose();
 				this.getBridge().close(this);
 			});

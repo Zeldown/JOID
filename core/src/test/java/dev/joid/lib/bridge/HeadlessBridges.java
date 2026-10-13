@@ -74,6 +74,7 @@ public final class HeadlessBridges extends ExternalResource {
 	public @NonNull HeadlessBridges frame() {
 		this.clock.advance(16L);
 		this.render.getDraws().clear();
+		BridgeHandler.UI.fireFrame();
 		this.ui.update();
 		this.ui.draw();
 		return this;

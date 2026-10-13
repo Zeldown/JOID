@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
 import dev.joid.lib.bridge.BridgeHandler;
@@ -18,6 +19,7 @@ import lombok.NonNull;
 
 public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 
+	private final List<Runnable>                   frameList;
 	private final Map<MouseButton, List<UIBridge>> pressedMap;
 
 	private int width;
@@ -25,6 +27,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 
 	private UIBridgeRegistry() {
 		super("UI");
+		this.frameList = new CopyOnWriteArrayList<>();
 		this.pressedMap = new EnumMap<>(MouseButton.class);
 	}
 
@@ -45,6 +48,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 			bridgeList.forEach(UIBridge::load);
 		}
 
+		this.fireFrame();
 		bridgeList.forEach(UIBridge::update);
 		render.beginFrame();
 		try {
@@ -56,6 +60,15 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 		} finally {
 			render.endFrame();
 		}
+	}
+
+	public @NonNull UIBridgeRegistry onFrame(final @NonNull Runnable task) {
+		this.frameList.add(task);
+		return this;
+	}
+
+	public void fireFrame() {
+		this.frameList.forEach(Runnable::run);
 	}
 
 	public boolean mouseMoved() {

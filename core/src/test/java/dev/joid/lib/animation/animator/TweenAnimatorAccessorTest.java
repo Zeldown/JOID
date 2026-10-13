@@ -20,14 +20,13 @@ public class TweenAnimatorAccessorTest {
 	}
 
 	@Test
-	public void takesItsTypeAsTheIndexOfTheValue() {
+	public void drivesItsSingleValueWhateverTheType() {
 		final TweenAnimator animator = TweenAnimator.create(4F);
 		final float[] values = {9F};
 		new TweenAnimatorAccessor().getValues(animator, 5, values);
-		Assert.assertEquals(0F, values[0], 0F);
+		Assert.assertEquals(4F, values[0], 0F);
 		new TweenAnimatorAccessor().setValues(animator, 5, new float[] {7F});
-		Assert.assertEquals(7F, animator.channel(5).get(), 0F);
-		Assert.assertEquals(4F, animator.get(), 0F);
+		Assert.assertEquals(7F, animator.get(), 0F);
 	}
 
 }
