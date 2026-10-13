@@ -65,29 +65,7 @@ public class UIDemoChoice extends UI {
 	static {
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoChoice.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSimple.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoAnimation.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoLayout.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOverflow.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoDraggable.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoCursor.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoReorderable.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoFont.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoText.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoMarkup.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoTextField.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoControl.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSlider.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSelector.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoShader.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEffect.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoResource.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoPlayer.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoModel.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoChart.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSignal.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoWatch.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoStore.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOtherStore.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOption.class));
 		UIDemoChoice.LIST.add(DemoEntry.create("UIDemoOverlay", () -> {
 			final UIDemoOverlay overlay = JOID.getUi(UIDemoOverlay.class);
 			if (overlay != null) {
@@ -96,12 +74,34 @@ public class UIDemoChoice extends UI {
 				JOID.open(new UIDemoOverlay());
 			}
 		}).state(() -> JOID.isOpen(UIDemoOverlay.class)));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoLayout.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOverflow.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoText.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoFont.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoMarkup.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoResource.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoPlayer.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoAudio.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEvent.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEventFlow.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoCursor.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoDraggable.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoReorderable.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoTextField.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoControl.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSlider.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSelector.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSignal.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoWatch.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoStore.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOtherStore.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEffect.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoAnimation.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoTween.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoRender.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoAudio.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOption.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoShader.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoChart.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoModel.class));
 	}
 
 	@Override
